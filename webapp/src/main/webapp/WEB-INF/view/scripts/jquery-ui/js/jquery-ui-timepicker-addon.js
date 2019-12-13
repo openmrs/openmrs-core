@@ -144,20 +144,24 @@ $.extend(Timepicker.prototype, {
 		}
 		tp_inst._defaults = $.extend({}, this._defaults, inlineSettings, o, {
 			beforeShow: function(input, dp_inst) {
-				if ($.isFunction(o.beforeShow))
+				if ($.isFunction(o.beforeShow)){
 					o.beforeShow(input, dp_inst, tp_inst);
+				}
 			},
 			onChangeMonthYear: function(year, month, dp_inst) {
 				// Update the time as well : this prevents the time from disappearing from the $input field.
 				tp_inst._updateDateTime(dp_inst);
-				if ($.isFunction(o.onChangeMonthYear))
+				if ($.isFunction(o.onChangeMonthYear)){
 					o.onChangeMonthYear.call($input[0], year, month, dp_inst, tp_inst);
+				}
 			},
 			onClose: function(dateText, dp_inst) {
-				if (tp_inst.timeDefined === true && $input.val() != '')
+				if (tp_inst.timeDefined === true && $input.val() != ''){
 					tp_inst._updateDateTime(dp_inst);
-				if ($.isFunction(o.onClose))
+				}
+				if ($.isFunction(o.onClose)){
 					o.onClose.call($input[0], dateText, dp_inst, tp_inst);
+				}
 			},
 			timepicker: tp_inst // add timepicker as a property of datepicker: $.datepicker._get(dp_inst, 'timepicker');
 		});
@@ -166,12 +170,14 @@ $.extend(Timepicker.prototype, {
 
 		if (tp_inst._defaults.timezoneList === null) {
 			var timezoneList = [];
-			for (var i = -11; i <= 12; i++)
+			for (var i = -11; i <= 12; i++){
 				timezoneList.push((i >= 0 ? '+' : '-') + ('0' + Math.abs(i).toString()).slice(-2) + '00');
-			if (tp_inst._defaults.timezoneIso8609)
+			}
+			if (tp_inst._defaults.timezoneIso8609){
 				timezoneList = $.map(timezoneList, function(val) {
 					return val == '+0000' ? 'Z' : (val.substring(0, 3) + ':' + val.substring(3));
 				});
+			}
 			tp_inst._defaults.timezoneList = timezoneList;
 		}
 
@@ -182,10 +188,11 @@ $.extend(Timepicker.prototype, {
 		tp_inst.ampm = '';
 		tp_inst.$input = $input;
 
-		if (o.altField)
+		if (o.altField){
 			tp_inst.$altInput = $(o.altField)
 				.css({ cursor: 'pointer' })
 				.focus(function(){ $input.trigger("focus"); });
+		}
 		
 		if(tp_inst._defaults.minDate==0 || tp_inst._defaults.minDateTime==0)
 		{
@@ -197,14 +204,18 @@ $.extend(Timepicker.prototype, {
 		}
 		
 		// datepicker needs minDate/maxDate, timepicker needs minDateTime/maxDateTime..
-		if(tp_inst._defaults.minDate !== undefined && tp_inst._defaults.minDate instanceof Date)
+		if(tp_inst._defaults.minDate !== undefined && tp_inst._defaults.minDate instanceof Date){
 			tp_inst._defaults.minDateTime = new Date(tp_inst._defaults.minDate.getTime());
-		if(tp_inst._defaults.minDateTime !== undefined && tp_inst._defaults.minDateTime instanceof Date)
+		}
+		if(tp_inst._defaults.minDateTime !== undefined && tp_inst._defaults.minDateTime instanceof Date){
 			tp_inst._defaults.minDate = new Date(tp_inst._defaults.minDateTime.getTime());
-		if(tp_inst._defaults.maxDate !== undefined && tp_inst._defaults.maxDate instanceof Date)
+		}
+		if(tp_inst._defaults.maxDate !== undefined && tp_inst._defaults.maxDate instanceof Date){
 			tp_inst._defaults.maxDateTime = new Date(tp_inst._defaults.maxDate.getTime());
-		if(tp_inst._defaults.maxDateTime !== undefined && tp_inst._defaults.maxDateTime instanceof Date)
+		}
+		if(tp_inst._defaults.maxDateTime !== undefined && tp_inst._defaults.maxDateTime instanceof Date){
 			tp_inst._defaults.maxDate = new Date(tp_inst._defaults.maxDateTime.getTime());
+		}
 		return tp_inst;
 	},
 
@@ -237,7 +248,9 @@ $.extend(Timepicker.prototype, {
 			ampm = '',
 			treg;
 
-		if (!this.inst) this.inst = $.datepicker._getInst(this.$input[0]);
+		if (!this.inst){
+			this.inst = $.datepicker._getInst(this.$input[0]);
+		}
 
 		if (withDate || !this._defaults.timeOnly) {
 			// the time should come after x number of characters and a space.
@@ -262,16 +275,26 @@ $.extend(Timepicker.prototype, {
 			}
 
 			if (order.h !== -1) {
-				if (ampm == 'AM' && treg[order.h] == '12')
+				if (ampm == 'AM' && treg[order.h] == '12'){
 					this.hour = 0; // 12am = 0 hour
-				else if (ampm == 'PM' && treg[order.h] != '12')
+				}
+				else if (ampm == 'PM' && treg[order.h] != '12'){
 					this.hour = (parseFloat(treg[order.h]) + 12).toFixed(0); // 12pm = 12 hour, any other pm = hour + 12
-				else this.hour = Number(treg[order.h]);
+				}
+				else{
+					this.hour = Number(treg[order.h]);
+				}
 			}
 
-			if (order.m !== -1) this.minute = Number(treg[order.m]);
-			if (order.s !== -1) this.second = Number(treg[order.s]);
-			if (order.l !== -1) this.millisec = Number(treg[order.l]);
+			if (order.m !== -1){
+				this.minute = Number(treg[order.m]);
+			}
+			if (order.s !== -1){
+				this.second = Number(treg[order.s]);
+			}
+			if (order.l !== -1){
+				this.millisec = Number(treg[order.l]);
+			}
 			if (order.z !== -1 && treg[order.z] !== undefined) {
 				var tz = treg[order.z].toUpperCase();
 				switch (tz.length) {
@@ -279,18 +302,21 @@ $.extend(Timepicker.prototype, {
 					tz = this._defaults.timezoneIso8609 ? 'Z' : '+0000';
 					break;
 				case 5:	// +hhmm
-					if (this._defaults.timezoneIso8609)
+					if (this._defaults.timezoneIso8609){
 						tz = tz.substring(1) == '0000'
 						   ? 'Z'
 						   : tz.substring(0, 3) + ':' + tz.substring(3);
+					}
 					break;
 				case 6:	// +hh:mm
-					if (!this._defaults.timezoneIso8609)
+					if (!this._defaults.timezoneIso8609){
 						tz = tz == 'Z' || tz.substring(1) == '00:00'
 						   ? '+0000'
 						   : tz.replace(/:/, '');
-					else if (tz.substring(1) == '00:00')
+					}
+					else if (tz.substring(1) == '00:00'){
 						tz = 'Z';
+					}
 					break;
 				}
 				this.timezone = tz;
@@ -308,10 +334,12 @@ $.extend(Timepicker.prototype, {
 	_getPatternAmpm: function() {
 		var markers = [];
 			o = this._defaults;
-		if (o.amNames)
+		if (o.amNames){
 			$.merge(markers, o.amNames);
-		if (o.pmNames)
+		}
+		if (o.pmNames){
 			$.merge(markers, o.pmNames);
+		}
 		markers = $.map(markers, function(val) { return val.replace(/[.*+?|()\[\]{}\\]/g, '\\$&') });
 		return '(' + markers.join('|') + ')?';
 	},
@@ -323,11 +351,13 @@ $.extend(Timepicker.prototype, {
 		var finds = this._defaults.timeFormat.toLowerCase().match(/(h{1,2}|m{1,2}|s{1,2}|l{1}|t{1,2}|z)/g),
 			orders = { h: -1, m: -1, s: -1, l: -1, t: -1, z: -1 };
 
-		if (finds)
-			for (var i = 0; i < finds.length; i++)
-				if (orders[finds[i].toString().charAt(0)] == -1)
+		if (finds){
+			for (var i = 0; i < finds.length; i++){
+				if (orders[finds[i].toString().charAt(0)] == -1){
 					orders[finds[i].toString().charAt(0)] = i + 1;
-
+				}
+			}
+		}
 		return orders;
 	},
 
@@ -373,19 +403,29 @@ $.extend(Timepicker.prototype, {
 				for (var h = o.hourMin; h <= hourMax; h += parseInt(o.hourGrid,10)) {
 					hourGridSize++;
 					var tmph = (o.ampm && h > 12) ? h-12 : h;
-					if (tmph < 10) tmph = '0' + tmph;
+					if (tmph < 10){
+						tmph = '0' + tmph;
+					}
 					if (o.ampm) {
-						if (h == 0) tmph = 12 +'a';
-						else if (h < 12) tmph += 'a';
-						else tmph += 'p';
+						if (h == 0){
+							tmph = 12 +'a';
+						}
+						else if (h < 12){
+						tmph += 'a';
+						}
+						else{
+							tmph += 'p';
+						}
 					}
 					html += '<td>' + tmph + '</td>';
 				}
 
 				html += '</tr></table></div>' +
 						'</dd>';
-			} else html += '<dd class="ui_tpicker_hour" id="ui_tpicker_hour_' + dp_id + '"' +
+			} else{
+				html += '<dd class="ui_tpicker_hour" id="ui_tpicker_hour_' + dp_id + '"' +
 							((o.showHour) ? '' : noDisplay) + '></dd>';
+			}
 
 			html += '<dt class="ui_tpicker_minute_label" id="ui_tpicker_minute_label_' + dp_id + '"' +
 					((o.showMinute) ? '' : noDisplay) + '>' + o.minuteText + '</dt>';
@@ -404,8 +444,10 @@ $.extend(Timepicker.prototype, {
 
 				html += '</tr></table></div>' +
 						'</dd>';
-			} else html += '<dd class="ui_tpicker_minute" id="ui_tpicker_minute_' + dp_id + '"' +
+			} else{
+ 				html += '<dd class="ui_tpicker_minute" id="ui_tpicker_minute_' + dp_id + '"' +
 							((o.showMinute) ? '' : noDisplay) + '></dd>';
+			}
 
 			// Seconds
 			html += '<dt class="ui_tpicker_second_label" id="ui_tpicker_second_label_' + dp_id + '"' +
@@ -424,8 +466,10 @@ $.extend(Timepicker.prototype, {
 
 				html += '</tr></table></div>' +
 						'</dd>';
-			} else html += '<dd class="ui_tpicker_second" id="ui_tpicker_second_' + dp_id + '"'	+
+			} else{
+				html += '<dd class="ui_tpicker_second" id="ui_tpicker_second_' + dp_id + '"'	+
 							((o.showSecond) ? '' : noDisplay) + '></dd>';
+			}
 
 			// Milliseconds
 			html += '<dt class="ui_tpicker_millisec_label" id="ui_tpicker_millisec_label_' + dp_id + '"' +
@@ -444,8 +488,10 @@ $.extend(Timepicker.prototype, {
 
 				html += '</tr></table></div>' +
 						'</dd>';
-			} else html += '<dd class="ui_tpicker_millisec" id="ui_tpicker_millisec_' + dp_id + '"'	+
+			} else{
+				html += '<dd class="ui_tpicker_millisec" id="ui_tpicker_millisec_' + dp_id + '"'	+
 							((o.showMillisec) ? '' : noDisplay) + '></dd>';
+			}
 
 			// Timezone
 			html += '<dt class="ui_tpicker_timezone_label" id="ui_tpicker_timezone_label_' + dp_id + '"' +
@@ -544,10 +590,18 @@ $.extend(Timepicker.prototype, {
 							var ap = h.substring(2).toLowerCase(),
 								aph = parseInt(h.substring(0,2), 10);
 							if (ap == 'a') {
-								if (aph == 12) h = 0;
-								else h = aph;
-							} else if (aph == 12) h = 12;
-							else h = aph + 12;
+								if (aph == 12){
+									h = 0;
+								}
+								else{
+									h = aph;
+								}
+							} else if (aph == 12){
+								h = 12;
+							}
+							else{
+								h = aph + 12;
+							}
 						}
 						tp_inst.hour_slider.slider("option", "value", h);
 						tp_inst._onTimeChange();
@@ -620,8 +674,12 @@ $.extend(Timepicker.prototype, {
 			}
 
 			var $buttonPanel = $dp.find('.ui-datepicker-buttonpane');
-			if ($buttonPanel.length) $buttonPanel.before($tp);
-			else $dp.append($tp);
+			if ($buttonPanel.length){
+				$buttonPanel.before($tp);
+			}
+			else{
+				$dp.append($tp);
+			}
 
 			this.$timeObj = $tp.find('#ui_tpicker_time_'+ dp_id);
 
@@ -650,7 +708,9 @@ $.extend(Timepicker.prototype, {
 		var o = this._defaults,
 			dp_date = new Date(dp_inst.selectedYear, dp_inst.selectedMonth, dp_inst.selectedDay);
 
-		if(!this._defaults.showTimepicker) return; // No time so nothing to check here
+		if(!this._defaults.showTimepicker){
+			return; // No time so nothing to check here
+		}
 
 		if($.datepicker._get(dp_inst, 'minDateTime') !== null && $.datepicker._get(dp_inst, 'minDateTime') !== undefined && dp_date){
 			var minDateTime = $.datepicker._get(dp_inst, 'minDateTime'),
@@ -675,8 +735,9 @@ $.extend(Timepicker.prototype, {
 						this.second = this._defaults.secondMin;
 						this._defaults.millisecMin = minDateTime.getMilliseconds();
 					} else {
-						if(this.millisec < this._defaults.millisecMin)
+						if(this.millisec < this._defaults.millisecMin){
 							this.millisec = this._defaults.millisecMin;
+						}
 						this._defaults.millisecMin = this.millisecMinOriginal;
 					}
 				} else {
@@ -715,7 +776,9 @@ $.extend(Timepicker.prototype, {
 						this.second = this._defaults.secondMax;
 						this._defaults.millisecMax = maxDateTime.getMilliseconds();
 					} else {
-						if(this.millisec > this._defaults.millisecMax) this.millisec = this._defaults.millisecMax;
+						if(this.millisec > this._defaults.millisecMax){
+							this.millisec = this._defaults.millisecMax;
+						}
 						this._defaults.millisecMax = this.millisecMaxOriginal;
 					}
 				} else {
@@ -737,14 +800,18 @@ $.extend(Timepicker.prototype, {
                 secMax  = (this._defaults.secondMax - ((this._defaults.secondMax - this._defaults.secondMin) % this._defaults.stepSecond)).toFixed(0),
 				millisecMax  = (this._defaults.millisecMax - ((this._defaults.millisecMax - this._defaults.millisecMin) % this._defaults.stepMillisec)).toFixed(0);
 
-			if(this.hour_slider)
+			if(this.hour_slider){
 				this.hour_slider.slider("option", { min: this._defaults.hourMin, max: hourMax }).slider('value', this.hour);
-			if(this.minute_slider)
+			}
+			if(this.minute_slider){
 				this.minute_slider.slider("option", { min: this._defaults.minuteMin, max: minMax }).slider('value', this.minute);
-			if(this.second_slider)
+			}
+			if(this.second_slider){
 				this.second_slider.slider("option", { min: this._defaults.secondMin, max: secMax }).slider('value', this.second);
-			if(this.millisec_slider)
+			}
+			if(this.millisec_slider){
 				this.millisec_slider.slider("option", { min: this._defaults.millisecMin, max: millisecMax }).slider('value', this.millisec);
+			}
 		}
 
 	},
@@ -762,16 +829,34 @@ $.extend(Timepicker.prototype, {
 			timezone = (this.timezone_select) ? this.timezone_select.val() : false,
 			o = this._defaults;
 
-		if (typeof(hour) == 'object') hour = false;
-		if (typeof(minute) == 'object') minute = false;
-		if (typeof(second) == 'object') second = false;
-		if (typeof(millisec) == 'object') millisec = false;
-		if (typeof(timezone) == 'object') timezone = false;
+		if (typeof(hour) == 'object'){
+			hour = false;
+		}
+		if (typeof(minute) == 'object'){
+			minute = false;
+		}
+		if (typeof(second) == 'object'){
+		second = false;
+		}
+		if (typeof(millisec) == 'object'){
+			millisec = false;
+		}
+		if (typeof(timezone) == 'object'){
+			timezone = false;
+		}
 
-		if (hour !== false) hour = parseInt(hour,10);
-		if (minute !== false) minute = parseInt(minute,10);
-		if (second !== false) second = parseInt(second,10);
-		if (millisec !== false) millisec = parseInt(millisec,10);
+		if (hour !== false){
+			hour = parseInt(hour,10);
+		}
+		if (minute !== false){
+			minute = parseInt(minute,10);
+		}
+		if (second !== false){
+		second = parseInt(second,10);
+		}
+		if (millisec !== false){
+			millisec = parseInt(millisec,10);
+		}
 
 		var ampm = o[hour < 12 ? 'amNames' : 'pmNames'][0];
 
@@ -785,22 +870,39 @@ $.extend(Timepicker.prototype, {
 		
 		if (hasChanged) {
 
-			if (hour !== false)this.hour = hour;
-			if (minute !== false) this.minute = minute;
-			if (second !== false) this.second = second;
-			if (millisec !== false) this.millisec = millisec;
-			if (timezone !== false) this.timezone = timezone;
+			if (hour !== false){
+				this.hour = hour;
+			}
+			if (minute !== false){
+				this.minute = minute;
+			}
+			if (second !== false){
+				this.second = second;
+			}
+			if (millisec !== false){
+				this.millisec = millisec;
+			}
+			if (timezone !== false){
+				this.timezone = timezone;
+			}
 			
-			if (!this.inst) this.inst = $.datepicker._getInst(this.$input[0]);
-			
+			if (!this.inst){
+				this.inst = $.datepicker._getInst(this.$input[0]);
+			}			
 			this._limitMinMaxDateTime(this.inst, true);
 		}
-		if (o.ampm) this.ampm = ampm;
+		if (o.ampm){
+			this.ampm = ampm;
+		}		
 		
 		this._formatTime();
-		if (this.$timeObj) this.$timeObj.text(this.formattedTime + o.timeSuffix);
+		if (this.$timeObj){
+			this.$timeObj.text(this.formattedTime + o.timeSuffix);
+		}
 		this.timeDefined = true;
-		if (hasChanged) this._updateDateTime();
+		if (hasChanged){
+			this._updateDateTime();
+		}
 	},
     
 	//########################################################################
@@ -819,16 +921,20 @@ $.extend(Timepicker.prototype, {
 	// format the time all pretty...
 	//########################################################################
 	_formatTime: function(time, format, ampm) {
-		if (ampm == undefined) ampm = this._defaults.ampm;
+		if (ampm == undefined){
+			ampm = this._defaults.ampm;
+		}
 		time = time || { hour: this.hour, minute: this.minute, second: this.second, millisec: this.millisec, ampm: this.ampm, timezone: this.timezone };
 		var tmptime = (format || this._defaults.timeFormat).toString();
 
 		var hour = parseInt(time.hour, 10);
 		if (ampm) {
-			if (!$.inArray(time.ampm.toUpperCase(), this.amNames) !== -1)
+			if (!$.inArray(time.ampm.toUpperCase(), this.amNames) !== -1){
 				hour = hour % 12;
-			if (hour === 0)
+			}
+			if (hour === 0){
 				hour = 12;
+			}
 		}
 		tmptime = tmptime.replace(/(?:hh?|mm?|ss?|[tT]{1,2}|[lz])/g, function(match) {
 			switch (match.toLowerCase()) {
@@ -843,16 +949,21 @@ $.extend(Timepicker.prototype, {
 				case 't': case 'tt':
 					if (ampm) {
 						var _ampm = time.ampm;
-						if (match.length == 1)
+						if (match.length == 1){
 							_ampm = _ampm.charAt(0);
+						}
 						return match.charAt(0) == 'T' ? _ampm.toUpperCase() : _ampm.toLowerCase();
 					}
 					return '';
 			}
 		});
 
-		if (arguments.length) return tmptime;
-		else this.formattedTime = tmptime;
+		if (arguments.length){
+			return tmptime;
+		}
+		else{
+			this.formattedTime = tmptime;
+		}
 	},
 
 	//########################################################################
@@ -866,8 +977,9 @@ $.extend(Timepicker.prototype, {
 			timeAvailable = dt !== null && this.timeDefined;
 		this.formattedDate = $.datepicker.formatDate(dateFmt, (dt === null ? new Date() : dt), formatCfg);
 		var formattedDateTime = this.formattedDate;
-		if (dp_inst.lastVal !== undefined && (dp_inst.lastVal.length > 0 && this.$input.val().length === 0))
+		if (dp_inst.lastVal !== undefined && (dp_inst.lastVal.length > 0 && this.$input.val().length === 0)){
 			return;
+		}
 
 		if (this._defaults.timeOnly === true) {
 			formattedDateTime = this.formattedTime;
@@ -902,7 +1014,9 @@ $.fn.extend({
 		o = o || {};
 		var tmp_args = arguments;
 
-		if (typeof o == 'object') tmp_args[0] = $.extend(o, { timeOnly: true });
+		if (typeof o == 'object'){
+			tmp_args[0] = $.extend(o, { timeOnly: true });
+		}
 
 		return $(this).each(function() {
 			$.fn.datetimepicker.apply($(this), tmp_args);
@@ -918,19 +1032,22 @@ $.fn.extend({
 		tmp_args = arguments;
 
 		if (typeof(o) == 'string'){
-			if(o == 'getDate') 
+			if(o == 'getDate'){ 
 				return $.fn.datepicker.apply($(this[0]), tmp_args);
-			else 
+			}
+			else{
 				return this.each(function() {
 					var $t = $(this);
 					$t.datepicker.apply($t, tmp_args);
 				});
+			}
 		}
-		else
+		else{
 			return this.each(function() {
 				var $t = $(this);
 				$t.datepicker($.timepicker._newInst($t, o)._defaults);
 			});
+		}
 	}
 });
 
@@ -952,7 +1069,9 @@ $.datepicker._selectDate = function (id, dateStr) {
 		this._notifyChange(inst);
 		this._updateDatepicker(inst);
 	}
-	else this._base_selectDate(id, dateStr);
+	else{
+		this._base_selectDate(id, dateStr);
+	}
 };
 
 //#############################################################################################
@@ -977,7 +1096,9 @@ $.datepicker._updateDatepicker = function(inst) {
 		
 		// Reload the time control when changing something in the input text field.
 		var tp_inst = this._get(inst, 'timepicker');
-		if(tp_inst) tp_inst._addTimePicker(inst);
+		if(tp_inst){
+			tp_inst._addTimePicker(inst);
+		}
 	}
 };
 
@@ -1054,8 +1175,9 @@ $.datepicker._gotoToday = function(id) {
 		tzoffset = Math.abs(tzoffset);
 		var tzmin = tzoffset % 60
 		tzoffset = tzsign + ('0' + (tzoffset - tzmin) / 60).slice(-2) + ('0' + tzmin).slice(-2);
-		if (tp_inst._defaults.timezoneIso8609)
+		if (tp_inst._defaults.timezoneIso8609){
 			tzoffset = tzoffset.substring(0, 3) + ':' + tzoffset.substring(3);
+		}
 		tp_inst.timezone_select.val(tzoffset);
 	}
 	this._setTime(inst, now);
@@ -1112,10 +1234,18 @@ $.datepicker._setTime = function(inst, date) {
 		tp_inst.second = second;
 		tp_inst.millisec = millisec;
 
-		if (tp_inst.hour_slider) tp_inst.hour_slider.slider('value', hour);
-		if (tp_inst.minute_slider) tp_inst.minute_slider.slider('value', minute);
-		if (tp_inst.second_slider) tp_inst.second_slider.slider('value', second);
-		if (tp_inst.millisec_slider) tp_inst.millisec_slider.slider('value', millisec);
+		if (tp_inst.hour_slider){
+		tp_inst.hour_slider.slider('value', hour);
+		}
+		if (tp_inst.minute_slider){
+			tp_inst.minute_slider.slider('value', minute);
+		}
+		if (tp_inst.second_slider){
+			tp_inst.second_slider.slider('value', second);
+		}
+		if (tp_inst.millisec_slider){
+			tp_inst.millisec_slider.slider('value', millisec);
+		}
 
 		tp_inst._onTimeChange();
 		tp_inst._updateDateTime(inst);
@@ -1138,8 +1268,12 @@ $.datepicker._setTimeDatepicker = function(target, date, withDate) {
 				tp_date = new Date();
 				tp_date.setHours(tp_inst.hour, tp_inst.minute, tp_inst.second, tp_inst.millisec);
 			}
-			else tp_date = new Date(date.getTime());
-			if (tp_date.toString() == 'Invalid Date') tp_date = undefined;
+			else{
+			tp_date = new Date(date.getTime());
+			}
+			if (tp_date.toString() == 'Invalid Date'){
+				tp_date = undefined;
+			}
 			this._setTime(inst, tp_date);
 		}
 	}
@@ -1170,7 +1304,9 @@ $.datepicker._getDateDatepicker = function(target, noDefault) {
 	if (tp_inst) {
 		this._setDateFromField(inst, noDefault);
 		var date = this._getDate(inst);
-		if (date && tp_inst._parseTime($(target).val(), tp_inst.timeOnly)) date.setHours(tp_inst.hour, tp_inst.minute, tp_inst.second, tp_inst.millisec);
+		if (date && tp_inst._parseTime($(target).val(), tp_inst.timeOnly)){
+			date.setHours(tp_inst.hour, tp_inst.minute, tp_inst.second, tp_inst.millisec);
+		}
 		return date;
 	}
 	return this._base_getDateDatepicker(target, noDefault);
@@ -1202,8 +1338,9 @@ $.datepicker._formatDate = function(inst, day, month, year){
 	var tp_inst = this._get(inst, 'timepicker');
 	if(tp_inst)
 	{
-		if(day)
+		if(day){
 			var b = this._base_formatDate(inst, day, month, year);
+		}
 		tp_inst._updateDateTime();	
 		return tp_inst.$input.val();
 	}
@@ -1220,40 +1357,51 @@ $.datepicker._optionDatepicker = function(target, name, value) {
 	if (tp_inst) {
 		var min,max,onselect;
 		if (typeof name == 'string') { // if min/max was set with the string
-			if (name==='minDate' || name==='minDateTime' )
+			if (name==='minDate' || name==='minDateTime' ){
 				min = value;
-			else if (name==='maxDate' || name==='maxDateTime')
+			}
+			else if (name==='maxDate' || name==='maxDateTime'){
 				max = value;
-			else if (name==='onSelect')
+			}
+			else if (name==='onSelect'){
 				onselect=value;
+			}
 		} else if (typeof name == 'object') { //if min/max was set with the JSON
-			if(name.minDate)
+			if(name.minDate){
 				min = name.minDate;
-			else if (name.minDateTime)
+			}
+			else if (name.minDateTime){
 				min = name.minDateTime;
-			else if (name.maxDate)
+			}
+			else if (name.maxDate){
 				max = name.maxDate;
-			else if (name.maxDateTime)
+			}
+		else if (name.maxDateTime){
 				max = name.maxDateTime;
+			}
 		}
 		if(min){ //if min was set
-			if(min==0)
+			if(min==0){
 				min=new Date();
-			else
+			}
+			else{
 				min= new Date(min);
-			
+			}
 			tp_inst._defaults.minDate = min;
 			tp_inst._defaults.minDateTime = min;
 		} else if (max){ //if max was set
-			if(max==0)
+			if(max==0){
 				max=new Date();
-			else
+			}
+			else{
 				max= new Date(max);
-			tp_inst._defaults.maxDate = max;
+		}
+		tp_inst._defaults.maxDate = max;
 			tp_inst._defaults.maxDateTime = max;
 		}
-		else if (onselect)
+		else if (onselect){
 			tp_inst._defaults.onSelect=onselect;
+		}
 	}
 	this._base_optionDatepicker(target, name, value);
 };
@@ -1263,9 +1411,11 @@ $.datepicker._optionDatepicker = function(target, name, value) {
 //#######################################################################################
 function extendRemove(target, props) {
 	$.extend(target, props);
-	for (var name in props)
-		if (props[name] === null || props[name] === undefined)
+	for (var name in props){
+		if (props[name] === null || props[name] === undefined){
 			target[name] = props[name];
+		}
+	}
 	return target;
 }
 
