@@ -216,17 +216,17 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	 * @should void state with endDate null if startDates equal
 	 */
 	public void voidLastState(ProgramWorkflow workflow, User voidBy, Date voidDate, String voidReason) {
-		List<PatientState> states = statesInWorkflow(workflow, false);
+		List<PatientState> tempStates = statesInWorkflow(workflow, false);
 		if (voidDate == null) {
 			voidDate = new Date();
 		}
 		PatientState last = null;
 		PatientState nextToLast = null;
-		if (!states.isEmpty()) {
-			last = states.get(states.size() - 1);
+		if (!tempStates.isEmpty()) {
+			last = tempStates.get(tempStates.size() - 1);
 		}
-		if (states.size() > 1) {
-			nextToLast = states.get(states.size() - 2);
+		if (tempStates.size() > 1) {
+			nextToLast = tempStates.get(tempStates.size() - 2);
 		}
 		if (last != null) {
 			last.setVoided(true);

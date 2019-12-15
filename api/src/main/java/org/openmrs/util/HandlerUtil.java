@@ -78,8 +78,9 @@ public class HandlerUtil implements ApplicationListener<ContextRefreshedEvent> {
 			}
 			if (type == null) {
 				return other.type == null;
-			} else
+			} else {
 				return type.equals(other.type);
+			}
 		}
 		
 	}
