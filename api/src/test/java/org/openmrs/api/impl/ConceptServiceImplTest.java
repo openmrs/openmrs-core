@@ -289,6 +289,64 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see ConceptServiceImpl#saveDrug(Drug) 
+	 */
+	@Test
+	public void saveDrug_shouldPutGeneratedIdOntoReturnedDrug() {
+		Drug drug = new Drug();
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("Concept", new Locale("en", "US")));
+		concept.addDescription(new ConceptDescription("Description", new Locale("en", "US")));
+		concept.setConceptClass(new ConceptClass(1));
+		concept.setDatatype(new ConceptDatatype(1));
+		Concept savedConcept = conceptService.saveConcept(concept);
+		drug.setConcept(savedConcept);
+		assertNull(drug.getDrugId());
+		Drug savedDrug = conceptService.saveDrug(drug);
+		assertNotNull(savedDrug.getDrugId());
+	}
+
+	/**
+	 * @see ConceptServiceImpl#saveDrug(Drug)
+	 */
+	@Test
+	public void saveDrug_shouldCreateNewDrugInDatabase() {
+		Drug drug = new Drug();
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("Concept", new Locale("en", "US")));
+		concept.addDescription(new ConceptDescription("Description", new Locale("en", "US")));
+		concept.setConceptClass(new ConceptClass(1));
+		concept.setDatatype(new ConceptDatatype(1));
+		Concept savedConcept = conceptService.saveConcept(concept);
+		drug.setConcept(savedConcept);
+		drug.setName("Drug");
+		assertNull(conceptService.getDrug("Drug"));
+		Drug savedDrug = conceptService.saveDrug(drug);
+		assertNotNull(conceptService.getDrug(savedDrug.getDrugId()));
+	}
+
+	/**
+	 * @see ConceptServiceImpl#saveDrug(Drug)
+	 */
+	@Test
+	public void saveDrug_shouldUpdateDrugAlreadyExistingInDatabase() {
+		Drug drug = new Drug();
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("Concept", new Locale("en", "US")));
+		concept.addDescription(new ConceptDescription("Description", new Locale("en", "US")));
+		concept.setConceptClass(new ConceptClass(1));
+		concept.setDatatype(new ConceptDatatype(1));
+		Concept savedConcept = conceptService.saveConcept(concept);
+		drug.setConcept(savedConcept);
+		drug.setCombination(false);
+		Drug savedDrug = conceptService.saveDrug(drug);
+		assertFalse(savedDrug.getCombination());
+		savedDrug.setCombination(true);
+		conceptService.saveDrug(savedDrug);
+		assertTrue(conceptService.getDrug(savedDrug.getDrugId()).getCombination());
+	}
+	
+	/**
 	 * @see ConceptServiceImpl#purgeConcept(Concept)
 	 */
 	@Test
@@ -395,7 +453,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see ConcepTServiceImpl#retireDrug(Drug, String)
+	 * @see ConceptServiceImpl#retireDrug(Drug, String)
 	 */
 	@Test
 	public void retireDrug_shouldRetireTheGivenDrug() {
@@ -406,7 +464,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see ConcepTServiceImpl#unretireDrug(Drug)
+	 * @see ConceptServiceImpl#unretireDrug(Drug)
 	 */
 	@Test
 	public void unretireDrug_shouldMarkDrugAsNotRetired() {
@@ -417,7 +475,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see ConcepTServiceImpl#unretireDrug(Drug)
+	 * @see ConceptServiceImpl#unretireDrug(Drug)
 	 */
 	@Test
 	public void unretireDrug_shouldNotChangeAttributesOfDrugThatIsAlreadyNotRetired() {
@@ -562,7 +620,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see ConceptServiceImpl#getDrugByIngredients(Concept)
+	 * @see ConceptServiceImpl#getDrugsByIngredient(Concept)
 	 */
 	@Test
 	public void getDrugsByIngredient_shouldRaiseExceptionIfNoConceptIsGiven() {
@@ -790,5 +848,60 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		int conceptId = 792;
 		assertEquals(new Integer(1),
 		    conceptService.getCountOfDrugs(phrase, conceptService.getConcept(conceptId), true, true, true));
+	}
+
+	/**
+	 * @see ConceptServiceImpl#saveConceptProposal(ConceptProposal) 
+	 */
+	@Test
+	public void saveConceptProposal_shouldReturnSavedConceptProposalObject() {
+		final String ORIGINAL_TEXT = "OriginalText";
+		ConceptProposal conceptProposal = new ConceptProposal();
+		conceptProposal.setOriginalText(ORIGINAL_TEXT);
+		List<ConceptProposal> existingConceptProposals = conceptService.getConceptProposals(ORIGINAL_TEXT);
+		assertTrue(existingConceptProposals.isEmpty());
+		ConceptProposal savedConceptProposal = conceptService.saveConceptProposal(conceptProposal);
+		assertEquals(ORIGINAL_TEXT, savedConceptProposal.getOriginalText());
+		assertEquals(conceptProposal, savedConceptProposal);
+	}
+
+	/**
+	 * @see ConceptServiceImpl#saveConceptProposal(ConceptProposal)
+	 */
+	@Test
+	public void saveConceptProposal_shouldReturnUpdatedConceptProposalObject() {
+		ConceptProposal conceptProposal = new ConceptProposal();
+		conceptProposal.setOriginalText("OriginalText");
+		ConceptProposal savedConceptProposal = conceptService.saveConceptProposal(conceptProposal);
+		final String ANOTHER_ORIGINAL_TEXT = "AnotherOriginalText";
+		savedConceptProposal.setOriginalText(ANOTHER_ORIGINAL_TEXT);
+		ConceptProposal updatedConceptProposal = conceptService.saveConceptProposal(savedConceptProposal);
+		assertEquals(ANOTHER_ORIGINAL_TEXT, updatedConceptProposal.getOriginalText());
+	}
+
+	/**
+	 * @see ConceptServiceImpl#saveConceptProposal(ConceptProposal)
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void saveConceptProposal_shouldFailGivenNull() {
+		conceptService.saveConceptProposal(null);
+	}
+
+	/**
+	 * @see ConceptServiceImpl#getConceptNameTagByName(String)
+	 */
+	@Test
+	public void getConceptNameTagByName_shouldReturnNullIfNoConceptNameTagIsFound() {
+		assertNull(conceptService.getConceptNameTagByName("random-tag"));
+	}
+
+	/**
+	 * @see ConceptServiceImpl#getConceptNameTagByName(String)
+	 */
+	@Test
+	public void getConceptNameTagByName_shouldReturnTheMatchingConceptNameTagObjectIfFound() {
+		ConceptNameTag conceptNameTag = conceptService.getConceptNameTag(1);
+		assertNotNull(conceptNameTag);
+		assertEquals(conceptNameTag, conceptService.getConceptNameTagByName(conceptNameTag.getTag()));
 	}
 }

@@ -159,7 +159,9 @@ public class CohortMembership extends BaseChangeableOpenmrsData implements Compa
 			return false;
 		}
 		CohortMembership otherCohortMembership = (CohortMembership)otherCohortMembershipObject;
-		if(this == otherCohortMembership) return true;
+		if(this == otherCohortMembership){
+			return true;
+		} 
 		
 		
 		return ((endDate != null ) ? endDate.equals(otherCohortMembership.getEndDate()) : otherCohortMembership.getEndDate() == null)
