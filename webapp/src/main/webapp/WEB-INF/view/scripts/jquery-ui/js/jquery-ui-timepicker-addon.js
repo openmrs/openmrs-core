@@ -170,7 +170,7 @@ $.extend(Timepicker.prototype, {
 				timezoneList.push((i >= 0 ? '+' : '-') + ('0' + Math.abs(i).toString()).slice(-2) + '00');
 			if (tp_inst._defaults.timezoneIso8609)
 				timezoneList = $.map(timezoneList, function(val) {
-					return val == '+0000' ? 'Z' : (val.substring(0, 3) + ':' + val.substring(3));
+					return val === '+0000' ? 'Z' : (val.substring(0, 3) + ':' + val.substring(3));
 				});
 			tp_inst._defaults.timezoneList = timezoneList;
 		}
@@ -182,29 +182,34 @@ $.extend(Timepicker.prototype, {
 		tp_inst.ampm = '';
 		tp_inst.$input = $input;
 
-		if (o.altField)
+		if (o.altField) {
 			tp_inst.$altInput = $(o.altField)
 				.css({ cursor: 'pointer' })
 				.focus(function(){ $input.trigger("focus"); });
+		}
 		
 		if(tp_inst._defaults.minDate==0 || tp_inst._defaults.minDateTime==0)
 		{
 			tp_inst._defaults.minDate=new Date();
 		}
-		if(tp_inst._defaults.maxDate==0 || tp_inst._defaults.maxDateTime==0)
+		if(tp_inst._defaults.maxDate===0 || tp_inst._defaults.maxDateTime===0)
 		{
 			tp_inst._defaults.maxDate=new Date();
 		}
 		
 		// datepicker needs minDate/maxDate, timepicker needs minDateTime/maxDateTime..
-		if(tp_inst._defaults.minDate !== undefined && tp_inst._defaults.minDate instanceof Date)
+		if(tp_inst._defaults.minDate !== undefined && tp_inst._defaults.minDate instanceof Date) {
 			tp_inst._defaults.minDateTime = new Date(tp_inst._defaults.minDate.getTime());
-		if(tp_inst._defaults.minDateTime !== undefined && tp_inst._defaults.minDateTime instanceof Date)
+		}
+		if(tp_inst._defaults.minDateTime !== undefined && tp_inst._defaults.minDateTime instanceof Date) {
 			tp_inst._defaults.minDate = new Date(tp_inst._defaults.minDateTime.getTime());
-		if(tp_inst._defaults.maxDate !== undefined && tp_inst._defaults.maxDate instanceof Date)
+		}
+		if(tp_inst._defaults.maxDate !== undefined && tp_inst._defaults.maxDate instanceof Date) {
 			tp_inst._defaults.maxDateTime = new Date(tp_inst._defaults.maxDate.getTime());
-		if(tp_inst._defaults.maxDateTime !== undefined && tp_inst._defaults.maxDateTime instanceof Date)
+		}
+		if(tp_inst._defaults.maxDateTime !== undefined && tp_inst._defaults.maxDateTime instanceof Date) {
 			tp_inst._defaults.maxDate = new Date(tp_inst._defaults.maxDateTime.getTime());
+		}
 		return tp_inst;
 	},
 
