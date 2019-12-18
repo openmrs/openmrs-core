@@ -198,7 +198,7 @@ $.extend(Timepicker.prototype, {
 		}
 		
 		// datepicker needs minDate/maxDate, timepicker needs minDateTime/maxDateTime..
-		if(tp_inst._defaults.minDate !== undefined && tp_inst._defaults.minDate instanceof Date) {
+		if(tp_inst._defaults.minDate && tp_inst._defaults.minDate instanceof Date) {
 			tp_inst._defaults.minDateTime = new Date(tp_inst._defaults.minDate.getTime());
 		}
 		if(tp_inst._defaults.minDateTime !== undefined && tp_inst._defaults.minDateTime instanceof Date) {
@@ -1278,4 +1278,3 @@ $.timepicker = new Timepicker(); // singleton instance
 $.timepicker.version = "0.9.7";
 
 })(jQuery);
-
