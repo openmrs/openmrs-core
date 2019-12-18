@@ -192,7 +192,7 @@ $.extend(Timepicker.prototype, {
 		{
 			tp_inst._defaults.minDate=new Date();
 		}
-		if(tp_inst._defaults.maxDate===0 || tp_inst._defaults.maxDateTime===0)
+		if(tp_inst._defaults.maxDate === 0 || tp_inst._defaults.maxDateTime === 0)
 		{
 			tp_inst._defaults.maxDate=new Date();
 		}
