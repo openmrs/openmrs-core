@@ -93,21 +93,6 @@
 		</addColumn>
 	</changeSet>
 
-	<changeSet id="TRUNK-5664-20191010" author="Wyclif">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<tableExists tableName="users_unused_fields" />
-			</not>
-		</preConditions>
-		<comment>Adding users_unused_fields table</comment>
-		<createTable tableName="users_unused_fields">
-			<column name="user_id" type="int" >
-				<constraints nullable="false" unique="true" />
-			</column>
-			<column name="name" type="varchar(1)" />
-			<column name="description" type="varchar(1)" />
-		</createTable>
-	</changeSet>
 	<changeSet id="TRUNK-5672-201910211105" author="Mritunjay">
 		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="0">
