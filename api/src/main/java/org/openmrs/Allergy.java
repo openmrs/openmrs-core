@@ -188,11 +188,8 @@ public class Allergy extends BaseChangeableOpenmrsData {
 	 * @deprecated as of 2.3.0, replaced by {@link #getComments()}
 	 */
 	@Deprecated
-	public String getComment() {
-		return getComments();
-	}
 	
-	/**
+	/*GCI-tixpro removed the deprecated code*
 	 * @param comment the comment to set
 	 * @deprecated as of 2.3.0, replaced by {@link #setComments(String)}
 	 */
