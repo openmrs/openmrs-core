@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="org.openmrs">
+
+	<class name="Obs" table="obs" batch-size="25">
+
+		<id name="obsId" type="int" column="obs_id" unsaved-value="null">
+			<generator class="native">
+				<param name="sequence">obs_obs_id_seq</param>
+			</generator>
+		</id>
+
+		
+
+		<property name="uuid" type="java.lang.String"
+			column="uuid" length="38" unique="true" />
+
+		<property name="personId" type="java.lang.Integer" length="11" 
+			column="person_id" not-null="true" insert="false" update="false" />
+			
+		<property name="obsDatetime" type="java.util.Date"
+			column="obs_datetime" not-null="true" length="19" />
+					
+		<property name="valueGroupId" type="java.lang.Integer"
+			column="value_group_id" length="11" />
+		<property name="valueDatetime" type="java.util.Date"
+			column="value_datetime" length="19" />
+		<property name="valueNumeric" type="double"
+			column="value_numeric" length="22" />
+		<property name="valueModifier" type="java.lang.String"
+			column="value_modifier" length="2" />
+		<property name="valueText" type="java.lang.String"
+			column="value_text" length="65535" />
+		<property name="valueComplex" type="java.lang.String"
+		    column="value_complex" length="255" />
+			
+		<property name="comment" type="java.lang.String"
+			column="comments" length="255" />
+		<property name="accessionNumber" type="java.lang.String"
+			column="accession_number" length="255" />
+			
+				
+		<property name="dateCreated" type="java.util.Date"
+			column="date_created" not-null="true" length="19" />
+		<property name="voided" type="java.lang.Boolean" column="voided"
+			length="1" not-null="true" />
+		<property name="dateVoided" type="java.util.Date"
+			column="date_voided" length="19" />
+		<property name="voidReason" type="java.lang.String"
+			column="void_reason" length="255" />
+		<property name="formNamespaceAndPath" type="java.lang.String"
+			column="form_namespace_and_path" length="255" access="field" />
+		<property name="status" column="status" length="16" not-null="true">
+			<type name="org.hibernate.type.EnumType">
+				<param name="enumClass">org.openmrs.Obs$Status</param>
+				<param name="type">12</param>
+			</type>
+		</property>
+		<property name="interpretation" column="interpretation" length="32">
+			<type name="org.hibernate.type.EnumType">
+				<param name="enumClass">org.openmrs.Obs$Interpretation</param>
+				<param name="type">12</param>
+			</type>
+		</property>
+		
+		<!-- Associations -->
+
+		<many-to-one name="person" class="Person" not-null="true" column="person_id" />
+		<many-to-one name="concept" class="Concept" not-null="true" column="concept_id" />
+		<many-to-one name="valueCoded" class="Concept" column="value_coded" />
+		<many-to-one name="valueCodedName" class="ConceptName" column="value_coded_name_id" />
+		<many-to-one name="valueDrug" class="Drug" column="value_drug" />
+		<many-to-one name="order" class="Order" column="order_id" cascade="none" />
+		<many-to-one name="location" class="Location" not-null="false" column="location_id" />
+		<many-to-one name="encounter" class="Encounter" column="encounter_id" />
+		<many-to-one name="creator" class="User" not-null="true" />
+		<many-to-one name="voidedBy" class="User" column="voided_by" />
+		
+		<!-- many-to-one association from this obs to its parent grouping obs -->
+		<many-to-one name="obsGroup" class="Obs" column="obs_group_id" />
+		
+		<!-- one-to-many association to all obs in this grouping -->
+		<set name="groupMembers" inverse="true" cascade="delete" order-by="obs_id"
+		access = "field" batch-size="25">
+			<key column="obs_group_id" />
+			<one-to-many class="Obs" />
+		</set> 
+		<many-to-one name="previousVersion" class="Obs" column="previous_version" unique="true" />
+	</class>
+	
+</hibernate-mapping>

@@ -19,7 +19,6 @@ import org.hibernate.CallbackException;
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.type.Type;
 import org.openmrs.Auditable;
-import org.openmrs.Obs;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.api.context.Context;
 import org.slf4j.Logger;
@@ -84,10 +83,6 @@ public class AuditableInterceptor extends EmptyInterceptor {
 			}
 			
 			Map<String, Object> propertyValues = getPropertyValuesToUpdate();
-			if (entity instanceof Obs) {
-				propertyValues.remove("changedBy");
-				propertyValues.remove("dateChanged");
-			}
 			objectWasChanged = changeProperties(currentState, propertyNames, objectWasChanged, propertyValues, false);
 		}
 		return objectWasChanged;

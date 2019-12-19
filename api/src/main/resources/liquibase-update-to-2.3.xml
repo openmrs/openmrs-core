@@ -32,23 +32,6 @@
 		<comment>Renaming allerygy.comment to allergy.comments</comment>
     	<renameColumn tableName="allergy" oldColumnName="comment" newColumnName="comments" columnDataType="varchar(1024)"/>
     </changeSet>
-	
-	<changeSet id="TRUNK-5494" author="Wyclif">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<tableExists tableName="obs_unused_fields" />
-			</not>
-		</preConditions>
-		<comment>Adding obs_unused_fields table</comment>
-		<createTable tableName="obs_unused_fields">
-			<column name="obs_id" type="int" >
-				<constraints nullable="false" unique="true" />
-			</column>
-			<column name="changed_by" type="int" />
-			<column name="date_changed" type="DATETIME" />
-		</createTable>
-	</changeSet>
-	
 
     <changeSet id="TRUNK-5413" author="odorajonathan">
       <preConditions onFail="MARK_RAN">
