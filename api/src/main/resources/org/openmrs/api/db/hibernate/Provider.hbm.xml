@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs">
+
+	<class name="Provider" table="provider">
+
+		<id name="providerId" type="java.lang.Integer" column="provider_id"
+			unsaved-value="0">
+			<generator class="native" />
+		</id>
+
+		<discriminator column="provider_id" insert="false" />
+
+		<many-to-one name="person" class="Person" column="person_id"
+			cascade="save-update" />
+
+		<property name="name" type="java.lang.String" length="255" access="field"/>
+
+		<property name="identifier" type="java.lang.String" length="255" />
+
+		<many-to-one name="creator" class="User" not-null="true" column="creator" />
+
+		<many-to-one name="role" class="Concept" column="role_id" />
+
+		<many-to-one name="speciality" class="Concept" column="speciality_id" />
+
+		<property name="dateCreated" type="java.util.Date" column="date_created"
+			not-null="true" length="19" />
+
+		<many-to-one name="changedBy" class="User" column="changed_by" />
+
+		<property name="dateChanged" type="java.util.Date" column="date_changed"
+			length="19" />
+
+		<many-to-one name="retiredBy" class="org.openmrs.User" column="retired_by" />
+		
+		<property name="dateRetired" type="java.util.Date" column="date_retired" length="19" />
+		
+		<property name="retireReason" type="java.lang.String" column="retire_reason" length="255" />
+		
+		<property name="retired" type="boolean" length="1" not-null="true" />
+		
+		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
+
+        <set name="attributes" lazy="true" inverse="true" batch-size="100"
+            cascade="all-delete-orphan" sort="unsorted" order-by="voided asc">
+            <key column="provider_id" />
+            <one-to-many class="ProviderAttribute" />
+        </set>
+
+
+	</class>
+
+</hibernate-mapping>

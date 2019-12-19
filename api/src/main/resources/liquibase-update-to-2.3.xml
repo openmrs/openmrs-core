@@ -120,18 +120,4 @@
 			<where>system_id='admin'</where>
 		</update>
 	</changeSet>
-	<changeSet id="TRUNK-5671-20191017" author="Wyclif">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<tableExists tableName="provider_unused_fields" />
-			</not>
-		</preConditions>
-		<comment>Adding provider_unused_fields table</comment>
-		<createTable tableName="provider_unused_fields">
-			<column name="provider_id" type="int" >
-				<constraints nullable="false" unique="true" />
-			</column>
-			<column name="description" type="varchar(1)" />
-		</createTable>
-	</changeSet>
 </databaseChangeLog>
