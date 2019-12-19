@@ -94,15 +94,15 @@ public class CohortMembership extends BaseChangeableOpenmrsData implements Compa
 	}
 	
 	public Date getStartDate() {
-		return startDate;
+		return startDate != null ? (Date) startDate.clone() : null;
 	}
 	
 	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
+		 this.startDate = startDate != null ? new Date(startDate.getTime()) : null;
 	}
 	
 	public Date getEndDate() {
-		return endDate;
+		return endDate != null ? (Date) endDate.clone() : null;
 	}
 	
 	/**
@@ -112,8 +112,9 @@ public class CohortMembership extends BaseChangeableOpenmrsData implements Compa
 	 * @param endDate
 	 */
 	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
+		this.endDate = endDate != null ? new Date(endDate.getTime()) : null;
 	}
+	
 	
 	/**
 	 * Sorts by following fields, in order:
