@@ -9,8 +9,12 @@
  */
 package org.openmrs.validator;
 
+import org.openmrs.Encounter;
 import org.openmrs.annotation.Handler;
+import org.openmrs.api.APIException;
 import org.openmrs.notification.Alert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -22,6 +26,8 @@ import org.springframework.validation.Validator;
  */
 @Handler(supports = { Alert.class }, order = 50)
 public class AlertValidator implements Validator {
+
+	private static final Logger logger = LoggerFactory.getLogger(AlertValidator.class);
 
 	/**
 	 * Determines if the command object being submitted is a valid type
@@ -41,13 +47,16 @@ public class AlertValidator implements Validator {
 	 * @should fail validation if field lengths are not correct
 	 */
 	@Override
-	public void validate(Object obj, Errors errors) {
+	public void validate(Object obj, Errors errors) throws APIException {
+		logger.debug("{}.validate...", this.getClass().getName());
+
+		if (obj == null || !(obj instanceof Alert)) {
+			throw new IllegalArgumentException("error.general and must be of type " + Alert.class);
+	}
 		Alert alert = (Alert) obj;
-		if (alert == null) {
-			errors.rejectValue("alert", "error.general");
-		} else {
+
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "text", "Alert.text.required");
 			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "text");
-		}
+
 	}
 }
