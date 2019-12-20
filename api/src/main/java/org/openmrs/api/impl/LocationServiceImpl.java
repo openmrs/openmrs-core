@@ -121,7 +121,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 		}
 
 		if (location == null) {
-			location = getDefaultLocation(location, locationGP);
+			location = getDefaultLocation(null, locationGP);
 		}
 		
 		// If neither exist, get the first available location
