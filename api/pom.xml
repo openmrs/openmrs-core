@@ -252,6 +252,11 @@
 		   <groupId>org.aspectj</groupId>
 		   <artifactId>aspectjweaver</artifactId>
 	   </dependency>
+	   <dependency>
+		   <groupId>org.apache.lucene</groupId>
+		   <artifactId>lucene-analyzers-phonetic</artifactId>
+		   <version>8.3.1</version>
+	   </dependency>
    </dependencies>
    <build>
      <resources>
