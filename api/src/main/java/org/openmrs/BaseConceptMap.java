@@ -79,7 +79,10 @@ public abstract class BaseConceptMap extends BaseOpenmrsObject implements Audita
 	 */
 	@Override
 	public Date getDateCreated() {
-		return dateCreated;
+		if(dateCreated == null) {
+			return null;
+		}
+		return (Date) dateCreated.clone();
 	}
 	
 	/**
@@ -95,7 +98,10 @@ public abstract class BaseConceptMap extends BaseOpenmrsObject implements Audita
 	 */
 	@Override
 	public Date getDateChanged() {
-		return dateChanged;
+		if(dateChanged == null) {
+			return null;
+		}
+		return (Date) dateChanged.clone();
 	}
 	
 	/**
