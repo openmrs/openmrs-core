@@ -700,4 +700,29 @@ public class HibernateOrderDAO implements OrderDAO {
 		criteria.add(Restrictions.eq("orderType", orderType));
 		return !criteria.list().isEmpty();
 	}
+	/**
+	 * @see OrderDAO#getOrderGroupsByPatient(Patient)
+	 */
+	@Override
+	public List<OrderGroup> getOrderGroupsByPatient(Patient patient) throws DAOException {
+		if (patient == null) {
+			throw new APIException("Patient cannot be null");
+		}
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(OrderGroup.class);
+		criteria.add(Restrictions.eq("patient", patient));
+		return criteria.list();
+	}
+
+	/**
+	 * @see OrderDAO#getOrderGroupsByEncounter(Encounter)
+	 */
+	@Override
+	public List<OrderGroup> getOrderGroupsByEncounter(Encounter encounter) throws DAOException {
+		if (encounter == null) {
+			throw new APIException("Encounter cannot be null");
+		}
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(OrderGroup.class);
+		criteria.add(Restrictions.eq("encounter", encounter));
+		return criteria.list();
+	}
 }
