@@ -92,7 +92,7 @@ public class ValidationException extends APIException {
 		return errors;
 	}
 	
-	/**message.prop
+	/**
 	 * @since 1.11
 	 */
 	public void setErrors(Errors errors) {
