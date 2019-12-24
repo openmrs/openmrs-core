@@ -90,7 +90,11 @@ public abstract class BaseConceptMap extends BaseOpenmrsObject implements Audita
 	 */
 	@Override
 	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
+		if(dateCreated == null) {
+			this.dateCreated = null;
+			return;
+		}
+		this.dateCreated = new Date(dateCreated.getTime());
 	}
 	
 	/**
@@ -109,7 +113,11 @@ public abstract class BaseConceptMap extends BaseOpenmrsObject implements Audita
 	 */
 	@Override
 	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
+		if(dateChanged == null) {
+			this.dateChanged = null;
+			return;
+		}
+		this.dateChanged = new Date(dateChanged.getTime());
 	}
 	
 }
