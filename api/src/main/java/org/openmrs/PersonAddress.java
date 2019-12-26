@@ -513,7 +513,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	 * @since 1.9
 	 */
 	public Date getEndDate() {
-		return endDate;
+		return this.endDate;
 	}
 	
 	/**

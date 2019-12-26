@@ -39,6 +39,8 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	
 	private String address2;
 	
+	private Date startDate;
+	
 	private String cityVillage;
 	
 	private String stateProvince;
@@ -129,6 +131,22 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	@Override
 	public void setAddress2(String address2) {
 		this.address2 = address2;
+	}
+	
+	/**
+	 * @return the startDate
+	 * @since 1.9
+	 */
+	public Date getStartDate() {
+		return startDate;
+	}
+	
+	/**
+	 * @param startDate to set to
+	 * @since 1.9
+	 */
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
 	}
 	
 	/**
