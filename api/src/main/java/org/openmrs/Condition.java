@@ -105,8 +105,8 @@ public class Condition extends BaseChangeableOpenmrsData {
 		this.verificationStatus = verificationStatus;
 		this.previousVersion = previousVersion;
 		this.additionalDetail = additionalDetail;
-		this.onsetDate = onsetDate;
-		this.endDate = endDate;
+		this.onsetDate = onsetDate != null ? new Date(onsetDate.getTime()) : null;
+		this.endDate = endDate != null ? new Date(endDate.getTime()) : null;
 		this.patient = patient;
 	}
 	
@@ -246,7 +246,7 @@ public class Condition extends BaseChangeableOpenmrsData {
 	 *         set
 	 */
 	public Date getOnsetDate() {
-		return onsetDate;
+		return onsetDate != null ? (Date) onsetDate.clone() : null;
 	}
 	
 	/**
@@ -255,7 +255,7 @@ public class Condition extends BaseChangeableOpenmrsData {
 	 * @param onsetDate the onset date of the condition to be set
 	 */
 	public void setOnsetDate(Date onsetDate) {
-		this.onsetDate = onsetDate;
+		this.onsetDate = onsetDate != null ? new Date(onsetDate.getTime()) : null;
 	}
 	
 	/**
@@ -264,7 +264,7 @@ public class Condition extends BaseChangeableOpenmrsData {
 	 * @return endDate - a date object that shows the end date of the condition
 	 */
 	public Date getEndDate() {
-		return endDate;
+		return endDate != null ? (Date) endDate.clone() : null;
 	}
 	
 	/**
@@ -273,7 +273,7 @@ public class Condition extends BaseChangeableOpenmrsData {
 	 * @param endDate the end date to be set for the condition
 	 */
 	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
+		this.endDate = endDate != null ? new Date(endDate.getTime()) : null;
 	}
 	
 	/**
