@@ -3,7 +3,6 @@
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
  * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
- *
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
@@ -15,6 +14,7 @@ import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.openmrs.Condition;
 import org.openmrs.Patient;
+import org.openmrs.api.ConditionService;
 import org.openmrs.api.db.ConditionDAO;
 import org.openmrs.api.db.DAOException;
 
@@ -24,12 +24,12 @@ import org.openmrs.api.db.DAOException;
  * @see ConditionDAO
  */
 public class HibernateConditionDAO implements ConditionDAO {
-	
+
 	/**
 	 * Hibernate session factory
 	 */
 	private SessionFactory sessionFactory;
-	
+
 	/**
 	 * Set session factory
 	 *
@@ -38,7 +38,7 @@ public class HibernateConditionDAO implements ConditionDAO {
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-	
+
 	/**
 	 * Saves the condition.
 	 *
@@ -50,7 +50,7 @@ public class HibernateConditionDAO implements ConditionDAO {
 		sessionFactory.getCurrentSession().saveOrUpdate(condition);
 		return condition;
 	}
-	
+
 	/**
 	 * Gets the condition with the specified id.
 	 *
@@ -61,7 +61,7 @@ public class HibernateConditionDAO implements ConditionDAO {
 	public Condition getCondition(Integer conditionId) {
 		return (Condition) sessionFactory.getCurrentSession().get(Condition.class, conditionId);
 	}
-	
+
 	/**
 	 * Gets the condition by its UUID.
 	 *
@@ -71,9 +71,9 @@ public class HibernateConditionDAO implements ConditionDAO {
 	@Override
 	public Condition getConditionByUuid(String uuid) {
 		return (Condition) sessionFactory.getCurrentSession().createQuery("from Condition c where c.uuid = :uuid")
-				.setString("uuid", uuid).uniqueResult();
+			.setString("uuid", uuid).uniqueResult();
 	}
-	
+
 	/**
 	 * Gets all conditions related to the specified patient.
 	 *
@@ -83,12 +83,12 @@ public class HibernateConditionDAO implements ConditionDAO {
 	@Override
 	public List<Condition> getConditionHistory(Patient patient) {
 		Query query = sessionFactory.getCurrentSession().createQuery(
-				"from Condition con where con.patient.patientId = :patientId and con.voided = false " +
-						"order by con.onsetDate desc");
+			"from Condition con where con.patient.patientId = :patientId and con.voided = false " +
+				"order by con.onsetDate desc");
 		query.setInteger("patientId", patient.getId());
 		return query.list();
 	}
-	
+
 	/**
 	 * Gets all active conditions related to the specified patient.
 	 *
@@ -98,8 +98,8 @@ public class HibernateConditionDAO implements ConditionDAO {
 	@Override
 	public List<Condition> getActiveConditions(Patient patient) {
 		Query query = sessionFactory.getCurrentSession().createQuery(
-				"from Condition c where c.patient.patientId = :patientId and c.voided = false and c.endDate is null order "
-						+ "by c.onsetDate desc");
+			"from Condition c where c.patient.patientId = :patientId and c.voided = false and c.endDate is null order "
+				+ "by c.onsetDate desc");
 		query.setInteger("patientId", patient.getId());
 		return query.list();
 	}
@@ -109,16 +109,12 @@ public class HibernateConditionDAO implements ConditionDAO {
 	 */
 	@Override
 	public List<Condition> getAllConditions(Patient patient) {
-		Query query = sessionFactory.getCurrentSession().createQuery(
-				"from Condition c where c.patient.patientId = :patientId and c.voided = false order "
-						+ "by c.onsetDate desc");
-		query.setInteger("patientId", patient.getId());
-		return query.list();
+		return this.getConditionHistory(patient);
 	}
-	
+
 	/**
 	 * Removes a condition from the database
-	 * 
+	 *
 	 * @param condition the condition to be deleted
 	 */
 	@Override

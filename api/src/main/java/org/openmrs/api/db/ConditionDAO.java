@@ -3,7 +3,6 @@
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
  * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
- *
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
@@ -13,6 +12,7 @@ import java.util.List;
 
 import org.openmrs.Condition;
 import org.openmrs.Patient;
+import org.openmrs.api.ConditionService;
 
 /**
  * This interface defines database methods for condition objects.
@@ -65,10 +65,10 @@ public interface ConditionDAO {
 	 * @return the condition associated with the id
 	 */
 	Condition getCondition(Integer conditionId);
-	
+
 	/**
 	 * Removes a condition from the database
-	 * 
+	 *
 	 * @param condition the condition object to delete from database
 	 */
 	void deleteCondition(Condition condition) throws DAOException;
