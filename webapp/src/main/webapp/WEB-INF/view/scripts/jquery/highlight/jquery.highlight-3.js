@@ -17,7 +17,7 @@ Johann Burkard
 jQuery.fn.highlight = function(pat) {
  function innerHighlight(node, pat) {
   var skip = 0;
-  if (node.nodeType == 3) {
+  if (node.nodeType === 3) {
    var pos = node.data.toUpperCase().indexOf(pat);
    if (pos >= 0) {
     var spannode = document.createElement('span');
@@ -30,14 +30,14 @@ jQuery.fn.highlight = function(pat) {
     skip = 1;
    }
   }
-  else if (node.nodeType == 1 && node.childNodes && !/(script|style)/i.test(node.tagName)) {
+  else if (node.nodeType === 1 && node.childNodes && !/(script|style)/i.test(node.tagName)) {
    for (var i = 0; i < node.childNodes.length; ++i) {
     i += innerHighlight(node.childNodes[i], pat);
    }
   }
   return skip;
  }
- if (pat == null || pat.length == 0) { return this; }
+ if (pat == null || pat.length === 0) { return this; }
  return this.each(function() {
   innerHighlight(this, pat.toUpperCase());
  });

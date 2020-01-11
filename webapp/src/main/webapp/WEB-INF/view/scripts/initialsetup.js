@@ -11,14 +11,14 @@
  * @param value the value to match to the radio box to check
  */
 function clickRadio(radioName, value) {
-    var radio = document.getElementsByName(radioName);
-    var radioLength = radio.length;
-    for(var i = 0; i < radioLength; i++) {
-        radio[i].checked = false;
-        if(radio[i].value == value.toString()) {
-            radio[i].checked = true;
-        }
+  var radio = document.getElementsByName(radioName);
+  var radioLength = radio.length;
+  for(var i = 0; i < radioLength; i++) {
+    radio[i].checked = false;
+    if(radio[i].value === value.toString()) {
+        radio[i].checked = true;
     }
+  }
 }
 
 function submitenter(myfield,e) {
@@ -31,7 +31,7 @@ function submitenter(myfield,e) {
         return true;
     }
 
-    if (keycode == 13) {
+    if (keycode === 13) {
         myfield.form.submit();
         return false;
     } else {

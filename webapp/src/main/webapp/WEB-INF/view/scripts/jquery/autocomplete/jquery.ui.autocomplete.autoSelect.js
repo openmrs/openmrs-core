@@ -32,7 +32,7 @@ jQuery( this ).val(autocomplete.selectedItem.value);
 /*alert("triggering select");*/
 autocomplete._trigger( "select", event, { item: autocomplete.selectedItem } );
 }
-else if (jQuery(this).val() != autocomplete.options.initialValue) {
+else if (jQuery(this).val() !== autocomplete.options.initialValue) {
 	/* Nothing valid was selected */
 	jQuery( this ).val("");
 }

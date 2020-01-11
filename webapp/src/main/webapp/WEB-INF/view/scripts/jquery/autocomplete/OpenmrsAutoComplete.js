@@ -41,7 +41,7 @@ function CreateCallback(options) {
 	 * roles: a comma separated list of role names to restrict to
 	 */
 	this.personCallback = function() { var thisObject = this; return function(q, response) {
-		if (jQuery.trim(q).length == 0)
+		if (jQuery.trim(q).length === 0)
 			return response(false);
 		
 		thisObject.searchCounter += 1;
@@ -52,7 +52,7 @@ function CreateCallback(options) {
 	 * Use this method if searching for patients
 	 */
 	this.patientCallback = function() { var thisObject = this; return function(q, response) {
-		if (jQuery.trim(q).length == 0)
+		if (jQuery.trim(q).length === 0)
 			return response(false);
 		
 		thisObject.searchCounter += 1;
@@ -66,7 +66,7 @@ function CreateCallback(options) {
 	 * roles: a comma separated list of role names to restrict to
 	 */
 	this.userCallback = function() { var thisObject = this; return function(q, response) {
-		if (jQuery.trim(q).length == 0)
+		if (jQuery.trim(q).length === 0)
 			return response(false);
 		
 		var rolesArray = [];
@@ -85,7 +85,7 @@ function CreateCallback(options) {
 	 * excludeDatatypes: an array of datatype names to leave out of the results
 	 */
 	this.conceptCallback = function() { var thisObject = this; return function(q, response) {
-		if (jQuery.trim(q).length == 0)
+		if (jQuery.trim(q).length === 0)
 			return response(false);
 		
 		// changes a single element into an array
@@ -104,7 +104,7 @@ function CreateCallback(options) {
 	 * none (yet)
 	 */
 	this.drugCallback = function() { var thisObject = this; return function(q, response) {
-		if (jQuery.trim(q).length == 0)
+		if (jQuery.trim(q).length === 0)
 			return response(false);
 		
 		thisObject.searchCounter += 1;
@@ -126,7 +126,7 @@ function CreateCallback(options) {
 	 * showAnswersFor: a concept id. if non-null the search space is restricted to the answers to the given concept id
 	 */
 	this.encounterCallback = function() { var thisObject = this; return function(q, response) {
-		if (jQuery.trim(q).length == 0)
+		if (jQuery.trim(q).length === 0)
 			return response(false);
 		
 		// do NOT return false if no text given, instead should return all answers
@@ -139,7 +139,7 @@ function CreateCallback(options) {
 	 * @param sourceElement (optional) the element whose value is the conceptSourceId for the source to search for terms
 	 */
 	this.conceptReferenceTermCallback = function(sourceElement) { var thisObject = this; return function(q, response) {
-		if (jQuery.trim(q).length == 0)
+		if (jQuery.trim(q).length === 0)
 			return response(false);
 		var sourceId = null;
 		if(sourceElement)
@@ -153,7 +153,7 @@ function CreateCallback(options) {
 	 * Use this method if searching for provider objects
 	 */
 	this.providerCallback = function() { var thisObject = this; return function(q, response) {
-		if (jQuery.trim(q).length == 0)
+		if (jQuery.trim(q).length === 0)
 			return response(false);
 		
 		thisObject.searchCounter += 1;
@@ -218,9 +218,9 @@ function CreateCallback(options) {
 					
 		// item is a PersonListItem object
 		var imageText = "";
-		if (person.gender == 'M')
+		if (person.gender === 'M')
 			imageText = "<span class='male'>&#9794;</span>"; //<img style='height: 1em' src='" + openmrsContextPath + "/images/male.gif'/>";
-		else if (person.gender == "F")
+		else if (person.gender === "F")
 			imageText = "<span class='female'>&#9792;</span>"; //"<img style='height: 1em' src='" + openmrsContextPath + "/images/female.gif'/>"
 		//else
 		//	imageText = "?";
@@ -378,7 +378,7 @@ function CreateCallback(options) {
 		if (typeof item == 'string')
 			return { label: item, value: "" };
 			
-		var textShown = " " + item.code+((item.name != null && $j.trim(item.name) != '') ? " - "+item.name : "")+" ["+item.conceptSourceName+"]";
+		var textShown = " " + item.code+((item.name != null && $j.trim(item.name) !== '') ? " - "+item.name : "")+" ["+item.conceptSourceName+"]";
 		
 		// highlight each search term in the results
 		textShown = highlightWords(textShown, origQuery);
