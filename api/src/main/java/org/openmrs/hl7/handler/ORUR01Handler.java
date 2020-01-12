@@ -354,11 +354,13 @@ public class ORUR01Handler implements Application {
 					
 				}
 				catch (HL7Exception e) {
-					errorInHL7Queue = e; 
+					errorInHL7Queue = e;
+					throw new HL7Exception e(Context.getMessageSourceService().getMessage(
+						    "ORUR01.error.improperlyFormattedOBX";
 					}
 				finally {
 					// Handle obs-level exceptions
-					if (errorInHL7Queue != null) {
+					if (errorInHL7Queue != null) 
 						
 						    new Object[] { PipeParser.encode(obx, new EncodingCharacters('|', "^~\\&")) }, null),
 						        HL7Exception.DATA_TYPE_ERROR, errorInHL7Queue);
