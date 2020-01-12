@@ -356,8 +356,8 @@ public class ORUR01Handler implements Application {
 				}
 				catch (HL7Exception e) {
 					errorInHL7Queue = e;
-					throw new HL7Exception (e(Context.getMessageSourceService().getMessage(
-						    "ORUR01.error.improperlyFormattedOBX"));
+					throw new HL7Exception(Context.getMessageSourceService().getMessage(
+            finally {      "ORUR01.error.improperlyFormattedOBX"));
 					}
 				
 				finally {
