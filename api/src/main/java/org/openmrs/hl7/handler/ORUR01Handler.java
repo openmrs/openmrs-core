@@ -359,18 +359,8 @@ public class ORUR01Handler implements Application {
 						    "ORUR01.error.improperlyFormattedOBX";
 					}
 				finally {
-					// Handle obs-level exceptions
-					if (errorInHL7Queue != null) 
-						
-						    new Object[] { PipeParser.encode(obx, new EncodingCharacters('|', "^~\\&")) }, null),
-						        HL7Exception.DATA_TYPE_ERROR, errorInHL7Queue);
-					}
-				}
-			}
-			
-		}
-		
-		if (log.isDebugEnabled()) {
+		 
+					if (log.isDebugEnabled()) {
 			log.debug("Finished creating observations");
 			log.debug("Current thread: " + Thread.currentThread());
 			log.debug("Creating the encounter object");
