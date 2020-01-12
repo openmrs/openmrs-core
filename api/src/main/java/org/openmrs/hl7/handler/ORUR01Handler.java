@@ -360,6 +360,10 @@ public class ORUR01Handler implements Application {
 					}
 				finally {
 		 
+				     }
+			       }
+						
+				}
 					if (log.isDebugEnabled()) {
 			log.debug("Finished creating observations");
 			log.debug("Current thread: " + Thread.currentThread());
