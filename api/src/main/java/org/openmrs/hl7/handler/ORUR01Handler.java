@@ -349,13 +349,17 @@ public class ORUR01Handler implements Application {
 					} else {
 						errorInHL7Queue = new HL7Exception(Context.getMessageSourceService().getMessage(
 						    "Hl7.proposed.concept.name.empty"), proposingException);
+						
 						break;//stop any further processing of current message
 					}
 					
 				}
 				catch (HL7Exception e) {
 					errorInHL7Queue = e;
+					throw new HL7Exception e(Context.getMessageSourceService().getMessage(
+						    "ORUR01.error.improperlyFormattedOBX");
 					}
+				
 				finally {
 		 
 				     }
