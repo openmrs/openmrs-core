@@ -356,12 +356,6 @@ public class ORUR01Handler implements Application {
 				}
 				catch (HL7Exception e) {
 					errorInHL7Queue = e;
-					throw new HL7Exception(Context.getMessageSourceService().getMessage(
-            finally {      "ORUR01.error.improperlyFormattedOBX"));
-					}
-				
-				finally {
-		 
 				    
 				       }
 			       }
@@ -378,6 +372,9 @@ public class ORUR01Handler implements Application {
 		// now that the encounter is saved
 		for (ConceptProposal proposal : conceptProposals) {
 			Context.getConceptService().saveConceptProposal(proposal);
+		
+			throw new HL7Exception(Context.getMessageSourceService().getMessage(
+        finally {                  "ORUR01.error.improperlyFormattedOBX"));
 		}
 		
 		return oru;
