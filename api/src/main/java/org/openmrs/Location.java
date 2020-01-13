@@ -303,7 +303,8 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 			return Context.getLocationService().getLocation(Integer.valueOf(locationId));
 		}
 		catch (Exception e) {
-			return new Location();
+			
+			throw new RuntimeException(e);
 		}
 	}
 	
