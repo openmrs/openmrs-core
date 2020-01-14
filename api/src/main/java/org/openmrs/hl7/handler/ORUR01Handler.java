@@ -357,9 +357,10 @@ public class ORUR01Handler implements Application {
 				catch (HL7Exception e) {
 					errorInHL7Queue = e;
 					throw new HL7Exception(Context.getMessageSourceService().getMessage(	
-						    "ORUR01.error.improperlyFormattedOBX",
+						    "ORUR01.error.improperlyFormattedOBX")),
 					}	   
-			if (log.isDebugEnabled()) {
+			
+				if (log.isDebugEnabled()) {
 			log.debug("Finished creating observations");
 			log.debug("Current thread: " + Thread.currentThread());
 			log.debug("Creating the encounter object");
