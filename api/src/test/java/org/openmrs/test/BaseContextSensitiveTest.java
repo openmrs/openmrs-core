@@ -613,7 +613,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * @param tableName the table that contains the column
 	 * @throws SQLException
 	 */
-	public void dropNotNullConstraint(String tableName, String columnName) throws SQLException {
+	private void dropNotNullConstraint(String tableName, String columnName) throws SQLException {
 		if (!useInMemoryDatabase()) {
 			throw new RuntimeException("Altering column nullability is not supported for a non in-memory database");
 		}
