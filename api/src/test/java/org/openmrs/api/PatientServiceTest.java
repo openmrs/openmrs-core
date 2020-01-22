@@ -491,6 +491,20 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertEquals(0, patients.size());
 	}
 	
+	@Test
+	public void shouldGetPatientsByIdentifierAndMoreThanOneIdentifierTypes() throws Exception {
+		initializeInMemoryDatabase();
+		executeDataSet(FIND_PATIENTS_XML);
+		authenticate();
+		updateSearchIndex();
+		
+		List<PatientIdentifierType> types = new ArrayList<>();
+		types.add(new PatientIdentifierType(1));
+		types.add(new PatientIdentifierType(2));
+		List<Patient> patients = patientService.getPatients("4567", null, types, false);
+		assertEquals(1, patients.size());
+	}
+	
 	/**
 	 * @see PatientService#purgePatientIdentifierType(PatientIdentifierType)
 	 */
