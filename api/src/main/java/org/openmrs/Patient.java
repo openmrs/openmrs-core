@@ -11,26 +11,12 @@ package org.openmrs;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.SortNatural;
 import org.hibernate.search.annotations.ContainedIn;
-import org.hibernate.search.annotations.Field;
 
 /**
  * Defines a Patient in the system. A patient is simply an extension of a person and all that that
@@ -38,59 +24,16 @@ import org.hibernate.search.annotations.Field;
  * 
  * @version 2.0
  */
-@Entity
-@Table(name = "patient")
-@PrimaryKeyJoinColumn(name = "patient_id")
 public class Patient extends Person {
 	
 	public static final long serialVersionUID = 93123L;
 	
-	@Column(name = "patient_id", nullable = false, updatable = false, insertable = false)
 	private Integer patientId;
 	
-	@Column(name = "allergy_status", length = 50)
 	private String allergyStatus = Allergies.UNKNOWN;
 	
-	@OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
-	@SortNatural
 	@ContainedIn
 	private Set<PatientIdentifier> identifiers;
-	
-	@ManyToOne
-	@JoinColumn(name = "creator", updatable = false)
-	@Access(AccessType.PROPERTY)
-	private User creator;
-	
-	@Column(name = "date_created", nullable = false, updatable = false, length = 19)
-	@Access(AccessType.PROPERTY)
-	private Date dateCreated;
-	
-	@Column(name = "voided", nullable = false)
-	@Access(AccessType.PROPERTY)
-	@Field
-	private Boolean voided = Boolean.FALSE;
-	
-	@Column(name = "date_voided", length = 19)
-	@Access(AccessType.PROPERTY)
-	private Date dateVoided;
-	
-	@ManyToOne
-	@JoinColumn(name = "voided_by")
-	@Access(AccessType.PROPERTY)
-	private User voidedBy;
-	
-	@Column(name = "void_reason")
-	@Access(AccessType.PROPERTY)
-	private String voidReason;
-	
-	@ManyToOne
-	@JoinColumn(name = "changed_by")
-	@Access(AccessType.PROPERTY)
-	private User changedBy;
-	
-	@Column(name = "date_changed", length = 19)
-	@Access(AccessType.PROPERTY)
-	private Date dateChanged;
 	
 	// Constructors
 	
@@ -156,9 +99,6 @@ public class Patient extends Person {
 	 * @return internal identifier for patient
 	 */
 	public Integer getPatientId() {
-		if (this.patientId == null) {
-			this.patientId = getPersonId();
-		}
 		return this.patientId;
 	}
 	
@@ -460,5 +400,4 @@ public class Patient extends Person {
 	public Person getPerson() {
 		return this;
 	}
-	
 }
