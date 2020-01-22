@@ -815,9 +815,11 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	private LuceneQuery<PatientIdentifier> getPatientIdentifierLuceneQuery(String query, List<PatientIdentifierType> identifierTypes, boolean matchExactly) {
 		LuceneQuery<PatientIdentifier> patientIdentifierLuceneQuery = getPatientIdentifierLuceneQuery(query, matchExactly);
+		List<Integer> identifierTypeIds = new ArrayList<Integer>();
 		for(PatientIdentifierType identifierType : identifierTypes) {
-			patientIdentifierLuceneQuery.include("identifierType.patientIdentifierTypeId", identifierType.getId());
+			identifierTypeIds.add(identifierType.getId());
 		}
+		patientIdentifierLuceneQuery.include("identifierType.patientIdentifierTypeId", identifierTypeIds);
 		patientIdentifierLuceneQuery.include("patient.isPatient", true);
 		patientIdentifierLuceneQuery.skipSame("patient.personId");
 		
