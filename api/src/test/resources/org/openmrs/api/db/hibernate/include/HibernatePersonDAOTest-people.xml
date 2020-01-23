@@ -56,7 +56,7 @@
         Voided person with non-voided name
     -->
     <person person_id="50" gender="M" birthdate="1998-09-30 12:34:56.7" birthdate_estimated="0" dead="false" creator="1" date_created="2013-04-25 12:34:56.7" voided="true" uuid="2B856CBF-23D4-4D37-B2F6-FF8BD23A0434"/>
-    <person_name person_name_id="50" preferred="true" person_id="50" prefix="Mr." given_name="voided-bravo" middle_name="voided-foxtrot" family_name="voided-kilo" family_name2="voided-oscar" creator="1" date_created="2013-04-18 12:34:56.7" voided="true" void_reason="" uuid="3CCEB428-2B96-48AF-AAA3-36DB80601C9B"/>
+    <person_name person_name_id="50" preferred="true" person_id="50" prefix="Mr." given_name="voided-bravo" middle_name="voided-foxtrot" family_name="voided-kilo" family_name2="voided-oscar" creator="1" date_created="2013-04-18 12:34:56.7" voided="false" void_reason="" uuid="3CCEB428-2B96-48AF-AAA3-36DB80601C9B"/>
 
     <!--
         Dead people with non-voided name

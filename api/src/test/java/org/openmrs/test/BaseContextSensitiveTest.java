@@ -85,7 +85,6 @@ import org.openmrs.api.context.ContextMockHelper;
 import org.openmrs.api.context.Credentials;
 import org.openmrs.api.context.UsernamePasswordCredentials;
 import org.openmrs.module.ModuleConstants;
-import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -585,11 +584,6 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			throw new RuntimeException(
 			        "You shouldn't be initializing a NON in-memory database. Consider unoverriding useInMemoryDatabase");
 
-		//Because creator property in the superclass is mapped with optional set to false, the autoddl tool marks the 
-		//column as not nullable but for person it is actually nullable, we need to first drop the constraint from 
-		//person.creator column, historically this was to allow inserting the very first row. Ideally, this should not 
-		//be necessary outside of tests because tables are created using liquibase and not autoddl
-		dropNotNullConstraint("person", "creator");
 		setAutoIncrementOnTablesWithNativeIfNotAssignedIdentityGenerator();
 		executeDataSet(INITIAL_XML_DATASET_PACKAGE_PATH);
 	}
@@ -604,21 +598,6 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			getConnection().prepareStatement("ALTER TABLE " + table + " ALTER COLUMN " + table + "_id INT AUTO_INCREMENT")
 					.execute();
 		}
-	}
-
-	/**
-	 * Drops the not null constraint from the the specified column in the specified table
-	 *
-	 * @param columnName the column from which to remove the constraint
-	 * @param tableName the table that contains the column
-	 * @throws SQLException
-	 */
-	protected void dropNotNullConstraint(String tableName, String columnName) throws SQLException {
-		if (!useInMemoryDatabase()) {
-			throw new RuntimeException("Altering column nullability is not supported for a non in-memory database");
-		}
-		final String sql = "ALTER TABLE " + tableName + " ALTER COLUMN " + columnName + " SET NULL";
-		DatabaseUtil.executeSQL(getConnection(), sql, false);
 	}
 
 	/**
