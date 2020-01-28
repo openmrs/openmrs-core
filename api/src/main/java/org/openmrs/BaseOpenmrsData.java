@@ -90,7 +90,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	 */
 	@Override
 	public Date getDateCreated() {
-		return dateCreated;
+		return dateCreated != null ? (Date) dateCreated.clone() : null;
 	}
 	
 	/**
@@ -98,7 +98,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	 */
 	@Override
 	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
+		this.dateCreated = dateCreated != null ? new Date(dateCreated.getTime()) : null;
 	}
 	
 	/**
@@ -128,7 +128,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	@Override
 	@Deprecated
 	public Date getDateChanged() {
-		return dateChanged;
+		return dateChanged != null ? (Date) dateChanged.clone() : null;
 	}
 	
 	/**
@@ -138,7 +138,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	@Override
 	@Deprecated
 	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
+		this.dateChanged = dateChanged != null ? new Date(dateChanged.getTime()) : null;
 	}
 	
 	/**
@@ -173,7 +173,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	 */
 	@Override
 	public Date getDateVoided() {
-		return dateVoided;
+		return dateVoided != null ? (Date) dateVoided.clone() : null;
 	}
 	
 	/**
@@ -181,7 +181,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	 */
 	@Override
 	public void setDateVoided(Date dateVoided) {
-		this.dateVoided = dateVoided;
+		this.dateVoided = dateVoided != null ? new Date(dateVoided.getTime()) : null;
 	}
 	
 	/**
