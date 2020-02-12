@@ -283,6 +283,7 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	 * @see org.openmrs.Attributable#findPossibleValues(java.lang.String)
 	 */
 	@Override
+	@Deprecated
 	public List<User> findPossibleValues(String searchText) {
 		try {
 			return Context.getUserService().getUsersByName(searchText, "", false);
@@ -296,6 +297,7 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	 * @see org.openmrs.Attributable#getPossibleValues()
 	 */
 	@Override
+	@Deprecated
 	public List<User> getPossibleValues() {
 		try {
 			return Context.getUserService().getAllUsers();
