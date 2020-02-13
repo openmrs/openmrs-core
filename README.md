@@ -195,7 +195,7 @@ https://www.transifex.com/openmrs/OpenMRS/
 to manage our translations.
 
 The `messages.properties` file in this repository is our single source of
-truth. It contains key, value pairs for the English language which is the
+truth. It contains keys, value pairs for the English language which is the
 default.
 
 Transifex fetches updates to this file every night which can then be translated
