@@ -36,7 +36,10 @@ public interface Attributable<E> {
 	 * database is delved into and all Location objects should be returned
 	 * 
 	 * @return List of objects that can be assigned
+	 * @deprecated Data provided by this method can be better achieved from 
+	 * appropriate service at point of use.
 	 */
+	@Deprecated
 	public List<E> getPossibleValues();
 	
 	/**
@@ -44,7 +47,10 @@ public interface Attributable<E> {
 	 * 
 	 * @param searchText String to search on
 	 * @return List of possible objects that can be assigned
+	 * @deprecated Data provided by this method can be better achieved from 
+	 * appropriate service at point of use.
 	 */
+	@Deprecated
 	public List<E> findPossibleValues(String searchText);
 	
 	/**

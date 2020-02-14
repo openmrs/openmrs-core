@@ -272,6 +272,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @see org.openmrs.Attributable#findPossibleValues(java.lang.String)
 	 */
 	@Override
+	@Deprecated
 	public List<Location> findPossibleValues(String searchText) {
 		try {
 			return Context.getLocationService().getLocations(searchText);
@@ -285,6 +286,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @see org.openmrs.Attributable#getPossibleValues()
 	 */
 	@Override
+	@Deprecated
 	public List<Location> getPossibleValues() {
 		try {
 			return Context.getLocationService().getAllLocations();

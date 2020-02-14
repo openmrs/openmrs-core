@@ -57,6 +57,7 @@ public class AttributableDate extends Date implements Attributable<AttributableD
 	 * @see org.openmrs.Attributable#findPossibleValues(java.lang.String)
 	 */
 	@Override
+	@Deprecated
 	public List<AttributableDate> findPossibleValues(String searchText) {
 		// TODO Auto-generated method stub
 		return null;
@@ -74,6 +75,7 @@ public class AttributableDate extends Date implements Attributable<AttributableD
 	 * @see org.openmrs.Attributable#getPossibleValues()
 	 */
 	@Override
+	@Deprecated
 	public List<AttributableDate> getPossibleValues() {
 		// TODO Auto-generated method stub
 		return null;

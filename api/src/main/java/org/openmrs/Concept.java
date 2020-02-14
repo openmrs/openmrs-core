@@ -1409,6 +1409,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @see org.openmrs.Attributable#findPossibleValues(java.lang.String)
 	 */
 	@Override
+	@Deprecated
 	public List<Concept> findPossibleValues(String searchText) {
 		List<Concept> concepts = new ArrayList<>();
 		try {
@@ -1428,6 +1429,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @see org.openmrs.Attributable#getPossibleValues()
 	 */
 	@Override
+	@Deprecated
 	public List<Concept> getPossibleValues() {
 		try {
 			return Context.getConceptService().getConceptsByName("");
