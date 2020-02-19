@@ -771,7 +771,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		ConceptService cs = Context.getConceptService();
 		// create and add an obs to this encounter
-		Obs obs = new Obs(new Patient(2), cs.getConcept(1), new Date(), new Location(1));
+		Obs obs = new Obs(new Patient(3), cs.getConcept(1), new Date(), new Location(1));
 		obs.setDateCreated(date);
 		obs.setCreator(creator);
 		obs.setValueNumeric(50d);

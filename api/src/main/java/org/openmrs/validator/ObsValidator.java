@@ -100,6 +100,9 @@ public class ObsValidator implements Validator {
 		if (obs.getObsDatetime() == null) {
 			errors.rejectValue("obsDatetime", "error.null");
 		}
+		if(obs.getPerson() != null && obs.getEncounter() != null && obs.getEncounter().getPatient() != null && obs.getEncounter().getPatient().getId()!=obs.getPerson().getId()) {
+			errors.rejectValue("person","Obs.error.person.not.same");
+		}
 		
 		// if this is an obs group (i.e., parent) make sure that it has no values (other than valueGroupId) set
 		if (obs.hasGroupMembers()) {

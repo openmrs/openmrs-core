@@ -927,10 +927,9 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		List<Obs> obss = obsService.getObservations(Collections.singletonList(new Person(9)), null, null, null, null, null,
 		    null, null, null, null, null, true, null);
 		
-		Assert.assertEquals(2, obss.size());
+		Assert.assertEquals(1, obss.size());
 		
 		Assert.assertEquals(10, obss.get(0).getObsId().intValue());
-		Assert.assertEquals(9, obss.get(1).getObsId().intValue());
 	}
 	
 	/**
@@ -946,7 +945,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Integer obss = obsService.getObservationCount(Collections.singletonList(new Person(9)), null, null, null, null,
 		    null, null, null, null, true, null);
 		
-		Assert.assertEquals(2, obss.intValue());
+		Assert.assertEquals(1, obss.intValue());
 		
 	}
 	
@@ -977,12 +976,13 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		ObsService obsService = Context.getObsService();
 		
-		List<Obs> obss = obsService.getObservations(Collections.singletonList(new Person(9)), null, null, null, null, null,
+		List<Obs> obss = obsService.getObservations(Collections.singletonList(new Person(8)), null, null, null, null, null,
 		    null, null, null, null, null, false, null);
 		
-		Assert.assertEquals(1, obss.size());
+		Assert.assertEquals(2, obss.size());
 		
-		Assert.assertEquals(9, obss.get(0).getObsId().intValue());
+		Assert.assertEquals(8, obss.get(0).getObsId().intValue());
+		Assert.assertEquals(7, obss.get(1).getObsId().intValue());
 	}
 	
 	/**
@@ -998,7 +998,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Integer obss = obsService.getObservationCount(Collections.singletonList(new Person(9)), null, null, null, null,
 		    null, null, null, null, false, null);
 		
-		Assert.assertEquals(1, obss.intValue());
+		Assert.assertEquals(0, obss.intValue());
 	}
 	
 	/**
@@ -1046,7 +1046,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		List<Obs> obss = obsService.getObservations(null, null, null, null, Collections.singletonList(PERSON_TYPE.PATIENT),
 		    null, null, null, null, null, null, false, null);
 		
-		Assert.assertEquals(15, obss.size());
+		Assert.assertEquals(16, obss.size());
 	}
 	
 	/**
@@ -1062,7 +1062,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Integer count = obsService.getObservationCount(null, null, null, null,
 		    Collections.singletonList(PERSON_TYPE.PATIENT), null, null, null, null, false, null);
 		
-		Assert.assertEquals(15, count.intValue());
+		Assert.assertEquals(16, count.intValue());
 	}
 	
 	/**
@@ -1554,8 +1554,8 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Obs origParentObs = obsService.getObs(2);
 		Set<Obs> originalMembers = new HashSet<>(origParentObs.getGroupMembers(true));
 		assertEquals(3, originalMembers.size());
-		assertTrue(originalMembers.contains(obsService.getObs(9)));
 		assertTrue(originalMembers.contains(obsService.getObs(10)));
+		assertTrue(originalMembers.contains(obsService.getObs(9)));
 
 		Obs groupMember = new Obs();
 		groupMember.setConcept(Context.getConceptService().getConcept(3));
@@ -1565,8 +1565,9 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		groupMember.setValueNumeric(50d);
 		origParentObs.addGroupMember(groupMember);
 		assertNotNull(groupMember.getObsGroup());
-		
+			
 		Obs newParentObs = obsService.saveObs(origParentObs, "Updating obs group");
+
 		assertEquals(origParentObs, newParentObs);
 		assertEquals(4, newParentObs.getGroupMembers(true).size());
 		// make sure the api filled in all of the necessary ids again
@@ -1863,7 +1864,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void saveObs_shouldCopyTheFormNamespaceAndPathFieldInEditedObs() {
 		executeDataSet(INITIAL_OBS_XML);
-		Obs obs = Context.getObsService().getObs(7);
+		Obs obs = Context.getObsService().getObs(6);
 		obs.setValueNumeric(5.0);
 		Obs o2 = Context.getObsService().saveObs(obs, "just testing");
 		Assert.assertNotNull(obs.getFormFieldNamespace());
@@ -1908,11 +1909,9 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		child.addGroupMember(o1);
 
 		int count = 0;
-
 		Obs newObs = Context.getObsService().saveObs(obs, "just testing");
 
 		Assert.assertEquals(newObs.getObsDatetime().toString(), newDate.toString());
-
 		for(Obs member : newObs.getGroupMembers()) {
 			Assert.assertEquals(member.getObsDatetime().toString(), newDate.toString());
 			if(member.getGroupMembers()!= null) {
@@ -1975,4 +1974,5 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		assertThat(existing.getVoided(), is(true));
 		assertThat(newObs.getStatus(), is(Obs.Status.FINAL));
 	}
+	
 }
