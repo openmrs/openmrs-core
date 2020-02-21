@@ -99,12 +99,12 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 
 	/**
 	 * @see org.openmrs.api.ConceptService#saveConcept(org.openmrs.Concept)
-	 * @should return the concept with new conceptID if creating new concept
-	 * @should return the concept with same conceptID if updating existing concept
-	 * @should leave preferred name preferred if set
-	 * @should set default preferred name to fully specified first
-	 * @should not set default preferred name to short or index terms
-         * @should force set flag if set members exist
+	 * <strong>Should</strong> return the concept with new conceptID if creating new concept
+	 * <strong>Should</strong> return the concept with same conceptID if updating existing concept
+	 * <strong>Should</strong> leave preferred name preferred if set
+	 * <strong>Should</strong> set default preferred name to fully specified first
+	 * <strong>Should</strong> not set default preferred name to short or index terms
+     * <strong>Should</strong> force set flag if set members exist
 	 */
 	@Override
 	public Concept saveConcept(Concept concept) throws APIException {

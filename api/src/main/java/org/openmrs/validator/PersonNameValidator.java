@@ -42,10 +42,10 @@ public class PersonNameValidator implements Validator {
 	 *
 	 * @param object
 	 * @param errors
-	 * @should fail validation if PersonName object is null
-	 * @should pass validation if name is invalid but voided
-	 * @should pass validation if field lengths are correct
-	 * @should fail validation if field lengths are not correct
+	 * <strong>Should</strong> fail validation if PersonName object is null
+	 * <strong>Should</strong> pass validation if name is invalid but voided
+	 * <strong>Should</strong> pass validation if field lengths are correct
+	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object object, Errors errors) {
@@ -73,52 +73,52 @@ public class PersonNameValidator implements Validator {
 	 * @param personName the {@link PersonName} to validate
 	 * @param errors
 	 * @param arrayInd indicates whether or not a names[0] array needs to be prepended to field
-	 * @should fail validation if PersonName object is null
-	 * @should fail validation if PersonName.givenName is null
-	 * @should fail validation if PersonName.givenName is empty
-	 * @should fail validation if PersonName.givenName is just spaces
-	 * @should fail validation if PersonName.givenName is spaces surrounded by quotation marks
-	 * @should pass validation if PersonName.givenName is not blank
-	 * @should pass validation if PersonName.familyName is null
-	 * @should pass validation if PersonName.familyName is empty
-	 * @should pass validation if PersonName.familyName is just spaces
-	 * @should fail validation if PersonName.familyName is spaces surrounded by quotation marks
-	 * @should pass validation if PersonName.familyName is not blank
-	 * @should fail validation if PersonName.prefix is too long
-	 * @should pass validation if PersonName.prefix is exactly max length
-	 * @should pass validation if PersonName.prefix is less than maximum field length
-	 * @should fail validation if PersonName.givenName is too long
-	 * @should pass validation if PersonName.givenName is exactly max length
-	 * @should pass validation if PersonName.givenName is less than maximum field length
-	 * @should fail validation if PersonName.middleName is too long
-	 * @should pass validation if PersonName.middleName is exactly max length
-	 * @should pass validation if PersonName.middleName is less than maximum field length
-	 * @should fail validation if PersonName.familyNamePrefix is too long
-	 * @should pass validation if PersonName.familyNamePrefix is exactly max length
-	 * @should pass validation if PersonName.familyNamePrefix is less than maximum field length
-	 * @should fail validation if PersonName.familyName is too long
-	 * @should pass validation if PersonName.familyName is exactly max length
-	 * @should pass validation if PersonName.familyName is less than maximum field length
-	 * @should fail validation if PersonName.familyName2 is too long
-	 * @should pass validation if PersonName.familyName2 is exactly max length
-	 * @should pass validation if PersonName.familyName2 is less than maximum field length
-	 * @should fail validation if PersonName.familyNameSuffix is too long
-	 * @should pass validation if PersonName.familyNameSuffix is exactly max length
-	 * @should pass validation if PersonName.familyNameSuffix is less than maximum field length
-	 * @should fail validation if PersonName.degree is too long
-	 * @should pass validation if PersonName.degree is exactly max length
-	 * @should pass validation if PersonName.degree is less than maximum field length
-	 * @should fail validation if PersonName.givenName is invalid
-	 * @should pass validation if PersonName.givenName is valid
-	 * @should fail validation if PersonName.middleName is invalid
-	 * @should pass validation if PersonName.middleName is valid
-	 * @should fail validation if PersonName.familyName is invalid
-	 * @should pass validation if PersonName.familyName is valid
-	 * @should fail validation if PersonName.familyName2 is invalid
-	 * @should pass validation if PersonName.familyName2 is valid
-	 * @should pass validation if regex string is null
-	 * @should pass validation if regex string is empty
-	 * @should not validate against regex for blank names
+	 * <strong>Should</strong> fail validation if PersonName object is null
+	 * <strong>Should</strong> fail validation if PersonName.givenName is null
+	 * <strong>Should</strong> fail validation if PersonName.givenName is empty
+	 * <strong>Should</strong> fail validation if PersonName.givenName is just spaces
+	 * <strong>Should</strong> fail validation if PersonName.givenName is spaces surrounded by quotation marks
+	 * <strong>Should</strong> pass validation if PersonName.givenName is not blank
+	 * <strong>Should</strong> pass validation if PersonName.familyName is null
+	 * <strong>Should</strong> pass validation if PersonName.familyName is empty
+	 * <strong>Should</strong> pass validation if PersonName.familyName is just spaces
+	 * <strong>Should</strong> fail validation if PersonName.familyName is spaces surrounded by quotation marks
+	 * <strong>Should</strong> pass validation if PersonName.familyName is not blank
+	 * <strong>Should</strong> fail validation if PersonName.prefix is too long
+	 * <strong>Should</strong> pass validation if PersonName.prefix is exactly max length
+	 * <strong>Should</strong> pass validation if PersonName.prefix is less than maximum field length
+	 * <strong>Should</strong> fail validation if PersonName.givenName is too long
+	 * <strong>Should</strong> pass validation if PersonName.givenName is exactly max length
+	 * <strong>Should</strong> pass validation if PersonName.givenName is less than maximum field length
+	 * <strong>Should</strong> fail validation if PersonName.middleName is too long
+	 * <strong>Should</strong> pass validation if PersonName.middleName is exactly max length
+	 * <strong>Should</strong> pass validation if PersonName.middleName is less than maximum field length
+	 * <strong>Should</strong> fail validation if PersonName.familyNamePrefix is too long
+	 * <strong>Should</strong> pass validation if PersonName.familyNamePrefix is exactly max length
+	 * <strong>Should</strong> pass validation if PersonName.familyNamePrefix is less than maximum field length
+	 * <strong>Should</strong> fail validation if PersonName.familyName is too long
+	 * <strong>Should</strong> pass validation if PersonName.familyName is exactly max length
+	 * <strong>Should</strong> pass validation if PersonName.familyName is less than maximum field length
+	 * <strong>Should</strong> fail validation if PersonName.familyName2 is too long
+	 * <strong>Should</strong> pass validation if PersonName.familyName2 is exactly max length
+	 * <strong>Should</strong> pass validation if PersonName.familyName2 is less than maximum field length
+	 * <strong>Should</strong> fail validation if PersonName.familyNameSuffix is too long
+	 * <strong>Should</strong> pass validation if PersonName.familyNameSuffix is exactly max length
+	 * <strong>Should</strong> pass validation if PersonName.familyNameSuffix is less than maximum field length
+	 * <strong>Should</strong> fail validation if PersonName.degree is too long
+	 * <strong>Should</strong> pass validation if PersonName.degree is exactly max length
+	 * <strong>Should</strong> pass validation if PersonName.degree is less than maximum field length
+	 * <strong>Should</strong> fail validation if PersonName.givenName is invalid
+	 * <strong>Should</strong> pass validation if PersonName.givenName is valid
+	 * <strong>Should</strong> fail validation if PersonName.middleName is invalid
+	 * <strong>Should</strong> pass validation if PersonName.middleName is valid
+	 * <strong>Should</strong> fail validation if PersonName.familyName is invalid
+	 * <strong>Should</strong> pass validation if PersonName.familyName is valid
+	 * <strong>Should</strong> fail validation if PersonName.familyName2 is invalid
+	 * <strong>Should</strong> pass validation if PersonName.familyName2 is valid
+	 * <strong>Should</strong> pass validation if regex string is null
+	 * <strong>Should</strong> pass validation if regex string is empty
+	 * <strong>Should</strong> not validate against regex for blank names
 	 * @deprecated as of 2.2.0, use {@link #validate(Object, Errors)}
 	 */
 	@Deprecated

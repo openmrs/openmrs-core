@@ -158,9 +158,9 @@ public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 	 * object for this concept reference term already, this one will not be added.
 	 *
 	 * @param conceptReferenceTermMap
-	 * @should not add a map where termB is itself
-	 * @should set termA as the term to which a mapping is being added
-	 * @should not add duplicate concept reference term maps
+	 * <strong>Should</strong> not add a map where termB is itself
+	 * <strong>Should</strong> set termA as the term to which a mapping is being added
+	 * <strong>Should</strong> not add duplicate concept reference term maps
 	 */
 	public void addConceptReferenceTermMap(ConceptReferenceTermMap conceptReferenceTermMap) {
 		if (conceptReferenceTermMap != null && conceptReferenceTermMap.getTermB() != null

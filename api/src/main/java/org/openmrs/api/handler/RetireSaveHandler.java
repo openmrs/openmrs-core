@@ -48,16 +48,16 @@ public class RetireSaveHandler implements SaveHandler<Retireable> {
 	 * 
 	 * @see org.openmrs.api.handler.RequiredDataHandler#handle(org.openmrs.OpenmrsObject,
 	 *      org.openmrs.User, java.util.Date, java.lang.String)
-	 * @should not set the retired bit
-	 * @should not set the retireReason
-	 * @should set retired by
-	 * @should not set retired by if non null
-	 * @should set dateRetired
-	 * @should not set dateRetired if non null
-	 * @should not set the dateRetired if retired is false
-	 * @should set retireReason to null if retired is true
-	 * @should set dateRetired to null if retired is true
-	 * @should set retiredBy to null if retired is true
+	 * <strong>Should</strong> not set the retired bit
+	 * <strong>Should</strong> not set the retireReason
+	 * <strong>Should</strong> set retired by
+	 * <strong>Should</strong> not set retired by if non null
+	 * <strong>Should</strong> set dateRetired
+	 * <strong>Should</strong> not set dateRetired if non null
+	 * <strong>Should</strong> not set the dateRetired if retired is false
+	 * <strong>Should</strong> set retireReason to null if retired is true
+	 * <strong>Should</strong> set dateRetired to null if retired is true
+	 * <strong>Should</strong> set retiredBy to null if retired is true
 	 */
 	@Override
 	public void handle(Retireable retireableObject, User currentUser, Date currentDate, String notUsed) {

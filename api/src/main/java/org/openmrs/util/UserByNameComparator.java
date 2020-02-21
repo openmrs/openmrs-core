@@ -26,7 +26,7 @@ public class UserByNameComparator implements Comparator<User>, Serializable {
 	
 	/**
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-	 * @should sort users by personNames
+	 * <strong>Should</strong> sort users by personNames
 	 */
 	@Override
 	public int compare(User user1, User user2) {

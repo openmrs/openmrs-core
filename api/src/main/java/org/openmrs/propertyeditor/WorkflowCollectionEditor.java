@@ -50,7 +50,7 @@ public class WorkflowCollectionEditor extends PropertyEditorSupport {
 	 * purpose is to retire and un-retire workflows where possible rather than deleting and creating
 	 * them.
 	 * 
-	 * @should update workflows in program
+	 * <strong>Should</strong> update workflows in program
 	 */
 	@Override
 	public void setAsText(String text) throws IllegalArgumentException {

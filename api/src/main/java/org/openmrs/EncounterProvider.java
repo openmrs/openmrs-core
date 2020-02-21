@@ -98,7 +98,7 @@ public class EncounterProvider extends BaseChangeableOpenmrsData {
 	/**
 	 * @return copied encounter provider
 	 *
-	 * @should copy all EncounterProvider data
+	 * <strong>Should</strong> copy all EncounterProvider data
 	 */
 	public EncounterProvider copy() {
 		EncounterProvider target = new EncounterProvider();

@@ -42,7 +42,7 @@ public class CachedMessageSource extends AbstractMessageSource implements Mutabl
 	
 	/**
 	 * @see org.openmrs.messagesource.MutableMessageSource#getLocales()
-	 * @should should be able to contain multiple locales
+	 * <strong>Should</strong> should be able to contain multiple locales
 	 */
 	@Override
 	public Collection<Locale> getLocales() {
@@ -84,7 +84,7 @@ public class CachedMessageSource extends AbstractMessageSource implements Mutabl
 	/**
 	 * @see org.openmrs.messagesource.MutableMessageSource#getPresentation(java.lang.String,
 	 *      java.util.Locale)
-	 * @should match get message with presentation message
+	 * <strong>Should</strong> match get message with presentation message
 	 */
 	@Override
 	public PresentationMessage getPresentation(String key, Locale forLocale) {

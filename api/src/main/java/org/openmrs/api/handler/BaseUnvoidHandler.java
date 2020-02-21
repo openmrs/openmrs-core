@@ -40,12 +40,12 @@ public class BaseUnvoidHandler implements UnvoidHandler<Voidable> {
 	 * 
 	 * @see org.openmrs.api.handler.RequiredDataHandler#handle(org.openmrs.OpenmrsObject,
 	 *      org.openmrs.User, java.util.Date, java.lang.String)
-	 * @should unset the voided bit
-	 * @should unset the voider
-	 * @should unset the dateVoided
-	 * @should unset the voidReason
-	 * @should only act on already voided objects
-	 * @should not act on objects with a different dateVoided
+	 * <strong>Should</strong> unset the voided bit
+	 * <strong>Should</strong> unset the voider
+	 * <strong>Should</strong> unset the dateVoided
+	 * <strong>Should</strong> unset the voidReason
+	 * <strong>Should</strong> only act on already voided objects
+	 * <strong>Should</strong> not act on objects with a different dateVoided
 	 */
 	@Override
 	public void handle(Voidable voidableObject, User voidingUser, Date origParentVoidedDate, String unused) {

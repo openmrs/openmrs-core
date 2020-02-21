@@ -124,7 +124,7 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 	 *
 	 * @param otherName PersonName with which to compare
 	 * @return boolean true/false whether or not they are the same names
-	 * @should return true if given middle and family name are equal
+	 * <strong>Should</strong> return true if given middle and family name are equal
 	 */
 	public boolean equalsContent(PersonName otherName) {
 		return new EqualsBuilder().append(defaultString(otherName.getPrefix()), defaultString(prefix)).append(
@@ -141,7 +141,7 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 	 * PersonName.person object in this object AND the cloned object will point at the same person
 	 *
 	 * @return New PersonName object
-	 * @should copy every property of given personName
+	 * <strong>Should</strong> copy every property of given personName
 	 */
 	public static PersonName newInstance(PersonName pn) {
 		if (pn == null) {
@@ -217,7 +217,7 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 	
 	/**
 	 * @return Returns the familyName.
-	 * @should return obscured name if obscure_patients is set to true
+	 * <strong>Should</strong> return obscured name if obscure_patients is set to true
 	 */
 	public String getFamilyName() {
 		if (OpenmrsConstants.OBSCURE_PATIENTS) {
@@ -235,7 +235,7 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 	
 	/**
 	 * @return Returns the familyName2.
-	 * @should return null if obscure_patients is set to true
+	 * <strong>Should</strong> return null if obscure_patients is set to true
 	 */
 	public String getFamilyName2() {
 		if (OpenmrsConstants.OBSCURE_PATIENTS) {
@@ -253,7 +253,7 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 	
 	/**
 	 * @return Returns the familyNamePrefix.
-	 * @should return null if obscure_patients is set to true
+	 * <strong>Should</strong> return null if obscure_patients is set to true
 	 */
 	public String getFamilyNamePrefix() {
 		if (OpenmrsConstants.OBSCURE_PATIENTS) {
@@ -271,7 +271,7 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 	
 	/**
 	 * @return Returns the familyNameSuffix.
-	 * @should return null if obscure_patients is set to true
+	 * <strong>Should</strong> return null if obscure_patients is set to true
 	 */
 	public String getFamilyNameSuffix() {
 		if (OpenmrsConstants.OBSCURE_PATIENTS) {
@@ -289,7 +289,7 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 	
 	/**
 	 * @return Returns the givenName.
-	 * @should return obscured name if obscure_patients is set to true
+	 * <strong>Should</strong> return obscured name if obscure_patients is set to true
 	 */
 	public String getGivenName() {
 		if (OpenmrsConstants.OBSCURE_PATIENTS) {
@@ -307,7 +307,7 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 	
 	/**
 	 * @return Returns the middleName.
-	 * @should return obscured name if obscure_patients is set to true
+	 * <strong>Should</strong> return obscured name if obscure_patients is set to true
 	 */
 	public String getMiddleName() {
 		if (OpenmrsConstants.OBSCURE_PATIENTS) {
@@ -378,7 +378,7 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 	
 	/**
 	 * @return Returns the prefix.
-	 * @should return null if obscure_patients is set to true
+	 * <strong>Should</strong> return null if obscure_patients is set to true
 	 */
 	public String getPrefix() {
 		if (OpenmrsConstants.OBSCURE_PATIENTS) {
@@ -400,7 +400,7 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 	 * {@link #getMiddleName()}, etc are null, they are not included in the returned name
 	 *
 	 * @return all of the parts of this {@link PersonName} joined with spaces
-	 * @should not put spaces around an empty middle name
+	 * <strong>Should</strong> not put spaces around an empty middle name
 	 */
 	public String getFullName() {
 		NameTemplate nameTemplate = null;
@@ -474,15 +474,15 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 	
 	/**
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 * @should return negative if other name is voided
-	 * @should return negative if this name is preferred
-	 * @should return negative if other familyName is greater
-	 * @should return negative if other familyName2 is greater
-	 * @should return negative if other givenName is greater
-	 * @should return negative if other middleName is greater
-	 * @should return negative if other familynamePrefix is greater
-	 * @should return negative if other familyNameSuffix is greater
-	 * @should return negative if other dateCreated is greater
+	 * <strong>Should</strong> return negative if other name is voided
+	 * <strong>Should</strong> return negative if this name is preferred
+	 * <strong>Should</strong> return negative if other familyName is greater
+	 * <strong>Should</strong> return negative if other familyName2 is greater
+	 * <strong>Should</strong> return negative if other givenName is greater
+	 * <strong>Should</strong> return negative if other middleName is greater
+	 * <strong>Should</strong> return negative if other familynamePrefix is greater
+	 * <strong>Should</strong> return negative if other familyNameSuffix is greater
+	 * <strong>Should</strong> return negative if other dateCreated is greater
 	 * Note: this comparator imposes orderings that are inconsistent with equals.
 	 */
 	@Override

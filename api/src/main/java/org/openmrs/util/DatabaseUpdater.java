@@ -245,7 +245,7 @@ public class DatabaseUpdater {
 	 *
 	 * @return true/false whether database updates are required
 	 * @throws LockException
-	 * @should always have a valid update to latest file
+	 * <strong>Should</strong> always have a valid update to latest file
 	 */
 	public static boolean updatesRequired() throws LockException {
 		log.debug("checking for updates");
@@ -271,7 +271,7 @@ public class DatabaseUpdater {
 	 *
 	 * @param changeLogFilenames the filenames of all files to search for unrun changesets
 	 * @return true/false whether database updates are required
-	 * @should always have a valid update to latest file
+	 * <strong>Should</strong> always have a valid update to latest file
 	 */
 	public static boolean updatesRequired(String... changeLogFilenames) throws Exception {
 		log.debug("checking for updates");
