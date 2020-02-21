@@ -197,7 +197,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	 * Schedule the given task according to the given schedule.
 	 *
 	 * @param taskDefinition the task to be scheduled
-	 * @should should handle zero repeat interval
+	 * <strong>Should</strong> should handle zero repeat interval
 	 */
 	@Override
 	public Task scheduleTask(TaskDefinition taskDefinition) throws SchedulerException {

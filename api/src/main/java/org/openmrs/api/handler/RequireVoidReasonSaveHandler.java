@@ -36,11 +36,11 @@ public class RequireVoidReasonSaveHandler implements SaveHandler<Voidable> {
 	/**
 	 * Validates that the voidReason is non-null and non-empty for supported objects
 	 * 
-	 * @should throw APIException if Patient voidReason is null
-	 * @should throw APIException if Encounter voidReason is empty
-	 * @should throw APIException if Encounter voidReason is blank
-	 * @should not throw Exception if voidReason is not blank
-	 * @should not throw Exception if voidReason is null for unsupported types
+	 * <strong>Should</strong> throw APIException if Patient voidReason is null
+	 * <strong>Should</strong> throw APIException if Encounter voidReason is empty
+	 * <strong>Should</strong> throw APIException if Encounter voidReason is blank
+	 * <strong>Should</strong> not throw Exception if voidReason is not blank
+	 * <strong>Should</strong> not throw Exception if voidReason is null for unsupported types
 	 */
 	@Override
 	public void handle(Voidable voidableObject, User currentUser, Date currentDate, String notUsed) {

@@ -123,7 +123,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * Create the given task
 	 *
 	 * @param task the task to be created
-	 * @should save task to the database
+	 * <strong>Should</strong> save task to the database
 	 */
 	@Authorized( { "Manage Scheduler" })
 	@Logging(ignore = true)

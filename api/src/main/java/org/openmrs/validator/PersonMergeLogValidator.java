@@ -38,12 +38,12 @@ public class PersonMergeLogValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should fail validation if personMergeLogData is null
-	 * @should fail validation if winner is null 
-	 * @should fail validation if loser is null 
-	 * @should pass validation if all fields are correct
-	 * @should pass validation if field lengths are correct
-	 * @should fail validation if field lengths are not correct
+	 * <strong>Should</strong> fail validation if personMergeLogData is null
+	 * <strong>Should</strong> fail validation if winner is null 
+	 * <strong>Should</strong> fail validation if loser is null 
+	 * <strong>Should</strong> pass validation if all fields are correct
+	 * <strong>Should</strong> pass validation if field lengths are correct
+	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {

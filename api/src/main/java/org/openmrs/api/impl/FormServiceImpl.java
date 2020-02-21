@@ -330,7 +330,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	
 	/**
 	 * @see org.openmrs.api.FormService#getForm(java.lang.String)
-	 * @should return the form with the highest version, if more than one form with the given name
+	 * <strong>Should</strong> return the form with the highest version, if more than one form with the given name
 	 *         exists
 	 */
 	@Override

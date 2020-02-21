@@ -1326,12 +1326,12 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 	
 	/**
-	 * @should return a drug if either the drug name or concept name matches the phase not both
-	 * @should return distinct drugs
-	 * @should return a drug, if phrase match concept_name No need to match both concept_name and
+	 * <strong>Should</strong> return a drug if either the drug name or concept name matches the phase not both
+	 * <strong>Should</strong> return distinct drugs
+	 * <strong>Should</strong> return a drug, if phrase match concept_name No need to match both concept_name and
 	 *         drug_name
-	 * @should return drug when phrase match drug_name even searchDrugConceptNames is false
-	 * @should return a drug if phrase match drug_name No need to match both concept_name and
+	 * <strong>Should</strong> return drug when phrase match drug_name even searchDrugConceptNames is false
+	 * <strong>Should</strong> return a drug if phrase match drug_name No need to match both concept_name and
 	 *         drug_name
 	 */
 	@Override

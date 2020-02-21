@@ -27,8 +27,8 @@ import org.springframework.util.StringUtils;
 public class PersonEditor extends PropertyEditorSupport {
 
 	/**
-	 * @should set using id
-	 * @should set using uuid
+	 * <strong>Should</strong> set using id
+	 * <strong>Should</strong> set using uuid
 	 *
 	 * @see java.beans.PropertyEditorSupport#setAsText(java.lang.String)
 	 */

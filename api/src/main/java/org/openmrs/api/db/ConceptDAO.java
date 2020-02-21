@@ -55,7 +55,7 @@ public interface ConceptDAO {
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#purgeConcept(org.openmrs.Concept)
-	 * @should purge concept
+	 * <strong>Should</strong> purge concept
 	 */
 	public void purgeConcept(Concept concept) throws DAOException;
 	
@@ -103,7 +103,7 @@ public interface ConceptDAO {
 	 * @param searchOnPhrase This puts wildcard characters around the concept name search criteria
 	 * @return List&lt;Concept&gt;
 	 * @throws DAOException
-	 * @should not return concepts with matching names that are voided
+	 * <strong>Should</strong> not return concepts with matching names that are voided
 	 */
 	public List<Concept> getConcepts(String name, Locale loc, boolean searchOnPhrase, List<ConceptClass> classes,
 	        List<ConceptDatatype> datatypes) throws DAOException;
@@ -112,8 +112,8 @@ public interface ConceptDAO {
 	 * @see ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept,
 	 *      Integer, Integer)
 	 * @throws DAOException
-	 * @should return correct results for concept with names that contains words with more weight
-	 * @should return correct results if a concept name contains same word more than once
+	 * <strong>Should</strong> return correct results for concept with names that contains words with more weight
+	 * <strong>Should</strong> return correct results if a concept name contains same word more than once
 	 */
 	public List<ConceptSearchResult> getConcepts(String phrase, List<Locale> locales, boolean includeRetired,
 	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
@@ -225,7 +225,7 @@ public interface ConceptDAO {
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#getConceptsByAnswer(org.openmrs.Concept)
-	 * @should return concepts for the given answer concept
+	 * <strong>Should</strong> return concepts for the given answer concept
 	 */
 	public List<Concept> getConceptsByAnswer(Concept concept) throws DAOException;
 	
@@ -404,7 +404,7 @@ public interface ConceptDAO {
 	 * 
 	 * @param concept for which the conceptDatatype should be fetched
 	 * @return the conceptDatatype currently in the database for this concept
-	 * @should get saved conceptDatatype from database
+	 * <strong>Should</strong> get saved conceptDatatype from database
 	 */
 	public ConceptDatatype getSavedConceptDatatype(Concept concept);
 	
@@ -548,9 +548,9 @@ public interface ConceptDAO {
 	 * @param term
 	 * @return true if term is in use
 	 * @throws DAOException
-	 * @should return true if a term has a conceptMap or more using it
-	 * @should return true if a term has a conceptReferenceTermMap or more using it
-	 * @should return false if a term has no maps using it
+	 * <strong>Should</strong> return true if a term has a conceptMap or more using it
+	 * <strong>Should</strong> return true if a term has a conceptReferenceTermMap or more using it
+	 * <strong>Should</strong> return false if a term has no maps using it
 	 */
 	public boolean isConceptReferenceTermInUse(ConceptReferenceTerm term) throws DAOException;
 	
@@ -561,9 +561,9 @@ public interface ConceptDAO {
 	 * @param mapType
 	 * @return true if map type is in use
 	 * @throws DAOException
-	 * @should return true if a mapType has a conceptMap or more using it
-	 * @should return true if a mapType has a conceptReferenceTermMap or more using it
-	 * @should return false if a mapType has no maps using it
+	 * <strong>Should</strong> return true if a mapType has a conceptMap or more using it
+	 * <strong>Should</strong> return true if a mapType has a conceptReferenceTermMap or more using it
+	 * <strong>Should</strong> return false if a mapType has no maps using it
 	 */
 	public boolean isConceptMapTypeInUse(ConceptMapType mapType) throws DAOException;
 	

@@ -322,11 +322,11 @@ public class UpdateFilter extends StartupFilter {
 	 * @param password user entered password
 	 * @return true if this user has the super user role
 	 * @see #isSuperUser(Connection, Integer)
-	 * @should return false if given invalid credentials
-	 * @should return false if given user is not superuser
-	 * @should return true if given user is superuser
-	 * @should not authorize retired superusers
-	 * @should authenticate with systemId
+	 * <strong>Should</strong> return false if given invalid credentials
+	 * <strong>Should</strong> return false if given user is not superuser
+	 * <strong>Should</strong> return true if given user is superuser
+	 * <strong>Should</strong> not authorize retired superusers
+	 * <strong>Should</strong> authenticate with systemId
 	 */
 	protected boolean authenticateAsSuperUser(String usernameOrSystemId, String password) throws ServletException {
 		Connection connection = null;
@@ -455,8 +455,8 @@ public class UpdateFilter extends StartupFilter {
 	 * @param userId the user id to look at
 	 * @return true if the given user is a super user
 	 * @throws SQLException
-	 * @should return true if given user has superuser role
-	 * @should return false if given user does not have the super user role
+	 * <strong>Should</strong> return true if given user has superuser role
+	 * <strong>Should</strong> return false if given user does not have the super user role
 	 */
 	protected boolean isSuperUser(Connection connection, Integer userId) throws SQLException {
 		// the 'Administrator' part of this string is necessary because if the database was upgraded

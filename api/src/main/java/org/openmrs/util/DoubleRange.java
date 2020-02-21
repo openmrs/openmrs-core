@@ -28,13 +28,13 @@ public class DoubleRange implements Comparable<DoubleRange> {
 	private boolean closedHigh = false;
 	
 	/**
-	 * @should return null low and high if accessors are not called
+	 * <strong>Should</strong> return null low and high if accessors are not called
 	 */
 	public DoubleRange() {
 	}
 	
 	/**
-	 * @should return infinite low and high if called with null parameters
+	 * <strong>Should</strong> return infinite low and high if called with null parameters
 	 */
 	public DoubleRange(Double low, Double high) {
 		this.low = low == null ? new Double(Double.NEGATIVE_INFINITY) : low;
@@ -43,8 +43,8 @@ public class DoubleRange implements Comparable<DoubleRange> {
 	
 	/**
 	 * @return Returns the high.
-	 * @should return correct value of high if it high was set previously
-	 * @should return positive infinity if high was not set previously
+	 * <strong>Should</strong> return correct value of high if it high was set previously
+	 * <strong>Should</strong> return positive infinity if high was not set previously
 	 */
 	public Double getHigh() {
 		return high;
@@ -52,8 +52,8 @@ public class DoubleRange implements Comparable<DoubleRange> {
 	
 	/**
 	 * @param high The high to set.
-	 * @should set high to positive infinity on null parameter
-	 * @should cause low to have the set value
+	 * <strong>Should</strong> set high to positive infinity on null parameter
+	 * <strong>Should</strong> cause low to have the set value
 	 */
 	public void setHigh(Double high) {
 		this.high = high == null ? new Double(Double.POSITIVE_INFINITY) : high;
@@ -61,8 +61,8 @@ public class DoubleRange implements Comparable<DoubleRange> {
 	
 	/**
 	 * @return Returns the low.
-	 * @should return correct value of low if low was set previously
-	 * @should return negative infinity if low was not set previously
+	 * <strong>Should</strong> return correct value of low if low was set previously
+	 * <strong>Should</strong> return negative infinity if low was not set previously
 	 */
 	public Double getLow() {
 		return low;
@@ -70,8 +70,8 @@ public class DoubleRange implements Comparable<DoubleRange> {
 	
 	/**
 	 * @param low The low to set.
-	 * @should set low to negative infinity on null parameter
-	 * @should cause low to have the set value
+	 * <strong>Should</strong> set low to negative infinity on null parameter
+	 * <strong>Should</strong> cause low to have the set value
 	 */
 	public void setLow(Double low) {
 		this.low = low == null ? new Double(Double.NEGATIVE_INFINITY) : low;
@@ -79,12 +79,12 @@ public class DoubleRange implements Comparable<DoubleRange> {
 	
 	/**
 	 * first sorts according to low-bound (ascending) then according to high-bound (descending)
-	 * @should return plus 1 if this low is greater than other low
-	 * @should return minus one if this low is lower than other low
-	 * @should return plus one if both lows are equal but other high is greater than this high
-	 * @should return minus one if both lows are equal but other high is less than this high
-	 * @should return zero if both lows and both highs are equal
-	 * @should return 1 if this range is wider than other range
+	 * <strong>Should</strong> return plus 1 if this low is greater than other low
+	 * <strong>Should</strong> return minus one if this low is lower than other low
+	 * <strong>Should</strong> return plus one if both lows are equal but other high is greater than this high
+	 * <strong>Should</strong> return minus one if both lows are equal but other high is less than this high
+	 * <strong>Should</strong> return zero if both lows and both highs are equal
+	 * <strong>Should</strong> return 1 if this range is wider than other range
 	 */
 	@Override
 	public int compareTo(DoubleRange other) {
@@ -102,12 +102,12 @@ public class DoubleRange implements Comparable<DoubleRange> {
 	 * checks whether a double is in this range
 	 * @param 	d the Double to check for in this range
 	 * @return  true if d is in this range, false otherwise
-	 * @should return true if parameter is in range
-	 * @should return false if parameter is not in range
-	 * @should return false if parameter is equal to high
-	 * @should return true if parameter is equal to low
-	 * @should return false if parameter is lower than low
-	 * @should return false if both low and high are null
+	 * <strong>Should</strong> return true if parameter is in range
+	 * <strong>Should</strong> return false if parameter is not in range
+	 * <strong>Should</strong> return false if parameter is equal to high
+	 * <strong>Should</strong> return true if parameter is equal to low
+	 * <strong>Should</strong> return false if parameter is lower than low
+	 * <strong>Should</strong> return false if both low and high are null
 	 */
 	public boolean contains(double d) {
 		if (low != null) {
@@ -136,10 +136,10 @@ public class DoubleRange implements Comparable<DoubleRange> {
 	/**
 	 *
 	 * @return a String representation of the DoubleRange
-	 * @should print the range if high and low are not null and not infinite
-	 * @should print empty high if high is infinite
-	 * @should print empty low if low is infinite
-	 * @should print empty string if low and high are infinite
+	 * <strong>Should</strong> print the range if high and low are not null and not infinite
+	 * <strong>Should</strong> print empty high if high is infinite
+	 * <strong>Should</strong> print empty low if low is infinite
+	 * <strong>Should</strong> print empty string if low and high are infinite
 	 */
 	@Override
 	public String toString() {
@@ -175,7 +175,7 @@ public class DoubleRange implements Comparable<DoubleRange> {
 	}
 	
 	/**
-	 * @should return the same hashCode for objects representing the same interval
+	 * <strong>Should</strong> return the same hashCode for objects representing the same interval
 	 */
 	@Override
 	public int hashCode() {

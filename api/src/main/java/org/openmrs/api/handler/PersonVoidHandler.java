@@ -35,14 +35,14 @@ public class PersonVoidHandler implements VoidHandler<Person> {
 	 *
 	 * @see org.openmrs.api.handler.RequiredDataHandler#handle(org.openmrs.OpenmrsObject,
 	 *      org.openmrs.User, java.util.Date, java.lang.String)
-	 * @should set the personVoided bit
-	 * @should set the personVoidReason
-	 * @should set personVoidedBy
-	 * @should not set personVoidedBy if non null
-	 * @should set personDateVoided
-	 * @should not set personDateVoided if non null
-	 * @should not set the personVoidReason if already personVoided
-	 * @should retire users
+	 * <strong>Should</strong> set the personVoided bit
+	 * <strong>Should</strong> set the personVoidReason
+	 * <strong>Should</strong> set personVoidedBy
+	 * <strong>Should</strong> not set personVoidedBy if non null
+	 * <strong>Should</strong> set personDateVoided
+	 * <strong>Should</strong> not set personDateVoided if non null
+	 * <strong>Should</strong> not set the personVoidReason if already personVoided
+	 * <strong>Should</strong> retire users
 	 */
 	@Override
 	public void handle(Person person, User voidingUser, Date voidedDate, String voidReason) {

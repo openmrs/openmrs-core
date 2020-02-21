@@ -159,9 +159,9 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	 * 
 	 * @param roleName the name of the role to check
 	 * @return true if the user has the given role, else false
-	 * @should return true if the user has the given role
-	 * @should return false if the user does not have the given role
-	 * @should be case insensitive
+	 * <strong>Should</strong> return true if the user has the given role
+	 * <strong>Should</strong> return false if the user does not have the given role
+	 * <strong>Should</strong> be case insensitive
 	 */
 	public boolean containsRole(String roleName) {
 		for (Role role : getAllRoles()) {

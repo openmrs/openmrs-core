@@ -352,15 +352,15 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * @param module
 	 * @param fileUrl
 	 * @return true if it should be included
-	 * @should return true if file matches and openmrs version matches
-	 * @should return false if file matches but openmrs version does not
-	 * @should return true if file does not match and openmrs version does not match
-	 * @should return true if file matches and module version matches
-	 * @should return false if file matches and module version does not match
-	 * @should return false if file matches and openmrs version matches but module version does not 
+	 * <strong>Should</strong> return true if file matches and openmrs version matches
+	 * <strong>Should</strong> return false if file matches but openmrs version does not
+	 * <strong>Should</strong> return true if file does not match and openmrs version does not match
+	 * <strong>Should</strong> return true if file matches and module version matches
+	 * <strong>Should</strong> return false if file matches and module version does not match
+	 * <strong>Should</strong> return false if file matches and openmrs version matches but module version does not 
 	 * 		   match
-	 * @should return false if file matches and module not found
-	 * @should return true if file does not match and module version does not match
+	 * <strong>Should</strong> return false if file matches and module not found
+	 * <strong>Should</strong> return true if file does not match and module version does not match
 	 */
 	static boolean shouldResourceBeIncluded(Module module, URL fileUrl, String openmrsVersion,
 	        Map<String, String> startedRelatedModules) {

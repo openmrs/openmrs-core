@@ -118,7 +118,7 @@ public class Daemon {
 	 * @param roleNames A list of role names to fetch the roles to add to the user.
 	 * @return The newly created user
 	 * 
-	 * @should only allow the creation of new users, not the edition of existing ones
+	 * <strong>Should</strong> only allow the creation of new users, not the edition of existing ones
 	 * 
 	 * @since 2.3.0
 	 */
@@ -182,8 +182,8 @@ public class Daemon {
 	 * This can only be called from {@link TimerSchedulerTask} during actual task execution
 	 *
 	 * @param task the task to run
-	 * @should not be called from other methods other than TimerSchedulerTask
-	 * @should not throw error if called from a TimerSchedulerTask class
+	 * <strong>Should</strong> not be called from other methods other than TimerSchedulerTask
+	 * <strong>Should</strong> not throw error if called from a TimerSchedulerTask class
 	 */
 	public static void executeScheduledTask(final Task task) throws Exception {
 		
@@ -237,8 +237,8 @@ public class Daemon {
 	 *
 	 * @param runnable what to run in a new thread
 	 * @return the newly spawned {@link Thread}
-	 * @should throw error if called from a non daemon thread
-	 * @should not throw error if called from a daemon thread
+	 * <strong>Should</strong> throw error if called from a non daemon thread
+	 * <strong>Should</strong> not throw error if called from a daemon thread
 	 */
 	@SuppressWarnings("squid:S1217")
 	public static Thread runInNewDaemonThread(final Runnable runnable) {
@@ -419,8 +419,8 @@ public class Daemon {
 	 *
 	 * @param user user whom we are checking if daemon
 	 * @return true if user is Daemon
-	 * @should return true for a daemon user
-	 * @should return false if the user is not a daemon
+	 * <strong>Should</strong> return true for a daemon user
+	 * <strong>Should</strong> return false if the user is not a daemon
 	 */
 	public static boolean isDaemonUser(User user) {
 		return DAEMON_USER_UUID.equals(user.getUuid());

@@ -101,9 +101,9 @@ public class HandlerUtil implements ApplicationListener<ContextRefreshedEvent> {
 	 * @param handlerType Indicates the type of class to return
 	 * @param type Indicates the type that the given handlerType must support (or null for any)
 	 * @return a List of all matching Handlers for the given parameters, ordered by Handler#order
-	 * @should return a list of all classes that can handle the passed type
-	 * @should return classes registered in a module
-	 * @should return an empty list if no classes can handle the passed type
+	 * <strong>Should</strong> return a list of all classes that can handle the passed type
+	 * <strong>Should</strong> return classes registered in a module
+	 * <strong>Should</strong> return an empty list if no classes can handle the passed type
 	 */
 	public static <H, T> List<H> getHandlersForType(Class<H> handlerType, Class<T> type) {
 		List<?> list = cachedHandlers.get(new Key(handlerType, type));
@@ -156,11 +156,11 @@ public class HandlerUtil implements ApplicationListener<ContextRefreshedEvent> {
 	 * @param handlerType the class that is an annotated {@link Handler} to retrieve
 	 * @param type the class that the annotated {@link Handler} must support
 	 * @return the class of the passed handlerType with the lowest configured order
-	 * @should return the preferred handler for the passed handlerType and type
-	 * @should throw a APIException if no handler is found
-	 * @should throw a APIException if multiple preferred handlers are found
-	 * @should should return patient validator for patient
-	 * @should should return person validator for person
+	 * <strong>Should</strong> return the preferred handler for the passed handlerType and type
+	 * <strong>Should</strong> throw a APIException if no handler is found
+	 * <strong>Should</strong> throw a APIException if multiple preferred handlers are found
+	 * <strong>Should</strong> should return patient validator for patient
+	 * <strong>Should</strong> should return person validator for person
 	 */
 	public static <H, T> H getPreferredHandler(Class<H> handlerType, Class<T> type) {
 		
