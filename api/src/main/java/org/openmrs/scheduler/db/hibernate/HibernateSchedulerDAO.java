@@ -165,4 +165,11 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 		}
 		return schedule;
 	}
+
+	@Override
+	public TaskDefinition getTaskByUuid(String uuid) throws DAOException {
+		return (TaskDefinition) sessionFactory.getCurrentSession()
+				.createQuery("from TaskDefinition o where o.uuid = :uuid").setString("uuid", uuid).uniqueResult();
+
+	}
 }

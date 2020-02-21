@@ -40,6 +40,15 @@ public interface SchedulerDAO {
 	public TaskDefinition getTask(Integer taskId) throws DAOException;
 	
 	/**
+	 * Get task by UUID
+	 * 
+	 * @param taskId internal task identifier
+	 * @return task with given internal identifier
+	 * @throws DAOException
+	 */
+	public TaskDefinition getTaskByUuid(String uuid) throws DAOException;
+
+	/**
 	 * Update task
 	 * 
 	 * @param task to be updated

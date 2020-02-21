@@ -104,6 +104,14 @@ public interface SchedulerService extends OpenmrsService {
 	public TaskDefinition getTask(Integer id);
 	
 	/**
+	 * Get the task with the given UUID.
+	 * 
+	 * @param uuid the identifier of the task
+	 */
+	@Authorized({ "Manage Scheduler" })
+	public TaskDefinition getTaskByUuid(String uuid);
+
+	/**
 	 * Get the task with the given name.
 	 * 
 	 * @param name name of the task
