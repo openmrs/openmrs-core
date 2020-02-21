@@ -380,7 +380,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * {@link #hasGroupMembers(boolean)} with value true.
 	 * 
 	 * @return true if this is the parent group of other obs
-	 * @should not include voided obs
+	 * <strong>Should</strong> not include voided obs
 	 */
 	public boolean hasGroupMembers() {
 		return hasGroupMembers(false);
@@ -393,7 +393,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * 
 	 * @param includeVoided determines if Voided members should be considered as group members.
 	 * @return true if this is the parent group of other Obs
-	 * @should return true if this obs has group members based on parameter
+	 * <strong>Should</strong> return true if this obs has group members based on parameter
 	 */
 	public boolean hasGroupMembers(boolean includeVoided) {
 		// ! symbol used because if it's not empty, we want true
@@ -424,7 +424,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * 
 	 * @param includeVoided
 	 * @return the set of group members in this obs group
-	 * @should Get all group members if passed true, and non-voided if passed false
+	 * <strong>Should</strong> Get all group members if passed true, and non-voided if passed false
 	 */
 	public Set<Obs> getGroupMembers(boolean includeVoided) {
 		if (includeVoided) {
@@ -449,10 +449,10 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * @param groupMembers the groupedObs to set
 	 * @see #addGroupMember(Obs)
 	 * @see #hasGroupMembers()
-	 * @should mark the obs as dirty when the set is changed from null to a non empty one
-	 * @should not mark the obs as dirty when the set is changed from null to an empty one
-	 * @should mark the obs as dirty when the set is replaced with another with different members
-	 * @should not mark the obs as dirty when the set is replaced with another with same members
+	 * <strong>Should</strong> mark the obs as dirty when the set is changed from null to a non empty one
+	 * <strong>Should</strong> not mark the obs as dirty when the set is changed from null to an empty one
+	 * <strong>Should</strong> mark the obs as dirty when the set is replaced with another with different members
+	 * <strong>Should</strong> not mark the obs as dirty when the set is replaced with another with same members
 	 */
 	public void setGroupMembers(Set<Obs> groupMembers) {
 		//Copy over the entire list
@@ -467,8 +467,8 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * @param member Obs to add to this group
 	 * @see #setGroupMembers(Set)
 	 * @see #getGroupMembers()
-	 * @should return true when a new obs is added as a member
-	 * @should return false when a duplicate obs is added as a member
+	 * <strong>Should</strong> return true when a new obs is added as a member
+	 * <strong>Should</strong> return false when a duplicate obs is added as a member
 	 */
 	public void addGroupMember(Obs member) {
 		if (member == null) {
@@ -496,8 +496,8 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * @param member Obs to remove from this group
 	 * @see #setGroupMembers(Set)
 	 * @see #getGroupMembers()
-	 * @should return true when an obs is removed
-	 * @should return false when a non existent obs is removed
+	 * <strong>Should</strong> return true when an obs is removed
+	 * <strong>Should</strong> return false when a non existent obs is removed
 	 */
 	public void removeGroupMember(Obs member) {
 		if (member == null || getGroupMembers() == null) {
@@ -639,9 +639,9 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * Coerces a value to a Boolean representation
 	 * 
 	 * @return Boolean representation of the obs value
-	 * @should return true for value_numeric concepts if value is 1
-	 * @should return false for value_numeric concepts if value is 0
-	 * @should return null for value_numeric concepts if value is neither 1 nor 0
+	 * <strong>Should</strong> return true for value_numeric concepts if value is 1
+	 * <strong>Should</strong> return false for value_numeric concepts if value is 0
+	 * <strong>Should</strong> return null for value_numeric concepts if value is neither 1 nor 0
 	 */
 	public Boolean getValueAsBoolean() {
 		
@@ -666,8 +666,8 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * Returns the boolean value if the concept of this obs is of boolean datatype
 	 * 
 	 * @return true or false if value is set otherwise null
-	 * @should return true if value coded answer concept is true concept
-	 * @should return false if value coded answer concept is false concept
+	 * <strong>Should</strong> return true if value coded answer concept is true concept
+	 * <strong>Should</strong> return false if value coded answer concept is false concept
 	 */
 	public Boolean getValueBoolean() {
 		if (getConcept() != null && valueCoded != null && getConcept().getDatatype().isBoolean()) {
@@ -841,7 +841,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 	/**
 	 * @return Returns true if this Obs is complex.
 	 * @since 1.5
-	 * @should return true if the concept is complex
+	 * <strong>Should</strong> return true if the concept is complex
 	 */
 	public boolean isComplex() {
 		if (getConcept() != null) {
@@ -938,15 +938,15 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * missing.
 	 *
 	 * @param locale locale for locale-specific depictions of value
-	 * @should return first part of valueComplex for complex obs
-	 * @should return first part of valueComplex for non null valueComplexes
-	 * @should return non precise values for NumericConcepts
-	 * @should return date in correct format
-	 * @should not return long decimal numbers as scientific notation
-	 * @should use commas or decimal places depending on locale
-	 * @should not use thousand separator
-	 * @should return regular number for size of zero to or greater than ten digits
-	 * @should return regular number if decimal places are as high as six
+	 * <strong>Should</strong> return first part of valueComplex for complex obs
+	 * <strong>Should</strong> return first part of valueComplex for non null valueComplexes
+	 * <strong>Should</strong> return non precise values for NumericConcepts
+	 * <strong>Should</strong> return date in correct format
+	 * <strong>Should</strong> not return long decimal numbers as scientific notation
+	 * <strong>Should</strong> use commas or decimal places depending on locale
+	 * <strong>Should</strong> not use thousand separator
+	 * <strong>Should</strong> return regular number for size of zero to or greater than ten digits
+	 * <strong>Should</strong> return regular number if decimal places are as high as six
 	 */
 	public String getValueAsString(Locale locale) {
 		// formatting for the return of numbers of type double
@@ -1064,9 +1064,9 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * Sets the value for the obs from a string depending on the datatype of the question concept
 	 *
 	 * @param s the string to coerce to a boolean
-	 * @should set value as boolean if the datatype of the question concept is boolean
-	 * @should fail if the value of the string is null
-	 * @should fail if the value of the string is empty
+	 * <strong>Should</strong> set value as boolean if the datatype of the question concept is boolean
+	 * <strong>Should</strong> fail if the value of the string is null
+	 * <strong>Should</strong> fail if the value of the string is empty
 	 */
 	public void setValueAsString(String s) throws ParseException {
 		if (log.isDebugEnabled()) {
@@ -1181,9 +1181,9 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * 
 	 * @return the namespace
 	 * @since 1.11
-	 * @should return the namespace for a form field that has no path
-	 * @should return the correct namespace for a form field with a path
-	 * @should return null if the namespace is not specified
+	 * <strong>Should</strong> return the namespace for a form field that has no path
+	 * <strong>Should</strong> return the correct namespace for a form field with a path
+	 * <strong>Should</strong> return null if the namespace is not specified
 	 */
 	public String getFormFieldNamespace() {
 		if (StringUtils.isNotBlank(formNamespaceAndPath)) {
@@ -1202,9 +1202,9 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * 
 	 * @return the the form field path
 	 * @since 1.11
-	 * @should return the path for a form field that has no namespace
-	 * @should return the correct path for a form field with a namespace
-	 * @should return null if the path is not specified
+	 * <strong>Should</strong> return the path for a form field that has no namespace
+	 * <strong>Should</strong> return the correct path for a form field with a namespace
+	 * <strong>Should</strong> return null if the path is not specified
 	 */
 	public String getFormFieldPath() {
 		if (StringUtils.isNotBlank(formNamespaceAndPath)) {
@@ -1228,14 +1228,14 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * @param namespace the namespace of the form field
 	 * @param formFieldPath the path of the form field
 	 * @since 1.11
-	 * @should set the underlying formNamespaceAndPath in the correct pattern
-	 * @should reject a namepace containing the separator
-	 * @should reject a path containing the separator
-	 * @should reject a namepace and path combination longer than the max length
-	 * @should not mark the obs as dirty when the value has not been changed
-	 * @should mark the obs as dirty when the value has been changed
-	 * @should mark the obs as dirty when the value is changed from a null to a non null value
-	 * @should mark the obs as dirty when the value is changed from a non null to a null value
+	 * <strong>Should</strong> set the underlying formNamespaceAndPath in the correct pattern
+	 * <strong>Should</strong> reject a namepace containing the separator
+	 * <strong>Should</strong> reject a path containing the separator
+	 * <strong>Should</strong> reject a namepace and path combination longer than the max length
+	 * <strong>Should</strong> not mark the obs as dirty when the value has not been changed
+	 * <strong>Should</strong> mark the obs as dirty when the value has been changed
+	 * <strong>Should</strong> mark the obs as dirty when the value is changed from a null to a non null value
+	 * <strong>Should</strong> mark the obs as dirty when the value is changed from a non null to a null value
 	 */
 	public void setFormField(String namespace, String formFieldPath) {
 		if (namespace == null && formFieldPath == null) {
@@ -1271,11 +1271,11 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 *
 	 * @return true if not changed otherwise false
 	 * @since 2.0
-	 * @should return false when no change has been made
-	 * @should return true when any immutable field has been changed
-	 * @should return false when only mutable fields are changed
-	 * @should return true when an immutable field is changed from a null to a non null value
-	 * @should return true when an immutable field is changed from a non null to a null value
+	 * <strong>Should</strong> return false when no change has been made
+	 * <strong>Should</strong> return true when any immutable field has been changed
+	 * <strong>Should</strong> return false when only mutable fields are changed
+	 * <strong>Should</strong> return true when an immutable field is changed from a null to a non null value
+	 * <strong>Should</strong> return true when an immutable field is changed from a non null to a null value
 	 */
 	public boolean isDirty() {
 		return dirty;

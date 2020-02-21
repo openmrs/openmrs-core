@@ -134,7 +134,7 @@ public class DiagnosisServiceImpl extends BaseOpenmrsService implements Diagnosi
 	 * @param diagnosis diagnosis to unvoid
 	 * @return the unvoided diagnosis
 	 * @throws APIException
-	 * @should unset voided bit on given diagnosis
+	 * <strong>Should</strong> unset voided bit on given diagnosis
 	 */
 	@Override
 	public Diagnosis unvoidDiagnosis(Diagnosis diagnosis) {
@@ -149,7 +149,7 @@ public class DiagnosisServiceImpl extends BaseOpenmrsService implements Diagnosi
 	 *
 	 * @param diagnosis diagnosis to remove from the database
 	 * @throws APIException
-	 * @should delete the given diagnosis from th e database
+	 * <strong>Should</strong> delete the given diagnosis from th e database
 	 * @see #purgeDiagnosis(Diagnosis)
 	 */
 	@Override

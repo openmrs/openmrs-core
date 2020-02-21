@@ -39,10 +39,10 @@ public class DrugsByNameComparator implements Comparator<Drug>, Serializable {
 	 * @param d1 the first Drug to be compared
 	 * @param d2 the second Drug to be compared
 	 * @return the int
-	 * @should return negative if name for drug1 comes before that of drug2
-	 * @should return zero if name for drug1 comes before that of drug2
-	 * @should return positive if name for drug1 comes before that of drug2 ignoring dashes
-	 * @should return positive if name for drug1 comes before that of drug2 ignoring numerics
+	 * <strong>Should</strong> return negative if name for drug1 comes before that of drug2
+	 * <strong>Should</strong> return zero if name for drug1 comes before that of drug2
+	 * <strong>Should</strong> return positive if name for drug1 comes before that of drug2 ignoring dashes
+	 * <strong>Should</strong> return positive if name for drug1 comes before that of drug2 ignoring numerics
 	 */
 	private int compareDrugNamesIgnoringNumericals(Drug d1, Drug d2) {
 		

@@ -196,9 +196,9 @@ public interface LocationDAO {
 	 *
 	 * @param locationTagIdList
 	 * @return list of locations
-	 * @should get locations having all tags
-	 * @should return empty list when no location has the given tags
-	 * @should ignore null values in location tag list
+	 * <strong>Should</strong> get locations having all tags
+	 * <strong>Should</strong> return empty list when no location has the given tags
+	 * <strong>Should</strong> ignore null values in location tag list
 	 */
 	List<Location> getLocationsHavingAllTags(List<LocationTag> locationTagIdList);
 }

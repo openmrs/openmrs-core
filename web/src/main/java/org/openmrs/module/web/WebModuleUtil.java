@@ -388,10 +388,10 @@ public class WebModuleUtil {
 	 * @param modulePackageName the package name of module
 	 * @param taskClass the class of given task
 	 * @return true if task and module are in the same package
-	 * @should return false for different package names
-	 * @should return false if module has longer package name
-	 * @should properly match subpackages
-	 * @should return false for empty package names
+	 * <strong>Should</strong> return false for different package names
+	 * <strong>Should</strong> return false if module has longer package name
+	 * <strong>Should</strong> properly match subpackages
+	 * <strong>Should</strong> return false for empty package names
 	 */
 	public static boolean isModulePackageNameInTaskClass(String modulePackageName, String taskClass) {
 		return modulePackageName.length() <= taskClass.length()
@@ -901,9 +901,9 @@ public class WebModuleUtil {
 	 *
 	 * @param moduleId module id (e.g., "basicmodule")
 	 * @return a path to a folder that stores web files or null if not in a web environment
-	 * @should return the correct module folder
-	 * @should return null if the dispatcher servlet is not yet set
-	 * @should return the correct module folder if real path has a trailing slash
+	 * <strong>Should</strong> return the correct module folder
+	 * <strong>Should</strong> return null if the dispatcher servlet is not yet set
+	 * <strong>Should</strong> return the correct module folder if real path has a trailing slash
 	 */
 	public static String getModuleWebFolder(String moduleId) {
 		if (dispatcherServlet == null) {

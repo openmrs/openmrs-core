@@ -110,8 +110,8 @@ public class Duration {
 	 * 
 	 * @param durationUnits
 	 * @return a string which is reference term code
-	 * @should return null if the concept has no mapping to the SNOMED CT source
-	 * @should return the code for the term of the mapping to the SNOMED CT source
+	 * <strong>Should</strong> return null if the concept has no mapping to the SNOMED CT source
+	 * <strong>Should</strong> return the code for the term of the mapping to the SNOMED CT source
 	 */
 	public static String getCode(Concept durationUnits) {
 		for (ConceptMap conceptMapping : durationUnits.getConceptMappings()) {

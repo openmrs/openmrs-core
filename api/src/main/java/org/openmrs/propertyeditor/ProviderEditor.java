@@ -33,8 +33,8 @@ public class ProviderEditor extends PropertyEditorSupport {
 	}
 	
 	/**
-	 * @should set using id
-	 * @should set using uuid
+	 * <strong>Should</strong> set using id
+	 * <strong>Should</strong> set using uuid
 	 */
 	@Override
 	public void setAsText(String text) throws IllegalArgumentException {

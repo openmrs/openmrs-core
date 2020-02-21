@@ -43,9 +43,9 @@ public interface AlertService extends OpenmrsService {
 	 * @param alert the Alert object to save
 	 * @return The saved alert object
 	 * @throws APIException
-	 * @should save simple alert with one user
-	 * @should save alerts by role
-	 * @should assign uuid to alert
+	 * <strong>Should</strong> save simple alert with one user
+	 * <strong>Should</strong> save alerts by role
+	 * <strong>Should</strong> assign uuid to alert
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ALERTS)
 	public Alert saveAlert(Alert alert) throws APIException;
@@ -124,9 +124,9 @@ public interface AlertService extends OpenmrsService {
 	 * @param messageCode The alert message code from messages.properties
 	 * @param cause The exception that was thrown, method will work if cause is null
 	 * @param messageArguments The arguments for the coded message
-	 * @should add an alert with message of length equals Text Max Length
-	 * @should add an alert with message text if cause is null
-	 * @should add an alert to the database
+	 * <strong>Should</strong> add an alert with message of length equals Text Max Length
+	 * <strong>Should</strong> add an alert with message text if cause is null
+	 * <strong>Should</strong> add an alert to the database
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ALERTS)
 	public void notifySuperUsers(String messageCode, Exception cause, Object... messageArguments);

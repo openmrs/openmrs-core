@@ -29,7 +29,7 @@ public interface SerializationService extends OpenmrsService {
 	 * objects without needing to know the underlying serialization implementation class.
 	 * 
 	 * @return {@link OpenmrsSerializer} the default configured serializer
-	 * @should return a serializer
+	 * <strong>Should</strong> return a serializer
 	 */
 	public OpenmrsSerializer getDefaultSerializer();
 	
@@ -38,7 +38,7 @@ public interface SerializationService extends OpenmrsService {
 	 * 
 	 * @param serializationClass - the serialization class to retrieve
 	 * @return {@link OpenmrsSerializer} that matches the passed class
-	 * @should return a serializer of the given class
+	 * <strong>Should</strong> return a serializer of the given class
 	 */
 	public OpenmrsSerializer getSerializer(Class<? extends OpenmrsSerializer> serializationClass);
 	
@@ -49,8 +49,8 @@ public interface SerializationService extends OpenmrsService {
 	 * @param o - the object to serialize
 	 * @param clazz - the {@link OpenmrsSerializer} class to use for serialization
 	 * @return String representing this object
-	 * @should Serialize And Deserialize Correctly
-	 * @should Serialize And Deserialize Hibernate Objects Correctly
+	 * <strong>Should</strong> Serialize And Deserialize Correctly
+	 * <strong>Should</strong> Serialize And Deserialize Hibernate Objects Correctly
 	 */
 	public String serialize(Object o, Class<? extends OpenmrsSerializer> clazz) throws SerializationException;
 	

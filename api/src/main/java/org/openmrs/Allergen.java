@@ -141,10 +141,10 @@ public class Allergen {
 	 * 
 	 * @param allergen the given allergen to test with
 	 * 
-	 * @should return true for same coded allergen
-	 * @should return false for different coded allergen
-	 * @should return true for same non coded allergen
-	 * @should return false for different non coded allergen
+	 * <strong>Should</strong> return true for same coded allergen
+	 * <strong>Should</strong> return false for different coded allergen
+	 * <strong>Should</strong> return true for same non coded allergen
+	 * <strong>Should</strong> return false for different non coded allergen
 	 * 
 	 * @return true if the same, else false
 	 */

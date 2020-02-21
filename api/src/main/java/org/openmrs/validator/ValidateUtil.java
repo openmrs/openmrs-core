@@ -54,8 +54,8 @@ public class ValidateUtil {
 	 *
 	 * @param obj the object to validate
 	 * @throws ValidationException thrown if a binding exception occurs
-	 * @should throw APIException if errors occur during validation
-	 * @should return immediately if validation is disabled
+	 * <strong>Should</strong> throw APIException if errors occur during validation
+	 * <strong>Should</strong> return immediately if validation is disabled
 	 */
 	public static void validate(Object obj) throws ValidationException {
 		if (disableValidation) {
@@ -90,8 +90,8 @@ public class ValidateUtil {
 	 * @param obj the object to validate
 	 * @param errors the validation errors found
 	 * @since 1.9
-	 * @should populate errors if object invalid
-	 * @should return immediately if validation is disabled and have no errors
+	 * <strong>Should</strong> populate errors if object invalid
+	 * <strong>Should</strong> return immediately if validation is disabled and have no errors
 	 */
 	public static void validate(Object obj, Errors errors) {
 		if (disableValidation) {
@@ -107,10 +107,10 @@ public class ValidateUtil {
 	 * @param errors
 	 * @param aClass the class of the object being tested
 	 * @param fields a var args that contains all of the fields from the model
-	 * @should pass validation if regEx field length is not too long
-	 * @should fail validation if regEx field length is too long
-	 * @should fail validation if name field length is too long
-	 * @should return immediately if validation is disabled and have no errors
+	 * <strong>Should</strong> pass validation if regEx field length is not too long
+	 * <strong>Should</strong> fail validation if regEx field length is too long
+	 * <strong>Should</strong> fail validation if name field length is too long
+	 * <strong>Should</strong> return immediately if validation is disabled and have no errors
 	 */
 	public static void validateFieldLengths(Errors errors, Class<?> aClass, String... fields) {
 		if (disableValidation) {

@@ -70,12 +70,12 @@ public class ConceptNumeric extends Concept {
 	 * Note: This cannot copy over numeric specific values
 	 * 
 	 * @param c
-	 * @should make deep copy of collections
-	 * @should change reference to the parent object  for objects in answers collection
-	 * @should change reference to the parent object  for objects in conceptSets collection
-	 * @should change reference to the parent object  for objects in names collection
-	 * @should change reference to the parent object  for objects in descriptions collection
-	 * @should change reference to the parent object  for objects in conceptMappings collection
+	 * <strong>Should</strong> make deep copy of collections
+	 * <strong>Should</strong> change reference to the parent object  for objects in answers collection
+	 * <strong>Should</strong> change reference to the parent object  for objects in conceptSets collection
+	 * <strong>Should</strong> change reference to the parent object  for objects in names collection
+	 * <strong>Should</strong> change reference to the parent object  for objects in descriptions collection
+	 * <strong>Should</strong> change reference to the parent object  for objects in conceptMappings collection
 	 */
 	public ConceptNumeric(Concept c) {
 		this.setChangedBy(c.getChangedBy());

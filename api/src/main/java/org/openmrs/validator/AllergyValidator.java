@@ -38,15 +38,15 @@ public class AllergyValidator implements Validator {
 	 * @see Validator#validate(Object, org.springframework.validation.Errors)
 	 * @param target
 	 * @param errors
-	 * @should fail for a null value
-	 * @should fail if patient is null
-	 * @should fail id allergenType is null
-	 * @should fail if allergen is null
-	 * @should fail if codedAllergen is null
-	 * @should fail if nonCodedAllergen is null and allergen is set to other non coded
-	 * @should reject a duplicate allergen
-	 * @should reject a duplicate non coded allergen
-	 * @should pass for a valid allergy
+	 * <strong>Should</strong> fail for a null value
+	 * <strong>Should</strong> fail if patient is null
+	 * <strong>Should</strong> fail id allergenType is null
+	 * <strong>Should</strong> fail if allergen is null
+	 * <strong>Should</strong> fail if codedAllergen is null
+	 * <strong>Should</strong> fail if nonCodedAllergen is null and allergen is set to other non coded
+	 * <strong>Should</strong> reject a duplicate allergen
+	 * <strong>Should</strong> reject a duplicate non coded allergen
+	 * <strong>Should</strong> pass for a valid allergy
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {

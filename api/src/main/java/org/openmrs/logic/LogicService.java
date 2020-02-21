@@ -67,7 +67,7 @@ public interface LogicService {
 	 * Fetch all known (registered) tokens
 	 * 
 	 * @return all known (registered) tokens
-	 * @should return all registered token
+	 * <strong>Should</strong> return all registered token
 	 */
 	public List<String> getAllTokens();
 	
@@ -76,9 +76,9 @@ public interface LogicService {
 	 * 
 	 * @param partialToken full or partial token name
 	 * @return all tokens containing the given string
-	 * @should return all registered token matching the input fully
-	 * @should return all registered token matching the input partially
-	 * @should not fail when input is null
+	 * <strong>Should</strong> return all registered token matching the input fully
+	 * <strong>Should</strong> return all registered token matching the input partially
+	 * <strong>Should</strong> not fail when input is null
 	 */
 	public List<String> getTokens(String partialToken);
 	
@@ -89,8 +89,8 @@ public interface LogicService {
 	 * @param rule new rule to be registered
 	 * @throws LogicException
 	 * @see org.openmrs.logic.Rule
-	 * @should not fail when another rule is registered on the same token
-	 * @should persist the rule and associate it with the token
+	 * <strong>Should</strong> not fail when another rule is registered on the same token
+	 * <strong>Should</strong> persist the rule and associate it with the token
 	 */
 	public void addRule(String token, Rule rule) throws LogicException;
 	
@@ -101,8 +101,8 @@ public interface LogicService {
 	 * @param tags words or phrases associated with this token (do not need to be unique)
 	 * @param rule new rule to be registered
 	 * @throws LogicException
-	 * @should not fail when no tags is specified
-	 * @should persist rule with the tags
+	 * <strong>Should</strong> not fail when no tags is specified
+	 * <strong>Should</strong> persist rule with the tags
 	 */
 	public void addRule(String token, String[] tags, Rule rule) throws LogicException;
 	
@@ -112,9 +112,9 @@ public interface LogicService {
 	 * @param token lookup key ("token") under which the rule is registered
 	 * @return rule registered under the given token
 	 * @throws LogicException if no rule by that name is found
-	 * @should return Rule associated with the input token
-	 * @should fail when no Rule is associated with the input token
-	 * @should return ReferenceRule
+	 * <strong>Should</strong> return Rule associated with the input token
+	 * <strong>Should</strong> fail when no Rule is associated with the input token
+	 * <strong>Should</strong> return ReferenceRule
 	 */
 	public Rule getRule(String token) throws LogicException;
 	
@@ -124,7 +124,7 @@ public interface LogicService {
 	 * @param token lookup key ("token") for the rule to be updated
 	 * @param rule new version of rule (replaces existing rule)
 	 * @throws LogicException
-	 * @should update Rule when another Rule is registered under the same token
+	 * <strong>Should</strong> update Rule when another Rule is registered under the same token
 	 */
 	public void updateRule(String token, Rule rule) throws LogicException;
 	
@@ -133,7 +133,7 @@ public interface LogicService {
 	 * 
 	 * @param token lookup key ("token") under which rule to be removed is registered
 	 * @throws LogicException
-	 * @should remove rule
+	 * <strong>Should</strong> remove rule
 	 */
 	public void removeRule(String token) throws LogicException;
 	
@@ -278,7 +278,7 @@ public interface LogicService {
 	 * 
 	 * @param token
 	 * @param tag
-	 * @should add tag for a token
+	 * <strong>Should</strong> add tag for a token
 	 */
 	public void addTokenTag(String token, String tag);
 	
@@ -287,7 +287,7 @@ public interface LogicService {
 	 * 
 	 * @param token
 	 * @param tag
-	 * @should remove tag from a token
+	 * <strong>Should</strong> remove tag from a token
 	 */
 	public void removeTokenTag(String token, String tag);
 	
@@ -296,7 +296,7 @@ public interface LogicService {
 	 * 
 	 * @param token token to look up by
 	 * @return collection of tags
-	 * @should return set of tags for a certain token
+	 * <strong>Should</strong> return set of tags for a certain token
 	 */
 	public Set<String> getTokenTags(String token);
 	
@@ -305,7 +305,7 @@ public interface LogicService {
 	 * 
 	 * @param tag tag to look up by
 	 * @return collection of tokens
-	 * @should return set of token associated with a tag
+	 * <strong>Should</strong> return set of token associated with a tag
 	 */
 	public List<String> getTokensWithTag(String tag);
 	
@@ -314,7 +314,7 @@ public interface LogicService {
 	 * 
 	 * @param partialTag partial match string
 	 * @return collection of tags
-	 * @should return set of tags matching input tag partially
+	 * <strong>Should</strong> return set of tags matching input tag partially
 	 */
 	public List<String> getTags(String partialTag);
 	

@@ -21,7 +21,7 @@ public abstract class BaseMetadataDatatype<T extends OpenmrsMetadata> extends Ba
 	
 	/**
 	 * @see BaseOpenmrsDatatype#doGetTextSummary(Object)
-	 * @should use the name in summary instance
+	 * <strong>Should</strong> use the name in summary instance
 	 */
 	@Override
 	public Summary doGetTextSummary(T typedValue) {

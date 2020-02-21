@@ -20,7 +20,7 @@ public interface OrderNumberGenerator {
 	 * therefore implementations need to be thread safe.
 	 * 
 	 * @return the new order number
-	 * @should always return unique orderNumbers when called multiple times without saving orders
+	 * <strong>Should</strong> always return unique orderNumbers when called multiple times without saving orders
 	 * @param orderContext
 	 */
 	public String getNewOrderNumber(OrderContext orderContext);

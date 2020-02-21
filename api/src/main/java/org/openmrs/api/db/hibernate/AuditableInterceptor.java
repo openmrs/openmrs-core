@@ -45,10 +45,10 @@ public class AuditableInterceptor extends EmptyInterceptor {
 	
 	/**
 	 * This method is only called when inserting new objects.
-	 * @should return true if dateCreated was null
-	 * @should return true if creator was null
-	 * @should return false if dateCreated and creator was not null
-	 * @should be called when saving OpenmrsObject
+	 * <strong>Should</strong> return true if dateCreated was null
+	 * <strong>Should</strong> return true if creator was null
+	 * <strong>Should</strong> return false if dateCreated and creator was not null
+	 * <strong>Should</strong> be called when saving OpenmrsObject
 	 * @return true if the object got the dateCreated and creator fields set
 	 * @see org.hibernate.EmptyInterceptor#onSave(java.lang.Object, java.io.Serializable,
 	 *      java.lang.Object[], java.lang.String[], org.hibernate.type.Type[])
@@ -62,10 +62,10 @@ public class AuditableInterceptor extends EmptyInterceptor {
 	 * This class method is only called when flushing an updated dirty object, not inserting objects
 	 *
 	 * @return true if the object got the changedBy and dateChanged fields set
-	 * @should set the dateChanged field
-	 * @should set the changedBy field
-	 * @should be called when saving an Auditable
-	 * @should not enter into recursion on entity
+	 * <strong>Should</strong> set the dateChanged field
+	 * <strong>Should</strong> set the changedBy field
+	 * <strong>Should</strong> be called when saving an Auditable
+	 * <strong>Should</strong> not enter into recursion on entity
 	 * @see org.hibernate.EmptyInterceptor#onFlushDirty(java.lang.Object, java.io.Serializable,
 	 *      java.lang.Object[], java.lang.Object[], java.lang.String[], org.hibernate.type.Type[])
 	 */

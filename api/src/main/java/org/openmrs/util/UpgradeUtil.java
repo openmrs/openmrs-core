@@ -34,8 +34,8 @@ public class UpgradeUtil {
 	 * 
 	 * @param units
 	 * @return conceptId
-	 * @should return concept_id for units
-	 * @should fail if units is not specified
+	 * <strong>Should</strong> return concept_id for units
+	 * <strong>Should</strong> fail if units is not specified
 	 */
 	public static Integer getConceptIdForUnits(String units) {
 		String appDataDir = OpenmrsUtil.getApplicationDataDirectory();

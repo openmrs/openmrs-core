@@ -35,7 +35,7 @@ public interface MessageService {
 	 * 
 	 * @param message
 	 * @throws MessageException
-	 * @should send message
+	 * <strong>Should</strong> send message
 	 */
 	public void sendMessage(Message message) throws MessageException;
 	
@@ -70,7 +70,7 @@ public interface MessageService {
 	 * @param message
 	 * @return Message the message that was created
 	 * @throws MessageException
-	 * @should create message
+	 * <strong>Should</strong> create message
 	 */
 	public Message createMessage(String recipients, String sender, String subject, String message) throws MessageException;
 	

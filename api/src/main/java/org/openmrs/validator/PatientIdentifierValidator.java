@@ -49,8 +49,8 @@ public class PatientIdentifierValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should pass validation if field lengths are correct
-	 * @should fail validation if field lengths are not correct
+	 * <strong>Should</strong> pass validation if field lengths are correct
+	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
@@ -69,10 +69,10 @@ public class PatientIdentifierValidator implements Validator {
 	 * 
 	 * @param pi - the {@link PatientIdentifier} to validate
 	 * @throws PatientIdentifierException if the {@link PatientIdentifier} is invalid
-	 * @should fail validation if PatientIdentifier is null
-	 * @should pass validation if PatientIdentifier is voided
-	 * @should fail validation if another patient has a matching identifier of the same type
-	 * @should pass if in use and id type uniqueness is set to non unique
+	 * <strong>Should</strong> fail validation if PatientIdentifier is null
+	 * <strong>Should</strong> pass validation if PatientIdentifier is voided
+	 * <strong>Should</strong> fail validation if another patient has a matching identifier of the same type
+	 * <strong>Should</strong> pass if in use and id type uniqueness is set to non unique
 	 * @see #validateIdentifier(String, PatientIdentifierType)
 	 */
 	public static void validateIdentifier(PatientIdentifier pi) throws PatientIdentifierException {
@@ -113,8 +113,8 @@ public class PatientIdentifierValidator implements Validator {
 	 * @param pit - the {@link PatientIdentifierType} to validate against
 	 * @param identifier - the identifier to check against the passed {@link PatientIdentifierType}
 	 * @throws PatientIdentifierException if the identifier is invalid
-	 * @should fail validation if PatientIdentifierType is null
-	 * @should fail validation if identifier is blank
+	 * <strong>Should</strong> fail validation if PatientIdentifierType is null
+	 * <strong>Should</strong> fail validation if identifier is blank
 	 * @see #checkIdentifierAgainstFormat(String, String, String)
 	 * @see #checkIdentifierAgainstValidator(String, IdentifierValidator)
 	 */
@@ -148,12 +148,12 @@ public class PatientIdentifierValidator implements Validator {
 	 * @param format - the regular expression format to validate against
 	 * @param formatDescription - user-friendly way of describing format (may be null)
 	 * @throws PatientIdentifierException if the identifier is does not match the format
-	 * @should fail validation if identifier is blank
-	 * @should fail validation if identifier does not match the format
-	 * @should pass validation if identifier matches the format
-	 * @should pass validation if the format is blank
-	 * @should include format in error message if no formatDescription is specified
-	 * @should include formatDescription in error message if specified
+	 * <strong>Should</strong> fail validation if identifier is blank
+	 * <strong>Should</strong> fail validation if identifier does not match the format
+	 * <strong>Should</strong> pass validation if identifier matches the format
+	 * <strong>Should</strong> pass validation if the format is blank
+	 * <strong>Should</strong> include format in error message if no formatDescription is specified
+	 * <strong>Should</strong> include formatDescription in error message if specified
 	 */
 	public static void checkIdentifierAgainstFormat(String identifier, String format, String formatDescription)
 	        throws PatientIdentifierException {
@@ -184,10 +184,10 @@ public class PatientIdentifierValidator implements Validator {
 	 * @param identifier the identifier to check against the passed {@link PatientIdentifierType}
 	 * @param validator the IdentifierValidator to use to check the identifier
 	 * @throws PatientIdentifierException if the identifier is does not match the format
-	 * @should fail validation if identifier is blank
-	 * @should fail validation if identifier is invalid
-	 * @should pass validation if identifier is valid
-	 * @should pass validation if validator is null
+	 * <strong>Should</strong> fail validation if identifier is blank
+	 * <strong>Should</strong> fail validation if identifier is invalid
+	 * <strong>Should</strong> pass validation if identifier is valid
+	 * <strong>Should</strong> pass validation if validator is null
 	 */
 	public static void checkIdentifierAgainstValidator(String identifier, IdentifierValidator validator)
 	        throws PatientIdentifierException {

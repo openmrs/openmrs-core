@@ -55,72 +55,72 @@ public interface PatientDAO {
 	/**
 	 * @see org.openmrs.api.PatientService#getPatients(String, Integer, Integer)
 	 *
-	 * @should not get patients by empty query _ signature no 2
-	 * @should not get patients by null query _ signature no 2
+	 * <strong>Should</strong> not get patients by empty query _ signature no 2
+	 * <strong>Should</strong> not get patients by null query _ signature no 2
 	 *
-	 * @should get patient by given name _ signature no 2
-	 * @should get patient by middle name _ signature no 2
-	 * @should get patient by family name _ signature no 2
-	 * @should get patient by family2 name _ signature no 2
-	 * @should get patient by whole name _ signature no 2
+	 * <strong>Should</strong> get patient by given name _ signature no 2
+	 * <strong>Should</strong> get patient by middle name _ signature no 2
+	 * <strong>Should</strong> get patient by family name _ signature no 2
+	 * <strong>Should</strong> get patient by family2 name _ signature no 2
+	 * <strong>Should</strong> get patient by whole name _ signature no 2
 	 *
-	 * @should not get patient by non-existing single name _ signature no 2
-	 * @should not get patient by non-existing name parts _ signature no 2
-	 * @should not get patient by mix of existing and non-existing name parts _ signature no 2
-	 * @should not get patient by voided name _ signature no 2
+	 * <strong>Should</strong> not get patient by non-existing single name _ signature no 2
+	 * <strong>Should</strong> not get patient by non-existing name parts _ signature no 2
+	 * <strong>Should</strong> not get patient by mix of existing and non-existing name parts _ signature no 2
+	 * <strong>Should</strong> not get patient by voided name _ signature no 2
 	 *
-	 * @should get patient by short given name _ signature no 2
-	 * @should get patient by short middle name _ signature no 2
-	 * @should get patient by short family name _ signature no 2
-	 * @should get patient by short family2 name _ signature no 2
-	 * @should get patient by whole name made up of short names _ signature no 2
-	 * @should get patients by multiple short name parts _ signature no 2
+	 * <strong>Should</strong> get patient by short given name _ signature no 2
+	 * <strong>Should</strong> get patient by short middle name _ signature no 2
+	 * <strong>Should</strong> get patient by short family name _ signature no 2
+	 * <strong>Should</strong> get patient by short family2 name _ signature no 2
+	 * <strong>Should</strong> get patient by whole name made up of short names _ signature no 2
+	 * <strong>Should</strong> get patients by multiple short name parts _ signature no 2
 	 *
-	 * @should not get patient by non-existing single short name _ signature no 2
-	 * @should not get patient by non-existing short name parts _ signature no 2
-	 * @should not get patient by mix of existing and non-existing short name parts _ signature no 2
-	 * @should not get patient by voided short name _ signature no 2
+	 * <strong>Should</strong> not get patient by non-existing single short name _ signature no 2
+	 * <strong>Should</strong> not get patient by non-existing short name parts _ signature no 2
+	 * <strong>Should</strong> not get patient by mix of existing and non-existing short name parts _ signature no 2
+	 * <strong>Should</strong> not get patient by voided short name _ signature no 2
 	 *
-	 * @should get patient by identifier _ signature no 2
-	 * @should not get patient by non-existing identifier _ signature no 2
-	 * @should not get patient by voided identifier _ signature no 2
+	 * <strong>Should</strong> get patient by identifier _ signature no 2
+	 * <strong>Should</strong> not get patient by non-existing identifier _ signature no 2
+	 * <strong>Should</strong> not get patient by voided identifier _ signature no 2
 	 *
-	 * @should get no patient by non-existing attribute _ signature no 2
-	 * @should get no patient by non-searchable attribute _ signature no 2
-	 * @should get no patient by voided attribute _ signature no 2
-	 * @should get one patient by attribute _ signature no 2
-	 * @should get one patient by random case attribute _ signature no 2
-	 * @should not get patients by searching for non-voided and voided attribute _ signature no 2
-	 * @should get multiple patients by single attribute _ signature no 2
-	 * @should not get patients by multiple attributes _ signature no 2
+	 * <strong>Should</strong> get no patient by non-existing attribute _ signature no 2
+	 * <strong>Should</strong> get no patient by non-searchable attribute _ signature no 2
+	 * <strong>Should</strong> get no patient by voided attribute _ signature no 2
+	 * <strong>Should</strong> get one patient by attribute _ signature no 2
+	 * <strong>Should</strong> get one patient by random case attribute _ signature no 2
+	 * <strong>Should</strong> not get patients by searching for non-voided and voided attribute _ signature no 2
+	 * <strong>Should</strong> get multiple patients by single attribute _ signature no 2
+	 * <strong>Should</strong> not get patients by multiple attributes _ signature no 2
 	 *
-	 * @should find eleven out of eleven patients _ signature no 2
-	 * @should find the first four out of eleven patients _ signature no 2
-	 * @should find the next four out of eleven patients _ signature no 2
-	 * @should find the remaining three out of eleven patients _ signature no 2
+	 * <strong>Should</strong> find eleven out of eleven patients _ signature no 2
+	 * <strong>Should</strong> find the first four out of eleven patients _ signature no 2
+	 * <strong>Should</strong> find the next four out of eleven patients _ signature no 2
+	 * <strong>Should</strong> find the remaining three out of eleven patients _ signature no 2
 
-	 * @should find patients with null as start _ signature no 2
-	 * @should find patients with negative start _ signature no 2
-	 * @should find patients with null as length _ signature no 2
-	 * @should not get patients by zero length _ signature no 2
-	 * @should not get patients by negative length _ signature no 2
-	 * @should find patients with excessive length _ signature no 2
+	 * <strong>Should</strong> find patients with null as start _ signature no 2
+	 * <strong>Should</strong> find patients with negative start _ signature no 2
+	 * <strong>Should</strong> find patients with null as length _ signature no 2
+	 * <strong>Should</strong> not get patients by zero length _ signature no 2
+	 * <strong>Should</strong> not get patients by negative length _ signature no 2
+	 * <strong>Should</strong> find patients with excessive length _ signature no 2
 	 *
-	 * @should return distinct patient list _ signature no 2
-	 * @should not match voided patients _ signature no 2
+	 * <strong>Should</strong> return distinct patient list _ signature no 2
+	 * <strong>Should</strong> not match voided patients _ signature no 2
 	 *
-	 * @should get patients with match mode start _ signature no 2
-	 * @should get patients with match mode anywhere _ signature no 2
-	 * @should not get patients with match mode start _ signature no 2
-	 * @should not get patients with match mode anywhere _ signature no 2
+	 * <strong>Should</strong> get patients with match mode start _ signature no 2
+	 * <strong>Should</strong> get patients with match mode anywhere _ signature no 2
+	 * <strong>Should</strong> not get patients with match mode start _ signature no 2
+	 * <strong>Should</strong> not get patients with match mode anywhere _ signature no 2
 	 *
 	 */
 	public List<Patient> getPatients(String query, Integer start, Integer length) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.PatientService#getPatients(String, boolean, Integer, Integer)
-	 * @should get voided person when voided true is passed
-	 * @should get no voided person when voided false is passed
+	 * <strong>Should</strong> get voided person when voided true is passed
+	 * <strong>Should</strong> get no voided person when voided false is passed
 	 */
 	public List<Patient> getPatients(String query, boolean includeVoided, Integer start, Integer length) throws DAOException;
 	
@@ -136,14 +136,14 @@ public interface PatientDAO {
 	 * @see org.openmrs.api.PatientService#getPatientIdentifiers(java.lang.String, java.util.List,
 	 *      java.util.List, java.util.List, java.lang.Boolean)
 	 *      
-	 * @should return all matching non voided patient identifiers if is preferred is set to null
-	 * @should return all matching non voided patient identifiers if is preferred is set to true
-	 * @should return all matching non voided patient identifiers if is preferred is set to false
-	 * @should fetch all patient identifiers belong to given patient
-	 * @should fetch all patient identifiers belong to given patients
-	 * @should fetch patient identifiers that equals given identifier
-	 * @should not fetch patient identifiers that partially matches given identifier  
-	 * @should not get voided patient identifiers 
+	 * <strong>Should</strong> return all matching non voided patient identifiers if is preferred is set to null
+	 * <strong>Should</strong> return all matching non voided patient identifiers if is preferred is set to true
+	 * <strong>Should</strong> return all matching non voided patient identifiers if is preferred is set to false
+	 * <strong>Should</strong> fetch all patient identifiers belong to given patient
+	 * <strong>Should</strong> fetch all patient identifiers belong to given patients
+	 * <strong>Should</strong> fetch patient identifiers that equals given identifier
+	 * <strong>Should</strong> not fetch patient identifiers that partially matches given identifier  
+	 * <strong>Should</strong> not get voided patient identifiers 
 	 */
 	public List<PatientIdentifier> getPatientIdentifiers(String identifier,
 	        List<PatientIdentifierType> patientIdentifierTypes, List<Location> locations, List<Patient> patients,
@@ -155,10 +155,10 @@ public interface PatientDAO {
 	public PatientIdentifierType savePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws DAOException;
 	
 	/**
-	 * @should not return null when includeRetired is false
-	 * @should not return retired when includeRetired is false
-	 * @should not return null when includeRetired is true
-	 * @should return all when includeRetired is true
+	 * <strong>Should</strong> not return null when includeRetired is false
+	 * <strong>Should</strong> not return retired when includeRetired is false
+	 * <strong>Should</strong> not return null when includeRetired is true
+	 * <strong>Should</strong> return all when includeRetired is true
 	 * @see org.openmrs.api.PatientService#getAllPatientIdentifierTypes(boolean)
 	 */
 	public List<PatientIdentifierType> getAllPatientIdentifierTypes(boolean includeRetired) throws DAOException;
@@ -222,18 +222,18 @@ public interface PatientDAO {
 	/**
 	 * @see org.openmrs.api.PatientService#getCountOfPatients(String)
 	 *
-	 * @should count zero patients when query is empty _ signature no 2
-	 * @should count zero patients when query is null _ signature no 2
-	 * @should count zero patients for non-matching query _ signature no 2
+	 * <strong>Should</strong> count zero patients when query is empty _ signature no 2
+	 * <strong>Should</strong> count zero patients when query is null _ signature no 2
+	 * <strong>Should</strong> count zero patients for non-matching query _ signature no 2
 
-	 * @should not count voided patients _ signature no 2
-	 * @should count single patient _ signature no 2
-	 * @should count multiple patients _ signature no 2
+	 * <strong>Should</strong> not count voided patients _ signature no 2
+	 * <strong>Should</strong> count single patient _ signature no 2
+	 * <strong>Should</strong> count multiple patients _ signature no 2
 	 *
-	 * @should count patients by name _ signature no 2
-	 * @should count patients by identifier _ signature no 2
-	 * @should count patients by searchable attribute _ signature no 2
-	 * @should obey attribute match mode
+	 * <strong>Should</strong> count patients by name _ signature no 2
+	 * <strong>Should</strong> count patients by identifier _ signature no 2
+	 * <strong>Should</strong> count patients by searchable attribute _ signature no 2
+	 * <strong>Should</strong> obey attribute match mode
 	 */
 	public Long getCountOfPatients(String query);
 	
@@ -272,8 +272,8 @@ public interface PatientDAO {
 	 * 
 	 * @param allergyId of allergy to return
 	 * @return the allergy matching the given allergyId
-	 * @should return allergy given valid allergyId
-	 * @should return null if no object found with given allergyId
+	 * <strong>Should</strong> return allergy given valid allergyId
+	 * <strong>Should</strong> return null if no object found with given allergyId
 	 */
 	public Allergy getAllergy(Integer allergyId);
 	
@@ -284,8 +284,8 @@ public interface PatientDAO {
 	 * @param uuid of allergy to return
 	 * @since 2.0
 	 * @return the allergy matching the given uuid
-	 * @should return allergy given valid uuid
-	 * @should return null if no object found with given uuid
+	 * <strong>Should</strong> return allergy given valid uuid
+	 * <strong>Should</strong> return null if no object found with given uuid
 	 */
 	public Allergy getAllergyByUuid(String uuid);
 	

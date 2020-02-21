@@ -33,7 +33,7 @@ public class EncounterType extends BaseChangeableOpenmrsMetadata {
 	/**
 	 * Constructor with id
 	 * 
-	 * @should set encounter type id with given parameter
+	 * <strong>Should</strong> set encounter type id with given parameter
 	 */
 	public EncounterType(Integer encounterTypeId) {
 		this.encounterTypeId = encounterTypeId;
