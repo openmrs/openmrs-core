@@ -35,7 +35,7 @@ public class ModuleFilterChain implements FilterChain {
 	 * Private constructor which sets all required properties
 	 * 
 	 * @param filters: The Collection of {@link Filter}s that this FilterChain will iterate over
-	 *            before returning control back the the <code>initialFilterChain</code>
+	 *            before returning control back the <code>initialFilterChain</code>
 	 * @param initialFilterChain: The {@link FilterChain} to return control to once all of the
 	 *            {@link Filter}s have been executed
 	 */
