@@ -106,7 +106,7 @@
          <plugin>
              <groupId>org.eclipse.jetty</groupId>
              <artifactId>jetty-maven-plugin</artifactId>
-             <version>9.3.3.v20150827</version>
+             <version>9.4.25.v20191220</version>
              <configuration>
                <webApp>
                	  <descriptor>${project.build.directory}/jetty/WEB-INF/web.xml</descriptor>
@@ -114,6 +114,7 @@
                   <!--enable reloading static resources -->
                   <overrideDescriptor>src/test/resources/override-web.xml</overrideDescriptor>
                   <extraClasspath>target/classes;../api/target/classes;../web/target/classes</extraClasspath>
+				  <webInfIncludeJarPattern>^(?!openmrs-(?:web|api)-\d+\.\d+\.\d+.*\.jar)$</webInfIncludeJarPattern> 
                </webApp>
                <scanIntervalSeconds>10</scanIntervalSeconds>
                <scanTargets>
