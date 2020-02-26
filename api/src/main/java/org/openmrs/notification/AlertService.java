@@ -130,4 +130,8 @@ public interface AlertService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ALERTS)
 	public void notifySuperUsers(String messageCode, Exception cause, Object... messageArguments);
+
+	public static Alert getDeletedAlert() {
+		return null;
+	}
 }
