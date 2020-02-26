@@ -65,7 +65,7 @@ import org.springframework.util.StringUtils;
 @Entity
 @Table(name = "person")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class Person extends BaseChangeableOpenmrsData {
+public class Person extends BaseCustomizableData<PersonAttribute> implements Customizable<PersonAttribute> {
 	
 	public static final long serialVersionUID = 2L;
 	
