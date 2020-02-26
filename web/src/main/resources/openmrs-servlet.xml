@@ -52,16 +52,23 @@
 		<property name="maxUploadSize"><value>75000000</value></property>
 	</bean>
 	
-	<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+	<bean id="contentNegotiationManager"
+		  class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+		<property name="defaultContentType" value="application/json" />
+
 		<property name="mediaTypes">
 			<map>
 				<entry key="json" value="application/json" />
 				<entry key="xml" value="application/xml" />
 			</map>
 		</property>
+	</bean>
+	
+	<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+		<property name="contentNegotiationManager" ref="contentNegotiationManager" />
 		<property name="defaultViews">
 			<list>
-				<bean class="org.springframework.web.servlet.view.json.MappingJacksonJsonView">
+				<bean class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">
 					<property name="extractValueFromSingleKeyModel" value="true" />
 				</bean>
 				<bean class="org.springframework.web.servlet.view.xml.MarshallingView">
@@ -113,7 +120,7 @@
 				<bean class="org.springframework.http.converter.StringHttpMessageConverter" />
 				<bean class="org.springframework.http.converter.FormHttpMessageConverter" />
 				<bean class="org.springframework.http.converter.xml.SourceHttpMessageConverter" />
-				<bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter" />
+				<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
 				<ref bean="xmlMarshallingHttpMessageConverter" />
 			</list>
 		</property>

@@ -1051,7 +1051,7 @@
 		<openmrs.version.shortnumericonly>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}</openmrs.version.shortnumericonly>
 		<openmrs.version>${project.version}</openmrs.version>
 
-		<springVersion>4.1.4.RELEASE</springVersion>
+		<springVersion>4.3.18.RELEASE</springVersion>
 		<hibernateVersion>4.3.10.Final</hibernateVersion>
 		<slf4jVersion>1.7.28</slf4jVersion>
 		<log4jVersion>2.12.1</log4jVersion>
