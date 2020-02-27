@@ -877,6 +877,9 @@
 				<configuration>
 					<failIfNoTests>false</failIfNoTests>
 					<useSystemClassLoader>false</useSystemClassLoader>
+					<systemProperties>
+						<log4j2.disable.jmx>true</log4j2.disable.jmx>
+					</systemProperties>
 				</configuration>
 			</plugin>
 			<plugin>
