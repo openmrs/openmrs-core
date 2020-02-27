@@ -1055,7 +1055,7 @@
 		<openmrs.version>${project.version}</openmrs.version>
 
 		<springVersion>4.3.26.RELEASE</springVersion>
-		<hibernateVersion>4.3.10.Final</hibernateVersion>
+		<hibernateVersion>4.3.11.Final</hibernateVersion>
 		<slf4jVersion>1.7.28</slf4jVersion>
 		<log4jVersion>2.12.1</log4jVersion>
 		<customArgLineForTesting/>
