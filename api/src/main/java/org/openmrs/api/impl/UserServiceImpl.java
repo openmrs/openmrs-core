@@ -68,9 +68,6 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	private static final int MIN_VALID_TIME = 60*1000; //Period of 1 minute
 	private static final int DEFAULT_VALID_TIME = 10*60*1000; //Default time of 10 minute
 	
-	@Autowired(required = false)
-	List<PrivilegeListener> privilegeListeners;
-	
 	public UserServiceImpl() {
 	}
 	
