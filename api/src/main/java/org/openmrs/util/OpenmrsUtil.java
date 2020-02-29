@@ -1377,7 +1377,12 @@ public class OpenmrsUtil {
 		
 		if (!pattern.contains("yyyy")) {
 			// otherwise, change the pattern to be a four digit year
-			pattern = pattern.replaceFirst("yy", "yyyy");
+			String regex = "yy";
+			if (!pattern.contains("yy")) {
+				//Java 11 has dd/MM/y instead of dd/MM/yy
+				regex = "y";
+			}
+			pattern = pattern.replaceFirst(regex, "yyyy");
 			sdf.applyPattern(pattern);
 		}
 		if (!pattern.contains("MM")) {
