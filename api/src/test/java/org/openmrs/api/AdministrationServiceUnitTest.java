@@ -12,8 +12,7 @@ package org.openmrs.api;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -24,6 +23,7 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.api.impl.AdministrationServiceImpl;
 
@@ -53,7 +53,7 @@ public class AdministrationServiceUnitTest {
 		
 		adminService.executeSQL(null, true);
 		
-		verify(adminDAO, never()).executeSQL(anyString(), anyBoolean());
+		verify(adminDAO, never()).executeSQL(ArgumentMatchers.nullable(String.class), anyBoolean());
 	}
 	
 	@Test
@@ -61,7 +61,7 @@ public class AdministrationServiceUnitTest {
 		
 		adminService.executeSQL(" ", true);
 		
-		verify(adminDAO, never()).executeSQL(anyString(), anyBoolean());
+		verify(adminDAO, never()).executeSQL(ArgumentMatchers.nullable(String.class), anyBoolean());
 	}
 	
 	@Test(expected = IllegalArgumentException.class)

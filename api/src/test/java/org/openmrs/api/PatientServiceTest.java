@@ -10,6 +10,8 @@
 package org.openmrs.api;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -17,6 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentMatcher;
+import org.mockito.internal.hamcrest.HamcrestArgumentMatcher;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
@@ -685,8 +688,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		assertThat(mergedVisits.size(), is(6));
 		// in order to keep this test passing when (someday?) we copy visits instead of moving them, use matchers here:
-		assertThat(mergedVisits, containsInAnyOrder(matchingVisit(visit1), matchingVisit(visit2), matchingVisit(visit3),
-		    matchingVisit(visit4), matchingVisit(visit5), matchingVisit(visit6)));
+		assertThat(mergedVisits, containsInAnyOrder(matchingVisit(visit1),matchingVisit(visit2),matchingVisit(visit3),
+			matchingVisit(visit4),matchingVisit(visit5),matchingVisit(visit6)));
 
 		// be sure nothing slipped through without being assigned to the right patient (probably not necessary)
 		for (Visit v : mergedVisits) {
@@ -710,20 +713,36 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertThat(mergeLogData.getMovedEncounters(), containsInAnyOrder(encounterUuidsThatShouldBeMoved.toArray()));
 	}
 	
-	private ArgumentMatcher<Visit> matchingVisit(final Visit expected) {
-		return new ArgumentMatcher<Visit>() {
-			
-			@Override
-			public boolean matches(Object argument) {
-				Visit visit = (Visit) argument;
-				return OpenmrsUtil.nullSafeEquals(visit.getLocation(), expected.getLocation())
-				        && OpenmrsUtil.nullSafeEquals(visit.getVisitType(), expected.getVisitType())
-				        && OpenmrsUtil.nullSafeEquals(visit.getIndication(), expected.getIndication())
-				        && OpenmrsUtil.nullSafeEquals(visit.getStartDatetime(), expected.getStartDatetime())
-				        && OpenmrsUtil.nullSafeEquals(visit.getStopDatetime(), expected.getStopDatetime())
-				        && (visit.getEncounters().size() == expected.getEncounters().size());
-			}
-		};
+	private Matcher<Visit> matchingVisit(final Visit expected) {
+   return new Matcher<Visit>() {
+	   @Override
+	   public void describeTo(Description description) {
+         
+	   }
+
+	   @Override
+   		public boolean matches(Object argument) {
+		   Visit visit = (Visit) argument;
+		   return OpenmrsUtil.nullSafeEquals(visit.getLocation(), expected.getLocation())
+			   && OpenmrsUtil.nullSafeEquals(visit.getVisitType(), expected.getVisitType())
+			   && OpenmrsUtil.nullSafeEquals(visit.getIndication(), expected.getIndication())
+			   && OpenmrsUtil.nullSafeEquals(visit.getStartDatetime(), expected.getStartDatetime())
+			   && OpenmrsUtil.nullSafeEquals(visit.getStopDatetime(), expected.getStopDatetime())
+			   && (visit.getEncounters().size() == expected.getEncounters().size());
+	   }
+
+	   @Override
+	   public void describeMismatch(Object o, Description description) {
+		   
+	   }
+
+	   @Override
+	   public void _dont_implement_Matcher___instead_extend_BaseMatcher_() {
+		   
+	   }
+
+   };
+	
 	}
 	
 	/**

@@ -10,9 +10,8 @@
 package org.openmrs.validator;
 
 import static org.mockito.AdditionalMatchers.aryEq;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isA;
-
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA; 
 import java.util.Locale;
 
 import org.junit.Assert;

@@ -459,17 +459,17 @@
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
-				<version>1.10.19</version>
+				<version>2.28.2</version>
 			</dependency>
 			<dependency>
 				<groupId>org.powermock</groupId>
 				<artifactId>powermock-module-junit4</artifactId>
-				<version>1.7.0</version>
+				<version>2.0.2</version>
 			</dependency>
 			<dependency>
 				<groupId>org.powermock</groupId>
-				<artifactId>powermock-api-mockito</artifactId>
-				<version>1.7.0</version>
+				<artifactId>powermock-api-mockito2</artifactId>
+				<version>2.0.2</version>
 				<exclusions>
 					<exclusion>
 						<artifactId>mockito-all</artifactId>
