@@ -114,6 +114,12 @@ public class Patient extends Person {
 		this.identifiers = newIdentifiers;
 	}
 	
+	/** constructor with all required fields for Patient */
+	public Patient(Date personDateCreated, Boolean personVoided, Integer patientId, Integer personId) {
+		super(personId, personDateCreated, personVoided);
+		this.patientId = patientId;
+	}
+	
 	// Property accessors
 	
 	/**

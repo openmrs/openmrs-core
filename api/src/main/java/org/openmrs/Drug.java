@@ -64,7 +64,16 @@ public class Drug extends BaseChangeableOpenmrsMetadata {
 	public Drug(Integer drugId) {
 		this.drugId = drugId;
 	}
-	
+
+	/** constructor with all required fields for Drug */
+	public Drug(int drugId, Boolean combination, Concept concept, String name, User creator) {
+		this.drugId = drugId;
+		this.combination = combination;
+		this.concept = concept;
+		setName(name);
+		setCreator(creator);
+	}
+
 	// Property accessors
 	
 	/**

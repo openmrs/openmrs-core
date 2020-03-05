@@ -12,6 +12,7 @@ package org.openmrs;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -75,6 +76,15 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	/** constructor with person object */
 	public User(Person person) {
 		this.person = person;
+	}
+	
+	/** constructor with all required fields for User */
+	public User(int userId, Person person, String systemId,Map<String, String> userProperties, User creator){
+		this.userId = userId;
+		this.person = person;
+		this.systemId = systemId;
+		this.userProperties = userProperties;
+		setCreator(creator);
 	}
 	
 	/**

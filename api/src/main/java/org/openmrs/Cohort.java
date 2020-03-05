@@ -126,6 +126,13 @@ public class Cohort extends BaseChangeableOpenmrsData {
 		Arrays.stream(ids).forEach(id -> addMembership(new CohortMembership(Integer.valueOf(id.trim()))));
 	}
 	
+	/** Constructor with all required fileds for Cohort */
+	public Cohort(Integer cohortId, String name, String description) {
+		this.cohortId = cohortId;
+		this.name = name;
+		this.description = description;
+	}
+
 	/**
 	 * @deprecated since 2.1.0 cohorts are more complex than just a set of patient ids, so there is no one-line replacement
 	 * @return Returns a comma-separated list of patient ids in the cohort.

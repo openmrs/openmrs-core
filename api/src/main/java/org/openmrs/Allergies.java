@@ -33,6 +33,12 @@ public class Allergies implements List<Allergy> {
 	
 	private List<Allergy> allergies = new ArrayList<>();
 
+	/** default constructor */
+	public Allergies() {
+	}
+	
+	
+
 	/**
      * @return the allergyStatus
      */

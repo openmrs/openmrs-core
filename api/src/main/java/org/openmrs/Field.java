@@ -51,7 +51,16 @@ public class Field extends BaseChangeableOpenmrsMetadata {
 	public Field(Integer fieldId) {
 		this.fieldId = fieldId;
 	}
-	
+
+	/** constructor with all required fields for Field */
+	public Field(int fieldId, FieldType fieldType, Boolean selectMultiple, User creator, String name) {
+		this.fieldId = fieldId;
+		this.fieldType = fieldType;
+		this.selectMultiple = selectMultiple;
+		setCreator(creator);
+		setName(name);
+	}
+
 	// Property accessors
 	
 	/**

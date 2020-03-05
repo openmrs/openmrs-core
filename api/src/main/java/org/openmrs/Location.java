@@ -97,6 +97,13 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 		this.locationId = locationId;
 	}
 	
+	/** constructor with all required fileds for Location */
+	public Location(int locationId, User creator, String name){
+		this.locationId = locationId;
+		setCreator(creator);
+		setName(name);
+	}
+	
 	// Property accessors
 	
 	/**

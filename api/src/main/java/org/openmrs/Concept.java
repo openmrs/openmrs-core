@@ -152,6 +152,16 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		this.conceptId = conceptId;
 	}
 	
+	/** constructor with all required fields for Concept */
+	public Concept(int conceptId, ConceptClass conceptClass, User creator, Boolean retired, ConceptDatatype datatype, Boolean set){
+		this.conceptId = conceptId;
+		this.conceptClass = conceptClass;
+		this.creator = creator;
+		this.retired = retired;
+		this.datatype = datatype;
+		this.set = set;
+	}
+	
 	/**
 	 * @return Returns all answers (including retired answers).
 	 * @should return retired and non-retired answers

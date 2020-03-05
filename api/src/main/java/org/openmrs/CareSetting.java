@@ -37,6 +37,19 @@ public class CareSetting extends BaseChangeableOpenmrsMetadata {
 	
 	public CareSetting() {
 	}
+
+	/** constructor with id for CareSetting */
+	public CareSetting(Integer careSettingId) {
+		this.careSettingId = careSettingId;
+	}
+
+	/** constructor with all required fields for CareSetting */
+	public CareSetting(Integer careSettingId, CareSettingType careSettingType, String name, User creator) {
+		this.careSettingId = careSettingId;
+		this.careSettingType = careSettingType;
+		setName(name);
+		setCreator(creator);
+	}
 	
 	public CareSetting(String name, String description, CareSettingType careSettingType) {
 		setName(name);
