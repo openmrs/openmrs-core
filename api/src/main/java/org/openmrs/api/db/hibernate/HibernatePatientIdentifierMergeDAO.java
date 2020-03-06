@@ -37,7 +37,7 @@ public class HibernatePatientIdentifierMergeDAO implements PatientIdentifierMerg
 		String nameOfToBeMerged = toBeMerged.getName();
 		// Merge the patient identifiers of nameOfMain and nameOfToBeMerged
 		String queryString = "UPDATE patient_identifier SET identifier_type = (SELECT patient_identifier_type_id FROM patient_identifier_type WHERE NAME = :mainName) " + 
-		"WHERE identifier_type = (SELECT patient_identifier_type_id FROM patient_identifier_type WHERE NAME = :mergedName)";
+				"WHERE identifier_type = (SELECT patient_identifier_type_id FROM patient_identifier_type WHERE NAME = :mergedName)";
 		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(queryString);
 		query.setParameter("mainName", nameOfMain);
 		query.setParameter("mergedName", nameOfToBeMerged);
