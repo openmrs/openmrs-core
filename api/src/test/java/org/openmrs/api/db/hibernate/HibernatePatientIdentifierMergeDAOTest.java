@@ -2,9 +2,12 @@ package org.openmrs.api.db.hibernate;
 
 import static java.util.Collections.emptyList;
 
+
 import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.hasItems;
+import static org.junit.Assert.assertEquals;
 
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,15 +38,29 @@ public class HibernatePatientIdentifierMergeDAOTest extends BaseContextSensitive
 	
 
 	@Test
-	public void getPatientIdentifiers_shouldGetByIdentifierType() {
+	public void mergePatientIdentifierTypes() {
+		// Creating new patient identifier types
 		PatientIdentifierType a = new PatientIdentifierType();
-		a.setName("BadNumber");
+		Date dateobj = new Date();
+		a.setName("SSN");
+		a.setId(5);
+		a.setDateCreated(dateobj);
+		sessionFactory.getCurrentSession().update(a);
 		PatientIdentifierType c = new PatientIdentifierType();
-		c.setName("SSN");
-		List<PatientIdentifierType> b = new ArrayList<>();
-		b.add(a);
-		System.out.println(hibernatePatientIdentifierMergeDao);
-		hibernatePatientIdentifierMergeDao.mergePatientIdentifier(c, b);
+		c.setName("BadNumber");
+		c.setId(6);
+		c.setDateCreated(dateobj);
+		sessionFactory.getCurrentSession().update(c);
+		
+		// Calling the merge function for merging duplicate patient identifier types
+		hibernatePatientIdentifierMergeDao.mergePatientIdentifier(a, c);
+		PatientIdentifierType cShouldBeNull = (PatientIdentifierType) sessionFactory.getCurrentSession().get(PatientIdentifierType.class, c.getId());
+		PatientIdentifierType aShouldBeTheSame = (PatientIdentifierType) sessionFactory.getCurrentSession().get(PatientIdentifierType.class, a.getId());
+		
+		// cShouldBeNull is null because it is deleted after being merged
+		assertEquals(null, cShouldBeNull);
+		// a should be the same because it wasn't changed during the merge
+		assertEquals(a, aShouldBeTheSame);
 	}
 	
 	

@@ -11,6 +11,6 @@ import org.openmrs.PatientIdentifierType;
  */
 public interface PatientIdentifierMergeDAO {
 	
-	public void mergePatientIdentifier(PatientIdentifierType main, List<PatientIdentifierType> toBeMerged) throws DAOException ;
+	public void mergePatientIdentifier(PatientIdentifierType main, PatientIdentifierType toBeMerged) throws DAOException;
 	
 }
