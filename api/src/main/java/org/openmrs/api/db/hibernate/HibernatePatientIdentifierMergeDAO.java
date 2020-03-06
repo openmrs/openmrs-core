@@ -34,16 +34,20 @@ public class HibernatePatientIdentifierMergeDAO implements PatientIdentifierMerg
 	@Override
 	public void mergePatientIdentifier(PatientIdentifierType main, PatientIdentifierType toBeMerged) throws DAOException {
 		String nameOfMain = main.getName();
-		// Change identifier_type in patient_identifier to the merged one
 		String nameOfToBeMerged = toBeMerged.getName();
+		// Merge the patient identifiers of nameOfMain and nameOfToBeMerged
 		String queryString = "UPDATE patient_identifier SET identifier_type = (SELECT patient_identifier_type_id FROM patient_identifier_type WHERE NAME = :mainName) " + 
 		"WHERE identifier_type = (SELECT patient_identifier_type_id FROM patient_identifier_type WHERE NAME = :mergedName)";
-		Query query = sessionFactory.getCurrentSession().createSQLQuery(queryString);
-		query.setString("mainName", nameOfMain);
-		query.setString("mergedName", nameOfToBeMerged);
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(queryString);
+		query.setParameter("mainName", nameOfMain);
+		query.setParameter("mergedName", nameOfToBeMerged);
 		query.executeUpdate();
+
 		// Delete the patientIdentifierType that was merged
-		sessionFactory.getCurrentSession().delete(toBeMerged);
-			
+		String deleteString = "DELETE FROM patient_identifier_type WHERE NAME = :mergedName";
+		SQLQuery deleteQuery = sessionFactory.getCurrentSession().createSQLQuery(deleteString);
+		deleteQuery.setParameter("mergedName", nameOfToBeMerged);
+		deleteQuery.executeUpdate();
 		}
 	}
+
