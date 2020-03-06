@@ -1,40 +1,14 @@
 package org.openmrs.api.db.hibernate;
 
-import static java.util.Collections.emptyList;
-import java.util.SortedSet;  
-import java.util.TreeSet;
 
-
-
-import static java.util.Collections.singletonList;
-import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Date;
-import java.util.HashSet;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.mail.Address;
-
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Patient;
-import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.PersonAddress;
-import org.openmrs.PersonName;
-import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.util.GlobalPropertiesTestHelper;
 
 public class HibernatePatientIdentifierMergeDAOTest extends BaseContextSensitiveTest {
 	
@@ -47,8 +21,6 @@ public class HibernatePatientIdentifierMergeDAOTest extends BaseContextSensitive
 		hibernatePatientIdentifierMergeDao.setSessionFactory(sessionFactory);
 	}
 	
-	
-
 	@Test
 	public void mergePatientIdentifierTypes() {
 		
@@ -85,8 +57,5 @@ public class HibernatePatientIdentifierMergeDAOTest extends BaseContextSensitive
 
 		// patient1 and patient2 should now have the same patient identifier type, which is "OpenMRS Identification Number id"
 	    assertEquals(updatedPatient1.getPatientIdentifier().getIdentifierType(), updatedPatient2.getPatientIdentifier().getIdentifierType());
-	
-	}
-	
-	
+	}	
 }

@@ -1,12 +1,7 @@
 package org.openmrs.api.db.hibernate;
 
-import java.util.List;
-
-import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
-import org.openmrs.Patient;
-import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientIdentifierMergeDAO;
