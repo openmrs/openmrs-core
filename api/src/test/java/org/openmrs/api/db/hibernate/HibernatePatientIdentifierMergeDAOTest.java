@@ -86,8 +86,7 @@ public class HibernatePatientIdentifierMergeDAOTest extends BaseContextSensitive
 			// Should give exception because you're not allowed to have duplicate identifiers
 			} catch (ConstraintViolationException e){
 			}
-		hibernatePatientIdentifierMergeDao.mergePatientIdentifier(patientIdentifierType1, patientIdentifierType2);
-		
+
 		try {
 			// Calling the merge duplicate id function. Will give DAOException
 			hibernatePatientIdentifierMergeDao.mergePatientIdentifier(patientIdentifierType1, patientIdentifierType2);
