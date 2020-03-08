@@ -102,6 +102,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		Context.requirePrivilege(PrivilegeConstants.ADD_USERS);
 		
 		checkPrivileges(user);
+		
 		// if a password wasn't supplied, throw an error
 		if (password == null || password.length() < 1) {
 			throw new APIException("User.creating.password.required", (Object[]) null);
