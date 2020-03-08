@@ -19,6 +19,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.openmrs.Person;
 import org.openmrs.Privilege;
 import org.openmrs.PrivilegeListener;
@@ -114,6 +115,10 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		
 		// TODO Check required fields for user!!
 		OpenmrsUtil.validatePassword(user.getUsername(), password, user.getSystemId());
+		
+		if (EmailValidator.getInstance().isValid(user.getUsername())) {
+			user.setUserProperty(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS, user.getUsername());
+		}
 		
 		return dao.saveUser(user, password);
 	}

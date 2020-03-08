@@ -16,6 +16,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.openmrs.test.TestUtil.containsId;
 
+import java.net.BindException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,6 +33,7 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
@@ -277,7 +279,43 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 						newUser.getSystemId()));
 		userService.createUser(newUser, SOME_VALID_PASSWORD);
 	}
+	
+	@Test
+	public void createUser_shouldMapEmailUsernameToTheNotificationAddressIfEmailAsUsernameEnabled() {
+		AdministrationService as = Context.getAdministrationService();
+		as.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME, "true");
 
+		as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME, "true");
+
+		User user = new User();
+		user.setPerson(new Person());
+		user.addName(new PersonName("Benjamin", "A", "Wolfe"));
+		user.getPerson().setGender("M");
+
+		user.setUsername("test@gmail.com");
+
+		User createdUser = userService.createUser(user, SOME_VALID_PASSWORD);
+
+		assertEquals(createdUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS), "test@gmail.com");
+	}
+	
+	@Test(expected = ValidationException.class)
+	public void creatUser_shouldNotAllowInvalidEmailWhenEmailAsUsernameEnabled() {
+		AdministrationService as = Context.getAdministrationService();
+		as.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME, "true");
+
+		as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME, "true");
+
+		User user = new User();
+		user.setPerson(new Person());
+		user.addName(new PersonName("Benjamin", "A", "Wolfe"));
+		user.getPerson().setGender("M");
+		
+		user.setUsername("test@.gmail.com");
+		
+		userService.createUser(user, SOME_VALID_PASSWORD);
+	}
+	
 	private User userWithValidPerson() {
 		Person person = new Person();
 		person.addName(new PersonName("jane", "sue", "doe"));
