@@ -1,4 +1,5 @@
 /**
+ /**
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
@@ -31,36 +32,40 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.test.BaseContextSensitiveTest;
 
 public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
-	
+
 	private HibernatePatientDAO hibernatePatientDao;
-	
 	private SessionFactory sessionFactory;
-	
+
 	@Before
 	public void beforeEach() {
 		sessionFactory = (SessionFactory) applicationContext.getBean("sessionFactory");
 		updateSearchIndex();
 		hibernatePatientDao = (HibernatePatientDAO) applicationContext.getBean("patientDAO");
 	}
-	
+
 	@Test
 	public void getPatientIdentifiers_shouldGetByIdentifierType() {
 		List<PatientIdentifierType> identifierTypes = singletonList(new PatientIdentifierType(2));
-		List<PatientIdentifier> identifiers = hibernatePatientDao.getPatientIdentifiers(null, identifierTypes, emptyList(),
-		    emptyList(), null);
-		List<Integer> identifierIds = identifiers.stream().map(PatientIdentifier::getId).collect(Collectors.toList());
-		
+		List<PatientIdentifier> identifiers = hibernatePatientDao
+				.getPatientIdentifiers(null, identifierTypes, emptyList(), emptyList(), null);
+		List<Integer> identifierIds = identifiers.stream().map(PatientIdentifier::getId)
+				.collect(Collectors.toList());
+
 		Assert.assertEquals(2, identifiers.size());
 		Assert.assertThat(identifierIds, hasItems(1, 3));
 	}
-	
+
 	@Test
 	public void getPatientIdentifiers_shouldGetByPatients() {
-		List<Patient> patients = Arrays.asList(hibernatePatientDao.getPatient(6), hibernatePatientDao.getPatient(7));
-		List<PatientIdentifier> identifiers = hibernatePatientDao.getPatientIdentifiers(null, emptyList(), emptyList(),
-		    patients, null);
-		List<Integer> identifierIds = identifiers.stream().map(PatientIdentifier::getId).collect(Collectors.toList());
-		
+		List<Patient> patients = Arrays.asList(
+				hibernatePatientDao.getPatient(6),
+				hibernatePatientDao.getPatient(7)
+		);
+		List<PatientIdentifier> identifiers = hibernatePatientDao
+				.getPatientIdentifiers(null, emptyList(), emptyList(), patients, null);
+		List<Integer> identifierIds = identifiers.stream().map(PatientIdentifier::getId)
+				.collect(Collectors.toList());
+
 		Assert.assertEquals(2, identifiers.size());
 		Assert.assertThat(identifierIds, hasItems(3, 4));
 	}
