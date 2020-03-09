@@ -296,5 +296,7 @@ public interface PatientDAO {
 	 * @return the saved allergy
 	 */
 	public Allergy saveAllergy(Allergy allergy);
+
+	public void mergePatientIdentifier(PatientIdentifierType main, PatientIdentifierType toBeMerged) throws DAOException;
 	
 }
