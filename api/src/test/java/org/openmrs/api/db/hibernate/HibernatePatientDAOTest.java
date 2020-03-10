@@ -105,14 +105,14 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void getPatientIdentifer_shouldGiveEverWhenThereAreDuplicateIdentifiers() {
+	public void getPatientIdentifer_shouldGiveErrorWhenThereAreDuplicateIdentifiers() {
 		
 		// Getting the PatientIdentifierType objects in the mock database
 		PatientIdentifierType patientIdentifierType1 = (PatientIdentifierType) sessionFactory.getCurrentSession()
 		        .get(PatientIdentifierType.class, 1);
 		PatientIdentifierType patientIdentifierType2 = (PatientIdentifierType) sessionFactory.getCurrentSession()
 		        .get(PatientIdentifierType.class, 2);
-		
+
 		// Get patients that are already in the database and chnage their patient identifiers to be the same (should give error)
 		Patient patient1 = (Patient) sessionFactory.getCurrentSession().get(Patient.class, 2);
 		Patient patient2 = (Patient) sessionFactory.getCurrentSession().get(Patient.class, 6);
