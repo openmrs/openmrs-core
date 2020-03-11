@@ -871,9 +871,9 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @param type the type of Bean to retrieve from the Spring {@link ApplicationContext}
 	 * @return a List of all registered Beans that are valid instances of the passed type
 	 * @since 1.5
-	 * @should return a list of all registered beans of the passed type
-	 * @should return beans registered in a module
-	 * @should return an empty list if no beans have been registered of the passed type
+	 * <strong>Should</strong> return a list of all registered beans of the passed type
+	 * <strong>Should</strong> return beans registered in a module
+	 * <strong>Should</strong> return an empty list if no beans have been registered of the passed type
 	 */
 	
 	public <T> List<T> getRegisteredComponents(Class<T> type) {

@@ -213,7 +213,7 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	 * @param voidBy - The user who is voiding the {@link PatientState}
 	 * @param voidDate - The date to void the {@link PatientState}
 	 * @param voidReason - The reason for voiding the {@link PatientState}
-	 * @should void state with endDate null if startDates equal
+	 * <strong>Should</strong> void state with endDate null if startDates equal
 	 */
 	public void voidLastState(ProgramWorkflow workflow, User voidBy, Date voidDate, String voidReason) {
 		List<PatientState> states = statesInWorkflow(workflow, false);

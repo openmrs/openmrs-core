@@ -196,7 +196,7 @@ public interface PersonDAO {
 	 * 
 	 * @param personAttributeType the personAttributeType get the the name of
 	 * @return the name currently in the database for this personAttributeType
-	 * @should get saved personAttributeType name from database
+	 * <strong>Should</strong> get saved personAttributeType name from database
 	 */
 	public String getSavedPersonAttributeTypeName(PersonAttributeType personAttributeType);
 	

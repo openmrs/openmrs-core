@@ -15,7 +15,7 @@ import com.sun.javadoc.Tag;
 import com.sun.tools.doclets.Taglet;
 
 /**
- * Taglet for @should annotations.
+ * Taglet for <strong>Should</strong> annotations.
  */
 public class ShouldTaglet implements Taglet {
 	
@@ -32,9 +32,9 @@ public class ShouldTaglet implements Taglet {
 	}
 	
 	/**
-	 * Will return false since <code> @should</code> cannot be used in field documentation.
+	 * Will return false since <code> <strong>Should</strong></code> cannot be used in field documentation.
 	 * 
-	 * @return false since <code> @should</code> can be used in field documentation and true
+	 * @return false since <code> <strong>Should</strong></code> can be used in field documentation and true
 	 *         otherwise.
 	 */
 	@Override
@@ -43,9 +43,9 @@ public class ShouldTaglet implements Taglet {
 	}
 	
 	/**
-	 * Will return true since <code> @should</code> can be used in constructor documentation.
+	 * Will return true since <code> <strong>Should</strong></code> can be used in constructor documentation.
 	 * 
-	 * @return true since <code> @should</code> can be used in constructor documentation and false
+	 * @return true since <code> <strong>Should</strong></code> can be used in constructor documentation and false
 	 *         otherwise.
 	 */
 	@Override
@@ -54,9 +54,9 @@ public class ShouldTaglet implements Taglet {
 	}
 	
 	/**
-	 * Will return true since <code> @should</code> can be used in method documentation.
+	 * Will return true since <code> <strong>Should</strong></code> can be used in method documentation.
 	 * 
-	 * @return true since <code> @should</code> can be used in method documentation and false
+	 * @return true since <code> <strong>Should</strong></code> can be used in method documentation and false
 	 *         otherwise.
 	 */
 	@Override
@@ -65,9 +65,9 @@ public class ShouldTaglet implements Taglet {
 	}
 	
 	/**
-	 * Will return true since <code> @should</code> can be used in method documentation.
+	 * Will return true since <code> <strong>Should</strong></code> can be used in method documentation.
 	 * 
-	 * @return true since <code> @should</code> can be used in overview documentation and false
+	 * @return true since <code> <strong>Should</strong></code> can be used in overview documentation and false
 	 *         otherwise.
 	 */
 	@Override
@@ -76,9 +76,9 @@ public class ShouldTaglet implements Taglet {
 	}
 	
 	/**
-	 * Will return false since <code> @should</code> cannot be used in package documentation.
+	 * Will return false since <code> <strong>Should</strong></code> cannot be used in package documentation.
 	 * 
-	 * @return false since <code> @should</code> cannot be used in package documentation and true
+	 * @return false since <code> <strong>Should</strong></code> cannot be used in package documentation and true
 	 *         otherwise.
 	 */
 	@Override
@@ -87,10 +87,10 @@ public class ShouldTaglet implements Taglet {
 	}
 	
 	/**
-	 * Will return true since <code> @should</code> can be used in type documentation (classes or
+	 * Will return true since <code> <strong>Should</strong></code> can be used in type documentation (classes or
 	 * interfaces).
 	 * 
-	 * @return true since <code> @should</code> can be used in type documentation and false
+	 * @return true since <code> <strong>Should</strong></code> can be used in type documentation and false
 	 *         otherwise.
 	 */
 	@Override
@@ -99,9 +99,9 @@ public class ShouldTaglet implements Taglet {
 	}
 	
 	/**
-	 * Will return false since <code> @should</code> is not an inline tag.
+	 * Will return false since <code> <strong>Should</strong></code> is not an inline tag.
 	 * 
-	 * @return false since <code> @should</code> is not an inline tag.
+	 * @return false since <code> <strong>Should</strong></code> is not an inline tag.
 	 */
 	
 	@Override

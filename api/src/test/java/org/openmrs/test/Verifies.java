@@ -31,9 +31,9 @@ public @interface Verifies {
 	
 	/**
 	 * The text description of what this test will be doing. This is how unit tests are linked back
-	 * to a specific "@should" on the (hopefully) many "@shoulds" on a method.
+	 * to a specific "<strong>Should</strong>" on the (hopefully) many "<strong>Should</strong>s" on a method.
 	 * 
-	 * @return the text after the "@should" on the method this unit test is testing
+	 * @return the text after the "<strong>Should</strong>" on the method this unit test is testing
 	 */
 	public String value();
 	

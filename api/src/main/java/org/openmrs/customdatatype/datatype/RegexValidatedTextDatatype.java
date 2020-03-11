@@ -34,7 +34,7 @@ public class RegexValidatedTextDatatype extends SerializingCustomDatatype<String
 	
 	/**
 	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#serialize(java.lang.Object)
-	 * @should fail if the string does not match the regex
+	 * <strong>Should</strong> fail if the string does not match the regex
 	 */
 	@Override
 	public String serialize(String typedValue) {
@@ -51,8 +51,8 @@ public class RegexValidatedTextDatatype extends SerializingCustomDatatype<String
 	
 	/**
 	 * @see org.openmrs.customdatatype.CustomDatatype#validate(java.lang.Object)
-	 * @should accept a string that matches the regex
-	 * @should fail if the string does not match the regex
+	 * <strong>Should</strong> accept a string that matches the regex
+	 * <strong>Should</strong> fail if the string does not match the regex
 	 */
 	@Override
 	public void validate(String typedValue) throws InvalidCustomValueException {

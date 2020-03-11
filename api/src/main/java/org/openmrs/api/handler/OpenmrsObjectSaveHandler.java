@@ -49,11 +49,11 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 	 *
 	 * @see org.openmrs.api.handler.RequiredDataHandler#handle(org.openmrs.OpenmrsObject,
 	 *      org.openmrs.User, java.util.Date, java.lang.String)
-	 * @should set empty string properties to null
-	 * @should not set empty string properties to null for AllowEmptyStrings annotation
-	 * @should not trim empty strings for AllowLeadingOrTrailingWhitespace annotation
-	 * @should trim strings without AllowLeadingOrTrailingWhitespace annotation
-	 * @should trim empty strings for AllowEmptyStrings annotation
+	 * <strong>Should</strong> set empty string properties to null
+	 * <strong>Should</strong> not set empty string properties to null for AllowEmptyStrings annotation
+	 * <strong>Should</strong> not trim empty strings for AllowLeadingOrTrailingWhitespace annotation
+	 * <strong>Should</strong> trim strings without AllowLeadingOrTrailingWhitespace annotation
+	 * <strong>Should</strong> trim empty strings for AllowEmptyStrings annotation
 	 */
 	@Override
 	public void handle(OpenmrsObject openmrsObject, User creator, Date dateCreated, String reason) {

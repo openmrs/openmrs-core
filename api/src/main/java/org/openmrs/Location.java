@@ -359,7 +359,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @param includeRetired specifies whether or not to include voided childLocations
 	 * @return Returns a Set&lt;Location&gt; of all the childLocations.
 	 * @since 1.5
-	 * @should return a set of locations
+	 * <strong>Should</strong> return a set of locations
 	 */
 	public Set<Location> getChildLocations(boolean includeRetired) {
 		Set<Location> ret = new HashSet<>();
@@ -405,9 +405,9 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	/**
 	 * @param child The child location to add.
 	 * @since 1.5
-	 * @should return null given null parameter
-	 * @should throw APIException given same object as child
-	 * @should throw APIException if child already in hierarchy
+	 * <strong>Should</strong> return null given null parameter
+	 * <strong>Should</strong> throw APIException given same object as child
+	 * <strong>Should</strong> throw APIException if child already in hierarchy
 	 */
 	public void addChildLocation(Location child) {
 		if (child == null) {
@@ -443,11 +443,11 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @param location The location to be tested.
 	 * @param root Location node from which to start the testing (down in the hierarchy).
 	 * @since 1.5
-	 * @should return false given any null parameter
-	 * @should return true given same object in both parameters
-	 * @should return true given location that is already somewhere in hierarchy
-	 * @should return false given location that is not in hierarchy
-	 * @should should find location in hierarchy
+	 * <strong>Should</strong> return false given any null parameter
+	 * <strong>Should</strong> return true given same object in both parameters
+	 * <strong>Should</strong> return true given location that is already somewhere in hierarchy
+	 * <strong>Should</strong> return false given location that is not in hierarchy
+	 * <strong>Should</strong> should find location in hierarchy
 	 */
 	public static Boolean isInHierarchy(Location location, Location root) {
 		if (root == null) {
@@ -524,8 +524,8 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @param tagToFind the string of the tag for which to check
 	 * @return true if the tags include the specified tag, false otherwise
 	 * @since 1.5
-	 * @should not fail given null parameter
-	 * @should return false given empty string parameter
+	 * <strong>Should</strong> not fail given null parameter
+	 * <strong>Should</strong> return false given empty string parameter
 	 */
 	public Boolean hasTag(String tagToFind) {
 		if (tagToFind != null && getTags() != null) {

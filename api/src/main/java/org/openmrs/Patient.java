@@ -142,7 +142,7 @@ public class Patient extends Person {
 	 * 
 	 * @return current allargy status for patient
 	 * @since 2.0
-	 * @should return allergy status maintained by the supporting infrastructure
+	 * <strong>Should</strong> return allergy status maintained by the supporting infrastructure
 	 */
 	public String getAllergyStatus() {
 		return this.allergyStatus;
@@ -154,7 +154,7 @@ public class Patient extends Person {
 	 * 
 	 * @param allergyStatus
 	 * @since 2.0
-	 * @should not be called by service client
+	 * <strong>Should</strong> not be called by service client
 	 */
 	public void setAllergyStatus(String allergyStatus) {
 		this.allergyStatus = allergyStatus;
@@ -179,7 +179,7 @@ public class Patient extends Person {
 	 * @return Set of all known identifiers for this patient
 	 * @see org.openmrs.PatientIdentifier
 	 * @see #getActiveIdentifiers()
-	 * @should not return null
+	 * <strong>Should</strong> not return null
 	 */
 	public Set<PatientIdentifier> getIdentifiers() {
 		if (identifiers == null) {
@@ -278,9 +278,9 @@ public class Patient extends Person {
 	 * Will add this PatientIdentifier if the patient doesn't contain it already
 	 * 
 	 * @param patientIdentifier
-	 * @should not fail with null identifiers list
-	 * @should add identifier to current list
-	 * @should not add identifier that is in list already
+	 * <strong>Should</strong> not fail with null identifiers list
+	 * <strong>Should</strong> add identifier to current list
+	 * <strong>Should</strong> not add identifier that is in list already
 	 */
 	public void addIdentifier(PatientIdentifier patientIdentifier) {
 		if (patientIdentifier != null) {
@@ -303,7 +303,7 @@ public class Patient extends Person {
 	 * <code>patientIdentifier</code> is null, nothing is done.
 	 * 
 	 * @param patientIdentifier the identifier to remove
-	 * @should remove identifier if exists
+	 * <strong>Should</strong> remove identifier if exists
 	 */
 	public void removeIdentifier(PatientIdentifier patientIdentifier) {
 		if (patientIdentifier != null) {
@@ -415,7 +415,7 @@ public class Patient extends Person {
 	 * 
 	 * @return list of non-voided identifiers for this patient
 	 * @see #getIdentifiers()
-	 * @should return preferred identifiers first in the list
+	 * <strong>Should</strong> return preferred identifiers first in the list
 	 */
 	public List<PatientIdentifier> getActiveIdentifiers() {
 		List<PatientIdentifier> ids = new ArrayList<>();

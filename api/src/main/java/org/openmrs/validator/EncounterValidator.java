@@ -52,15 +52,15 @@ public class EncounterValidator implements Validator {
 	 * @param errors Errors
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should fail if the patients for the visit and the encounter dont match
-	 * @should fail if patient is not set
-	 * @should fail if encounter type is not set
-	 * @should fail if encounter dateTime is not set
-	 * @should fail if encounter dateTime is after current dateTime
-	 * @should fail if encounter dateTime is before visit startDateTime
-	 * @should fail if encounter dateTime is after visit stopDateTime
-	 * @should pass validation if field lengths are correct
-	 * @should fail validation if field lengths are not correct
+	 * <strong>Should</strong> fail if the patients for the visit and the encounter dont match
+	 * <strong>Should</strong> fail if patient is not set
+	 * <strong>Should</strong> fail if encounter type is not set
+	 * <strong>Should</strong> fail if encounter dateTime is not set
+	 * <strong>Should</strong> fail if encounter dateTime is after current dateTime
+	 * <strong>Should</strong> fail if encounter dateTime is before visit startDateTime
+	 * <strong>Should</strong> fail if encounter dateTime is after visit stopDateTime
+	 * <strong>Should</strong> pass validation if field lengths are correct
+	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) throws APIException {

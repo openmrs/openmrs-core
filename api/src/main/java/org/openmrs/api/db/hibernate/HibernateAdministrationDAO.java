@@ -212,10 +212,10 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#validate(java.lang.Object, Errors)
-	 * @should Pass validation if field lengths are correct
-	 * @should Fail validation if field lengths are not correct
-	 * @should Fail validation for location class if field lengths are not correct
-	 * @should Pass validation for location class if field lengths are correct
+	 * <strong>Should</strong> Pass validation if field lengths are correct
+	 * <strong>Should</strong> Fail validation if field lengths are not correct
+	 * <strong>Should</strong> Fail validation for location class if field lengths are not correct
+	 * <strong>Should</strong> Pass validation for location class if field lengths are correct
 	 */
 	
 	//@SuppressWarnings({ "deprecation", "unchecked", "rawtypes" })

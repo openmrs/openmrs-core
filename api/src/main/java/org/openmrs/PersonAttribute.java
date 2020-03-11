@@ -124,7 +124,7 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 	 * 
 	 * @param otherAttribute PersonAttribute with which to compare
 	 * @return boolean true/false whether or not they are the same attributes
-	 * @should return true if attributeType value and void status are the same
+	 * <strong>Should</strong> return true if attributeType value and void status are the same
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean equalsContent(PersonAttribute otherAttribute) {
@@ -206,7 +206,7 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 	
 	/**
 	 * @see java.lang.Object#toString()
-	 * @should return toString of hydrated value
+	 * <strong>Should</strong> return toString of hydrated value
 	 */
 	@Override
 	public String toString() {
@@ -239,8 +239,8 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 	 * <code>Attributable</code>, hydrate(value) is called. Defaults to just returning getValue()
 	 * 
 	 * @return hydrated object or getValue()
-	 * @should load class in format property
-	 * @should still load class in format property if not Attributable
+	 * <strong>Should</strong> load class in format property
+	 * <strong>Should</strong> still load class in format property if not Attributable
 	 */
 	@SuppressWarnings("unchecked")
 	public Object getHydratedObject() {
@@ -282,7 +282,7 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 	 * Convenience method for voiding this attribute
 	 * 
 	 * @param reason
-	 * @should set voided bit to true
+	 * <strong>Should</strong> set voided bit to true
 	 */
 	public void voidAttribute(String reason) {
 		setVoided(true);
@@ -293,12 +293,12 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 	
 	/**
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 * @should return negative if other attribute is voided
-	 * @should return negative if other attribute has earlier date created
-	 * @should return negative if this attribute has lower attribute type than argument
-	 * @should return negative if other attribute has lower value
-	 * @should return negative if this attribute has lower attribute id than argument
-	 * @should not throw exception if attribute type is null
+	 * <strong>Should</strong> return negative if other attribute is voided
+	 * <strong>Should</strong> return negative if other attribute has earlier date created
+	 * <strong>Should</strong> return negative if this attribute has lower attribute type than argument
+	 * <strong>Should</strong> return negative if other attribute has lower value
+	 * <strong>Should</strong> return negative if this attribute has lower attribute id than argument
+	 * <strong>Should</strong> not throw exception if attribute type is null
 	 * Note: this comparator imposes orderings that are inconsistent with equals
 	 */
 	@Override

@@ -51,16 +51,16 @@ public class PatientValidator extends PersonValidator {
 	 * @param errors Errors
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should fail validation if gender is blank
-	 * @should fail validation if birthdate makes patient older that 120 years old
-	 * @should fail validation if birthdate is a future date
-	 * @should fail validation if a preferred patient identifier is not chosen
-	 * @should fail validation if voidReason is blank when patient is voided
-	 * @should fail validation if causeOfDeath is blank when patient is dead
-	 * @should fail validation if a preferred patient identifier is not chosen for voided patients
-	 * @should not fail when patient has only one identifier and its not preferred
-	 * @should pass validation if field lengths are correct
-	 * @should fail validation if field lengths are not correct
+	 * <strong>Should</strong> fail validation if gender is blank
+	 * <strong>Should</strong> fail validation if birthdate makes patient older that 120 years old
+	 * <strong>Should</strong> fail validation if birthdate is a future date
+	 * <strong>Should</strong> fail validation if a preferred patient identifier is not chosen
+	 * <strong>Should</strong> fail validation if voidReason is blank when patient is voided
+	 * <strong>Should</strong> fail validation if causeOfDeath is blank when patient is dead
+	 * <strong>Should</strong> fail validation if a preferred patient identifier is not chosen for voided patients
+	 * <strong>Should</strong> not fail when patient has only one identifier and its not preferred
+	 * <strong>Should</strong> pass validation if field lengths are correct
+	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {

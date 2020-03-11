@@ -45,16 +45,16 @@ public class PersonAddressValidator implements Validator {
 	/**
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should pass if all the dates are valid
-	 * @should fail if the startDate is in the future
-	 * @should fail if the endDate is before the startDate
-	 * @should pass if startDate and endDate are both null
-	 * @should pass if startDate is null
-	 * @should pass if endDate is null
-	 * @should fail if required fields are empty
-	 * @should pass if required fields are not empty
-	 * @should pass validation if field lengths are correct
-	 * @should fail validation if field lengths are not correct
+	 * <strong>Should</strong> pass if all the dates are valid
+	 * <strong>Should</strong> fail if the startDate is in the future
+	 * <strong>Should</strong> fail if the endDate is before the startDate
+	 * <strong>Should</strong> pass if startDate and endDate are both null
+	 * <strong>Should</strong> pass if startDate is null
+	 * <strong>Should</strong> pass if endDate is null
+	 * <strong>Should</strong> fail if required fields are empty
+	 * <strong>Should</strong> pass if required fields are not empty
+	 * <strong>Should</strong> pass validation if field lengths are correct
+	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object object, Errors errors) {

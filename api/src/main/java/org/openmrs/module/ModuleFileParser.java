@@ -628,11 +628,11 @@ public class ModuleFileParser {
 	/**
 	 * Parses conditionalResources tag.
 	 *
-	 * @should parse openmrsVersion and modules
-	 * @should parse conditionalResource with whitespace
-	 * @should throw exception if multiple conditionalResources tags found
-	 * @should throw exception if conditionalResources contains invalid tag
-	 * @should throw exception if path is blank
+	 * <strong>Should</strong> parse openmrsVersion and modules
+	 * <strong>Should</strong> parse conditionalResource with whitespace
+	 * <strong>Should</strong> throw exception if multiple conditionalResources tags found
+	 * <strong>Should</strong> throw exception if conditionalResources contains invalid tag
+	 * <strong>Should</strong> throw exception if path is blank
 	 */
 	List<ModuleConditionalResource> extractConditionalResources(Element configRoot) {
 		List<ModuleConditionalResource> conditionalResources = new ArrayList<>();
