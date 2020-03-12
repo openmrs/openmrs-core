@@ -59,7 +59,7 @@
 	-->
 	<bean id="transactionInterceptor" class="org.springframework.transaction.interceptor.TransactionInterceptor">
 		<property name="transactionManager" ref="transactionManager"/>
-		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
+		<property name="transactionAttributeSource"><ref bean="transactionAttributeSource" /></property>
 	</bean>
 
 	<bean class="org.openmrs.api.impl.GlobalLocaleList" id="globalLocaleList"/>
@@ -354,199 +354,199 @@
 	</bean>
 	
 	<bean id="patientService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager"><ref local="transactionManager"/></property>
-		<property name="target"><ref local="patientServiceTarget"/></property>
+		<property name="transactionManager"><ref bean="transactionManager"/></property>
+		<property name="target"><ref bean="patientServiceTarget"/></property>
 		<property name="preInterceptors">
-			<ref local="serviceInterceptors" />
+			<ref bean="serviceInterceptors" />
 		</property>
-		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
+		<property name="transactionAttributeSource"><ref bean="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="personService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager"><ref local="transactionManager"/></property>
-		<property name="target"><ref local="personServiceTarget"/></property>
+		<property name="transactionManager"><ref bean="transactionManager"/></property>
+		<property name="target"><ref bean="personServiceTarget"/></property>
 		<property name="preInterceptors">
-			<ref local="serviceInterceptors" />
+			<ref bean="serviceInterceptors" />
 		</property>
-		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
+		<property name="transactionAttributeSource"><ref bean="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="conceptService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager"><ref local="transactionManager"/></property>
-		<property name="target"><ref local="conceptServiceTarget"/></property>
+		<property name="transactionManager"><ref bean="transactionManager"/></property>
+		<property name="target"><ref bean="conceptServiceTarget"/></property>
 		<property name="preInterceptors">
-			<ref local="serviceInterceptors" />
+			<ref bean="serviceInterceptors" />
 		</property>
-		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
+		<property name="transactionAttributeSource"><ref bean="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="userService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager"><ref local="transactionManager"/></property>
-		<property name="target"><ref local="userServiceTarget"/></property>
+		<property name="transactionManager"><ref bean="transactionManager"/></property>
+		<property name="target"><ref bean="userServiceTarget"/></property>
 		<property name="preInterceptors">
-			<ref local="serviceInterceptors" />
+			<ref bean="serviceInterceptors" />
 		</property>
-		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
+		<property name="transactionAttributeSource"><ref bean="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="obsService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager"><ref local="transactionManager"/></property>
-		<property name="target"><ref local="obsServiceTarget"/></property>
+		<property name="transactionManager"><ref bean="transactionManager"/></property>
+		<property name="target"><ref bean="obsServiceTarget"/></property>
 		<property name="preInterceptors">
-			<ref local="serviceInterceptors" />
+			<ref bean="serviceInterceptors" />
 		</property>
-		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
+		<property name="transactionAttributeSource"><ref bean="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="encounterService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager"><ref local="transactionManager"/></property>
-		<property name="target"><ref local="encounterServiceTarget"/></property>
+		<property name="transactionManager"><ref bean="transactionManager"/></property>
+		<property name="target"><ref bean="encounterServiceTarget"/></property>
 		<property name="preInterceptors">
-			<ref local="serviceInterceptors" />
+			<ref bean="serviceInterceptors" />
 		</property>
-		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
+		<property name="transactionAttributeSource"><ref bean="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="locationService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager"><ref local="transactionManager"/></property>
-		<property name="target"><ref local="locationServiceTarget"/></property>
+		<property name="transactionManager"><ref bean="transactionManager"/></property>
+		<property name="target"><ref bean="locationServiceTarget"/></property>
 		<property name="preInterceptors">
-			<ref local="serviceInterceptors" />
+			<ref bean="serviceInterceptors" />
 		</property>
-		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
+		<property name="transactionAttributeSource"><ref bean="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="orderService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager"><ref local="transactionManager"/></property>
-		<property name="target"><ref local="orderServiceTarget"/></property>
+		<property name="transactionManager"><ref bean="transactionManager"/></property>
+		<property name="target"><ref bean="orderServiceTarget"/></property>
 		<property name="preInterceptors">
-			<ref local="serviceInterceptors" />
+			<ref bean="serviceInterceptors" />
 		</property>
-		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
+		<property name="transactionAttributeSource"><ref bean="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="conditionService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager"><ref local="transactionManager"/></property>
-		<property name="target"><ref local="conditionServiceTarget"/></property>
+		<property name="transactionManager"><ref bean="transactionManager"/></property>
+		<property name="target"><ref bean="conditionServiceTarget"/></property>
 		<property name="preInterceptors">
-			<ref local="serviceInterceptors" />
+			<ref bean="serviceInterceptors" />
 		</property>
-		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
+		<property name="transactionAttributeSource"><ref bean="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="diagnosisService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager"><ref local="transactionManager"/></property>
-		<property name="target"><ref local="diagnosisServiceTarget"/></property>
+		<property name="transactionManager"><ref bean="transactionManager"/></property>
+		<property name="target"><ref bean="diagnosisServiceTarget"/></property>
 		<property name="preInterceptors">
-			<ref local="serviceInterceptors" />
+			<ref bean="serviceInterceptors" />
 		</property>
-		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
+		<property name="transactionAttributeSource"><ref bean="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="orderSetService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager"><ref local="transactionManager"/></property>
-		<property name="target"><ref local="orderSetServiceTarget"/></property>
+		<property name="transactionManager"><ref bean="transactionManager"/></property>
+		<property name="target"><ref bean="orderSetServiceTarget"/></property>
 		<property name="preInterceptors">
-			<ref local="serviceInterceptors" />
+			<ref bean="serviceInterceptors" />
 		</property>
-		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
+		<property name="transactionAttributeSource"><ref bean="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="formService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager"><ref local="transactionManager"/></property>
-		<property name="target"><ref local="formServiceTarget"/></property>
+		<property name="transactionManager"><ref bean="transactionManager"/></property>
+		<property name="target"><ref bean="formServiceTarget"/></property>
 		<property name="preInterceptors">
-			<ref local="serviceInterceptors" />
+			<ref bean="serviceInterceptors" />
 		</property>
-		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
+		<property name="transactionAttributeSource"><ref bean="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="adminService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager"><ref local="transactionManager"/></property>
-		<property name="target"><ref local="adminServiceTarget"/></property>
+		<property name="transactionManager"><ref bean="transactionManager"/></property>
+		<property name="target"><ref bean="adminServiceTarget"/></property>
 		<property name="preInterceptors">
-			<ref local="serviceInterceptors" />
+			<ref bean="serviceInterceptors" />
 		</property>
-		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
+		<property name="transactionAttributeSource"><ref bean="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="datatypeService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-        <property name="transactionManager"><ref local="transactionManager"/></property>
-        <property name="target"><ref local="datatypeServiceTarget"/></property>
+        <property name="transactionManager"><ref bean="transactionManager"/></property>
+        <property name="target"><ref bean="datatypeServiceTarget"/></property>
         <property name="preInterceptors">
-            <ref local="serviceInterceptors" />
+            <ref bean="serviceInterceptors" />
         </property>
         <!-- This service is not transactional, at least not yet, so maybe we can remove this -->
-        <property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
+        <property name="transactionAttributeSource"><ref bean="transactionAttributeSource" /></property>
     </bean>
 	<bean id="programWorkflowService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager"><ref local="transactionManager"/></property>
-		<property name="target"><ref local="programWorkflowServiceTarget"/></property>
+		<property name="transactionManager"><ref bean="transactionManager"/></property>
+		<property name="target"><ref bean="programWorkflowServiceTarget"/></property>
 		<property name="preInterceptors">
-			<ref local="serviceInterceptors" />
+			<ref bean="serviceInterceptors" />
 		</property>
-		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
+		<property name="transactionAttributeSource"><ref bean="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="messageService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager"><ref local="transactionManager"/></property>
-		<property name="target"><ref local="messageServiceTarget"/></property>
+		<property name="transactionManager"><ref bean="transactionManager"/></property>
+		<property name="target"><ref bean="messageServiceTarget"/></property>
 		<property name="preInterceptors">
-			<ref local="serviceInterceptors" />
+			<ref bean="serviceInterceptors" />
 		</property>
-		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
+		<property name="transactionAttributeSource"><ref bean="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="cohortService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager"><ref local="transactionManager"/></property>
-		<property name="target"><ref local="cohortServiceTarget"/></property>
+		<property name="transactionManager"><ref bean="transactionManager"/></property>
+		<property name="target"><ref bean="cohortServiceTarget"/></property>
 		<property name="preInterceptors">
-			<ref local="serviceInterceptors" />
+			<ref bean="serviceInterceptors" />
 		</property>
-		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
+		<property name="transactionAttributeSource"><ref bean="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="schedulerService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager"><ref local="transactionManager"/></property>
-		<property name="target"><ref local="schedulerServiceTarget"/></property>
+		<property name="transactionManager"><ref bean="transactionManager"/></property>
+		<property name="target"><ref bean="schedulerServiceTarget"/></property>
 		<property name="preInterceptors">
-			<ref local="serviceInterceptors" />
+			<ref bean="serviceInterceptors" />
 		</property>
-		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
+		<property name="transactionAttributeSource"><ref bean="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="alertService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager"><ref local="transactionManager"/></property>
-		<property name="target"><ref local="alertServiceTarget"/></property>
+		<property name="transactionManager"><ref bean="transactionManager"/></property>
+		<property name="target"><ref bean="alertServiceTarget"/></property>
 		<property name="preInterceptors">
-			<ref local="serviceInterceptors" />
+			<ref bean="serviceInterceptors" />
 		</property>
-		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
+		<property name="transactionAttributeSource"><ref bean="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="serializationService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager"><ref local="transactionManager"/></property>
-		<property name="target"><ref local="serializationServiceTarget"/></property>
+		<property name="transactionManager"><ref bean="transactionManager"/></property>
+		<property name="target"><ref bean="serializationServiceTarget"/></property>
 		<property name="preInterceptors">
-			<ref local="serviceInterceptors" />
+			<ref bean="serviceInterceptors" />
 		</property>
 		<property name="transactionAttributeSource">
 			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
 		</property>
 	</bean>
 	<bean id="hL7Service" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager"><ref local="transactionManager"/></property>
-		<property name="target"><ref local="hL7ServiceTarget"/></property>
+		<property name="transactionManager"><ref bean="transactionManager"/></property>
+		<property name="target"><ref bean="hL7ServiceTarget"/></property>
 		<property name="preInterceptors">
-			<ref local="serviceInterceptors" />
+			<ref bean="serviceInterceptors" />
 		</property>
-		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
+		<property name="transactionAttributeSource"><ref bean="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="messageSourceService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager"><ref local="transactionManager"/></property>
-		<property name="target"><ref local="messageSourceServiceTarget"/></property>
+		<property name="transactionManager"><ref bean="transactionManager"/></property>
+		<property name="target"><ref bean="messageSourceServiceTarget"/></property>
 		<property name="preInterceptors">
-			<ref local="serviceInterceptors" />
+			<ref bean="serviceInterceptors" />
 		</property>
-		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
+		<property name="transactionAttributeSource"><ref bean="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="visitService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-	    <property name="transactionManager"><ref local="transactionManager"/></property>
-	    <property name="target"><ref local="visitServiceTarget"/></property>
+	    <property name="transactionManager"><ref bean="transactionManager"/></property>
+	    <property name="target"><ref bean="visitServiceTarget"/></property>
 	    <property name="preInterceptors">
-	        <ref local="serviceInterceptors"/>
+	        <ref bean="serviceInterceptors"/>
 	    </property>
-	    <property name="transactionAttributeSource"><ref local="transactionAttributeSource"/></property>
+	    <property name="transactionAttributeSource"><ref bean="transactionAttributeSource"/></property>
     </bean>
 	<bean id="providerService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-	    <property name="transactionManager"><ref local="transactionManager"/></property>
-	    <property name="target"><ref local="providerServiceTarget"/></property>
+	    <property name="transactionManager"><ref bean="transactionManager"/></property>
+	    <property name="target"><ref bean="providerServiceTarget"/></property>
 	    <property name="preInterceptors">
-	        <ref local="serviceInterceptors"/>
+	        <ref bean="serviceInterceptors"/>
 	    </property>
-	    <property name="transactionAttributeSource"><ref local="transactionAttributeSource"/></property>
+	    <property name="transactionAttributeSource"><ref bean="transactionAttributeSource"/></property>
     </bean>
 	
 	
@@ -569,10 +569,10 @@
 	<bean id="annotationCacheOperationSource" class="org.springframework.cache.annotation.AnnotationCacheOperationSource"/>
 
 	<util:list id="serviceInterceptors">
-		<ref local="authorizationInterceptor"/>
-		<ref local="requiredDataInterceptor"/>
-		<ref local="loggingInterceptor"/>
-		<ref local="cacheInterceptor"/>
+		<ref bean="authorizationInterceptor"/>
+		<ref bean="requiredDataInterceptor"/>
+		<ref bean="loggingInterceptor"/>
+		<ref bean="cacheInterceptor"/>
 	</util:list>
 	
 	
@@ -617,8 +617,8 @@
 
 	<!--  **************************  TRANSACTION MANAGER CONFIGURATION  *************************  -->
 
-	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
-		<property name="sessionFactory"><ref local="sessionFactory"/></property>
+	<bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 	</bean>
 
 

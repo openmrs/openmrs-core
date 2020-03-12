@@ -15,6 +15,7 @@ import java.io.OutputStream;
 import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -162,5 +163,15 @@ public class GZIPResponseStream extends ServletOutputStream {
 	
 	public void reset() {
 		//noop
+	}
+
+	@Override
+	public boolean isReady() {
+		throw new UnsupportedOperationException("Asynchonous operation is not supported.");
+	}
+
+	@Override
+	public void setWriteListener(WriteListener writeListener) {
+		throw new UnsupportedOperationException("Asynchonous operation is not supported.");
 	}
 }

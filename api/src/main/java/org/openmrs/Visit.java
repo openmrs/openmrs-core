@@ -44,7 +44,7 @@ import org.openmrs.customdatatype.Customizable;
 public class Visit extends BaseCustomizableData<VisitAttribute> implements Auditable, Customizable<VisitAttribute> {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "visit_id")
 	private Integer visitId;
 	
