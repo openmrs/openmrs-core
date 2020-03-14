@@ -18,6 +18,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 import java.io.IOException;
+import org.openmrs.api.UnsupportedViewException;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -105,6 +106,28 @@ public class BinaryDataHandlerTest {
 		
 		assertEquals(complexObs1.getComplexData().getMimeType(), mimetype);
 		assertEquals(complexObs2.getComplexData().getMimeType(), mimetype);
+	}
+	
+	@Test(expected=UnsupportedViewException.class)
+	public void getObs_shouldThrowUnsupportedViewExceptionWhenViewNotSupported() throws IOException {
+		String filename = "TestingComplexObsSaving";
+		byte[] content = "Teststring".getBytes();
+		
+		ComplexData complexData = new ComplexData(filename, content);
+		
+		Obs obs1 = new Obs();
+		obs1.setComplexData(complexData);
+
+		// Mocked methods
+		mockStatic(Context.class);
+		when(Context.getAdministrationService()).thenReturn(administrationService);
+		when(administrationService.getGlobalProperty(any())).thenReturn(complexObsTestFolder.newFolder().getAbsolutePath());
+		
+		BinaryDataHandler handler = new BinaryDataHandler();
+		handler.saveObs(obs1);
+        
+		assertFalse(handler.supportsView(ComplexObsHandler.HTML_VIEW));
+        handler.getObs(obs1, ComplexObsHandler.HTML_VIEW);
 	}
 	
 }

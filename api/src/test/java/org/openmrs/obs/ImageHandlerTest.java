@@ -20,6 +20,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import org.openmrs.api.UnsupportedViewException;
 
 import javax.imageio.ImageIO;
 
@@ -114,4 +115,29 @@ public class ImageHandlerTest {
 		assertEquals(complexObs2.getComplexData().getMimeType(), mimetype);
 	}
 	
+	@Test(expected=UnsupportedViewException.class)
+	public void getObs_shouldThrowUnsupportedViewExceptionWhenViewNotSupported() throws IOException {
+		String filename = "TestingComplexObsSaving.png";
+		File sourceFile = new File(
+	        "src" + File.separator + "test" + File.separator + "resources" + File.separator + "ComplexObsTestImage.png");
+		
+		BufferedImage img = ImageIO.read(sourceFile);
+		
+		ComplexData complexData = new ComplexData(filename, img);
+		
+		Obs obs1 = new Obs();
+		obs1.setComplexData(complexData);
+		
+		// Mocked methods
+		mockStatic(Context.class);
+		when(Context.getAdministrationService()).thenReturn(administrationService);
+		when(administrationService.getGlobalProperty(any())).thenReturn(complexObsTestFolder.newFolder().getAbsolutePath());
+		
+		ImageHandler handler = new ImageHandler();
+		handler.saveObs(obs1);
+        
+		assertFalse(handler.supportsView(ComplexObsHandler.HTML_VIEW));
+        handler.getObs(obs1, ComplexObsHandler.HTML_VIEW);
+	}
+		
 }

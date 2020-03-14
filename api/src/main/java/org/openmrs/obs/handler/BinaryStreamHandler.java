@@ -17,6 +17,7 @@ import java.io.OutputStream;
 
 import org.openmrs.Obs;
 import org.openmrs.api.APIException;
+import org.openmrs.api.UnsupportedViewException;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.OpenmrsConstants;
@@ -56,7 +57,7 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 	 * @see ComplexObsHandler#getObs(Obs, String)
 	 */
 	@Override
-	public Obs getObs(Obs obs, String view) {
+	public Obs getObs(Obs obs, String view) throws APIException {
 		ComplexData complexData = null;
 		File file = null;
 		
@@ -79,9 +80,10 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 				throw new APIException("Obs.error.while.trying.get.binary.complex", null, e);
 			}
 		} else {
-			// No other view supported
-			// NOTE: if adding support for another view, don't forget to update supportedViews list above
-			return null;
+			if( view != null )
+				// No other view supported
+				// NOTE: if adding support for another view, don't forget to update supportedViews list above
+				throw new UnsupportedViewException();
 		}
 		
 		Assert.notNull(complexData, "Complex data must not be null");

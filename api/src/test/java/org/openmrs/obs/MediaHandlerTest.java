@@ -20,6 +20,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import org.openmrs.api.UnsupportedViewException;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -114,4 +115,28 @@ public class MediaHandlerTest {
 		assertEquals(complexObs2.getComplexData().getMimeType(), mimetype);
 	}
 	
+	@Test(expected=UnsupportedViewException.class)
+	public void getObs_shouldThrowUnsupportedViewExceptionWhenViewNotSupported() throws IOException {
+		String filename = "TestingComplexObsSaving.mp3";
+		File sourceFile = new File(
+	        "src" + File.separator + "test" + File.separator + "resources" + File.separator + "ComplexObsTestAudio.mp3");
+		
+		FileInputStream in1 = new FileInputStream(sourceFile);
+		
+		ComplexData complexData1 = new ComplexData(filename, in1);
+		Obs obs1 = new Obs();
+		obs1.setComplexData(complexData1);
+
+		// Mocked methods
+		mockStatic(Context.class);
+		when(Context.getAdministrationService()).thenReturn(administrationService);
+		when(administrationService.getGlobalProperty(any())).thenReturn(complexObsTestFolder.newFolder().getAbsolutePath());
+		
+		MediaHandler handler = new MediaHandler();
+		handler.saveObs(obs1);        
+		
+		assertFalse(handler.supportsView(ComplexObsHandler.HTML_VIEW));
+        handler.getObs(obs1, ComplexObsHandler.HTML_VIEW);
+	}
+
 }
