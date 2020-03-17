@@ -124,7 +124,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			patient.getPatientIdentifier().setPreferred(true);
 		}
 
-		if (!patient.getVoided()) {
+		if (!patient.getVoided() && patient.getIdentifiers().size() == 1) {
 			checkPatientIdentifiers(patient);
 		}
 
