@@ -448,9 +448,11 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	public void getSimilarPeople_shouldAcceptGreaterThanThreeNames() throws Exception {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-names.xml");
 		Set<Person> matches = Context.getPersonService().getSimilarPeople("Darius Graham Jazayeri Junior", 1979, "M");
-		Assert.assertEquals(2, matches.size());
+		Assert.assertEquals(3, matches.size());
 		assertTrue(containsId(matches, 1006));
 		assertTrue(containsId(matches, 1007));
+		assertTrue(containsId(matches, 1009));
+		
 	}
 	
 	/**
@@ -459,8 +461,10 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getSimilarPeople_shouldMatchSingleSearchToAnyNamePart() throws Exception {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-names.xml");
+		updateSearchIndex();
+		
 		Set<Person> matches = Context.getPersonService().getSimilarPeople("Darius", 1979, "M");
-		Assert.assertEquals(9, matches.size());
+		Assert.assertEquals(11, matches.size());
 		assertTrue(containsId(matches, 1000));
 		assertTrue(containsId(matches, 1001));
 		assertTrue(containsId(matches, 1002));
@@ -470,6 +474,9 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		assertTrue(containsId(matches, 1006));
 		assertTrue(containsId(matches, 1007));
 		assertTrue(containsId(matches, 1008));
+		assertTrue(containsId(matches, 1009));
+		assertTrue(containsId(matches, 1012));
+		
 	}
 	
 	/**
@@ -478,15 +485,77 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getSimilarPeople_shouldMatchTwoWordSearchToAnyNamePart() throws Exception {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-names.xml");
+		updateSearchIndex();
+		
 		Set<Person> matches = Context.getPersonService().getSimilarPeople("Darius Graham", 1979, "M");
-		Assert.assertEquals(6, matches.size());
+		Assert.assertEquals(11, matches.size());
 		assertTrue(containsId(matches, 1000));
 		assertTrue(containsId(matches, 1003));
-		assertTrue(containsId(matches, 1004));
-		assertTrue(containsId(matches, 1005));
+		assertTrue(containsId(matches, 1004)); 
+		assertTrue(containsId(matches, 1005)); 
 		assertTrue(containsId(matches, 1006));
 		assertTrue(containsId(matches, 1007));
+		
+		assertTrue(containsId(matches, 1009));
+		assertTrue(containsId(matches, 1010));
+		assertTrue(containsId(matches, 1011));
+		assertTrue(containsId(matches, 1012));
+		assertTrue(containsId(matches, 1013));
+		
+		
 	}
+	
+	/**
+	 * @see PersonService#getSimilarPeople(String,Integer,String)
+	 */
+	@Test
+	public void getSimilarPeople_shouldMatchN1InThreeNamesSearch() throws Exception {
+		executeDataSet("org/openmrs/api/include/PersonServiceTest-names.xml");
+		updateSearchIndex();
+		
+		Set<Person> matches = Context.getPersonService().getSimilarPeople("Darius G", 1979, "M");
+		Assert.assertEquals(3, matches.size());
+		//Matching because of given_name and others empty
+		assertTrue(containsId(matches, 1000));
+		assertTrue(containsId(matches, 1009));
+		assertTrue(containsId(matches, 1012));
+		
+	}
+	
+	/**
+	 * @see PersonService#getSimilarPeople(String,Integer,String)
+	 */
+	@Test
+	public void getSimilarPeople_shouldMatchN2InTwoNamesSearch() throws Exception {
+		executeDataSet("org/openmrs/api/include/PersonServiceTest-names.xml");
+		updateSearchIndex();
+		
+		Set<Person> matches = Context.getPersonService().getSimilarPeople("D Graham", 1979, "M");
+		Assert.assertEquals(3, matches.size());
+		assertTrue(containsId(matches, 1010));
+		
+		assertTrue(containsId(matches, 1011));
+		assertTrue(containsId(matches, 1013));
+		
+	}
+	
+	
+	/**
+	 * @see PersonService#getSimilarPeople(String,Integer,String)
+	 */
+	@Test
+	public void getSimilarPeople_shouldMatchN2InOneLastNameAndEmptyNames() throws Exception {
+		executeDataSet("org/openmrs/api/include/PersonServiceTest-names.xml");
+		updateSearchIndex();
+		
+		Set<Person> matches = Context.getPersonService().getSimilarPeople("D Graham", 1979, "M");
+		Assert.assertEquals(3, matches.size());
+		assertTrue(containsId(matches, 1010));
+		assertTrue(containsId(matches, 1011));
+		assertTrue(containsId(matches, 1013));
+		
+	}
+	
 	
 	/**
 	 * @see PersonService#getSimilarPeople(String,Integer,String)
@@ -495,10 +564,13 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	public void getSimilarPeople_shouldMatchThreeWordSearchToAnyNamePart() throws Exception {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-names.xml");
 		Set<Person> matches = Context.getPersonService().getSimilarPeople("Darius Graham Jazayeri", 1979, "M");
-		Assert.assertEquals(3, matches.size());
+		Assert.assertEquals(5, matches.size());
 		assertTrue(containsId(matches, 1003));
 		assertTrue(containsId(matches, 1006));
 		assertTrue(containsId(matches, 1007));
+		assertTrue(containsId(matches, 1012));
+		assertTrue(containsId(matches, 1011));
+		
 	}
 	
 	/**
@@ -522,6 +594,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getSimilarPeople_shouldMatchSearchToFamilyName2() throws Exception {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-extranames.xml");
+		updateSearchIndex();
 		
 		Set<Person> people = Context.getPersonService().getSimilarPeople("Johnson", null, "M");
 		Assert.assertEquals(2, people.size());

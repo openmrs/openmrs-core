@@ -67,8 +67,81 @@ public class PersonLuceneQuery {
 	public LuceneQuery<PersonName> getPatientNameQueryWithOrParser(String query, boolean includeVoided, LuceneQuery<?> skipSame) {
 		return getPersonNameQuery(query, true, includeVoided, true, skipSame);
 	}
+	
+	public LuceneQuery<PersonName> getSoundexPersonNameAtLeastThreeMatches(String name1, String name2,  Integer birthyear, boolean includeVoided, String gender) {
+		String n1ThreeMatches = "(givenNameSoundex:" + name1 + " AND (middleNameSoundex:" + name1 + " OR familyName2Soundex:" + name1 + " OR  familyNameSoundex:" + name1 + ")) " 
+			+ "OR (middleNameSoundex:"+ name1 + " AND  familyName2Soundex:"+ name1 + " AND  familyNameSoundex:"+name1+")";
+		
+		String n2TwoMatches = " OR (givenNameSoundex:query AND (middleNameSoundex:query OR familyNameSoundex:query OR familyName2Soundex:query))\n"
+			+ "               OR (middleNameSoundex:query AND (familyName2Soundex:query OR familyNameSoundex:query))  \n"
+			+ "               OR (familyNameSoundex:query AND familyName2Soundex:query)";
+		n2TwoMatches =  n2TwoMatches.replace("query", name2);
+		
+		String n1OnlyFirstMatch = "OR (givenNameSoundex:query AND -middleNameSoundex:[* TO *] AND -familyNameSoundex:[* TO *] AND -familyName2Soundex:[* TO *])";
+		n1OnlyFirstMatch = n1OnlyFirstMatch.replace("query", name1);
+		
+		String n2MatchesOneNonFirstName = " OR (middleNameSoundex:query AND  -familyNameSoundex:[* TO *] AND -familyName2Soundex:[* TO *] AND -givenNameSoundex:[* TO *])" 
+			+ " OR (familyNameSoundex:query AND  -middleNameSoundex:[* TO *] AND -familyName2Soundex:[* TO *] AND -givenNameSoundex:[* TO *])    " 
+			+ " OR  (familyName2Soundex:query AND  -middleNameSoundex:[* TO *] AND -familyNameSoundex:[* TO *] AND -givenNameSoundex:[* TO *])";
+		
+		n2MatchesOneNonFirstName = n2MatchesOneNonFirstName.replace("query", name2);
+		
+		return getSoundexPersonNameQuery(n1ThreeMatches + n2TwoMatches + n1OnlyFirstMatch + n2MatchesOneNonFirstName, birthyear, includeVoided, gender);
+	}
+	
+	public LuceneQuery<PersonName> getSoundexPersonFirstNameQuery(String firstName, Integer birthyear, boolean includeVoided, String gender) {
+		List<String> fields = new ArrayList<>();
+		fields.addAll(Arrays.asList("givenNameSoundex"));
+		
+		return buildSoundexLuceneQuery(firstName, fields, birthyear, includeVoided, gender);
+	}
+	
+	public LuceneQuery<PersonName> getSoundexPersonSecondNameQuery(String secondName, Integer birthyear, boolean includeVoided, String gender) {
+		List<String> fields = new ArrayList<>();
+		fields.addAll(Arrays.asList("familyNameSoundex", "familyName2Soundex", "middleNameSoundex"));
+		String query = secondName;
+		if(secondName == "") {
+			 query = "*:* AND -(middleNameSoundex:[* TO *] AND  familyNameSoundex:[* TO *] AND familyName2Soundex:[* TO *])" ;
+				// + "(*:* AND -middleNameSoundex:[* TO *] OR -familyNameSoundex:[* TO *])";
+			
+		}
+		
+		return buildSoundexLuceneQuery(query, fields, birthyear, includeVoided, gender);
+	}
+		
+		
+	public LuceneQuery<PersonName> getSoundexPersonNameQuery(String query, Integer birthyear, boolean includeVoided, String gender) {
+		List<String> fields = new ArrayList<>();
+		fields.addAll(Arrays.asList("familyNameSoundex", "familyName2Soundex", "middleNameSoundex", "givenNameSoundex"));
+		
+		return buildSoundexLuceneQuery(query, fields, birthyear, includeVoided, gender);
+	}
 
-	private LuceneQuery<PersonName> getPersonNameQuery(String query, boolean orQueryParser, boolean includeVoided, boolean patientsOnly, LuceneQuery<?> skipSame) {
+	private LuceneQuery<PersonName> buildSoundexLuceneQuery(String query, List<String> fields, Integer birthyear, boolean includeVoided, String gender) {
+		String completeQuery = query;
+		if(birthyear != 0) {
+			// https://stackoverflow.com/questions/17221736/whats-wrong-with-this-solr-range-filter-query/17225534#17225534
+			String dateQuery = " AND (person.birthdate: [" + (birthyear - 1) + " TO " + (birthyear + 1) + "] OR ( -person.birthdate:([* TO *])  AND *:*))";
+			completeQuery+= dateQuery;
+		}
+		
+		LuceneQuery<PersonName> luceneQuery = LuceneQuery
+			.newQuery(PersonName.class, sessionFactory.getCurrentSession(), completeQuery, fields).useOrQueryParser();
+		
+		if (!includeVoided) {
+			luceneQuery.include("voided", false);
+			luceneQuery.include("person.voided", false);
+		}
+		
+		if(gender != null) {
+			String[] searchedGenders = new String[] {gender.toLowerCase()};
+			luceneQuery.include("person.gender", searchedGenders);
+		}		
+		return luceneQuery;
+	}
+		
+		
+		private LuceneQuery<PersonName> getPersonNameQuery(String query, boolean orQueryParser, boolean includeVoided, boolean patientsOnly, LuceneQuery<?> skipSame) {
 		List<String> fields = new ArrayList<>();
 		fields.addAll(Arrays.asList("givenNameExact", "middleNameExact", "familyNameExact", "familyName2Exact"));
 		fields.addAll(Arrays.asList("givenNameStart", "middleNameStart", "familyNameStart", "familyName2Start"));

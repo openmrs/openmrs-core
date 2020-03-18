@@ -11,6 +11,7 @@ package org.openmrs.api.db.hibernate;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -72,6 +73,83 @@ public class HibernatePersonDAO implements PersonDAO {
 		this.sessionFactory = sessionFactory;
 	}
 	
+	
+	private Set<Person> executeSoundexOnePersonNameQuery(String name, Integer birthyear, boolean includeVoided , String gender) {
+		PersonLuceneQuery personLuceneQuery = new PersonLuceneQuery(sessionFactory);
+		String query = LuceneQuery.escapeQuery(name);
+		int maxResults = HibernatePersonDAO.getMaximumSearchResults();
+		
+		
+		LuceneQuery<PersonName> luceneQuery = personLuceneQuery.getSoundexPersonNameQuery(query, birthyear, false, gender);;
+		LinkedHashSet<Person> people = new LinkedHashSet<>();
+		List<PersonName> persons = luceneQuery.list();
+		ListPart<Object[]> names = luceneQuery.listPartProjection(0, maxResults, "person.personId");
+		names.getList().forEach(x-> people.add(getPerson((Integer) x[0])));
+		
+		return people; 
+	}
+	
+	private Set<Person> executeSoundexTwoPersonNameQuery(String name1, String name2,  Integer birthyear, boolean includeVoided , String gender) {
+		PersonLuceneQuery personLuceneQuery = new PersonLuceneQuery(sessionFactory);
+		int maxResults = HibernatePersonDAO.getMaximumSearchResults();
+		
+		LuceneQuery<PersonName> luceneQuery = personLuceneQuery.getSoundexPersonNameAtLeastThreeMatches(name1, name2, 0, false, "M");
+		LinkedHashSet<Person> people = new LinkedHashSet<>();
+		ListPart<Object[]> names = luceneQuery.listPartProjection(0, maxResults, "person.personId");
+		names.getList().forEach(x-> people.add(getPerson((Integer) x[0])));
+		
+		Set<Person> firstNamesMatch = new HashSet<>();
+		Set<Person> secondNamesMatch = new HashSet<>();
+		Set<Person> secondNamesMatchFirstName = new HashSet<>();
+		Set<Person> firstNamesMatchSecondName = new HashSet<>();
+		
+		
+		// Executed Filter Logic: 
+		// People whose first name matches n1 and second part of the name (givenName, familyName, familyName2) matches at least once n2
+		firstNamesMatch = execSoundexLuceneQueryByNames(true, name1, birthyear, includeVoided, gender);
+		secondNamesMatch = execSoundexLuceneQueryByNames(false, name2, birthyear, includeVoided, gender);
+		
+		firstNamesMatch.retainAll(secondNamesMatch);
+		people.addAll(firstNamesMatch);
+		
+		// Executed Filter Logic: 
+		// People who have second part of the name(givenName, familyName, familyName2) matching n2 and n1 (at least once)
+		secondNamesMatchFirstName = execSoundexLuceneQueryByNames(false, name1, birthyear, includeVoided, gender);
+		secondNamesMatch.retainAll(secondNamesMatchFirstName);
+		people.addAll(secondNamesMatch);
+		secondNamesMatch.clear();
+		
+		// Executed Filter Logic:
+		// People who have given_name matching n2, second name matching n1, and another part of second name matching “”
+		firstNamesMatchSecondName = execSoundexLuceneQueryByNames(true, name2, birthyear, includeVoided, gender);
+		secondNamesMatch = execSoundexLuceneQueryByNames(false, "", birthyear, includeVoided, gender);
+		
+		firstNamesMatchSecondName.retainAll(secondNamesMatchFirstName);
+		firstNamesMatchSecondName.retainAll(secondNamesMatch);
+		people.addAll(firstNamesMatchSecondName);
+		
+		return people;
+	}
+	
+	
+	private Set<Person> execSoundexLuceneQueryByNames(boolean firstName, String name, Integer birthyear, boolean includeVoided , String gender) {
+		PersonLuceneQuery personLuceneQuery = new PersonLuceneQuery(sessionFactory);
+		int maxResults = HibernatePersonDAO.getMaximumSearchResults();
+		Set<Person> results = new HashSet<>();
+		LuceneQuery<PersonName> luceneQuery;
+		
+		if(firstName) {
+			luceneQuery = personLuceneQuery.getSoundexPersonFirstNameQuery(name, birthyear, includeVoided, gender);
+		}
+		else {
+			luceneQuery = personLuceneQuery.getSoundexPersonSecondNameQuery(name, birthyear, includeVoided, gender);
+		}
+		ListPart<Object[]> names = luceneQuery.listPartProjection(0, maxResults, "person.personId");
+		names.getList().forEach(x-> results.add(getPerson((Integer) x[0])));
+		
+		return results;
+	}
+	
 	/**
 	 * @see org.openmrs.api.PersonService#getSimilarPeople(java.lang.String, java.lang.Integer,
 	 *      java.lang.String, java.lang.String)
@@ -84,6 +162,7 @@ public class HibernatePersonDAO implements PersonDAO {
 		if (birthyear == null) {
 			birthyear = 0;
 		}
+		
 
 		name = name.replaceAll("  ", " ");
 		name = name.replace(", ", " ");
@@ -92,12 +171,15 @@ public class HibernatePersonDAO implements PersonDAO {
 		StringBuilder q = new StringBuilder(
 		        "select p from Person p left join p.names as pname where p.personVoided = false and pname.voided = false and ");
 		
+		
 		if (names.length == 1) {
-			q.append("(").append(" soundex(pname.givenName) = soundex(:n1)").append(
-			    " or soundex(pname.middleName) = soundex(:n1)").append(" or soundex(pname.familyName) = soundex(:n1) ")
-			        .append(" or soundex(pname.familyName2) = soundex(:n1) ").append(")");
+			return executeSoundexOnePersonNameQuery(name, birthyear, false, gender);
+			//q.append("(").append(" soundex(pname.givenName) = soundex(:n1)").append(
+			//    " or soundex(pname.middleName) = soundex(:n1)").append(" or soundex(pname.familyName) = soundex(:n1) ")
+			//        .append(" or soundex(pname.familyName2) = soundex(:n1) ").append(")");
 		} else if (names.length == 2) {
-			q.append("(").append(" case").append("  when pname.givenName is null then 1").append(
+			return executeSoundexTwoPersonNameQuery(names[0], names[1], birthyear, false, gender);
+			/*q.append("(").append(" case").append("  when pname.givenName is null then 1").append(
 			    "  when pname.givenName = '' then 1").append("  when soundex(pname.givenName) = soundex(:n1) then 4")
 			        .append("  when soundex(pname.givenName) = soundex(:n2) then 3").append("  else 0 ").append(" end")
 			        .append(" + ").append(" case").append("  when pname.middleName is null then 1").append(
@@ -112,7 +194,7 @@ public class HibernatePersonDAO implements PersonDAO {
 			            "  when pname.familyName2 = '' then 1").append(
 			            "  when soundex(pname.familyName2) = soundex(:n1) then 3").append(
 			            "  when soundex(pname.familyName2) = soundex(:n2) then 4").append("  else 0 ").append(" end")
-			        .append(") > 6");
+			        .append(") > 6");*/
 		} else if (names.length == 3) {
 			q.append("(").append(" case").append("  when pname.givenName is null then 0").append(
 			    "  when soundex(pname.givenName) = soundex(:n1) then 3").append(
@@ -254,7 +336,7 @@ public class HibernatePersonDAO implements PersonDAO {
 			criteria.setMaxResults(maxResults);
 			return criteria.list();
 		}
-
+		
 		String query = LuceneQuery.escapeQuery(searchString);
 
 		PersonLuceneQuery personLuceneQuery = new PersonLuceneQuery(sessionFactory);
@@ -263,12 +345,11 @@ public class HibernatePersonDAO implements PersonDAO {
 		if (dead != null) {
 			nameQuery.include("person.dead", dead);
 		}
-
 		List<Person> people = new ArrayList<>();
-
+		
 		ListPart<Object[]> names = nameQuery.listPartProjection(0, maxResults, "person.personId");
 		names.getList().forEach(name -> people.add(getPerson((Integer) name[0])));
-
+		
 		LuceneQuery<PersonAttribute> attributeQuery = personLuceneQuery.getPersonAttributeQueryWithOrParser(query, includeVoided, nameQuery);
 		ListPart<Object[]> attributes = attributeQuery.listPartProjection(0, maxResults, "person.personId");
 		attributes.getList().forEach(attribute -> people.add(getPerson((Integer) attribute[0])));

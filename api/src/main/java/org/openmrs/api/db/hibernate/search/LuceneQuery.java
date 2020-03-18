@@ -231,8 +231,7 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	 */
 	protected QueryParser newQueryParser() {
 		Analyzer analyzer = getFullTextSession().getSearchFactory().getAnalyzer(getType());
-		QueryParser queryParser = new QueryParser(null, analyzer);
-
+		QueryParser queryParser = new QueryParser(null, analyzer); 
 		setDefaultOperator(queryParser);
 		return queryParser;
 	}
@@ -240,7 +239,8 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 
 	protected MultiFieldQueryParser newMultipleFieldQueryParser(Collection<String> fields) {
 		Analyzer analyzer;
-		if (getType().isAssignableFrom(PatientIdentifier.class) || getType().isAssignableFrom(PersonName.class) || getType().isAssignableFrom(PersonAttribute.class)) {
+		//getType().isAssignableFrom(PersonName.class) ||
+		if (getType().isAssignableFrom(PatientIdentifier.class) ||  getType().isAssignableFrom(PersonAttribute.class)) {
 			analyzer = getFullTextSession().getSearchFactory().getAnalyzer(LuceneAnalyzers.EXACT_ANALYZER);
 		} else {
 			analyzer = getFullTextSession().getSearchFactory().getAnalyzer(getType());
