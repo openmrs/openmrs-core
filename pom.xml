@@ -258,7 +258,7 @@
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-validator</artifactId>
-				<version>4.3.2.Final</version>
+				<version>5.4.0.Final</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
@@ -500,7 +500,7 @@
 			<dependency>
 				<groupId>javax.validation</groupId>
 				<artifactId>validation-api</artifactId>
-				<version>1.0.0.GA</version>
+				<version>2.0.1.Final</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.sonar-plugins.java</groupId>
