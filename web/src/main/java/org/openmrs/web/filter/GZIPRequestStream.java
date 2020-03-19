@@ -12,6 +12,7 @@ package org.openmrs.web.filter;
 import java.io.IOException;
 import java.util.zip.GZIPInputStream;
 
+import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 
@@ -43,5 +44,19 @@ public class GZIPRequestStream extends ServletInputStream {
 	public int read(byte[] b) throws IOException {
 		return zipInput.read(b);
 	}
-	
+
+	@Override
+	public boolean isFinished() {
+		throw new UnsupportedOperationException("Asynchonous operation is not supported.");
+	}
+
+	@Override
+	public boolean isReady() {
+		throw new UnsupportedOperationException("Asynchonous operation is not supported.");
+	}
+
+	@Override
+	public void setReadListener(ReadListener readListener) {
+		throw new UnsupportedOperationException("Asynchonous operation is not supported.");
+	}
 }

@@ -59,7 +59,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	
 	// Fields
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "encounter_id")
 	private Integer encounterId;
 	

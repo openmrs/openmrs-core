@@ -72,7 +72,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	private static final Logger log = LoggerFactory.getLogger(Person.class);
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "person_id")
 	@DocumentId
 	protected Integer personId;

@@ -85,11 +85,6 @@
 		<property name="unmarshaller" ref="xStreamMarshaller" />
 	</bean>
 	
-	<bean id="defaultMethodParamResolver" class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
-		<property name="paramName"><value>method</value></property>
-		<property name="defaultMethodName"><value>handleRequest</value></property>
-	</bean>
-	
 	<!--  Exception handler mappings --> 
  		 
  	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver"> 
@@ -103,14 +98,14 @@
 	
 	<!-- So that controllers can use annotations like @Controller and @RequestMapping
 -->
-	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
 		<!-- makes annotations more important than default mappings -->
 		<property name="order"><value>98</value></property>
 	</bean>
 
 	<bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
 
-	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
 		<property name="webBindingInitializer">
 			<bean class="org.openmrs.web.OpenmrsBindingInitializer"/>
 		</property>

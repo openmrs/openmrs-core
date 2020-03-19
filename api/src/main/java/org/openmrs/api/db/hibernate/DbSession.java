@@ -301,7 +301,8 @@ public class DbSession {
 	 * @throws HibernateException Indicates problems cleaning up.
 	 */
 	public Connection close() throws HibernateException {
-		return getSession().close();
+		getSession().close();
+		return null;
 	}
 	
 	/**

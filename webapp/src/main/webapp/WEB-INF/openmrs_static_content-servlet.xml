@@ -44,7 +44,7 @@
 	<bean id="staticContentController" class="org.openmrs.web.controller.PseudoStaticContentController">
 		<property name="interpretJstl"><value>false</value></property>
 		<property name="rewrites">
-			<ref local="urlRewrites"/>
+			<ref bean="urlRewrites"/>
 		</property>
 	</bean>
 	

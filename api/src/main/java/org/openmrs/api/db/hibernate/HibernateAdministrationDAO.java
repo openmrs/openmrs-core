@@ -15,6 +15,10 @@ import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.Metadata;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
@@ -26,8 +30,14 @@ import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.StringType;
 import org.hibernate.type.TextType;
 import org.hibernate.type.Type;
+import org.openmrs.Allergy;
+import org.openmrs.Condition;
+import org.openmrs.Diagnosis;
+import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.OpenmrsObject;
+import org.openmrs.Patient;
+import org.openmrs.Visit;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.api.db.DAOException;
@@ -60,6 +70,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	private SessionFactory sessionFactory;
 	
 	private Configuration configuration;
+	
+	private Metadata metaData;
 	
 	private ApplicationContext applicationContext;
 	
@@ -189,7 +201,17 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 			configuration = sessionFactoryBean.getConfiguration();
 		}
 		
-		PersistentClass persistentClass = configuration.getClassMapping(aClass.getName().split("_")[0]);
+		if (metaData == null) {
+			StandardServiceRegistry standardRegistry = new StandardServiceRegistryBuilder()
+					.configure().applySettings(configuration.getProperties()).build();
+			
+			metaData = new MetadataSources(standardRegistry).addAnnotatedClass(Allergy.class)
+					.addAnnotatedClass(Patient.class).addAnnotatedClass(Encounter.class)
+					.addAnnotatedClass(Diagnosis.class).addAnnotatedClass(Condition.class)
+					.addAnnotatedClass(Visit.class).getMetadataBuilder().build();
+		}
+		
+		PersistentClass persistentClass = metaData.getEntityBinding(aClass.getName().split("_")[0]);
 		if (persistentClass == null) {
 			throw new APIException("Couldn't find a class in the hibernate configuration named: " + aClass.getName());
 		} else {
