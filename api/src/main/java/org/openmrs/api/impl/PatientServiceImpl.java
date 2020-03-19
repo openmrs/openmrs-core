@@ -117,7 +117,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * @see org.openmrs.api.PatientService#savePatient(org.openmrs.Patient)
 	 */
 	@Override
-	public Patient savePatient(Patient patient) throws APIException {
+	public synchronized Patient savePatient(Patient patient) throws APIException {
 		requireAppropriatePatientModificationPrivilege(patient);
 
 		if (!patient.getVoided() && patient.getIdentifiers().size() == 1) {
