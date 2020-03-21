@@ -9,6 +9,9 @@
  */
 package org.openmrs.notification.mail;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
@@ -17,12 +20,14 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 import org.openmrs.api.context.Context;
+import org.openmrs.api.impl.UserServiceImpl;
 import org.openmrs.notification.Message;
 import org.openmrs.notification.MessageException;
 import org.openmrs.notification.MessageSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
+
 
 public class MailMessageSender implements MessageSender {
 	
@@ -117,7 +122,6 @@ public class MailMessageSender implements MessageSender {
 		
 		return mimeMessage;
 	}
-	
 	/**
 	 * Creates a MimeMultipart, so that we can have an attachment.
 	 *
@@ -131,9 +135,15 @@ public class MailMessageSender implements MessageSender {
 		textContent.setContent(message.getContent(), message.getContentType());
 		
 		MimeBodyPart attachment = new MimeBodyPart();
-		attachment.setContent(message.getAttachment(), message.getAttachmentContentType());
-		attachment.setFileName(message.getAttachmentFileName());
-		
+		if(message.getAttachmentFileName().equals("Logo")){
+			DataSource fds = new FileDataSource(
+				UserServiceImpl.getTemplateFile()[1]);
+			attachment.setDataHandler(new DataHandler(fds));
+			attachment.setHeader("Content-ID", "<image>");
+		}else {
+			attachment.setContent(message.getAttachment(), message.getAttachmentContentType());
+			attachment.setFileName(message.getAttachmentFileName());
+		}
 		toReturn.addBodyPart(textContent);
 		toReturn.addBodyPart(attachment);
 		

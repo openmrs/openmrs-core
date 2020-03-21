@@ -9,6 +9,7 @@
  */
 package org.openmrs.api;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
