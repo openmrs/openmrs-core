@@ -128,26 +128,42 @@ public class PersonNameValidator implements Validator {
 			errors.reject("error.name");
 			return;
 		}
+		
 		// Make sure they assign a name
-		if (StringUtils.isBlank(personName.getGivenName())
+		if (StringUtils.isBlank(personName.getGivenName()) 
 		        || StringUtils.isBlank(personName.getGivenName().replaceAll("\"", ""))) {
 			errors.rejectValue(getFieldKey("givenName", arrayInd, testInd), "Patient.names.required.given.family");
 		}
 
+		// Make sure entered name value has no leading and trailing spaces
+		if (startsOrEndsWithWhitespace(personName.getGivenName())) {
+			errors.rejectValue(getFieldKey("givenName", arrayInd, testInd), "GivenName.startsOrEndsWithWhitespace");
+		}
+		if (startsOrEndsWithWhitespace(personName.getMiddleName())) {
+			errors.rejectValue(getFieldKey("middleName", arrayInd, testInd), "MiddleName.startsOrEndsWithWhitespace");
+		}
+		if (startsOrEndsWithWhitespace(personName.getFamilyName())) {
+			errors.rejectValue(getFieldKey("familyName", arrayInd, testInd), "FamilyName.startsOrEndsWithWhitespace");
+		}
+		if (startsOrEndsWithWhitespace(personName.getFamilyName2())) {
+			errors.rejectValue(getFieldKey("familyName2", arrayInd, testInd), "FamilyName2.startsOrEndsWithWhitespace");
+		}
+		
+		
 		// Make sure the entered name value is sensible 
 		String namePattern = Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_NAME_REGEX);
 		if (StringUtils.isNotBlank(namePattern)) {
-			if (StringUtils.isNotBlank(personName.getGivenName()) && !personName.getGivenName().matches(namePattern)) {
+			if (!matchNamePattern(personName.getGivenName(), namePattern)) {
 				errors.rejectValue(getFieldKey("givenName", arrayInd, testInd), "GivenName.invalid");
 			}
-			if (StringUtils.isNotBlank(personName.getMiddleName()) && !personName.getMiddleName().matches(namePattern)) {
+			if (!matchNamePattern(personName.getMiddleName(), namePattern)) {
 				errors.rejectValue(getFieldKey("middleName", arrayInd, testInd), "MiddleName.invalid");
 			}
-			if (StringUtils.isNotBlank(personName.getFamilyName()) && !personName.getFamilyName().matches(namePattern)) {
+			if (!matchNamePattern(personName.getFamilyName(), namePattern)) {
 				errors.rejectValue(getFieldKey("familyName", arrayInd, testInd), "FamilyName.invalid");
 			}
-			if (StringUtils.isNotBlank(personName.getFamilyName2()) && !personName.getFamilyName2().matches(namePattern)) {
+			if (!matchNamePattern(personName.getFamilyName2(), namePattern)) {
 				errors.rejectValue(getFieldKey("familyName2", arrayInd, testInd), "FamilyName2.invalid");
 			}
 		}
@@ -162,6 +178,18 @@ public class PersonNameValidator implements Validator {
 	 */
 	private String getFieldKey(String field, boolean arrayInd, boolean testInd) {
 		return testInd ? field : arrayInd ? "names[0]." + field : "name." + field;
+	}
+	
+	private boolean startsOrEndsWithWhitespace(String value) {
+		return (StringUtils.isNotBlank(value) && (Character.isSpaceChar(value.charAt(0)) || Character.isSpaceChar(value.charAt(value.length() -1))));		
+	}
+	
+	private boolean matchNamePattern(String value, String namePattern) {
+		boolean match = true;
+		if (StringUtils.isNotBlank(value)) {
+			match = value.matches(namePattern);
+		} 
+		return match;
 	}
 	
 }
