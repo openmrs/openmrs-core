@@ -163,7 +163,9 @@ public class HibernatePersonDAO implements PersonDAO {
 			birthyear = 0;
 		}
 		
-
+		String matchMode = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE);
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE, OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_SOUNDEX);
+		
 		name = name.replaceAll("  ", " ");
 		name = name.replace(", ", " ");
 		String[] names = name.split(" ");
@@ -173,12 +175,17 @@ public class HibernatePersonDAO implements PersonDAO {
 		
 		
 		if (names.length == 1) {
-			return executeSoundexOnePersonNameQuery(name, birthyear, false, gender);
+			Set<Person> result =  executeSoundexOnePersonNameQuery(name, birthyear, false, gender);
+			Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE, matchMode);
+			return result;
+				
 			//q.append("(").append(" soundex(pname.givenName) = soundex(:n1)").append(
 			//    " or soundex(pname.middleName) = soundex(:n1)").append(" or soundex(pname.familyName) = soundex(:n1) ")
 			//        .append(" or soundex(pname.familyName2) = soundex(:n1) ").append(")");
 		} else if (names.length == 2) {
-			return executeSoundexTwoPersonNameQuery(names[0], names[1], birthyear, false, gender);
+			Set<Person> result =   executeSoundexTwoPersonNameQuery(names[0], names[1], birthyear, false, gender);
+			Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE, matchMode);
+			return result;
 			/*q.append("(").append(" case").append("  when pname.givenName is null then 1").append(
 			    "  when pname.givenName = '' then 1").append("  when soundex(pname.givenName) = soundex(:n1) then 4")
 			        .append("  when soundex(pname.givenName) = soundex(:n2) then 3").append("  else 0 ").append(" end")

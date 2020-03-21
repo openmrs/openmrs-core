@@ -575,6 +575,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getPatients_shouldForceSearchStringToBeGreaterThanMinsearchcharactersGlobalProperty() throws Exception {
 		// make sure we can get patients with the default of 3
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE, OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_START);
+		
 		assertEquals(1, Context.getPatientService().getPatients("Colle").size());
 		
 		Context.clearSession();

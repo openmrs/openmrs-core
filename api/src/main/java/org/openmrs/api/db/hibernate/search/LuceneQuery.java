@@ -34,6 +34,7 @@ import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
 import org.openmrs.collection.ListPart;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Performs Lucene queries.
@@ -240,7 +241,9 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	protected MultiFieldQueryParser newMultipleFieldQueryParser(Collection<String> fields) {
 		Analyzer analyzer;
 		//getType().isAssignableFrom(PersonName.class) ||
-		if (getType().isAssignableFrom(PatientIdentifier.class) ||  getType().isAssignableFrom(PersonAttribute.class)) {
+		String soundexMatch = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE);
+			
+		if (getType().isAssignableFrom(PatientIdentifier.class) || (getType().isAssignableFrom(PersonName.class) && !OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_SOUNDEX.equals(soundexMatch)) || getType().isAssignableFrom(PersonAttribute.class)) {
 			analyzer = getFullTextSession().getSearchFactory().getAnalyzer(LuceneAnalyzers.EXACT_ANALYZER);
 		} else {
 			analyzer = getFullTextSession().getSearchFactory().getAnalyzer(getType());

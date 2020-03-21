@@ -65,8 +65,6 @@ public class LuceneAnalyzerFactory {
 			.filter(LowerCaseFilterFactory.class)
 			.filter(PhoneticFilterFactory.class)
 				.param("encoder", "Soundex");
-				//.param("inject", "true");
-
 		
 		return mapping;
 	}

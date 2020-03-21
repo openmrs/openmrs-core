@@ -586,6 +586,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		assertTrue(TestUtil.containsId(people, 2));
 		assertTrue(TestUtil.containsId(people, 4));
 		assertTrue(TestUtil.containsId(people, 5));
+		
 	}
 	
 	/**

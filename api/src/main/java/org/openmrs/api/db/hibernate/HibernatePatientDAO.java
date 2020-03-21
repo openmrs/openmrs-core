@@ -787,8 +787,8 @@ public class HibernatePatientDAO implements PatientDAO {
 		}
 
 		PersonLuceneQuery personLuceneQuery = new PersonLuceneQuery(sessionFactory);
-
 		LuceneQuery<PersonName> nameQuery = personLuceneQuery.getPatientNameQuery(query, includeVoided, identifierQuery);
+		
 		long namesSize = nameQuery.resultSize();
 		if (namesSize > tmpStart) {
 			ListPart<Object[]> personNames = nameQuery.listPartProjection(tmpStart, tmpLength, "person.personId");
