@@ -51,6 +51,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.HibernatePatientDAO;
 import org.openmrs.api.db.hibernate.HibernatePersonDAO;
 import org.openmrs.api.db.hibernate.PersonAttributeHelper;
+import org.openmrs.api.db.hibernate.search.LuceneQuery;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.GlobalPropertiesTestHelper;
 import org.openmrs.util.OpenmrsConstants;
@@ -2467,5 +2468,28 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		results = patientService.getPatients("uric", 0, 15);
 		time = System.currentTimeMillis() - time;
 		System.out.println("Anywhere search for 'uric' attribute limited to 15 results returned in " + time + " ms");
+	}
+	
+	@Test
+	public void savePatients_shouldChangeLuceneIndexOfPersonClass() {
+		List<String> fields=new ArrayList<>();
+		fields.add("gender");
+		
+		LuceneQuery<Person> luceneQuery = LuceneQuery
+				.newQuery(Person.class, sessionFactory.getCurrentSession(), "M", fields);
+		luceneQuery.include("isPatient", true);
+		luceneQuery.include("voided", false);
+		Assert.assertEquals(44,luceneQuery.resultSize());
+		Patient patient=patientService.getPatient(6);
+		patient.setGender("F");
+		patientService.savePatient(patient);
+		
+		updateSearchIndex();
+		//As the gender of patient(with ID=6) is change to female, count of male patients reduce by 1
+		LuceneQuery<Person> updatedQuery = LuceneQuery
+				.newQuery(Person.class, sessionFactory.getCurrentSession(), "M", fields);
+		updatedQuery.include("isPatient", true);
+		updatedQuery.include("voided", false);
+		Assert.assertEquals(43,luceneQuery.resultSize());
 	}
 }
