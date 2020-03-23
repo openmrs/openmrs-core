@@ -71,7 +71,7 @@
 <tr class="a">
 <td>com.mysql</td>
 <td>mysql-connector-mxj</td>
-<td>5.0.11</td>
+<td>5.0.12</td>
 <td>jar</td>
 <td>-</td></tr>
 <tr class="b">
@@ -459,7 +459,7 @@
 <tr class="b">
 <td>mysql</td>
 <td><a class="externalLink" href="http://dev.mysql.com/doc/connector-j/en/">mysql-connector-java</a></td>
-<td>5.1.45</td>
+<td>8.0.19</td>
 <td>jar</td>
 <td><a class="externalLink" href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html">The GNU General Public License, Version 2</a></td></tr>
 <tr class="a">
