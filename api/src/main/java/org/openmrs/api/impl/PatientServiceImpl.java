@@ -1323,8 +1323,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			return getIdentifierValidator((Class<IdentifierValidator>) Context.loadClass(pivClassName));
 		}
 		catch (ClassNotFoundException e) {
-			log.error("Could not find patient identifier validator " + pivClassName, e);
-			return getDefaultIdentifierValidator();
+			throw new PatientIdentifierException("Could not find patient identifier validator " + pivClassName);
 		}
 	}
 	
