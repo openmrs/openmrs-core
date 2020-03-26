@@ -21,7 +21,16 @@
                     <td>$l10n.get("install.advanced.admin.password.retype"):</td>
      			<td><input type="password" name="new_admin_password_confirm" value="" autocomplete="off" onKeyPress="return submitenter(this,event);"/></td>
      		</tr>
-                <tr>
+			<tr>
+				<td colspan="2" class="question">
+					<strong>$l10n.get("install.advanced.admin.password.constraints") :</strong><br/>
+					$l10n.get("install.advanced.admin.password.constraints.min.length")<br/>
+					$l10n.get("install.advanced.admin.password.constraints.cases")<br/>
+					$l10n.get("install.advanced.admin.password.constraints.numbers")<br/>
+					$l10n.get("install.advanced.admin.password.constraints.username")<br/>
+				</td>
+			</tr>
+			<tr>
 			<td colspan="2" align="center">
 				<input type="image" src="images/back_button.png" value="Back" name="back" style="margin-right: 20px"/>
 				<input type="image" src="images/forward_button.png" name="continue" style="margin-left: 20px"/>
