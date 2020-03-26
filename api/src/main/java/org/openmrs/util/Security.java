@@ -53,9 +53,9 @@ public class Security {
 	 * @param passwordToHash a string to encode/hash and compare to hashedPassword
 	 * @return true/false whether the two are equal
 	 * @since 1.5
-	 * @should match strings hashed with incorrect sha1 algorithm
-	 * @should match strings hashed with sha1 algorithm
-	 * @should match strings hashed with sha512 algorithm and 128 characters salt
+	 * <strong>Should</strong> match strings hashed with incorrect sha1 algorithm
+	 * <strong>Should</strong> match strings hashed with sha1 algorithm
+	 * <strong>Should</strong> match strings hashed with sha512 algorithm and 128 characters salt
 	 */
 	public static boolean hashMatches(String hashedPassword, String passwordToHash) {
 		if (hashedPassword == null || passwordToHash == null) {
@@ -83,7 +83,7 @@ public class Security {
 	 *
 	 * @param strToEncode string to encode
 	 * @return the SHA-512 encryption of a given string
-	 * @should encode strings to 128 characters
+	 * <strong>Should</strong> encode strings to 128 characters
 	 */
 	public static String encodeString(String strToEncode) throws APIException {
 		String algorithm = "SHA-512";
@@ -238,7 +238,7 @@ public class Security {
 	 * @param text
 	 * @return encrypted text
 	 * @since 1.9
-	 * @should encrypt short and long text
+	 * <strong>Should</strong> encrypt short and long text
 	 */
 	public static String encrypt(String text) {
 		return Security.encrypt(text, Security.getSavedInitVector(), Security.getSavedSecretKey());
@@ -280,7 +280,7 @@ public class Security {
 	 * @param text text to be decrypted
 	 * @return decrypted text
 	 * @since 1.9
-	 * @should decrypt short and long text
+	 * <strong>Should</strong> decrypt short and long text
 	 */
 	public static String decrypt(String text) {
 		return Security.decrypt(text, Security.getSavedInitVector(), Security.getSavedSecretKey());

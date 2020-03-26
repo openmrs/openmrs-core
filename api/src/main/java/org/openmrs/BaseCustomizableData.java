@@ -89,7 +89,7 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseChan
 	
 	/**
 	 * Convenience method that voids all existing attributes of the given type, and sets this new one.
-	 * @should void the attribute if an attribute with same attribute type already exists and the maxOccurs is set to 1
+	 * <strong>Should</strong> void the attribute if an attribute with same attribute type already exists and the maxOccurs is set to 1
 	 *
 	 * @param attribute
 	 */

@@ -26,8 +26,8 @@ public class OpenmrsSecurityManager extends SecurityManager {
 	 * @return the most recently called class.
 	 * @throws APIException if given a callStackDepth less than zero
 	 * @see SecurityManager#getClassContext()
-	 * @should get the most recently called method
-	 * @should throw an error if given a subzero call stack level
+	 * <strong>Should</strong> get the most recently called method
+	 * <strong>Should</strong> throw an error if given a subzero call stack level
 	 */
 	public Class<?> getCallerClass(int callStackDepth) {
 		if (callStackDepth < 0) {

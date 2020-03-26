@@ -258,7 +258,7 @@
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-validator</artifactId>
-				<version>4.3.2.Final</version>
+				<version>5.4.0.Final</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
@@ -500,7 +500,7 @@
 			<dependency>
 				<groupId>javax.validation</groupId>
 				<artifactId>validation-api</artifactId>
-				<version>1.0.0.GA</version>
+				<version>2.0.1.Final</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.sonar-plugins.java</groupId>
@@ -665,12 +665,6 @@
 					<artifactId>maven-javadoc-plugin</artifactId>
 					<version>2.10.3</version>
 					<configuration>
-						<taglet>org.openmrs.tools.doclet.ShouldTaglet</taglet>
-						<tagletArtifact>
-							<groupId>org.openmrs.tools</groupId>
-							<artifactId>openmrs-tools</artifactId>
-							<version>${project.version}</version>
-						</tagletArtifact>
 						<!-- For some reason some packages from org.springframework are being
 						included and causing errors. -->
 						<excludePackageNames>org.springframework.*</excludePackageNames>

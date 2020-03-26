@@ -52,24 +52,24 @@ public interface EncounterService extends OpenmrsService {
 	 * 
 	 * @param encounter to be saved
 	 * @throws APIException
-	 * @should save encounter with basic details
-	 * @should update encounter successfully
-	 * @should cascade save to contained obs
-	 * @should cascade patient to orders in the encounter
-	 * @should cascade save to contained obs when encounter already exists
-	 * @should cascade encounter datetime to obs
-	 * @should only cascade the obsdatetimes to obs with different initial obsdatetimes
-	 * @should not overwrite creator if non null
-	 * @should not overwrite dateCreated if non null
-	 * @should not overwrite obs and orders creator or dateCreated
-	 * @should not assign encounter to visit if no handler is registered
-	 * @should not assign encounter to visit if the no assign handler is registered
-	 * @should assign encounter to visit if the assign to existing handler is registered
-	 * @should assign encounter to visit if the assign to existing or new handler is registered
-	 * @should cascade save encounter providers
-	 * @should cascade delete encounter providers
-	 * @should void and create new obs when saving encounter
-	 * @should fail if user is not supposed to edit encounters of type of given encounter
+	 * <strong>Should</strong> save encounter with basic details
+	 * <strong>Should</strong> update encounter successfully
+	 * <strong>Should</strong> cascade save to contained obs
+	 * <strong>Should</strong> cascade patient to orders in the encounter
+	 * <strong>Should</strong> cascade save to contained obs when encounter already exists
+	 * <strong>Should</strong> cascade encounter datetime to obs
+	 * <strong>Should</strong> only cascade the obsdatetimes to obs with different initial obsdatetimes
+	 * <strong>Should</strong> not overwrite creator if non null
+	 * <strong>Should</strong> not overwrite dateCreated if non null
+	 * <strong>Should</strong> not overwrite obs and orders creator or dateCreated
+	 * <strong>Should</strong> not assign encounter to visit if no handler is registered
+	 * <strong>Should</strong> not assign encounter to visit if the no assign handler is registered
+	 * <strong>Should</strong> assign encounter to visit if the assign to existing handler is registered
+	 * <strong>Should</strong> assign encounter to visit if the assign to existing or new handler is registered
+	 * <strong>Should</strong> cascade save encounter providers
+	 * <strong>Should</strong> cascade delete encounter providers
+	 * <strong>Should</strong> void and create new obs when saving encounter
+	 * <strong>Should</strong> fail if user is not supposed to edit encounters of type of given encounter
 	 */
 	@Authorized( { PrivilegeConstants.ADD_ENCOUNTERS, PrivilegeConstants.EDIT_ENCOUNTERS })
 	public Encounter saveEncounter(Encounter encounter) throws APIException;
@@ -80,9 +80,9 @@ public interface EncounterService extends OpenmrsService {
 	 * @param encounterId encounter id
 	 * @return encounter with given internal identifier
 	 * @throws APIException
-	 * @should throw error if given null parameter
-	 * @should fail if user is not allowed to view encounter by given id
-	 * @should return encounter if user is allowed to view it
+	 * <strong>Should</strong> throw error if given null parameter
+	 * <strong>Should</strong> fail if user is not allowed to view encounter by given id
+	 * <strong>Should</strong> return encounter if user is allowed to view it
 	 */
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
 	public Encounter getEncounter(Integer encounterId) throws APIException;
@@ -92,8 +92,8 @@ public interface EncounterService extends OpenmrsService {
 	 * 
 	 * @param uuid
 	 * @return encounter or null
-	 * @should find object given valid uuid
-	 * @should return null if no object found with given uuid
+	 * <strong>Should</strong> find object given valid uuid
+	 * <strong>Should</strong> return null if no object found with given uuid
 	 */
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
 	public Encounter getEncounterByUuid(String uuid) throws APIException;
@@ -103,8 +103,8 @@ public interface EncounterService extends OpenmrsService {
 	 * 
 	 * @param patient
 	 * @return List&lt;Encounter&gt; encounters (not voided) for a patient.
-	 * @should not get voided encounters
-	 * @should throw error when given null parameter
+	 * <strong>Should</strong> not get voided encounters
+	 * <strong>Should</strong> throw error when given null parameter
 	 */
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
 	public List<Encounter> getEncountersByPatient(Patient patient);
@@ -115,8 +115,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @param patientId
 	 * @return all encounters (not voided) for the given patient identifier
 	 * @throws APIException
-	 * @should not get voided encounters
-	 * @should throw error if given a null parameter
+	 * <strong>Should</strong> not get voided encounters
+	 * <strong>Should</strong> throw error if given a null parameter
 	 */
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
 	public List<Encounter> getEncountersByPatientId(Integer patientId) throws APIException;
@@ -127,8 +127,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @param identifier
 	 * @return all encounters (not retired) for the given patient identifier
 	 * @throws APIException
-	 * @should not get voided encounters
-	 * @should throw error if given null parameter
+	 * <strong>Should</strong> not get voided encounters
+	 * <strong>Should</strong> throw error if given null parameter
 	 */
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
 	public List<Encounter> getEncountersByPatientIdentifier(String identifier) throws APIException;
@@ -149,16 +149,16 @@ public interface EncounterService extends OpenmrsService {
 	 * @param includeVoided true/false to include the voided encounters or not
 	 * @return a list of encounters ordered by increasing encounterDatetime
 	 * @since 1.9
-	 * @should get encounters by location
-	 * @should get encounters on or after date
-	 * @should get encounters on or up to a date
-	 * @should get encounters by form
-	 * @should get encounters by type
-	 * @should get encounters by provider
-	 * @should get encounters by visit type
-	 * @should get encounters by visit
-	 * @should exclude voided encounters
-	 * @should include voided encounters
+	 * <strong>Should</strong> get encounters by location
+	 * <strong>Should</strong> get encounters on or after date
+	 * <strong>Should</strong> get encounters on or up to a date
+	 * <strong>Should</strong> get encounters by form
+	 * <strong>Should</strong> get encounters by type
+	 * <strong>Should</strong> get encounters by provider
+	 * <strong>Should</strong> get encounters by visit type
+	 * <strong>Should</strong> get encounters by visit
+	 * <strong>Should</strong> exclude voided encounters
+	 * <strong>Should</strong> include voided encounters
 	 * 
 	 * @deprecated As of 2.0, replaced by {@link #getEncounters(EncounterSearchCriteria)}
 	 */
@@ -175,7 +175,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @param encounterSearchCriteria the object containing search parameters
 	 * @return a list of encounters ordered by increasing encounterDatetime
 	 * @since 1.12
-	 * @should get encounters modified after specified date
+	 * <strong>Should</strong> get encounters modified after specified date
 	 */
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
 	public List<Encounter> getEncounters(EncounterSearchCriteria encounterSearchCriteria);
@@ -185,12 +185,12 @@ public interface EncounterService extends OpenmrsService {
 	 * 
 	 * @param encounter Encounter object to void
 	 * @param reason String reason that it's being voided
-	 * @should void encounter and set attributes
-	 * @should cascade to obs
-	 * @should cascade to orders
-	 * @should throw error with null reason parameter
-	 * @should not void providers
-	 * @should fail if user is not supposed to edit encounters of type of given encounter
+	 * <strong>Should</strong> void encounter and set attributes
+	 * <strong>Should</strong> cascade to obs
+	 * <strong>Should</strong> cascade to orders
+	 * <strong>Should</strong> throw error with null reason parameter
+	 * <strong>Should</strong> not void providers
+	 * <strong>Should</strong> fail if user is not supposed to edit encounters of type of given encounter
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_ENCOUNTERS })
 	public Encounter voidEncounter(Encounter encounter, String reason);
@@ -199,10 +199,10 @@ public interface EncounterService extends OpenmrsService {
 	 * Unvoid encounter record
 	 * 
 	 * @param encounter Encounter to be revived
-	 * @should cascade unvoid to obs
-	 * @should cascade unvoid to orders
-	 * @should unvoid and unmark all attributes
-	 * @should fail if user is not supposed to edit encounters of type of given encounter
+	 * <strong>Should</strong> cascade unvoid to obs
+	 * <strong>Should</strong> cascade unvoid to orders
+	 * <strong>Should</strong> unvoid and unmark all attributes
+	 * <strong>Should</strong> fail if user is not supposed to edit encounters of type of given encounter
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_ENCOUNTERS })
 	public Encounter unvoidEncounter(Encounter encounter) throws APIException;
@@ -212,8 +212,8 @@ public interface EncounterService extends OpenmrsService {
 	 * encounters, use <code>voidEncounter(org.openmrs.Encounter)</code>
 	 * 
 	 * @param encounter encounter object to be purged
-	 * @should purgeEncounter
-	 * @should fail if user is not supposed to edit encounters of type of given encounter
+	 * <strong>Should</strong> purgeEncounter
+	 * <strong>Should</strong> fail if user is not supposed to edit encounters of type of given encounter
 	 */
 	@Authorized( { PrivilegeConstants.PURGE_ENCOUNTERS })
 	public void purgeEncounter(Encounter encounter) throws APIException;
@@ -224,8 +224,8 @@ public interface EncounterService extends OpenmrsService {
 	 * 
 	 * @param encounter encounter object to be purged
 	 * @param cascade Purge any related observations as well?
-	 * @should cascade purge to obs and orders
-	 * @should fail if user is not supposed to edit encounters of type of given encounter
+	 * <strong>Should</strong> cascade purge to obs and orders
+	 * <strong>Should</strong> fail if user is not supposed to edit encounters of type of given encounter
 	 */
 	@Authorized( { PrivilegeConstants.PURGE_ENCOUNTERS })
 	public void purgeEncounter(Encounter encounter, boolean cascade) throws APIException;
@@ -234,12 +234,12 @@ public interface EncounterService extends OpenmrsService {
 	 * Save a new Encounter Type or update an existing Encounter Type.
 	 * 
 	 * @param encounterType
-	 * @should save encounter type
-	 * @should not overwrite creator
-	 * @should not overwrite creator or date created
-	 * @should not overwrite date created
-	 * @should update an existing encounter type name
-	 * @should throw error when trying to save encounter type when encounter types are locked
+	 * <strong>Should</strong> save encounter type
+	 * <strong>Should</strong> not overwrite creator
+	 * <strong>Should</strong> not overwrite creator or date created
+	 * <strong>Should</strong> not overwrite date created
+	 * <strong>Should</strong> update an existing encounter type name
+	 * <strong>Should</strong> throw error when trying to save encounter type when encounter types are locked
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_ENCOUNTER_TYPES })
 	public EncounterType saveEncounterType(EncounterType encounterType) throws APIException;
@@ -250,7 +250,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @param encounterTypeId Integer
 	 * @return encounterType with given internal identifier
 	 * @throws APIException
-	 * @should throw error if given null parameter
+	 * <strong>Should</strong> throw error if given null parameter
 	 */
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTER_TYPES })
 	public EncounterType getEncounterType(Integer encounterTypeId) throws APIException;
@@ -260,8 +260,8 @@ public interface EncounterService extends OpenmrsService {
 	 * 
 	 * @param uuid
 	 * @return encounter type or null
-	 * @should find object given valid uuid
-	 * @should return null if no object found with given uuid
+	 * <strong>Should</strong> find object given valid uuid
+	 * <strong>Should</strong> return null if no object found with given uuid
 	 */
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTER_TYPES })
 	public EncounterType getEncounterTypeByUuid(String uuid) throws APIException;
@@ -272,10 +272,10 @@ public interface EncounterService extends OpenmrsService {
 	 * @param name string to match to an Encounter.name
 	 * @return EncounterType that is not retired
 	 * @throws APIException
-	 * @should not get retired types
-	 * @should return null if only retired type found
-	 * @should not get by inexact name
-	 * @should return null with null name parameter
+	 * <strong>Should</strong> not get retired types
+	 * <strong>Should</strong> return null if only retired type found
+	 * <strong>Should</strong> not get by inexact name
+	 * <strong>Should</strong> return null with null name parameter
 	 */
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTER_TYPES })
 	public EncounterType getEncounterType(String name) throws APIException;
@@ -285,7 +285,7 @@ public interface EncounterService extends OpenmrsService {
 	 * 
 	 * @return encounter types list
 	 * @throws APIException
-	 * @should not return retired types
+	 * <strong>Should</strong> not return retired types
 	 */
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTER_TYPES })
 	public List<EncounterType> getAllEncounterTypes() throws APIException;
@@ -296,8 +296,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @param includeRetired
 	 * @return encounter types list
 	 * @throws APIException
-	 * @should not return retired types
-	 * @should include retired types with true includeRetired parameter
+	 * <strong>Should</strong> not return retired types
+	 * <strong>Should</strong> include retired types with true includeRetired parameter
 	 */
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTER_TYPES })
 	public List<EncounterType> getAllEncounterTypes(boolean includeRetired) throws APIException;
@@ -309,11 +309,11 @@ public interface EncounterService extends OpenmrsService {
 	 * @param name of the encounter type to find
 	 * @return List&lt;EncounterType&gt; matching encounters
 	 * @throws APIException
-	 * @should return types by partial name match
-	 * @should return types by partial case insensitive match
-	 * @should include retired types in the results
-	 * @should not partial match name on internal substrings
-	 * @should return types ordered on name and nonretired first
+	 * <strong>Should</strong> return types by partial name match
+	 * <strong>Should</strong> return types by partial case insensitive match
+	 * <strong>Should</strong> include retired types in the results
+	 * <strong>Should</strong> not partial match name on internal substrings
+	 * <strong>Should</strong> return types ordered on name and nonretired first
 	 */
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTER_TYPES })
 	public List<EncounterType> findEncounterTypes(String name) throws APIException;
@@ -325,9 +325,9 @@ public interface EncounterService extends OpenmrsService {
 	 * @param encounterType the encounter type to retire
 	 * @param reason required non-null purpose for retiring this encounter type
 	 * @throws APIException
-	 * @should retire type and set attributes
-	 * @should throw error if given null reason parameter
-	 * @should should throw error when trying to retire encounter type when encounter types are
+	 * <strong>Should</strong> retire type and set attributes
+	 * <strong>Should</strong> throw error if given null reason parameter
+	 * <strong>Should</strong> should throw error when trying to retire encounter type when encounter types are
 	 *         locked
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_ENCOUNTER_TYPES })
@@ -339,8 +339,8 @@ public interface EncounterService extends OpenmrsService {
 	 * 
 	 * @param encounterType the encounter type to unretire
 	 * @throws APIException
-	 * @should unretire type and unmark attributes
-	 * @should should throw error when trying to unretire encounter type when encounter types are
+	 * <strong>Should</strong> unretire type and unmark attributes
+	 * <strong>Should</strong> should throw error when trying to unretire encounter type when encounter types are
 	 *         locked
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_ENCOUNTER_TYPES })
@@ -351,8 +351,8 @@ public interface EncounterService extends OpenmrsService {
 	 * 
 	 * @param encounterType
 	 * @throws APIException
-	 * @should purge type
-	 * @should should throw error when trying to delete encounter type when encounter types are
+	 * <strong>Should</strong> purge type
+	 * <strong>Should</strong> should throw error when trying to delete encounter type when encounter types are
 	 *         locked
 	 */
 	@Authorized( { PrivilegeConstants.PURGE_ENCOUNTER_TYPES })
@@ -377,10 +377,10 @@ public interface EncounterService extends OpenmrsService {
 	 * @param includeVoided Specifies whether voided encounters should be included
 	 * @return list of encounters for the given patient
 	 * @throws APIException
-	 * @should get all unvoided encounters for the given patient name
-	 * @should get all unvoided encounters for the given patient identifier
-	 * @should throw error if given null parameter
-	 * @should include voided encounters in the returned list if includedVoided is true
+	 * <strong>Should</strong> get all unvoided encounters for the given patient name
+	 * <strong>Should</strong> get all unvoided encounters for the given patient identifier
+	 * <strong>Should</strong> throw error if given null parameter
+	 * <strong>Should</strong> include voided encounters in the returned list if includedVoided is true
 	 * @since 1.7
 	 */
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
@@ -398,9 +398,9 @@ public interface EncounterService extends OpenmrsService {
 	 * @return list of encounters for the given patient based on batch settings
 	 * @throws APIException
 	 * @since 1.8
-	 * @should get all the unique encounters that match the specified parameter values
-	 * @should not return voided encounters if includeVoided is set to true
-	 * @should return empty list for empty query
+	 * <strong>Should</strong> get all the unique encounters that match the specified parameter values
+	 * <strong>Should</strong> not return voided encounters if includeVoided is set to true
+	 * <strong>Should</strong> return empty list for empty query
 	 */
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
 	public List<Encounter> getEncounters(String query, Integer start, Integer length, boolean includeVoided)
@@ -419,14 +419,14 @@ public interface EncounterService extends OpenmrsService {
 	 * @return list of encounters for the given patient based on batch settings
 	 * @throws APIException
 	 * @since 1.10
-	 * @should fetch encounters by patient id
-	 * @should include voided encounters if includeVoided is set to true
-	 * @should should match on provider identifier
-	 * @should match on the provider name
-	 * @should match on the location name
-	 * @should match on the provider person name
-	 * @should match on the encounter type name
-	 * @should match on the form name
+	 * <strong>Should</strong> fetch encounters by patient id
+	 * <strong>Should</strong> include voided encounters if includeVoided is set to true
+	 * <strong>Should</strong> should match on provider identifier
+	 * <strong>Should</strong> match on the provider name
+	 * <strong>Should</strong> match on the location name
+	 * <strong>Should</strong> match on the provider person name
+	 * <strong>Should</strong> match on the encounter type name
+	 * <strong>Should</strong> match on the form name
 	 */
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
 	public List<Encounter> getEncounters(String query, Integer patientId, Integer start, Integer length,
@@ -437,7 +437,7 @@ public interface EncounterService extends OpenmrsService {
 	 * 
 	 * @param patients Cohort of patients to search
 	 * @return Map of all encounters for specified patients.
-	 * @should get all encounters for a cohort of patients
+	 * <strong>Should</strong> get all encounters for a cohort of patients
 	 * @since 1.8
 	 */
 	public Map<Integer, List<Encounter>> getAllEncounters(Cohort patients);
@@ -449,7 +449,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @param includeVoided Specifies whether voided encounters should be included
 	 * @return the number of encounters matching the given search phrase
 	 * @since 1.8
-	 * @should get the correct count of unique encounters
+	 * <strong>Should</strong> get the correct count of unique encounters
 	 */
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
 	public Integer getCountOfEncounters(String query, boolean includeVoided);
@@ -460,8 +460,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @param visit the visit.
 	 * @param includeVoided whether voided encounters should be returned
 	 * @return list of encounters in the given visit.
-	 * @should get active encounters by visit
-	 * @should include voided encounters when includeVoided is true
+	 * <strong>Should</strong> get active encounters by visit
+	 * <strong>Should</strong> include voided encounters when includeVoided is true
 	 * @since 1.9
 	 */
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
@@ -472,9 +472,9 @@ public interface EncounterService extends OpenmrsService {
 	 *         found, an empty list.
 	 * @see EncounterVisitHandler
 	 * @since 1.9
-	 * @should return the no assignment handler
-	 * @should return the existing visit only assignment handler
-	 * @should return the existing or new visit assignment handler
+	 * <strong>Should</strong> return the no assignment handler
+	 * <strong>Should</strong> return the existing visit only assignment handler
+	 * <strong>Should</strong> return the existing or new visit assignment handler
 	 */
 	public List<EncounterVisitHandler> getEncounterVisitHandlers();
 	
@@ -495,8 +495,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @throws APIException
 	 * @return EncounterRole
 	 * @since 1.9
-	 * @should save encounter role with basic details
-	 * @should update encounter role successfully
+	 * <strong>Should</strong> save encounter role with basic details
+	 * <strong>Should</strong> update encounter role successfully
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_ENCOUNTER_ROLES })
 	public EncounterRole saveEncounterRole(EncounterRole encounterRole) throws APIException;
@@ -519,7 +519,7 @@ public interface EncounterService extends OpenmrsService {
 	 * 
 	 * @param encounterRole encounter role object to be purged
 	 * @since 1.9
-	 * @should purge Encounter Role
+	 * <strong>Should</strong> purge Encounter Role
 	 */
 	@Authorized( { PrivilegeConstants.PURGE_ENCOUNTER_ROLES })
 	public void purgeEncounterRole(EncounterRole encounterRole) throws APIException;
@@ -530,7 +530,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @param includeRetired
 	 * @return List of all encounter roles
 	 * @since 1.9
-	 * @should get all encounter roles based on include retired flag.
+	 * <strong>Should</strong> get all encounter roles based on include retired flag.
 	 */
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTER_ROLES })
 	public List<EncounterRole> getAllEncounterRoles(boolean includeRetired);
@@ -541,7 +541,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @param uuid
 	 * @return EncounterRole
 	 * @since 1.9
-	 * @should find encounter role based on uuid
+	 * <strong>Should</strong> find encounter role based on uuid
 	 */
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTER_ROLES })
 	public EncounterRole getEncounterRoleByUuid(String uuid) throws APIException;
@@ -552,7 +552,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @param name
 	 * @return EncounterRole object by name
 	 * @since 1.10
-	 * @should find an encounter role identified by its name
+	 * <strong>Should</strong> find an encounter role identified by its name
 	 */
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTER_ROLES })
 	public EncounterRole getEncounterRoleByName(String name);
@@ -565,8 +565,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @param reason required non-null purpose for retiring this encounter role
 	 * @throws APIException
 	 * @since 1.9
-	 * @should retire type and set attributes
-	 * @should throw error if given null reason parameter
+	 * <strong>Should</strong> retire type and set attributes
+	 * <strong>Should</strong> throw error if given null reason parameter
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_ENCOUNTER_ROLES })
 	public EncounterRole retireEncounterRole(EncounterRole encounterRole, String reason) throws APIException;
@@ -578,7 +578,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @param encounterType the encounter role to unretire
 	 * @throws APIException
 	 * @since 1.9
-	 * @should unretire type and unmark attributes
+	 * <strong>Should</strong> unretire type and unmark attributes
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_ENCOUNTER_ROLES })
 	public EncounterRole unretireEncounterRole(EncounterRole encounterType) throws APIException;
@@ -590,7 +590,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @param patient the patient to match against
 	 * @return a list of {@link Encounter}s
 	 * @throws APIException
-	 * @should return the unvoided encounters not assigned to any visit
+	 * <strong>Should</strong> return the unvoided encounters not assigned to any visit
 	 * @since 1.9
 	 */
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
@@ -638,8 +638,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @param user the user instance to filter "visible" encounters for
 	 * @return list, that does not include encounters, which can not be shown to given user due to
 	 *         permissions check
-	 * @should filter encounters if user is not allowed to see some encounters
-	 * @should not filter all encounters when the encounter type's view privilege column is null
+	 * <strong>Should</strong> filter encounters if user is not allowed to see some encounters
+	 * <strong>Should</strong> not filter all encounters when the encounter type's view privilege column is null
 	 */
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
 	public List<Encounter> filterEncountersByViewPermissions(List<Encounter> encounters, User user);
@@ -649,8 +649,8 @@ public interface EncounterService extends OpenmrsService {
 	 * 
 	 * @param subject the user whose permission to view all encounter types will be checked
 	 * @return true if user has access to view all types of encounters
-	 * @should return true if user is granted to view all encounters
-	 * @should return true when the encounter type's view privilege column is null
+	 * <strong>Should</strong> return true if user is granted to view all encounters
+	 * <strong>Should</strong> return true when the encounter type's view privilege column is null
 	 */
 	public boolean canViewAllEncounterTypes(User subject);
 	
@@ -659,8 +659,8 @@ public interface EncounterService extends OpenmrsService {
 	 * 
 	 * @param subject the user whose permission to edit all encounter types will be checked
 	 * @return true if user has access to edit all types of encounters
-	 * @should return true if user is granted to edit all encounters
-	 * @should return true when the encounter type's edit privilege column is null
+	 * <strong>Should</strong> return true if user is granted to edit all encounters
+	 * <strong>Should</strong> return true when the encounter type's edit privilege column is null
 	 */
 	public boolean canEditAllEncounterTypes(User subject);
 	
@@ -671,9 +671,9 @@ public interface EncounterService extends OpenmrsService {
 	 * @param encounter the encounter instance to be checked
 	 * @param subject the user, who requests edit access
 	 * @return true if user has privilege denoted by <em>editPrivilege</em> given on encounter type
-	 * @should return true if user can edit encounter
-	 * @should return false if user can not edit encounter
-	 * @should fail if encounter is null
+	 * <strong>Should</strong> return true if user can edit encounter
+	 * <strong>Should</strong> return false if user can not edit encounter
+	 * <strong>Should</strong> fail if encounter is null
 	 */
 	public boolean canEditEncounter(Encounter encounter, User subject);
 	
@@ -684,9 +684,9 @@ public interface EncounterService extends OpenmrsService {
 	 * @param encounter the encounter instance to be checked
 	 * @param subject the user, who requests view access
 	 * @return true if user has privilege denoted by <em>viewPrivilege</em> given on encounter type
-	 * @should return true if user can view encounter
-	 * @should return false if user can not view encounter
-	 * @should fail if encounter is null
+	 * <strong>Should</strong> return true if user can view encounter
+	 * <strong>Should</strong> return false if user can not view encounter
+	 * <strong>Should</strong> fail if encounter is null
 	 */
 	public boolean canViewEncounter(Encounter encounter, User subject);
 	
@@ -704,7 +704,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @param name
 	 * @return List of EncounterRole objects
 	 * @since 1.11
-	 * @should find encounter roles based on their name
+	 * <strong>Should</strong> find encounter roles based on their name
 	 */
 	
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTER_ROLES })
@@ -718,9 +718,9 @@ public interface EncounterService extends OpenmrsService {
 	 * @return transferred encounter
 	 * @since 1.12
 	 *
-	 * @should transfer an encounter with observations but not orders to given patient
-	 * @should void given encounter
-	 * @should void given encounter visit if given encounter is the only encounter
+	 * <strong>Should</strong> transfer an encounter with observations but not orders to given patient
+	 * <strong>Should</strong> void given encounter
+	 * <strong>Should</strong> void given encounter visit if given encounter is the only encounter
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_ENCOUNTERS })
 	public Encounter transferEncounter(Encounter encounter, Patient patient);

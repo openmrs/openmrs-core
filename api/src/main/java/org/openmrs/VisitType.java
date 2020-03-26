@@ -28,7 +28,7 @@ public class VisitType extends BaseChangeableOpenmrsMetadata{
 	/**
 	 * Constructor with id
 	 * 
-	 * @should set visit type id with given parameter
+	 * <strong>Should</strong> set visit type id with given parameter
 	 */
 	public VisitType(Integer visitTypeId) {
 		this.visitTypeId = visitTypeId;

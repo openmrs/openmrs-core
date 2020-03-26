@@ -40,7 +40,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	 * @param args
 	 * @param target
 	 * @throws Throwable
-	 * @should notify listeners about checked privileges
+	 * <strong>Should</strong> notify listeners about checked privileges
 	 */
 	@Override
 	public void before(Method method, Object[] args, Object target) throws Throwable {

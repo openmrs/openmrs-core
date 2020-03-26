@@ -38,13 +38,13 @@ public class RoleValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should throw NullPointerException if role is null
-	 * @should fail validation if role is empty or whitespace
-	 * @should pass validation if description is null or empty or whitespace
-	 * @should fail validation if role has leading or trailing space
-	 * @should pass validation if all required fields have proper values
-	 * @should pass validation if field lengths are correct
-	 * @should fail validation if field lengths are not correct
+	 * <strong>Should</strong> throw NullPointerException if role is null
+	 * <strong>Should</strong> fail validation if role is empty or whitespace
+	 * <strong>Should</strong> pass validation if description is null or empty or whitespace
+	 * <strong>Should</strong> fail validation if role has leading or trailing space
+	 * <strong>Should</strong> pass validation if all required fields have proper values
+	 * <strong>Should</strong> pass validation if field lengths are correct
+	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {

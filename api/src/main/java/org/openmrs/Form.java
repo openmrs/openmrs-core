@@ -46,7 +46,7 @@ public class Form extends BaseChangeableOpenmrsMetadata {
 	/**
 	 * Constructor with id
 	 *
-	 * @should set formId with given parameter
+	 * <strong>Should</strong> set formId with given parameter
 	 */
 	public Form(Integer formId) {
 		this.formId = formId;

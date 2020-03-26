@@ -55,9 +55,9 @@ public class UpdateFileParser {
 	 * Parse the contents of the update.rdf file.
 	 *
 	 * @throws ModuleException
-	 * @should set properties from xml file
-	 * @should set properties using the newest update
-	 * @should not set properties using updates ahead of current openmrs version
+	 * <strong>Should</strong> set properties from xml file
+	 * <strong>Should</strong> set properties using the newest update
+	 * <strong>Should</strong> not set properties using updates ahead of current openmrs version
 	 */
 	public void parse() throws ModuleException {
 		StringReader stringReader = null;

@@ -122,7 +122,7 @@ public interface EncounterDAO {
 	 * 
 	 * @param encounter the Encounter go the the encounterDatetime of
 	 * @return the encounterDatetime currently in the database for this encounter
-	 * @should get saved encounter datetime from database
+	 * <strong>Should</strong> get saved encounter datetime from database
 	 */
 	public Date getSavedEncounterDatetime(Encounter encounter);
 	

@@ -135,12 +135,12 @@ public class ModuleFilterMapping implements Serializable {
 	 *         example: Passing a ModuleFilterMapping containing a urlPattern of "*" would return
 	 *         true for any requestPath Passing a ModuleFilterMapping containing a urlPattern of
 	 *         "*.jsp" would return true for any requestPath ending in ".jsp"
-	 * @should return false if the requestPath is null
-	 * @should return true if the ModuleFilterMapping contains any matching urlPatterns for this
+	 * <strong>Should</strong> return false if the requestPath is null
+	 * <strong>Should</strong> return true if the ModuleFilterMapping contains any matching urlPatterns for this
 	 *         requestPath
-	 * @should return true if the ModuleFilterMapping contains any matching servletNames for this
+	 * <strong>Should</strong> return true if the ModuleFilterMapping contains any matching servletNames for this
 	 *         requestPath
-	 * @should return false if no matches are found for this requestPath
+	 * <strong>Should</strong> return false if no matches are found for this requestPath
 	 */
 	public static boolean filterMappingPasses(ModuleFilterMapping filterMapping, String requestPath) {
 		
@@ -170,13 +170,13 @@ public class ModuleFilterMapping implements Serializable {
 	 * 
 	 * @param patternToCheck String pattern to check
 	 * @param requestPath to check
-	 * @should return false if the patternToCheck is null
-	 * @should return true if the pattern is *
-	 * @should return true if the pattern is /*
-	 * @should return true if the pattern matches the requestPath exactly
-	 * @should return true if the pattern matches everything up to a suffix of /*
-	 * @should return true if the pattern matches by extension
-	 * @should return false if no pattern matches
+	 * <strong>Should</strong> return false if the patternToCheck is null
+	 * <strong>Should</strong> return true if the pattern is *
+	 * <strong>Should</strong> return true if the pattern is /*
+	 * <strong>Should</strong> return true if the pattern matches the requestPath exactly
+	 * <strong>Should</strong> return true if the pattern matches everything up to a suffix of /*
+	 * <strong>Should</strong> return true if the pattern matches by extension
+	 * <strong>Should</strong> return false if no pattern matches
 	 */
 	public static boolean urlPatternMatches(String patternToCheck, String requestPath) {
 		
@@ -223,10 +223,10 @@ public class ModuleFilterMapping implements Serializable {
 	 * 
 	 * @param patternToCheck String pattern to check
 	 * @param servletName Servlet Name to check
-	 * @should return false if the patternToCheck is null
-	 * @should return true if the pattern is *
-	 * @should return true if the pattern matches the servlet name exactly
-	 * @should return false if no pattern matches
+	 * <strong>Should</strong> return false if the patternToCheck is null
+	 * <strong>Should</strong> return true if the pattern is *
+	 * <strong>Should</strong> return true if the pattern matches the servlet name exactly
+	 * <strong>Should</strong> return false if no pattern matches
 	 */
 	public static boolean servletNameMatches(String patternToCheck, String servletName) {
 		

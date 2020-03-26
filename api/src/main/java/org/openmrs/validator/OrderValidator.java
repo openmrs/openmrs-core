@@ -43,26 +43,26 @@ public class OrderValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should fail validation if order is null
-	 * @should fail validation if order and encounter have different patients
-	 * @should fail validation if voided is null
-	 * @should fail validation if concept is null
-	 * @should fail validation if patient is null
-	 * @should fail validation if encounter is null
-	 * @should fail validation if orderer is null
-	 * @should fail validation if urgency is null
-	 * @should fail validation if action is null
-	 * @should fail validation if dateActivated after dateStopped
-	 * @should fail validation if dateActivated after autoExpireDate
-	 * @should fail validation if dateActivated is before encounter's encounterDatetime
-	 * @should fail validation if scheduledDate is set and urgency is not set as ON_SCHEDULED_DATE
-	 * @should fail validation if scheduledDate is null when urgency is ON_SCHEDULED_DATE
-	 * @should fail validation if orderType.javaClass does not match order.class
-	 * @should pass validation if the class of the order is a subclass of orderType.javaClass
-	 * @should pass validation if all fields are correct
-	 * @should not allow a future dateActivated
-	 * @should pass validation if field lengths are correct
-	 * @should fail validation if field lengths are not correct
+	 * <strong>Should</strong> fail validation if order is null
+	 * <strong>Should</strong> fail validation if order and encounter have different patients
+	 * <strong>Should</strong> fail validation if voided is null
+	 * <strong>Should</strong> fail validation if concept is null
+	 * <strong>Should</strong> fail validation if patient is null
+	 * <strong>Should</strong> fail validation if encounter is null
+	 * <strong>Should</strong> fail validation if orderer is null
+	 * <strong>Should</strong> fail validation if urgency is null
+	 * <strong>Should</strong> fail validation if action is null
+	 * <strong>Should</strong> fail validation if dateActivated after dateStopped
+	 * <strong>Should</strong> fail validation if dateActivated after autoExpireDate
+	 * <strong>Should</strong> fail validation if dateActivated is before encounter's encounterDatetime
+	 * <strong>Should</strong> fail validation if scheduledDate is set and urgency is not set as ON_SCHEDULED_DATE
+	 * <strong>Should</strong> fail validation if scheduledDate is null when urgency is ON_SCHEDULED_DATE
+	 * <strong>Should</strong> fail validation if orderType.javaClass does not match order.class
+	 * <strong>Should</strong> pass validation if the class of the order is a subclass of orderType.javaClass
+	 * <strong>Should</strong> pass validation if all fields are correct
+	 * <strong>Should</strong> not allow a future dateActivated
+	 * <strong>Should</strong> pass validation if field lengths are correct
+	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {

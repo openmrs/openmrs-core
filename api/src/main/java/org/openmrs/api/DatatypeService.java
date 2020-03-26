@@ -48,8 +48,8 @@ public interface DatatypeService extends OpenmrsService {
 	 * @param datatype
 	 * @param handlerConfig
 	 * @return default handler with the given configuration
-     * @should return a handler for the specified datatype
-     * @should return a handler for a datatype that extends a generic superclass
+     * <strong>Should</strong> return a handler for the specified datatype
+     * <strong>Should</strong> return a handler for a datatype that extends a generic superclass
 	 */
 	CustomDatatypeHandler<?, ?> getHandler(CustomDatatype<?> datatype, String handlerConfig);
 	

@@ -33,7 +33,7 @@ public class Reflect {
 	
 	/**
 	 * @param parametrizedClass Class
-	 * @should throw exception when null is passed
+	 * <strong>Should</strong> throw exception when null is passed
 	 */
 	public Reflect(Class parametrizedClass) {
 		
@@ -46,8 +46,8 @@ public class Reflect {
 	/**
 	 * @param fieldClass
 	 * @return true if, given fieldClass is Collection otherwise returns false
-	 * @should return true if given fieldClass is Collection class
-	 * @should return false if given fieldClass is not a Collection class
+	 * <strong>Should</strong> return true if given fieldClass is Collection class
+	 * <strong>Should</strong> return false if given fieldClass is not a Collection class
 	 */
 	public static boolean isCollection(Class<?> fieldClass) {
 		return Collection.class.isAssignableFrom(fieldClass);
@@ -56,8 +56,8 @@ public class Reflect {
 	/**
 	 * @param object Object
 	 * @return true if, given object is Collection otherwise returns false
-	 * @should return true if given object is Collection class
-	 * @should return false if given object is not a Collection
+	 * <strong>Should</strong> return true if given object is Collection class
+	 * <strong>Should</strong> return false if given object is not a Collection
 	 */
 	public static boolean isCollection(Object object) {
 		return isCollection(object.getClass());
@@ -69,7 +69,7 @@ public class Reflect {
 	 * 
 	 * @param fieldClass Class
 	 * @return List&lt;Field&gt;
-	 * @should return all fields include private and super classes
+	 * <strong>Should</strong> return all fields include private and super classes
 	 */
 	public static List<Field> getAllFields(Class<?> fieldClass) {
 		List<Field> fields = ClassDataCacher.getInstance().getClassData(fieldClass).getFields();
@@ -96,8 +96,8 @@ public class Reflect {
 	/**
 	 * @param subClass Class
 	 * @return true if, given subClass is accessible from the parameterized class
-	 * @should return true if given subClass is accessible from given parameterized class
-	 * @should return false if given subClass is not accessible from given parameterized class
+	 * <strong>Should</strong> return true if given subClass is accessible from given parameterized class
+	 * <strong>Should</strong> return false if given subClass is not accessible from given parameterized class
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean isSuperClass(Class subClass) {
@@ -108,8 +108,8 @@ public class Reflect {
 	 * @param t
 	 * @return true if given type is a subclass, or a generic type bounded by a subclass of the
 	 *         parameterized class
-	 * @should return true for a generic whose bound is a subclass
-	 * @should return false for a generic whose bound is not a subclass
+	 * <strong>Should</strong> return true for a generic whose bound is a subclass
+	 * <strong>Should</strong> return false for a generic whose bound is not a subclass
 	 */
 	public boolean isSuperClass(Type t) {
 		if (t instanceof TypeVariable<?>) {
@@ -133,8 +133,8 @@ public class Reflect {
 	/**
 	 * @param object Object
 	 * @return true if, given object is accessible from the parameterized class
-	 * @should return true if given object is accessible from given parameterized class
-	 * @should return false if given object is not accessible from given parameterized class
+	 * <strong>Should</strong> return true if given object is accessible from given parameterized class
+	 * <strong>Should</strong> return false if given object is not accessible from given parameterized class
 	 */
 	public boolean isSuperClass(Object object) {
 		return isSuperClass(object.getClass());
@@ -146,10 +146,10 @@ public class Reflect {
 	 * 
 	 * @param field Field
 	 * @return boolean
-	 * @should return true if given field is Collection and its element type is given parameterized
+	 * <strong>Should</strong> return true if given field is Collection and its element type is given parameterized
 	 *         class type
-	 * @should return false if given field is not a Collection
-	 * @should return false if given field is Collection and element type is other than given
+	 * <strong>Should</strong> return false if given field is not a Collection
+	 * <strong>Should</strong> return false if given field is Collection and element type is other than given
 	 *         parameterized class type
 	 */
 	@SuppressWarnings("unchecked")
@@ -175,7 +175,7 @@ public class Reflect {
 	 * 
 	 * @param subClass Class
 	 * @return List&lt;Field&gt;
-	 * @should return only the sub class fields of given parameterized class
+	 * <strong>Should</strong> return only the sub class fields of given parameterized class
 	 */
 	public List<Field> getInheritedFields(Class<?> subClass) {
 		
