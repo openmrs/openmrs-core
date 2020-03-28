@@ -239,7 +239,10 @@ public class Security {
 	 * @return encrypted text
 	 * @since 1.9
 	 * <strong>Should</strong> encrypt short and long text
+	 * 
+	 * @deprecated As of version 2.3.0, this method is not referenced in openmrs-core or any other projects under github OpenMRS organisation.
 	 */
+	@Deprecated
 	public static String encrypt(String text) {
 		return Security.encrypt(text, Security.getSavedInitVector(), Security.getSavedSecretKey());
 	}
@@ -281,7 +284,10 @@ public class Security {
 	 * @return decrypted text
 	 * @since 1.9
 	 * <strong>Should</strong> decrypt short and long text
+	 * 
+	 * @deprecated As of version 2.3.0, this method is not referenced in openmrs-core or any other projects under github OpenMRS organisation.
 	 */
+	@Deprecated
 	public static String decrypt(String text) {
 		return Security.decrypt(text, Security.getSavedInitVector(), Security.getSavedSecretKey());
 	}
