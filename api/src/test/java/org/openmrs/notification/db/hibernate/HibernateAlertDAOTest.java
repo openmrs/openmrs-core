@@ -9,10 +9,16 @@
  */
 package org.openmrs.notification.db.hibernate;
 
+import org.junit.Assert;
 import org.junit.Before;
+
+import java.util.List;
+
+import org.hibernate.SessionFactory;
 import org.junit.Test;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
-import org.openmrs.notification.AlertService;
+import org.openmrs.notification.Alert;
 import org.openmrs.test.BaseContextSensitiveTest;
 
 /**
@@ -20,23 +26,81 @@ import org.openmrs.test.BaseContextSensitiveTest;
  * tests to use dbunit
  */
 public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
+	private HibernateAlertDAO hibernateAlertDAO;
 	
 	@Before
 	public void runBeforeEachTest() {
+		Context.openSession();
 		authenticate();
+		hibernateAlertDAO = new HibernateAlertDAO();
+		hibernateAlertDAO.setSessionFactory((SessionFactory) applicationContext.getBean("sessionFactory"));
 	}
 	
+	/**
+	 * Creates and Returns alert with Id 1234
+	 * 
+	 * @return Alert object
+	 */
+
+	private Alert createAlert() {
+		Alert alert = new Alert(1234);
+		alert.setText("Testing the hibernate DAO");
+		return alert;
+
+	}
+
 	/**
 	 * Test that you can get alerts
 	 * 
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldGetAlerts() {
-		
-		AlertService as = Context.getAlertService();
-		//System.out.println(as.getAllAlerts());
-		
+	public void getAlert_shouldReturnAlert() throws Exception {
+
+		Alert alert = createAlert();
+		Context.getAlertService().saveAlert(alert);
+		Alert savedAlert = Context.getAlertService().getAlert(1234);
+		Assert.assertEquals(savedAlert.getText(), "Testing the hibernate DAO");
+
+	}
+
+	@Test
+	public void saveAlert_shouldReturnNotNull() {
+
+		Alert alert = createAlert();
+		Context.getAlertService().saveAlert(alert);
+		Alert savedAlert = Context.getAlertService().getAlert(1234);
+		Assert.assertNotNull(savedAlert.getAlertId());
+
+	}
+
+	@Test
+
+	public void deleteAlert_shouldReturnNull() {
+
+		Alert alert = createAlert();
+		Context.getAlertService().saveAlert(alert);
+		hibernateAlertDAO.deleteAlert(alert);
+		Assert.assertNull(Context.getAlertService().getAlert(1234));
+
+	}
+
+	@Test
+
+	public void getAllAllerts_shouldReturnNotNull() {
+
+		List<Alert> allAllerts = hibernateAlertDAO.getAllAlerts(true);
+		Assert.assertNotNull(allAllerts);
+
+	}
+
+	@Test
+
+	public void getAlerts_shouldReturnNotNull() {
+		User user = new User(1);
+		List<Alert> alerts = hibernateAlertDAO.getAlerts(user, true, true);
+		Assert.assertNotNull(alerts);
+
 	}
 	
 }
