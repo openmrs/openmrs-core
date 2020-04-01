@@ -15,13 +15,14 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Person;
 import org.openmrs.Privilege;
-import org.openmrs.PrivilegeListener;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
@@ -46,7 +47,6 @@ import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,7 +63,6 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 	
 	protected UserDAO dao;
-	
 	private static final int MAX_VALID_TIME = 12*60*60*1000; //Period of 12 hours
 	private static final int MIN_VALID_TIME = 60*1000; //Period of 1 minute
 	private static final int DEFAULT_VALID_TIME = 10*60*1000; //Default time of 10 minute
@@ -394,34 +393,22 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @param new user that has privileges
 	 */
 	private void checkPrivileges(User user) {
-		Collection<Role> roles = user.getAllRoles();
-		List<String> requiredPrivs = new ArrayList<>();
-		
-		for (Role r : roles) {
-			if (r.getRole().equals(RoleConstants.SUPERUSER)
-			        && !Context.hasPrivilege(PrivilegeConstants.ASSIGN_SYSTEM_DEVELOPER_ROLE)) {
-				throw new APIException("User.you.must.have.role", new Object[] { RoleConstants.SUPERUSER });
-			}
-			if (r.getPrivileges() != null) {
-				for (Privilege p : r.getPrivileges()) {
-					if (!Context.hasPrivilege(p.getPrivilege())) {
-						requiredPrivs.add(p.getPrivilege());
-					}
-				}
-			}
-		}
-		
+		List<String> requiredPrivs = user.getAllRoles().stream().peek(this::checkSuperUserPrivilege)
+				.map(Role::getPrivileges).filter(Objects::nonNull).flatMap(Collection::stream)
+				.map(Privilege::getPrivilege).filter(p -> !Context.hasPrivilege(p)).collect(Collectors.toList());
 		if (requiredPrivs.size() == 1) {
 			throw new APIException("User.you.must.have.privilege", new Object[] { requiredPrivs.get(0) });
 		} else if (requiredPrivs.size() > 1) {
-			StringBuilder txt = new StringBuilder("You must have the following privileges in order to assign them: ");
-			for (String s : requiredPrivs) {
-				txt.append(s).append(", ");
-			}
-			throw new APIException(txt.substring(0, txt.length() - 2));
+			throw new APIException(String.format("ERROR_FORMAT", String.join(", ", requiredPrivs)));
+		  }
+	  	}
+
+	private void checkSuperUserPrivilege(Role r) {
+		if (r.getRole().equals(RoleConstants.SUPERUSER)
+				&& !Context.hasPrivilege(PrivilegeConstants.ASSIGN_SYSTEM_DEVELOPER_ROLE)) {
+			throw new APIException("User.you.must.have.role", new Object[] { RoleConstants.SUPERUSER });
+	    	}
 		}
-	}
-	
 	/**
 	 * @see org.openmrs.api.UserService#setUserProperty(User, String, String)
 	 */

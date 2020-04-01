@@ -681,7 +681,6 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Privilege privilege = userService.getPrivilege("Some Privilege");
 		Assert.assertEquals("Some Privilege", privilege.getPrivilege());
 	}
-	
 	/**
 	 * @see UserService#getRole(String)
 	 */
@@ -1334,7 +1333,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		
 		userService.changePassword(user, "testTest123");
 	}
-	
+
 	@Test
 	public void changePasswordUsingSecretAnswer_shouldUpdatePasswordIfSecretIsCorrect() {
 		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
