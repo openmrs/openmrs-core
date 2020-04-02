@@ -20,32 +20,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.persistence.Basic;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
-import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Formula;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
-import org.hibernate.annotations.SortNatural;
 import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Field;
@@ -62,106 +39,60 @@ import org.springframework.util.StringUtils;
  * 
  * @see org.openmrs.Patient
  */
-@Entity
-@Table(name = "person")
-@Inheritance(strategy = InheritanceType.JOINED)
 public class Person extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 2L;
 	
 	private static final Logger log = LoggerFactory.getLogger(Person.class);
 	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "person_id")
 	@DocumentId
 	protected Integer personId;
 	
-	@OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
-	@LazyCollection(LazyCollectionOption.FALSE)
-	@SortNatural
-	@OrderBy("voided asc, preferred desc, date_created desc")
-	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-	@BatchSize(size = 1000)
 	private Set<PersonAddress> addresses = null;
 	
-	@OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
-	@LazyCollection(LazyCollectionOption.FALSE)
-	@SortNatural
-	@OrderBy("voided asc, preferred desc, date_created desc")
-	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-	@BatchSize(size = 1000)
 	@ContainedIn
 	private Set<PersonName> names = null;
 	
-	@OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
-	@LazyCollection(LazyCollectionOption.FALSE)
-	@SortNatural
-	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-	@BatchSize(size = 1000)
 	@ContainedIn
 	private Set<PersonAttribute> attributes = null;
 	
 	@Field
-	@Column(length = 50)
 	private String gender;
 	
-	@Column(name = "birthdate", length = 10)
 	private Date birthdate;
 	
-	@Basic
-	@Temporal(TemporalType.TIME)
 	private Date birthtime;
 	
-	@Column(name = "birthdate_estimated")
 	private Boolean birthdateEstimated = false;
 	
-	@Column(name = "deathdate_estimated")
 	private Boolean deathdateEstimated = false;
 	
 	@Field
-	@Column(nullable = false)
 	private Boolean dead = false;
 	
-	@Column(name = "death_date", length = 19)
 	private Date deathDate;
 	
-	@ManyToOne
-	@JoinColumn(name = "cause_of_death")
 	private Concept causeOfDeath;
 	
-	@Column(name = "cause_of_death_non_coded")
 	private String causeOfDeathNonCoded;
 	
-	@ManyToOne
-	@JoinColumn(name = "creator", updatable = false, insertable = false)
 	private User personCreator;
 	
-	@Column(name = "date_created", updatable = false, insertable = false, nullable = false, length = 19)
 	private Date personDateCreated;
 	
-	@ManyToOne
-	@JoinColumn(name = "changed_by", updatable = false, insertable = false)
 	private User personChangedBy;
 	
-	@Column(name = "date_changed", updatable = false, insertable = false, length = 19)
 	private Date personDateChanged;
 	
-	@Column(name = "voided", updatable = false, insertable = false, nullable = false)
 	private Boolean personVoided = false;
 	
-	@ManyToOne
-	@JoinColumn(name = "voided_by", updatable = false, insertable = false)
 	private User personVoidedBy;
 	
-	@Column(name = "date_voided", updatable = false, insertable = false, length = 19)
 	private Date personDateVoided;
 	
-	@Column(name = "void_reason", updatable = false, insertable = false)
 	private String personVoidReason;
 	
 	@Field
-	@Formula("case when exists (select * from patient p where p.patient_id = person_id) then 1 else 0 end")
 	private boolean isPatient;
 	
 	/**
