@@ -10,6 +10,7 @@
 package org.openmrs.obs.handler;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.Arrays;
@@ -23,6 +24,7 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 
 /**
  * Abstract handler for some convenience methods Files are stored in the location specified by the
@@ -146,12 +148,21 @@ public class AbstractHandler {
 	 * @param obs
 	 * @return File object
 	 */
+
 	public static File getComplexDataFile(Obs obs) {
+		if(obs.getValueComplex()!=null && !obs.getValueComplex().isEmpty()) {
 		String[] names = obs.getValueComplex().split("\\|");
 		String filename = names.length < 2 ? names[0] : names[names.length - 1];
 		File dir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(
 		    Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
 		return new File(dir, filename);
+		}
+		else {
+
+			log.error("The file must exist!!");
+			return null;
+		}
+		
 	}
 	
 	/**
