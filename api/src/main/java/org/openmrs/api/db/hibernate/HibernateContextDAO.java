@@ -110,7 +110,7 @@ public class HibernateContextDAO implements ContextDAO {
 			
 			try {
 				candidateUser = (User) session.createQuery(
-				    "from User u where (u.username = ? or u.systemId = ? or u.systemId = ?) and u.retired = '0'").setString(
+				    "from User u where (u.username = ?0 or u.systemId = ?1 or u.systemId = ?2) and u.retired = '0'").setString(
 				    0, login).setString(1, login).setString(2, loginWithDash).uniqueResult();
 			}
 			catch (HibernateException he) {
@@ -156,11 +156,11 @@ public class HibernateContextDAO implements ContextDAO {
 				}
 			}
 			
-			String passwordOnRecord = (String) session.createSQLQuery("select password from users where user_id = ?")
+			String passwordOnRecord = (String) session.createSQLQuery("select password from users where user_id = ?0")
 			        .addScalar("password", StandardBasicTypes.STRING).setInteger(0, candidateUser.getUserId())
 			        .uniqueResult();
 			
-			String saltOnRecord = (String) session.createSQLQuery("select salt from users where user_id = ?").addScalar(
+			String saltOnRecord = (String) session.createSQLQuery("select salt from users where user_id = ?0").addScalar(
 			    "salt", StandardBasicTypes.STRING).setInteger(0, candidateUser.getUserId()).uniqueResult();
 			
 			// if the username and password match, hydrate the user and return it
@@ -227,14 +227,14 @@ public class HibernateContextDAO implements ContextDAO {
 	public User getUserByUuid(String uuid) {
 		
 		// don't flush here in case we're in the AuditableInterceptor.  Will cause a StackOverflowEx otherwise
-		FlushMode flushMode = sessionFactory.getCurrentSession().getFlushMode();
-		sessionFactory.getCurrentSession().setFlushMode(FlushMode.MANUAL);
+		FlushMode flushMode = sessionFactory.getCurrentSession().getHibernateFlushMode();
+		sessionFactory.getCurrentSession().setHibernateFlushMode(FlushMode.MANUAL);
 		
 		User u = (User) sessionFactory.getCurrentSession().createQuery("from User u where u.uuid = :uuid").setString("uuid",
 		    uuid).uniqueResult();
 		
 		// reset the flush mode to whatever it was before
-		sessionFactory.getCurrentSession().setFlushMode(flushMode);
+		sessionFactory.getCurrentSession().setHibernateFlushMode(flushMode);
 		
 		return u;
 	}
@@ -303,7 +303,7 @@ public class HibernateContextDAO implements ContextDAO {
 				log.debug("Registering session with synchronization manager (" + sessionFactory.hashCode() + ")");
 			}
 			Session session = sessionFactory.openSession();
-			session.setFlushMode(FlushMode.MANUAL);
+			session.setHibernateFlushMode(FlushMode.MANUAL);
 			TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(session));
 		}
 	}
@@ -473,10 +473,10 @@ public class HibernateContextDAO implements ContextDAO {
 		session.flush();
 		session.clear();
 		
-		FlushMode flushMode = session.getFlushMode();
+		FlushMode flushMode = session.getHibernateFlushMode();
 		CacheMode cacheMode = session.getCacheMode();
 		try {
-			session.setFlushMode(FlushMode.MANUAL);
+			session.setHibernateFlushMode(FlushMode.MANUAL);
 			session.setCacheMode(CacheMode.IGNORE);
 			
 			//Scrollable results will avoid loading too many objects in memory
@@ -497,7 +497,7 @@ public class HibernateContextDAO implements ContextDAO {
 			session.clear();
 		}
 		finally {
-			session.setFlushMode(flushMode);
+			session.setHibernateFlushMode(flushMode);
 			session.setCacheMode(cacheMode);
 		}
 	}

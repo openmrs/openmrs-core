@@ -9,14 +9,15 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import static org.openmrs.Order.Action.DISCONTINUE;
-
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Calendar;
+import java.util.Set;
+
+import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.EntityType;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
@@ -29,7 +30,6 @@ import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.SimpleExpression;
-import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.transform.DistinctRootEntityResultTransformer;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
@@ -307,7 +307,7 @@ public class HibernateOrderDAO implements OrderDAO {
 		query.setParameter("orderId", order.getOrderId());
 		
 		//prevent hibernate from flushing before fetching the list
-		query.setFlushMode(FlushMode.MANUAL);
+		query.setHibernateFlushMode(FlushMode.MANUAL);
 		
 		return query.list();
 	}
@@ -584,9 +584,10 @@ public class HibernateOrderDAO implements OrderDAO {
 	@Override
 	public boolean isOrderFrequencyInUse(OrderFrequency orderFrequency) {
 		
-		Map<String, ClassMetadata> metadata = sessionFactory.getAllClassMetadata();
-		for (ClassMetadata classMetadata : metadata.values()) {
-			Class<?> entityClass = classMetadata.getMappedClass();
+		Set<EntityType<?>> entities = sessionFactory.getMetamodel().getEntities();
+		
+		for (EntityType<?> entityTpe : entities) {
+			Class<?> entityClass = entityTpe.getJavaType();
 			if (Order.class.equals(entityClass)) {
 				//ignore the org.openmrs.Order class itself
 				continue;
@@ -597,11 +598,10 @@ public class HibernateOrderDAO implements OrderDAO {
 				continue;
 			}
 
-			String[] names = classMetadata.getPropertyNames();
-			for (String name : names) {
-				if (classMetadata.getPropertyType(name).getReturnedClass().equals(OrderFrequency.class)) {
+			for (Attribute<?,?> attribute : entityTpe.getDeclaredAttributes()) {
+				if (attribute.getJavaType().equals(OrderFrequency.class)) {
 					Criteria criteria = sessionFactory.getCurrentSession().createCriteria(entityClass);
-					criteria.add(Restrictions.eq(name, orderFrequency));
+					criteria.add(Restrictions.eq(attribute.getName(), orderFrequency));
 					criteria.setMaxResults(1);
 					if (!criteria.list().isEmpty()) {
 						return true;

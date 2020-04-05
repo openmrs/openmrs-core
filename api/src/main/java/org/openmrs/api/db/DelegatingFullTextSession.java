@@ -19,6 +19,7 @@ import org.hibernate.search.FullTextSession;
 import org.hibernate.search.FullTextSharedSessionBuilder;
 import org.hibernate.search.MassIndexer;
 import org.hibernate.search.SearchFactory;
+import org.hibernate.search.query.engine.spi.QueryDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -132,6 +133,11 @@ public class DelegatingFullTextSession extends SessionDelegatorBaseImpl implemen
 	@Override
 	public FullTextSharedSessionBuilder sessionWithOptions() {
 		return delegate.sessionWithOptions();
+	}
+
+	@Override
+	public FullTextQuery createFullTextQuery(QueryDescriptor descriptor, Class<?>... entities) {
+		throw new UnsupportedOperationException();
 	}
 	
 }

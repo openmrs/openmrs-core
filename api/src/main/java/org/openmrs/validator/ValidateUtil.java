@@ -13,9 +13,11 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.proxy.HibernateProxy;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.api.ValidationException;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.springframework.util.Assert;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -62,6 +64,10 @@ public class ValidateUtil {
 			return;
 		}
 
+		if (obj != null && obj instanceof HibernateProxy) {
+			obj = HibernateUtil.getRealObjectFromProxy(obj);
+		}
+		
 		Errors errors = new BindException(obj, "");
 		
 		Context.getAdministrationService().validate(obj, errors);
