@@ -24,32 +24,45 @@ import static org.junit.Assert.assertTrue;
 import static org.openmrs.test.OpenmrsMatchers.hasId;
 import static org.openmrs.test.TestUtil.containsId;
 
+import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.GregorianCalendar;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 import org.apache.commons.lang3.time.DateUtils;
+import org.hibernate.boot.Metadata;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.openmrs.Allergy;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptName;
+import org.openmrs.Condition;
+import org.openmrs.Diagnosis;
+import org.openmrs.DosingInstructions;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
@@ -66,8 +79,11 @@ import org.openmrs.Patient;
 import org.openmrs.Provider;
 import org.openmrs.SimpleDosingInstructions;
 import org.openmrs.TestOrder;
+import org.openmrs.Visit;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.hibernate.HibernateAdministrationDAO;
+import org.openmrs.api.db.hibernate.HibernateSessionFactoryBean;
 import org.openmrs.api.impl.OrderServiceImpl;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.order.OrderUtil;
@@ -109,7 +125,51 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 	
-	private class SomeTestOrder extends TestOrder {}
+	@Entity
+	private class SomeTestOrder extends TestOrder {
+		@Id
+		private Integer orderId;
+		private Patient patient;
+		private OrderType orderType;
+		private Concept concept;
+		private String instructions;
+		private Date dateActivated;
+		private Date autoExpireDate;
+		private Encounter encounter;
+		private Provider orderer;
+		private Date dateStopped;
+		private Concept orderReason;
+		private String accessionNumber;
+		private String orderReasonNonCoded;
+		private Urgency urgency = Urgency.ROUTINE;
+		private String orderNumber;
+		private String commentToFulfiller;
+		private CareSetting careSetting;
+		private Date scheduledDate;
+		private Double sortWeight;
+		private Order previousOrder;
+		private Action action = Action.NEW;
+		private OrderGroup orderGroup;
+		private FulfillerStatus fulfillerStatus;
+		private String fulfillerComment;
+		private Double dose;
+		private Concept doseUnits;
+		private OrderFrequency frequency;
+		private Boolean asNeeded = false;
+		private Double quantity;
+		private Concept quantityUnits;
+		private Drug drug;
+		private String asNeededCondition;
+		private Class<? extends DosingInstructions> dosingType = SimpleDosingInstructions.class;
+		private Integer numRefills;
+		private String dosingInstructions;
+		private Integer duration;
+		private Concept durationUnits;
+		private Concept route;
+		private String brandName;
+		private Boolean dispenseAsWritten = Boolean.FALSE;
+		private String drugNonCoded;
+	}
 	
 	@Before
 	public void setup() {
@@ -2572,7 +2632,25 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
 	 */
 	@Test
-	public void saveOrder_shouldFailIfTheJavaTypeOfThePreviousOrderDoesNotMatch() {
+	public void saveOrder_shouldFailIfTheJavaTypeOfThePreviousOrderDoesNotMatch() throws Exception {
+		
+		HibernateSessionFactoryBean sessionFactoryBean = (HibernateSessionFactoryBean) applicationContext
+		        .getBean("&sessionFactory");
+		Configuration configuration = sessionFactoryBean.getConfiguration();
+		
+		HibernateAdministrationDAO adminDAO = (HibernateAdministrationDAO)applicationContext.getBean("adminDAO");
+		StandardServiceRegistry standardRegistry = new StandardServiceRegistryBuilder()
+				.configure().applySettings(configuration.getProperties()).build();
+		
+		Metadata metaData = new MetadataSources(standardRegistry).addAnnotatedClass(Allergy.class)
+				.addAnnotatedClass(Encounter.class).addAnnotatedClass(SomeTestOrder.class)
+				.addAnnotatedClass(Diagnosis.class).addAnnotatedClass(Condition.class)
+				.addAnnotatedClass(Visit.class).getMetadataBuilder().build();
+		
+		Field field = adminDAO.getClass().getDeclaredField("metaData");
+		field.setAccessible(true);
+		field.set(adminDAO, metaData);
+		
 		Order order = orderService.getOrder(7);
 		assertTrue(OrderUtilTest.isActiveOrder(order, null));
 		Order discontinuationOrder = new SomeTestOrder();

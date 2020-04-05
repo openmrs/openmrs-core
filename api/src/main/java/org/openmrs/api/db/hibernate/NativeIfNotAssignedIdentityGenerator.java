@@ -15,6 +15,7 @@ import java.util.Properties;
 import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
 import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.id.Configurable;
 import org.hibernate.id.IdentityGenerator;
 import org.hibernate.persister.entity.EntityPersister;
@@ -38,7 +39,7 @@ public class NativeIfNotAssignedIdentityGenerator extends IdentityGenerator impl
 	private String entityName;
 	
 	@Override
-	public Serializable generate(SessionImplementor session, Object entity) throws HibernateException {
+	public Serializable generate(SharedSessionContractImplementor session, Object entity) throws HibernateException {
 		Serializable id;
 		EntityPersister persister = session.getEntityPersister(entityName, entity);
 		// Determine if an ID has been assigned.

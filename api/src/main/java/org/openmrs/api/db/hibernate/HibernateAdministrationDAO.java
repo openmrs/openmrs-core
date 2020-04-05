@@ -36,7 +36,6 @@ import org.openmrs.Diagnosis;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.OpenmrsObject;
-import org.openmrs.Patient;
 import org.openmrs.Visit;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.AdministrationDAO;
@@ -206,7 +205,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 					.configure().applySettings(configuration.getProperties()).build();
 			
 			metaData = new MetadataSources(standardRegistry).addAnnotatedClass(Allergy.class)
-					.addAnnotatedClass(Patient.class).addAnnotatedClass(Encounter.class)
+					.addAnnotatedClass(Encounter.class)
 					.addAnnotatedClass(Diagnosis.class).addAnnotatedClass(Condition.class)
 					.addAnnotatedClass(Visit.class).getMetadataBuilder().build();
 		}
@@ -277,8 +276,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 				}
 			}
 		}
-		FlushMode previousFlushMode = sessionFactory.getCurrentSession().getFlushMode();
-		sessionFactory.getCurrentSession().setFlushMode(FlushMode.MANUAL);
+		FlushMode previousFlushMode = sessionFactory.getCurrentSession().getHibernateFlushMode();
+		sessionFactory.getCurrentSession().setHibernateFlushMode(FlushMode.MANUAL);
 		try {
 			for (Validator validator : getValidators(object)) {
 				validator.validate(object, errors);
@@ -287,7 +286,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 		}
 		
 		finally {
-			sessionFactory.getCurrentSession().setFlushMode(previousFlushMode);
+			sessionFactory.getCurrentSession().setHibernateFlushMode(previousFlushMode);
 		}
 		
 	}

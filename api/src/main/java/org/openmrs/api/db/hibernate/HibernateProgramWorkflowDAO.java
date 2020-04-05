@@ -428,8 +428,8 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 
         @Override
         public List<PatientProgram> getPatientProgramByAttributeNameAndValue(String attributeName, String attributeValue) {
-            FlushMode flushMode = sessionFactory.getCurrentSession().getFlushMode();
-            sessionFactory.getCurrentSession().setFlushMode(FlushMode.MANUAL);
+            FlushMode flushMode = sessionFactory.getCurrentSession().getHibernateFlushMode();
+            sessionFactory.getCurrentSession().setHibernateFlushMode(FlushMode.MANUAL);
             Query query;
             try {
                 query = sessionFactory.getCurrentSession().createQuery(
@@ -443,7 +443,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
                         .setParameter("attributeValue", attributeValue);
                 return query.list();
             } finally {
-                sessionFactory.getCurrentSession().setFlushMode(flushMode);
+                sessionFactory.getCurrentSession().setHibernateFlushMode(flushMode);
             }
         }
 

@@ -15,15 +15,14 @@ import java.util.Set;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.MatchAllDocsQuery;
-import org.apache.lucene.search.QueryWrapperFilter;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.hibernate.search.annotations.Factory;
 import org.hibernate.search.annotations.Key;
 import org.hibernate.search.filter.FilterKey;
 import org.hibernate.search.filter.StandardFilterKey;
-import org.hibernate.search.filter.impl.CachingWrapperFilter;
+import org.hibernate.search.filter.impl.CachingWrapperQuery;
 
 public class TermsFilterFactory {
 	
@@ -48,7 +47,7 @@ public class TermsFilterFactory {
 	}
 	
 	@Factory
-	public Filter getFilter() {
+	public Query getQuery() {
 		BooleanQuery query = new BooleanQuery();
 
 		if (includeTerms.isEmpty()) {
@@ -72,6 +71,6 @@ public class TermsFilterFactory {
 			query.add(new TermQuery(term), Occur.MUST_NOT);
 		}
 		
-		return new CachingWrapperFilter(new QueryWrapperFilter(query));
+		return new CachingWrapperQuery(query);
 	}
 }

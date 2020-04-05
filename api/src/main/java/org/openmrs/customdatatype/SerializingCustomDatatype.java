@@ -9,6 +9,7 @@
  */
 package org.openmrs.customdatatype;
 
+import org.openmrs.OpenmrsObject;
 import org.openmrs.validator.ValidateUtil;
 
 /**
@@ -60,7 +61,9 @@ public abstract class SerializingCustomDatatype<T> implements CustomDatatype<T> 
 		if (typedValue == null) {
 			throw new InvalidCustomValueException("cannot be null");
 		}
-		ValidateUtil.validate(typedValue);
+		if (typedValue instanceof OpenmrsObject) {
+			ValidateUtil.validate(typedValue);
+		}
 	}
 	
 	/**

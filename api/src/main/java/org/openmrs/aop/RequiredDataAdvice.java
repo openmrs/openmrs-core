@@ -144,7 +144,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 				Collection<OpenmrsObject> openmrsObjects = (Collection<OpenmrsObject>) mainArgument;
 				
 				for (OpenmrsObject object : openmrsObjects) {
-					ValidateUtil.validate(mainArgument);
+					ValidateUtil.validate(object);
 					
 					recursivelyHandle(SaveHandler.class, object, other);
 				}

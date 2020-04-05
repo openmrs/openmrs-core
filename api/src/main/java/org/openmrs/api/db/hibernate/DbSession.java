@@ -250,7 +250,7 @@ public class DbSession {
 	 * @see FlushMode
 	 */
 	public void setFlushMode(FlushMode flushMode) {
-		getSession().setFlushMode(flushMode);
+		getSession().setHibernateFlushMode(flushMode);
 	}
 	
 	/**
@@ -259,7 +259,7 @@ public class DbSession {
 	 * @return The flush mode
 	 */
 	public FlushMode getFlushMode() {
-		return getSession().getFlushMode();
+		return getSession().getHibernateFlushMode();
 	}
 	
 	/**
