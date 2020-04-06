@@ -242,6 +242,9 @@ public class DatabaseUpgradeTestUtil {
 		Configuration config = new Configuration().configure();
 		Set<Class<?>> entityClasses = OpenmrsClassScanner.getInstance().getClassesWithAnnotation(Entity.class);
 		for (Class<?> clazz : entityClasses) {
+			if (clazz.getSimpleName().equals("SomeTestOrder")) {
+				continue;
+			}
 			config.addAnnotatedClass(clazz);
 		}
 		//H2 version we use behaves differently from H2Dialect in Hibernate so we provide our implementation
