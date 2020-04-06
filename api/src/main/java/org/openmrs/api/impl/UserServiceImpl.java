@@ -15,13 +15,14 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Person;
 import org.openmrs.Privilege;
-import org.openmrs.PrivilegeListener;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
@@ -46,7 +47,6 @@ import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -535,14 +535,21 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	private void checkPrivileges(Role role) {
 		Collection<Privilege> privileges = role.getPrivileges();
-		
-		if (privileges != null) {
-			for (Privilege p : privileges) {
-				if (!Context.hasPrivilege(p.getPrivilege())) {
-					throw new APIAuthenticationException("Privilege required: " + p);
-				}
-			}
-		}
+//		
+//		 if (privileges != null) {
+//			for (Privilege p : privileges) {
+//				if (!Context.hasPrivilege(p.getPrivilege())) {
+//		 			throw new APIAuthenticationException("Privilege required: " + p);
+//	 		}
+//	 	}
+//	 }
+	 	Optional.ofNullable(role.getPrivileges())
+	 	.map(p -> p.stream().filter(pr -> !Context.hasPrivilege(pr.getPrivilege())).collect(
+	 		Collectors.toSet())).ifPresent(missing -> {
+					throw new APIAuthenticationException("privileges required: "
+	 					+ missing.stream().map(
+	 		Privilege::getPrivilege).collect(Collectors.joining(", ")));
+	 });
 	}
 	
 	/**
