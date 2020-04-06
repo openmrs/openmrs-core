@@ -33,7 +33,7 @@ import org.springframework.validation.Validator;
  */
 @Handler(supports = { DrugOrder.class }, order = 50)
 public class DrugOrderValidator extends OrderValidator implements Validator {
-	
+
 	/**
 	 * Determines if the command object being submitted is a valid type
 	 * 
@@ -43,44 +43,48 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 	public boolean supports(Class<?> c) {
 		return DrugOrder.class.isAssignableFrom(c);
 	}
-	
+
 	/**
 	 * Checks the form object for any inconsistencies/errors
 	 * 
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
-	 *      org.springframework.validation.Errors)
-	 * <strong>Should</strong> fail validation if asNeeded is null
-	 * <strong>Should</strong> fail validation if dosingType is null
-	 * <strong>Should</strong> fail validation if drug concept is different from order concept
-	 * <strong>Should</strong> fail validation if dose is null for SimpleDosingInstructions dosingType
-	 * <strong>Should</strong> fail validation if doseUnits is null for SimpleDosingInstructions dosingType
-	 * <strong>Should</strong> fail validation if route is null for SimpleDosingInstructions dosingType
-	 * <strong>Should</strong> fail validation if frequency is null for SimpleDosingInstructions dosingType
-	 * <strong>Should</strong> fail validation if dosingInstructions is null for FreeTextDosingInstructions
-	 *         dosingType
-	 * <strong>Should</strong> fail validation if numberOfRefills is null for outpatient careSetting
-	 * <strong>Should</strong> fail validation if quantity is null for outpatient careSetting
-	 * <strong>Should</strong> fail validation if doseUnits is null when dose is present
-	 * <strong>Should</strong> fail validation if doseUnits is not a dose unit concept
-	 * <strong>Should</strong> fail validation if quantityUnits is null when quantity is present
-	 * <strong>Should</strong> fail validation if quantityUnits it not a quantity unit concept
-	 * <strong>Should</strong> fail validation if durationUnits is null when duration is present
-	 * <strong>Should</strong> fail validation if durationUnits is not a duration unit concept
-	 * <strong>Should</strong> pass validation if all fields are correct
-	 * <strong>Should</strong> not require all fields for a discontinuation order
-	 * <strong>Should</strong> fail if route is not a valid concept
-	 * <strong>Should</strong> fail if concept is null and drug is not specified
-	 * <strong>Should</strong> fail if concept is null and cannot infer it from drug
-	 * <strong>Should</strong> pass if concept is null and drug is set
-	 * <strong>Should</strong> not validate a custom dosing type against any other dosing type validation
-	 * <strong>Should</strong> apply validation for a custom dosing type
-	 * <strong>Should</strong> pass validation if field lengths are correct
-	 * <strong>Should</strong> fail validation if field lengths are not correct
+	 *      org.springframework.validation.Errors) <strong>Should</strong> fail
+	 *      validation if asNeeded is null <strong>Should</strong> fail validation
+	 *      if dosingType is null <strong>Should</strong> fail validation if drug
+	 *      concept is different from order concept <strong>Should</strong> fail
+	 *      validation if dose is null for SimpleDosingInstructions dosingType
+	 *      <strong>Should</strong> fail validation if doseUnits is null for
+	 *      SimpleDosingInstructions dosingType <strong>Should</strong> fail
+	 *      validation if route is null for SimpleDosingInstructions dosingType
+	 *      <strong>Should</strong> fail validation if frequency is null for
+	 *      SimpleDosingInstructions dosingType <strong>Should</strong> fail
+	 *      validation if dosingInstructions is null for FreeTextDosingInstructions
+	 *      dosingType <strong>Should</strong> fail validation if numberOfRefills is
+	 *      null for outpatient careSetting <strong>Should</strong> fail validation
+	 *      if quantity is null for outpatient careSetting <strong>Should</strong>
+	 *      fail validation if doseUnits is null when dose is present
+	 *      <strong>Should</strong> fail validation if doseUnits is not a dose unit
+	 *      concept <strong>Should</strong> fail validation if quantityUnits is null
+	 *      when quantity is present <strong>Should</strong> fail validation if
+	 *      quantityUnits it not a quantity unit concept <strong>Should</strong>
+	 *      fail validation if durationUnits is null when duration is present
+	 *      <strong>Should</strong> fail validation if durationUnits is not a
+	 *      duration unit concept <strong>Should</strong> pass validation if all
+	 *      fields are correct <strong>Should</strong> not require all fields for a
+	 *      discontinuation order <strong>Should</strong> fail if route is not a
+	 *      valid concept <strong>Should</strong> fail if concept is null and drug
+	 *      is not specified <strong>Should</strong> fail if concept is null and
+	 *      cannot infer it from drug <strong>Should</strong> pass if concept is
+	 *      null and drug is set <strong>Should</strong> not validate a custom
+	 *      dosing type against any other dosing type validation
+	 *      <strong>Should</strong> apply validation for a custom dosing type
+	 *      <strong>Should</strong> pass validation if field lengths are correct
+	 *      <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
 		super.validate(obj, errors);
-		
+
 		DrugOrder order = (DrugOrder) obj;
 		if (order == null) {
 			errors.reject("error.general");
@@ -93,11 +97,24 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 			if (order.getDrug() == null || order.getDrug().getConcept() == null) {
 				ValidationUtils.rejectIfEmpty(errors, "concept", "error.null");
 			}
-			
+
 			if (order.getConcept() != null && order.getDrug() != null && order.getDrug().getConcept() != null
-			        && !order.getDrug().getConcept().equals(order.getConcept())) {
+					&& !order.getDrug().getConcept().equals(order.getConcept())) {
+
+				if (order.getDrugNonCoded() != null) {
+
+					if (order.getDrugNonCoded().equals(Context.getOrderService().getNonCodedDrugConcept())) {
+
+						order.setConcept(Context.getOrderService().getNonCodedDrugConcept());
+
+					};
+				
+				}
+
+			} else {
 				errors.rejectValue("drug", "error.general");
 				errors.rejectValue("concept", "error.concept");
+
 			}
 			if (order.getAction() != Order.Action.DISCONTINUE && order.getDosingType() != null) {
 				DosingInstructions dosingInstructions = order.getDosingInstructionsInstance();
@@ -106,45 +123,43 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 			validateFieldsForOutpatientCareSettingType(order, errors);
 			validatePairedFields(order, errors);
 			validateUnitsAreAmongAllowedConcepts(errors, order);
-            validateForRequireDrug(errors, order);
+			validateForRequireDrug(errors, order);
 			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "asNeededCondition", "brandName");
 		}
 	}
 
 	private void validateForRequireDrug(Errors errors, DrugOrder order) {
-		//Reject if global property is set to specify a formulation for drug order
-		boolean requireDrug = Context.getAdministrationService().getGlobalPropertyValue(
-				OpenmrsConstants.GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG, false);
+		// Reject if global property is set to specify a formulation for drug order
+		boolean requireDrug = Context.getAdministrationService()
+				.getGlobalPropertyValue(OpenmrsConstants.GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG, false);
 		OrderService orderService = Context.getOrderService();
 
-
-		if(requireDrug){
-			if(order.getConcept() != null && OpenmrsUtil.nullSafeEquals(orderService.getNonCodedDrugConcept(), order.getConcept())){
-				if(order.getDrug() == null && !order.isNonCodedDrug()){
+		if (requireDrug) {
+			if (order.getConcept() != null
+					&& OpenmrsUtil.nullSafeEquals(orderService.getNonCodedDrugConcept(), order.getConcept())) {
+				if (order.getDrug() == null && !order.isNonCodedDrug()) {
 					errors.rejectValue("drugNonCoded", "DrugOrder.error.drugNonCodedIsRequired");
-				}
-				else if(order.getDrug() != null){
+				} else if (order.getDrug() != null) {
 					errors.rejectValue("concept", "DrugOrder.error.onlyOneOfDrugOrNonCodedShouldBeSet");
 				}
-			}else{
-				if(order.getDrug() == null && !order.isNonCodedDrug()){
+			} else {
+				if (order.getDrug() == null && !order.isNonCodedDrug()) {
 					errors.rejectValue("drug", "DrugOrder.error.drugIsRequired");
-				}
-				else if(order.getDrug() != null && order.isNonCodedDrug()){
+				} else if (order.getDrug() != null && order.isNonCodedDrug()) {
 					errors.rejectValue("concept", "DrugOrder.error.onlyOneOfDrugOrNonCodedShouldBeSet");
 				}
 			}
 		}
 	}
-	
+
 	private void validateFieldsForOutpatientCareSettingType(DrugOrder order, Errors errors) {
 		if (order.getAction() != Order.Action.DISCONTINUE && order.getCareSetting() != null
-		        && order.getCareSetting().getCareSettingType().equals(CareSetting.CareSettingType.OUTPATIENT)) {
+				&& order.getCareSetting().getCareSettingType().equals(CareSetting.CareSettingType.OUTPATIENT)) {
 			ValidationUtils.rejectIfEmpty(errors, "quantity", "DrugOrder.error.quantityIsNullForOutPatient");
 			ValidationUtils.rejectIfEmpty(errors, "numRefills", "DrugOrder.error.numRefillsIsNullForOutPatient");
 		}
 	}
-	
+
 	private void validatePairedFields(DrugOrder order, Errors errors) {
 		if (order.getDose() != null) {
 			ValidationUtils.rejectIfEmpty(errors, "doseUnits", "DrugOrder.error.doseUnitsRequiredWithDose");
@@ -156,7 +171,7 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 			ValidationUtils.rejectIfEmpty(errors, "durationUnits", "DrugOrder.error.durationUnitsRequiredWithDuration");
 		}
 	}
-	
+
 	private void validateUnitsAreAmongAllowedConcepts(Errors errors, DrugOrder order) {
 		OrderService orderService = Context.getOrderService();
 		if (order.getDoseUnits() != null) {
