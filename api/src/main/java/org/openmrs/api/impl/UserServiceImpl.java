@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -521,8 +522,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @param new user that has privileges
 	 */
 	private void checkPrivileges(Role role) {
-		Collection<Privilege> privileges = role.getPrivileges();
-		
+	
 		if (privileges != null) {
 			for (Privilege p : privileges) {
 				if (!Context.hasPrivilege(p.getPrivilege())) {

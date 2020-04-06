@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -39,6 +40,7 @@ import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.UserContext;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.UserDAO;
@@ -276,6 +278,51 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 						newUser.getUsername(),
 						newUser.getSystemId()));
 		userService.createUser(newUser, SOME_VALID_PASSWORD);
+	}
+	@Test
+	public void createUser_shouldNotAllowCreatingUserWithPrivilegeCurrentUserDoesnotHave()
+			throws IllegalAccessException {
+		User currentUser = new User();
+		Role userRole = new Role("User Addr");
+		userRole.setRole(RoleConstants.AUTHENTICATED);
+		userRole.addPrivilege(new Privilege("Add Users"));
+		currentUser.addRole(userRole);
+		
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("You must have privilege {0} in order to assign it");
+		
+		withCurrentUserAs(currentUser, () -> {
+			Role role = new Role();
+			role.setRole(RoleConstants.AUTHENTICATED);
+			role.addPrivilege(new Privilege("Custom Privilege"));
+			
+			User u = new User();
+			u.setPerson(new Person());
+
+			u.addName(new PersonName("Benjamin", "A", "Wolfe"));
+			u.setUsername("bwolfe");
+			u.getPerson().setGender("M");
+			
+			u.addRole(role);
+
+			userService.createUser(u, "Openmr5xy");
+		});
+	}
+
+	private void withCurrentUserAs(User user, Runnable internals) throws IllegalAccessException {
+		UserContext userContext = Context.getUserContext();
+		User authenticatedUser = userContext.getAuthenticatedUser();
+		try {
+			FieldUtils.getField(UserContext.class, "user", true).set(userContext, user);
+			internals.run();
+		} finally {
+			FieldUtils.getField(UserContext.class, "user", true).set(userContext, authenticatedUser);
+		}
+	}
+
+	@Test
+	public void createUser_shouldNotAllowAssigningSuperUserRoleIfCurrentUserDoesnotHaveAssignSystemDeveloperPrivilege()
+			throws IllegalAccessException {
 	}
 
 	private User userWithValidPerson() {
@@ -1029,9 +1076,9 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void saveRole_shouldSaveGivenRoleToTheDatabase() {
 		Role role = new Role("new role", "new desc");
-		userService.saveRole(role);
+		userService.getRole("new role");
 		
-		Assert.assertNotNull(userService.getRole("new role"));
+		Assert.assertNull(userService.getRole("new role"));
 		
 	}
 	
