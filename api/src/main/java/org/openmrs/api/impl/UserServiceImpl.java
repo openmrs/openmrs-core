@@ -535,14 +535,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	private void checkPrivileges(Role role) {
 		Collection<Privilege> privileges = role.getPrivileges();
-//		
-//		 if (privileges != null) {
-//			for (Privilege p : privileges) {
-//				if (!Context.hasPrivilege(p.getPrivilege())) {
-//		 			throw new APIAuthenticationException("Privilege required: " + p);
-//	 		}
-//	 	}
-//	 }
+
 	 	Optional.ofNullable(role.getPrivileges())
 	 	.map(p -> p.stream().filter(pr -> !Context.hasPrivilege(pr.getPrivilege())).collect(
 	 		Collectors.toSet())).ifPresent(missing -> {
