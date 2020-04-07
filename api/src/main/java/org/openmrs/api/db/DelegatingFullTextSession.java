@@ -77,6 +77,32 @@ public class DelegatingFullTextSession extends SessionDelegatorBaseImpl implemen
 		
 		return query;
 	}
+	@Override
+	public FullTextQuery createFullTextQuery(QueryDescriptor descriptor, Class<?>... entities) {
+		if (entities.length > 1) {
+			throw new DAOException("Can't create FullTextQuery for multiple persistent classes");
+		}
+
+		if (log.isDebugEnabled()) {
+			log.debug("Creating new FullTextQuery instance");
+		}
+
+		Class<?> entityClass = entities[0];
+		FullTextQuery query = delegate.createFullTextQuery(descriptor, entityClass);
+
+		if (log.isDebugEnabled()) {
+			log.debug("Notifying FullTextQueryCreated listeners...");
+		}
+
+		//Notify listeners, note that we intentionally don't catch any exception from a listener
+		//so that failure should just halt the entire creation operation, this is possible because 
+		//the default ApplicationEventMulticaster in spring fires events serially in the same thread
+		//but has the downside of where a rogue listener can block the entire application.
+		FullTextQueryAndEntityClass queryAndClass = new FullTextQueryAndEntityClass(query, entityClass);
+		eventPublisher.publishEvent(new FullTextQueryCreatedEvent(queryAndClass));
+
+		return query;
+	}
 	
 	/**
 	 * @see FullTextSession#index(Object)
