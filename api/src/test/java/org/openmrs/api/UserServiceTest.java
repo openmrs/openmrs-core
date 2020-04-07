@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -32,6 +33,7 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.openmrs.OpenmrsObject;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
@@ -39,6 +41,7 @@ import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.UserContext;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.UserDAO;
@@ -65,6 +68,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	protected static final String SOME_VALID_PASSWORD = "s0mePassword";
 
 	public static final String SOME_USERNAME = "butch";
+
+	private static final boolean CurrentUser = false;
 
 	private final String ADMIN_USERNAME = "admin";
 
@@ -276,6 +281,45 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 						newUser.getUsername(),
 						newUser.getSystemId()));
 		userService.createUser(newUser, SOME_VALID_PASSWORD);
+	}
+	
+	@Test
+	public void createUser_shouldNotAllowCreatingUserWithPrivilegeCurrentUserDoesNotHave() throws IllegalAccessException {
+	//setup the currently logged in user
+		User currentUser = new User();
+		Role userRole = new Role("User Adder");
+		userRole.setRole(RoleConstants.AUTHENTICATED);
+		userRole.addPrivilege(new Privilege("Add Users"));
+		currentUser.addRole(userRole);
+		
+		// setup our expected exception
+		// we expect this to fail because the currently logged-in user lacks a privilege to be
+		// assigned to the new user
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("You must have privilege {0} in order to assign it");
+		// set current user to the user defined above
+		withCurrentUserAs(currentUser, () -> {
+			// create a role to assign to the new user
+			Role role = new Role();
+			role.setRole(RoleConstants.AUTHENTICATED);
+			role.addPrivilege(new Privilege("Custom Privilege"));// add a privilege to the role
+			
+			// create our new user object with the required fields
+			User u = new User();
+			u.setPerson(new Person());
+			// assign the specified role to the user
+			u.addName(new PersonName("Benjamin", "A", "Wolfe"));
+			u.setUsername("bwolfe");
+			u.getPerson().setGender("M");
+			u.addRole(role);
+			// here we expect the exception to be thrown
+			userService.createUser(u, "Openmr5xy");
+		});
+	}
+	
+	@Test
+	public void createUser_shouldNotAllowAssigningSuperUserRoleIfCurrentUserDoesnotHaveAssignSystemDeveloperPrivilege() throws IllegalAccessException {
+	
 	}
 
 	private User userWithValidPerson() {
@@ -1059,6 +1103,65 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		userService.saveRole(parentRole);
 	}
 	
+	@Test
+	public void saveRole_shouldAllowARoleToBeSavedWithCorrectPermissions() throws IllegalAccessException {
+		Role role = new Role("my role");
+		Privilege myPrivilege = new Privilege("custom privilege");
+		role.addPrivilege(myPrivilege);
+		
+		User currentUser = new User();
+		currentUser.addRole(new Role(RoleConstants.SUPERUSER));
+		
+		withCurrentUserAs(currentUser, () -> {
+			Role newRole = new Role("another role");
+			newRole.addPrivilege(myPrivilege);
+			userService.saveRole(newRole);
+		});
+	}
+
+	@Test
+	public void saveRole_shouldThrowErrorWhenCurrentUserLacksPrivilegeAssignedToRole() throws IllegalAccessException {
+		Role adminRole = new Role("my role");
+		adminRole.addPrivilege(new Privilege(PrivilegeConstants.MANAGE_ROLES));
+
+		User currentUser = new User();
+		currentUser.addRole(adminRole);
+
+		Privilege myPrivilege = new Privilege("custom privilege");
+		
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("You must have the following privileges in order to assign them: custom privilege");
+
+		withCurrentUserAs(currentUser, () -> {
+			Role newRole = new Role("another role");
+			newRole.addPrivilege(myPrivilege);
+			userService.saveRole(newRole);
+		});
+	}
+
+	@Test
+	public void saveRole_shouldThrowErrorWhenCurrentUserLacksAPrivilegeAssignedToRole() throws IllegalAccessException {
+		Privilege myFirstPrivilege = new Privilege("custom privilege");
+		Privilege mySecondPrivilege = new Privilege("another privilege");
+		
+		Role adminRole = new Role("my role");
+		adminRole.addPrivilege(new Privilege(PrivilegeConstants.MANAGE_ROLES));
+		adminRole.addPrivilege(myFirstPrivilege);
+
+		User currentUser = new User();
+		currentUser.addRole(adminRole);
+
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("You must have the following privileges in order to assign them: another privilege");
+
+		withCurrentUserAs(currentUser, () -> {
+			Role newRole = new Role("another role");
+			newRole.addPrivilege(myFirstPrivilege);
+			newRole.addPrivilege(mySecondPrivilege);
+			userService.saveRole(newRole);
+		});
+	}
+	
 	/**
 	 * @see UserService#getUsersByPerson(Person,null)
 	 */
@@ -1504,5 +1607,24 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		expectedException.expectMessage(messages.getMessage("activation.key.not.correct"));
 		
 		userService.changePasswordUsingActivationKey(key, "Pa55w0rd");
+	}
+
+	/**
+	 * Utility method to set the current executing user to test various permission levels.
+	 * 
+	 * @param user the user to set as the currently running user
+	 * @param internals the functionality to test with this current running user
+	 * @throws IllegalAccessException because we use reflection to set the currently running user, this may fail and throw
+	 *  and {@link IllegalArgumentException}
+	 */
+	private void withCurrentUserAs(User user, Runnable internals) throws IllegalAccessException {
+		UserContext userContext = Context.getUserContext();
+		User authenticatedUser = userContext.getAuthenticatedUser();
+		try {
+			FieldUtils.getField(UserContext.class, "user", true).set(userContext, user);
+			internals.run();
+		} finally {
+			FieldUtils.getField(UserContext.class, "user", true).set(userContext, authenticatedUser);
+		}
 	}
 }
