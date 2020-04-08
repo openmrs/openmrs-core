@@ -11,7 +11,6 @@ package org.openmrs.scheduler;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -413,23 +412,5 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		assertNotNull("lastExecutionTime is null, so the SchedulerService didn't save it", td.getLastExecutionTime());
 		assertEquals("Last execution time in seconds is wrong", actualExecutionTime / 1000, td.getLastExecutionTime()
 		        .getTime() / 1000, 1);
-	}
-
-	/**
-	 * @see org.openmrs.scheduler.SchedulerService#getTaskByUuid(java.lang.String)
-	 */
-	@Test
-	public void getTaskByUuid_shouldGetTaskByUuid() throws Exception {
-		TaskDefinition td = Context.getSchedulerService().getTaskByUuid("1365a6da-6493-4e9b-b950-5af1b392aaa3");
-		assertNotNull(td);
-	}
-
-	/**
-	 * @see org.openmrs.scheduler.SchedulerService#getTaskByUuid(java.lang.String)
-	 */
-	@Test
-	public void getTaskByUuid_shouldReturnNullWhenUuidDoesNotExist() throws Exception {
-		TaskDefinition td = Context.getSchedulerService().getTaskByUuid("kncsjvcjvbevismcvbsnksndcsjbvjhvbn");
-		assertNull(td);
 	}
 }

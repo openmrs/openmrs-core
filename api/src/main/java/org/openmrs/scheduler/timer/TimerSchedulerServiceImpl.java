@@ -542,15 +542,5 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 			}
 		}
 	}
-
-	/**
-	 * @see org.openmrs.scheduler.SchedulerService#getTaskByUuid(java.lang.String)
-	 *
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public TaskDefinition getTaskByUuid(String uuid) {
-		return getSchedulerDAO().getTaskByUuid(uuid);
-	}
 	
 }
