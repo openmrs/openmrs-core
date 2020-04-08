@@ -15,7 +15,9 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -536,14 +538,13 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	private void checkPrivileges(Role role) {
 		Collection<Privilege> privileges = role.getPrivileges();
 		
-		if (privileges != null) {
-			for (Privilege p : privileges) {
-				if (!Context.hasPrivilege(p.getPrivilege())) {
-					throw new APIAuthenticationException("Privilege required: " + p);
-				}
-			}
-		}
-	}
+		Optional.ofNullable(role.getPrivileges())
+		.map(p -> p.stream().filter(pr -> !Context.hasPrivilege(pr.getPrivilege())).map(Privilege::getPrivilege)
+			.distinct().collect(Collectors.joining(", ")))
+		.ifPresent(missing -> {
+			throw new APIException("Role.you.must.have.privileges: ", new Object[] { missing });
+		});
+    }
 	
 	/**
 	 * @see org.openmrs.api.UserService#getPrivilegeByUuid(java.lang.String)
