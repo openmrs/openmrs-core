@@ -536,13 +536,13 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @param new user that has privileges
 	 */
 	private void checkPrivileges(Role role) {
-		Collection<Privilege> privileges = role.getPrivileges();
-		
 		Optional.ofNullable(role.getPrivileges())
 		.map(p -> p.stream().filter(pr -> !Context.hasPrivilege(pr.getPrivilege())).map(Privilege::getPrivilege)
 			.distinct().collect(Collectors.joining(", ")))
 		.ifPresent(missing -> {
-			throw new APIException("Role.you.must.have.privileges: ", new Object[] { missing });
+			if (StringUtils.isNotBlank(missing)) {
+				throw new APIException("Role.you.must.have.privileges", new Object[] { missing });
+			}
 		});
     }
 	
