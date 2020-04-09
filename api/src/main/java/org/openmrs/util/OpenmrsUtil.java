@@ -858,7 +858,7 @@ public class OpenmrsUtil {
 			return ret;
 		}
 		ConceptService cs = Context.getConceptService();
-		
+		Set<Concept> conceptSet = new HashSet<>();
 		for (StringTokenizer st = new StringTokenizer(descriptor, "|"); st.hasMoreTokens();) {
 			String s = st.nextToken().trim();
 			boolean isSet = s.startsWith("set:");
@@ -878,12 +878,17 @@ public class OpenmrsUtil {
 			if (c != null) {
 				if (isSet) {
 					List<Concept> inSet = cs.getConceptsByConceptSet(c);
-					ret.addAll(inSet);
+					conceptSet.addAll(inSet);
 				} else {
-					ret.add(c);
+					conceptSet.add(c);
 				}
 			}
 		}
+		
+		for( Concept concept: conceptSet) {
+			ret.add(concept);	
+		}
+		
 		return ret;
 	}
 	
