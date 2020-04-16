@@ -68,6 +68,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	protected static final String SOME_VALID_PASSWORD = "s0mePassword";
 
 	public static final String SOME_USERNAME = "butch";
+	
+	private static final boolean CurrentUser = false;
 
 	private final String ADMIN_USERNAME = "admin";
 
@@ -279,6 +281,113 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 						newUser.getUsername(),
 						newUser.getSystemId()));
 		userService.createUser(newUser, SOME_VALID_PASSWORD);
+	}
+	
+	@Test
+	public void createUser_shouldNotAllowCreatingUserWithPrivilegeCurrentUserDoesNotHave() throws IllegalAccessException {
+		//setup the currently logged in user
+		User currentUser = new User();
+		Role userRole = new Role("User Adder");
+		userRole.setRole(RoleConstants.AUTHENTICATED);
+		userRole.addPrivilege(new Privilege("Add Users"));
+		currentUser.addRole(userRole);
+		// setup our expected exception
+		// we expect this to fail because the currently logged-in user lacks a privilege to be
+		// assigned to the new user
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("You must have privilege {0} in order to assign it");
+		// set current user to the user defined above
+		withCurrentUserAs(currentUser, () -> {
+			// create a role to assign to the new user
+			Role role = new Role();
+			role.setRole(RoleConstants.AUTHENTICATED);
+			// add a privilege to the role
+			role.addPrivilege(new Privilege("Custom Privilege"));
+
+			// create our new user object with the required fields
+			User u = new User();
+			u.setPerson(new Person());
+			// assign the specified role to the user
+			u.addName(new PersonName("Benjamin", "A", "Wolfe"));
+			u.setUsername("bwolfe");
+			u.getPerson().setGender("M");
+			u.addRole(role);
+			// here we expect the exception to be thrown
+			userService.createUser(u, "Openmr5xy");
+		});
+	}
+	
+	@Test
+	public void createUser_shouldNotAllowCreatingUserWithPrivilegesCurrentUserDoesNotHave() throws IllegalAccessException {
+		//setup the currently logged in user
+		User currentUser = new User();
+		Role userRole = new Role("User Adder");
+		userRole.setRole(RoleConstants.AUTHENTICATED);
+		userRole.addPrivilege(new Privilege("Add Users"));
+		currentUser.addRole(userRole);
+		// setup our expected exception
+		// we expect this to fail because the currently logged-in user lacks a privilege to be
+		// assigned to the new user
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("You must have the following privileges in order to assign them: Another Privilege, Custom Privilege");
+		// set current user to the user defined above
+		withCurrentUserAs(currentUser, () -> {
+			// create a role to assign to the new user
+			Role role = new Role();
+			role.setRole(RoleConstants.AUTHENTICATED);
+			// add privileges to the role
+			role.addPrivilege(new Privilege("Custom Privilege"));
+			role.addPrivilege(new Privilege("Another Privilege"));
+
+			// create our new user object with the required fields
+			User u = new User();
+			u.setPerson(new Person());
+			// assign the specified role to the user
+			u.addName(new PersonName("Benjamin", "A", "Wolfe"));
+			u.setUsername("bwolfe");
+			u.getPerson().setGender("M");
+			u.addRole(role);
+			// here we expect the exception to be thrown
+			userService.createUser(u, "Openmr5xy");
+		});
+	}
+	
+	@Test
+	public void createUser_shouldNotAllowAssigningSuperUserRoleIfCurrentUserDoesNotHaveAssignSystemDeveloperPrivileges() throws IllegalAccessException {
+		//setup the currently logged in user
+		User currentUser = new User();
+		Role userRole = new Role("User Adder");
+		userRole.setRole(RoleConstants.AUTHENTICATED);
+		userRole.addPrivilege(new Privilege("Add Users"));
+		currentUser.addRole(userRole);
+
+		// setup our expected exception
+		// we expect this to fail because the currently logged-in user lacks a privilege to be
+		// assigned to the new user
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("You must have the role {0} in order to assign it"); 
+
+		// set current user to the user defined above
+		withCurrentUserAs(currentUser, () -> {
+			// create a role to assign to the new user
+			// the current user cannot assign a user to the superuser role because he lacks AssignSystemDeveloper privileges
+			Role role= new Role("add user");
+			role.setRole(RoleConstants.SUPERUSER);
+			// add a privilege to the role
+			role.hasPrivilege(PrivilegeConstants.ASSIGN_SYSTEM_DEVELOPER_ROLE);			
+
+			// create our new user object with the required fields
+			User u = new User();
+			u.setPerson(new Person());
+			// assign the specified role to the user
+			u.addName(new PersonName("Benjamin", "A", "Wolfe"));
+			u.setUsername("bwolfe");
+			u.getPerson().setGender("M");
+			u.isSuperUser();
+			u.addRole(role);
+			// here we expect the exception to be thrown
+			userService.createUser(u, "Openmr5xy");
+		});
 	}
 
 	private User userWithValidPerson() {
