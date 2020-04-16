@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -397,30 +398,20 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	private void checkPrivileges(User user) {
 		Collection<Role> roles = user.getAllRoles();
-		List<String> requiredPrivs = new ArrayList<>();
-		
-		for (Role r : roles) {
-			if (r.getRole().equals(RoleConstants.SUPERUSER)
-			        && !Context.hasPrivilege(PrivilegeConstants.ASSIGN_SYSTEM_DEVELOPER_ROLE)) {
-				throw new APIException("User.you.must.have.role", new Object[] { RoleConstants.SUPERUSER });
-			}
-			if (r.getPrivileges() != null) {
-				for (Privilege p : r.getPrivileges()) {
-					if (!Context.hasPrivilege(p.getPrivilege())) {
-						requiredPrivs.add(p.getPrivilege());
-					}
-				}
-			}
-		}
-		
+		List<String> requiredPrivs = user.getAllRoles().stream().peek(this::checkSuperUserPrivilege)
+				.map(Role::getPrivileges).filter(Objects::nonNull).flatMap(Collection::stream)
+				.map(Privilege::getPrivilege).filter(p -> !Context.hasPrivilege(p)).sorted().collect(Collectors.toList());
 		if (requiredPrivs.size() == 1) {
 			throw new APIException("User.you.must.have.privilege", new Object[] { requiredPrivs.get(0) });
 		} else if (requiredPrivs.size() > 1) {
-			StringBuilder txt = new StringBuilder("You must have the following privileges in order to assign them: ");
-			for (String s : requiredPrivs) {
-				txt.append(s).append(", ");
-			}
-			throw new APIException(txt.substring(0, txt.length() - 2));
+			throw new APIException("User.you.must.have.privileges", new Object[] { String.join(", ", requiredPrivs) });
+		}		
+	}
+	
+	private void checkSuperUserPrivilege(Role r) {
+		if (r.getRole().equals(RoleConstants.SUPERUSER)
+				&& !Context.hasPrivilege(PrivilegeConstants.ASSIGN_SYSTEM_DEVELOPER_ROLE)) {
+			throw new APIException("User.you.must.have.role", new Object[] { RoleConstants.SUPERUSER });
 		}
 	}
 	
