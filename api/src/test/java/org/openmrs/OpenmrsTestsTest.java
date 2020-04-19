@@ -18,6 +18,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import javassist.CannotCompileException;
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.CtMethod;
+import javassist.expr.ExprEditor;
+import javassist.expr.MethodCall;
+
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -34,6 +41,8 @@ public class OpenmrsTestsTest {
 	
 	private List<Class<?>> testClasses = null;
 	
+	private String innerMethodName = "";
+
 	/**
 	 * Make sure there is at least one _other_ test case out there
 	 * 
@@ -209,4 +218,49 @@ public class OpenmrsTestsTest {
 		return currentDirTestClasses;
 	}
 	
+	/**
+	 * Make sure all tests in this class have a call to assert in them. This would help prevent
+	 * people from making tests that just print results to the screen
+	 * 
+	 * @throws CannotCompileException
+	 * @throws Throwable
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldHaveAtLeastOneCallToAssert() throws Throwable {
+		ClassPool cp = ClassPool.getDefault();
+		CtClass ctClass = cp.get("org.openmrs.OpenmrsTestsTest");
+		
+		//get all methods called in "org.openmrs.OpenmrsTestsTest" class
+		CtMethod[] cMethod = ctClass.getDeclaredMethods();
+		for (CtMethod classMethod : cMethod) {
+
+			// if cMethod is a test class (has a @Test annotation)
+			if (classMethod.getAnnotation(Test.class) != null) {
+
+				//if classMethod name starts with or contains "should"
+				if (classMethod.getName().startsWith("should") || classMethod.getName().contains("_should")) {
+					classMethod.instrument(new ExprEditor() {
+						
+						@Override
+						public void edit(MethodCall m) throws CannotCompileException {
+							concateMethodName(m.getMethodName());
+						}
+					});
+					assertTrue("org.openmrs.OpenmrsTestsTest" + "#" + classMethod.getName()
+					        + " does not contatin a call to assert", this.innerMethodName.contains("assert"));
+					this.innerMethodName = "";
+				}
+			}
+		}
+
+	}
+	
+	/**
+	 * Adds a String specified by "methodNameToAdd" to this.innerMethodName
+	 */
+	private void concateMethodName(String methodNameToAdd) {
+		Assert.assertNotNull(methodNameToAdd);
+		this.innerMethodName = innerMethodName.concat(methodNameToAdd);
+	}
 }
