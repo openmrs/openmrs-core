@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
+import org.hibernate.MappingException;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.Metadata;
 import org.hibernate.criterion.MatchMode;
@@ -216,7 +217,13 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	@Override
 	public void validate(Object object, Errors errors) throws DAOException {
 		Class entityClass = object.getClass();
-		ClassMetadata metadata = sessionFactory.getClassMetadata(entityClass);
+		ClassMetadata metadata = null;
+		try {
+			metadata = sessionFactory.getClassMetadata(entityClass);
+		}
+		catch (MappingException ex) {
+			log.debug(entityClass + " is not a hibernate mapped entity", ex);
+		}
 		if (metadata != null) {
 			String[] propNames = metadata.getPropertyNames();
 			Object identifierType = metadata.getIdentifierType();
