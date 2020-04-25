@@ -14,6 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Obs;
 import org.openmrs.api.APIException;
 import org.openmrs.obs.ComplexData;
@@ -60,6 +61,7 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 		if (ComplexObsHandler.RAW_VIEW.equals(view)) {
 			// to handle problem with downloading/saving files with blank spaces or commas in their names
 			// also need to remove the "file" text appended to the end of the file name
+			if (!StringUtils.isBlank(obs.getValueComplex())) {
 			String[] names = obs.getValueComplex().split("\\|");
 			String originalFilename = names[0];
 			originalFilename = originalFilename.replaceAll(",", "").replaceAll(" ", "").replaceAll("file$", "");
@@ -70,6 +72,11 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 			catch (IOException e) {
 				log.error("Trying to read file: " + file.getAbsolutePath(), e);
 			}
+			}
+			else {
+				log.error("The file must exist!!");
+			}
+			
 		} else {
 			// No other view supported
 			// NOTE: if adding support for another view, don't forget to update supportedViews list above

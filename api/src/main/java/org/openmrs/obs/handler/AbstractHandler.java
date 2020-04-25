@@ -147,11 +147,18 @@ public class AbstractHandler {
 	 * @return File object
 	 */
 	public static File getComplexDataFile(Obs obs) {
+		if (!StringUtils.isBlank(obs.getValueComplex())) {
 		String[] names = obs.getValueComplex().split("\\|");
 		String filename = names.length < 2 ? names[0] : names[names.length - 1];
 		File dir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(
 		    Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
 		return new File(dir, filename);
+		}
+		else {
+			log.error("The file must exist!!");
+			return null;
+		}
+		
 	}
 	
 	/**
