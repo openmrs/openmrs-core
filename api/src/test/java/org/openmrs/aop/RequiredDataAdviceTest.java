@@ -548,7 +548,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 		SomeOpenmrsData openmrsObject = new SomeOpenmrsData();
 		requiredDataAdvice.before(m, new Object[] { openmrsObject }, new WithAppropriatelyNamedMethod());
 		verify(saveHandler, times(1)).handle(eq(openmrsObject), Matchers.anyObject(), Matchers.anyObject(),
-		    anyString());
+				Matchers.any());
 	}
 	
 	@Test
@@ -568,7 +568,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 		List<SomeOpenmrsData> openmrsObjects = Arrays.asList(new SomeOpenmrsData(), new SomeOpenmrsData());
 		requiredDataAdvice.before(m, new Object[] { openmrsObjects }, new WithAppropriatelyNamedMethod());
 		verify(saveHandler, times(2)).handle(Matchers.anyObject(), Matchers.anyObject(),
-		    Matchers.anyObject(), anyString());
+		    Matchers.anyObject(), Matchers.any());
 	}
 	
 	@Test

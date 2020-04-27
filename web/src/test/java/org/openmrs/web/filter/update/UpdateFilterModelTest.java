@@ -60,9 +60,9 @@ public class UpdateFilterModelTest {
 		
 		assertTrue("should require an update", model.updateRequired);
 		assertThat(model.changes, is(changes));
-		PowerMockito.verifyStatic();
+		PowerMockito.verifyStatic(DatabaseUpdater.class);
 		DatabaseUpdater.getUnrunDatabaseChanges();
-		PowerMockito.verifyStatic(never());
+		PowerMockito.verifyStatic(DatabaseUpdater.class, never());
 		DatabaseUpdater.updatesRequired();
 	}
 	
@@ -78,9 +78,9 @@ public class UpdateFilterModelTest {
 		
 		assertTrue("should require an update", model.updateRequired);
 		assertThat(model.changes, is(empty()));
-		PowerMockito.verifyStatic();
+		PowerMockito.verifyStatic(DatabaseUpdater.class);
 		DatabaseUpdater.getUnrunDatabaseChanges();
-		PowerMockito.verifyStatic();
+		PowerMockito.verifyStatic(DatabaseUpdater.class);
 		DatabaseUpdater.updatesRequired();
 	}
 	
@@ -96,9 +96,9 @@ public class UpdateFilterModelTest {
 		
 		assertFalse("should not require an update", model.updateRequired);
 		assertThat(model.changes, is(empty()));
-		PowerMockito.verifyStatic();
+		PowerMockito.verifyStatic(DatabaseUpdater.class);
 		DatabaseUpdater.getUnrunDatabaseChanges();
-		PowerMockito.verifyStatic();
+		PowerMockito.verifyStatic(DatabaseUpdater.class);
 		DatabaseUpdater.updatesRequired();
 	}
 	
@@ -114,9 +114,9 @@ public class UpdateFilterModelTest {
 		
 		assertFalse("should not require an update", model.updateRequired);
 		assertNull("should not have changes", model.changes);
-		PowerMockito.verifyStatic();
+		PowerMockito.verifyStatic(DatabaseUpdater.class);
 		DatabaseUpdater.getUnrunDatabaseChanges();
-		PowerMockito.verifyStatic();
+		PowerMockito.verifyStatic(DatabaseUpdater.class);
 		DatabaseUpdater.updatesRequired();
 	}
 	
@@ -132,9 +132,9 @@ public class UpdateFilterModelTest {
 		
 		assertFalse("should not require an update", model.updateRequired);
 		assertNull("should not have changes", model.changes);
-		PowerMockito.verifyStatic(times(2));
+		PowerMockito.verifyStatic(DatabaseUpdater.class, times(2));
 		DatabaseUpdater.getUnrunDatabaseChanges();
-		PowerMockito.verifyStatic();
+		PowerMockito.verifyStatic(DatabaseUpdater.class);
 		DatabaseUpdater.updatesRequired();
 	}
 	
@@ -152,9 +152,9 @@ public class UpdateFilterModelTest {
 		
 		assertTrue("should require an update", model.updateRequired);
 		assertThat(model.changes, is(changes));
-		PowerMockito.verifyStatic(times(2));
+		PowerMockito.verifyStatic(DatabaseUpdater.class, times(2));
 		DatabaseUpdater.getUnrunDatabaseChanges();
-		PowerMockito.verifyStatic(never());
+		PowerMockito.verifyStatic(DatabaseUpdater.class, never());
 		DatabaseUpdater.updatesRequired();
 	}
 }
