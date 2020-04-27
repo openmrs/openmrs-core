@@ -127,9 +127,7 @@ public class ModuleFactory {
 	 */
 	public static Module loadModule(Module module, Boolean replaceIfExists) throws ModuleException {
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Adding module " + module.getName() + " to the module queue");
-		}
+			log.debug("Adding module to the module queue {}", module.getName());
 		
 		Module oldModule = getLoadedModulesMap().get(module.getModuleId());
 		if (oldModule != null) {
@@ -164,9 +162,7 @@ public class ModuleFactory {
 		// load modules from the user's module repository directory
 		File modulesFolder = ModuleUtil.getModuleRepository();
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Loading modules from: " + modulesFolder.getAbsolutePath());
-		}
+			log.debug("Loading modules from: {}", modulesFolder.getAbsolutePath());
 		
 		File[] files = modulesFolder.listFiles();
 		if (modulesFolder.isDirectory() && files != null) {

@@ -109,9 +109,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public Order getOrder(Integer orderId) throws DAOException {
-		if (log.isDebugEnabled()) {
-			log.debug("getting order #" + orderId);
-		}
+			log.debug("getting order #{}", orderId);
 		
 		return (Order) sessionFactory.getCurrentSession().get(Order.class, orderId);
 	}

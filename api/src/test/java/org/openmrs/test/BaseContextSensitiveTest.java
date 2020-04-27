@@ -186,10 +186,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		
 		Properties props = getRuntimeProperties();
-		
-		if (log.isDebugEnabled())
-			log.debug("props: " + props);
-		
+			log.debug("props: {}", props);
 		Context.setRuntimeProperties(props);
 		
 		loadCount++;

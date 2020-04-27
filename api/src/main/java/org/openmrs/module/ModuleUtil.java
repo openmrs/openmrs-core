@@ -135,7 +135,7 @@ public class ModuleUtil {
 			if (modules == null || modules.isEmpty()) {
 				log.debug("No modules loaded");
 			} else {
-				log.debug("Found and loaded " + modules.size() + " module(s)");
+				log.debug("Found and loaded {} module(s) {}", modules.size());
 			}
 		}
 		
@@ -154,9 +154,7 @@ public class ModuleUtil {
 		List<Module> modules = new ArrayList<>(ModuleFactory.getStartedModules());
 		
 		for (Module mod : modules) {
-			if (log.isDebugEnabled()) {
-				log.debug("stopping module: " + mod.getModuleId());
-			}
+				log.debug("stopping module: {}", mod.getModuleId());
 			
 			if (mod.isStarted()) {
 				ModuleFactory.stopModule(mod, true, true);

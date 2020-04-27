@@ -113,11 +113,7 @@ public class WebModuleUtil {
 	 * @return boolean whether or not the spring context need to be refreshed
 	 */
 	public static boolean startModule(Module mod, ServletContext servletContext, boolean delayContextRefresh) {
-		
-		if (log.isDebugEnabled()) {
-			log.debug("trying to start module " + mod);
-		}
-		
+			log.debug("trying to start module {}", mod);
 		// only try and start this module if the api started it without a
 		// problem.
 		if (ModuleFactory.isModuleStarted(mod) && !mod.hasStartupError()) {
@@ -170,9 +166,7 @@ public class WebModuleUtil {
 						// if a module id has a . in it, we should treat that as a /, i.e. files in the module
 						// ui.springmvc should go in folder names like .../ui/springmvc/...
 						absPath.append(mod.getModuleIdAsPath()).append("/").append(filepath);
-						if (log.isDebugEnabled()) {
-							log.debug("Moving file from: " + name + " to " + absPath);
-						}
+							log.debug("Moving file from: {} to {}", name, absPath);
 						
 						// get the output file
 						File outFile = new File(absPath.toString().replace("/", File.separator));

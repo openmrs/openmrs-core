@@ -943,11 +943,7 @@ public class OpenmrsUtil {
 		if (!dir.exists() || !dir.isDirectory()) {
 			throw new IOException("Could not delete directory '" + dir.getAbsolutePath() + "' (not a directory)");
 		}
-		
-		if (log.isDebugEnabled()) {
-			log.debug("Deleting directory " + dir.getAbsolutePath());
-		}
-		
+			log.debug("Deleting directory {}", dir.getAbsolutePath());
 		File[] fileList = dir.listFiles();
 		if (fileList == null) {
 			return false;
@@ -958,11 +954,7 @@ public class OpenmrsUtil {
 				deleteDirectory(f);
 			}
 			boolean success = f.delete();
-			
-			if (log.isDebugEnabled()) {
-				log.debug("   deleting " + f.getName() + " : " + (success ? "ok" : "failed"));
-			}
-			
+				log.debug("   deleting {} :  ok {} : failed {}", f.getName(), success);
 			if (!success) {
 				f.deleteOnExit();
 			}

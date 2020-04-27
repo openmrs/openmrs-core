@@ -193,10 +193,7 @@ public class ConceptValidator extends BaseCustomizableValidator implements Valid
 					throw new DuplicateConceptNameException("'" + nameInLocale.getName()
 					        + "' is a duplicate name in locale '" + conceptNameLocale.toString() + "' for the same concept");
 				}
-				
-				if (log.isDebugEnabled()) {
-					log.debug("Valid name found: " + nameInLocale.getName());
-				}
+					log.debug("Valid name found: {}", nameInLocale.getName());
 			}
 		}
 		
