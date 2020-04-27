@@ -11,7 +11,7 @@ package org.openmrs.obs;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
@@ -40,12 +40,13 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.obs.handler.AbstractHandler;
 import org.openmrs.util.OpenmrsUtil;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ AbstractHandler.class, OpenmrsUtil.class, Context.class })
-
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*", "org.w3c.dom.*"})
 public class AbstractHandlerTest {
 	
 	private final String FILENAME = "mytxtfile.txt";
