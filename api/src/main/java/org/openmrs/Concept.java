@@ -641,6 +641,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * Returns the name which is explicitly marked as preferred for a given locale.
 	 * 
 	 * @param forLocale locale for which to return a preferred name
+	 
 	 * @return preferred name for the locale, or null if no preferred name is specified
 	 * @should return the concept name explicitly marked as locale preferred
 	 * @should return the fully specified name if no name is explicitly marked as locale preferred
@@ -652,9 +653,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		}
 		// fail early if this concept has no names defined
 		if (getNames(forLocale).isEmpty()) {
-			if (log.isDebugEnabled()) {
-				log.debug("there are no names defined for concept with id: " + conceptId + " in the  locale: " + forLocale);
-			}
+			log.debug("The ConceptId is {}.", conceptId);
+			log.debug("The Locale is" +  forLocale);
 			return null;
 		} else if (forLocale == null) {
 			log.warn("Locale cannot be null");
