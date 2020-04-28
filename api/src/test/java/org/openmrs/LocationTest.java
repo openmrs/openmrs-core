@@ -9,7 +9,9 @@
  */
 package org.openmrs;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -101,5 +103,79 @@ public class LocationTest {
 		    firstChildOfNonRetiredLocation, secondChildOfNonRetiredLocation));
 		
 		Assert.assertThat(descendantLocations, equalTo(expectedLocations));
+	}
+
+	/**
+	 * Check that an existing tag is found.
+	 *
+	 * @see Location#hasTag(String)
+	 */
+	@Test
+	public void hasTag_shouldReturnTrueIfTagToFindIsInLocationTags() {
+		Location location = new Location();
+		LocationTag tagOne = new LocationTag("One", "");
+		LocationTag tagTwo = new LocationTag("Two", "");
+		
+		location.addTag(tagOne);
+		location.addTag(tagTwo);
+		
+		String tagToFind = "Two";
+		assertTrue(location.hasTag(tagToFind));
+	}
+	
+	/**
+	 * Check that a non-existing tag is not found.
+	 *
+	 * @see Location#hasTag(String)
+	 */
+	@Test
+	public void hasTag_shouldReturnFalseIfTagToFindIsNotInLocationTags() {
+		Location location = new Location();
+		LocationTag tagOne = new LocationTag("One", "");
+		LocationTag tagTwo = new LocationTag("Two", "");
+		
+		location.addTag(tagOne);
+		location.addTag(tagTwo);
+		
+		String tagToFind = "Three";
+		assertFalse(location.hasTag(tagToFind));
+	}
+	
+	/**
+	 * Check that all child locations are returned when includeRetired is true.
+	 *
+	 * @see Location#getChildLocations(boolean)
+	 */
+	@Test
+	public void getChildLocations_shouldReturnAllChildLocationsIfIncludeRetiredIsTrue() {
+		Location rootLocation = new Location();
+		Location childLocationOne = new Location();
+		Location childLocationTwo = new Location();
+		Set<Location> childLocations = new HashSet<>(Arrays.asList(childLocationOne, childLocationTwo));
+		
+		rootLocation.setChildLocations(childLocations);
+		
+		Set<Location> expectedChildLocations = childLocations;
+		assertThat(rootLocation.getChildLocations(true), equalTo(expectedChildLocations));
+	}
+	
+	/**
+	 * Check that only non-retired child locations are returned when includeRetired is false.
+	 *
+	 * @see Location#getChildLocations(boolean)
+	 */
+	@Test
+	public void getChildLocations_shouldReturnNonRetiredChildLocationsIfIncludeRetiredIsFalse() {
+		Location rootLocation = new Location();
+		Location nonRetiredChildLocation = new Location();
+		Location retiredChildLocation = new Location();
+		Set<Location> childLocations = new HashSet<>(Arrays.asList(nonRetiredChildLocation, retiredChildLocation));
+		
+		nonRetiredChildLocation.setRetired(false);
+		retiredChildLocation.setRetired(true);
+		rootLocation.setChildLocations(childLocations);
+		
+		Set<Location> expectedChildLocations = new HashSet<>(Collections.singletonList(nonRetiredChildLocation));
+		assertThat(rootLocation.getChildLocations(false), equalTo(expectedChildLocations));
 	}
 }
