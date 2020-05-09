@@ -10,9 +10,11 @@
 package org.openmrs.validator;
 
 import org.openmrs.Condition;
+import org.openmrs.ConditionClinicalStatus;
 import org.openmrs.annotation.Handler;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+import java.util.Date;
 
 /**
  * * Validates {@link Condition} objects
@@ -46,7 +48,9 @@ public class ConditionValidator implements Validator {
 		Condition condition = (Condition) object;
 		if(condition.getCondition() == null){
 			errors.rejectValue("condition", "Condition.conditionShouldNotBeNull", "The condition is required");
-		}
+		} else if(condition.getClinicalStatus().equals(ConditionClinicalStatus.INACTIVE) && condition.getOnsetDate().compareTo(condition.getEndDate()) > 0){
+			errors.rejectValue("onsetDate","Condition.onsetDateShouldBeBeforeEndDate","Valid Onset Date is required");
+		}	
 		if(condition.getClinicalStatus() == null){
 			errors.rejectValue("clinicalStatus", "Condition.clinicalStatusShouldNotBeNull", "The clinical status is required");
 		}

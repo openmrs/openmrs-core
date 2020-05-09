@@ -24,6 +24,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
 import java.util.Locale;
+import java.util.Date;
 
 /**
  * Class to implement tests for {@link ConditionValidator}
@@ -79,5 +80,28 @@ public class ConditionValidatorTest {
 		validator.validate(condition, errors);
 		Assert.assertFalse(errors.hasFieldErrors("condition"));
 		Assert.assertFalse(errors.hasFieldErrors("clinicalStatus"));
+	}
+
+	@Test
+	public void shouldPassWhenOnsetDateIsBeforeEndDate(){
+		Condition condition = new Condition();
+		condition.setCondition(new CodedOrFreeText(new Concept(), new ConceptName("name", new Locale("en")), "nonCoded"));
+		condition.setOnsetDate(new Date(1562591017000L));
+		condition.setEndDate(new Date(1562936617000L));
+		condition.setClinicalStatus(ConditionClinicalStatus.INACTIVE);
+		validator.validate(condition,errors);
+		Assert.assertFalse(errors.hasFieldErrors("onsetDate"));
+	}
+
+	@Test
+	public void shouldFailForInvalidOnsetDate(){
+		Condition condition = new Condition();
+		condition.setCondition(new CodedOrFreeText(new Concept(), new ConceptName("name", new Locale("en")), "nonCoded"));
+		condition.setEndDate(new Date(1562591017000L));
+		condition.setOnsetDate(new Date(1562936617000L));
+		condition.setClinicalStatus(ConditionClinicalStatus.INACTIVE);
+		validator.validate(condition,errors);
+		Assert.assertTrue(errors.hasFieldErrors("onsetDate"));
+	
 	}
 }
