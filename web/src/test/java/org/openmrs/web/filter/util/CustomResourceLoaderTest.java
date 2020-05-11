@@ -1,12 +1,13 @@
 package org.openmrs.web.filter.util;
 
 import junit.framework.TestCase;
+import org.junit.Test;
 import org.openmrs.util.LocaleUtility;
 
 import java.util.*;
 
 public class CustomResourceLoaderTest extends TestCase {
-	
+	@Test
 	public void testUpdateResource() {
 		String testMainClassPath = "classpath*:testOverride/messages*.properties";
 		String testOverrideClassPath = "classpath*:testOverride/%s_override.properties";
@@ -23,6 +24,7 @@ public class CustomResourceLoaderTest extends TestCase {
 		assertEquals("PQR",resources.get(expectedLocale).getString("test.install.header2"));
     }
 	
+    @Test
 	public void testUpdateResourceEmptyOverrideProperties() {
 		String testMainClassPath = "classpath*:testOverride/messages*.properties";
 		String testOverrideClassPath = "classpath*:testOverride/%s_override.properties";
