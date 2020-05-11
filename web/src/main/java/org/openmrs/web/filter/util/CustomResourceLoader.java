@@ -10,15 +10,9 @@
 package org.openmrs.web.filter.util;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.PropertyResourceBundle;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.io.InputStream;
+import java.io.SequenceInputStream;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -32,12 +26,14 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
  * This class is responsible for loading messages resources from file system
  */
 public class CustomResourceLoader {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(CustomResourceLoader.class);
 	
 	/** */
 	public static final String PREFIX = "messages";
-	
+	public static final String CLASSPATH_MESSAGES_PROPERTIES = "classpath*:messages*.properties";
+	public static final String CLASSPATH_OVERRIDE_MESSAGES_PROPERTIES = "classpath*:override-messages/%s_override.properties";
+
 	/** the map that contains resource bundles for each locale */
 	private Map<Locale, ResourceBundle> resources;
 	
@@ -52,20 +48,41 @@ public class CustomResourceLoader {
 	private CustomResourceLoader(HttpServletRequest httpRequest) {
 		this.resources = new HashMap<>();
 		this.availablelocales = new HashSet<>();
-		
+		this.resources = updateResources(CLASSPATH_MESSAGES_PROPERTIES,CLASSPATH_OVERRIDE_MESSAGES_PROPERTIES);
+		this.availablelocales = this.resources.keySet();
+	}
+
+	/**
+	 * sets values from property file into Provided maps. Acts as helper in testing 
+	 */
+	public Map<Locale, ResourceBundle> updateResources(String mainClassPath,String overrideClassPath){
+		Map<Locale, ResourceBundle> resources = new HashMap<>();
+		Set<Locale> availablelocales = new HashSet<>();
 		try {
 			PathMatchingResourcePatternResolver patternResolver = new PathMatchingResourcePatternResolver();
-			Resource[] localResources = patternResolver.getResources("classpath*:messages*.properties");
+			Resource[] localResources = patternResolver.getResources(mainClassPath);
 			for (Resource localeResource : localResources) {
 				Locale locale = parseLocaleFrom(localeResource.getFilename(), PREFIX);
-				ResourceBundle rb = new PropertyResourceBundle(new InputStreamReader(localeResource.getInputStream(), StandardCharsets.UTF_8));
-				getResource().put(locale, rb);
-				getAvailablelocales().add(locale);
+				InputStream defaultStream = localeResource.getInputStream();
+				String actualOverrideClassPath = String.format(overrideClassPath,locale);
+				List<InputStream> propertyStreams = new ArrayList<>();
+				// add default property at beginning
+				propertyStreams.add(defaultStream);
+				Resource[] localOverrideResources = patternResolver.getResources(actualOverrideClassPath);
+				for( Resource localOverrideResource: localOverrideResources){
+					propertyStreams.add(localOverrideResource.getInputStream());
+				}
+				Enumeration<InputStream> enumeratedStreams = Collections.enumeration(propertyStreams);
+				SequenceInputStream sequenceInputStream = new SequenceInputStream(enumeratedStreams);
+				ResourceBundle rb = new PropertyResourceBundle(sequenceInputStream);
+				resources.put(locale, rb);
+				availablelocales.add(locale);
 			}
 		}
 		catch (IOException ex) {
 			log.error(ex.getMessage(), ex);
 		}
+		return resources;
 	}
 	
 	/**
