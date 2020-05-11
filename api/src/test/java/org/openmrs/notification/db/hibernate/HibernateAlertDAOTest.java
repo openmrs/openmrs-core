@@ -18,7 +18,6 @@ import org.junit.Test;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.Alert;
-import org.openmrs.notification.AlertService;
 import org.openmrs.test.BaseContextSensitiveTest;
 
 /**
@@ -65,6 +64,7 @@ public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(savedAlert.getAlertId());
 
 	}
+	@Test
 	public void deleteAlert_shouldReturnNullAfterDeleting() {
     	Alert alert = createAlert();
 		Context.getAlertService().saveAlert(alert);
