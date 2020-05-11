@@ -9,9 +9,15 @@
  */
 package org.openmrs.notification.db.hibernate;
 
+import java.util.List;
+
+import org.hibernate.SessionFactory;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.notification.Alert;
 import org.openmrs.notification.AlertService;
 import org.openmrs.test.BaseContextSensitiveTest;
 
@@ -20,10 +26,20 @@ import org.openmrs.test.BaseContextSensitiveTest;
  * tests to use dbunit
  */
 public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
+	private HibernateAlertDAO hibernateAlertDAO;
 	
 	@Before
 	public void runBeforeEachTest() {
+		Context.openSession();
 		authenticate();
+		hibernateAlertDAO = new HibernateAlertDAO();
+		hibernateAlertDAO.setSessionFactory((SessionFactory) applicationContext.getBean("sessionFactory"));
+	}
+	private Alert createAlert() {
+		Alert alert = new Alert(1234);
+		alert.setText("Testing the hibernate DAO");
+		return alert;
+
 	}
 	
 	/**
@@ -32,11 +48,49 @@ public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldGetAlerts() {
+	public void getAlert_shouldReturnSavedAlert() throws Exception {
+		Alert alert = createAlert();
+		Context.getAlertService().saveAlert(alert);
+		Alert savedAlert = Context.getAlertService().getAlert(1234);
+		Assert.assertEquals(savedAlert.getText(), "Testing the hibernate DAO");
 		
-		AlertService as = Context.getAlertService();
-		//System.out.println(as.getAllAlerts());
-		
+	}
+	
+	@Test
+	public void saveAlert_shouldReturnNotNull() {
+
+		Alert alert = createAlert();
+		Context.getAlertService().saveAlert(alert);
+		Alert savedAlert = Context.getAlertService().getAlert(1234);
+		Assert.assertNotNull(savedAlert.getAlertId());
+
+	}
+	public void deleteAlert_shouldReturnNullAfterDeleting() {
+    	Alert alert = createAlert();
+		Context.getAlertService().saveAlert(alert);
+		hibernateAlertDAO.deleteAlert(alert);
+		Assert.assertNull(Context.getAlertService().getAlert(1234));
+
+	}
+	@Test
+	public void getAlerts_shouldReturnAlertsWhenUserIsPassedIn() {
+		User user = new User(1);
+		Alert alert=new Alert();
+		alert.setText("Testing get Alerts Method");
+		alert.addRecipient(user);
+		Context.getAlertService().saveAlert(alert);
+		List<Alert> alerts = hibernateAlertDAO.getAlerts(user, true, true);
+		Assert.assertEquals(alerts.size(),1);
+
+	}
+	@Test
+	public void getAllAllerts_shouldreturnAllAlerts() {
+		Alert alert=new Alert();
+		alert.setText("Testing the Hibernate get All Alerts Method");
+		Context.getAlertService().saveAlert(alert);
+        List<Alert>alerts=hibernateAlertDAO.getAllAlerts(false);
+	    Assert.assertEquals(alerts.size(), 1);
+	    
 	}
 	
 }
