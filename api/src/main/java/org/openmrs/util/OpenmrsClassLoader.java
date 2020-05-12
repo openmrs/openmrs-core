@@ -129,8 +129,8 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	}
 	
 	/**
-	 * It loads classes from the web container class loader first (parent class loader) and then
-	 * tries module class loaders.
+	 * It attempts to load classes from the module class loaders first and then
+	 * tries the web container class loader (parent class loader).
 	 * 
 	 * @see java.lang.ClassLoader#loadClass(java.lang.String, boolean)
 	 * <strong>Should</strong> load class from cache second time
