@@ -76,7 +76,7 @@ public class ValidateUtil {
 			Set<String> uniqueErrorMessages = new LinkedHashSet<>();
 			for (Object objerr : errors.getAllErrors()) {
 				ObjectError error = (ObjectError) objerr;
-				String message = Context.getMessageSourceService().getMessage(error.getCode());
+				String message = Context.getMessageSourceService().getMessage(error.getCode(), error.getArguments(), Context.getLocale());
 				if (error instanceof FieldError) {
 					message = ((FieldError) error).getField() + ": " + message;
 				}
