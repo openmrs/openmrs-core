@@ -3598,7 +3598,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see ConceptService#getConceptByNameOrIdOrMap(String)
 	 */
 	@Test
-	public void getConceptByNameOrIdOrMap_shouldReturnNullOtherwise() {
+	public void getConceptByNameOrIdOrMap_shouldReturnNullWhenEitherConceptRefIsInvalidOrDoesNotMatchAnyConcept() {
 		String givenNull = null;
 		Assert.assertNull(conceptService.getConceptByNameOrIdOrMap(givenNull));
 		
