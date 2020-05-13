@@ -23,11 +23,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
-import javax.persistence.Entity;
-
+import liquibase.datatype.DataTypeFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -39,10 +37,6 @@ import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.ext.h2.H2DataTypeFactory;
 import org.dbunit.operation.DatabaseOperation;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.cfg.Environment;
-import org.openmrs.util.OpenmrsClassScanner;
 
 import liquibase.Liquibase;
 import liquibase.database.Database;
@@ -50,6 +44,7 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
+import liquibase.ext.datatype.core.MySQLBooleanType;
 
 /**
  * Allows to test database upgrade. It accepts initialDatabasePath which should point to the h2
@@ -115,8 +110,8 @@ public class DatabaseUpgradeTestUtil {
 		connection.setAutoCommit(true);
 		
 		try {
-			liqubaseConnection = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(
-			    new JdbcConnection(connection));
+			liqubaseConnection = DatabaseFactory.getInstance()
+			        .findCorrectDatabaseImplementation(new JdbcConnection(connection));
 			liqubaseConnection.setDatabaseChangeLogTableName("LIQUIBASECHANGELOG");
 			liqubaseConnection.setDatabaseChangeLogLockTableName("LIQUIBASECHANGELOGLOCK");
 		}
@@ -157,8 +152,8 @@ public class DatabaseUpgradeTestUtil {
 		InputStream inputStream = getClass().getResourceAsStream(path);
 		ReplacementDataSet replacementDataSet;
 		try {
-			replacementDataSet = new ReplacementDataSet(new FlatXmlDataSet(new InputStreamReader(inputStream), false, true,
-			        false));
+			replacementDataSet = new ReplacementDataSet(
+			        new FlatXmlDataSet(new InputStreamReader(inputStream), false, true, false));
 			
 			inputStream.close();
 		}
@@ -224,41 +219,21 @@ public class DatabaseUpgradeTestUtil {
 	public void upgrade() throws IOException, SQLException {
 		upgrade("liquibase-update-to-latest.xml");
 	}
-
+	
 	public void upgrade(String filename) throws IOException, SQLException {
 		try {
-			Liquibase liquibase = new Liquibase(filename, new ClassLoaderResourceAccessor(getClass()
-			        .getClassLoader()), liqubaseConnection);
-			liquibase.update(null);
+			Liquibase liquibase = new Liquibase(filename, new ClassLoaderResourceAccessor(getClass().getClassLoader()),
+			        liqubaseConnection);
+
+			DataTypeFactory dataTypeFactory = DataTypeFactory.getInstance();
+			dataTypeFactory.register( MySQLBooleanType.class );
+
+			liquibase.update("");
 			
 			connection.commit();
 		}
 		catch (LiquibaseException e) {
 			throw new IOException(e);
 		}
-	}
-	
-	public SessionFactory buildSessionFactory() {
-		Configuration config = new Configuration().configure();
-		Set<Class<?>> entityClasses = OpenmrsClassScanner.getInstance().getClassesWithAnnotation(Entity.class);
-		for (Class<?> clazz : entityClasses) {
-			if (clazz.getSimpleName().equals("SomeTestOrder")) {
-				continue;
-			}
-			config.addAnnotatedClass(clazz);
-		}
-		//H2 version we use behaves differently from H2Dialect in Hibernate so we provide our implementation
-		config.setProperty(Environment.DIALECT, H2LessStrictDialect.class.getName());
-		config.setProperty(Environment.URL, connectionUrl);
-		config.setProperty(Environment.DRIVER, "org.h2.Driver");
-		config.setProperty(Environment.USER, "sa");
-		config.setProperty(Environment.PASS, "sa");
-		config.setProperty(Environment.USE_SECOND_LEVEL_CACHE, "false");
-		config.setProperty(Environment.USE_QUERY_CACHE, "false");
-		
-		//Let's validate HBMs against the actual schema
-		config.setProperty(Environment.HBM2DDL_AUTO, "validate");
-		
-		return config.buildSessionFactory();
 	}
 }

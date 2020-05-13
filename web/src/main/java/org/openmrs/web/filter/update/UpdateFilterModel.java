@@ -10,10 +10,10 @@
 package org.openmrs.web.filter.update;
 
 import java.util.List;
-
+import org.openmrs.liquibase.LiquibaseProvider;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.DatabaseUpdater.OpenMRSChangeSet;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.DatabaseUpdaterLiquibaseProvider;
 import org.openmrs.web.filter.StartupFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,16 +25,31 @@ import org.slf4j.LoggerFactory;
  */
 public class UpdateFilterModel {
 	
+	private static final Logger log = LoggerFactory.getLogger(UpdateFilterModel.class);
+	
 	public List<OpenMRSChangeSet> changes = null;
 	
-	public static final String OPENMRS_VERSION = OpenmrsConstants.OPENMRS_VERSION_SHORT;
-	
 	public Boolean updateRequired = false;
+	
+	private LiquibaseProvider liquibaseProvider;
 	
 	/**
 	 * Default constructor that sets up some of the properties
 	 */
 	public UpdateFilterModel() {
+		this(new DatabaseUpdaterLiquibaseProvider());
+		log.debug("executing default constructor...");
+	}
+	
+	/**
+	 * Constructor that allows to inject a Liquibase provider.
+	 * 
+	 * @param liquibaseProvider a Liquibase provider
+	 */
+	public UpdateFilterModel(LiquibaseProvider liquibaseProvider) {
+		log.debug("executing non-default constructor...");
+		this.liquibaseProvider = liquibaseProvider;
+		
 		updateChanges();
 		
 		try {
@@ -50,23 +65,21 @@ public class UpdateFilterModel {
 	}
 	
 	/**
-	 * Convenience method that reads from liquibase again to get the most recent list of changesets
-	 * that still need to be run.
+	 * Convenience method that reads from liquibase again to get the most recent list of changesets that
+	 * still need to be run.
 	 */
 	public void updateChanges() {
-		Logger log = LoggerFactory.getLogger(getClass());
-		
+		log.debug("executing updateChanges()...");
 		try {
-			changes = DatabaseUpdater.getUnrunDatabaseChanges();
+			changes = DatabaseUpdater.getUnrunDatabaseChanges(liquibaseProvider);
 			
 			// not sure why this is necessary...
 			if (changes == null && DatabaseUpdater.isLocked()) {
-				changes = DatabaseUpdater.getUnrunDatabaseChanges();
+				changes = DatabaseUpdater.getUnrunDatabaseChanges(liquibaseProvider);
 			}
 		}
 		catch (Exception e) {
 			log.error("Unable to get the database changes", e);
 		}
 	}
-	
 }
