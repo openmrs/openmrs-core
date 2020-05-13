@@ -126,7 +126,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public ExpectedException expectedException = ExpectedException.none();
 	
 	@Entity
-	private class SomeTestOrder extends TestOrder {
+	public class SomeTestOrder extends TestOrder {
 		@Id
 		private Integer orderId;
 		private Patient patient;

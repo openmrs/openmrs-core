@@ -47,7 +47,7 @@ public class StartupErrorFilterTest {
 		
 		StartupErrorFilter filter = new StartupErrorFilter();
 		
-		StartupErrorFilterModel model = filter.getModel();
+		StartupErrorFilterModel model = filter.getUpdateFilterModel();
 		
 		assertThat(model.errorAtStartup, is(t));
 	}

@@ -10,16 +10,24 @@
     graphic logo is a trademark of OpenMRS Inc.
 
 -->
-<databaseChangeLog logicalFilePath="liquibase-update-to-latest.xml" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
-	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
-    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+<!--
+    This file contains all changesets that have been introduced on top of liquibase-snapshots/1.9.x/liquibase-*.xml.
+-->
+<databaseChangeLog 
+	logicalFilePath="liquibase-update-to-latest.xml" 
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext 
+    	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog 
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
 	<!-- 
 		See http://www.liquibase.org/manual/home#available_database_refactorings 
 		for a list of supported elements and attributes 
 	-->
-	
+
 	<changeSet id="0" author="bwolfe">
 		<preConditions onError="MARK_RAN" onFail="MARK_RAN">
 			<sqlCheck expectedResult="The update-to-latest.sql file needs to be run on this db.">

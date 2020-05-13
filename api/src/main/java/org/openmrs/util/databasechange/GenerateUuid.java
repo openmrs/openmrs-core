@@ -9,18 +9,6 @@
  */
 package org.openmrs.util.databasechange;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Map;
-import java.util.UUID;
-
-import org.apache.commons.lang3.StringUtils;
-import org.openmrs.util.OpenmrsUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
 import liquibase.database.jvm.JdbcConnection;
@@ -29,13 +17,22 @@ import liquibase.exception.DatabaseException;
 import liquibase.exception.SetupException;
 import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
+import org.apache.commons.lang3.StringUtils;
+import org.openmrs.util.OpenmrsUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Map;
+import java.util.UUID;
 
 /**
- * Generates UUIDs for all rows in all tables in the tableNames
- * parameter.
- * <br/>
- * If run on MySQL, it generates SQL statements using the in-built uuid() MySQL function,
- * otherwise it uses Java's {@link UUID} class, which is less efficient.<br/>
+ * Generates UUIDs for all rows in all tables in the tableNames parameter. <br/>
+ * If run on MySQL, it generates SQL statements using the in-built uuid() MySQL function, otherwise
+ * it uses Java's {@link UUID} class, which is less efficient.<br/>
  * <br/>
  * Expects parameter: "tableNames" : whitespace delimited list of table names to add <br/>
  * Expects parameter: "columnName" : name of the column to change. Default: "uuid" <br/>
@@ -52,14 +49,14 @@ public class GenerateUuid implements CustomTaskChange {
 	public static final Integer TRANSACTION_BATCH_SIZE_LIMIT = 512;
 	
 	/**
-	 * The "tableNames" parameter defined in the liquibase xml changeSet element that is calling
-	 * this class (whitespace separated).
+	 * The "tableNames" parameter defined in the liquibase xml changeSet element that is calling this
+	 * class (whitespace separated).
 	 */
 	private String tableNames = null;
 	
 	/**
-	 * The "columnName" parameter defined in the liquibase xml changeSet element that is calling
-	 * this class
+	 * The "columnName" parameter defined in the liquibase xml changeSet element that is calling this
+	 * class
 	 */
 	private String columnName = "uuid";
 	
@@ -86,15 +83,14 @@ public class GenerateUuid implements CustomTaskChange {
 	private String genericIdSql;
 	
 	/**
-	 * The sql statement to update the rows with the uuids. Generated in the {@link #setUp()}
-	 * method.
+	 * The sql statement to update the rows with the uuids. Generated in the {@link #setUp()} method.
 	 */
 	private String genericUpdateSql;
 	
 	/**
-	 * Adds UUIDs to all rows for the specified tables. It generates UUIDs using Java and updates one row at a time, thus
-	 * it is not very efficient. When running on the MySQL database, we generate SQL statements using the uuid MySQL function,
-	 * which is much faster.
+	 * Adds UUIDs to all rows for the specified tables. It generates UUIDs using Java and updates one
+	 * row at a time, thus it is not very efficient. When running on the MySQL database, we generate SQL
+	 * statements using the uuid MySQL function, which is much faster.
 	 *
 	 * @see liquibase.change.custom.CustomTaskChange#execute(liquibase.database.Database)
 	 */
@@ -106,7 +102,7 @@ public class GenerateUuid implements CustomTaskChange {
 			initialAutoCommit = connection.getAutoCommit();
 			connection.setAutoCommit(false);
 			
-			if ("mysql".equals(database.getTypeName())) {
+			if ("mysql".equals(database.getShortName()) || "mariadb".equals(database.getShortName())) {
 				String updateSql = "update %s set " + columnName + " = uuid() where " + columnName + " is null";
 				for (String tablename : tableNamesArray) {
 					String rawSql = String.format(updateSql, tablename);
