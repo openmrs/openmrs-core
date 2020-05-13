@@ -64,7 +64,8 @@ public class PersonAddressValidator implements Validator {
 		}
 		
 		if (object == null) {
-			throw new IllegalArgumentException("The personAddress object should not be null");
+			log.info("The personAddress object should not be null");
+			return ; 
 		}
 		
 		PersonAddress personAddress = (PersonAddress) object;
