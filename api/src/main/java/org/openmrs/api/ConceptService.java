@@ -1923,4 +1923,23 @@ public interface ConceptService extends OpenmrsService {
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	boolean hasAnyConceptAttribute(ConceptAttributeType conceptAttributeType);
 	
+	/**
+	 * Get the concept by conceptRef where the conceptRef can either be: 1) an integer id like 5090
+	 * 2) a mapping type id like "XYZ:HT" 3) a uuid like "a3e12268-74bf-11df-9768-17cfc9833272" 4) a
+	 * name like "PLATELETS" 5) the fully qualified name of a Java constant that contains one of
+	 * above
+	 * 
+	 * @param conceptRef the concept string identifier
+	 * @return the concept if exist, else null
+	 * <strong>Should</strong> find a concept by its conceptId
+	 * <strong>Should</strong>  find a concept by its mapping
+	 * <strong>Should</strong> find a concept by its uuid
+	 * <strong>Should</strong> find a concept by its name
+	 * <strong>Should</strong> find a concept by a fully qualified name of a Java constant that contains an id,
+	 * 								uuid, name or mapping
+	 * <strong>Should</strong> return null when ConceptRef does not exist
+	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	public Concept getConceptByNameOrIdOrMap(String conceptRef);
 }
+

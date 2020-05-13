@@ -11,6 +11,7 @@ package org.openmrs.api.impl;
 
 import static org.apache.commons.lang3.StringUtils.contains;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,6 +28,7 @@ import java.util.UUID;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptAttribute;
@@ -1961,6 +1963,72 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Transactional(readOnly = true)
 	public boolean hasAnyConceptAttribute(ConceptAttributeType conceptAttributeType) {
 		return dao.getConceptAttributeCount(conceptAttributeType) > 0;
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptByNameOrIdOrMap(String conceptRef
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public Concept getConceptByNameOrIdOrMap(String conceptRef) throws APIException {
+		if (conceptRef == null) {
+			return null;
+		}
+		Concept cpt = null;
+		//check if input is a valid Uuid
+		if (!(conceptRef.length() < 36 || conceptRef.length() > 38 || conceptRef.contains(" ") || conceptRef.contains("."))) {
+			cpt = Context.getConceptService().getConceptByUuid(conceptRef);
+			if (cpt != null)
+				return cpt;
+		}
+		//check if input is map
+		if (conceptRef.indexOf(":") != -1) {
+			int idx = conceptRef.indexOf(":");
+			String conceptSource, conceptCode;
+			conceptCode = conceptRef.substring(idx + 1);
+			conceptSource = conceptRef.substring(0, idx);
+			cpt = Context.getConceptService().getConceptByMapping(conceptCode, conceptSource);
+			if (cpt != null)
+				return cpt;
+		}
+		//check if input is a name or id
+		if (!conceptRef.isEmpty()) {
+			//handle id
+			if (NumberUtils.isParsable(conceptRef)) {
+				int conceptId = Integer.valueOf(conceptRef);
+				cpt = Context.getConceptService().getConcept(conceptId);
+			} else
+				//handle name
+				cpt = Context.getConceptService().getConceptByName(conceptRef);
+			if (cpt != null)
+				return cpt;
+		}
+		if (conceptRef.contains(".")) {
+			return getConceptByNameOrIdOrMap(evaluateStaticConstant(conceptRef));
+		}
+		return cpt;
+	}
+	
+	/**
+	 * Evaluates the specified Java constant using reflection
+	 * 
+	 * @param fqn the fully qualified name of the constant
+	 * @return the constant value
+	 */
+	private static String evaluateStaticConstant(String fqn) {
+		int lastPeriod = fqn.lastIndexOf(".");
+		String clazzName = fqn.substring(0, lastPeriod);
+		String constantName = fqn.substring(lastPeriod + 1);
+		
+		try {
+			Class<?> clazz = Context.loadClass(clazzName);
+			Field constantField = clazz.getField(constantName);
+			Object val = constantField.get(null);
+			return val != null ? String.valueOf(val) : null;
+		}
+		catch (Exception ex) {
+			throw new IllegalArgumentException("Unable to evaluate " + fqn, ex);
+		}
 	}
 
 	private List<ConceptClass> getConceptClassesOfOrderTypes() {

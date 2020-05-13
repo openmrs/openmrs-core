@@ -101,6 +101,10 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 
 	protected static final String CONCEPT_ATTRIBUTE_TYPE_XML = "org/openmrs/api/include/ConceptServiceTest-conceptAttributeType.xml";
 
+	// For testing concept lookups by static constant
+	public static final int TEST_CONCEPT_CONSTANT_ID = 3;
+	public static final String TEST_CONCEPT_CONSTANT_UUID = "0cbe2ed3-cd5f-4f46-9459-26127c9265ab";
+
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 	
@@ -3530,5 +3534,81 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	
 		Assert.assertEquals(1, searchResults.size());
 		assertThat(searchResults.get(0).getWord(), is("SALBUTAMOL INHALER NOT"));
+	}
+	
+	/**
+	 * @see ConceptService#getConceptByNameOrIdOrMap(String)
+	 */
+	@Test
+	public void getConceptByNameOrIdOrMap_shouldFindAConceptByItsConceptName() {
+		String conceptName = "COUGH SYRUP";
+		Assert.assertEquals("3", conceptService.getConceptByNameOrIdOrMap(conceptName).getConceptId().toString());
+	}
+	
+	/**
+	 * @see ConceptService#getConceptByNameOrIdOrMap(String)
+	 */
+	@Test
+	public void getConceptByNameOrIdOrMap_shouldFindAConceptByItsConceptId() {
+		String conceptId = "3";
+		Assert.assertEquals("COUGH SYRUP", conceptService.getConceptByNameOrIdOrMap(conceptId).getName().toString());
+	}
+	
+	/**
+	 * @see ConceptService#getConceptByNameOrIdOrMap(String)
+	 */
+	@Test
+	public void getConceptByNameOrIdOrMap_shouldFindAConceptByItsMapping() {
+		Concept concept = conceptService.getConceptByNameOrIdOrMap("SSTRM:454545");
+		Assert.assertEquals(24, concept.getId().intValue());
+	}
+	
+	/**
+	 * @see ConceptService#getConceptByNameOrIdOrMap(String)
+	 */
+	@Test
+	public void getConceptByNameOrIdOrMap_shouldFindAConceptByItsUuid() {
+		String uuid = "7d104a6f-8337-4afa-b936-41083a5d9d88";
+		Assert.assertEquals(uuid, conceptService.getConceptByNameOrIdOrMap(uuid).getUuid());
+	}
+	
+	/**
+	 * @see ConceptService#getConceptByNameOrIdOrMap(String) tests a uuid that is 36 characters long
+	 *      but has no dashes
+	 */
+	@Test
+	public void getConceptByNameOrIdOrMap_shouldFindAConceptWithNonStandardUuid() {
+		String nonStandardUuid = "1000AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+		Assert.assertEquals(64, conceptService.getConceptByNameOrIdOrMap(nonStandardUuid).getConceptId().intValue());
+	}
+	
+	/**
+	 * @see ConceptService#getConceptByNameOrIdOrMap(String) tests static constant containing ids
+	 *      and UUIDs
+	 */
+	@Test
+	public void getConceptByNameOrIdOrMap_shouldFindAConceptByStaticConstant() {
+		assertNotNull(conceptService
+		        .getConceptByNameOrIdOrMap("org.openmrs.api.ConceptServiceTest.TEST_CONCEPT_CONSTANT_ID"));
+		assertNotNull(conceptService
+		        .getConceptByNameOrIdOrMap("org.openmrs.api.ConceptServiceTest.TEST_CONCEPT_CONSTANT_UUID"));
+	}
+	
+	/**
+	 * @see ConceptService#getConceptByNameOrIdOrMap(String)
+	 */
+	@Test
+	public void getConceptByNameOrIdOrMap_shouldReturnNullOtherwise() {
+		String givenNull = null;
+		Assert.assertNull(conceptService.getConceptByNameOrIdOrMap(givenNull));
+		
+		String emptyString = "";
+		Assert.assertNull(conceptService.getConceptByNameOrIdOrMap(emptyString));
+		
+		String noneExisting = "id, name or map which does not match to any concept";//not exist in the standardTestDataset
+		Assert.assertNull(conceptService.getConceptByNameOrIdOrMap(noneExisting));
+		
+		String invalidUuid = "1000";// invalid uuid but exists in standardTestDataset
+		Assert.assertNull(conceptService.getConceptByNameOrIdOrMap(invalidUuid));
 	}
 }
