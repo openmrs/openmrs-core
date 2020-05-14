@@ -29,17 +29,17 @@ public class ChangeLogVersionsTest {
 	
 	private static final String CORE_DATA_BASE_NAME = ChangeLogVersionFinder.CORE_DATA_BASE_NAME;
 	
-	private static final String CORE_DATA_PATTERN = "classpath:" + ChangeLogVersionFinder.CORE_DATA_FOLDER_NAME
+	private static final String CORE_DATA_PATTERN = "classpath*:" + ChangeLogVersionFinder.CORE_DATA_FOLDER_NAME
 	        + File.separator + "*";
 	
 	private static final String SCHEMA_ONLY_BASE_NAME = ChangeLogVersionFinder.SCHEMA_ONLY_BASE_NAME;
 	
-	private static final String SCHEMA_ONLY_PATTERN = "classpath:" + ChangeLogVersionFinder.SCHEMA_ONLY_FOLDER_NAME
+	private static final String SCHEMA_ONLY_PATTERN = "classpath*:" + ChangeLogVersionFinder.SCHEMA_ONLY_FOLDER_NAME
 	        + File.separator + "*";
 	
 	private static final String UPDATE_TO_LATEST_BASE_NAME = ChangeLogVersionFinder.UPDATE_TO_LATEST_BASE_NAME;
 	
-	private static final String UPDATE_TO_LATEST_PATTERN = "classpath:" + ChangeLogVersionFinder.UPDATES_FOLDER_NAME
+	private static final String UPDATE_TO_LATEST_PATTERN = "classpath*:" + ChangeLogVersionFinder.UPDATES_FOLDER_NAME
 	        + File.separator + "*";
 	
 	private ChangeLogVersions changeLogVersions;
