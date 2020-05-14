@@ -2255,7 +2255,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		
 		// verify
 		Assert.assertThat(actualConcepts.size(), is(6));
-		Assert.assertThat(actualConcepts, containsInAnyOrder(conceptService.getConcept(3), conceptService.getConcept(60), conceptService.getConcept(88), conceptService.getConcept(792)));
+		Assert.assertThat(actualConcepts, containsInAnyOrder(conceptService.getConcept(3), conceptService.getConcept(64), conceptService.getConcept(60), conceptService.getConcept(67), conceptService.getConcept(88), conceptService.getConcept(792)));
 	}
 	
 	/**
@@ -2804,7 +2804,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		//check desc order
 		allConcepts = conceptService.getAllConcepts("dateCreated", false, true);
 		
-		assertEquals(36, allConcepts.size());
+		assertEquals(38, allConcepts.size());
 		assertEquals(23, allConcepts.get(0).getConceptId().intValue());
 		assertEquals(88, allConcepts.get(allConcepts.size() - 1).getConceptId().intValue());
 	}
