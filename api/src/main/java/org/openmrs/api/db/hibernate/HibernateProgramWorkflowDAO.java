@@ -433,7 +433,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
             Query query;
             try {
                 query = sessionFactory.getCurrentSession().createQuery(
-                        "SELECT pp FROM patient_program pp " +
+                        "SELECT pp FROM PatientProgram pp " +
                                 "INNER JOIN pp.attributes attr " +
                                 "INNER JOIN attr.attributeType attr_type " +
                                 "WHERE attr.valueReference = :attributeValue " +
@@ -453,18 +453,19 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
             if (patientIds.isEmpty() || attributeName == null) {
                 return patientProgramAttributes;
             }
-            String commaSeperatedPatientIds = StringUtils.join(patientIds, ",");
             List list = sessionFactory.getCurrentSession().createSQLQuery(
                     "SELECT p.patient_id as person_id, " +
                             " concat('{',group_concat(DISTINCT (coalesce(concat('\"',ppt.name,'\":\"', COALESCE (cn.name, ppa.value_reference),'\"'))) SEPARATOR ','),'}') AS patientProgramAttributeValue  " +
                             " from patient p " +
-                            " join patient_program pp on p.patient_id = pp.patient_id and p.patient_id in (" + commaSeperatedPatientIds + ")" +
+                            " join patient_program pp on p.patient_id = pp.patient_id and p.patient_id in (:patientIds)" +
                             " join patient_program_attribute ppa on pp.patient_program_id = ppa.patient_program_id and ppa.voided=0" +
-                            " join program_attribute_type ppt on ppa.attribute_type_id = ppt.program_attribute_type_id and ppt.name ='" + attributeName + "' "+
-                            " LEFT OUTER JOIN concept_name cn on ppa.value_reference = cn.concept_id and cn.concept_name_type= 'FULLY_SPECIFIED' and cn.voided=0 and ppt.datatype like '%ConceptDataType%'" +
+                            " join program_attribute_type ppt on ppa.attribute_type_id = ppt.program_attribute_type_id and ppt.name = :attributeName"+
+                            " and ppt.datatype like '%ConceptDataType%' LEFT OUTER JOIN concept_name cn on ppa.value_reference = cn.concept_id and cn.concept_name_type= 'FULLY_SPECIFIED' and cn.voided=0" +
                             " group by p.patient_id")
                     .addScalar("person_id", StandardBasicTypes.INTEGER)
                     .addScalar("patientProgramAttributeValue", StandardBasicTypes.STRING)
+				    .setParameter("attributeName", attributeName)
+				    .setParameterList("patientIds", patientIds)
                     .list();
 
             for (Object o : list) {
