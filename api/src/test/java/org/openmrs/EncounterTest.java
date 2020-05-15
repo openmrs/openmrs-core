@@ -957,14 +957,14 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	/**
 	 * @see Encounter#addCondition(Condition)
 	 */
-	// @Test
+	@Test
 	public void addCondition_shouldSetEncounterAttribute() {
 		// setup
 		Encounter encounter = new Encounter();
 		Condition condition = new Condition();
 		
 		// replay
-		encounter.addCondition(new Condition());
+		encounter.addCondition(condition);
 		
 		// verify
 		assertTrue(condition.getEncounter().equals(encounter));
@@ -973,7 +973,7 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	/**
 	 * @see Encounter#addCondition(Condition)
 	 */
-	// @Test
+	@Test
 	public void addCondition_shouldNotFailWithNullCondition() {
 		// setup
 		Encounter encounter = new Encounter();
@@ -988,7 +988,7 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	/**
 	 * @see Encounter#removeCondition(Condition)
 	 */
-	// @Test
+	@Test
 	public void removeCondition_shouldNotFailWhenRemovingNonExistentCondition() {
 		Encounter encounter = new Encounter();
 		encounter.removeCondition(new Condition());
@@ -997,7 +997,7 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	/**
 	 * @see Encounter#removeCondition(Condition)
 	 */
-	// @Test
+	@Test
 	public void removeCondition_shouldRemoveConditionFromEncounter() {
 		// setup
 		Encounter encounter = new Encounter();

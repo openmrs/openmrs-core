@@ -80,7 +80,7 @@ public interface ConditionService extends OpenmrsService {
 	 * @param encounter - the encounter to retrieve conditions for
 	 * @return a list of encounter's conditions
 	 * @throws APIException
-	 * @since 2.4.0
+	 * @since 2.4.0, 2.3.1
 	 */
 	List<Condition> getConditionsByEncounter(Encounter encounter) throws APIException;
 	

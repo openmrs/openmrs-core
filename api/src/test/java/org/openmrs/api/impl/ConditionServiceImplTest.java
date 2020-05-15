@@ -74,13 +74,18 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 	 * @see ConditionService#saveCondition(Condition)
 	 */
 	@Test
-	public void saveCondition_shouldSaveConditionWithAnEncounter() {
+	public void saveCondition_shouldSaveConditionAssociatedWithAnEncounter() {
+		// setup
 		String uuid = "fc281d91-cb1a-4cd1-b1ca-0f3cd5138fb2";
 		Condition condition = new Condition();
 		condition.setUuid(uuid);
 		condition.setPatient(new Patient(2));
-		condition.setEncounter(new Encounter(2039));	
-		conditionService.saveCondition(condition);	
+		condition.setEncounter(new Encounter(2039));
+		
+		// replay
+		conditionService.saveCondition(condition);
+		
+		// verify
 		Condition savedCondition = conditionService.getConditionByUuid(uuid);
 		Assert.assertEquals(Integer.valueOf(2039), savedCondition.getEncounter().getId());
 	}

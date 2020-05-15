@@ -493,7 +493,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * Basic property getter for conditions
 	 * 
 	 * @return conditions - set of conditions
-	 * @since 2.4.0
+	 * @since 2.4.0, 2.3.1
 	 */
 	public Set<Condition> getConditions() {
 		if (conditions == null) {
@@ -506,7 +506,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * Basic property setter for conditions
 	 *  
 	 * @param conditions - set of conditions
-	 * @since 2.4.0
+	 * @since 2.4.0, 2.3.1
 	 */
 	public void setConditions(Set<Condition> conditions) {
 		this.conditions = conditions;
