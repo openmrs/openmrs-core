@@ -10,6 +10,7 @@
 package org.openmrs.api;
 
 import org.openmrs.Condition;
+import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.util.PrivilegeConstants;
@@ -74,6 +75,16 @@ public interface ConditionService extends OpenmrsService {
 	List<Condition> getAllConditions(Patient patient) throws APIException;
 
 	/**
+	 * Gets all conditions(not voided) of an encounter.
+	 * 
+	 * @param encounter - the encounter to retrieve conditions for
+	 * @return a list of encounter's conditions
+	 * @throws APIException
+	 * @since 2.4.0
+	 */
+	List<Condition> getConditionsByEncounter(Encounter encounter) throws APIException;
+	
+	/**
 	 * Gets a condition by id
 	 *
 	 * @param conditionId - the id of the Condition to retrieve
@@ -105,4 +116,5 @@ public interface ConditionService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.DELETE_CONDITIONS)
 	void purgeCondition(Condition condition) throws APIException;
+	
 }

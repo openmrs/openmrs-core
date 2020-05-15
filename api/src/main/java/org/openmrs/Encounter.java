@@ -89,6 +89,9 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	private Set<Diagnosis> diagnoses;
 	
 	@OneToMany(mappedBy = "encounter")
+	private Set<Condition> conditions;
+	
+	@OneToMany(mappedBy = "encounter")
 	@Access(AccessType.FIELD)
 	@OrderBy("concept_id")
 	@BatchSize(size = 25)
@@ -439,7 +442,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	}
 	
 	/**
-	 * Remove the given observation from the list of orders for this Encounter
+	 * Remove the given order from the list of orders for this Encounter
 	 *
 	 * @param order
 	 * <strong>Should</strong> remove order from encounter
@@ -484,6 +487,52 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 */
 	public void setDiagnoses(Set<Diagnosis> diagnoses) {
 		this.diagnoses = diagnoses;
+	}
+	
+	/**
+	 * Basic property getter for conditions
+	 * 
+	 * @return conditions - set of conditions
+	 * @since 2.4.0
+	 */
+	public Set<Condition> getConditions() {
+		if (conditions == null) {
+			conditions = new LinkedHashSet<>();
+		}
+		return conditions;
+	}
+
+	/**
+	 * Basic property setter for conditions
+	 *  
+	 * @param conditions - set of conditions
+	 * @since 2.4.0
+	 */
+	public void setConditions(Set<Condition> conditions) {
+		this.conditions = conditions;
+	}
+
+	/**
+	 * Add the given Condition to the set of conditions for this Encounter
+	 *
+	 * @param condition - the condition to add
+	 */
+	public void addCondition(Condition condition) {
+		if (condition != null) {
+			condition.setEncounter(this);
+			getConditions().add(condition);
+		}
+	}
+	
+	/**
+	 * Remove the given condition from the set of conditions for this Encounter
+	 *
+	 * @param condition - the condition to remove
+	 */
+	public void removeCondition(Condition condition) {
+		if (conditions != null) {
+			conditions.remove(condition);
+		}
 	}
 	
 	/**

@@ -16,12 +16,12 @@ import org.openmrs.CodedOrFreeText;
 import org.openmrs.Condition;
 import org.openmrs.ConditionClinicalStatus;
 import org.openmrs.ConditionVerificationStatus;
+import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.api.ConditionService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -70,6 +70,21 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(savedCondition.getConditionId());
 	}
 
+	/**
+	 * @see ConditionService#saveCondition(Condition)
+	 */
+	@Test
+	public void saveCondition_shouldSaveConditionWithAnEncounter() {
+		String uuid = "fc281d91-cb1a-4cd1-b1ca-0f3cd5138fb2";
+		Condition condition = new Condition();
+		condition.setUuid(uuid);
+		condition.setPatient(new Patient(2));
+		condition.setEncounter(new Encounter(2039));	
+		conditionService.saveCondition(condition);	
+		Condition savedCondition = conditionService.getConditionByUuid(uuid);
+		Assert.assertEquals(Integer.valueOf(2039), savedCondition.getEncounter().getId());
+	}
+	
 	/**
 	 * @see ConditionService#getConditionByUuid(String)
 	 */
@@ -120,7 +135,17 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 		Assert.assertEquals("2cc6880e-2c46-15e4-9038-a6c5e4d22fb7",conditions.get(1).getUuid());
 	}
 	
-	
+	/**
+	 * ConditionService#getConditionsByEncounter(Encounter)
+	 */
+	@Test
+	public void getConditionsByEncounter_shouldGetAllConditionsAssociatedWithAnEncounter() {
+		List<Condition> conditions = conditionService.getConditionsByEncounter(new Encounter(2039));
+
+		Assert.assertTrue(conditions.size() == 2);
+		Assert.assertEquals("2cd6780e-2a46-11e4-9038-a6c5e4d26fc2",conditions.get(0).getUuid());
+		Assert.assertEquals("2cc6880e-2c46-15e4-9038-a6c5e4d22fb7",conditions.get(1).getUuid());
+	}
 
 	/**
 	 * @see ConditionService#voidCondition(Condition, String) 

@@ -13,8 +13,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.openmrs.CodedOrFreeText;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
+import org.openmrs.Condition;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
@@ -55,6 +57,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -380,6 +383,38 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 
 		encounter = es.getEncounter(101);
 		assertEquals(2, encounter.getObsAtTopLevel(true).size());
+	}
+	
+	@Test
+	public void saveEncounter_shouldCascadeSaveToContainedConditions() {
+		// setup
+		Encounter encounter = buildEncounter();
+		Condition pregnancy = new Condition();
+		CodedOrFreeText freeTextForPregnancy = new CodedOrFreeText();
+		freeTextForPregnancy.setNonCoded("Pregnancy");
+		pregnancy.setCondition(freeTextForPregnancy);
+		pregnancy.setPatient(encounter.getPatient());
+		encounter.addCondition(pregnancy);
+		
+		Condition edema = new Condition();
+		CodedOrFreeText freeTextForEdema = new CodedOrFreeText();
+		freeTextForEdema.setNonCoded("Edema");
+		edema.setCondition(freeTextForEdema);
+		edema.setPatient(encounter.getPatient());
+		encounter.addCondition(edema);
+		
+		// replay
+		Context.getEncounterService().saveEncounter(encounter);
+		
+		// verify
+		Object[] conditionsArray = encounter.getConditions().toArray();
+		pregnancy = (Condition) conditionsArray[0];
+		edema = (Condition) conditionsArray[1];
+		assertEquals(2, conditionsArray.length);
+		assertNotNull(pregnancy.getId());
+		assertEquals("Pregnancy", pregnancy.getCondition().getNonCoded());
+		assertNotNull(edema.getId());
+		assertEquals("Edema", edema.getCondition().getNonCoded());
 	}
 	
 	private Encounter buildEncounter() {

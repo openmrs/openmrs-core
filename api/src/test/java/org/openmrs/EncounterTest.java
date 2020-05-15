@@ -955,6 +955,66 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see Encounter#addCondition(Condition)
+	 */
+	// @Test
+	public void addCondition_shouldSetEncounterAttribute() {
+		// setup
+		Encounter encounter = new Encounter();
+		Condition condition = new Condition();
+		
+		// replay
+		encounter.addCondition(new Condition());
+		
+		// verify
+		assertTrue(condition.getEncounter().equals(encounter));
+	}
+	
+	/**
+	 * @see Encounter#addCondition(Condition)
+	 */
+	// @Test
+	public void addCondition_shouldNotFailWithNullCondition() {
+		// setup
+		Encounter encounter = new Encounter();
+		
+		// replay
+		encounter.addCondition(null);
+		
+		// verify
+		assertEquals(0, encounter.getConditions().size());
+	}
+	
+	/**
+	 * @see Encounter#removeCondition(Condition)
+	 */
+	// @Test
+	public void removeCondition_shouldNotFailWhenRemovingNonExistentCondition() {
+		Encounter encounter = new Encounter();
+		encounter.removeCondition(new Condition());
+	}
+	
+	/**
+	 * @see Encounter#removeCondition(Condition)
+	 */
+	// @Test
+	public void removeCondition_shouldRemoveConditionFromEncounter() {
+		// setup
+		Encounter encounter = new Encounter();
+		Condition condition = new Condition();
+		condition.setId(100);
+		encounter.addCondition(condition);
+		
+		assertEquals(1, encounter.getConditions().size());
+		
+		// replay
+		encounter.removeCondition(condition);
+		
+		// verify
+		assertEquals(0, encounter.getConditions().size());
+	}
+	
+	/**
 	 * @see Encounter#addProvider(EncounterRole,Provider)
 	 */
 	@Test

@@ -92,4 +92,22 @@
 			<where>system_id='admin'</where>
 		</update>
 	</changeSet>
+    
+    <changeSet id="TRUNK-5728-2020-04-15" author="samuel34">
+    	<preConditions onFail="MARK_RAN">
+    		<not>
+    			<columnExists tableName="conditions" columnName="encounter_id"/>
+    		</not>
+    	</preConditions>
+    	<comment>Adding 'encounter_id' column to 'conditions' table</comment>
+    	<addColumn tableName="conditions">
+    		<column name="encounter_id" type="int">
+    			<constraints nullable="true" />
+    		</column>
+    	</addColumn>
+    	<addForeignKeyConstraint constraintName="encounter_id_fk"
+								 baseTableName="conditions" baseColumnNames="encounter_id"
+								 referencedTableName="encounter" referencedColumnNames="encounter_id" />
+    </changeSet>
+    
 </databaseChangeLog>
