@@ -349,7 +349,6 @@ public class Condition extends BaseChangeableOpenmrsData {
 	 * @param encounter - the encounter to set
 	 * @since 2.4.0, 2.3.1
 	 */
-
 	public void setEncounter(Encounter encounter) {
 		this.encounter = encounter;
 	}
