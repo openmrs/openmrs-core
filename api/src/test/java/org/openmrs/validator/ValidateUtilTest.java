@@ -12,12 +12,11 @@ package org.openmrs.validator;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
-import org.openmrs.Location;
-import org.openmrs.Patient;
-import org.openmrs.PatientIdentifierType;
+import org.openmrs.*;
 import org.openmrs.api.ValidationException;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
@@ -146,5 +145,19 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 		}
 
 		ValidateUtil.setDisableValidation(prevVal);
+	}
+
+	/**
+	 * @see ValidateUtil#validate(Object)
+	 */
+	@Test
+	public void validate_shouldReturnThrowExceptionAlongWithAppropriateMessageIfTheObjectIsInvalid() {
+		Drug drug = new Drug();
+		Concept concept = new Concept();
+		drug.setName("Sucedáneo de leche humana de término de kcal 509-528/100g, lípidos 25.80-28.90/100g, proteínas 9.50-12.0/100g, hidrato de carbono 55.20-57.90/100g, polvo, envase de lata con 400 a 454 g y medida de 4.30 a 4.50 g. - envase con 400 a 454 g - - envase con 400 a 454 g");
+		drug.setConcept(concept);
+		
+		ValidationException exception = assertThrows(ValidationException.class, () -> ValidateUtil.validate(drug));
+		assertTrue(exception.getMessage().contains("failed to validate with reason: name: This value exceeds the maximum length of 255 permitted for this field."));
 	}
 }

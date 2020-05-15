@@ -834,7 +834,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	public void savePatientProgram_shouldTestThrowPatientStateRequiresException() {
 		expectedException.expect(APIException.class);
 		expectedException.expectMessage("'PatientProgram(id=1, patient=Patient#2, program=Program(id=1, concept=Concept #1738, " +
-											"workflows=[ProgramWorkflow(id=1), ProgramWorkflow(id=2)]))' failed to validate with reason: states: {0} is required for a patient state");
+											"workflows=[ProgramWorkflow(id=1), ProgramWorkflow(id=2)]))' failed to validate with reason: states: State is required for a patient state");
 		PatientProgram patientProgram = pws.getPatientProgram(1);
 		for (PatientState state : patientProgram.getStates()) {
 			state.setState(null);
