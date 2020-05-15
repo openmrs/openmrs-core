@@ -1254,6 +1254,24 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see OrderService#updateOrderFulfillerStatus(org.openmrs.Order,
+	 *      Order.FulfillerStatus, String, String)
+	 */
+	@Test
+	public void updateOrderFulfillerStatus_shouldEditFulfillerStatusWithAccessioNumberInOrder() {
+		Order originalOrder = orderService.getOrder(111);
+		String commentText = "We got the new order";
+		String accessionNumber = "12345";
+		assertNotEquals(originalOrder.getAccessionNumber(), accessionNumber);
+
+		orderService.updateOrderFulfillerStatus(originalOrder, Order.FulfillerStatus.IN_PROGRESS, commentText,
+				accessionNumber);
+		Order updatedOrder = orderService.getOrder(111);
+
+		assertEquals(updatedOrder.getAccessionNumber(), accessionNumber);
+	}
+
+	/**
 	 * @see OrderService#saveOrder(Order,OrderContext)
 	 */
 	@Test

@@ -30,6 +30,7 @@ import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Order;
+import org.openmrs.Order.FulfillerStatus;
 import org.openmrs.OrderFrequency;
 import org.openmrs.OrderGroup;
 import org.openmrs.OrderType;
@@ -39,20 +40,20 @@ import org.openmrs.TestOrder;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AmbiguousOrderException;
 import org.openmrs.api.CannotDeleteObjectInUseException;
+import org.openmrs.api.CannotStopDiscontinuationOrderException;
+import org.openmrs.api.CannotStopInactiveOrderException;
+import org.openmrs.api.CannotUnvoidOrderException;
 import org.openmrs.api.CannotUpdateObjectInUseException;
+import org.openmrs.api.EditedOrderDoesNotMatchPreviousException;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.MissingRequiredPropertyException;
 import org.openmrs.api.OrderContext;
+import org.openmrs.api.OrderEntryException;
 import org.openmrs.api.OrderNumberGenerator;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.UnchangeableObjectException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderDAO;
-import org.openmrs.api.CannotStopDiscontinuationOrderException;
-import org.openmrs.api.CannotStopInactiveOrderException;
-import org.openmrs.api.CannotUnvoidOrderException;
-import org.openmrs.api.EditedOrderDoesNotMatchPreviousException;
-import org.openmrs.api.OrderEntryException;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.parameter.OrderSearchCriteria;
 import org.openmrs.util.OpenmrsConstants;
@@ -484,6 +485,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		return saveOrderInternal(order, null);
 	}
 	
+	@Override
 	public Order updateOrderFulfillerStatus(Order order, Order.FulfillerStatus orderFulfillerStatus, String fullFillerComment) {
 		order.setFulfillerStatus(orderFulfillerStatus);
 		order.setFulfillerComment(fullFillerComment);	
@@ -1058,5 +1060,17 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Override
 	public List<OrderGroup> getOrderGroupsByEncounter(Encounter encounter) throws APIException {
 		return dao.getOrderGroupsByEncounter(encounter);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Order updateOrderFulfillerStatus(Order order, FulfillerStatus orderFulfillerStatus, String fullFillerComment,
+			String accessionNumber) {
+
+		order.setFulfillerStatus(orderFulfillerStatus);
+		order.setFulfillerComment(fullFillerComment);
+		order.setAccessionNumber(accessionNumber);
+
+		return saveOrderInternal(order, null);
 	}
 }
