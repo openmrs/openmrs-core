@@ -45,8 +45,8 @@
 		<insert tableName="users">
 			<column name="user_id" valueNumeric="1"/>
 			<column name="system_id" value="admin"/>
-			<column name="username" value="admin"/>
-			<column name="password" value="6f0be51d599f59dd1269e12e17949f8ecb9ac963e467ac1400cf0a02eb9f8861ce3cca8f6d34d93c0ca34029497542cbadda20c949affb4cb59269ef4912087b"/>
+			<column name="username" value=""/>
+			<column name="password" value="4a1750c8607dfa237de36c6305715c223415189"/>
 			<column name="salt" value="c788c6ad82a157b712392ca695dfcf2eed193d7f"/>
 			<column name="secret_question"/>
 			<column name="secret_answer"/>
