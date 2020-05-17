@@ -102,7 +102,7 @@ The pom file of the openmrs-liquibase module contains a template for generating 
 #### Step 1 - Drop your local OpenMRS schema
 E.g. by running the script `openmrs-core/liquibase/scripts/drop_openmrs_schema.sql`:
 
-	mysql -u root -p openmrs < openmrs-core/liquibase/scripts/drop_openmrs_schema.sql
+	mysql -u root -p < openmrs-core/liquibase/scripts/drop_openmrs_schema.sql
 	
 Take care **not** to run this script on a production database.
 
@@ -221,14 +221,16 @@ Change the username and password of the user with `name="system_id"` and  `value
 #### Step 1 - Drop your local OpenMRS schema
 E.g. by running the script `drop_openmrs_schema.sql`:
 
-	mysql -u root -p openmrs < openmrs-core/liquibase/scripts/drop_openmrs_schema.sql
+	mysql -u root -p < openmrs-core/liquibase/scripts/drop_openmrs_schema.sql
 	
 Again, take care **not** to run this script on a production database.
 
 #### Step 2 - Create an empty OpenMRS database
 E.g. by running the script `create_openmrs_database.sql`:
 
-	mysql -u root -p openmrs < openmrs-core/liquibase/scripts/create_openmrs_database.sql
+	mysql -u root -p < openmrs-core/liquibase/scripts/create_openmrs_database.sql
+	
+The script creates the openmrs database and the tables `liquibasechangelog` and `liquibasechangeloglock`.
 	
 #### Step 3 - Use the snapshots to update the OpenMRS database 
 Execute
@@ -303,7 +305,7 @@ This section describes how these tests were conducted, so that they can be repea
 #### Step 1 - Drop your local OpenMRS schema
 E.g. by running the script `drop_openmrs_schema.sql`:
 
-	mysql -u root -p openmrs < openmrs-core/liquibase/scripts/drop_openmrs_schema.sql
+	mysql -u root -p < openmrs-core/liquibase/scripts/drop_openmrs_schema.sql
 	
 Take care **not** to run this script on a production database.
 
