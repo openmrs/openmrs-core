@@ -44,6 +44,8 @@ public class ChangeLogDetective {
 	
 	private static final String LIQUIBASE_CORE_DATA_1_9_X_FILENAME = "liquibase-core-data-1.9.x.xml";
 	
+	private static final String LIQUIBASE_SCHEMA_ONLY_1_9_X_FILENAME = "liquibase-schema-only-1.9.x.xml";
+	
 	private ChangeLogVersionFinder changeLogVersionFinder;
 	
 	public ChangeLogDetective() {
@@ -85,7 +87,7 @@ public class ChangeLogDetective {
 				List<ChangeSet> refinedUnrunChangeSets = excludeVintageChangeSets(filename, rawUnrunChangeSets);
 				
 				log.info("file '{}' contains {} un-run change sets", filename, refinedUnrunChangeSets.size());
-				logUnrunChangeSetDetails(filename, refinedUnrunChangeSets);
+				logUnRunChangeSetDetails(filename, refinedUnrunChangeSets);
 				
 				unrunChangeSetsCount += refinedUnrunChangeSets.size();
 			}
@@ -119,7 +121,9 @@ public class ChangeLogDetective {
 		for (String filename : updateFileNames) {
 			Liquibase liquibase = liquibaseProvider.getLiquibase(filename);
 			List<ChangeSet> unrunChangeSets = liquibase.listUnrunChangeSets(new Contexts(context), new LabelExpression());
+			
 			log.info("file '{}}' contains {} un-run change sets", filename, unrunChangeSets.size());
+			logUnRunChangeSetDetails(filename, unrunChangeSets);
 			
 			if (unrunChangeSets.size() > 0) {
 				unrunLiquibaseUpdates.add(filename);
@@ -157,13 +161,22 @@ public class ChangeLogDetective {
 		}
 		return false;
 	}
-	
-	private void logUnrunChangeSetDetails(String filename, List<ChangeSet> filteredUnrunChangeSets) {
-		if (filteredUnrunChangeSets.size() < MAX_NUMBER_OF_CHANGE_SETS_TO_LOG) {
-			for (ChangeSet changeSet : filteredUnrunChangeSets) {
-				log.debug("file '{}' contains un-run change set with id '{}' by author '{}'", filename, changeSet.getId(),
+
+	/**
+	 * Logs un-run change sets no more than a given number and only for the 1.9.x Liquibase snapshots.
+	 * 
+	 * @return a boolean value indicating whether the change sets were logged. The value is used for testing.
+	 */
+	boolean logUnRunChangeSetDetails( String filename, List<ChangeSet> ChangeSets) {
+		if (ChangeSets.size() < MAX_NUMBER_OF_CHANGE_SETS_TO_LOG
+		        && (filename.contains(LIQUIBASE_CORE_DATA_1_9_X_FILENAME)
+		                || filename.contains(LIQUIBASE_SCHEMA_ONLY_1_9_X_FILENAME))) {
+			for (ChangeSet changeSet : ChangeSets) {
+				log.info("file '{}' contains un-run change set with id '{}' by author '{}'", filename, changeSet.getId(),
 				    changeSet.getAuthor());
 			}
+			return true;
 		}
+		return false;
 	}
 }

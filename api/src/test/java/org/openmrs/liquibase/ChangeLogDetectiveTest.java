@@ -85,7 +85,7 @@ public class ChangeLogDetectiveTest {
 		boolean actual = changeLogDetective.isVintageChangeSet("any_filename", changeSet);
 		assertFalse(actual);
 	}
-
+	
 	/*
 	 * The vintage change sets to ignore were authored by a person called Ben, this test is about all the
 	 * other change sets authored by Ben.
@@ -133,5 +133,42 @@ public class ChangeLogDetectiveTest {
 		List<ChangeSet> expected = changeSets;
 		
 		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void shouldLogSmallNumberOfUnrunChangeSets() {
+		ChangeLogDetective changeLogDetective = new ChangeLogDetective();
+		
+		// log up to 9 change sets
+		List<ChangeSet> changeSets = Arrays.asList(mock(ChangeSet.class), mock(ChangeSet.class), mock(ChangeSet.class),
+		    mock(ChangeSet.class), mock(ChangeSet.class), mock(ChangeSet.class), mock(ChangeSet.class),
+		    mock(ChangeSet.class), mock(ChangeSet.class));
+		
+		assertTrue(changeLogDetective.logUnRunChangeSetDetails("liquibase-core-data-1.9.x.xml", changeSets));
+		assertTrue(changeLogDetective.logUnRunChangeSetDetails("liquibase-schema-only-1.9.x.xml", changeSets));
+	}
+	
+	@Test
+	public void shouldNotLogLargeNumberOfUnrunChangeSets() {
+		ChangeLogDetective changeLogDetective = new ChangeLogDetective();
+		
+		// do not log 10 or more change sets
+		List<ChangeSet> changeSets = Arrays.asList(mock(ChangeSet.class), mock(ChangeSet.class), mock(ChangeSet.class),
+		    mock(ChangeSet.class), mock(ChangeSet.class), mock(ChangeSet.class), mock(ChangeSet.class),
+		    mock(ChangeSet.class), mock(ChangeSet.class), mock(ChangeSet.class));
+		
+		assertFalse(changeLogDetective.logUnRunChangeSetDetails("liquibase-core-data-1.9.x.xml", changeSets));
+		assertFalse(changeLogDetective.logUnRunChangeSetDetails("liquibase-schema-only-1.9.x.xml", changeSets));
+	}
+	
+	@Test
+	public void shouldNotLogUnrunChangeSetsFromOtherChangeLogFile() {
+		ChangeLogDetective changeLogDetective = new ChangeLogDetective();
+		
+		List<ChangeSet> changeSets = Arrays.asList(mock(ChangeSet.class), mock(ChangeSet.class));
+		
+		assertFalse(changeLogDetective.logUnRunChangeSetDetails("liquibase-core-data-2.2.x.xml", changeSets));
+		assertFalse(changeLogDetective.logUnRunChangeSetDetails("liquibase-schema-only-2.2.x.xml", changeSets));
+		assertFalse(changeLogDetective.logUnRunChangeSetDetails("any_filename", changeSets));
 	}
 }
