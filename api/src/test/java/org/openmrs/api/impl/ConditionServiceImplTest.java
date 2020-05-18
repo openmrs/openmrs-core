@@ -80,9 +80,9 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 		Condition condition = new Condition();
 		condition.setUuid(uuid);
 		condition.setPatient(new Patient(2));
-		condition.setEncounter(new Encounter(2039));
 		
 		// replay
+		condition.setEncounter(new Encounter(2039));
 		conditionService.saveCondition(condition);
 		
 		// verify

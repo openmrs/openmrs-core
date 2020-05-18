@@ -394,16 +394,16 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		freeTextForPregnancy.setNonCoded("Pregnancy");
 		pregnancy.setCondition(freeTextForPregnancy);
 		pregnancy.setPatient(encounter.getPatient());
-		encounter.addCondition(pregnancy);
 		
 		Condition edema = new Condition();
 		CodedOrFreeText freeTextForEdema = new CodedOrFreeText();
 		freeTextForEdema.setNonCoded("Edema");
 		edema.setCondition(freeTextForEdema);
 		edema.setPatient(encounter.getPatient());
-		encounter.addCondition(edema);
 		
 		// replay
+		encounter.addCondition(pregnancy);
+		encounter.addCondition(edema);
 		Context.getEncounterService().saveEncounter(encounter);
 		
 		// verify
