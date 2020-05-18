@@ -52,7 +52,7 @@ public class BaseUnvoidHandler implements UnvoidHandler<Voidable> {
 	 */
 	@Override
 	public void handle(Voidable voidableObject, User voidingUser, Date origParentVoidedDate, String unused) {
-		
+
 		// reload object from database if it has been saved before
 		if (voidableObject.getId() != null) {
 			Context.refreshEntity(voidableObject);

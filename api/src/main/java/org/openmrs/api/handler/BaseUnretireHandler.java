@@ -15,6 +15,7 @@ import org.openmrs.Retireable;
 import org.openmrs.User;
 import org.openmrs.annotation.Handler;
 import org.openmrs.aop.RequiredDataAdvice;
+import org.openmrs.api.context.Context;
 
 /**
  * This is the super interface for all unretire* actions that take place on all services. The
@@ -50,7 +51,10 @@ public class BaseUnretireHandler implements UnretireHandler<Retireable> {
 	 */
 	@Override
 	public void handle(Retireable retireableObject, User retiringUser, Date origParentRetiredDate, String unused) {
-		
+		  // reload object from database if it has been saved before
+	    if (retireableObject.getId() != null) {  
+	        Context.refreshEntity(retireableObject);    
+	    }
 		// only act on retired objects
 		if (retireableObject.getRetired()
 		        && (origParentRetiredDate == null || origParentRetiredDate.equals(retireableObject.getDateRetired()))) {

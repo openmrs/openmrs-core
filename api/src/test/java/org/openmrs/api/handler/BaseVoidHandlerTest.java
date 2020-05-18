@@ -18,7 +18,7 @@ import org.openmrs.User;
 import org.openmrs.Voidable;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.api.context.ServiceContext.getService;
+
 
 
 

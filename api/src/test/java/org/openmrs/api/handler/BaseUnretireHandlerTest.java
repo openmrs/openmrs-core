@@ -16,11 +16,14 @@ import org.junit.Test;
 import org.openmrs.Location;
 import org.openmrs.Retireable;
 import org.openmrs.User;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.LocationService;
+import org.openmrs.test.BaseContextSensitiveTest;
 
 /**
  * Tests the {@link BaseUnretireHandler} class.
  */
-public class BaseUnretireHandlerTest {
+public class BaseUnretireHandlerTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see BaseUnretireHandler#handle(Retireable,User,Date,String)
@@ -101,4 +104,30 @@ public class BaseUnretireHandlerTest {
 		Assert.assertTrue(retireable.getRetired());
 	}
 	
+	/**
+	 * @see BaseUnretireHandler#handle(Retireable,User,Date,String)
+	 */
+	@Test
+	public void handle_shoudNotUpdateFieldBesidesRetireableFields() {
+		RetireHandler<Retireable> handler = new BaseRetireHandler();
+	        
+	        LocationService locationService = Context.getLocationService();
+	        
+	        // retire the location
+		Location retireable = locationService.getLocation(1);
+		retireable.setRetired(true);
+		retireable.setRetireReason("test");
+	        locationService.saveLocation(retireable);
+	        
+	        retireable = locationService.getLocation(1);
+		Assert.assertNotEquals("NOT SET", retireable.getAddress1());
+		
+		retireable.setAddress1("NOT SET");
+		Assert.assertEquals("NOT SET", retireable.getAddress1());
+		
+		retireable.setRetired(false);
+		handler.handle(retireable, null, null, "THE REASON");
+		
+		Assert.assertNotEquals("NOT SET", retireable.getAddress1());
+	}
 }
