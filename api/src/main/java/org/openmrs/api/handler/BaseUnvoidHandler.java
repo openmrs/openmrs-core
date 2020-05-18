@@ -11,10 +11,13 @@ package org.openmrs.api.handler;
 
 import java.util.Date;
 
+
 import org.openmrs.User;
 import org.openmrs.Voidable;
 import org.openmrs.annotation.Handler;
 import org.openmrs.aop.RequiredDataAdvice;
+import org.openmrs.api.context.Context;
+
 
 /**
  * This is the super interface for all unvoid* actions that take place on all services. The
@@ -50,6 +53,10 @@ public class BaseUnvoidHandler implements UnvoidHandler<Voidable> {
 	@Override
 	public void handle(Voidable voidableObject, User voidingUser, Date origParentVoidedDate, String unused) {
 		
+		// reload object from database if it has been saved before
+		if (voidableObject.getId() != null) {
+			Context.refreshEntity(voidableObject);
+		
 		// only operate on voided objects
 		if (voidableObject.getVoided()
 		        && (origParentVoidedDate == null || origParentVoidedDate.equals(voidableObject.getDateVoided()))) {
@@ -59,7 +66,9 @@ public class BaseUnvoidHandler implements UnvoidHandler<Voidable> {
 			voidableObject.setVoidedBy(null);
 			voidableObject.setDateVoided(null);
 			voidableObject.setVoidReason(null);
-		}
+		    }
+	    }
 	}
-	
+ 
 }
+	

@@ -15,6 +15,8 @@ import org.openmrs.User;
 import org.openmrs.Voidable;
 import org.openmrs.annotation.Handler;
 import org.openmrs.aop.RequiredDataAdvice;
+import org.openmrs.api.context.Context;
+
 
 /**
  * This is the super interface for all void* actions that take place on all services. The
@@ -54,6 +56,11 @@ public class BaseVoidHandler implements VoidHandler<Voidable> {
 	 */
 	@Override
 	public void handle(Voidable voidableObject, User voidingUser, Date voidedDate, String voidReason) {
+		
+		// reload object from database if it has been saved before
+		if (voidableObject.getId() != null) {
+			Context.refreshEntity(voidableObject);
+		}
 		
 		// skip over all work if the object is already voided
 		if (!voidableObject.getVoided() || voidableObject.getVoidedBy() == null) {
