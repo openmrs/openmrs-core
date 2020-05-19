@@ -9,18 +9,6 @@
  */
 package org.openmrs.api.impl;
 
-import static org.openmrs.Order.Action.DISCONTINUE;
-import static org.openmrs.Order.Action.REVISE;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.proxy.HibernateProxy;
 import org.openmrs.CareSetting;
@@ -63,6 +51,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
+import static org.openmrs.Order.Action.DISCONTINUE;
+import static org.openmrs.Order.Action.REVISE;
 
 /**
  * Default implementation of the Order-related services class. This method should not be invoked by
@@ -487,12 +487,28 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	
 	@Override
 	public Order updateOrderFulfillerStatus(Order order, Order.FulfillerStatus orderFulfillerStatus, String fullFillerComment) {
-		order.setFulfillerStatus(orderFulfillerStatus);
-		order.setFulfillerComment(fullFillerComment);	
+		return updateOrderFulfillerStatus(order, orderFulfillerStatus, fullFillerComment, null);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Order updateOrderFulfillerStatus(Order order, FulfillerStatus orderFulfillerStatus, String fullFillerComment,
+											String accessionNumber) {
+
+		if (orderFulfillerStatus != null) {
+			order.setFulfillerStatus(orderFulfillerStatus);
+		}
+
+		if (fullFillerComment != null) {
+			order.setFulfillerComment(fullFillerComment);
+		}
+	
+		if (accessionNumber != null) {
+			order.setAccessionNumber(accessionNumber);
+		}
 		
 		return saveOrderInternal(order, null);
 	}
-	
 	
 	/**
 	 * @see org.openmrs.api.OrderService#getOrder(java.lang.Integer)
@@ -1061,16 +1077,5 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	public List<OrderGroup> getOrderGroupsByEncounter(Encounter encounter) throws APIException {
 		return dao.getOrderGroupsByEncounter(encounter);
 	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public Order updateOrderFulfillerStatus(Order order, FulfillerStatus orderFulfillerStatus, String fullFillerComment,
-			String accessionNumber) {
-
-		order.setFulfillerStatus(orderFulfillerStatus);
-		order.setFulfillerComment(fullFillerComment);
-		order.setAccessionNumber(accessionNumber);
-
-		return saveOrderInternal(order, null);
-	}
+	
 }
