@@ -12,8 +12,8 @@
 -->
 <dataset>
 
-  	<encounter encounter_id="2039" encounter_type="2" patient_id="2" location_id="1" form_id="1" encounter_datetime="2020-04-20 14:09:05.0" 
-  				creator="1" date_created="2020-04-20 14:09:05.0" voided="false" uuid="0519d652-393b-4118-9c83-a3715b82d4av"/>
+	<encounter encounter_id="2039" encounter_type="2" patient_id="2" location_id="1" form_id="1" encounter_datetime="2020-04-20 14:09:05.0" 
+				creator="1" date_created="2020-04-20 14:09:05.0" voided="false" uuid="0519d652-393b-4118-9c83-a3715b82d4av"/>
 
 	<conditions condition_id="1" patient_id="2" clinical_status="INACTIVE" encounter_id="2039" creator="1" date_created="2015-01-12 00:00:00" 
 			   voided="false" onset_date="2017-01-12 00:00:00" end_date="2017-01-15 00:00:00" verification_status="PROVISIONAL" 
