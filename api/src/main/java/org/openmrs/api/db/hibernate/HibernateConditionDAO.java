@@ -14,7 +14,9 @@ import java.util.List;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.openmrs.Condition;
+import org.openmrs.Encounter;
 import org.openmrs.Patient;
+import org.openmrs.api.APIException;
 import org.openmrs.api.db.ConditionDAO;
 import org.openmrs.api.db.DAOException;
 
@@ -120,5 +122,17 @@ public class HibernateConditionDAO implements ConditionDAO {
 	@Override
 	public void deleteCondition(Condition condition) throws DAOException {
 		sessionFactory.getCurrentSession().delete(condition);
+	}
+
+	/**
+	 * @see ConditionService#getConditionsByEncounter(Encounter)
+	 */
+	@Override
+	public List<Condition> getConditionsByEncounter(Encounter encounter) throws APIException {
+		Query query = sessionFactory.getCurrentSession().createQuery(
+				"from Condition c where c.encounter.encounterId = :encounterId and c.voided = false order "
+						+ "by c.onsetDate desc");
+		query.setInteger("encounterId", encounter.getId());
+		return query.list();
 	}
 }
