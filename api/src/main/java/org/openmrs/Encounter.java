@@ -518,10 +518,8 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * @param condition - the condition to add
 	 */
 	public void addCondition(Condition condition) {
-		if (condition != null) {
-			condition.setEncounter(this);
-			getConditions().add(condition);
-		}
+		condition.setEncounter(this);
+		getConditions().add(condition);
 	}
 	
 	/**

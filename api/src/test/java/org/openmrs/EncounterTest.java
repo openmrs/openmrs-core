@@ -971,21 +971,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see Encounter#addCondition(Condition)
-	 */
-	@Test
-	public void addCondition_shouldNotFailWithNullCondition() {
-		// setup
-		Encounter encounter = new Encounter();
-		
-		// replay
-		encounter.addCondition(null);
-		
-		// verify
-		assertEquals(0, encounter.getConditions().size());
-	}
-	
-	/**
 	 * @see Encounter#removeCondition(Condition)
 	 */
 	@Test
