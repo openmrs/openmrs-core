@@ -9,38 +9,6 @@
  */
 package org.openmrs.api;
 
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.openmrs.test.OpenmrsMatchers.hasId;
-import static org.openmrs.test.TestUtil.containsId;
-
-import java.lang.reflect.Field;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
-
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
@@ -96,6 +64,37 @@ import org.openmrs.test.TestUtil;
 import org.openmrs.util.DateUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.openmrs.test.OpenmrsMatchers.hasId;
+import static org.openmrs.test.TestUtil.containsId;
 
 /**
  * TODO clean up and test all methods in OrderService
@@ -1249,8 +1248,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Context.flushSession();
 		Order updatedOrder = orderService.getOrder(111);
 		
-		assertEquals(updatedOrder.getFulfillerStatus(), Order.FulfillerStatus.IN_PROGRESS);
-		assertEquals(updatedOrder.getFulfillerComment(), commentText);
+		assertEquals(Order.FulfillerStatus.IN_PROGRESS, updatedOrder.getFulfillerStatus()) ;
+		assertEquals(commentText, updatedOrder.getFulfillerComment());
 	}
 	
 	/**
@@ -1258,7 +1257,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 *      Order.FulfillerStatus, String, String)
 	 */
 	@Test
-	public void updateOrderFulfillerStatus_shouldEditFulfillerStatusWithAccessioNumberInOrder() {
+	public void updateOrderFulfillerStatus_shouldEditFulfillerStatusWithAccessionNumberInOrder() {
 		Order originalOrder = orderService.getOrder(111);
 		String commentText = "We got the new order";
 		String accessionNumber = "12345";
@@ -1266,11 +1265,61 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 		orderService.updateOrderFulfillerStatus(originalOrder, Order.FulfillerStatus.IN_PROGRESS, commentText,
 				accessionNumber);
+		Context.flushSession();
 		Order updatedOrder = orderService.getOrder(111);
 
-		assertEquals(updatedOrder.getAccessionNumber(), accessionNumber);
+		assertEquals(Order.FulfillerStatus.IN_PROGRESS, updatedOrder.getFulfillerStatus());
+		assertEquals(commentText, updatedOrder.getFulfillerComment());
+		assertEquals(accessionNumber, updatedOrder.getAccessionNumber());
 	}
 
+		 
+	@Test
+	public void updateOrderFulfillerStatus_shouldNotUpdateFulfillerStatusNullParameters() {
+		
+		// set up the test data
+		Order originalOrder = orderService.getOrder(111);
+		String commentText = "We got the new order";
+		String accessionNumber = "12345";
+		assertNotEquals(originalOrder.getAccessionNumber(), accessionNumber);
+
+		orderService.updateOrderFulfillerStatus(originalOrder, Order.FulfillerStatus.IN_PROGRESS, commentText,
+			accessionNumber);
+
+		// now call again with all null
+		orderService.updateOrderFulfillerStatus(originalOrder, null, null, null);
+
+		Context.flushSession();
+		Order updatedOrder = orderService.getOrder(111);
+
+		assertEquals(Order.FulfillerStatus.IN_PROGRESS, updatedOrder.getFulfillerStatus());
+		assertEquals(commentText, updatedOrder.getFulfillerComment());
+		assertEquals(accessionNumber, updatedOrder.getAccessionNumber());
+	}
+
+	@Test
+	public void updateOrderFulfillerStatus_shouldUpdateFulfillerStatusWithEmptyStrings() {
+
+		// set up the test data
+		Order originalOrder = orderService.getOrder(111);
+		String commentText = "We got the new order";
+		String accessionNumber = "12345";
+		assertNotEquals(originalOrder.getAccessionNumber(), accessionNumber);
+
+		orderService.updateOrderFulfillerStatus(originalOrder, Order.FulfillerStatus.IN_PROGRESS, commentText,
+			accessionNumber);
+
+		// now call again with all null
+		orderService.updateOrderFulfillerStatus(originalOrder, null, "", "");
+
+		Context.flushSession();
+		Order updatedOrder = orderService.getOrder(111);
+
+		assertEquals(Order.FulfillerStatus.IN_PROGRESS, updatedOrder.getFulfillerStatus());
+		assertEquals("", updatedOrder.getFulfillerComment());
+		assertEquals("", updatedOrder.getAccessionNumber());
+	}
+	
 	/**
 	 * @see OrderService#saveOrder(Order,OrderContext)
 	 */
