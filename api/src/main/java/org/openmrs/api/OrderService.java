@@ -9,10 +9,6 @@
  */
 package org.openmrs.api;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
@@ -28,6 +24,10 @@ import org.openmrs.api.db.OrderDAO;
 import org.openmrs.parameter.OrderSearchCriteria;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Contains methods pertaining to creating/deleting/voiding Orders
@@ -284,9 +284,10 @@ public interface OrderService extends OpenmrsService {
 	 * @param order order whose fulfillerStatus should be changed
 	 * @param orderFulfillerStatus describes the new Order.FulfillerStatus the order should be set to
 	 * @param fullFillerComment is a string which describes a comment that is set while changing the FulfillerStatus               
-	 * @return the Order that is updated with an according fulfillerStataus and fulFillerComment
+	 * @return the Order that is updated with an according fulfillerStatus and fulFillerComment
 	 * <strong>Should</strong> set the new fulfillerStatus
 	 * <strong>Should</strong> set the new fulFillerComment
+	 * <strong>Should</strong> not update fulfillerStatus or fulFillerComment if null passed in to that field
 	 * <strong>Should</strong> save the changed order
 	 */
 	@Authorized(PrivilegeConstants.EDIT_ORDERS)
@@ -299,10 +300,11 @@ public interface OrderService extends OpenmrsService {
 	 * @param orderFulfillerStatus describes the new Order.FulfillerStatus the order should be set to
 	 * @param fullFillerComment is a string which describes a comment that is set while changing the FulfillerStatus 
 	 * @param accessionNumber is the accession number to set             
-	 * @return the Order that is updated with an according fulfillerStataus and fulFillerComment and accession number
+	 * @return the Order that is updated with an according fulfillerStatus and fulFillerComment and accession number
 	 * <strong>Should</strong> set the new fulfillerStatus
 	 * <strong>Should</strong> set the new fulFillerComment
 	 * <strong>Should</strong> set the new accessionNumber
+	 *  <strong>Should</strong> not update fulfillerStatus or fulFillerComment or accessionNumber if null passed in to that field
 	 * <strong>Should</strong> save the changed order
 	 */
 	@Authorized(PrivilegeConstants.EDIT_ORDERS)
