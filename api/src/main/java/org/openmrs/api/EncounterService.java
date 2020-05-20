@@ -68,6 +68,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @should assign encounter to visit if the assign to existing or new handler is registered
 	 * @should cascade save encounter providers
 	 * @should cascade delete encounter providers
+	 * @should cascade save encounter conditions
 	 * @should void and create new obs when saving encounter
 	 * @should fail if user is not supposed to edit encounters of type of given encounter
 	 */

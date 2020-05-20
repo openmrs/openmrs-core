@@ -82,6 +82,10 @@ public class Condition extends BaseChangeableOpenmrsData {
 	@JoinColumn(name = "patient_id")
 	private Patient patient;
 	
+	@ManyToOne(optional = true)
+	@JoinColumn(name = "encounter_id")
+	private Encounter encounter;
+	
 	public Condition() {
 	}
 	
@@ -328,6 +332,27 @@ public class Condition extends BaseChangeableOpenmrsData {
 		this.patient = patient;
 	}
 	
+	/**
+	 * Basic property getter for encounter
+	 * 
+	 * @return encounter - the associated encounter
+	 * @since 2.4.0, 2.3.1
+	 */
+	public Encounter getEncounter() {
+		return encounter;
+	}
+	
+	/**
+	 * Basic property setter for encounter
+	 *  
+	 * @param encounter - the encounter to set
+	 * @since 2.4.0, 2.3.1
+	 */
+	public void setEncounter(Encounter encounter) {
+		this.encounter = encounter;
+	}
+	
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
