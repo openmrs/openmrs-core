@@ -27,6 +27,7 @@ import java.util.UUID;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.hibernate.Hibernate;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptAttribute;
@@ -1195,9 +1196,12 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	public Concept getUnknownConcept() {
 		if (unknownConcept == null) {
 			try {
-				ConceptServiceImpl.setStaticUnknownConcept(Context.getConceptService().getConcept(
-				    Integer.parseInt(Context.getAdministrationService().getGlobalProperty(
-				        OpenmrsConstants.GLOBAL_PROPERTY_UNKNOWN_CONCEPT))));
+				Concept unknownConcept = Context.getConceptService().getConcept(
+					Integer.parseInt(Context.getAdministrationService().getGlobalProperty(
+						OpenmrsConstants.GLOBAL_PROPERTY_UNKNOWN_CONCEPT)));
+				initializeLazyPropertiesForConcept(unknownConcept);
+				
+				ConceptServiceImpl.setStaticUnknownConcept(unknownConcept);
 			}
 			catch (NumberFormatException e) {
 				log.warn("Concept id for unknown concept should be a number");
@@ -1225,15 +1229,30 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			trueConcept = Context.getConceptService().getConcept(
 			    Integer.parseInt(Context.getAdministrationService().getGlobalProperty(
 			        OpenmrsConstants.GLOBAL_PROPERTY_TRUE_CONCEPT)));
+			initializeLazyPropertiesForConcept(trueConcept);
+			
 			falseConcept = Context.getConceptService().getConcept(
 			    Integer.parseInt(Context.getAdministrationService().getGlobalProperty(
 			        OpenmrsConstants.GLOBAL_PROPERTY_FALSE_CONCEPT)));
+			initializeLazyPropertiesForConcept(falseConcept);
 		}
 		catch (NumberFormatException e) {
 			log.warn("Concept ids for boolean concepts should be numbers");
 		}
 	}
-	
+
+	private void initializeLazyPropertiesForConcept(Concept concept) {
+		Hibernate.initialize(concept.getRetiredBy());
+		Hibernate.initialize(concept.getCreator());
+		Hibernate.initialize(concept.getChangedBy());
+		Hibernate.initialize(concept.getNames());
+		Hibernate.initialize(concept.getAnswers());
+		Hibernate.initialize(concept.getConceptSets());
+		Hibernate.initialize(concept.getDescriptions());
+		Hibernate.initialize(concept.getConceptMappings());
+		Hibernate.initialize(concept.getAttributes());
+	}
+
 	/**
 	 * @see org.openmrs.api.ConceptService#getConceptSourceByName(java.lang.String)
 	 */
