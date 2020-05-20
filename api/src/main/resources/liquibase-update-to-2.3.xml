@@ -101,7 +101,7 @@
     			<constraints nullable="true" />
     		</column>
     	</addColumn>
-    	<addForeignKeyConstraint constraintName="encounter_id_fk"
+    	<addForeignKeyConstraint constraintName="conditions_encounter_id_fk"
 								 baseTableName="conditions" baseColumnNames="encounter_id"
 								 referencedTableName="encounter" referencedColumnNames="encounter_id" />
     </changeSet>
