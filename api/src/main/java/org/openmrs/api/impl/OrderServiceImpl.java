@@ -491,7 +491,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 
 	@Override
-	@Transactional(readOnly = true)
 	public Order updateOrderFulfillerStatus(Order order, FulfillerStatus orderFulfillerStatus, String fullFillerComment,
 											String accessionNumber) {
 
