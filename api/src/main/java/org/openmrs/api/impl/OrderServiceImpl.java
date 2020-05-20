@@ -9,18 +9,6 @@
  */
 package org.openmrs.api.impl;
 
-import static org.openmrs.Order.Action.DISCONTINUE;
-import static org.openmrs.Order.Action.REVISE;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.proxy.HibernateProxy;
 import org.openmrs.CareSetting;
@@ -39,20 +27,20 @@ import org.openmrs.TestOrder;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AmbiguousOrderException;
 import org.openmrs.api.CannotDeleteObjectInUseException;
+import org.openmrs.api.CannotStopDiscontinuationOrderException;
+import org.openmrs.api.CannotStopInactiveOrderException;
+import org.openmrs.api.CannotUnvoidOrderException;
 import org.openmrs.api.CannotUpdateObjectInUseException;
+import org.openmrs.api.EditedOrderDoesNotMatchPreviousException;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.MissingRequiredPropertyException;
 import org.openmrs.api.OrderContext;
+import org.openmrs.api.OrderEntryException;
 import org.openmrs.api.OrderNumberGenerator;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.UnchangeableObjectException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderDAO;
-import org.openmrs.api.CannotStopDiscontinuationOrderException;
-import org.openmrs.api.CannotStopInactiveOrderException;
-import org.openmrs.api.CannotUnvoidOrderException;
-import org.openmrs.api.EditedOrderDoesNotMatchPreviousException;
-import org.openmrs.api.OrderEntryException;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.parameter.OrderSearchCriteria;
 import org.openmrs.util.OpenmrsConstants;
@@ -62,6 +50,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
+import static org.openmrs.Order.Action.DISCONTINUE;
+import static org.openmrs.Order.Action.REVISE;
 
 /**
  * Default implementation of the Order-related services class. This method should not be invoked by
@@ -490,7 +490,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 
 	@Override
-	public Order updateOrderFulfillerStatus(Order order, FulfillerStatus orderFulfillerStatus, String fullFillerComment,
+	public Order updateOrderFulfillerStatus(Order order, Order.FulfillerStatus orderFulfillerStatus, String fullFillerComment,
 											String accessionNumber) {
 
 		if (orderFulfillerStatus != null) {
