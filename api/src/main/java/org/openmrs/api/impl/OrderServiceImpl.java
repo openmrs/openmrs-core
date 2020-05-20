@@ -484,13 +484,29 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		return saveOrderInternal(order, null);
 	}
 	
+	@Override
 	public Order updateOrderFulfillerStatus(Order order, Order.FulfillerStatus orderFulfillerStatus, String fullFillerComment) {
-		order.setFulfillerStatus(orderFulfillerStatus);
-		order.setFulfillerComment(fullFillerComment);	
+		return updateOrderFulfillerStatus(order, orderFulfillerStatus, fullFillerComment, null);
+	}
+
+	@Override
+	public Order updateOrderFulfillerStatus(Order order, FulfillerStatus orderFulfillerStatus, String fullFillerComment,
+											String accessionNumber) {
+
+		if (orderFulfillerStatus != null) {
+			order.setFulfillerStatus(orderFulfillerStatus);
+		}
+
+		if (fullFillerComment != null) {
+			order.setFulfillerComment(fullFillerComment);
+		}
+	
+		if (accessionNumber != null) {
+			order.setAccessionNumber(accessionNumber);
+		}
 		
 		return saveOrderInternal(order, null);
 	}
-	
 	
 	/**
 	 * @see org.openmrs.api.OrderService#getOrder(java.lang.Integer)

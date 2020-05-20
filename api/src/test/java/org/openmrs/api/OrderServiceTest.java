@@ -1189,8 +1189,76 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Context.flushSession();
 		Order updatedOrder = orderService.getOrder(111);
 		
-		assertEquals(updatedOrder.getFulfillerStatus(), Order.FulfillerStatus.IN_PROGRESS);
-		assertEquals(updatedOrder.getFulfillerComment(), commentText);
+		assertEquals(Order.FulfillerStatus.IN_PROGRESS, updatedOrder.getFulfillerStatus()) ;
+		assertEquals(commentText, updatedOrder.getFulfillerComment());
+	}
+	
+	/**
+	 * @see OrderService#updateOrderFulfillerStatus(org.openmrs.Order,
+	 *      Order.FulfillerStatus, String, String)
+	 */
+	@Test
+	public void updateOrderFulfillerStatus_shouldEditFulfillerStatusWithAccessionNumberInOrder() {
+		Order originalOrder = orderService.getOrder(111);
+		String commentText = "We got the new order";
+		String accessionNumber = "12345";
+		assertNotEquals(originalOrder.getAccessionNumber(), accessionNumber);
+
+		orderService.updateOrderFulfillerStatus(originalOrder, Order.FulfillerStatus.IN_PROGRESS, commentText,
+				accessionNumber);
+		Context.flushSession();
+		Order updatedOrder = orderService.getOrder(111);
+
+		assertEquals(Order.FulfillerStatus.IN_PROGRESS, updatedOrder.getFulfillerStatus());
+		assertEquals(commentText, updatedOrder.getFulfillerComment());
+		assertEquals(accessionNumber, updatedOrder.getAccessionNumber());
+	}
+
+		 
+	@Test
+	public void updateOrderFulfillerStatus_shouldNotUpdateFulfillerStatusNullParameters() {
+		
+		// set up the test data
+		Order originalOrder = orderService.getOrder(111);
+		String commentText = "We got the new order";
+		String accessionNumber = "12345";
+		assertNotEquals(originalOrder.getAccessionNumber(), accessionNumber);
+
+		orderService.updateOrderFulfillerStatus(originalOrder, Order.FulfillerStatus.IN_PROGRESS, commentText,
+			accessionNumber);
+
+		// now call again with all null
+		orderService.updateOrderFulfillerStatus(originalOrder, null, null, null);
+
+		Context.flushSession();
+		Order updatedOrder = orderService.getOrder(111);
+
+		assertEquals(Order.FulfillerStatus.IN_PROGRESS, updatedOrder.getFulfillerStatus());
+		assertEquals(commentText, updatedOrder.getFulfillerComment());
+		assertEquals(accessionNumber, updatedOrder.getAccessionNumber());
+	}
+
+	@Test
+	public void updateOrderFulfillerStatus_shouldUpdateFulfillerStatusWithEmptyStrings() {
+
+		// set up the test data
+		Order originalOrder = orderService.getOrder(111);
+		String commentText = "We got the new order";
+		String accessionNumber = "12345";
+		assertNotEquals(originalOrder.getAccessionNumber(), accessionNumber);
+
+		orderService.updateOrderFulfillerStatus(originalOrder, Order.FulfillerStatus.IN_PROGRESS, commentText,
+			accessionNumber);
+
+		// now call again with all null
+		orderService.updateOrderFulfillerStatus(originalOrder, null, "", "");
+
+		Context.flushSession();
+		Order updatedOrder = orderService.getOrder(111);
+
+		assertEquals(Order.FulfillerStatus.IN_PROGRESS, updatedOrder.getFulfillerStatus());
+		assertEquals("", updatedOrder.getFulfillerComment());
+		assertEquals("", updatedOrder.getAccessionNumber());
 	}
 	
 	/**
