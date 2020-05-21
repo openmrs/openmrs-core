@@ -32,6 +32,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
@@ -51,6 +52,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.openmrs.Concept;
 import org.openmrs.GlobalProperty;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -59,6 +61,7 @@ import org.openmrs.api.InvalidCharactersPasswordException;
 import org.openmrs.api.ShortPasswordException;
 import org.openmrs.api.WeakPasswordException;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.ConceptService;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.TestUtil;
 
@@ -1003,4 +1006,23 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 			context.updateLoggers();
 		}
 	}
+	
+	/**
+	 * @see OpenmrsUtil#conceptListHelper(String)
+	 */
+	@Test
+	public void conceptListHelper_shouldNotAllowDuplicateConcepts() {
+		ConceptService conceptService = Context.getConceptService();
+
+		String descriptor = "name:YES | name:NO | name:YES";
+		List<Concept> ret = OpenmrsUtil.conceptListHelper(descriptor);
+		assertEquals(2, ret.size());
+		
+		// both set point to the same concept with id 22		
+		descriptor = "set:30 | set:29";
+		ret = OpenmrsUtil.conceptListHelper(descriptor);
+		assertEquals(1, ret.size());
+		
+	}
+	
 }
