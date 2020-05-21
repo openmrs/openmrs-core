@@ -2396,6 +2396,38 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertEquals(3, orders.size());
 	}
 	
+	@Test
+	public void getOrders_shouldGetTheOrdersByOrderNumber() {
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setOrderNumber("ORD-7").build();
+		List<Order> orders = orderService.getOrders(orderSearchCriteria);
+		assertEquals(1, orders.size());
+		assertEquals("2c96f25c-4949-4f72-9931-d808fbc226df", orders.iterator().next().getUuid());
+	}
+
+	@Test
+	public void getOrders_shouldGetTheOrdersByOrderNumberEvenIfCaseDoesNotMatch() {
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setOrderNumber("ord-7").build();
+		List<Order> orders = orderService.getOrders(orderSearchCriteria);
+		assertEquals(1, orders.size());
+		assertEquals("2c96f25c-4949-4f72-9931-d808fbc226df", orders.iterator().next().getUuid());
+	}
+
+	@Test
+	public void getOrders_shouldGetTheOrdersByAccessionNumber() {
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setAccessionNumber("ACC-123").build();
+		List<Order> orders = orderService.getOrders(orderSearchCriteria);
+		assertEquals(1, orders.size());
+		assertEquals("e1f95924-697a-11e3-bd76-0800271c1b75", orders.iterator().next().getUuid());
+	}
+
+	@Test
+	public void getOrders_shouldGetTheOrdersByAccessionNumberEvenIfCaseDoesNotMatch() {
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setAccessionNumber("acc-123").build();
+		List<Order> orders = orderService.getOrders(orderSearchCriteria);
+		assertEquals(1, orders.size());
+		assertEquals("e1f95924-697a-11e3-bd76-0800271c1b75", orders.iterator().next().getUuid());
+	}
+	
 	/**
 	 * @see OrderService#getAllOrdersByPatient(org.openmrs.Patient)
 	 */

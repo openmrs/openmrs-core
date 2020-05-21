@@ -32,6 +32,16 @@ public class OrderSearchCriteria {
 	private final Collection<OrderType> orderTypes;
 
 	/**
+	 * Accession Number to match on; performs an exact match
+	 */
+	private String accessionNumber;
+
+	/**
+	 * Accession Number to match on; performs an exact match
+	 */
+	private String orderNumber;
+
+	/**
 	 * Matches on dateActivated that is any time on this date or less
 	 */
 	private final Date activatedOnOrBeforeDate;
@@ -81,6 +91,49 @@ public class OrderSearchCriteria {
 	private final boolean excludeDiscontinueOrders;
 
 	/**
+	 * Instead of calling this constructor directly, it is recommended to use {@link OrderSearchCriteriaBuilder}.
+	 * @param patient the patient the order is for
+	 * @param careSetting the care setting to match on
+	 * @param concepts the concepts to match on; if not specified, matches on all concepts
+	 * @param orderTypes the order types to match on; if not specified, matches all order types
+	 * @param accessionNumber to match on; performs exact match if specified
+	 * @param orderNumber to match on; performs exact match if specifed              
+	 * @param activatedOnOrBeforeDate orders must have dateActivated on or before this date
+	 * @param activatedOnOrAfterDate orders must have dateActivated on or after this date
+	 * @param includeVoided whether to include the voided orders or not
+	 */
+	public OrderSearchCriteria(Patient patient, CareSetting careSetting, Collection<Concept> concepts,
+							   Collection<OrderType> orderTypes, String accessionNumber, String orderNumber, 
+							   Date activatedOnOrBeforeDate, Date activatedOnOrAfterDate, boolean isStopped, 
+							   Date autoExpireOnOrBeforeDate,
+							   Date canceledOrExpiredOnOrBeforeDate,
+							   Order.Action action,
+							   Order.FulfillerStatus fulfillerStatus,
+							   Boolean includeNullFulfillerStatus,
+							   boolean excludeCanceledAndExpired,
+							   boolean excludeDiscontinueOrders,
+							   boolean includeVoided) {
+		this.patient = patient;
+		this.careSetting = careSetting;
+		this.concepts = concepts;
+		this.orderTypes = orderTypes;
+		this.accessionNumber = accessionNumber;
+		this.orderNumber = orderNumber;
+		this.activatedOnOrBeforeDate = activatedOnOrBeforeDate;
+		this.activatedOnOrAfterDate = activatedOnOrAfterDate;
+		this.isStopped = isStopped;
+		this.autoExpireOnOrBeforeDate = autoExpireOnOrBeforeDate;
+		this.canceledOrExpiredOnOrBeforeDate = canceledOrExpiredOnOrBeforeDate;
+		this.action = action;
+		this.fulfillerStatus = fulfillerStatus;
+		this.includeNullFulfillerStatus = includeNullFulfillerStatus;
+		this.excludeCanceledAndExpired = excludeCanceledAndExpired;
+		this.excludeDiscontinueOrders = excludeDiscontinueOrders;
+		this.includeVoided = includeVoided;
+	}
+	
+	/**
+	 * (Legacy constructor, before addition of Order Number and Accession Number fields)
 	 * Instead of calling this constructor directly, it is recommended to use {@link OrderSearchCriteriaBuilder}.
 	 * @param patient the patient the order is for
 	 * @param careSetting the care setting to match on
@@ -136,6 +189,14 @@ public class OrderSearchCriteria {
 	 * @return the order types to match on must be in this collection
 	 */
 	public Collection<OrderType> getOrderTypes() { return orderTypes; }
+
+	public String getAccessionNumber() {
+		return accessionNumber;
+	}
+
+	public String getOrderNumber() {
+		return orderNumber;
+	}
 
 	/**
 	 * @return orders must have dateActivated on or before this date
