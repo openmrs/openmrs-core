@@ -9,7 +9,11 @@
  */
 package org.openmrs.parameter;
 
-import org.openmrs.*;
+import org.openmrs.CareSetting;
+import org.openmrs.Concept;
+import org.openmrs.Order;
+import org.openmrs.OrderType;
+import org.openmrs.Patient;
 
 import java.util.Collection;
 import java.util.Date;
@@ -22,13 +26,13 @@ import java.util.Date;
  * @see OrderSearchCriteriaBuilder
  */
 public class OrderSearchCriteria {
-	
+
 	private final Patient patient;
-	
+
 	private final CareSetting careSetting;
-	
+
 	private final Collection<Concept> concepts;
-	
+
 	private final Collection<OrderType> orderTypes;
 
 	/**
@@ -45,7 +49,7 @@ public class OrderSearchCriteria {
 	 * Matches on dateActivated that is any time on this date or less
 	 */
 	private final Date activatedOnOrBeforeDate;
-	
+
 	/**
 	 * Matches on dateActivated that is any time on this date or more
 	 */
@@ -97,14 +101,14 @@ public class OrderSearchCriteria {
 	 * @param concepts the concepts to match on; if not specified, matches on all concepts
 	 * @param orderTypes the order types to match on; if not specified, matches all order types
 	 * @param accessionNumber to match on; performs exact match if specified
-	 * @param orderNumber to match on; performs exact match if specifed              
+	 * @param orderNumber to match on; performs exact match if specifed
 	 * @param activatedOnOrBeforeDate orders must have dateActivated on or before this date
 	 * @param activatedOnOrAfterDate orders must have dateActivated on or after this date
 	 * @param includeVoided whether to include the voided orders or not
 	 */
 	public OrderSearchCriteria(Patient patient, CareSetting careSetting, Collection<Concept> concepts,
-							   Collection<OrderType> orderTypes, String accessionNumber, String orderNumber, 
-							   Date activatedOnOrBeforeDate, Date activatedOnOrAfterDate, boolean isStopped, 
+							   Collection<OrderType> orderTypes, String accessionNumber, String orderNumber,
+							   Date activatedOnOrBeforeDate, Date activatedOnOrAfterDate, boolean isStopped,
 							   Date autoExpireOnOrBeforeDate,
 							   Date canceledOrExpiredOnOrBeforeDate,
 							   Order.Action action,
@@ -131,7 +135,7 @@ public class OrderSearchCriteria {
 		this.excludeDiscontinueOrders = excludeDiscontinueOrders;
 		this.includeVoided = includeVoided;
 	}
-	
+
 	/**
 	 * (Legacy constructor, before addition of Order Number and Accession Number fields)
 	 * Instead of calling this constructor directly, it is recommended to use {@link OrderSearchCriteriaBuilder}.
@@ -144,8 +148,8 @@ public class OrderSearchCriteria {
 	 * @param includeVoided whether to include the voided orders or not
 	 */
 	@Deprecated
-	public OrderSearchCriteria(Patient patient, CareSetting careSetting, Collection<Concept> concepts, 
-							   Collection<OrderType> orderTypes, Date activatedOnOrBeforeDate, 
+	public OrderSearchCriteria(Patient patient, CareSetting careSetting, Collection<Concept> concepts,
+							   Collection<OrderType> orderTypes, Date activatedOnOrBeforeDate,
 							   Date activatedOnOrAfterDate, boolean isStopped, Date autoExpireOnOrBeforeDate,
 							   Date canceledOrExpiredOnOrBeforeDate,
 							   Order.Action action,
@@ -154,11 +158,11 @@ public class OrderSearchCriteria {
 							   boolean excludeCanceledAndExpired,
 							   boolean excludeDiscontinueOrders,
 							   boolean includeVoided) {
-		
+
 		this(patient, careSetting, concepts, orderTypes, null, null,
 			activatedOnOrBeforeDate, activatedOnOrAfterDate, isStopped, autoExpireOnOrBeforeDate, canceledOrExpiredOnOrBeforeDate,
 			action, fulfillerStatus, includeNullFulfillerStatus, excludeCanceledAndExpired, excludeDiscontinueOrders, includeVoided);
-		
+
 	}
 
 	/**
@@ -216,7 +220,7 @@ public class OrderSearchCriteria {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return orders must have autoExpireDate on or before this date
 	 */
 	public Date getAutoExpireOnOrBeforeDate() {
@@ -268,5 +272,5 @@ public class OrderSearchCriteria {
 	 * @return whether to include the voided orders or not
 	 */
 	public boolean getIncludeVoided() { return includeVoided; }
-	
+
 }
