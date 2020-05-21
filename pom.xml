@@ -100,10 +100,15 @@
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>jsp-api</artifactId>
-				<version>2.0.public_draft</version>
-                <scope>provided</scope>
+			 <groupId>jspapi</groupId>
+            <artifactId>jsp-api</artifactId>
+            <version>2.0.public_draft</version>
+             <distributionManagement>
+               <relocation>
+               <groupId>javax.servlet</groupId>
+               <artifactId>jsp-api</artifactId>
+             </relocation>
+           </distributionManagement>
 			</dependency>
 			<dependency>
 				<groupId>javax.servlet</groupId>
