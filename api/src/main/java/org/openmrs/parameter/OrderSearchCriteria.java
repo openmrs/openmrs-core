@@ -32,12 +32,12 @@ public class OrderSearchCriteria {
 	private final Collection<OrderType> orderTypes;
 
 	/**
-	 * Accession Number to match on; performs an exact match
+	 * Accession Number to match on; performs an exact match, case-insensitive
 	 */
 	private String accessionNumber;
 
 	/**
-	 * Accession Number to match on; performs an exact match
+	 * Accession Number to match on; performs an exact match, case-insensitive
 	 */
 	private String orderNumber;
 
@@ -143,6 +143,7 @@ public class OrderSearchCriteria {
 	 * @param activatedOnOrAfterDate orders must have dateActivated on or after this date
 	 * @param includeVoided whether to include the voided orders or not
 	 */
+	@Deprecated
 	public OrderSearchCriteria(Patient patient, CareSetting careSetting, Collection<Concept> concepts, 
 							   Collection<OrderType> orderTypes, Date activatedOnOrBeforeDate, 
 							   Date activatedOnOrAfterDate, boolean isStopped, Date autoExpireOnOrBeforeDate,
@@ -153,21 +154,11 @@ public class OrderSearchCriteria {
 							   boolean excludeCanceledAndExpired,
 							   boolean excludeDiscontinueOrders,
 							   boolean includeVoided) {
-		this.patient = patient;
-		this.careSetting = careSetting;
-		this.concepts = concepts;
-		this.orderTypes = orderTypes;
-		this.activatedOnOrBeforeDate = activatedOnOrBeforeDate;
-		this.activatedOnOrAfterDate = activatedOnOrAfterDate;
-		this.isStopped = isStopped;
-		this.autoExpireOnOrBeforeDate = autoExpireOnOrBeforeDate;
-		this.canceledOrExpiredOnOrBeforeDate = canceledOrExpiredOnOrBeforeDate;
-		this.action = action;
-		this.fulfillerStatus = fulfillerStatus;
-		this.includeNullFulfillerStatus = includeNullFulfillerStatus;
-		this.excludeCanceledAndExpired = excludeCanceledAndExpired;
-		this.excludeDiscontinueOrders = excludeDiscontinueOrders;
-		this.includeVoided = includeVoided;
+		
+		this(patient, careSetting, concepts, orderTypes, null, null,
+			activatedOnOrBeforeDate, activatedOnOrAfterDate, isStopped, autoExpireOnOrBeforeDate, canceledOrExpiredOnOrBeforeDate,
+			action, fulfillerStatus, includeNullFulfillerStatus, excludeCanceledAndExpired, excludeDiscontinueOrders, includeVoided);
+		
 	}
 
 	/**
@@ -190,10 +181,18 @@ public class OrderSearchCriteria {
 	 */
 	public Collection<OrderType> getOrderTypes() { return orderTypes; }
 
+	/**
+	 * @return the accession number to match on; must be case-insensitive exact-match
+	 * @since 2.3.1
+	 */
 	public String getAccessionNumber() {
 		return accessionNumber;
 	}
 
+	/**
+	 * @return the order number to match on; must be case-insensitive exact-match
+	 * @since 2.3.1
+	 */
 	public String getOrderNumber() {
 		return orderNumber;
 	}

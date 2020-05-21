@@ -92,7 +92,7 @@ public class OrderSearchCriteriaBuilder {
 	}
 
 	/**
-	 * @param accessionNumber the accessionNumber to match on (exact match)
+	 * @param accessionNumber the accessionNumber to match on (exact match, case-insensitive)
 	 * @return this builder instance
 	 */
 	public OrderSearchCriteriaBuilder setAccessionNumber(String accessionNumber) {
@@ -101,7 +101,7 @@ public class OrderSearchCriteriaBuilder {
 	}
 
 	/**
-	 * @param orderNumber the orderNumber to match on (exact match)
+	 * @param orderNumber the orderNumber to match on (exact match, case-insensitive)
 	 * @return this builder instance
 	 */
 	public OrderSearchCriteriaBuilder setOrderNumber(String orderNumber) {
