@@ -174,6 +174,12 @@ public class HibernateOrderDAO implements OrderDAO {
 		if (searchCriteria.getOrderTypes() != null && !searchCriteria.getOrderTypes().isEmpty()) {
 			crit.add(Restrictions.in("orderType", searchCriteria.getOrderTypes()));
 		}
+		if (searchCriteria.getOrderNumber() != null) {
+			crit.add(Restrictions.eq("orderNumber", searchCriteria.getOrderNumber()).ignoreCase());
+		}
+		if (searchCriteria.getAccessionNumber() != null) {
+			crit.add(Restrictions.eq("accessionNumber", searchCriteria.getAccessionNumber()).ignoreCase());
+		}
 		if (searchCriteria.getActivatedOnOrBeforeDate() != null) {
 			// set the date's time to the last millisecond of the date
 			Calendar cal = Calendar.getInstance();
