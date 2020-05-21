@@ -16,11 +16,12 @@ import org.junit.Test;
 import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.Voidable;
-
+import org.openmrs.api.context.Context;
+import org.openmrs.test.BaseContextSensitiveTest;
 /**
  * Tests the {@link BaseUnvoidHandler} class.
  */
-public class BaseUnvoidHandlerTest {
+public class BaseUnvoidHandlerTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see BaseUnvoidHandler#handle(Voidable,User,Date,String)
@@ -100,4 +101,27 @@ public class BaseUnvoidHandlerTest {
 		handler.handle(voidable, null, new Date(), "SOME REASON");
 		Assert.assertTrue(voidable.getVoided());
 	}
+	
+	/**
+	 * @see BaseUnvoidHandler#handle(Voidable,User,Date,String)
+	 */
+	@Test
+	public void handle_shouldNotUpdateFieldBesidesVoidFields() {
+		VoidHandler<Voidable> handler = new BaseVoidHandler();
+		Person voidable = Context.getPersonService().getPerson(1);
+		Assert.assertNotEquals("NOT SET", voidable.getGender());
+
+		voidable.setVoided(true);
+		voidable.setVoidReason("test");
+		Context.getPersonService().savePerson(voidable);
+
+		voidable.setGender("NOT SET");
+		Assert.assertEquals("NOT SET", voidable.getGender());
+
+		voidable.setVoided(false);
+		handler.handle(voidable, null, null, "THE REASON");
+
+		Assert.assertNotEquals("NOT SET", voidable.getGender());
+	}
 }
+

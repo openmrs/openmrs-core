@@ -122,7 +122,7 @@ public class BaseRetireHandlerTest {
 		Assert.assertEquals("THE REASON", retireable.getRetireReason());
 	}
 	@Test
-	public void handle_shoudNotUpdateFieldBesidesRetireableFields() {
+	public void handle_shouldNotUpdateFieldBesidesRetireableFields() {
 		RetireHandler<Retireable> handler = new BaseRetireHandler();
 		Location retireable = Context.getLocationService().getLocation(1);
 		Assert.assertNotEquals("NOT SET", retireable.getAddress1());

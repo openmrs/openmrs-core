@@ -131,7 +131,7 @@ public class BaseVoidHandlerTest extends BaseContextSensitiveTest  {
 	 * @see BaseUnvoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
-	public void handle_shoudNotUpdateFieldBesidesVoidFields() {  
+	public void handle_shouldNotUpdateFieldBesidesVoidFields() {  
 	  VoidHandler<Voidable> handler = new BaseVoidHandler();   
 	  Person voidable = Context.getPersonService().getPerson(1);                                        
 	  Assert.assertNotEquals("NOT SET", voidable.getGender());

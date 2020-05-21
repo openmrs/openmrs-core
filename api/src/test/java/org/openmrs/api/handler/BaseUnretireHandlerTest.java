@@ -108,7 +108,7 @@ public class BaseUnretireHandlerTest extends BaseContextSensitiveTest {
 	 * @see BaseUnretireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
-	public void handle_shoudNotUpdateFieldBesidesRetireableFields() {
+	public void handle_shouldNotUpdateFieldBesidesRetireableFields() {
 		RetireHandler<Retireable> handler = new BaseRetireHandler();
 	        
 	        LocationService locationService = Context.getLocationService();
