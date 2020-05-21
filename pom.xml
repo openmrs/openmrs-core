@@ -96,7 +96,7 @@
 			<dependency>
 				<groupId>javax.servlet</groupId>
 				<artifactId>javax.servlet-api</artifactId>
-				<version>3.1.0</version>
+				<version>4.0.1</version>
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
@@ -105,9 +105,9 @@
 				<version>2.0</version>
 			</dependency>
 			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>jstl</artifactId>
-				<version>1.1.2</version>
+				<groupId>javax.servlet.jsp.jstl</groupId>
+				<artifactId>javax.servlet.jsp.jstl-api</artifactId>
+				<version>1.2.2</version>
 			</dependency>
 			<dependency>
 				<groupId>taglibs</groupId>
@@ -375,8 +375,8 @@
 			</dependency>
 			<dependency>
 				<groupId>javax.mail</groupId>
-				<artifactId>mail</artifactId>
-				<version>1.4.1</version>
+				<artifactId>javax.mail-api</artifactId>
+				<version>1.6.2</version>
 				<exclusions>
 					<exclusion>  <!-- declare the exclusion here -->
 						<groupId>javax.activation</groupId>
