@@ -17,11 +17,11 @@ import org.openmrs.Location;
 import org.openmrs.Retireable;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
-
+import org.openmrs.test.BaseContextSensitiveTest;
 /**
  * Tests for the {@link BaseRetireHandler} class.
  */
-public class BaseRetireHandlerTest {
+public class BaseRetireHandlerTest extends BaseContextSensitiveTest  {
 	
 	/**
 	 * @see BaseRetireHandler#handle(Retireable,User,Date,String)
