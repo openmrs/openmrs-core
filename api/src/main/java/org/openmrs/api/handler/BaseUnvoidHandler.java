@@ -56,6 +56,7 @@ public class BaseUnvoidHandler implements UnvoidHandler<Voidable> {
 		// reload object from database if it has been saved before
 		if (voidableObject.getId() != null) {
 			Context.refreshEntity(voidableObject);
+		}
 		
 		// only operate on voided objects
 		if (voidableObject.getVoided()
@@ -66,9 +67,6 @@ public class BaseUnvoidHandler implements UnvoidHandler<Voidable> {
 			voidableObject.setVoidedBy(null);
 			voidableObject.setDateVoided(null);
 			voidableObject.setVoidReason(null);
-		    }
 	    }
 	}
- 
-}
-	
+}	
