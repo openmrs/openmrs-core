@@ -65,7 +65,7 @@ public interface ComplexObsHandler {
 	 * @return the obs with complex data filled in
 	 * @see org.openmrs.util.OpenmrsConstants
 	 */
-	public Obs getObs(Obs obs, String view);
+	public Obs getObs(Obs obs, String view) throws APIException;
 	
 	/**
 	 * Completely removes the ComplexData Object from its storage location. <br>

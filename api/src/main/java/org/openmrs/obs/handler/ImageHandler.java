@@ -25,6 +25,7 @@ import javax.imageio.stream.FileImageInputStream;
 
 import org.openmrs.Obs;
 import org.openmrs.api.APIException;
+import org.openmrs.api.UnsupportedViewException;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.OpenmrsUtil;
@@ -67,7 +68,7 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 	 * @see org.openmrs.obs.ComplexObsHandler#getObs(org.openmrs.Obs, java.lang.String)
 	 */
 	@Override
-	public Obs getObs(Obs obs, String view) {
+	public Obs getObs(Obs obs, String view) throws APIException {
 		File file = getComplexDataFile(obs);
 		
 		// Raw image
@@ -109,9 +110,10 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 			
 			obs.setComplexData(complexData);
 		} else {
-			// No other view supported
-			// NOTE: if adding support for another view, don't forget to update supportedViews list above
-			return null;
+			if( view != null )
+				// No other view supported
+				// NOTE: if adding support for another view, don't forget to update supportedViews list above
+				throw new UnsupportedViewException();
 		}
 		
 		return obs;
