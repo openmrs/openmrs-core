@@ -15,11 +15,11 @@ import com.sun.javadoc.Tag;
 import com.sun.tools.doclets.Taglet;
 
 /**
- * Taglet for @should annotations.
+ * Taglet for <strong>should</strong> annotations.
  */
 public class ShouldTaglet implements Taglet {
 	
-	private static final String NAME = "should";
+	private static final String NAME = "<strong>should</strong>";
 	
 	private static final String HEADER = "Expected Behaviour:";
 	
@@ -32,20 +32,21 @@ public class ShouldTaglet implements Taglet {
 	}
 	
 	/**
-	 * Will return false since <code> @should</code> cannot be used in field documentation.
+	 * Will return false since <code> <strong>should</strong></code> cannot be used in field documentation.
 	 * 
-	 * @return false since <code> @should</code> can be used in field documentation and true
+	 * @return false since <code> <strong>should</strong></code> can be used in field documentation and true
 	 *         otherwise.
 	 */
+
 	@Override
 	public boolean inField() {
 		return false;
 	}
 	
 	/**
-	 * Will return true since <code> @should</code> can be used in constructor documentation.
+	 * Will return true since <code> <strong>should</strong></code> can be used in constructor documentation.
 	 * 
-	 * @return true since <code> @should</code> can be used in constructor documentation and false
+	 * @return true since <code> <strong>should</strong></code> can be used in constructor documentation and false
 	 *         otherwise.
 	 */
 	@Override
@@ -54,9 +55,9 @@ public class ShouldTaglet implements Taglet {
 	}
 	
 	/**
-	 * Will return true since <code> @should</code> can be used in method documentation.
+	 * Will return true since <code> <strong>should</strong></code> can be used in method documentation.
 	 * 
-	 * @return true since <code> @should</code> can be used in method documentation and false
+	 * @return true since <code> <strong>should</strong></code> can be used in method documentation and false
 	 *         otherwise.
 	 */
 	@Override
@@ -65,9 +66,9 @@ public class ShouldTaglet implements Taglet {
 	}
 	
 	/**
-	 * Will return true since <code> @should</code> can be used in method documentation.
+	 * Will return true since <code> <strong>should</strong></code> can be used in method documentation.
 	 * 
-	 * @return true since <code> @should</code> can be used in overview documentation and false
+	 * @return true since <code> <strong>should</strong></code> can be used in overview documentation and false
 	 *         otherwise.
 	 */
 	@Override
@@ -76,9 +77,9 @@ public class ShouldTaglet implements Taglet {
 	}
 	
 	/**
-	 * Will return false since <code> @should</code> cannot be used in package documentation.
+	 * Will return false since <code> <strong>should</strong></code> cannot be used in package documentation.
 	 * 
-	 * @return false since <code> @should</code> cannot be used in package documentation and true
+	 * @return false since <code> <strong>should</strong></code> cannot be used in package documentation and true
 	 *         otherwise.
 	 */
 	@Override
@@ -87,10 +88,10 @@ public class ShouldTaglet implements Taglet {
 	}
 	
 	/**
-	 * Will return true since <code> @should</code> can be used in type documentation (classes or
+	 * Will return true since <code> <strong>should</strong></code> can be used in type documentation (classes or
 	 * interfaces).
 	 * 
-	 * @return true since <code> @should</code> can be used in type documentation and false
+	 * @return true since <code> <strong>should</strong></code> can be used in type documentation and false
 	 *         otherwise.
 	 */
 	@Override
@@ -99,9 +100,9 @@ public class ShouldTaglet implements Taglet {
 	}
 	
 	/**
-	 * Will return false since <code> @should</code> is not an inline tag.
+	 * Will return false since <code> <strong>should</strong></code> is not an inline tag.
 	 * 
-	 * @return false since <code> @should</code> is not an inline tag.
+	 * @return false since <code> <strong>should</strong></code> is not an inline tag.
 	 */
 	
 	@Override
@@ -147,7 +148,7 @@ public class ShouldTaglet implements Taglet {
 		}
 		StringBuilder result = new StringBuilder("\n<DT><B>").append(HEADER).append("</B></DT>");
 		for (Tag tag : tags) {
-			result.append("\n  <DD>Should ").append(tag.text()).append("</DD>");
+			result.append("\n  <strong>Should</strong> ").append(tag.text()).append("</DD>");
 		}
 		return result.toString();
 	}
