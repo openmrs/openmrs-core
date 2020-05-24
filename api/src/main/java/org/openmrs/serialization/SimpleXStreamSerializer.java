@@ -86,7 +86,7 @@ public class SimpleXStreamSerializer implements OpenmrsSerializer {
 	
 	/**
 	 * @see OpenmrsSerializer#serialize(java.lang.Object)
-	 * @should not serialize proxies
+	 * <strong>Should</strong> not serialize proxies
 	 */
 	@Override
 	public String serialize(Object o) throws SerializationException {
@@ -96,8 +96,8 @@ public class SimpleXStreamSerializer implements OpenmrsSerializer {
 	
 	/**
 	 * @see OpenmrsSerializer#deserialize(String, Class)
-	 * @should not deserialize proxies
-	 * @should ignore entities
+	 * <strong>Should</strong> not deserialize proxies
+	 * <strong>Should</strong> ignore entities
 	 */
 	@Override
 	@SuppressWarnings("unchecked")

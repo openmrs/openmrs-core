@@ -30,7 +30,7 @@ public class EncounterRole extends BaseChangeableOpenmrsMetadata {
 	
 	/**
 	 * @param encounterRoleId
-	 * @should set encounter role id
+	 * <strong>Should</strong> set encounter role id
 	 */
 	public EncounterRole(Integer encounterRoleId) {
 		this.encounterRoleId = encounterRoleId;
@@ -40,7 +40,7 @@ public class EncounterRole extends BaseChangeableOpenmrsMetadata {
 	
 	/**
 	 * @see Object#toString()
-	 * @should not fail with empty object
+	 * <strong>Should</strong> not fail with empty object
 	 */
 	@Override
 	public String toString() {

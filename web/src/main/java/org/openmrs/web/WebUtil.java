@@ -286,12 +286,12 @@ public class WebUtil implements GlobalPropertyListener {
 	 * @param localeString input string with locale parameter
 	 * @return locale object for input string if CTLs were cleaned up or weren't exist or null if
 	 *         could not to clean up CTLs from input string
-	 * @should ignore leading spaces
-	 * @should accept language only locales
-	 * @should not accept invalid locales
-	 * @should not fail with empty strings
-	 * @should not fail with whitespace only
-	 * @should not fail with "_" character only
+	 * <strong>Should</strong> ignore leading spaces
+	 * <strong>Should</strong> accept language only locales
+	 * <strong>Should</strong> not accept invalid locales
+	 * <strong>Should</strong> not fail with empty strings
+	 * <strong>Should</strong> not fail with whitespace only
+	 * <strong>Should</strong> not fail with "_" character only
 	 */
 	public static Locale normalizeLocale(String localeString) {
 		if (localeString == null) {
@@ -331,8 +331,8 @@ public class WebUtil implements GlobalPropertyListener {
 	 *            "en, fr_RW, gh")
 	 * @return cleaned up string (or same string) if success or null otherwise
 	 * @see #normalizeLocale(String)
-	 * @should skip over invalid locales
-	 * @should not fail with empty string
+	 * <strong>Should</strong> skip over invalid locales
+	 * <strong>Should</strong> not fail with empty string
 	 */
 	public static String sanitizeLocales(String localesString) {
 		// quick npe check
@@ -367,7 +367,7 @@ public class WebUtil implements GlobalPropertyListener {
 	 * is empty.
 	 *
 	 * @return return WebConstants.WEBAPP_NAME or empty string if WebConstants.WEBAPP_NAME is null
-	 * @should return empty string if WebConstants.WEBAPP_NAME is null
+	 * <strong>Should</strong> return empty string if WebConstants.WEBAPP_NAME is null
 	 */
 	public static String getContextPath() {
 		return StringUtils.isEmpty(WebConstants.WEBAPP_NAME) ? "" : "/" + WebConstants.WEBAPP_NAME;

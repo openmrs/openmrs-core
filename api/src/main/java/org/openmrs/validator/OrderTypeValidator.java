@@ -41,19 +41,19 @@ public class OrderTypeValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should fail if the orderType object is null
-	 * @should fail if name is null
-	 * @should fail if name is empty
-	 * @should fail if name is whitespace
-	 * @should fail if name is a duplicate
-	 * @should fail if conceptClass is a duplicate
-	 * @should fail if parent is among its descendants
-	 * @should fail if parent is also a direct child
-	 * @should pass if all fields are correct for a new order type
-	 * @should pass if all fields are correct for an existing order type
-	 * @should be invoked when an order type is saved
-	 * @should pass validation if field lengths are correct
-	 * @should fail validation if field lengths are not correct
+	 * <strong>Should</strong> fail if the orderType object is null
+	 * <strong>Should</strong> fail if name is null
+	 * <strong>Should</strong> fail if name is empty
+	 * <strong>Should</strong> fail if name is whitespace
+	 * <strong>Should</strong> fail if name is a duplicate
+	 * <strong>Should</strong> fail if conceptClass is a duplicate
+	 * <strong>Should</strong> fail if parent is among its descendants
+	 * <strong>Should</strong> fail if parent is also a direct child
+	 * <strong>Should</strong> pass if all fields are correct for a new order type
+	 * <strong>Should</strong> pass if all fields are correct for an existing order type
+	 * <strong>Should</strong> be invoked when an order type is saved
+	 * <strong>Should</strong> pass validation if field lengths are correct
+	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {

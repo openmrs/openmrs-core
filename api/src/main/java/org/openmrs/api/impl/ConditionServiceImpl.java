@@ -10,7 +10,9 @@
 package org.openmrs.api.impl;
 
 import org.openmrs.Condition;
+import org.openmrs.Encounter;
 import org.openmrs.Patient;
+import org.openmrs.api.APIException;
 import org.openmrs.api.ConditionService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConditionDAO;
@@ -159,6 +161,14 @@ public class ConditionServiceImpl extends BaseOpenmrsService implements Conditio
 	@Override
 	public void purgeCondition(Condition condition) {
 		conditionDAO.deleteCondition(condition);
+	}
+
+	/**
+	 * @see ConditionService#getConditionsByEncounter(Encounter)
+	 */
+	@Override
+	public List<Condition> getConditionsByEncounter(Encounter encounter) throws APIException {
+		return conditionDAO.getConditionsByEncounter(encounter);
 	}
 }
 

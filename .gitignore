@@ -77,7 +77,10 @@ nb-configuration.xml
 /web/WEB-INF/dwr-modules.xml
 #############
 
+### log files ###
+**/logs
 *.log
+#############
 
 !.editorconfig
 

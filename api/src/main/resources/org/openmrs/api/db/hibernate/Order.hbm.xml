@@ -47,21 +47,21 @@
 		<property name="urgency" column="urgency" length="50" not-null="true">
             <type name="org.hibernate.type.EnumType">
                 <param name="enumClass">org.openmrs.Order$Urgency</param>
-                <param name="type">12</param>
+                <param name="useNamed">true</param>
             </type>
         </property>
 
         <property name="action" column="order_action" length="50" not-null="true">
             <type name="org.hibernate.type.EnumType">
                 <param name="enumClass">org.openmrs.Order$Action</param>
-                <param name="type">12</param>
+                <param name="useNamed">true</param>
             </type>
         </property>
 
 		<property name="fulfillerStatus" column="fulfiller_status" length="50" not-null="false">
 			<type name="org.hibernate.type.EnumType">
 				<param name="enumClass">org.openmrs.Order$FulfillerStatus</param>
-				<param name="type">12</param>
+				<param name="useNamed">true</param>
 			</type>
 		</property>
 
@@ -128,7 +128,7 @@
             <property name="laterality" column="laterality" length="20" not-null="false">
                 <type name="org.hibernate.type.EnumType">
                     <param name="enumClass">org.openmrs.TestOrder$Laterality</param>
-                    <param name="type">12</param>
+                    <param name="useNamed">true</param>
                 </type>
             </property>
             <property name="clinicalHistory" type="java.lang.String" column="clinical_history" length="65535" />

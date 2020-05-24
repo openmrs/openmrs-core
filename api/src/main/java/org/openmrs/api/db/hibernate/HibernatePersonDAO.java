@@ -193,42 +193,42 @@ public class HibernatePersonDAO implements PersonDAO {
 	
 	/**
 	 * @see org.openmrs.api.db.PersonDAO#getPeople(java.lang.String, java.lang.Boolean)
-	 * @should get no one by null
-	 * @should get every one by empty string
-	 * @should get no one by non-existing attribute
-	 * @should get no one by non-searchable attribute
-	 * @should get no one by voided attribute
-	 * @should get one person by attribute
-	 * @should get one person by random case attribute
-	 * @should get one person by searching for a mix of attribute and voided attribute
-	 * @should get multiple people by single attribute
-	 * @should get multiple people by multiple attributes
-	 * @should get no one by non-existing name
-	 * @should get one person by name
-	 * @should get one person by random case name
-	 * @should get multiple people by single name
-	 * @should get multiple people by multiple names
-	 * @should get no one by non-existing name and non-existing attribute
-	 * @should get no one by non-existing name and non-searchable attribute
-	 * @should get no one by non-existing name and voided attribute
-	 * @should get one person by name and attribute
-	 * @should get one person by name and voided attribute
-	 * @should get multiple people by name and attribute
-	 * @should get one person by given name
-	 * @should get multiple people by given name
-	 * @should get one person by middle name
-	 * @should get multiple people by middle name
-	 * @should get one person by family name
-	 * @should get multiple people by family name
-	 * @should get one person by family name2
-	 * @should get multiple people by family name2
-	 * @should get one person by multiple name parts
-	 * @should get multiple people by multiple name parts
-	 * @should get no one by voided name
-	 * @should not get voided person
-	 * @should not get dead person
-	 * @should get single dead person
-	 * @should get multiple dead people
+	 * <strong>Should</strong> get no one by null
+	 * <strong>Should</strong> get every one by empty string
+	 * <strong>Should</strong> get no one by non-existing attribute
+	 * <strong>Should</strong> get no one by non-searchable attribute
+	 * <strong>Should</strong> get no one by voided attribute
+	 * <strong>Should</strong> get one person by attribute
+	 * <strong>Should</strong> get one person by random case attribute
+	 * <strong>Should</strong> get one person by searching for a mix of attribute and voided attribute
+	 * <strong>Should</strong> get multiple people by single attribute
+	 * <strong>Should</strong> get multiple people by multiple attributes
+	 * <strong>Should</strong> get no one by non-existing name
+	 * <strong>Should</strong> get one person by name
+	 * <strong>Should</strong> get one person by random case name
+	 * <strong>Should</strong> get multiple people by single name
+	 * <strong>Should</strong> get multiple people by multiple names
+	 * <strong>Should</strong> get no one by non-existing name and non-existing attribute
+	 * <strong>Should</strong> get no one by non-existing name and non-searchable attribute
+	 * <strong>Should</strong> get no one by non-existing name and voided attribute
+	 * <strong>Should</strong> get one person by name and attribute
+	 * <strong>Should</strong> get one person by name and voided attribute
+	 * <strong>Should</strong> get multiple people by name and attribute
+	 * <strong>Should</strong> get one person by given name
+	 * <strong>Should</strong> get multiple people by given name
+	 * <strong>Should</strong> get one person by middle name
+	 * <strong>Should</strong> get multiple people by middle name
+	 * <strong>Should</strong> get one person by family name
+	 * <strong>Should</strong> get multiple people by family name
+	 * <strong>Should</strong> get one person by family name2
+	 * <strong>Should</strong> get multiple people by family name2
+	 * <strong>Should</strong> get one person by multiple name parts
+	 * <strong>Should</strong> get multiple people by multiple name parts
+	 * <strong>Should</strong> get no one by voided name
+	 * <strong>Should</strong> not get voided person
+	 * <strong>Should</strong> not get dead person
+	 * <strong>Should</strong> get single dead person
+	 * <strong>Should</strong> get multiple dead people
 	 */
 	@Override
 	@SuppressWarnings("unchecked")

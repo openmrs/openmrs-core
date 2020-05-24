@@ -72,7 +72,7 @@ public class DrugOrder extends Order {
 
 	/**
 	 * @see org.openmrs.Order#copy()
-	 * @should copy all drug order fields
+	 * <strong>Should</strong> copy all drug order fields
 	 */
 	@Override
 	public DrugOrder copy() {
@@ -412,7 +412,7 @@ public class DrugOrder extends Order {
 
 	/**
 	 * @see org.openmrs.Order#cloneForDiscontinuing()
-	 * @should set all the relevant fields
+	 * <strong>Should</strong> set all the relevant fields
 	 * @since 1.10
 	 */
 	@Override
@@ -435,8 +435,8 @@ public class DrugOrder extends Order {
 	 *
 	 * @return the newly created order
 	 * @since 1.10
-	 * @should set all the relevant fields
-	 * @should set the relevant fields for a DC order
+	 * <strong>Should</strong> set all the relevant fields
+	 * <strong>Should</strong> set the relevant fields for a DC order
 	 */
 	@Override
 	public DrugOrder cloneForRevision() {
@@ -472,9 +472,9 @@ public class DrugOrder extends Order {
 	/**
 	 * Sets autoExpireDate based on duration.
 	 *
-	 * @should delegate calculation to dosingInstructions
-	 * @should not calculate for discontinue action
-	 * @should not calculate if autoExpireDate already set
+	 * <strong>Should</strong> delegate calculation to dosingInstructions
+	 * <strong>Should</strong> not calculate for discontinue action
+	 * <strong>Should</strong> not calculate if autoExpireDate already set
 	 */
 	public void setAutoExpireDateBasedOnDuration() {
 		if (DISCONTINUE != getAction() && getAutoExpireDate() == null) {
@@ -506,14 +506,14 @@ public class DrugOrder extends Order {
 	 * @since 1.10
 	 * @param otherOrder the other order to match on
 	 * @return true if the drugs match
-	 * @should return false if the other order is null
-	 * @should return false if the other order is not a drug order
-	 * @should return false if both drugs are null and the concepts are different
-	 * @should return false if the concepts match and only this has a drug
-	 * @should return false if the concepts match and only the other has a drug
-	 * @should return false if the concepts match and drugs are different and not null
-	 * @should return true if both drugs are null and the concepts match
-	 * @should return true if the drugs match
+	 * <strong>Should</strong> return false if the other order is null
+	 * <strong>Should</strong> return false if the other order is not a drug order
+	 * <strong>Should</strong> return false if both drugs are null and the concepts are different
+	 * <strong>Should</strong> return false if the concepts match and only this has a drug
+	 * <strong>Should</strong> return false if the concepts match and only the other has a drug
+	 * <strong>Should</strong> return false if the concepts match and drugs are different and not null
+	 * <strong>Should</strong> return true if both drugs are null and the concepts match
+	 * <strong>Should</strong> return true if the drugs match
 	 */
 	@Override
 	public boolean hasSameOrderableAs(Order otherOrder) {

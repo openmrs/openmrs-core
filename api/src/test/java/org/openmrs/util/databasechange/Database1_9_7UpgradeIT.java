@@ -9,12 +9,6 @@
  */
 package org.openmrs.util.databasechange;
 
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -28,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-
 import org.apache.commons.io.FileUtils;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -45,6 +38,12 @@ import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Tests database upgrade from OpenMRS 1.9.7.
  */
@@ -58,6 +57,8 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 	public static final String STANDARD_TEST_1_9_7_DATASET = TEST_DATA_DIR + "standardTest-1.9.7-dataSet.xml";
 	
 	public final static String DATABASE_PATH = TEST_DATA_DIR + "openmrs-1.9.7.h2.db";
+	
+	public static final String LIQUIBASE_UPDATE_TO_LATEST_XML = "liquibase-update-to-latest.xml";
 	
 	private DatabaseUpgradeTestUtil upgradeTestUtil;
 	
@@ -104,7 +105,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 	
 	/**
 	 * This method creates mock order entry upgrade file
-	 * 
+	 *
 	 * @see org.openmrs.util.UpgradeUtil#getConceptIdForUnits(String)
 	 */
 	public static void createOrderEntryUpgradeFileWithTestData(String propString) throws IOException {
@@ -153,9 +154,6 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		
 		List<Map<String, String>> drugOrderSelect = upgradeTestUtil.select("drug_order", null, "order_id");
 		Assert.assertThat(drugOrderSelect.size(), Matchers.is(0));
-		
-		//Test if the generated schema corresponds to Hibernate mappings
-		upgradeTestUtil.buildSessionFactory();
 	}
 	
 	@Test
@@ -173,10 +171,11 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 	
 	@Test
 	public void shouldFailMigratingDrugOrdersIfUnitsToConceptsMappingsDoesNotPointToValidCodedDoseUnits()
-	    throws IOException, SQLException {
+	        throws IOException, SQLException {
 		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
 		upgradeTestUtil.executeDataset(UPGRADE_TEST_1_9_7_TO_1_10_DATASET);
-		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
+		createOrderEntryUpgradeFileWithTestData(
+		    "mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=invalid");
 		
 		expectedException.expect(IOException.class);
@@ -192,7 +191,8 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		
 		upgradeTestUtil.executeDataset(UPGRADE_TEST_1_9_7_TO_1_10_DATASET);
 		
-		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
+		createOrderEntryUpgradeFileWithTestData(
+		    "mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
 		upgradeTestUtil.upgrade();
 		
@@ -210,8 +210,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		
 		List<Map<String, String>> drugOrderSelect = upgradeTestUtil.select("drug_order", null, "order_id", "frequency");
 		
-		Assert.assertThat(
-		    drugOrderSelect,
+		Assert.assertThat(drugOrderSelect,
 		    Matchers.containsInAnyOrder(row("order_id", "1", "frequency", conceptsToFrequencies.get("113")),
 		        row("order_id", "2", "frequency", conceptsToFrequencies.get("113")),
 		        row("order_id", "3", "frequency", conceptsToFrequencies.get("114")),
@@ -270,12 +269,10 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		upgradeTestUtil.executeDataset(UPGRADE_TEST_1_9_7_TO_1_10_DATASET);
 		
 		//set the mappings for all existing frequencies and dose units
-		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
+		createOrderEntryUpgradeFileWithTestData(
+		    "mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
 		upgradeTestUtil.upgrade();
-		
-		//Test if the generated schema corresponds to Hibernate mappings
-		upgradeTestUtil.buildSessionFactory();
 	}
 	
 	@Test
@@ -301,7 +298,8 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		Set<Integer> originalProviderIds = DatabaseUtil.getUniqueNonNullColumnValues("provider_id", "provider",
 		    Integer.class, upgradeTestUtil.getConnection());
 		
-		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
+		createOrderEntryUpgradeFileWithTestData(
+		    "mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
 		upgradeTestUtil.upgrade();
 		
@@ -310,7 +308,8 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		for (OrderAndPerson op : ordersAndOrderersWithAProviderAccount) {
 			rows = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
 			    "select p.provider_id, p.person_id from provider p join orders o on p.provider_id = o.orderer where order_id = "
-			            + op.getOrderId(), true);
+			            + op.getOrderId(),
+			    true);
 			Assert.assertEquals(op.getPersonId(), rows.get(0).get(1));
 			//The provider account should have been among the existing ones prior to upgrade
 			Assert.assertTrue(originalProviderIds.contains(rows.get(0).get(0)));
@@ -320,7 +319,8 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		rows = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
 		    "select order_id from orders where orderer = (Select provider_id from provider where uuid ="
 		            + "(select property_value from global_property where property = '"
-		            + OpenmrsConstants.GP_UNKNOWN_PROVIDER_UUID + "'))", true);
+		            + OpenmrsConstants.GP_UNKNOWN_PROVIDER_UUID + "'))",
+		    true);
 		
 		Assert.assertEquals(orderIdsWithNoOrderer.size(), rows.size());
 		Assert.assertTrue(orderIdsWithNoOrderer.contains(rows.get(0).get(0)));
@@ -331,7 +331,8 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 	public void shouldConcatenateDoseStrengthAndUnits() throws IOException, SQLException {
 		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
 		upgradeTestUtil.executeDataset(UPGRADE_TEST_1_9_7_TO_1_10_DATASET);
-		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
+		createOrderEntryUpgradeFileWithTestData(
+		    "mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
 		upgradeTestUtil.upgrade();
 		
@@ -348,7 +349,8 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
 		upgradeTestUtil.executeDataset(UPGRADE_TEST_1_9_7_TO_1_10_DATASET);
 		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/UpgradeTest-orderWithStrengthButNullUnits.xml");
-		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
+		createOrderEntryUpgradeFileWithTestData(
+		    "mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
 		expectedException.expect(IOException.class);
 		String errorMsgSubString = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201403262140-TRUNK-4265::wyclif";
@@ -361,7 +363,8 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
 		upgradeTestUtil.executeDataset(UPGRADE_TEST_1_9_7_TO_1_10_DATASET);
 		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/UpgradeTest-orderWithStrengthButBlankUnits.xml");
-		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
+		createOrderEntryUpgradeFileWithTestData(
+		    "mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
 		expectedException.expect(IOException.class);
 		String errorMsgSubString = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201403262140-TRUNK-4265::wyclif";
@@ -370,12 +373,13 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void shouldFailIfThereAreAnyOrderTypesInTheDatabaseOtherThanDrugOrderTypeAndNoNewColumns() throws IOException,
-	    SQLException {
+	public void shouldFailIfThereAreAnyOrderTypesInTheDatabaseOtherThanDrugOrderTypeAndNoNewColumns()
+	        throws IOException, SQLException {
 		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
 		upgradeTestUtil.executeDataset(UPGRADE_TEST_1_9_7_TO_1_10_DATASET);
 		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/UpgradeTest-otherOrderTypes.xml");
-		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
+		createOrderEntryUpgradeFileWithTestData(
+		    "mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
 		expectedException.expect(IOException.class);
 		String errorMsgSubString = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201404091110::wyclif";
@@ -385,14 +389,15 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 	
 	@Test
 	public void shouldPassIfThereAreAnyOrderTypesInTheDatabaseOtherThanDrugOrderTypeAndTheNewColumnsExist()
-	    throws IOException, SQLException {
+	        throws IOException, SQLException {
 		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
 		upgradeTestUtil.executeDataset(UPGRADE_TEST_1_9_7_TO_1_10_DATASET);
 		upgradeTestUtil.executeDataset("UpgradeTest-otherOrderTypes.xml");
 		upgradeTestUtil.getConnection().createStatement()
 		        .executeUpdate("alter table `order_type` add java_class_name varchar(255) default 'org.openmrs.Order'");
 		upgradeTestUtil.getConnection().createStatement().executeUpdate("alter table `order_type` add parent int(11)");
-		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
+		createOrderEntryUpgradeFileWithTestData(
+		    "mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
 		upgradeTestUtil.upgrade();
 	}
@@ -401,7 +406,8 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 	public void shouldCreateDiscontinuationOrderForStoppedOrders() throws IOException, SQLException {
 		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
 		upgradeTestUtil.executeDataset(UPGRADE_TEST_1_9_7_TO_1_10_DATASET);
-		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
+		createOrderEntryUpgradeFileWithTestData(
+		    "mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		List<List<Object>> discontinuedOrders = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
 		    "SELECT count(*) order_id FROM orders WHERE discontinued = true", true);
 		long discontinuedOrdersCount = (Long) discontinuedOrders.get(0).get(0);
@@ -430,7 +436,8 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/database1_9To1_10UpgradeTest-dataSet.xml");
 		upgradeTestUtil
 		        .executeDataset("/org/openmrs/util/databasechange/UpgradeTest-orderWithOrdererThatIsNotAProvider.xml");
-		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
+		createOrderEntryUpgradeFileWithTestData(
+		    "mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
 		expectedException.expect(IOException.class);
 		String errorMsgSubString = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201406262016::wyclif";
@@ -443,17 +450,16 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
 		upgradeTestUtil.executeDataset(UPGRADE_TEST_1_9_7_TO_1_10_DATASET);
 		upgradeTestUtil.executeDataset(TEST_DATA_DIR + "UpgradeTest-orderWithBlankUnitsOrFrequency.xml");
-		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
+		createOrderEntryUpgradeFileWithTestData(
+		    "mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
 		upgradeTestUtil.upgrade();
 		
 		List<Map<String, String>> drug_orders = upgradeTestUtil.select("drug_order", "order_id = 6 or order_id = 7",
 		    "order_id", "dose_units", "frequency");
 		
-		assertThat(
-		    drug_orders,
-		    containsInAnyOrder(row("order_id", "6", "dose_units", null, "frequency", null),
-		        row("order_id", "7", "dose_units", null, "frequency", null)));
+		assertThat(drug_orders, containsInAnyOrder(row("order_id", "6", "dose_units", null, "frequency", null),
+		    row("order_id", "7", "dose_units", null, "frequency", null)));
 	}
 	
 	@Test
@@ -472,9 +478,11 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		        + "','a6a521de-3992-11e6-899a-a4d646d86a8a')";
 		DatabaseUtil.executeSQL(connection, insertPrivilegeQuery, false);
 		//Assign some privileges to some roles for testing purposes
-		DatabaseUtil.executeSQL(connection, "insert into role_privilege (role,privilege) values ('" + PROVIDER_ROLE + "', '"
-		        + GET_ENCOUNTERS + "'), ('" + PROVIDER_ROLE + "', '" + EDIT_ENCOUNTERS + "'), ('" + AUTHENTICATED_ROLE
-		        + "', '" + ADD_ENCOUNTERS + "')", false);
+		DatabaseUtil.executeSQL(connection,
+		    "insert into role_privilege (role,privilege) values ('" + PROVIDER_ROLE + "', '" + GET_ENCOUNTERS + "'), ('"
+		            + PROVIDER_ROLE + "', '" + EDIT_ENCOUNTERS + "'), ('" + AUTHENTICATED_ROLE + "', '" + ADD_ENCOUNTERS
+		            + "')",
+		    false);
 		connection.commit();
 		
 		String query = "select privilege from privilege where privilege = '" + GET_VISITS + "' or " + "privilege = '"
@@ -500,12 +508,12 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		final String query = "select * from role_privilege where role='" + role + "' and privilege ='" + privilege + "'";
 		return DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(), query, true).size() == 1;
 	}
-
+	
 	@Test
 	public void shouldUpgradeLiquibase() throws IOException, SQLException {
-		upgradeTestUtil.upgrade("liquibase-update-to-latest.xml");
-
+		upgradeTestUtil.upgrade(LIQUIBASE_UPDATE_TO_LATEST_XML);
+		
 		// no explicit assertions here, this test serves to see whether the master is executed without raising an exception.
-
+		
 	}
 }

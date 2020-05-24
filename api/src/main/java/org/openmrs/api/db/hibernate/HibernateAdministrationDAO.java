@@ -14,8 +14,9 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
+import org.hibernate.MappingException;
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
+import org.hibernate.boot.Metadata;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -58,10 +59,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	 * Hibernate session factory
 	 */
 	private SessionFactory sessionFactory;
-	
-	private Configuration configuration;
-	
-	private ApplicationContext applicationContext;
+
+	private Metadata metadata;
 	
 	public HibernateAdministrationDAO() {
 	}
@@ -183,13 +182,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	
 	@Override
 	public int getMaximumPropertyLength(Class<? extends OpenmrsObject> aClass, String fieldName) {
-		if (configuration == null) {
-			HibernateSessionFactoryBean sessionFactoryBean = (HibernateSessionFactoryBean) applicationContext
-			        .getBean("&sessionFactory");
-			configuration = sessionFactoryBean.getConfiguration();
-		}
-		
-		PersistentClass persistentClass = configuration.getClassMapping(aClass.getName().split("_")[0]);
+		PersistentClass persistentClass = metadata.getEntityBinding(aClass.getName().split("_")[0]);
 		if (persistentClass == null) {
 			throw new APIException("Couldn't find a class in the hibernate configuration named: " + aClass.getName());
 		} else {
@@ -207,22 +200,30 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		this.applicationContext = applicationContext;
+		HibernateSessionFactoryBean sessionFactoryBean = (HibernateSessionFactoryBean) applicationContext
+		        .getBean("&sessionFactory");
+		metadata = sessionFactoryBean.getMetadata();
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#validate(java.lang.Object, Errors)
-	 * @should Pass validation if field lengths are correct
-	 * @should Fail validation if field lengths are not correct
-	 * @should Fail validation for location class if field lengths are not correct
-	 * @should Pass validation for location class if field lengths are correct
+	 * <strong>Should</strong> Pass validation if field lengths are correct
+	 * <strong>Should</strong> Fail validation if field lengths are not correct
+	 * <strong>Should</strong> Fail validation for location class if field lengths are not correct
+	 * <strong>Should</strong> Pass validation for location class if field lengths are correct
 	 */
 	
 	//@SuppressWarnings({ "deprecation", "unchecked", "rawtypes" })
 	@Override
 	public void validate(Object object, Errors errors) throws DAOException {
 		Class entityClass = object.getClass();
-		ClassMetadata metadata = sessionFactory.getClassMetadata(entityClass);
+		ClassMetadata metadata = null;
+		try {
+			metadata = sessionFactory.getClassMetadata(entityClass);
+		}
+		catch (MappingException ex) {
+			log.debug(entityClass + " is not a hibernate mapped entity", ex);
+		}
 		if (metadata != null) {
 			String[] propNames = metadata.getPropertyNames();
 			Object identifierType = metadata.getIdentifierType();
@@ -255,8 +256,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 				}
 			}
 		}
-		FlushMode previousFlushMode = sessionFactory.getCurrentSession().getFlushMode();
-		sessionFactory.getCurrentSession().setFlushMode(FlushMode.MANUAL);
+		FlushMode previousFlushMode = sessionFactory.getCurrentSession().getHibernateFlushMode();
+		sessionFactory.getCurrentSession().setHibernateFlushMode(FlushMode.MANUAL);
 		try {
 			for (Validator validator : getValidators(object)) {
 				validator.validate(object, errors);
@@ -265,7 +266,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 		}
 		
 		finally {
-			sessionFactory.getCurrentSession().setFlushMode(previousFlushMode);
+			sessionFactory.getCurrentSession().setHibernateFlushMode(previousFlushMode);
 		}
 		
 	}

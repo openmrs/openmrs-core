@@ -24,8 +24,8 @@ public class OpenmrsProfileIncludeFilter implements TypeFilter {
 	private OpenmrsProfileExcludeFilter openmrsProfileExcludeFilter = new OpenmrsProfileExcludeFilter();
 	
 	/**
-	 * @should create bean for openmrs 1_8 and later
-	 * @should not create bean for openmrs 1_6 to 1_7
+	 * <strong>Should</strong> create bean for openmrs 1_8 and later
+	 * <strong>Should</strong> not create bean for openmrs 1_6 to 1_7
 	 */
 	@Override
 	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory) throws IOException {

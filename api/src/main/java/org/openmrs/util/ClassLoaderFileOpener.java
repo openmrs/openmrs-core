@@ -11,9 +11,8 @@ package org.openmrs.util;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.util.Enumeration;
-
+import java.util.HashSet;
+import java.util.Set;
 import liquibase.resource.ResourceAccessor;
 
 /**
@@ -36,13 +35,20 @@ public class ClassLoaderFileOpener implements ResourceAccessor {
 	}
 	
 	@Override
-	public InputStream getResourceAsStream(String file) throws IOException {
-		return cl.getResourceAsStream(file);
+	public Set<InputStream> getResourcesAsStream(String path) throws IOException {
+		Set<InputStream> result = new HashSet<>();
+		
+		if (path.isEmpty()) {
+			return result;
+		}
+		
+		result.add(cl.getResourceAsStream(path));
+		return result;
 	}
 	
 	@Override
-	public Enumeration<URL> getResources(String packageName) throws IOException {
-		return cl.getResources(packageName);
+	public Set<String> list(String s, String s1, boolean b, boolean b1, boolean b2) throws IOException {
+		throw new UnsupportedOperationException();
 	}
 	
 	@Override

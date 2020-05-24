@@ -91,10 +91,10 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
-import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 import org.xml.sax.InputSource;
@@ -111,7 +111,7 @@ import org.xml.sax.InputSource;
 @TestExecutionListeners( { TransactionalTestExecutionListener.class, SkipBaseSetupAnnotationExecutionListener.class,
         StartModuleExecutionListener.class })
 @Transactional
-@TransactionConfiguration(defaultRollback = true)
+@Rollback
 public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringContextTests {
 	
 	private static final Logger log = LoggerFactory.getLogger(BaseContextSensitiveTest.class);

@@ -32,10 +32,10 @@ public class OpenmrsProfileExcludeFilter implements TypeFilter {
 	 * @return whether this filter matches
 	 * @throws IOException
 	 *
-	 * @should not include bean for openmrs from 1_6 to 1_7
-	 * @should include bean for openmrs 1_10 and later
-	 * @should not include bean for openmrs 1_8 and later if module missing
-	 * @should include bean for openmrs 1_8 and later
+	 * <strong>Should</strong> not include bean for openmrs from 1_6 to 1_7
+	 * <strong>Should</strong> include bean for openmrs 1_10 and later
+	 * <strong>Should</strong> not include bean for openmrs 1_8 and later if module missing
+	 * <strong>Should</strong> include bean for openmrs 1_8 and later
 	 */
 	@Override
 	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory) throws IOException {

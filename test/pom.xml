@@ -30,7 +30,7 @@
          <groupId>com.h2database</groupId>
          <artifactId>h2</artifactId>
       </dependency>
-      <dependency>
+	   <dependency>
          <groupId>junit</groupId>
          <artifactId>junit</artifactId>
       </dependency>
@@ -48,7 +48,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.powermock</groupId>
-			<artifactId>powermock-api-mockito</artifactId>
+			<artifactId>powermock-api-mockito2</artifactId>
 		</dependency>
 		<dependency>
 		    <groupId>org.hamcrest</groupId>

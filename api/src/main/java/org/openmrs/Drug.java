@@ -265,9 +265,9 @@ public class Drug extends BaseChangeableOpenmrsMetadata {
 	 * @param drugReferenceMap
 	 * @since 1.10
 	 *
-	 * @should set drug as the drug to which a mapping is being added
+	 * <strong>Should</strong> set drug as the drug to which a mapping is being added
 	 *
-	 * @should should not add duplicate drug reference maps
+	 * <strong>Should</strong> should not add duplicate drug reference maps
 	 */
 	public void addDrugReferenceMap(DrugReferenceMap drugReferenceMap) {
 		if (drugReferenceMap != null && !getDrugReferenceMaps().contains(drugReferenceMap)) {

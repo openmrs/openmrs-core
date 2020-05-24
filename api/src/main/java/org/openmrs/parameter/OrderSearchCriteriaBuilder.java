@@ -28,6 +28,10 @@ public class OrderSearchCriteriaBuilder {
 	private Collection<Concept> concepts;
 
 	private Collection<OrderType> orderTypes;
+	
+	private String accessionNumber;
+	
+	private String orderNumber;
 
 	private Date activatedOnOrBeforeDate;
 
@@ -87,6 +91,24 @@ public class OrderSearchCriteriaBuilder {
 		return (this);
 	}
 
+	/**
+	 * @param accessionNumber the accessionNumber to match on (exact match, case-insensitive)
+	 * @return this builder instance
+	 */
+	public OrderSearchCriteriaBuilder setAccessionNumber(String accessionNumber) {
+		this.accessionNumber = accessionNumber;
+		return (this);
+	}
+
+	/**
+	 * @param orderNumber the orderNumber to match on (exact match, case-insensitive)
+	 * @return this builder instance
+	 */
+	public OrderSearchCriteriaBuilder setOrderNumber(String orderNumber) {
+		this.orderNumber = orderNumber;
+		return (this);
+	}
+	
 	/**
 	 * @param activatedOnOrBeforeDate orders must have dateActivated on or before this date
 	 * @return this builder instance
@@ -189,7 +211,7 @@ public class OrderSearchCriteriaBuilder {
 	 * @return a new search criteria instance
 	 */
 	public OrderSearchCriteria build() {
-		return new OrderSearchCriteria(patient, careSetting, concepts, orderTypes, activatedOnOrBeforeDate,  
+		return new OrderSearchCriteria(patient, careSetting, concepts, orderTypes, accessionNumber, orderNumber, activatedOnOrBeforeDate,  
 			activatedOnOrAfterDate, isStopped, autoExpireOnOrBeforeDate, canceledOrExpiredOnOrBeforeDate,
 				action, fulfillerStatus, includeNullFulfillerStatus, excludeCanceledAndExpired, excludeDiscontinueOrders, includeVoided);
 	}

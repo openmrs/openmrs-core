@@ -51,19 +51,19 @@ public class ProviderValidator extends BaseCustomizableValidator implements Vali
 	 * @param errors Errors
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should be valid if identifier is not set
-	 * @should be valid if identifier is set
-	 * @should be invalid if provider is retired and the retired reason is not mentioned
-	 * @should be invalid if person is not set
-	 * @should be valid if only person is set
-	 * @should reject a provider if it has fewer than min occurs of an attribute
-	 * @should reject a provider if it has more than max occurs of an attribute
-	 * @should accept duplicate identifier if the existing provider is not retired
-	 * @should accept duplicate identifier if the existing provider is retired
-	 * @should accept a duplicate identifier for a new provider which is not retired
-	 * @should accept a duplicate identifier for a new provider which is retired
-	 * @should pass validation if field lengths are correct
-	 * @should fail validation if field lengths are not correct
+	 * <strong>Should</strong> be valid if identifier is not set
+	 * <strong>Should</strong> be valid if identifier is set
+	 * <strong>Should</strong> be invalid if provider is retired and the retired reason is not mentioned
+	 * <strong>Should</strong> be invalid if person is not set
+	 * <strong>Should</strong> be valid if only person is set
+	 * <strong>Should</strong> reject a provider if it has fewer than min occurs of an attribute
+	 * <strong>Should</strong> reject a provider if it has more than max occurs of an attribute
+	 * <strong>Should</strong> accept duplicate identifier if the existing provider is not retired
+	 * <strong>Should</strong> accept duplicate identifier if the existing provider is retired
+	 * <strong>Should</strong> accept a duplicate identifier for a new provider which is not retired
+	 * <strong>Should</strong> accept a duplicate identifier for a new provider which is retired
+	 * <strong>Should</strong> pass validation if field lengths are correct
+	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) throws APIException {

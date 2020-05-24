@@ -1,0 +1,1386 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+    
+-->
+<databaseChangeLog
+	logicalFilePath="liquibase-core-data.xml"
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext 
+    	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog 
+    	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+	<changeSet author="ben" id="disable-foreign-key-checks" runAlways="true" dbms="mysql">
+	<sql>SET FOREIGN_KEY_CHECKS=0</sql>
+    </changeSet>
+    
+    <changeSet author="sunbiz" id="function-disable-postgresql" runAlways="true" dbms="postgresql">
+        <customChange class="org.openmrs.util.databasechange.DisableTriggersChangeSet">
+        </customChange>
+    </changeSet>
+    
+    <changeSet author="sunbiz" id="function-disable-sqlserver" runAlways="true" dbms="mssql">
+        <sql>
+            EXEC sp_msforeachtable "ALTER TABLE ? NOCHECK CONSTRAINT all";
+        </sql>
+    </changeSet>
+    <changeSet author="ben (generated)" id="1226348923233-22">
+        <insert tableName="person">
+            <column name="person_id" valueNumeric="1"/>
+            <column name="gender" value=""/>
+            <column name="birthdate"/>
+            <column name="birthdate_estimated" valueBoolean="false"/>
+            <column name="dead" valueBoolean="false"/>
+            <column name="death_date"/>
+            <column name="cause_of_death"/>
+            <column name="date_created" valueDate="2005-01-01"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="voided" valueBoolean="false"/>
+            <column name="voided_by"/>
+            <column name="date_voided"/>
+            <column name="void_reason"/>
+        </insert>
+    </changeSet>
+    <changeSet author="ben (generated)" id="1226348923233-16">
+        <insert tableName="users">
+            <column name="system_id" value="admin"/>
+            <column name="username" value=""/>
+            <column name="password" value="4a1750c8607dfa237de36c6305715c223415189"/>
+            <column name="salt" value="c788c6ad82a157b712392ca695dfcf2eed193d7f"/>
+            <column name="secret_question"/>
+            <column name="person_id" valueNumeric="1"/>
+            <column name="secret_answer"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2005-01-01"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+    </changeSet>
+    <changeSet author="ben (generated)" id="1226348923233-2">
+        <insert tableName="field_type">
+            <column name="field_type_id" valueNumeric="1"/>
+            <column name="name" value="Concept"/>
+            <column name="description" value=""/>
+            <column name="is_set" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2005-02-22"/>
+        </insert>
+        <insert tableName="field_type">
+            <column name="field_type_id" valueNumeric="2"/>
+            <column name="name" value="Database element"/>
+            <column name="description" value=""/>
+            <column name="is_set" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2005-02-22"/>
+        </insert>
+        <insert tableName="field_type">
+            <column name="field_type_id" valueNumeric="3"/>
+            <column name="name" value="Set of Concepts"/>
+            <column name="description" value=""/>
+            <column name="is_set" valueBoolean="true"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2005-02-22"/>
+        </insert>
+        <insert tableName="field_type">
+            <column name="field_type_id" valueNumeric="4"/>
+            <column name="name" value="Miscellaneous Set"/>
+            <column name="description" value=""/>
+            <column name="is_set" valueBoolean="true"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2005-02-22"/>
+        </insert>
+        <insert tableName="field_type">
+            <column name="field_type_id" valueNumeric="5"/>
+            <column name="name" value="Section"/>
+            <column name="description" value=""/>
+            <column name="is_set" valueBoolean="true"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2005-02-22"/>
+        </insert>
+    </changeSet>
+    <changeSet author="ben (generated)" id="1226348923233-8">
+        <insert tableName="person_attribute_type">
+            <column name="person_attribute_type_id" valueNumeric="1"/>
+            <column name="name" value="Race"/>
+            <column name="description" value="Group of persons related by common descent or heredity"/>
+            <column name="format" value="java.lang.String"/>
+            <column name="foreign_key" valueNumeric="0"/>
+            <column name="searchable" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2007-05-04"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+        <insert tableName="person_attribute_type">
+            <column name="person_attribute_type_id" valueNumeric="2"/>
+            <column name="name" value="Birthplace"/>
+            <column name="description" value="Location of persons birth"/>
+            <column name="format" value="java.lang.String"/>
+            <column name="foreign_key" valueNumeric="0"/>
+            <column name="searchable" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2007-05-04"/>
+            <column name="changed_by" />
+            <column name="date_changed"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+        <insert tableName="person_attribute_type">
+            <column name="person_attribute_type_id" valueNumeric="3"/>
+            <column name="name" value="Citizenship"/>
+            <column name="description" value="Country of which this person is a member"/>
+            <column name="format" value="java.lang.String"/>
+            <column name="foreign_key" valueNumeric="0"/>
+            <column name="searchable" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2007-05-04"/>
+            <column name="changed_by" />
+            <column name="date_changed"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by" />
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+        <insert tableName="person_attribute_type">
+            <column name="person_attribute_type_id" valueNumeric="4"/>
+            <column name="name" value="Mother's Name"/>
+            <column name="description" value="First or last name of this person's mother"/>
+            <column name="format" value="java.lang.String"/>
+            <column name="foreign_key" valueNumeric="0"/>
+            <column name="searchable" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2007-05-04"/>
+            <column name="changed_by" />
+            <column name="date_changed"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by" />
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+        <insert tableName="person_attribute_type">
+            <column name="person_attribute_type_id" valueNumeric="5"/>
+            <column name="name" value="Civil Status"/>
+            <column name="description" value="Marriage status of this person"/>
+            <column name="format" value="org.openmrs.Concept"/>
+            <column name="foreign_key" valueNumeric="1054"/>
+            <column name="searchable" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2007-05-04"/>
+            <column name="changed_by" />
+            <column name="date_changed"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by" />
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+        <insert tableName="person_attribute_type">
+            <column name="person_attribute_type_id" valueNumeric="6"/>
+            <column name="name" value="Health District"/>
+            <column name="description" value="District/region in which this patient' home health center resides"/>
+            <column name="format" value="java.lang.String"/>
+            <column name="foreign_key" valueNumeric="0"/>
+            <column name="searchable" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2007-05-04"/>
+            <column name="changed_by" />
+            <column name="date_changed"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by" />
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+        <insert tableName="person_attribute_type">
+            <column name="person_attribute_type_id" valueNumeric="7"/>
+            <column name="name" value="Health Center"/>
+            <column name="description" value="Specific Location of this person's home health center."/>
+            <column name="format" value="org.openmrs.Location"/>
+            <column name="foreign_key" valueNumeric="0"/>
+            <column name="searchable" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2007-05-04"/>
+            <column name="changed_by" />
+            <column name="date_changed"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by" />
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+    </changeSet>
+    <changeSet author="ben (generated)" id="1226348923233-12">
+        <insert tableName="concept_datatype">
+            <column name="concept_datatype_id" valueNumeric="1"/>
+            <column name="name" value="Numeric"/>
+            <column name="hl7_abbreviation" value="NM"/>
+            <column name="description" value="Numeric value, including integer or float (e.g., creatinine, weight)"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2004-02-02"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+        <insert tableName="concept_datatype">
+            <column name="concept_datatype_id" valueNumeric="2"/>
+            <column name="name" value="Coded"/>
+            <column name="hl7_abbreviation" value="CWE"/>
+            <column name="description" value="Value determined by term dictionary lookup (i.e., term identifier)"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2004-02-02"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+        <insert tableName="concept_datatype">
+            <column name="concept_datatype_id" valueNumeric="3"/>
+            <column name="name" value="Text"/>
+            <column name="hl7_abbreviation" value="ST"/>
+            <column name="description" value="Free text"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2004-02-02"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+        <insert tableName="concept_datatype">
+            <column name="concept_datatype_id" valueNumeric="4"/>
+            <column name="name" value="N/A"/>
+            <column name="hl7_abbreviation" value="ZZ"/>
+            <column name="description" value="Not associated with a datatype (e.g., term answers, sets)"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2004-02-02"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+        <insert tableName="concept_datatype">
+            <column name="concept_datatype_id" valueNumeric="5"/>
+            <column name="name" value="Document"/>
+            <column name="hl7_abbreviation" value="RP"/>
+            <column name="description" value="Pointer to a binary or text-based document (e.g., clinical document, RTF, XML, EKG, image, etc.) stored in complex_obs table"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2004-04-15"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+        <insert tableName="concept_datatype">
+            <column name="concept_datatype_id" valueNumeric="6"/>
+            <column name="name" value="Date"/>
+            <column name="hl7_abbreviation" value="DT"/>
+            <column name="description" value="Absolute date"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2004-07-22"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+        <insert tableName="concept_datatype">
+            <column name="concept_datatype_id" valueNumeric="7"/>
+            <column name="name" value="Time"/>
+            <column name="hl7_abbreviation" value="TM"/>
+            <column name="description" value="Absolute time of day"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2004-07-22"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+        <insert tableName="concept_datatype">
+            <column name="concept_datatype_id" valueNumeric="8"/>
+            <column name="name" value="Datetime"/>
+            <column name="hl7_abbreviation" value="TS"/>
+            <column name="description" value="Absolute date and time"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2004-07-22"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+        <insert tableName="concept_datatype">
+            <column name="concept_datatype_id" valueNumeric="10"/>
+            <column name="name" value="Boolean"/>
+            <column name="hl7_abbreviation" value="BIT"/>
+            <column name="description" value="Boolean value (yes/no, true/false)"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2004-08-26"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+        <insert tableName="concept_datatype">
+            <column name="concept_datatype_id" valueNumeric="11"/>
+            <column name="name" value="Rule"/>
+            <column name="hl7_abbreviation" value="ZZ"/>
+            <column name="description" value="Value derived from other data"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2006-09-11"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+        <insert tableName="concept_datatype">
+            <column name="concept_datatype_id" valueNumeric="12"/>
+            <column name="name" value="Structured Numeric"/>
+            <column name="hl7_abbreviation" value="SN"/>
+            <column name="description" value="Complex numeric values possible (ie, &lt;5, 1-10, etc.)"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2005-08-06"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+        <insert tableName="concept_datatype">
+            <column name="concept_datatype_id" value="13"/>
+            <column name="name" value="Complex"/>
+            <column name="hl7_abbreviation" value="ED"/>
+            <column name="description" value="Complex value.  Analogous to HL7 Embedded Datatype"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2008-05-28T12:25:34" />
+        </insert>
+    </changeSet>
+    <changeSet author="ben (generated)" id="1226348923233-13">
+        <insert tableName="role">
+            <column name="role" value="System Developer"/>
+            <column name="description" value="Developers of the OpenMRS .. have additional access to change fundamental structure of the database model."/>
+        </insert>
+	<insert tableName="role">
+            <column name="role" value="Provider"/>
+            <column name="description" value="All users with the 'Provider' role will appear as options in the default Infopath "/>
+        </insert>
+    </changeSet>
+    <changeSet author="ben (generated)" id="1226412230538-24">
+        <insert tableName="role">
+            <column name="role" value="Anonymous"/>
+            <column name="description" value="Privileges for non-authenticated users."/>
+        </insert>
+        <insert tableName="role">
+            <column name="role" value="Authenticated"/>
+            <column name="description" value="Privileges gained once authentication has been established."/>
+        </insert>
+    </changeSet>
+    <changeSet author="ben (generated)" id="1226412230538-7">
+        <insert tableName="privilege">
+            <column name="privilege" value="Add Cohorts"/>
+            <column name="description" value="Able to add a cohort to the system"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Add Concept Proposals"/>
+            <column name="description" value="Able to add concept proposals to the system"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Add Encounters"/>
+            <column name="description" value="Able to add patient encounters"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Add Observations"/>
+            <column name="description" value="Able to add patient observations"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Add Orders"/>
+            <column name="description" value="Able to add orders"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Add Patient Identifiers"/>
+            <column name="description" value="Able to add patient identifiers"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Add Patient Programs"/>
+            <column name="description" value="Able to add patients to programs"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Add Patients"/>
+            <column name="description" value="Able to add patients"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Add People"/>
+            <column name="description" value="Able to add person objects"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Add Relationships"/>
+            <column name="description" value="Able to add relationships"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Add Report Objects"/>
+            <column name="description" value="Able to add report objects"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Add Reports"/>
+            <column name="description" value="Able to add reports"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Add Users"/>
+            <column name="description" value="Able to add users to OpenMRS"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Delete Cohorts"/>
+            <column name="description" value="Able to add a cohort to the system"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Delete Concept Proposals"/>
+            <column name="description" value="Able to delete concept proposals from the system"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Delete Encounters"/>
+            <column name="description" value="Able to delete patient encounters"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Delete Observations"/>
+            <column name="description" value="Able to delete patient observations"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Delete Orders"/>
+            <column name="description" value="Able to delete orders"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Delete Patient Identifiers"/>
+            <column name="description" value="Able to delete patient identifiers"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Delete Patient Programs"/>
+            <column name="description" value="Able to delete patients from programs"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Delete Patients"/>
+            <column name="description" value="Able to delete patients"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Delete People"/>
+            <column name="description" value="Able to delete objects"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Delete Relationships"/>
+            <column name="description" value="Able to delete relationships"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Delete Report Objects"/>
+            <column name="description" value="Able to delete report objects"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Delete Reports"/>
+            <column name="description" value="Able to delete reports"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Delete Users"/>
+            <column name="description" value="Able to delete users in OpenMRS"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit Cohorts"/>
+            <column name="description" value="Able to add a cohort to the system"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit Concept Proposals"/>
+            <column name="description" value="Able to edit concept proposals in the system"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit Encounters"/>
+            <column name="description" value="Able to edit patient encounters"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit Observations"/>
+            <column name="description" value="Able to edit patient observations"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit Orders"/>
+            <column name="description" value="Able to edit orders"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit Patient Identifiers"/>
+            <column name="description" value="Able to edit patient identifiers"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit Patient Programs"/>
+            <column name="description" value="Able to edit patients in programs"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit Patients"/>
+            <column name="description" value="Able to edit patients"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit People"/>
+            <column name="description" value="Able to edit person objects"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit Relationships"/>
+            <column name="description" value="Able to edit relationships"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit Report Objects"/>
+            <column name="description" value="Able to edit report objects"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit Reports"/>
+            <column name="description" value="Able to edit reports"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit User Passwords"/>
+            <column name="description" value="Able to change the passwords of users in OpenMRS"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit Users"/>
+            <column name="description" value="Able to edit users in OpenMRS"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Form Entry"/>
+            <column name="description" value="Allows user to access Form Entry pages/functions"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Alerts"/>
+            <column name="description" value="Able to add/edit/delete user alerts"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Concept Classes"/>
+            <column name="description" value="Able to add/edit/retire concept classes"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Concept Datatypes"/>
+            <column name="description" value="Able to add/edit/retire concept datatypes"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Concept Sources"/>
+            <column name="description" value="Able to add/edit/delete concept sources"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Concepts"/>
+            <column name="description" value="Able to add/edit/delete concept entries"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Encounter Types"/>
+            <column name="description" value="Able to add/edit/delete encounter types"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Field Types"/>
+            <column name="description" value="Able to add/edit/retire field types"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage FormEntry XSN"/>
+            <column name="description" value="Allows user to upload and edit the xsns stored on the server"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Forms"/>
+            <column name="description" value="Able to add/edit/delete forms"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Global Properties"/>
+            <column name="description" value="Able to add/edit global properties"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Identifier Types"/>
+            <column name="description" value="Able to add/edit/delete patient identifier types"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Locations"/>
+            <column name="description" value="Able to add/edit/delete locations"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Modules"/>
+            <column name="description" value="Able to add/remove modules to the system"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Order Types"/>
+            <column name="description" value="Able to add/edit/retire order types"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Person Attribute Types"/>
+            <column name="description" value="Able to add/edit/delete person attribute types"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Privileges"/>
+            <column name="description" value="Able to add/edit/delete privileges"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Programs"/>
+            <column name="description" value="Able to add/view/delete patient programs"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Relationship Types"/>
+            <column name="description" value="Able to add/edit/retire relationship types"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Relationships"/>
+            <column name="description" value="Able to add/edit/delete relationships"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Roles"/>
+            <column name="description" value="Able to add/edit/delete user roles"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Scheduler"/>
+            <column name="description" value="Able to add/edit/remove scheduled tasks"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Patient Dashboard - View Demographics Section"/>
+            <column name="description" value="Able to view the 'Demographics' tab on the patient dashboard"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Patient Dashboard - View Encounters Section"/>
+            <column name="description" value="Able to view the 'Encounters' tab on the patient dashboard"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Patient Dashboard - View Forms Section"/>
+            <column name="description" value="Allows user to view the Forms tab on the patient dashboard"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Patient Dashboard - View Graphs Section"/>
+            <column name="description" value="Able to view the 'Graphs' tab on the patient dashboard"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Patient Dashboard - View Overview Section"/>
+            <column name="description" value="Able to view the 'Overview' tab on the patient dashboard"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Patient Dashboard - View Patient Summary"/>
+            <column name="description" value="Able to view the 'Summary' tab on the patient dashboard"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Patient Dashboard - View Regimen Section"/>
+            <column name="description" value="Able to view the 'Regimen' tab on the patient dashboard"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Purge Field Types"/>
+            <column name="description" value="Able to purge field types"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Upload XSN"/>
+            <column name="description" value="Allows user to upload/overwrite the XSNs defined for forms"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Administration Functions"/>
+            <column name="description" value="Able to view the 'Administration' link in the navigation bar"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Concept Classes"/>
+            <column name="description" value="Able to view concept classes"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Concept Datatypes"/>
+            <column name="description" value="Able to view concept datatypes"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Concept Proposals"/>
+            <column name="description" value="Able to view concept proposals to the system"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Concept Sources"/>
+            <column name="description" value="Able to view concept sources"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Concepts"/>
+            <column name="description" value="Able to view concept entries"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Data Entry Statistics"/>
+            <column name="description" value="Able to view data entry statistics from the admin screen"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Encounter Types"/>
+            <column name="description" value="Able to view encounter types"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Encounters"/>
+            <column name="description" value="Able to view patient encounters"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Field Types"/>
+            <column name="description" value="Able to view field types"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Forms"/>
+            <column name="description" value="Able to view forms"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Global Properties"/>
+            <column name="description" value="Able to view global properties on the administration screen"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Identifier Types"/>
+            <column name="description" value="Able to view patient identifier types"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Locations"/>
+            <column name="description" value="Able to view locations"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Navigation Menu"/>
+            <column name="description" value="Ability to see the navigation menu"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Observations"/>
+            <column name="description" value="Able to view patient observations"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Order Types"/>
+            <column name="description" value="Able to view order types"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Orders"/>
+            <column name="description" value="Able to view orders"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Patient Cohorts"/>
+            <column name="description" value="Able to view patient cohorts"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Patient Identifiers"/>
+            <column name="description" value="Able to view patient identifiers"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Patient Programs"/>
+            <column name="description" value="Able to see which programs that patients are in"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Patients"/>
+            <column name="description" value="Able to view patients"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View People"/>
+            <column name="description" value="Able to view person objects"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Person Attribute Types"/>
+            <column name="description" value="Able to view person attribute types"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Privileges"/>
+            <column name="description" value="Able to view user privileges"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Programs"/>
+            <column name="description" value="Able to view patient programs"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Relationship Types"/>
+            <column name="description" value="Able to view relationship types"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Relationships"/>
+            <column name="description" value="Able to view relationships"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Report Objects"/>
+            <column name="description" value="Able to view report objects"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Reports"/>
+            <column name="description" value="Able to view reports"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Roles"/>
+            <column name="description" value="Able to view user roles"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Unpublished Forms"/>
+            <column name="description" value="Able to view and fill out unpublished forms"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Users"/>
+            <column name="description" value="Able to view users in OpenMRS"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Problems"/>
+            <column name="description" value="Able to view problems in OpenMRS"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Allergies"/>
+            <column name="description" value="Able to view allergies in OpenMRS"/>
+        </insert>
+    </changeSet>
+    <changeSet author="ben (generated)" id="1226348923233-6">
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="View Concept Classes"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="View Concept Datatypes"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="View Encounter Types"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="View Field Types"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="View Global Properties"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="View Identifier Types"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="View Locations"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="View Order Types"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="View Person Attribute Types"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="View Privileges"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="View Relationship Types"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="View Relationships"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="View Roles"/>
+        </insert>
+    </changeSet>
+    <changeSet author="ben (generated)" id="1226348923233-14">
+        <insert tableName="relationship_type">
+            <column name="relationship_type_id" valueNumeric="1"/>
+            <column name="a_is_to_b" value="Doctor"/>
+            <column name="b_is_to_a" value="Patient"/>
+            <column name="preferred" valueBoolean="false"/>
+            <column name="weight" valueNumeric="0"/>
+            <column name="description" value="Relationship from a primary care provider to the patient"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2007-05-04"/>
+        </insert>
+        <insert tableName="relationship_type">
+            <column name="relationship_type_id" valueNumeric="2"/>
+            <column name="a_is_to_b" value="Sibling"/>
+            <column name="b_is_to_a" value="Sibling"/>
+            <column name="preferred" valueBoolean="false"/>
+            <column name="weight" valueNumeric="0"/>
+            <column name="description" value="Relationship between brother/sister, brother/brother, and sister/sister"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2007-05-04"/>
+        </insert>
+        <insert tableName="relationship_type">
+            <column name="relationship_type_id" valueNumeric="3"/>
+            <column name="a_is_to_b" value="Parent"/>
+            <column name="b_is_to_a" value="Child"/>
+            <column name="preferred" valueBoolean="false"/>
+            <column name="weight" valueNumeric="0"/>
+            <column name="description" value="Relationship from a mother/father to the child"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2007-05-04"/>
+        </insert>
+        <insert tableName="relationship_type">
+            <column name="relationship_type_id" valueNumeric="4"/>
+            <column name="a_is_to_b" value="Aunt/Uncle"/>
+            <column name="b_is_to_a" value="Niece/Nephew"/>
+            <column name="preferred" valueBoolean="false"/>
+            <column name="weight" valueNumeric="0"/>
+            <column name="description" value="Relationship from a parent's sibling to a child of that parent"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2007-05-04"/>
+        </insert>
+    </changeSet>
+    <changeSet author="ben (generated)" id="1226348923233-15">
+        <insert tableName="concept_class">
+            <column name="concept_class_id" valueNumeric="1"/>
+            <column name="name" value="Test"/>
+            <column name="description" value="Acq. during patient encounter (vitals, labs, etc.)"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2004-02-02"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+        <insert tableName="concept_class">
+            <column name="concept_class_id" valueNumeric="2"/>
+            <column name="name" value="Procedure"/>
+            <column name="description" value="Describes a clinical procedure"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2004-03-02"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+        <insert tableName="concept_class">
+            <column name="concept_class_id" valueNumeric="3"/>
+            <column name="name" value="Drug"/>
+            <column name="description" value="Drug"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2004-02-02"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+        <insert tableName="concept_class">
+            <column name="concept_class_id" valueNumeric="4"/>
+            <column name="name" value="Diagnosis"/>
+            <column name="description" value="Conclusion drawn through findings"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2004-02-02"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+        <insert tableName="concept_class">
+            <column name="concept_class_id" valueNumeric="5"/>
+            <column name="name" value="Finding"/>
+            <column name="description" value="Practitioner observation/finding"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2004-03-02"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+        <insert tableName="concept_class">
+            <column name="concept_class_id" valueNumeric="6"/>
+            <column name="name" value="Anatomy"/>
+            <column name="description" value="Anatomic sites / descriptors"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2004-03-02"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+        <insert tableName="concept_class">
+            <column name="concept_class_id" valueNumeric="7"/>
+            <column name="name" value="Question"/>
+            <column name="description" value="Question (eg, patient history, SF36 items)"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2004-03-02"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+        <insert tableName="concept_class">
+            <column name="concept_class_id" valueNumeric="8"/>
+            <column name="name" value="LabSet"/>
+            <column name="description" value="Term to describe laboratory sets"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2004-03-02"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+        <insert tableName="concept_class">
+            <column name="concept_class_id" valueNumeric="9"/>
+            <column name="name" value="MedSet"/>
+            <column name="description" value="Term to describe medication sets"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2004-02-02"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+        <insert tableName="concept_class">
+            <column name="concept_class_id" valueNumeric="10"/>
+            <column name="name" value="ConvSet"/>
+            <column name="description" value="Term to describe convenience sets"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2004-03-02"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+        <insert tableName="concept_class">
+            <column name="concept_class_id" valueNumeric="11"/>
+            <column name="name" value="Misc"/>
+            <column name="description" value="Terms which don't fit other categories"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2004-03-02"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+        <insert tableName="concept_class">
+            <column name="concept_class_id" valueNumeric="12"/>
+            <column name="name" value="Symptom"/>
+            <column name="description" value="Patient-reported observation"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2004-10-04"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+        <insert tableName="concept_class">
+            <column name="concept_class_id" valueNumeric="13"/>
+            <column name="name" value="Symptom/Finding"/>
+            <column name="description" value="Observation that can be reported from patient or found on exam"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2004-10-04"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+        <insert tableName="concept_class">
+            <column name="concept_class_id" valueNumeric="14"/>
+            <column name="name" value="Specimen"/>
+            <column name="description" value="Body or fluid specimen"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2004-12-02"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+        <insert tableName="concept_class">
+            <column name="concept_class_id" valueNumeric="15"/>
+            <column name="name" value="Misc Order"/>
+            <column name="description" value="Orderable items which aren't tests or drugs"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2005-02-17"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+    </changeSet>
+    <changeSet author="sunbiz" id="20110915-0751">
+        <insert tableName="users">
+            <column name="system_id" value="daemon"/>
+            <column name="username" value="daemon"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2010-04-26T13:25:00"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="person_id" valueNumeric="1"/>
+            <column name="uuid" value="A4F30A1B-5EB9-11DF-A648-37A07F9C90FB"/>
+        </insert>
+    </changeSet>
+    <changeSet author="ben (generated)" id="1226348923233-17">
+        <insert tableName="patient_identifier_type">
+            <column name="patient_identifier_type_id" valueNumeric="1"/>
+            <column name="name" value="OpenMRS Identification Number"/>
+            <column name="description" value="Unique number used in OpenMRS"/>
+            <column name="format" value=""/>
+            <column name="check_digit" valueBoolean="true"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2005-09-22"/>
+            <column name="required" valueBoolean="false"/>
+            <column name="format_description"/>
+            <column name="validator" value="org.openmrs.patient.impl.LuhnIdentifierValidator"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+        <insert tableName="patient_identifier_type">
+            <column name="patient_identifier_type_id" valueNumeric="2"/>
+            <column name="name" value="Old Identification Number"/>
+            <column name="description" value="Number given out prior to the OpenMRS system (No check digit)"/>
+            <column name="format" value=""/>
+            <column name="check_digit" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2005-09-22"/>
+            <column name="required" valueBoolean="false"/>
+            <column name="format_description"/>
+            <column name="validator"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+    </changeSet>
+    <changeSet author="ben (generated)" id="1226348923233-18">
+        <insert tableName="user_role">
+            <column name="user_id" valueNumeric="1"/>
+            <column name="role" value="System Developer"/>
+        </insert>
+        <insert tableName="user_role">
+            <column name="user_id" valueNumeric="1"/>
+            <column name="role" value="Provider"/>
+        </insert>
+    </changeSet>
+    <changeSet author="ben (generated)" id="1226348923233-20">
+        <insert tableName="person_name">
+            <column name="person_name_id" valueNumeric="1"/>
+            <column name="preferred" valueBoolean="true"/>
+            <column name="person_id" valueNumeric="1"/>
+            <column name="prefix"/>
+            <column name="given_name" value="Super"/>
+            <column name="middle_name" value=""/>
+            <column name="family_name_prefix"/>
+            <column name="family_name" value="User"/>
+            <column name="family_name2"/>
+            <column name="family_name_suffix"/>
+            <column name="degree"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2005-01-01"/>
+            <column name="voided" valueBoolean="false"/>
+            <column name="voided_by"/>
+            <column name="date_voided"/>
+            <column name="void_reason"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+        </insert>
+    </changeSet>
+    <changeSet author="ben (generated)" id="1226348923233-21">
+        <insert tableName="location">
+            <column name="location_id" valueNumeric="1"/>
+            <column name="name" value="Unknown Location"/>
+            <column name="description"/>
+            <column name="address1" value=""/>
+            <column name="address2" value=""/>
+            <column name="city_village" value=""/>
+            <column name="state_province" value=""/>
+            <column name="postal_code" value=""/>
+            <column name="country" value=""/>
+            <column name="latitude"/>
+            <column name="longitude"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2005-09-22"/>
+            <column name="county_district"/>
+            <column name="address3"/>
+            <column name="address4"/>
+            <column name="address5"/>
+            <column name="address6"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+        </insert>
+    </changeSet>
+    <changeSet author="ben (generated)" id="1226348923233-23">
+        <insert tableName="hl7_source">
+            <column name="hl7_source_id" valueNumeric="1"/>
+            <column name="name" value="LOCAL"/>
+            <column name="description" value=""/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2006-09-01"/>
+        </insert>
+    </changeSet>
+    <changeSet author="ben (generated)" id="1226412230538-9a">
+        <insert tableName="concept_name_tag">
+            <column name="concept_name_tag_id" valueNumeric="1"/>
+            <column name="tag" value="default"/>
+            <column name="description" value="name to use when nothing else is available"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2007-05-01"/>
+            <column name="voided" valueBoolean="false"/>
+            <column name="voided_by"/>
+            <column name="date_voided"/>
+            <column name="void_reason"/>
+        </insert>
+        <insert tableName="concept_name_tag">
+            <column name="concept_name_tag_id" valueNumeric="2"/>
+            <column name="tag" value="short"/>
+            <column name="description" value="preferred short name for a concept"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2007-05-01"/>
+            <column name="voided" valueBoolean="false"/>
+            <column name="voided_by"/>
+            <column name="date_voided"/>
+            <column name="void_reason"/>
+        </insert>
+        <insert tableName="concept_name_tag">
+            <column name="concept_name_tag_id" valueNumeric="3"/>
+            <column name="tag" value="synonym"/>
+            <column name="description" value="a different word with similar meaning"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2007-05-01"/>
+            <column name="voided" valueBoolean="false"/>
+            <column name="voided_by"/>
+            <column name="date_voided"/>
+            <column name="void_reason"/>
+        </insert>
+        <insert tableName="concept_name_tag">
+            <column name="concept_name_tag_id" valueNumeric="4"/>
+            <column name="tag" value="preferred"/>
+            <column name="description" value="preferred name in English"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2007-05-01"/>
+            <column name="voided" valueBoolean="false"/>
+            <column name="voided_by"/>
+            <column name="date_voided"/>
+            <column name="void_reason"/>
+        </insert>
+   </changeSet>
+   <changeSet id="20110915-0803" author="sunbiz">
+       <insert tableName="order_type">
+           <column name="order_type_id" valueNumeric="2"/>
+           <column name="name" value="Drug Order"/>
+           <column name="description" value="An order for a medication to be given to the patient"/>
+           <column name="creator" valueNumeric="1"/>
+           <column name="date_created" valueDate="2010-05-12"/>
+           <column name="retired" valueBoolean="false"/>
+           <column name="date_retired"/>
+           <column name="retire_reason"/>
+           <column name="uuid" value="131168f4-15f5-102d-96e4-000c29c2a5d7"/>
+       </insert>
+   </changeSet>
+   <changeSet id="20110915-0848" author="sunbiz">
+       <insert tableName="active_list_type">
+           <column name="active_list_type_id" valueNumeric="1"/>
+           <column name="name" value="Allergy"/>
+           <column name="description" value="An Allergy the Patient may have"/>
+           <column name="creator" valueNumeric="1" />
+           <column name="date_created" valueDate="2010-05-28"/>
+           <column name="retired" valueBoolean="false"/>
+           <column name="date_retired"/>
+           <column name="retire_reason"/>
+           <column name="uuid" value="96f4f603-6a99-11df-a648-37a07f9c90fb"/>
+       </insert>
+       <insert tableName="active_list_type">
+           <column name="active_list_type_id" valueNumeric="2"/>
+           <column name="name" value="Problem"/>
+           <column name="description" value="A Problem the Patient may have"/>
+           <column name="creator" valueNumeric="1"/>
+           <column name="date_created" valueDate="2010-05-28"/>
+           <column name="retired" valueBoolean="false"/>
+           <column name="date_retired"/>
+           <column name="retire_reason"/>
+           <column name="uuid" value="a0c7422b-6a99-11df-a648-37a07f9c90fb"/>
+       </insert>
+   </changeSet>
+   <changeSet id="20110915-1107" author="sunbiz">
+       <insert tableName="scheduler_task_config">
+           <column name="name" value="Update Concept Index" />
+           <column name="description" value="Iterates through the concept dictionary, re-creating the concept index (which are used for searcing). This task is started when using the 'Update Concept Index Storage' page and no range is given.  This task stops itself when one iteration has completed." />
+           <column name="schedulable_class" value="org.openmrs.scheduler.tasks.ConceptIndexUpdateTask" />
+           <column name="start_on_startup" valueBoolean="true" />
+           <column name="date_created" valueDate="2005-01-01T00:00:00" />
+           <column name="created_by" value="1" />
+           <column name="uuid" value="7c75911e-0310-11e0-8222-18a905e044dc" />
+       </insert>
+   </changeSet>
+   <changeSet id="20110915-1149" author="sunbiz">
+       <insert tableName="concept_stop_word">
+           <column name="word" value="A"/>
+           <column name="uuid" value="f5f45540-e2a7-11df-87ae-18a905e044dc"/>
+       </insert>
+       <insert tableName="concept_stop_word">
+           <column name="word" value="AND"/>
+           <column name="uuid" value="f5f469ae-e2a7-11df-87ae-18a905e044dc"/>
+       </insert>
+       <insert tableName="concept_stop_word">
+           <column name="word" value="AT"/>
+           <column name="uuid" value="f5f47070-e2a7-11df-87ae-18a905e044dc"/>
+       </insert>
+       <insert tableName="concept_stop_word">
+           <column name="word" value="BUT"/>
+           <column name="uuid" value="f5f476c4-e2a7-11df-87ae-18a905e044dc"/>
+       </insert>
+       <insert tableName="concept_stop_word">
+           <column name="word" value="BY"/>
+           <column name="uuid" value="f5f47d04-e2a7-11df-87ae-18a905e044dc"/>
+       </insert>
+       <insert tableName="concept_stop_word">
+           <column name="word" value="FOR"/>
+           <column name="uuid" value="f5f4834e-e2a7-11df-87ae-18a905e044dc"/>
+       </insert>
+       <insert tableName="concept_stop_word">
+           <column name="word" value="HAS"/>
+           <column name="uuid" value="f5f48a24-e2a7-11df-87ae-18a905e044dc"/>
+       </insert>
+       <insert tableName="concept_stop_word">
+           <column name="word" value="OF"/>
+           <column name="uuid" value="f5f49064-e2a7-11df-87ae-18a905e044dc"/>
+       </insert>
+       <insert tableName="concept_stop_word">
+           <column name="word" value="THE"/>
+           <column name="uuid" value="f5f496ae-e2a7-11df-87ae-18a905e044dc"/>
+       </insert>
+       <insert tableName="concept_stop_word">
+           <column name="word" value="TO"/>
+           <column name="uuid" value="f5f49cda-e2a7-11df-87ae-18a905e044dc"/>
+       </insert>
+   </changeSet>
+   <changeSet id="20110915-1459" author="sunbiz">
+		<comment>Inserting core concept map types</comment>
+		<customChange class="org.openmrs.util.databasechange.AddConceptMapTypesChangeset">
+			<param name="visibleConceptMapTypes">
+				SAME-AS|35543629-7d8c-11e1-909d-c80aa9edcf4e, NARROWER-THAN|43ac5109-7d8c-11e1-909d-c80aa9edcf4e, BROADER-THAN|4b9d9421-7d8c-11e1-909d-c80aa9edcf4e, 
+				Associated finding|55e02065-7d8c-11e1-909d-c80aa9edcf4e, Associated morphology|605f4a61-7d8c-11e1-909d-c80aa9edcf4e, 
+				Associated procedure|6eb1bfce-7d8c-11e1-909d-c80aa9edcf4e, Associated with|781bdc8f-7d8c-11e1-909d-c80aa9edcf4e, 
+				Causative agent|808f9e19-7d8c-11e1-909d-c80aa9edcf4e, Finding site|889c3013-7d8c-11e1-909d-c80aa9edcf4e, 
+				Has specimen|929600b9-7d8c-11e1-909d-c80aa9edcf4e, Laterality|999c6fc0-7d8c-11e1-909d-c80aa9edcf4e, Severity|a0e52281-7d8c-11e1-909d-c80aa9edcf4e
+			</param>
+			<param name="hiddenConceptMapTypes">
+				Access|f9e90b29-7d8c-11e1-909d-c80aa9edcf4e, After|01b60e29-7d8d-11e1-909d-c80aa9edcf4e, Clinical course|5f7c3702-7d8d-11e1-909d-c80aa9edcf4e, 
+				Component|67debecc-7d8d-11e1-909d-c80aa9edcf4e, Direct device|718c00da-7d8d-11e1-909d-c80aa9edcf4e, 
+				Direct morphology|7b9509cb-7d8d-11e1-909d-c80aa9edcf4e, Direct substance|82bb495d-7d8d-11e1-909d-c80aa9edcf4e, 
+				Due to|8b77f7d3-7d8d-11e1-909d-c80aa9edcf4e, Episodicity|94a81179-7d8d-11e1-909d-c80aa9edcf4e, 
+				Finding context|9d23c22e-7d8d-11e1-909d-c80aa9edcf4e, Finding informer|a4524368-7d8d-11e1-909d-c80aa9edcf4e, 
+				Finding method|af089254-7d8d-11e1-909d-c80aa9edcf4e, Has active ingredient|b65aa605-7d8d-11e1-909d-c80aa9edcf4e, 
+				Has definitional manifestation|c2b7b2fa-7d8d-11e1-909d-c80aa9edcf4,	Has dose form|cc3878e6-7d8d-11e1-909d-c80aa9edcf4e, 
+				Has focus|d67c5840-7d8d-11e1-909d-c80aa9edcf4e, Has intent|de2fb2c5-7d8d-11e1-909d-c80aa9edcf4e, 
+				Has interpretation|e758838b-7d8d-11e1-909d-c80aa9edcf4e, Indirect device|ee63c142-7d8d-11e1-909d-c80aa9edcf4e, 
+				Indirect morphology|f4f36681-7d8d-11e1-909d-c80aa9edcf4e, Interprets|fc7f5fed-7d8d-11e1-909d-c80aa9edcf4e, 
+				Measurement method|06b11d79-7d8e-11e1-909d-c80aa9edcf4e, Method|0efb4753-7d8e-11e1-909d-c80aa9edcf4e, 
+				Occurrence|16e7b617-7d8e-11e1-909d-c80aa9edcf4e, Part of|1e82007b-7d8e-11e1-909d-c80aa9edcf4e, 
+				Pathological process|2969915e-7d8e-11e1-909d-c80aa9edcf4e, Priority|32d57796-7d8e-11e1-909d-c80aa9edcf4e, 
+				Procedure context|3f11904c-7d8e-11e1-909d-c80aa9edcf4e, Procedure device|468c4aa3-7d8e-11e1-909d-c80aa9edcf4e, 
+				Procedure morphology|5383e889-7d8e-11e1-909d-c80aa9edcf4e, Procedure site|5ad2655d-7d8e-11e1-909d-c80aa9edcf4e, 
+				Procedure site - Direct|66085196-7d8e-11e1-909d-c80aa9edcf4e, Procedure site - Indirect|7080e843-7d8e-11e1-909d-c80aa9edcf4e, 
+				Property|76bfb796-7d8e-11e1-909d-c80aa9edcf4e, Recipient category|7e7d00e4-7d8e-11e1-909d-c80aa9edcf4e, 
+				Revision status|851e14c1-7d8e-11e1-909d-c80aa9edcf4e, Route of administration|8ee5b13d-7d8e-11e1-909d-c80aa9edcf4e, 
+				Scale type|986acf48-7d8e-11e1-909d-c80aa9edcf4e, Specimen procedure|a6937642-7d8e-11e1-909d-c80aa9edcf4e, 
+				Specimen source identity|b1d6941e-7d8e-11e1-909d-c80aa9edcf4e, Specimen source morphology|b7c793c1-7d8e-11e1-909d-c80aa9edcf4e, 
+				Specimen source topography|be9f9eb8-7d8e-11e1-909d-c80aa9edcf4e, Specimen substance|c8f2bacb-7d8e-11e1-909d-c80aa9edcf4e, 
+				Subject of information|d0664c4f-7d8e-11e1-909d-c80aa9edcf4e, Subject relationship context|dace9d13-7d8e-11e1-909d-c80aa9edcf4e, 
+				Surgical approach|e3cd666d-7d8e-11e1-909d-c80aa9edcf4e, Temporal context|ed96447d-7d8e-11e1-909d-c80aa9edcf4e, 
+				Time aspect|f415bcce-7d8e-11e1-909d-c80aa9edcf4e, Using access device|fa9538a9-7d8e-11e1-909d-c80aa9edcf4e, 
+				Using device|06588655-7d8f-11e1-909d-c80aa9edcf4e, Using energy|0c2ae0bc-7d8f-11e1-909d-c80aa9edcf4e, 
+				Using substance|13d2c607-7d8f-11e1-909d-c80aa9edcf4e, IS A|1ce7a784-7d8f-11e1-909d-c80aa9edcf4e, 
+				MAY BE A|267812a3-7d8f-11e1-909d-c80aa9edcf4e, MOVED FROM|2de3168e-7d8f-11e1-909d-c80aa9edcf4e,
+				MOVED TO|32f0fd99-7d8f-11e1-909d-c80aa9edcf4e, REPLACED BY|3b3b9a7d-7d8f-11e1-909d-c80aa9edcf4e, WAS A|41a034da-7d8f-11e1-909d-c80aa9edcf4e
+			</param>
+		</customChange>
+   </changeSet>
+
+   <changeSet author="sunbiz" id="function-enable-sqlserver" runAlways="true" dbms="mssql">
+        <sql>
+            EXEC sp_msforeachtable "ALTER TABLE ? WITH CHECK CHECK CONSTRAINT all";
+        </sql>
+    </changeSet>
+   
+    <changeSet author="sunbiz" id="function-enable-postgresql" runAlways="true" dbms="postgresql">
+        <customChange class="org.openmrs.util.databasechange.EnableTriggersChangeSet">
+        </customChange>
+    </changeSet>
+    
+    <changeSet author="ben" id="enable-foreign-key-checks" runAlways="true" dbms="mysql">
+	<sql>SET FOREIGN_KEY_CHECKS=1</sql>
+    </changeSet>
+</databaseChangeLog>

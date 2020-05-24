@@ -11,21 +11,25 @@
     
 -->
 <!--
-    This file contains all changesets that have been introduced on top of liquibase-update-to-2.0.xml exclusively.
-    If you intend for a changeset to be backported to older releases, you must put such a changeset in the
-    liquibase-update-to-2.0.xml, which have been used for older releases.
+    This file contains all changesets that have been introduced on top of either liquibase-snapshots/2.3.x/liquibase-*.xml 
+    or liquibase-updates/2.3.x/liquibase-update-to-latest.xml.
 -->
-<databaseChangeLog logicalFilePath="liquibase-update-to-latest.xml" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
-	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
-    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+<databaseChangeLog 
+	logicalFilePath="liquibase-update-to-latest.xml" 
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext 
+    	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog 
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
 	<!--
 		See http://www.liquibase.org/manual/home#available_database_refactorings
 		for a list of supported elements and attributes
 	-->
-	
-	 <changeSet id="20190815-Trunk-5412" author="gitacliff">
+
+	<changeSet id="20190815-Trunk-5412" author="gitacliff">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<columnExists tableName="order_group" columnName="order_group_reason"/>				
@@ -60,5 +64,23 @@
 								 referencedTableName="order_group"
 								 referencedColumnNames="order_group_id" />
     </changeSet>
-	</databaseChangeLog> 
+    
+    <changeSet id="TRUNK-5728-2020-05-20" author="samuel34">
+    	<preConditions onFail="MARK_RAN">
+    		<not>
+    			<columnExists tableName="conditions" columnName="encounter_id"/>
+    		</not>
+    	</preConditions>
+    	<comment>Adding 'encounter_id' column to 'conditions' table</comment>
+    	<addColumn tableName="conditions">
+    		<column name="encounter_id" type="int">
+    			<constraints nullable="true" />
+    		</column>
+    	</addColumn>
+    	<addForeignKeyConstraint constraintName="conditions_encounter_id_fk"
+								 baseTableName="conditions" baseColumnNames="encounter_id"
+								 referencedTableName="encounter" referencedColumnNames="encounter_id" />
+    </changeSet>
+    
+</databaseChangeLog> 
 	
