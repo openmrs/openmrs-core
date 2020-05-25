@@ -94,7 +94,7 @@ public class ValidateHibernateMappingsDatabaseIT extends H2DatabaseIT {
 		}
 		configuration.setProperty(Environment.DIALECT, H2LessStrictDialect.class.getName());
 		configuration.setProperty(Environment.URL, "jdbc:h2:mem:openmrs;AUTO_RECONNECT=TRUE;DB_CLOSE_DELAY=-1");
-		configuration.setProperty(Environment.DRIVER, "com.mysql.jdbc.Driver");
+		configuration.setProperty(Environment.DRIVER, "com.mysql.cj.jdbc.Driver");
 		configuration.setProperty(Environment.USER, USER_NAME);
 		configuration.setProperty(Environment.PASS, PASSWORD);
 		configuration.setProperty(Environment.USE_SECOND_LEVEL_CACHE, "false");

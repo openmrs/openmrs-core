@@ -37,7 +37,7 @@
 				<configuration>
 					<changeLogFile>../api/src/main/resources/${changelogfile}</changeLogFile>
 					<diffTypes>${diffTypes}</diffTypes>
-					<driver>com.mysql.jdbc.Driver</driver>
+					<driver>com.mysql.cj.jdbc.Driver</driver>
 					<outputChangeLogFile>../api/src/main/resources/${outputChangelogfile}</outputChangeLogFile>
 					<password>${password}</password>
 					<url>jdbc:mysql://127.0.0.1:3306/openmrs</url>

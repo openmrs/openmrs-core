@@ -1151,7 +1151,7 @@ public class InitializationFilter extends StartupFilter {
 			
 			// TODO how to get the driver for the other dbs...
 			if (wizardModel.databaseConnection.contains("mysql")) {
-				Class.forName("com.mysql.jdbc.Driver").newInstance();
+				Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
 			} else {
 				replacedSql = replacedSql.replaceAll("`", "\"");
 			}
