@@ -18,7 +18,7 @@
 			factory="org.apache.commons.dbcp.BasicDataSourceFactory"
 			validationQuery="SELECT * FROM users"
 			url="jdbc:mysql://localhost:3306/openmrs"
-			driverClassName="com.mysql.jdbc.Driver"
+			driverClassName="com.mysql.cj.jdbc.Driver"
 			username="openmrs"
 			password="openmrs"
 			maxWait="3000"
