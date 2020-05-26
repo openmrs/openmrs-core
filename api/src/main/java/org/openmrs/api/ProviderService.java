@@ -17,6 +17,7 @@ import org.openmrs.Person;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
+import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Handler;
 import org.openmrs.util.PrivilegeConstants;
@@ -76,6 +77,13 @@ public interface ProviderService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.PURGE_PROVIDERS })
 	public void purgeProvider(Provider provider);
+	
+	/**
+	 * Create a given Provider 
+	 * @param providers to be created
+	 */
+	@Authorized({PrivilegeConstants.CREATE_PROVIDERS})
+	public Provider createProvider(Provider provide);
 	
 	/**
 	 * Gets a provider by its provider id
@@ -321,4 +329,5 @@ public interface ProviderService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.GET_PROVIDERS })
 	public Provider getUnknownProvider();
+	
 }

@@ -55,6 +55,11 @@ public interface ProviderDAO {
 	 */
 	
 	public Provider getProviderByUuid(String uuid);
+	/**
+	 * @param providerFromUser
+	 * @return Provider create the Provider based on user
+	 */
+	public Provider createProviderFromUser(Provider provider);
 	
 	/**
 	 * @see ProviderService#getProvidersByPerson( Person, boolean )

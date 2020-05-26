@@ -329,4 +329,13 @@ public class HibernateProviderDAO implements ProviderDAO {
 		criteria.add(Restrictions.ilike("identifier", identifier, MatchMode.EXACT));
 		return (Provider) criteria.uniqueResult();
 	}
+    @Override
+	public Provider createProviderFromUser(Provider provider) throws DAOException {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Provider.class);
+		criteria.add(Restrictions.eq("identifier", provider.getProviderId()));		
+		if(provider.getPerson() != null) {
+			return (Provider) criteria.uniqueResult();
+		}
+		return provider;
+	}
 }

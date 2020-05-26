@@ -13,10 +13,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.velocity.runtime.log.Log;
 import org.openmrs.Person;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
+import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
@@ -24,6 +26,7 @@ import org.openmrs.api.db.ProviderDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -36,7 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderService {
 	
 	private ProviderDAO dao;
-	
+
 	/**
 	 * Sets the data access object for Concepts. The dao is used for saving and getting concepts
 	 * to/from the database
@@ -265,7 +268,6 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	public void purgeProviderAttributeType(ProviderAttributeType providerAttributeType) {
 		dao.deleteProviderAttributeType(providerAttributeType);
 	}
-	
 	/**
 	 * @see org.openmrs.api.ProviderService#isProviderIdentifierUnique(Provider)
 	 */
@@ -283,6 +285,23 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	public Provider getProviderByIdentifier(String identifier) {
 		return dao.getProviderByIdentifier(identifier);
 	}
+
+	@Transactional(readOnly = true)
+	public Provider createProviderFromUser(User user) {
+		
+		   Provider p = new Provider();
+		
+               if (user == null || user.getPerson() != null) {
+			   throw new APIException("User cannot be null");
+		    }
+		      else if (Context.getProviderService().getProvidersByPerson(user.getPerson()).isEmpty()) {
+			   p.setPerson(user.getPerson());
+			   return Context.getProviderService().saveProvider(p);
+			   
+		   } else {
+			   throw  new RuntimeException("Provider already exists for user");
+		   }
+	}
 	
 	/**
 	 * @see org.openmrs.api.ProviderService#getUnknownProvider()
@@ -293,4 +312,11 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 		return getProviderByUuid(Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GP_UNKNOWN_PROVIDER_UUID));
 	}
+
+	@Override
+	public Provider createProvider(Provider provider) {
+		Provider p2 = new Provider();
+	    return dao.createProviderFromUser(Context.getProviderService().saveProvider(p2));
+	}
+
 }

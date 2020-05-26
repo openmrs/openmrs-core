@@ -568,5 +568,8 @@ public class PrivilegeConstants {
 
 	@AddOnStartup(description = "Able to delete diagnoses")
 	public static final String DELETE_DIAGNOSES = "Delete Diagnoses";
+	
+    @AddOnStartup(description = "Able to create a provider by User")
+	public static final String CREATE_PROVIDERS = "Create Diagnoses by User";
 
 }
