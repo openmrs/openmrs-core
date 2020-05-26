@@ -240,7 +240,8 @@ public class Security {
 	 * @since 1.9
 	 * <strong>Should</strong> encrypt short and long text
 	 * 
-	 * @deprecated As of version 2.3.0, this method is not referenced in openmrs-core or any other projects under github OpenMRS organisation.
+	 * @deprecated As of version 2.4.0, this method is not referenced in openmrs-core or any other projects under the
+	 * GitHub OpenMRS organisation.
 	 */
 	@Deprecated
 	public static String encrypt(String text) {
@@ -285,7 +286,8 @@ public class Security {
 	 * @since 1.9
 	 * <strong>Should</strong> decrypt short and long text
 	 * 
-	 * @deprecated As of version 2.3.0, this method is not referenced in openmrs-core or any other projects under github OpenMRS organisation.
+	 * @deprecated As of version 2.4.0, this method is not referenced in openmrs-core or any other projects under the
+	 * GitHub OpenMRS organisation.
 	 */
 	@Deprecated
 	public static String decrypt(String text) {
