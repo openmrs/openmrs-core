@@ -106,17 +106,15 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		if (obs.getObsId() == null || obs.getVoided()) {
 			return saveNewOrVoidedObs(obs,changeMessage);
 		} else if(!obs.isDirty()){
-			setPersonFromEncounter(obs);
 			return saveObsNotDirty(obs, changeMessage);
 		} else {
-			setPersonFromEncounter(obs);
 			return saveExistingObs(obs,changeMessage);
 		}
 	}
 
 	private void setPersonFromEncounter(Obs obs) {
 		Encounter encounter = obs.getEncounter();
-		if (encounter != null) {
+		if (encounter != null && encounter.getPatient() != null) {
 			obs.setPerson(encounter.getPatient());
 		}
 	}

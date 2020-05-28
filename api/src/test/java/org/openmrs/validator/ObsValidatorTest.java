@@ -38,6 +38,8 @@ import org.springframework.validation.Errors;
  */
 public class ObsValidatorTest extends BaseContextSensitiveTest {
 	
+	protected static final String ENCOUNTER_OBS_XML = "org/openmrs/api/include/ObsServiceTest-EncounterOverwrite.xml";
+	
 	@Autowired
 	private ObsValidator obsValidator;
 	
@@ -509,6 +511,26 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		new ObsValidator().validate(obs, errors);
 
 		Assert.assertFalse(errors.hasFieldErrors("person"));
+		Assert.assertFalse(errors.hasFieldErrors("concept"));
+		Assert.assertFalse(errors.hasFieldErrors("obsDatetime"));
+		Assert.assertFalse(errors.hasFieldErrors("valueText"));
+	}
+	
+	@Test
+	public void validate_shouldFailWhenObsPersonValueAndEncounterPatientAreNotSame() {
+		executeDataSet(ENCOUNTER_OBS_XML);
+
+		Obs obs = new Obs();
+		obs.setConcept(Context.getConceptService().getConcept(3));
+		obs.setObsDatetime(new Date());
+		obs.setValueText("Testing");
+		obs.setPerson(Context.getPersonService().getPerson(2)); // Setting this person (2) as different from that of encounter person (7)
+		obs.setEncounter(Context.getEncounterService().getEncounter(2));
+
+		Errors errors = new BindException(obs, "obs");
+		new ObsValidator().validate(obs, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("person"));	
 		Assert.assertFalse(errors.hasFieldErrors("concept"));
 		Assert.assertFalse(errors.hasFieldErrors("obsDatetime"));
 		Assert.assertFalse(errors.hasFieldErrors("valueText"));
