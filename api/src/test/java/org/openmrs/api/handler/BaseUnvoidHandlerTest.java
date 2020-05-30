@@ -11,8 +11,8 @@ package org.openmrs.api.handler;
 
 import java.util.Date;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.Voidable;
@@ -31,7 +31,7 @@ public class BaseUnvoidHandlerTest {
 		Voidable voidable = new Person();
 		voidable.setVoided(true);
 		handler.handle(voidable, null, null, null);
-		Assert.assertFalse(voidable.getVoided());
+		Assertions.assertFalse(voidable.getVoided());
 	}
 	
 	/**
@@ -44,7 +44,7 @@ public class BaseUnvoidHandlerTest {
 		voidable.setVoided(true);
 		voidable.setVoidedBy(new User(1));
 		handler.handle(voidable, null, null, null);
-		Assert.assertNull(voidable.getVoidedBy());
+		Assertions.assertNull(voidable.getVoidedBy());
 	}
 	
 	/**
@@ -57,7 +57,7 @@ public class BaseUnvoidHandlerTest {
 		voidable.setVoided(true);
 		voidable.setDateVoided(new Date());
 		handler.handle(voidable, null, null, null);
-		Assert.assertNull(voidable.getDateVoided());
+		Assertions.assertNull(voidable.getDateVoided());
 	}
 	
 	/**
@@ -70,7 +70,7 @@ public class BaseUnvoidHandlerTest {
 		voidable.setVoided(true);
 		voidable.setVoidReason("SOME REASON");
 		handler.handle(voidable, null, null, null);
-		Assert.assertNull(voidable.getVoidReason());
+		Assertions.assertNull(voidable.getVoidReason());
 	}
 	
 	/**
@@ -82,7 +82,7 @@ public class BaseUnvoidHandlerTest {
 		Voidable voidable = new Person();
 		voidable.setVoided(false);
 		handler.handle(voidable, null, null, "SOME REASON");
-		Assert.assertNull(voidable.getVoidReason());
+		Assertions.assertNull(voidable.getVoidReason());
 	}
 	
 	/**
@@ -98,6 +98,6 @@ public class BaseUnvoidHandlerTest {
 		voidable.setDateVoided(d);
 		
 		handler.handle(voidable, null, new Date(), "SOME REASON");
-		Assert.assertTrue(voidable.getVoided());
+		Assertions.assertTrue(voidable.getVoided());
 	}
 }

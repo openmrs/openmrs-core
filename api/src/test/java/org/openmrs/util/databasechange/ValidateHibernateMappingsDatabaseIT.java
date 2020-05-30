@@ -16,9 +16,7 @@ import javax.persistence.Entity;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 import org.openmrs.api.OrderServiceTest;
 import org.openmrs.liquibase.ChangeLogVersionFinder;
 import org.openmrs.util.H2DatabaseIT;
@@ -32,9 +30,6 @@ import org.slf4j.LoggerFactory;
 public class ValidateHibernateMappingsDatabaseIT extends H2DatabaseIT {
 	
 	private static final Logger log = LoggerFactory.getLogger(ValidateHibernateMappingsDatabaseIT.class);
-	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	
 	@Test
 	public void shouldValidateHibernateMappings() throws Exception {

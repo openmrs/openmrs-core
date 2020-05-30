@@ -11,9 +11,9 @@ package org.openmrs;
 
 import java.util.Date;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class PatientStateTest {
 	
@@ -31,7 +31,7 @@ public class PatientStateTest {
 	
 	private String uuid1;
 	
-	@Before
+	@BeforeEach
 	public void before() {
 		inRange = new Date();
 		leftRange = new Date(inRange.getTime() - 10000);
@@ -55,7 +55,7 @@ public class PatientStateTest {
 		boolean active = patientState.getActive(inRange);
 		
 		//then
-		Assert.assertFalse(active);
+		Assertions.assertFalse(active);
 	}
 	
 	/**
@@ -73,7 +73,7 @@ public class PatientStateTest {
 		boolean active = patientState.getActive(rightOutOfRange);
 		
 		//then
-		Assert.assertFalse(active);
+		Assertions.assertFalse(active);
 	}
 	
 	/**
@@ -91,7 +91,7 @@ public class PatientStateTest {
 		boolean active = patientState.getActive(inRange);
 		
 		//then
-		Assert.assertTrue(active);
+		Assertions.assertTrue(active);
 	}
 	
 	/**
@@ -109,7 +109,7 @@ public class PatientStateTest {
 		boolean active = patientState.getActive(inRange);
 		
 		//then
-		Assert.assertTrue(active);
+		Assertions.assertTrue(active);
 	}
 	
 	/**
@@ -127,7 +127,7 @@ public class PatientStateTest {
 		boolean active = patientState.getActive(inRange);
 		
 		//then
-		Assert.assertTrue(active);
+		Assertions.assertTrue(active);
 	}
 	
 	/**
@@ -145,7 +145,7 @@ public class PatientStateTest {
 		boolean active = patientState.getActive(inRange);
 		
 		//then
-		Assert.assertTrue(active);
+		Assertions.assertTrue(active);
 	}
 	
 	/**
@@ -163,7 +163,7 @@ public class PatientStateTest {
 		boolean active = patientState.getActive(null);
 		
 		//then
-		Assert.assertFalse(active);
+		Assertions.assertFalse(active);
 	}
 	
 	/**
@@ -181,7 +181,7 @@ public class PatientStateTest {
 		boolean active = patientState.getActive(leftOutOfRange);
 		
 		//then
-		Assert.assertFalse(active);
+		Assertions.assertFalse(active);
 	}
 	
 	/**
@@ -199,7 +199,7 @@ public class PatientStateTest {
 		boolean active = patientState.getActive(rightOutOfRange);
 		
 		//then
-		Assert.assertFalse(active);
+		Assertions.assertFalse(active);
 	}
 	
 	/**
@@ -222,7 +222,7 @@ public class PatientStateTest {
 		int result = patientState.compareTo(patientState2);
 		
 		//then
-		Assert.assertTrue(result > 0);
+		Assertions.assertTrue(result > 0);
 	}
 	
 	/**
@@ -245,7 +245,7 @@ public class PatientStateTest {
 		int result = patientState.compareTo(patientState2);
 		
 		//then
-		Assert.assertTrue(result < 0);
+		Assertions.assertTrue(result < 0);
 	}
 	
 	/**
@@ -266,7 +266,7 @@ public class PatientStateTest {
 		patientState2.setUuid(uuid1);
 		patientState2.setVoided(false);
 		
-		Assert.assertTrue(patientState.compareTo(patientState2) == 0);
+		Assertions.assertTrue(patientState.compareTo(patientState2) == 0);
 	}
 	
 	/**
@@ -291,6 +291,6 @@ public class PatientStateTest {
 		
 		int result = (patientState.compareTo(patientState2));
 		
-		Assert.assertTrue(result <= -1 || result >= 1);
+		Assertions.assertTrue(result <= -1 || result >= 1);
 	}
 }

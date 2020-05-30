@@ -13,9 +13,9 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class DateOrDatetimeEditorTest {
 	
@@ -23,7 +23,7 @@ public class DateOrDatetimeEditorTest {
 	
 	DateFormat ymdhm = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	
-	@Before
+	@BeforeEach
 	public void before() {
 		ed = new DateOrDatetimeEditor();
 	}
@@ -35,7 +35,7 @@ public class DateOrDatetimeEditorTest {
 	@Test
 	public void getAsText_shouldPrintDateWithoutTime() throws ParseException {
 		ed.setValue(ymdhm.parse("2011-10-27 00:00"));
-		Assert.assertEquals("27/10/2011", ed.getAsText());
+		Assertions.assertEquals("27/10/2011", ed.getAsText());
 	}
 	
 	/**
@@ -45,7 +45,7 @@ public class DateOrDatetimeEditorTest {
 	@Test
 	public void getAsText_shouldPrintDateAndTimeWithTime() throws ParseException {
 		ed.setValue(ymdhm.parse("2011-10-27 17:59"));
-		Assert.assertEquals("27/10/2011 17:59", ed.getAsText());
+		Assertions.assertEquals("27/10/2011 17:59", ed.getAsText());
 	}
 	
 	/**
@@ -55,7 +55,7 @@ public class DateOrDatetimeEditorTest {
 	@Test
 	public void setAsText_shouldHandleDate() throws ParseException {
 		ed.setAsText("27/10/2011");
-		Assert.assertEquals(ymdhm.parse("2011-10-27 00:00"), ed.getValue());
+		Assertions.assertEquals(ymdhm.parse("2011-10-27 00:00"), ed.getValue());
 	}
 	
 	/**
@@ -65,22 +65,23 @@ public class DateOrDatetimeEditorTest {
 	@Test
 	public void setAsText_shouldHandleDateAndTime() throws ParseException {
 		ed.setAsText("27/10/2011 17:59");
-		Assert.assertEquals(ymdhm.parse("2011-10-27 17:59"), ed.getValue());
+		Assertions.assertEquals(ymdhm.parse("2011-10-27 17:59"), ed.getValue());
 	}
 	
 	/**
 	 * @see DateOrDatetimeEditor#setAsText(String)
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void setAsText_shouldFailOnPartialDate() {
-		ed.setAsText("27/10");
+		Assertions.assertThrows(IllegalArgumentException.class,() ->ed.setAsText("27/10"));
 	}
 	
 	/**
 	 * @see DateOrDatetimeEditor#setAsText(String)
 	 */
-	@Test(expected = IllegalArgumentException.class)
-	public void setAsText_shouldFailOnPartialDateAndTime() {
-		ed.setAsText("27/10/2011 17");
+	@Test
+	public void setAsText_shouldFailOnPartialDateAndTime()
+	{
+		Assertions.assertThrows(IllegalArgumentException.class ,() ->ed.setAsText("27/10/2011 17"));
 	}
 }

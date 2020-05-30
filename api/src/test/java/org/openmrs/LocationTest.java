@@ -10,15 +10,15 @@
 package org.openmrs;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Test;
 
 public class LocationTest {
 	
@@ -64,7 +64,7 @@ public class LocationTest {
 		
 		Set<Location> expectedLocations = new HashSet<>(Arrays.asList(locationOne, locationTwo, childOflocationOne,
 		    childOnfLocationTwo));
-		Assert.assertThat(descendantLocations, equalTo(expectedLocations));
+		MatcherAssert.assertThat(descendantLocations, equalTo(expectedLocations));
 		
 	}
 	
@@ -100,6 +100,6 @@ public class LocationTest {
 		Set<Location> expectedLocations = new HashSet<>(Arrays.asList(nonRetiredLocation,
 		    firstChildOfNonRetiredLocation, secondChildOfNonRetiredLocation));
 		
-		Assert.assertThat(descendantLocations, equalTo(expectedLocations));
+		MatcherAssert.assertThat(descendantLocations, equalTo(expectedLocations));
 	}
 }

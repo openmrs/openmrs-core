@@ -11,8 +11,8 @@ package org.openmrs.util;
 
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the methods on the {@link Graph} class
@@ -46,18 +46,18 @@ public class GraphTest {
 		                             "D", "E"));
 		
 		List<String> sortedNodes = graph.topologicalSort();
-		Assert.assertTrue(sortedNodes.indexOf("A") < sortedNodes.indexOf("B"));
-		Assert.assertTrue(sortedNodes.indexOf("A") < sortedNodes.indexOf("C"));
-		Assert.assertTrue(sortedNodes.indexOf("B") < sortedNodes.indexOf("C"));
-		Assert.assertTrue(sortedNodes.indexOf("B") < sortedNodes.indexOf("D"));
-		Assert.assertTrue(sortedNodes.indexOf("D") < sortedNodes.indexOf("E"));
+		Assertions.assertTrue(sortedNodes.indexOf("A") < sortedNodes.indexOf("B"));
+		Assertions.assertTrue(sortedNodes.indexOf("A") < sortedNodes.indexOf("C"));
+		Assertions.assertTrue(sortedNodes.indexOf("B") < sortedNodes.indexOf("C"));
+		Assertions.assertTrue(sortedNodes.indexOf("B") < sortedNodes.indexOf("D"));
+		Assertions.assertTrue(sortedNodes.indexOf("D") < sortedNodes.indexOf("E"));
 	}
 	
 	/**
 	 * @throws CycleException 
 	 * @see Graph#topologicalSort()
 	 */
-	@Test(expected = CycleException.class)
+	
 	public void topologicalSort_shouldThrowCycleException() throws CycleException {
 		
 		Graph<String> graph = new Graph<>();
@@ -79,7 +79,7 @@ public class GraphTest {
 		graph.addEdge(graph.new Edge(
 		                             "D", "A"));
 		
-		graph.topologicalSort();
+		Assertions.assertThrows(CycleException.class,() -> graph.topologicalSort());
 	}
 	
 }

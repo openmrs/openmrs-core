@@ -16,8 +16,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Visit;
@@ -37,7 +37,7 @@ public class ReflectTest {
 		List<Field> allFields = Reflect.getAllFields(OpenmrsObjectImp.class);
 		
 		Field genericCollectionField = findFieldByName(allFields, "genericCollectionField");
-		Assert.assertTrue(reflect.hasField(genericCollectionField));
+		Assertions.assertTrue(reflect.hasField(genericCollectionField));
 	}
 	
 	/**
@@ -50,7 +50,7 @@ public class ReflectTest {
 		
 		Field normalClassField = findFieldByName(allFields, "normalClassField");
 		
-		Assert.assertFalse(reflect.hasField(normalClassField));
+		Assertions.assertFalse(reflect.hasField(normalClassField));
 	}
 	
 	private Field findFieldByName(List<Field> fields, String name) {
@@ -84,7 +84,7 @@ public class ReflectTest {
 		List<Field> allFields = Reflect.getAllFields(OpenmrsObjectImp.class);
 		
 		Field nonCollectionField = findFieldByName(allFields, "nonCollectionField");
-		Assert.assertFalse(reflect.isCollectionField(nonCollectionField));
+		Assertions.assertFalse(reflect.isCollectionField(nonCollectionField));
 	}
 	
 	/**
@@ -92,7 +92,7 @@ public class ReflectTest {
 	 */
 	@Test
 	public void isCollection_shouldReturnTrueIfGivenFieldClassIsCollectionClass() {
-		Assert.assertTrue(Reflect.isCollection(ArrayList.class));
+		Assertions.assertTrue(Reflect.isCollection(ArrayList.class));
 	}
 	
 	/**
@@ -100,7 +100,7 @@ public class ReflectTest {
 	 */
 	@Test
 	public void isCollection_shouldReturnFalseIfGivenObjectIsNotACollection() {
-		Assert.assertFalse(Reflect.isCollection(new NormalClass()));
+		Assertions.assertFalse(Reflect.isCollection(new NormalClass()));
 	}
 	
 	/**
@@ -108,15 +108,16 @@ public class ReflectTest {
 	 */
 	@Test
 	public void isCollection_shouldReturnTrueIfGivenObjectIsCollectionClass() {
-		Assert.assertTrue(Reflect.isCollection(new ArrayList<>()));
+		Assertions.assertTrue(Reflect.isCollection(new ArrayList<>()));
 	}
 	
 	/**
 	 * @see Reflect#Reflect(Class)
 	 */
-	@Test(expected = NullPointerException.class)
+	@Test
 	public void Reflect_shouldThrowExceptionWhenNullIsPassed() {
-		new Reflect(null);
+		
+		Assertions.assertThrows(NullPointerException.class ,() -> new Reflect(null));
 	}
 	
 	/**
@@ -134,7 +135,7 @@ public class ReflectTest {
 		findFieldByName(fields, "genericCollectionField");
 		
 		Field normalClassField = findFieldByName(allFields, "normalClassField");
-		Assert.assertFalse(fields.contains(normalClassField));
+		Assertions.assertFalse(fields.contains(normalClassField));
 	}
 	
 	/**
@@ -146,8 +147,8 @@ public class ReflectTest {
 		Reflect reflect = new Reflect(OpenmrsObject.class);
 		List<Field> allFields = Reflect.getAllFields(OpenmrsObjectImp.class);
 		
-		Assert.assertEquals("subClassField", allFields.get(1).getName());
-		Assert.assertTrue(reflect.isCollectionField(allFields.get(1)));
+		Assertions.assertEquals("subClassField", allFields.get(1).getName());
+		Assertions.assertTrue(reflect.isCollectionField(allFields.get(1)));
 	}
 	
 	/**
@@ -155,7 +156,7 @@ public class ReflectTest {
 	 */
 	@Test
 	public void isCollectionField_shouldReturnFalseIfGivenFieldIsNotACollection() {
-		Assert.assertFalse(Reflect.isCollection(NormalClass.class));
+		Assertions.assertFalse(Reflect.isCollection(NormalClass.class));
 	}
 	
 	/**
@@ -167,7 +168,7 @@ public class ReflectTest {
 		List<Field> allFields = Reflect.getAllFields(OpenmrsObjectImp.class);
 		
 		Field genericCollectionField = findFieldByName(allFields, "genericCollectionField");
-		Assert.assertFalse(reflect.isCollectionField(genericCollectionField));
+		Assertions.assertFalse(reflect.isCollectionField(genericCollectionField));
 	}
 	
 	/**
@@ -177,7 +178,7 @@ public class ReflectTest {
 	public void isSuperClass_shouldReturnFalseIfGivenSubClassIsNotAccessibleFromGivenParameterizedClass() {
 		Reflect reflect = new Reflect(OpenmrsObject.class);
 		
-		Assert.assertFalse(reflect.isSuperClass(new NormalClass()));
+		Assertions.assertFalse(reflect.isSuperClass(new NormalClass()));
 	}
 	
 	/**
@@ -187,7 +188,7 @@ public class ReflectTest {
 	public void isSuperClass_shouldReturnTrueIfGivenSubClassIsAccessibleFromGivenParameterizedClass() {
 		Reflect reflect = new Reflect(OpenmrsObject.class);
 		
-		Assert.assertTrue(reflect.isSuperClass(OpenmrsObjectImp.class));
+		Assertions.assertTrue(reflect.isSuperClass(OpenmrsObjectImp.class));
 	}
 	
 	/**
@@ -197,7 +198,7 @@ public class ReflectTest {
 	public void isSuperClass_shouldReturnFalseIfGivenObjectIsNotAccessibleFromGivenParameterizedClass() {
 		Reflect reflect = new Reflect(OpenmrsObject.class);
 		
-		Assert.assertFalse(reflect.isSuperClass(NormalClass.class));
+		Assertions.assertFalse(reflect.isSuperClass(NormalClass.class));
 	}
 	
 	/**
@@ -207,7 +208,7 @@ public class ReflectTest {
 	public void isSuperClass_shouldReturnTrueIfGivenObjectIsAccessibleFromGivenParameterizedClass() {
 		Reflect reflect = new Reflect(OpenmrsObject.class);
 		
-		Assert.assertTrue(reflect.isSuperClass(new OpenmrsObjectImp()));
+		Assertions.assertTrue(reflect.isSuperClass(new OpenmrsObjectImp()));
 	}
 	
 	/**
@@ -219,7 +220,7 @@ public class ReflectTest {
 		Field field = ReflectionUtils.findField(Visit.class, "attributes");
 		ParameterizedType setOfAttr = (ParameterizedType) field.getGenericType();
 		Type genericType = setOfAttr.getActualTypeArguments()[0];
-		Assert.assertTrue(reflect.isSuperClass(genericType));
+		Assertions.assertTrue(reflect.isSuperClass(genericType));
 	}
 	
 	/**
@@ -231,7 +232,7 @@ public class ReflectTest {
 		Field field = ReflectionUtils.findField(Visit.class, "attributes");
 		ParameterizedType setOfAttr = (ParameterizedType) field.getGenericType();
 		Type genericType = setOfAttr.getActualTypeArguments()[0];
-		Assert.assertFalse(reflect.isSuperClass(genericType));
+		Assertions.assertFalse(reflect.isSuperClass(genericType));
 	}
 	
 }

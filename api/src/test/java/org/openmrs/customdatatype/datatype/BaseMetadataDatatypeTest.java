@@ -9,8 +9,8 @@
  */
 package org.openmrs.customdatatype.datatype;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Location;
 import org.openmrs.OpenmrsMetadata;
 import org.openmrs.customdatatype.CustomDatatype;
@@ -27,7 +27,7 @@ public class BaseMetadataDatatypeTest {
 		location.setName(expectedSummary);
 		BaseMetadataDatatype datatype = new MockLocationDatatype();
 		CustomDatatype.Summary summary = datatype.doGetTextSummary(location);
-		Assert.assertEquals(expectedSummary, summary.getSummary());
-		Assert.assertEquals(true, summary.isComplete());
+		Assertions.assertEquals(expectedSummary, summary.getSummary());
+		Assertions.assertEquals(true, summary.isComplete());
 	}
 }

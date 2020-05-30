@@ -15,8 +15,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -65,7 +67,7 @@ public class ChangeLogVersionFinderTest {
 	
 	private ChangeLogVersions changeLogVersions;
 	
-	@Before
+	@BeforeEach
 	public void setup() {
 		changeLogVersions = mock(ChangeLogVersions.class);
 		
@@ -155,9 +157,9 @@ public class ChangeLogVersionFinderTest {
 		assertTrue(actual.isEmpty());
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void shouldHandleEmtpyString() {
-		changeLogVersionFinder.getUpdateVersionsGreaterThan("");
+		Assertions.assertThrows(IllegalArgumentException.class,() ->changeLogVersionFinder.getUpdateVersionsGreaterThan(""));
 	}
 	
 	@Test
@@ -197,8 +199,8 @@ public class ChangeLogVersionFinderTest {
 		assertEquals(expected, actual);
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void shouldHandleNonPatternMatchingVersionName() {
-		changeLogVersionFinder.getVersionAsDotX(OPENMRS_NOT_A_VERSION);
+		Assertions.assertThrows(IllegalArgumentException.class,()-> changeLogVersionFinder.getVersionAsDotX(OPENMRS_NOT_A_VERSION));
 	}
 }

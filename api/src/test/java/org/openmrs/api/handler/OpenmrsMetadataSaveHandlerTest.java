@@ -11,8 +11,8 @@ package org.openmrs.api.handler;
 
 import java.util.Date;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Location;
 import org.openmrs.OpenmrsMetadata;
 import org.openmrs.User;
@@ -32,7 +32,7 @@ public class OpenmrsMetadataSaveHandlerTest {
 		Location loc = new Location();
 		loc.setName(" " + NAME + " ");
 		handler.handle(loc, null, null, null);
-		Assert.assertEquals(NAME, loc.getName());
+		Assertions.assertEquals(NAME, loc.getName());
 	}
 	
 	/**
@@ -46,6 +46,6 @@ public class OpenmrsMetadataSaveHandlerTest {
 		loc.setName("a name");
 		loc.setDescription(" " + DESC + " ");
 		handler.handle(loc, null, null, null);
-		Assert.assertEquals(DESC, loc.getDescription());
+		Assertions.assertEquals(DESC, loc.getDescription());
 	}
 }

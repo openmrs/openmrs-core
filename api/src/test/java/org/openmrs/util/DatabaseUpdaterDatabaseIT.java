@@ -9,14 +9,13 @@
  */
 package org.openmrs.util;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.openmrs.liquibase.ChangeLogVersionFinder;
+
 import java.util.List;
 import java.util.Map;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.openmrs.liquibase.ChangeLogVersionFinder;
 
 import static org.junit.Assert.assertEquals;
 
@@ -32,15 +31,13 @@ public class DatabaseUpdaterDatabaseIT extends H2DatabaseIT {
 	 */
 	private static final int CHANGE_SET_COUNT_FOR_2_1_X = 863;
 	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	
-	@Before
+	@BeforeEach
 	public void setup() {
 		DatabaseUpdater.setLiquibaseProvider(this);
 	}
 	
-	@After
+	@AfterEach
 	public void tearDown() {
 		DatabaseUpdater.unsetLiquibaseProvider();
 	}

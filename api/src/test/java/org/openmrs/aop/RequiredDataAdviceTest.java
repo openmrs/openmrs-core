@@ -9,28 +9,6 @@
  */
 package org.openmrs.aop;
 
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -67,6 +45,27 @@ import org.openmrs.util.HandlerUtil;
 import org.openmrs.util.Reflect;
 import org.openmrs.util.RoleConstants;
 import org.springframework.context.ApplicationContext;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests the {@link RequiredDataAdvice} class.
@@ -350,7 +349,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see RequiredDataAdvice#isHandlerMarkedAsDisabled(Class, java.lang.reflect.Field)
+	 * @see RequiredDataAdvice#isHandlerMarkedAsDisabled(Class, Field)
 	 */
 	@Test
 	public void isHandlerMarkedAsDisabled_shouldReturnTrueIfHandlerDisabled() {
@@ -368,7 +367,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see RequiredDataAdvice#isHandlerMarkedAsDisabled(Class, java.lang.reflect.Field)
+	 * @see RequiredDataAdvice#isHandlerMarkedAsDisabled(Class, Field)
 	 */
 	@Test
 	public void isHandlerMarkedAsDisabled_shouldReturnFalseIfHandlerNotDisabled() {
@@ -385,7 +384,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see RequiredDataAdvice#isHandlerMarkedAsDisabled(Class, java.lang.reflect.Field)
+	 * @see RequiredDataAdvice#isHandlerMarkedAsDisabled(Class, Field)
 	 */
 	@Test
 	public void isHandlerMarkedAsDisabled_shouldReturnFalseIfFieldNotAnnotated() {
@@ -439,7 +438,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see RequiredDataAdvice#isHandlerMarkedAsDisabled(Class, java.lang.reflect.Field)
+	 * @see RequiredDataAdvice#isHandlerMarkedAsDisabled(Class, Field)
 	 */
 	@Test
 	public void isHandlerMarkedAsDisabled_shouldReturnTrueIfSupertypeHandlerDisabled() {
@@ -487,7 +486,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see RequiredDataAdvice#isHandlerMarkedAsDisabled(Class, java.lang.reflect.Field)
+	 * @see RequiredDataAdvice#isHandlerMarkedAsDisabled(Class, Field)
 	 */
 	@Test
 	public void isHandlerMarkedAsDisabled_shouldReturnTrueIfHandlerDisabledOnMetadata() {
@@ -504,7 +503,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see RequiredDataAdvice#isHandlerMarkedAsDisabled(Class, java.lang.reflect.Field)
+	 * @see RequiredDataAdvice#isHandlerMarkedAsDisabled(Class, Field)
 	 */
 	@Test
 	public void isHandlerMarkedAsDisabled_shouldReturnFalseIfHandlerNotDisabledOnMetatdata() {

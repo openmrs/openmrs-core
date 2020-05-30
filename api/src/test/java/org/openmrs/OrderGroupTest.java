@@ -9,9 +9,11 @@
  */
 package org.openmrs;
 
+import org.junit.jupiter.api.Test;
+
 import java.util.List;
-import org.junit.Assert;
-import org.junit.Test;
+
+import static org.springframework.test.util.AssertionErrors.assertNotNull;
 
 public class OrderGroupTest {
 
@@ -28,7 +30,7 @@ public class OrderGroupTest {
 
         List<Order> orders = orderGroup.getOrders();
 
-        Assert.assertNotNull("should have orderGroup in order", orders.get(0).getOrderGroup());
-        Assert.assertNotNull("should have orderGroup in order", orders.get(1).getOrderGroup());
+        assertNotNull("should have orderGroup in order", orders.get(0).getOrderGroup());
+        assertNotNull("should have orderGroup in order", orders.get(1).getOrderGroup());
     }
 }

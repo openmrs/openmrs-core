@@ -9,8 +9,8 @@
  */
 package org.openmrs;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * This tests methods on the provider object.
@@ -27,7 +27,7 @@ public class ProviderTest {
 		Person person = new Person(1);
 		person.addName(new PersonName("givenName", "middleName", "familyName"));
 		provider.setPerson(person);
-		Assert.assertEquals(person.getPersonName().getFullName(), provider.getName());
+		Assertions.assertEquals(person.getPersonName().getFullName(), provider.getName());
 	}
 	
 	/**
@@ -42,7 +42,7 @@ public class ProviderTest {
 		Person person = new Person(1);
 		person.addName(new PersonName("givenName", "middleName", "familyName"));
 		provider.setPerson(person);
-		Assert.assertEquals(provider.toString(), "[Provider: providerId:1 providerName:[givenName middleName familyName] ]");
+		Assertions.assertEquals(provider.toString(), "[Provider: providerId:1 providerName:[givenName middleName familyName] ]");
 	}
 	
 }

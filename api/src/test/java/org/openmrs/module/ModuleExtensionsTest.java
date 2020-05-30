@@ -9,11 +9,12 @@
  */
 package org.openmrs.module;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.sameInstance;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.openmrs.messagesource.MessageSourceService;
+import org.openmrs.test.BaseContextMockTest;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -22,12 +23,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.openmrs.messagesource.MessageSourceService;
-import org.openmrs.test.BaseContextMockTest;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 
 /**
  * Tests for {@link Module#getExtensions()}.
@@ -203,21 +203,21 @@ public class ModuleExtensionsTest extends BaseContextMockTest {
 
 	static class AccessibleExtension extends Extension {
 		@Override
-		public Extension.MEDIA_TYPE getMediaType() {
+		public MEDIA_TYPE getMediaType() {
 			return null;
 		}
 	}
 	
 	static class AnotherAccessibleExtension extends Extension {
 		@Override
-		public Extension.MEDIA_TYPE getMediaType() {
+		public MEDIA_TYPE getMediaType() {
 			return null;
 		}
 	}
 	
 	static class ExtensionCausingIllegalAccessException extends Extension {
 		@Override
-		public Extension.MEDIA_TYPE getMediaType() {
+		public MEDIA_TYPE getMediaType() {
 			return null;
 		}
 		private ExtensionCausingIllegalAccessException() {

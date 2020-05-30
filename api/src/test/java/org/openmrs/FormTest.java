@@ -9,8 +9,8 @@
  */
 package org.openmrs;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * This class tests the all of the {@link Form} non-trivial object methods.
@@ -27,6 +27,6 @@ public class FormTest {
 	@Test
 	public void Form_shouldSetFormIdWithGivenParameter() {
 		Form form = new Form(123);
-		Assert.assertEquals(123, form.getFormId().intValue());
+		Assertions.assertEquals(123, form.getFormId().intValue());
 	}
 }

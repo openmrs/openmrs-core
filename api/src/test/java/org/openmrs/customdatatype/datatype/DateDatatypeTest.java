@@ -13,15 +13,15 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class DateDatatypeTest {
 	
 	DateDatatype datatype;
 	
-	@Before
+	@BeforeEach
 	public void before() {
 		datatype = new DateDatatype();
 	}
@@ -33,7 +33,7 @@ public class DateDatatypeTest {
 	@Test
 	public void deserialize_shouldReconstructADateSerializedByThisHandler() throws ParseException {
 		Date date = new SimpleDateFormat("yyyy-MM-dd").parse("2011-04-25");
-		Assert.assertEquals(date, datatype.deserialize(datatype.serialize(date)));
+		Assertions.assertEquals(date, datatype.deserialize(datatype.serialize(date)));
 	}
 	
 	/**
@@ -43,6 +43,6 @@ public class DateDatatypeTest {
 	@Test
 	public void serialize_shouldConvertADateIntoAYmdStringRepresentation() throws ParseException {
 		Date date = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse("2011-04-25 01:02:03");
-		Assert.assertEquals("2011-04-25", datatype.serialize(date));
+		Assertions.assertEquals("2011-04-25", datatype.serialize(date));
 	}
 }

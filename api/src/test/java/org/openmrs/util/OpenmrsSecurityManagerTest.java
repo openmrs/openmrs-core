@@ -9,8 +9,8 @@
  */
 package org.openmrs.util;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.openmrs.api.APIException;
 
 /**
@@ -25,15 +25,16 @@ public class OpenmrsSecurityManagerTest {
 	public void getCallerClass_shouldGetTheMostRecentlyCalledMethod() {
 		OpenmrsSecurityManager openmrsSecurityManager = new OpenmrsSecurityManager();
 		Class<?> callerClass = openmrsSecurityManager.getCallerClass(0);
-		Assert.assertTrue("Oops, didn't get a junit type of class: " + callerClass, callerClass.getPackage().getName()
-		        .contains("junit"));
+		Assertions.assertTrue(callerClass.getPackage().getName()
+						.contains("junit"), "Oops, didn't get a junit type of class: " + callerClass);
 	}
 	
 	/**
 	 * @see OpenmrsSecurityManager#getCallerClass(int)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void getCallerClass_shouldThrowAnErrorIfGivenASubzeroCallStackLevel() {
-		new OpenmrsSecurityManager().getCallerClass(-1);
+		Assertions.assertThrows(APIException.class,() -> new OpenmrsSecurityManager().getCallerClass(-1));
+	
 	}
 }

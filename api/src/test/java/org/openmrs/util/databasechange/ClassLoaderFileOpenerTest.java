@@ -9,14 +9,15 @@
  */
 package org.openmrs.util.databasechange;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.util.ClassLoaderFileOpener;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -47,11 +48,11 @@ public class ClassLoaderFileOpenerTest {
 		assertEquals(0, inputStreamSet.size());
 	}
 	
-	@Test(expected = UnsupportedOperationException.class)
+	@Test
 	public void shouldIndicateThatListIsNotSupported() throws IOException {
 		ClassLoader classLoader = mock(ClassLoader.class);
 		
 		ClassLoaderFileOpener classLoaderFileOpener = new ClassLoaderFileOpener(classLoader);
-		classLoaderFileOpener.list("", "", false, false, false);
+		assertThrows(UnsupportedOperationException.class,() ->classLoaderFileOpener.list("", "", false, false, false));
 	}
 }

@@ -9,8 +9,8 @@
  */
 package org.openmrs.util;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 
@@ -29,7 +29,7 @@ public class PersonByNameComparatorTest {
 		Person person2 = new Person();
 		person2.addName(new PersonName("givenName", "middleNamf", "familyName"));
 		int actualValue = PersonByNameComparator.comparePersonsByName(person1, person2);
-		Assert.assertTrue("Expected a negative value but it was: " + actualValue, actualValue < 0);
+		Assertions.assertTrue(actualValue < 0, "Expected a negative value but it was: " + actualValue);
 	}
 	
 	/**
@@ -42,7 +42,7 @@ public class PersonByNameComparatorTest {
 		Person person2 = new Person();
 		person2.addName(new PersonName("givenName", "middleName", "familyName"));
 		int actualValue = PersonByNameComparator.comparePersonsByName(person1, person2);
-		Assert.assertTrue("Expected a positive value but it was: " + actualValue, actualValue > 0);
+		Assertions.assertTrue(actualValue > 0, "Expected a positive value but it was: " + actualValue);
 	}
 	
 	/**
@@ -55,7 +55,7 @@ public class PersonByNameComparatorTest {
 		Person person2 = new Person();
 		person2.addName(new PersonName("givenName", "middleName", "familyName"));
 		int actualValue = PersonByNameComparator.comparePersonsByName(person1, person2);
-		Assert.assertTrue("Expected zero but it was: " + actualValue, actualValue == 0);
+		Assertions.assertTrue(actualValue == 0, "Expected zero but it was: " + actualValue);
 	}
 	
 	@Test
@@ -65,6 +65,6 @@ public class PersonByNameComparatorTest {
 		Person person2 = new Person();
 		person2.addName(new PersonName("givenName", "middleName", "familyName"));
 		int actualValue = PersonByNameComparator.comparePersonsByName(person1, person2);
-		Assert.assertTrue("Expected zero but it was: " + actualValue, actualValue == 0);
+		Assertions.assertTrue(actualValue == 0, "Expected zero but it was: " + actualValue);
 	}
 }

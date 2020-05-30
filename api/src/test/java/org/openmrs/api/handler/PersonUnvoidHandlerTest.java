@@ -11,8 +11,8 @@ package org.openmrs.api.handler;
 
 import java.util.Date;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Person;
 import org.openmrs.User;
 
@@ -30,7 +30,7 @@ public class PersonUnvoidHandlerTest {
 		Person person = new Person();
 		person.setPersonVoided(true); // make sure personVoided is set
 		handler.handle(person, null, null, null);
-		Assert.assertFalse(person.getPersonVoided());
+		Assertions.assertFalse(person.getPersonVoided());
 	}
 	
 	/**
@@ -43,7 +43,7 @@ public class PersonUnvoidHandlerTest {
 		person.setPersonVoided(true);
 		person.setPersonVoidedBy(new User(1));
 		handler.handle(person, null, null, null);
-		Assert.assertNull(person.getPersonVoidedBy());
+		Assertions.assertNull(person.getPersonVoidedBy());
 	}
 	
 	/**
@@ -56,7 +56,7 @@ public class PersonUnvoidHandlerTest {
 		person.setPersonVoided(true);
 		person.setPersonDateVoided(new Date());
 		handler.handle(person, null, null, null);
-		Assert.assertNull(person.getPersonDateVoided());
+		Assertions.assertNull(person.getPersonDateVoided());
 	}
 	
 	/**
@@ -69,7 +69,7 @@ public class PersonUnvoidHandlerTest {
 		person.setPersonVoided(true);
 		person.setPersonVoidReason("SOME REASON");
 		handler.handle(person, null, null, null);
-		Assert.assertNull(person.getPersonVoidReason());
+		Assertions.assertNull(person.getPersonVoidReason());
 	}
 	
 	/**
@@ -81,7 +81,7 @@ public class PersonUnvoidHandlerTest {
 		Person person = new Person();
 		person.setPersonVoided(false);
 		handler.handle(person, null, null, "SOME REASON");
-		Assert.assertNull(person.getPersonVoidReason());
+		Assertions.assertNull(person.getPersonVoidReason());
 	}
 	
 	/**
@@ -97,6 +97,6 @@ public class PersonUnvoidHandlerTest {
 		person.setPersonDateVoided(d);
 		
 		handler.handle(person, null, new Date(), "SOME REASON");
-		Assert.assertTrue(person.getPersonVoided());
+		Assertions.assertTrue(person.getPersonVoided());
 	}
 }

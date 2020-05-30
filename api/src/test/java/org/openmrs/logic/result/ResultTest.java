@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Test;
 import org.openmrs.Encounter;
 import org.openmrs.api.context.Context;
@@ -31,7 +31,7 @@ public class ResultTest {
 	public void toObject_shouldReturnResultObjectForSingleResults() {
 		Result firstResult = new Result(new Date(), "some value", new Encounter(123));
 		
-		Assert.assertEquals(123, ((Encounter) firstResult.toObject()).getId().intValue());
+		Assertions.assertEquals(123, ((Encounter) firstResult.toObject()).getId().intValue());
 	}
 	
 	@Test
@@ -58,7 +58,7 @@ public class ResultTest {
 		parentResult.add(firstResult);
 		parentResult.add(secondResult);
 		
-		Assert.assertEquals("some value", parentResult.earliest().toString());
+		Assertions.assertEquals("some value", parentResult.earliest().toString());
 	}
 	
 	@Test
@@ -70,13 +70,13 @@ public class ResultTest {
 		parentResult.add(firstResult);
 		parentResult.add(secondResult);
 		
-		Assert.assertEquals("some value", parentResult.earliest().toString());
+		Assertions.assertEquals("some value", parentResult.earliest().toString());
 	}
 	
 	@Test
 	public void earliest_shouldGetAnEmptyResultGivenAnEmptyResult() {
 		Result parentResult = new EmptyResult();
-		Assert.assertEquals(new EmptyResult(), parentResult.earliest());
+		Assertions.assertEquals(new EmptyResult(), parentResult.earliest());
 	}
 	
 	@Test
@@ -88,7 +88,7 @@ public class ResultTest {
 		parentResult.add(firstResult);
 		parentResult.add(secondResult);
 		
-		Assert.assertEquals("some other value", parentResult.earliest().toString());
+		Assertions.assertEquals("some other value", parentResult.earliest().toString());
 	}
 	
 	@Test
@@ -100,12 +100,12 @@ public class ResultTest {
 		parentResult.add(firstResult);
 		parentResult.add(secondResult);
 		
-		Assert.assertEquals("some value", parentResult.earliest().toString());
+		Assertions.assertEquals("some value", parentResult.earliest().toString());
 	}
 	
 	@Test
 	public void equals_shouldReturnTrueOnTwoEmptyResults() {
-		Assert.assertTrue(new EmptyResult().equals(new Result()));
+		Assertions.assertTrue(new EmptyResult().equals(new Result()));
 	}
 	
 	@Test
@@ -118,12 +118,12 @@ public class ResultTest {
 		parentResult.add(secondResult);
 		
 		// 3 is greater than the number of entries in the parentResult
-		Assert.assertEquals(new EmptyResult(), parentResult.get(3));
+		Assertions.assertEquals(new EmptyResult(), parentResult.get(3));
 	}
 	
 	@Test
 	public void isNull_shouldReturnFalse() {
-		Assert.assertFalse(new Result().isNull());
+		Assertions.assertFalse(new Result().isNull());
 	}
 	
 	@Test
@@ -135,19 +135,19 @@ public class ResultTest {
 		parentResult.add(firstResult);
 		parentResult.add(secondResult);
 		
-		Assert.assertEquals("some value", parentResult.latest().toString());
+		Assertions.assertEquals("some value", parentResult.latest().toString());
 	}
 	
 	@Test
 	public void latest_shouldGetTheResultGivenASingleResult() throws ParseException {
 		Result result = new Result(Context.getDateFormat().parse("12/08/2008"), "some other value", new Encounter(124));
 		
-		Assert.assertEquals("some other value", result.latest().toString());
+		Assertions.assertEquals("some other value", result.latest().toString());
 	}
 	
 	@Test
 	public void latest_shouldGetAnEmptyResultGivenAnEmptyResult() {
-		Assert.assertEquals(new EmptyResult(), new Result().latest());
+		Assertions.assertEquals(new EmptyResult(), new Result().latest());
 	}
 	
 	@Test
@@ -159,7 +159,7 @@ public class ResultTest {
 		parentResult.add(firstResult);
 		parentResult.add(secondResult);
 		
-		Assert.assertEquals("some value", parentResult.latest().toString());
+		Assertions.assertEquals("some value", parentResult.latest().toString());
 	}
 	
 	@Test(expected = LogicException.class)
@@ -172,6 +172,6 @@ public class ResultTest {
 		parentResult.add(secondResult);
 		
 		Object toObject = parentResult.toObject();
-		Assert.assertNull(toObject);
+		Assertions.assertNull(toObject);
 	}
 }

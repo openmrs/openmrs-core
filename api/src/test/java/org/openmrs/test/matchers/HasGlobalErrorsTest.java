@@ -16,8 +16,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.hamcrest.Description;
 import org.hamcrest.StringDescription;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -32,7 +32,7 @@ public class HasGlobalErrorsTest {
 	
 	private Description description;
 	
-	@Before
+	@BeforeEach
 	public void setUp() {
 		
 		item = new BindException("", "string");

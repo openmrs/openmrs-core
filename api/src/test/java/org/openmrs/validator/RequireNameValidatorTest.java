@@ -9,8 +9,8 @@
  */
 package org.openmrs.validator;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.openmrs.EncounterRole;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -31,17 +31,17 @@ public class RequireNameValidatorTest {
 		
 		Errors errors = new BindException(role, "type");
 		new RequireNameValidator().validate(role, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		Assertions.assertTrue(errors.hasFieldErrors("name"));
 		
 		role.setName("");
 		errors = new BindException(role, "type");
 		new RequireNameValidator().validate(role, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		Assertions.assertTrue(errors.hasFieldErrors("name"));
 		
 		role.setName(" ");
 		errors = new BindException(role, "type");
 		new RequireNameValidator().validate(role, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		Assertions.assertTrue(errors.hasFieldErrors("name"));
 	}
 	
 	/**
@@ -55,6 +55,6 @@ public class RequireNameValidatorTest {
 		Errors errors = new BindException(role, "type");
 		new RequireNameValidator().validate(role, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		Assertions.assertFalse(errors.hasErrors());
 	}
 }

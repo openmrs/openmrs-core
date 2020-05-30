@@ -12,8 +12,8 @@ package org.openmrs.comparator;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.openmrs.PatientIdentifierType;
 
 public class PatientIdentifierTypeDefaultComparatorTest {
@@ -55,7 +55,7 @@ public class PatientIdentifierTypeDefaultComparatorTest {
 		    requiredNotRetired, notRequiredNotRetiredB, requiredRetired1A);
 		list.sort(new PatientIdentifierTypeDefaultComparator());
 		
-		Assert.assertEquals(Arrays.asList(requiredNotRetired, notRequiredNotRetiredA, notRequiredNotRetiredB,
+		Assertions.assertEquals(Arrays.asList(requiredNotRetired, notRequiredNotRetiredA, notRequiredNotRetiredB,
 		    requiredRetired1A, requiredRetired2a, notRequiredRetired), list);
 	}
 }

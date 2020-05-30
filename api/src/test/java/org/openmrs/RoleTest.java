@@ -10,16 +10,17 @@
 package org.openmrs;
 
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.openmrs.util.RoleConstants;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * This class tests all methods that are not getter or setters in the Role java object TODO: finish
@@ -44,26 +45,26 @@ public class RoleTest {
 		
 		Privilege priv1 = new Privilege("priv1");
 		role.addPrivilege(priv1);
-		assertEquals("Incorrect number of privileges", 1, role.getPrivileges().size());
+		Assert.assertEquals("Incorrect number of privileges", 1, role.getPrivileges().size());
 		
 		// adding the same privilege should not be allowed
 		role.addPrivilege(priv1);
-		assertEquals("Incorrect number of privileges", 1, role.getPrivileges().size());
+		Assert.assertEquals("Incorrect number of privileges", 1, role.getPrivileges().size());
 		
 		// adding a different privilege with the same name should not be allowed
 		Privilege priv2 = new Privilege(priv1.getPrivilege());
 		role.addPrivilege(priv2);
-		assertEquals("Incorrect number of privileges", 1, role.getPrivileges().size());
+		Assert.assertEquals("Incorrect number of privileges", 1, role.getPrivileges().size());
 		
 		Privilege priv3 = new Privilege("priv3");
 		
 		// removing a fake privilege shouldn't do anything
 		role.removePrivilege(priv3);
-		assertEquals("Incorrect number of privileges", 1, role.getPrivileges().size());
+		Assert.assertEquals("Incorrect number of privileges", 1, role.getPrivileges().size());
 		
 		// removing the first privilege
 		role.removePrivilege(priv1);
-		assertEquals("Incorrect number of privileges", 0, role.getPrivileges().size());
+		Assert.assertEquals("Incorrect number of privileges", 0, role.getPrivileges().size());
 	}
 	
 	/**
@@ -89,7 +90,7 @@ public class RoleTest {
 		// very basic privilege adding and checking
 		Privilege p1 = new Privilege("priv1");
 		role.addPrivilege(p1);
-		assertTrue("This roles should have the privilege", role.hasPrivilege("priv1"));
+		assertTrue(role.hasPrivilege("priv1"), "This roles should have the privilege");
 	}
 	
 	/**
@@ -98,7 +99,7 @@ public class RoleTest {
 	@Test
 	public void hasPrivilege_shouldReturnFalseIfNotFound() {
 		Role role = new Role();
-		assertFalse("This roles should not have the privilege", role.hasPrivilege("some other privilege name"));
+		assertFalse(role.hasPrivilege("some other privilege name"), "This roles should not have the privilege");
 	}
 
 	@Test
@@ -108,7 +109,7 @@ public class RoleTest {
 		// very basic privilege adding and checking
 		Privilege p1 = new Privilege("PrIv1");
 		role.addPrivilege(p1);
-		assertTrue("This roles should have the privilege", role.hasPrivilege("priv1"));
+		assertTrue(role.hasPrivilege("priv1"), "This roles should have the privilege");
 	}
 	
 	/**
@@ -119,8 +120,8 @@ public class RoleTest {
 		// check super user "super" status
 		Role role = new Role(RoleConstants.SUPERUSER);
 		
-		assertTrue("Super users are super special and should have all privileges", role
-		        .hasPrivilege("Some weird privilege name that shouldn't be there"));
+		assertTrue(role
+						.hasPrivilege("Some weird privilege name that shouldn't be there"), "Super users are super special and should have all privileges");
 		assertNotNull(role.getName());
 		assertEquals(role.getName(), RoleConstants.SUPERUSER);
 	}
@@ -159,13 +160,13 @@ public class RoleTest {
 		child2.setInheritedRoles(new HashSet<>(inheritedRoles));
 		
 		// ensure only inherited roles are found
-		Assert.assertEquals(3, niece.getAllParentRoles().size());
-		Assert.assertEquals(2, child1.getAllParentRoles().size());
-		Assert.assertEquals(2, child2.getAllParentRoles().size());
-		Assert.assertEquals(1, parent.getAllParentRoles().size());
-		Assert.assertEquals(1, aunt.getAllParentRoles().size());
-		Assert.assertEquals(1, uncle.getAllParentRoles().size());
-		Assert.assertEquals(0, grandparent.getAllParentRoles().size());
+		Assertions.assertEquals(3, niece.getAllParentRoles().size());
+		Assertions.assertEquals(2, child1.getAllParentRoles().size());
+		Assertions.assertEquals(2, child2.getAllParentRoles().size());
+		Assertions.assertEquals(1, parent.getAllParentRoles().size());
+		Assertions.assertEquals(1, aunt.getAllParentRoles().size());
+		Assertions.assertEquals(1, uncle.getAllParentRoles().size());
+		Assertions.assertEquals(0, grandparent.getAllParentRoles().size());
 	}
 	
 	/**
@@ -202,13 +203,13 @@ public class RoleTest {
 		parent.setChildRoles(new HashSet<>(childRoles));
 		
 		// ensure only child roles are found
-		Assert.assertEquals(0, niece.getAllChildRoles().size());
-		Assert.assertEquals(0, child1.getAllChildRoles().size());
-		Assert.assertEquals(0, child2.getAllChildRoles().size());
-		Assert.assertEquals(2, parent.getAllChildRoles().size());
-		Assert.assertEquals(1, aunt.getAllChildRoles().size());
-		Assert.assertEquals(1, uncle.getAllChildRoles().size());
-		Assert.assertEquals(6, grandparent.getAllChildRoles().size());
+		Assertions.assertEquals(0, niece.getAllChildRoles().size());
+		Assertions.assertEquals(0, child1.getAllChildRoles().size());
+		Assertions.assertEquals(0, child2.getAllChildRoles().size());
+		Assertions.assertEquals(2, parent.getAllChildRoles().size());
+		Assertions.assertEquals(1, aunt.getAllChildRoles().size());
+		Assertions.assertEquals(1, uncle.getAllChildRoles().size());
+		Assertions.assertEquals(6, grandparent.getAllChildRoles().size());
 	}
 	
 }

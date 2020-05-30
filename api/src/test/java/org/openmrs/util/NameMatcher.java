@@ -12,7 +12,7 @@ package org.openmrs.util;
 import java.util.Set;
 
 import org.hamcrest.Description;
-import org.junit.internal.matchers.TypeSafeMatcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.openmrs.PersonName;
 
 public class NameMatcher extends TypeSafeMatcher<Set<PersonName>> {
