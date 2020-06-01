@@ -653,8 +653,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		}
 		// fail early if this concept has no names defined
 		if (getNames(forLocale).isEmpty()) {
-			log.debug("The ConceptId is {}.", conceptId);
-			log.debug("The Locale is" +  forLocale);
+			log.debug("there are no names defined for concept with id: {} in the locale: {}", conceptId, forLocale);
+
 			return null;
 		} else if (forLocale == null) {
 			log.warn("Locale cannot be null");
