@@ -502,7 +502,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
 		Person result = hl7service.createPersonFromNK1(nk1List.get(0));
 		Assert.assertNotNull("should have returned something", result);
-		Assert.assertTrue("should have returned a Patient", result instanceof Patient);
+		Assert.assertNotNull("should have returned a Patient", result instanceof Patient);
 	}
 	
 	/**

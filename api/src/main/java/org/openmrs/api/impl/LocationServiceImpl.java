@@ -119,20 +119,10 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 		if (StringUtils.hasText(locationGP)) {
 			location = Context.getLocationService().getLocation(locationGP);
 		}
-
-		if (location == null) {
-			location = getDefaultLocation(null, locationGP);
+		  return StringUtils.hasText(locationGP) ? Context.getLocationService().getLocation(locationGP) : getDefaultLocation(null, "");
 		}
-		
-		// If neither exist, get the first available location
-		if (location == null) {
-			location = Context.getLocationService().getLocation(1);
-		}
-		
-		return location;
-	}
-
-	private Location getDefaultLocation(Location location, String locationGP) {
+	
+    private Location getDefaultLocation(Location location, String locationGP) {
 		//Try to look up 'Unknown Location' in case the global property is something else
 		Location result = getDefaultLocationFromSting(location, locationGP, "Unknown Location");
 

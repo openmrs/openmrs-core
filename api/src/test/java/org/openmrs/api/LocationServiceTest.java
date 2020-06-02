@@ -937,7 +937,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCATION_NAME,
 		        "None existent Location", "Testing");
 		Context.getAdministrationService().saveGlobalProperty(gp);
-		Assert.assertEquals("Unknown Location", Context.getLocationService().getDefaultLocation().getName());
+    	Assert.assertNull("Unknown location", Context.getLocationService().getDefaultLocation());
 	}
 	
 	/**
