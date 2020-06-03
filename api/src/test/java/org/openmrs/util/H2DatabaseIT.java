@@ -13,6 +13,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import liquibase.Contexts;
 import liquibase.Liquibase;
 import liquibase.database.Database;
@@ -37,8 +38,6 @@ public class H2DatabaseIT implements LiquibaseProvider {
 	
 	protected static final String PASSWORD = "another_password";
 	
-	private Connection connection;
-	
 	@Before
 	public void setup() throws SQLException, ClassNotFoundException {
 		this.initializeDatabase();
@@ -49,9 +48,10 @@ public class H2DatabaseIT implements LiquibaseProvider {
 		this.dropAllDatabaseObjects();
 	}
 	
-	public Liquibase getLiquibase(String filename) throws LiquibaseException {
+	public Liquibase getLiquibase(String filename) throws LiquibaseException, SQLException {
 		Database liquibaseConnection = DatabaseFactory.getInstance()
-		        .findCorrectDatabaseImplementation(new JdbcConnection(connection));
+		        .findCorrectDatabaseImplementation(new JdbcConnection(getConnection()));
+		
 		liquibaseConnection.setDatabaseChangeLogTableName("LIQUIBASECHANGELOG");
 		liquibaseConnection.setDatabaseChangeLogLockTableName("LIQUIBASECHANGELOGLOCK");
 		
@@ -61,18 +61,16 @@ public class H2DatabaseIT implements LiquibaseProvider {
 	protected void initializeDatabase() throws SQLException, ClassNotFoundException {
 		String driver = "org.h2.Driver";
 		Class.forName(driver);
-		
-		connection = DriverManager.getConnection("jdbc:h2:mem:openmrs;DB_CLOSE_DELAY=-1", USER_NAME, PASSWORD);
-		connection.setAutoCommit(false);
 	}
 	
-	protected void updateDatabase(String filename) throws SQLException, LiquibaseException {
+	protected void updateDatabase(String filename) throws Exception {
 		Liquibase liquibase = getLiquibase(filename);
 		liquibase.update(new Contexts(CONTEXT));
-		connection.commit();
+		liquibase.getDatabase().getConnection().commit();
 	}
 	
 	protected void dropAllDatabaseObjects() throws SQLException {
+		Connection connection = getConnection();
 		Statement statement = null;
 		try {
 			statement = connection.createStatement();
@@ -85,5 +83,20 @@ public class H2DatabaseIT implements LiquibaseProvider {
 		finally {
 			connection.close();
 		}
+	}
+
+	protected void updateDatabase( List<String> filenames) throws Exception {
+		log.info("liquibase files used for creating and updating the OpenMRS database are: " + filenames);
+
+		for (String filename : filenames) {
+			log.info("updating database with '{}'", filename);
+			this.updateDatabase(filename);
+		}
+	}
+
+	private Connection getConnection() throws SQLException {
+		Connection connection = DriverManager.getConnection("jdbc:h2:mem:openmrs;DB_CLOSE_DELAY=-1", USER_NAME, PASSWORD);
+		connection.setAutoCommit( false );
+		return connection;
 	}
 }
