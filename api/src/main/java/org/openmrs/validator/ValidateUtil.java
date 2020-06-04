@@ -13,7 +13,6 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.proxy.HibernateProxy;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.api.ValidationException;
 import org.openmrs.api.context.Context;
@@ -64,9 +63,7 @@ public class ValidateUtil {
 			return;
 		}
 
-		if (obj != null && obj instanceof HibernateProxy) {
-			obj = HibernateUtil.getRealObjectFromProxy(obj);
-		}
+		obj = HibernateUtil.getRealObjectFromProxy(obj);
 		
 		Errors errors = new BindException(obj, "");
 		
@@ -104,6 +101,8 @@ public class ValidateUtil {
 			return;
 		}
 
+		obj = HibernateUtil.getRealObjectFromProxy(obj);
+		
 		Context.getAdministrationService().validate(obj, errors);
 	}
 	

@@ -11,6 +11,7 @@ package org.openmrs.validator;
 
 import org.openmrs.Form;
 import org.openmrs.annotation.Handler;
+import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -48,6 +49,9 @@ public class FormValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
+		
+		obj = HibernateUtil.getRealObjectFromProxy(obj);
+		
 		Form form = (Form) obj;
 		if (form == null) {
 			errors.rejectValue("form", "error.general");
