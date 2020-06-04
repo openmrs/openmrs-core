@@ -11,12 +11,16 @@ package org.openmrs.util;
 
 import liquibase.exception.LockException;
 import org.junit.Test;
+import org.openmrs.liquibase.LiquibaseProvider;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.mockito.Mockito.verify;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 
 /**
  * Tests methods on the {@link DatabaseUpdater} class. This class expects /metadata/model to be on
@@ -68,5 +72,14 @@ public class DatabaseUpdaterTest extends BaseContextSensitiveTest {
 		catch (RuntimeException re) {
 			assertTrue(re.getCause() instanceof IllegalArgumentException);
 		}
+	}
+	
+	@Test
+	public void shouldReturnInjectedLiquibaseProvider() throws Exception {
+		LiquibaseProvider liquibaseProvider = mock(LiquibaseProvider.class);
+		DatabaseUpdater.setLiquibaseProvider(liquibaseProvider);
+		DatabaseUpdater.getLiquibase( "filename" );
+		verify(liquibaseProvider, times(1)).getLiquibase("filename");
+		DatabaseUpdater.unsetLiquibaseProvider();
 	}
 }

@@ -9,12 +9,10 @@
  */
 package org.openmrs.util.databasechange;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.persistence.Entity;
-import liquibase.exception.LiquibaseException;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
@@ -39,7 +37,7 @@ public class ValidateHibernateMappingsDatabaseIT extends H2DatabaseIT {
 	public ExpectedException expectedException = ExpectedException.none();
 	
 	@Test
-	public void shouldValidateHibernateMappings() throws SQLException, LiquibaseException, ClassNotFoundException {
+	public void shouldValidateHibernateMappings() throws Exception {
 		/*
 		 * Drop all database objects before running the test as previously run tests may have left tables behind.
 		 */

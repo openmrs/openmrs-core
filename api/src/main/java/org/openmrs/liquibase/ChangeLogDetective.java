@@ -80,16 +80,30 @@ public class ChangeLogDetective {
 			log.info("looking for un-run change sets in snapshot version '{}'", version);
 			List<String> changeSets = snapshotCombinations.get(version);
 			
-			for (String filename : changeSets) {
-				Liquibase liquibase = liquibaseProvider.getLiquibase(filename);
-				List<ChangeSet> rawUnrunChangeSets = liquibase.listUnrunChangeSets(new Contexts(context),
-				    new LabelExpression());
-				List<ChangeSet> refinedUnrunChangeSets = excludeVintageChangeSets(filename, rawUnrunChangeSets);
-				
-				log.info("file '{}' contains {} un-run change sets", filename, refinedUnrunChangeSets.size());
-				logUnRunChangeSetDetails(filename, refinedUnrunChangeSets);
-				
-				unrunChangeSetsCount += refinedUnrunChangeSets.size();
+			Liquibase liquibase = null;
+			try {
+				for (String filename : changeSets) {
+					liquibase = liquibaseProvider.getLiquibase(filename);
+					List<ChangeSet> rawUnrunChangeSets = liquibase.listUnrunChangeSets(new Contexts(context),
+					    new LabelExpression());
+					liquibase.close();
+					
+					List<ChangeSet> refinedUnrunChangeSets = excludeVintageChangeSets(filename, rawUnrunChangeSets);
+					
+					log.info("file '{}' contains {} un-run change sets", filename, refinedUnrunChangeSets.size());
+					logUnRunChangeSetDetails(filename, refinedUnrunChangeSets);
+					
+					unrunChangeSetsCount += refinedUnrunChangeSets.size();
+				}
+			}
+			finally {
+				if (liquibase != null) {
+					try {
+						liquibase.close();
+					} catch ( Exception e ) {
+						// ignore exceptions triggered by closing liquibase a second time 
+					}
+				}
 			}
 			
 			if (unrunChangeSetsCount == 0) {
@@ -118,15 +132,29 @@ public class ChangeLogDetective {
 		List<String> updateVersions = changeLogVersionFinder.getUpdateVersionsGreaterThan(snapshotVersion);
 		List<String> updateFileNames = changeLogVersionFinder.getUpdateFileNames(updateVersions);
 		
-		for (String filename : updateFileNames) {
-			Liquibase liquibase = liquibaseProvider.getLiquibase(filename);
-			List<ChangeSet> unrunChangeSets = liquibase.listUnrunChangeSets(new Contexts(context), new LabelExpression());
-			
-			log.info("file '{}}' contains {} un-run change sets", filename, unrunChangeSets.size());
-			logUnRunChangeSetDetails(filename, unrunChangeSets);
-			
-			if (unrunChangeSets.size() > 0) {
-				unrunLiquibaseUpdates.add(filename);
+		Liquibase liquibase = null;
+		try {
+			for (String filename : updateFileNames) {
+				liquibase = liquibaseProvider.getLiquibase(filename);
+				List<ChangeSet> unrunChangeSets = liquibase.listUnrunChangeSets(new Contexts(context),
+				    new LabelExpression());
+				liquibase.close();
+				
+				log.info("file '{}}' contains {} un-run change sets", filename, unrunChangeSets.size());
+				logUnRunChangeSetDetails(filename, unrunChangeSets);
+				
+				if (unrunChangeSets.size() > 0) {
+					unrunLiquibaseUpdates.add(filename);
+				}
+			}
+		}
+		finally {
+			if (liquibase != null) {
+				try {
+					liquibase.close();
+				} catch ( Exception e ) {
+					// ignore exceptions triggered by closing liquibase a second time 
+				}
 			}
 		}
 		
