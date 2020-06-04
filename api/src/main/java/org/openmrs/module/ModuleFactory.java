@@ -196,11 +196,11 @@ public class ModuleFactory {
 						log.debug("Loaded module: " + mod + " successfully");
 					}
 					catch (Exception e) {
-						log.debug("Unable to load file in module directory: " + f + ". Skipping file.", e);
+						log.error("Unable to load file in module directory: " + f + ". Skipping file.", e);
 					}
 				}
 			} else {
-				log.debug("Could not find file in module directory: " + f);
+				log.error("Could not find file in module directory: " + f);
 			}
 		}
 		
