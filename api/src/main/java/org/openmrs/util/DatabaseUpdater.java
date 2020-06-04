@@ -90,9 +90,27 @@ public class DatabaseUpdater {
 	
 	private static final ChangeLogVersionFinder changeLogVersionFinder;
 	
+	private static LiquibaseProvider liquibaseProvider;
+	
 	static {
 		changeLogDetective = new ChangeLogDetective();
 		changeLogVersionFinder = new ChangeLogVersionFinder();
+	}
+	
+	/**
+	 * Allows to inject a LiquibaseProvider instance for testing purposes.
+	 * 
+	 * @param liquibaseProvider
+	 */
+	static void setLiquibaseProvider(LiquibaseProvider liquibaseProvider) {
+		DatabaseUpdater.liquibaseProvider = liquibaseProvider;
+	}
+
+	/**
+	 * Removes any LiquibaseProvider instance that was set for testing purposes.
+	 */
+	static void unsetLiquibaseProvider() {
+		DatabaseUpdater.liquibaseProvider = null;
 	}
 	
 	/**
@@ -375,6 +393,9 @@ public class DatabaseUpdater {
 	 * @throws Exception
 	 */
 	static Liquibase getLiquibase(String changeLogFile) throws Exception {
+		if (liquibaseProvider != null) {
+			return liquibaseProvider.getLiquibase(changeLogFile);
+		}
 		return getLiquibase(changeLogFile, OpenmrsClassLoader.getInstance());
 	}
 	
@@ -581,6 +602,54 @@ public class DatabaseUpdater {
 	}
 	
 	/**
+	 * Returns all change sets defined by (a) the Liquibase snapshot files that had been used to
+	 * initialise the OpenMRS database and (b) the Liquibase update files that that are applicable on
+	 * top of the snapshot version.
+	 * 
+	 * @return list of change sets that both have and haven't been run
+	 */
+	@Authorized(PrivilegeConstants.GET_DATABASE_CHANGES)
+	public static List<OpenMRSChangeSet> getDatabaseChanges() throws Exception {
+		List<OpenMRSChangeSet> result = new ArrayList<>();
+		
+		String initialSnapshotVersion = changeLogDetective.getInitialLiquibaseSnapshotVersion(CONTEXT,
+		    new DatabaseUpdaterLiquibaseProvider());
+		List<String> updateVersions = changeLogVersionFinder.getUpdateVersionsGreaterThan(initialSnapshotVersion);
+		
+		Map<String, List<String>> snapshotCombinations = changeLogVersionFinder.getSnapshotCombinations();
+
+		List<String> changeLogFileNames = new ArrayList<>();
+		changeLogFileNames.addAll(snapshotCombinations.get(initialSnapshotVersion));
+		changeLogFileNames.addAll(changeLogVersionFinder.getUpdateFileNames(updateVersions));
+		
+		Liquibase liquibase = null;
+		try {
+			for (String filename : changeLogFileNames) {
+				liquibase = getLiquibase(filename);
+				List<ChangeSet> changeSets = liquibase.getDatabaseChangeLog().getChangeSets();
+				
+				for (ChangeSet changeSet : changeSets) {
+					OpenMRSChangeSet openMRSChangeSet = new OpenMRSChangeSet(changeSet, liquibase.getDatabase());
+					result.add(openMRSChangeSet);
+				}
+				liquibase.close();
+			}
+		}
+		finally {
+			if (liquibase != null) {
+				try {
+					liquibase.close();
+				}
+				catch (Exception e) {
+					// ignore exceptions triggered by closing liquibase a second time 
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	/**
 	 * Returns a list of Liquibase change sets were not run yet.
 	 *
 	 * @param liquibaseProvider provides access to a Liquibase instance
@@ -620,6 +689,7 @@ public class DatabaseUpdater {
 			}
 			
 			List<OpenMRSChangeSet> results = new ArrayList<>();
+			
 			for (String changelogFile : changeLogFilenames) {
 				Liquibase liquibase = getLiquibase(changelogFile, null);
 				database = liquibase.getDatabase();

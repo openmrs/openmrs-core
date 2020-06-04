@@ -1,4 +1,3 @@
-
 /**
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -10,10 +9,8 @@
  */
 package org.openmrs.liquibase;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import liquibase.exception.LiquibaseException;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -79,14 +76,5 @@ public class ChangeLogDetectiveDatabaseIT extends H2DatabaseIT {
 		List<String> actual = changeLogDetective.getUnrunLiquibaseUpdateFileNames(VERSION_2_1_X, "some context", this);
 		
 		assertEquals(expected, actual);
-	}
-	
-	private void updateDatabase(List<String> filenames) throws SQLException, LiquibaseException {
-		log.info("liquibase files used for creating and updating the OpenMRS database are: " + filenames);
-		
-		for (String filename : filenames) {
-			log.info("updating database with '{}'", filename);
-			this.updateDatabase(filename);
-		}
 	}
 }
