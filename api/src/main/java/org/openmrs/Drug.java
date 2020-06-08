@@ -21,36 +21,73 @@ import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.openmrs.api.context.Context;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
 /**
  * Drug
  */
 @Indexed
+@Entity
+@Table(name = "drug")
+@AttributeOverride(name = "name", column = @Column(name = "name", nullable = true))
 public class Drug extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 285L;
-	
+
 	// Fields
+	@Id
 	@DocumentId
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_generator")
+	@SequenceGenerator(name = "id_generator", sequenceName = "drug_drug_id_seq")
+	@Column(name = "drug_id", updatable = false, nullable = false)
 	private Integer drugId;
-	
+
+	@Column(name = "combination", length = 1, nullable = false)
 	private Boolean combination = false;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "dosage_form")
 	private Concept dosageForm;
-	
+
+	@Column(name = "maximum_daily_dose", length = 22)
 	private Double maximumDailyDose;
-	
+
+	@Column(name = "minimumDailyDose", length = 22)
 	private Double minimumDailyDose;
-	
+
+	@Column(name = "strength", length = 255)
 	private String strength;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "dose_limit_units")
 	private Concept doseLimitUnits;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "concept_id")
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	private Concept concept;
-	
+
+	@JoinColumn(name = "drug_id")
+	@Column(name = "drugReferenceMaps")
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
+	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
 	private Set<DrugReferenceMap> drugReferenceMaps;
-	
+
+	@Column(name = "ingredients")
+	@JoinColumn(name = "drug_id")
+	@OneToMany(fetch = FetchType.LAZY)
 	private Collection<DrugIngredient> ingredients;
 	
 	// Constructors
