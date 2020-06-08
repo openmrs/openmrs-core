@@ -81,6 +81,9 @@
 								 baseTableName="conditions" baseColumnNames="encounter_id"
 								 referencedTableName="encounter" referencedColumnNames="encounter_id" />
     </changeSet>
-    
+    <changeSet id="20200604-soundex_extension" author="aman" dbms="postgresql">
+        <comment> Soundex extension for PostgreSQL</comment>
+        <sql> CREATE EXTENSION IF NOT EXISTS fuzzystrmatch SCHEMA public;</sql>
+    </changeSet>
 </databaseChangeLog> 
 	
