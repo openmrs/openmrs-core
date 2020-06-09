@@ -1922,7 +1922,7 @@ public class InitializationFilter extends StartupFilter {
 				
 				String[] types = { "TABLE" };
 				
-				//get all tables
+				//get all tables.
 				ResultSet tbls = dbMetaData.getTables(null, null, null, types);
 				
 				while (tbls.next()) {
