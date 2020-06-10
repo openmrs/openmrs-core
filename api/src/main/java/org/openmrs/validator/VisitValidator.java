@@ -30,11 +30,11 @@ import org.springframework.validation.Validator;
  */
 @Handler(supports = { Visit.class }, order = 50)
 public class VisitValidator extends BaseCustomizableValidator implements Validator {
-	
+
 	private static final double ESTIMATED_BIRTHDATE_ERROR_MARGIN = -0.5;
-	
+
 	private static final int ESTIMATED_BIRTHDATE_ERROR_MARGIN_MINIMUM_YEARS = -1;
-	
+
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
@@ -42,7 +42,7 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 	public boolean supports(Class<?> clazz) {
 		return Visit.class.isAssignableFrom(clazz);
 	}
-	
+
 	/**
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
@@ -80,12 +80,12 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 		        && OpenmrsUtil.compareWithNullAsLatest(visit.getStartDatetime(), visit.getStopDatetime()) > 0) {
 			errors.rejectValue("stopDatetime", "Visit.error.endDateBeforeStartDate");
 		}
-		
+
 		//If this is not a new visit, validate based on its existing encounters.
 		if (visit.getId() != null) {
 			Date startDateTime = visit.getStartDatetime();
 			Date stopDateTime = visit.getStopDatetime();
-			
+
 			List<Encounter> encounters = Context.getEncounterService().getEncountersByVisit(visit, false);
 			for (Encounter encounter : encounters) {
 				if (encounter.getEncounterDatetime().before(startDateTime)) {
@@ -99,12 +99,12 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 				}
 			}
 		}
-		
+
 		ValidateUtil.validateFieldLengths(errors, target.getClass(), "voidReason");
-		
+
 		// check attributes
 		super.validateAttributes(visit, errors, Context.getVisitService().getAllVisitAttributeTypes());
-		
+
 		// check start and end dates
 		if (disallowOverlappingVisits()) {
 			List<Visit> otherVisitList = Context.getVisitService().getVisitsByPatient(visit.getPatient());
@@ -113,30 +113,30 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 				validateStopDatetime(visit, otherVisit, errors);
 			}
 		}
-		
+
 		validateVisitStartedBeforePatientBirthdate(visit, errors);
 	}
-	
+
 	/*
 	 * Convenience method to make the code more readable.
 	 */
 	private boolean disallowOverlappingVisits() {
 		return !allowOverlappingVisits();
 	}
-	
+
 	private boolean allowOverlappingVisits() {
 		return Boolean.parseBoolean(Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_ALLOW_OVERLAPPING_VISITS, "true"));
 	}
-	
+
 	private void validateStartDatetime(Visit visit, Visit otherVisit, Errors errors) {
-		
+
 		if (visit.getStartDatetime() != null && otherVisit.getStartDatetime() != null
 		        && visit.getStartDatetime().equals(otherVisit.getStartDatetime())) {
 			errors.rejectValue("startDatetime", "Visit.startCannotBeTheSameAsOtherStartDateOfTheSamePatient",
 			    "This visit has the same start date and time as another visit of this patient.");
 		}
-		
+
 		if (visit.getStartDatetime() != null && otherVisit.getStartDatetime() != null
 		        && otherVisit.getStopDatetime() != null && visit.getStartDatetime().after(otherVisit.getStartDatetime())
 		        && visit.getStartDatetime().before(otherVisit.getStopDatetime())) {
@@ -144,17 +144,17 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 			    "This visit has a start date that falls into another visit of the same patient.");
 		}
 	}
-	
+
 	private void validateStopDatetime(Visit visit, Visit otherVisit, Errors errors) {
-		
+
 		if (visit.getStopDatetime() != null && otherVisit.getStartDatetime() != null && otherVisit.getStopDatetime() != null
 		        && visit.getStopDatetime().after(otherVisit.getStartDatetime())
 		        && visit.getStopDatetime().before(otherVisit.getStopDatetime())) {
 			errors.rejectValue("stopDatetime", "Visit.stopDateCannotFallIntoAnotherVisitOfTheSamePatient",
 			    "This visit has a stop date that falls into another visit of the same patient.");
-			
+
 		}
-		
+
 		if (visit.getStartDatetime() != null && visit.getStopDatetime() != null && otherVisit.getStartDatetime() != null
 		        && otherVisit.getStopDatetime() != null && visit.getStartDatetime().before(otherVisit.getStartDatetime())
 		        && visit.getStopDatetime().after(otherVisit.getStopDatetime())) {
@@ -165,33 +165,33 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 
 			errors.rejectValue("stopDatetime", "Visit.visitCannotContainAnotherVisitOfTheSamePatient", message);
 		}
-		
+
 	}
-	
+
 	private void validateVisitStartedBeforePatientBirthdate(Visit visit, Errors errors) {
 		if (visit.getPatient() == null || visit.getPatient().getBirthdate() == null || visit.getStartDatetime() == null) {
 			return;
 		}
-		
+
 		if (visit.getStartDatetime().before(getPatientBirthdateAdjustedIfEstimated(visit.getPatient()))) {
-			errors.rejectValue("startDatetime", "Visit.startDateCannotFallBeforeTheBirthDateOfTheSamePatient",
-			    "This visit has a start date that falls before the birthdate of the same patient.");
+			errors.rejectValue("startDatetime", "Visit.startDateCannotFallBeforeBirthDate",
+			    "This visit has a start date that falls before the birthdate of the patient.");
 		}
 	}
-	
+
 	private Date getPatientBirthdateAdjustedIfEstimated(Patient patient) {
 		Date birthday = patient.getBirthdate();
-		
+
 		if (patient.getBirthdateEstimated()) {
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(birthday);
 			cal.add(Calendar.YEAR, calculateGracePeriodInYears(patient.getAge()));
 			birthday = cal.getTime();
 		}
-		
+
 		return birthday;
 	}
-	
+
 	private int calculateGracePeriodInYears(int age) {
 		return Math.min(ESTIMATED_BIRTHDATE_ERROR_MARGIN_MINIMUM_YEARS,
 			(int)Math.ceil(age * ESTIMATED_BIRTHDATE_ERROR_MARGIN));
