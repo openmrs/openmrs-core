@@ -486,7 +486,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		}
 		
 		if (log.isDebugEnabled()) {
-			log.debug("Response: " + response);
+			log.debug("Response: {}", response);
 		}
 		
 		if (response.startsWith("Success")) {

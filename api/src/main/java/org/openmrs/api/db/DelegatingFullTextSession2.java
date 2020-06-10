@@ -24,32 +24,30 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 
 /**
- * Custom implementation of the {@link FullTextSession} interface that acts a
- * wrapper around a target FullTextSession instance, it actually delegates all
- * the method calls directly to the target except for the
- * {@link FullTextSession#createFullTextQuery(Query, Class[])} method where it
- * first notifies registered listeners of the creation event before returning
- * the newly created {@link FullTextQuery} object. The newly created query
- * object and entity type are passed to the listeners wrapped in a
- * {@link FullTextQueryAndEntityClass} object. <br>
+ * Custom implementation of the {@link FullTextSession} interface that acts a wrapper around a
+ * target FullTextSession instance, it actually delegates all the method calls directly to the
+ * target except for the {@link FullTextSession#createFullTextQuery(Query, Class[])} method where it
+ * first notifies registered listeners of the creation event before returning the newly created
+ * {@link FullTextQuery} object. The newly created query object and entity type are passed to the
+ * listeners wrapped in a {@link FullTextQueryAndEntityClass} object. <br>
  * <br>
- * An example use case is that a listener can enable/disable filters on the
- * newly created query object.
+ * An example use case is that a listener can enable/disable filters on the newly created query
+ * object.
  */
-public class DelegatingFullTextSession extends SessionDelegatorBaseImpl implements FullTextSession {
-
-	private static final Logger log = LoggerFactory.getLogger(DelegatingFullTextSession.class);
-
+public class DelegatingFullTextSession2 extends SessionDelegatorBaseImpl implements FullTextSession {
+	
+	private static final Logger log = LoggerFactory.getLogger(DelegatingFullTextSession2.class);
+	
 	private FullTextSession delegate;
-
+	
 	private ApplicationEventPublisher eventPublisher;
-
-	public DelegatingFullTextSession(FullTextSession delegate, ApplicationEventPublisher eventPublisher) {
+	
+	public DelegatingFullTextSession2(FullTextSession delegate, ApplicationEventPublisher eventPublisher) {
 		super((SessionImplementor) delegate, delegate);
 		this.delegate = delegate;
 		this.eventPublisher = eventPublisher;
 	}
-
+	
 	/**
 	 * @see FullTextSession#createFullTextQuery(Query, Class[])
 	 */
@@ -58,32 +56,28 @@ public class DelegatingFullTextSession extends SessionDelegatorBaseImpl implemen
 		if (entities.length > 1) {
 			throw new DAOException("Can't create FullTextQuery for multiple persistent classes");
 		}
-
+		
 		if (log.isDebugEnabled()) {
-			log.debug("Creating new {} instance", FullTextQuery.class.getSimpleName());
+			log.debug("Creating new FullTextQuery instance");
 		}
-
+		
 		Class<?> entityClass = entities[0];
 		FullTextQuery query = delegate.createFullTextQuery(luceneQuery, entityClass);
-
+		
 		if (log.isDebugEnabled()) {
-			log.debug("Notifying {} listeners", entityClass.getName());
+			log.debug("Notifying FullTextQueryCreated listeners...");
 		}
-
-		// Notify listeners, note that we intentionally don't catch any exception from a
-		// listener
-		// so that failure should just halt the entire creation operation, this is
-		// possible because
-		// the default ApplicationEventMulticaster in spring fires events serially in
-		// the same thread
-		// but has the downside of where a rogue listener can block the entire
-		// application.
+		
+		//Notify listeners, note that we intentionally don't catch any exception from a listener
+		//so that failure should just halt the entire creation operation, this is possible because 
+		//the default ApplicationEventMulticaster in spring fires events serially in the same thread
+		//but has the downside of where a rogue listener can block the entire application.
 		FullTextQueryAndEntityClass queryAndClass = new FullTextQueryAndEntityClass(query, entityClass);
 		eventPublisher.publishEvent(new FullTextQueryCreatedEvent(queryAndClass));
-
+		
 		return query;
 	}
-
+	
 	/**
 	 * @see FullTextSession#index(Object)
 	 */
@@ -91,7 +85,7 @@ public class DelegatingFullTextSession extends SessionDelegatorBaseImpl implemen
 	public <T> void index(T entity) {
 		delegate.index(entity);
 	}
-
+	
 	/**
 	 * @see FullTextSession#getSearchFactory()
 	 */
@@ -99,7 +93,7 @@ public class DelegatingFullTextSession extends SessionDelegatorBaseImpl implemen
 	public SearchFactory getSearchFactory() {
 		return delegate.getSearchFactory();
 	}
-
+	
 	/**
 	 * @see FullTextSession#purge(Class, Serializable)
 	 */
@@ -107,7 +101,7 @@ public class DelegatingFullTextSession extends SessionDelegatorBaseImpl implemen
 	public <T> void purge(Class<T> entityType, Serializable id) {
 		delegate.purge(entityType, id);
 	}
-
+	
 	/**
 	 * @see FullTextSession#purgeAll(Class)
 	 */
@@ -115,7 +109,7 @@ public class DelegatingFullTextSession extends SessionDelegatorBaseImpl implemen
 	public <T> void purgeAll(Class<T> entityType) {
 		delegate.purgeAll(entityType);
 	}
-
+	
 	/**
 	 * @see FullTextSession#flushToIndexes()
 	 */
@@ -123,7 +117,7 @@ public class DelegatingFullTextSession extends SessionDelegatorBaseImpl implemen
 	public void flushToIndexes() {
 		delegate.flushToIndexes();
 	}
-
+	
 	/**
 	 * @see FullTextSession#createIndexer(Class[])
 	 */
@@ -131,7 +125,7 @@ public class DelegatingFullTextSession extends SessionDelegatorBaseImpl implemen
 	public MassIndexer createIndexer(Class<?>... types) {
 		return delegate.createIndexer(types);
 	}
-
+	
 	/**
 	 * @see FullTextSession#sessionWithOptions()
 	 */
@@ -139,5 +133,5 @@ public class DelegatingFullTextSession extends SessionDelegatorBaseImpl implemen
 	public FullTextSharedSessionBuilder sessionWithOptions() {
 		return delegate.sessionWithOptions();
 	}
-
+	
 }

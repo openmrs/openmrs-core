@@ -195,7 +195,7 @@ public class ConceptValidator extends BaseCustomizableValidator implements Valid
 				}
 				
 				if (log.isDebugEnabled()) {
-					log.debug("Valid name found: " + nameInLocale.getName());
+					log.debug("Valid name found: {} ", nameInLocale.getName());
 				}
 			}
 		}

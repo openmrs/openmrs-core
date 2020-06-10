@@ -945,7 +945,7 @@ public class OpenmrsUtil {
 		}
 		
 		if (log.isDebugEnabled()) {
-			log.debug("Deleting directory " + dir.getAbsolutePath());
+			log.debug("Deleting directory {}", dir.getAbsolutePath());
 		}
 		
 		File[] fileList = dir.listFiles();
@@ -960,7 +960,7 @@ public class OpenmrsUtil {
 			boolean success = f.delete();
 			
 			if (log.isDebugEnabled()) {
-				log.debug("   deleting " + f.getName() + " : " + (success ? "ok" : "failed"));
+				log.debug("   deleting {} :  ok {} : failed {}", f.getName(), success );
 			}
 			
 			if (!success) {

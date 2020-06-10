@@ -82,7 +82,7 @@ public class PseudoStaticContentController implements Controller, LastModified, 
 		// this allows the files to cache until we say so
 		if (interpretJstl) {
 			if (log.isDebugEnabled()) {
-				log.debug("returning last modified date of : " + lastModified + " for : " + request.getPathInfo());
+				log.debug("returning last modified date of : {} for : {} ", lastModified, request.getPathInfo());
 			}
 			return lastModified;
 		}

@@ -34,7 +34,7 @@ public class AutoCloseVisitsTask extends AbstractTask {
 	public void execute() {
 		if (!isExecuting) {
 			if (log.isDebugEnabled()) {
-				log.debug("Starting Auto Close Visits Task...");
+				log.debug("Starting Auto Close Visits Task {}...");
 			}
 			
 			startExecuting();

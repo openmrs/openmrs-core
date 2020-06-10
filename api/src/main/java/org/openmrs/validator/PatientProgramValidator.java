@@ -74,7 +74,7 @@ public class PatientProgramValidator implements Validator {
 	@Override
 	public void validate(Object obj, Errors errors) {
 		if (log.isDebugEnabled()) {
-			log.debug(this.getClass().getName() + ".validate...");
+			log.debug(".validate...{}", this.getClass().getName() );
 		}
 		
 		if (obj == null) {

@@ -50,7 +50,7 @@ public class PersonNameValidator implements Validator {
 	@Override
 	public void validate(Object object, Errors errors) {
 		if (log.isDebugEnabled()) {
-			log.debug(this.getClass().getName() + ".validate...");
+			log.debug(".validate...{}", this.getClass().getName() );
 		}
 		PersonName personName = (PersonName) object;
 		try {

@@ -111,7 +111,7 @@ public class TestInstallUtil {
 			
 			if (proc.waitFor() == 0) {
 				if (log.isDebugEnabled()) {
-					log.debug("Added test data successfully");
+					log.debug("Added test data successfully {}");
 				}
 				return true;
 			}
@@ -154,7 +154,7 @@ public class TestInstallUtil {
 				ZipEntry entry = (ZipEntry) entries.nextElement();
 				if (entry.isDirectory()) {
 					if (log.isDebugEnabled()) {
-						log.debug("Skipping directory: " + entry.getName());
+						log.debug("Skipping directory: {}",  entry.getName());
 					}
 					continue;
 				}

@@ -60,7 +60,7 @@ public class PersonAddressValidator implements Validator {
 	public void validate(Object object, Errors errors) {
 		//TODO Validate other aspects of the personAddress object
 		if (log.isDebugEnabled()) {
-			log.debug(this.getClass().getName() + ".validate...");
+			log.debug(".validate... {}", this.getClass().getName());
 		}
 		
 		if (object == null) {

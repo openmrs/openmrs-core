@@ -79,7 +79,7 @@ public class HibernateUtil {
 		dialect = implementor.getDialect();
 		
 		if (log.isDebugEnabled()) {
-			log.debug("Getting dialect for session: " + dialect);
+			log.debug("Getting dialect for session: {}", dialect);
 		}
 		
 		return dialect;

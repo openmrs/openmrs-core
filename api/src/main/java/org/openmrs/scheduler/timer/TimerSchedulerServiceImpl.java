@@ -377,7 +377,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	@Transactional(readOnly = true)
 	public TaskDefinition getTask(Integer id) {
 		if (log.isDebugEnabled()) {
-			log.debug("get task " + id);
+			log.debug("get task {}", id);
 		}
 		return getSchedulerDAO().getTask(id);
 	}
@@ -391,7 +391,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	@Transactional(readOnly = true)
 	public TaskDefinition getTaskByName(String name) {
 		if (log.isDebugEnabled()) {
-			log.debug("get task " + name);
+			log.debug("get task {}", name);
 		}
 		TaskDefinition foundTask = null;
 		try {

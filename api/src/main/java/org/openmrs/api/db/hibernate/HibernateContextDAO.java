@@ -124,7 +124,7 @@ public class HibernateContextDAO implements ContextDAO {
 		// only continue if this is a valid username and a nonempty password
 		if (candidateUser != null && password != null) {
 			if (log.isDebugEnabled()) {
-				log.debug("Candidate user id: " + candidateUser.getUserId());
+				log.debug("Candidate user id {}", candidateUser.getUserId());
 			}
 			
 			String lockoutTimeString = candidateUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, null);
@@ -295,12 +295,12 @@ public class HibernateContextDAO implements ContextDAO {
 		log.debug("HibernateContext: Opening Hibernate Session");
 		if (TransactionSynchronizationManager.hasResource(sessionFactory)) {
 			if (log.isDebugEnabled()) {
-				log.debug("Participating in existing session (" + sessionFactory.hashCode() + ")");
+				log.debug("Participating in existing session {})", sessionFactory.hashCode());
 			}
 			participate = true;
 		} else {
 			if (log.isDebugEnabled()) {
-				log.debug("Registering session with synchronization manager (" + sessionFactory.hashCode() + ")");
+				log.debug("Registering session with synchronization manager {})", sessionFactory.hashCode());
 			}
 			Session session = sessionFactory.openSession();
 			session.setFlushMode(FlushMode.MANUAL);

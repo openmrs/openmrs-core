@@ -67,7 +67,7 @@ public class TaskFactory {
 		catch (Exception e) {
 			if (log.isDebugEnabled()) {
 				// don't need to log errors here necessarily.  If its needed, the calling method can log it.
-				log.debug("Error creating new task for class " + taskDefinition.getTaskClass(), e);
+				log.error("Error creating new task for class {}",  taskDefinition.getTaskClass(), e);
 			}
 			
 			throw new SchedulerException("error creating new task for class " + taskDefinition.getTaskClass(), e);

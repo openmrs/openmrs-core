@@ -1070,7 +1070,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 */
 	public void setValueAsString(String s) throws ParseException {
 		if (log.isDebugEnabled()) {
-			log.debug("getConcept() == " + getConcept());
+			log.debug("getConcept() == {}", getConcept());
 		}
 		
 		if (getConcept() != null && !StringUtils.isBlank(s)) {

@@ -522,8 +522,7 @@ public class UpdateFilter extends StartupFilter {
 					setUpdatesRequired(false);
 				} else {
 					if (log.isDebugEnabled()) {
-						log.debug("Setting updates required to " + (!model.changes.isEmpty())
-						        + " because of the size of unrun changes");
+						log.debug("Setting updates required to {} because of the size of unrun changes {} ", (!model.changes.isEmpty()));
 					}
 					setUpdatesRequired(!model.changes.isEmpty());
 				}

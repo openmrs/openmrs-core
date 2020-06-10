@@ -79,7 +79,7 @@ public class AuditableInterceptor extends EmptyInterceptor {
 		
 		if (entity instanceof Auditable && propertyNames != null) {
 			if (log.isDebugEnabled()) {
-				log.debug("Setting changed by fields on " + entity.getClass());
+				log.debug("Setting changed by fields on {}", entity.getClass());
 			}
 			
 			Map<String, Object> propertyValues = getPropertyValuesToUpdate();
@@ -105,7 +105,7 @@ public class AuditableInterceptor extends EmptyInterceptor {
 		
 		if (entity instanceof OpenmrsObject) {
 			if (log.isDebugEnabled()) {
-				log.debug("Setting creator and dateCreated on " + entity);
+				log.debug("Setting creator and dateCreated on {}", entity);
 			}
 			
 			Map<String, Object> propertyValues = getPropertyValuesToSave();

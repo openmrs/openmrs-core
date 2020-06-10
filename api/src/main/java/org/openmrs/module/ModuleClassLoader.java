@@ -90,7 +90,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		}
 		
 		if (log.isDebugEnabled()){
-			log.debug("URLs length: " + urls.size());
+			log.debug("URLs length: {}", urls.size());
 		}
 		this.module = module;
 		requiredModules = collectRequiredModuleImports(module);
@@ -277,7 +277,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		// add each defined jar in the /lib folder, add as a url in the classpath of the classloader
 		try {
 			if (log.isDebugEnabled()) {
-				log.debug("Expanding /lib folder in module");
+				log.debug("Expanding {} /lib folder in module");
 			}
 			
 			ModuleUtil.expandJar(module.getFile(), tmpModuleDir, "lib", true);

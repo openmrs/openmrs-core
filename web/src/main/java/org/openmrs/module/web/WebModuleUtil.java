@@ -115,7 +115,7 @@ public class WebModuleUtil {
 	public static boolean startModule(Module mod, ServletContext servletContext, boolean delayContextRefresh) {
 		
 		if (log.isDebugEnabled()) {
-			log.debug("trying to start module " + mod);
+			log.debug("trying to start module {}", mod);
 		}
 		
 		// only try and start this module if the api started it without a
@@ -171,7 +171,7 @@ public class WebModuleUtil {
 						// ui.springmvc should go in folder names like .../ui/springmvc/...
 						absPath.append(mod.getModuleIdAsPath()).append("/").append(filepath);
 						if (log.isDebugEnabled()) {
-							log.debug("Moving file from: " + name + " to " + absPath);
+							log.debug("Moving file from: {} to {} ", name, absPath);
 						}
 						
 						// get the output file
