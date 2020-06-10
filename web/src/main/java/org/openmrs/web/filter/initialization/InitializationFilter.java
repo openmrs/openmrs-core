@@ -1141,7 +1141,7 @@ public class InitializationFilter extends StartupFilter {
 		}
 	}
 	
-	private boolean checkIfDatabaseIsSupported(String database) {
+	private boolean isCurrentDatabase(String database) {
 		if (wizardModel.databaseConnection.contains(database)) {
 			return true;
 		}
@@ -1165,9 +1165,9 @@ public class InitializationFilter extends StartupFilter {
 			String replacedSql = sql;
 			
 			// TODO how to get the driver for the other dbs...
-			if (checkIfDatabaseIsSupported(DATABASE_MYSQL)) {
+			if (isCurrentDatabase(DATABASE_MYSQL)) {
 				Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
-			} else if (checkIfDatabaseIsSupported(DATABASE_POSTGRESQL)) {
+			} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
 				Class.forName("org.postgresql.Driver").newInstance();
 				replacedSql = replacedSql.replaceAll("`", "\"");
 			} else {
@@ -1399,11 +1399,11 @@ public class InitializationFilter extends StartupFilter {
 							setExecutingTask(WizardTask.CREATE_SCHEMA);
 							// connect via jdbc and create a database
 							String sql;
-							if (checkIfDatabaseIsSupported(DATABASE_MYSQL)) {
+							if (isCurrentDatabase(DATABASE_MYSQL)) {
 								sql = "create database if not exists `?` default character set utf8";
-							} else if (checkIfDatabaseIsSupported(DATABASE_POSTGRESQL)) {
+							} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
 								sql = "create database `?` encoding 'utf8'";
-							} else if (checkIfDatabaseIsSupported(DATABASE_H2)) {
+							} else if (isCurrentDatabase(DATABASE_H2)) {
 								sql = null;
 							} else {
 								sql = "create database `?`";
@@ -1454,18 +1454,18 @@ public class InitializationFilter extends StartupFilter {
 							}
 							
 							String sql = "";
-							if (checkIfDatabaseIsSupported(DATABASE_MYSQL)) {
+							if (isCurrentDatabase(DATABASE_MYSQL)) {
 								sql = "drop user '?'@" + host;
-							} else if (checkIfDatabaseIsSupported(DATABASE_POSTGRESQL)) {
+							} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
 								sql = "drop user `?`";
 							}
 							
 							executeStatement(true, wizardModel.createUserUsername, wizardModel.createUserPassword, sql,
 							    connectionUsername);
 							
-							if (checkIfDatabaseIsSupported(DATABASE_MYSQL)) {
+							if (isCurrentDatabase(DATABASE_MYSQL)) {
 								sql = "create user '?'@" + host + " identified by '?'";
-							} else if (checkIfDatabaseIsSupported(DATABASE_POSTGRESQL)) {
+							} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
 								sql = "create user `?` with password '?'";
 							}
 							
@@ -1480,11 +1480,11 @@ public class InitializationFilter extends StartupFilter {
 							
 							// grant the roles
 							int result = 1;
-							if (checkIfDatabaseIsSupported(DATABASE_MYSQL)) {
+							if (isCurrentDatabase(DATABASE_MYSQL)) {
 								sql = "GRANT ALL ON `?`.* TO '?'@" + host;
 								result = executeStatement(false, wizardModel.createUserUsername,
 								    wizardModel.createUserPassword, sql, wizardModel.databaseName, connectionUsername);
-							} else if (checkIfDatabaseIsSupported(DATABASE_POSTGRESQL)) {
+							} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
 								sql = "ALTER USER `?` WITH SUPERUSER";
 								result = executeStatement(false, wizardModel.createUserUsername,
 								    wizardModel.createUserPassword, sql, connectionUsername);
