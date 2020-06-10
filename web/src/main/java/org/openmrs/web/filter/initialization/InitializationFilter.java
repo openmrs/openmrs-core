@@ -86,6 +86,14 @@ public class InitializationFilter extends StartupFilter {
 	
 	private static final org.slf4j.Logger log = LoggerFactory.getLogger(InitializationFilter.class);
 	
+	private static final String DATABASE_POSTGRESQL = "postgresql";
+	
+	private static final String DATABASE_MYSQL = "mysql";
+	
+	private static final String DATABASE_SQLSERVER = "sqlserver";
+	
+	private static final String DATABASE_H2 = "h2";
+	
 	private static final String LIQUIBASE_DEMO_DATA = "liquibase-demo-data.xml";
 	
 	/**
@@ -1133,6 +1141,13 @@ public class InitializationFilter extends StartupFilter {
 		}
 	}
 	
+	private boolean isCurrentDatabase(String database) {
+		if (wizardModel.databaseConnection.contains(database)) {
+			return true;
+		}
+		return false;
+	}
+	
 	/**
 	 * @param silent if this statement fails do not display stack trace or record an error in the wizard
 	 *            object.
@@ -1150,8 +1165,11 @@ public class InitializationFilter extends StartupFilter {
 			String replacedSql = sql;
 			
 			// TODO how to get the driver for the other dbs...
-			if (wizardModel.databaseConnection.contains("mysql")) {
+			if (isCurrentDatabase(DATABASE_MYSQL)) {
 				Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
+			} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
+				Class.forName("org.postgresql.Driver").newInstance();
+				replacedSql = replacedSql.replaceAll("`", "\"");
 			} else {
 				replacedSql = replacedSql.replaceAll("`", "\"");
 			}
@@ -1381,11 +1399,11 @@ public class InitializationFilter extends StartupFilter {
 							setExecutingTask(WizardTask.CREATE_SCHEMA);
 							// connect via jdbc and create a database
 							String sql;
-							if (wizardModel.databaseConnection.contains("mysql")) {
+							if (isCurrentDatabase(DATABASE_MYSQL)) {
 								sql = "create database if not exists `?` default character set utf8";
-							} else if (wizardModel.databaseConnection.contains("postgresql")) {
+							} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
 								sql = "create database `?` encoding 'utf8'";
-							} else if (wizardModel.databaseConnection.contains("h2")) {
+							} else if (isCurrentDatabase(DATABASE_H2)) {
 								sql = null;
 							} else {
 								sql = "create database `?`";
@@ -1434,10 +1452,23 @@ public class InitializationFilter extends StartupFilter {
 							        || wizardModel.databaseConnection.contains("127.0.0.1")) {
 								host = "'localhost'";
 							}
-							String sql = "drop user '?'@" + host;
+							
+							String sql = "";
+							if (isCurrentDatabase(DATABASE_MYSQL)) {
+								sql = "drop user '?'@" + host;
+							} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
+								sql = "drop user `?`";
+							}
+							
 							executeStatement(true, wizardModel.createUserUsername, wizardModel.createUserPassword, sql,
 							    connectionUsername);
-							sql = "create user '?'@" + host + " identified by '?'";
+							
+							if (isCurrentDatabase(DATABASE_MYSQL)) {
+								sql = "create user '?'@" + host + " identified by '?'";
+							} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
+								sql = "create user `?` with password '?'";
+							}
+							
 							if (-1 != executeStatement(false, wizardModel.createUserUsername, wizardModel.createUserPassword,
 							    sql, connectionUsername, connectionPassword.toString())) {
 								wizardModel.workLog.add("Created user " + connectionUsername);
@@ -1448,9 +1479,17 @@ public class InitializationFilter extends StartupFilter {
 							}
 							
 							// grant the roles
-							sql = "GRANT ALL ON `?`.* TO '?'@" + host;
-							int result = executeStatement(false, wizardModel.createUserUsername,
-							    wizardModel.createUserPassword, sql, wizardModel.databaseName, connectionUsername);
+							int result = 1;
+							if (isCurrentDatabase(DATABASE_MYSQL)) {
+								sql = "GRANT ALL ON `?`.* TO '?'@" + host;
+								result = executeStatement(false, wizardModel.createUserUsername,
+								    wizardModel.createUserPassword, sql, wizardModel.databaseName, connectionUsername);
+							} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
+								sql = "ALTER USER `?` WITH SUPERUSER";
+								result = executeStatement(false, wizardModel.createUserUsername,
+								    wizardModel.createUserPassword, sql, connectionUsername);
+							}
+							
 							// throw the user back to the main screen if this error occurs
 							if (result < 0) {
 								reportError(ErrorMessageConstants.ERROR_DB_GRANT_PRIV, DEFAULT_PAGE);
@@ -1491,13 +1530,13 @@ public class InitializationFilter extends StartupFilter {
 						if (StringUtils.hasText(wizardModel.databaseDriver)) {
 							runtimeProperties.put("connection.driver_class", wizardModel.databaseDriver);
 						}
-						if (finalDatabaseConnectionString.contains("postgres")) {
-							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+						if (finalDatabaseConnectionString.contains(DATABASE_POSTGRESQL)) {
+							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQL82Dialect");
 						}
-						if (finalDatabaseConnectionString.contains("sqlserver")) {
+						if (finalDatabaseConnectionString.contains(DATABASE_SQLSERVER)) {
 							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.SQLServerDialect");
 						}
-						if (finalDatabaseConnectionString.contains("h2")) {
+						if (finalDatabaseConnectionString.contains(DATABASE_H2)) {
 							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
 						}
 						runtimeProperties.put("module.allow_web_admin", wizardModel.moduleWebAdmin.toString());
