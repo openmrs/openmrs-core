@@ -26,6 +26,9 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.SortComparator;
 import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Field;
@@ -45,6 +48,19 @@ import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ObjectUtils;
+
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 
 /**
  * A Concept object can represent either a question or an answer to a data point. That data point is
@@ -77,41 +93,68 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	private static final String CONCEPT_NAME_LOCALE_NULL = "Concept.name.locale.null";
 	
 	// Fields
+	@Id
 	@DocumentId
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer conceptId;
-	
+
 	@Field
+	@Column(name = "retired", length = 1, nullable = false)
 	private Boolean retired = false;
-	
+
+	@ManyToOne
+	@JoinColumn(name="retired_by")
 	private User retiredBy;
-	
+
+	@Column(name="date_retired", length = 19)
 	private Date dateRetired;
-	
+
+	@Column(name = "retire_reason")
 	private String retireReason;
-	
+
+	@ManyToOne
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
+	@JoinColumn(name = "datatype_id")
 	private ConceptDatatype datatype;
-	
+
+	@ManyToOne
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
+	@JoinColumn(name = "class_id", nullable = false)
 	private ConceptClass conceptClass;
-	
+
+	@Column(name = "set", length = 1, nullable = false)
 	private Boolean set = false;
 	
+	@Column(name = "version")
 	private String version;
 	
+	@ManyToOne
+	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
 	
+	@Column(name = "date_created", nullable = false, length = 19)
 	private Date dateCreated;
 	
+	@ManyToOne
+	@JoinColumn(name = "changed_by")
 	private User changedBy;
 	
+	@Column(name = "date_changed", length = 19)
 	private Date dateChanged;
 	
 	@AllowDirectAccess
 	@ContainedIn
+	@BatchSize(size = 25)
+	@Access(AccessType.FIELD)
+	@JoinColumn(name = "concept_id", nullable = false)
+	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "names")
 	private Collection<ConceptName> names;
 	
 	@AllowDirectAccess
+	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+	@BatchSize(size = 25)
+	@OrderBy("sort_weight asc, concept_answer_id asc")
+	@Access(AccessType.FIELD)
 	private Collection<ConceptAnswer> answers;
 	
 	private Collection<ConceptSet> conceptSets;
