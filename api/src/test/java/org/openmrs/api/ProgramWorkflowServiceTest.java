@@ -18,13 +18,18 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptStateConversion;
@@ -37,8 +42,12 @@ import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.ProgramWorkflowDAO;
+import org.openmrs.api.impl.ProgramWorkflowServiceImpl;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.TestUtil;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This class tests methods in the PatientService class TODO Add methods to test all methods in
@@ -51,19 +60,30 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	protected static final String PROGRAM_WITH_OUTCOMES_XML = "org/openmrs/api/include/ProgramWorkflowServiceTest-initialData.xml";
 	
 	protected static final String PROGRAM_ATTRIBUTES_XML = "org/openmrs/api/include/ProgramAttributesDataset.xml";
+
+	protected static final String OTHER_PROGRAM_WORKFLOWS = "org/openmrs/api/include/ProgramWorkflowServiceTest-otherProgramWorkflows.xml";
         
-        protected ProgramWorkflowService pws = null;
+	protected ProgramWorkflowService pws = null;
+	
+	@Autowired
+	protected ProgramWorkflowDAO dao = null;
+	
+	private ProgramWorkflowServiceImpl pwsi = null;
 	
 	protected AdministrationService adminService = null;
 	
 	protected EncounterService encounterService = null;
 	
 	protected ConceptService cs = null;
+
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
 	
 	@Before
 	public void runBeforeEachTest() {
 		executeDataSet(CREATE_PATIENT_PROGRAMS_XML);
 		executeDataSet(PROGRAM_ATTRIBUTES_XML);
+		executeDataSet(OTHER_PROGRAM_WORKFLOWS);
                 
 		if (pws == null) {
 			pws = Context.getProgramWorkflowService();
@@ -71,6 +91,12 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 			encounterService = Context.getEncounterService();
 			cs = Context.getConceptService();
 		}
+	}
+
+	@Before
+	public void setup() {
+		pwsi = new ProgramWorkflowServiceImpl();
+		pwsi.setProgramWorkflowDAO(dao);
 	}
 	
 	/**
@@ -740,7 +766,297 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
                 int totalAttributeTypes = pws.getAllProgramAttributeTypes().size();
 		pws.purgeProgramAttributeType(programAttributeType);
 		assertEquals((totalAttributeTypes - 1), pws.getAllProgramAttributeTypes().size());
-}
+	}
+	
+	
+	@Test
+	public void getPrograms_shouldTestGetPrograms() {
+		List<Program> malPrograms = pws.getPrograms("MAL");
+		List<Program> prPrograms = pws.getPrograms("PR");
+		assertEquals(malPrograms.size(), 1);
+		assertEquals(prPrograms.size(), 3);
+	}
+	
+	@Test
+	public void retireProgram_shouldSetRetiredStateToFalseAndSetAReason() {
+		Concept concept = Context.getConceptService().getConcept(12);
+		ProgramWorkflow programWorkflow = dao.getProgramWorkflowsByConcept(concept).get(1);
+		ArrayList<ProgramWorkflow> programWorkflows = new ArrayList<>();
+		programWorkflows.add(programWorkflow);
+		Set<ProgramWorkflow> allWorkflows = new HashSet<>(programWorkflows);
+		Program programTest = pws.getAllPrograms().get(1);
+		programTest.setAllWorkflows(allWorkflows);
+		Program program = pws.retireProgram(programTest, "expired");
+		for (ProgramWorkflow workflow : program.getWorkflows()) {
+			assertTrue(workflow.getRetired());
+			assertNotNull(workflow.getStates());
+			for (ProgramWorkflowState state : workflow.getStates()) {
+				assertTrue(state.getRetired());
+			}
+		}
+		assertEquals(program.getRetireReason(), "expired");
+	}
+	
+	@Test
+	public void unretireProgram_shouldSetRetireFalseForWorkflowsAndWorkflowStates() {
+		Program program = pws.getAllPrograms().get(0);
+		Date lastModifiedDate = program.getDateChanged();
+		assertEquals(program.getRetired(), false);
+		for (ProgramWorkflow workflow : program.getAllWorkflows()) {
+			if (lastModifiedDate != null && lastModifiedDate.equals(workflow.getDateChanged())) {
+				assertEquals(workflow.getRetired(), false);
+				for (ProgramWorkflowState state : workflow.getStates()) {
+					if (lastModifiedDate.equals(state.getDateChanged())) {
+						assertEquals(state.getRetired(), false);
+					}
+				}
+			}
+		}
+	}
+	
+	@Test
+	public void saveUnretireProgram_shouldTestSaveUnretireProgram() {
+		Program program = new Program();
+		Concept concept = Context.getConceptService().getAllConcepts().get(0);
+		User testUser = Context.getUserService().getAllUsers().get(0);
+		program.setConcept(concept);
+		program.setDescription("test");
+		program.setName("programTest");
+		program.setCreator(testUser);
+		pws.getAllPrograms();
+		pws.retireProgram(program, "abc");
+		pws.unretireProgram(program);
+		Program programToBeAsserted = dao.getProgramByUuid(program.getUuid());
+		assertEquals(program, programToBeAsserted);
+	}
+	
+	@Test
+	public void savePatientProgram_shouldTestThrowPatientStateRequiresException() {
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("'PatientProgram(id=1, patient=Patient#2, program=Program(id=1, concept=Concept #1738, " +
+											"workflows=[ProgramWorkflow(id=1), ProgramWorkflow(id=2)]))' failed to validate with reason: states: State is required for a patient state");
+		PatientProgram patientProgram = pws.getPatientProgram(1);
+		for (PatientState state : patientProgram.getStates()) {
+			state.setState(null);
+		}
+		pws.savePatientProgram(patientProgram);
+	}
+	
+	@Test
+	public void savePatientProgram_shouldTestSetPatientProgram() {
+		PatientProgram patientProgram = pws.getPatientProgram(1);
+		for (PatientState state : patientProgram.getStates()) {
+			state.setPatientProgram(null);
+		}
+		pws.savePatientProgram(patientProgram);
+		for (PatientState state : patientProgram.getStates()) {
+			assertEquals(state.getPatientProgram(), patientProgram);
+		}
+	}
+	
+	@Test
+	public void savePatientProgram_shouldThrowPatientProgramAlreadyAssignedException() {
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("This PatientProgram contains a ProgramWorkflowState whose parent is " +
+			"already assigned to PatientProgram(id=2, patient=Patient#2, program=Program(id=2, concept=Concept #10, " +
+			"workflows=[ProgramWorkflow(id=3)]))");
+		PatientProgram patientProgram = pws.getPatientProgram(1);
+		PatientProgram patientProgram1 = pws.getPatientProgram(2);
+		for (PatientState state : patientProgram.getStates()) {
+			state.setPatientProgram(patientProgram1);
+		}
+		pws.savePatientProgram(patientProgram);
+	}
+	
+	@Test
+	public void savePatientProgram_shouldTestSetState() {
+		PatientProgram patientProgram = pws.getPatientProgram(1);
+		pws.voidPatientProgram(patientProgram, "test");
+		for (PatientState state : patientProgram.getStates()) {
+			state.setVoided(false);
+			state.setVoidReason(null);
+		}
+		pws.savePatientProgram(patientProgram);
+		for (PatientState state : patientProgram.getStates()) {
+			assertEquals(state.getVoided(), true);
+			assertEquals(state.getVoidReason(), "test");
+		}
+	}
+	
+	@Test
+	public void getPrograms_shouldTestGetProgramsIfCohortIsEmpty() {
+		Cohort cohort = new Cohort();
+		Collection<Program> programs = pws.getAllPrograms();
+		List<PatientProgram> patientPrograms;
+		cohort.getMemberIds().clear();
+		patientPrograms = dao.getPatientPrograms(null, programs);
+		assertEquals(patientPrograms.size(), 4);
+	}
+	
+	@Test
+	public void getPrograms_shouldTestGetProgramsIfCohortIsNotEmpty() {
+		Cohort cohort = new Cohort();
+		Collection<Program> programs = pws.getAllPrograms();
+		List<PatientProgram> patientPrograms;
+		cohort.addMember(1);
+		cohort.addMember(2);
+		patientPrograms = dao.getPatientPrograms(cohort, programs);
+		assertEquals(patientPrograms.size(), 2);
+	}
+	
+	
+	@Test
+	public void voidPatientProgram_shouldTestVoidPatientProgram() {
+		PatientProgram patientProgram = pws.getPatientProgram(1);
+		PatientProgram patientProgram1 = pws.voidPatientProgram(patientProgram, "abc");
+		assertEquals(patientProgram1.getVoided(), true);
+		assertEquals(patientProgram1.getVoidReason(), "abc");
+	}
+	
+	@Test
+	public void unvoidPatientProgram_shouldTestUnvoidPatientProgram() {
+		PatientProgram existingPatientProgram = pws.getPatientProgram(1);
+		PatientProgram existingPatientProgramVoided = pws.voidPatientProgram(existingPatientProgram, "expired");
+		Date patientProgramDateVoided = existingPatientProgramVoided.getDateVoided();
+		existingPatientProgramVoided = pws.unvoidPatientProgram(existingPatientProgram);
+		assertEquals(existingPatientProgramVoided.getVoided(), false);
+		for (PatientState state : existingPatientProgram.getStates()) {
+			assertEquals(state.getVoided(), false);
+			if (patientProgramDateVoided != null && patientProgramDateVoided.equals(state.getDateVoided())) {
+				assertNull(state.getVoidedBy());
+				assertNull(state.getDateVoided());
+				assertNull(state.getVoidReason());
+			}
+		}
+	}
+	
+	@Test
+	public void saveConceptStateConversion_shouldThrowConceptStateConversionRequire() {
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("'ConceptStateConversion: Concept[null] results in State [null] for workflow [null]' failed to validate with reason: " +
+			"concept: Invalid concept, programWorkflow: Invalid Programme Workflow, programWorkflowState: Invalid Programme Workflow State");
+		ConceptStateConversion conceptStateConversion = new ConceptStateConversion();
+		conceptStateConversion.setConcept(null);
+		pws.saveConceptStateConversion(conceptStateConversion);
+	}
+	
+	@Test
+	public void saveConceptStateConversion_shouldTestSaveConceptStateConversion() {
+		ConceptStateConversion newConceptStateConversion = new ConceptStateConversion();
+		ConceptStateConversion existingConceptStateConversion = pws.getAllConceptStateConversions().get(0);
+		newConceptStateConversion.setConcept(existingConceptStateConversion.getConcept());
+		newConceptStateConversion.setProgramWorkflow(existingConceptStateConversion.getProgramWorkflow());
+		newConceptStateConversion.setProgramWorkflowState(existingConceptStateConversion.getProgramWorkflowState());
+		String conceptStateConversionUuid = newConceptStateConversion.getUuid();
+		pws.saveConceptStateConversion(newConceptStateConversion);
+		ConceptStateConversion conceptStateConversion2 = dao.getConceptStateConversionByUuid(conceptStateConversionUuid);
+		assertEquals(conceptStateConversionUuid, conceptStateConversion2.getUuid());
+	}
+	
+	@Test
+	public void getConceptStateConversion_shouldTestGetConceptStateConversion() {
+		ConceptStateConversion conceptStateConversion1 = pws.getAllConceptStateConversions().get(0);
+		int conceptStateConversion1Id = conceptStateConversion1.getId();
+		ConceptStateConversion conceptStateConversion2 = pws.getConceptStateConversion(conceptStateConversion1Id);
+		assertEquals(conceptStateConversion1, conceptStateConversion2);
+	}
+	
+	@Test
+	public void getAllConceptStateConversion_shouldTestGetAllConceptStateConversion() {
+		List<ConceptStateConversion> conceptStateConversions = pws.getAllConceptStateConversions();
+		assertEquals(conceptStateConversions.size(), 1);
+		
+	}
+	
+	@Test
+	public void purgeConceptStateConversion_shouldTestPurgeConceptStateConversion() {
+		ConceptStateConversion conceptStateConversion = pws.getAllConceptStateConversions().get(0);
+		Context.getProgramWorkflowService().purgeConceptStateConversion(conceptStateConversion, false);
+		List<ConceptStateConversion> list = pws.getAllConceptStateConversions();
+		assertEquals(list.size(), 0);
+	}
+	
+	@Test
+	public void getProgramsByConcept_shouldTestGetProgramsByConcept() {
+		Concept concept = Context.getConceptService().getAllConcepts().get(0);
+		List<Program> programs = pws.getProgramsByConcept(concept);
+		assertEquals(programs.size(), 0);
+	}
+	
+	@Test
+	public void programWorkflowsByConcept_shouldTestGetProgramWorkflowsByConcept() {
+		Concept concept = Context.getConceptService().getAllConcepts().get(0);
+		List<ProgramWorkflow> programWorkflows = pws.getProgramWorkflowsByConcept(concept);
+		assertEquals(programWorkflows.size(), 0);
+	}
+	
+	@Test
+	public void programWorkflowStatesByConcept_shouldTestGetProgramWorkflowStatesByConcept() {
+		Concept concept = Context.getConceptService().getAllConcepts().get(0);
+		List<ProgramWorkflowState> programWorkflowStates = pws.getProgramWorkflowStatesByConcept(concept);
+		assertEquals(programWorkflowStates.size(), 0);
+	}
+	
+	@Test
+	public void getAllPrograms_shouldTestGetAllPrograms() {
+		List<Program> programs = pws.getAllPrograms();
+		assertEquals(programs.size(), 3);
+	}
+	
+	@Test
+	public void getConceptStateConversion_shouldGetConceptStateConversion(){
+		ProgramWorkflow programWorkflow = pws.getProgram(1).getWorkflow(2);
+		Concept concept = dao.getAllConceptStateConversions().get(0).getConcept();
+		ConceptStateConversion conceptStateConversion = dao.getConceptStateConversion(programWorkflow, concept);
+		assertEquals(conceptStateConversion, dao.getAllConceptStateConversions().get(0));
+	}
+	
+	@Test 
+	public void getProgram_shouldGetProgramByName(){
+		Program program = pws.getAllPrograms().get(0);
+		String programName = program.getName();
+		assertEquals(Context.getProgramWorkflowService().getProgramByName(programName), program);
+	}
+	
+	@Test
+	public void triggerStateConversion_shouldThrowConvertStateInvalidPatient(){
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("Attempting to convert state of an invalid patient");
+		Concept trigger = Context.getConceptService().getAllConcepts().get(0);
+		Date dateConverted = new Date();
+		pwsi.triggerStateConversion(null, trigger, dateConverted);
+	}
+
+	@Test
+	public void triggerStateConversion_shouldThrowConvertStatePatientWithoutValidTrigger(){
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("Attempting to convert state for a patient without a valid trigger concept");
+		Patient patient = Context.getPatientService().getAllPatients().get(0);
+		Date dateConverted = new Date();
+		pwsi.triggerStateConversion(patient, null, dateConverted);
+	}
+
+	@Test
+	public void triggerStateConversion_shouldThrowConvertStateInvalidDate(){
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("Invalid date for converting patient state");
+		Patient patient = Context.getPatientService().getAllPatients().get(0);
+		Concept trigger = Context.getConceptService().getAllConcepts().get(0);
+		pwsi.triggerStateConversion(patient, trigger, null);
+	}
+	
+	@Test
+	public void triggerStateConversion_shouldTestTransitionToState(){
+		Patient patient = Context.getPatientService().getPatientByUuid("6013a8cd-c6a0-4140-bfac-0af565704420");
+		PatientProgram patientProgram = pws.getPatientProgram(1);
+		Concept trigger = Context.getConceptService().getConcept(14);
+		Date dateConverted = new Date();
+		patientProgram.setDateCompleted(null);
+		int patientStatesSize = patientProgram.getStates().size();
+		pwsi.triggerStateConversion(patient, trigger, dateConverted);
+		assertEquals(patientProgram.getStates().size(), (patientStatesSize + 1));
+	}
+	
 	//	/**
 	//	 * This method should be uncommented when you want to examine the actual hibernate
 	//	 * sql calls being made.  The calls that should be limiting the number of returned

@@ -40,12 +40,12 @@ public class ConceptClassValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should fail validation if user is null or empty or whitespace
-	 * @should fail validation if name is already exist in non retired concept class
-	 * @should pass validation if description is null or empty or whitespace
-	 * @should pass validation if all required fields have proper values
-	 * @should pass validation if field lengths are correct
-	 * @should fail validation if field lengths are not correct
+	 * <strong>Should</strong> fail validation if user is null or empty or whitespace
+	 * <strong>Should</strong> fail validation if name is already exist in non retired concept class
+	 * <strong>Should</strong> pass validation if description is null or empty or whitespace
+	 * <strong>Should</strong> pass validation if all required fields have proper values
+	 * <strong>Should</strong> pass validation if field lengths are correct
+	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	
 	@Override

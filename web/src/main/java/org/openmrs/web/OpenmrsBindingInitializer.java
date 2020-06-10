@@ -81,7 +81,6 @@ import org.openmrs.propertyeditor.VisitTypeEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.support.WebBindingInitializer;
-import org.springframework.web.context.request.WebRequest;
 
 /**
  * Shared WebBindingInitializer that allows all OpenMRS annotated controllers to use our custom
@@ -94,7 +93,7 @@ public class OpenmrsBindingInitializer implements WebBindingInitializer {
 	 *      org.springframework.web.context.request.WebRequest)
 	 */
 	@Override
-	public void initBinder(WebDataBinder wdb, WebRequest request) {
+	public void initBinder(WebDataBinder wdb) {
 		wdb.registerCustomEditor(Cohort.class, new CohortEditor());
 		wdb.registerCustomEditor(Concept.class, new ConceptEditor());
 		wdb.registerCustomEditor(ConceptAnswer.class, new ConceptAnswerEditor());

@@ -40,6 +40,12 @@ public interface SchedulerDAO {
 	public TaskDefinition getTask(Integer taskId) throws DAOException;
 	
 	/**
+	 * @see org.openmrs.scheduler.SchedulerService#getTaskByUuid(java.lang.String)
+	 * 
+	 */
+	public TaskDefinition getTaskByUuid(String uuid) throws DAOException;
+
+	/**
 	 * Update task
 	 * 
 	 * @param task to be updated

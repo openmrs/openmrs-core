@@ -218,10 +218,10 @@ public class ModuleUtil {
 	 *
 	 * @param versions the openmrs versions to be checked against the current openmrs version
 	 * @return true if the current openmrs version is in versions otherwise false
-	 * @should return false when versions is null
-	 * @should return false when versions is empty
-	 * @should return true if current openmrs version matches one element in versions
-	 * @should return false if current openmrs version does not match any element in versions
+	 * <strong>Should</strong> return false when versions is null
+	 * <strong>Should</strong> return false when versions is empty
+	 * <strong>Should</strong> return true if current openmrs version matches one element in versions
+	 * <strong>Should</strong> return false if current openmrs version does not match any element in versions
 	 */
 	public static boolean isOpenmrsVersionInVersions(String ...versions) {
 
@@ -265,29 +265,29 @@ public class ModuleUtil {
 	 * @param version openmrs version number to be compared
 	 * @param versionRange value in the config file for required openmrs version
 	 * @return true if the <code>version</code> is within the <code>value</code>
-	 * @should allow ranged required version
-	 * @should allow ranged required version with wild card
-	 * @should allow ranged required version with wild card on one end
-	 * @should allow single entry for required version
-	 * @should allow required version with wild card
-	 * @should allow non numeric character required version
-	 * @should allow ranged non numeric character required version
-	 * @should allow ranged non numeric character with wild card
-	 * @should allow ranged non numeric character with wild card on one end
-	 * @should return false when openmrs version beyond wild card range
-	 * @should return false when required version beyond openmrs version
-	 * @should return false when required version with wild card beyond openmrs version
-	 * @should return false when required version with wild card on one end beyond openmrs version
-	 * @should return false when single entry required version beyond openmrs version
-	 * @should allow release type in the version
-	 * @should match when revision number is below maximum revision number
-	 * @should not match when revision number is above maximum revision number
-	 * @should correctly set upper and lower limit for versionRange with qualifiers and wild card
-	 * @should match when version has wild card plus qualifier and is within boundary
-	 * @should not match when version has wild card plus qualifier and is outside boundary
-	 * @should match when version has wild card and is within boundary
-	 * @should not match when version has wild card and is outside boundary
-	 * @should return true when required version is empty
+	 * <strong>Should</strong> allow ranged required version
+	 * <strong>Should</strong> allow ranged required version with wild card
+	 * <strong>Should</strong> allow ranged required version with wild card on one end
+	 * <strong>Should</strong> allow single entry for required version
+	 * <strong>Should</strong> allow required version with wild card
+	 * <strong>Should</strong> allow non numeric character required version
+	 * <strong>Should</strong> allow ranged non numeric character required version
+	 * <strong>Should</strong> allow ranged non numeric character with wild card
+	 * <strong>Should</strong> allow ranged non numeric character with wild card on one end
+	 * <strong>Should</strong> return false when openmrs version beyond wild card range
+	 * <strong>Should</strong> return false when required version beyond openmrs version
+	 * <strong>Should</strong> return false when required version with wild card beyond openmrs version
+	 * <strong>Should</strong> return false when required version with wild card on one end beyond openmrs version
+	 * <strong>Should</strong> return false when single entry required version beyond openmrs version
+	 * <strong>Should</strong> allow release type in the version
+	 * <strong>Should</strong> match when revision number is below maximum revision number
+	 * <strong>Should</strong> not match when revision number is above maximum revision number
+	 * <strong>Should</strong> correctly set upper and lower limit for versionRange with qualifiers and wild card
+	 * <strong>Should</strong> match when version has wild card plus qualifier and is within boundary
+	 * <strong>Should</strong> not match when version has wild card plus qualifier and is outside boundary
+	 * <strong>Should</strong> match when version has wild card and is within boundary
+	 * <strong>Should</strong> not match when version has wild card and is outside boundary
+	 * <strong>Should</strong> return true when required version is empty
 	 */
 	public static boolean matchRequiredVersions(String version, String versionRange) {
 		// There is a null check so no risk in keeping the literal on the right side
@@ -382,15 +382,15 @@ public class ModuleUtil {
 	 * @param version openmrs version number to be compared
 	 * @param versionRange value in the config file for required openmrs version
 	 * @throws ModuleException if the <code>version</code> is not within the <code>value</code>
-	 * @should throw ModuleException if openmrs version beyond wild card range
-	 * @should throw ModuleException if required version beyond openmrs version
-	 * @should throw ModuleException if required version with wild card beyond openmrs version
-	 * @should throw ModuleException if required version with wild card on one end beyond openmrs
+	 * <strong>Should</strong> throw ModuleException if openmrs version beyond wild card range
+	 * <strong>Should</strong> throw ModuleException if required version beyond openmrs version
+	 * <strong>Should</strong> throw ModuleException if required version with wild card beyond openmrs version
+	 * <strong>Should</strong> throw ModuleException if required version with wild card on one end beyond openmrs
 	 *         version
-	 * @should throw ModuleException if single entry required version beyond openmrs version
-	 * @should throw ModuleException if SNAPSHOT not handled correctly
-	 * @should handle SNAPSHOT versions
-	 * @should handle ALPHA versions
+	 * <strong>Should</strong> throw ModuleException if single entry required version beyond openmrs version
+	 * <strong>Should</strong> throw ModuleException if SNAPSHOT not handled correctly
+	 * <strong>Should</strong> handle SNAPSHOT versions
+	 * <strong>Should</strong> handle ALPHA versions
 	 */
 	public static void checkRequiredVersion(String version, String versionRange) throws ModuleException {
 		if (!matchRequiredVersions(version, versionRange)) {
@@ -411,8 +411,8 @@ public class ModuleUtil {
 	 *         numerically less than the argument <code>value</code>; and a value greater than
 	 *         <code>0</code> if <code>version</code> is numerically greater than the argument
 	 *         <code>value</code>
-	 * @should correctly comparing two version numbers
-	 * @should treat SNAPSHOT as earliest version
+	 * <strong>Should</strong> correctly comparing two version numbers
+	 * <strong>Should</strong> treat SNAPSHOT as earliest version
 	 */
 	public static int compareVersion(String version, String value) {
 		try {
@@ -481,8 +481,8 @@ public class ModuleUtil {
 	 * Gets the folder where modules are stored. ModuleExceptions are thrown on errors
 	 *
 	 * @return folder containing modules
-	 * @should use the runtime property as the first choice if specified
-	 * @should return the correct file if the runtime property is an absolute path
+	 * <strong>Should</strong> use the runtime property as the first choice if specified
+	 * <strong>Should</strong> return the correct file if the runtime property is an absolute path
 	 */
 	public static File getModuleRepository() {
 		
@@ -548,11 +548,11 @@ public class ModuleUtil {
 	 * @param keepFullPath if true, will recreate entire directory structure in tmpModuleDir
 	 *            relating to <code>name</code>. if false will start directory structure at
 	 *            <code>name</code>
-	 * @should expand entire jar if name is null
-	 * @should expand entire jar if name is empty string
-	 * @should expand directory with parent tree if name is directory and keepFullPath is true
-	 * @should expand directory without parent tree if name is directory and keepFullPath is false
-	 * @should expand file with parent tree if name is file and keepFullPath is true
+	 * <strong>Should</strong> expand entire jar if name is null
+	 * <strong>Should</strong> expand entire jar if name is empty string
+	 * <strong>Should</strong> expand directory with parent tree if name is directory and keepFullPath is true
+	 * <strong>Should</strong> expand directory without parent tree if name is directory and keepFullPath is false
+	 * <strong>Should</strong> expand file with parent tree if name is file and keepFullPath is true
 	 */
 	public static void expandJar(File fileToExpand, File tmpModuleDir, String name, boolean keepFullPath) throws IOException {
 		JarFile jarFile = null;
@@ -649,7 +649,7 @@ public class ModuleUtil {
 	 *
 	 * @param url
 	 * @return InputStream of contents
-	 * @should return a valid input stream for old module urls
+	 * <strong>Should</strong> return a valid input stream for old module urls
 	 */
 	public static InputStream getURLStream(URL url) {
 		InputStream in = null;
@@ -724,9 +724,9 @@ public class ModuleUtil {
 	 *
 	 * @param url
 	 * @return String contents of the URL
-	 * @should return an update rdf page for old https dev urls
-	 * @should return an update rdf page for old https module urls
-	 * @should return an update rdf page for module urls
+	 * <strong>Should</strong> return an update rdf page for old https dev urls
+	 * <strong>Should</strong> return an update rdf page for old https module urls
+	 * <strong>Should</strong> return an update rdf page for module urls
 	 */
 	public static String getURL(URL url) {
 		InputStream in = null;
@@ -955,7 +955,7 @@ public class ModuleUtil {
 	 * sure that all mandatory modules have been started successfully.
 	 *
 	 * @throws ModuleException if a mandatory module isn't started
-	 * @should throw ModuleException if a mandatory module is not started
+	 * <strong>Should</strong> throw ModuleException if a mandatory module is not started
 	 */
 	protected static void checkMandatoryModulesStarted() throws ModuleException {
 		
@@ -976,7 +976,7 @@ public class ModuleUtil {
 	 * needs.
 	 *
 	 * @throws ModuleException if a module that is core to OpenMRS is not started
-	 * @should throw ModuleException if a core module is not started
+	 * <strong>Should</strong> throw ModuleException if a core module is not started
 	 */
 	protected static void checkOpenmrsCoreModulesStarted() throws OpenmrsCoreModuleException {
 		
@@ -1026,7 +1026,7 @@ public class ModuleUtil {
 	 * &lt;moduleid&gt;.mandatory=true global property.
 	 *
 	 * @return list of modules ids for mandatory modules
-	 * @should return mandatory module ids
+	 * <strong>Should</strong> return mandatory module ids
 	 */
 	public static List<String> getMandatoryModules() {
 		
@@ -1063,9 +1063,9 @@ public class ModuleUtil {
 	 *
 	 * @param path
 	 * @return the running module that matches the most of the given path
-	 * @should handle ui springmvc css ui dot css when ui dot springmvc module is running
-	 * @should handle ui springmvc css ui dot css when ui module is running
-	 * @should return null for ui springmvc css ui dot css when no relevant module is running
+	 * <strong>Should</strong> handle ui springmvc css ui dot css when ui dot springmvc module is running
+	 * <strong>Should</strong> handle ui springmvc css ui dot css when ui module is running
+	 * <strong>Should</strong> return null for ui springmvc css ui dot css when no relevant module is running
 	 */
 	public static Module getModuleForPath(String path) {
 		int ind = path.lastIndexOf('/');
@@ -1099,7 +1099,7 @@ public class ModuleUtil {
 	 * @param module
 	 * @param path
 	 * @return local path
-	 * @should handle ui springmvc css ui dot css example
+	 * <strong>Should</strong> handle ui springmvc css ui dot css example
 	 */
 	public static String getPathForResource(Module module, String path) {
 		if (path.startsWith("/")) {
@@ -1182,9 +1182,9 @@ public class ModuleUtil {
 	 * @param version version of the module
 	 * @param resource name of a resource from the api jar
 	 * @return resource as an input stream or <code>null</code> if resource cannot be loaded
-	 * @should load file from api as input stream
-	 * @should return null if api is not found
-	 * @should return null if file is not found in api
+	 * <strong>Should</strong> load file from api as input stream
+	 * <strong>Should</strong> return null if api is not found
+	 * <strong>Should</strong> return null if file is not found in api
 	 */
 	public static InputStream getResourceFromApi(JarFile jarFile, String moduleId, String version, String resource) {
 		String apiLocation = "lib/" + moduleId + "-api-" + version + ".jar";

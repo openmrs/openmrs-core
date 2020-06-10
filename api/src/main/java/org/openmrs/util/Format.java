@@ -71,14 +71,14 @@ public class Format {
 	 * @param type input type to determine how much information from the date is returned
 	 * @return empty string if one of the parameters is null. Otherwise a string object for the date such that it is
 	 * formatted according to locale and the amount of information it contains is determined by type.
-	 * @should not fail when only date is null
-	 * @should not fail when only locale is null
-	 * @should not fail when only type is null
-	 * @should not fail when date and locale is null
-	 * @should not fail when date and type is null
-	 * @should not fail when locale and type is null
-	 * @should not fail when all parameters are null
-	 * @should not fail when none of the parameters are null
+	 * <strong>Should</strong> not fail when only date is null
+	 * <strong>Should</strong> not fail when only locale is null
+	 * <strong>Should</strong> not fail when only type is null
+	 * <strong>Should</strong> not fail when date and locale is null
+	 * <strong>Should</strong> not fail when date and type is null
+	 * <strong>Should</strong> not fail when locale and type is null
+	 * <strong>Should</strong> not fail when all parameters are null
+	 * <strong>Should</strong> not fail when none of the parameters are null
 	 */
 	public static String format(Date date, Locale locale, FORMAT_TYPE type) {
 		if (date == null || locale == null || type == null) {

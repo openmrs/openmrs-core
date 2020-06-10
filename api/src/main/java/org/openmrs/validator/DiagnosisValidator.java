@@ -25,7 +25,7 @@ import org.springframework.validation.Validator;
 public class DiagnosisValidator implements Validator {
 
 	/**
-	 * @should support Diagnosis class
+	 * <strong>Should</strong> support Diagnosis class
 	 */
 	@Override
 	public boolean supports(Class<?> aClass) {
@@ -35,10 +35,10 @@ public class DiagnosisValidator implements Validator {
 	/**
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should fail validation if rank is null or a non-positive integer
-	 * @should fail validation if certainty is null
-	 * @should fail validation if diagnosis is null
-	 * @should fail validation if encounter is null
+	 * <strong>Should</strong> fail validation if rank is null or a non-positive integer
+	 * <strong>Should</strong> fail validation if certainty is null
+	 * <strong>Should</strong> fail validation if diagnosis is null
+	 * <strong>Should</strong> fail validation if encounter is null
 	 */
 	@Override
 	public void validate(Object o, Errors errors) {

@@ -265,8 +265,8 @@ public final class Module {
 	 *
 	 * @return the version of the given required module, or null if there are no version constraints
 	 * @since 1.5
-	 * @should return null if no required modules exist
-	 * @should return null if no required module by given name exists
+	 * <strong>Should</strong> return null if no required modules exist
+	 * <strong>Should</strong> return null if no required module by given name exists
 	 */
 	public String getRequiredModuleVersion(String moduleName) {
 		return requiredModulesMap == null ? null : requiredModulesMap.get(moduleName);
@@ -276,7 +276,7 @@ public final class Module {
 	 * This is a convenience method to set all the required modules without any version requirements
 	 *
 	 * @param requiredModules the requiredModules to set for this module
-	 * @should set modules when there is a null required modules map
+	 * <strong>Should</strong> set modules when there is a null required modules map
 	 */
 	public void setRequiredModules(List<String> requiredModules) {
 		if (requiredModulesMap == null) {
@@ -291,7 +291,7 @@ public final class Module {
 	/**
 	 * @param requiredModule the requiredModule to add for this module
 	 * @param version version requiredModule
-	 * @should add module to required modules map
+	 * <strong>Should</strong> add module to required modules map
 	 */
 	public void addRequiredModule(String requiredModule, String version) {
 		if (requiredModulesMap != null) {
@@ -480,10 +480,10 @@ public final class Module {
 	 * 
 	 * @return the extensions
 	 *
-	 * @should not expand extensionNames if extensionNames is null
-	 * @should not expand extensionNames if extensionNames is empty
-	 * @should not expand extensionNames if extensions matches extensionNames
-	 * @should expand extensionNames if extensions does not match extensionNames 
+	 * <strong>Should</strong> not expand extensionNames if extensionNames is null
+	 * <strong>Should</strong> not expand extensionNames if extensionNames is empty
+	 * <strong>Should</strong> not expand extensionNames if extensions matches extensionNames
+	 * <strong>Should</strong> expand extensionNames if extensions does not match extensionNames 
 	 */
 	public List<Extension> getExtensions() {
 		if (isNoNeedToExpand()) {
@@ -711,7 +711,7 @@ public final class Module {
 	
 	/**
 	 * @param e string to set as startup error message
-	 * @should throw exception when message is null
+	 * <strong>Should</strong> throw exception when message is null
 	 */
 	public void setStartupErrorMessage(String e) {
 		if (e == null) {
@@ -729,9 +729,9 @@ public final class Module {
 	 *            message
 	 * @param t throwable stacktrace to include in the error message
 	 *
-	 * @should throw exception when throwable is null
-	 * @should set StartupErrorMessage when exceptionMessage is null
-	 * @should append throwable's message to exceptionMessage
+	 * <strong>Should</strong> throw exception when throwable is null
+	 * <strong>Should</strong> set StartupErrorMessage when exceptionMessage is null
+	 * <strong>Should</strong> append throwable's message to exceptionMessage
 	 */
 	public void setStartupErrorMessage(String exceptionMessage, Throwable t) {
 		if (t == null) {
@@ -774,7 +774,7 @@ public final class Module {
 	}
 
 	/*
-	 * @should dispose all classInstances, not AdvicePoints
+	 * <strong>Should</strong> dispose all classInstances, not AdvicePoints
 	 */	
 	public void disposeAdvicePointsClassInstance() {
 		if (advicePoints == null) {

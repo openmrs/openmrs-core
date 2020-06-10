@@ -18,8 +18,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -36,6 +34,7 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
+import org.powermock.reflect.Whitebox;
 
 /**
  * Tests methods on the {@link org.openmrs.module.ModuleUtil} class
@@ -112,13 +111,8 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	public void isOpenmrsVersionInVersions_shouldReturnTrueIfCurrentOpenmrsVersionMatchesOneElementInVersions()
 	        throws Exception {
 
-		Field versionField = OpenmrsConstants.class.getDeclaredField("OPENMRS_VERSION_SHORT");
-		Field modifiersField = Field.class.getDeclaredField("modifiers");
-		modifiersField.setAccessible(true);
-		modifiersField.setInt(versionField, versionField.getModifiers() & ~Modifier.FINAL);
 		final String currentVersion = "1.9.8";
-		versionField.set(null, currentVersion);
-
+		Whitebox.setInternalState(OpenmrsConstants.class, "OPENMRS_VERSION_SHORT", currentVersion);
 		Assert.assertTrue(ModuleUtil.isOpenmrsVersionInVersions( currentVersion, "1.10.*"));
 	}
 
@@ -129,12 +123,7 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	public void isOpenmrsVersionInVersions_shouldReturnFalseIfCurrentOpenmrsVersionDoesNotMatchAnyElementInVersions()
 	        throws Exception {
 
-		Field versionField = OpenmrsConstants.class.getDeclaredField("OPENMRS_VERSION_SHORT");
-		Field modifiersField = Field.class.getDeclaredField("modifiers");
-		modifiersField.setAccessible(true);
-		modifiersField.setInt(versionField, versionField.getModifiers() & ~Modifier.FINAL);
-		versionField.set(null, "1.9.8");
-
+		Whitebox.setInternalState(OpenmrsConstants.class, "OPENMRS_VERSION_SHORT", "1.9.8");
 		Assert.assertFalse(ModuleUtil.isOpenmrsVersionInVersions("1.11.*", "2.1.0"));
 	}
 

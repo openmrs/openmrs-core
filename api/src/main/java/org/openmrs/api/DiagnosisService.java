@@ -99,7 +99,7 @@ public interface DiagnosisService extends OpenmrsService {
 	 *
 	 * @param diagnosis diagnosis to unvoid
 	 * @throws APIException
-	 * @should unset voided bit on given diagnosis
+	 * <strong>Should</strong> unset voided bit on given diagnosis
 	 * @return the unvoided diagnosis
 	 */
 	@Authorized(PrivilegeConstants.EDIT_DIAGNOSES)
@@ -114,7 +114,7 @@ public interface DiagnosisService extends OpenmrsService {
 	 * @param diagnosis diagnosis to remove from the database
 	 * @throws APIException
 	 * @see #purgeDiagnosis(Diagnosis) 
-	 * @should delete the given diagnosis from th e database
+	 * <strong>Should</strong> delete the given diagnosis from th e database
 	 */
 	@Authorized(PrivilegeConstants.DELETE_DIAGNOSES)
 	void purgeDiagnosis(Diagnosis diagnosis) throws APIException;

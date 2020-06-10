@@ -207,8 +207,8 @@ public class PatientSearchCriteria {
 	}
 	
 	/**
-	 * @should return source value when target is blank
-	 * @should return target value when target is non-blank
+	 * <strong>Should</strong> return source value when target is blank
+	 * <strong>Should</strong> return target value when target is non-blank
 	 */
 	String copySearchParameter(String source, String target) {
 		if (!StringUtils.isBlank(source) && StringUtils.isBlank(target)) {
@@ -218,12 +218,12 @@ public class PatientSearchCriteria {
 	}
 	
 	/**
-	 * @should identify search by name
-	 * @should identify search by identifier
-	 * @should identify search by identifier type list
-	 * @should identify search by identifier and identifier type list
-	 * @should identify search by name or identifier
-	 * @should identify search by name and identifier
+	 * <strong>Should</strong> identify search by name
+	 * <strong>Should</strong> identify search by identifier
+	 * <strong>Should</strong> identify search by identifier type list
+	 * <strong>Should</strong> identify search by identifier and identifier type list
+	 * <strong>Should</strong> identify search by name or identifier
+	 * <strong>Should</strong> identify search by name and identifier
 	 */
 	PatientSearchMode getSearchMode(String name, String identifier, List<PatientIdentifierType> identifierTypes,
 	        boolean searchOnNamesOrIdentifiers) {
@@ -430,11 +430,11 @@ public class PatientSearchCriteria {
 	}
 	
 	/**
-	 * @should process simple space as separator
-	 * @should process comma as separator
-	 * @should process mixed separators
-	 * @should not return empty name parts
-	 * @should reject null as name
+	 * <strong>Should</strong> process simple space as separator
+	 * <strong>Should</strong> process comma as separator
+	 * <strong>Should</strong> process mixed separators
+	 * <strong>Should</strong> not return empty name parts
+	 * <strong>Should</strong> reject null as name
 	 **/
 	String[] getQueryParts(String query) {
 		if (query == null) {
@@ -487,8 +487,8 @@ public class PatientSearchCriteria {
 	}
 	
 	/**
-	 * @should recognise short name
-	 * @should recognise long name
+	 * <strong>Should</strong> recognise short name
+	 * <strong>Should</strong> recognise long name
 	 */
 	Boolean isShortName(String name) {
 		Integer minChars = Context.getAdministrationService().getGlobalPropertyValue(
@@ -562,9 +562,9 @@ public class PatientSearchCriteria {
 	}
 	
 	/**
-	 * @should return start as default match mode
-	 * @should return start as configured match mode
-	 * @should return anywhere as configured match mode
+	 * <strong>Should</strong> return start as default match mode
+	 * <strong>Should</strong> return start as configured match mode
+	 * <strong>Should</strong> return anywhere as configured match mode
 	 */
 	MatchMode getMatchMode() {
 		String matchMode = Context.getAdministrationService().getGlobalProperty(

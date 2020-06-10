@@ -153,7 +153,7 @@ public class PatientDataUnvoidHandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies unvoid the members associated with the patient
+	 * <strong>Verifies</strong> unvoid the members associated with the patient
 	 * @see PatientDataUnvoidHandler#handle(Patient,User,Date,String)
 	 */
 	@Test

@@ -34,8 +34,8 @@ public class PrivilegeEditor extends PropertyEditorSupport {
 	}
 	
 	/**
-	 * @should set using name
-	 * @should set using uuid
+	 * <strong>Should</strong> set using name
+	 * <strong>Should</strong> set using uuid
 	 */
 	@Override
 	public void setAsText(String text) throws IllegalArgumentException {

@@ -57,36 +57,36 @@ public class ConceptValidator extends BaseCustomizableValidator implements Valid
 	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should pass if the concept has at least one fully specified name added to it
-	 * @should fail if there is a duplicate unretired concept name in the locale
-	 * @should fail if there is a duplicate unretired preferred name in the same locale
-	 * @should fail if there is a duplicate unretired fully specified name in the same locale
-	 * @should fail if any names in the same locale for this concept are similar
-	 * @should pass if the concept with a duplicate name is retired
-	 * @should pass if the concept being validated is retired and has a duplicate name
-	 * @should fail if any name is an empty string
-	 * @should fail if the object parameter is null
-	 * @should pass if the concept is being updated with no name change
-	 * @should fail if any name is a null value
-	 * @should not allow multiple preferred names in a given locale
-	 * @should not allow multiple fully specified conceptNames in a given locale
-	 * @should not allow multiple short names in a given locale
-	 * @should not allow an index term to be a locale preferred name
-	 * @should fail if there is no name explicitly marked as fully specified
-	 * @should pass if the duplicate ConceptName is neither preferred nor fully Specified
-	 * @should pass if the concept has a synonym that is also a short name
-	 * @should fail if a term is mapped multiple times to the same concept
-	 * @should not fail if a term has two new mappings on it
-	 * @should fail if there is a duplicate unretired concept name in the same locale different than
+	 * <strong>Should</strong> pass if the concept has at least one fully specified name added to it
+	 * <strong>Should</strong> fail if there is a duplicate unretired concept name in the locale
+	 * <strong>Should</strong> fail if there is a duplicate unretired preferred name in the same locale
+	 * <strong>Should</strong> fail if there is a duplicate unretired fully specified name in the same locale
+	 * <strong>Should</strong> fail if any names in the same locale for this concept are similar
+	 * <strong>Should</strong> pass if the concept with a duplicate name is retired
+	 * <strong>Should</strong> pass if the concept being validated is retired and has a duplicate name
+	 * <strong>Should</strong> fail if any name is an empty string
+	 * <strong>Should</strong> fail if the object parameter is null
+	 * <strong>Should</strong> pass if the concept is being updated with no name change
+	 * <strong>Should</strong> fail if any name is a null value
+	 * <strong>Should</strong> not allow multiple preferred names in a given locale
+	 * <strong>Should</strong> not allow multiple fully specified conceptNames in a given locale
+	 * <strong>Should</strong> not allow multiple short names in a given locale
+	 * <strong>Should</strong> not allow an index term to be a locale preferred name
+	 * <strong>Should</strong> fail if there is no name explicitly marked as fully specified
+	 * <strong>Should</strong> pass if the duplicate ConceptName is neither preferred nor fully Specified
+	 * <strong>Should</strong> pass if the concept has a synonym that is also a short name
+	 * <strong>Should</strong> fail if a term is mapped multiple times to the same concept
+	 * <strong>Should</strong> not fail if a term has two new mappings on it
+	 * <strong>Should</strong> fail if there is a duplicate unretired concept name in the same locale different than
 	 *         the system locale
-	 * @should pass for a new concept with a map created with deprecated concept map methods
-	 * @should pass for an edited concept with a map created with deprecated concept map methods
-	 * @should pass validation if field lengths are correct
-	 * @should fail validation if field lengths are not correct
-	 * @should pass if fully specified name is the same as short name
-	 * @should pass if different concepts have the same short name
-	 * @should fail if the concept datatype is null
-	 * @should fail if the concept class is null
+	 * <strong>Should</strong> pass for a new concept with a map created with deprecated concept map methods
+	 * <strong>Should</strong> pass for an edited concept with a map created with deprecated concept map methods
+	 * <strong>Should</strong> pass validation if field lengths are correct
+	 * <strong>Should</strong> fail validation if field lengths are not correct
+	 * <strong>Should</strong> pass if fully specified name is the same as short name
+	 * <strong>Should</strong> pass if different concepts have the same short name
+	 * <strong>Should</strong> fail if the concept datatype is null
+	 * <strong>Should</strong> fail if the concept class is null
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) throws APIException, DuplicateConceptNameException {

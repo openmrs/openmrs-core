@@ -9,20 +9,6 @@
  */
 package org.openmrs;
 
-import org.hibernate.annotations.SortNatural;
-import org.hibernate.search.annotations.ContainedIn;
-import org.hibernate.search.annotations.Field;
-
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -31,27 +17,29 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+import org.hibernate.search.annotations.ContainedIn;
+import org.hibernate.search.annotations.Field;
+
 /**
  * Defines a Patient in the system. A patient is simply an extension of a person and all that that
  * implies.
  * 
  * @version 2.0
  */
-@Entity
-@Table(name = "patient")
-@PrimaryKeyJoinColumn(name = "patient_id")
 public class Patient extends Person {
 	
 	public static final long serialVersionUID = 93123L;
 	
-	@Column(name = "patient_id", nullable = false, updatable = false, insertable = false)
 	private Integer patientId;
 	
-	@Column(name = "allergy_status", length = 50)
 	private String allergyStatus = Allergies.UNKNOWN;
 	
-	@OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
-	@SortNatural
 	@ContainedIn
 	private Set<PatientIdentifier> identifiers;
 
@@ -142,7 +130,7 @@ public class Patient extends Person {
 	 * 
 	 * @return current allargy status for patient
 	 * @since 2.0
-	 * @should return allergy status maintained by the supporting infrastructure
+	 * <strong>Should</strong> return allergy status maintained by the supporting infrastructure
 	 */
 	public String getAllergyStatus() {
 		return this.allergyStatus;
@@ -154,7 +142,7 @@ public class Patient extends Person {
 	 * 
 	 * @param allergyStatus
 	 * @since 2.0
-	 * @should not be called by service client
+	 * <strong>Should</strong> not be called by service client
 	 */
 	public void setAllergyStatus(String allergyStatus) {
 		this.allergyStatus = allergyStatus;
@@ -179,7 +167,7 @@ public class Patient extends Person {
 	 * @return Set of all known identifiers for this patient
 	 * @see org.openmrs.PatientIdentifier
 	 * @see #getActiveIdentifiers()
-	 * @should not return null
+	 * <strong>Should</strong> not return null
 	 */
 	public Set<PatientIdentifier> getIdentifiers() {
 		if (identifiers == null) {
@@ -197,65 +185,6 @@ public class Patient extends Person {
 	 */
 	public void setIdentifiers(Set<PatientIdentifier> identifiers) {
 		this.identifiers = identifiers;
-	}
-
-	@ManyToOne
-	@JoinColumn(name = "creator", updatable = false)
-	@Access(AccessType.PROPERTY)
-	@Override
-	public User getCreator() {
-		return super.getCreator();
-	}
-	
-	@Column(name = "date_created", nullable = false, updatable = false, length = 19)
-	@Access(AccessType.PROPERTY)
-	@Override
-	public Date getDateCreated() {
-		return super.getDateCreated();
-	}
-
-	@Column(name = "voided", nullable = false)
-	@Access(AccessType.PROPERTY)
-	@Field
-	@Override
-	public Boolean getVoided() {
-		return super.getVoided();
-	}
-
-	@Column(name = "date_voided", length = 19)
-	@Access(AccessType.PROPERTY)
-	@Override
-	public Date getDateVoided() {
-		return super.getDateVoided();
-	}
-
-	@ManyToOne
-	@JoinColumn(name = "voided_by")
-	@Override
-	public User getVoidedBy() {
-		return super.getVoidedBy();
-	}
-
-	@Column(name = "void_reason")
-	@Access(AccessType.PROPERTY)
-	@Override
-	public String getVoidReason() {
-		return super.getVoidReason();
-	}
-
-	@ManyToOne
-	@JoinColumn(name = "changed_by")
-	@Access(AccessType.PROPERTY)
-	@Override
-	public User getChangedBy() {
-		return super.getChangedBy();
-	}
-
-	@Column(name = "date_changed", length = 19)
-	@Access(AccessType.PROPERTY)
-	@Override
-	public Date getDateChanged() {
-		return super.getDateChanged();
 	}
 
 	/**
@@ -278,9 +207,9 @@ public class Patient extends Person {
 	 * Will add this PatientIdentifier if the patient doesn't contain it already
 	 * 
 	 * @param patientIdentifier
-	 * @should not fail with null identifiers list
-	 * @should add identifier to current list
-	 * @should not add identifier that is in list already
+	 * <strong>Should</strong> not fail with null identifiers list
+	 * <strong>Should</strong> add identifier to current list
+	 * <strong>Should</strong> not add identifier that is in list already
 	 */
 	public void addIdentifier(PatientIdentifier patientIdentifier) {
 		if (patientIdentifier != null) {
@@ -303,7 +232,7 @@ public class Patient extends Person {
 	 * <code>patientIdentifier</code> is null, nothing is done.
 	 * 
 	 * @param patientIdentifier the identifier to remove
-	 * @should remove identifier if exists
+	 * <strong>Should</strong> remove identifier if exists
 	 */
 	public void removeIdentifier(PatientIdentifier patientIdentifier) {
 		if (patientIdentifier != null) {
@@ -415,7 +344,7 @@ public class Patient extends Person {
 	 * 
 	 * @return list of non-voided identifiers for this patient
 	 * @see #getIdentifiers()
-	 * @should return preferred identifiers first in the list
+	 * <strong>Should</strong> return preferred identifiers first in the list
 	 */
 	public List<PatientIdentifier> getActiveIdentifiers() {
 		List<PatientIdentifier> ids = new ArrayList<>();

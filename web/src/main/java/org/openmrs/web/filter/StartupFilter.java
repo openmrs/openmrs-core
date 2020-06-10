@@ -97,12 +97,12 @@ public abstract class StartupFilter implements Filter {
 	/**
 	 * The web.xml file sets this {@link StartupFilter} to be the first filter for all requests.
 	 *
-	 * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
-	 *      javax.servlet.ServletResponse, javax.servlet.FilterChain)
+	 * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse,
+	 *      javax.servlet.FilterChain)
 	 */
 	@Override
-	public final void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
-	    ServletException {
+	public final void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+	        throws IOException, ServletException {
 		if (skipFilter((HttpServletRequest) request)) {
 			chain.doFilter(request, response);
 		} else {
@@ -141,8 +141,9 @@ public abstract class StartupFilter implements Filter {
 					}
 				}
 			} else if (servletPath.startsWith("/scripts")) {
-				log.error("Calling /scripts during the initializationfilter pages will cause the openmrs_static_context-servlet.xml to initialize too early and cause errors after startup.  Use '/initfilter"
-				        + servletPath + "' instead.");
+				log.error(
+				    "Calling /scripts during the initializationfilter pages will cause the openmrs_static_context-servlet.xml to initialize too early and cause errors after startup.  Use '/initfilter"
+				            + servletPath + "' instead.");
 			}
 			// for anything but /initialsetup
 			else if (!httpRequest.getServletPath().equals("/" + WebConstants.SETUP_PAGE_URL)
@@ -202,8 +203,8 @@ public abstract class StartupFilter implements Filter {
 	 * @param httpRequest
 	 * @param httpResponse
 	 */
-	protected abstract void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
-	    ServletException;
+	protected abstract void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
+	        throws IOException, ServletException;
 	
 	/**
 	 * Called by {@link #doFilter(ServletRequest, ServletResponse, FilterChain)} on POST requests
@@ -211,12 +212,12 @@ public abstract class StartupFilter implements Filter {
 	 * @param httpRequest
 	 * @param httpResponse
 	 */
-	protected abstract void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
-	    ServletException;
+	protected abstract void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
+	        throws IOException, ServletException;
 	
 	/**
-	 * All private attributes on this class are returned to the template via the velocity context
-	 * and reflection
+	 * All private attributes on this class are returned to the template via the velocity context and
+	 * reflection
 	 *
 	 * @param templateName the name of the velocity file to render. This name is prepended with
 	 *            {@link #getTemplatePrefix()}
@@ -224,7 +225,7 @@ public abstract class StartupFilter implements Filter {
 	 * @param httpResponse
 	 */
 	protected void renderTemplate(String templateName, Map<String, Object> referenceMap, HttpServletResponse httpResponse)
-	    throws IOException {
+	        throws IOException {
 		// first we should get velocity tools context for current client request (within
 		// his http session) and merge that tools context with basic velocity context
 		if (referenceMap == null) {
@@ -232,14 +233,15 @@ public abstract class StartupFilter implements Filter {
 		}
 		
 		Object locale = referenceMap.get(FilterUtil.LOCALE_ATTRIBUTE);
-		ToolContext velocityToolContext = getToolContext(locale != null ? locale.toString() : Context.getLocale().toString());
+		ToolContext velocityToolContext = getToolContext(
+		    locale != null ? locale.toString() : Context.getLocale().toString());
 		VelocityContext velocityContext = new VelocityContext(velocityToolContext);
 		
 		for (Map.Entry<String, Object> entry : referenceMap.entrySet()) {
 			velocityContext.put(entry.getKey(), entry.getValue());
 		}
 		
-		Object model = getModel();
+		Object model = getUpdateFilterModel();
 		
 		// put each of the private varibles into the template for convenience
 		for (Field field : model.getClass().getDeclaredFields()) {
@@ -300,24 +302,24 @@ public abstract class StartupFilter implements Filter {
 	}
 	
 	/**
-	 * The model that is used as the backer for all pages in this startup wizard. Should never
-	 * return null.
+	 * The model that is used as the backer for all pages in this startup wizard. Should never return
+	 * null.
 	 *
 	 * @return the stored formbacking/model object
 	 */
-	protected abstract Object getModel();
+	protected abstract Object getUpdateFilterModel();
 	
 	/**
-	 * If this returns true, this filter fails early and quickly. All logic is skipped and startup
-	 * and usage continue normally.
+	 * If this returns true, this filter fails early and quickly. All logic is skipped and startup and
+	 * usage continue normally.
 	 *
 	 * @return true if this filter can be skipped
 	 */
 	public abstract boolean skipFilter(HttpServletRequest request);
 	
 	/**
-	 * Convenience method to convert the given object to a JSON string. Supports Maps, Lists,
-	 * Strings, Boolean, Double
+	 * Convenience method to convert the given object to a JSON string. Supports Maps, Lists, Strings,
+	 * Boolean, Double
 	 *
 	 * @param object object to convert to json
 	 * @return JSON string to be eval'd in javascript

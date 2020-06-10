@@ -78,7 +78,7 @@ public class VerhoeffIdentifierValidator extends BaseHyphenatedIdentifierValidat
 	 * Override to disallow identifiers that are not exactly VERHOEFF_UNDECORATED_ID_LENGTH long.
 	 *
 	 * @see org.openmrs.patient.impl.BaseHyphenatedIdentifierValidator#getValidIdentifier(java.lang.String)
-	 * @should get valid identifier
+	 * <strong>Should</strong> get valid identifier
 	 */
 	@Override
 	public String getValidIdentifier(String undecoratedIdentifier) throws UnallowedIdentifierException {

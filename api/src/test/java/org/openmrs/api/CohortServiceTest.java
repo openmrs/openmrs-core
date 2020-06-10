@@ -590,7 +590,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link Cohort#getActiveMemberships(Date)}
+	 * <strong>Verifies</strong> {@link Cohort#getActiveMemberships(Date)}
 	 */
 	@Test
 	public void getMemberships_shouldGetMembershipsAsOfADate() throws ParseException {
@@ -611,7 +611,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get matching memberships of a cohort as of a date
+	 * <strong>Verifies</strong> not get matching memberships of a cohort as of a date
 	 * @see Cohort#getActiveMemberships(Date)
 	 */
 	@Test
@@ -633,7 +633,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies return voided memberships
+	 * <strong>Verifies</strong> return voided memberships
 	 * @see Cohort#getMemberships(boolean)
 	 */
 	@Test
@@ -657,7 +657,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies return unvoided memberships
+	 * <strong>Verifies</strong> return unvoided memberships
 	 * @see Cohort#getMemberships(boolean)
 	 */
 	@Test
@@ -682,7 +682,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not return ended memberships
+	 * <strong>Verifies</strong> not return ended memberships
 	 * @see CohortService#getCohortsContainingPatient(org.openmrs.Patient)
 	 */
 	@Test

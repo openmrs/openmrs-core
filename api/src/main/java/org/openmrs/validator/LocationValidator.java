@@ -41,15 +41,15 @@ public class LocationValidator extends BaseCustomizableValidator implements Vali
 	 * 
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should fail validation if name is null or empty
-	 * @should fail validation if retired and retireReason is null or empty
-	 * @should set retired to false if retireReason is null or empty
-	 * @should pass validation if all fields are correct
-	 * @should pass validation if retired location is given retired reason
-	 * @should fail validation if parent location creates a loop
-	 * @should fail validation if name is exist in non retired locations
-	 * @should pass validation if field lengths are correct
-	 * @should fail validation if field lengths are not correct
+	 * <strong>Should</strong> fail validation if name is null or empty
+	 * <strong>Should</strong> fail validation if retired and retireReason is null or empty
+	 * <strong>Should</strong> set retired to false if retireReason is null or empty
+	 * <strong>Should</strong> pass validation if all fields are correct
+	 * <strong>Should</strong> pass validation if retired location is given retired reason
+	 * <strong>Should</strong> fail validation if parent location creates a loop
+	 * <strong>Should</strong> fail validation if name is exist in non retired locations
+	 * <strong>Should</strong> pass validation if field lengths are correct
+	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {

@@ -31,14 +31,14 @@ public class PersonAttributeHelper {
 	}
 	
 	/**
-	 * @should return true if a person attribute exists
+	 * <strong>Should</strong> return true if a person attribute exists
 	 */
 	public boolean personAttributeExists(String value) {
 		return getPersonAttribute(getPersonAttributeList(QUERY_ALL_PERSON_ATTRIBUTES), value) != null;
 	}
 	
 	/**
-	 * @should return true if a voided person attribute exists
+	 * <strong>Should</strong> return true if a voided person attribute exists
 	 */
 	public boolean voidedPersonAttributeExists(String value) {
 		PersonAttribute personAttribute = getPersonAttribute(getPersonAttributeList(QUERY_ALL_VOIDED_PERSON_ATTRIBUTES),
@@ -50,21 +50,21 @@ public class PersonAttributeHelper {
 	}
 	
 	/**
-	 * @should return true if a non-voided person attribute exists
+	 * <strong>Should</strong> return true if a non-voided person attribute exists
 	 */
 	public boolean nonVoidedPersonAttributeExists(String value) {
 		return personAttributeExists(value) && (!voidedPersonAttributeExists(value));
 	}
 	
 	/**
-	 * @should return true if a non-searchable person attribute exists
+	 * <strong>Should</strong> return true if a non-searchable person attribute exists
 	 */
 	public boolean nonSearchablePersonAttributeExists(String value) {
 		return getPersonAttribute(getPersonAttributeList(QUERY_ALL_NON_SEARCHABLE_PERSON_ATTRIBUTES), value) != null;
 	}
 	
 	/**
-	 * @should return true if a searchable person attribute exists
+	 * <strong>Should</strong> return true if a searchable person attribute exists
 	 */
 	public boolean searchablePersonAttributeExists(String value) {
 		return personAttributeExists(value) && (!nonSearchablePersonAttributeExists(value));

@@ -31,12 +31,13 @@ import org.openmrs.api.context.Context;
 import org.openmrs.obs.handler.AbstractHandler;
 import org.openmrs.obs.handler.BinaryStreamHandler;
 import org.openmrs.util.OpenmrsUtil;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ AbstractHandler.class, OpenmrsUtil.class, Context.class })
-
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*", "org.w3c.dom.*"})
 public class BinaryStreamHandlerTest {
 	
 	@Mock

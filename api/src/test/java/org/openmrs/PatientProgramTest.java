@@ -65,7 +65,7 @@ public class PatientProgramTest {
 	
 	/**
 	 * @see PatientProgram#voidLastState(ProgramWorkflow,User,Date,String)
-	 * @verifies void state with endDate null if startDates equal
+	 * <strong>Verifies</strong> void state with endDate null if startDates equal
 	 */
 	@Test
 	public void voidLastState_shouldVoidStateWithEndDateEqualToProgramCompletionDate() throws Exception {

@@ -545,8 +545,10 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 		Method m = WithAppropriatelyNamedMethod.class.getMethod("saveSomeOpenmrsData", SomeOpenmrsData.class);
 		SomeOpenmrsData openmrsObject = new SomeOpenmrsData();
 		requiredDataAdvice.before(m, new Object[] { openmrsObject }, new WithAppropriatelyNamedMethod());
+
 		verify(saveHandler, times(1)).handle(eq(openmrsObject), ArgumentMatchers.any(), ArgumentMatchers.any(),
 			ArgumentMatchers.nullable(String.class));
+
 	}
 	
 	@Test
@@ -565,8 +567,10 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 		Method m = WithAppropriatelyNamedMethod.class.getMethod("saveSomeOpenmrsDatas", List.class);
 		List<SomeOpenmrsData> openmrsObjects = Arrays.asList(new SomeOpenmrsData(), new SomeOpenmrsData());
 		requiredDataAdvice.before(m, new Object[] { openmrsObjects }, new WithAppropriatelyNamedMethod());
+
 		verify(saveHandler, times(2)).handle(ArgumentMatchers.any(), ArgumentMatchers.any(),
 		    ArgumentMatchers.any(), ArgumentMatchers.nullable(String.class));
+
 	}
 	
 	@Test

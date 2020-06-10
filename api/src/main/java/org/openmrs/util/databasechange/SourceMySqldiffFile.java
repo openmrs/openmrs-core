@@ -9,6 +9,22 @@
  */
 package org.openmrs.util.databasechange;
 
+import liquibase.change.custom.CustomTaskChange;
+import liquibase.database.Database;
+import liquibase.database.DatabaseConnection;
+import liquibase.exception.CustomChangeException;
+import liquibase.exception.DatabaseException;
+import liquibase.exception.SetupException;
+import liquibase.exception.ValidationErrors;
+import liquibase.resource.ResourceAccessor;
+import org.openmrs.api.context.Context;
+import org.openmrs.util.ClassLoaderFileOpener;
+import org.openmrs.util.OpenmrsClassLoader;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -23,21 +39,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
-
-import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import liquibase.change.custom.CustomTaskChange;
-import liquibase.database.Database;
-import liquibase.database.DatabaseConnection;
-import liquibase.exception.CustomChangeException;
-import liquibase.exception.DatabaseException;
-import liquibase.exception.SetupException;
-import liquibase.exception.ValidationErrors;
-import liquibase.resource.ResourceAccessor;
+import java.util.Set;
 
 /**
  * Executes (aka "source"s) the given file on the current database. <br>
@@ -90,14 +92,17 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 		File tmpOutputFile = null;
 		try {
 			tmpOutputFile = File.createTempFile(sqlFile, "tmp");
-			InputStream sqlFileInputStream = fileOpener.getResourceAsStream(sqlFile);
+			
+			fileOpener = new ClassLoaderFileOpener(OpenmrsClassLoader.getInstance());
+			Set<InputStream> sqlFileInputStream = fileOpener.getResourcesAsStream(sqlFile);
+			
 			OutputStream outputStream = new FileOutputStream(tmpOutputFile);
-			OpenmrsUtil.copyFile(sqlFileInputStream, outputStream);
+			OpenmrsUtil.copyFile(sqlFileInputStream.iterator().next(), outputStream);
 		}
 		catch (IOException e) {
 			if (tmpOutputFile != null) {
-				throw new CustomChangeException(
-				        "Unable to copy " + sqlFile + " to file: " + tmpOutputFile.getAbsolutePath(), e);
+				throw new CustomChangeException("Unable to copy " + sqlFile + " to file: " + tmpOutputFile.getAbsolutePath(),
+				        e);
 			} else {
 				throw new CustomChangeException("Unable to copy " + sqlFile, e);
 			}
@@ -136,9 +141,11 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 		}
 		catch (IOException io) {
 			if (io.getMessage().endsWith("not found")) {
-				throw new CustomChangeException("Unable to run command: " + commands.get(0)
-				        + ".  Make sure that it is on the PATH and then restart your server and try again. " + " Or run "
-				        + errorCommand + " at the command line with the appropriate full mysql path", io);
+				throw new CustomChangeException(
+				        "Unable to run command: " + commands.get(0)
+				                + ".  Make sure that it is on the PATH and then restart your server and try again. "
+				                + " Or run " + errorCommand + " at the command line with the appropriate full mysql path",
+				        io);
 			}
 		}
 		catch (Exception e) {
@@ -150,12 +157,10 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 		if (exitValue != 0) {
 			log.error("There was an error while running the " + commands.get(0) + " command.  Command output: "
 			        + output.toString());
-			throw new CustomChangeException(
-			        "There was an error while running the "
-			                + commands.get(0)
-			                + " command. See your server's error log for the full error output. As an alternative, you"
-			                + " can run this command manually on your database to skip over this error.  Run this at the command line "
-			                + errorCommand + "  ");
+			throw new CustomChangeException("There was an error while running the " + commands.get(0)
+			        + " command. See your server's error log for the full error output. As an alternative, you"
+			        + " can run this command manually on your database to skip over this error.  Run this at the command line "
+			        + errorCommand + "  ");
 		} else {
 			// a normal exit value
 			log.debug("Output of exec: " + output);
@@ -204,8 +209,8 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 			wd = null;
 		}
 		
-		Process p = (wd != null) ? Runtime.getRuntime().exec(cmdWithArguments, null, wd) : Runtime.getRuntime().exec(
-		    cmdWithArguments);
+		Process p = (wd != null) ? Runtime.getRuntime().exec(cmdWithArguments, null, wd)
+		        : Runtime.getRuntime().exec(cmdWithArguments);
 		
 		out.append("Normal cmd output:\n");
 		Reader reader = new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8);
@@ -244,7 +249,7 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 	}
 	
 	/**
-	 * @see liquibase.change.custom.CustomChange#setFileOpener(ResourceAccessor) 
+	 * @see liquibase.change.custom.CustomChange#setFileOpener(ResourceAccessor)
 	 */
 	@Override
 	public void setFileOpener(ResourceAccessor fileOpener) {

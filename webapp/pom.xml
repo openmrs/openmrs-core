@@ -145,6 +145,14 @@
 			  </configuration>
 		  </plugin>
       </plugins>
+      <extensions>
+            <!-- Prevents this error, with JDK 11 and above: -->
+            <!-- NoSuchMethodError: 'java.lang.String javax.annotation.Resource.lookup()' -->
+            <extension>
+                <groupId>javax.annotation</groupId>
+                <artifactId>javax.annotation-api</artifactId>
+            </extension>
+      </extensions>
    </build>
    <profiles>
       <profile>

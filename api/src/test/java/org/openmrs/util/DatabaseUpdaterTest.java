@@ -9,12 +9,18 @@
  */
 package org.openmrs.util;
 
+import liquibase.exception.LockException;
 import org.junit.Test;
+import org.openmrs.liquibase.LiquibaseProvider;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import liquibase.exception.LockException;
+import static org.mockito.Mockito.verify;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 
 /**
  * Tests methods on the {@link DatabaseUpdater} class. This class expects /metadata/model to be on
@@ -29,15 +35,51 @@ public class DatabaseUpdaterTest extends BaseContextSensitiveTest {
 	 * @see DatabaseUpdater#updatesRequired()
 	 */
 	@Test
-	public void updatesRequired_shouldAlwaysHaveAValidUpdateToLatestFile() throws LockException {
+	public void updatesRequired_shouldAlwaysHaveAValidUpdateToLatestFile() throws Exception {
 		// expects /metadata/model to be on the classpath so that
 		// the liquibase-update-to-latest.xml can be found.
 		try {
 			DatabaseUpdater.updatesRequired();
 		}
-		catch (RuntimeException rex) {
-			log.error("Runtime Exception in test for Validation Errors");
+		catch (Exception ex) {
+			log.error("Exception in test for Validation Errors");
 		}
 		// does not run DatabaseUpdater.update() because hsqldb doesn't like single quotes in strings
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void shouldRejectNullAsChangelog() throws DatabaseUpdateException, InputRequiredException {
+		DatabaseUpdater.executeChangelog(null, (DatabaseUpdater.ChangeSetExecutorCallback) null);
+	}
+	
+	@Test
+	public void shouldRejectNullAsChangelogFilenames() {
+		try {
+			DatabaseUpdater.getUnrunDatabaseChanges((String[]) null);
+			fail();
+		}
+		catch (RuntimeException re) {
+			assertTrue(re.getCause() instanceof IllegalArgumentException);
+		}
+	}
+	
+	@Test
+	public void shouldRejectEmptyArrayAsChangelogFilenames() {
+		try {
+			DatabaseUpdater.getUnrunDatabaseChanges(new String[0]);
+			fail();
+		}
+		catch (RuntimeException re) {
+			assertTrue(re.getCause() instanceof IllegalArgumentException);
+		}
+	}
+	
+	@Test
+	public void shouldReturnInjectedLiquibaseProvider() throws Exception {
+		LiquibaseProvider liquibaseProvider = mock(LiquibaseProvider.class);
+		DatabaseUpdater.setLiquibaseProvider(liquibaseProvider);
+		DatabaseUpdater.getLiquibase( "filename" );
+		verify(liquibaseProvider, times(1)).getLiquibase("filename");
+		DatabaseUpdater.unsetLiquibaseProvider();
 	}
 }
