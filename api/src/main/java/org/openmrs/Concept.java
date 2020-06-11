@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.BatchSize;
@@ -53,14 +54,23 @@ import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * A Concept object can represent either a question or an answer to a data point. That data point is
@@ -85,6 +95,8 @@ import javax.persistence.OrderBy;
  * @see ConceptService
  */
 @FullTextFilterDefs( { @FullTextFilterDef(name = "termsFilterFactory", impl = TermsFilterFactory.class) })
+@Entity
+@Table(name = "concept")
 public class Concept extends BaseOpenmrsObject implements Auditable, Retireable, Serializable, Attributable<Concept>,Customizable<ConceptAttribute> {
 	
 	public static final long serialVersionUID = 57332L;
@@ -95,6 +107,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	// Fields
 	@Id
 	@DocumentId
+	@Column(name = "concept_id", insertable = false, updatable = false, nullable = false)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer conceptId;
 
@@ -114,7 +127,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 
 	@ManyToOne
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
-	@JoinColumn(name = "datatype_id")
+	@JoinColumn(name = "datatype_id", nullable = false)
 	private ConceptDatatype datatype;
 
 	@ManyToOne
@@ -122,7 +135,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	@JoinColumn(name = "class_id", nullable = false)
 	private ConceptClass conceptClass;
 
-	@Column(name = "set", length = 1, nullable = false)
+	@Column(name = "is_set", length = 1, nullable = false)
 	private Boolean set = false;
 	
 	@Column(name = "version")
@@ -146,8 +159,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	@ContainedIn
 	@BatchSize(size = 25)
 	@Access(AccessType.FIELD)
-	@JoinColumn(name = "concept_id", nullable = false)
-	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "names")
+	@JoinColumn(name = "names", nullable = true, referencedColumnName = "concept_id")
+	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)     //mapped by names
 	private Collection<ConceptName> names;
 	
 	@AllowDirectAccess
@@ -157,19 +170,35 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	@Access(AccessType.FIELD)
 	private Collection<ConceptAnswer> answers;
 	
+	@OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)      //mapped by concept_id
+	@BatchSize(size = 25)
+	@OrderBy("sort_weight asc")
+	@JoinTable(name = "concept_set", joinColumns = @JoinColumn(name = "concept_set", nullable = false))
 	private Collection<ConceptSet> conceptSets;
 	
+	@OrderBy("concept_description_id")
+	@JoinColumn(name = "descriptions")
+	@BatchSize(size = 25)
+	@OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
 	private Collection<ConceptDescription> descriptions;
 	
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
+	@JoinColumn(name = "conceptMappings", nullable = true, referencedColumnName = "concept_id")
+	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+	@BatchSize(size = 25)
 	private Collection<ConceptMap> conceptMappings;
 	
 	/**
 	 * A cache of locales to names which have compatible locales. Built on-the-fly by
 	 * getCompatibleNames().
 	 */
+	@Transient
 	private Map<Locale, List<ConceptName>> compatibleCache;
-
+	
+	@JoinColumn(name = "attributes")
+	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+	@OrderBy("voided asc")
+	@BatchSize(size = 100)
 	private Set<ConceptAttribute> attributes = new LinkedHashSet<>();
 
 	/** default constructor */

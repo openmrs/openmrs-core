@@ -15,12 +15,17 @@ import java.util.TreeSet;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.search.annotations.Indexed;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
 /**
  * The ConceptNumeric extends upon the Concept object by adding some number range values
  * 
  * @see Concept
  */
 @Indexed
+@Entity
+@Table(name = "concept_numeric")
 public class ConceptNumeric extends Concept {
 	
 	public static final long serialVersionUID = 47323L;
