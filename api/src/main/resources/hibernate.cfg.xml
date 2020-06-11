@@ -21,8 +21,7 @@
 		<property name="hibernate.search.model_mapping">org.openmrs.api.db.hibernate.search.LuceneAnalyzerFactory</property>
 		
 		<!-- API -->
-
-		<mapping resource="org/openmrs/api/db/hibernate/AllergyReaction.hbm.xml" />
+		
 		<mapping resource="org/openmrs/api/db/hibernate/Concept.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptAnswer.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptAttribute.hbm.xml" />

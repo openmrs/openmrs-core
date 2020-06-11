@@ -12,20 +12,40 @@ package org.openmrs;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.util.OpenmrsUtil;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
 /**
  * Represent allergy reactions
  */
+@Entity
+@Table(name = "allergy_reaction")
 public class AllergyReaction extends BaseOpenmrsObject implements java.io.Serializable{
 	
 	public static final long serialVersionUID = 1;
 
-
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_generator")
+	@SequenceGenerator(name = "id_generator", sequenceName = "allergy_reaction_allergy_reaction_id_seq")
+	@Column(name = "allergy_reaction_id", nullable = false, updatable = false)
 	private Integer allergyReactionId;
 	
+	@ManyToOne
+	@JoinColumn(name = "allergy_id", nullable = false)
 	private Allergy allergy;
 	
+	@ManyToOne
+	@JoinColumn(name = "reaction_concept_id", nullable = false)
 	private Concept reaction;
 	
+	@Column(name = "reaction_non_coded")
 	private String reactionNonCoded;
 	
 	/**
