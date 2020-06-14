@@ -14,31 +14,56 @@ import java.util.Set;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 /**
  * Field
  *
  * @version 1.0
  */
+@Entity
+@Table(name = "field")
 public class Field extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 4454L;
 	
 	// Fields
-	
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "field_id_gen")
+	@SequenceGenerator(name = "field_id_gen", sequenceName = "field_field_id_seq")
+	@Column(name = "field_id", nullable = false, updatable = false)
 	private Integer fieldId;
 	
+	@ManyToOne
+	@JoinColumn(name = "field_type")
 	private FieldType fieldType;
 	
+	@ManyToOne
+	@JoinColumn(name = "concept_id")
 	private Concept concept;
 	
+	@Column(name = "table_name", length = 50)
 	private String tableName;
 	
+	@Column(name = "attribute_name", length = 50)
 	private String attributeName;
 	
+	@Column(name = "default_value", length = 65535)
 	private String defaultValue;
 	
+	@Column(name = "select_multiple", length = 1, nullable = false)
 	private Boolean selectMultiple = false;
 	
+	@Transient
 	private Set<FieldAnswer> answers;
 	
 	// Constructors
