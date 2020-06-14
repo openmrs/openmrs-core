@@ -94,7 +94,7 @@ public class H2DatabaseIT implements LiquibaseProvider {
 		}
 	}
 
-	private Connection getConnection() throws SQLException {
+	protected Connection getConnection() throws SQLException {
 		Connection connection = DriverManager.getConnection("jdbc:h2:mem:openmrs;DB_CLOSE_DELAY=-1", USER_NAME, PASSWORD);
 		connection.setAutoCommit( false );
 		return connection;
