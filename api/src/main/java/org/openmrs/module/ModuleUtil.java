@@ -858,6 +858,7 @@ public class ModuleUtil {
 		for (Module module : startedModules) {
 			try {
 				if (module.getModuleActivator() != null) {
+					Thread.currentThread().setContextClassLoader(ModuleFactory.getModuleClassLoader(module));
 					module.getModuleActivator().willRefreshContext();
 				}
 			}
