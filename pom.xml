@@ -1097,7 +1097,7 @@
 
 		<springVersion>5.2.6.RELEASE</springVersion>
 		<hibernateVersion>5.4.17.Final</hibernateVersion>
-		<slf4jVersion>1.7.28</slf4jVersion>
+		<slf4jVersion> 1.7.30</slf4jVersion>
 		<log4jVersion>2.12.1</log4jVersion>
 		<customArgLineForTesting/>
 
