@@ -12,13 +12,15 @@ package org.openmrs.util;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
-import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
@@ -56,8 +58,8 @@ public class MemoryAppenderTest {
 
 		List<String> logLines = memoryAppender.getLogLines();
 		assertThat(logLines, notNullValue());
-		assertThat(logLines.size(), equalTo(1));
-		assertThat(logLines.get(0), equalTo("Logging message"));
+		assertThat(logLines, hasSize(greaterThanOrEqualTo(1)));
+		assertThat(logLines, hasItem(equalTo("Logging message")));
 	}
 
 	@Test
@@ -69,8 +71,8 @@ public class MemoryAppenderTest {
 
 		List<String> logLines = memoryAppender.getLogLines();
 		assertThat(logLines, notNullValue());
-		assertThat(logLines.size(), equalTo(nTimes));
-		for (int i = 0; i < nTimes; i++) {
+		assertThat(logLines, hasSize(greaterThanOrEqualTo(1)));
+		for (int i = logLines.size() - nTimes; i < nTimes; i++) {
 			assertThat(logLines.get(i), equalTo("Logging message"));
 		}
 	}
