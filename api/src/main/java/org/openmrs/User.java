@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.Date;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -73,7 +74,7 @@ import org.slf4j.LoggerFactory;
 @AttributeOverrides({
         @AttributeOverride(name = "name", column = @Column(table = "users_unused_fields", name = "name", insertable = false, updatable = false)),
         @AttributeOverride(name = "description", column = @Column(table = "users_unused_fields", name = "description", insertable = false, updatable = false)) })
-public class User extends BaseChangeableOpenmrsMetadata implements java.io.Serializable, Attributable<User> {
+public class User extends BaseOpenmrsObject implements Auditable, Retireable<User> {
 	
 	public static final long serialVersionUID = 2L;
 	
@@ -99,6 +100,35 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	
 	@Column(unique = true)
 	private String email;
+	
+	@Column(length = 50)
+	private String creator;
+	
+	@Column(length = 50)
+	private String creator;
+	
+	@Column(length = 50)
+	private Date dateCreated;
+	
+	@Column(length = 50)
+	private String changedBy;
+	
+	@Column(length = 50)
+	private Date dateChanged;
+	
+	@Column(length = 50)
+	private String retiredBy;
+	
+	@Column(length = 50)
+	private String retireReason;
+	
+	@Column(length = 50)
+	private String retired;
+	
+	@Column(length = 50)
+	private Date dateRetired;
+	
+	
 	
 	@ManyToMany
 	@JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role"))
@@ -136,6 +166,44 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 		this.person = person;
 	}
 	
+	/** constructor with creator object */
+	public User(String creator) {
+		this.creator = creator;
+	}
+	/** constructor with dateCreated object */
+	public User(Date dateCreated) {
+		this.dateCreated = dateCreated;
+	}
+	
+	/** constructor with changedBy object */
+	public User(String changedBy) {
+		this.changedBy = changedBy;
+	}
+	
+	/** constructor with dateChanged object */
+	public User(Date dateChanged) {
+		this.dateChanged = dateChanged;
+	}
+	
+	/** constructor with retiredBy object */
+	public User(String retiredBy) {
+		this.retiredBy = retiredBy;
+	}
+	
+	/** constructor with retireReason object */
+	public User(String retireReason) {
+		this.retireReason = retireReason;
+	}
+	
+	/** constructor with retired object */
+	public User(String retired) {
+		this.retired = retired;
+	}
+	
+	/** constructor with dateRetired object */
+	public User(Date dateRetired) {
+		this.dateRetired = dateRetired;
+	}
 	/**
 	 * Return true if this user has all privileges
 	 * 
