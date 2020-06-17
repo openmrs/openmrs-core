@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import static org.hibernate.annotations.CascadeType.EVICT;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -18,6 +20,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.Date;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -73,9 +76,9 @@ import org.slf4j.LoggerFactory;
 @AttributeOverrides({
         @AttributeOverride(name = "name", column = @Column(table = "users_unused_fields", name = "name", insertable = false, updatable = false)),
         @AttributeOverride(name = "description", column = @Column(table = "users_unused_fields", name = "description", insertable = false, updatable = false)) })
-public class User extends BaseChangeableOpenmrsMetadata implements java.io.Serializable, Attributable<User> {
+public class User extends BaseOpenmrsObject implements Serializable, Attributable<User>, Auditable, Retireable {
 	
-	public static final long serialVersionUID = 2L;
+	public static final long serialVersionUID = 4353L;
 	
 	private static final Logger log = LoggerFactory.getLogger(User.class);
 	
@@ -100,11 +103,43 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	@Column(unique = true)
 	private String email;
 	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "creator")
+	private User creator;
+	
+	@Column(length = 50)
+	private Date dateCreated;
+	@Column(name = "date_created", nullable = false)
+	private Date dateCreated;
+	
+	@ManyToOne
+	@JoinColumn(name = "changed_by")
+	private User changedBy;
+	
+	@Column(name = "date_changed")
+	private Date dateChanged;
+	
+	@ManyToOne
+	@JoinColumn(name = "retired_by")
+	private User retiredBy;
+	
+	@Column(name = "retire_reason", length = 255)
+	private String retireReason;
+	
+	@Column(name = "retired", nullable = false)
+	@Field
+	private String retired;
+	
+	@Column(length = 50)
+	private Date dateRetired;
+	
+	
+	
 	@ManyToMany
 	@JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role"))
 	@LazyCollection(LazyCollectionOption.FALSE)
 	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-	@Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.EVICT })
+	@Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, EVICT })
 	private Set<Role> roles;
 	
 	@ElementCollection
@@ -136,6 +171,52 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 		this.person = person;
 	}
 	
+	/** constructor with creator object */
+	public User(String creator) {
+		this.creator = creator;
+	}
+	/** constructor with dateCreated object */
+	public User(Date dateCreated) {
+		this.dateCreated = dateCreated;
+	}
+	
+	/** constructor with changedBy object 
+	 * @return 
+	 * @return */
+	public void User111(String changedBy) {
+		this.changedBy = changedBy;
+	}
+	
+	/** constructor with dateChanged object 
+	 * @return */
+	public void User11(Date dateChanged) {
+		this.dateChanged = dateChanged;
+	}
+	
+	/** constructor with retiredBy object 
+	 * @return */
+	public void User11(String retiredBy) {
+		this.retiredBy = retiredBy;
+	}
+	
+	/** constructor with retireReason object 
+	 * @return */
+	public void User1(String retireReason) {
+		this.retireReason = retireReason;
+	}
+	
+	/** constructor with retired object 
+	 * @return */
+	public void User1111(String retired) {
+		this.retired = retired;
+	}
+	
+	/** constructor with dateRetired object 
+	 * @return 
+	 * @return */
+	public void User1(Date dateRetired) {
+		this.dateRetired = dateRetired;
+	}
 	/**
 	 * Return true if this user has all privileges
 	 * 
@@ -649,6 +730,108 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	@Override
 	public void setId(Integer id) {
 		setUserId(id);
+	}
+
+	@Override
+	public User getCreator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setCreator(User creator) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Date getDateCreated() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setDateCreated(Date dateCreated) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public User getChangedBy() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setChangedBy(User changedBy) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Date getDateChanged() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setDateChanged(Date dateChanged) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Boolean isRetired() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Boolean getRetired() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setRetired(Boolean retired) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public User getRetiredBy() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setRetiredBy(User retiredBy) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Date getDateRetired() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setDateRetired(Date dateRetired) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getRetireReason() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setRetireReason(String retireReason) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

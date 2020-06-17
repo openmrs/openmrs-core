@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import java.util.List;
+
 /**
  * In OpenMRS, the convention is to track basic audit information for each object related to who
  * initially created the object and when, and who last changed the object and when. This allows us
@@ -19,5 +21,15 @@ package org.openmrs;
  * @since 1.5
  */
 public interface Auditable extends Creatable, Changeable {
+
+	List<User> findPossibleValues(String searchText);
+
+	List<User> getPossibleValues();
+
+	User hydrate(String userId);
+
+	String serialize();
+
+	String getDisplayString();
 
 }

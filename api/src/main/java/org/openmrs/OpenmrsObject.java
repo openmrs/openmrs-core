@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import java.util.List;
+
 /**
  * This is the base interface for all OpenMRS-defined classes
  * 
@@ -35,5 +37,7 @@ public interface OpenmrsObject {
 	 * @param uuid a universally unique id for this object
 	 */
 	public void setUuid(String uuid);
+
+	List<User> findPossibleValues(String searchText);
 	
 }

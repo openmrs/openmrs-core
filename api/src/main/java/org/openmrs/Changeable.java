@@ -10,6 +10,7 @@
 package org.openmrs;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Base interface for domain objects that need to track information related to when they were
@@ -33,9 +34,4 @@ public interface Changeable extends OpenmrsObject {
 	 * @return Date - the date the object was last changed
 	 */
 	Date getDateChanged();
-	
-	/**
-	 * @param dateChanged - the date the object was last changed
-	 */
-	void setDateChanged(Date dateChanged);
-}
+	}
