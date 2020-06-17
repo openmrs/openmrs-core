@@ -1098,7 +1098,7 @@
 		<springVersion>5.2.6.RELEASE</springVersion>
 		<hibernateVersion>5.4.17.Final</hibernateVersion>
 		<slf4jVersion> 1.7.30</slf4jVersion>
-		<log4jVersion>2.12.1</log4jVersion>
+		<log4jVersion>2.13.3</log4jVersion>
 		<customArgLineForTesting/>
 
 		<sonar.host.url>https://sonar.openmrs.org</sonar.host.url>
