@@ -9,6 +9,17 @@
  */
 package org.openmrs;
 
+import org.hibernate.annotations.BatchSize;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import java.util.Date;
 
 /**
@@ -18,33 +29,50 @@ import java.util.Date;
  *
  * @see Concept#getAnswers()
  */
+@Entity
+@Table(name = "concept_answer")
+@BatchSize(size = 25)
 public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.io.Serializable, Comparable<ConceptAnswer> {
 	
 	public static final long serialVersionUID = 3744L;
 	
 	// Fields
+	@Id
+	@Column(name = "concept_answer_id", nullable = false)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "concept_answer_id_gen")
+	@SequenceGenerator(name = "concept_answer_id_gen", sequenceName = "concept_answer_concept_answer_id_seq")
 	private Integer conceptAnswerId;
 	
 	/**
 	 * The question concept that this object is answering
 	 */
+	@ManyToOne
+	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
 	
 	/**
 	 * The answer to the question
 	 */
+	@ManyToOne
+	@JoinColumn(name = "answer_concept", nullable = false)
 	private Concept answerConcept;
 	
 	/**
 	 * The {@link Drug} answer to the question. This can be null if this does not represent a drug
 	 * type of answer
 	 */
+	@ManyToOne
+	@JoinColumn(name = "answer_drug")
 	private Drug answerDrug;
 	
+	@ManyToOne
+	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
 	
+	@Column(name = "date_created", nullable = false)
 	private Date dateCreated;
 	
+	@Column(name = "sort_weight")
 	private Double sortWeight;
 	
 	// Constructors
