@@ -171,52 +171,6 @@ public class User extends BaseOpenmrsObject implements Serializable, Attributabl
 		this.person = person;
 	}
 	
-	/** constructor with creator object */
-	public User(String creator) {
-		this.creator = creator;
-	}
-	/** constructor with dateCreated object */
-	public User(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-	
-	/** constructor with changedBy object 
-	 * @return 
-	 * @return */
-	public void User111(String changedBy) {
-		this.changedBy = changedBy;
-	}
-	
-	/** constructor with dateChanged object 
-	 * @return */
-	public void User11(Date dateChanged) {
-		this.dateChanged = dateChanged;
-	}
-	
-	/** constructor with retiredBy object 
-	 * @return */
-	public void User11(String retiredBy) {
-		this.retiredBy = retiredBy;
-	}
-	
-	/** constructor with retireReason object 
-	 * @return */
-	public void User1(String retireReason) {
-		this.retireReason = retireReason;
-	}
-	
-	/** constructor with retired object 
-	 * @return */
-	public void User1111(String retired) {
-		this.retired = retired;
-	}
-	
-	/** constructor with dateRetired object 
-	 * @return 
-	 * @return */
-	public void User1(Date dateRetired) {
-		this.dateRetired = dateRetired;
-	}
 	/**
 	 * Return true if this user has all privileges
 	 * 
