@@ -18,6 +18,8 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.GlobalProperty;
+import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
@@ -295,52 +297,45 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 */
 	@Override
 	public Person savePerson(Person person) throws APIException {
-		setPreferredPersonName(person);
-		setPreferredPersonAddress(person);
+		setPersonDetail(person, new PersonName().getClass());
+		setPersonDetail(person, new PersonAddress().getClass());
 		return dao.savePerson(person);
 	}
-
-	private void setPreferredPersonName(Person person) {
-		PersonName preferredName = null;
-		PersonName possiblePreferredName = person.getPersonName();
-		if (possiblePreferredName != null && possiblePreferredName.getPreferred() && !possiblePreferredName.getVoided()) {
-			preferredName = possiblePreferredName;
+	
+	private PersonPatientSharable<?> currentPreferredDetail = null;	
+	
+	private void setDetailPreferred(PersonPatientSharable<?> detail) {
+		if (currentPreferredDetail == null && !detail.getVoided()) {
+			detail.setPreferred(true);
+			currentPreferredDetail = detail;
+			return;
 		}
 
-		for (PersonName name : person.getNames()) {
-			if (preferredName == null && !name.getVoided()) {
-				name.setPreferred(true);
-				preferredName = name;
-				continue;
-			}
-
-			if (!name.equals(preferredName)) {
-				name.setPreferred(false);
-			}
+		if (!detail.equals(currentPreferredDetail)) {
+			detail.setPreferred(false);
 		}
 	}
 	
-	private void setPreferredPersonAddress(Person person) {
-		PersonAddress preferredAddress = null;
-		PersonAddress possiblePreferredAddress = person.getPersonAddress();
-		if (possiblePreferredAddress != null && possiblePreferredAddress.getPreferred()
-				&& !possiblePreferredAddress.getVoided()) {
-			preferredAddress = possiblePreferredAddress;
-		}
-
-		for (PersonAddress address : person.getAddresses()) {
-			if (preferredAddress == null && !address.getVoided()) {
-				address.setPreferred(true);
-				preferredAddress = address;
-				continue;
-			}
-
-			if (!address.equals(preferredAddress)) {
-				address.setPreferred(false);
-			}
+	private void setOrKeepPreferredDetail(PersonPatientSharable<?> possiblePreferredDetail) {
+		if (possiblePreferredDetail != null && possiblePreferredDetail.getPreferred() && !possiblePreferredDetail.getVoided()) {
+			currentPreferredDetail = possiblePreferredDetail;
 		}
 	}
 	
+	private void setPersonDetail(Person person, Class<?> detailType) {
+		if(detailType == PersonName.class)
+		{
+			setOrKeepPreferredDetail(person.getPersonName());
+			person.getNames().forEach(name -> setDetailPreferred(name));
+			currentPreferredDetail = null;
+		}
+		else if(detailType == PersonAddress.class) {
+			setOrKeepPreferredDetail(person.getPersonAddress());
+			person.getAddresses().forEach(address -> setDetailPreferred(address));
+			currentPreferredDetail = null;
+		}
+	}
+
 	/**
 	 * @see org.openmrs.api.PersonService#voidPerson(org.openmrs.Person, java.lang.String)
 	 */
