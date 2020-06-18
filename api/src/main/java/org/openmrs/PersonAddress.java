@@ -17,13 +17,14 @@ import java.util.Date;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.openmrs.api.impl.PersonPatientSharable;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
  * This class is the representation of a person's address. This class is many-to-one to the Person
  * class, so a Person/Patient/User can have zero to n addresses
  */
-public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PersonAddress>, Address {
+public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PersonAddress>, Address, PersonPatientSharable<PersonAddress> {
 	
 	public static final long serialVersionUID = 343333L;
 	

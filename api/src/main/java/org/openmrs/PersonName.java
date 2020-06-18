@@ -28,6 +28,7 @@ import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.hibernate.search.LuceneAnalyzers;
+import org.openmrs.api.impl.PersonPatientSharable;
 import org.openmrs.layout.name.NameSupport;
 import org.openmrs.layout.name.NameTemplate;
 import org.openmrs.util.OpenmrsConstants;
@@ -40,7 +41,7 @@ import org.springframework.util.StringUtils;
  * A Person can have zero to n PersonName(s).
  */
 @Indexed
-public class PersonName extends BaseChangeableOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PersonName> {
+public class PersonName extends BaseChangeableOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PersonName>, PersonPatientSharable<PersonName> {
 	
 	public static final long serialVersionUID = 4353L;
 
@@ -362,6 +363,7 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 		return getPreferred();
 	}
 	
+	@Override
 	public Boolean getPreferred() {
 		if (preferred == null) {
 			return Boolean.FALSE;
@@ -372,6 +374,7 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 	/**
 	 * @param preferred The preferred to set.
 	 */
+	@Override
 	public void setPreferred(Boolean preferred) {
 		this.preferred = preferred;
 	}

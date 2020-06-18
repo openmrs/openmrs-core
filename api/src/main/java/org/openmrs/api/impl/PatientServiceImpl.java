@@ -128,9 +128,9 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			checkPatientIdentifiers(patient);
 		}
 
-		setPreferredPatientIdentifier(patient);
-		setPreferredPatientName(patient);
-		setPreferredPatientAddress(patient);
+		setPatientDetail(patient, new PatientIdentifier().getClass());
+		setPatientDetail(patient, new PersonName().getClass());
+		setPatientDetail(patient, new PersonAddress().getClass());
 
 		return dao.savePatient(patient);
 	}
@@ -144,68 +144,46 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (patient.getVoided()) {
 			Context.requirePrivilege(PrivilegeConstants.DELETE_PATIENTS);
 		}
-	}
-
-	private void setPreferredPatientIdentifier(Patient patient) {
-		PatientIdentifier preferredIdentifier = null;
-		PatientIdentifier possiblePreferredId = patient.getPatientIdentifier();
-		if (possiblePreferredId != null && possiblePreferredId.getPreferred() && !possiblePreferredId.getVoided()) {
-			preferredIdentifier = possiblePreferredId;
+	}	
+	
+	private PersonPatientSharable<?> currentPreferredDetail = null;
+	
+	private void setDetailPreferred(PersonPatientSharable<?> detail) {
+		if (currentPreferredDetail == null && !detail.getVoided()) {
+			detail.setPreferred(true);
+			currentPreferredDetail = detail;
+			return;
 		}
 
-		for (PatientIdentifier id : patient.getIdentifiers()) {
-			if (preferredIdentifier == null && !id.getVoided()) {
-				id.setPreferred(true);
-				preferredIdentifier = id;
-				continue;
-			}
-
-			if (!id.equals(preferredIdentifier)) {
-				id.setPreferred(false);
-			}
-		}
-	}
-
-	private void setPreferredPatientName(Patient patient) {
-		PersonName preferredName = null;
-		PersonName possiblePreferredName = patient.getPersonName();
-		if (possiblePreferredName != null && possiblePreferredName.getPreferred() && !possiblePreferredName.getVoided()) {
-			preferredName = possiblePreferredName;
-		}
-
-		for (PersonName name : patient.getNames()) {
-			if (preferredName == null && !name.getVoided()) {
-				name.setPreferred(true);
-				preferredName = name;
-				continue;
-			}
-
-			if (!name.equals(preferredName)) {
-				name.setPreferred(false);
-			}
+		if (!detail.equals(currentPreferredDetail)) {
+			detail.setPreferred(false);
 		}
 	}
 	
-	private void setPreferredPatientAddress(Patient patient) {
-		PersonAddress preferredAddress = null;
-		PersonAddress possiblePreferredAddress = patient.getPersonAddress();
-		if (possiblePreferredAddress != null && possiblePreferredAddress.getPreferred()
-				&& !possiblePreferredAddress.getVoided()) {
-			preferredAddress = possiblePreferredAddress;
-		}
-
-		for (PersonAddress address : patient.getAddresses()) {
-			if (preferredAddress == null && !address.getVoided()) {
-				address.setPreferred(true);
-				preferredAddress = address;
-				continue;
-			}
-
-			if (!address.equals(preferredAddress)) {
-				address.setPreferred(false);
-			}
+	private void setOrKeepPreferredDetail(PersonPatientSharable<?> possiblePreferredDetail) {
+		if (possiblePreferredDetail != null && possiblePreferredDetail.getPreferred() && !possiblePreferredDetail.getVoided()) {
+			currentPreferredDetail = possiblePreferredDetail;
 		}
 	}
+	
+	private void setPatientDetail(Patient patient, Class<?> detailType) {
+		if(detailType == PersonName.class)
+		{
+			setOrKeepPreferredDetail(patient.getPersonName());
+			patient.getNames().forEach(name -> setDetailPreferred(name));
+			currentPreferredDetail = null;
+		}		
+		else if(detailType == PatientIdentifier.class) {
+			setOrKeepPreferredDetail(patient.getPatientIdentifier());
+			patient.getIdentifiers().forEach(identifier -> setDetailPreferred(identifier));
+			currentPreferredDetail = null;
+		}
+		else if(detailType == PersonAddress.class) {
+			setOrKeepPreferredDetail(patient.getPersonAddress());
+			patient.getAddresses().forEach(address -> setDetailPreferred(address));
+			currentPreferredDetail = null;
+		}
+	}	
 	
 	/**
 	 * @see org.openmrs.api.PatientService#getPatient(java.lang.Integer)
