@@ -9,32 +9,57 @@
  */
 package org.openmrs;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 /**
  * Form
  *
  * @version 1.0
  */
+@Entity
+@Table(name = "form")
+@AttributeOverride(name = "retireReason", column = @Column(name = "retired_reason"))
 public class Form extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 845634L;
 	
 	// Fields
-	
+	@Id
+	@Column(name = "form_id", nullable = false)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "form_id_gen")
+	@SequenceGenerator(name = "form_id_gen", sequenceName = "form_form_id_seq")
 	private Integer formId;
 	
+	@Column(name = "version", length = 50, nullable = false)
 	private String version;
 	
+	@Column(name = "build")
 	private Integer build;
 	
+	@Column(name = "published", length = 1, nullable = false)
 	private Boolean published = false;
 	
+	@ManyToOne
+	@JoinColumn(name = "encounter_type")
 	private EncounterType encounterType;
 	
+	@OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
+	@JoinColumn(name = "form_id")
 	private Set<FormField> formFields;
 	
 	// Constructors
