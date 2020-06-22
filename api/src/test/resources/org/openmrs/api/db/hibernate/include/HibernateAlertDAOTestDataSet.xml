@@ -10,7 +10,6 @@
     graphic logo is a trademark of OpenMRS Inc.
 
 -->
-
 <dataset>
 	<notification_alert alert_id="2" creator="1" text="Testing hibernate Dao" date_created="2019-01-01 00:00:00.0"  date_to_expire="2020-08-08 00:00:00.0" satisfied_by_any="1" alert_read="1" uuid="16914264-e162-11df-9195-001e378eb69e"/>
 	<notification_alert alert_id="3" creator="1" text="A running instance" date_created="2018-01-01 00:00:00.1"  date_to_expire="2019-01-01 00:00:00.1" satisfied_by_any="1" alert_read="1" uuid="16914264-e162-11df-9195-001e378eb67e"/>
