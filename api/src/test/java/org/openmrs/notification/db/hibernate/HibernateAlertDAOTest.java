@@ -25,20 +25,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 	
 	private static final String DATA_XML = "org/openmrs/api/db/hibernate/include/HibernateAlertDAOTestDataSet.xml";
+	
 	@Autowired
 	private HibernateAlertDAO hibernateAlertDAO;
+	
 	@Before
-
 	public void setUp() {
 		executeDataSet(DATA_XML);
-		
 	}
-	/**
-	 * Test that you can get alerts
-	 * 
-	 * @throws Exception
-	 */
-	
+
 	@Test
 	public void saveAlert_shouldSaveAlertToDb() {
 		Alert saveAlert = hibernateAlertDAO.getAlert(2);
@@ -53,6 +48,7 @@ public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(id,2);
 		
 	}
+	
 	@Test
 	public void deleteAlert_shouldReturnNullAfterDeleting() {
 		Alert savedAlert = hibernateAlertDAO.getAlert(2);
@@ -60,17 +56,16 @@ public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 		hibernateAlertDAO.deleteAlert(savedAlert);
 		Assert.assertNull(hibernateAlertDAO.getAlert(2));
 	}
+	
 	@Test
 	public void getAllAlerts_shouldReturnOnlyNonExpiredAllerts() {
-		
-		Assert.assertEquals(hibernateAlertDAO.getAllAlerts(false).size(),1);
-		
+		Assert.assertEquals(hibernateAlertDAO.getAllAlerts(false).size(), 1);
 	}
+	
 	@Test
 	public void getAlerts_shouldReturnAllAlertsWhenUserIsSpecified() {
-		User user=Context.getUserService().getUserByUuid("c1d8f5c2-e131-11de-babe-001e378eb77e");
-		Assert.assertEquals(hibernateAlertDAO.getAlerts(user,true,false).size(),1);
-		
+		User user = Context.getUserService().getUserByUuid("c1d8f5c2-e131-11de-babe-001e378eb77e");
+		Assert.assertEquals(hibernateAlertDAO.getAlerts(user, true, false).size(),1);
 	}
 
 }
