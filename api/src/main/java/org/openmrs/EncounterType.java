@@ -9,19 +9,40 @@
  */
 package org.openmrs;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 /**
  * An EncounterType defines how a certain kind of {@link Encounter}.
  * 
  * @see Encounter
  */
+@Entity
+@Table(name = "encounter_type")
+@AttributeOverride(name = "name", column = @Column(name = "name", length = 50, nullable = false, unique = true))
+@AttributeOverride(name = "description", column = @Column(name = "description", length = 1024))
 public class EncounterType extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 789L;
-	
+
+	@Id
+	@Column(name = "encounter_type_id", nullable = false)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer encounterTypeId;
 	
+	@ManyToOne
+	@JoinColumn(name = "view_privilege")
 	private Privilege viewPrivilege;
 	
+	@ManyToOne
+	@JoinColumn(name = "edit_privilege")
 	private Privilege editPrivilege;
 	
 	// Constructors
