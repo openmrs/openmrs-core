@@ -5044,7 +5044,7 @@
         <addForeignKeyConstraint baseColumnNames="voided_by" baseTableName="concept_attribute" constraintName="concept_attribute_voided_by_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="user_id" referencedTableName="users" validate="true"/>
     </changeSet>
     <changeSet author="wolf (generated)" id="1582473628795-539">
-        <addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="concept_complex" constraintName="concept_attributes" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="concept_id" referencedTableName="concept" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="concept_complex" constraintName="concept_attributes" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="concept_id" referencedTableName="concept" validate="true"/>
     </changeSet>
     <changeSet author="wolf (generated)" id="1582473628795-540">
         <addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="concept_class" constraintName="concept_class_changed_by" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="user_id" referencedTableName="users" validate="true"/>
@@ -5437,7 +5437,7 @@
         <addForeignKeyConstraint baseColumnNames="parent" baseTableName="note" constraintName="note_hierarchy" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="note_id" referencedTableName="note" validate="true"/>
     </changeSet>
     <changeSet author="wolf (generated)" id="1582473628795-670">
-        <addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="concept_numeric" constraintName="numeric_attributes" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="concept_id" referencedTableName="concept" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="concept_numeric" constraintName="numeric_attributes" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="concept_id" referencedTableName="concept" validate="true"/>
     </changeSet>
     <changeSet author="wolf (generated)" id="1582473628795-671">
         <addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="obs" constraintName="obs_concept" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="concept_id" referencedTableName="concept" validate="true"/>
@@ -5617,7 +5617,7 @@
         <addForeignKeyConstraint baseColumnNames="cause_of_death" baseTableName="person" constraintName="person_died_because" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="concept_id" referencedTableName="concept" validate="true"/>
     </changeSet>
     <changeSet author="wolf (generated)" id="1582473628795-730">
-        <addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="patient" constraintName="person_id_for_patient" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="person_id" referencedTableName="person" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="patient" constraintName="person_id_for_patient" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="CASCADE" referencedColumnNames="person_id" referencedTableName="person" validate="true"/>
     </changeSet>
     <changeSet author="wolf (generated)" id="1582473628795-731">
         <addForeignKeyConstraint baseColumnNames="person_id" baseTableName="users" constraintName="person_id_for_user" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="person_id" referencedTableName="person" validate="true"/>
@@ -5797,7 +5797,7 @@
         <addForeignKeyConstraint baseColumnNames="frequency" baseTableName="test_order" constraintName="test_order_frequency_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="order_frequency_id" referencedTableName="order_frequency" validate="true"/>
     </changeSet>
     <changeSet author="wolf (generated)" id="1582473628795-790">
-        <addForeignKeyConstraint baseColumnNames="order_id" baseTableName="test_order" constraintName="test_order_order_id_fk" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="order_id" referencedTableName="orders" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="order_id" baseTableName="test_order" constraintName="test_order_order_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="order_id" referencedTableName="orders" validate="true"/>
     </changeSet>
     <changeSet author="wolf (generated)" id="1582473628795-791">
         <addForeignKeyConstraint baseColumnNames="specimen_source" baseTableName="test_order" constraintName="test_order_specimen_source_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="concept_id" referencedTableName="concept" validate="true"/>
