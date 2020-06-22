@@ -108,4 +108,37 @@
 			SELECT setval('order_type_order_type_id_seq', (SELECT MAX(order_type_id) FROM order_type)+1);
 		</sql>
 	</changeSet> 
+	
+	<changeSet id="20200622-cascade_delete_concept_comlex" author="aman" dbms="postgresql">
+		<preConditions onFail="MARK_RAN">
+    	    <foreignKeyConstraintExists foreignKeyName="concept_attributes"/>
+		</preConditions>
+		<comment>Updating Foreign Key To Add delete CASCADES</comment>
+   		<dropForeignKeyConstraint baseTableName="concept_complex" constraintName="concept_attributes"/>
+   		<addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="concept_complex" constraintName="concept_attributes" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="concept_id" referencedTableName="concept"/>
+	</changeSet>
+	<changeSet id="20200622-cascade_delete_concept_numeric" author="aman" dbms="postgresql">
+		<preConditions onFail="MARK_RAN">
+   	    	<foreignKeyConstraintExists foreignKeyName="numeric_attributes"/>
+		</preConditions>
+		<comment>Updating Foreign Key To Add delete CASCADES</comment>
+		<dropForeignKeyConstraint baseTableName="concept_numeric" constraintName="numeric_attributes"/>
+		<addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="concept_numeric" constraintName="numeric_attributes" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="concept_id" referencedTableName="concept"/>   	
+	</changeSet>
+	<changeSet id="20200622-cascade_delete_patient" author="aman" dbms="postgresql">
+		<preConditions onFail="MARK_RAN">
+   		   <foreignKeyConstraintExists foreignKeyName="person_id_for_patient"/>
+		</preConditions>
+		<comment>Updating Foreign Key To Add delete CASCADES</comment>
+   		<dropForeignKeyConstraint baseTableName="patient" constraintName="person_id_for_patient"/>
+		<addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="patient" constraintName="person_id_for_patient" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="person_id" referencedTableName="person"/>
+	</changeSet>
+	<changeSet id="20200622-cascade_delete_test_order" author="aman" dbms="postgresql">
+		<preConditions onFail="MARK_RAN">
+	        <foreignKeyConstraintExists foreignKeyName="test_order_order_id_fk"/>
+		</preConditions>
+		<comment>Updating Foreign Key To Add delete CASCADES</comment>
+    	<dropForeignKeyConstraint baseTableName="test_order" constraintName="test_order_order_id_fk"/>
+		<addForeignKeyConstraint baseColumnNames="order_id" baseTableName="test_order" constraintName="test_order_order_id_fk" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="order_id" referencedTableName="orders"/>
+	</changeSet>
 </databaseChangeLog> 
