@@ -44,9 +44,7 @@ public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAlert_shouldGetAlertById() {
 		Alert savedAlert = hibernateAlertDAO.getAlert(2);
-		int id=savedAlert.getAlertId();
-		Assert.assertEquals(id,2);
-		
+		Assert.assertEquals(savedAlert.getAlertId(), 2);
 	}
 	
 	@Test
