@@ -41,7 +41,7 @@ public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 		alert.setText("Coding time");
 		alert.setId(5);
 	    hibernateAlertDAO.saveAlert(alert);
-	    Assert.assertNull(Context.getAlertService().getAlert(5));
+	    Assert.assertNotNull(Context.getAlertService().getAlert(5));
 	}
 	
 	@Test
