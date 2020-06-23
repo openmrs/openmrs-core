@@ -10,6 +10,7 @@
 package org.openmrs.notification.db.hibernate;
 
 import org.junit.Assert;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.User;
@@ -36,15 +37,18 @@ public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void saveAlert_shouldSaveAlertToDb() {
-		Alert saveAlert = hibernateAlertDAO.getAlert(2);
-	    hibernateAlertDAO.saveAlert(saveAlert);
-	    Assert.assertNotNull(saveAlert.getText());
+		Alert alert=new Alert();
+		alert.setText("Coding time");
+		alert.setId(5);
+	    hibernateAlertDAO.saveAlert(alert);
+	    Assert.assertNull(Context.getAlertService().getAlert(5));
 	}
 	
 	@Test
 	public void getAlert_shouldGetAlertById() {
 		Alert savedAlert = hibernateAlertDAO.getAlert(2);
-		Assert.assertEquals(savedAlert.getAlertId(), 2);
+		int id=savedAlert.getAlertId();
+		Assert.assertEquals(id, 2);
 	}
 	
 	@Test
