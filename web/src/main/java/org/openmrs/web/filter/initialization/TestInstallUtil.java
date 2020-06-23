@@ -153,9 +153,7 @@ public class TestInstallUtil {
 			while (entries.hasMoreElements()) {
 				ZipEntry entry = (ZipEntry) entries.nextElement();
 				if (entry.isDirectory()) {
-					if (log.isDebugEnabled()) {
 						log.debug("Skipping directory: {}",  entry.getName());
-					}
 					continue;
 				}
 				

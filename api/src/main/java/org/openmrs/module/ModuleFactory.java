@@ -165,7 +165,7 @@ public class ModuleFactory {
 		File modulesFolder = ModuleUtil.getModuleRepository();
 		
 		if (log.isDebugEnabled()) {
-			log.debug("Loading modules from: {} ", modulesFolder.getAbsolutePath());
+			log.debug("Loading modules from: {}", modulesFolder.getAbsolutePath());
 		}
 		
 		File[] files = modulesFolder.listFiles();

@@ -154,9 +154,7 @@ public class ModuleUtil {
 		List<Module> modules = new ArrayList<>(ModuleFactory.getStartedModules());
 		
 		for (Module mod : modules) {
-			if (log.isDebugEnabled()) {
-				log.debug("stopping module: {} ", mod.getModuleId());
-			}
+				log.debug("stopping module: {}", mod.getModuleId());
 			
 			if (mod.isStarted()) {
 				ModuleFactory.stopModule(mod, true, true);

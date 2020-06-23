@@ -147,9 +147,7 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 		
 		Set<Role> tmproles = getAllRoles();
 		
-		if (log.isDebugEnabled()) {
-			log.debug("User # {} has roles {}", userId, tmproles);
-		}
+			log.debug("User # {} has roles: {}", userId, tmproles);
 		
 		return containsRole(r);
 	}
@@ -214,9 +212,7 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 			totalRoles.addAll(getRoles());
 		}
 		
-		if (log.isDebugEnabled()) {
-			log.debug("User's base roles: {} ", baseRoles);
-		}
+			log.debug("User's base roles: {}", baseRoles);
 		
 		try {
 			for (Role r : baseRoles) {

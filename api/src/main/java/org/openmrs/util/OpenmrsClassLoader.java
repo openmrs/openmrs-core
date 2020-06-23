@@ -542,16 +542,13 @@ public class OpenmrsClassLoader extends URLClassLoader {
 									}
 								} else {
 									field.set(null, null);
-									if (log.isDebugEnabled()) {
 										log.debug("Set field {} to null in class {}", field.getName(), clazz.getName());
-									}
 								}
 							}
 							catch (Exception t) {
 								if (log.isDebugEnabled()) {
 									log.debug("Could not set field {} to null in class {}", field.getName(), t);	
-									
-								}
+								}	
 							}
 						}
 					}

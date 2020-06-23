@@ -37,13 +37,15 @@ import org.springframework.context.ApplicationEventPublisher;
  * newly created query object.
  */
 public class DelegatingFullTextSession extends SessionDelegatorBaseImpl implements FullTextSession {
-
+	
 	private static final Logger log = LoggerFactory.getLogger(DelegatingFullTextSession.class);
-
+	
 	private FullTextSession delegate;
-
+	
 	private ApplicationEventPublisher eventPublisher;
 
+	private FullTextQuery query;
+	
 	public DelegatingFullTextSession(FullTextSession delegate, ApplicationEventPublisher eventPublisher) {
 		super((SessionImplementor) delegate, delegate);
 		this.delegate = delegate;
@@ -59,17 +61,14 @@ public class DelegatingFullTextSession extends SessionDelegatorBaseImpl implemen
 			throw new DAOException("Can't create FullTextQuery for multiple persistent classes");
 		}
 
-		if (log.isDebugEnabled()) {
-			log.debug("Creating new {} instance", FullTextQuery.class.getSimpleName());
-		}
+		log.debug("Creating new FullTextQuery instance");
 
 		Class<?> entityClass = entities[0];
 		FullTextQuery query = delegate.createFullTextQuery(luceneQuery, entityClass);
 
-		if (log.isDebugEnabled()) {
 			log.debug("Notifying {} listeners", entityClass.getName());
-		}
-
+	
+	
 		// Notify listeners, note that we intentionally don't catch any exception from a
 		// listener
 		// so that failure should just halt the entire creation operation, this is

@@ -105,9 +105,7 @@ public abstract class ImmutableEntityInterceptor extends EmptyInterceptor {
 				}
 			}
 			if (CollectionUtils.isNotEmpty(changedProperties)) {
-				if (log.isDebugEnabled()) {
-					log.debug("The following fields cannot be changed for: {} ", getSupportedType(), changedProperties);
-				}
+					log.debug("The following fields cannot be changed for: {}", getSupportedType(), changedProperties);
 				
 				throw new UnchangeableObjectException("editing.fields.not.allowed", new Object[] { changedProperties,
 				        getSupportedType().getSimpleName() });

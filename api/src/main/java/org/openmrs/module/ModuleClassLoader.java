@@ -88,10 +88,8 @@ public class ModuleClassLoader extends URLClassLoader {
 		} else if (parent instanceof ModuleClassLoader) {
 			throw new IllegalArgumentException("Parent must not be ModuleClassLoader");
 		}
-		
-		if (log.isDebugEnabled()){
 			log.debug("URLs length: {}", urls.size());
-		}
+		
 		this.module = module;
 		requiredModules = collectRequiredModuleImports(module);
 		awareOfModules = collectAwareOfModuleImports(module);
@@ -276,9 +274,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		
 		// add each defined jar in the /lib folder, add as a url in the classpath of the classloader
 		try {
-			if (log.isDebugEnabled()) {
 				log.debug("Expanding {} /lib folder in module");
-			}
 			
 			ModuleUtil.expandJar(module.getFile(), tmpModuleDir, "lib", true);
 			File libdir = new File(tmpModuleDir, "lib");

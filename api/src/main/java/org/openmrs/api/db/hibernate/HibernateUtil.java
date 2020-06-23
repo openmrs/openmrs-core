@@ -78,9 +78,7 @@ public class HibernateUtil {
 		SessionFactoryImplementor implementor = (SessionFactoryImplementor) sessionFactory;
 		dialect = implementor.getDialect();
 		
-		if (log.isDebugEnabled()) {
 			log.debug("Getting dialect for session: {}", dialect);
-		}
 		
 		return dialect;
 	}

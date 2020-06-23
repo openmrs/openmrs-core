@@ -179,9 +179,7 @@ public class ServiceContext implements ApplicationContextAware {
 			}
 		}
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Destroying ServiceContext instance{}", ServiceContextHolder.instance);
-		}
+			log.debug("Destroying ServiceContext instance {}", ServiceContextHolder.instance);
 		
 		ServiceContextHolder.instance = null;
 	}

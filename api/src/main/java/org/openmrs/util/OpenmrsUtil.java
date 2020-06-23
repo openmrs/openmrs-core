@@ -944,9 +944,7 @@ public class OpenmrsUtil {
 			throw new IOException("Could not delete directory '" + dir.getAbsolutePath() + "' (not a directory)");
 		}
 		
-		if (log.isDebugEnabled()) {
 			log.debug("Deleting directory {}", dir.getAbsolutePath());
-		}
 		
 		File[] fileList = dir.listFiles();
 		if (fileList == null) {
@@ -959,9 +957,7 @@ public class OpenmrsUtil {
 			}
 			boolean success = f.delete();
 			
-			if (log.isDebugEnabled()) {
-				log.debug("   deleting {} :  ok {} : failed {}", f.getName(), success );
-			}
+				log.debug("   deleting {} :  ok {} : failed {}", f.getName(), success);
 			
 			if (!success) {
 				f.deleteOnExit();
