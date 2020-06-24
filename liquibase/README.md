@@ -60,8 +60,8 @@ time of writing this document.
 
 * `org/openmrs/liquibase/updates/liquibase-update-to-latest-2.2.x.xml` contains database changes introduced by OpenMRS 2.2.x
 
-### Change sets in (hypothetic) OpenMRS 4.7.x
-Looking forward to a (hypothetic) version 4.7.x of OpenMRS, the respective change sets are:
+### Change sets in (hypothetic) OpenMRS 4.8.x
+Looking forward to a (hypothetic) version 4.8.x of OpenMRS, the respective change sets are:
 
 * `org/openmrs/liquibase/snapshots/schema-only/liquibase-schema-only-4.7.x.xml` defines the OpenMRS schema. This file is a **snapshot** generated from OpenMRS 4.7.x.
 
@@ -90,7 +90,7 @@ version are added to
 
     * `org/openmrs/liquibase/updates`
    
-   The examples for the (hypothetic) OpemMRS version 4.7.x further above illustrates the different version numbers to use for the new change log files.
+   The examples for the (hypothetic) OpemMRS version 4.8.x further above illustrates the different version numbers to use for the new change log files.
 
 2. when a **database change is added to an existing minor or major version**, the snapshot files of later versions 
 need to be updated so that they include the change.
