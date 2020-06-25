@@ -9,6 +9,12 @@
  */
 package org.openmrs.util.databasechange;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -22,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+
 import org.apache.commons.io.FileUtils;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -37,12 +44,6 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
-
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Tests database upgrade from OpenMRS 1.9.7.
@@ -153,7 +154,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		Assert.assertThat(orderFrequencySelect.size(), Matchers.is(0));
 		
 		List<Map<String, String>> drugOrderSelect = upgradeTestUtil.select("drug_order", null, "order_id");
-		Assert.assertThat(drugOrderSelect.size(), Matchers.is(0));
+		assertThat(drugOrderSelect.size(), Matchers.is(0));
 	}
 	
 	@Test
@@ -198,7 +199,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		
 		List<Map<String, String>> orderFrequencySelect = upgradeTestUtil.select("order_frequency", null,
 		    "order_frequency_id", "concept_id");
-		Assert.assertThat(orderFrequencySelect.size(), Matchers.is(2));
+		assertThat(orderFrequencySelect.size(), Matchers.is(2));
 		
 		Map<String, String> conceptsToFrequencies = new HashMap<>();
 		conceptsToFrequencies.put(orderFrequencySelect.get(0).get("concept_id"),
@@ -210,7 +211,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		
 		List<Map<String, String>> drugOrderSelect = upgradeTestUtil.select("drug_order", null, "order_id", "frequency");
 		
-		Assert.assertThat(drugOrderSelect,
+		assertThat(drugOrderSelect,
 		    Matchers.containsInAnyOrder(row("order_id", "1", "frequency", conceptsToFrequencies.get("113")),
 		        row("order_id", "2", "frequency", conceptsToFrequencies.get("113")),
 		        row("order_id", "3", "frequency", conceptsToFrequencies.get("114")),
@@ -338,7 +339,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		
 		List<Map<String, String>> drugs = upgradeTestUtil.select("drug", null, "strength");
 		
-		Assert.assertThat(drugs.size(), Matchers.is(3));
+		assertThat(drugs.size(), Matchers.is(3));
 		Assert.assertTrue(drugs.get(0).containsValue("1.0tab(s)"));
 		Assert.assertTrue(drugs.get(1).containsValue("325.0mg"));
 		Assert.assertNull(drugs.get(2).get("strength"));
