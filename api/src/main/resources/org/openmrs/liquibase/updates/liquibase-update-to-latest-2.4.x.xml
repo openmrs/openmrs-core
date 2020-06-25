@@ -113,7 +113,7 @@
 		<preConditions onFail="MARK_RAN">
     	    <foreignKeyConstraintExists foreignKeyName="concept_attributes"/>
 		</preConditions>
-		<comment>Updating Foreign Key concept_attributes To Add delete CASCADES</comment>
+		<comment>Updating foreign key concept_attributes to add delete CASCADES</comment>
    		<dropForeignKeyConstraint baseTableName="concept_complex" constraintName="concept_attributes"/>
    		<addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="concept_complex" constraintName="concept_attributes" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="concept_id" referencedTableName="concept"/>
 	</changeSet>
@@ -121,7 +121,7 @@
 		<preConditions onFail="MARK_RAN">
    	    	<foreignKeyConstraintExists foreignKeyName="numeric_attributes"/>
 		</preConditions>
-		<comment>Updating Foreign Key numeric_attributes To Add delete CASCADES</comment>
+		<comment>Updating foreign key numeric_attributes to add delete CASCADES</comment>
 		<dropForeignKeyConstraint baseTableName="concept_numeric" constraintName="numeric_attributes"/>
 		<addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="concept_numeric" constraintName="numeric_attributes" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="concept_id" referencedTableName="concept"/>   	
 	</changeSet>
@@ -129,7 +129,7 @@
 		<preConditions onFail="MARK_RAN">
    		   <foreignKeyConstraintExists foreignKeyName="person_id_for_patient"/>
 		</preConditions>
-		<comment>Updating Foreign Key person_id_for_patient To Add delete CASCADES</comment>
+		<comment>Updating foreign key person_id_for_patient to add delete CASCADES</comment>
    		<dropForeignKeyConstraint baseTableName="patient" constraintName="person_id_for_patient"/>
 		<addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="patient" constraintName="person_id_for_patient" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="person_id" referencedTableName="person"/>
 	</changeSet>
@@ -137,7 +137,7 @@
 		<preConditions onFail="MARK_RAN">
 	        <foreignKeyConstraintExists foreignKeyName="test_order_order_id_fk"/>
 		</preConditions>
-		<comment>Updating Foreign Key test_order_order_id_fk To Add delete CASCADES</comment>
+		<comment>Updating foreign key test_order_order_id_fk to add delete CASCADES</comment>
     	<dropForeignKeyConstraint baseTableName="test_order" constraintName="test_order_order_id_fk"/>
 		<addForeignKeyConstraint baseColumnNames="order_id" baseTableName="test_order" constraintName="test_order_order_id_fk" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="order_id" referencedTableName="orders"/>
 	</changeSet>
