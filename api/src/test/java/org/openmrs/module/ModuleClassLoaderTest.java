@@ -9,8 +9,9 @@
  */
 package org.openmrs.module;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+
 
 import java.net.MalformedURLException;
 import java.net.URI;
