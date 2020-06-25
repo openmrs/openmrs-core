@@ -9,10 +9,11 @@
  */
 package org.openmrs.util;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import java.io.IOException;
 
 import org.hamcrest.core.Is;
-import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.api.APIException;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -31,7 +32,7 @@ public class UpgradeUtilTest extends BaseContextSensitiveTest {
 		
 		Integer conceptId = UpgradeUtil.getConceptIdForUnits("drug_order_quantity_units");
 		
-		Assert.assertThat(conceptId, Is.is(5403));
+		assertThat(conceptId, Is.is(5403));
 	}
 	
 	/**

@@ -9,9 +9,10 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isIn;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
+
 
 import java.util.Date;
 
