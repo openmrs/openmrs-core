@@ -48,8 +48,8 @@
          <artifactId>jsp-api</artifactId>
       </dependency>
       <dependency>
-         <groupId>javax.servlet</groupId>
-         <artifactId>jstl</artifactId>
+         <groupId>javax.servlet.jsp.jstl</groupId>
+         <artifactId>javax.servlet.jsp.jstl-api</artifactId>
       </dependency>
       <dependency>
          <groupId>commons-io</groupId>
