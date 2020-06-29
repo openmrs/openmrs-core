@@ -3,15 +3,17 @@
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
  * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
- *
+ * 
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
+
 package org.openmrs.api.impl;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -19,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -33,6 +36,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.openmrs.Concept;
@@ -42,16 +46,17 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
-import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.DuplicateIdentifierException;
 import org.openmrs.api.InsufficientIdentifiersException;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.MissingRequiredIdentifierException;
 import org.openmrs.api.ObsService;
+import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientServiceTest;
 import org.openmrs.api.context.UserContext;
 import org.openmrs.api.db.PatientDAO;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.test.jupiter.BaseContextMockTest;
 
 /**
@@ -62,33 +67,43 @@ import org.openmrs.test.jupiter.BaseContextMockTest;
  */
 public class PatientServiceImplTest extends BaseContextMockTest {
 
-	private PatientServiceImpl patientService;
-
-	@Mock
-	AdministrationService administrationService;
-
-	@Mock
-	ConceptService conceptService;
-
-	@Mock
-	ObsService obsService;
-
-	@Mock
-	LocationService locationService;
-
 	@Mock
 	private PatientDAO patientDaoMock;
 
+	@Mock
+	private PatientService PatientServiceMock;
+	
+	@Mock
+	private AdministrationServiceImpl administrationServiceMock;
+
+	@Mock
+	private ConceptService conceptServiceMock;
+	
+	@Mock
+	private ObsService obsServiceMock;
+	
+	@Mock
+	private LocationService locationService;
+	
+	@Mock
+	private MessageSourceService messageSourceServiceMock;
+
+	@InjectMocks
+	private PatientServiceImpl patientService;
+
 	@BeforeEach
-	public void before() {
-		patientService = new PatientServiceImpl();
-		patientService.setPatientDAO(patientDaoMock);
-		this.contextMockHelper.setPatientService(patientService);
+	public void setUp() {
+		this.contextMockHelper.setPatientService(PatientServiceMock);
+		this.contextMockHelper.setAdministrationService(administrationServiceMock);
+		this.contextMockHelper.setConceptService(conceptServiceMock);
+		this.contextMockHelper.setObsService(obsServiceMock);
+		this.contextMockHelper.setLocationService(locationService);
+		this.contextMockHelper.setMessageSourceService(messageSourceServiceMock);
 	}
 
+
 	@Test
-	public void checkPatientIdentifiers_shouldThrowMissingRequiredIdentifierGivenRequiredIdentifierTypeMissing()
-		throws Exception {
+	public void checkPatientIdentifiers_shouldThrowMissingRequiredIdentifierGivenRequiredIdentifierTypeMissing() {
 		// given
 		final PatientIdentifierType requiredIdentifierType = new PatientIdentifierType(12345);
 		requiredIdentifierType.setUuid("some type uuid");
@@ -111,20 +126,17 @@ public class PatientServiceImplTest extends BaseContextMockTest {
 			patientService.checkPatientIdentifiers(patientWithIdentifiers);
 			fail();
 			// then
-		}
-		catch (MissingRequiredIdentifierException e) {
+		} catch (MissingRequiredIdentifierException e) {
 			assertTrue(e.getMessage().contains("required"));
 			assertTrue(e.getMessage().contains("NameOfRequiredIdentifierType"));
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			fail("Expecting MissingRequiredIdentifierException");
 		}
 
 	}
 
 	@Test
-	public void checkPatientIdentifiers_shouldNotThrowMissingRequiredIdentifierGivenRequiredIdentifierTypesArePresent()
-		throws Exception {
+	public void checkPatientIdentifiers_shouldNotThrowMissingRequiredIdentifierGivenRequiredIdentifierTypesArePresent() {
 		// given
 		final String typeUuid = "equal type uuid";
 		final PatientIdentifierType requiredIdentifierType = new PatientIdentifierType(12345);
@@ -153,7 +165,7 @@ public class PatientServiceImplTest extends BaseContextMockTest {
 	}
 
 	@Test
-	public void checkPatientIdentifiers_shouldThrowDuplicateIdentifierGivenDuplicateIdentifiers() throws Exception {
+	public void checkPatientIdentifiers_shouldThrowDuplicateIdentifierGivenDuplicateIdentifiers() {
 		// given
 		final Integer equalIdentifierTypeId = 12345;
 		final String equalIdentifierTypeName = "TypeName";
@@ -184,6 +196,7 @@ public class PatientServiceImplTest extends BaseContextMockTest {
 	@Test
 	public void checkPatientIdentifiers_shouldThrowInsufficientIdentifiersErrorGivenPatientHasNoActiveIdentifiers()
 		throws Exception {
+
 		// given
 		Patient patient = new Patient();
 		patient.setVoided(false);
@@ -196,7 +209,7 @@ public class PatientServiceImplTest extends BaseContextMockTest {
 	}
 
 	@Test
-	public void checkPatientIdentifiers_shouldIgnoreAbsenceOfActiveIdentifiersGivenPatientIsVoided() throws Exception {
+	public void checkPatientIdentifiers_shouldIgnoreAbsenceOfActiveIdentifiersGivenPatientIsVoided() {
 		// given
 		Patient patient = new Patient();
 		patient.setVoided(true);
@@ -219,7 +232,7 @@ public class PatientServiceImplTest extends BaseContextMockTest {
 	}
 
 	@Test
-	public void getDuplicatePatientsByAttributes_shouldCallDaoGivenAttributes() throws Exception {
+	public void getDuplicatePatientsByAttributes_shouldCallDaoGivenAttributes() {
 		when(patientDaoMock.getDuplicatePatientsByAttributes(anyList())).thenReturn(
 			Collections.singletonList(mock(Patient.class)));
 		final List<Patient> duplicatePatients = patientService
@@ -264,6 +277,39 @@ public class PatientServiceImplTest extends BaseContextMockTest {
 	}
 
 	@Test
+	public void exitFromCare_shouldFailIfGivenPatientIsNull() {
+
+		when((messageSourceServiceMock).getMessage(eq("Patient.invalid.care"), any(), any()))
+			.thenReturn("localized error message");
+
+		Exception thrown = assertThrows(APIException.class,
+			() -> patientService.exitFromCare(null, new Date(), new Concept()));
+		assertThat(thrown.getMessage(), is("localized error message"));
+	}
+
+	@Test
+	public void exitFromCare_shouldFailIfGivenDateExitedIsNull() {
+
+		when((messageSourceServiceMock).getMessage(eq("Patient.no.valid.dateExited"), any(), any()))
+			.thenReturn("localized error message");
+
+		Exception thrown = assertThrows(APIException.class,
+			() -> patientService.exitFromCare(new Patient(), null, new Concept()));
+		assertThat(thrown.getMessage(), is("localized error message"));
+	}
+
+	@Test
+	public void exitFromCare_shouldFailIfGivenConceptIsNull() {
+
+		when((messageSourceServiceMock).getMessage(eq("Patient.no.valid.reasonForExit"), any(), any()))
+			.thenReturn("localized error message");
+
+		Exception thrown = assertThrows(APIException.class,
+			() -> patientService.exitFromCare(new Patient(), new Date(), null));
+		assertThat(thrown.getMessage(), is("localized error message"));
+	}
+	
+	@Test
 	public void processDeath_shouldThrowAPIExceptionIfPatientIsNull() throws Exception {
 		assertThrows(APIException.class, () -> patientService.processDeath(null, new Date(), new Concept(), "unknown"));
 	}
@@ -277,14 +323,14 @@ public class PatientServiceImplTest extends BaseContextMockTest {
 	public void processDeath_shouldThrowAPIExceptionIfCauseOfDeathIsNull() throws Exception {
 		assertThrows(APIException.class, () -> patientService.processDeath(new Patient(), new Date(), null, "unknown"));
 	}
-
+	
 	@Test
-	public void processDeath_shouldMapValuesAndSavePatient() throws Exception {
+	public void processDeath_shouldMapValuesAndSavePatient() {
 		// given
 		final Date dateDied = new Date();
 		final Concept causeOfDeath = new Concept(2);
 
-		when(conceptService.getConcept((String)Matchers.any())).thenReturn(new Concept());
+		when(conceptServiceMock.getConcept((String) Matchers.any())).thenReturn(new Concept());
 		when(locationService.getDefaultLocation()).thenReturn(new Location());
 
 		UserContext userContext = mock(UserContext.class);
@@ -314,4 +360,5 @@ public class PatientServiceImplTest extends BaseContextMockTest {
 		patientIdentifier.setVoidReason("Testing whether voided identifiers are ignored");
 		return patientIdentifier;
 	}
+	
 }
