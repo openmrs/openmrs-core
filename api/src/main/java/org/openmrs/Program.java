@@ -13,30 +13,64 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.openmrs.annotation.AllowDirectAccess;
+
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.AttributeOverride;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 /**
  * Program
  */
+@Entity
+@Table(name = "program")
+@AttributeOverride(name = "name", column = @Column(name = "name", length = 100))
+@AttributeOverride(name = "description", column = @Column(name = "description", length = 500))
 public class Program extends BaseChangeableOpenmrsMetadata {
-	
+
 	public static final long serialVersionUID = 3214567L;
-	
+
 	// ******************
 	// Properties
 	// ******************
-	
+
+	@Id
+	@Column(name = "program_id", nullable = false)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "program_id_gen")
+	@SequenceGenerator(name = "program_id_gen", sequenceName = "program_program_id_seq")
 	private Integer programId;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "concept_id")
 	private Concept concept;
-	
+
 	/**
 	 * Represents the possible outcomes for this program. The concept should have answers or a
 	 * memberSet.
 	 */
+	@ManyToOne
+	@JoinColumn(name = "outcomes_concept_id")
 	private Concept outcomesConcept;
-	
+
 	@AllowDirectAccess
+	@OrderBy("date_created asc")
+	@Access(AccessType.FIELD)
+	@LazyCollection(LazyCollectionOption.FALSE)
+	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "program")
 	private Set<ProgramWorkflow> allWorkflows = new HashSet<>();
 	
 	// ******************
