@@ -275,8 +275,8 @@
 		    <artifactId>jakarta.xml.bind-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.glassfish.jaxb</groupId>
-			<artifactId>jaxb-runtime</artifactId>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
 	    </dependency>
    </dependencies>
    <build>
