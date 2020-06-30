@@ -9,27 +9,52 @@
  */
 package org.openmrs;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import java.util.Date;
 
 /**
  * Relationship
  */
+@Entity
+@Table(name = "relationship")
+@AttributeOverride(name = "voidReason", column = @Column(name = "void_reason", length = 255))
 public class Relationship extends BaseChangeableOpenmrsData {
-	
+
 	public static final long serialVersionUID = 323423L;
-	
+
 	// Fields
-	
+
+	@Id
+	@Column(name = "relationship_id", nullable = false, unique = true)
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "relationship_id_gen")
+	@SequenceGenerator(name = "relationship_id_gen", sequenceName = "relationship_relationship_id_seq")
 	private Integer relationshipId;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "person_a", nullable = false)
 	private Person personA;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "relationship", nullable = true)
 	private RelationshipType relationshipType;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "person_b", nullable = false)
 	private Person personB;
-	
+
+	@Column(name = "start_date", length = 19)
 	private Date startDate;
-	
+
+	@Column(name = "end_date", length = 19)
 	private Date endDate;
 	
 	// Constructors
