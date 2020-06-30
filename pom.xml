@@ -555,9 +555,9 @@
 			    <version>3.0.0-RC3</version>
 			</dependency>
 			<dependency>
-			    <groupId>org.glassfish.jaxb</groupId>
-			    <artifactId>jaxb-runtime</artifactId>
-			    <version>2.3.2</version>
+				<groupId>com.sun.xml.bind</groupId>
+				<artifactId>jaxb-impl</artifactId>
+			    <version>3.0.0-M4</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
