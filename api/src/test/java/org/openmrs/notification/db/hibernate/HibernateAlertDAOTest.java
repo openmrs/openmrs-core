@@ -41,14 +41,13 @@ public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 		alert.setText("Coding time");
 		alert.setId(5);
 	    hibernateAlertDAO.saveAlert(alert);
-	    Assert.assertNotNull(Context.getAlertService().getAlert(5));
+		Assert.assertNotNull(hibernateAlertDAO.getAlert(5));
 	}
 	
 	@Test
 	public void getAlert_shouldGetAlertById() {
 		Alert savedAlert = hibernateAlertDAO.getAlert(2);
-		int id=savedAlert.getAlertId();
-		Assert.assertEquals(id, 2);
+		Assert.assertEquals(savedAlert.getAlertId(), 2);
 	}
 	
 	@Test
@@ -67,7 +66,7 @@ public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAlerts_shouldReturnAllAlertsWhenUserIsSpecified() {
 		User user = Context.getUserService().getUserByUuid("c1d8f5c2-e131-11de-babe-001e378eb77e");
-		Assert.assertEquals(hibernateAlertDAO.getAlerts(user, true, false).size(),1);
+		Assert.assertEquals(hibernateAlertDAO.getAlerts(user, true, false).size(), 1);
 	}
 
 }
