@@ -2349,4 +2349,32 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		assertThat(result, contains(birthplace));
 		assertEquals(result.size(), 1);
 	}
+	/**
+	 * @see PersonService#getPeople(String,Boolean,Boolean)
+	 */
+	@Test
+	public void getPeople_shouldMatchSearchToFamilyNameOneOrTwo() throws Exception {
+		executeDataSet("org/openmrs/api/include/PersonServiceTest-extranames.xml");
+		updateSearchIndex();
+		
+		List<Person> people = Context.getPersonService().getPeople("Johnson",true,true);
+		Assert.assertEquals(1, people.size());
+		assertTrue(containsId(people, 3));
+	}
+	/**
+	 * @see org.openmrs.api.PersonService#savePersonAddress(PersonAddress)
+	 */
+	@Test
+	public void savePersonAddress_shouldNotBeNullOnReturningAsavedPersonAdress() throws Exception {
+		PersonAddress pAddress = new PersonAddress();
+		pAddress.setAddress1("123 My street");
+		pAddress.setAddress2("Apt 402");
+		pAddress.setCityVillage("Anywhere city");
+		pAddress.setCountry("Some Country");
+		pAddress.setUuid("y403fafk-e5k4-42d0-9d11-4f52e89d123r");
+		PersonService personService=Context.getPersonService();
+		personService.savePersonAddress(pAddress);
+	    assertNotNull(personService.getPersonAddressByUuid("y403fafk-e5k4-42d0-9d11-4f52e89d123r"));	
+	}
+	
 }
