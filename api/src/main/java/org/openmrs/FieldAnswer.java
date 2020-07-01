@@ -9,30 +9,82 @@
  */
 package org.openmrs;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+
+import javax.persistence.Embeddable;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * FieldAnswer
  * 
  * @version 1.0
  */
+@Entity
+@Table(name = "field_answer")
 public class FieldAnswer extends BaseOpenmrsObject {
-	
+
 	public static final long serialVersionUID = 5656L;
-	
+
 	// Fields
-	
+
+	@EmbeddedId
+	private PK FieldAnswerId;
+
+	@Transient
 	private Date dateCreated;
-	
-	private Concept concept;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
-	
-	private Field field;
-	
+
+	@Transient
 	private boolean dirty;
+
+	@Embeddable
+	private class PK implements Serializable {
+
+		@ManyToOne
+		@JoinColumn(name="answer_id")
+		private Concept concept;
+
+		@ManyToOne
+		@JoinColumn(name="field_id")
+		private Field field;
+
+		public PK(){
+		}
+
+		public PK(Field field, Concept concept) {
+			this.field = field;
+			this.concept = concept;
+		}
+
+		public Concept getConcept() {
+			return concept;
+		}
+
+		public void setConcept(Concept concept) {
+			setDirty(true);
+			this.concept = concept;
+		}
+
+		public Field getField() {
+			setDirty(true);
+			return field;
+		}
+
+		public void setField(Field field) {
+			this.field = field;
+		}
+	}
 	
 	// Constructors
 	
@@ -61,23 +113,12 @@ public class FieldAnswer extends BaseOpenmrsObject {
 	public void setClean() {
 		dirty = false;
 	}
-	
+
+	public void setDirty(boolean dirty) {
+		this.dirty = dirty;
+	}
+
 	// Property accessors
-	
-	/**
-	 * @return Returns the concept.
-	 */
-	public Concept getConcept() {
-		return concept;
-	}
-	
-	/**
-	 * @param concept The concept to set.
-	 */
-	public void setConcept(Concept concept) {
-		this.dirty = true;
-		this.concept = concept;
-	}
 	
 	/**
 	 * @return Returns the creator.
@@ -107,21 +148,6 @@ public class FieldAnswer extends BaseOpenmrsObject {
 	public void setDateCreated(Date dateCreated) {
 		this.dirty = true;
 		this.dateCreated = dateCreated;
-	}
-	
-	/**
-	 * @return Returns the field.
-	 */
-	public Field getField() {
-		return field;
-	}
-	
-	/**
-	 * @param field The field to set.
-	 */
-	public void setField(Field field) {
-		this.dirty = true;
-		this.field = field;
 	}
 	
 	/**
