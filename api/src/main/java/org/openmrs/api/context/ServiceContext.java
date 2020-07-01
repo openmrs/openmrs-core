@@ -178,9 +178,8 @@ public class ServiceContext implements ApplicationContextAware {
 				ServiceContextHolder.instance.moduleOpenmrsServices = null;
 			}
 		}
-		
-			log.debug("Destroying ServiceContext instance {}", ServiceContextHolder.instance);
-		
+	
+			log.debug("Destroying ServiceContext instance: {}", ServiceContextHolder.instance);	
 		ServiceContextHolder.instance = null;
 	}
 	

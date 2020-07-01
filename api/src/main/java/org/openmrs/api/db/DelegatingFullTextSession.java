@@ -65,9 +65,7 @@ public class DelegatingFullTextSession extends SessionDelegatorBaseImpl implemen
 
 		Class<?> entityClass = entities[0];
 		FullTextQuery query = delegate.createFullTextQuery(luceneQuery, entityClass);
-
 			log.debug("Notifying {} listeners", entityClass.getName());
-	
 	
 		// Notify listeners, note that we intentionally don't catch any exception from a
 		// listener

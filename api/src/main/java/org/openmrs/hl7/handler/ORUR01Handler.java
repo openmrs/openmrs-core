@@ -196,10 +196,7 @@ public class ORUR01Handler implements Application {
 		// Obtain message control id (unique ID for message from sending
 		// application)
 		String messageControlId = msh.getMessageControlID().getValue();
-		if (log.isDebugEnabled()) {
-			log.debug("Found HL7 message in inbound queue with control id {}",  messageControlId);
-		}
-		
+			log.debug("Found HL7 message in inbound queue with control = id {}",  messageControlId);
 		
 		// create the encounter
 		Patient patient = getPatient(pid);

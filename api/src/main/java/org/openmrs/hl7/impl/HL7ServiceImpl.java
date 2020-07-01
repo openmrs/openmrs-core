@@ -713,7 +713,6 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		} else {
 			hl7InQueue.setMessageState(HL7Constants.HL7_STATUS_PROCESSING);
 		}
-	
 			log.debug("Processing HL7 inbound queue (id= {} ,Key= {})", hl7InQueue.getHL7InQueueId(), hl7InQueue.getHL7SourceKey());
 		
 		// Parse the HL7 into an HL7Message or abort with failure
