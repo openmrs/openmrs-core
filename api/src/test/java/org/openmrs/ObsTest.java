@@ -37,9 +37,13 @@ import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.api.APIException;
+import org.openmrs.api.ObsService;
+import org.openmrs.api.context.Context;
 import org.openmrs.obs.ComplexData;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.Reflect;
 
 /**
@@ -48,11 +52,14 @@ import org.openmrs.util.Reflect;
  * 
  * @see Obs
  */
-public class ObsTest {
+public class ObsTest extends BaseContextSensitiveTest {
 	
 	private static final String VERO = "Vero";
 	
 	private static final String FORM_NAMESPACE_PATH_SEPARATOR = "^";
+	
+	private static final String INITIAL_OBS_XML = "org/openmrs/api/db/include/ObsTest.xml";
+	
 	
 	//ignore these fields, groupMembers and formNamespaceAndPath field are taken care of by other tests
 	private static final List<String> IGNORED_FIELDS = Arrays.asList("dirty", "log", "serialVersionUID",
@@ -60,6 +67,11 @@ public class ObsTest {
 	    "FORM_NAMESPACE_PATH_MAX_LENGTH", "obsId", "groupMembers", "uuid", "changedBy", "dateChanged", "voided", "voidedBy",
 	    "voidReason", "dateVoided", "formNamespaceAndPath", "$jacocoData");
 	
+	@Before
+	public void setUp() {
+		executeDataSet(INITIAL_OBS_XML);
+	}
+
 	private void resetObs(Obs obs) throws Exception {
 		Field field = Obs.class.getDeclaredField("dirty");
 		field.setAccessible(true);
@@ -1085,5 +1097,17 @@ public class ObsTest {
 		assertNotNull(obs.getValueCoded());
 		obs.setValueBoolean(null);
 		assertNotNull(obs.getValueCoded());
+	}
+	@Test
+	public void removingObsFromObsGroup_shouldRemoveChildObs() throws Exception {
+		ObsService os = Context.getObsService();
+		Obs oParent = os.getObs(7);
+		Obs oChild = os.getObs(9);
+    	oParent.removeGroupMember(oChild);
+		os.saveObs(oParent,"Updating to reproduce the error");
+		Context.evictFromSession(oParent);
+		Context.flushSession();
+		oParent = os.getObs(9);
+		assertEquals(0,oParent.getGroupMembers().stream().filter(obs -> obs.getObsId() == 9).count());
 	}
 }

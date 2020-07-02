@@ -505,7 +505,9 @@ public class Obs extends BaseChangeableOpenmrsData {
 		}
 		
 		if (groupMembers.remove(member)) {
-			member.setObsGroup(null);
+			Obs oldObs=Context.getObsService().getObsByUuid(member.getUuid());
+			Obs voidedObs=Context.getObsService().voidObs(oldObs, "");
+			member.setObsGroup(voidedObs);
 		}
 	}
 	
