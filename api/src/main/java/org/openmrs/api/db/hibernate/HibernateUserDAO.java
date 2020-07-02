@@ -77,6 +77,9 @@ public class HibernateUserDAO implements UserDAO {
 		sessionFactory.getCurrentSession().saveOrUpdate(user);
 		
 		if (isNewUser && password != null) {
+			// In case of PostgreSQL hibernate session.saveOrUpdate does not issues insert statements at the same time
+			sessionFactory.getCurrentSession().flush();
+			
 			//update the new user with the password
 			String salt = Security.getRandomToken();
 			String hashedPassword = Security.encodeString(password + salt);
