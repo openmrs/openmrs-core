@@ -470,9 +470,29 @@
 				<version>4.13</version>
 			</dependency>
 			<dependency>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter-api</artifactId>
+				<version>${junitVersion}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter-engine</artifactId>
+				<version>${junitVersion}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.junit.vintage</groupId>
+				<artifactId>junit-vintage-engine</artifactId>
+				<version>${junitVersion}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
-				<version>3.3.3</version>
+				<version>${mockitoVersion}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-junit-jupiter</artifactId>
+				<version>${mockitoVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.powermock</groupId>
@@ -1105,6 +1125,8 @@
 		<hibernateVersion>5.4.17.Final</hibernateVersion>
 		<slf4jVersion> 1.7.30</slf4jVersion>
 		<log4jVersion>2.13.3</log4jVersion>
+		<junitVersion>5.6.2</junitVersion>
+		<mockitoVersion>3.3.3</mockitoVersion>
 		<customArgLineForTesting/>
 
 		<sonar.host.url>https://sonar.openmrs.org</sonar.host.url>
