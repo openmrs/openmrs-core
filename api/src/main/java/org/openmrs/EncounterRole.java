@@ -9,17 +9,35 @@
  */
 package org.openmrs;
 
+import org.hibernate.annotations.BatchSize;
+
+import javax.persistence.AttributeOverride;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 /**
  * An EncounterRole a role specific to the encounter. While these could match up to existing
  * organizational roles (e.g., "Nurse"), they don't have to (e.g., "Lead Surgeon")
  *
  * @since 1.9
  */
+@Entity
+@Table(name = "encounter_role")
+@BatchSize(size = 25)
+@AttributeOverride(name = "description", column = @Column(name = "description", length = 1024))
+@AttributeOverride(name = "name", column = @Column(name = "name", length = 50, nullable = false, unique = true))
 public class EncounterRole extends BaseChangeableOpenmrsMetadata {
-	
+
 	public static final String UNKNOWN_ENCOUNTER_ROLE_UUID = "a0b03050-c99b-11e0-9572-0800200c9a66";
-	
+
 	// Fields
+	@Id
+	@Column(name = "encounter_role_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer encounterRoleId;
 	
 	// Constructors
