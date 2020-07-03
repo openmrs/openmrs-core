@@ -143,10 +143,8 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	public static void destroyInstance() {
 		if (ServiceContextHolder.instance != null && ServiceContextHolder.instance.services != null) {
-			if (log.isDebugEnabled()) {
 				for (Map.Entry<Class, Object> entry : ServiceContextHolder.instance.services.entrySet()) {
-					log.debug("Service - " + entry.getKey().getName() + ":" + entry.getValue());
-				}
+					log.debug("Service - {}: {}", entry.getKey().getName(), entry.getValue());
 			}
 			
 			// Remove advice and advisors that this service added
@@ -178,7 +176,6 @@ public class ServiceContext implements ApplicationContextAware {
 				ServiceContextHolder.instance.moduleOpenmrsServices = null;
 			}
 		}
-	
 			log.debug("Destroying ServiceContext instance: {}", ServiceContextHolder.instance);	
 		ServiceContextHolder.instance = null;
 	}

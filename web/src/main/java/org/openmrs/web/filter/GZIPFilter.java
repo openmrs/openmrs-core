@@ -76,9 +76,7 @@ public class GZIPFilter extends OncePerRequestFilter {
 			if (!isCompressedRequestForPathAccepted(req.getRequestURI())) {
 				throw new APIException("Unsupported Media Type");
 			}
-			
 				log.debug("GZIP request supported {}");
-			
 			try {
 				GZIPRequestWrapper wrapperRequest = new GZIPRequestWrapper(req);
 					log.debug("GZIP request wrapped successfully {}");

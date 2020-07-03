@@ -60,13 +60,13 @@ public class DelegatingFullTextSession extends SessionDelegatorBaseImpl implemen
 		if (entities.length > 1) {
 			throw new DAOException("Can't create FullTextQuery for multiple persistent classes");
 		}
-
 		log.debug("Creating new FullTextQuery instance");
-
 		Class<?> entityClass = entities[0];
 		FullTextQuery query = delegate.createFullTextQuery(luceneQuery, entityClass);
-			log.debug("Notifying {} listeners", entityClass.getName());
-	
+		if (log.isDebugEnabled()) {
+			log.debug("Notifying FullTextQueryCreated listeners...");
+		}
+
 		// Notify listeners, note that we intentionally don't catch any exception from a
 		// listener
 		// so that failure should just halt the entire creation operation, this is

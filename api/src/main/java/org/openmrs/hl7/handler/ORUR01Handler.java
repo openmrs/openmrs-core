@@ -200,9 +200,7 @@ public class ORUR01Handler implements Application {
 		
 		// create the encounter
 		Patient patient = getPatient(pid);
-		if (log.isDebugEnabled()) {
 			log.debug("Processing HL7 message for patient {}",  patient.getPatientId());
-		}
 		Encounter encounter = createEncounter(msh, patient, pv1, orc);
 		
 		// do the discharge to location logic

@@ -110,9 +110,7 @@ public class TestInstallUtil {
 			}
 			
 			if (proc.waitFor() == 0) {
-				if (log.isDebugEnabled()) {
-					log.debug("Added test data successfully {}");
-				}
+					log.debug("Added test data successfully");
 				return true;
 			}
 			

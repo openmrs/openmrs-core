@@ -1083,8 +1083,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 			// fetch more archives to be processed
 			hl7InArchives = getHL7InArchivesToMigrate();
 		}
-	
-			log.debug("Transfer of HL7 archives has completed or has been stopped {}");
+			log.debug("Transfer of HL7 archives has completed or has been stopped");
 	}
 	
 	/**

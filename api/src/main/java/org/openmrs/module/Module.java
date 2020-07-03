@@ -520,10 +520,8 @@ public final class Module {
 	 * @see ModuleFileParser
 	 */
 	public void setExtensionNames(Map<String, String> map) {
-		if (log.isDebugEnabled()) {
 			for (Map.Entry<String, String> entry : extensionNames.entrySet()) {
-				log.debug("Setting extension names: " + entry.getKey() + " : " + entry.getValue());
-			}
+				log.debug("Setting extension names: {}: {}", entry.getKey(), entry.getValue());
 		}
 		this.extensionNames = map;
 	}

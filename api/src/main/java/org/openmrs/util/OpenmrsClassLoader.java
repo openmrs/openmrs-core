@@ -84,9 +84,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		
 		OpenmrsClassLoaderHolder.INSTANCE = this;
 		
-		if (log.isDebugEnabled()) {
 			log.debug("Creating new OpenmrsClassLoader instance with parent: {}", parent);
-		}
 		
 		//disable caching so the jars aren't locked
 		//if performance is effected, this can be disabled in favor of
@@ -554,9 +552,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 					}
 				}
 				catch (Exception t) {
-					if (log.isDebugEnabled()) {
 						log.debug("Could not clean fields for class {}.", clazz.getName(), t);
-					}
 				}
 			}
 		}

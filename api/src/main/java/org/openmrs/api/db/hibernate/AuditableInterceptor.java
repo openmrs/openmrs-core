@@ -103,7 +103,6 @@ public class AuditableInterceptor extends EmptyInterceptor {
 		
 		if (entity instanceof OpenmrsObject) {
 				log.debug("Setting creator and dateCreated on {}", entity);
-			
 			Map<String, Object> propertyValues = getPropertyValuesToSave();
 			objectWasChanged = changeProperties(currentState, propertyNames, objectWasChanged, propertyValues, true);
 		}

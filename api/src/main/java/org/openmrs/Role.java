@@ -224,9 +224,7 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 				allRoles.addAll(r.recurseOverParents(allRoles));
 			}
 		}
-		
 			log.debug("Total roles: {}",  allRoles);
-		
 		return allRoles;
 	}
 	
@@ -318,7 +316,6 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 			}
 		}
 			log.debug("Total roles: {}", allRoles);
-		
 		return allRoles;
 	}
 }

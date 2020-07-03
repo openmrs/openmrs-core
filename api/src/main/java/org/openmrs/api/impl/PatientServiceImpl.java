@@ -649,7 +649,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		VisitService visitService = Context.getVisitService();
 		
 		for (Visit visit : visitService.getVisitsByPatient(notPreferred, true, true)) {
-				log.debug("Merging visit to {}", visit.getVisitId(), preferred.getPatientId());
+				log.debug("Merging visit {} to {}", visit.getVisitId(), preferred.getPatientId());
 			visit.setPatient(preferred);
 			Visit persisted = visitService.saveVisit(visit);
 			mergedData.addMovedVisit(persisted.getUuid());
