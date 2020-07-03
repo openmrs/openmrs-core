@@ -46,7 +46,6 @@
 		<mapping resource="org/openmrs/api/db/hibernate/DrugReferenceMap.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Field.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/FieldAnswer.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/FieldType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Form.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/FormField.hbm.xml" />
         <mapping resource="org/openmrs/api/db/hibernate/FormResource.hbm.xml" />
@@ -65,8 +64,8 @@
 		<mapping resource="org/openmrs/api/db/hibernate/Patient.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PatientIdentifier.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PatientIdentifierType.hbm.xml" />
-                <mapping resource="org/openmrs/api/db/hibernate/PatientProgram.hbm.xml" />
-                <mapping resource="org/openmrs/api/db/hibernate/PatientProgramAttribute.hbm.xml" />
+		<mapping resource="org/openmrs/api/db/hibernate/PatientProgram.hbm.xml" />
+		<mapping resource="org/openmrs/api/db/hibernate/PatientProgramAttribute.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Relationship.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/RelationshipType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/OrderType.hbm.xml" />
@@ -83,7 +82,7 @@
         <mapping resource="org/openmrs/api/db/hibernate/EncounterProvider.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/EncounterRole.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Program.hbm.xml" />
-                <mapping resource="org/openmrs/api/db/hibernate/ProgramAttributeType.hbm.xml" />
+		<mapping resource="org/openmrs/api/db/hibernate/ProgramAttributeType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ProgramWorkflow.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ProgramWorkflowState.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PatientState.hbm.xml" />

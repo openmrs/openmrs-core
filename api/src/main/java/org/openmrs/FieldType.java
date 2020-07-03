@@ -9,17 +9,35 @@
  */
 package org.openmrs;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
 /**
  * FieldType
  */
+@Entity
+@Table(name = "field_type")
+@AttributeOverride(name = "retired", column = @Column(name = "retired", columnDefinition = "boolean default false"))
+@AttributeOverride(name = "name", column = @Column(name = "name", length = 50, nullable = false))
 public class FieldType extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 35467L;
 	
 	// Fields
 	
+	@Id
+	@Column(name = "field_type_id", nullable = false)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "field_type_id_gen")
+	@SequenceGenerator(name = "field_type_id_gen", sequenceName = "field_type_field_type_id_seq")
 	private Integer fieldTypeId;
 	
+	@Column(name = "is_set", length = 1, nullable = false)
 	private Boolean isSet = false;
 	
 	// Constructors
