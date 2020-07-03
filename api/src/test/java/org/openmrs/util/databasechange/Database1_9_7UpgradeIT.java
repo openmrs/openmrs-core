@@ -151,7 +151,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		
 		List<Map<String, String>> orderFrequencySelect = upgradeTestUtil.select("order_frequency", null,
 		    "order_frequency_id");
-		Assert.assertThat(orderFrequencySelect.size(), Matchers.is(0));
+		assertThat(orderFrequencySelect.size(), Matchers.is(0));
 		
 		List<Map<String, String>> drugOrderSelect = upgradeTestUtil.select("drug_order", null, "order_id");
 		assertThat(drugOrderSelect.size(), Matchers.is(0));
