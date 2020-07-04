@@ -9,10 +9,13 @@
  */
 package org.openmrs;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Field;
@@ -26,9 +29,7 @@ import java.util.List;
 import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.openmrs.Order.Urgency;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -57,8 +58,6 @@ public class OrderTest extends BaseContextSensitiveTest {
 		o = new Order();
 	}
 
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	
 	protected static void assertThatAllFieldsAreCopied(Order original, String methodName, String... otherfieldsToExclude)
 	        throws Exception {
@@ -521,10 +520,8 @@ public class OrderTest extends BaseContextSensitiveTest {
 		order.setDateActivated(DateUtils.parseDate("2014-11-01 11:11:10", DATE_FORMAT));
 		order.setAutoExpireDate(DateUtils.parseDate("2014-11-01 11:11:11", DATE_FORMAT));
 		OrderUtilTest.setDateStopped(order, DateUtils.parseDate("2014-11-01 11:11:12", DATE_FORMAT));
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage(
-		    Context.getMessageSourceService().getMessage("Order.error.invalidDateStoppedAndAutoExpireDate"));
-		order.isDiscontinued(DateUtils.parseDate("2014-11-01 11:11:13", DATE_FORMAT));
+		APIException exception = assertThrows(APIException.class, () -> order.isDiscontinued(DateUtils.parseDate("2014-11-01 11:11:13", DATE_FORMAT)));
+		assertThat(exception.getMessage(), is(Context.getMessageSourceService().getMessage("Order.error.invalidDateStoppedAndAutoExpireDate")));
 	}
 	
 	/**
@@ -671,10 +668,8 @@ public class OrderTest extends BaseContextSensitiveTest {
 		order.setDateActivated(DateUtils.parseDate("2014-11-01 11:11:10", DATE_FORMAT));
 		order.setAutoExpireDate(DateUtils.parseDate("2014-11-01 11:11:11", DATE_FORMAT));
 		OrderUtilTest.setDateStopped(order, DateUtils.parseDate("2014-11-01 11:11:12", DATE_FORMAT));
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage(
-		    Context.getMessageSourceService().getMessage("Order.error.invalidDateStoppedAndAutoExpireDate"));
-		order.isExpired(DateUtils.parseDate("2014-11-01 11:11:13", DATE_FORMAT));
+		APIException exception = assertThrows(APIException.class, () -> order.isExpired(DateUtils.parseDate("2014-11-01 11:11:13", DATE_FORMAT)));
+		assertThat(exception.getMessage(), is(Context.getMessageSourceService().getMessage("Order.error.invalidDateStoppedAndAutoExpireDate")));
 	}
 	
 	/**

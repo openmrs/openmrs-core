@@ -9,14 +9,16 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
 import org.openmrs.Patient;
@@ -33,8 +35,6 @@ public class CohortValidatorTest extends BaseContextSensitiveTest {
 	private static final String nullOrIncompatibleObjErrorMessage = "The parameter obj should not be null and must be of type"
 	        + Cohort.class;
 	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	
 	private CohortValidator validator;
 	
@@ -62,19 +62,17 @@ public class CohortValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void shouldFailIfGivenNull() {
+	public void shouldFailIfGivenNull() { 
 		
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage(nullOrIncompatibleObjErrorMessage);
-		validator.validate(null, errors);
+		IllegalArgumentException exception =assertThrows(IllegalArgumentException.class, () -> validator.validate(null, errors));
+		assertThat(exception.getMessage(), is(nullOrIncompatibleObjErrorMessage));
 	}
 	
 	@Test
 	public void shouldFailIfGivenInstanceOfOtherClassThanCohort() {
 		
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage(nullOrIncompatibleObjErrorMessage);
-		validator.validate(new Patient(), errors);
+		IllegalArgumentException exception =assertThrows(IllegalArgumentException.class, () -> validator.validate(new Patient(), errors));
+		assertThat(exception.getMessage(), is(nullOrIncompatibleObjErrorMessage));
 	}
 	
 	/**

@@ -9,6 +9,8 @@
  */
 package org.openmrs.validator;
 
+import static org.junit.Assert.assertThrows;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -47,9 +49,9 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 	/**
 	 * @see PatientProgramValidator#validate(Object,Errors)
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void validate_shouldFailValidationIfObjIsNull() {
-		new PatientProgramValidator().validate(null, new BindException(new Object(), ""));
+		assertThrows(IllegalArgumentException.class, () -> new PatientProgramValidator().validate(null, new BindException(new Object(), "")));
 	}
 	
 	/**

@@ -9,15 +9,17 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Patient;
@@ -32,8 +34,6 @@ import org.springframework.validation.Errors;
  */
 public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	
 	private EncounterValidator encounterValidator;
 	
@@ -51,19 +51,17 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void shouldFailIfGivenNull() {
+	public void shouldFailIfGivenNull() { 
 		
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("The parameter obj should not be null and must be of type " + Encounter.class);
-		encounterValidator.validate(null, errors);
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> encounterValidator.validate(null, errors));
+		assertThat(exception.getMessage(), is("The parameter obj should not be null and must be of type " + Encounter.class));
 	}
 	
 	@Test
-	public void shouldFailIfGivenInstanceOfOtherClassThanEncounter() {
+	public void shouldFailIfGivenInstanceOfOtherClassThanEncounter() { 
 		
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("The parameter obj should not be null and must be of type " + Encounter.class);
-		encounterValidator.validate(new Patient(), errors);
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> encounterValidator.validate(new Patient(), errors));
+		assertThat(exception.getMessage(), is("The parameter obj should not be null and must be of type " + Encounter.class));
 	}
 	
 	/**

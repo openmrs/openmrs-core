@@ -9,8 +9,10 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.openmrs.test.matchers.HasFieldErrors.hasFieldErrors;
 import static org.openmrs.test.matchers.HasGlobalErrors.hasGlobalErrors;
 
@@ -20,9 +22,7 @@ import java.util.Locale;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
@@ -45,8 +45,6 @@ import org.springframework.validation.Errors;
  */
 public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	
 	private ConceptValidator validator;
 	
@@ -73,9 +71,8 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldFailIfTheObjectParameterIsNull() {
 		
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("The parameter obj should not be null and must be of type" + Concept.class);
-		validator.validate(null, errors);
+		IllegalArgumentException exception = assertThrows (IllegalArgumentException.class , () -> validator.validate(null, errors));
+		assertThat(exception.getMessage(), is("The parameter obj should not be null and must be of type" + Concept.class));
 	}
 	
 	@Test
@@ -149,10 +146,8 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		concept.addName(newName);
 		errors = new BindException(concept, "concept");
 		
-		expectedException.expect(DuplicateConceptNameException.class);
-		expectedException
-		        .expectMessage("'" + duplicateName + "' is a duplicate name in locale '" + Context.getLocale() + "'");
-		validator.validate(concept, errors);
+		DuplicateConceptNameException exception = assertThrows(DuplicateConceptNameException.class, () -> validator.validate(concept, errors));
+		assertThat(exception.getMessage(), is("'" + duplicateName + "' is a duplicate name in locale '" + Context.getLocale() + "' for the same concept"));
 	}
 	
 	@Test
@@ -164,10 +159,8 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		concept.setConceptClass(new ConceptClass());
 		concept.setDatatype(new ConceptDatatype());
 		
-		expectedException.expect(DuplicateConceptNameException.class);
-		expectedException
-		        .expectMessage("'same name' is a duplicate name in locale '" + Context.getLocale() + "'");
-		validator.validate(concept, errors);
+		DuplicateConceptNameException exception = assertThrows(DuplicateConceptNameException.class, () -> validator.validate(concept, errors));
+		assertThat(exception.getMessage(), is("'same name' is a duplicate name in locale '" + Context.getLocale() + "' for the same concept"));
 	}
 	
 	@Test
@@ -180,10 +173,8 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		anotherConcept.getFullySpecifiedName(Context.getLocale()).setName(duplicateName);
 		Errors errors = new BindException(anotherConcept, "concept");
 		
-		expectedException.expect(DuplicateConceptNameException.class);
-		expectedException
-		        .expectMessage("'" + duplicateName + "' is a duplicate name in locale '" + Context.getLocale() + "'");
-		validator.validate(anotherConcept, errors);
+		DuplicateConceptNameException exception = assertThrows(DuplicateConceptNameException.class, () -> validator.validate(anotherConcept, errors));
+		assertThat(exception.getMessage(), is("'" + duplicateName + "' is a duplicate name in locale '" + Context.getLocale() + "'"));
 	}
 	
 	@Test
@@ -199,10 +190,8 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		anotherConcept.getFullySpecifiedName(Context.getLocale()).setName("preferred name");
 		Errors errors = new BindException(anotherConcept, "concept");
 		
-		expectedException.expect(DuplicateConceptNameException.class);
-		expectedException
-		        .expectMessage("'" + preferredName + "' is a duplicate name in locale '" + Context.getLocale() + "'");
-		validator.validate(anotherConcept, errors);
+		DuplicateConceptNameException exception = assertThrows(DuplicateConceptNameException.class, () -> validator.validate(anotherConcept, errors));
+		assertThat(exception.getMessage(), is("'" + preferredName + "' is a duplicate name in locale '" + Context.getLocale() + "'"));
 	}
 	
 	@Test
@@ -368,11 +357,8 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		anotherConcept.getFullySpecifiedName(en).setName(duplicateName);
 		Errors errors = new BindException(anotherConcept, "concept");
 		
-		expectedException.expect(DuplicateConceptNameException.class);
-		expectedException
-		        .expectMessage("'" + duplicateName + "' is a duplicate name in locale '" + en + "'");
-		validator.validate(concept, errors);
-		validator.validate(anotherConcept, errors);
+		DuplicateConceptNameException exception = assertThrows(DuplicateConceptNameException.class, () -> validator.validate(anotherConcept, errors));
+		assertThat(exception.getMessage(), is("'" + duplicateName + "' is a duplicate name in locale '" + en + "'"));
 	}
 	
 	@Test

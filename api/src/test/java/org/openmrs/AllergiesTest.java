@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import static org.junit.Assert.assertThrows;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -143,16 +145,16 @@ public class AllergiesTest extends BaseContextSensitiveTest {
 	/**
 	 * @see {@link Allergies#confirmNoKnownAllergies()}
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void shouldThrowAnErrorWhenTryingConfirmNoKnowAllergiesWhileAllergiesIsNotEmpty(){
 		allergies.add(new Allergy());
-		allergies.confirmNoKnownAllergies();
+		assertThrows(APIException.class, () -> allergies.confirmNoKnownAllergies());
 	}
 	
 	/**
 	 * @see {@link Allergies#add(Allergy)}
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void add_shouldNotAllowDuplicateCodedAllergen(){
 		Allergy allergy1 = new Allergy();
         Concept concept = new Concept();
@@ -162,7 +164,7 @@ public class AllergiesTest extends BaseContextSensitiveTest {
 		allergy2.setAllergen(new Allergen(null, concept, null));
 		
 		allergies.add(allergy1);
-		allergies.add(allergy2);
+		assertThrows(APIException.class, () -> allergies.add(allergy2));
 	}
 	
 	/**
@@ -183,7 +185,7 @@ public class AllergiesTest extends BaseContextSensitiveTest {
 	/**
 	 * @see {@link Allergies#add(Allergy)}
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void add_shouldNotAllowDuplicateNonCodedAllergen(){
 		Concept concept = Context.getConceptService().getConceptByUuid(Allergen.getOtherNonCodedConceptUuid());
 		
@@ -194,7 +196,7 @@ public class AllergiesTest extends BaseContextSensitiveTest {
 		allergy2.setAllergen(new Allergen(null, concept, "OTHER VALUE"));
 		
 		allergies.add(allergy1);
-		allergies.add(allergy2);
+		assertThrows(APIException.class, () -> allergies.add(allergy2));
 	}
 	
 	/**
@@ -217,7 +219,7 @@ public class AllergiesTest extends BaseContextSensitiveTest {
 	/**
 	 * @see {@link Allergies#add(int, Allergy)}
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void add2_shouldNotAllowDuplicateCodedAllergen(){
 		Allergy allergy1 = new Allergy();
         Concept concept = new Concept();
@@ -227,7 +229,7 @@ public class AllergiesTest extends BaseContextSensitiveTest {
 		allergy2.setAllergen(new Allergen(null, concept, null));
 		
 		allergies.add(0, allergy1);
-		allergies.add(0, allergy2);
+		assertThrows(APIException.class, () -> allergies.add(0, allergy2));
 	}
 	
 	/**
@@ -248,7 +250,7 @@ public class AllergiesTest extends BaseContextSensitiveTest {
 	/**
 	 * @see {@link Allergies#add(int, Allergy)}
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void add2_shouldNotAllowDuplicateNonCodedAllergen(){
 		Concept concept = Context.getConceptService().getConceptByUuid(Allergen.getOtherNonCodedConceptUuid());
 		
@@ -259,7 +261,7 @@ public class AllergiesTest extends BaseContextSensitiveTest {
 		allergy2.setAllergen(new Allergen(null, concept, "OTHER VALUE"));
 		
 		allergies.add(0, allergy1);
-		allergies.add(0, allergy2);
+		assertThrows(APIException.class, () -> allergies.add(0, allergy2));
 	}
 	
 	/**
@@ -282,7 +284,7 @@ public class AllergiesTest extends BaseContextSensitiveTest {
 	/**
 	 * @see {@link Allergies#addAll(java.util.Collection)}
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void addAll_shouldNotAllowDuplicateCodedAllergen(){
 		Allergy allergy1 = new Allergy();
 		allergy1.setAllergen(new Allergen(null, new Concept(1), null));
@@ -294,13 +296,13 @@ public class AllergiesTest extends BaseContextSensitiveTest {
 		allergies.add(allergy1);
 		allergies.add(allergy2);
 		
-		allergies.addAll(allergies);
+		assertThrows(APIException.class, () -> allergies.addAll(allergies));
 	}
 	
 	/**
 	 * @see {@link Allergies#addAll(java.util.Collection)}
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void addAll_shouldAllowNonDuplicateCodedAllergen(){
 		Allergy allergy1 = new Allergy();
 		allergy1.setAllergen(new Allergen(null, new Concept(1), null));
@@ -311,14 +313,14 @@ public class AllergiesTest extends BaseContextSensitiveTest {
 		Allergies allergies = new Allergies();
 		allergies.add(allergy1);
 		allergies.add(allergy2);
-		
-		allergies.addAll(allergies);
+
+		assertThrows(APIException.class, () -> allergies.addAll(allergies));
 	}
 	
 	/**
 	 * @see {@link Allergies#addAll(java.util.Collection)}
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void addAll_shouldNotAllowDuplicateNonCodedAllergen(){
 		Concept concept = Context.getConceptService().getConceptByUuid(Allergen.getOtherNonCodedConceptUuid());
 		
@@ -330,15 +332,14 @@ public class AllergiesTest extends BaseContextSensitiveTest {
 		
 		Allergies allergies = new Allergies();
 		allergies.add(allergy1);
-		allergies.add(allergy2);
-		
-		allergies.addAll(allergies);
+		assertThrows(APIException.class, () -> allergies.add(allergy2));
+		assertThrows(APIException.class, () -> allergies.addAll(allergies));
 	}
 	
 	/**
 	 * @see {@link Allergies#addAll(java.util.Collection)}
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void addAll_shouldAllowNonDuplicateNonCodedAllergen(){
 		Concept concept = Context.getConceptService().getConceptByUuid(Allergen.getOtherNonCodedConceptUuid());
 		
@@ -351,14 +352,14 @@ public class AllergiesTest extends BaseContextSensitiveTest {
 		Allergies allergies = new Allergies();
 		allergies.add(allergy1);
 		allergies.add(allergy2);
-		
-		allergies.addAll(allergies);
+
+		assertThrows(APIException.class, () -> allergies.addAll(allergies));
 	}
 	
 	/**
 	 * @see {@link Allergies#addAll(int, java.util.Collection)}
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void addAll2_shouldNotAllowDuplicateCodedAllergen(){
 		Allergy allergy1 = new Allergy();
 		allergy1.setAllergen(new Allergen(null, new Concept(1), null));
@@ -369,14 +370,14 @@ public class AllergiesTest extends BaseContextSensitiveTest {
 		Allergies allergies = new Allergies();
 		allergies.add(allergy1);
 		allergies.add(allergy2);
-		
-		allergies.addAll(0, allergies);
+
+		assertThrows(APIException.class, () -> allergies.addAll(0, allergies));
 	}
 	
 	/**
 	 * @see {@link Allergies#addAll(int, java.util.Collection)}
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void addAll2_shouldAllowNonDuplicateCodedAllergen(){
 		Allergy allergy1 = new Allergy();
 		allergy1.setAllergen(new Allergen(null, new Concept(1), null));
@@ -387,14 +388,14 @@ public class AllergiesTest extends BaseContextSensitiveTest {
 		Allergies allergies = new Allergies();
 		allergies.add(allergy1);
 		allergies.add(allergy2);
-		
-		allergies.addAll(0, allergies);
+
+		assertThrows(APIException.class, () -> allergies.addAll(0, allergies));
 	}
 	
 	/**
 	 * @see {@link Allergies#addAll(int, java.util.Collection)}
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void addAll2_shouldNotAllowDuplicateNonCodedAllergen(){
 		Concept concept = Context.getConceptService().getConceptByUuid(Allergen.getOtherNonCodedConceptUuid());
 		
@@ -406,15 +407,13 @@ public class AllergiesTest extends BaseContextSensitiveTest {
 		
 		Allergies allergies = new Allergies();
 		allergies.add(allergy1);
-		allergies.add(allergy2);
-		
-		allergies.addAll(0, allergies);
+		assertThrows(APIException.class, () -> allergies.add(allergy2));
 	}
 	
 	/**
 	 * @see {@link Allergies#addAll(int, java.util.Collection)}
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void addAll2_shouldAllowNonDuplicateNonCodedAllergen(){
 		Concept concept = Context.getConceptService().getConceptByUuid(Allergen.getOtherNonCodedConceptUuid());
 		
@@ -427,14 +426,14 @@ public class AllergiesTest extends BaseContextSensitiveTest {
 		Allergies allergies = new Allergies();
 		allergies.add(allergy1);
 		allergies.add(allergy2);
-		
-		allergies.addAll(0, allergies);
+
+		assertThrows(APIException.class, () -> allergies.addAll(0, allergies));
 	}
 	
 	/**
 	 * @see {@link Allergies#addAll(java.util.Collection)}
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void addAll4_shouldNotAllowDuplicateCodedAllergen(){
 		Allergy allergy1 = new Allergy();
         Concept concept = new Concept();
@@ -446,14 +445,14 @@ public class AllergiesTest extends BaseContextSensitiveTest {
 		List<Allergy> allergies = new ArrayList<>();
 		allergies.add(allergy1);
 		allergies.add(allergy2);
-		
-		new Allergies().addAll(allergies);
+
+		assertThrows(APIException.class, () -> new Allergies().addAll(allergies));
 	}
 	
 	/**
 	 * @see {@link Allergies#addAll(int, java.util.Collection)}
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void addAll5_shouldNotAllowDuplicateCodedAllergen(){
 		Allergy allergy1 = new Allergy();
         Concept concept = new Concept();
@@ -465,14 +464,14 @@ public class AllergiesTest extends BaseContextSensitiveTest {
 		List<Allergy> allergies = new ArrayList<>();
 		allergies.add(allergy1);
 		allergies.add(allergy2);
-		
-		new Allergies().addAll(0, allergies);
+
+		assertThrows(APIException.class, () -> new Allergies().addAll(0, allergies));
 	}
 	
 	/**
 	 * @see {@link Allergies#addAll(java.util.Collection)}
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void addAll6_shouldNotAllowDuplicateNonCodedAllergen(){
 		Concept concept = Context.getConceptService().getConceptByUuid(Allergen.getOtherNonCodedConceptUuid());
 		
@@ -485,14 +484,14 @@ public class AllergiesTest extends BaseContextSensitiveTest {
 		List<Allergy> allergies = new ArrayList<>();
 		allergies.add(allergy1);
 		allergies.add(allergy2);
-		
-		new Allergies().addAll(allergies);
+
+		assertThrows(APIException.class, () -> new Allergies().addAll(allergies));
 	}
 	
 	/**
 	 * @see {@link Allergies#addAll(int, java.util.Collection)}
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void addAll7_shouldNotAllowDuplicateNonCodedAllergen(){
 		Concept concept = Context.getConceptService().getConceptByUuid(Allergen.getOtherNonCodedConceptUuid());
 		
@@ -505,7 +504,7 @@ public class AllergiesTest extends BaseContextSensitiveTest {
 		List<Allergy> allergies = new ArrayList<>();
 		allergies.add(allergy1);
 		allergies.add(allergy2);
-		
-		new Allergies().addAll(0, allergies);
+
+		assertThrows(APIException.class, () -> new Allergies().addAll(0, allergies));
 	}
 }

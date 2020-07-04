@@ -9,13 +9,15 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
+
 import java.util.Collections;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.Drug;
@@ -31,8 +33,6 @@ import org.springframework.validation.Errors;
  */
 public class DrugValidatorTest extends BaseContextSensitiveTest {
 	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	
 	@Autowired
 	private ConceptService conceptService;
@@ -49,9 +49,8 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void validate_shouldFailIfTheDrugObjectIsNull() {
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("The parameter obj should not be null and must be of type" + Drug.class);
-		new DrugValidator().validate(null, new BindException(new Drug(), "drug"));
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new DrugValidator().validate(null, new BindException(new Drug(), "drug")));
+		assertThat(exception.getMessage(), is("The parameter obj should not be null and must be of type" + Drug.class));
 	}
 	
 	/**

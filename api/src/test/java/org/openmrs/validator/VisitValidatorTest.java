@@ -13,6 +13,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.openmrs.test.matchers.HasFieldErrors.hasFieldErrors;
 
@@ -94,24 +95,24 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	/**
 	 * @see VisitValidator#validate(Object,Errors)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void validate_shouldRejectAVisitIfItHasFewerThanMinOccursOfAnAttribute() {
 		Visit visit = makeVisit();
 		visit.addAttribute(makeAttribute("one"));
-		ValidateUtil.validate(visit);
+		assertThrows(APIException.class, () -> ValidateUtil.validate(visit));
 	}
 	
 	/**
 	 * @see VisitValidator#validate(Object,Errors)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void validate_shouldRejectAVisitIfItHasMoreThanMaxOccursOfAnAttribute() {
 		Visit visit = makeVisit();
 		visit.addAttribute(makeAttribute("one"));
 		visit.addAttribute(makeAttribute("two"));
 		visit.addAttribute(makeAttribute("three"));
 		visit.addAttribute(makeAttribute("four"));
-		ValidateUtil.validate(visit);
+		assertThrows(APIException.class, () -> ValidateUtil.validate(visit));
 	}
 	
 	private Visit makeVisit() {

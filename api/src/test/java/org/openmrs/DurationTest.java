@@ -10,24 +10,22 @@
 package org.openmrs;
 
 import static junit.framework.TestCase.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.openmrs.test.TestUtil.createDateTime;
 
 import java.text.ParseException;
 import java.util.Date;
 
-import org.hamcrest.Matchers;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 
 public class DurationTest extends BaseContextSensitiveTest {
 	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	
 	@Test
 	public void addToDate_shouldAddSecondsWhenUnitIsSeconds() throws ParseException {
@@ -98,18 +96,17 @@ public class DurationTest extends BaseContextSensitiveTest {
 		Date startDate = createDateTime("2014-07-01 10:00:00");
 		OrderFrequency frequency = null;
 		
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage(Matchers.is(Context.getMessageSourceService().getMessage("Duration.error.frequency.null")));
-		duration.addToDate(startDate, frequency);
+		APIException exception = assertThrows(APIException.class, () -> duration.addToDate(startDate, frequency));
+		assertThat(exception.getMessage(), is(Context.getMessageSourceService().getMessage("Duration.error.frequency.null")));
 	}
 	
 	@Test
 	public void addToDate_shouldFailWhenUnitIsUnknown() throws ParseException {
 		Duration duration = new Duration(3, "J");
 		
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage(Matchers.is(Context.getMessageSourceService().getMessage("Duration.unknown.code", new Object[] { "J" }, null)));
-		duration.addToDate(createDateTime("2014-07-01 10:00:00"), null);
+		
+		APIException exception = assertThrows(APIException.class, () -> duration.addToDate(createDateTime("2014-07-01 10:00:00"), null));
+		assertThat(exception.getMessage(), is(Context.getMessageSourceService().getMessage("Duration.unknown.code", new Object[] { "J" }, null)));
 	}
 	
 	private OrderFrequency createFrequency(double frequencyPerDay) {
