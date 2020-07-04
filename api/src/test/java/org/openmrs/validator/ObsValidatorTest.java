@@ -9,7 +9,10 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
@@ -18,9 +21,7 @@ import java.util.Set;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.Drug;
@@ -41,8 +42,6 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	@Autowired
 	private ObsValidator obsValidator;
 	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	
 	/**
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
@@ -481,9 +480,8 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void validate_shouldFailForANullObject() {
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage(CoreMatchers.equalTo("Obs can't be null"));
-		obsValidator.validate(null, null);
+		APIException exception = assertThrows(APIException.class, () -> obsValidator.validate(null, null));
+		assertThat(exception.getMessage(), is(CoreMatchers.equalTo("Obs can't be null"))); 
 	}
 	
 	/**

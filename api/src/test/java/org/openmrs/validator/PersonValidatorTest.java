@@ -9,6 +9,8 @@
  */
 package org.openmrs.validator;
 
+import static org.junit.Assert.assertThrows;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -235,7 +237,7 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(errors.hasErrors());
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void validate_shouldThrowExceptionWhenAddressIsNull() {
 		Person person = new Patient(1);
 		Set<PersonAddress> addresses =  new HashSet<>();
@@ -251,7 +253,7 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(person, "patient");
 		PersonValidator personValidator = new PersonValidator();
 		
-		personValidator.validate(person, errors);
+		assertThrows(IllegalArgumentException.class, () ->  personValidator.validate(person, errors));
 	}
 
 }

@@ -9,6 +9,8 @@
  */
 package org.openmrs.validator;
 
+import static org.junit.Assert.assertThrows;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.ConceptNameTag;
@@ -24,10 +26,10 @@ import org.springframework.validation.Errors;
  */
 public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void validate_shouldFailValidationIfConceptNameTagIsNull() {
 		Errors errors = new BindException(new ConceptNameTag(), "cnt");
-		new ConceptNameTagValidator().validate(null, errors);
+		assertThrows(IllegalArgumentException.class, () -> new ConceptNameTagValidator().validate(null, errors));
 	}
 	
 	/**

@@ -9,15 +9,16 @@
  */
 package org.openmrs;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -317,19 +318,19 @@ public class ObsTest {
 	/**
 	 * @see Obs#setValueAsString(String)
 	 */
-	@Test(expected = RuntimeException.class)
+	@Test
 	public void setValueAsString_shouldFailIfTheValueOfTheStringIsEmpty() throws Exception {
 		Obs obs = new Obs();
-		obs.setValueAsString("");
+		assertThrows(RuntimeException.class, () -> obs.setValueAsString(""));
 	}
 	
 	/**
 	 * @see Obs#setValueAsString(String)
 	 */
-	@Test(expected = RuntimeException.class)
+	@Test
 	public void setValueAsString_shouldFailIfTheValueOfTheStringIsNull() throws Exception {
 		Obs obs = new Obs();
-		obs.setValueAsString(null);
+		assertThrows(RuntimeException.class, () -> obs.setValueAsString(null));
 	}
 	
 	/**
@@ -591,7 +592,7 @@ public class ObsTest {
 	/**
 	 * @see Obs#setFormField(String,String)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void setFormField_shouldRejectANamepaceAndPathCombinationLongerThanTheMaxLength() throws Exception {
 		StringBuilder nsBuffer = new StringBuilder(125);
 		for (int i = 0; i < 125; i++) {
@@ -604,27 +605,27 @@ public class ObsTest {
 		final String ns = nsBuffer.toString();
 		final String path = "";
 		Obs obs = new Obs();
-		obs.setFormField(ns, path);
+		assertThrows(APIException.class, () -> obs.setFormField(ns, path));
 	}
 	
 	/**
 	 * @see Obs#setFormField(String,String)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void setFormField_shouldRejectANamepaceContainingTheSeparator() throws Exception {
 		final String ns = "my ns" + FORM_NAMESPACE_PATH_SEPARATOR;
 		Obs obs = new Obs();
-		obs.setFormField(ns, "");
+		assertThrows(APIException.class, () -> obs.setFormField(ns, ""));
 	}
 	
 	/**
 	 * @see Obs#setFormField(String,String)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void setFormField_shouldRejectAPathContainingTheSeparator() throws Exception {
 		final String path = FORM_NAMESPACE_PATH_SEPARATOR + "my path";
 		Obs obs = new Obs();
-		obs.setFormField("", path);
+		assertThrows(APIException.class, () -> obs.setFormField("", path));
 	}
 	
 	/**
