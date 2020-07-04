@@ -9,6 +9,8 @@
  */
 package org.openmrs.validator;
 
+import static org.junit.Assert.assertThrows;
+
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -87,10 +89,10 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	/**
 	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void validate_shouldFailIfTheConceptReferenceTermObjectIsNull() {
 		Errors errors = new BindException(new ConceptReferenceTerm(), "term");
-		new ConceptReferenceTermValidator().validate(null, errors);
+		assertThrows(IllegalArgumentException.class, () -> new ConceptReferenceTermValidator().validate(null, errors));
 	}
 	
 	/**

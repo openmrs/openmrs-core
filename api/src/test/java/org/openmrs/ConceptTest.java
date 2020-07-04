@@ -15,6 +15,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -561,14 +562,14 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	/**
 	 * @see Concept#getSetMembers()
 	 */
-	@Test(expected = UnsupportedOperationException.class)
+	@Test
 	public void getSetMembers_shouldReturnUnmodifiableListOfConceptMemberList() {
 		Concept c = new Concept();
 		c.addSetMember(new Concept(12345));
 		List<Concept> setMembers = c.getSetMembers();
 		
 		Assert.assertEquals(1, setMembers.size());
-		setMembers.add(new Concept());
+		assertThrows(UnsupportedOperationException.class, () -> setMembers.add(new Concept()));
 	}
 	
 	/**

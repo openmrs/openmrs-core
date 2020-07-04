@@ -9,6 +9,8 @@
  */
 package org.openmrs.validator;
 
+import static org.junit.Assert.assertThrows;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.ConceptMapType;
@@ -36,10 +38,10 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 	/**
 	 * @see ConceptMapTypeValidator#validate(Object,Errors)
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void validate_shouldFailIfTheConceptMapTypeObjectIsNull() {
 		Errors errors = new BindException(new ConceptMapType(), "mapType");
-		new ConceptMapTypeValidator().validate(null, errors);
+		assertThrows(IllegalArgumentException.class, () ->  new ConceptMapTypeValidator().validate(null, errors));
 	}
 	
 	/**

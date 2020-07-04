@@ -11,12 +11,16 @@ package org.openmrs.validator;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
-import org.openmrs.*;
+import org.openmrs.Concept;
+import org.openmrs.Drug;
+import org.openmrs.Location;
+import org.openmrs.Patient;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.ValidationException;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
@@ -30,10 +34,10 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 	/**
 	 * @see ValidateUtil#validate(Object)
 	 */
-	@Test(expected = ValidationException.class)
+	@Test
 	public void validate_shouldThrowValidationExceptionIfErrorsOccurDuringValidation() {
 		Location loc = new Location();
-		ValidateUtil.validate(loc);
+		assertThrows(ValidationException.class , () -> ValidateUtil.validate(loc));
 	}
 	
 	@Test

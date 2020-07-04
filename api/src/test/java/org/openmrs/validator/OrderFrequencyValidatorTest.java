@@ -9,12 +9,13 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptName;
@@ -31,8 +32,6 @@ import org.springframework.validation.Errors;
  */
 public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	
 	/**
 	 * @see OrderFrequencyValidator#validate(Object,Errors)
@@ -126,10 +125,9 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldBeInvokedWhenAnOrderFrequencyIsSaved() {
 		OrderFrequency orderFrequency = Context.getOrderService().getOrderFrequency(2);
 		orderFrequency.setConcept(null);
-		expectedException.expect(APIException.class);
 		String expectedMsg = "'" + orderFrequency + "' failed to validate with reason: concept: " + Context.getMessageSourceService().getMessage("Concept.noConceptSelected");
-		expectedException.expectMessage(expectedMsg);
-		Context.getOrderService().saveOrderFrequency(orderFrequency);
+		APIException exception = assertThrows(APIException.class, () -> Context.getOrderService().saveOrderFrequency(orderFrequency));
+		assertThat(exception.getMessage(), is(expectedMsg));
 	}
 	
 	/**

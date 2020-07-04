@@ -9,21 +9,23 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
+
+import java.util.Locale;
+
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.openmrs.CodedOrFreeText;
 import org.openmrs.Cohort;
+import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.Condition;
-import org.openmrs.Concept;
 import org.openmrs.ConditionClinicalStatus;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
-
-import java.util.Locale;
 
 /**
  * Class to implement tests for {@link ConditionValidator}
@@ -32,10 +34,7 @@ public class ConditionValidatorTest {
 
 	private static final String NULL_ERROR_MESSAGE = "The object parameter should not be null";
 	private static final String INCOMPATIBLE_ERROR_MESSAGE = "The object parameter should be of type " + Condition.class;
-
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
-
+	
 	private ConditionValidator validator;
 
 	private Condition condition;
@@ -51,16 +50,14 @@ public class ConditionValidatorTest {
 
 	@Test
 	public void shouldFailIfGivenNull(){
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage(NULL_ERROR_MESSAGE);
-		validator.validate(null, errors);
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> validator.validate(null, errors));
+		assertThat(exception.getMessage(), is(NULL_ERROR_MESSAGE));
 	}
 
 	@Test
 	public void shouldFailIfGivenInstanceOfClassOtherThanCondition(){
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage(INCOMPATIBLE_ERROR_MESSAGE);
-		validator.validate(new Cohort(), errors);
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> validator.validate(new Cohort(), errors));
+		assertThat(exception.getMessage(), is(INCOMPATIBLE_ERROR_MESSAGE));
 	}
 	
 	@Test

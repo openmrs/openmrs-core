@@ -9,16 +9,17 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 
 import java.util.Collection;
 import java.util.HashSet;
 
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.openmrs.ConceptClass;
 import org.openmrs.OrderType;
 import org.openmrs.api.APIException;
@@ -37,16 +38,14 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 	@Autowired
 	private OrderService orderService;
 	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	
 	/**
 	 * @see OrderTypeValidator#validate(Object,Errors)
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void validate_shouldFailIfTheOrderTypeObjectIsNull() {
 		Errors errors = new BindException(new OrderType(), "orderType");
-		new OrderTypeValidator().validate(null, errors);
+		assertThrows(IllegalArgumentException.class, () -> new OrderTypeValidator().validate(null, errors));
 	}
 	
 	/**
@@ -188,10 +187,9 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldBeInvokedWhenAnOrderTypeIsSaved() {
 		OrderType orderType = orderService.getOrderType(1);
 		orderType.setName(null);
-		expectedException.expect(APIException.class);
 		String expectedMsg = "'" + orderType + "' failed to validate with reason: name: " + Context.getMessageSourceService().getMessage("error.name");
-		expectedException.expectMessage(expectedMsg);
-		orderService.saveOrderType(orderType);
+		APIException exception = assertThrows(APIException.class, () -> orderService.saveOrderType(orderType));
+		assertThat(exception.getMessage(), is(expectedMsg));
 	}
 	
 	/**
