@@ -207,7 +207,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		conceptsToFrequencies.put(orderFrequencySelect.get(1).get("concept_id"),
 		    orderFrequencySelect.get(1).get("order_frequency_id"));
 		
-		Assert.assertThat(conceptsToFrequencies.keySet(), Matchers.containsInAnyOrder("113", "114"));
+		assertThat(conceptsToFrequencies.keySet(), Matchers.containsInAnyOrder("113", "114"));
 		
 		List<Map<String, String>> drugOrderSelect = upgradeTestUtil.select("drug_order", null, "order_id", "frequency");
 		
