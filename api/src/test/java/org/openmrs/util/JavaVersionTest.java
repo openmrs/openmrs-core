@@ -9,6 +9,7 @@
  */
 package org.openmrs.util;
 
+import static org.junit.Assert.assertThrows;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 import org.junit.Before;
@@ -34,10 +35,10 @@ public class JavaVersionTest {
 	/**
 	 * @see org.openmrs.util.OpenmrsUtil#validateJavaVersion()
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void validateJavaVersion_shouldFailIfTheCurrentJVMVersionIsEarlierThanJava6() {
 		when(JdkVersion.getJavaVersion()).thenReturn("1.5.0_20");
-		OpenmrsUtil.validateJavaVersion();
+		assertThrows(APIException.class, () -> OpenmrsUtil.validateJavaVersion());
 	}
 	
 	/**

@@ -12,13 +12,12 @@ package org.openmrs.util;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThrows;
 
 import java.util.List;
 
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.openmrs.DrugOrder;
 import org.openmrs.Order;
 import org.openmrs.Patient;
@@ -37,8 +36,6 @@ import org.springframework.validation.Validator;
  */
 public class HandlerUtilTest extends BaseContextSensitiveTest {
 	
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 	
 	/**
 	 * @see HandlerUtil#getHandlerForType(Class, Class)
@@ -75,11 +72,10 @@ public class HandlerUtilTest extends BaseContextSensitiveTest {
 	 * @see HandlerUtil#getPreferredHandler(Class, Class)
 	 */
 	@Test
-	public void getPreferredHandler_shouldThrowAAPIExceptionExceptionIfNoHandlerIsFound() {
-		thrown.expect(APIException.class);
-		thrown.expectMessage(Context.getMessageSourceService().getMessage("handler.type.not.found", new Object[] { Validator.class.toString(), Integer.class }, null));
+	public void getPreferredHandler_shouldThrowAAPIExceptionExceptionIfNoHandlerIsFound() { 
 		
-		HandlerUtil.getPreferredHandler(Validator.class, Integer.class);
+		APIException exception = assertThrows(APIException.class, () -> HandlerUtil.getPreferredHandler(Validator.class, Integer.class));
+		assertThat(exception.getMessage(), is(Context.getMessageSourceService().getMessage("handler.type.not.found", new Object[] { Validator.class.toString(), Integer.class }, null)));
 	}
 	
 	@Test

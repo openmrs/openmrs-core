@@ -10,6 +10,7 @@
 package org.openmrs.util;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 
 import java.io.IOException;
 
@@ -39,10 +40,9 @@ public class UpgradeUtilTest extends BaseContextSensitiveTest {
 	 * @throws IOException
 	 * @see org.openmrs.util.UpgradeUtil#getConceptIdForUnits(String)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void getConceptIdForUnits_shouldFailIfUnitsIsNotSpecified() throws IOException {
 		Database1_9_7UpgradeIT.createOrderEntryUpgradeFileWithTestData("mg=540" + "\n" + "ounces=5402");
-		
-		UpgradeUtil.getConceptIdForUnits("drug_order_quantity_units");
+		assertThrows(APIException.class, () -> UpgradeUtil.getConceptIdForUnits("drug_order_quantity_units"));
 	}
 }

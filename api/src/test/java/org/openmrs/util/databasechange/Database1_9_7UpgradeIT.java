@@ -9,10 +9,14 @@
  */
 package org.openmrs.util.databasechange;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -36,9 +40,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.DatabaseUtil;
@@ -65,8 +67,6 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 	
 	private static File testAppDataDir;
 	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	
 	private Map<String, String> row(String... values) {
 		Map<String, String> row = new HashMap<>();
@@ -161,13 +161,12 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 	public void shouldFailMigratingDrugOrdersIfUnitsToConceptsMappingsIsNotSet() throws IOException, SQLException {
 		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
 		createOrderEntryUpgradeFileWithTestData("");
-		expectedException.expect(IOException.class);
 		String errorMsgSubString1 = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201401101647-TRUNK-4187::wyclif";
-		expectedException.expectMessage(errorMsgSubString1);
 		String errorMsgSubString2 = Context.getMessageSourceService().getMessage("upgrade.settings.file.not.have.mapping",
 		    new Object[] { "mg" }, null);
-		expectedException.expectMessage(errorMsgSubString2);
-		upgradeTestUtil.upgrade();
+		IOException exception = assertThrows(IOException.class, () -> upgradeTestUtil.upgrade());
+		assertThat(exception.getMessage(), containsString(errorMsgSubString1));
+		assertThat(exception.getMessage(), containsString(errorMsgSubString2));
 	}
 	
 	@Test
@@ -179,11 +178,10 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		    "mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=invalid");
 		
-		expectedException.expect(IOException.class);
 		String errorMsgSubString1 = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201401101647-TRUNK-4187::wyclif";
-		expectedException.expectMessage(errorMsgSubString1);
-		expectedException.expectMessage("For input string: \"invalid\"");
-		upgradeTestUtil.upgrade();
+		IOException exception = assertThrows(IOException.class, () -> upgradeTestUtil.upgrade());
+		assertThat(exception.getMessage(), containsString(errorMsgSubString1));
+		assertThat(exception.getMessage(), containsString("For input string: \"invalid\""));
 	}
 	
 	@Test
@@ -230,11 +228,9 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		//map the frequencies only
 		createOrderEntryUpgradeFileWithTestData("1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
-		expectedException.expect(IOException.class);
 		String errorMsgSubString1 = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201401101647-TRUNK-4187::wyclif";
-		expectedException.expectMessage(errorMsgSubString1);
-		
-		upgradeTestUtil.upgrade();
+		IOException exception =assertThrows(IOException.class, () -> upgradeTestUtil.upgrade());
+		assertThat(exception.getMessage(), is(errorMsgSubString1));
 	}
 	
 	@Test
@@ -248,11 +244,10 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		//map the dose units only
 		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112");
 		
-		expectedException.expect(IOException.class);
 		String errorMsgSubString1 = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201401101647-TRUNK-4187::wyclif";
-		expectedException.expectMessage(errorMsgSubString1);
 		
-		upgradeTestUtil.upgrade();
+		IOException exception = assertThrows(IOException.class, () -> upgradeTestUtil.upgrade());
+		assertThat(exception.getMessage(), is(errorMsgSubString1));
 	}
 	
 	@Test
@@ -353,10 +348,9 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		createOrderEntryUpgradeFileWithTestData(
 		    "mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
-		expectedException.expect(IOException.class);
 		String errorMsgSubString = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201403262140-TRUNK-4265::wyclif";
-		expectedException.expectMessage(errorMsgSubString);
-		upgradeTestUtil.upgrade();
+		IOException exception = assertThrows(IOException.class, () -> upgradeTestUtil.upgrade());
+		assertThat(exception.getMessage(), startsWith(errorMsgSubString));
 	}
 	
 	@Test
@@ -367,10 +361,9 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		createOrderEntryUpgradeFileWithTestData(
 		    "mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
-		expectedException.expect(IOException.class);
 		String errorMsgSubString = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201403262140-TRUNK-4265::wyclif";
-		expectedException.expectMessage(errorMsgSubString);
-		upgradeTestUtil.upgrade();
+		IOException exception = assertThrows(IOException.class, () -> upgradeTestUtil.upgrade());
+		assertThat(exception.getMessage(), is(errorMsgSubString));
 	}
 	
 	@Test
@@ -382,10 +375,9 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		createOrderEntryUpgradeFileWithTestData(
 		    "mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
-		expectedException.expect(IOException.class);
 		String errorMsgSubString = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201404091110::wyclif";
-		expectedException.expectMessage(errorMsgSubString);
-		upgradeTestUtil.upgrade();
+		IOException exception = assertThrows(IOException.class, () -> upgradeTestUtil.upgrade());
+		assertThat(exception.getLocalizedMessage(), is(errorMsgSubString));
 	}
 	
 	@Test
@@ -440,10 +432,9 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		createOrderEntryUpgradeFileWithTestData(
 		    "mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
-		expectedException.expect(IOException.class);
 		String errorMsgSubString = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201406262016::wyclif";
-		expectedException.expectMessage(errorMsgSubString);
-		upgradeTestUtil.upgrade();
+		IOException exception = assertThrows(IOException.class, () -> upgradeTestUtil.upgrade());
+		assertThat(exception.getMessage(), is(errorMsgSubString));
 	}
 	
 	@Test

@@ -9,6 +9,8 @@
  */
 package org.openmrs.propertyeditor;
 
+import static org.junit.Assert.assertThrows;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -71,16 +73,16 @@ public class DateOrDatetimeEditorTest {
 	/**
 	 * @see DateOrDatetimeEditor#setAsText(String)
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void setAsText_shouldFailOnPartialDate() {
-		ed.setAsText("27/10");
+		assertThrows(IllegalArgumentException.class, () -> ed.setAsText("27/10"));
 	}
 	
 	/**
 	 * @see DateOrDatetimeEditor#setAsText(String)
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void setAsText_shouldFailOnPartialDateAndTime() {
-		ed.setAsText("27/10/2011 17");
+		assertThrows(IllegalArgumentException.class, () -> ed.setAsText("27/10/2011 17"));
 	}
 }
