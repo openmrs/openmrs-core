@@ -9,16 +9,15 @@
  */
 package org.openmrs.util;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.List;
 import java.util.Map;
+
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.openmrs.liquibase.ChangeLogVersionFinder;
-
-import static org.junit.Assert.assertEquals;
 
 public class DatabaseUpdaterDatabaseIT extends H2DatabaseIT {
 	
@@ -32,8 +31,6 @@ public class DatabaseUpdaterDatabaseIT extends H2DatabaseIT {
 	 */
 	private static final int CHANGE_SET_COUNT_FOR_2_1_X = 862;
 	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	
 	@Before
 	public void setup() {

@@ -9,6 +9,8 @@
  */
 package org.openmrs.util;
 
+import static org.junit.Assert.assertThrows;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.api.APIException;
@@ -32,8 +34,8 @@ public class OpenmrsSecurityManagerTest {
 	/**
 	 * @see OpenmrsSecurityManager#getCallerClass(int)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void getCallerClass_shouldThrowAnErrorIfGivenASubzeroCallStackLevel() {
-		new OpenmrsSecurityManager().getCallerClass(-1);
+		assertThrows(APIException.class, () -> new OpenmrsSecurityManager().getCallerClass(-1));
 	}
 }

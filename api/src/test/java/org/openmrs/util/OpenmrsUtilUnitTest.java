@@ -18,6 +18,7 @@ import static org.hamcrest.Matchers.equalTo;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
@@ -98,22 +99,21 @@ public class OpenmrsUtilUnitTest {
 		assertThat(OpenmrsUtil.parseParameterList("||||"), equalTo(Collections.EMPTY_MAP));
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void parseParameterList_shouldFailGivenOnlyWhitespaces() {
 
-		OpenmrsUtil.parseParameterList("   ");
+		assertThrows(IllegalArgumentException.class, () -> OpenmrsUtil.parseParameterList("   "));
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void parseParameterList_shouldFailGivenOnlyAKey() {
-		
-		OpenmrsUtil.parseParameterList("role_id");
+		assertThrows(IllegalArgumentException.class, () -> OpenmrsUtil.parseParameterList("role_id"));
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void parseParameterList_shouldFailGivenOnlyKeysSeparatedByPipes() {
 
-		OpenmrsUtil.parseParameterList("role_id|patient_id");
+		assertThrows(IllegalArgumentException.class, () -> OpenmrsUtil.parseParameterList("role_id|patient_id"));
 	}
 
 	@Test
