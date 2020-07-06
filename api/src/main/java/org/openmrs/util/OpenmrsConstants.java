@@ -9,13 +9,15 @@
  */
 package org.openmrs.util;
 
+import static java.util.Arrays.asList;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
@@ -33,8 +35,6 @@ import org.openmrs.scheduler.SchedulerConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static java.util.Arrays.asList;
-
 /**
  * Constants used in OpenMRS. Contents built from build properties (version, version_short, and
  * expected_database). Some are set at runtime (database, database version). This file should
@@ -45,6 +45,10 @@ public final class OpenmrsConstants {
 	
 	private static final Logger log = LoggerFactory.getLogger(OpenmrsConstants.class);
 	
+	public static final String GP_AT_FACILITY_VISIT_TYPE = "Faculty VisitType";
+	
+	public static final String LOCATION_TAG_SUPPORTS_VISITS = "Visit Location";
+
 	public static String KEY_OPENMRS_APPLICATION_DATA_DIRECTORY = "OPENMRS_APPLICATION_DATA_DIRECTORY";
 	
 	/**

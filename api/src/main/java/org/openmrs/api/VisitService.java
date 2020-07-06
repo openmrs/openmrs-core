@@ -379,4 +379,45 @@ public interface VisitService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.EDIT_VISITS)
 	public void stopVisits(Date maximumStartDate);
+	
+	/**
+	 * @param visit
+	 * @param location
+	 * @param when
+	 * @return true if when falls in the visits timespan AND location is within visit.location
+	 */
+	public boolean isSuitableVisit(Visit visit, Location location, Date when);
+	
+	/**
+	 * If the patient has no active visit on the day of @visitTime, one is created (and persisted).
+	 * The visit's location will be a valid visit location per our business logic.
+	 *
+	 * @param patient
+	 * @param visitTime
+	 * @param department
+	 * @return
+	 */
+	public Visit ensureVisit(Patient patient, Date visitTime, Location department);
+	
+	/**
+	 * Like #getActiveVisit, but if the patient has no active visit, one is created (and persisted).
+	 * (This has the same side-effects as #getActiveVisit.) The visit's location will be a valid
+	 * visit location per our business logic.
+	 *
+	 * @param patient
+	 * @param department
+	 * @return
+	 */
+	public Visit ensureActiveVisit(Patient patient, Location department);
+	
+	/**
+	 * Looks at location, and if necessary its ancestors in the location hierarchy, until it finds
+	 * one tagged with "Visit Location"
+	 *
+	 * @param location
+	 * @return location, or an ancestor
+	 * @throws IllegalArgumentException if neither location nor its ancestors support visits
+	 */
+	public Location getLocationThatSupportsVisits(Location location);
+
 }

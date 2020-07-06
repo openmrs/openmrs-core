@@ -499,4 +499,9 @@ public interface LocationService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_LOCATION_ATTRIBUTE_TYPES)
 	LocationAttributeType getLocationAttributeTypeByName(String locationAttributeTypeName);
+	
+	/**
+	 * @return all locations that are allowed to have visits assigned to them
+	 */
+	List<Location> getAllLocationsThatSupportVisits();
 }

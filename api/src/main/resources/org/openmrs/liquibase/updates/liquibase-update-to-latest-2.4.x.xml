@@ -142,4 +142,21 @@
     	<dropForeignKeyConstraint baseTableName="test_order" constraintName="test_order_order_id_fk"/>
 		<addForeignKeyConstraint baseColumnNames="order_id" baseTableName="test_order" constraintName="test_order_order_id_fk" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="order_id" referencedTableName="orders"/>
 	</changeSet>
+	
+	<changeSet id="TRUNK-5655-2020-06-19" author="jnsereko">
+    	<preConditions onFail="MARK_RAN">
+    		<not>
+    			<columnExists tableName="location" columnName="supports_visits"/>
+    		</not>
+    	</preConditions>
+    	<comment>Adding 'supports_visits' column to 'location' table</comment>
+    	<addColumn tableName="location">
+    		<column name="supports_visits" type="boolean">
+    			<constraints nullable="true" />
+    		</column>
+    	</addColumn>
+    	<addForeignKeyConstraint constraintName="location_supports_visits_fk"
+								 baseTableName="location" baseColumnNames="supports_visits"
+								 referencedTableName="location" referencedColumnNames="location_id" />
+    </changeSet>
 </databaseChangeLog> 

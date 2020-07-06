@@ -9,12 +9,15 @@
  */
 package org.openmrs.api;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
@@ -30,12 +33,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
+import org.openmrs.LocationTag;
 import org.openmrs.Patient;
 import org.openmrs.Visit;
 import org.openmrs.VisitAttribute;
@@ -63,6 +68,10 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	
 	private VisitService visitService;
 	
+	private LocationTag supportsVisits;
+	
+	private VisitType atFacilityVisitType;
+
 	@Before
 	public void before() {
 		visitService = Context.getVisitService();
@@ -73,12 +82,219 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		//
 		globalPropertiesTestHelper = new GlobalPropertiesTestHelper(Context.getAdministrationService());
 		globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ALLOW_OVERLAPPING_VISITS, "true");
+		
+		supportsVisits = Context.getLocationService().getLocationTagByName(OpenmrsConstants.LOCATION_TAG_SUPPORTS_VISITS);
+		
+		atFacilityVisitType = new VisitType(4);
+		atFacilityVisitType.setName(OpenmrsConstants.GP_AT_FACILITY_VISIT_TYPE);
+	}
+	
+	/**
+	 * @see org.org.openmrs.api.VisitService#ensureVisit(Patient, Location)
+	 */
+	@Test
+	public void ensureActiveVisit_shouldReturnNewVisit() {
+		Patient patient = new Patient(7);
+		Location visitLocation = new Location(1901);
+		visitLocation.addTag(supportsVisits);
+		assertTrue("patients has visits already", visitService.getVisitsByPatient(patient).isEmpty());
+		Visit returnedVisit = visitService.ensureActiveVisit(patient, visitLocation);
+		assertFalse("patients has no visits", visitService.getVisitsByPatient(patient).isEmpty());
+		assertNotNull(returnedVisit);
+		assertThat(returnedVisit.getPatient(), is(patient));
+		assertThat(returnedVisit.getVisitType().getName(), is(atFacilityVisitType.getName()));
+		assertThat(returnedVisit.getLocation(), is(visitLocation));
+	}
+	
+	/**
+	 * @see org.org.openmrs.api.VisitService#ensureVisit(Patient, Location)
+	 */
+	@Test
+	public void ensureActiveVisit_shouldFindsRecentVisit() {
+		Patient patient = new Patient(2);
+		assertFalse("patients has no visits", visitService.getVisitsByPatient(patient).isEmpty());
+		Location visitLocation = new Location(1901);
+		visitLocation.addTag(supportsVisits);
+		Visit recentVisit = Context.getVisitService().getVisit(6);
+		recentVisit.setLocation(visitLocation);
+		recentVisit.setStartDatetime(DateUtils.addHours(new Date(), -1));
+		recentVisit.setPatient(patient);
+		
+		visitLocation.addTag(supportsVisits);
+		Visit visitOne = Context.getVisitService().getVisit(1);
+		visitOne.setLocation(visitLocation);
+		visitOne.setStartDatetime(DateUtils.addHours(new Date(), -2));
+		visitOne.setPatient(patient);
+		
+		assertThat(visitService.ensureActiveVisit(patient, visitLocation), is(visitOne));
+	}
+	
+	/**
+	 * @see org.org.openmrs.api.VisitService#ensureVisit(Patient, Location)
+	 */
+	@Test
+	public void ensureActiveVisit_shouldNotFindOldVisit() {
+		Patient patient = new Patient(2);
+		assertFalse("patients has no visits", visitService.getVisitsByPatient(patient).isEmpty());
+		Location visitLocation = new Location(1901);
+		visitLocation.addTag(supportsVisits);
+		Date now = new Date();
+		Visit newVisit = Context.getVisitService().getVisit(1);
+		newVisit.setLocation(visitLocation);
+		newVisit.setStartDatetime(DateUtils.addDays(now, -4));
+		newVisit.setStopDatetime(DateUtils.addDays(now, -2));
+		newVisit.setPatient(patient);
+		
+		Visit oldVisit = Context.getVisitService().getVisit(2);
+		oldVisit.setLocation(visitLocation);
+		oldVisit.setStartDatetime(DateUtils.addDays(now, -6));
+		oldVisit.setStopDatetime(DateUtils.addDays(now, -3));
+		oldVisit.setPatient(patient);
+		final Visit createdVisit = visitService.ensureActiveVisit(patient, visitLocation);
+		assertNotNull(createdVisit);
+		assertNotSame(oldVisit, createdVisit);
+	}
+	
+	/**
+	 * @see org.org.openmrs.api.VisitService#ensureVisit(Patient, Date, Location)
+	 */
+	@Test
+	public void ensureVisit_shouldReturnVisitBasingOnVisitTime() {
+		Location visitLocation = new Location(1901);
+		visitLocation.addTag(supportsVisits);
+		Patient patient = new Patient(2);
+		assertFalse("patients has no visits", visitService.getVisitsByPatient(patient).isEmpty());
+		Date now = new Date();
+		//ended five days ago
+		Date oldVisitTime = DateUtils.addDays(now, -5);
+		
+		Visit newVisit = Context.getVisitService().getVisit(1);
+		newVisit.setLocation(visitLocation);
+		newVisit.setStartDatetime(DateUtils.addDays(now, -4));
+		newVisit.setStopDatetime(DateUtils.addDays(now, -2));
+		newVisit.setPatient(patient);
+		
+		Visit oldVisit = Context.getVisitService().getVisit(2);
+		oldVisit.setLocation(visitLocation);
+		oldVisit.setStartDatetime(DateUtils.addDays(now, -6));
+		oldVisit.setStopDatetime(DateUtils.addDays(now, -1));
+		oldVisit.setPatient(patient);
+		
+		final Visit returnedOldVisit = visitService.ensureVisit(patient, oldVisitTime, visitLocation);
+		assertNotNull(returnedOldVisit);
+		assertSame(oldVisit, returnedOldVisit);
+		//ended three days ago
+		Date newVisitTime = DateUtils.addDays(now, -3);
+		final Visit returnedNewVisit = visitService.ensureVisit(patient, newVisitTime, visitLocation);
+		assertNotNull(returnedNewVisit);
+		assertSame(newVisit, returnedNewVisit);
+	}
+	
+	/**
+	 * @see org.org.openmrs.api.VisitService#ensureVisit(Patient, Date, Location)
+	 */
+	@Test
+	public void ensureVisit_shouldReturnNewVisitIfPatientHasNoVisit() {
+		Location visitLocation = new Location(1901);
+		visitLocation.addTag(supportsVisits);
+		int originalVisits = Context.getVisitService().getAllVisits().size();
+		Patient patient = new Patient(7);
+		assertTrue("patients has visits", visitService.getVisitsByPatient(patient).isEmpty());
+		final Visit returnedVisit = visitService.ensureVisit(patient, new Date(), visitLocation);
+		assertNotNull(returnedVisit);
+		assertThat(Context.getVisitService().getAllVisits().size(), is(originalVisits + 1));
+	}
+	
+	/**
+	 * @see org.org.openmrs.api.VisitService#ensureVisit(Patient, Date, Location)
+	 */
+	@Test
+	public void ensureVisit_shouldCreatesNewVisitIfVisitTimeIsEitherLessThanVisitStartTimeOrGreaterThanVisitEndTime() {
+		Location visitLocation = new Location(1901);
+		visitLocation.addTag(supportsVisits);
+		Patient patient = new Patient(6);
+		assertFalse("patients has no visits", visitService.getVisitsByPatient(patient).isEmpty());
+		//ended ten days ago
+		Date now = new Date();
+		Date startTime = DateUtils.addDays(now, -10);
+		
+		Visit newVisit = Context.getVisitService().getVisit(4);
+		newVisit.setLocation(visitLocation);
+		newVisit.setStartDatetime(DateUtils.addDays(now, -4));
+		newVisit.setStopDatetime(DateUtils.addDays(now, -2));
+		newVisit.setPatient(patient);
+		
+		Visit oldVisit = Context.getVisitService().getVisit(5);
+		oldVisit.setLocation(visitLocation);
+		oldVisit.setStartDatetime(DateUtils.addDays(now, -6));
+		oldVisit.setStopDatetime(DateUtils.addDays(now, -1));
+		oldVisit.setPatient(patient);
+		
+		int originalVisits = Context.getVisitService().getAllVisits().size();
+		
+		final Visit returnedVisit = visitService.ensureVisit(patient, startTime, visitLocation);
+		assertNotNull(returnedVisit);
+		assertNotSame(newVisit, returnedVisit);
+		assertNotSame(newVisit, returnedVisit);
+		assertThat(Context.getVisitService().getAllVisits().size(), is(originalVisits + 1));
+	}
+	
+	/**
+	 * @see org.org.openmrs.api.VisitService#isSuitableVisit(Visit, Location, Date)
+	 */
+	@Test
+	public void isSuitableVisit_shouldReturnFalseIfWhenIsEitherLessThanVisitStartTimeOrGreaterThanVisitEndTime() {
+		Date when = new Date();
+		Date threeDaysAgo = DateUtils.addDays(when, -3);
+		Date fiveDaysAgo = DateUtils.addDays(when, -5);
+		Date sevenDaysAgo = DateUtils.addDays(when, -7);
+		Visit visit = new Visit();
+		Location location = new Location();
+		visit.setAttribute(new VisitAttribute());
+		visit.setLocation(location);
+		visit.setStartDatetime(fiveDaysAgo);
+		assertFalse(visitService.isSuitableVisit(visit, location, sevenDaysAgo));
+		
+		visit.setStopDatetime(sevenDaysAgo);
+		assertFalse(visitService.isSuitableVisit(visit, location, threeDaysAgo));
+		
+		visit.setStartDatetime(sevenDaysAgo);
+		visit.setStopDatetime(threeDaysAgo);
+		assertTrue(visitService.isSuitableVisit(visit, location, fiveDaysAgo));
+		assertTrue(visitService.isSuitableVisit(visit, location, sevenDaysAgo));
+		assertTrue(visitService.isSuitableVisit(visit, location, threeDaysAgo));
 	}
 	
 	@Test
+	public void getLocationThatSupportsVisits_shouldReturnLocationTaggedWithVisitLocationTag() {
+		Location location = new Location();
+		location.addTag(supportsVisits);
+		Location returnedLocation = Context.getVisitService().getLocationThatSupportsVisits(location);
+		assertSame(location, returnedLocation);
+	}
+	
+	@Test
+	public void getLocationThatSupportsVisits_shouldReturnParentLocationIfChildLackVisitLocationTag() {
+		Location childLocation = new Location();
+		Location parentLocation = new Location();
+		parentLocation.addTag(supportsVisits);
+		childLocation.setParentLocation(parentLocation);
+		Location returnedLocation = Context.getVisitService().getLocationThatSupportsVisits(childLocation);
+		assertSame(parentLocation, returnedLocation);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void getLocationThatSupportsVisits_shouldThrowIllegalAgumentExceptionIfParentAndChildLackVisitLocationTag() {
+		Location childLocation = new Location();
+		Location parentLocation = new Location();
+		childLocation.setParentLocation(parentLocation);
+		Context.getVisitService().getLocationThatSupportsVisits(childLocation);
+	}
+
+	@Test
 	public void getAllVisitTypes_shouldGetAllVisitTypes() {
 		List<VisitType> visitTypes = visitService.getAllVisitTypes();
-		assertEquals(3, visitTypes.size());
+		assertEquals(4, visitTypes.size());
 	}
 	
 	@Test
@@ -92,7 +308,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getVisitType_shouldReturnNullIfVisitTypeIsNotFound() {
 		
-		assertNull(visitService.getVisitType(4));
+		assertNull(visitService.getVisitType(5));
 	}
 	
 	@Test
@@ -144,7 +360,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		assertEquals(1, visitTypes.size());
 		
 		//Should create a new visit type row.
-		assertEquals(4, visitService.getAllVisitTypes().size());
+		assertEquals(5, visitService.getAllVisitTypes().size());
 	}
 	
 	@Test
@@ -163,7 +379,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		assertEquals("Edited Description", visitType.getDescription());
 		
 		//Should not change the number of visit types.
-		assertEquals(3, visitService.getAllVisitTypes().size());
+		assertEquals(4, visitService.getAllVisitTypes().size());
 	}
 	
 	@Test
@@ -181,7 +397,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		assertEquals("retire reason", visitType.getRetireReason());
 		
 		//Should not change the number of visit types.
-		assertEquals(3, visitService.getAllVisitTypes().size());
+		assertEquals(4, visitService.getAllVisitTypes().size());
 	}
 	
 	@Test
@@ -199,7 +415,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		assertNull(visitType.getRetireReason());
 		
 		//Should not change the number of visit types.
-		assertEquals(3, visitService.getAllVisitTypes().size());
+		assertEquals(4, visitService.getAllVisitTypes().size());
 	}
 	
 	@Test
@@ -213,7 +429,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		assertNull(visitType);
 		
 		//Should reduce the existing number of visit types.
-		assertEquals(2, visitService.getAllVisitTypes().size());
+		assertEquals(3, visitService.getAllVisitTypes().size());
 	}
 	
 	/**
@@ -966,9 +1182,9 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	public void getAllVisitTypes_shouldGetAllVisitTypesBasedOnIncludeRetiredFlag() {
 		VisitService visitService = Context.getVisitService();
 		List<VisitType> visitTypes = visitService.getAllVisitTypes(true);
-		assertEquals("get all visit types including retired", 3, visitTypes.size());
+		assertEquals("get all visit types including retired", 4, visitTypes.size());
 		visitTypes = visitService.getAllVisitTypes(false);
-		assertEquals("get all visit types excluding retired", 2, visitTypes.size());
+		assertEquals("get all visit types excluding retired", 3, visitTypes.size());
 	}
 
 	private int getNumberOfAllVisitsIncludingVoided() {

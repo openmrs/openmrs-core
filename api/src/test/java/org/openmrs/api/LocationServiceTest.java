@@ -9,11 +9,13 @@
  */
 package org.openmrs.api;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
@@ -237,7 +239,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getAllLocations_shouldReturnAllLocationsIncludingRetired() {
 		List<Location> locations = Context.getLocationService().getAllLocations();
 		
-		Assert.assertEquals(6, locations.size());
+		Assert.assertEquals(7, locations.size());
 	}
 	
 	/**
@@ -247,7 +249,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getRootLocations_shouldReturnRootLocationsIncludingRetired() {
 		List<Location> locations = Context.getLocationService().getRootLocations(true);
 		
-		Assert.assertEquals(3, locations.size());
+		Assert.assertEquals(4, locations.size());
 	}
 	
 	/**
@@ -257,7 +259,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getRootLocations_shouldReturnOnlyUnretiredRootLocations() {
 		List<Location> locations = Context.getLocationService().getRootLocations(false);
 		
-		Assert.assertEquals(2, locations.size());
+		Assert.assertEquals(3, locations.size());
 	}
 	
 	/**
@@ -267,7 +269,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getAllLocations_shouldReturnAllLocationsWhenIncludeRetiredIsTrue() {
 		List<Location> locations = Context.getLocationService().getAllLocations(true);
 		
-		Assert.assertEquals(6, locations.size());
+		Assert.assertEquals(7, locations.size());
 	}
 	
 	/**
@@ -277,7 +279,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getAllLocations_shouldReturnOnlyUnretiredLocationsWhenIncludeRetiresIsFalse() {
 		List<Location> locations = Context.getLocationService().getAllLocations(false);
 		
-		Assert.assertEquals(5, locations.size());
+		Assert.assertEquals(6, locations.size());
 	}
 	
 	/**
@@ -398,7 +400,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getLocationsHavingAllTags_shouldReturnAllUnretiredLocationsGivenAnEmptyTagList() {
 		LocationService ls = Context.getLocationService();
-		Assert.assertEquals(5, ls.getLocationsHavingAllTags(Collections.EMPTY_LIST).size());
+		Assert.assertEquals(6, ls.getLocationsHavingAllTags(Collections.EMPTY_LIST).size());
 	}
 	
 	/**
@@ -705,7 +707,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getAllLocationTags_shouldReturnAllLocationTagsIncludingRetired() {
 		List<LocationTag> tags = Context.getLocationService().getAllLocationTags();
 		
-		Assert.assertEquals(6, tags.size());
+		Assert.assertEquals(7, tags.size());
 	}
 	
 	/**
@@ -715,7 +717,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getAllLocationTags_shouldReturnAllLocationTagsIfIncludeRetiredIsTrue() {
 		List<LocationTag> tags = Context.getLocationService().getAllLocationTags(true);
 		
-		Assert.assertEquals(6, tags.size());
+		Assert.assertEquals(7, tags.size());
 	}
 	
 	/**
@@ -725,7 +727,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getAllLocationTags_shouldReturnOnlyUnretiredLocationTagsIfIncludeRetiredIsFalse() {
 		List<LocationTag> tags = Context.getLocationService().getAllLocationTags(false);
 		
-		Assert.assertEquals(5, tags.size());
+		Assert.assertEquals(6, tags.size());
 	}
 	
 	/**
@@ -1189,4 +1191,10 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(tag.getRetired());
 	}
 	
+	@Test
+	public void getAllLocationsThatSupportVisits_shouldReturnAllLocationsTaggedWithVisitLocations() {
+		List<Location> visitLocation = Context.getLocationService().getAllLocationsThatSupportVisits();
+		assertThat(visitLocation.size(), is(1));
+	}
+
 }
