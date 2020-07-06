@@ -11,6 +11,7 @@ package org.openmrs.api.db.hibernate;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItems;
 
 import java.util.Arrays;
@@ -44,7 +45,7 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 				.collect(Collectors.toList());
 
 		Assert.assertEquals(2, identifiers.size());
-		Assert.assertThat(identifierIds, hasItems(1, 3));
+		assertThat(identifierIds, hasItems(1, 3));
 	}
 
 	@Test
@@ -59,7 +60,7 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 				.collect(Collectors.toList());
 
 		Assert.assertEquals(2, identifiers.size());
-		Assert.assertThat(identifierIds, hasItems(3, 4));
+		assertThat(identifierIds, hasItems(3, 4));
 	}
 
 }
