@@ -106,6 +106,7 @@
 			SELECT setval('hl7_source_hl7_source_id_seq', (SELECT MAX(hl7_source_id) FROM hl7_source)+1);
 			SELECT setval('location_location_id_seq', (SELECT MAX(location_id) FROM location)+1);
 			SELECT setval('order_type_order_type_id_seq', (SELECT MAX(order_type_id) FROM order_type)+1);
+			SELECT setval('patient_identifier_type_patient_identifier_type_id_seq', (SELECT MAX(patient_identifier_type_id) FROM patient_identifier_type)+1);
 		</sql>
 	</changeSet> 
 	
