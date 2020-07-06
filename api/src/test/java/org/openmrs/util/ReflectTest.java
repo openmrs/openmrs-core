@@ -9,6 +9,8 @@
  */
 package org.openmrs.util;
 
+import static org.junit.Assert.assertThrows;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -114,9 +116,9 @@ public class ReflectTest {
 	/**
 	 * @see Reflect#Reflect(Class)
 	 */
-	@Test(expected = NullPointerException.class)
+	@Test
 	public void Reflect_shouldThrowExceptionWhenNullIsPassed() {
-		new Reflect(null);
+		assertThrows(NullPointerException.class, () -> new Reflect(null));
 	}
 	
 	/**

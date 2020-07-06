@@ -9,6 +9,8 @@
  */
 package org.openmrs.util;
 
+import static org.junit.Assert.assertThrows;
+
 import java.util.List;
 
 import org.junit.Assert;
@@ -57,7 +59,7 @@ public class GraphTest {
 	 * @throws CycleException 
 	 * @see Graph#topologicalSort()
 	 */
-	@Test(expected = CycleException.class)
+	@Test
 	public void topologicalSort_shouldThrowCycleException() throws CycleException {
 		
 		Graph<String> graph = new Graph<>();
@@ -79,7 +81,7 @@ public class GraphTest {
 		graph.addEdge(graph.new Edge(
 		                             "D", "A"));
 		
-		graph.topologicalSort();
+		assertThrows(CycleException.class, () -> graph.topologicalSort());
 	}
 	
 }
