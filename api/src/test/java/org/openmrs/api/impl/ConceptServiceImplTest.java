@@ -9,11 +9,14 @@
  */
 package org.openmrs.api.impl;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
@@ -23,9 +26,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
@@ -53,8 +54,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	protected ConceptService conceptService = null;
 	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	
 	/**
 	 * Run this before each unit test in this class. The "@Before" method in
@@ -362,8 +361,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	@Test
 	public void retireConcept_shouldFailIfNoReasonIsGiven() {
 		Concept concept = conceptService.getConcept(3);
-		expectedException.expect(IllegalArgumentException.class);
-		conceptService.retireConcept(concept, "");
+		assertThrows(IllegalArgumentException.class, () -> conceptService.retireConcept(concept, ""));
 	}
 	
 	/**
@@ -624,9 +622,8 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getDrugsByIngredient_shouldRaiseExceptionIfNoConceptIsGiven() {
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("ingredient is required");
-		conceptService.getDrugsByIngredient(null);
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> conceptService.getDrugsByIngredient(null));
+		assertThat(exception.getMessage(), is("ingredient is required"));
 	}
 	
 	/**
@@ -798,9 +795,8 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	public void purgeConceptReferenceTerm_shouldFailIfGivenConceptReferenceTermIsInUse() {
 		ConceptReferenceTerm refTerm = conceptService.getConceptReferenceTerm(1);
 		assertNotNull(refTerm);
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage("Reference term is in use");
-		conceptService.purgeConceptReferenceTerm(refTerm);
+		APIException exception = assertThrows(APIException.class, () -> conceptService.purgeConceptReferenceTerm(refTerm));
+		assertThat(exception.getMessage(), is("Reference term is in use"));
 	}
 	
 	/**
@@ -835,8 +831,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	public void mapConceptProposalToConcept_shouldThrowAPIExceptionWhenMappingToNullConcept() {
 		ConceptProposal cp = conceptService.getConceptProposal(2);
 		Locale locale = new Locale("en", "GB");
-		expectedException.expect(APIException.class);
-		conceptService.mapConceptProposalToConcept(cp, null, locale);
+		assertThrows(APIException.class, () -> conceptService.mapConceptProposalToConcept(cp, null, locale));
 	}
 	
 	/**
@@ -882,9 +877,9 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	/**
 	 * @see ConceptServiceImpl#saveConceptProposal(ConceptProposal)
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void saveConceptProposal_shouldFailGivenNull() {
-		conceptService.saveConceptProposal(null);
+		assertThrows(IllegalArgumentException.class, () -> conceptService.saveConceptProposal(null));
 	}
 
 	/**

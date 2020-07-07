@@ -12,6 +12,7 @@ package org.openmrs.api.impl;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -189,7 +190,7 @@ public class PatientServiceImplTest extends BaseContextMockTest {
 
 	}
 
-	@Test(expected = InsufficientIdentifiersException.class)
+	@Test
 	public void checkPatientIdentifiers_shouldThrowInsufficientIdentifiersErrorGivenPatientHasNoActiveIdentifiers()
 		throws Exception {
 		// given
@@ -198,7 +199,7 @@ public class PatientServiceImplTest extends BaseContextMockTest {
 		patient.addIdentifier(createVoidedPatientIdentifier());
 
 		// when
-		patientService.checkPatientIdentifiers(patient);
+		assertThrows(InsufficientIdentifiersException.class, () -> patientService.checkPatientIdentifiers(patient));
 
 		// this patient only has a voided identifier, so saving is not allowed > exception
 	}
@@ -216,14 +217,14 @@ public class PatientServiceImplTest extends BaseContextMockTest {
 		// no exception
 	}
 
-	@Test(expected = APIException.class)
+	@Test
 	public void getDuplicatePatientsByAttributes_shouldThrowErrorGivenEmptyAttributes() throws Exception {
-		patientService.getDuplicatePatientsByAttributes(Collections.emptyList());
+		assertThrows(APIException.class, () -> patientService.getDuplicatePatientsByAttributes(Collections.emptyList()));
 	}
 
-	@Test(expected = APIException.class)
+	@Test
 	public void getDuplicatePatientsByAttributes_shouldThrowErrorGivenNoAttributes() throws Exception {
-		patientService.getDuplicatePatientsByAttributes(null);
+		assertThrows(APIException.class, () -> patientService.getDuplicatePatientsByAttributes(null));
 	}
 
 	@Test
@@ -271,19 +272,19 @@ public class PatientServiceImplTest extends BaseContextMockTest {
 		assertEquals(0, actualIdentifierTypes.size());
 	}
 
-	@Test(expected = APIException.class)
+	@Test
 	public void processDeath_shouldThrowAPIExceptionIfPatientIsNull() throws Exception {
-		patientService.processDeath(null, new Date(), new Concept(), "unknown");
+		assertThrows(APIException.class, () -> patientService.processDeath(null, new Date(), new Concept(), "unknown"));
 	}
 
-	@Test(expected = APIException.class)
+	@Test
 	public void processDeath_shouldThrowAPIExceptionIfDateDiedIsNull() throws Exception {
-		patientService.processDeath(new Patient(), null, new Concept(), "unknown");
+		assertThrows(APIException.class, () -> patientService.processDeath(new Patient(), null, new Concept(), "unknown"));
 	}
 
-	@Test(expected = APIException.class)
+	@Test
 	public void processDeath_shouldThrowAPIExceptionIfCauseOfDeathIsNull() throws Exception {
-		patientService.processDeath(new Patient(), new Date(), null, "unknown");
+		assertThrows(APIException.class, () -> patientService.processDeath(new Patient(), new Date(), null, "unknown"));
 	}
 
 	@Test
