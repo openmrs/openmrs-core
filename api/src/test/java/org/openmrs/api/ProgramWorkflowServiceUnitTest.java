@@ -9,14 +9,16 @@
  */
 package org.openmrs.api;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 import org.openmrs.Concept;
 import org.openmrs.Patient;
@@ -38,8 +40,6 @@ public class ProgramWorkflowServiceUnitTest {
 	
 	private ProgramWorkflowService pws;
 	
-	@Rule
-	public final ExpectedException exception = ExpectedException.none();
 	
 	@Before
 	public void setup() {
@@ -82,35 +82,27 @@ public class ProgramWorkflowServiceUnitTest {
 	@Test
 	public void saveProgram_shouldFailIfProgramConceptIsNull() {
 		
-		exception.expect(APIException.class);
-		exception.expectMessage("Program concept is required");
-		
 		Program program1 = new Program(1);
 		
-		pws.saveProgram(program1);
+		APIException exception = assertThrows(APIException.class, () -> pws.saveProgram(program1));
+		assertThat(exception.getMessage(), is("Program concept is required"));
 	}
 	
 	@Test
 	public void saveProgram_shouldFailIfProgramWorkFlowConceptIsNull() {
-		
-		exception.expect(APIException.class);
-		exception.expectMessage("ProgramWorkflow concept is required");
 		
 		Program program = new Program();
 		program.setName("TEST PROGRAM");
 		program.setDescription("TEST PROGRAM DESCRIPTION");
 		program.setConcept(new Concept(1));
 		program.addWorkflow(new ProgramWorkflow());
-		
-		pws.saveProgram(program);
+		APIException exception = assertThrows(APIException.class, () -> pws.saveProgram(program));
+		assertThat(exception.getMessage(), is("ProgramWorkflow concept is required"));
 	}
 	
 	@Test
 	public void saveProgram_shouldFailIfProgramWorkFlowStateConceptIsNull() {
 		
-		exception.expect(APIException.class);
-		exception.expectMessage("ProgramWorkflowState concept, initial, terminal are required");
-		
 		Program program = new Program();
 		program.setName("TEST PROGRAM");
 		program.setDescription("TEST PROGRAM DESCRIPTION");
@@ -125,16 +117,13 @@ public class ProgramWorkflowServiceUnitTest {
 		
 		workflow.addState(state1);
 		program.addWorkflow(workflow);
-		
-		pws.saveProgram(program);
+		APIException exception = assertThrows(APIException.class, () -> pws.saveProgram(program));
+		assertThat(exception.getMessage(), is("ProgramWorkflowState concept, initial, terminal are required"));
 	}
 	
 	@Test
 	public void saveProgram_shouldFailIfProgramWorkFlowStateInitialIsNull() {
 		
-		exception.expect(APIException.class);
-		exception.expectMessage("ProgramWorkflowState concept, initial, terminal are required");
-		
 		Program program = new Program();
 		program.setName("TEST PROGRAM");
 		program.setDescription("TEST PROGRAM DESCRIPTION");
@@ -149,15 +138,13 @@ public class ProgramWorkflowServiceUnitTest {
 		
 		workflow.addState(state1);
 		program.addWorkflow(workflow);
-		
-		pws.saveProgram(program);
+		APIException exception = assertThrows(APIException.class, () ->  pws.saveProgram(program));
+		assertThat(exception.getMessage(), is("ProgramWorkflowState concept, initial, terminal are required"));
 	}
 	
 	@Test
 	public void saveProgram_shouldFailIfProgramWorkFlowStateTerminalIsNull() {
 		
-		exception.expect(APIException.class);
-		exception.expectMessage("ProgramWorkflowState concept, initial, terminal are required");
 		
 		Program program = new Program();
 		program.setName("TEST PROGRAM");
@@ -173,57 +160,45 @@ public class ProgramWorkflowServiceUnitTest {
 		
 		workflow.addState(state1);
 		program.addWorkflow(workflow);
-		
-		pws.saveProgram(program);
+		APIException exception = assertThrows(APIException.class, () -> pws.saveProgram(program));
+		assertThat(exception.getMessage(), is("ProgramWorkflowState concept, initial, terminal are required"));
 	}
 	
 	@Test
 	public void savePatientProgram_shouldFailForNullPatient() {
 		
-		exception.expect(APIException.class);
-		exception.expectMessage("PatientProgram requires a Patient and a Program");
-		
 		PatientProgram patientProgram = new PatientProgram(1);
 		patientProgram.setProgram(new Program(1));
-		
-		pws.savePatientProgram(patientProgram);
+		APIException exception = assertThrows(APIException.class, () -> pws.savePatientProgram(patientProgram));
+		assertThat(exception.getMessage(), is("PatientProgram requires a Patient and a Program"));
 	}
 	
 	@Test
 	public void savePatientProgram_shouldFailForNullProgram() {
 		
-		exception.expect(APIException.class);
-		exception.expectMessage("PatientProgram requires a Patient and a Program");
-		
 		PatientProgram patientProgram = new PatientProgram(1);
 		patientProgram.setPatient(new Patient(1));
-		
-		pws.savePatientProgram(patientProgram);
+		APIException exception = assertThrows(APIException.class, () -> pws.savePatientProgram(patientProgram));
+		assertThat(exception.getMessage(), is("PatientProgram requires a Patient and a Program"));
 	}
 	
 	@Test
 	public void purgePatientProgram_shouldFailGivenNonEmptyStatesAndTrueCascade() {
 		
-		exception.expect(APIException.class);
-		exception.expectMessage("Cascade purging of PatientPrograms is not implemented yet");
-		
 		PatientProgram patientProgram = new PatientProgram();
 		PatientState patientState = new PatientState();
 		patientProgram.getStates().add(patientState);
-		
-		pws.purgePatientProgram(patientProgram, true);
+		APIException exception = assertThrows(APIException.class, () -> pws.purgePatientProgram(patientProgram, true));
+		assertThat(exception.getMessage(), is("Cascade purging of PatientPrograms is not implemented yet"));
 	}
 	
 	@Test
 	public void purgeProgram_shouldFailGivenNonEmptyWorkFlowsAndTrueCascade() {
 		
-		exception.expect(APIException.class);
-		exception.expectMessage("Cascade purging of Programs is not implemented yet");
-		
 		Program program = new Program(1);
 		ProgramWorkflow workflow = new ProgramWorkflow(1);
 		program.addWorkflow(workflow);
-		
-		pws.purgeProgram(program, true);
+		APIException exception = assertThrows(APIException.class, () -> pws.purgeProgram(program, true));
+		assertThat(exception.getMessage(), is("Cascade purging of Programs is not implemented yet"));
 	}
 }

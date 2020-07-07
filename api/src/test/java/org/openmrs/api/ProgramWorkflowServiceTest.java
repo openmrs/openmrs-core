@@ -14,6 +14,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -26,9 +27,7 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
@@ -46,7 +45,6 @@ import org.openmrs.api.db.ProgramWorkflowDAO;
 import org.openmrs.api.impl.ProgramWorkflowServiceImpl;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.TestUtil;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -76,8 +74,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	
 	protected ConceptService cs = null;
 
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	
 	@Before
 	public void runBeforeEachTest() {
@@ -832,14 +828,13 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void savePatientProgram_shouldTestThrowPatientStateRequiresException() {
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage("'PatientProgram(id=1, patient=Patient#2, program=Program(id=1, concept=Concept #1738, " +
-											"workflows=[ProgramWorkflow(id=1), ProgramWorkflow(id=2)]))' failed to validate with reason: states: State is required for a patient state");
 		PatientProgram patientProgram = pws.getPatientProgram(1);
 		for (PatientState state : patientProgram.getStates()) {
 			state.setState(null);
 		}
-		pws.savePatientProgram(patientProgram);
+		APIException exception = assertThrows(APIException.class, () -> pws.savePatientProgram(patientProgram));
+		assertThat(exception.getMessage(), is("'PatientProgram(id=1, patient=Patient#2, program=Program(id=1, concept=Concept #1738, " +
+			"workflows=[ProgramWorkflow(id=1), ProgramWorkflow(id=2)]))' failed to validate with reason: states: State is required for a patient state"));
 	}
 	
 	@Test
@@ -856,16 +851,15 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void savePatientProgram_shouldThrowPatientProgramAlreadyAssignedException() {
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage("This PatientProgram contains a ProgramWorkflowState whose parent is " +
-			"already assigned to PatientProgram(id=2, patient=Patient#2, program=Program(id=2, concept=Concept #10, " +
-			"workflows=[ProgramWorkflow(id=3)]))");
 		PatientProgram patientProgram = pws.getPatientProgram(1);
 		PatientProgram patientProgram1 = pws.getPatientProgram(2);
 		for (PatientState state : patientProgram.getStates()) {
 			state.setPatientProgram(patientProgram1);
 		}
-		pws.savePatientProgram(patientProgram);
+		APIException exception = assertThrows(APIException.class, () -> pws.savePatientProgram(patientProgram));
+		assertThat(exception.getMessage(), is("This PatientProgram contains a ProgramWorkflowState whose parent is " +
+			"already assigned to PatientProgram(id=2, patient=Patient#2, program=Program(id=2, concept=Concept #10, " +
+			"workflows=[ProgramWorkflow(id=3)]))"));
 	}
 	
 	@Test
@@ -932,12 +926,11 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void saveConceptStateConversion_shouldThrowConceptStateConversionRequire() {
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage("'ConceptStateConversion: Concept[null] results in State [null] for workflow [null]' failed to validate with reason: " +
-			"concept: Invalid concept, programWorkflow: Invalid Programme Workflow, programWorkflowState: Invalid Programme Workflow State");
 		ConceptStateConversion conceptStateConversion = new ConceptStateConversion();
 		conceptStateConversion.setConcept(null);
-		pws.saveConceptStateConversion(conceptStateConversion);
+		APIException exception = assertThrows(APIException.class, () -> pws.saveConceptStateConversion(conceptStateConversion));
+		assertThat(exception.getMessage(), is("'ConceptStateConversion: Concept[null] results in State [null] for workflow [null]' failed to validate with reason: " +
+			"concept: Invalid concept, programWorkflow: Invalid Programme Workflow, programWorkflowState: Invalid Programme Workflow State"));
 	}
 	
 	@Test
@@ -1020,29 +1013,26 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void triggerStateConversion_shouldThrowConvertStateInvalidPatient(){
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage("Attempting to convert state of an invalid patient");
 		Concept trigger = Context.getConceptService().getAllConcepts().get(0);
 		Date dateConverted = new Date();
-		pwsi.triggerStateConversion(null, trigger, dateConverted);
+		APIException exception = assertThrows(APIException.class, () -> pwsi.triggerStateConversion(null, trigger, dateConverted));
+		assertThat(exception.getMessage(), is("Attempting to convert state of an invalid patient"));
 	}
 
 	@Test
 	public void triggerStateConversion_shouldThrowConvertStatePatientWithoutValidTrigger(){
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage("Attempting to convert state for a patient without a valid trigger concept");
 		Patient patient = Context.getPatientService().getAllPatients().get(0);
 		Date dateConverted = new Date();
-		pwsi.triggerStateConversion(patient, null, dateConverted);
+		APIException exception = assertThrows(APIException.class, () -> pwsi.triggerStateConversion(patient, null, dateConverted));
+		assertThat(exception.getMessage(), is("Attempting to convert state for a patient without a valid trigger concept"));
 	}
 
 	@Test
 	public void triggerStateConversion_shouldThrowConvertStateInvalidDate(){
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage("Invalid date for converting patient state");
 		Patient patient = Context.getPatientService().getAllPatients().get(0);
 		Concept trigger = Context.getConceptService().getAllConcepts().get(0);
-		pwsi.triggerStateConversion(patient, trigger, null);
+		APIException exception = assertThrows(APIException.class, () -> pwsi.triggerStateConversion(patient, trigger, null));
+		assertThat(exception.getMessage(), is("Invalid date for converting patient state"));
 	}
 	
 	@Test
