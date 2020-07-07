@@ -21,6 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.openmrs.test.OpenmrsMatchers.hasConcept;
 import static org.openmrs.test.OpenmrsMatchers.hasId;
@@ -43,9 +44,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptAttributeType;
@@ -101,8 +100,6 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 
 	protected static final String CONCEPT_ATTRIBUTE_TYPE_XML = "org/openmrs/api/include/ConceptServiceTest-conceptAttributeType.xml";
 
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	
 	/**
 	 * Run this before each unit test in this class. The "@Before" method in
@@ -616,9 +613,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		
 	}
 	
-	@Test(expected = APIException.class)
+	@Test
 	public void getConceptByMapping_shouldThrowExceptionIfTwoConceptsHaveSameMapping() {
-		conceptService.getConceptByMapping("127689", "Some Standardized Terminology");
+		assertThrows(APIException.class, () -> conceptService.getConceptByMapping("127689", "Some Standardized Terminology"));
 	}
 	
 	/**
@@ -1143,9 +1140,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getConceptSourceByUniqueId_shouldFailIfGivenNull() {
 
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("uniqueId is required");
-		conceptService.getConceptSourceByUniqueId(null);
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> conceptService.getConceptSourceByUniqueId(null));
+		assertThat(exception.getMessage(), is("uniqueId is required"));
 	}
 	
 	/**
@@ -1185,9 +1181,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getConceptSourceByHL7Code_shouldFailIfGivenNull() {
 
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("hl7Code is required");
-		conceptService.getConceptSourceByHL7Code(null);
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> conceptService.getConceptSourceByHL7Code(null));
+		assertThat(exception.getMessage(), is("hl7Code is required"));
 	}
 	
 	@Test
@@ -1218,13 +1213,13 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		
 	}
 	
-	@Test(expected = Exception.class)
+	@Test
 	public void saveConceptSource_shouldNotSaveAConceptSourceIfVoidedIsNull() {
 		ConceptSource source = new ConceptSource();
 		source.setRetired(null);
 		assertNull(source.getRetired());
 		
-		conceptService.saveConceptSource(source);
+		assertThrows(Exception.class, () -> conceptService.saveConceptSource(source));
 		
 	}
 	
@@ -1239,7 +1234,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		assertEquals(savedNameTag.getId(), nameTag.getId());
 	}
 	
-	@Test(expected = Exception.class)
+	@Test
 	public void saveConceptNameTag_shouldNotSaveAConceptNameTagIfTagExists() {
 		String tag = "a new tag";
 		
@@ -1251,13 +1246,12 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		ConceptNameTag secondNameTag = new ConceptNameTag();
 		secondNameTag.setTag(tag);
 		
-		ConceptNameTag existingConceptNameTag = conceptService.saveConceptNameTag(secondNameTag);
-		
+		assertThrows(Exception.class, () -> conceptService.saveConceptNameTag(secondNameTag));
 		assertNull(secondNameTag.getId());
-		assertEquals(existingConceptNameTag.getId(), nameTag.getId());
+		
 	}
 	
-	@Test(expected = ConceptInUseException.class)
+	@Test
 	public void saveConcept_shouldNotUpdateConceptDataTypeIfConceptIsAttachedToAnObservation() {
 		executeDataSet(INITIAL_CONCEPTS_XML);
 		
@@ -1272,7 +1266,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		
 		ConceptDatatype newDatatype = conceptService.getConceptDatatypeByName("Text");
 		concept.setDatatype(newDatatype);
-		conceptService.saveConcept(concept);
+		assertThrows(ConceptInUseException.class, () -> conceptService.saveConcept(concept));
 	}
 	
 	@Test
@@ -1337,10 +1331,10 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see ConceptService#getConcept(Integer)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void changeConceptFromBooleanToCoded_shouldFailIfTheDatatypeOfTheConceptIsNotBoolean() {
 		Concept concept = conceptService.getConcept(5497);
-		conceptService.convertBooleanConceptToCoded(concept);
+		assertThrows(APIException.class, () -> conceptService.convertBooleanConceptToCoded(concept));
 	}
 	
 	/**
@@ -1459,7 +1453,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see ConceptService#purgeConcept(Concept)
 	 */
-	@Test(expected = ConceptNameInUseException.class)
+	@Test
 	public void purgeConcept_shouldFailIfAnyOfTheConceptNamesOfTheConceptIsBeingUsedByAnObs() {
 		Obs o = new Obs();
 		o.setConcept(Context.getConceptService().getConcept(3));
@@ -1476,7 +1470,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Concept concept = conceptService.getConceptByName("cd4 count");
 		//make sure the name concept name exists
 		Assert.assertNotNull(concept);
-		conceptService.purgeConcept(concept);
+		assertThrows(ConceptNameInUseException.class, () -> conceptService.purgeConcept(concept));
 	}
 	
 	/**
@@ -1587,12 +1581,12 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see ConceptService#saveConceptStopWord(ConceptStopWord)
 	 */
-	@Test(expected = ConceptStopWordException.class)
+	@Test
 	public void saveConceptStopWord_shouldFailIfADuplicateConceptStopWordInALocaleIsAdded() {
 		ConceptStopWord conceptStopWord = new ConceptStopWord("A");
 		try {
 			conceptService.saveConceptStopWord(conceptStopWord);
-			conceptService.saveConceptStopWord(conceptStopWord);
+			assertThrows(ConceptStopWordException.class, () -> conceptService.saveConceptStopWord(conceptStopWord));
 		}
 		catch (ConceptStopWordException e) {
 			assertEquals("ConceptStopWord.duplicated", e.getMessage());
@@ -2849,7 +2843,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see ConceptService#mapConceptProposalToConcept(ConceptProposal,Concept,Locale)
 	 */
-	@Test(expected = DuplicateConceptNameException.class)
+	@Test
 	public void mapConceptProposalToConcept_shouldFailWhenAddingADuplicateSyonymn() {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-proposals.xml");
 		ConceptService cs = Context.getConceptService();
@@ -2861,7 +2855,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		mappedConcept.addDescription(new ConceptDescription("some description",locale));
 		Assert.assertTrue(mappedConcept.hasName(cp.getFinalText(), locale));
 		
-		cs.mapConceptProposalToConcept(cp, mappedConcept, locale);
+		assertThrows(DuplicateConceptNameException.class, () -> cs.mapConceptProposalToConcept(cp, mappedConcept, locale));
 	}
 	
 	/**
@@ -2880,12 +2874,12 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see ConceptService#saveConceptNameTag(Object,Errors)
 	 */
-	@Test(expected = Exception.class)
+	@Test
 	public void saveConceptNameTag_shouldNotSaveATagIfItIsInvalid() {
 		ConceptNameTag cnt = new ConceptNameTag();
 		ConceptService cs = Context.getConceptService();
 		
-		cs.saveConceptNameTag(cnt);
+		assertThrows(Exception.class, () -> cs.saveConceptNameTag(cnt));
 	}
 	
 	/**
@@ -3038,9 +3032,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see ConceptService#getDrugs(String, java.util.Locale, boolean, boolean)
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void getDrugs_shouldRejectANullSearchPhrase() {
-		conceptService.getDrugs(null, null, false, false);
+		assertThrows(IllegalArgumentException.class, () -> conceptService.getDrugs(null, null, false, false));
 	}
 	
 	/**
@@ -3149,9 +3143,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see ConceptService#getDrugsByMapping(String, org.openmrs.ConceptSource,
 	 *      java.util.Collection, boolean)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void getDrugsByMapping_shouldFailIfNoCodeAndConceptSourceAndWithAnyOfTheseTypesAreProvided() {
-		conceptService.getDrugByMapping(null, null, null);
+		assertThrows(APIException.class, () -> conceptService.getDrugByMapping(null, null, null));
 	}
 	
 	/**
@@ -3159,10 +3153,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 *      java.util.Collection, boolean)
 	 */
 	@Test
-	public void getDrugsByMapping_shouldFailIfSourceIsNull() {
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage(Context.getMessageSourceService().getMessage("ConceptSource.is.required"));
-		conceptService.getDrugsByMapping("random", null, null, false);
+	public void getDrugsByMapping_shouldFailIfSourceIsNull() { 
+		APIException exception = assertThrows(APIException.class, () -> conceptService.getDrugsByMapping("random", null, null, false));
+		assertThat(exception.getMessage(), is(Context.getMessageSourceService().getMessage("ConceptSource.is.required")));
 	}
 	
 	/**
@@ -3196,11 +3189,11 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see ConceptService#getDrugByMapping(String, org.openmrs.ConceptSource, java.util.Collection
 	 */
-	@Test(expected = DAOException.class)
+	@Test
 	public void getDrugByMapping_shouldFailIfMultipleDrugsAreFoundMatchingTheBestMapType() {
 		executeDataSet(GET_DRUG_MAPPINGS);
 		ConceptSource source = conceptService.getConceptSource(1);
-		conceptService.getDrugByMapping("CD41003", source, Collections.singleton(conceptService.getConceptMapType(2)));
+		assertThrows(DAOException.class, () -> conceptService.getDrugByMapping("CD41003", source, Collections.singleton(conceptService.getConceptMapType(2))));
 	}
 	
 	/**
@@ -3217,9 +3210,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see ConceptService#getDrugByMapping(String, org.openmrs.ConceptSource, java.util.Collection
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void getDrugByMapping_shouldFailIfNoCodeAndConceptSourceAndWithAnyOfTheseTypesAreProvided() {
-		conceptService.getDrugByMapping(null, null, Collections.EMPTY_LIST);
+		assertThrows(APIException.class, () -> conceptService.getDrugByMapping(null, null, Collections.EMPTY_LIST));
 	}
 	
 	/**
@@ -3238,9 +3231,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getDrugByMapping_shouldFailIfSourceIsNull() {
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage(Context.getMessageSourceService().getMessage("ConceptSource.is.required"));
-		conceptService.getDrugByMapping("random", null, null);
+		APIException exception = assertThrows(APIException.class, () -> conceptService.getDrugByMapping("random", null, null));
+		assertThat(exception.getMessage(), is(Context.getMessageSourceService().getMessage("ConceptSource.is.required")));
 	}
 	
 	/**

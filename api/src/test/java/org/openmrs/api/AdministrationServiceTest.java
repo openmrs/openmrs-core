@@ -18,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
@@ -30,9 +31,7 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 import org.openmrs.GlobalProperty;
 import org.openmrs.ImplementationId;
@@ -64,9 +63,6 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	private HttpClient implementationHttpClient;
 
 	private CacheManager cacheManager;
-	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	
 	@Before
 	public void runBeforeEachTest() {
@@ -234,10 +230,10 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		assertEquals("new-value", newValue);
 	}
 	
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void updateGlobalProperty_shouldFailIfGlobalPropertyBeingUpdatedDoesNotAlreadyExist() {
 		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
-		adminService.updateGlobalProperty("a_invalid_gp_key", "asdfsadfsafd");
+		assertThrows(IllegalStateException.class, () -> adminService.updateGlobalProperty("a_invalid_gp_key", "asdfsadfsafd"));
 	}
 	
 	@Test
@@ -443,11 +439,9 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		assertThat("localeList contains default locale but should not for this test case", localeList,
 			not(containsString(LocaleUtility.getDefaultLocale().toString())));
 
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage("can not be removed from allowed locales list because it is the default locale");
 		
-		adminService.saveGlobalProperty(
-			new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, localeList));
+		APIException exception = assertThrows(APIException.class, () -> adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, localeList)));
+		assertThat(exception.getMessage(), containsString("can not be removed from allowed locales list because it is the default locale"));
 	}
 
 	@Test
@@ -455,11 +449,9 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 
 		Locale defaultLocale = new Locale("fr");
 
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage("is not in allowed locales list");
 
-		adminService.saveGlobalProperty(
-			new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE, defaultLocale.toString()));
+		APIException exception = assertThrows(APIException.class, () -> adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE, defaultLocale.toString())));
+		assertThat(exception.getMessage(), containsString("is not in allowed locales list"));
 	}
 	
 	@Test
@@ -633,10 +625,10 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		assertFalse("pl", searchLocales.contains(new Locale("pl")));
 	}
 	
-	@Test(expected = APIException.class)
+	@Test
 	public void validate_shouldThrowThrowAPIExceptionIfTheInputIsNull() {
 		BindException errors = new BindException(new Object(), "");
-		adminService.validate(null, errors);
+		assertThrows(APIException.class, () -> adminService.validate(null, errors));
 	}
 	
 	@Test

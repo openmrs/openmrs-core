@@ -12,6 +12,7 @@ package org.openmrs.api;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -64,10 +65,10 @@ public class AdministrationServiceUnitTest {
 		verify(adminDAO, never()).executeSQL(anyString(), anyBoolean());
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void getGlobalPropertyValue_shouldFailIfDefaultValueIsNull() {
 
-		adminService.getGlobalPropertyValue("valid.double", null);
+		assertThrows(IllegalArgumentException.class, () -> adminService.getGlobalPropertyValue("valid.double", null));
 	}
 
 	@Test
