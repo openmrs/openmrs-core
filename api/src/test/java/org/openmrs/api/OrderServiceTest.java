@@ -11,6 +11,7 @@ package org.openmrs.api;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
@@ -20,6 +21,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.openmrs.test.OpenmrsMatchers.hasId;
 import static org.openmrs.test.TestUtil.containsId;
@@ -49,9 +51,7 @@ import org.hibernate.cfg.Configuration;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.openmrs.Allergy;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
@@ -121,8 +121,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	
 	private MessageSourceService mss;
 	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	
 	@Entity
 	public class SomeTestOrder extends TestOrder {
@@ -208,9 +206,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Order order = new Order();
 		order.setPatient(null);
 		order.setOrderer(null);
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage("failed to validate with reason:");
-		orderService.saveOrder(order, null);
+		APIException exception = assertThrows(APIException.class, () -> orderService.saveOrder(order, null));
+		assertThat(exception.getMessage(), containsString("failed to validate with reason:"));
 	}
 	
 	/**
@@ -370,9 +367,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getOrderHistoryByConcept_shouldRejectANullConcept() {
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("patient and concept are required");
-		orderService.getOrderHistoryByConcept(new Patient(), null);
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> orderService.getOrderHistoryByConcept(new Patient(), null));
+		assertThat(exception.getMessage(), is("patient and concept are required"));
 	}
 	
 	/**
@@ -380,9 +376,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getOrderHistoryByConcept_shouldRejectANullPatient() {
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("patient and concept are required");
-		orderService.getOrderHistoryByConcept(null, new Concept());
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> orderService.getOrderHistoryByConcept(null, new Concept()));
+		assertThat(exception.getMessage(), is("patient and concept are required")) ;
 	}
 	
 	/**
@@ -513,10 +508,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 *      org.openmrs.CareSetting, java.util.Date)
 	 */
 	@Test
-	public void getActiveOrders_shouldFailIfPatientIsNull() {
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("Patient is required when fetching active orders");
-		orderService.getActiveOrders(null, null, orderService.getCareSetting(1), null);
+	public void getActiveOrders_shouldFailIfPatientIsNull() { 
+		IllegalArgumentException exception  = assertThrows(IllegalArgumentException.class, () -> orderService.getActiveOrders(null, null, orderService.getCareSetting(1), null));
+		assertThat(exception.getMessage(), is("Patient is required when fetching active orders"));
 	}
 	
 	/**
@@ -759,9 +753,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Order discontinuationOrder = orderService.getOrder(26);
 		assertEquals(Action.DISCONTINUE, discontinuationOrder.getAction());
 		Encounter encounter = encounterService.getEncounter(3);
-		expectedException.expect(CannotStopDiscontinuationOrderException.class);
-		expectedException.expectMessage(mss.getMessage("Order.action.cannot.discontinue"));
-		orderService.discontinueOrder(discontinuationOrder, "Test if I can discontinue this", null, null, encounter);
+		CannotStopDiscontinuationOrderException exception = assertThrows(CannotStopDiscontinuationOrderException.class, () -> orderService.discontinueOrder(discontinuationOrder, "Test if I can discontinue this", null, null, encounter));
+		assertThat(exception.getMessage(), is(mss.getMessage("Order.action.cannot.discontinue")));
 	}
 	
 	/**
@@ -775,9 +768,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Order discontinuationOrder = orderService.getOrder(26);
 		assertEquals(Action.DISCONTINUE, discontinuationOrder.getAction());
 		Encounter encounter = encounterService.getEncounter(3);
-		expectedException.expect(CannotStopDiscontinuationOrderException.class);
-		expectedException.expectMessage(mss.getMessage("Order.action.cannot.discontinue"));
-		orderService.discontinueOrder(discontinuationOrder, (Concept) null, null, null, encounter);
+		CannotStopDiscontinuationOrderException exception = assertThrows(CannotStopDiscontinuationOrderException.class, () -> orderService.discontinueOrder(discontinuationOrder, (Concept) null, null, null, encounter));
+		assertThat(exception.getMessage(), is(mss.getMessage("Order.action.cannot.discontinue")));
 	}
 	
 	/**
@@ -790,9 +782,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertFalse(discontinuationOrder.isActive());
 		assertNotNull(discontinuationOrder.getDateStopped());
 		Encounter encounter = encounterService.getEncounter(3);
-		expectedException.expect(CannotStopInactiveOrderException.class);
-		expectedException.expectMessage(mss.getMessage("Order.cannot.discontinue.inactive"));
-		orderService.discontinueOrder(discontinuationOrder, "some reason", null, null, encounter);
+		CannotStopInactiveOrderException exception = assertThrows(CannotStopInactiveOrderException.class, () -> orderService.discontinueOrder(discontinuationOrder, "some reason", null, null, encounter));
+		assertThat(exception.getMessage(), is(mss.getMessage("Order.cannot.discontinue.inactive")));
 	}
 	
 	/**
@@ -805,9 +796,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertFalse(discontinuationOrder.isActive());
 		assertNotNull(discontinuationOrder.getDateStopped());
 		Encounter encounter = encounterService.getEncounter(3);
-		expectedException.expect(CannotStopInactiveOrderException.class);
-		expectedException.expectMessage(mss.getMessage("Order.cannot.discontinue.inactive"));
-		orderService.discontinueOrder(discontinuationOrder, (Concept) null, null, null, encounter);
+		CannotStopInactiveOrderException exception = assertThrows(CannotStopInactiveOrderException.class, () -> orderService.discontinueOrder(discontinuationOrder, (Concept) null, null, null, encounter));
+		assertThat(exception.getMessage(), is(mss.getMessage("Order.cannot.discontinue.inactive")));
 	}
 	
 	/**
@@ -898,9 +888,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertFalse(previousOrder.getConcept().equals(newConcept));
 		order.setConcept(newConcept);
 		
-		expectedException.expect(EditedOrderDoesNotMatchPreviousException.class);
-		expectedException.expectMessage("The orderable of the previous order and the new one order don't match");
-		orderService.saveOrder(order, null);
+		EditedOrderDoesNotMatchPreviousException exception = assertThrows(EditedOrderDoesNotMatchPreviousException.class, () -> orderService.saveOrder(order, null));
+		assertThat(exception.getMessage(), is("The orderable of the previous order and the new one order don't match"));
 	}
 	
 	/**
@@ -915,9 +904,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		CareSetting careSetting = orderService.getCareSetting(1);
 		Order orderToDiscontinue = orderService.getActiveOrders(patient, null, careSetting, null).get(0);
 		Encounter encounter = encounterService.getEncounter(3);
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("Discontinue date cannot be in the future");
-		orderService.discontinueOrder(orderToDiscontinue, new Concept(), cal.getTime(), null, encounter);
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> orderService.discontinueOrder(orderToDiscontinue, new Concept(), cal.getTime(), null, encounter));
+		assertThat(exception.getMessage(), is("Discontinue date cannot be in the future"));
 	}
 	
 	/**
@@ -931,9 +919,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Order orderToDiscontinue = orderService.getActiveOrders(Context.getPatientService().getPatient(2), null,
 		    orderService.getCareSetting(1), null).get(0);
 		Encounter encounter = encounterService.getEncounter(3);
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("Discontinue date cannot be in the future");
-		orderService.discontinueOrder(orderToDiscontinue, "Testing", cal.getTime(), null, encounter);
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> orderService.discontinueOrder(orderToDiscontinue, "Testing", cal.getTime(), null, encounter));
+		assertThat(exception.getMessage(), is("Discontinue date cannot be in the future"));
 	}
 	
 	/**
@@ -991,9 +978,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setDrug(discontinuationOrderDrug);
 		order.setOrderReasonNonCoded("Discontinue this");
 		
-		expectedException.expect(EditedOrderDoesNotMatchPreviousException.class);
-		expectedException.expectMessage("The orderable of the previous order and the new one order don't match");
-		orderService.saveOrder(order, null);
+		EditedOrderDoesNotMatchPreviousException exception = assertThrows(EditedOrderDoesNotMatchPreviousException.class, () -> orderService.saveOrder(order, null));
+		assertThat(exception.getMessage(), is("The orderable of the previous order and the new one order don't match"));
 	}
 	
 	/**
@@ -1048,9 +1034,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Order orderToDiscontinue = orderService.getOrder(1);
 		Encounter encounter = encounterService.getEncounter(3);
 		assertNotNull(orderToDiscontinue.getDateStopped());
-		expectedException.expect(CannotStopInactiveOrderException.class);
-		expectedException.expectMessage(mss.getMessage("Order.cannot.discontinue.inactive"));
-		orderService.discontinueOrder(orderToDiscontinue, Context.getConceptService().getConcept(1), null, null, encounter);
+		CannotStopInactiveOrderException exception = assertThrows(CannotStopInactiveOrderException.class, () -> orderService.discontinueOrder(orderToDiscontinue, Context.getConceptService().getConcept(1), null, null, encounter));
+		assertThat(exception.getMessage(), is(mss.getMessage("Order.cannot.discontinue.inactive")));
 	}
 	
 	/**
@@ -1062,9 +1047,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Order orderToDiscontinue = orderService.getOrder(8);
 		Encounter encounter = encounterService.getEncounter(3);
 		assertTrue(orderToDiscontinue.getVoided());
-		expectedException.expect(CannotStopInactiveOrderException.class);
-		expectedException.expectMessage(mss.getMessage("Order.cannot.discontinue.inactive"));
-		orderService.discontinueOrder(orderToDiscontinue, "testing", null, null, encounter);
+		CannotStopInactiveOrderException exception = assertThrows(CannotStopInactiveOrderException.class, () -> orderService.discontinueOrder(orderToDiscontinue, "testing", null, null, encounter));
+		assertThat(exception.getMessage(), is(mss.getMessage("Order.cannot.discontinue.inactive")));
 	}
 	
 	/**
@@ -1077,9 +1061,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Encounter encounter = encounterService.getEncounter(3);
 		assertNotNull(orderToDiscontinue.getAutoExpireDate());
 		assertTrue(orderToDiscontinue.getAutoExpireDate().before(new Date()));
-		expectedException.expect(CannotStopInactiveOrderException.class);
-		expectedException.expectMessage(mss.getMessage("Order.cannot.discontinue.inactive"));
-		orderService.discontinueOrder(orderToDiscontinue, Context.getConceptService().getConcept(1), null, null, encounter);
+		CannotStopInactiveOrderException exception = assertThrows(CannotStopInactiveOrderException.class, () -> orderService.discontinueOrder(orderToDiscontinue, Context.getConceptService().getConcept(1), null, null, encounter));
+		assertThat(exception.getMessage(), is(mss.getMessage("Order.cannot.discontinue.inactive")));
 	}
 	
 	/**
@@ -1088,9 +1071,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void saveOrder_shouldNotAllowEditingAnExistingOrder() {
 		final DrugOrder order = (DrugOrder) orderService.getOrder(5);
-		expectedException.expect(UnchangeableObjectException.class);
-		expectedException.expectMessage("Order.cannot.edit.existing");
-		orderService.saveOrder(order, null);
+		UnchangeableObjectException exception = assertThrows(UnchangeableObjectException.class, () -> orderService.saveOrder(order, null));
+		assertThat(exception.getMessage(), is("Order.cannot.edit.existing"));
 	}
 	
 	/**
@@ -1150,9 +1132,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		revisedOrder.setInstructions("Take after a meal");
 		revisedOrder.setOrderer(providerService.getProvider(1));
 		revisedOrder.setDateActivated(new Date());
-		expectedException.expect(CannotStopInactiveOrderException.class);
-		expectedException.expectMessage(mss.getMessage("Order.cannot.discontinue.inactive"));
-		orderService.saveOrder(revisedOrder, null);
+		CannotStopInactiveOrderException exception = assertThrows(CannotStopInactiveOrderException.class, () -> orderService.saveOrder(revisedOrder, null));
+		assertThat(exception.getMessage(), is(mss.getMessage("Order.cannot.discontinue.inactive")));
 	}
 	
 	/**
@@ -1167,9 +1148,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		revisedOrder.setInstructions("Take after a meal");
 		revisedOrder.setOrderer(providerService.getProvider(1));
 		revisedOrder.setDateActivated(new Date());
-		expectedException.expect(CannotStopInactiveOrderException.class);
-		expectedException.expectMessage(mss.getMessage("Order.cannot.discontinue.inactive"));
-		orderService.saveOrder(revisedOrder, null);
+		CannotStopInactiveOrderException exception = assertThrows(CannotStopInactiveOrderException.class, () -> orderService.saveOrder(revisedOrder, null));
+		assertThat(exception.getMessage(), is(mss.getMessage("Order.cannot.discontinue.inactive")));
 	}
 	
 	/**
@@ -1186,9 +1166,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		revisedOrder.setOrderer(providerService.getProvider(1));
 		revisedOrder.setDateActivated(new Date());
 		revisedOrder.setAutoExpireDate(new Date());
-		expectedException.expect(CannotStopInactiveOrderException.class);
-		expectedException.expectMessage(mss.getMessage("Order.cannot.discontinue.inactive"));
-		orderService.saveOrder(revisedOrder, null);
+		CannotStopInactiveOrderException exception = assertThrows(CannotStopInactiveOrderException.class, () -> orderService.saveOrder(revisedOrder, null));
+		assertThat(exception.getMessage(), is(mss.getMessage("Order.cannot.discontinue.inactive")));
 	}
 	
 	/**
@@ -1205,9 +1184,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		revisedOrder.setOrderer(providerService.getProvider(1));
 		revisedOrder.setDateActivated(new Date());
 		
-		expectedException.expect(MissingRequiredPropertyException.class);
-		expectedException.expectMessage(mss.getMessage("Order.previous.required"));
-		orderService.saveOrder(revisedOrder, null);
+		MissingRequiredPropertyException exception = assertThrows(MissingRequiredPropertyException.class, () -> orderService.saveOrder(revisedOrder, null));
+		assertThat(exception.getMessage(), is(mss.getMessage("Order.previous.required")));
 	}
 	
 	/**
@@ -1454,9 +1432,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getOrderFrequencies_shouldRejectANullSearchPhrase() {
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("searchPhrase is required");
-		orderService.getOrderFrequencies(null, Locale.ENGLISH, false, false);
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> orderService.getOrderFrequencies(null, Locale.ENGLISH, false, false));
+		assertThat(exception.getMessage(), is("searchPhrase is required"));
 	}
 	
 	@Test
@@ -1561,9 +1538,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(orderFrequency);
 		
 		orderFrequency.setFrequencyPerDay(4d);
-		expectedException.expect(CannotUpdateObjectInUseException.class);
-		expectedException.expectMessage("Order.frequency.cannot.edit");
-		orderService.saveOrderFrequency(orderFrequency);
+		CannotUpdateObjectInUseException exception = assertThrows(CannotUpdateObjectInUseException.class, () -> orderService.saveOrderFrequency(orderFrequency));
+		assertThat(exception.getMessage(), is("Order.frequency.cannot.edit"));
 	}
 	
 	/**
@@ -1574,9 +1550,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		OrderFrequency orderFrequency = orderService.getOrderFrequency(1);
 		assertNotNull(orderFrequency);
 		
-		expectedException.expect(CannotDeleteObjectInUseException.class);
-		expectedException.expectMessage(mss.getMessage("Order.frequency.cannot.delete"));
-		orderService.purgeOrderFrequency(orderFrequency);
+		CannotDeleteObjectInUseException exception = assertThrows(CannotDeleteObjectInUseException.class, () -> orderService.purgeOrderFrequency(orderFrequency));
+		assertThat(exception.getMessage(), is(mss.getMessage("Order.frequency.cannot.delete")));
 	}
 	
 	@Test
@@ -1695,9 +1670,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		revision.setEncounter(encounterService.getEncounter(6));
 		revision.setOrderer(providerService.getProvider(1));
 		
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage("Order.cannot.have.more.than.one");
-		orderService.saveOrder(revision, null);
+		APIException exception = assertThrows(APIException.class, () -> orderService.saveOrder(revision, null));
+		assertThat(exception.getMessage(), is("Order.cannot.have.more.than.one"));
 	}
 	
 	/**
@@ -1771,9 +1745,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		drugOrder.setQuantityUnits(duplicateOrder.getQuantityUnits());
 		drugOrder.setNumRefills(duplicateOrder.getNumRefills());
 		
-		expectedException.expect(AmbiguousOrderException.class);
-		expectedException.expectMessage("Order.cannot.have.more.than.one");
-		orderService.saveOrder(drugOrder, null);
+		AmbiguousOrderException exception = assertThrows(AmbiguousOrderException.class, () -> orderService.saveOrder(drugOrder, null));;
+		assertThat(exception.getMessage(), is("Order.cannot.have.more.than.one"));
 	}
 	
 	/**
@@ -1899,9 +1872,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setQuantityUnits(conceptService.getConcept(51));
 		order.setNumRefills(2);
 		
-		expectedException.expect(AmbiguousOrderException.class);
-		expectedException.expectMessage("Order.cannot.have.more.than.one");
-		orderService.saveOrder(order, null);
+		AmbiguousOrderException exception = assertThrows(AmbiguousOrderException.class, () -> orderService.saveOrder(order, null));
+		assertThat(exception.getMessage(), is("Order.cannot.have.more.than.one"));
 	}
 	
 	/**
@@ -2071,9 +2043,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getOrders_shouldFailIfPatientIsNull() {
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("Patient is required");
-		orderService.getOrders(null, null, null, false);
+		IllegalArgumentException exception = assertThrows (IllegalArgumentException.class, () -> orderService.getOrders(null, null, null, false));
+		assertThat(exception.getMessage(), is("Patient is required"));
 	}
 	
 	/**
@@ -2082,9 +2053,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getOrders_shouldFailIfCareSettingIsNull() {
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("CareSetting is required");
-		orderService.getOrders(new Patient(), null, null, false);
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> orderService.getOrders(new Patient(), null, null, false));
+		assertThat(exception.getMessage(), is("CareSetting is required"));
 	}
 	
 	/**
@@ -2433,9 +2403,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getAllOrdersByPatient_shouldFailIfPatientIsNull() {
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("Patient is required");
-		orderService.getAllOrdersByPatient(null);
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> orderService.getAllOrdersByPatient(null));
+		assertThat(exception.getMessage(), is("Patient is required"));
 	}
 	
 	/**
@@ -2475,9 +2444,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setCareSetting(orderService.getCareSetting(1));
 		order.setEncounter(encounterService.getEncounter(3));
 		order.setDateActivated(new Date());
-		expectedException.expect(OrderEntryException.class);
-		expectedException.expectMessage("Order.type.cannot.determine");
-		orderService.saveOrder(order, null);
+		OrderEntryException exception = assertThrows(OrderEntryException.class, () -> orderService.saveOrder(order, null));
+		assertThat(exception.getMessage(), is("Order.type.cannot.determine"));
 	}
 	
 	/**
@@ -2534,9 +2502,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void purgeOrderType_shouldNotAllowDeletingAnOrderTypeThatIsInUse() {
 		OrderType orderType = orderService.getOrderType(1);
 		assertNotNull(orderType);
-		expectedException.expect(CannotDeleteObjectInUseException.class);
-		expectedException.expectMessage(mss.getMessage("Order.type.cannot.delete"));
-		orderService.purgeOrderType(orderType);
+		CannotDeleteObjectInUseException exception = assertThrows(CannotDeleteObjectInUseException.class, () -> orderService.purgeOrderType(orderType));
+		assertThat(exception.getMessage(), is(mss.getMessage("Order.type.cannot.delete")));
 	}
 	
 	/**
@@ -2677,9 +2644,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertFalse(previousOrder.getConcept().equals(newConcept));
 		order.setConcept(newConcept);
 		
-		expectedException.expect(EditedOrderDoesNotMatchPreviousException.class);
-		expectedException.expectMessage("The orderable of the previous order and the new one order don't match");
-		orderService.saveOrder(order, null);
+		EditedOrderDoesNotMatchPreviousException exception = assertThrows(EditedOrderDoesNotMatchPreviousException.class, () -> orderService.saveOrder(order, null));
+		assertThat(exception.getMessage(), is("The orderable of the previous order and the new one order don't match"));
 	}
 	
 	/**
@@ -2702,9 +2668,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setEncounter(encounterService.getEncounter(6));
 		order.setDrug(discontinuationOrderDrug);
 		
-		expectedException.expect(EditedOrderDoesNotMatchPreviousException.class);
-		expectedException.expectMessage("The orderable of the previous order and the new one order don't match");
-		orderService.saveOrder(order, null);
+		EditedOrderDoesNotMatchPreviousException exception = assertThrows(EditedOrderDoesNotMatchPreviousException.class, () -> orderService.saveOrder(order, null));
+		assertThat(exception.getMessage(), is("The orderable of the previous order and the new one order don't match"));
 	}
 	
 	/**
@@ -2722,9 +2687,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		discontinuationOrder.setOrderer(Context.getProviderService().getProvider(1));
 		discontinuationOrder.setEncounter(Context.getEncounterService().getEncounter(6));
 		
-		expectedException.expect(EditedOrderDoesNotMatchPreviousException.class);
-		expectedException.expectMessage(mss.getMessage("Order.type.doesnot.match"));
-		orderService.saveOrder(discontinuationOrder, null);
+		EditedOrderDoesNotMatchPreviousException exception = assertThrows(EditedOrderDoesNotMatchPreviousException.class, () -> orderService.saveOrder(discontinuationOrder, null));
+		assertThat(exception.getMessage(), is(mss.getMessage("Order.type.doesnot.match")));
 	}
 	
 	/**
@@ -2763,9 +2727,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		discontinuationOrder.setOrderer(Context.getProviderService().getProvider(1));
 		discontinuationOrder.setEncounter(Context.getEncounterService().getEncounter(6));
 		
-		expectedException.expect(EditedOrderDoesNotMatchPreviousException.class);
-		expectedException.expectMessage(mss.getMessage("Order.class.doesnot.match"));
-		orderService.saveOrder(discontinuationOrder, null);
+		EditedOrderDoesNotMatchPreviousException exception = assertThrows(EditedOrderDoesNotMatchPreviousException.class, () -> orderService.saveOrder(discontinuationOrder, null));
+		assertThat(exception.getMessage(), is(mss.getMessage("Order.class.doesnot.match")));
 	}
 	
 	/**
@@ -2782,9 +2745,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		discontinuationOrder.setOrderer(Context.getProviderService().getProvider(1));
 		discontinuationOrder.setEncounter(Context.getEncounterService().getEncounter(6));
 		
-		expectedException.expect(EditedOrderDoesNotMatchPreviousException.class);
-		expectedException.expectMessage(mss.getMessage("Order.care.setting.doesnot.match"));
-		orderService.saveOrder(discontinuationOrder, null);
+		EditedOrderDoesNotMatchPreviousException exception = assertThrows(EditedOrderDoesNotMatchPreviousException.class, () -> orderService.saveOrder(discontinuationOrder, null));
+		assertThat(exception.getMessage(), is(mss.getMessage("Order.care.setting.doesnot.match")));
 	}
 	
 	/**
@@ -2962,10 +2924,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		    previousOrder.getEncounter());
 		Thread.sleep(10);
 		
-		expectedException.expect(CannotUnvoidOrderException.class);
-		expectedException.expectMessage(mss.getMessage("Order.action.cannot.unvoid", new Object[] { "discontinuation" },
-		    null));
-		orderService.unvoidOrder(order);
+		CannotUnvoidOrderException exception = assertThrows(CannotUnvoidOrderException.class, () -> orderService.unvoidOrder(order));
+		assertThat(exception.getMessage(), is(mss.getMessage("Order.action.cannot.unvoid", new Object[] { "discontinuation" }, null)));
 	}
 	
 	/**
@@ -2992,9 +2952,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		orderService.saveOrder(revise, null);
 		Thread.sleep(10);
 		
-		expectedException.expect(CannotUnvoidOrderException.class);
-		expectedException.expectMessage(mss.getMessage("Order.action.cannot.unvoid", new Object[] { "revision" }, null));
-		orderService.unvoidOrder(order);
+		CannotUnvoidOrderException exception = assertThrows(CannotUnvoidOrderException.class, () -> orderService.unvoidOrder(order));
+		assertThat(exception.getMessage(), is(mss.getMessage("Order.action.cannot.unvoid", new Object[] { "revision" }, null)));
 	}
 	
 	/**
@@ -3266,7 +3225,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see OrderServiceImpl#discontinueExistingOrdersIfNecessary()
 	 */
-	@Test(expected = AmbiguousOrderException.class)
+	@Test
 	public void saveOrder_shouldThrowAmbiguousOrderExceptionIfDisconnectingMultipleActiveOrdersForTheGivenConcepts()
 	{
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-discontinueAmbiguousOrderByConcept.xml");
@@ -3278,13 +3237,13 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setPatient(patientService.getPatient(9));
 		order.setOrderer(providerService.getProvider(1));
 		order.setCareSetting(orderService.getCareSetting(1));
-		order = (DrugOrder) orderService.saveOrder(order, null);
+		assertThrows(AmbiguousOrderException.class, () -> orderService.saveOrder(order, null));
 	}
 	
 	/**
 	 * @see OrderServiceImpl#discontinueExistingOrdersIfNecessary()
 	 */
-	@Test(expected = AmbiguousOrderException.class)
+	@Test
 	public void saveOrder_shouldThrowAmbiguousOrderExceptionIfDisconnectingMultipleActiveDrugOrdersWithTheSameDrug()
 	{
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-ambiguousDrugOrders.xml");
@@ -3296,7 +3255,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setPatient(patientService.getPatient(9));
 		order.setOrderer(providerService.getProvider(1));
 		order.setCareSetting(orderService.getCareSetting(1));
-		order = (DrugOrder) orderService.saveOrder(order, null);
+		assertThrows(AmbiguousOrderException.class, () ->  orderService.saveOrder(order, null));
 	}
 	
 	/**
@@ -3385,9 +3344,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		DrugOrder drugOrder = duplicateOrder.copy();
 		drugOrder.setDrugNonCoded("non coded drug crocine");
 		
-		expectedException.expect(AmbiguousOrderException.class);
-		expectedException.expectMessage("Order.cannot.have.more.than.one");
-		orderService.saveOrder(drugOrder, null);
+		AmbiguousOrderException exception = assertThrows(AmbiguousOrderException.class, () -> orderService.saveOrder(drugOrder, null));
+		assertThat(exception.getMessage(), is("Order.cannot.have.more.than.one"));
 	}
 	
 	@Test
@@ -3417,9 +3375,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		drugOrder.setOrderer(providerService.getProvider(1));
 		drugOrder.setEncounter(encounterService.getEncounter(6));
 		
-		expectedException.expect(EditedOrderDoesNotMatchPreviousException.class);
-		expectedException.expectMessage("The orderable of the previous order and the new one order don't match");
-		orderService.saveOrder(drugOrder, null);
+		EditedOrderDoesNotMatchPreviousException exception = assertThrows(EditedOrderDoesNotMatchPreviousException.class, () -> orderService.saveOrder(drugOrder, null));
+		assertThat(exception.getMessage(), is("The orderable of the previous order and the new one order don't match"));
 	}
 	
 	@Test
@@ -3437,9 +3394,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setDrugNonCoded(drugNonCodedParacetemol);
 		order.setPreviousOrder(previousOrder);
 		
-		expectedException.expect(EditedOrderDoesNotMatchPreviousException.class);
-		expectedException.expectMessage("The orderable of the previous order and the new one order don't match");
-		orderService.saveOrder(order, null);
+		EditedOrderDoesNotMatchPreviousException exception = assertThrows(EditedOrderDoesNotMatchPreviousException.class, () -> orderService.saveOrder(order, null));
+		assertThat(exception.getMessage(), is("The orderable of the previous order and the new one order don't match"));
 	}
 	
 	@Test
@@ -3520,9 +3476,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setEncounter(encounterService.getEncounter(18));
 		order.setPreviousOrder(previousOrder);
 		
-		expectedException.expect(CannotStopInactiveOrderException.class);
-		expectedException.expectMessage(mss.getMessage("Order.cannot.discontinue.inactive"));
-		orderService.saveRetrospectiveOrder(order, null);
+		CannotStopInactiveOrderException exception = assertThrows(CannotStopInactiveOrderException.class, () -> orderService.saveRetrospectiveOrder(order, null));
+		assertThat(exception.getMessage(), is(mss.getMessage("Order.cannot.discontinue.inactive")));
 	}
 	
 	@Test
@@ -3553,9 +3508,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setQuantityUnits(duplicateOrder.getQuantityUnits());
 		order.setNumRefills(duplicateOrder.getNumRefills());
 		
-		expectedException.expect(AmbiguousOrderException.class);
-		expectedException.expectMessage("Order.cannot.have.more.than.one");
-		orderService.saveRetrospectiveOrder(order, null);
+		AmbiguousOrderException exception = assertThrows(AmbiguousOrderException.class, () -> orderService.saveRetrospectiveOrder(order, null));
+		assertThat(exception.getMessage(), is("Order.cannot.have.more.than.one"));
 	}
 	
 	@Test
@@ -3834,8 +3788,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		        .withCareSetting(1).withOrderer(1).withEncounter(3).withDateActivated(new Date()).withOrderType(17)
 		        .withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date()).withOrderGroup(savedOrderGroup)
 		        .build();
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage("Cannot add a member which is out of range of the list");
-		secondSavedOrderGroup.addOrder(newOrderWithInvalidPosition, secondSavedOrderGroup.getOrders().size() + 1);
+		APIException exception = assertThrows(APIException.class, () -> secondSavedOrderGroup.addOrder(newOrderWithInvalidPosition, secondSavedOrderGroup.getOrders().size() + 1));
+		assertThat(exception.getMessage(), is("Cannot add a member which is out of range of the list"));
 	}
 }

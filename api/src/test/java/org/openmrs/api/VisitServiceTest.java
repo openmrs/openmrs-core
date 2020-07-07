@@ -15,6 +15,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.text.ParseException;
@@ -544,15 +545,15 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		assertEquals(6, getNumberOfAllVisitsIncludingVoided());
 	}
 	
-	@Test(expected = APIException.class)
+	@Test
 	public void saveVisitType_shouldThrowErrorWhenNameIsNull() {
-		visitService.saveVisitType(new VisitType());
+		assertThrows(APIException.class, () -> visitService.saveVisitType(new VisitType()));
 	}
 	
-	@Test(expected = APIException.class)
+	@Test
 	public void saveVisitType_shouldThrowErrorWhenNameIsEmptyString() {
 		VisitType visitType = new VisitType("", null);
-		visitService.saveVisitType(visitType);
+		assertThrows(APIException.class, () -> visitService.saveVisitType(visitType));
 	}
 	
 	/**
@@ -716,7 +717,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see VisitService#saveVisit(Visit)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void saveVisit_shouldFailIfValidationErrorsAreFound() {
 		
 		Visit visit = new Visit();
@@ -724,7 +725,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		visit.setVisitType(visitService.getVisitType(1));
 		visit.setStartDatetime(new Date());
 		
-		visitService.saveVisit(visit);
+		assertThrows(APIException.class, () -> visitService.saveVisit(visit));
 	}
 	
 	/**
@@ -769,7 +770,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see VisitService#endVisit(Visit,Date)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void endVisit_shouldFailIfValidationErrorsAreFound() {
 		
 		Visit visit = visitService.getVisit(1);
@@ -777,7 +778,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		cal.setTime(visit.getStartDatetime());
 		cal.add(Calendar.DAY_OF_MONTH, -1);
 		
-		visitService.endVisit(visit, cal.getTime());
+		assertThrows(APIException.class, () -> visitService.endVisit(visit, cal.getTime()));
 	}
 	
 	/**
@@ -810,7 +811,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see VisitService#purgeVisit(Visit)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void purgeVisit_shouldFailIfTheVisitHasEncountersAssociatedToIt() {
 		Visit visit = visitService.getVisit(1);
 		Encounter e = Context.getEncounterService().getEncounter(3);
@@ -819,7 +820,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		//sanity check
 		assertTrue(Context.getEncounterService().getEncountersByVisit(visit, false).size() > 0);
 		
-		visitService.purgeVisit(visit);
+		assertThrows(APIException.class, () -> visitService.purgeVisit(visit));
 	}
 	
 	/**

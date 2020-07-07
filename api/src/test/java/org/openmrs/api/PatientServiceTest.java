@@ -17,6 +17,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.openmrs.test.TestUtil.assertCollectionContentsEquals;
@@ -43,9 +44,7 @@ import org.hamcrest.Matcher;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
@@ -121,8 +120,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	
 	protected static LocationService locationService = null;
 	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	
 	/**
 	 * Run this before each unit test in this class. The "@Before" method in
@@ -631,9 +628,9 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see PatientServiceImpl#mergePatients(Patient,Patient)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void mergePatients_shouldNotMergePatientWithItself() throws Exception {
-		Context.getPatientService().mergePatients(new Patient(2), new Patient(2));
+		assertThrows(APIException.class, () -> Context.getPatientService().mergePatients(new Patient(2), new Patient(2)));
 	}
 	
 	/**
@@ -1000,7 +997,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see PatientService#checkPatientIdentifiers(Patient)
 	 */
-	@Test(expected = BlankIdentifierException.class)
+	@Test
 	public void checkPatientIdentifiers_shouldRemoveIdentifierAndThrowErrorWhenPatientHasBlankPatientIdentifier()
 	    throws Exception {
 		
@@ -1010,7 +1007,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patient.addIdentifier(patientIdentifier);
 		
 		// Should throw blank identifier exception
-		Context.getPatientService().checkPatientIdentifiers(patient);
+		assertThrows(BlankIdentifierException.class, () -> Context.getPatientService().checkPatientIdentifiers(patient));
 		
 	}
 
@@ -1080,11 +1077,11 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see PatientService#checkPatientIdentifiers(Patient)
 	 */
-	@Test(expected = InsufficientIdentifiersException.class)
+	@Test
 	public void checkPatientIdentifiers_shouldThrowErrorWhenPatientHasNullPatientIdentifiers() throws Exception {
 		Patient patient = new Patient();
 		patient.setIdentifiers(null);
-		Context.getPatientService().checkPatientIdentifiers(patient);
+		assertThrows(InsufficientIdentifiersException.class, () -> Context.getPatientService().checkPatientIdentifiers(patient));
 	}
 	
 	/**
@@ -1093,17 +1090,17 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @see PatientService#checkPatientIdentifiers(Patient)
 	 */
-	@Test(expected = InsufficientIdentifiersException.class)
+	@Test
 	public void checkPatientIdentifiers_shouldThrowErrorWhenPatientHasEmptyPatientIdentifiers() throws Exception {
 		Patient patient = new Patient();
 		patient.setIdentifiers(new HashSet<>());
-		Context.getPatientService().checkPatientIdentifiers(patient);
+		assertThrows(InsufficientIdentifiersException.class, () -> Context.getPatientService().checkPatientIdentifiers(patient));
 	}
 	
 	/**
 	 * @see PatientService#checkPatientIdentifiers(Patient)
 	 */
-	@Test(expected = DuplicateIdentifierException.class)
+	@Test
 	public void checkPatientIdentifiers_shouldThrowErrorWhenPatientHasIdenticalIdentifiers() throws Exception {
 		
 		PatientIdentifierType patientIdentifierType = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
@@ -1123,7 +1120,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patientIdentifier2.setIdentifierType(patientIdentifierType);
 		patientIdentifier2.setLocation( new Location(2) );
 		patient.addIdentifier(patientIdentifier2);
-		patientService.checkPatientIdentifiers(patient);
+		assertThrows(DuplicateIdentifierException.class, () -> patientService.checkPatientIdentifiers(patient));
 		
 	}
 
@@ -2131,27 +2128,27 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 	}
 	
-	@Test(expected = APIException.class)
+	@Test
 	public void savePatientIdentifier_shouldThrowAnAPIExceptionWhenOneOfTheRequiredFieldsIsNull() throws Exception {
 		PatientIdentifier patientIdentifier = patientService.getPatientIdentifier(7);
 		patientIdentifier.setIdentifier(null);
-		patientService.savePatientIdentifier(patientIdentifier);
+		assertThrows(APIException.class, () -> patientService.savePatientIdentifier(patientIdentifier));
 		
 	}
 	
-	@Test(expected = APIException.class)
+	@Test
 	public void savePatientIdentifier_shouldThrowAnAPIExceptionIfThePatientIdentifierStringIsAWhiteSpace() throws Exception {
 		PatientIdentifier patientIdentifier = patientService.getPatientIdentifier(7);
 		patientIdentifier.setIdentifier(" ");
-		patientService.savePatientIdentifier(patientIdentifier);
+		assertThrows(APIException.class, () -> patientService.savePatientIdentifier(patientIdentifier));
 	}
 	
-	@Test(expected = APIException.class)
+	@Test
 	public void savePatientIdentifier_shouldThrowAnAPIExceptionIfThePatientIdentifierStringIsAnEmptyString()
 	    throws Exception {
 		PatientIdentifier patientIdentifier = patientService.getPatientIdentifier(7);
 		patientIdentifier.setIdentifier("");
-		patientService.savePatientIdentifier(patientIdentifier);
+		assertThrows(APIException.class, () -> patientService.savePatientIdentifier(patientIdentifier));
 	}
 	
 	/**
@@ -2168,30 +2165,30 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see PatientService#savePatientIdentifier(PatientIdentifier)
 	 */
-	@Test(expected = ValidationException.class)
+	@Test
 	public void savePatientIdentifier_shouldAllowLocationToBeNullWhenLocationBehaviourIsRequired() {
 		PatientIdentifier patientIdentifier = patientService.getPatientIdentifier(9);
 		patientIdentifier.setLocation(null);
 		patientIdentifier.getIdentifierType().setLocationBehavior(PatientIdentifierType.LocationBehavior.REQUIRED);
-		patientService.savePatientIdentifier(patientIdentifier);
+		assertThrows(ValidationException.class, () -> patientService.savePatientIdentifier(patientIdentifier));
 	}
 	
-	@Test(expected = APIException.class)
+	@Test
 	public void voidPatientIdentifier_shouldThrowAnAPIExceptionIfTheReasonIsNull() throws Exception {
 		PatientIdentifier patientIdentifierToVoid = patientService.getPatientIdentifier(3);
-		patientService.voidPatientIdentifier(patientIdentifierToVoid, null);
+		assertThrows(APIException.class, () -> patientService.voidPatientIdentifier(patientIdentifierToVoid, null));
 	}
 	
-	@Test(expected = APIException.class)
+	@Test
 	public void voidPatientIdentifier_shouldThrowAnAPIExceptionIfTheReasonIsAnEmptyString() throws Exception {
 		PatientIdentifier patientIdentifierToVoid = patientService.getPatientIdentifier(3);
-		patientService.voidPatientIdentifier(patientIdentifierToVoid, "");
+		assertThrows(APIException.class, () -> patientService.voidPatientIdentifier(patientIdentifierToVoid, ""));
 	}
 	
-	@Test(expected = APIException.class)
+	@Test
 	public void voidPatientIdentifier_shouldThrowAnAPIExceptionIfTheReasonIsAWhiteSpaceCharacter() throws Exception {
 		PatientIdentifier patientIdentifierToVoid = patientService.getPatientIdentifier(3);
-		patientService.voidPatientIdentifier(patientIdentifierToVoid, " ");
+		assertThrows(APIException.class, () -> patientService.voidPatientIdentifier(patientIdentifierToVoid, " "));
 	}
 	
 	@Test
@@ -3175,9 +3172,9 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	/**
 	 *           an APIException when a null argument is passed
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void savePatientIdentifier_shouldThrowAnAPIExceptionWhenANullArgumentIsPassed() throws Exception {
-		patientService.savePatientIdentifier(null);
+		assertThrows(APIException.class, () -> patientService.savePatientIdentifier(null));
 	}
 	
 	/**
@@ -3191,30 +3188,30 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Context.getAdministrationService().saveGlobalProperty(gp);
 	}
 	
-	@Test(expected = PatientIdentifierTypeLockedException.class)
+	@Test
 	public void savePatientIdentifierType_shouldThrowErrorWhenTryingToSaveAPatientIdentifierTypeWhilePatientIdentifierTypesAreLocked()
 	    throws Exception {
 		PatientService ps = Context.getPatientService();
 		createPatientIdentifierTypeLockedGPAndSetValue("true");
 		PatientIdentifierType pit = ps.getPatientIdentifierType(1);
 		pit.setDescription("test");
-		ps.savePatientIdentifierType(pit);
+		assertThrows(PatientIdentifierTypeLockedException.class, () -> ps.savePatientIdentifierType(pit));
 	}
 	
-	@Test(expected = PatientIdentifierTypeLockedException.class)
+	@Test
 	public void retirePatientIdentifierType_shouldThrowErrorWhenTryingToRetireAPatientIdentifierTypeWhilePatientIdentifierTypesAreLocked()
 	    throws Exception {
 		PatientService ps = Context.getPatientService();
 		createPatientIdentifierTypeLockedGPAndSetValue("true");
 		PatientIdentifierType pit = ps.getPatientIdentifierType(1);
-		ps.retirePatientIdentifierType(pit, "Retire test");
+		assertThrows(PatientIdentifierTypeLockedException.class, () -> ps.retirePatientIdentifierType(pit, "Retire test"));
 	}
 	
-	@Test(expected = APIException.class)
+	@Test
 	public void retirePatientIdentifierType_shouldThrowAPIExceptionWhenNullReasonIsPassed() throws Exception {
 		PatientService ps = Context.getPatientService();
 		PatientIdentifierType pit = ps.getPatientIdentifierType(1);
-		ps.retirePatientIdentifierType(pit, null);
+		assertThrows(APIException.class, () -> ps.retirePatientIdentifierType(pit, null));
 	}
 	
 	@Test
@@ -3234,30 +3231,28 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertEquals(dateRetired.getYear(), today.getYear());
 	}
 	
-	@Test(expected = PatientIdentifierTypeLockedException.class)
+	@Test
 	public void unretirePatientIdentifierType_shouldThrowErrorWhenTryingToUnretireAPatientIdentifierTypeWhilePatientIdentifierTypesAreLocked()
 	    throws Exception {
 		PatientService ps = Context.getPatientService();
 		createPatientIdentifierTypeLockedGPAndSetValue("true");
 		PatientIdentifierType pit = ps.getPatientIdentifierType(1);
-		ps.unretirePatientIdentifierType(pit);
+		assertThrows(PatientIdentifierTypeLockedException.class, () -> ps.unretirePatientIdentifierType(pit));
 	}
 	
-	@Test(expected = PatientIdentifierTypeLockedException.class)
+	@Test
 	public void purgePatientIdentifierType_shouldThrowErrorWhenTryingToDeleteAPatientIdentifierTypeWhilePatientIdentifierTypesAreLocked()
 	    throws Exception {
 		PatientService ps = Context.getPatientService();
 		createPatientIdentifierTypeLockedGPAndSetValue("true");
 		PatientIdentifierType pit = ps.getPatientIdentifierType(1);
-		ps.purgePatientIdentifierType(pit);
+		assertThrows(PatientIdentifierTypeLockedException.class, () -> ps.purgePatientIdentifierType(pit));
 	}
 	
 	@Test
 	public void mergePatients_shouldFailIfMultiplePatientsHaveActiveOrderOfSameType() throws Exception {
-		expectedException.expect(APIException.class);
 		String message = Context.getMessageSourceService().getMessage("Patient.merge.cannotHaveSameTypeActiveOrders",
 				new Object[] { "2", "7", "Drug order" }, Context.getLocale());
-		expectedException.expectMessage(is(message));
 		Patient preferredPatient = patientService.getPatient(2);
 		Patient notPreferredPatient = patientService.getPatient(7);
 		
@@ -3265,7 +3260,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 				hasActiveOrderOfType(preferredPatient, "Drug order"));
 		assertTrue("Test pre-request: No Active Drug order in " + notPreferredPatient,
 				hasActiveOrderOfType(preferredPatient, "Drug order"));
-		patientService.mergePatients(preferredPatient, notPreferredPatient);
+		APIException exception = assertThrows(APIException.class, () -> patientService.mergePatients(preferredPatient, notPreferredPatient));
+		assertThat(exception.getMessage(), is(message));
 	}
 
 	/**

@@ -9,10 +9,13 @@
  */
 package org.openmrs.api;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.openmrs.test.TestUtil.containsId;
 
@@ -30,10 +33,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.openmrs.OpenmrsObject;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
@@ -80,9 +80,6 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Autowired
 	private UserDAO dao;
 	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
-
 	@Before
 	public void setup() {
 		userService = Context.getUserService();
@@ -186,25 +183,22 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void createUser_shouldNotAllowExistingUser() {
 		User someUser = userService.getUserByUsername(SOME_USERNAME);
 
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage("This method can be used for only creating new users");
-		userService.createUser(someUser, SOME_VALID_PASSWORD);
+		APIException exception = assertThrows(APIException.class, () -> userService.createUser(someUser, SOME_VALID_PASSWORD));
+		assertThat(exception.getMessage(), is("This method can be used for only creating new users"));
 	}
 
 	@Test
 	public void createUser_shouldNotAllowBlankPassword() {
 		User unsavedUser = new User();
 
-		expectedException.expect(ValidationException.class);
-		userService.createUser(unsavedUser, "");
+		assertThrows(ValidationException.class, () -> userService.createUser(unsavedUser, ""));
 	}
 
 	@Test
 	public void createUser_shouldNotAllowNullPassword() {
 		User unsavedUser = new User();
 
-		expectedException.expect(ValidationException.class);
-		userService.createUser(unsavedUser, null);
+		assertThrows(ValidationException.class, () -> userService.createUser(unsavedUser, null));
 	}
 
 	@Test
@@ -214,12 +208,10 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User newUser = userWithValidPerson();
 		newUser.setUsername(someUser.getUsername());
 
-		expectedException.expect(DAOException.class);
-		expectedException.expectMessage(
-				String.format("Username %s or system id %s is already in use.",
-						newUser.getUsername(),
-						Context.getUserService().generateSystemId()));
-		userService.createUser(newUser, SOME_VALID_PASSWORD);
+		DAOException exception = assertThrows(DAOException.class, () -> userService.createUser(newUser, SOME_VALID_PASSWORD));
+		assertThat(exception.getMessage(), is(String.format("Username %s or system id %s is already in use.",
+			newUser.getUsername(),
+			Context.getUserService().generateSystemId())));
 	}
 
 	@Test
@@ -229,12 +221,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User newUser = userWithValidPerson();
 		newUser.setSystemId(someUser.getSystemId());
 
-		expectedException.expect(DAOException.class);
-		expectedException.expectMessage(
-				String.format("Username %s or system id %s is already in use.",
-						newUser.getUsername(),
-						newUser.getSystemId()));
-		userService.createUser(newUser, SOME_VALID_PASSWORD);
+		DAOException exception = assertThrows(DAOException.class, () -> userService.createUser(newUser, SOME_VALID_PASSWORD));
+		assertThat(exception.getMessage(), is(String.format("Username %s or system id %s is already in use.", newUser.getUsername(), newUser.getSystemId())));
 	}
 
 	@Test
@@ -244,12 +232,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User newUser = userWithValidPerson();
 		newUser.setUsername(someUser.getSystemId());
 
-		expectedException.expect(DAOException.class);
-		expectedException.expectMessage(
-				String.format("Username %s or system id %s is already in use.",
-						newUser.getUsername(),
-						Context.getUserService().generateSystemId()));
-		userService.createUser(newUser, SOME_VALID_PASSWORD);
+		DAOException exception = assertThrows(DAOException.class, () -> userService.createUser(newUser, SOME_VALID_PASSWORD));
+		assertThat(exception.getMessage(), is(String.format("Username %s or system id %s is already in use.", newUser.getUsername(), Context.getUserService().generateSystemId())));
 	}
 
 	@Test
@@ -259,12 +243,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User newUser = userWithValidPerson();
 		newUser.setSystemId(someUser.getUsername());
 
-		expectedException.expect(DAOException.class);
-		expectedException.expectMessage(
-				String.format("Username %s or system id %s is already in use.",
-						newUser.getUsername(),
-						newUser.getSystemId()));
-		userService.createUser(newUser, SOME_VALID_PASSWORD);
+		DAOException exception = assertThrows(DAOException.class, () -> userService.createUser(newUser, SOME_VALID_PASSWORD));
+		assertThat(exception.getMessage(), is(String.format("Username %s or system id %s is already in use.", newUser.getUsername(), newUser.getSystemId())));
 	}
 
 	@Test
@@ -275,12 +255,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		newUser.setUsername(someUser.getUsername());
 		newUser.setSystemId(decorateWithLuhnIdentifier(someUser.getUsername()));
 
-		expectedException.expect(DAOException.class);
-		expectedException.expectMessage(
-				String.format("Username %s or system id %s is already in use.",
-						newUser.getUsername(),
-						newUser.getSystemId()));
-		userService.createUser(newUser, SOME_VALID_PASSWORD);
+		DAOException exception = assertThrows(DAOException.class, () ->  userService.createUser(newUser, SOME_VALID_PASSWORD));
+		assertThat(exception.getMessage(), is(String.format("Username %s or system id %s is already in use.", newUser.getUsername(), newUser.getSystemId())));
 	}
 	
 	@Test
@@ -294,10 +270,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		// setup our expected exception
 		// we expect this to fail because the currently logged-in user lacks a privilege to be
 		// assigned to the new user
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage("You must have privilege {0} in order to assign it");
 		// set current user to the user defined above
-		withCurrentUserAs(currentUser, () -> {
+		APIException exception = assertThrows(APIException.class, () -> withCurrentUserAs(currentUser, () -> {
 			// create a role to assign to the new user
 			Role role = new Role();
 			role.setRole(RoleConstants.AUTHENTICATED);
@@ -314,7 +288,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 			u.addRole(role);
 			// here we expect the exception to be thrown
 			userService.createUser(u, "Openmr5xy");
-		});
+		}));
+		assertThat(exception.getMessage(), is("You must have privilege {0} in order to assign it."));
 	}
 	
 	@Test
@@ -328,10 +303,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		// setup our expected exception
 		// we expect this to fail because the currently logged-in user lacks a privilege to be
 		// assigned to the new user
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage("You must have the following privileges in order to assign them: Another Privilege, Custom Privilege");
 		// set current user to the user defined above
-		withCurrentUserAs(currentUser, () -> {
+		APIException exception = assertThrows(APIException.class, () -> withCurrentUserAs(currentUser, () -> {
 			// create a role to assign to the new user
 			Role role = new Role();
 			role.setRole(RoleConstants.AUTHENTICATED);
@@ -349,7 +322,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 			u.addRole(role);
 			// here we expect the exception to be thrown
 			userService.createUser(u, "Openmr5xy");
-		});
+		}));
+		assertThat(exception.getMessage(), is("You must have the following privileges in order to assign them: Another Privilege, Custom Privilege"));
 	}
 	
 	@Test
@@ -364,11 +338,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		// setup our expected exception
 		// we expect this to fail because the currently logged-in user lacks a privilege to be
 		// assigned to the new user
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage("You must have the role {0} in order to assign it"); 
-
 		// set current user to the user defined above
-		withCurrentUserAs(currentUser, () -> {
+		APIException exception = assertThrows(APIException.class, () ->  withCurrentUserAs(currentUser, () -> {
 			// create a role to assign to the new user
 			// the current user cannot assign a user to the superuser role because he lacks AssignSystemDeveloper privileges
 			Role role= new Role("add user");
@@ -387,7 +358,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 			u.addRole(role);
 			// here we expect the exception to be thrown
 			userService.createUser(u, "Openmr5xy");
-		});
+		}));
+		assertThat(exception.getMessage(), is("You must have the role {0} in order to assign it."));
 	}
 
 	private User userWithValidPerson() {
@@ -948,8 +920,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void purgePrivilege_shouldThrowErrorWhenPrivilegeIsCorePrivilege() {
-		expectedException.expect(APIException.class);
-		userService.purgePrivilege(new Privilege(PrivilegeConstants.ADD_COHORTS));
+		assertThrows(APIException.class, () -> userService.purgePrivilege(new Privilege(PrivilegeConstants.ADD_COHORTS)));
 	}
 	
 	/**
@@ -978,8 +949,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void purgeRole_shouldThrowErrorWhenRoleIsACoreRole() {
 		Role role = new Role(RoleConstants.ANONYMOUS);
 
-		expectedException.expect(APIException.class);
-		userService.purgeRole(role);
+		assertThrows(APIException.class, () -> userService.purgeRole(role));
 	}
 	
 	/**
@@ -993,8 +963,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		childRole.add(role1);
 		role2.setChildRoles(childRole);
 
-		expectedException.expect(CannotDeleteRoleWithChildrenException.class);
-		userService.purgeRole(role2);
+		assertThrows(CannotDeleteRoleWithChildrenException.class, () -> userService.purgeRole(role2));
 	}
 	
 	/**
@@ -1024,8 +993,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void purgeUser_shouldThrowAPIExceptionIfCascadeIsTrue() {
 		User user = userService.getUser(502);
 
-		expectedException.expect(APIException.class);
-		userService.purgeUser(user, true);
+		assertThrows(APIException.class, () -> userService.purgeUser(user, true));
 	}
 	
 	/**
@@ -1063,8 +1031,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		
 		Context.logout();
 
-		expectedException.expect(APIException.class);
-		userService.removeUserProperty(user, "some key");
+		assertThrows(APIException.class, () -> userService.removeUserProperty(user, "some key"));
 	}
 	
 	/**
@@ -1132,8 +1099,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User user = userService.getUser(502);
 		
 		Context.logout();
-		expectedException.expect(APIException.class);
-		userService.setUserProperty(user, "some key", "some value");
+		assertThrows(APIException.class, () -> userService.setUserProperty(user, "some key", "some value"));
 	}
 	
 	/**
@@ -1166,9 +1132,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		inheritsFromChild.add(childRole);
 		parentRole.setInheritedRoles(inheritsFromChild);
 		
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage(messages.getMessage("Role.cannot.inherit.descendant"));
-		userService.saveRole(parentRole);
+		APIException exception = assertThrows(APIException.class, () -> userService.saveRole(parentRole));
+		assertThat(exception.getMessage(), is(messages.getMessage("Role.cannot.inherit.descendant")));
 	}
 	
 	@Test
@@ -1197,14 +1162,12 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 
 		Privilege myPrivilege = new Privilege("custom privilege");
 		
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage("You must have the following privileges in order to assign them: custom privilege");
-
-		withCurrentUserAs(currentUser, () -> {
+		APIException exception = assertThrows(APIException.class, () ->  withCurrentUserAs(currentUser, () -> {
 			Role newRole = new Role("another role");
 			newRole.addPrivilege(myPrivilege);
 			userService.saveRole(newRole);
-		});
+		}));
+		assertThat(exception.getMessage(), is("You must have the following privileges in order to assign them: custom privilege"));
 	}
 
 	@Test
@@ -1219,15 +1182,13 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User currentUser = new User();
 		currentUser.addRole(adminRole);
 
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage("You must have the following privileges in order to assign them: another privilege");
-
-		withCurrentUserAs(currentUser, () -> {
+		APIException exception = assertThrows(APIException.class, () -> withCurrentUserAs(currentUser, () -> {
 			Role newRole = new Role("another role");
 			newRole.addPrivilege(myFirstPrivilege);
 			newRole.addPrivilege(mySecondPrivilege);
 			userService.saveRole(newRole);
-		});
+		}));
+		assertThat(exception.getMessage(), is("You must have the following privileges in order to assign them: another privilege"));
 	}
 	
 	/**
@@ -1291,8 +1252,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		u.setUsername("bwolfe");
 		u.getPerson().setGender("M");
 
-		expectedException.expect(PasswordException.class);
-		us.createUser(u, "short");
+		assertThrows(PasswordException.class, () -> us.createUser(u, "short"));
 	}
 	
 	/**
@@ -1415,10 +1375,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		//user6001 has not got required priviliges
 		Context.authenticate(user6001.getUsername(), "userServiceTest");
 		
-		expectedException.expect(APIAuthenticationException.class);
-		expectedException.expectMessage(messages
-				.getMessage("error.privilegesRequired", new Object[] {PrivilegeConstants.EDIT_USER_PASSWORDS}, null));
-		userService.changePassword(user6001, wrongPassword, newPassword);
+		APIAuthenticationException exception = assertThrows(APIAuthenticationException.class, () -> userService.changePassword(user6001, wrongPassword, newPassword));
+		assertThat(exception.getMessage(), is(messages.getMessage("error.privilegesRequired", new Object[] {PrivilegeConstants.EDIT_USER_PASSWORDS}, null)));
 	}
 	
 	/**
@@ -1436,10 +1394,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		//user6001 has not got required priviliges
 		Context.authenticate(user6001.getUsername(), "userServiceTest");
 		
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage(messages
-				.getMessage("error.privilegesRequired", new Object[] {PrivilegeConstants.EDIT_USER_PASSWORDS}, null));
-		userService.changePassword(user6001, oldPassword, newPassword);
+		APIException exception = assertThrows(APIException.class, () -> userService.changePassword(user6001, oldPassword, newPassword));
+		assertThat(exception.getMessage(), is(messages.getMessage("error.privilegesRequired", new Object[] {PrivilegeConstants.EDIT_USER_PASSWORDS}, null)));	
 	}
 	
 	/**
@@ -1453,9 +1409,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		String oldPassword = "userServiceTest";
 		String weakPassword = "weak";
 		
-		expectedException.expectMessage(
-				messages.getMessage("error.password.length", new Object[] {"8"}, null));
-		userService.changePassword(user6001, oldPassword, weakPassword);
+		APIException exception = assertThrows(APIException.class, () -> userService.changePassword(user6001, oldPassword, weakPassword));
+		assertThat( exception.getMessage(), is(messages.getMessage("error.password.length", new Object[] {"8"}, null)));
 	}
 	
 	/**
@@ -1467,18 +1422,14 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User notExistingUser = new User();
 		String anyString = "anyString";
 		
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage(messages.getMessage("user.must.exist"));
-		userService.changePassword(notExistingUser, anyString, anyString);
+		APIException exception = assertThrows(APIException.class, () ->  userService.changePassword(notExistingUser, anyString, anyString));
+		assertThat(exception.getMessage(), is(messages.getMessage("user.must.exist")));
 	}
 
     @Test
-	public void changePassword_shouldThrowShortPasswordExceptionWithShortPassword() {
-        expectedException.expect(ShortPasswordException.class);
-        expectedException.expectMessage(
-		        messages.getMessage("error.password.length", new Object[] {"8"}, null));
-
-        userService.changePassword("test", "");
+	public void changePassword_shouldThrowShortPasswordExceptionWithShortPassword() { 
+		ShortPasswordException exception = assertThrows(ShortPasswordException.class, () -> userService.changePassword("test", ""));
+		assertThat(exception.getMessage(), is(messages.getMessage("error.password.length", new Object[] {"8"}, null)));
     }
     
 	@Test
@@ -1497,13 +1448,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User user = userService.getUser(6001);
 		assertFalse(user.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS));
 		Context.authenticate(user.getUsername(), "userServiceTest");
-		
-		expectedException.expect(APIAuthenticationException.class);
-		expectedException.expectMessage(
-				messages.getMessage("error.privilegesRequired",
-						new Object[] {PrivilegeConstants.EDIT_USER_PASSWORDS}, null));
-		
-		userService.changePassword(user, "testTest123");
+		APIAuthenticationException exception = assertThrows(APIAuthenticationException.class, () ->  userService.changePassword(user, "testTest123"));
+		assertThat(exception.getMessage(), is(messages.getMessage("error.privilegesRequired", new Object[] {PrivilegeConstants.EDIT_USER_PASSWORDS}, null)));
 	}
 	
 	@Test
@@ -1525,10 +1471,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertFalse(user.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS));
 		Context.authenticate(user.getUsername(), "userServiceTest");
 		
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage(messages.getMessage("secret.answer.not.correct"));
-		
-		userService.changePasswordUsingSecretAnswer("wrong answer", "userServiceTest2");
+		APIException exception = assertThrows(APIException.class, () -> userService.changePasswordUsingSecretAnswer("wrong answer", "userServiceTest2"));
+		assertThat(exception.getMessage(), is(messages.getMessage("secret.answer.not.correct")));
 	}
 	
 	/**
@@ -1543,23 +1487,20 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void getUserByUsernameOrEmail_shouldNotGetUserIfEmailIsEmpty() {
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage(messages.getMessage("error.usernameOrEmail.notNullOrBlank"));
-		userService.getUserByUsernameOrEmail("");
+		APIException exception = assertThrows(APIException.class, () -> userService.getUserByUsernameOrEmail(""));
+		assertThat(exception.getMessage(), is(messages.getMessage("error.usernameOrEmail.notNullOrBlank")));
 	}
 	
 	@Test
 	public void getUserByUsernameOrEmail_shouldFailIfEmailIsWhiteSpace() {
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage(messages.getMessage("error.usernameOrEmail.notNullOrBlank"));
-		userService.getUserByUsernameOrEmail("  ");
+		APIException exception = assertThrows(APIException.class, () -> userService.getUserByUsernameOrEmail("  "));
+		assertThat(exception.getMessage(), is(messages.getMessage("error.usernameOrEmail.notNullOrBlank")));
 	}
 	
 	@Test
 	public void getUserByUsernameOrEmail_shouldFailIfEmailIsNull() {
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage(messages.getMessage("error.usernameOrEmail.notNullOrBlank"));
-		userService.getUserByUsernameOrEmail(null);
+		APIException exception = assertThrows(APIException.class, () -> userService.getUserByUsernameOrEmail(null));
+		assertThat(exception.getMessage(), is(messages.getMessage("error.usernameOrEmail.notNullOrBlank")));
 	}
 	
 	
@@ -1574,8 +1515,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		    "http://localhost:8080/openmrs/admin/users/changePassword.form/{activationKey}");
 		User createdUser = userService.createUser(u, "Openmr5xy");
 		assertNull(dao.getLoginCredential(createdUser).getActivationKey());
-		expectedException.expect(MessageException.class);
-		assertEquals(createdUser, userService.setUserActivationKey(createdUser));
+		assertThrows(MessageException.class, () -> userService.setUserActivationKey(createdUser));
 		assertNotNull(dao.getLoginCredential(createdUser).getActivationKey());
 	}
 	
@@ -1647,10 +1587,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User createdUser = userService.createUser(u, "Openmr5xy");
 		String key = "wrongactivationkeyin";
 		Context.authenticate(createdUser.getUsername(), "Openmr5xy");
-		expectedException.expect(InvalidActivationKeyException.class);
-		expectedException.expectMessage(messages.getMessage("activation.key.not.correct"));
-		
-		userService.changePasswordUsingActivationKey(key, "Pa55w0rd");
+		InvalidActivationKeyException exception = assertThrows(InvalidActivationKeyException.class, () -> userService.changePasswordUsingActivationKey(key, "Pa55w0rd"));
+		assertThat(exception.getMessage(), is(messages.getMessage("activation.key.not.correct")));
 	}
 	
 	@Test
@@ -1671,10 +1609,9 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		dao.updateLoginCredential(credentials);
 		Context.authenticate(createdUser.getUsername(), "Openmr5xy");
 		
-		expectedException.expect(InvalidActivationKeyException.class);
-		expectedException.expectMessage(messages.getMessage("activation.key.not.correct"));
 		
-		userService.changePasswordUsingActivationKey(key, "Pa55w0rd");
+		InvalidActivationKeyException exception = assertThrows(InvalidActivationKeyException.class, () -> userService.changePasswordUsingActivationKey(key, "Pa55w0rd"));
+		assertThat(exception.getMessage(), is(messages.getMessage("activation.key.not.correct")));
 	}
 
 	/**
