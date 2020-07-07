@@ -9,6 +9,8 @@
  */
 package org.openmrs.module;
 
+import static org.junit.Assert.assertThrows;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +59,7 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(ModuleFactory.getLoadedModules().contains(test2));
 	}
 	
-	@Test(expected = ModuleException.class)
+	@Test
 	public void loadModule_shouldNotLoadModuleIfAlreadyLoaded() {
 		Module test1 = ModuleFactory.getModuleById(MODULE1);
 		
@@ -66,7 +68,7 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(test1.isStarted());
 		
 		//this should throw an exception for trying to load this module again
-		ModuleFactory.loadModule(test1, false);
+		assertThrows(ModuleException.class, () -> ModuleFactory.loadModule(test1, false));
 	}
 
 	@Test

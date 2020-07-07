@@ -13,6 +13,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -37,17 +38,17 @@ public class ModuleTest {
 	/*
 	 * @see Module#setStartupErrorMessage(String)
 	 */
-	@Test(expected = ModuleException.class)
+	@Test
 	public void setStartupErrorMessage_shouldThrowExceptionWhenMessageIsNull() {
-		testModule.setStartupErrorMessage(null);
+		assertThrows(ModuleException.class, () -> testModule.setStartupErrorMessage(null));
 	}
 
 	/*
 	 * @see Module#setStartupErrorMessage(String, Throwable)
 	 */
-	@Test(expected = ModuleException.class)
+	@Test
 	public void setStartupErrorMessage_shouldThrowExceptionWhenThrowableIsNull() {
-		testModule.setStartupErrorMessage("error", null);
+		assertThrows(ModuleException.class, () -> testModule.setStartupErrorMessage("error", null));
 	}
 
 	/*
