@@ -9,14 +9,16 @@
  */
 package org.openmrs.api.context;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
+
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.User;
@@ -33,8 +35,6 @@ import org.openmrs.test.BaseContextSensitiveTest;
  */
 public class DaemonTest extends BaseContextSensitiveTest {
 	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	
 	/**
 	 * @see Daemon#executeScheduledTask(Task)
@@ -66,11 +66,10 @@ public class DaemonTest extends BaseContextSensitiveTest {
 	@Test 
 	public void createUser_shouldThrowWhenCalledOutsideContextDAO() throws Throwable {
 		// verif
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage(Context.getMessageSourceService().getMessage("Context.DAO.only", new Object[] { this.getClass().getName() }, null));
 		
 		// replay
-		Daemon.createUser(new User(), "password", null);
+		APIException exception = assertThrows(APIException.class, () -> Daemon.createUser(new User(), "password", null));
+		assertThat(exception.getMessage(), is(Context.getMessageSourceService().getMessage("Context.DAO.only", new Object[] { this.getClass().getName() }, null)));
 	}
 	
 	@Test
@@ -98,11 +97,10 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		User u = Context.getUserService().getUser(501);
 		
 		// verif
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage(Context.getMessageSourceService().getMessage("User.creating.already.exists", new Object[] { u.getDisplayString() }, null));
 		
 		// replay
-		Context.getContextDAO().createUser(u, "P@ssw0rd", null);
+		APIException exception = assertThrows(APIException.class, () -> Context.getContextDAO().createUser(u, "P@ssw0rd", null));
+		assertThat(exception.getMessage(), is(Context.getMessageSourceService().getMessage("User.creating.already.exists", new Object[] { u.getDisplayString() }, null)));
 	}
 	
 	/**
