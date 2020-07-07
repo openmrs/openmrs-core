@@ -9,9 +9,12 @@
  */
 package org.openmrs.api;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -21,9 +24,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.openmrs.OrderSet;
 import org.openmrs.OrderSetMember;
 import org.openmrs.User;
@@ -40,8 +41,6 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
 	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	
 	/**
 	 * Run this before each unit test in this class. The "@Before" method in
@@ -190,9 +189,8 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 		orderSetMemberToBeAddedAtPosition.setDateCreated(new Date());
 		orderSetMemberToBeAddedAtPosition.setRetired(false);
 		
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage("Cannot add a member which is out of range of the list");
-		orderSet.addOrderSetMember(orderSetMemberToBeAddedAtPosition, newPosition);
+		APIException exception = assertThrows(APIException.class, () -> orderSet.addOrderSetMember(orderSetMemberToBeAddedAtPosition, newPosition));
+		assertThat(exception.getMessage(), is("Cannot add a member which is out of range of the list"));
 	}
 	
 	@Test

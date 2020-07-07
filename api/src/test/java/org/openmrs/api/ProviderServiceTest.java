@@ -13,6 +13,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.text.ParseException;
@@ -356,15 +357,14 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see ProviderService#getProvidersByPerson(Person)
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void getProvidersByPerson_shouldFailIfPersonIsNull() {
 		//given
 		
 		//when
-		service.getProvidersByPerson(null);
+		assertThrows(IllegalArgumentException.class, () -> service.getProvidersByPerson(null));
 		
 		//then
-		Assert.fail();
 	}
 	
 	/**

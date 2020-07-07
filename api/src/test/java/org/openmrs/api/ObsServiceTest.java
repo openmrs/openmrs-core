@@ -15,6 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import javax.imageio.ImageIO;
@@ -40,9 +41,7 @@ import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptProposal;
@@ -82,10 +81,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	@Autowired
 	private ObsService obsService;
 
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
-
-
+	
 	/**
 	 * This method gets the revision obs for voided obs
 	 *
@@ -105,10 +101,9 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void shouldReturnAPIExceptionWhenObsIsNull(){
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage(Context.getMessageSourceService().getMessage("Obs.error.cannot.be.null"));
 		ObsService os = Context.getObsService();
-		os.saveObs(null,"Null Obs");
+		APIException exception = assertThrows(APIException.class, () -> os.saveObs(null,"Null Obs"));
+		assertThat(exception.getMessage(), is(Context.getMessageSourceService().getMessage("Obs.error.cannot.be.null")));
 	}
 	
 	/**
@@ -1343,9 +1338,9 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see ObsService#purgeObs(Obs,boolean)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void purgeObs_shouldThrowAPIExceptionIfGivenTrueCascade() {
-		Context.getObsService().purgeObs(new Obs(1), true);
+		assertThrows(APIException.class, () -> Context.getObsService().purgeObs(new Obs(1), true));
 	}
 	
 	/**
@@ -1472,13 +1467,13 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see ObsService#voidObs(Obs,String)
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void voidObs_shouldFailIfReasonParameterIsEmpty() {
 		ObsService obsService = Context.getObsService();
 		
 		Obs obs = obsService.getObs(7);
 		
-		obsService.voidObs(obs, "");
+		assertThrows(IllegalArgumentException.class, () -> obsService.voidObs(obs, ""));
 	}
 	
 	/**

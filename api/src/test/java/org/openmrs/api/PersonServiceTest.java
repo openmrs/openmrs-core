@@ -17,6 +17,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.openmrs.test.TestUtil.containsId;
@@ -676,16 +677,16 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		assertTrue("Number of relationship type are 6", relationshipTypes.size() == 6);
 	}
 	
-	@Test(expected = APIException.class)
+	@Test
 	public void retireRelationshipType_shouldFailIfGivenReasonIsNull() {
 		
-		personService.retireRelationshipType(new RelationshipType(), null);
+		assertThrows(APIException.class, () -> personService.retireRelationshipType(new RelationshipType(), null));
 	}
 	
-	@Test(expected = APIException.class)
+	@Test
 	public void retireRelationshipType_shouldFailIfGivenReasonIsEmptyString() {
 		
-		personService.retireRelationshipType(new RelationshipType(), "");
+		assertThrows(APIException.class, () -> personService.retireRelationshipType(new RelationshipType(), ""));
 	}
 	
 	@Test
@@ -1243,31 +1244,31 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see PersonService#savePersonMergeLog(PersonMergeLog)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void savePersonMergeLog_shouldRequireLoser() throws Exception {
 		PersonMergeLog personMergeLog = getTestPersonMergeLog();
 		personMergeLog.setLoser(null);
-		Context.getPersonService().savePersonMergeLog(personMergeLog);
+		assertThrows(APIException.class, () -> Context.getPersonService().savePersonMergeLog(personMergeLog));
 	}
 	
 	/**
 	 * @see PersonService#savePersonMergeLog(PersonMergeLog)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void savePersonMergeLog_shouldRequireWinner() throws Exception {
 		PersonMergeLog personMergeLog = getTestPersonMergeLog();
 		personMergeLog.setWinner(null);
-		Context.getPersonService().savePersonMergeLog(personMergeLog);
+		assertThrows(APIException.class, () -> Context.getPersonService().savePersonMergeLog(personMergeLog));
 	}
 	
 	/**
 	 * @see PersonService#savePersonMergeLog(PersonMergeLog)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void savePersonMergeLog_shouldRequirePersonMergeLogData() throws Exception {
 		PersonMergeLog personMergeLog = new PersonMergeLog();
 		personMergeLog.setPersonMergeLogData(null);
-		Context.getPersonService().savePersonMergeLog(personMergeLog);
+		assertThrows(APIException.class, () -> Context.getPersonService().savePersonMergeLog(personMergeLog));
 	}
 	
 	/**
@@ -1398,9 +1399,9 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see PersonService#getPersonMergeLogByUuid(String,boolean)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void getPersonMergeLogByUuid_shouldRequireUuid() throws Exception {
-		Context.getPersonService().getPersonMergeLogByUuid(null, false);
+		assertThrows(APIException.class, () -> Context.getPersonService().getPersonMergeLogByUuid(null, false));
 	}
 	
 	/**
@@ -1520,14 +1521,14 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see PersonService#saveRelationship(Relationship)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void saveRelationship_shouldThrowAPIException() {
 		Relationship relationship = new Relationship();
 		Person person = new Person();
 		relationship.setPersonA(person);
 		relationship.setPersonB(person);
 		
-		personService.saveRelationship(relationship);
+		assertThrows(APIException.class, () -> personService.saveRelationship(relationship));
 		
 	}
 	
@@ -1940,12 +1941,12 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	 * @throws APIException
 	 * @see PersonService#savePersonName(org.openmrs.PersonName)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void savePersonName_shouldFailIfYouTryToVoidTheLastNonVoidedName() throws Exception {
 		executeDataSet("org/openmrs/api/include/PersionServiceTest-voidUnvoidPersonName.xml");
 		PersonName personName = Context.getPersonService().getPersonNameByUuid("39ghgh7b-6482-487d-94ce-c07bb3ca3cc1");
 		Assert.assertFalse(personName.getVoided());
-		Context.getPersonService().voidPersonName(personName, "Test Voiding PersonName");
+		assertThrows(APIException.class, () -> Context.getPersonService().voidPersonName(personName, "Test Voiding PersonName"));
 	}
 	
 	/**
@@ -2058,12 +2059,12 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see PersonService#saveRelationshipType(RelationshipType)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void saveRelationshipType_shouldFailIfTheDescriptionIsNotSpecified() throws Exception {
 		RelationshipType relationshipType = new RelationshipType();
 		relationshipType.setaIsToB("Sister");
 		relationshipType.setbIsToA("Brother");
-		personService.saveRelationshipType(relationshipType);
+		assertThrows(APIException.class, () -> personService.saveRelationshipType(relationshipType));
 	}
 	
 	/**
@@ -2156,39 +2157,39 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	 * @see PersonService#savePersonAttributeType(PersonAttributeType)
 	 * @throws PersonAttributeTypeLockedException
 	 */
-	@Test(expected = PersonAttributeTypeLockedException.class)
+	@Test
 	public void savePersonAttributeType_shouldThrowAnErrorWhenTryingToSavePersonAttributeTypeWhilePersonAttributeTypesAreLocked()
 	        throws Exception {
 		PersonService ps = Context.getPersonService();
 		createPersonAttributeTypeLockedGPAndSetValue("true");
 		PersonAttributeType pat = ps.getPersonAttributeType(1);
 		pat.setDescription("New person attribute type");
-		ps.savePersonAttributeType(pat);
+		assertThrows(PersonAttributeTypeLockedException.class, () -> ps.savePersonAttributeType(pat));
 	}
 	
-	@Test(expected = PersonAttributeTypeLockedException.class)
+	@Test
 	public void shouldFailToRetirePersonAttributeTypeWhilePersonAttributeTypesAreLocked() {
 		
 		createPersonAttributeTypeLockedGPAndSetValue("true");
 		PersonAttributeType pat = personService.getPersonAttributeType(UNRETIRED_PERSON_ATTRIBUTE_TYPE);
 		
-		personService.retirePersonAttributeType(pat, "Retire test");
+		assertThrows(PersonAttributeTypeLockedException.class, () -> personService.retirePersonAttributeType(pat, "Retire test"));
 	}
 	
-	@Test(expected = APIException.class)
+	@Test
 	public void shouldFailToRetirePersonAttributeTypeIfGivenReasonIsNull() {
 		
 		PersonAttributeType pat = personService.getPersonAttributeType(UNRETIRED_PERSON_ATTRIBUTE_TYPE);
 		
-		personService.retirePersonAttributeType(pat, null);
+		assertThrows(APIException.class, () -> personService.retirePersonAttributeType(pat, null));
 	}
 	
-	@Test(expected = APIException.class)
+	@Test
 	public void shouldFailToRetirePersonAttributeTypeIfGivenReasonIsEmpty() {
 		
 		PersonAttributeType pat = personService.getPersonAttributeType(UNRETIRED_PERSON_ATTRIBUTE_TYPE);
 		
-		personService.retirePersonAttributeType(pat, "");
+		assertThrows(APIException.class, () -> personService.retirePersonAttributeType(pat, ""));
 	}
 	
 	@Test
@@ -2207,13 +2208,13 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(retiredPat.getDateRetired());
 	}
 	
-	@Test(expected = PersonAttributeTypeLockedException.class)
+	@Test
 	public void unretirePersonAttributeType_shouldThrowAnErrorWhenTryingToUnretirePersonAttributeTypeWhilePersonAttributeTypesAreLocked() {
 		
 		createPersonAttributeTypeLockedGPAndSetValue("true");
 		PersonAttributeType pat = personService.getPersonAttributeType(RETIRED_PERSON_ATTRIBUTE_TYPE);
 		
-		personService.unretirePersonAttributeType(pat);
+		assertThrows(PersonAttributeTypeLockedException.class, () -> personService.unretirePersonAttributeType(pat));
 	}
 	
 	@Test
@@ -2234,13 +2235,13 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	 * @see PersonService#purgePersonAttributeType(PersonAttributeType)
 	 * @throws PersonAttributeTypeLockedException
 	 */
-	@Test(expected = PersonAttributeTypeLockedException.class)
+	@Test
 	public void purgePersonAttributeType_shouldThrowAnErrorWhileTryingToDeletePersonAttributeTypeWhenPersonAttributeTypesAreLocked()
 	        throws Exception {
 		PersonService ps = Context.getPersonService();
 		createPersonAttributeTypeLockedGPAndSetValue("true");
 		PersonAttributeType pat = ps.getPersonAttributeType(1);
-		ps.purgePersonAttributeType(pat);
+		assertThrows(PersonAttributeTypeLockedException.class, () ->  ps.purgePersonAttributeType(pat));
 	}
 	
 	@Test
