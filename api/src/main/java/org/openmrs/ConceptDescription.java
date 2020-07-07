@@ -9,31 +9,59 @@
  */
 package org.openmrs;
 
+import org.hibernate.annotations.BatchSize;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import java.util.Date;
 import java.util.Locale;
 
 /**
  * ConceptDescription is the localized description of a concept.
  */
+@Entity
+@Table(name = "concept_description")
+@BatchSize(size = 10)
 public class ConceptDescription extends BaseOpenmrsObject implements Auditable, java.io.Serializable {
 	
 	private static final long serialVersionUID = -7223075113369136584L;
 	
 	// Fields
+	@Id
+	@Column(name = "concept_description_id")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "concept_description_id_gen")
+	@SequenceGenerator(name = "concept_description_id_gen", sequenceName = "concept_description_concept_description_id_seq")
 	private Integer conceptDescriptionId;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
-	
+
+	@Column(length = 65535)
 	private String description;
-	
+
+	@Column(nullable = false, length = 50)
 	private Locale locale;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
-	
+
+	@Column(name = "date_created", nullable = false)
 	private Date dateCreated;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "changed_by")
 	private User changedBy;
-	
+
+	@Column(name = "date_changed")
 	private Date dateChanged;
 	
 	// Constructors
