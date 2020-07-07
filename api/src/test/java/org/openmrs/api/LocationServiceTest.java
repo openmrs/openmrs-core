@@ -14,6 +14,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -542,14 +543,14 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see LocationService#saveLocationTag(LocationTag)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void saveLocationTag_shouldThrowExceptionIfTagNameIsNull() {
 		LocationTag tag = new LocationTag();
 		
 		tag.setName(null);
 		tag.setDescription("desc");
 		
-		Context.getLocationService().saveLocationTag(tag);
+		assertThrows(APIException.class, () -> Context.getLocationService().saveLocationTag(tag));
 	}
 	
 	/**
@@ -850,23 +851,23 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see LocationService#saveLocation(Location)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void saveLocation_shouldThrowAPIExceptionIfLocationHasNoName() {
 		Location location = new Location();
-		Context.getLocationService().saveLocation(location);
+		assertThrows(APIException.class, () -> Context.getLocationService().saveLocation(location));
 	}
 	
 	/**
 	 * @see LocationService#saveLocation(Location)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void saveLocation_shouldThrowAPIExceptionIfTransientTagIsNotFound() {
 		LocationTag tagWithoutName = new LocationTag("some random tag name", "a nonexistant tag");
 		Location location = new Location();
 		location.setName("Some name");
 		location.setDescription("Some description");
 		location.addTag(tagWithoutName);
-		Context.getLocationService().saveLocation(location);
+		assertThrows(APIException.class, () -> Context.getLocationService().saveLocation(location));
 	}
 	
 	/**
@@ -882,14 +883,14 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see LocationService#saveLocationTag(LocationTag)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void saveLocationTag_shouldThrowAPIExceptionIfTagHasNoName() {
 		LocationTag tagWithoutName = new LocationTag();
 		Location location = new Location();
 		location.setName("Some name");
 		location.setDescription("Some description");
 		location.addTag(tagWithoutName);
-		Context.getLocationService().saveLocation(location);
+		assertThrows(APIException.class, () -> Context.getLocationService().saveLocation(location));
 	}
 	
 	/**

@@ -9,6 +9,29 @@
  */
 package org.openmrs.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
+
+import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -49,29 +72,6 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.DateUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
-
-import java.lang.reflect.Field;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Tests all methods in the {@link EncounterService}
@@ -862,9 +862,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see EncounterService#getEncountersByPatient(Patient)
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void getEncountersByPatient_shouldThrowErrorWhenGivenNullParameter() {
-		Context.getEncounterService().getEncountersByPatient((Patient) null);
+		assertThrows(IllegalArgumentException.class, () -> Context.getEncounterService().getEncountersByPatient((Patient) null));
 	}
 	
 	/**
@@ -881,9 +881,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see EncounterService#getEncountersByPatientId(Integer)
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void getEncountersByPatientId_shouldThrowErrorIfGivenANullParameter() {
-		Context.getEncounterService().getEncountersByPatientId(null);
+		assertThrows(IllegalArgumentException.class, () -> Context.getEncounterService().getEncountersByPatientId(null));
 	}
 	
 	/**
@@ -900,9 +900,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see EncounterService#getEncountersByPatientIdentifier(String)
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void getEncountersByPatientIdentifier_shouldThrowErrorIfGivenNullParameter() {
-		Context.getEncounterService().getEncountersByPatientIdentifier(null);
+		assertThrows(IllegalArgumentException.class, () -> Context.getEncounterService().getEncountersByPatientIdentifier(null));
 	}
 	
 	/**
@@ -1001,11 +1001,11 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see EncounterService#voidEncounter(Encounter,String)
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void voidEncounter_shouldThrowErrorWithNullReasonParameter() {
 		EncounterService encounterService = Context.getEncounterService();
 		Encounter type = encounterService.getEncounter(1);
-		encounterService.voidEncounter(type, null);
+		assertThrows(IllegalArgumentException.class, () -> encounterService.voidEncounter(type, null));
 	}
 	
 	/**
@@ -1503,11 +1503,11 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see EncounterService#retireEncounterType(EncounterType,String)
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void retireEncounterType_shouldThrowErrorIfGivenNullReasonParameter() {
 		EncounterService encounterService = Context.getEncounterService();
 		EncounterType type = encounterService.getEncounterType(1);
-		encounterService.retireEncounterType(type, null);
+		assertThrows(IllegalArgumentException.class, () -> encounterService.retireEncounterType(type, null));
 	}
 	
 	/**
@@ -1575,17 +1575,17 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see EncounterService#getEncounter(Integer)
 	 */
-	@Test(expected = IllegalArgumentException.class)
-	public void getEncounter_shouldThrowErrorIfGivenNullParameter() {
-		Context.getEncounterService().getEncounter(null);
+	@Test
+	public void getEncounter_shouldThrowErrorIfGivenNullParameter() { 
+		assertThrows(IllegalArgumentException.class, () -> Context.getEncounterService().getEncounter(null));
 	}
 	
 	/**
 	 * @see EncounterService#getEncounterType(Integer)
 	 */
-	@Test(expected = IllegalArgumentException.class)
-	public void getEncounterType_shouldThrowErrorIfGivenNullParameter() {
-		Context.getEncounterService().getEncounterType((Integer) null);
+	@Test
+	public void getEncounterType_shouldThrowErrorIfGivenNullParameter() { 
+		assertThrows(IllegalArgumentException.class, () -> Context.getEncounterService().getEncounterType((Integer) null));
 	}
 	
 	/**
@@ -1679,9 +1679,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see EncounterService#getEncountersByPatient(String,boolean)
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void getEncountersByPatient_shouldThrowErrorIfGivenNullParameter() {
-		Context.getEncounterService().getEncountersByPatient(null, false);
+		assertThrows(IllegalArgumentException.class, () -> Context.getEncounterService().getEncountersByPatient(null, false));
 	}
 	
 	/**
@@ -1879,11 +1879,11 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see EncounterService#retireEncounterRole(org.openmrs.EncounterRole, String)
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void retireEncounterRole_shouldThrowErrorIfGivenNullReasonParameter() {
 		EncounterService encounterService = Context.getEncounterService();
 		EncounterRole encounterRole = encounterService.getEncounterRole(1);
-		encounterService.retireEncounterRole(encounterRole, null);
+		assertThrows(IllegalArgumentException.class, () -> encounterService.retireEncounterRole(encounterRole, null));
 	}
 	
 	/**
@@ -2460,10 +2460,10 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see EncounterService#canEditEncounter(Encounter, User)
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void canEditEncounter_shouldFailfIfEncounterIsNull() {
 		// invoke method using null encounter
-		Context.getEncounterService().canEditEncounter(null, null);
+		assertThrows(IllegalArgumentException.class, () -> Context.getEncounterService().canEditEncounter(null, null));
 	}
 	
 	/**
@@ -2488,10 +2488,10 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see EncounterService#canViewEncounter(Encounter, User)
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void canViewEncounter_shouldFailfIfEncounterIsNull() {
 		// invoke method using null encounter
-		Context.getEncounterService().canViewEncounter(null, null);
+		assertThrows(IllegalArgumentException.class, () -> Context.getEncounterService().canViewEncounter(null, null));
 	}
 	
 	/**
@@ -2513,7 +2513,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see EncounterService#getEncounter(Integer)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void getEncounter_shouldFailIfUserIsNotAllowedToViewEncounterByGivenId() {
 		// get encounter that has type with view privilege set
 		Encounter encounter = getEncounterWithViewPrivilege();
@@ -2528,7 +2528,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// have to add privilege in order to be able to call getEncounter(Integer) method
 		Context.addProxyPrivilege(PrivilegeConstants.GET_ENCOUNTERS);
 		
-		assertNull(Context.getEncounterService().getEncounter(encounter.getId()));
+		assertThrows(APIException.class, () -> Context.getEncounterService().getEncounter(encounter.getId()));
 	}
 	
 	/**
@@ -2559,7 +2559,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see EncounterService#saveEncounter(Encounter)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void saveEncounter_shouldFailfIfUserIsNotSupposedToEditEncountersOfTypeOfGivenEncounter() {
 		// get encounter that has type with edit privilege set
 		Encounter encounter = getEncounterWithEditPrivilege();
@@ -2574,13 +2574,13 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// have to add privilege in order to be able to call saveEncounter(Encounter) method
 		Context.addProxyPrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
 		
-		Context.getEncounterService().saveEncounter(encounter);
+		assertThrows(APIException.class, () -> Context.getEncounterService().saveEncounter(encounter));
 	}
 	
 	/**
 	 * @see EncounterService#voidEncounter(Encounter, String)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void voidEncounter_shouldFailfIfUserIsNotSupposedToEditEncountersOfTypeOfGivenEncounter() {
 		// get encounter that has type with edit privilege set
 		Encounter encounter = getEncounterWithEditPrivilege();
@@ -2595,13 +2595,13 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// have to add privilege in order to be able to call voidEncounter(Encounter,String) method
 		Context.addProxyPrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
 		
-		Context.getEncounterService().voidEncounter(encounter, "test");
+		assertThrows(APIException.class, () -> Context.getEncounterService().voidEncounter(encounter, "test"));
 	}
 	
 	/**
 	 * @see EncounterService#unvoidEncounter(Encounter)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void unvoidEncounter_shouldFailfIfUserIsNotSupposedToEditEncountersOfTypeOfGivenEncounter() {
 		// get encounter that has type with edit privilege set
 		Encounter encounter = getEncounterWithEditPrivilege();
@@ -2616,13 +2616,13 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// have to add privilege in order to be able to call unvoidEncounter(Encounter) method
 		Context.addProxyPrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
 		
-		Context.getEncounterService().unvoidEncounter(encounter);
+		assertThrows(APIException.class, () -> Context.getEncounterService().unvoidEncounter(encounter));
 	}
 	
 	/**
 	 * @see EncounterService#purgeEncounter(Encounter)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void purgeEncounter_shouldFailfIfUserIsNotSupposedToEditEncountersOfTypeOfGivenEncounter() {
 		// get encounter that has type with edit privilege set
 		Encounter encounter = getEncounterWithEditPrivilege();
@@ -2637,13 +2637,13 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// have to add privilege in order to be able to call purgeEncounter(Encounter) method
 		Context.addProxyPrivilege(PrivilegeConstants.PURGE_ENCOUNTERS);
 		
-		Context.getEncounterService().purgeEncounter(encounter);
+		assertThrows(APIException.class, () -> Context.getEncounterService().purgeEncounter(encounter));
 	}
 	
 	/**
 	 * @see EncounterService#purgeEncounter(Encounter,Boolean)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void purgeEncounterCascade_shouldFailfIfUserIsNotSupposedToEditEncountersOfTypeOfGivenEncounter()
 	{
 		// get encounter that has type with edit privilege set
@@ -2659,10 +2659,10 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// have to add privilege in order to be able to call purgeEncounter(Encounter,Boolean) method
 		Context.addProxyPrivilege(PrivilegeConstants.PURGE_ENCOUNTERS);
 		
-		Context.getEncounterService().purgeEncounter(encounter, Boolean.TRUE);
+		assertThrows(APIException.class, () -> Context.getEncounterService().purgeEncounter(encounter, Boolean.TRUE));
 	}
 	
-	@Test(expected = APIException.class)
+	@Test
 	public void getActiveEncounterVisitHandler_shouldThrowIfBeanWithGivenTypeAndNameNotFound() {
 		
 		String incorrectBeanName = OpenmrsConstants.REGISTERED_COMPONENT_NAME_PREFIX + "invalidName";
@@ -2672,7 +2672,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		Context.getAdministrationService().saveGlobalProperty(visitHandlerProperty);
 		
-		Context.getEncounterService().getActiveEncounterVisitHandler();
+		assertThrows(APIException.class, () -> Context.getEncounterService().getActiveEncounterVisitHandler());
 	}
 	
 	@Test
@@ -2814,7 +2814,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#saveEncounterType(EncounterType)
 	 * @see EncounterService#checkIfEncounterTypesAreLocked()
 	 */
-	@Test(expected = EncounterTypeLockedException.class)
+	@Test
 	public void saveEncounterType_shouldThrowErrorWhenTryingToSaveEncounterTypeWhenEncounterTypesAreLocked()
 	{
 		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED);
@@ -2826,13 +2826,13 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		Assert.assertNotNull(encounterType);
 		
-		encounterService.saveEncounterType(encounterType);
+		assertThrows(EncounterTypeLockedException.class, () -> encounterService.saveEncounterType(encounterType));
 	}
 	
 	/**
 	 * @see EncounterService#retireEncounterType(EncounterType, String)
 	 */
-	@Test(expected = EncounterTypeLockedException.class)
+	@Test
 	public void retireEncounterType_shouldThrowErrorWhenTryingToRetireEncounterTypeWhenEncounterTypesAreLocked()
 	{
 		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED);
@@ -2843,13 +2843,13 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		EncounterType encounterType = Context.getEncounterService().getEncounterType(1);
 		Assert.assertNotNull(encounterType);
 		
-		encounterService.retireEncounterType(encounterType, "reason");
+		assertThrows(EncounterTypeLockedException.class, () -> encounterService.retireEncounterType(encounterType, "reason"));
 	}
 	
 	/**
 	 * @see EncounterService#unretireEncounterType(EncounterType)
 	 */
-	@Test(expected = EncounterTypeLockedException.class)
+	@Test
 	public void unretireEncounterType_shouldThrowErrorWhenTryingToUnretireEncounterTypeWhenEncounterTypesAreLocked()
 	{
 		EncounterService encounterService = Context.getEncounterService();
@@ -2859,13 +2859,13 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		gp.setPropertyValue("true");
 		Context.getAdministrationService().saveGlobalProperty(gp);
 		
-		encounterService.unretireEncounterType(encounterType);
+		assertThrows(EncounterTypeLockedException.class, () -> encounterService.unretireEncounterType(encounterType));
 	}
 	
 	/**
 	 * @see EncounterService#purgeEncounterType(EncounterType)
 	 */
-	@Test(expected = EncounterTypeLockedException.class)
+	@Test
 	public void purgeEncounterType_shouldThrowErrorWhenTryingToDeleteEncounterTypeWhenEncounterTypesAreLocked()
 	{
 		EncounterService encounterService = Context.getEncounterService();
@@ -2877,7 +2877,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		gp.setPropertyValue("true");
 		Context.getAdministrationService().saveGlobalProperty(gp);
 		
-		encounterService.purgeEncounterType(encounterType);
+		assertThrows(EncounterTypeLockedException.class, () -> encounterService.purgeEncounterType(encounterType));
 	}
 	
 	@Test
