@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.handler;
 
+import static org.junit.Assert.assertThrows;
+
 import java.util.Date;
 
 import org.junit.Test;
@@ -29,28 +31,28 @@ public class RequireVoidReasonVoidHandlerTest extends BaseContextSensitiveTest {
 	/**
 	 * @see RequireVoidReasonVoidHandler#handle(Voidable,User,Date,String)
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void handle_shouldThrowIllegalArgumentExceptionIfPatientVoidReasonIsNull() {
 		Patient p = Context.getPatientService().getPatient(2);
-		Context.getPatientService().voidPatient(p, null);
+		assertThrows(IllegalArgumentException.class, () -> Context.getPatientService().voidPatient(p, null));
 	}
 	
 	/**
 	 * @see RequireVoidReasonVoidHandler#handle(Voidable,User,Date,String)
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void handle_shouldThrowIllegalArgumentExceptionIfEncounterVoidReasonIsEmpty() {
 		Encounter e = Context.getEncounterService().getEncounter(3);
-		Context.getEncounterService().voidEncounter(e, "");
+		assertThrows(IllegalArgumentException.class, () -> Context.getEncounterService().voidEncounter(e, ""));
 	}
 	
 	/**
 	 * @see RequireVoidReasonVoidHandler#handle(Voidable,User,Date,String)
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void handle_shouldThrowIllegalArgumentExceptionIfObsVoidReasonIsBlank() {
 		Obs o = Context.getObsService().getObs(7);
-		Context.getObsService().voidObs(o, "  ");
+		assertThrows(IllegalArgumentException.class, () -> Context.getObsService().voidObs(o, "  "));
 	}
 	
 	/**

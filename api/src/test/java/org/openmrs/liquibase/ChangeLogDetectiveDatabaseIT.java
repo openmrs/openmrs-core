@@ -9,18 +9,17 @@
  */
 package org.openmrs.liquibase;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import java.util.List;
 import java.util.Map;
+
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.openmrs.util.H2DatabaseIT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 public class ChangeLogDetectiveDatabaseIT extends H2DatabaseIT {
 	
@@ -28,8 +27,6 @@ public class ChangeLogDetectiveDatabaseIT extends H2DatabaseIT {
 	
 	private static final String VERSION_2_1_X = "2.1.x";
 	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	
 	@Test
 	public void shouldGetInitialLiquibaseSnapshotVersion() throws Exception {
