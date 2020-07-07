@@ -9,6 +9,8 @@
  */
 package org.openmrs.web;
 
+import static org.junit.Assert.assertThrows;
+
 import org.junit.Test;
 import org.openmrs.module.ModuleException;
 import org.openmrs.util.DatabaseUpdateException;
@@ -16,9 +18,9 @@ import org.openmrs.util.InputRequiredException;
 
 public class WebDaemonTest {
 	
-	@Test(expected = ModuleException.class)
+	@Test
 	public void startOpenmrs_shouldThrowExceptionGivenNull() throws DatabaseUpdateException, InputRequiredException {
-		WebDaemon.startOpenmrs(null);
+		assertThrows(ModuleException.class, () -> WebDaemon.startOpenmrs(null));
 	}
 
 }

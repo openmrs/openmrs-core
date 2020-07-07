@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.context;
 
+import static org.junit.Assert.assertThrows;
+
 import java.util.List;
 import java.util.Locale;
 
@@ -48,41 +50,41 @@ public class ContextTest extends BaseContextSensitiveTest {
 	/**
 	 * @see Context#authenticate(String,String)
 	 */
-	@Test(expected = ContextAuthenticationException.class)
+	@Test
 	public void authenticate_shouldNotAuthenticateWithNullPassword() {
-		Context.authenticate("some username", null);
+		assertThrows(ContextAuthenticationException.class, () -> Context.authenticate("some username", null));
 	}
 	
 	/**
 	 * @see Context#authenticate(String,String)
 	 */
-	@Test(expected = ContextAuthenticationException.class)
+	@Test
 	public void authenticate_shouldNotAuthenticateWithNullPasswordAndProperSystemId() {
-		Context.authenticate("1-8", null);
+		assertThrows(ContextAuthenticationException.class, () -> Context.authenticate("1-8", null));
 	}
 	
 	/**
 	 * @see Context#authenticate(String,String)
 	 */
-	@Test(expected = ContextAuthenticationException.class)
+	@Test
 	public void authenticate_shouldNotAuthenticateWithNullPasswordAndProperUsername() {
-		Context.authenticate("admin", null);
+		assertThrows(ContextAuthenticationException.class, () -> Context.authenticate("admin", null));
 	}
 	
 	/**
 	 * @see Context#authenticate(String,String)
 	 */
-	@Test(expected = ContextAuthenticationException.class)
+	@Test
 	public void authenticate_shouldNotAuthenticateWithNullUsername() {
-		Context.authenticate(null, "some password");
+		assertThrows(ContextAuthenticationException.class, () -> Context.authenticate(null, "some password"));
 	}
 	
 	/**
 	 * @see Context#authenticate(String,String)
 	 */
-	@Test(expected = ContextAuthenticationException.class)
+	@Test
 	public void authenticate_shouldNotAuthenticateWithNullUsernameAndPassword() {
-		Context.authenticate((String) null, (String) null);
+		assertThrows(ContextAuthenticationException.class, () -> Context.authenticate((String) null, (String) null));
 	}
 	
 	/**
@@ -110,10 +112,10 @@ public class ContextTest extends BaseContextSensitiveTest {
 	/**
 	 * @see Context#getUserContext()
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void getUserContext_shouldFailIfSessionHasntBeenOpened() {
 		Context.closeSession();
-		Context.getUserContext(); // trigger the api exception
+		assertThrows(APIException.class, () -> Context.getUserContext()); // trigger the api exception
 	}
 	
 	/**
@@ -191,13 +193,11 @@ public class ContextTest extends BaseContextSensitiveTest {
 	/**
 	 * @see Context#getRegisteredComponent(String, Class)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void getRegisteredComponent_shouldFailIfBeanHaveBeenREgisteredOfThePassedTypeAndNameDoesntExist()
 	{
+		assertThrows(APIException.class, () -> Context.getRegisteredComponent("invalidBeanName", EncounterVisitHandler.class));
 		
-		Context.getRegisteredComponent("invalidBeanName", EncounterVisitHandler.class);
-		
-		Assert.fail();
 	}
 	
 	/**
