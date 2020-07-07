@@ -9,6 +9,8 @@
  */
 package org.openmrs.module;
 
+import static org.junit.Assert.assertThrows;
+
 import java.io.File;
 import java.net.URL;
 
@@ -75,10 +77,10 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	/**
 	 * @see ModuleUtil#checkMandatoryModulesStarted()
 	 */
-	@Test(expected = MandatoryModuleException.class)
+	@Test
 	public void checkMandatoryModulesStarted_shouldThrowModuleExceptionIfAMandatoryModuleIsNotStarted() throws Exception {
 		executeDataSet("org/openmrs/module/include/mandatoryModulesGlobalProperties.xml");
-		ModuleUtil.checkMandatoryModulesStarted();
+		assertThrows(MandatoryModuleException.class, () -> ModuleUtil.checkMandatoryModulesStarted());
 	}
 	
 	/**
@@ -307,54 +309,54 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	/**
 	 * @see ModuleUtil#checkRequiredVersion(String, String)
 	 */
-	@Test(expected = ModuleException.class)
+	@Test
 	public void checkRequiredVersion_shouldThrowModuleExceptionIfOpenmrsVersionBeyondWildCardRange() throws Exception {
 		String openmrsVersion = "1.4.3";
 		String requiredOpenmrsVersion = "1.3.*";
-		ModuleUtil.checkRequiredVersion(openmrsVersion, requiredOpenmrsVersion);
+		assertThrows(ModuleException.class, () -> ModuleUtil.checkRequiredVersion(openmrsVersion, requiredOpenmrsVersion));
 	}
 	
 	/**
 	 * @see ModuleUtil#checkRequiredVersion(String, String)
 	 */
-	@Test(expected = ModuleException.class)
+	@Test
 	public void checkRequiredVersion_shouldThrowModuleExceptionIfRequiredVersionBeyondOpenmrsVersion() throws Exception {
 		String openmrsVersion = "1.4.3";
 		String requiredOpenmrsVersion = "1.5.*";
-		ModuleUtil.checkRequiredVersion(openmrsVersion, requiredOpenmrsVersion);
+		assertThrows(ModuleException.class, () -> ModuleUtil.checkRequiredVersion(openmrsVersion, requiredOpenmrsVersion));
 	}
 	
 	/**
 	 * @see ModuleUtil#checkRequiredVersion(String, String)
 	 */
-	@Test(expected = ModuleException.class)
+	@Test
 	public void checkRequiredVersion_shouldThrowModuleExceptionIfRequiredVersionWithWildCardBeyondOpenmrsVersion()
 	        throws Exception {
 		String openmrsVersion = "1.4.3";
 		String requiredOpenmrsVersion = "1.5.* - 1.6.*";
-		ModuleUtil.checkRequiredVersion(openmrsVersion, requiredOpenmrsVersion);
+		assertThrows(ModuleException.class, () -> ModuleUtil.checkRequiredVersion(openmrsVersion, requiredOpenmrsVersion));
 	}
 	
 	/**
 	 * @see ModuleUtil#checkRequiredVersion(String, String)
 	 */
-	@Test(expected = ModuleException.class)
+	@Test
 	public void checkRequiredVersion_shouldThrowModuleExceptionIfRequiredVersionWithWildCardOnOneEndBeyondOpenmrsVersion()
 	        throws Exception {
 		String openmrsVersion = "1.4.3";
 		String requiredOpenmrsVersion = "1.4.5 - 1.5.*";
-		ModuleUtil.checkRequiredVersion(openmrsVersion, requiredOpenmrsVersion);
+		assertThrows(ModuleException.class, () -> ModuleUtil.checkRequiredVersion(openmrsVersion, requiredOpenmrsVersion));
 	}
 	
 	/**
 	 * @see ModuleUtil#checkRequiredVersion(String, String)
 	 */
-	@Test(expected = ModuleException.class)
+	@Test
 	public void checkRequiredVersion_shouldThrowModuleExceptionIfSingleEntryRequiredVersionBeyondOpenmrsVersion()
 	        throws Exception {
 		String openmrsVersion = "1.4.3";
 		String requiredOpenmrsVersion = "1.5.0";
-		ModuleUtil.checkRequiredVersion(openmrsVersion, requiredOpenmrsVersion);
+		assertThrows(ModuleException.class, () -> ModuleUtil.checkRequiredVersion(openmrsVersion, requiredOpenmrsVersion));
 	}
 	
 	/**
