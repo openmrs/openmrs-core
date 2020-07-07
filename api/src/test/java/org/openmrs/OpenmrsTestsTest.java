@@ -9,7 +9,8 @@
  */
 package org.openmrs;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -18,9 +19,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.junit.Assert;
+
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -43,7 +45,7 @@ public class OpenmrsTestsTest {
 	public void shouldHaveAtLeastOneTest() {
 		List<Class<?>> classes = getTestClasses();
 		
-		assertTrue("There should be more than one class but there was only " + classes.size(), classes.size() > 1);
+		assertTrue(classes.size() > 1, "There should be more than one class but there was only " + classes.size());
 	}
 	
 	/**
@@ -65,8 +67,7 @@ public class OpenmrsTestsTest {
 					String methodName = method.getName();
 					
 					boolean passes = methodName.startsWith("should") || methodName.contains("_should");
-					assertTrue(currentClass.getName() + "#" + methodName
-					        + " is supposed to either 1) start with 'should' or 2) contain '_should' but it doesn't", passes);
+					assertTrue(passes, currentClass.getName() + "#" + methodName + " is supposed to either 1) start with 'should' or 2) contain '_should' but it doesn't");
 				}
 			}
 		}
@@ -88,9 +89,7 @@ public class OpenmrsTestsTest {
 				
 				// make sure every should___ method has an @Test annotation
 				if (methodName.startsWith("should") || methodName.contains("_should")) {
-					assertTrue(currentClass.getName() + "#" + methodName
-					        + " does not have the @Test annotation on it even though the method name starts with 'should'",
-					    method.getAnnotation(Test.class) != null);
+					assertTrue(method.getAnnotation(org.junit.jupiter.api.Test.class) != null || method.getAnnotation(Test.class) != null, currentClass.getName() + "#" + methodName + " does not have the @Test annotation on it even though the method name starts with 'should'");
 				}
 			}
 		}
@@ -111,18 +110,16 @@ public class OpenmrsTestsTest {
 		for (Class<?> currentClass : getClasses("^.*(?<!Test|IT|PT)\\.class$")) {
 			
 			// skip over classes that are @Ignore'd
-			if (currentClass.getAnnotation(Ignore.class) == null) {
+			if (currentClass.getAnnotation(Ignore.class) == null || currentClass.getAnnotation(Disabled.class) == null) {
 				boolean foundATestMethod = false;
 				
 				for (Method method : currentClass.getMethods()) {
-					if (method.getAnnotation(Test.class) != null) {
+					if (method.getAnnotation(org.junit.Test.class) != null && method.getAnnotation(org.junit.jupiter.api.Test.class) != null) {
 						foundATestMethod = true;
 					}
 				}
 				
-				Assert.assertFalse(
-				    currentClass.getName() + " does not end with 'Test' but contains @Test annotated methods",
-				    foundATestMethod);
+				assertFalse(foundATestMethod, currentClass.getName() + " does not end with 'Test' but contains @Test annotated methods");
 			}
 		}
 	}
@@ -150,7 +147,7 @@ public class OpenmrsTestsTest {
 		URL url = classLoader.getResource("org/openmrs");
 		File directory = OpenmrsUtil.url2file(url);
 		// make sure we get a directory back
-		assertTrue("org.openmrs.test should be a directory", directory.isDirectory());
+		assertTrue(directory.isDirectory(), "org.openmrs.test should be a directory");
 		
 		testClasses = getClassesInDirectory(directory, pattern);
 		
@@ -159,7 +156,7 @@ public class OpenmrsTestsTest {
 		if (url != null) {
 			directory = OpenmrsUtil.url2file(url);
 			// make sure we get a directory back
-			assertTrue("org.openmrs.web.test should be a directory", directory.isDirectory());
+			assertTrue(directory.isDirectory(), "org.openmrs.web.test should be a directory");
 			
 			testClasses.addAll(getClassesInDirectory(directory, pattern));
 		}
