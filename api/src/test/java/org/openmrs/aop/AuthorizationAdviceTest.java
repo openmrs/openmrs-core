@@ -16,6 +16,7 @@ package org.openmrs.aop;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
+import static org.junit.Assert.assertThrows;
 
 import javax.annotation.Resource;
 import java.util.LinkedHashSet;
@@ -91,10 +92,10 @@ public class AuthorizationAdviceTest extends BaseContextSensitiveTest {
 	@Component("listener2")
 	public static class Listener2 extends Listener1 {}
 	
-	@Test(expected = APIAuthenticationException.class)
+	@Test
 	public void before_shouldThrowAPIAuthenticationException() {
 		Context.getUserContext().logout();
-		Context.getConceptService().getConcept(3);
+		assertThrows(APIAuthenticationException.class, () -> Context.getConceptService().getConcept(3));
 	}
 	
 }

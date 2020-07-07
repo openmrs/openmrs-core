@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.handler;
 
+import static org.junit.Assert.assertThrows;
+
 import java.util.Date;
 
 import org.junit.Test;
@@ -29,34 +31,34 @@ public class RequiredReasonVoidSaveHandlerTest extends BaseContextSensitiveTest 
 	/**
 	 * @see RequireVoidReasonSaveHandler#handle(Voidable,User,Date,String)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void handle_shouldThrowAPIExceptionIfPatientVoidReasonIsNull() {
 		Patient p = Context.getPatientService().getPatient(2);
 		p.setVoided(true);
 		p.setVoidReason(null);
-		Context.getPatientService().savePatient(p);
+		assertThrows(APIException.class, () -> Context.getPatientService().savePatient(p));
 	}
 	
 	/**
 	 * @see RequireVoidReasonSaveHandler#handle(Voidable,User,Date,String)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void handle_shouldThrowAPIExceptionIfEncounterVoidReasonIsEmpty() {
 		Encounter e = Context.getEncounterService().getEncounter(3);
 		e.setVoided(true);
 		e.setVoidReason("");
-		Context.getEncounterService().saveEncounter(e);
+		assertThrows(APIException.class, () -> Context.getEncounterService().saveEncounter(e));
 	}
 	
 	/**
 	 * @see RequireVoidReasonSaveHandler#handle(Voidable,User,Date,String)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void handle_shouldThrowAPIExceptionIfObsVoidReasonIsBlank() {
 		Encounter e = Context.getEncounterService().getEncounter(3);
 		e.setVoided(true);
 		e.setVoidReason("  ");
-		Context.getEncounterService().saveEncounter(e);
+		assertThrows(APIException.class, () -> Context.getEncounterService().saveEncounter(e));
 	}
 	
 	/**
