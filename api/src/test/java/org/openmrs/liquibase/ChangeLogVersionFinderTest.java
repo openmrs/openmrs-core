@@ -9,19 +9,21 @@
  */
 package org.openmrs.liquibase;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class ChangeLogVersionFinderTest {
 	
@@ -155,9 +157,9 @@ public class ChangeLogVersionFinderTest {
 		assertTrue(actual.isEmpty());
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void shouldHandleEmtpyString() {
-		changeLogVersionFinder.getUpdateVersionsGreaterThan("");
+		assertThrows(IllegalArgumentException.class, () -> changeLogVersionFinder.getUpdateVersionsGreaterThan(""));
 	}
 	
 	@Test
@@ -197,8 +199,8 @@ public class ChangeLogVersionFinderTest {
 		assertEquals(expected, actual);
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void shouldHandleNonPatternMatchingVersionName() {
-		changeLogVersionFinder.getVersionAsDotX(OPENMRS_NOT_A_VERSION);
+		assertThrows(IllegalArgumentException.class, () -> changeLogVersionFinder.getVersionAsDotX(OPENMRS_NOT_A_VERSION));
 	}
 }

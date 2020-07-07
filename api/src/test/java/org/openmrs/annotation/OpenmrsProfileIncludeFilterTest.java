@@ -12,6 +12,7 @@ package org.openmrs.annotation;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThrows;
 
 import org.junit.Test;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -34,9 +35,9 @@ public class OpenmrsProfileIncludeFilterTest extends BaseContextSensitiveTest {
 	/**
 	 * @see OpenmrsProfileIncludeFilter#match(MetadataReader,MetadataReaderFactory)
 	 */
-	@Test(expected = NoSuchBeanDefinitionException.class)
+	@Test
 	public void match_shouldNotCreateBeanForOpenmrs1_6To1_7() {
-		applicationContext.getBean(OpenmrsComponent1_6To1_7.class);
+		assertThrows(NoSuchBeanDefinitionException.class, () -> applicationContext.getBean(OpenmrsComponent1_6To1_7.class));
 	}
 	
 }

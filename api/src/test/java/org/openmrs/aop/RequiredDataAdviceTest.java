@@ -9,6 +9,7 @@
  */
 package org.openmrs.aop;
 
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
@@ -22,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -206,11 +206,11 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	/**
 	 * @see RequiredDataAdvice#getChildCollection(OpenmrsObject, Field)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void getChildCollection_shouldThrowAPIExceptionIfGetterMethodNotFound() throws Exception {
 		ClassWithBadGetter oo = new ClassWithBadGetter();
 		oo.setMyLocations(new HashSet<>());
-		RequiredDataAdvice.getChildCollection(oo, ClassWithBadGetter.class.getDeclaredField("locations"));
+		assertThrows(APIException.class, () -> RequiredDataAdvice.getChildCollection(oo, ClassWithBadGetter.class.getDeclaredField("locations")));
 	}
 	
 	/**
