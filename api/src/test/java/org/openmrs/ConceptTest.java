@@ -846,14 +846,14 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	/**
 	 * @see Concept#setPreferredName(ConceptName)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void setPreferredName_shouldFailIfThePreferredNameToSetToIsAnIndexTerm() {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("some name", Context.getLocale()));
 		ConceptName preferredName = new ConceptName("some pref name", Context.getLocale());
 		preferredName.setLocalePreferred(true);
 		preferredName.setConceptNameType(ConceptNameType.INDEX_TERM);
-		concept.setPreferredName(preferredName);
+		assertThrows(APIException.class, () -> concept.setPreferredName(preferredName));
 	}
 	
 	/**
