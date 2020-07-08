@@ -9,6 +9,8 @@
  */
 package org.openmrs.logic.result;
 
+import static org.junit.Assert.assertThrows;
+
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -162,7 +164,7 @@ public class ResultTest {
 		Assert.assertEquals("some value", parentResult.latest().toString());
 	}
 	
-	@Test(expected = LogicException.class)
+	@Test
 	public void toObject_shouldFailWhenContainsMultipleResults() throws ParseException {
 		Result parentResult = new Result();
 		Result firstResult = new Result(Context.getDateFormat().parse("12/08/2008"), "some value", new Encounter(123));
@@ -171,7 +173,6 @@ public class ResultTest {
 		parentResult.add(firstResult);
 		parentResult.add(secondResult);
 		
-		Object toObject = parentResult.toObject();
-		Assert.assertNull(toObject);
+		assertThrows(LogicException.class, () -> parentResult.toObject());
 	}
 }

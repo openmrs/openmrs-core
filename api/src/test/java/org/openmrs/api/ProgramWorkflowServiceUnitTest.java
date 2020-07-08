@@ -65,7 +65,7 @@ public class ProgramWorkflowServiceUnitTest {
 		Assert.assertNull(pws.getProgramByName("A name"));
 	}
 	
-	@Test(expected = org.openmrs.api.ProgramNameDuplicatedException.class)
+	@Test
 	public void getProgramByName_shouldFailWhenTwoProgramsFoundWithSameName() {
 		ProgramWorkflowDAO mockDao = Mockito.mock(ProgramWorkflowDAO.class);
 		List<Program> programsWithGivenName = new ArrayList<>();
@@ -76,7 +76,7 @@ public class ProgramWorkflowServiceUnitTest {
 		Mockito.when(mockDao.getProgramsByName("A name", false)).thenReturn(programsWithGivenName);
 		Mockito.when(mockDao.getProgramsByName("A name", true)).thenReturn(programsWithGivenName);
 		pws.setProgramWorkflowDAO(mockDao);
-		pws.getProgramByName("A name");
+		assertThrows(ProgramNameDuplicatedException.class, () -> pws.getProgramByName("A name"));
 	}
 	
 	@Test
