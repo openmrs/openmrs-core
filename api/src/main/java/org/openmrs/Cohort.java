@@ -10,7 +10,20 @@
 package org.openmrs;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -21,16 +34,28 @@ import java.util.stream.Collectors;
 /**
  * This class represents a list of patientIds.
  */
+@Entity
+@Table(name = "cohort")
+@AttributeOverride(name = "uuid", column = @Column(name = "uuid", length = 38, unique = true))
 public class Cohort extends BaseChangeableOpenmrsData {
-	
+
 	public static final long serialVersionUID = 0L;
-	
+
+	@Id
+	@Column(name = "cohort_id")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cohort_id_gen")
+	@SequenceGenerator(name = "cohort_id_gen", sequenceName = "cohort_cohort_id_seq")
 	private Integer cohortId;
-	
+
+	@Column(nullable = false)
 	private String name;
-	
+
+	@Column(nullable = false, length = 1000)
 	private String description;
-	
+
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@LazyCollection(LazyCollectionOption.TRUE)
+	@JoinColumn(name = "cohort_id", nullable = false, insertable = false, updatable = false)
 	private Collection<CohortMembership> memberships;
 	
 	public Cohort() {
