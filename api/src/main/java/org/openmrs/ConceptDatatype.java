@@ -9,11 +9,23 @@
  */
 package org.openmrs;
 
+import jdk.nashorn.internal.ir.annotations.Immutable;
 import org.hibernate.search.annotations.DocumentId;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 /**
  * ConceptDatatype
  */
+@Entity
+@Table(name = "concept_datatype")
+@Immutable
 public class ConceptDatatype extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 473L;
@@ -63,9 +75,14 @@ public class ConceptDatatype extends BaseChangeableOpenmrsMetadata {
 	public static final String COMPLEX_UUID = "8d4a6242-c2cc-11de-8d13-0010c6dffd0f";
 	
 	// Fields
+	@Id
 	@DocumentId
+	@Column(name = "concept_datatype_id")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "concept_datatype_id_gen")
+	@SequenceGenerator(name = "concept_datatype_id_gen", sequenceName = "concept_datatype_concept_datatype_id_seq")
 	private Integer conceptDatatypeId;
 	
+	@Column(name = "hl7_abbreviation", length = 3)
 	private String hl7Abbreviation;
 	
 	// Constructors
