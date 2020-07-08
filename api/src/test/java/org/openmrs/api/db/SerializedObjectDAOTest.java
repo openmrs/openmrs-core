@@ -11,6 +11,7 @@ package org.openmrs.api.db;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 
 import java.util.Date;
 import java.util.List;
@@ -95,13 +96,13 @@ public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 		assertNotNull(newData.getDateCreated());
 	}
 	
-	@Test(expected = DAOException.class)
+	@Test
 	public void saveObject_shouldThrowAnExceptionIfObjectNotSupported() {
 		dao.unregisterSupportedType(Program.class);
 		Program data = new Program();
 		data.setName("NewProgram");
 		data.setDescription("This is to test saving a Program");
-		dao.saveObject(data);
+		assertThrows(DAOException.class, () -> dao.saveObject(data));
 	}
 	
 	@Test
