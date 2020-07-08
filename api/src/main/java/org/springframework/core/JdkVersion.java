@@ -21,7 +21,7 @@ package org.springframework.core;
  * operating on, to allow for automatically adapting to the present platform's
  * capabilities.
  *
- * <p>Note that Spring requires JVM 1.6 or higher, as of Spring 4.0.
+ * <p>Note that Spring requires JVM 1.8 or higher, as of Spring 5.0.
  *
  * @author Rod Johnson
  * @author Juergen Hoeller
@@ -65,14 +65,50 @@ public abstract class JdkVersion {
 	 */
 	public static final int JAVA_19 = 6;
 	
+	/**
+	 * Constant identifying the 10.0.x JVM (Java 10).
+	 */
+	public static final int JAVA_100 = 7;
+
+	/**
+	 * Constant identifying the 11.0.x JVM (Java 11).
+	 */
+	public static final int JAVA_110 = 8;
+
+	/**
+	 * Constant identifying the 12.0.x JVM (Java 12).
+	 */
+	public static final int JAVA_120 = 9;
+
+	/**
+	 * Constant identifying the 13.0.x JVM (Java 13).
+	 */
+	public static final int JAVA_130 = 10;
+
+	/**
+	 * Constant identifying the 14.0.x JVM (Java 14).
+	 */
+	public static final int JAVA_140 = 11;
+	
 	private static final String javaVersion;
 	
 	private static final int majorJavaVersion;
 	
 	static {
 		javaVersion = System.getProperty("java.version");
-		// version String should look like "1.4.2_10"
-		if (javaVersion.contains("1.9.")) {
+		// in versions 9 and lower		- version String should look like "1.4.2_10"
+		// in versions 10 and higher 	- version String should look like "11.0.7"
+		if (javaVersion.contains("14.0.")) {
+			majorJavaVersion = JAVA_140;
+		} else if (javaVersion.contains("13.0.")) {
+			majorJavaVersion = JAVA_130;
+		} else if (javaVersion.contains("12.0.")) {
+			majorJavaVersion = JAVA_120;
+		} else if (javaVersion.contains("11.0.")) {
+			majorJavaVersion = JAVA_110;
+		} else if (javaVersion.contains("10.0.")) {
+			majorJavaVersion = JAVA_100;
+		} else if (javaVersion.contains("1.9.")) {
 			majorJavaVersion = JAVA_19;
 		} else if (javaVersion.contains("1.8.")) {
 			majorJavaVersion = JAVA_18;
@@ -102,6 +138,11 @@ public abstract class JdkVersion {
 	 * @see #JAVA_17
 	 * @see #JAVA_18
 	 * @see #JAVA_19
+	 * @see #JAVA_100
+	 * @see #JAVA_110
+	 * @see #JAVA_120
+	 * @see #JAVA_130
+	 * @see #JAVA_140
 	 */
 	public static int getMajorJavaVersion() {
 		return majorJavaVersion;
