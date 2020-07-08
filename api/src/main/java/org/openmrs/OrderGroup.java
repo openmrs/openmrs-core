@@ -235,7 +235,6 @@ public class OrderGroup extends BaseChangeableOpenmrsData {
 	}
 
 	/**
-<<<<<<< HEAD
 	 * Gets the order group reason which denotes the reason why the group was
 	 * ordered
 	 * 
