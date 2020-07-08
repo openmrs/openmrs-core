@@ -10,21 +10,18 @@
 
 package org.openmrs.api.db.hibernate;
 
-import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import java.util.Date;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.openmrs.Condition;
 import org.openmrs.CodedOrFreeText;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
+import org.openmrs.Condition;
 import org.openmrs.ConditionClinicalStatus;
 import org.openmrs.ConditionVerificationStatus;
 import org.openmrs.Patient;
@@ -36,8 +33,6 @@ public class HibernateConditionDAOTest extends BaseContextSensitiveTest {
 	
 	private static final String CONDITIONS_XML = "org/openmrs/api/db/hibernate/include/HibernateConditionDAOTestDataSet.xml";
 	
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 	
 	@Autowired
 	ConditionDAO dao;

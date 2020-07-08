@@ -9,12 +9,14 @@
  */
 package org.openmrs;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
@@ -24,10 +26,7 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.hamcrest.Matchers;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
@@ -62,8 +61,6 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 	@Autowired
 	private EncounterService encounterService;
 	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	
 	@Test
 	public void shouldGetTheActiveOrdersForAPatient() {
@@ -295,10 +292,9 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		Encounter encounter = encounterService.getEncounter(3);
 		assertFalse(encounter.getOrders().isEmpty());
 		encounter.getOrders().iterator().next().setInstructions("new");
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage(Matchers.is(Context.getMessageSourceService().getMessage("editing.fields.not.allowed", new Object[] { "[instructions]", Order.class.getSimpleName() }, null)));
 		encounterService.saveEncounter(encounter);
-		Context.flushSession();
+		APIException exception = assertThrows(APIException.class, () -> Context.flushSession());
+		assertThat(exception.getMessage(), is(Context.getMessageSourceService().getMessage("editing.fields.not.allowed", new Object[] { "[instructions]", Order.class.getSimpleName() }, null)));
 	}
 	
 	/**

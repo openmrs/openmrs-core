@@ -11,6 +11,7 @@ package org.openmrs.hl7.handler;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -398,7 +399,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	/**
 	 * @see ORUR01Handler#processMessage(Message)
 	 */
-	@Test(expected = ApplicationException.class)
+	@Test
 	public void processMessage_shouldFailOnEmptyConceptAnswers() throws Exception {
 		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080630094800||ORU^R01|kgWdFt0SVwwClOfJm3pe|P|2.5|1||||||||15^AMRS.ELD.FORMID\r"
 		        + "PID|||3^^^^~d3811480^^^^||John3^Doe^||\r"
@@ -407,13 +408,13 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
 		        + "OBX|1|CWE|5497^CD4, BY FACS^99DCT||^^99DCT|||||||||20080208";
 		Message hl7message = parser.parse(hl7string);
-		router.processMessage(hl7message);
+		assertThrows(ApplicationException.class, () -> router.processMessage(hl7message));
 	}
 	
 	/**
 	 * @see ORUR01Handler#processMessage(Message)
 	 */
-	@Test(expected = ApplicationException.class)
+	@Test
 	public void processMessage_shouldFailOnEmptyConceptProposals() throws Exception {
 		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080630094800||ORU^R01|kgWdFt0SVwwClOfJm3pe|P|2.5|1||||||||15^AMRS.ELD.FORMID\r"
 		        + "PID|||3^^^^~d3811480^^^^||John3^Doe^||\r"
@@ -423,7 +424,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "OBR|1|||1284^PROBLEM LIST^99DCT\r"
 		        + "OBX|1|CWE|6042^PROBLEM ADDED^99DCT||PROPOSED^^99DCT|||||||||20080208";
 		Message hl7message = parser.parse(hl7string);
-		router.processMessage(hl7message);
+		assertThrows(ApplicationException.class, () -> router.processMessage(hl7message));
 	}
 	
 	/**
@@ -464,7 +465,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	/**
 	 * @see ORUR01Handler#processNK1(Patient,NK1)
 	 */
-	@Test(expected = HL7Exception.class)
+	@Test
 	public void processNK1_shouldFailIfTheCodingSystemIsNot99REL() throws Exception {
 		// process a message with an invalid coding system
 		Patient patient = new Patient(3); // the patient that is the focus of
@@ -483,13 +484,13 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		ORU_R01 oru = (ORU_R01) hl7message;
 		List<NK1> nk1List = oruHandler.getNK1List(oru);
 		for (NK1 nk1 : nk1List)
-			oruHandler.processNK1(patient, nk1);
+			assertThrows(HL7Exception.class, () -> oruHandler.processNK1(patient, nk1));
 	}
 	
 	/**
 	 * @see ORUR01Handler#processNK1(Patient,NK1)
 	 */
-	@Test(expected = HL7Exception.class)
+	@Test
 	public void processNK1_shouldFailIfTheRelationshipIdentifierIsFormattedImproperly() throws Exception {
 		// process a message with an invalid relationship identifier format
 		Patient patient = new Patient(3); // the patient that is the focus of
@@ -508,13 +509,13 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		ORU_R01 oru = (ORU_R01) hl7message;
 		List<NK1> nk1List = oruHandler.getNK1List(oru);
 		for (NK1 nk1 : nk1List)
-			oruHandler.processNK1(patient, nk1);
+			assertThrows(HL7Exception.class, () -> oruHandler.processNK1(patient, nk1));
 	}
 	
 	/**
 	 * @see ORUR01Handler#processNK1(Patient,NK1)
 	 */
-	@Test(expected = HL7Exception.class)
+	@Test
 	public void processNK1_shouldFailIfTheRelationshipTypeIsNotFound() throws Exception {
 		// process a message with a non-existent relationship type
 		Patient patient = new Patient(3); // the patient that is the focus of
@@ -533,7 +534,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		ORU_R01 oru = (ORU_R01) hl7message;
 		List<NK1> nk1List = oruHandler.getNK1List(oru);
 		for (NK1 nk1 : nk1List)
-			oruHandler.processNK1(patient, nk1);
+			assertThrows(HL7Exception.class, () -> oruHandler.processNK1(patient, nk1));
 	}
 	
 	/**
@@ -669,7 +670,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	/**
 	 * @see ORUR01Handler#processMessage(Message)
 	 */
-	@Test(expected = ApplicationException.class)
+	@Test
 	public void processMessage_shouldFailIfQuestionDatatypeIsCodedAndABooleanIsNotAValidAnswer() throws Exception {
 		GlobalProperty trueConceptGlobalProperty = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_TRUE_CONCEPT, "7",
 		        "Concept id of the concept defining the TRUE boolean concept");
@@ -685,13 +686,13 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "OBX|2|NM|4^CIVIL STATUS^99DCT||1|||||||||20080206";
 		Assert.assertEquals("Coded", Context.getConceptService().getConcept(4).getDatatype().getName());
 		Message hl7message = parser.parse(hl7string);
-		router.processMessage(hl7message);
+		assertThrows(ApplicationException.class, () -> router.processMessage(hl7message));
 	}
 	
 	/**
 	 * @see ORUR01Handler#processMessage(Message)
 	 */
-	@Test(expected = ApplicationException.class)
+	@Test
 	public void processMessage_shouldFailIfQuestionDatatypeIsNeitherBooleanNorNumericNorCoded() throws Exception {
 		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
 		        + "PID|||7^^^^||Collet^Test^Chebaskwony||\r"
@@ -701,7 +702,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "OBX|2|NM|19^FAVORITE FOOD, NON-CODED^99DCT||1|||||||||20080206";
 		Assert.assertEquals("Text", Context.getConceptService().getConcept(19).getDatatype().getName());
 		Message hl7message = parser.parse(hl7string);
-		router.processMessage(hl7message);
+		assertThrows(ApplicationException.class, () -> router.processMessage(hl7message));
 	}
 	
 	/**
@@ -1045,7 +1046,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	/**
 	 * @see ORUR01Handler#processMessage(Message)
 	 */
-	@Test(expected = ApplicationException.class)
+	@Test
 	public void processMessage_shouldFailIfTheProviderNameTypeCodeIsNotSpecifiedAndIsNotAPersonId() throws Exception {
 		int patientId = 2;
 		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
@@ -1057,7 +1058,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "&^|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
 		        + "ORC|RE||||||||20080226102537|1^Super User\r" + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT";
 		Message hl7message = parser.parse(hl7string);
-		router.processMessage(hl7message);
+		assertThrows(ApplicationException.class, () -> router.processMessage(hl7message));
 	}
 	
 	/**
