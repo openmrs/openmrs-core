@@ -9,23 +9,20 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertNotNull;
-
-import org.junit.Rule;
-import org.junit.Test;
 import org.junit.Before;
-import org.junit.rules.ExpectedException;
+import org.junit.Test;
 import org.openmrs.CodedOrFreeText;
-import org.openmrs.Condition;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
+import org.openmrs.Condition;
 import org.openmrs.ConditionVerificationStatus;
 import org.openmrs.Diagnosis;
 import org.openmrs.Encounter;
