@@ -12,6 +12,7 @@ package org.openmrs.api.db.hibernate;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -77,17 +78,17 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	 * @see {@link HibernateOrderDAO#getOrderGroupsByEncounter(Encounter)}
 	 * @throws Exception
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void getOrderGroupsByEncounter_shouldFailGivenNullEncounter() {
-		dao.getOrderGroupsByEncounter(null);
+		assertThrows(APIException.class, () -> dao.getOrderGroupsByEncounter(null));
 	}
 	/**
 	 * @see {@link HibernateOrderDAO#getOrderGroupsByPatient(Patient)}
 	 * @throws Exception
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void getOrderGroupsByPatient_shouldFailGivenNullPatient() {
-		dao.getOrderGroupsByPatient(null);
+		assertThrows(APIException.class, () -> dao.getOrderGroupsByPatient(null));
 	}
 	/**
 	 * @see {@link HibernateOrderDAO#getOrderGroupsByEncounter(Encounter)}

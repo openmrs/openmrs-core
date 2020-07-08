@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import static org.junit.Assert.assertThrows;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,9 +89,9 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	/**
 	 * @see PatientSearchCriteria#getQueryParts(String)
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void getQueryParts_shouldRejectNullAsName() {
-		patientSearchCriteria.getQueryParts(null);
+		assertThrows(IllegalArgumentException.class, () -> patientSearchCriteria.getQueryParts(null));
 	}
 	
 	/**

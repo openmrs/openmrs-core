@@ -9,6 +9,14 @@
  */
 package org.openmrs.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,6 +29,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import org.apache.commons.collections.ListUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -37,13 +46,6 @@ import org.openmrs.obs.SerializableComplexObsHandler;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.DateUtil;
 import org.openmrs.util.OpenmrsConstants;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * TODO clean up and finish this test for all methods in FormService
@@ -917,7 +919,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * @see FormService#saveForm(Form)
 	 * @throws FormsLockedException
 	 */
-	@Test(expected = FormsLockedException.class)
+	@Test
 	public void saveForm_shouldThrowAnErrorWhenTryingToSaveAnExistingFormWhileFormsAreLocked() {
 		FormService fs = Context.getFormService();
 		createFormsLockedGPAndSetValue("true");
@@ -925,14 +927,14 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		Form form = fs.getForm(1);
 		form.setName("modified basic form");
 
-		fs.saveForm(form);
+		assertThrows(FormsLockedException.class, () -> fs.saveForm(form));
 	}
 
 	/**
 	 * @see FormService#saveForm(Form)
 	 * @throws FormsLockedException
 	 */
-	@Test(expected = FormsLockedException.class)
+	@Test
 	public void saveForm_shouldThrowAnErrorWhenTryingToSaveANewFormWhileFormsAreLocked() {
 		FormService fs = Context.getFormService();
 		createFormsLockedGPAndSetValue("true");
@@ -942,21 +944,21 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		form.setVersion("1.0");
 		form.setDescription("testing TRUNK-4030");
 
-		fs.saveForm(form);
+		assertThrows(FormsLockedException.class, () -> fs.saveForm(form));
 	}
 
 	/**
 	 * @see FormService#purgeForm(Form)
 	 * @throws FormsLockedException
 	 */
-	@Test(expected = FormsLockedException.class)
+	@Test
 	public void purgeForm_shouldThrowAnErrorWhenTryingToDeleteFormWhileFormsAreLocked() {
 		FormService fs = Context.getFormService();
 		createFormsLockedGPAndSetValue("true");
 
 		Form form = fs.getForm(1);
 
-		fs.purgeForm(form);
+		assertThrows(FormsLockedException.class, () -> fs.purgeForm(form));
 	}
 
 	/**
@@ -977,13 +979,13 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * @see FormService#duplicateForm(Form)}
 	 * @throws FormsLockedException
 	 */
-	@Test(expected = FormsLockedException.class)
+	@Test
 	public void duplicateForm_shouldThrowAnErrorWhenTryingToDuplicateFormWhileFormsAreLocked() {
 		FormService fs = Context.getFormService();
 		createFormsLockedGPAndSetValue("true");
 
 		Form form = fs.getForm(1);
-		fs.duplicateForm(form);
+		assertThrows(FormsLockedException.class, () -> fs.duplicateForm(form));
 	}
 
 	/**

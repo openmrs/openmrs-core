@@ -12,6 +12,7 @@ package org.openmrs.hl7;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
@@ -126,14 +127,14 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	 * @throws HL7Exception
 	 * @see HL7Service#processHL7InQueue(HL7InQueue)
 	 */
-	@Test(expected = HL7Exception.class)
+	@Test
 	public void processHL7InQueue_shouldFailIfGivenInQueueIsAlreadyMarkedAsProcessing() throws HL7Exception {
 		executeDataSet("org/openmrs/hl7/include/ORUTest-initialData.xml");
 		
 		HL7Service hl7service = Context.getHL7Service();
 		HL7InQueue queueItem = hl7service.getHL7InQueue(1);
 		queueItem.setMessageState(HL7Constants.HL7_STATUS_PROCESSING); // set this to processing
-		hl7service.processHL7InQueue(queueItem);
+		assertThrows(HL7Exception.class, () -> hl7service.processHL7InQueue(queueItem));
 	}
 	
 	/**
@@ -373,7 +374,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	 * @throws HL7Exception
 	 * @see HL7Service#createPersonFromNK1(NK1)
 	 */
-	@Test(expected = HL7Exception.class)
+	@Test
 	public void getPersonFromNK1_shouldFailIfAPersonWithTheSameUUIDExists() throws HL7Exception {
 		executeDataSet("org/openmrs/hl7/include/ORUTest-initialData.xml");
 		HL7Service hl7service = Context.getHL7Service();
@@ -388,15 +389,14 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
 		ORU_R01 oru = (ORU_R01) message;
 		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
-		hl7service.createPersonFromNK1(nk1List.get(0));
-		Assert.fail("should have thrown an exception");
+		assertThrows(HL7Exception.class, () -> hl7service.createPersonFromNK1(nk1List.get(0)));
 	}
 	
 	/**
 	 * @throws HL7Exception
 	 * @see HL7Service#createPersonFromNK1(NK1)
 	 */
-	@Test(expected = HL7Exception.class)
+	@Test
 	public void getPersonFromNK1_shouldFailIfNoBirthdateSpecified() throws HL7Exception {
 		HL7Service hl7service = Context.getHL7Service();
 		Message message = hl7service
@@ -410,15 +410,14 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
 		ORU_R01 oru = (ORU_R01) message;
 		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
-		hl7service.createPersonFromNK1(nk1List.get(0));
-		Assert.fail("should have thrown an exception");
+		assertThrows(HL7Exception.class, () -> hl7service.createPersonFromNK1(nk1List.get(0)));
 	}
 	
 	/**
 	 * @throws HL7Exception
 	 * @see HL7Service#createPersonFromNK1(NK1)
 	 */
-	@Test(expected = HL7Exception.class)
+	@Test
 	public void getPersonFromNK1_shouldFailIfNoGenderSpecified() throws HL7Exception {
 		HL7Service hl7service = Context.getHL7Service();
 		Message message = hl7service
@@ -432,15 +431,14 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
 		ORU_R01 oru = (ORU_R01) message;
 		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
-		hl7service.createPersonFromNK1(nk1List.get(0));
-		Assert.fail("should have thrown an exception");
+		assertThrows(HL7Exception.class, () -> hl7service.createPersonFromNK1(nk1List.get(0)));
 	}
 	
 	/**
 	 * @throws HL7Exception
 	 * @see HL7Service#createPersonFromNK1(NK1)
 	 */
-	@Test(expected = HL7Exception.class)
+	@Test
 	public void getPersonFromNK1_shouldFailOnAnInvalidGender() throws HL7Exception {
 		HL7Service hl7service = Context.getHL7Service();
 		Message message = hl7service
@@ -454,8 +452,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
 		ORU_R01 oru = (ORU_R01) message;
 		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
-		hl7service.createPersonFromNK1(nk1List.get(0));
-		Assert.fail("should have thrown an exception");
+		assertThrows(HL7Exception.class, () -> hl7service.createPersonFromNK1(nk1List.get(0)));
 	}
 	
 	/**
@@ -613,7 +610,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	 * @throws HL7Exception
 	 * @see HL7Service#getUuidFromIdentifiers(null)
 	 */
-	@Test(expected = HL7Exception.class)
+	@Test
 	public void getUuidFromIdentifiers_shouldFailIfMultipleDifferentUUIDsExistInIdentifiers() throws HL7Exception {
 		HL7Service hl7service = Context.getHL7Service();
 		Message message = hl7service
@@ -628,8 +625,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		ORU_R01 oru = (ORU_R01) message;
 		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
 		CX[] identifiers = nk1List.get(0).getNextOfKinAssociatedPartySIdentifiers();
-		hl7service.getUuidFromIdentifiers(identifiers);
-		Assert.fail("should have failed");
+		assertThrows(HL7Exception.class, () -> hl7service.getUuidFromIdentifiers(identifiers));
 	}
 	
 	/**

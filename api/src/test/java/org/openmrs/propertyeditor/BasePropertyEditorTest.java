@@ -12,6 +12,7 @@ package org.openmrs.propertyeditor;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 
 import java.beans.PropertyEditor;
 
@@ -95,10 +96,10 @@ public abstract class BasePropertyEditorTest<T extends OpenmrsObject, E extends 
 		assertNull(editor.getValue());
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void shouldFailToSetTheEditorValueIfGivenUuidDoesNotExist() {
 		
-		editor.setAsText(getNonExistingObjectUuid());
+		assertThrows(IllegalArgumentException.class, () -> editor.setAsText(getNonExistingObjectUuid()));
 	}
 	
 	@Test
