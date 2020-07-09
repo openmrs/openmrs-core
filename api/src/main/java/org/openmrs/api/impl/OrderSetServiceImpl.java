@@ -15,6 +15,8 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.OrderSet;
+import org.openmrs.OrderSetAttribute;
+import org.openmrs.OrderSetAttributeType;
 import org.openmrs.OrderSetMember;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OrderSetService;
@@ -120,5 +122,84 @@ public class OrderSetServiceImpl extends BaseOpenmrsService implements OrderSetS
 	@Transactional(readOnly = true)
 	public OrderSetMember getOrderSetMemberByUuid(String uuid) {
 		return dao.getOrderSetMemberByUuid(uuid);
+	}
+
+	/**
+	 * @see org.openmrs.api.OrderSetService#getAllOrderSetAttributeTypes()
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<OrderSetAttributeType> getAllOrderSetAttributeTypes() {
+		return dao.getAllOrderSetAttributeTypes();
+	}
+
+	/**
+	 * @see org.openmrs.api.OrderSetService#getOrderSetAttributeType(java.lang.Integer)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public OrderSetAttributeType getOrderSetAttributeType(Integer id) {
+		return dao.getOrderSetAttributeType(id);
+	}
+
+	/**
+	 * @see org.openmrs.api.OrderSetService#getOrderSetAttributeTypeByUuid(java.lang.String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public OrderSetAttributeType getOrderSetAttributeTypeByUuid(String uuid) {
+		return dao.getOrderSetAttributeTypeByUuid(uuid);
+	}
+
+	/**
+	 * @see org.openmrs.api.OrderSetService#saveOrderSetAttributeType(org.openmrs.OrderSetAttributeType)
+	 */
+	@Override
+	public OrderSetAttributeType saveOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType) {
+		return dao.saveOrderSetAttributeType(orderSetAttributeType);
+	}
+
+	/**
+	 * @see org.openmrs.api.OrderSetService#retireOrderSetAttributeType(org.openmrs.OrderSetAttributeType,
+	 *      java.lang.String)
+	 */
+	@Override
+	public OrderSetAttributeType retireOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType,
+			String reason) {
+		return dao.saveOrderSetAttributeType(orderSetAttributeType);
+	}
+
+	/**
+	 * @see org.openmrs.api.OrderSetService#unretireOrderSetAttributeType(org.openmrs.OrderSetAttributeType)
+	 */
+	@Override
+	public OrderSetAttributeType unretireOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType) {
+		return Context.getOrderSetService().saveOrderSetAttributeType(orderSetAttributeType);
+	}
+
+	/**
+	 * @see org.openmrs.api.OrderSetService#purgeOrderSetAttributeType(org.openmrs.OrderSetAttributeType)
+	 */
+	@Override
+	public void purgeOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType) {
+		dao.deleteOrderSetAttributeType(orderSetAttributeType);
+	}
+
+	/**
+	 * @see org.openmrs.api.OrderSetService#getOrderSetAttributeTypeByName(java.lang.String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public OrderSetAttributeType getOrderSetAttributeTypeByName(String name) {
+		return dao.getOrderSetAttributeTypeByName(name);
+	}
+
+	/**
+	 * @see org.openmrs.api.OrderSetService#getOrderSetAttributeByUuid(java.lang.String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public OrderSetAttribute getOrderSetAttributeByUuid(String uuid) {
+		return dao.getOrderSetAttributeByUuid(uuid);
 	}
 }

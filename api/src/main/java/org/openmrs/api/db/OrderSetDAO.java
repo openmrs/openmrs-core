@@ -12,7 +12,10 @@ package org.openmrs.api.db;
 import java.util.List;
 
 import org.openmrs.OrderSet;
+import org.openmrs.OrderSetAttribute;
+import org.openmrs.OrderSetAttributeType;
 import org.openmrs.OrderSetMember;
+import org.openmrs.api.OrderSetService;
 
 /**
  * OrderSet-related database functions
@@ -49,4 +52,40 @@ public interface OrderSetDAO {
 	 * @see org.openmrs.api.OrderSetService#getOrderSetMemberByUuid(String)
 	 */
 	OrderSetMember getOrderSetMemberByUuid(String uuid) throws DAOException;
+
+	/**
+	 * @see OrderSetService#getAllOrderSetAttributeTypes()
+	 */
+	public List<OrderSetAttributeType> getAllOrderSetAttributeTypes();
+
+	/**
+	 * @see OrderSetService#getOrderSetAttributeType(Integer)
+	 */
+	public OrderSetAttributeType getOrderSetAttributeType(Integer id);
+
+	/**
+	 * @see OrderSetService#getOrderSetAttributeTypeByUuid(String)
+	 */
+	public OrderSetAttributeType getOrderSetAttributeTypeByUuid(String uuid);
+
+	/**
+	 * @see OrderSetService#saveOrderSetAttributeType(OrderSetAttributeType)
+	 */
+	public OrderSetAttributeType saveOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType);
+
+	/**
+	 * @see OrderSetService#purgeOrderSetAttributeType(OrderSetAttributeType)
+	 */
+	public void deleteOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType);
+
+	/**
+	 * @see OrderSetService#getOrderSetAttributeByUuid(String)
+	 */
+	public OrderSetAttribute getOrderSetAttributeByUuid(String uuid);
+
+	/**
+	 * @see OrderSetService#getOrderSetAttributeTypeByName(String)
+	 */
+	public OrderSetAttributeType getOrderSetAttributeTypeByName(String name);
+
 }
