@@ -1167,7 +1167,7 @@ public class OpenmrsUtil {
 	public static void validateJavaVersion() {
 		// check whether the current JVM version is at least Java 8
 		if (JdkVersion.getJavaVersion().matches("1.(0|1|2|3|4|5|6|7).(.*)")) {
-			throw new APIException("OpenMRS requires Java 8, but is running under " + JdkVersion.getJavaVersion());
+			throw new APIException("OpenMRS requires Java 8 and above, but is running under " + JdkVersion.getJavaVersion());
 		}
 	}
 	
