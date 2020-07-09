@@ -36,7 +36,7 @@ public class JavaVersionTest {
 	 * @see org.openmrs.util.OpenmrsUtil#validateJavaVersion()
 	 */
 	@Test
-	public void validateJavaVersion_shouldFailIfTheCurrentJVMVersionIsEarlierThanJava6() {
+	public void validateJavaVersion_shouldFailIfTheCurrentJVMVersionIsEarlierThanJava8() {
 		when(JdkVersion.getJavaVersion()).thenReturn("1.5.0_20");
 		assertThrows(APIException.class, () -> OpenmrsUtil.validateJavaVersion());
 	}
@@ -45,8 +45,17 @@ public class JavaVersionTest {
 	 * @see org.openmrs.util.OpenmrsUtil#validateJavaVersion()
 	 */
 	@Test
-	public void validateJavaVersion_shouldPassIfTheCurrentJVMVersionIsLaterThanJava5() {
+	public void validateJavaVersion_shouldPassIfTheCurrentJVMVersionIsLaterThanJava7AndEarlierThanJava10() {
 		when(JdkVersion.getJavaVersion()).thenReturn("1.8.0_25");
+		OpenmrsUtil.validateJavaVersion();
+	}
+
+	/**
+	 * @see org.openmrs.util.OpenmrsUtil#validateJavaVersion()
+	 */
+	@Test
+	public void validateJavaVersion_shouldPassIfTheCurrentJVMVersionIsLaterThanJava9() {
+		when(JdkVersion.getJavaVersion()).thenReturn("13.0.2");
 		OpenmrsUtil.validateJavaVersion();
 	}
 }
