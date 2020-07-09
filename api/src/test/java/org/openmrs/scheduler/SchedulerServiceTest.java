@@ -12,6 +12,7 @@ package org.openmrs.scheduler;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -94,15 +95,11 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 			fail("Class " + className + " is not a valid Task");
 	}
 	
-	@Test(expected = ClassNotFoundException.class)
-	public void shouldNotResolveInvalidClass() throws Exception {
-		String className = "org.openmrs.scheduler.tasks.InvalidTask";
-		Class<?> c = OpenmrsClassLoader.getInstance().loadClass(className);
-		Object o = c.newInstance();
-		if (o instanceof Task)
-			fail("Class " + className + " is not supposed to be a valid Task");
-		else
-			assertTrue("Class " + className + " is not a valid Task", true);
+	@Test
+	public void shouldNotResolveInvalidClass() {
+		
+		assertThrows(ClassNotFoundException.class,
+			() -> OpenmrsClassLoader.getInstance().loadClass("org.openmrs.scheduler.tasks.InvalidTask"));
 	}
 	
 	private TaskDefinition makeRepeatingTaskThatStartsImmediately(String taskClassName) {
