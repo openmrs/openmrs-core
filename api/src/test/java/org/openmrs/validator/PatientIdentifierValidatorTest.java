@@ -256,10 +256,7 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 		    messageSourceService.getMessage(eq("PatientIdentifier.error.invalidFormat"),
 		        aryEq(new String[] { "abc", format }), isA(Locale.class))).thenReturn(expectedErrorMessage);
 		
-		//expectedException.expectMessage(expectedErrorMessage);
-
 		assertThrows(InvalidIdentifierFormatException.class, () -> PatientIdentifierValidator.checkIdentifierAgainstFormat("abc", format, formatDescription));
-		
 	}
 	
 	/**
@@ -276,10 +273,7 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 		    messageSourceService.getMessage(eq("PatientIdentifier.error.invalidFormat"), aryEq(new String[] { "abc",
 		            formatDescription }), isA(Locale.class))).thenReturn(expectedErrorMessage);
 		
-		//expectedException.expectMessage(expectedErrorMessage);
-
 		assertThrows(InvalidIdentifierFormatException.class, () -> PatientIdentifierValidator.checkIdentifierAgainstFormat("abc", format, formatDescription));
-		
 	}
 	
 }
