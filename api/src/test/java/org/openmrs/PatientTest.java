@@ -20,8 +20,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * This class should test all methods on the patient object. It should not worry about the extended
@@ -214,7 +213,7 @@ public class PatientTest {
 	public void getIdentifiers_shouldNotReturnNull() {
 		Patient p = new Patient();
 		p.setIdentifiers(null);
-		Assert.assertNotNull(p.getIdentifiers());
+		assertNotNull(p.getIdentifiers());
 	}
 	
 	/**
