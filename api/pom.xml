@@ -278,6 +278,24 @@
 			<groupId>com.sun.xml.bind</groupId>
 			<artifactId>jaxb-impl</artifactId>
 	    </dependency>
+	   <dependency>
+		   <groupId>org.junit.jupiter</groupId>
+		   <artifactId>junit-jupiter-api</artifactId>
+		   <version>${junitVersion}</version>
+		   <scope>test</scope>
+	   </dependency>
+	   <dependency>
+		   <groupId>org.junit.jupiter</groupId>
+		   <artifactId>junit-jupiter-engine</artifactId>
+		   <version>${junitVersion}</version>
+		   <scope>test</scope>
+	   </dependency>
+	   <dependency>
+		   <groupId>org.junit.vintage</groupId>
+		   <artifactId>junit-vintage-engine</artifactId>
+		   <version>${junitVersion}</version>
+		   <scope>test</scope>
+	   </dependency>
    </dependencies>
    <build>
      <resources>
@@ -373,4 +391,7 @@
 			</build>
 		</profile>
 	</profiles>
+	<properties>
+		<junitVersion>5.6.2</junitVersion>
+	</properties>
 </project>
