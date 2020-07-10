@@ -9,7 +9,10 @@
  */
 package org.openmrs.aop;
 
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
@@ -31,9 +34,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -62,7 +64,7 @@ import org.openmrs.api.handler.UnretireHandler;
 import org.openmrs.api.handler.UnvoidHandler;
 import org.openmrs.api.handler.VoidHandler;
 import org.openmrs.api.impl.ConceptServiceImpl;
-import org.openmrs.test.BaseContextMockTest;
+import org.openmrs.test.BaseContextMockJunit5Test;
 import org.openmrs.util.HandlerUtil;
 import org.openmrs.util.Reflect;
 import org.openmrs.util.RoleConstants;
@@ -71,7 +73,7 @@ import org.springframework.context.ApplicationContext;
 /**
  * Tests the {@link RequiredDataAdvice} class.
  */
-public class RequiredDataAdviceTest extends BaseContextMockTest {
+public class RequiredDataAdviceTest extends BaseContextMockJunit5Test {
 	
 	@Mock
 	AdministrationService administrationService;
@@ -93,7 +95,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	
 	RequiredDataAdvice requiredDataAdvice = new RequiredDataAdvice();
 	
-	@Before
+	@BeforeEach
 	public void setUp() {
 
 		Context.setUserContext(userContext);
@@ -164,7 +166,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 		oo.setLocations(locs);
 		Collection<OpenmrsObject> fetchedLocations = RequiredDataAdvice.getChildCollection(oo, MiniOpenmrsObject.class
 		        .getDeclaredField("locations"));
-		Assert.assertTrue(fetchedLocations.contains(location));
+		assertTrue(fetchedLocations.contains(location));
 	}
 	
 	/**
@@ -174,7 +176,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	public void getChildCollection_shouldShouldBeAbleToGetAnnotatedPrivateFields() throws Exception {
 		MiniOpenmrsObject oo = new MiniOpenmrsObject();
 		oo.setLocations(new ArrayList<>());
-		Assert.assertNotNull(RequiredDataAdvice
+		assertNotNull(RequiredDataAdvice
 		        .getChildCollection(oo, MiniOpenmrsObject.class.getDeclaredField("locations")));
 	}
 	
@@ -257,11 +259,10 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	 */
 	@Test
 	public void isOpenmrsObjectCollection_shouldReturnFalseIfFieldIsCollectionOfOtherObjects() throws Exception {
-		Assert.assertFalse(RequiredDataAdvice.isOpenmrsObjectCollection(ClassWithOtherFields.class
-		        .getDeclaredField("locales")));
+		assertFalse(RequiredDataAdvice.isOpenmrsObjectCollection(ClassWithOtherFields.class.getDeclaredField("locales")));
 		List<String> list = new LinkedList<>();
 		list.add("Test");
-		Assert.assertFalse(RequiredDataAdvice.isOpenmrsObjectCollection(list));
+		assertFalse(RequiredDataAdvice.isOpenmrsObjectCollection(list));
 		
 	}
 	
@@ -270,8 +271,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	 */
 	@Test
 	public void isOpenmrsObjectCollection_shouldReturnFalseIfFieldIsCollectionOfParameterizedType() throws Exception {
-		Assert.assertFalse(RequiredDataAdvice.isOpenmrsObjectCollection(ClassWithOtherFields.class
-		        .getDeclaredField("nestedGenericProperty")));
+		assertFalse(RequiredDataAdvice.isOpenmrsObjectCollection(ClassWithOtherFields.class.getDeclaredField("nestedGenericProperty")));
 	}
 	
 	/**
@@ -279,7 +279,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	 */
 	@Test
 	public void isOpenmrsObjectCollection_shouldReturnFalseIfFieldIsNotACollection() throws Exception {
-		Assert.assertFalse(RequiredDataAdvice.isOpenmrsObjectCollection(ClassWithOtherFields.class.getDeclaredField("id")));
+		assertFalse(RequiredDataAdvice.isOpenmrsObjectCollection(ClassWithOtherFields.class.getDeclaredField("id")));
 	}
 	
 	/**
@@ -290,7 +290,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 		List<Location> locations = new ArrayList<>();
 		Location location = new Location();
 		locations.add(location);
-		Assert.assertTrue(RequiredDataAdvice.isOpenmrsObjectCollection(locations));
+		assertTrue(RequiredDataAdvice.isOpenmrsObjectCollection(locations));
 	}
 	
 	/**
@@ -301,7 +301,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 		Set<Location> locations = new HashSet<>();
 		Location location = new Location();
 		locations.add(location);
-		Assert.assertTrue(RequiredDataAdvice.isOpenmrsObjectCollection(locations));
+		assertTrue(RequiredDataAdvice.isOpenmrsObjectCollection(locations));
 	}
 	
 	/**
@@ -310,7 +310,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	@Test
 	public void isOpenmrsObjectCollection_shouldReturnFalseIfCollectionIsEmptyRegardlessOfTypeHeld() throws Exception {
 		Set<Location> locations = new HashSet<>();
-		Assert.assertFalse(RequiredDataAdvice.isOpenmrsObjectCollection(locations));
+		assertFalse(RequiredDataAdvice.isOpenmrsObjectCollection(locations));
 	}
 	
 	/**
@@ -363,8 +363,8 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 			}
 		}
 		
-		Assert.assertTrue(RequiredDataAdvice.isHandlerMarkedAsDisabled(SaveHandler.class, persons));
-		Assert.assertTrue(RequiredDataAdvice.isHandlerMarkedAsDisabled(VoidHandler.class, persons));
+		assertTrue(RequiredDataAdvice.isHandlerMarkedAsDisabled(SaveHandler.class, persons));
+		assertTrue(RequiredDataAdvice.isHandlerMarkedAsDisabled(VoidHandler.class, persons));
 	}
 	
 	/**
@@ -381,7 +381,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 			}
 		}
 		
-		Assert.assertFalse(RequiredDataAdvice.isHandlerMarkedAsDisabled(RetireHandler.class, persons));
+		assertFalse(RequiredDataAdvice.isHandlerMarkedAsDisabled(RetireHandler.class, persons));
 	}
 	
 	/**
@@ -398,7 +398,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 			}
 		}
 		
-		Assert.assertFalse(RequiredDataAdvice.isHandlerMarkedAsDisabled(RetireHandler.class, persons));
+		assertFalse(RequiredDataAdvice.isHandlerMarkedAsDisabled(RetireHandler.class, persons));
 	}
 	
 	/**
@@ -453,11 +453,11 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 		}
 		
 		// all the handlers should be marked as disabled, since the supertype (RequiredDataHandler) was specified to be ignored
-		Assert.assertTrue(RequiredDataAdvice.isHandlerMarkedAsDisabled(SaveHandler.class, persons));
-		Assert.assertTrue(RequiredDataAdvice.isHandlerMarkedAsDisabled(VoidHandler.class, persons));
-		Assert.assertTrue(RequiredDataAdvice.isHandlerMarkedAsDisabled(UnvoidHandler.class, persons));
-		Assert.assertTrue(RequiredDataAdvice.isHandlerMarkedAsDisabled(RetireHandler.class, persons));
-		Assert.assertTrue(RequiredDataAdvice.isHandlerMarkedAsDisabled(UnretireHandler.class, persons));
+		assertTrue(RequiredDataAdvice.isHandlerMarkedAsDisabled(SaveHandler.class, persons));
+		assertTrue(RequiredDataAdvice.isHandlerMarkedAsDisabled(VoidHandler.class, persons));
+		assertTrue(RequiredDataAdvice.isHandlerMarkedAsDisabled(UnvoidHandler.class, persons));
+		assertTrue(RequiredDataAdvice.isHandlerMarkedAsDisabled(RetireHandler.class, persons));
+		assertTrue(RequiredDataAdvice.isHandlerMarkedAsDisabled(UnretireHandler.class, persons));
 	}
 	
 	/**
@@ -500,7 +500,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 			}
 		}
 		
-		Assert.assertTrue(RequiredDataAdvice.isHandlerMarkedAsDisabled(UnretireHandler.class, persons));
+		assertTrue(RequiredDataAdvice.isHandlerMarkedAsDisabled(UnretireHandler.class, persons));
 	}
 	
 	/**
@@ -517,7 +517,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 			}
 		}
 		
-		Assert.assertFalse(RequiredDataAdvice.isHandlerMarkedAsDisabled(RetireHandler.class, persons));
+		assertFalse(RequiredDataAdvice.isHandlerMarkedAsDisabled(RetireHandler.class, persons));
 	}
 	
 	/**
