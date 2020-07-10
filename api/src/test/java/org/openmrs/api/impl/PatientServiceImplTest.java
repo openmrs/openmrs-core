@@ -10,10 +10,10 @@
 package org.openmrs.api.impl;
 
 import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -28,9 +28,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -51,7 +50,7 @@ import org.openmrs.api.ObsService;
 import org.openmrs.api.PatientServiceTest;
 import org.openmrs.api.context.UserContext;
 import org.openmrs.api.db.PatientDAO;
-import org.openmrs.test.BaseContextMockTest;
+import org.openmrs.test.BaseContextMockJunit5Test;
 
 /**
  * This class tests org.openmrs.{@link PatientServiceImpl}
@@ -59,7 +58,7 @@ import org.openmrs.test.BaseContextMockTest;
  *
  * If you need an integration test with application context and DB, have a look at @see org.openmrs.api.{@link PatientServiceTest}
  */
-public class PatientServiceImplTest extends BaseContextMockTest {
+public class PatientServiceImplTest extends BaseContextMockJunit5Test {
 
 	private PatientServiceImpl patientService;
 
@@ -78,7 +77,7 @@ public class PatientServiceImplTest extends BaseContextMockTest {
 	@Mock
 	private PatientDAO patientDaoMock;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		patientService = new PatientServiceImpl();
 		patientService.setPatientDAO(patientDaoMock);
@@ -234,7 +233,7 @@ public class PatientServiceImplTest extends BaseContextMockTest {
 		final List<Patient> duplicatePatients = patientService
 			.getDuplicatePatientsByAttributes(Arrays.asList("some attribute", "another attribute"));
 		verify(patientDaoMock, times(1)).getDuplicatePatientsByAttributes(anyList());
-		Assert.assertEquals(duplicatePatients.size(), 1);
+		assertEquals(duplicatePatients.size(), 1);
 	}
 
 	@Test
