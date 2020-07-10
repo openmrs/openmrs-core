@@ -81,7 +81,7 @@ public class HibernateOrderSetDAO implements OrderSetDAO {
 	 */
 	@Override
 	public OrderSet getOrderSetById(Integer orderSetId) throws DAOException {
-		return sessionFactory.getCurrentSession().get(OrderSet.class, orderSetId);
+		return (OrderSet)sessionFactory.getCurrentSession().get(OrderSet.class, orderSetId);
 	}
 	
 	/**

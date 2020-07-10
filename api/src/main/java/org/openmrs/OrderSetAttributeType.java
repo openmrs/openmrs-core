@@ -15,7 +15,7 @@ import org.openmrs.attribute.BaseAttributeType;
 /**
  * A user-defined extension to the {@link OrderSet} class.
  * @see AttributeType
- * @since 1.9
+ * @since 2.4.0
  */
 public class OrderSetAttributeType extends BaseAttributeType<OrderSet> implements AttributeType<OrderSet> {
 

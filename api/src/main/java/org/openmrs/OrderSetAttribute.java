@@ -16,13 +16,12 @@ import org.openmrs.attribute.BaseAttribute;
 /**
  * A value for a user-defined {@link OrderSetAttributeType} that is stored on a {@link OrderSet}.
  * @see Attribute
- * @since 1.9
+ * @since 2.4.0
  */
 public class OrderSetAttribute extends BaseAttribute<OrderSetAttributeType, OrderSet> implements Attribute<OrderSetAttributeType, OrderSet>{
 	
 	private Integer orderSetAttributeId;
 
-	// BaseAttribute<OrderSet> has an "owner" property of type OrderSet, which we re-expose as "orderSet"
 
 	/**
 	 * @return the orderSetAttributeId
