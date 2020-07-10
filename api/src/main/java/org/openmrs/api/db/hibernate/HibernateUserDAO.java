@@ -77,7 +77,12 @@ public class HibernateUserDAO implements UserDAO {
 		sessionFactory.getCurrentSession().saveOrUpdate(user);
 		
 		if (isNewUser && password != null) {
-			// In case of PostgreSQL hibernate session.saveOrUpdate does not issues insert statements at the same time
+			/* In OpenMRS, we are using generation strategy as native which will convert to IDENTITY 
+			 for MySQL and SEQUENCE for PostgreSQL. When using IDENTITY strategy, hibernate directly 
+			 issues insert statements where as with  SEQUENCE strategy hibernate only increments 
+			 sequences and issues insert on session flush ( batching is possible) . 
+			 PostgreSQL behaves differently than MySQL because it makes use of SEQUENCE strategy. 
+			*/
 			sessionFactory.getCurrentSession().flush();
 			
 			//update the new user with the password
