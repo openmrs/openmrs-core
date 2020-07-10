@@ -12,7 +12,21 @@ package org.openmrs;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.openmrs.api.APIException;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 /**
  * Contains a group of {@link org.openmrs.Order}s that are ordered together within a single encounter,often driven by an {@link org.openmrs.OrderSet}. 
@@ -21,22 +35,42 @@ import org.openmrs.api.APIException;
  * 
  * @since 1.12
  */
+@Entity
+@Table(name = "order_group")
 public class OrderGroup extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 72232L;
 	
+	@Id
+	@Column(name = "order_group_id")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_group_id_gen")
+	@SequenceGenerator(name = "order_group_id_gen", sequenceName = "order_group_order_group_id_seq")
 	private Integer orderGroupId;
 	
+	@ManyToOne
+	@JoinColumn(name = "patient_id")
 	private Patient patient;
 	
+	@ManyToOne
+	@JoinColumn(name = "encounter_id")
 	private Encounter encounter;
 	
+	@OneToMany
+	@OrderBy("sort_weight")
+	@LazyCollection(LazyCollectionOption.TRUE)
+	@JoinColumn(name = "order_group_id", insertable = false, updatable = false)
 	private List<Order> orders;
 	
+	@ManyToOne
+	@JoinColumn(name = "order_set_id")
 	private OrderSet orderSet;
 	
+	@ManyToOne
+	@JoinColumn(name = "parent_order_group")
 	private OrderGroup parentOrderGroup;
-
+	
+	@ManyToOne
+	@JoinColumn(name = "order_group_reason")
 	private Concept orderGroupReason;
 	/**
 	 * Gets the orderGroupId
