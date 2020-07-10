@@ -62,7 +62,7 @@ public class OpenmrsTestsTest {
 				
 				// make sure every "test" method (determined by having 
 				// the @Test annotation) starts with "testShould"
-				if (method.getAnnotation(Test.class) != null && method.getAnnotation(org.junit.Test.class) != null) {
+				if (method.getAnnotation(Test.class) != null || method.getAnnotation(org.junit.Test.class) != null) {
 					String methodName = method.getName();
 					
 					boolean passes = methodName.startsWith("should") || methodName.contains("_should");
