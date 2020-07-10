@@ -9,14 +9,19 @@
  */
 package org.openmrs;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.junit.jupiter.api.Test;
 
 public class PatientProgramTest {
 	
@@ -58,9 +63,9 @@ public class PatientProgramTest {
 		program.voidLastState(workflow, new User(), new Date(), "");
 		
 		//then
-		Assert.assertTrue(state1.isVoided());
-		Assert.assertFalse(state2.isVoided());
-		Assert.assertTrue(state2.getEndDate() == null);
+		assertTrue(state1.isVoided());
+		assertFalse(state2.isVoided());
+		assertTrue(state2.getEndDate() == null);
 	}
 	
 	/**
@@ -98,10 +103,10 @@ public class PatientProgramTest {
 		program.voidLastState(workflow, new User(), new Date(), "");
 		
 		//then
-		Assert.assertTrue(state1.isVoided());
-		Assert.assertFalse(state2.isVoided());
+		assertTrue(state1.isVoided());
+		assertFalse(state2.isVoided());
 		
-		Assert.assertTrue(program.getDateCompleted().equals(state2.getEndDate()));
+		assertTrue(program.getDateCompleted().equals(state2.getEndDate()));
 	}
 	
 	@Test
@@ -120,8 +125,8 @@ public class PatientProgramTest {
 		program.transitionToState(workflowState, new Date());
 		
 		//then
-		Assert.assertTrue(program.getStates().size() == 1);
-		Assert.assertTrue(program.getStates().iterator().next().getEndDate().equals(program.getDateCompleted()));
+		assertTrue(program.getStates().size() == 1);
+		assertTrue(program.getStates().iterator().next().getEndDate().equals(program.getDateCompleted()));
 		
 	}
 	
@@ -140,8 +145,8 @@ public class PatientProgramTest {
 		program.transitionToState(workflowState, new Date());
 		
 		//then
-		Assert.assertTrue(program.getStates().size() == 1);
-		Assert.assertNull(program.getStates().iterator().next().getEndDate());
+		assertTrue(program.getStates().size() == 1);
+		assertNull(program.getStates().iterator().next().getEndDate());
 	}
 	
 	@Test
@@ -150,7 +155,7 @@ public class PatientProgramTest {
 		// this test written specifically to verify fix for https://tickets.openmrs.org/browse/TRUNK-3645
 		Method getSortedStates = PatientProgram.class.getDeclaredMethod("getSortedStates");
 		getSortedStates.setAccessible(true);
-		Assert.assertNotNull(getSortedStates);
+		assertNotNull(getSortedStates);
 		
 		Set<PatientState> patientStates = new HashSet<>();
 		PatientState patientState = new PatientState();
@@ -178,7 +183,7 @@ public class PatientProgramTest {
 		List<PatientState> sortedStates = (List<PatientState>) getSortedStates.invoke(program);
 		
 		// then
-		Assert.assertEquals(3, sortedStates.size());
+		assertEquals(3, sortedStates.size());
 		
 	}
 }
