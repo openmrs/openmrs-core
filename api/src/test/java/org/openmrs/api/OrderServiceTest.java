@@ -75,6 +75,7 @@ import org.openmrs.OrderGroup;
 import org.openmrs.OrderSet;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
+import org.openmrs.PatientProgram;
 import org.openmrs.Provider;
 import org.openmrs.SimpleDosingInstructions;
 import org.openmrs.TestOrder;
@@ -2708,7 +2709,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Metadata metaData = new MetadataSources(standardRegistry).addAnnotatedClass(Allergy.class)
 				.addAnnotatedClass(Encounter.class).addAnnotatedClass(SomeTestOrder.class)
 				.addAnnotatedClass(Diagnosis.class).addAnnotatedClass(Condition.class)
-				.addAnnotatedClass(Visit.class).getMetadataBuilder().build();
+				.addAnnotatedClass(Visit.class).addAnnotatedClass(PatientProgram.class)
+				.getMetadataBuilder().build();
 		
 		Field field = adminDAO.getClass().getDeclaredField("metadata");
 		field.setAccessible(true);

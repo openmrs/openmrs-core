@@ -9,10 +9,25 @@
  */
 package org.openmrs;
 
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.Customizable;
 import org.openmrs.util.OpenmrsUtil;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,6 +42,8 @@ import java.util.Set;
 /**
  * PatientProgram
  */
+@Entity
+@Table(name = "patient_program")
 public class PatientProgram extends BaseChangeableOpenmrsData implements Customizable<PatientProgramAttribute>{
 	
 	public static final long serialVersionUID = 0L;
@@ -35,23 +52,44 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	// Properties
 	// ******************
 	
+	@Id
+	@Column(name = "patient_program_id")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "patient_program_id_gen")
+	@SequenceGenerator(name = "patient_program_id_gen", sequenceName = "patient_program_patient_program_id")
 	private Integer patientProgramId;
 	
+	@ManyToOne
+	@JoinColumn(name = "patient_id")
 	private Patient patient;
 	
+	@ManyToOne
+	@JoinColumn(name = "program_id", nullable = false)
 	private Program program;
 	
+	@ManyToOne
+	@JoinColumn(name = "location_id")
 	private Location location;
 	
+	@Column(name = "date_enrolled", length = 19)
 	private Date dateEnrolled;
 	
+	@Column(name = "date_completed", length = 19)
 	private Date dateCompleted;
 	
+	@ManyToOne
+	@JoinColumn(name = "outcome_concept_id")
 	private Concept outcome;
 	
+	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+	@JoinColumn(name = "patient_program_id", insertable = false, updatable = false, nullable = false)
 	private Set<PatientState> states = new HashSet<>();
          
-        private Set<PatientProgramAttribute> attributes = new LinkedHashSet();
+		@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+		@LazyCollection(LazyCollectionOption.TRUE)
+		@OrderBy("voided asc")
+		@BatchSize(size = 100)
+		@JoinColumn(name = "patient_program_id", insertable = false, updatable = false)
+		private Set<PatientProgramAttribute> attributes = new LinkedHashSet();
 	
 	// ******************
 	// Constructors
