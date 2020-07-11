@@ -7,7 +7,7 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.test;
+package org.openmrs.test.jupiter;
 
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
@@ -75,6 +75,10 @@ import org.openmrs.api.context.ContextMockHelper;
 import org.openmrs.api.context.Credentials;
 import org.openmrs.api.context.UsernamePasswordCredentials;
 import org.openmrs.module.ModuleConstants;
+import org.openmrs.test.SkipBaseSetup;
+import org.openmrs.test.SkipBaseSetupAnnotationExecutionListener;
+import org.openmrs.test.StartModuleExecutionListener;
+import org.openmrs.test.TestUtil;
 import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
@@ -101,7 +105,11 @@ import org.xml.sax.InputSource;
  * use Services and/or the database should extend this class. NOTE: Tests that do not need access to
  * spring enabled services do not need this class and extending this will only slow those test cases
  * down. (because spring is started before test cases are run). Normal test cases do not need to
- * extend anything
+ * extend anything.
+ * 
+ * Use this class for Junit 5 tests.
+ * 
+ * @since 2.4.0
  */
 @ContextConfiguration(locations = { "classpath:applicationContext-service.xml", "classpath*:openmrs-servlet.xml",
         "classpath*:moduleApplicationContext.xml", "classpath*:TestingApplicationContext.xml" })
@@ -113,9 +121,9 @@ import org.xml.sax.InputSource;
 @Transactional
 @Rollback
 @ExtendWith(SpringExtension.class)
-public abstract class BaseContextSensitiveJunit5Test {
+public abstract class BaseContextSensitiveTest {
 	
-	private static final Logger log = LoggerFactory.getLogger(BaseContextSensitiveJunit5Test.class);
+	private static final Logger log = LoggerFactory.getLogger(BaseContextSensitiveTest.class);
 	
 	/**
 	 * Only the classpath/package path and filename of the initial dataset
@@ -174,7 +182,7 @@ public abstract class BaseContextSensitiveJunit5Test {
 	@InjectMocks
 	protected ContextMockHelper contextMockHelper;
 	
-	private static volatile BaseContextSensitiveJunit5Test instance;
+	private static volatile BaseContextSensitiveTest instance;
 	
 	/**
 	 * Basic constructor for the super class to all openmrs api unit tests. This constructor sets up
@@ -184,7 +192,7 @@ public abstract class BaseContextSensitiveJunit5Test {
 	 * 
 	 * @see #getLoadCount()
 	 */
-	public BaseContextSensitiveJunit5Test() {
+	public BaseContextSensitiveTest() {
 		
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		
@@ -226,7 +234,7 @@ public abstract class BaseContextSensitiveJunit5Test {
 	 */
 	@BeforeEach
 	public void checkNotModule() throws Exception {
-		if (this.getClass().getPackage().toString().contains("org.openmrs.module.") && !(this instanceof BaseContextSensitiveJunit5Test)) {
+		if (this.getClass().getPackage().toString().contains("org.openmrs.module.") && !(this instanceof BaseContextSensitiveTest)) {
 			throw new RuntimeException("Module unit test classes should extend BaseModuleContextSensitiveTest, not just BaseContextSensitiveTest");
 		}
 	}
@@ -889,7 +897,7 @@ public abstract class BaseContextSensitiveJunit5Test {
 	}
 	
 	/**
-	 * This method is run before all test methods that extend this {@link BaseContextSensitiveJunit5Test}
+	 * This method is run before all test methods that extend this {@link BaseContextSensitiveTest}
 	 * unless you annotate your method with the "@SkipBaseSetup" annotation After running this
 	 * method an in-memory database will be available that has the content of the rows from
 	 * {@link #INITIAL_XML_DATASET_PACKAGE_PATH} and {@link #EXAMPLE_XML_DATASET_PACKAGE_PATH} xml
@@ -974,7 +982,7 @@ public abstract class BaseContextSensitiveJunit5Test {
 	
 	/**
 	 * Called after each test class. This is called once per test class that extends
-	 * {@link BaseContextSensitiveJunit5Test}. Needed so that "unit of work" that is the test class is
+	 * {@link BaseContextSensitiveTest}. Needed so that "unit of work" that is the test class is
 	 * surrounded by a pair of open/close session calls.
 	 * 
 	 * @throws Exception

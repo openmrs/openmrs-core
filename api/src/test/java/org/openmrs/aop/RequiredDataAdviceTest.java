@@ -58,7 +58,7 @@ import org.openmrs.api.handler.UnretireHandler;
 import org.openmrs.api.handler.UnvoidHandler;
 import org.openmrs.api.handler.VoidHandler;
 import org.openmrs.api.impl.ConceptServiceImpl;
-import org.openmrs.test.BaseContextMockJunit5Test;
+import org.openmrs.test.jupiter.BaseContextMockTest;
 import org.openmrs.util.HandlerUtil;
 import org.openmrs.util.Reflect;
 import org.springframework.context.ApplicationContext;
@@ -66,7 +66,7 @@ import org.springframework.context.ApplicationContext;
 /**
  * Tests the {@link RequiredDataAdvice} class.
  */
-public class RequiredDataAdviceTest extends BaseContextMockJunit5Test {
+public class RequiredDataAdviceTest extends BaseContextMockTest {
 
 	@Mock
 	AdministrationService administrationService;

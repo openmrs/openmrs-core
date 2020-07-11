@@ -7,7 +7,7 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.test;
+package org.openmrs.test.jupiter;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,10 +21,12 @@ import org.openmrs.api.context.UserContext;
  * Tests extending this class have a mocked authenticated UserContext. In addition you can mock
  * Context.get...Service() calls by annotating fields with {@link Mock}.
  * 
+ * Use this class for Junit 5 tests.
+ * 
  * @since 2.4.0
  */
 @ExtendWith(MockitoExtension.class)
-public abstract class BaseContextMockJunit5Test {
+public abstract class BaseContextMockTest {
 	
 	@Mock
 	protected UserContext userContext;

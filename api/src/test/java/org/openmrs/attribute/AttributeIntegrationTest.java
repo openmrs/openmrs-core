@@ -25,13 +25,13 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.InvalidCustomValueException;
-import org.openmrs.test.BaseContextSensitiveJunit5Test;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
  * Integration tests for using {@link BaseAttribute}, {@link BaseAttributeType}, and {@link AttributeHandler}
  * in concert.
  */
-public class AttributeIntegrationTest extends BaseContextSensitiveJunit5Test {
+public class AttributeIntegrationTest extends BaseContextSensitiveTest {
 	
 	VisitService service;
 	

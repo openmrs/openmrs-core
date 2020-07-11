@@ -18,13 +18,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.openmrs.VisitType;
 import org.openmrs.api.VisitService;
-import org.openmrs.test.BaseContextSensitiveJunit5Test;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
  * Contains the tests for {@link VisitDAO} methods that don't have equivalents at the
  * {@link VisitService} layer
  */
-public class VisitDAOTest extends BaseContextSensitiveJunit5Test {
+public class VisitDAOTest extends BaseContextSensitiveTest {
 	
 	protected static final String VISITS_WITH_DATES_XML = "org/openmrs/api/include/VisitServiceTest-otherVisits.xml";
 	

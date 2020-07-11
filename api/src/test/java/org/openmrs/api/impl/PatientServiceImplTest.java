@@ -52,7 +52,7 @@ import org.openmrs.api.ObsService;
 import org.openmrs.api.PatientServiceTest;
 import org.openmrs.api.context.UserContext;
 import org.openmrs.api.db.PatientDAO;
-import org.openmrs.test.BaseContextMockJunit5Test;
+import org.openmrs.test.jupiter.BaseContextMockTest;
 
 /**
  * This class tests org.openmrs.{@link PatientServiceImpl}
@@ -60,7 +60,7 @@ import org.openmrs.test.BaseContextMockJunit5Test;
  *
  * If you need an integration test with application context and DB, have a look at @see org.openmrs.api.{@link PatientServiceTest}
  */
-public class PatientServiceImplTest extends BaseContextMockJunit5Test {
+public class PatientServiceImplTest extends BaseContextMockTest {
 
 	private PatientServiceImpl patientService;
 
