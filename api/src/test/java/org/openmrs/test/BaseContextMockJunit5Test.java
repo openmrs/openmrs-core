@@ -10,21 +10,20 @@
 package org.openmrs.test;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmrs.api.context.ContextMockHelper;
 import org.openmrs.api.context.UserContext;
-import org.openmrs.module.ModuleUtilTest;
 
 /**
  * Tests extending this class have a mocked authenticated UserContext. In addition you can mock
  * Context.get...Service() calls by annotating fields with {@link Mock}.
  * 
- * @see ModuleUtilTest
- * @since 1.11, 1.10, 1.9.9
+ * @since 2.4.0
  */
+@ExtendWith(MockitoExtension.class)
 public abstract class BaseContextMockJunit5Test {
 	
 	@Mock
@@ -32,14 +31,6 @@ public abstract class BaseContextMockJunit5Test {
 	
 	@InjectMocks
 	protected ContextMockHelper contextMockHelper;
-	
-	/**
-	 * Initializes fields annotated with {@link Mock}. Sets userContext and authenticatedUser.
-	 */
-	@BeforeEach
-	public void initMocks() {
-		MockitoAnnotations.initMocks(this);
-	}
 	
 	@AfterEach
 	public void revertContextMocks() {

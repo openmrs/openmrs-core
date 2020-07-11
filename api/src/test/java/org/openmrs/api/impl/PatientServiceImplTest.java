@@ -10,6 +10,8 @@
 package org.openmrs.api.impl;
 
 import static junit.framework.TestCase.assertTrue;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -162,9 +164,6 @@ public class PatientServiceImplTest extends BaseContextMockJunit5Test {
 		final PatientIdentifierType sameIdentifierType = new PatientIdentifierType(equalIdentifierTypeId);
 		sameIdentifierType.setName(equalIdentifierTypeName);
 
-		when(patientDaoMock.getPatientIdentifierTypes(any(), any(), any(), any()))
-			.thenReturn(new ArrayList<>());
-
 		final Patient patientWithIdentifiers = new Patient();
 		final PatientIdentifier patientIdentifier = new PatientIdentifier("some identifier", identifierType,
 			mock(Location.class));
@@ -176,17 +175,10 @@ public class PatientServiceImplTest extends BaseContextMockJunit5Test {
 		patientIdentifierSameType.setIdentifier(equalIdentifier);
 		patientWithIdentifiers.addIdentifier(patientIdentifierSameType);
 
-		// when
-		try {
-			patientService.checkPatientIdentifiers(patientWithIdentifiers);
-			// then
-			fail();
-		}
-		catch (DuplicateIdentifierException e) {
-			assertNotNull(e.getPatientIdentifier());
-			assertTrue(e.getMessage().contains("Identifier1 id type #: 12345"));
-		}
-
+		DuplicateIdentifierException thrown = assertThrows(DuplicateIdentifierException.class,
+			() -> patientService.checkPatientIdentifiers(patientWithIdentifiers));
+		assertNotNull(thrown.getPatientIdentifier());
+		assertThat(thrown.getMessage(), containsString("Identifier1 id type #: 12345"));
 	}
 
 	@Test
