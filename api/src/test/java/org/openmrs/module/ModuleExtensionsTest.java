@@ -27,7 +27,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.openmrs.messagesource.MessageSourceService;
-import org.openmrs.test.BaseContextMockJunit5Test;
+import org.openmrs.test.jupiter.BaseContextMockTest;
 
 /**
  * Tests for {@link Module#getExtensions()}.
@@ -35,7 +35,7 @@ import org.openmrs.test.BaseContextMockJunit5Test;
  * Look at {@link ModuleFileParser#parse()} for how a Module is constructed and initialized.
  * At first the extension tags found in config.xml are parsed and set in {@link Module#setExtensionNames(Map)}.
  */
-public class ModuleExtensionsTest extends BaseContextMockJunit5Test {
+public class ModuleExtensionsTest extends BaseContextMockTest {
 
 	private static final String EXTENSION_POINT_ID_PATIENT_DASHBOARD = "org.openmrs.patientDashboard";
 	private static final String LOGIC_MODULE_PATH = "org/openmrs/module/include/logic-0.2.omod";

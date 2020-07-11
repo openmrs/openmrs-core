@@ -14,12 +14,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Program;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveJunit5Test;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
  * Tests {@link WorkflowCollectionEditor}
  */
-public class WorkflowCollectionEditorTest extends BaseContextSensitiveJunit5Test {
+public class WorkflowCollectionEditorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see WorkflowCollectionEditor#setAsText(String)

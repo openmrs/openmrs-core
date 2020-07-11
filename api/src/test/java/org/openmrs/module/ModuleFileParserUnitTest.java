@@ -50,7 +50,7 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.Privilege;
 import org.openmrs.customdatatype.datatype.RegexValidatedTextDatatype;
 import org.openmrs.messagesource.MessageSourceService;
-import org.openmrs.test.BaseContextMockJunit5Test;
+import org.openmrs.test.jupiter.BaseContextMockTest;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
@@ -63,7 +63,7 @@ import org.w3c.dom.ls.LSSerializer;
 /**
  * Tests {@link ModuleFileParser} without a database but with file IO (so technically not a unit test but close).
  */
-public class ModuleFileParserUnitTest extends BaseContextMockJunit5Test {
+public class ModuleFileParserUnitTest extends BaseContextMockTest {
 
 	private static DocumentBuilderFactory documentBuilderFactory;
 
