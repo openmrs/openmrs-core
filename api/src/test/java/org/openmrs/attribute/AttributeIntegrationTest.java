@@ -9,12 +9,15 @@
  */
 package org.openmrs.attribute;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.openmrs.Visit;
 import org.openmrs.VisitAttribute;
 import org.openmrs.VisitAttributeType;
@@ -22,17 +25,17 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.InvalidCustomValueException;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.BaseContextSensitiveJunit5Test;
 
 /**
  * Integration tests for using {@link BaseAttribute}, {@link BaseAttributeType}, and {@link AttributeHandler}
  * in concert.
  */
-public class AttributeIntegrationTest extends BaseContextSensitiveTest {
+public class AttributeIntegrationTest extends BaseContextSensitiveJunit5Test {
 	
 	VisitService service;
 	
-	@Before
+	@BeforeEach
 	public void before() {
 		service = Context.getVisitService();
 	}
@@ -51,8 +54,8 @@ public class AttributeIntegrationTest extends BaseContextSensitiveTest {
 		service.saveVisit(visit);
 		
 		// saving the visit should have caused the date to be validated and saved
-		Assert.assertNotNull(legalDate.getValueReference());
-		Assert.assertEquals("2011-04-15", legalDate.getValueReference());
+		assertNotNull(legalDate.getValueReference());
+		assertEquals("2011-04-15", legalDate.getValueReference());
 		
 		VisitAttribute badDate = new VisitAttribute();
 		badDate.setAttributeType(auditDate);
@@ -61,7 +64,7 @@ public class AttributeIntegrationTest extends BaseContextSensitiveTest {
 		
 		try {
 			service.saveVisit(visit);
-			Assert.fail("Should have failed because of bad date attribute");
+			fail("Should have failed because of bad date attribute");
 		}
 		catch (APIException ex) {
 			// expected this
