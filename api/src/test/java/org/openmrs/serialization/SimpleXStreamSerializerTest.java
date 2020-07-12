@@ -9,7 +9,8 @@
  */
 package org.openmrs.serialization;
 
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.beans.EventHandler;
 import java.lang.reflect.Proxy;
@@ -20,8 +21,7 @@ import java.util.Map;
 
 import com.thoughtworks.xstream.XStreamException;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.OpenmrsObject;
 
 public class SimpleXStreamSerializerTest {
@@ -49,7 +49,7 @@ public class SimpleXStreamSerializerTest {
 		
 		String serializedFoo = serializer.serialize(foo);
 		
-		Assert.assertTrue(StringUtils.deleteWhitespace(serializedFoo).equals(
+		assertTrue(StringUtils.deleteWhitespace(serializedFoo).equals(
 		    StringUtils.deleteWhitespace("<org.openmrs.serialization.Foo>\n" + "  <attributeString>test</attributeString>\n"
 		            + "  <attributeInt>1</attributeInt>\n" + "  <attributeList>\n" + "    <string>foo</string>\n"
 		            + "    <string>bar</string>\n" + "  </attributeList>\n" + "  <attributeMap>\n" + "    <entry>\n"
@@ -78,19 +78,19 @@ public class SimpleXStreamSerializerTest {
 		
 		Foo foo = serializer.deserialize(serializedFoo, Foo.class);
 		
-		Assert.assertTrue(foo.getAttributeString().equals("Testing"));
-		Assert.assertTrue(foo.getAttributeInt() == 4);
+		assertTrue(foo.getAttributeString().equals("Testing"));
+		assertTrue(foo.getAttributeInt() == 4);
 		
 		List newList = foo.getAttributeList();
-		Assert.assertTrue(newList.size() == 2);
-		Assert.assertTrue(newList.get(0).equals("fooBar"));
-		Assert.assertTrue(newList.get(1).equals("bar"));
+		assertTrue(newList.size() == 2);
+		assertTrue(newList.get(0).equals("fooBar"));
+		assertTrue(newList.get(1).equals("bar"));
 		
 		Map newMap = foo.getAttributeMap();
-		Assert.assertTrue(newMap.size() == 3);
-		Assert.assertTrue(newMap.get(10).equals("foo"));
-		Assert.assertTrue(newMap.get(20).equals("fooBar"));
-		Assert.assertTrue(newMap.get(30).equals("bar"));
+		assertTrue(newMap.size() == 3);
+		assertTrue(newMap.get(10).equals("foo"));
+		assertTrue(newMap.get(20).equals("fooBar"));
+		assertTrue(newMap.get(30).equals("bar"));
 		
 	}
 	
