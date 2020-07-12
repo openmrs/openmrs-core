@@ -100,7 +100,7 @@
       <option name="JAVA_DECLARATION" value="true" />
     </context>
   </template>
-  <template name="testException5" value="@org.junit.jupiter.api.Test&#10;public void $SHOULD_FAIL_SENTENCE$() {&#10;&#9;&#10;&#9;org.junit.Assert.assertThrows($EXCEPTION$, () -&gt; $BODY$);&#10;}" description="OpenMRS Style JUnit 5 Test for exception" toReformat="true" toShortenFQNames="true" useStaticImport="true">
+  <template name="testException5" value="@org.junit.jupiter.api.Test&#10;public void $SHOULD_FAIL_SENTENCE$() {&#10;&#10;&#9;org.junit.jupiter.api.Assertions.assertThrows($EXCEPTION$, () -&gt; $BODY$);&#10;}" description="OpenMRS Style JUnit 5 Test for exception" toReformat="true" toShortenFQNames="true" useStaticImport="true">
     <variable name="SHOULD_FAIL_SENTENCE" expression="" defaultValue="&quot;shouldFailGiven&quot;" alwaysStopAt="true" />
     <variable name="EXCEPTION" expression="" defaultValue="&quot;IllegalArgumentException.class&quot;" alwaysStopAt="true" />
     <variable name="BODY" expression="" defaultValue="&quot;{}&quot;" alwaysStopAt="true" />
