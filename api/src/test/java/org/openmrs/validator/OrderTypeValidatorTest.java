@@ -11,21 +11,22 @@ package org.openmrs.validator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.ConceptClass;
 import org.openmrs.OrderType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -56,7 +57,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		OrderType orderType = new OrderType();
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("name"));
+		assertEquals(true, errors.hasFieldErrors("name"));
 	}
 	
 	/**
@@ -68,7 +69,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		orderType.setName("");
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("name"));
+		assertEquals(true, errors.hasFieldErrors("name"));
 	}
 	
 	/**
@@ -80,7 +81,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		orderType.setName("");
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("name"));
+		assertEquals(true, errors.hasFieldErrors("name"));
 	}
 	
 	/**
@@ -92,7 +93,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		orderType.setName(" ");
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("name"));
+		assertEquals(true, errors.hasFieldErrors("name"));
 	}
 	
 	/**
@@ -104,7 +105,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		orderType.setName(orderService.getOrderType(1).getName());
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("name"));
+		assertEquals(true, errors.hasFieldErrors("name"));
 	}
 	
 	/**
@@ -119,7 +120,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		orderType.addConceptClass(existing.getConceptClasses().iterator().next());
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("conceptClasses[0]"));
+		assertEquals(true, errors.hasFieldErrors("conceptClasses[0]"));
 	}
 	
 	/**
@@ -129,11 +130,11 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailIfParentIsAmongItsDescendants() {
 		OrderType orderType = orderService.getOrderType(2);
 		OrderType descendant = orderService.getOrderType(9);
-		Assert.assertTrue(descendant.getParent().getParent().equals(orderType));
+		assertTrue(descendant.getParent().getParent().equals(orderType));
 		orderType.setParent(descendant);
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("parent"));
+		assertEquals(true, errors.hasFieldErrors("parent"));
 	}
 	
 	/**
@@ -143,11 +144,11 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailIfParentIsAlsoADirectChild() {
 		OrderType orderType = orderService.getOrderType(8);
 		OrderType descendant = orderService.getOrderType(12);
-		Assert.assertTrue(descendant.getParent().equals(orderType));
+		assertTrue(descendant.getParent().equals(orderType));
 		orderType.setParent(descendant);
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("parent"));
+		assertEquals(true, errors.hasFieldErrors("parent"));
 	}
 	
 	/**
@@ -164,7 +165,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -177,7 +178,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -210,7 +211,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -235,9 +236,9 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
 		
-		Assert.assertEquals(true, errors.hasFieldErrors("name"));
-		Assert.assertEquals(true, errors.hasFieldErrors("javaClassName"));
-		Assert.assertEquals(true, errors.hasFieldErrors("description"));
-		Assert.assertEquals(true, errors.hasFieldErrors("retireReason"));
+		assertEquals(true, errors.hasFieldErrors("name"));
+		assertEquals(true, errors.hasFieldErrors("javaClassName"));
+		assertEquals(true, errors.hasFieldErrors("description"));
+		assertEquals(true, errors.hasFieldErrors("retireReason"));
 	}
 }
