@@ -9,11 +9,13 @@
  */
 package org.openmrs.validator;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 import org.openmrs.Field;
 import org.openmrs.FieldType;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -40,7 +42,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(ff, "name");
 		new FieldValidator().validate(ff, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 	}
 	
 	/**
@@ -61,7 +63,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(ff, "name");
 		new FieldValidator().validate(ff, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 	}
 	
 	/**
@@ -82,7 +84,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(ff, "name");
 		new FieldValidator().validate(ff, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 	}
 	
 	/**
@@ -104,7 +106,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(ff, "selectMultiple");
 		new FieldValidator().validate(ff, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("selectMultiple"));
+		assertTrue(errors.hasFieldErrors("selectMultiple"));
 	}
 	
 	/**
@@ -126,7 +128,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(ff, "retired");
 		new FieldValidator().validate(ff, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("retired"));
+		assertTrue(errors.hasFieldErrors("retired"));
 	}
 	
 	/**
@@ -147,7 +149,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(ff, "name");
 		new FieldValidator().validate(ff, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -171,7 +173,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(ff, "field");
 		new FieldValidator().validate(ff, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -199,9 +201,9 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(ff, "field");
 		new FieldValidator().validate(ff, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("name"));
-		Assert.assertTrue(errors.hasFieldErrors("tableName"));
-		Assert.assertTrue(errors.hasFieldErrors("attributeName"));
-		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+		assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("tableName"));
+		assertTrue(errors.hasFieldErrors("attributeName"));
+		assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 }
