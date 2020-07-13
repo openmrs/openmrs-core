@@ -31,7 +31,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.tasks.AbstractTask;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsClassLoader;
 
 /**
