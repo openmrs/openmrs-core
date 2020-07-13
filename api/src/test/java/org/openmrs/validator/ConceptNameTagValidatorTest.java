@@ -9,13 +9,15 @@
  */
 package org.openmrs.validator;
 
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -41,17 +43,17 @@ public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(cnt, "cnt");
 		new ConceptNameTagValidator().validate(cnt, errors);
-		Assert.assertTrue(errors.hasFieldErrors("tag"));
+		assertTrue(errors.hasFieldErrors("tag"));
 		
 		cnt.setTag("");
 		errors = new BindException(cnt, "cnt");
 		new ConceptNameTagValidator().validate(cnt, errors);
-		Assert.assertTrue(errors.hasFieldErrors("tag"));
+		assertTrue(errors.hasFieldErrors("tag"));
 		
 		cnt.setTag(" ");
 		errors = new BindException(cnt, "cnt");
 		new ConceptNameTagValidator().validate(cnt, errors);
-		Assert.assertTrue(errors.hasFieldErrors("tag"));
+		assertTrue(errors.hasFieldErrors("tag"));
 	}
 	
 	/**
@@ -65,7 +67,7 @@ public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(cnt, "cnt");
 		new ConceptNameTagValidator().validate(cnt, errors);
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -82,8 +84,8 @@ public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(cnt, objectName);
 		new ConceptNameTagValidator().validate(cnt, errors);
-		Assert.assertTrue(errors.hasErrors());
-		Assert.assertEquals(true, errors.hasFieldErrors("tag"));
+		assertTrue(errors.hasErrors());
+		assertEquals(true, errors.hasFieldErrors("tag"));
 	}
 	
 	/**
@@ -98,7 +100,7 @@ public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(cnt, "cnt");
 		new ConceptNameTagValidator().validate(cnt, errors);
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -115,8 +117,8 @@ public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(cnt, "cnt");
 		new ConceptNameTagValidator().validate(cnt, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("tag"));
-		Assert.assertEquals(true, errors.hasFieldErrors("voidReason"));
+		assertEquals(true, errors.hasFieldErrors("tag"));
+		assertEquals(true, errors.hasFieldErrors("voidReason"));
 	}
 	
 	@Test
@@ -127,7 +129,7 @@ public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 
 		Errors errors = new BindException(cnt, objectName);
 		new ConceptNameTagValidator().validate(cnt, errors);
-		Assert.assertFalse(errors.hasErrors());
-		Assert.assertEquals(false, errors.hasFieldErrors("tag"));
+		assertFalse(errors.hasErrors());
+		assertEquals(false, errors.hasFieldErrors("tag"));
 	}
 }
