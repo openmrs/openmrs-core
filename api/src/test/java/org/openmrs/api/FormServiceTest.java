@@ -9,13 +9,13 @@
  */
 package org.openmrs.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,8 +31,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections.ListUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.Field;
 import org.openmrs.FieldType;
@@ -43,7 +42,7 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
 import org.openmrs.api.context.Context;
 import org.openmrs.obs.SerializableComplexObsHandler;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.DateUtil;
 import org.openmrs.util.OpenmrsConstants;
 
@@ -367,7 +366,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 
 		formService.saveFieldType(fieldType);
 
-		Assert.assertNotNull(formService.getFieldType(fieldType.getFieldTypeId()));
+		assertNotNull(formService.getFieldType(fieldType.getFieldTypeId()));
 	}
 
 	/**
@@ -378,7 +377,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		FormService formService = Context.getFormService();
 
 		FieldType fieldType = formService.getFieldType(1);
-		Assert.assertNotNull(fieldType);
+		assertNotNull(fieldType);
 
 		fieldType.setName("SOME OTHER NEW NAME");
 
@@ -399,8 +398,8 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 
 		Form dupForm = formService.duplicateForm(form);
 
-		Assert.assertNull(dupForm.getChangedBy());
-		Assert.assertNull(dupForm.getDateChanged());
+		assertNull(dupForm.getChangedBy());
+		assertNull(dupForm.getDateChanged());
 		assertEquals(Context.getAuthenticatedUser(), dupForm.getCreator());
 		assertFalse(dupForm.getDateCreated().before(startOfTest));
 	}
@@ -433,8 +432,8 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		String originalUUID = form.getUuid();
 
 		Form dupForm = formService.duplicateForm(form);
-		Assert.assertNotNull(dupForm.getUuid());
-		Assert.assertNotSame(originalUUID, dupForm.getUuid());
+		assertNotNull(dupForm.getUuid());
+		assertNotSame(originalUUID, dupForm.getUuid());
 	}
 
 	/**
@@ -442,7 +441,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getFieldAnswerByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
-		Assert.assertNull(Context.getFormService().getFieldAnswerByUuid("some invalid uuid"));
+		assertNull(Context.getFormService().getFieldAnswerByUuid("some invalid uuid"));
 	}
 
 	/**
@@ -460,7 +459,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getFieldByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
-		Assert.assertNull(Context.getFormService().getFieldByUuid("some invalid uuid"));
+		assertNull(Context.getFormService().getFieldByUuid("some invalid uuid"));
 	}
 
 	/**
@@ -478,7 +477,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getFieldTypeByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
-		Assert.assertNull(Context.getFormService().getFieldTypeByUuid("some invalid uuid"));
+		assertNull(Context.getFormService().getFieldTypeByUuid("some invalid uuid"));
 	}
 
 	/**
@@ -496,7 +495,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getFormByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
-		Assert.assertNull(Context.getFormService().getFormByUuid("some invalid uuid"));
+		assertNull(Context.getFormService().getFormByUuid("some invalid uuid"));
 	}
 
 	/**
@@ -514,7 +513,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getFormFieldByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
-		Assert.assertNull(Context.getFormService().getFormFieldByUuid("some invalid uuid"));
+		assertNull(Context.getFormService().getFormFieldByUuid("some invalid uuid"));
 	}
 
 	/**
@@ -536,7 +535,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		Context.getFormService().saveFormField(formField);
 
 		// the uuid should be set by this method so that the field can be saved successfully
-		Assert.assertNotNull(field.getUuid());
+		assertNotNull(field.getUuid());
 	}
 
 	/**
@@ -561,7 +560,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		Context.getFormService().mergeDuplicateFields();
 
 		// duplicateField should no longer be referenced
-		Assert.assertNull(Context.getFormService().getFieldByUuid("b1843148-da2f-4349-c9c7-1164b98d91dd"));
+		assertNull(Context.getFormService().getFieldByUuid("b1843148-da2f-4349-c9c7-1164b98d91dd"));
 
 		// duplicateField should be purged
 		assertEquals(2, Context.getFormService().getAllFields().size());
@@ -587,8 +586,8 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		Context.clearSession();
 
 		FormResource actual = Context.getFormService().getFormResource(resourceId);
-		Assert.assertNotNull(actual);
-		Assert.assertEquals(expected, actual.getValue());
+		assertNotNull(actual);
+		assertEquals(expected, actual.getValue());
 	}
 
 	/**
@@ -617,8 +616,8 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		FormResource actual = Context.getFormService().getFormResource(newForm, name);
 
 		// check it
-		Assert.assertNotNull(actual);
-		Assert.assertEquals(expected, actual.getValue());
+		assertNotNull(actual);
+		assertEquals(expected, actual.getValue());
 	}
 
 	/**
@@ -652,7 +651,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 
 		// try to find the resource
 		resource = Context.getFormService().getFormResource(resourceId);
-		Assert.assertNull(resource);
+		assertNull(resource);
 	}
 
 	/**
@@ -690,8 +689,8 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		// get the current value
 		FormResource actual = Context.getFormService().getFormResource(form, name);
 
-		Assert.assertFalse(previous.equals(actual.getValue()));
-		Assert.assertEquals(expected, actual.getValue());
+		assertFalse(previous.equals(actual.getValue()));
+		assertEquals(expected, actual.getValue());
 	}
 
 	/**
@@ -729,7 +728,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		Context.getFormService().purgeForm(form);
 
 		// check for the resource
-		Assert.assertNull(Context.getFormService().getFormResource(savedId));
+		assertNull(Context.getFormService().getFormResource(savedId));
 	}
 
 	/**
@@ -758,9 +757,9 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 
 		// make sure the resource is saved
 		Collection<FormResource> formResourcesForForm = Context.getFormService().getFormResourcesForForm(form);
-		Assert.assertEquals(1, formResourcesForForm.size());
+		assertEquals(1, formResourcesForForm.size());
 		FormResource actual = formResourcesForForm.iterator().next();
-		Assert.assertEquals(expected, actual.getValue());
+		assertEquals(expected, actual.getValue());
 	}
 
 	/**
@@ -806,12 +805,12 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		formField = fs.saveFormField(formField);
 		List<FormField> updatedFormFields = fs.getAllFormFields();
 		//should have this and the two form fields from the handler
-		Assert.assertEquals(initialFormFieldCount += 3, updatedFormFields.size());
+		assertEquals(initialFormFieldCount += 3, updatedFormFields.size());
 		//get the formfields added by the handler and check their parent
 		List<FormField> childFormFields = ListUtils.subtract(updatedFormFields, originalFormFields);
 		childFormFields.remove(formField);//exclude this form field
 		for (FormField ff : childFormFields) {
-			Assert.assertEquals(formField, ff.getParent());
+			assertEquals(formField, ff.getParent());
 		}
 	}
 
