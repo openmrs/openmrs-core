@@ -9,8 +9,9 @@
  */
 package org.openmrs.logic.result;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the {@link EmptyResult} class
@@ -19,11 +20,11 @@ public class EmptyResultTest {
 	
 	@Test
 	public void isEmpty_shouldReturnTrue() {
-		Assert.assertTrue(new EmptyResult().isEmpty());
+		assertTrue(new EmptyResult().isEmpty());
 	}
 	
 	@Test
 	public void isNull_shouldReturnTrue() {
-		Assert.assertTrue(new EmptyResult().isNull());
+		assertTrue(new EmptyResult().isNull());
 	}
 }
