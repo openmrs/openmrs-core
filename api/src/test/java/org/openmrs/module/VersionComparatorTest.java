@@ -9,11 +9,11 @@
  */
 package org.openmrs.module;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the {@link VersionComparator} class
@@ -32,7 +32,7 @@ public class VersionComparatorTest {
 		String[] randomPurmutationSet = { "1.2", "2.1.10", "2.1.20", "1.1", "1.7", "2.1.1", "1.20", "1.10", "2.1.9", "1.11" };
 		
 		Arrays.sort(randomPurmutationSet, new VersionComparator());
-		assertTrue("", Arrays.equals(correctStringSet, randomPurmutationSet));
+		assertTrue(Arrays.equals(correctStringSet, randomPurmutationSet), "");
 	}
 	
 }

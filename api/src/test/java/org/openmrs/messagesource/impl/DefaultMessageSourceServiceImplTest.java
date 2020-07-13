@@ -9,7 +9,7 @@
  */
 package org.openmrs.messagesource.impl;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Context;
 
 /**
