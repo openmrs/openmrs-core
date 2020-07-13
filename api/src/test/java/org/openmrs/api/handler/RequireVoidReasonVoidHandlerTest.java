@@ -9,11 +9,11 @@
  */
 package org.openmrs.api.handler;
 
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Encounter;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
@@ -21,7 +21,7 @@ import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.Voidable;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
  * Tests for the {@link RequireVoidReasonVoidHandler} class.
