@@ -2361,6 +2361,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(1, people.size());
 		assertTrue(containsId(people, 3));
 	}
+	
 	/**
 	 * @see org.openmrs.api.PersonService#savePersonAddress(PersonAddress)
 	 */
