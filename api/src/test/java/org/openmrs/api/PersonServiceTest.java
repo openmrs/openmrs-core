@@ -2373,8 +2373,10 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		pAddress.setCityVillage("Anywhere city");
 		pAddress.setCountry("Some Country");
 		pAddress.setUuid("y403fafk-e5k4-42d0-9d11-4f52e89d123r");
-		PersonService personService=Context.getPersonService();
+		
+		PersonService personService = Context.getPersonService();
 		personService.savePersonAddress(pAddress);
+		
 	    assertNotNull(personService.getPersonAddressByUuid("y403fafk-e5k4-42d0-9d11-4f52e89d123r"));	
 	}
 	
