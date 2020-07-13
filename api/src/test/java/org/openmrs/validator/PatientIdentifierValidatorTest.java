@@ -9,15 +9,18 @@
  */
 package org.openmrs.validator;
 
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.AdditionalMatchers.aryEq;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
 
 import java.util.Locale;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.openmrs.Location;
@@ -34,7 +37,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -65,7 +68,7 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 		// First, make sure this fails
 		try {
 			PatientIdentifierValidator.validateIdentifier(pi);
-			Assert.fail("The patient identifier should be invalid prior to voiding");
+			fail("The patient identifier should be invalid prior to voiding");
 		}
 		catch (Exception e) {}
 		pi.setVoided(true);
@@ -174,7 +177,7 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	public void validateIdentifier_shouldPassIfInUseAndIdTypeUniquenessIsSetToNonUnique() {
 		PatientService patientService = Context.getPatientService();
 		PatientIdentifier duplicateId = patientService.getPatientIdentifier(1);
-		Assert.assertNotNull(duplicateId.getLocation());
+		assertNotNull(duplicateId.getLocation());
 		
 		PatientIdentifierType idType = duplicateId.getIdentifierType();
 		idType.setUniquenessBehavior(UniquenessBehavior.NON_UNIQUE);
@@ -219,7 +222,7 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(pi, "pi");
 		new PatientIdentifierValidator().validate(pi, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -237,8 +240,8 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(pi, "pi");
 		new PatientIdentifierValidator().validate(pi, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("identifier"));
-		Assert.assertTrue(errors.hasFieldErrors("voidReason"));
+		assertTrue(errors.hasFieldErrors("identifier"));
+		assertTrue(errors.hasFieldErrors("voidReason"));
 	}
 	
 	/**

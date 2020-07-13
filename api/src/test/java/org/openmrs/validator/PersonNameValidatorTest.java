@@ -11,20 +11,20 @@ package org.openmrs.validator;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.openmrs.test.matchers.HasFieldErrors.hasFieldErrors;
 import static org.openmrs.test.matchers.HasGlobalErrors.hasGlobalErrors;
 
 import java.util.HashMap;
 import java.util.stream.Stream;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.openmrs.GlobalProperty;
 import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -47,7 +47,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	
 	private Errors errors;
 	
-	@Before
+	@BeforeEach
 	public void setUp() {
 		validator = new PersonNameValidator();
 		
@@ -663,7 +663,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -677,7 +677,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validate(personName, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -698,7 +698,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validate(personName, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -757,7 +757,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
-	@Ignore("Unignore after investigating and fixing - RA-543")
+	@Disabled("Unignore after investigating and fixing - RA-543")
 	public void validate_shouldFailValidationIfPersonNameGivenNameHasLeadingSpaces() {
 		
 		personName.setGivenName(" alex");
@@ -771,7 +771,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
-	@Ignore("Unignore after investigating and fixing - RA-543")
+	@Disabled("Unignore after investigating and fixing - RA-543")
 	public void validate_shouldFailValidationIfPersonNameGivenNameHasTrailingSpaces() {
 		
 		personName.setGivenName("alex ");
@@ -785,7 +785,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
-	@Ignore("Unignore after investigating and fixing - RA-543")
+	@Disabled("Unignore after investigating and fixing - RA-543")
 	public void validate_shouldFailValidationIfPersonNameMiddleNameHasLeadingSpaces() {
 		
 		personName.setMiddleName(" de");
@@ -799,7 +799,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
-	@Ignore("Unignore after investigating and fixing - RA-543")
+	@Disabled("Unignore after investigating and fixing - RA-543")
 	public void validate_shouldFailValidationIfPersonNameMiddleNameHasTrailingSpaces() {
 		
 		personName.setMiddleName("de ");
@@ -813,7 +813,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
-	@Ignore("Unignore after investigating and fixing - RA-543")
+	@Disabled("Unignore after investigating and fixing - RA-543")
 	public void validate_shouldFailValidationIfPersonNameFamilyNameHasLeadingSpaces() {
 		
 		personName.setFamilyName(" souza");
@@ -827,7 +827,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
-	@Ignore("Unignore after investigating and fixing - RA-543")
+	@Disabled("Unignore after investigating and fixing - RA-543")
 	public void validate_shouldFailValidationIfPersonNameFamilyNameHasTrailingSpaces() {
 		
 		personName.setFamilyName("souza ");
@@ -841,7 +841,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
-	@Ignore("Unignore after investigating and fixing - RA-543")
+	@Disabled("Unignore after investigating and fixing - RA-543")
 	public void validate_shouldFailValidationIfPersonNameFamilyName2HasLeadingSpaces() {
 		
 		personName.setFamilyName2(" souza-");
@@ -855,7 +855,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
-	@Ignore("Unignore after investigating and fixing - RA-543")
+	@Disabled("Unignore after investigating and fixing - RA-543")
 	public void validate_shouldFailValidationIfPersonNameFamilyName2HasTrailingSpaces() {
 		
 		personName.setFamilyName2("souza- ");
