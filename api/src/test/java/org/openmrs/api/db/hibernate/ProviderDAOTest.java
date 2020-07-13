@@ -9,17 +9,19 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import java.util.Collection;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Person;
 import org.openmrs.Provider;
 import org.openmrs.api.db.PersonDAO;
 import org.openmrs.api.db.ProviderDAO;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ProviderDAOTest extends BaseContextSensitiveTest {
@@ -37,7 +39,7 @@ public class ProviderDAOTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	@Before
+	@BeforeEach
 	public void runBeforeEachTest() {
 		executeDataSet(PROVIDERS_INITIAL_XML);
 	}
@@ -48,8 +50,8 @@ public class ProviderDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void getProvidersByPerson_shouldNotReturnRetiredProvidersIfIncludeRetiredFalse() {
 		Collection<Provider> providers = providerDao.getProvidersByPerson(personDao.getPerson(2), false);
-		Assert.assertEquals(1, providers.size());
-		Assert.assertFalse(providers.iterator().next().getRetired());
+		assertEquals(1, providers.size());
+		assertFalse(providers.iterator().next().getRetired());
 	}
 	
 	/**
@@ -58,7 +60,7 @@ public class ProviderDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void getProvidersByPerson_shouldListRetiredProvidersAtTheEnd() {
 		List<Provider> providers = (List<Provider>) providerDao.getProvidersByPerson(personDao.getPerson(2), true);
-		Assert.assertEquals(true, providers.get(1).getRetired());
+		assertEquals(true, providers.get(1).getRetired());
 	}
 	
 	/**
@@ -66,6 +68,6 @@ public class ProviderDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getProvidersByPerson_shouldReturnAllProvidersIfIncludeRetiredTrue() {
-		Assert.assertEquals(2, providerDao.getProvidersByPerson(personDao.getPerson(2), true).size());
+		assertEquals(2, providerDao.getProvidersByPerson(personDao.getPerson(2), true).size());
 	}
 }

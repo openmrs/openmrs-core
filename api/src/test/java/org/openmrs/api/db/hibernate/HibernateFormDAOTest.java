@@ -9,16 +9,17 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Field;
 import org.openmrs.FormField;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class HibernateFormDAOTest extends BaseContextSensitiveTest {
@@ -28,7 +29,7 @@ public class HibernateFormDAOTest extends BaseContextSensitiveTest {
 	@Autowired
 	private HibernateFormDAO dao;
 	
-	@Before
+	@BeforeEach
 	public void setUp() {
 		executeDataSet(FORM_XML);
 	}
@@ -36,10 +37,10 @@ public class HibernateFormDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void shouldFilterAgainstFormFields() {
 		List<FormField> formFields = Arrays.asList(new FormField(2), new FormField(3));
-		Assert.assertEquals(1, (Object)dao.getForms(null, false, Collections.emptyList(), null, formFields, formFields, Collections.emptyList()).size());
+		assertEquals(1, (Object)dao.getForms(null, false, Collections.emptyList(), null, formFields, formFields, Collections.emptyList()).size());
 		
 		formFields = Arrays.asList(new FormField(2), new FormField(3), new FormField(5));
-		Assert.assertEquals(0, (Object)dao.getForms(null, false, Collections.emptyList(), null, formFields, formFields, Arrays.asList(new Field(3))).size());
+		assertEquals(0, (Object)dao.getForms(null, false, Collections.emptyList(), null, formFields, formFields, Arrays.asList(new Field(3))).size());
 		
 	}
 }
