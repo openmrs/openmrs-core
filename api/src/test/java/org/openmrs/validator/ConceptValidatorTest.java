@@ -12,7 +12,10 @@ package org.openmrs.validator;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.openmrs.test.matchers.HasFieldErrors.hasFieldErrors;
 import static org.openmrs.test.matchers.HasGlobalErrors.hasGlobalErrors;
 
@@ -20,9 +23,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
@@ -35,7 +37,7 @@ import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.DuplicateConceptNameException;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -59,7 +61,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	
 	private Concept weight;
 	
-	@Before
+	@BeforeEach
 	public void setUp() {
 		validator = new ConceptValidator();
 		concept = new Concept();
@@ -167,7 +169,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailIfThereIsADuplicateUnretiredFullySpecifiedNameInTheSameLocale() {
 		
 		Context.setLocale(new Locale("en", "GB"));
-		Assert.assertEquals(true, cd4Count.getFullySpecifiedName(Context.getLocale()).isFullySpecifiedName());
+		assertEquals(true, cd4Count.getFullySpecifiedName(Context.getLocale()).isFullySpecifiedName());
 		String duplicateName = cd4Count.getFullySpecifiedName(Context.getLocale()).getName();
 		Concept anotherConcept = weight;
 		anotherConcept.getFullySpecifiedName(Context.getLocale()).setName(duplicateName);
@@ -185,7 +187,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		ConceptName preferredName = new ConceptName("preferred name", Context.getLocale());
 		concept.setPreferredName(preferredName);
 		conceptService.saveConcept(concept);
-		Assert.assertEquals("preferred name", concept.getPreferredName(Context.getLocale()).getName());
+		assertEquals("preferred name", concept.getPreferredName(Context.getLocale()).getName());
 		Concept anotherConcept = weight;
 		anotherConcept.getFullySpecifiedName(Context.getLocale()).setName("preferred name");
 		Errors errors = new BindException(anotherConcept, "concept");
@@ -217,7 +219,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validate(conceptToUpdate, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	@Test
@@ -230,7 +232,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validate(concept, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	@Test
@@ -240,14 +242,14 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		Concept concept = cd4Count;
 		//use a synonym as the duplicate name
 		ConceptName duplicateName = concept.getSynonyms(Context.getLocale()).iterator().next();
-		Assert.assertEquals(true, duplicateName.isSynonym());
+		assertEquals(true, duplicateName.isSynonym());
 		Concept anotherConcept = weight;
 		anotherConcept.getFullySpecifiedName(Context.getLocale()).setName(duplicateName.getName());
 		Errors errors = new BindException(anotherConcept, "concept");
 		
 		validator.validate(anotherConcept, errors);
 		
-		Assert.assertEquals(false, errors.hasErrors());
+		assertEquals(false, errors.hasErrors());
 	}
 	
 	@Test
@@ -264,7 +266,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validate(anotherConcept, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	@Test
@@ -281,7 +283,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validate(anotherConcept, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	@Test
@@ -299,7 +301,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validate(concept, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	@Test
@@ -324,9 +326,9 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		
 		ConceptName otherName = conceptService.getConceptName(1439);
 		//sanity check since names should only be unique amongst preferred and fully specified names
-		Assert.assertTrue(otherName.isFullySpecifiedName() || otherName.isPreferred());
-		Assert.assertFalse(otherName.getVoided());
-		Assert.assertFalse(otherName.getConcept().getRetired());
+		assertTrue(otherName.isFullySpecifiedName() || otherName.isPreferred());
+		assertFalse(otherName.getVoided());
+		assertFalse(otherName.getConcept().getRetired());
 		
 		//change to a duplicate name in the same locale
 		ConceptName duplicateName = conceptService.getConceptName(2477);
@@ -334,15 +336,15 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		Concept concept = duplicateName.getConcept();
 		concept.setPreferredName(duplicateName);
 		//ensure that the name has been marked as preferred in its locale
-		Assert.assertEquals(duplicateName, concept.getPreferredName(duplicateName.getLocale()));
-		Assert.assertTrue(duplicateName.isPreferred());
+		assertEquals(duplicateName, concept.getPreferredName(duplicateName.getLocale()));
+		assertTrue(duplicateName.isPreferred());
 		duplicateName.setVoided(true);
 		
 		Errors errors = new BindException(concept, "concept");
 		
 		validator.validate(concept, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	@Test
@@ -351,7 +353,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		Context.setLocale(new Locale("pl"));
 		Locale en = new Locale("en", "GB");
 		Concept concept = cd4Count;
-		Assert.assertEquals(true, concept.getFullySpecifiedName(en).isFullySpecifiedName());
+		assertEquals(true, concept.getFullySpecifiedName(en).isFullySpecifiedName());
 		String duplicateName = concept.getFullySpecifiedName(en).getName();
 		Concept anotherConcept = weight;
 		anotherConcept.getFullySpecifiedName(en).setName(duplicateName);
@@ -418,7 +420,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 
 		validator.validate(concept, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	@Test
@@ -453,7 +455,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 
 		validator.validate(concept, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	@Test
@@ -462,8 +464,8 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		Context.setLocale(new Locale("en", "GB"));
 		
 		List<Concept> concepts = conceptService.getConceptsByName("HSM");
-		Assert.assertEquals(1, concepts.size());
-		Assert.assertEquals(true, concepts.get(0).getShortNameInLocale(Context.getLocale()).getName()
+		assertEquals(1, concepts.size());
+		assertEquals(true, concepts.get(0).getShortNameInLocale(Context.getLocale()).getName()
 		        .equalsIgnoreCase("HSM"));
 		
 		concept.setConceptClass(new ConceptClass());
@@ -480,7 +482,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validate(concept, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 
 	@Test
@@ -517,7 +519,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validate(concept, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 
 	@Test
