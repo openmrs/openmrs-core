@@ -9,11 +9,11 @@
  */
 package org.openmrs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -25,9 +25,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.junit.jupiter.api.Test;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
  * This class should test all methods on the person object.<br>
@@ -56,13 +55,11 @@ public class PersonTest extends BaseContextSensitiveTest {
 		p.addAddress(pa1);
 		
 		// make sure the address is added.
-		assertTrue("There should be 1 address in the person object but there is actually : " + p.getAddresses().size(), p
-		        .getAddresses().size() == 1);
+		assertTrue(p.getAddresses().size() == 1, "There should be 1 address in the person object but there is actually : " + p.getAddresses().size());
 		
 		// adding the same address should not increment the size
 		p.addAddress(pa1);
-		assertTrue("There should be 1 address in the person object but there is actually : " + p.getAddresses().size(), p
-		        .getAddresses().size() == 1);
+		assertTrue(p.getAddresses().size() == 1, "There should be 1 address in the person object but there is actually : " + p.getAddresses().size());
 		
 		PersonAddress pa2 = new PersonAddress();
 		pa2.setAddress1("secondtest");
@@ -72,8 +69,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		p.addAddress(pa2);
 		
 		// make sure the address is added
-		assertTrue("There should be 2 addresses in the person object but there is actually : " + p.getAddresses().size(), p
-		        .getAddresses().size() == 2);
+		assertTrue(p.getAddresses().size() == 2, "There should be 2 addresses in the person object but there is actually : " + p.getAddresses().size());
 		
 		PersonAddress pa3 = new PersonAddress();
 		pa3.setAddress1(pa1.getAddress1());
@@ -83,33 +79,30 @@ public class PersonTest extends BaseContextSensitiveTest {
 		
 		p.addAddress(pa3);
 		// make sure the address is NOT added
-		assertTrue("There should be 2 addresses in the person object but there is actually : " + p.getAddresses().size(), p
-		        .getAddresses().size() == 2);
+		assertTrue(p.getAddresses().size() == 2, "There should be 2 addresses in the person object but there is actually : " + p.getAddresses().size());
 		
 		pa3.setVoided(true);
 		p.addAddress(pa3);
 		// make sure the address IS added
-		assertTrue("There should be 3 addresses in the person object but there is actually : " + p.getAddresses().size(), p
-		        .getAddresses().size() == 3);
+		assertTrue(p.getAddresses().size() == 3, "There should be 3 addresses in the person object but there is actually : " + p.getAddresses().size());
 		
 		p.removeAddress(pa3);
-		assertTrue("There should be only 2 address in the person object now", p.getAddresses().size() == 2);
+		assertTrue(p.getAddresses().size() == 2, "There should be only 2 address in the person object now");
 		
 		pa3.setDateCreated(new Date(pa1.getDateCreated().getTime() + 1));
 		p.addAddress(pa3);
 		// make sure the address IS added
-		assertTrue("There should be 3 addresses in the person object but there is actually : " + p.getAddresses().size(), p
-		        .getAddresses().size() == 3);
+		assertTrue(p.getAddresses().size() == 3, "There should be 3 addresses in the person object but there is actually : " + p.getAddresses().size());
 		
 		// test removing all of the addresses
 		p.removeAddress(pa3);
-		assertTrue("There should be only 2 address in the person object now", p.getAddresses().size() == 2);
+		assertTrue(p.getAddresses().size() == 2, "There should be only 2 address in the person object now");
 		p.removeAddress(pa2);
-		assertTrue("There should be only 1 address in the person object now", p.getAddresses().size() == 1);
+		assertTrue(p.getAddresses().size() == 1, "There should be only 1 address in the person object now");
 		p.removeAddress(pa2);
-		assertTrue("There should still be only 1 address in the person object now", p.getAddresses().size() == 1);
+		assertTrue(p.getAddresses().size() == 1, "There should still be only 1 address in the person object now");
 		p.removeAddress(pa1);
-		assertTrue("There shouldn't be any addresses in the person object now", p.getAddresses().size() == 0);
+		assertTrue(p.getAddresses().size() == 0, "There shouldn't be any addresses in the person object now");
 	}
 	
 	/**
@@ -133,13 +126,11 @@ public class PersonTest extends BaseContextSensitiveTest {
 		p.addName(pa1);
 		
 		// make sure the name is added.
-		assertTrue("There should be 1 name in the person object but there is actually : " + p.getNames().size(), p
-		        .getNames().size() == 1);
+		assertTrue(p.getNames().size() == 1, "There should be 1 name in the person object but there is actually : " + p.getNames().size());
 		
 		// adding the same name should not increment the size
 		p.addName(pa1);
-		assertTrue("There should be 1 name in the person object but there is actually : " + p.getNames().size(), p
-		        .getNames().size() == 1);
+		assertTrue(p.getNames().size() == 1, "There should be 1 name in the person object but there is actually : " + p.getNames().size());
 		
 		PersonName pa2 = new PersonName();
 		pa2.setGivenName("secondtest");
@@ -149,8 +140,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		p.addName(pa2);
 		
 		// make sure the name is added
-		assertTrue("There should be 2 names in the person object but there is actually : " + p.getNames().size(), p
-		        .getNames().size() == 2);
+		assertTrue(p.getNames().size() == 2, "There should be 2 names in the person object but there is actually : " + p.getNames().size());
 		
 		PersonName pa3 = new PersonName();
 		pa3.setGivenName(pa1.getGivenName());
@@ -160,8 +150,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		
 		p.addName(pa3);
 		// make sure the name is NOT added because its the same as pa1
-		assertTrue("There should be 2 names in the person object but there is actually : " + p.getNames().size(), p
-		        .getNames().size() == 2);
+		assertTrue(p.getNames().size() == 2, "There should be 2 names in the person object but there is actually : " + p.getNames().size());
 		
 		PersonName pa4 = new PersonName();
 		pa4.setGivenName(pa1.getGivenName() + "string to change the .equals method");
@@ -171,29 +160,27 @@ public class PersonTest extends BaseContextSensitiveTest {
 		pa4.setVoided(true);
 		p.addName(pa4);
 		// make sure a voided name IS added
-		assertTrue("There should be 3 names in the person object but there is actually : " + p.getNames().size(), p
-		        .getNames().size() == 3);
+		assertTrue(p.getNames().size() == 3, "There should be 3 names in the person object but there is actually : " + p.getNames().size());
 		
 		p.removeName(pa3);
-		assertTrue("There should be only 2 name in the person object now", p.getNames().size() == 2);
+		assertTrue(p.getNames().size() == 2, "There should be only 2 name in the person object now");
 		
 		pa3.setDateCreated(new Date(pa1.getDateCreated().getTime() + 1));
 		p.addName(pa3);
 		// make sure the name IS added
-		assertTrue("There should be 3 names in the person object but there is actually : " + p.getNames().size(), p
-		        .getNames().size() == 3);
+		assertTrue(p.getNames().size() == 3, "There should be 3 names in the person object but there is actually : " + p.getNames().size());
 		
 		// test removing all of the names
 		p.removeName(pa4);
-		assertTrue("There should be only 2 names in the person object now", p.getNames().size() == 2);
+		assertTrue(p.getNames().size() == 2, "There should be only 2 names in the person object now");
 		p.removeName(pa3); // pa3 was never added, but is the same as pa1
-		assertTrue("There should be only 1 names in the person object now", p.getNames().size() == 1);
+		assertTrue(p.getNames().size() == 1, "There should be only 1 names in the person object now");
 		p.removeName(pa2);
-		assertTrue("There should be only no names in the person object now", p.getNames().size() == 0);
+		assertTrue(p.getNames().size() == 0, "There should be only no names in the person object now");
 		p.removeName(pa2);
-		assertTrue("There should still be only no names in the person object now", p.getNames().size() == 0);
+		assertTrue(p.getNames().size() == 0, "There should still be only no names in the person object now");
 		p.removeName(pa1);
-		assertTrue("There shouldn't be any names in the person object now", p.getNames().size() == 0);
+		assertTrue(p.getNames().size() == 0, "There shouldn't be any names in the person object now");
 	}
 	
 	/**
@@ -217,13 +204,11 @@ public class PersonTest extends BaseContextSensitiveTest {
 		p.addAttribute(pa1);
 		
 		// make sure the attribute is added.
-		assertTrue("There should be 1 attribute in the person object but there is actually : " + p.getAttributes().size(), p
-		        .getAttributes().size() == 1);
+		assertTrue(p.getAttributes().size() == 1, "There should be 1 attribute in the person object but there is actually : " + p.getAttributes().size());
 		
 		// adding the same attribute should not increment the size
 		p.addAttribute(pa1);
-		assertTrue("There should be 1 attribute in the person object but there is actually : " + p.getAttributes().size(), p
-		        .getAttributes().size() == 1);
+		assertTrue(p.getAttributes().size() == 1, "There should be 1 attribute in the person object but there is actually : " + p.getAttributes().size());
 		
 		PersonAttribute pa2 = new PersonAttribute();
 		pa2.setValue("secondtest");
@@ -233,8 +218,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		p.addAttribute(pa2);
 		
 		// make sure the attribute is added
-		assertTrue("There should be 2 attributes in the person object but there is actually : " + p.getAttributes().size(),
-		    p.getAttributes().size() == 2);
+		assertTrue(p.getAttributes().size() == 2, "There should be 2 attributes in the person object but there is actually : " + p.getAttributes().size());
 		
 		PersonAttribute pa3 = new PersonAttribute();
 		pa3.setValue(pa1.getValue());
@@ -244,8 +228,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		
 		p.addAttribute(pa3);
 		// make sure the attribute is NOT added
-		assertTrue("There should be 2 attributes in the person object but there is actually : " + p.getAttributes().size(),
-		    p.getAttributes().size() == 2);
+		assertTrue(p.getAttributes().size() == 2, "There should be 2 attributes in the person object but there is actually : " + p.getAttributes().size());
 		
 		// (we must change the value here as well, because logic says that there
 		// is no
@@ -256,27 +239,25 @@ public class PersonTest extends BaseContextSensitiveTest {
 		pa3.setVoided(true);
 		p.addAttribute(pa3);
 		// make sure the attribute IS added
-		assertTrue("There should be 3 attributes in the person object but there is actually : " + p.getAttributes().size(),
-				p.getAttributes().size() == 3);
+		assertTrue(p.getAttributes().size() == 3, "There should be 3 attributes in the person object but there is actually : " + p.getAttributes().size());
 		
 		p.removeAttribute(pa3);
-		assertTrue("There should be only 2 attribute in the person object now", p.getAttributes().size() == 2);
+		assertTrue(p.getAttributes().size() == 2, "There should be only 2 attribute in the person object now");
 		
 		pa3.setDateCreated(new Date(pa1.getDateCreated().getTime() + 1));
 		p.addAttribute(pa3);
 		// make sure the attribute IS added
-		assertTrue("There should be 3 attributes in the person object but there is actually : " + p.getAttributes().size(),
-		    p.getAttributes().size() == 3);
+		assertTrue(p.getAttributes().size() == 3, "There should be 3 attributes in the person object but there is actually : " + p.getAttributes().size());
 		
 		// test removing all of the attributes
 		p.removeAttribute(pa3);
-		assertTrue("There should be only 2 attribute in the person object now", p.getAttributes().size() == 2);
+		assertTrue(p.getAttributes().size() == 2, "There should be only 2 attribute in the person object now");
 		p.removeAttribute(pa2);
-		assertTrue("There should be only 1 attribute in the person object now", p.getAttributes().size() == 1);
+		assertTrue(p.getAttributes().size() == 1, "There should be only 1 attribute in the person object now");
 		p.removeAttribute(pa2);
-		assertTrue("There should still be only 1 attribute in the person object now", p.getAttributes().size() == 1);
+		assertTrue(p.getAttributes().size() == 1, "There should still be only 1 attribute in the person object now");
 		p.removeAttribute(pa1);
-		assertTrue("There shouldn't be any attributes in the person object now", p.getAttributes().size() == 0);
+		assertTrue(p.getAttributes().size() == 0, "There shouldn't be any attributes in the person object now");
 	}
 	
 	/**
@@ -443,7 +424,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		Person p = new Person();
 		
 		// make sure there are no initial attributes
-		Assert.assertEquals("There should not be any attributes", 0, p.getAttributes().size());
+		assertEquals(0, p.getAttributes().size(), "There should not be any attributes");
 		
 		PersonAttribute pa1 = new PersonAttribute();
 		pa1.setValue("");
@@ -452,7 +433,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		p.addAttribute(pa1);
 		
 		// make sure the attribute was not added
-		Assert.assertEquals("There should not be any attributes", 0, p.getAttributes().size());
+		assertEquals(0, p.getAttributes().size(), "There should not be any attributes");
 	}
 	
 	/**
@@ -463,7 +444,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		Person p = new Person();
 		
 		// make sure there are no initial attributes
-		Assert.assertEquals("There should not be any attributes", 0, p.getAttributes().size());
+		assertEquals(0, p.getAttributes().size(), "There should not be any attributes");
 		
 		PersonAttribute pa1 = new PersonAttribute();
 		pa1.setValue(null);
@@ -472,7 +453,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		p.addAttribute(pa1);
 		
 		// make sure the attribute was not added
-		Assert.assertEquals("There should not be any attributes", 0, p.getAttributes().size());
+		assertEquals(0, p.getAttributes().size(), "There should not be any attributes");
 	}
 	
 	/**
@@ -483,7 +464,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		Person p = new Person();
 		
 		// make sure there are no initial attributes
-		Assert.assertEquals("There should not be any attributes", 0, p.getAttributes().size());
+		assertEquals(0, p.getAttributes().size(), "There should not be any attributes");
 		
 		PersonAttribute pa1 = new PersonAttribute();
 		pa1.setValue("ack");
@@ -494,7 +475,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		p.addAttribute(pa1);
 		
 		// make sure the attribute was added
-		Assert.assertEquals("The attribute was not added", 1, p.getAttributes().size());
+		assertEquals(1, p.getAttributes().size(), "The attribute was not added");
 		
 		// add another one
 		PersonAttribute pa2 = new PersonAttribute();
@@ -504,10 +485,10 @@ public class PersonTest extends BaseContextSensitiveTest {
 		p.addAttribute(pa2);
 		
 		// make sure the new attribute was not added and the old was not removed
-		Assert.assertEquals("Something changed ...", 1, p.getAttributes().size());
+		assertEquals(1, p.getAttributes().size(), "Something changed ...");
 		
 		// make sure the new attribute effectively voided the original
-		Assert.assertTrue("The original attribute is not voided", p.getAttributes().iterator().next().getVoided());
+		assertTrue(p.getAttributes().iterator().next().getVoided(), "The original attribute is not voided");
 		
 	}
 	
@@ -524,7 +505,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		pa2.setAddress1("");
 		p.addAddress(pa2);
 		
-		Assert.assertEquals(1, p.getAddresses().size());
+		assertEquals(1, p.getAddresses().size());
 	}
 	
 	/**
@@ -636,7 +617,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		notVoidedPerson.addAddress(firstPersonAddress);
 		notVoidedPerson.addAddress(secondPersonAddress);
 		
-		Assert.assertNull(notVoidedPerson.getPersonAddress());
+		assertNull(notVoidedPerson.getPersonAddress());
 	}
 	
 	/**
@@ -652,7 +633,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		notVoidedPerson.addName(firstVoidedName);
 		notVoidedPerson.addName(secondVoidedName);
 		
-		Assert.assertNull(notVoidedPerson.getPersonName());
+		assertNull(notVoidedPerson.getPersonName());
 	}
 
 	/**
@@ -666,7 +647,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		person.setBirthdate(new SimpleDateFormat("yyyy-MM-dd").parse("2012-01-01"));
 		person.setBirthtime(new SimpleDateFormat("HH:mm:ss").parse("11:11:11"));
 
-		Assert.assertEquals(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2012-01-01 11:11:11"), person.getBirthDateTime());
+		assertEquals(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2012-01-01 11:11:11"), person.getBirthDateTime());
 	}
 
 	/**
@@ -677,7 +658,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		Person person = new Person();
 
 		person.setBirthdate(null);
-		Assert.assertNull(person.getBirthDateTime());
+		assertNull(person.getBirthDateTime());
 	}
 
 	/**
@@ -690,7 +671,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 
 		person.setBirthdate(new SimpleDateFormat("yyyy-MM-dd").parse("2012-01-01"));
 		person.setBirthtime(null);
-		Assert.assertNull(person.getBirthDateTime());
+		assertNull(person.getBirthDateTime());
 	}
 
 	/**
@@ -699,7 +680,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAttribute_shouldPersonAttributeBasedOnAttributeName() {
 		Person person = personHelper(false, 1, 2, 3, "name1", "name2", "name3", "value1", "value2", "value3");
-		Assert.assertEquals("name3", person.getAttribute("name3").getAttributeType().getName());
+		assertEquals("name3", person.getAttribute("name3").getAttributeType().getName());
 	}
 
 	/**
@@ -708,7 +689,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAttribute_shouldReturnNullIfAttributeNameIsVoided() {
 		Person person = personHelper(true, 1, 2, 3, "name1", "name2", "name3", "value1", "value2", "value3");
-		Assert.assertNull(person.getAttribute("name3"));
+		assertNull(person.getAttribute("name3"));
 	}
 
 	/**
@@ -719,7 +700,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		Person person = personHelper(true, 1, 2, 3, "name1", "name2", "name3", "value1", "value2", "value3");
 	 	PersonAttributeType type = new PersonAttributeType(3);
 	 	type.setName("name3");
-		Assert.assertNull(person.getAttribute(type));
+		assertNull(person.getAttribute(type));
 	}
 
 	/**
@@ -728,7 +709,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAttribute_shouldreturnPersonAttributeBasedOnAttributeTypeId() {
 		Person person = personHelper(false, 1, 2, 3, "name1", "name2", "name3", "value1", "value2", "value3");
-		Assert.assertEquals(new Integer(3), person.getAttribute(3).getAttributeType().getId());
+		assertEquals(new Integer(3), person.getAttribute(3).getAttributeType().getId());
 	}
 
 	/**
@@ -737,7 +718,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAttribute_shouldReturnNullWhenExistingPersonAttributeWithMatchingAttributeTypeIdIsVoided() {
 		Person person = personHelper(true, 1, 2, 3, "name1", "name2", "name3", "value1", "value2", "value3");
-		Assert.assertNull(person.getAttribute(3));
+		assertNull(person.getAttribute(3));
 	}
 
 	/**
@@ -746,7 +727,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAttributes_shouldReturnAllPersonAttributesWithMatchingAttributeTypeNames() {
 		Person person = personHelper(false, 1, 2, 3, "name1", "name1", "name3", "value1", "value2", "value3");
-		Assert.assertEquals(2, person.getAttributes("name1").size());
+		assertEquals(2, person.getAttributes("name1").size());
 	}
 
 	/**
@@ -755,7 +736,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAttributes_shouldReturnListOfPersonAttributesBasedOnAttributeTypeId() {
 		Person person = personHelper(false, 1, 1, 3, "name1", "name2", "name3", "value1", "value2", "value3");
-		Assert.assertEquals(2, person.getAttributes(1).size());
+		assertEquals(2, person.getAttributes(1).size());
 	}
 
 	/**
@@ -764,7 +745,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAttributes_shouldReturnEmptyListWhenMatchingPersonAttributeByIdIsVoided() {
 		Person person = personHelper(true, 1, 1, 3, "name1", "name2", "name3", "value1", "value2", "value3");
-		Assert.assertEquals(0, person.getAttributes(1).size());
+		assertEquals(0, person.getAttributes(1).size());
 	}
 
 	private Person personHelper(boolean isVoid, int attributeType1, int attributeType2, int attributeType3, String attributeName1, String attributeName2, String attributeName3, String attributeValue1, String attributeValue2, String attributeValue3) {
@@ -823,7 +804,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		Person p = new Person();
 		Date deathDate = new Date();
 		p.setDeathDate(deathDate);
-		assertTrue ("Person must be dead(setDead(true)) inorder have a deathDate set for him", p.getDead());
+		assertTrue(p.getDead(), "Person must be dead(setDead(true)) inorder have a deathDate set for him");
 	}
 	
 	// helper class
