@@ -10,18 +10,18 @@
 package org.openmrs.api.handler;
 
 import static org.apache.commons.lang3.time.DateUtils.parseDate;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
 import org.openmrs.Encounter;
@@ -32,7 +32,7 @@ import org.openmrs.User;
 import org.openmrs.api.CohortService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -51,7 +51,7 @@ public class PatientDataVoidHandlerTest extends BaseContextSensitiveTest {
 	@Test
 	public void handle_shouldVoidTheOrdersEncountersAndObservationsAssociatedWithThePatient() {
 		Patient patient = Context.getPatientService().getPatient(7);
-		Assert.assertFalse(patient.getVoided());
+		assertFalse(patient.getVoided());
 		
 		List<Encounter> encounters = Context.getEncounterService().getEncountersByPatient(patient);
 		List<Obs> observations = Context.getObsService().getObservationsByPerson(patient);
