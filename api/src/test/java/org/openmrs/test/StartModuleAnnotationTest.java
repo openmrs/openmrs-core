@@ -9,9 +9,11 @@
  */
 package org.openmrs.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Context;
+import org.openmrs.test.jupiter.BaseModuleContextSensitiveTest;
 
 @StartModule( { "org/openmrs/module/include/dssmodule-1.44.omod", "org/openmrs/module/include/atdproducer-0.51.omod" })
 public class StartModuleAnnotationTest extends BaseModuleContextSensitiveTest {
@@ -21,10 +23,10 @@ public class StartModuleAnnotationTest extends BaseModuleContextSensitiveTest {
 		
 		Class<?> atdServiceClass = Context.loadClass("org.openmrs.module.atdproducer.service.ATDService");
 		Class<?> dssServiceClass = Context.loadClass("org.openmrs.module.dssmodule.DssService");
-		Assert.assertNotNull(atdServiceClass);
-		Assert.assertNotNull(dssServiceClass);
+		assertNotNull(atdServiceClass);
+		assertNotNull(dssServiceClass);
 		
-		Assert.assertNotNull(Context.getService(atdServiceClass));
-		Assert.assertNotNull(Context.getService(dssServiceClass));
+		assertNotNull(Context.getService(atdServiceClass));
+		assertNotNull(Context.getService(dssServiceClass));
 	}
 }
