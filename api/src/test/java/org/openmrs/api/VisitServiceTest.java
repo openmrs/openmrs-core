@@ -9,9 +9,9 @@
  */
 package org.openmrs.api;
 
-import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.hamcrest.core.Is.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -362,7 +362,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		assertTrue(visit.getVoided());
 		
 		encountersByVisit = Context.getEncounterService().getEncountersByVisit(visit, false);
-		assertTrue(encountersByVisit.isEmpty());
+		assertThat(encountersByVisit, is(empty()));
 	}
 	
 	/**
@@ -399,7 +399,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		assertTrue(visit.getVoided());
 		
 		encountersByVisit = Context.getEncounterService().getEncountersByVisit(visit, false);
-		assertTrue(encountersByVisit.isEmpty());
+		assertThat(encountersByVisit, is(empty()));
 		
 		//when
 		visit = visitService.unvoidVisit(visit);

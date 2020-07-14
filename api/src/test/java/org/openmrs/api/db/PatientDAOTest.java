@@ -367,7 +367,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		List<PatientIdentifier> patientIdentifiers = dao.getPatientIdentifiers(identifier,
 				new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), null);
 		
-		Assert.assertTrue(patientIdentifiers.isEmpty());
+		assertThat(patientIdentifiers, is(empty()));
 	}
 	
 	/**

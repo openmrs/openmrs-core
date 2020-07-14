@@ -9,10 +9,14 @@
  */
 package org.openmrs.api.handler;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.openmrs.api.context.Context.getUserService;
 
 import java.util.Date;
 
@@ -130,7 +134,7 @@ public class PersonVoidHandlerTest extends BaseContextSensitiveTest {
 		handler.handle(person, null, null, "reason");
 		
 		//then
-		assertTrue(Context.getUserService().getUsersByPerson(person, false).isEmpty());
+		assertThat(getUserService().getUsersByPerson(person, false), is(empty()));
 	}
 	
 }
