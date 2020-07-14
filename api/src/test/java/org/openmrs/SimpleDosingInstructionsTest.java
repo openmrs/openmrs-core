@@ -205,6 +205,6 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 		
 		new SimpleDosingInstructions().validate(drugOrder, errors);
 		
-		assertEquals(true, errors.hasErrors());
+		assertTrue(errors.hasErrors());
 	}
 }

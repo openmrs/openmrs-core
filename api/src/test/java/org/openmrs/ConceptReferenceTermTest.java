@@ -10,6 +10,7 @@
 package org.openmrs;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -25,7 +26,7 @@ public class ConceptReferenceTermTest {
 	public void addConceptReferenceTermMap_shouldSetTermAAsTheTermToWhichAMappingIsBeingAdded() {
 		ConceptReferenceTerm term = new ConceptReferenceTerm(2);
 		term.addConceptReferenceTermMap(new ConceptReferenceTermMap(new ConceptReferenceTerm(1), new ConceptMapType(1)));
-		assertEquals(true, term.equals(term.getConceptReferenceTermMaps().iterator().next().getTermA()));
+		assertTrue(term.equals(term.getConceptReferenceTermMaps().iterator().next().getTermA()));
 	}
 	
 	/**

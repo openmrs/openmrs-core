@@ -301,7 +301,7 @@ public class PatientServiceImplTest extends BaseContextMockTest {
 
 		// then
 		final Patient savedPatient = argumentCaptor.getValue();
-		assertEquals(true, savedPatient.getDead());
+		assertTrue(savedPatient.getDead());
 		assertEquals(dateDied, savedPatient.getDeathDate());
 		assertEquals(causeOfDeath, savedPatient.getCauseOfDeath());
 	}

@@ -125,7 +125,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 		
 		encounterValidator.validate(encounter, errors);
 		
-		assertEquals(true, errors.hasFieldErrors("encounterDatetime"));
+		assertTrue(errors.hasFieldErrors("encounterDatetime"));
 	}
 	
 	/**
@@ -146,7 +146,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 		
 		encounterValidator.validate(encounter, errors);
 		
-		assertEquals(true, errors.hasFieldErrors("encounterDatetime"));
+		assertTrue(errors.hasFieldErrors("encounterDatetime"));
 	}
 	
 	/**
@@ -165,7 +165,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 		
 		encounterValidator.validate(encounter, errors);
 		
-		assertEquals(true, errors.hasFieldErrors("encounterDatetime"));
+		assertTrue(errors.hasFieldErrors("encounterDatetime"));
 	}
 	
 	/**

@@ -1587,7 +1587,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		
 		savedRelationshipType.setPreferred(true);
 		RelationshipType updatedRelationshipType = personService.saveRelationshipType(savedRelationshipType);
-		Assert.assertEquals(true, updatedRelationshipType.getPreferred());
+		assertTrue(updatedRelationshipType.getPreferred());
 	}
 	
 	@Test

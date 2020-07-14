@@ -187,7 +187,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		visit.setStopDatetime(c.getTime());
 		Errors errors = new BindException(visit, "visit");
 		new VisitValidator().validate(visit, errors);
-		assertEquals(true, errors.hasFieldErrors("stopDatetime"));
+		assertTrue(errors.hasFieldErrors("stopDatetime"));
 	}
 	
 	/**
@@ -209,7 +209,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(visit, "visit");
 		new VisitValidator().validate(visit, errors);
-		assertEquals(true, errors.hasFieldErrors("startDatetime"));
+		assertTrue(errors.hasFieldErrors("startDatetime"));
 	}
 	
 	/**
@@ -231,7 +231,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(visit, "visit");
 		new VisitValidator().validate(visit, errors);
-		assertEquals(true, errors.hasFieldErrors("stopDatetime"));
+		assertTrue(errors.hasFieldErrors("stopDatetime"));
 	}
 	
 	/**
@@ -249,7 +249,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		visit.getActiveAttributes();
 		Errors errors = new BindException(visit, "visit");
 		new VisitValidator().validate(visit, errors);
-		assertEquals(true, errors.hasFieldErrors("attributes"));
+		assertTrue(errors.hasFieldErrors("attributes"));
 	}
 	
 	/**
@@ -454,7 +454,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(visit, "visit");
 		new VisitValidator().validate(visit, errors);
-		assertEquals(true, errors.hasFieldErrors("voidReason"));
+		assertTrue(errors.hasFieldErrors("voidReason"));
 	}
 	
 	@Test

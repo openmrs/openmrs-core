@@ -11,6 +11,7 @@ package org.openmrs.api.db.hibernate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -65,7 +66,7 @@ public class HibernateProviderDAOTest extends BaseContextSensitiveTest {
 		List<Provider> providers = new ArrayList<>();
 		providers = (List<Provider>) service.getProvidersByPerson(personDao.getPerson(2), true);
 		
-		assertEquals(true, providers.get(1).getRetired());
+		assertTrue(providers.get(1).getRetired());
 	}
 	
 	/**

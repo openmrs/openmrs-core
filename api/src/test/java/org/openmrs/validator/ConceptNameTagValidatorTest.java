@@ -85,7 +85,7 @@ public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(cnt, objectName);
 		new ConceptNameTagValidator().validate(cnt, errors);
 		assertTrue(errors.hasErrors());
-		assertEquals(true, errors.hasFieldErrors("tag"));
+		assertTrue(errors.hasFieldErrors("tag"));
 	}
 	
 	/**
@@ -117,8 +117,8 @@ public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(cnt, "cnt");
 		new ConceptNameTagValidator().validate(cnt, errors);
-		assertEquals(true, errors.hasFieldErrors("tag"));
-		assertEquals(true, errors.hasFieldErrors("voidReason"));
+		assertTrue(errors.hasFieldErrors("tag"));
+		assertTrue(errors.hasFieldErrors("voidReason"));
 	}
 	
 	@Test

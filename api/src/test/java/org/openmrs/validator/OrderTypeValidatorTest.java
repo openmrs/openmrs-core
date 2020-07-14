@@ -57,7 +57,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		OrderType orderType = new OrderType();
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
-		assertEquals(true, errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 	}
 	
 	/**
@@ -69,7 +69,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		orderType.setName("");
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
-		assertEquals(true, errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 	}
 	
 	/**
@@ -81,7 +81,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		orderType.setName("");
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
-		assertEquals(true, errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 	}
 	
 	/**
@@ -93,7 +93,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		orderType.setName(" ");
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
-		assertEquals(true, errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 	}
 	
 	/**
@@ -105,7 +105,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		orderType.setName(orderService.getOrderType(1).getName());
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
-		assertEquals(true, errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 	}
 	
 	/**
@@ -120,7 +120,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		orderType.addConceptClass(existing.getConceptClasses().iterator().next());
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
-		assertEquals(true, errors.hasFieldErrors("conceptClasses[0]"));
+		assertTrue(errors.hasFieldErrors("conceptClasses[0]"));
 	}
 	
 	/**
@@ -134,7 +134,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		orderType.setParent(descendant);
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
-		assertEquals(true, errors.hasFieldErrors("parent"));
+		assertTrue(errors.hasFieldErrors("parent"));
 	}
 	
 	/**
@@ -148,7 +148,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		orderType.setParent(descendant);
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
-		assertEquals(true, errors.hasFieldErrors("parent"));
+		assertTrue(errors.hasFieldErrors("parent"));
 	}
 	
 	/**
@@ -236,9 +236,9 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
 		
-		assertEquals(true, errors.hasFieldErrors("name"));
-		assertEquals(true, errors.hasFieldErrors("javaClassName"));
-		assertEquals(true, errors.hasFieldErrors("description"));
-		assertEquals(true, errors.hasFieldErrors("retireReason"));
+		assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("javaClassName"));
+		assertTrue(errors.hasFieldErrors("description"));
+		assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 }

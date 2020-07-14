@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.openmrs.api.context.Context.getLocale;
 import static org.openmrs.test.matchers.HasFieldErrors.hasFieldErrors;
 import static org.openmrs.test.matchers.HasGlobalErrors.hasGlobalErrors;
 
@@ -169,7 +170,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailIfThereIsADuplicateUnretiredFullySpecifiedNameInTheSameLocale() {
 		
 		Context.setLocale(new Locale("en", "GB"));
-		assertEquals(true, cd4Count.getFullySpecifiedName(Context.getLocale()).isFullySpecifiedName());
+		assertTrue(cd4Count.getFullySpecifiedName(getLocale()).isFullySpecifiedName());
 		String duplicateName = cd4Count.getFullySpecifiedName(Context.getLocale()).getName();
 		Concept anotherConcept = weight;
 		anotherConcept.getFullySpecifiedName(Context.getLocale()).setName(duplicateName);
@@ -242,7 +243,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		Concept concept = cd4Count;
 		//use a synonym as the duplicate name
 		ConceptName duplicateName = concept.getSynonyms(Context.getLocale()).iterator().next();
-		assertEquals(true, duplicateName.isSynonym());
+		assertTrue(duplicateName.isSynonym());
 		Concept anotherConcept = weight;
 		anotherConcept.getFullySpecifiedName(Context.getLocale()).setName(duplicateName.getName());
 		Errors errors = new BindException(anotherConcept, "concept");
@@ -353,7 +354,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		Context.setLocale(new Locale("pl"));
 		Locale en = new Locale("en", "GB");
 		Concept concept = cd4Count;
-		assertEquals(true, concept.getFullySpecifiedName(en).isFullySpecifiedName());
+		assertTrue(concept.getFullySpecifiedName(en).isFullySpecifiedName());
 		String duplicateName = concept.getFullySpecifiedName(en).getName();
 		Concept anotherConcept = weight;
 		anotherConcept.getFullySpecifiedName(en).setName(duplicateName);
@@ -465,7 +466,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		
 		List<Concept> concepts = conceptService.getConceptsByName("HSM");
 		assertEquals(1, concepts.size());
-		assertEquals(true, concepts.get(0).getShortNameInLocale(Context.getLocale()).getName()
+		assertTrue(concepts.get(0).getShortNameInLocale(getLocale()).getName()
 		        .equalsIgnoreCase("HSM"));
 		
 		concept.setConceptClass(new ConceptClass());
