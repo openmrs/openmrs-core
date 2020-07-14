@@ -11,6 +11,7 @@ package org.openmrs.propertyeditor;
 
 import org.openmrs.Location;
 import org.openmrs.api.LocationService;
+import org.openmrs.propertyeditor.jupiter.BasePropertyEditorTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class LocationEditorTest extends BasePropertyEditorTest<Location, LocationEditor> {

@@ -11,6 +11,7 @@ package org.openmrs.propertyeditor;
 
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.api.ProgramWorkflowService;
+import org.openmrs.propertyeditor.jupiter.BasePropertyEditorTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ProgramWorkflowEditorTest extends BasePropertyEditorTest<ProgramWorkflow, ProgramWorkflowEditor> {
