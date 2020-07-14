@@ -1360,7 +1360,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		List<PatientIdentifierType> patientIdentifierTypes = Context.getPatientService().getPatientIdentifierTypes(
 		    "Test OpenMRS Identification Number", "java.lang.Integer", null, null);
 		
-		Assert.assertEquals(false, patientIdentifierTypes.isEmpty());
+		assertFalse(patientIdentifierTypes.isEmpty());
 		
 		for (PatientIdentifierType patientIdentifierType : patientIdentifierTypes) {
 			Assert.assertEquals("Test OpenMRS Identification Number", patientIdentifierType.getName());

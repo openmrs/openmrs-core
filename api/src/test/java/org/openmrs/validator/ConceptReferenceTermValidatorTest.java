@@ -9,7 +9,7 @@
  */
 package org.openmrs.validator;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -165,7 +165,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		term.setConceptSource(Context.getConceptService().getConceptSource(1));
 		Errors errors = new BindException(term, "term");
 		new ConceptReferenceTermValidator().validate(term, errors);
-		assertEquals(false, errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -180,7 +180,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		term.setConceptSource(Context.getConceptService().getConceptSource(1));
 		Errors errors = new BindException(term, "term");
 		new ConceptReferenceTermValidator().validate(term, errors);
-		assertEquals(false, errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -195,7 +195,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		term.setConceptSource(Context.getConceptService().getConceptSource(1));
 		Errors errors = new BindException(term, "term");
 		new ConceptReferenceTermValidator().validate(term, errors);
-		assertEquals(false, errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -282,7 +282,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		term.setRetireReason("RetireReason");
 		Errors errors = new BindException(term, "term");
 		new ConceptReferenceTermValidator().validate(term, errors);
-		assertEquals(false, errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**

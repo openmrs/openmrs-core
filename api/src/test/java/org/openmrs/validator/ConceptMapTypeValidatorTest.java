@@ -9,7 +9,7 @@
  */
 package org.openmrs.validator;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -89,7 +89,7 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 		mapType.setName("unique-name");
 		Errors errors = new BindException(mapType, "mapType");
 		new ConceptMapTypeValidator().validate(mapType, errors);
-		assertEquals(false, errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -103,7 +103,7 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 		mapType.setRetireReason("RetireReason");
 		Errors errors = new BindException(mapType, "mapType");
 		new ConceptMapTypeValidator().validate(mapType, errors);
-		assertEquals(false, errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**

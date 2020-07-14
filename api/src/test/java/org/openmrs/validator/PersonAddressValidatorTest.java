@@ -10,6 +10,7 @@
 package org.openmrs.validator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Calendar;
@@ -87,7 +88,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 		personAddress.setEndDate(c.getTime());
 		Errors errors = new BindException(personAddress, "personAddress");
 		validator.validate(personAddress, errors);
-		assertEquals(false, errors.hasFieldErrors());
+		assertFalse(errors.hasFieldErrors());
 	}
 	
 	/**
@@ -100,7 +101,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 		personAddress.setEndDate(null);
 		Errors errors = new BindException(personAddress, "personAddress");
 		validator.validate(personAddress, errors);
-		assertEquals(false, errors.hasFieldErrors());
+		assertFalse(errors.hasFieldErrors());
 	}
 	
 	/**
@@ -114,7 +115,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 		personAddress.setEndDate(c.getTime());
 		Errors errors = new BindException(personAddress, "personAddress");
 		validator.validate(personAddress, errors);
-		assertEquals(false, errors.hasFieldErrors());
+		assertFalse(errors.hasFieldErrors());
 	}
 	
 	/**
@@ -128,7 +129,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 		personAddress.setEndDate(null);
 		Errors errors = new BindException(personAddress, "personAddress");
 		validator.validate(personAddress, errors);
-		assertEquals(false, errors.hasFieldErrors());
+		assertFalse(errors.hasFieldErrors());
 	}
 	
 	/**
@@ -155,7 +156,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(personAddress, "personAddress");
 		validator.validate(personAddress, errors);
-		assertEquals(false, errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -181,7 +182,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 		personAddress.setAddress5("address5");
 		Errors errors = new BindException(personAddress, "personAddress");
 		validator.validate(personAddress, errors);
-		assertEquals(false, errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
