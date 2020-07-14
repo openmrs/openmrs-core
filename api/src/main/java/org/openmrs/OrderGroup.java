@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openmrs.api.APIException;
+import org.openmrs.api.db.hibernate.HibernateUtil;
 
 /**
  * Contains a group of {@link org.openmrs.Order}s that are ordered together within a single encounter,often driven by an {@link org.openmrs.OrderSet}. 
@@ -264,7 +265,8 @@ public class OrderGroup extends BaseChangeableOpenmrsData {
 	 * @since 2.4.0
 	 */
 	public OrderGroup getPreviousOrderGroup() {
-		return previousOrderGroup;
+	
+		return  HibernateUtil.getRealObjectFromProxy(previousOrderGroup);
 	}
 
 	/**
@@ -274,7 +276,11 @@ public class OrderGroup extends BaseChangeableOpenmrsData {
 	 * @param previousOrderGroup The previous order group to set
 	 * @since 2.4.0
 	 */
+	@SuppressWarnings("unchecked")
 	public void setPreviousOrderGroup(OrderGroup previousOrderGroup) {
+		Order order = new Order();
+		List<Order> orders = (List<Order>) order.getPreviousOrder();
+		previousOrderGroup.setOrders(orders);
 		this.previousOrderGroup = previousOrderGroup;
 	}
 }
