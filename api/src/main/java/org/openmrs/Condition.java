@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import org.openmrs.util.OpenmrsUtil;
+
 import java.util.Date;
 import java.util.Objects;
 
@@ -40,7 +42,7 @@ import javax.persistence.Transient;
  */
 @Entity
 @Table(name = "conditions")
-public class Condition extends BaseChangeableOpenmrsData {
+public class Condition extends FormRecordable {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -396,4 +398,10 @@ public class Condition extends BaseChangeableOpenmrsData {
 		}
 		return Objects.equals(endReason, conditionToBeChecked.endReason);
 	}
+	
+	@Override
+	protected void markAsDirty(Object oldValue, Object newValue) {
+		// Do nothing
+	}
+	
 }

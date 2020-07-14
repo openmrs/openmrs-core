@@ -142,4 +142,19 @@
     	<dropForeignKeyConstraint baseTableName="test_order" constraintName="test_order_order_id_fk"/>
 		<addForeignKeyConstraint baseColumnNames="order_id" baseTableName="test_order" constraintName="test_order_order_id_fk" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="order_id" referencedTableName="orders"/>
 	</changeSet>
+
+	<changeSet id="-Trunk-" author="loliveira">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="conditions" columnName="form_namespace_path"/>
+			</not>
+		</preConditions>
+		<comment>Adding "order_group_reason" column to order_group table</comment>
+		<addColumn tableName="conditions">
+			<column name="form_namespace_path" type="varchar(255)">
+				<constraints nullable="true"/>
+			</column>
+		</addColumn>
+	</changeSet>
+	
 </databaseChangeLog> 
