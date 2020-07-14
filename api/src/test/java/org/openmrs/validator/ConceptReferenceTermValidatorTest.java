@@ -11,6 +11,7 @@ package org.openmrs.validator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -42,7 +43,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		term.setConceptSource(Context.getConceptService().getConceptSource(1));
 		Errors errors = new BindException(term, "term");
 		new ConceptReferenceTermValidator().validate(term, errors);
-		assertEquals(true, errors.hasFieldErrors("code"));
+		assertTrue(errors.hasFieldErrors("code"));
 	}
 	
 	/**
@@ -56,7 +57,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		term.setConceptSource(Context.getConceptService().getConceptSource(1));
 		Errors errors = new BindException(term, "term");
 		new ConceptReferenceTermValidator().validate(term, errors);
-		assertEquals(true, errors.hasFieldErrors("code"));
+		assertTrue(errors.hasFieldErrors("code"));
 	}
 	
 	/**
@@ -69,7 +70,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		term.setConceptSource(Context.getConceptService().getConceptSource(1));
 		Errors errors = new BindException(term, "term");
 		new ConceptReferenceTermValidator().validate(term, errors);
-		assertEquals(true, errors.hasFieldErrors("code"));
+		assertTrue(errors.hasFieldErrors("code"));
 	}
 	
 	/**
@@ -83,7 +84,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		term.setConceptSource(Context.getConceptService().getConceptSource(1));
 		Errors errors = new BindException(term, "term");
 		new ConceptReferenceTermValidator().validate(term, errors);
-		assertEquals(true, errors.hasFieldErrors("code"));
+		assertTrue(errors.hasFieldErrors("code"));
 	}
 	
 	/**
@@ -105,7 +106,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		term.setCode("code");
 		Errors errors = new BindException(term, "term");
 		new ConceptReferenceTermValidator().validate(term, errors);
-		assertEquals(true, errors.hasFieldErrors("conceptSource"));
+		assertTrue(errors.hasFieldErrors("conceptSource"));
 	}
 	
 	/**
@@ -121,7 +122,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		term.setConceptSource(Context.getConceptService().getConceptSource(1));
 		Errors errors = new BindException(term, "term");
 		new ConceptReferenceTermValidator().validate(term, errors);
-		assertEquals(true, errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 	}
 	
 	/**
@@ -136,7 +137,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		term.setConceptSource(Context.getConceptService().getConceptSource(1));
 		Errors errors = new BindException(term, "term");
 		new ConceptReferenceTermValidator().validate(term, errors);
-		assertEquals(true, errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 	}
 	
 	/**
@@ -150,7 +151,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		term.setConceptSource(Context.getConceptService().getConceptSource(1));
 		Errors errors = new BindException(term, "term");
 		new ConceptReferenceTermValidator().validate(term, errors);
-		assertEquals(true, errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 	}
 	
 	/**
@@ -209,7 +210,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		term.addConceptReferenceTermMap(new ConceptReferenceTermMap(new ConceptReferenceTerm(1), null));
 		Errors errors = new BindException(term, "term");
 		new ConceptReferenceTermValidator().validate(term, errors);
-		assertEquals(true, errors.hasFieldErrors("conceptReferenceTermMaps[0].conceptMapType"));
+		assertTrue(errors.hasFieldErrors("conceptReferenceTermMaps[0].conceptMapType"));
 	}
 	
 	/**
@@ -226,7 +227,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		term.setConceptReferenceTermMaps(maps);
 		Errors errors = new BindException(term, "term");
 		new ConceptReferenceTermValidator().validate(term, errors);
-		assertEquals(true, errors.hasFieldErrors("conceptReferenceTermMaps[0].termB"));
+		assertTrue(errors.hasFieldErrors("conceptReferenceTermMaps[0].termB"));
 	}
 	
 	/**
@@ -241,7 +242,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		term.setConceptReferenceTermMaps(maps);
 		Errors errors = new BindException(term, "term");
 		new ConceptReferenceTermValidator().validate(term, errors);
-		assertEquals(true, errors.hasFieldErrors("conceptReferenceTermMaps[0].termB"));
+		assertTrue(errors.hasFieldErrors("conceptReferenceTermMaps[0].termB"));
 	}
 	
 	/**
@@ -264,7 +265,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		System.err.println(errors.getAllErrors());
 		
 		//the term for second mapping should be rejected
-		assertEquals(true, errors.hasFieldErrors("conceptReferenceTermMaps[1].termB"));
+		assertTrue(errors.hasFieldErrors("conceptReferenceTermMaps[1].termB"));
 	}
 	
 	/**
@@ -303,10 +304,10 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 		Errors errors = new BindException(term, "term");
 		new ConceptReferenceTermValidator().validate(term, errors);
-		assertEquals(true, errors.hasFieldErrors("name"));
-		assertEquals(true, errors.hasFieldErrors("code"));
-		assertEquals(true, errors.hasFieldErrors("version"));
-		assertEquals(true, errors.hasFieldErrors("description"));
-		assertEquals(true, errors.hasFieldErrors("retireReason"));
+		assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("code"));
+		assertTrue(errors.hasFieldErrors("version"));
+		assertTrue(errors.hasFieldErrors("description"));
+		assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 }

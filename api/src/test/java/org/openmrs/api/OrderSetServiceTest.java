@@ -325,7 +325,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 		assertEquals(initialNumberOfOrderSets-1,numberOfOrderSetsAfterRetire);
 
 		OrderSet retiredOrderSet = orderSetService.getOrderSet(2001);
-		assertEquals(true, retiredOrderSet.getRetired());
+		assertTrue(retiredOrderSet.getRetired());
 
 		List<OrderSetMember> orderSetMembers = retiredOrderSet.getOrderSetMembers();
 		for (OrderSetMember orderSetMember : orderSetMembers) {

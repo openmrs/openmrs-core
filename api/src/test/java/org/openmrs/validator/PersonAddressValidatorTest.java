@@ -10,6 +10,7 @@
 package org.openmrs.validator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Calendar;
 
@@ -57,7 +58,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 		personAddress.setStartDate(c.getTime());
 		Errors errors = new BindException(personAddress, "personAddress");
 		validator.validate(personAddress, errors);
-		assertEquals(true, errors.hasFieldErrors());
+		assertTrue(errors.hasFieldErrors());
 	}
 	
 	/**
@@ -72,7 +73,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 		personAddress.setEndDate(c.getTime());
 		Errors errors = new BindException(personAddress, "personAddress");
 		validator.validate(personAddress, errors);
-		assertEquals(true, errors.hasFieldErrors());
+		assertTrue(errors.hasFieldErrors());
 	}
 	
 	/**
@@ -140,7 +141,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(personAddress, "personAddress");
 		validator.validate(personAddress, errors);
-		assertEquals(true, errors.hasErrors());
+		assertTrue(errors.hasErrors());
 	}
 	
 	/**
@@ -217,19 +218,19 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 		personAddress.setAddress15(longString);
 		Errors errors = new BindException(personAddress, "personAddress");
 		validator.validate(personAddress, errors);
-		assertEquals(true, errors.hasFieldErrors("address1"));
-		assertEquals(true, errors.hasFieldErrors("address2"));
-		assertEquals(true, errors.hasFieldErrors("cityVillage"));
-		assertEquals(true, errors.hasFieldErrors("stateProvince"));
-		assertEquals(true, errors.hasFieldErrors("postalCode"));
-		assertEquals(true, errors.hasFieldErrors("country"));
-		assertEquals(true, errors.hasFieldErrors("latitude"));
-		assertEquals(true, errors.hasFieldErrors("longitude"));
-		assertEquals(true, errors.hasFieldErrors("voidReason"));
-		assertEquals(true, errors.hasFieldErrors("countyDistrict"));
-		assertEquals(true, errors.hasFieldErrors("address3"));
-		assertEquals(true, errors.hasFieldErrors("address4"));
-		assertEquals(true, errors.hasFieldErrors("address5"));
+		assertTrue(errors.hasFieldErrors("address1"));
+		assertTrue(errors.hasFieldErrors("address2"));
+		assertTrue(errors.hasFieldErrors("cityVillage"));
+		assertTrue(errors.hasFieldErrors("stateProvince"));
+		assertTrue(errors.hasFieldErrors("postalCode"));
+		assertTrue(errors.hasFieldErrors("country"));
+		assertTrue(errors.hasFieldErrors("latitude"));
+		assertTrue(errors.hasFieldErrors("longitude"));
+		assertTrue(errors.hasFieldErrors("voidReason"));
+		assertTrue(errors.hasFieldErrors("countyDistrict"));
+		assertTrue(errors.hasFieldErrors("address3"));
+		assertTrue(errors.hasFieldErrors("address4"));
+		assertTrue(errors.hasFieldErrors("address5"));
 		assertEquals(true, errors.hasFieldErrors("address6"), "address6 missing in errors");
 		assertEquals(true, errors.hasFieldErrors("address7"), "address7 missing in errors");
 		assertEquals(true, errors.hasFieldErrors("address8"), "address8 missing in errors");

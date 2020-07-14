@@ -87,12 +87,12 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		
 		ConceptName initialPreferred = createConceptName(3, "Aspirin", primaryLocale, null, true);
 		testConcept.addName(initialPreferred);
-		assertEquals(true, initialPreferred.getLocalePreferred());
+		assertTrue(initialPreferred.getLocalePreferred());
 		ConceptName newPreferredName = createConceptName(4, "Doctor", primaryLocale, null, false);
 		testConcept.setPreferredName(newPreferredName);
 		
 		assertEquals(false, initialPreferred.getLocalePreferred());
-		assertEquals(true, newPreferredName.getLocalePreferred());
+		assertTrue(newPreferredName.getLocalePreferred());
 	}
 	
 	/**
@@ -384,7 +384,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		ConceptName newPreferredName = createConceptName(3, "Aspirin", primaryLocale, null, false);
 		assertEquals(false, testConcept.getNames(primaryLocale).contains(newPreferredName));
 		testConcept.setPreferredName(newPreferredName);
-		assertEquals(true, testConcept.getNames(primaryLocale).contains(newPreferredName));
+		assertTrue(testConcept.getNames(primaryLocale).contains(newPreferredName));
 	}
 	
 	/**
@@ -876,7 +876,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Concept concept = new Concept();
 		ConceptName oldFullySpecName = new ConceptName("some name", Context.getLocale());
 		concept.addName(oldFullySpecName);
-		assertEquals(true, oldFullySpecName.isFullySpecifiedName());
+		assertTrue(oldFullySpecName.isFullySpecifiedName());
 		ConceptName newFullySpecName = new ConceptName("new name", Context.getLocale());
 		newFullySpecName.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
 		concept.addName(newFullySpecName);

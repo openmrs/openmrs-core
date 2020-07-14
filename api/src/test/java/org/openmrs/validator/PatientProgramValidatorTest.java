@@ -45,7 +45,7 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 		PatientProgram program = new PatientProgram();
 		BindException errors = new BindException(program, "program");
 		new PatientProgramValidator().validate(program, errors);
-		assertEquals(true, errors.hasFieldErrors("patient"));
+		assertTrue(errors.hasFieldErrors("patient"));
 	}
 	
 	/**
@@ -137,7 +137,7 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 		
 		BindException errors = new BindException(program, "");
 		new PatientProgramValidator().validate(program, errors);
-		assertEquals(true, errors.hasFieldErrors("states"));
+		assertTrue(errors.hasFieldErrors("states"));
 	}
 	
 	/**
@@ -271,7 +271,7 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 		
 		BindException errors = new BindException(pp, "");
 		new PatientProgramValidator().validate(pp, errors);
-		assertEquals(true, errors.hasFieldErrors("states"));
+		assertTrue(errors.hasFieldErrors("states"));
 	}
 	
 	/**
@@ -401,6 +401,6 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 		
 		BindException errors = new BindException(pp, "program");
 		new PatientProgramValidator().validate(pp, errors);
-		assertEquals(true, errors.hasFieldErrors("voidReason"));
+		assertTrue(errors.hasFieldErrors("voidReason"));
 	}
 }

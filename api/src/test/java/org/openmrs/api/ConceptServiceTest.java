@@ -1359,7 +1359,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 				falseConceptFound = true;
 			}
 		}
-		Assert.assertEquals(true, falseConceptFound);
+		assertTrue(falseConceptFound);
 	}
 	
 	/**
@@ -1383,7 +1383,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 				trueConceptFound = true;
 			}
 		}
-		Assert.assertEquals(true, trueConceptFound);
+		assertTrue(trueConceptFound);
 	}
 	
 	/**
@@ -1465,7 +1465,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		o.setValueCodedName(conceptName);
 		Context.getObsService().saveObs(o, null);
 		//ensure that the association between the conceptName and the obs has been established
-		Assert.assertEquals(true, conceptService.hasAnyObservation(conceptName));
+		assertTrue(conceptService.hasAnyObservation(conceptName));
 		
 		Concept concept = conceptService.getConceptByName("cd4 count");
 		//make sure the name concept name exists
@@ -1516,9 +1516,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 			}
 		}
 		//ensure that the conceptName has actually been found and replaced
-		Assert.assertEquals(true, concept.hasName("new name", new Locale("en", "GB")));
+		assertTrue(concept.hasName("new name", new Locale("en", "GB")));
 		conceptService.saveConcept(concept);
-		Assert.assertEquals(true, conceptService.getConceptName(1847).getVoided());
+		assertTrue(conceptService.getConceptName(1847).getVoided());
 	}
 	
 	@Test
@@ -1696,7 +1696,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 				if (!CollectionUtils.isEmpty(concept.getNames(locale))) {
 					Assert.assertNotNull("Concept with Id: " + concept.getConceptId() + " has no preferred name in locale:"
 					        + locale, concept.getPreferredName(locale));
-					Assert.assertEquals(true, concept.getPreferredName(locale).getLocalePreferred());
+					assertTrue(concept.getPreferredName(locale).getLocalePreferred());
 				}
 			}
 		}

@@ -9,11 +9,14 @@
  */
 package org.openmrs.util;
 
+import static java.util.Locale.ENGLISH;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.openmrs.util.LocaleUtility.fromSpecification;
+import static org.openmrs.util.OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE;
 
 import java.util.Iterator;
 import java.util.Locale;
@@ -192,7 +195,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	@Test
 	public void getLocalesInOrder_shouldAlwaysHaveEnglishIncludedInTheReturnedCollection() {
 		Set<Locale> localesInOrder = LocaleUtility.getLocalesInOrder();
-		assertEquals(true, localesInOrder.contains(Locale.ENGLISH));
+		assertTrue(localesInOrder.contains(ENGLISH));
 	}
 	
 	/**
@@ -202,8 +205,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	public void getLocalesInOrder_shouldAlwaysHaveDefaultLocaleDefaultValueIncludedInTheReturnedCollection()
 	{
 		Set<Locale> localesInOrder = LocaleUtility.getLocalesInOrder();
-		assertEquals(true, localesInOrder.contains(LocaleUtility
-		        .fromSpecification(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE)));
+		assertTrue(localesInOrder.contains(fromSpecification(GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE)));
 	}
 	
 	/**

@@ -13,6 +13,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.openmrs.util.OpenmrsUtil.deleteDirectory;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,7 +38,6 @@ import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,7 +88,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		File tempDir = new File(System.getProperty("java.io.tmpdir"), HL7Constants.HL7_ARCHIVE_DIRECTORY_NAME);
 		
 		if (tempDir.exists() && tempDir.isDirectory())
-			Assert.assertEquals(true, OpenmrsUtil.deleteDirectory(tempDir));
+			assertTrue(deleteDirectory(tempDir));
 		
 		//set a global property for the archives directory as a temporary folder
 		GlobalProperty gp = new GlobalProperty();

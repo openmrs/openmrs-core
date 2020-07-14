@@ -9,7 +9,6 @@
  */
 package org.openmrs.validator;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -44,7 +43,7 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 		Map<String, String> map = new HashMap<>();
 		MapBindingResult errors = new MapBindingResult(map, Relationship.class.getName());
 		new RelationshipValidator().validate(relationship, errors);
-		assertEquals(true, errors.hasErrors());
+		assertTrue(errors.hasErrors());
 	}
 	
 	/**
@@ -87,7 +86,7 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(relationship, "relationship");
 		new RelationshipValidator().validate(relationship, errors);
-		assertEquals(true, errors.hasFieldErrors("voidReason"));
+		assertTrue(errors.hasFieldErrors("voidReason"));
 	}
 	
 	/**

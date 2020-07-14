@@ -1321,7 +1321,7 @@ public class EncounterTest extends BaseContextSensitiveTest {
 		
 		assertEquals(1, encounter.getProvidersByRole(encounterRole).size());
 		assertEquals(1, encounterCopy.getProvidersByRole(encounterRole).size());
-		assertEquals(true, encounter.getProvidersByRole(encounterRole).containsAll(
+		assertTrue(encounter.getProvidersByRole(encounterRole).containsAll(
 		    encounterCopy.getProvidersByRole(encounterRole)));
 		
 		assertNotNull(encounter.getVisit());
