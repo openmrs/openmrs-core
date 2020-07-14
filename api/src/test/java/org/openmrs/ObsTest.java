@@ -516,7 +516,7 @@ public class ObsTest {
 		final String path = "my path";
 		Obs obs = new Obs();
 		obs.setFormField(ns, path);
-		java.lang.reflect.Field formNamespaceAndPathProperty = Obs.class.getDeclaredField("formNamespaceAndPath");
+		java.lang.reflect.Field formNamespaceAndPathProperty = FormRecordable.class.getDeclaredField("formNamespaceAndPath");
 		formNamespaceAndPathProperty.setAccessible(true);
 		assertEquals(ns + FORM_NAMESPACE_PATH_SEPARATOR + path, formNamespaceAndPathProperty.get(obs));
 	}
