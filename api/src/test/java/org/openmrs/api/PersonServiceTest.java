@@ -10,9 +10,10 @@
 package org.openmrs.api;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -20,6 +21,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.openmrs.api.context.Context.getUserService;
 import static org.openmrs.test.TestUtil.containsId;
 
 import java.text.DateFormat;
@@ -2004,7 +2006,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		personService.unvoidPerson(person);
 		
 		//then
-		assertTrue(Context.getUserService().getUsersByPerson(person, false).isEmpty());
+		assertThat(getUserService().getUsersByPerson(person, false), is(empty()));
 	}
 	
 	/**
@@ -2038,7 +2040,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		personService.voidPerson(person, "reason");
 		
 		//then
-		assertTrue(Context.getUserService().getUsersByPerson(person, false).isEmpty());
+		assertThat(getUserService().getUsersByPerson(person, false), is(empty()));
 	}
 	
 	/**
@@ -2258,7 +2260,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		
 		List<PersonAttributeType> result = personService.getPersonAttributeTypes(null, PersonService.ATTR_VIEW_TYPE.LISTING);
 		
-		assertTrue(result.isEmpty());
+		assertThat(result, is(empty()));
 	}
 	
 	@Test
@@ -2266,14 +2268,14 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		
 		List<PersonAttributeType> result = personService.getPersonAttributeTypes(OpenmrsConstants.PERSON_TYPE.PERSON, PersonService.ATTR_VIEW_TYPE.LISTING);
 		
-		assertTrue(result.isEmpty());
+		assertThat(result, is(empty()));
 	}
 	@Test
 	public void getPersonAttributeTypes_shouldReturnEmptyListWhenViewTypePatientAndViewing() {
 		
 		List<PersonAttributeType> result = personService.getPersonAttributeTypes(OpenmrsConstants.PERSON_TYPE.PATIENT, PersonService.ATTR_VIEW_TYPE.VIEWING);
 		
-		assertTrue(result.isEmpty());
+		assertThat(result, is(empty()));
 	}
 	
 	@Test

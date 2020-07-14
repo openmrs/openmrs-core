@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.openmrs.api.context.Context.getObsService;
 import static org.openmrs.test.OpenmrsMatchers.hasConcept;
 import static org.openmrs.test.OpenmrsMatchers.hasId;
 import static org.openmrs.test.TestUtil.containsId;
@@ -646,7 +647,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getConceptsByMapping_shouldReturnEmptyListIfSourceCodeDoesNotExist() {
 		List<Concept> concept = conceptService.getConceptsByMapping("A random concept code", "A random source code");
-		Assert.assertTrue(concept.isEmpty());
+		assertThat(concept, is(empty()));
 	}
 	
 	/**
@@ -655,7 +656,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getConceptsByMapping_shouldReturnEmptyListIfNoMappingsExist() {
 		List<Concept> concept = conceptService.getConceptsByMapping("A random concept code", "SSTRM");
-		Assert.assertTrue(concept.isEmpty());
+		assertThat(concept, is(empty()));
 	}
 	
 	/**
@@ -2260,7 +2261,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		List<Concept> concepts = conceptService.getConceptsByClass(cc);
 		
 		// verify
-		Assert.assertTrue(concepts.isEmpty());
+		assertThat(concepts, is(empty()));
 	}
 	
 	/**
@@ -2726,8 +2727,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED, cp.getState());
 		final Concept civilStatusConcept = conceptService.getConcept(4);
 		final int mappedConceptId = 6;
-		Assert.assertTrue(Context.getObsService().getObservationsByPersonAndConcept(cp.getEncounter().getPatient(),
-		    civilStatusConcept).isEmpty());
+		assertThat(getObsService().getObservationsByPersonAndConcept(cp.getEncounter().getPatient(),
+		    civilStatusConcept), is(empty()));
 		Concept mappedConcept = conceptService.getConcept(mappedConceptId);
 		
 		cp.setObsConcept(civilStatusConcept);
@@ -2751,8 +2752,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		final Concept civilStatusConcept = conceptService.getConcept(4);
 		final int mappedConceptId = 6;
 		final String finalText = "Weight synonym";
-		Assert.assertTrue(Context.getObsService().getObservationsByPersonAndConcept(cp.getEncounter().getPatient(),
-		    civilStatusConcept).isEmpty());
+		assertThat(getObsService().getObservationsByPersonAndConcept(cp.getEncounter().getPatient(),
+		    civilStatusConcept), is(empty()));
 		Concept mappedConcept = conceptService.getConcept(mappedConceptId);
 		mappedConcept.addDescription(new ConceptDescription("some description",Context.getLocale()));
 		
@@ -3093,7 +3094,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		List<ConceptMapType> conceptMapTypeList = conceptService.getConceptMapTypes(false, true);
 		List<Drug> drugs = conceptService.getDrugsByMapping("some radom code", conceptService.getConceptSource(2),
 		    conceptMapTypeList, false);
-		assertTrue(drugs.isEmpty());
+		assertThat(drugs, is(empty()));
 	}
 	
 	/**

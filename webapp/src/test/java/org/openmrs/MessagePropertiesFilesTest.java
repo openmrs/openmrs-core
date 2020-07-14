@@ -9,6 +9,10 @@
  */
 package org.openmrs;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -73,7 +77,7 @@ public class MessagePropertiesFilesTest {
 		List<String> duplicatedKeys;
 		try {
 			duplicatedKeys = propertiesFileValidator.getDuplicatedKeys(fileInputStream);
-			Assert.assertTrue(duplicatedKeys.isEmpty());
+			assertThat(duplicatedKeys, is(empty()));
 		}catch(Exception e){
 			Assert.fail("Problem with checking messages properties file.");
 		} finally {

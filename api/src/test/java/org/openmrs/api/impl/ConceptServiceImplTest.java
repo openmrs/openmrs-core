@@ -9,8 +9,9 @@
  */
 package org.openmrs.api.impl;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -854,7 +855,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		ConceptProposal conceptProposal = new ConceptProposal();
 		conceptProposal.setOriginalText(ORIGINAL_TEXT);
 		List<ConceptProposal> existingConceptProposals = conceptService.getConceptProposals(ORIGINAL_TEXT);
-		assertTrue(existingConceptProposals.isEmpty());
+		assertThat(existingConceptProposals, is(empty()));
 		ConceptProposal savedConceptProposal = conceptService.saveConceptProposal(conceptProposal);
 		assertEquals(ORIGINAL_TEXT, savedConceptProposal.getOriginalText());
 		assertEquals(conceptProposal, savedConceptProposal);

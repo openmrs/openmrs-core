@@ -10,6 +10,7 @@
 package org.openmrs.api;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
@@ -20,6 +21,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.openmrs.api.context.Context.getUserService;
 import static org.openmrs.test.TestUtil.assertCollectionContentsEquals;
 import static org.openmrs.util.AddressMatcher.containsAddress;
 import static org.openmrs.util.NameMatcher.containsFullName;
@@ -460,9 +462,9 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		// make sure error cases are found & catched
 		patients = patientService.getPatients("4567", null, null, false);
-		assertTrue(patients.isEmpty());
+		assertThat(patients, is(empty()));
 		patients = patientService.getPatients("4567", null, null, false, -2, -2);
-		assertTrue(patients.isEmpty());		
+		assertThat(patients, is(empty()));		
 		
 		// make sure we get back only one patient
 		patients = patientService.getPatients("1234", null, null, false);
@@ -1896,7 +1898,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	public void savePatient_shouldFailWhenPatientDoesNotHaveAnyPatientIdentifiers() throws Exception {
 		Patient patient = new Patient();
 		// a sanity check first
-		assertTrue(patient.getIdentifiers().isEmpty());
+		assertThat(patient.getIdentifiers(), is(empty()));
 		try {
 			patientService.savePatient(patient);
 			Assert.fail("should fail when patient does not have any patient identifiers");
@@ -2822,7 +2824,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patientService.voidPatient(patient, "reason");
 		
 		//then
-		Assert.assertTrue(Context.getUserService().getUsersByPerson(patient, false).isEmpty());
+		assertThat(getUserService().getUsersByPerson(patient, false), is(empty()));
 	}
 	
 	/**
@@ -2863,7 +2865,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patientService.unvoidPatient(patient);
 		
 		//then
-		Assert.assertTrue(Context.getUserService().getUsersByPerson(patient, false).isEmpty());
+		assertThat(getUserService().getUsersByPerson(patient, false), is(empty()));
 	}
 	
 	/**
@@ -2877,7 +2879,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		List<Patient> patients = patientService.getPatients("", "", null, false);
 		
 		//then
-		Assert.assertTrue(patients.isEmpty());
+		assertThat(patients, is(empty()));
 	}
 	
 	/**

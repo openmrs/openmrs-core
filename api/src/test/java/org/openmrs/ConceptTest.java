@@ -10,6 +10,7 @@
 package org.openmrs;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -1037,7 +1038,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	public void getDescriptions_shouldNotReturnNullIfDescriptionsListIsNull() {
 		Concept c = new Concept();
 		c.setDescriptions(null);
-		assertTrue(c.getDescriptions().isEmpty());
+		assertThat(c.getDescriptions(), is(empty()));
 		assertNotNull(c.getDescriptions());
 	}
 	

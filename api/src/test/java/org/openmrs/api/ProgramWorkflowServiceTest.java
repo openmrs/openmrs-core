@@ -9,8 +9,9 @@
  */
 package org.openmrs.api;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -633,7 +634,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(PROGRAM_WITH_OUTCOMES_XML);
 		
 		List<Concept> possibleOutcomes = Context.getProgramWorkflowService().getPossibleOutcomes(999);
-		assertTrue(possibleOutcomes.isEmpty());
+		assertThat(possibleOutcomes, is(empty()));
 	}
 	
 	@Test
@@ -641,7 +642,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(PROGRAM_WITH_OUTCOMES_XML);
 		
 		List<Concept> possibleOutcomes = Context.getProgramWorkflowService().getPossibleOutcomes(1);
-		assertTrue(possibleOutcomes.isEmpty());
+		assertThat(possibleOutcomes, is(empty()));
 	}
 	
 	/**

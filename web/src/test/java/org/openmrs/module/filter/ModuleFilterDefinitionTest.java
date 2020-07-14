@@ -10,6 +10,7 @@
 package org.openmrs.module.filter;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -64,7 +65,7 @@ public class ModuleFilterDefinitionTest {
 		module.setConfig(getDocument(xmlString));
 
 		List<ModuleFilterDefinition> out = ModuleFilterDefinition.retrieveFilterDefinitions(module);
-		assertTrue(out.isEmpty());
+		assertThat(out, is(empty()));
 	}
 	
 	/**
