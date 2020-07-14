@@ -98,13 +98,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	@Test()
 	public void setImplementationId_shouldThrowAPIExceptionIfGivenEmptyImplementationIdObject() {
 		// save a blank impl id. exception thrown
-		try {
-			adminService.setImplementationId(new ImplementationId());
-			fail("An exception should be thrown on a blank impl id save");
-		}
-		catch (APIException e) {
-			// expected exception
-		}
+		assertThrows(APIException.class, () -> adminService.setImplementationId(new ImplementationId()));
 		ImplementationId afterBlank = adminService.getImplementationId();
 		assertNull(afterBlank, "There shouldn't be an impl id defined after setting a blank impl id");
 	}
@@ -120,13 +114,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		invalidId.setName("an invalid impl id for a unit test");
 		invalidId.setPassphrase("some valid passphrase");
 		invalidId.setDescription("Some valid description");
-		try {
-			adminService.setImplementationId(invalidId);
-			fail("An exception should be thrown on an invalid impl id save");
-		}
-		catch (APIException e) {
-			// expected exception
-		}
+		assertThrows(APIException.class, () -> adminService.setImplementationId(invalidId));
 		ImplementationId afterInvalid = adminService.getImplementationId();
 		assertNull(afterInvalid, "There shouldn't be an impl id defined after setting an invalid impl id");
 	}
@@ -139,13 +127,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		invalidId2.setName("an invalid impl id for a unit test");
 		invalidId2.setPassphrase("some valid passphrase");
 		invalidId2.setDescription("Some valid description");
-		try {
-			adminService.setImplementationId(invalidId2);
-			fail("An exception should be thrown on an invalid impl id save");
-		}
-		catch (APIException e) {
-			// expected exception
-		}
+		assertThrows(APIException.class, () -> adminService.setImplementationId(invalidId2));
 		ImplementationId afterInvalid2 = adminService.getImplementationId();
 		assertNull(afterInvalid2, "There shouldn't be an impl id defined after setting an invalid impl id");
 	}
