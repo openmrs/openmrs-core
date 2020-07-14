@@ -11,6 +11,7 @@ package org.openmrs.propertyeditor;
 
 import org.openmrs.User;
 import org.openmrs.api.UserService;
+import org.openmrs.propertyeditor.jupiter.BasePropertyEditorTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class UserEditorTest extends BasePropertyEditorTest<User, UserEditor> {

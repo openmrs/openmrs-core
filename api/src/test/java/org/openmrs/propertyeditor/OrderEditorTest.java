@@ -11,6 +11,7 @@ package org.openmrs.propertyeditor;
 
 import org.openmrs.Order;
 import org.openmrs.api.OrderService;
+import org.openmrs.propertyeditor.jupiter.BasePropertyEditorTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class OrderEditorTest extends BasePropertyEditorTest<Order, OrderEditor> {
