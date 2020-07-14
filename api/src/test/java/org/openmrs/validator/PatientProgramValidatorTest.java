@@ -10,6 +10,7 @@
 package org.openmrs.validator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -229,7 +230,7 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 		
 		BindException errors = new BindException(program, "");
 		new PatientProgramValidator().validate(program, errors);
-		assertEquals(false, errors.hasFieldErrors("states"));
+		assertFalse(errors.hasFieldErrors("states"));
 	}
 	
 	/**
@@ -245,7 +246,7 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 		
 		BindException errors = new BindException(program, "");
 		new PatientProgramValidator().validate(program, errors);
-		assertEquals(false, errors.hasFieldErrors("states"));
+		assertFalse(errors.hasFieldErrors("states"));
 	}
 	
 	/**
@@ -301,7 +302,7 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 		
 		BindException errors = new BindException(pp, "");
 		new PatientProgramValidator().validate(pp, errors);
-		assertEquals(false, errors.hasFieldErrors("states"));
+		assertFalse(errors.hasFieldErrors("states"));
 	}
 	
 	/**
@@ -380,7 +381,7 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 		
 		BindException errors = new BindException(pp, "program");
 		new PatientProgramValidator().validate(pp, errors);
-		assertEquals(false, errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**

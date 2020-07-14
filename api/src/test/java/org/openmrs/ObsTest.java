@@ -338,7 +338,7 @@ public class ObsTest {
 	public void getValueAsBoolean_shouldReturnFalseForValue_numericConceptsIfValueIs0() throws Exception {
 		Obs obs = new Obs();
 		obs.setValueNumeric(0.0);
-		assertEquals(false, obs.getValueAsBoolean());
+		assertFalse(obs.getValueAsBoolean());
 	}
 	
 	/**

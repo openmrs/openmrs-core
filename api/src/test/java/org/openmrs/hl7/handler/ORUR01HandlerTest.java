@@ -13,6 +13,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -737,7 +738,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 				newObservation = newObs;
 			}
 		}
-		Assert.assertEquals(false, newObservation.getValueBoolean());
+		assertFalse(newObservation.getValueBoolean());
 	}
 	
 	/**

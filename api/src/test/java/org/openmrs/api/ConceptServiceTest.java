@@ -1351,7 +1351,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 				falseConceptFound = true;
 			}
 		}
-		Assert.assertEquals(false, falseConceptFound);
+		assertFalse(falseConceptFound);
 		conceptService.convertBooleanConceptToCoded(concept);
 		answers = concept.getAnswers(false);
 		for (ConceptAnswer conceptAnswer : answers) {
@@ -1375,7 +1375,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 				trueConceptFound = true;
 			}
 		}
-		Assert.assertEquals(false, trueConceptFound);
+		assertFalse(trueConceptFound);
 		conceptService.convertBooleanConceptToCoded(concept);
 		answers = concept.getAnswers(false);
 		for (ConceptAnswer conceptAnswer : answers) {
@@ -1509,7 +1509,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void saveConcept_shouldVoidTheConceptNameIfTheTextOfTheNameHasChanged() {
 		Concept concept = conceptService.getConceptByName("cd4 count");
-		Assert.assertEquals(false, conceptService.getConceptName(1847).getVoided());
+		assertFalse(conceptService.getConceptName(1847).getVoided());
 		for (ConceptName cn : concept.getNames()) {
 			if (cn.getConceptNameId().equals(1847)) {
 				cn.setName("new name");
