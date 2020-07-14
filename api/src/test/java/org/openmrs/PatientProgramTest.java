@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -125,7 +127,7 @@ public class PatientProgramTest {
 		program.transitionToState(workflowState, new Date());
 		
 		//then
-		assertTrue(program.getStates().size() == 1);
+		assertThat(program.getStates(), hasSize(1));
 		assertTrue(program.getStates().iterator().next().getEndDate().equals(program.getDateCompleted()));
 		
 	}
@@ -145,7 +147,7 @@ public class PatientProgramTest {
 		program.transitionToState(workflowState, new Date());
 		
 		//then
-		assertTrue(program.getStates().size() == 1);
+		assertThat(program.getStates(), hasSize(1));
 		assertNull(program.getStates().iterator().next().getEndDate());
 	}
 	

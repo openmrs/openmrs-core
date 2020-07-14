@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.impl;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -131,7 +133,7 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 	@Test
 	public void getActiveConditions_shouldGetActiveConditions() {
 		List<Condition> activeConditions = conditionService.getActiveConditions(patientService.getPatient(2));
-		assertTrue(activeConditions.size() == 1);
+		assertThat(activeConditions, hasSize(1));
 		assertEquals("2cc6880e-2c46-11e4-9138-a6c5e4d20fb7",activeConditions.get(0).getUuid());
 	}
 
@@ -141,7 +143,7 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAllConditions_shouldGetAllConditions() {
 		List<Condition> conditions = conditionService.getAllConditions(patientService.getPatient(2));
-		assertTrue(conditions.size() == 2);
+		assertThat(conditions, hasSize(2));
 		assertEquals("2cc6880e-2c46-11e4-9138-a6c5e4d20fb7",conditions.get(0).getUuid());
 		assertEquals("2cc6880e-2c46-15e4-9038-a6c5e4d22fb7",conditions.get(1).getUuid());
 	}
@@ -153,7 +155,7 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 	public void getConditionsByEncounter_shouldGetAllConditionsAssociatedWithAnEncounter() {
 		List<Condition> conditions = conditionService.getConditionsByEncounter(new Encounter(2039));
 
-		assertTrue(conditions.size() == 2);
+		assertThat(conditions, hasSize(2));
 		assertEquals("9757313d-92ef-4f51-a002-72a0493c5078",conditions.get(0).getUuid());
 		assertEquals("054a376e-0bf6-4388-aa31-9dac63f8e315",conditions.get(1).getUuid());
 	}
