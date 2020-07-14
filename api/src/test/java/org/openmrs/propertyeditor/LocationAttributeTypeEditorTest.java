@@ -12,7 +12,7 @@ package org.openmrs.propertyeditor;
 import org.junit.jupiter.api.BeforeEach;
 import org.openmrs.LocationAttributeType;
 import org.openmrs.api.LocationService;
-import org.openmrs.propertyeditor.jupiter.BasePropertyEditorTest;
+import org.openmrs.test.jupiter.BasePropertyEditorTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class LocationAttributeTypeEditorTest extends BasePropertyEditorTest<LocationAttributeType, LocationAttributeTypeEditor> {

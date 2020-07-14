@@ -11,7 +11,7 @@ package org.openmrs.propertyeditor;
 
 import org.openmrs.PersonAttributeType;
 import org.openmrs.api.PersonService;
-import org.openmrs.propertyeditor.jupiter.BasePropertyEditorTest;
+import org.openmrs.test.jupiter.BasePropertyEditorTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class PersonAttributeTypeEditorTest extends BasePropertyEditorTest<PersonAttributeType, PersonAttributeTypeEditor> {

@@ -11,7 +11,7 @@ package org.openmrs.propertyeditor;
 
 import org.openmrs.Patient;
 import org.openmrs.api.PatientService;
-import org.openmrs.propertyeditor.jupiter.BasePropertyEditorTest;
+import org.openmrs.test.jupiter.BasePropertyEditorTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**

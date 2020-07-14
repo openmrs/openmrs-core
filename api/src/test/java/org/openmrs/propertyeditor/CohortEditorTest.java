@@ -12,7 +12,7 @@ package org.openmrs.propertyeditor;
 import org.junit.jupiter.api.BeforeEach;
 import org.openmrs.Cohort;
 import org.openmrs.api.CohortService;
-import org.openmrs.propertyeditor.jupiter.BasePropertyEditorTest;
+import org.openmrs.test.jupiter.BasePropertyEditorTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class CohortEditorTest extends BasePropertyEditorTest<Cohort, CohortEditor> {

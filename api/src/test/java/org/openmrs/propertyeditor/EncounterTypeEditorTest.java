@@ -11,7 +11,7 @@ package org.openmrs.propertyeditor;
 
 import org.openmrs.EncounterType;
 import org.openmrs.api.EncounterService;
-import org.openmrs.propertyeditor.jupiter.BasePropertyEditorTest;
+import org.openmrs.test.jupiter.BasePropertyEditorTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class EncounterTypeEditorTest extends BasePropertyEditorTest<EncounterType, EncounterTypeEditor> {

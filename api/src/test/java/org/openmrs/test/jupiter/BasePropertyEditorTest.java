@@ -7,7 +7,7 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.propertyeditor.jupiter;
+package org.openmrs.test.jupiter;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -19,7 +19,6 @@ import java.beans.PropertyEditor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.OpenmrsObject;
-import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
  * Serves as a base test that covers the common implementation of OpenMRS {@code PropertyEditor's}.
