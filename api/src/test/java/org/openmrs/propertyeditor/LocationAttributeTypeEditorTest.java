@@ -9,9 +9,10 @@
  */
 package org.openmrs.propertyeditor;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.openmrs.LocationAttributeType;
 import org.openmrs.api.LocationService;
+import org.openmrs.propertyeditor.jupiter.BasePropertyEditorTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class LocationAttributeTypeEditorTest extends BasePropertyEditorTest<LocationAttributeType, LocationAttributeTypeEditor> {
@@ -21,7 +22,7 @@ public class LocationAttributeTypeEditorTest extends BasePropertyEditorTest<Loca
 	@Autowired
 	private LocationService locationService;
 	
-	@Before
+	@BeforeEach
 	public void initializeData() {
 		executeDataSet("org/openmrs/api/include/LocationServiceTest-attributes.xml");
 	}

@@ -11,6 +11,7 @@ package org.openmrs.propertyeditor;
 
 import org.openmrs.ConceptMapType;
 import org.openmrs.api.ConceptService;
+import org.openmrs.propertyeditor.jupiter.BasePropertyEditorTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ConceptMapTypeEditorTest extends BasePropertyEditorTest<ConceptMapType, ConceptMapTypeEditor> {
