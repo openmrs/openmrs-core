@@ -789,7 +789,7 @@ public interface OrderService extends OpenmrsService {
 	
 	/**
 	 * Gets the non coded drug concept, i.e the concept that matches the uuid specified as the value
-	 * for the global property {@link OpenmrsConstants#GP_DRUG_NON_CODED_CONCEPT_UUID
+	 * for the global property {@link OpenmrsConstants#GP_DRUG_ORDER_DRUG_OTHER
 	 *
 	 * @return concept of non coded drug
 	 * @since 1.12
