@@ -11,12 +11,13 @@ package org.openmrs.api;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -40,8 +41,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptProposal;
@@ -58,7 +58,7 @@ import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.obs.handler.BinaryDataHandler;
 import org.openmrs.obs.handler.ImageHandler;
 import org.openmrs.obs.handler.TextHandler;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.DateUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
@@ -465,11 +465,11 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 
 		Obs complexObs = os.getObs(44);
 		
-		Assert.assertNotNull(complexObs);
-		Assert.assertTrue(complexObs.isComplex());
-		Assert.assertNotNull(complexObs.getValueComplex());
-		Assert.assertNotNull(complexObs.getComplexData());
-		Assert.assertEquals(complexObs, os.getObsByUuid(complexObs.getUuid()));
+		assertNotNull(complexObs);
+		assertTrue(complexObs.isComplex());
+		assertNotNull(complexObs.getValueComplex());
+		assertNotNull(complexObs.getComplexData());
+		assertEquals(complexObs, os.getObsByUuid(complexObs.getUuid()));
 		// delete gif file
 		// we always have to delete this inside the same unit test because it is
 		// outside the
@@ -536,7 +536,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		Obs normalObs = os.getComplexObs(7, ComplexObsHandler.RAW_VIEW);
 		
-		Assert.assertFalse(normalObs.isComplex());
+		assertFalse(normalObs.isComplex());
 	}
 	
 	/**
@@ -546,10 +546,10 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	public void getHandler_shouldHaveDefaultImageAndTextHandlersRegisteredBySpring() {
 		ObsService os = Context.getObsService();
 		ComplexObsHandler imgHandler = os.getHandler("ImageHandler");
-		Assert.assertNotNull(imgHandler);
+		assertNotNull(imgHandler);
 		
 		ComplexObsHandler textHandler = os.getHandler("TextHandler");
-		Assert.assertNotNull(textHandler);
+		assertNotNull(textHandler);
 	}
 	
 	/**
@@ -559,8 +559,8 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	public void getHandler_shouldGetHandlerWithMatchingKey() {
 		ObsService os = Context.getObsService();
 		ComplexObsHandler handler = os.getHandler("ImageHandler");
-		Assert.assertNotNull(handler);
-		Assert.assertTrue(handler instanceof ImageHandler);
+		assertNotNull(handler);
+		assertTrue(handler instanceof ImageHandler);
 	}
 	
 	/**
@@ -568,10 +568,10 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getHandlers_shouldNeverReturnNull() {
-		Assert.assertNotNull(Context.getObsService().getHandlers());
+		assertNotNull(Context.getObsService().getHandlers());
 		
 		// test our current implementation without it being initialized by spring
-		Assert.assertNotNull(new ObsServiceImpl().getHandlers());
+		assertNotNull(new ObsServiceImpl().getHandlers());
 	}
 	
 	/**
@@ -584,7 +584,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		os.registerHandler("DummyHandler", new ImageHandler());
 		
 		ComplexObsHandler dummyHandler = os.getHandler("DummyHandler");
-		Assert.assertNotNull(dummyHandler);
+		assertNotNull(dummyHandler);
 	}
 	
 	/**
@@ -598,7 +598,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		os.registerHandler("DummyHandler2", "org.openmrs.obs.handler.ImageHandler");
 		
 		ComplexObsHandler dummyHandler = os.getHandler("DummyHandler2");
-		Assert.assertNotNull(dummyHandler);
+		assertNotNull(dummyHandler);
 	}
 	
 	/**
@@ -619,12 +619,12 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		// add the handler and make sure its there
 		os.registerHandler("DummyHandler3", "org.openmrs.obs.handler.ImageHandler");
 		ComplexObsHandler dummyHandler = os.getHandler("DummyHandler3");
-		Assert.assertNotNull(dummyHandler);
+		assertNotNull(dummyHandler);
 		
 		// now remove the handler and make sure its gone
 		os.removeHandler("DummyHandler3");
 		ComplexObsHandler dummyHandlerAgain = os.getHandler("DummyHandler3");
-		Assert.assertNull(dummyHandlerAgain);
+		assertNull(dummyHandlerAgain);
 	}
 	
 	/**
@@ -661,7 +661,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 			os.saveObs(obsToSave, null);
 			
 			// make sure the file appears now after the save
-			Assert.assertTrue(createdFile.exists());
+			assertTrue(createdFile.exists());
 		}
 		finally {
 			// we always have to delete this inside the same unit test because it is outside the
@@ -712,13 +712,13 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 			os.saveObs(obsToSave, null);
 			
 			// make sure the old file still appears now after the save
-			Assert.assertEquals(oldFileSize, previouslyCreatedFile.length());
+			assertEquals(oldFileSize, previouslyCreatedFile.length());
 			
 			String valueComplex = obsToSave.getValueComplex();
 			String filename = valueComplex.substring(valueComplex.indexOf("|") + 1).trim();
 			newComplexFile = new File(complexObsDir, filename);
 			// make sure the file appears now after the save
-			Assert.assertTrue(newComplexFile.length() > oldFileSize);
+			assertTrue(newComplexFile.length() > oldFileSize);
 		}
 		finally {
 			// clean up the files we created
@@ -749,13 +749,13 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		os.setHandlers(handlers);
 		
 		ComplexObsHandler dummyHandler4 = os.getHandler("DummyHandler4");
-		Assert.assertNotNull(dummyHandler4);
+		assertNotNull(dummyHandler4);
 		
 		ComplexObsHandler dummyHandler5 = os.getHandler("DummyHandler5");
-		Assert.assertNotNull(dummyHandler5);
+		assertNotNull(dummyHandler5);
 		
 		ComplexObsHandler dummyHandler6 = os.getHandler("DummyHandler6");
-		Assert.assertNotNull(dummyHandler6);
+		assertNotNull(dummyHandler6);
 	}
 	
 	/**
@@ -772,7 +772,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		os.setHandlers(handlers);
 		
 		ComplexObsHandler dummyHandlerToOverride = os.getHandler("DummyHandlerToOverride");
-		Assert.assertTrue(dummyHandlerToOverride instanceof ImageHandler);
+		assertTrue(dummyHandlerToOverride instanceof ImageHandler);
 		
 		// now override that key and make sure the new class is stored
 		
@@ -782,7 +782,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		os.setHandlers(handlersAgain);
 		
 		ComplexObsHandler dummyHandlerToOverrideAgain = os.getHandler("DummyHandlerToOverride");
-		Assert.assertTrue(dummyHandlerToOverrideAgain instanceof BinaryDataHandler);
+		assertTrue(dummyHandlerToOverrideAgain instanceof BinaryDataHandler);
 		
 	}
 	
@@ -797,7 +797,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		// fetch the obs from the database again
 		obs = Context.getObsService().getObs(7);
-		Assert.assertTrue(obs.getVoided());
+		assertTrue(obs.getVoided());
 	}
 	
 	/**
@@ -809,7 +809,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		Obs obs = obsService.getObs(7);
 		
-		Assert.assertEquals(5089, obs.getConcept().getId().intValue());
+		assertEquals(5089, obs.getConcept().getId().intValue());
 	}
 	
 	/**
@@ -823,7 +823,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		List<Obs> obss = obsService.getObservations(null, Collections.singletonList(new Encounter(4)), null, null, null,
 		    null, null, null, null, null, null, false, null);
 		
-		Assert.assertEquals(6, obss.size());
+		assertEquals(6, obss.size());
 	}
 	
 	/**
@@ -837,7 +837,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Integer count = obsService.getObservationCount(null, Collections.singletonList(new Encounter(4)), null, null, null,
 		    null, null, null, null, false, null);
 		
-		Assert.assertEquals(6, count.intValue());
+		assertEquals(6, count.intValue());
 	}
 	
 	/**
@@ -854,13 +854,13 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		    null, null, null, null, null, false, null);
 		
 		// obs 11 in INITIAL_OBS_XML and obs 13 in standardTestDataset
-		Assert.assertEquals(3, obss.size());
+		assertEquals(3, obss.size());
 		Set<Integer> ids = new HashSet<>();
 		for (Obs o : obss) {
 			ids.add(o.getObsId());
 		}
-		Assert.assertTrue(ids.contains(11));
-		Assert.assertTrue(ids.contains(13));
+		assertTrue(ids.contains(11));
+		assertTrue(ids.contains(13));
 	}
 	
 	/**
@@ -876,7 +876,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Integer count = obsService.getObservationCount(null, null, null, Collections.singletonList(new Concept(7)), null,
 		    null, null, null, null, false, null);
 		
-		Assert.assertEquals(3, count.intValue());
+		assertEquals(3, count.intValue());
 		
 	}
 	
@@ -891,7 +891,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		List<Obs> obss = obsService.getObservations(null, null, Collections.singletonList(new Concept(5497)), null, null,
 		    null, null, null, null, null, null, false, null);
 		
-		Assert.assertEquals(2, obss.size());
+		assertEquals(2, obss.size());
 	}
 	
 	/**
@@ -905,7 +905,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Integer count = obsService.getObservationCount(null, null, Collections.singletonList(new Concept(5497)), null, null,
 		    null, null, null, null, false, null);
 		
-		Assert.assertEquals(2, count.intValue());
+		assertEquals(2, count.intValue());
 	}
 	
 	/**
@@ -921,10 +921,10 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		List<Obs> obss = obsService.getObservations(Collections.singletonList(new Person(9)), null, null, null, null, null,
 		    null, null, null, null, null, true, null);
 		
-		Assert.assertEquals(2, obss.size());
+		assertEquals(2, obss.size());
 		
-		Assert.assertEquals(10, obss.get(0).getObsId().intValue());
-		Assert.assertEquals(9, obss.get(1).getObsId().intValue());
+		assertEquals(10, obss.get(0).getObsId().intValue());
+		assertEquals(9, obss.get(1).getObsId().intValue());
 	}
 	
 	/**
@@ -940,7 +940,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Integer obss = obsService.getObservationCount(Collections.singletonList(new Person(9)), null, null, null, null,
 		    null, null, null, null, true, null);
 		
-		Assert.assertEquals(2, obss.intValue());
+		assertEquals(2, obss.intValue());
 		
 	}
 	
@@ -957,7 +957,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		List<Obs> count = obsService.getObservations(Collections.singletonList(new Person(8)), null, null, null, null, null,
 		    null, 1, null, null, null, false, null);
 		
-		Assert.assertEquals(1, count.size());
+		assertEquals(1, count.size());
 		
 	}
 	
@@ -974,9 +974,9 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		List<Obs> obss = obsService.getObservations(Collections.singletonList(new Person(9)), null, null, null, null, null,
 		    null, null, null, null, null, false, null);
 		
-		Assert.assertEquals(1, obss.size());
+		assertEquals(1, obss.size());
 		
-		Assert.assertEquals(9, obss.get(0).getObsId().intValue());
+		assertEquals(9, obss.get(0).getObsId().intValue());
 	}
 	
 	/**
@@ -992,7 +992,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Integer obss = obsService.getObservationCount(Collections.singletonList(new Person(9)), null, null, null, null,
 		    null, null, null, null, false, null);
 		
-		Assert.assertEquals(1, obss.intValue());
+		assertEquals(1, obss.intValue());
 	}
 	
 	/**
@@ -1008,7 +1008,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		List<Obs> obss = obsService.getObservations(null, null, null, null, null, null, null, null, 2 /*obsGroupId*/, null,
 		    null, false, null);
 		
-		Assert.assertEquals(2, obss.size());
+		assertEquals(2, obss.size());
 	}
 	
 	/**
@@ -1024,7 +1024,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Integer count = obsService.getObservationCount(null, null, null, null, null, null, 2 /*obsGroupId*/, null, null,
 		    false, null);
 		
-		Assert.assertEquals(2, count.intValue());
+		assertEquals(2, count.intValue());
 	}
 	
 	/**
@@ -1040,7 +1040,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		List<Obs> obss = obsService.getObservations(null, null, null, null, Collections.singletonList(PERSON_TYPE.PATIENT),
 		    null, null, null, null, null, null, false, null);
 		
-		Assert.assertEquals(15, obss.size());
+		assertEquals(15, obss.size());
 	}
 	
 	/**
@@ -1056,7 +1056,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Integer count = obsService.getObservationCount(null, null, null, null,
 		    Collections.singletonList(PERSON_TYPE.PATIENT), null, null, null, null, false, null);
 		
-		Assert.assertEquals(15, count.intValue());
+		assertEquals(15, count.intValue());
 	}
 	
 	/**
@@ -1072,7 +1072,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		List<Obs> obss = obsService.getObservations(null, null, null, null, Collections.singletonList(PERSON_TYPE.PERSON),
 		    null, null, null, null, null, null, false, null);
 		
-		Assert.assertEquals(17, obss.size());
+		assertEquals(17, obss.size());
 	}
 	
 	/**
@@ -1088,7 +1088,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Integer count = obsService.getObservationCount(null, null, null, null,
 		    Collections.singletonList(PERSON_TYPE.PERSON), null, null, null, null, false, null);
 		
-		Assert.assertEquals(17, count.intValue());
+		assertEquals(17, count.intValue());
 	}
 	
 	/**
@@ -1104,7 +1104,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		List<Obs> obss = obsService.getObservations(null, null, null, null, Collections.singletonList(PERSON_TYPE.USER),
 		    null, null, null, null, null, null, false, null);
 		
-		Assert.assertEquals(1, obss.size());
+		assertEquals(1, obss.size());
 	}
 	
 	/**
@@ -1120,7 +1120,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Integer count = obsService.getObservationCount(null, null, null, null, Collections.singletonList(PERSON_TYPE.USER),
 		    null, null, null, null, false, null);
 		
-		Assert.assertEquals(1, count.intValue());
+		assertEquals(1, count.intValue());
 	}
 	
 	/**
@@ -1134,7 +1134,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		List<Obs> obss = obsService.getObservations(null, null, null, null, null,
 		    Collections.singletonList(new Location(1)), null, null, null, null, null, false, null);
 		
-		Assert.assertEquals(8, obss.size());
+		assertEquals(8, obss.size());
 	}
 	
 	/**
@@ -1148,7 +1148,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Integer count = obsService.getObservationCount(null, null, null, null, null,
 		    Collections.singletonList(new Location(1)), null, null, null, false, null);
 		
-		Assert.assertEquals(8, count.intValue());
+		assertEquals(8, count.intValue());
 	}
 	
 	/**
@@ -1162,7 +1162,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		Integer count = obsService.getObservationCount(null, null, null, null, null, null, null, null, null, false, "AN1");
 		
-		Assert.assertEquals(2, count.intValue());
+		assertEquals(2, count.intValue());
 	}
 	
 	/**
@@ -1177,9 +1177,9 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		    Arrays.asList("concept", "obsDatetime"), null, null, null, null, false, null);
 		
 		// check the order of a few of the obs returned
-		Assert.assertEquals(11, obss.get(0).getObsId().intValue());
-		Assert.assertEquals(9, obss.get(1).getObsId().intValue());
-		Assert.assertEquals(16, obss.get(2).getObsId().intValue());
+		assertEquals(11, obss.get(0).getObsId().intValue());
+		assertEquals(9, obss.get(1).getObsId().intValue());
+		assertEquals(16, obss.get(2).getObsId().intValue());
 	}
 	
 	/**
@@ -1195,8 +1195,8 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		List<Obs> obss = obsService.getObservations(Collections.singletonList(new Person(8)), null, null, null, null, null,
 				new ArrayList<>(), null, null, null, null, false, null);
 		
-		Assert.assertEquals(8, obss.get(0).getObsId().intValue());
-		Assert.assertEquals(7, obss.get(1).getObsId().intValue());
+		assertEquals(8, obss.get(0).getObsId().intValue());
+		assertEquals(7, obss.get(1).getObsId().intValue());
 	}
 	
 	/**
@@ -1217,9 +1217,9 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		List<Obs> obss3 = obsService.getObservations(Collections.singletonList(new Person(8)), null, null, null, null, null,
 		    null, null, null, null, null, false, "AN2");
 		
-		Assert.assertEquals(2, obss1.size());
-		Assert.assertEquals(1, obss2.size());
-		Assert.assertEquals(0, obss3.size());
+		assertEquals(2, obss1.size());
+		assertEquals(1, obss2.size());
+		assertEquals(0, obss3.size());
 	}
 	
 	/**
@@ -1235,9 +1235,9 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		List<Obs> obss = obsService.getObservations("12345K");
 		
-		Assert.assertEquals(2, obss.size());
-		Assert.assertEquals(4, obss.get(0).getObsId().intValue());
-		Assert.assertEquals(3, obss.get(1).getObsId().intValue());
+		assertEquals(2, obss.size());
+		assertEquals(4, obss.get(0).getObsId().intValue());
+		assertEquals(3, obss.get(1).getObsId().intValue());
 	}
 	
 	/**
@@ -1249,8 +1249,8 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		List<Obs> obss = obsService.getObservations("5");
 		
-		Assert.assertEquals(1, obss.size());
-		Assert.assertEquals(16, obss.get(0).getObsId().intValue());
+		assertEquals(1, obss.size());
+		assertEquals(16, obss.get(0).getObsId().intValue());
 	}
 	
 	/**
@@ -1262,8 +1262,8 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		List<Obs> obss = obsService.getObservations("15");
 		
-		Assert.assertEquals(1, obss.size());
-		Assert.assertEquals(15, obss.get(0).getObsId().intValue());
+		assertEquals(1, obss.size());
+		assertEquals(15, obss.get(0).getObsId().intValue());
 	}
 	
 	/**
@@ -1275,9 +1275,9 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		List<Obs> obss = obsService.getObservationsByPerson(new Person(7));
 		
-		Assert.assertEquals(9, obss.size());
-		Assert.assertEquals(16, obss.get(0).getObsId().intValue());
-		Assert.assertEquals(7, obss.get(8).getObsId().intValue());
+		assertEquals(9, obss.size());
+		assertEquals(16, obss.get(0).getObsId().intValue());
+		assertEquals(7, obss.get(8).getObsId().intValue());
 	}
 	
 	/**
@@ -1289,10 +1289,10 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		List<Obs> obss = obsService.getObservationsByPersonAndConcept(new Person(7), new Concept(5089));
 		
-		Assert.assertEquals(3, obss.size());
-		Assert.assertEquals(16, obss.get(0).getObsId().intValue());
-		Assert.assertEquals(10, obss.get(1).getObsId().intValue());
-		Assert.assertEquals(7, obss.get(2).getObsId().intValue());
+		assertEquals(3, obss.size());
+		assertEquals(16, obss.get(0).getObsId().intValue());
+		assertEquals(10, obss.get(1).getObsId().intValue());
+		assertEquals(7, obss.get(2).getObsId().intValue());
 	}
 	
 	/**
@@ -1315,7 +1315,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		obsService.purgeObs(obs);
 		
-		Assert.assertNull(obsService.getObs(7));
+		assertNull(obsService.getObs(7));
 		
 		
 		executeDataSet(COMPLEX_OBS_XML);
@@ -1446,8 +1446,8 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		obsService.voidObs(parentObs, "testing void cascade to child obs groups");
 		
-		Assert.assertTrue(obsService.getObs(9).getVoided());
-		Assert.assertTrue(obsService.getObs(10).getVoided());
+		assertTrue(obsService.getObs(9).getVoided());
+		assertTrue(obsService.getObs(10).getVoided());
 	}
 	
 	/**
@@ -1532,7 +1532,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		obsService.saveObs(parentObs, null);
 		
 		// make sure the child obs was saved
-		Assert.assertNotNull(groupMember.getObsId());
+		assertNotNull(groupMember.getObsId());
 	}
 	
 	/**
@@ -1600,7 +1600,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		List<ConceptName> names = new LinkedList<>();
 		names.add(cn1);
 		names.add(cn2);
-		Assert.assertEquals(2, os.getObservationCount(names, true).intValue());
+		assertEquals(2, os.getObservationCount(names, true).intValue());
 	}
 	
 	/**
@@ -1633,7 +1633,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		List<ConceptName> names = new LinkedList<>();
 		names.add(cn1);
 		names.add(cn2);
-		Assert.assertEquals(2, os.getObservationCount(names, true).intValue());
+		assertEquals(2, os.getObservationCount(names, true).intValue());
 		
 	}
 	
@@ -1645,7 +1645,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		List<ConceptName> names = new LinkedList<>();
 		names.add(new ConceptName(1847));
 		names.add(new ConceptName(2453));
-		Assert.assertEquals(0, Context.getObsService().getObservationCount(names, true).intValue());
+		assertEquals(0, Context.getObsService().getObservationCount(names, true).intValue());
 	}
 	
 	/**
@@ -1730,20 +1730,20 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		obs.addGroupMember(conceptProposal.getObs());
 		
 		//before calling purgeObs method the Obs exists
-		Assert.assertNotNull(obsService.getObs(parentObsId));
-		Assert.assertNotNull(obsService.getObs(childObsId));
-		Assert.assertNotNull(obsService.getObs(unrelatedObsId));
-		Assert.assertNotNull(obsService.getObs(orderReferencingObsId));
-		Assert.assertNotNull(obsService.getObs(conceptProposalObsId));
+		assertNotNull(obsService.getObs(parentObsId));
+		assertNotNull(obsService.getObs(childObsId));
+		assertNotNull(obsService.getObs(unrelatedObsId));
+		assertNotNull(obsService.getObs(orderReferencingObsId));
+		assertNotNull(obsService.getObs(conceptProposalObsId));
 		
 		Context.getObsService().purgeObs(obs, false);
 		
 		//	After calling purgeObs method Obs are deleted
-		Assert.assertNull(obsService.getObs(parentObsId));
-		Assert.assertNull(obsService.getObs(childObsId));
-		Assert.assertNotNull(obsService.getObs(unrelatedObsId));
-		Assert.assertNull(obsService.getObs(orderReferencingObsId));
-		Assert.assertNull(obsService.getObs(conceptProposalObsId));
+		assertNull(obsService.getObs(parentObsId));
+		assertNull(obsService.getObs(childObsId));
+		assertNotNull(obsService.getObs(unrelatedObsId));
+		assertNull(obsService.getObs(orderReferencingObsId));
+		assertNull(obsService.getObs(conceptProposalObsId));
 	}
 	
 	/**
@@ -1764,8 +1764,8 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		Context.getObsService().purgeObs(obs, false);
 		
-		Assert.assertNull(obsService.getObs(orderReferencingObsId));
-		Assert.assertNotNull(orderService.getOrder(referencedOrderId));
+		assertNull(obsService.getObs(orderReferencingObsId));
+		assertNotNull(orderService.getOrder(referencedOrderId));
 	}
 	
 	/**
@@ -1814,7 +1814,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		try {
 			os.saveObs(obsToSave, changeMessage);
 			
-			Assert.assertFalse(createdFile.exists());
+			assertFalse(createdFile.exists());
 		}
 		finally {
 			// we always have to delete this inside the same unit test because it is outside the
@@ -1846,7 +1846,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Set<Obs> savedMembers = new HashSet<>(saveObs.getGroupMembers());
 		assertFalse(saveObs.isDirty());
 		for (Obs o : savedMembers) {
-			assertFalse("obs"+o.getId(), o.isDirty());
+			assertFalse(o.isDirty(), "obs"+o.getId());
 		}
 
 	}
@@ -1860,12 +1860,12 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Obs obs = Context.getObsService().getObs(7);
 		obs.setValueNumeric(5.0);
 		Obs o2 = Context.getObsService().saveObs(obs, "just testing");
-		Assert.assertNotNull(obs.getFormFieldNamespace());
+		assertNotNull(obs.getFormFieldNamespace());
 
 		// fetch the obs from the database again
 		obs = Context.getObsService().getObs(o2.getObsId());
-		Assert.assertNotNull(obs.getFormFieldNamespace());
-		Assert.assertNotNull(obs.getFormFieldPath());
+		assertNotNull(obs.getFormFieldNamespace());
+		assertNotNull(obs.getFormFieldPath());
 	}
 
 	/**
@@ -1905,20 +1905,20 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 
 		Obs newObs = Context.getObsService().saveObs(obs, "just testing");
 
-		Assert.assertEquals(newObs.getObsDatetime().toString(), newDate.toString());
+		assertEquals(newObs.getObsDatetime().toString(), newDate.toString());
 
 		for(Obs member : newObs.getGroupMembers()) {
-			Assert.assertEquals(member.getObsDatetime().toString(), newDate.toString());
+			assertEquals(member.getObsDatetime().toString(), newDate.toString());
 			if(member.getGroupMembers()!= null) {
 
 				for (Obs memberChild : member.getGroupMembers()) {
-					Assert.assertEquals(memberChild.getObsDatetime().toString(), newDate.toString());
+					assertEquals(memberChild.getObsDatetime().toString(), newDate.toString());
 					if (memberChild.getValueText()!= null && memberChild.getValueText().equals("NewObs Value")) {
 						count++;
 					}
 				}
 				if (count == 0) {
-					Assert.fail("New Obs not created");
+					fail("New Obs not created");
 				}
 			}
 		}
