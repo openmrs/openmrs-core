@@ -9,6 +9,9 @@
  */
 package org.openmrs.serialization;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -80,14 +83,14 @@ public class SimpleXStreamSerializerTest {
 		
 		assertTrue(foo.getAttributeString().equals("Testing"));
 		assertTrue(foo.getAttributeInt() == 4);
-		
-		List newList = foo.getAttributeList();
-		assertTrue(newList.size() == 2);
+
+		List<String> newList = foo.getAttributeList();
+		assertThat(newList, hasSize(2));
 		assertTrue(newList.get(0).equals("fooBar"));
 		assertTrue(newList.get(1).equals("bar"));
-		
+
 		Map newMap = foo.getAttributeMap();
-		assertTrue(newMap.size() == 3);
+		assertEquals(3, newMap.size());
 		assertTrue(newMap.get(10).equals("foo"));
 		assertTrue(newMap.get(20).equals("fooBar"));
 		assertTrue(newMap.get(30).equals("bar"));

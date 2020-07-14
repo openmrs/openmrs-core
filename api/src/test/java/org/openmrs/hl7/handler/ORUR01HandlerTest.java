@@ -9,6 +9,8 @@
  */
 package org.openmrs.hl7.handler;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
@@ -940,7 +942,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		// check for the new encounter
 		List<Encounter> encForPatient2 = Context.getEncounterService().getEncountersByPatient(patient);
 		encForPatient2.removeAll(encForPatient1);//retain only the new encounter
-		Assert.assertTrue(encForPatient2.size() == 1);
+		assertThat(encForPatient2, hasSize(1));
 		
 		Provider newProvider = encForPatient2.get(0).getProvidersByRole(
 		    Context.getEncounterService().getEncounterRoleByUuid(EncounterRole.UNKNOWN_ENCOUNTER_ROLE_UUID)).iterator()
@@ -970,7 +972,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		assertTrue("An encounter should have been created", (encForPatient1.size() + 1) == encForPatient2.size());
 		
 		encForPatient2.removeAll(encForPatient1);
-		Assert.assertTrue(encForPatient2.size() == 1);
+		assertThat(encForPatient2, hasSize(1));
 		
 		Provider newProvider = encForPatient2.get(0).getProvidersByRole(
 		    Context.getEncounterService().getEncounterRoleByUuid(EncounterRole.UNKNOWN_ENCOUNTER_ROLE_UUID)).iterator()
@@ -1002,7 +1004,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		// check for the new encounter
 		List<Encounter> encForPatient2 = Context.getEncounterService().getEncountersByPatient(patient);
 		encForPatient2.removeAll(encForPatient1);
-		Assert.assertTrue(encForPatient2.size() == 1);
+		assertThat(encForPatient2, hasSize(1));
 		
 		Provider newProvider = encForPatient2.get(0).getProvidersByRole(
 		    Context.getEncounterService().getEncounterRoleByUuid(EncounterRole.UNKNOWN_ENCOUNTER_ROLE_UUID)).iterator()
@@ -1036,7 +1038,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		// check for the new encounter
 		List<Encounter> encForPatient2 = Context.getEncounterService().getEncountersByPatient(patient);
 		encForPatient2.removeAll(encForPatient1);
-		Assert.assertTrue(encForPatient2.size() == 1);
+		assertThat(encForPatient2, hasSize(1));
 		
 		Provider newProvider = encForPatient2.get(0).getProvidersByRole(
 		    Context.getEncounterService().getEncounterRoleByUuid(EncounterRole.UNKNOWN_ENCOUNTER_ROLE_UUID)).iterator()
