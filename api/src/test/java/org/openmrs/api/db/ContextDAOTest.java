@@ -12,24 +12,26 @@ package org.openmrs.api.db;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import javax.annotation.Resource;
 import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
 
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.User;
 import org.openmrs.UserSessionListener;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.db.hibernate.HibernateContextDAO;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.stereotype.Component;
 
 /**
@@ -54,7 +56,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	@Before
+	@BeforeEach
 	public void runExtraSetup() {
 		executeDataSet("org/openmrs/api/db/include/contextDAOTest.xml");
 		
@@ -69,7 +71,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	 * Methods in this class might authenticate with a different user, so log that user out after
 	 * this whole junit class is done.
 	 */
-	@AfterClass
+	@AfterAll
 	public static void logOutAfterThisTest() {
 		Context.logout();
 	}
@@ -80,7 +82,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void authenticate_shouldAuthenticateGivenUsernameAndPassword() {
 		User u = dao.authenticate("admin", "test");
-		Assert.assertEquals("Should be the admin user", "admin", u.getUsername());
+		assertEquals("admin", u.getUsername(), "Should be the admin user");
 	}
 	
 	/**
@@ -89,7 +91,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void authenticate_shouldAuthenticateGivenSystemIdAndPassword() {
 		User u = dao.authenticate("1-8", "test");
-		Assert.assertEquals("Should be the 1-8 user", "1-8", u.getSystemId());
+		assertEquals("1-8", u.getSystemId(), "Should be the 1-8 user");
 	}
 	
 	/**
@@ -100,7 +102,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void authenticate_shouldAuthenticateGivenSystemIdWithoutHyphenAndPassword() {
 		User u = dao.authenticate("18", "test");
-		Assert.assertEquals("Should be the 1-8 user", "1-8", u.getSystemId());
+		assertEquals("1-8", u.getSystemId(), "Should be the 1-8 user");
 	}
 	
 	/**
@@ -189,7 +191,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	@Test()
 	public void authenticate_shouldGiveIdenticalErrorMessagesBetweenUsernameAndPasswordMismatch() {
 		User user = dao.authenticate("admin", "test");
-		Assert.assertNotNull("This test depends on there being an admin:test user", user);
+		assertNotNull(user, "This test depends on there being an admin:test user");
 		
 		String invalidUsernameErrorMessage = null;
 		String invalidPasswordErrorMessage = null;
@@ -211,7 +213,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 			invalidPasswordErrorMessage = invalidPasswordErrorMessage.replace("admin", "");
 		}
 		
-		Assert.assertEquals(invalidUsernameErrorMessage, invalidPasswordErrorMessage);
+		assertEquals(invalidUsernameErrorMessage, invalidPasswordErrorMessage);
 	}
 	
 	/**
@@ -229,7 +231,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 			dao.authenticate("admin", "test");
 		}
 		catch (ContextAuthenticationException authException) {
-			Assert.fail("There must be an admin:test user for this test to run properly");
+			fail("There must be an admin:test user for this test to run properly");
 		}
 		Context.logout();
 		
@@ -237,7 +239,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 			// try to authenticate with a proper 
 			try {
 				dao.authenticate("admin", "not the right password");
-				Assert.fail("Not sure why this username/password combo worked");
+				fail("Not sure why this username/password combo worked");
 			}
 			catch (ContextAuthenticationException authException) {
 				// pass
@@ -279,7 +281,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		// first we fail a login attempt
 		try {
 			dao.authenticate("admin", "not the right password");
-			Assert.fail("Not sure why this username/password combo worked");
+			fail("Not sure why this username/password combo worked");
 		}
 		catch (ContextAuthenticationException authException) {
 			// pass
@@ -290,7 +292,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 			dao.authenticate("admin", "test");
 		}
 		catch (ContextAuthenticationException authException) {
-			Assert.fail("There must be an admin:test user for this test to run properly");
+			fail("There must be an admin:test user for this test to run properly");
 		}
 		Context.logout();
 		
@@ -298,7 +300,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 			// now we fail several login attempts 
 			try {
 				dao.authenticate("admin", "not the right password");
-				Assert.fail("Not sure why this username/password combo worked");
+				fail("Not sure why this username/password combo worked");
 			}
 			catch (ContextAuthenticationException authException) {
 				// pass
@@ -340,7 +342,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		Properties properties = new Properties();
 		properties.setProperty("key", "value");
 		dao.mergeDefaultRuntimeProperties(properties);
-		Assert.assertNotNull(properties.getProperty("hibernate.key"));
+		assertNotNull(properties.getProperty("hibernate.key"));
 	}
 	
 	@Component("testUserSessionListener")
