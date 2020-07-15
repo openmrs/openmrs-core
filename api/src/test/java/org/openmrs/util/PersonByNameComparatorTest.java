@@ -9,6 +9,7 @@
  */
 package org.openmrs.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -56,7 +57,7 @@ public class PersonByNameComparatorTest {
 		Person person2 = new Person();
 		person2.addName(new PersonName("givenName", "middleName", "familyName"));
 		int actualValue = PersonByNameComparator.comparePersonsByName(person1, person2);
-		assertTrue(actualValue == 0, "Expected zero but it was: " + actualValue);
+		assertEquals(0, actualValue);
 	}
 	
 	@Test
@@ -66,6 +67,6 @@ public class PersonByNameComparatorTest {
 		Person person2 = new Person();
 		person2.addName(new PersonName("givenName", "middleName", "familyName"));
 		int actualValue = PersonByNameComparator.comparePersonsByName(person1, person2);
-		assertTrue(actualValue == 0, "Expected zero but it was: " + actualValue);
+		assertEquals(0, actualValue);
 	}
 }

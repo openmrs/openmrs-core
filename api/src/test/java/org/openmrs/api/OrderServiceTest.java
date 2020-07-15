@@ -23,6 +23,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.openmrs.Order.Action.DISCONTINUE;
+import static org.openmrs.Order.FulfillerStatus.COMPLETED;
 import static org.openmrs.test.OpenmrsMatchers.hasId;
 import static org.openmrs.test.TestUtil.containsId;
 
@@ -2213,7 +2215,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		List<Order> orders = orderService.getOrders(orderSearchCriteria);
 		assertEquals(1, orders.size());
 		for (Order order : orders) {
-			assertTrue(order.getFulfillerStatus() == Order.FulfillerStatus.COMPLETED );
+			assertEquals(COMPLETED, order.getFulfillerStatus());
 		}
 	}
 
@@ -2265,7 +2267,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		List<Order> orders = orderService.getOrders(orderSearchCriteria);
 		assertEquals(2, orders.size());
 		for (Order order : orders) {
-			assertTrue(order.getAction() == Action.DISCONTINUE );
+			assertEquals(DISCONTINUE, order.getAction());
 		}
 	}
 

@@ -82,7 +82,7 @@ public class SimpleXStreamSerializerTest {
 		Foo foo = serializer.deserialize(serializedFoo, Foo.class);
 		
 		assertTrue(foo.getAttributeString().equals("Testing"));
-		assertTrue(foo.getAttributeInt() == 4);
+		assertEquals(4, foo.getAttributeInt());
 
 		List<String> newList = foo.getAttributeList();
 		assertThat(newList, hasSize(2));

@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -268,7 +269,7 @@ public class PatientStateTest {
 		patientState2.setUuid(uuid1);
 		patientState2.setVoided(false);
 		
-		assertTrue(patientState.compareTo(patientState2) == 0);
+		assertEquals(0, patientState.compareTo(patientState2));
 	}
 	
 	/**

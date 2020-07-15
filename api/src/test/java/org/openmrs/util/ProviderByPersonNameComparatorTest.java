@@ -9,6 +9,7 @@
  */
 package org.openmrs.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -74,7 +75,7 @@ public class ProviderByPersonNameComparatorTest {
 		provider2.setPerson(person2);
 		
 		int actualValue = new ProviderByPersonNameComparator().compare(provider1, provider2);
-		assertTrue(actualValue == 0, "Expected zero but it was: " + actualValue);
+		assertEquals(0, actualValue);
 	}
 	
 	@Test
@@ -110,6 +111,6 @@ public class ProviderByPersonNameComparatorTest {
 		Provider provider2 = new Provider();
 		
 		int actualValue = new ProviderByPersonNameComparator().compare(provider1, provider2);
-		assertTrue(actualValue == 0, "Expected zero but it was: " + actualValue);
+		assertEquals(0, actualValue);
 	}
 }
