@@ -154,7 +154,7 @@ public class VerhoeffIdentifierValidatorTest {
 				allowedIdentifier = allowedIdentifier.substring(1) + allowedIdentifier.charAt(0);
 			}
 		}
-		assertTrue(failures == 0, failures + " transposed digits were not detected:\n" + failureMsg);
+		assertEquals(0, failures, "transposed digits were not detected:\n" + failureMsg);
 	}
 
 }

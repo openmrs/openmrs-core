@@ -290,7 +290,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		
 		Cohort cohortToGet = service.getCohort(2);
 		assertNotNull(cohortToGet);
-		assertTrue(cohortToGet.getCohortId() == 2);
+		assertEquals(2, cohortToGet.getCohortId());
 	}
 	
 	/**
@@ -301,7 +301,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(COHORT_XML);
 		
 		Cohort cohortToGet = service.getCohortByName("Example Cohort");
-		assertTrue(cohortToGet.getCohortId() == 2);
+		assertEquals(2, cohortToGet.getCohortId());
 	}
 	
 	/**
@@ -318,12 +318,12 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		assertTrue(allCohorts.get(0).getVoided());
 		assertFalse(allCohorts.get(1).getVoided());
 		// the non-voided cohort should have an id of 2
-		assertTrue(allCohorts.get(1).getCohortId() == 2);
+		assertEquals(2, allCohorts.get(1).getCohortId());
 		
 		// ask for the cohort by name
 		Cohort cohortToGet = service.getCohortByName("Example Cohort");
 		// see if the non-voided one got returned
-		assertTrue(cohortToGet.getCohortId() == 2);
+		assertEquals(2, cohortToGet.getCohortId());
 	}
 	
 	@Test
