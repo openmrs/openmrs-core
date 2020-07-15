@@ -27,7 +27,7 @@ public abstract class BaseFormRecordableOpenmrsData extends BaseChangeableOpenmr
 
 	protected static final int FORM_NAMESPACE_PATH_MAX_LENGTH = 255;
 
-	@Column(name = "form_namespace_path")
+	@Column(name = "form_namespace_and_path")
 	protected String formNamespaceAndPath;
 
 	/**
