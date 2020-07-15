@@ -169,7 +169,7 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * The model object that holds all the properties that the rendered templates use. All attributes on
 	 * this object are made available to all templates via reflection in the
-	 * {@link #renderTemplate(String, Map, httpResponse)} method.
+	 * {@link org.openmrs.web.filter.StartupFilter#renderTemplate(String, Map, HttpServletResponse)} method.
 	 */
 	private InitializationWizardModel wizardModel = null;
 	
@@ -1566,8 +1566,7 @@ public class InitializationFilter extends StartupFilter {
 							}
 							
 							/**
-							 * @see org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback#executing(liquibase.ChangeSet,
-							 *      int)
+							 * @see ChangeSetExecutorCallback#executing(liquibase.changelog.ChangeSet, int)
 							 */
 							@Override
 							public void executing(ChangeSet changeSet, int numChangeSetsToRun) {

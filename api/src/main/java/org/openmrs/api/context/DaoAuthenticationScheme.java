@@ -14,7 +14,7 @@ import org.openmrs.api.db.ContextDAO;
 /**
  * Base class for authentication schemes that intend to leverage OpenMRS' {@link ContextDAO}.
  *
- * @see {@link Context#authenticate(AuthenticationScheme, Credentials)}
+ * @see {@link Context#authenticate(Credentials)}
  * 
  * @since 2.3.0
  */
