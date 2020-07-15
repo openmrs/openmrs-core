@@ -9,26 +9,17 @@
  */
 package org.openmrs.api.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openmrs.CodedOrFreeText;
-import org.openmrs.Condition;
-import org.openmrs.ConditionClinicalStatus;
-import org.openmrs.ConditionVerificationStatus;
-import org.openmrs.Encounter;
-import org.openmrs.Patient;
+import org.openmrs.*;
 import org.openmrs.api.ConditionService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for methods that are specific to the {@link ConditionServiceImpl}. General tests that
@@ -37,11 +28,12 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 	
 	protected static final String CONDITION_XML = "org/openmrs/api/include/ConditionServiceImplTest-SetupCondition.xml";
+
+	private static final String FORM_NAMESPACE_PATH_SEPARATOR = "^";
 	
 	private ConditionService conditionService;
 	
 	private PatientService patientService;
-	
 	
 	@BeforeEach
 	public void setup (){
@@ -59,21 +51,31 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveCondition_shouldSaveNewCondition(){
+		
+		// Create Condition to test
+		String ns = "my ns";
+		String path = "my path";
 		Integer patientId = 2;
 		String uuid = "08002000-4469-12q3-551f-0339000c9a76";
 		CodedOrFreeText codedOrFreeText = new CodedOrFreeText();
 		Condition condition = new Condition();
+		condition.setFormField(ns, path);
 		condition.setCondition(codedOrFreeText);
 		condition.setClinicalStatus(ConditionClinicalStatus.ACTIVE);
 		condition.setUuid(uuid);
 		condition.setPatient(new Patient(patientId));
+		
+		// Perform test
 		conditionService.saveCondition(condition);
 		Condition savedCondition = conditionService.getConditionByUuid(uuid);
+		
+		// Validate test
 		assertEquals(patientId, savedCondition.getPatient().getPatientId());
 		assertEquals(uuid, savedCondition.getUuid());
 		assertEquals(codedOrFreeText, savedCondition.getCondition());
 		assertEquals(ConditionClinicalStatus.ACTIVE, savedCondition.getClinicalStatus());
 		assertNotNull(savedCondition.getConditionId());
+		assertEquals(ns + FORM_NAMESPACE_PATH_SEPARATOR + path, condition.getFormNamespaceAndPath());
 	}
 
 	/**

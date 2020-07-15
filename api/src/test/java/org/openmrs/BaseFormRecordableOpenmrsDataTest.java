@@ -141,11 +141,6 @@ public class BaseFormRecordableOpenmrsDataTest {
 	public class BaseFormRecordableOpenmrsDataImpl extends BaseFormRecordableOpenmrsData {
 
 		@Override
-		protected void markAsDirty(Object oldValue, Object newValue){
-			// Do Nothing
-		}
-
-		@Override
 		public Integer getId() {
 			return 1;
 		}
