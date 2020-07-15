@@ -11,7 +11,6 @@ package org.openmrs.propertyeditor;
 
 import org.openmrs.Form;
 import org.openmrs.api.FormService;
-import org.openmrs.propertyeditor.jupiter.BasePropertyEditorTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class FormEditorTest extends BasePropertyEditorTest<Form, FormEditor> {

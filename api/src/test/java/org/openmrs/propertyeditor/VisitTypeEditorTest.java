@@ -11,7 +11,6 @@ package org.openmrs.propertyeditor;
 
 import org.openmrs.VisitType;
 import org.openmrs.api.VisitService;
-import org.openmrs.propertyeditor.jupiter.BasePropertyEditorTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class VisitTypeEditorTest extends BasePropertyEditorTest<VisitType, VisitTypeEditor> {
