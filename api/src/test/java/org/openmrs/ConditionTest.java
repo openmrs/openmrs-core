@@ -35,7 +35,7 @@ public class ConditionTest {
 		final String path = "my path";
 		Condition condition = new Condition();
 		condition.setFormField(ns, path);
-		Field formNamespaceAndPathProperty = FormRecordable.class.getDeclaredField("formNamespaceAndPath");
+		Field formNamespaceAndPathProperty = BaseFormRecordableOpenmrsData.class.getDeclaredField("formNamespaceAndPath");
 		formNamespaceAndPathProperty.setAccessible(true);
 		assertEquals(ns + FORM_NAMESPACE_PATH_SEPARATOR + path, formNamespaceAndPathProperty.get(condition));
 	}

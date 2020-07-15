@@ -61,7 +61,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @see Encounter
  */
-public class Obs extends FormRecordable{
+public class Obs extends BaseFormRecordableOpenmrsData {
 	
 	/**
 	 * @since 2.1.0

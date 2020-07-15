@@ -9,8 +9,6 @@
  */
 package org.openmrs;
 
-import org.openmrs.util.OpenmrsUtil;
-
 import java.util.Date;
 import java.util.Objects;
 
@@ -42,7 +40,7 @@ import javax.persistence.Transient;
  */
 @Entity
 @Table(name = "conditions")
-public class Condition extends FormRecordable {
+public class Condition extends BaseFormRecordableOpenmrsData {
 	
 	private static final long serialVersionUID = 1L;
 	
