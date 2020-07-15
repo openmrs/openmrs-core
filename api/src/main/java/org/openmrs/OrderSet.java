@@ -12,7 +12,26 @@ package org.openmrs;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.IndexColumn;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.ListIndexBase;
 import org.openmrs.api.APIException;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 /**
  * Represents the grouping of orders into a set,
@@ -20,6 +39,8 @@ import org.openmrs.api.APIException;
  * 
  * @since 1.12
  */
+@Entity
+@Table(name = "order_set")
 public class OrderSet extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 72232L;
@@ -34,12 +55,25 @@ public class OrderSet extends BaseChangeableOpenmrsMetadata {
 		ALL, ONE, ANY
 	}
 	
+	@Id
+	@Column(name = "order_set_id")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_set_id_gen")
+	@SequenceGenerator(name = "order_set_id_gen", sequenceName = "order_set_order_set_id_seq")
 	private Integer orderSetId;
 	
+	@JoinColumn(name = "operator", nullable = false)
+	@Enumerated(EnumType.STRING)
 	private Operator operator;
 	
+	@OneToMany
+	@LazyCollection(LazyCollectionOption.TRUE)
+	@Cascade(CascadeType.ALL)
+	@IndexColumn(name = "sequence_number")
+	@JoinColumn(name = "order_set_id", updatable = false, insertable = false, nullable = false)
 	private List<OrderSetMember> orderSetMembers;
 	
+	@ManyToOne
+	@JoinColumn(name = "category")
 	private Concept category;
 
 	/**
