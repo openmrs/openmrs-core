@@ -30,7 +30,6 @@ public abstract class BaseFormRecordableOpenmrsData extends BaseChangeableOpenmr
 	@Column(name = "form_namespace_path")
 	protected String formNamespaceAndPath;
 
-
 	/**
 	 * @see org.openmrs.FormRecordable#getFormFieldNamespace()
 	 */
@@ -95,4 +94,11 @@ public abstract class BaseFormRecordableOpenmrsData extends BaseChangeableOpenmr
 	}
 
 	protected abstract void markAsDirty(Object oldValue, Object newValue);
+
+	/**
+	 * @return Returns the formNamespaceAndPath.
+	 */
+	public String getFormNamespaceAndPath() {
+		return formNamespaceAndPath;
+	}
 }
