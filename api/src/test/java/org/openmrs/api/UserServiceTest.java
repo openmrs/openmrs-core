@@ -11,13 +11,12 @@ package org.openmrs.api;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 import static org.openmrs.test.TestUtil.containsId;
 
 import java.sql.SQLException;
@@ -30,10 +29,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
@@ -48,8 +48,8 @@ import org.openmrs.api.db.UserDAO;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.notification.MessageException;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
-import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
@@ -80,7 +80,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Autowired
 	private UserDAO dao;
 	
-	@BeforeEach
+	@Before
 	public void setup() {
 		userService = Context.getUserService();
 		messages = Context.getMessageSourceService();
@@ -90,14 +90,14 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 * Methods in this class might authenticate with a different user, so log that user out after
 	 * this whole junit class is done.
 	 */
-	@AfterAll
+	@AfterClass
 	public static void logOutAfterThisTest() {
 		Context.logout();
 	}
 	
 	@Test
 	public void createUser_shouldCreateNewUserWithBasicElements() {
-		assertTrue(Context.isAuthenticated(), "The context needs to be correctly authenticated to by a user");
+		assertTrue("The context needs to be correctly authenticated to by a user", Context.isAuthenticated());
 
 		User u = new User();
 		u.setPerson(new Person());
@@ -109,10 +109,10 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User createdUser = userService.createUser(u, "Openmr5xy");
 		
 		// if we're returning the object from create methods, check validity
-		assertTrue(createdUser.equals(u), "The user returned by the create user method should equal the passed in user");
+		assertTrue("The user returned by the create user method should equal the passed in user", createdUser.equals(u));
 		
 		createdUser = userService.getUserByUsername("bwolfe");
-		assertTrue(createdUser.equals(u), "The created user should equal the passed in user");
+		assertTrue("The created user should equal the passed in user", createdUser.equals(u));
 	}
 	
 	@Test
@@ -124,7 +124,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		// authenticate to the temp database
 		authenticate();
 		
-		assertTrue(Context.isAuthenticated(), "The context needs to be correctly authenticated to by a user");
+		assertTrue("The context needs to be correctly authenticated to by a user", Context.isAuthenticated());
 		
 		// add in some basic data
 		executeDataSet(XML_FILENAME);
@@ -151,7 +151,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		
 		// do the actual creating of the user object
 		userService.createUser(user, "Openmr5xy");
-		assertNotNull(userService.getUser(user.getUserId()), "User was not created");
+		Assert.assertNotNull("User was not created", userService.getUser(user.getUserId()));
 		
 		Integer shouldCreateUserWhoIsPatientAlreadyTestUserIdCreated = user.getUserId();
 		
@@ -164,10 +164,10 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 			throw new RuntimeException("There is a user with id #3");
 		}
 		
-		assertNotNull(fetchedUser, "Uh oh, the user object was not created");
+		assertNotNull("Uh oh, the user object was not created", fetchedUser);
 		assertNotNull("Uh oh, the username was not saved", fetchedUser.getUsername());
-		assertTrue(fetchedUser.getUsername().equals("bwolfe"), "Uh oh, the username was not saved");
-		assertTrue(fetchedUser.hasRole("Some Role"), "Uh oh, the role was not assigned");
+		assertTrue("Uh oh, the username was not saved", fetchedUser.getUsername().equals("bwolfe"));
+		assertTrue("Uh oh, the role was not assigned", fetchedUser.hasRole("Some Role"));
 		
 		Context.clearSession();
 		
@@ -376,14 +376,14 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void saveUser_shouldUpdateUsersUsername() {
 		User u = userService.getUserByUsername(ADMIN_USERNAME);
-		assertNotNull(u, "There needs to be a user with username 'admin' in the database");
+		assertNotNull("There needs to be a user with username 'admin' in the database", u);
 		
 		u.setUsername("admin2");
 		userService.saveUser(u);
 		
 		User u2 = userService.getUserByUsername("admin2");
 		
-		assertEquals(u, u2, "The fetched user should equal the user we tried to update");
+		assertEquals("The fetched user should equal the user we tried to update", u, u2);
 	}
 	
 	/**
@@ -394,7 +394,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void changePassword_shouldBeAbleToUpdatePasswordMultipleTimes() {
 		User u = userService.getUserByUsername(ADMIN_USERNAME);
-		assertNotNull( u, "There needs to be a user with username 'admin' in the database");
+		assertNotNull("There needs to be a user with username 'admin' in the database", u);
 		
 		userService.changePassword("test", "Tester12");
 		userService.changePassword("Tester12", "Tester13");
@@ -441,7 +441,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void getUserByUsername_shouldGetUserByUsername() {
 		User user = userService.getUserByUsername(ADMIN_USERNAME);
 
-		assertNotNull(user, "username not found " + ADMIN_USERNAME);
+		assertNotNull("username not found " + ADMIN_USERNAME, user);
 	}
 
 	/**
@@ -508,10 +508,10 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-extranames.xml");
 
 		List<User> users = userService.getUsers("Johnson", null, false);
-		assertEquals(3, users.size());
-		assertTrue(containsId(users, 2));
-		assertTrue(containsId(users, 4));
-		assertTrue(containsId(users, 5));
+		Assert.assertEquals(3, users.size());
+		Assert.assertTrue(containsId(users, 2));
+		Assert.assertTrue(containsId(users, 4));
+		Assert.assertTrue(containsId(users, 5));
 	}
 
 	/**
@@ -553,7 +553,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(XML_FILENAME);
 		String uuid = "d979d066-15e6-467c-9d4b-cb575ef97f0f";
 		Privilege privilege = userService.getPrivilegeByUuid(uuid);
-		assertEquals("Some Privilege", privilege.getPrivilege());
+		Assert.assertEquals("Some Privilege", privilege.getPrivilege());
 	}
 
 	/**
@@ -561,7 +561,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPrivilegeByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
-		assertNull(userService.getPrivilegeByUuid("some invalid uuid"));
+		Assert.assertNull(userService.getPrivilegeByUuid("some invalid uuid"));
 	}
 
 	/**
@@ -571,7 +571,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void getRoleByUuid_shouldFindObjectGivenValidUuid() {
 		String uuid = "3480cb6d-c291-46c8-8d3a-96dc33d199fb";
 		Role role = userService.getRoleByUuid(uuid);
-		assertEquals("Provider", role.getRole());
+		Assert.assertEquals("Provider", role.getRole());
 	}
 
 	/**
@@ -579,7 +579,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getRoleByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
-		assertNull(userService.getRoleByUuid("some invalid uuid"));
+		Assert.assertNull(userService.getRoleByUuid("some invalid uuid"));
 	}
 
 	/**
@@ -589,7 +589,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void getUserByUuid_shouldFindObjectGivenValidUuid() {
 		String uuid = "c1d8f5c2-e131-11de-babe-001e378eb67e";
 		User user = userService.getUserByUuid(uuid);
-		assertEquals(501, (int) user.getUserId());
+		Assert.assertEquals(501, (int) user.getUserId());
 	}
 
 	/**
@@ -597,7 +597,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getUserByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
-		assertNull(userService.getUserByUuid("some invalid uuid"));
+		Assert.assertNull(userService.getUserByUuid("some invalid uuid"));
 	}
 
 	/**
@@ -629,7 +629,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 * @see UserService#changeQuestionAnswer(User,String,String)
 	 */
 	@Test
-	@Disabled
+	@Ignore
 	// TODO fix: the question not sticking - null expected:<[the question]> but was:<[]>
 	public void changeQuestionAnswer_shouldChangeTheSecretQuestionAndAnswerForGivenUser() {
 		User u = userService.getUser(501);
@@ -637,7 +637,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		
 		// need to retrieve the user since the service method does not modify the given user object
 		User o = userService.getUser(501);
-		assertTrue(userService.isSecretAnswer(o, "the answer"));
+		Assert.assertTrue(userService.isSecretAnswer(o, "the answer"));
 	}
 	
 	/**
@@ -647,7 +647,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void getAllPrivileges_shouldReturnAllPrivilegesInTheSystem() {
 		executeDataSet(XML_FILENAME);
 		List<Privilege> privileges = userService.getAllPrivileges();
-		assertEquals(1, privileges.size());
+		Assert.assertEquals(1, privileges.size());
 	}
 	
 	/**
@@ -658,7 +658,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(XML_FILENAME);
 		
 		List<Role> roles = userService.getAllRoles();
-		assertEquals(7, roles.size());
+		Assert.assertEquals(7, roles.size());
 	}
 	
 	/**
@@ -667,7 +667,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAllUsers_shouldFetchAllUsersInTheSystem() {
 		List<User> users = userService.getAllUsers();
-		assertEquals(3, users.size());
+		Assert.assertEquals(3, users.size());
 	}
 	
 	/**
@@ -690,7 +690,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		authenticate();
 
 		User user = userService.getUserByUuid("013c49c6-e132-11de-babe-001e378eb67e");
-		assertEquals(user, userService.getUser(5505), "Did not fetch user with given uuid");
+		assertEquals("Did not fetch user with given uuid", user, userService.getUser(5505));
 	}
 	
 	@Test
@@ -763,7 +763,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void getPrivilege_shouldFetchPrivilegeForGivenName() {
 		executeDataSet(XML_FILENAME);
 		Privilege privilege = userService.getPrivilege("Some Privilege");
-		assertEquals("Some Privilege", privilege.getPrivilege());
+		Assert.assertEquals("Some Privilege", privilege.getPrivilege());
 	}
 	
 	/**
@@ -773,7 +773,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void getRole_shouldFetchRoleForGivenRoleName() {
 		executeDataSet(XML_FILENAME);
 		Role role = userService.getRole("Some Role");
-		assertEquals("Some Role", role.getRole());
+		Assert.assertEquals("Some Role", role.getRole());
 	}
 	
 	/**
@@ -782,7 +782,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getUser_shouldFetchUserWithGivenUserId() {
 		User user = userService.getUser(501);
-		assertEquals(501, user.getUserId().intValue());
+		Assert.assertEquals(501, user.getUserId().intValue());
 	}
 	
 	/**
@@ -793,7 +793,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(XML_FILENAME);
 		
 		List<Role> roles = Collections.singletonList(new Role("Some Role"));
-		assertEquals(1, userService.getUsers("Susy Kingman", roles, false).size());
+		Assert.assertEquals(1, userService.getUsers("Susy Kingman", roles, false).size());
 	}
 	
 	/**
@@ -801,7 +801,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getUsers_shouldFetchUsersWithNameThatContainsGivenNameSearch() {
-		assertEquals(1, userService.getUsers("Hippocrates", null, false).size());
+		Assert.assertEquals(1, userService.getUsers("Hippocrates", null, false).size());
 	}
 	
 	/**
@@ -809,7 +809,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getUsers_shouldFetchUsersWithSystemIdThatContainsGivenNameSearch() {
-		assertEquals(1, userService.getUsers("2-6", null, true).size());
+		Assert.assertEquals(1, userService.getUsers("2-6", null, true).size());
 	}
 	
 	/**
@@ -817,7 +817,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getUsers_shouldFetchVoidedUsersIfIncludedVoidedIsTrue() {
-		assertEquals(1, userService.getUsers("Bruno", null, true).size());
+		Assert.assertEquals(1, userService.getUsers("Bruno", null, true).size());
 	}
 	
 	/**
@@ -837,7 +837,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(XML_FILENAME);
 		
 		List<User> users = userService.getUsers("John Doe", null, false);
-		assertEquals(1, users.size());
+		Assert.assertEquals(1, users.size());
 	}
 	
 	/**
@@ -845,7 +845,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getUsers_shouldNotFetchVoidedUsersIfIncludedVoidedIsFalse() {
-		assertEquals(0, userService.getUsers("Bruno", null, false).size());
+		Assert.assertEquals(0, userService.getUsers("Bruno", null, false).size());
 	}
 	
 	/**
@@ -855,7 +855,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void getUsersByRole_shouldFetchUsersAssignedGivenRole() {
 		executeDataSet(XML_FILENAME);
 		
-		assertEquals(2, userService.getUsersByRole(new Role("Some Role")).size());
+		Assert.assertEquals(2, userService.getUsersByRole(new Role("Some Role")).size());
 	}
 	
 	/**
@@ -865,7 +865,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void getUsersByRole_shouldNotFetchUserThatDoesNotBelongToGivenRole() {
 		executeDataSet(XML_FILENAME);
 		
-		assertEquals(0, userService.getUsersByRole(new Role("Nonexistent role")).size());
+		Assert.assertEquals(0, userService.getUsersByRole(new Role("Nonexistent role")).size());
 	}
 	
 	/**
@@ -878,12 +878,12 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User user = new User();
 		user.setSystemId("8-3");
 		user.setUsername("a unique username");
-		assertTrue(userService.hasDuplicateUsername(user));
+		Assert.assertTrue(userService.hasDuplicateUsername(user));
 		
 		user = new User();
 		user.setSystemId("a unique system id");
 		user.setUsername("userWithSha512Hash");
-		assertTrue(userService.hasDuplicateUsername(user));
+		Assert.assertTrue(userService.hasDuplicateUsername(user));
 	}
 	
 	/**
@@ -892,7 +892,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void isSecretAnswer_shouldReturnFalseWhenGivenAnswerDoesNotMatchTheStoredSecretAnswer() {
 		User user = userService.getUser(502);
-		assertFalse(userService.isSecretAnswer(user, "not the answer"));
+		Assert.assertFalse(userService.isSecretAnswer(user, "not the answer"));
 	}
 	
 	/**
@@ -903,7 +903,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(XML_FILENAME);
 		User user = userService.getUser(5507);
 		userService.changeQuestionAnswer(user, "question", "answer");
-		assertTrue(userService.isSecretAnswer(user, "answer"));
+		Assert.assertTrue(userService.isSecretAnswer(user, "answer"));
 	}
 	
 	/**
@@ -912,7 +912,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void purgePrivilege_shouldDeleteGivenPrivilegeFromTheDatabase() {
 		userService.purgePrivilege(new Privilege("Some Privilege"));
-		assertNull(userService.getPrivilege("Some Privilege"));
+		Assert.assertNull(userService.getPrivilege("Some Privilege"));
 	}
 	
 	/**
@@ -931,7 +931,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(XML_FILENAME);
 		Role role = userService.getRole("Some Role To Delete");
 		userService.purgeRole(role);
-		assertNull(userService.getRole("Some Role To Delete"));
+		Assert.assertNull(userService.getRole("Some Role To Delete"));
 	}
 	
 	/**
@@ -973,7 +973,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void purgeUser_shouldDeleteGivenUser() {
 		User user = userService.getUser(502);
 		userService.purgeUser(user);
-		assertNull(userService.getUser(2));
+		Assert.assertNull(userService.getUser(2));
 	}
 	
 	/**
@@ -983,7 +983,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void purgeUser_shouldDeleteGivenUserWhenCascadeEqualsFalse() {
 		User user = userService.getUser(502);
 		userService.purgeUser(user, false);
-		assertNull(userService.getUser(502));
+		Assert.assertNull(userService.getUser(502));
 	}
 	
 	/**
@@ -1004,12 +1004,12 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(XML_FILENAME);
 
 		User user = userService.getUser(5505);
-		assertNotSame("", user.getUserProperty("some key"));
+		Assert.assertNotSame("", user.getUserProperty("some key"));
 		
 		userService.removeUserProperty(user, "some key");
 		
 		user = userService.getUser(5505);
-		assertEquals("", user.getUserProperty("some key"));
+		Assert.assertEquals("", user.getUserProperty("some key"));
 	}
 	
 	/**
@@ -1017,7 +1017,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void removeUserProperty_shouldReturnNullIfUserIsNull() {
-		assertNull(userService.setUserProperty(null, "some key", "some new value"));
+		Assert.assertNull(userService.setUserProperty(null, "some key", "some new value"));
 	}
 	
 	/**
@@ -1043,7 +1043,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		userService.savePrivilege(p);
 		
 		Privilege savedPrivilege = userService.getPrivilege("new privilege name");
-		assertNotNull(savedPrivilege);
+		Assert.assertNotNull(savedPrivilege);
 		
 	}
 	
@@ -1057,12 +1057,12 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User user = userService.getUser(5505);
 		
 		// Check that it doesn't already exist
-		assertEquals(user.getUserProperty("some new key"), "");
+		Assert.assertEquals(user.getUserProperty("some new key"), "");
 		
 		userService.setUserProperty(user, "some new key", "some new value");
 		
 		user = userService.getUser(5505);
-		assertEquals("some new value", user.getUserProperty("some new key"));
+		Assert.assertEquals("some new value", user.getUserProperty("some new key"));
 	}
 	
 	/**
@@ -1075,12 +1075,12 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User user = userService.getUser(5505);
 		
 		// Check that it already exists
-		assertEquals(user.getUserProperty("some key"), "some value");
+		Assert.assertEquals(user.getUserProperty("some key"), "some value");
 		
 		userService.setUserProperty(user, "some key", "some new value");
 		
 		user = userService.getUser(5505);
-		assertEquals("some new value", user.getUserProperty("some key"));
+		Assert.assertEquals("some new value", user.getUserProperty("some key"));
 	}
 	
 	/**
@@ -1088,7 +1088,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void setUserProperty_shouldReturnNullIfUserIsNull() {
-		assertNull(userService.setUserProperty(null, "some key", "some value"));
+		Assert.assertNull(userService.setUserProperty(null, "some key", "some value"));
 	}
 	
 	/**
@@ -1110,7 +1110,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Role role = new Role("new role", "new desc");
 		userService.saveRole(role);
 		
-		assertNotNull(userService.getRole("new role"));
+		Assert.assertNotNull(userService.getRole("new role"));
 		
 	}
 	
@@ -1199,7 +1199,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(XML_FILENAME);
 		Person person = new Person(5508);
 		List<User> users = userService.getUsersByPerson(person, true);
-		assertEquals(3, users.size());
+		Assert.assertEquals(3, users.size());
 	}
 	
 	/**
@@ -1210,7 +1210,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(XML_FILENAME);
 		Person person = new Person(5508);
 		List<User> users = userService.getUsersByPerson(person, false);
-		assertEquals(2, users.size());
+		Assert.assertEquals(2, users.size());
 	}
 	
 	/**
@@ -1220,10 +1220,10 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void retireUser_shouldRetireUserAndSetAttributes() {
 		User user = userService.getUser(502);
 		userService.retireUser(user, "because");
-		assertTrue(user.getRetired());
-		assertNotNull(user.getDateRetired());
-		assertNotNull(user.getRetiredBy());
-		assertEquals("because", user.getRetireReason());
+		Assert.assertTrue(user.getRetired());
+		Assert.assertNotNull(user.getDateRetired());
+		Assert.assertNotNull(user.getRetiredBy());
+		Assert.assertEquals("because", user.getRetireReason());
 	}
 	
 	/**
@@ -1233,15 +1233,15 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void unretireUser_shouldUnretireAndUnmarkAllAttributes() {
 		User user = userService.getUser(501);
 		userService.unretireUser(user);
-		assertFalse(user.getRetired());
-		assertNull(user.getDateRetired());
-		assertNull(user.getRetiredBy());
-		assertNull(user.getRetireReason());
+		Assert.assertFalse(user.getRetired());
+		Assert.assertNull(user.getDateRetired());
+		Assert.assertNull(user.getRetiredBy());
+		Assert.assertNull(user.getRetireReason());
 	}
 	
 	@Test
 	public void saveUser_shouldFailToCreateTheUserWithAWeakPassword() {
-		assertTrue(Context.isAuthenticated(), "The context needs to be correctly authenticated to by a user");
+		assertTrue("The context needs to be correctly authenticated to by a user", Context.isAuthenticated());
 		
 		UserService us = userService;
 		
@@ -1266,7 +1266,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		List<Role> roles = new ArrayList<>();
 		roles.add(role);
 		
-		assertEquals(2, userService.getUsers("", roles, true).size());
+		Assert.assertEquals(2, userService.getUsers("", roles, true).size());
 	}
 	
 	/**
@@ -1278,7 +1278,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		
 		List<Role> roles = new ArrayList<>();
 		roles.add(userService.getRole("Parent"));
-		assertEquals(3, userService.getUsers(null, roles, true, null, null).size());
+		Assert.assertEquals(3, userService.getUsers(null, roles, true, null, null).size());
 	}
 	
 	@Test
@@ -1435,7 +1435,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void changePassword_shouldUpdatePasswordOfGivenUserWhenLoggedInUserHasEditUsersPasswordPrivilege() {
 		User user = userService.getUserByUsername(ADMIN_USERNAME);
-		assertNotNull(user, "There needs to be a user with username 'admin' in the database");
+		assertNotNull("There needs to be a user with username 'admin' in the database", user);
 		
 		userService.changePassword(user, "testTest123");
 		
@@ -1482,7 +1482,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void getUserByUsernameOrEmail_shouldGetUserByUsingEmail() {
 		executeDataSet(XML_FILENAME);
 		User user = userService.getUserByUsernameOrEmail("hank.williams@gmail.com");
-		assertNotNull(user, "User with email hank.williams@gmail not found in database");
+		assertNotNull("User with email hank.williams@gmail not found in database", user);
 	}
 	
 	@Test
