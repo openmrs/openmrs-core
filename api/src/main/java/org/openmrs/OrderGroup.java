@@ -214,7 +214,7 @@ public class OrderGroup extends BaseChangeableOpenmrsData {
 	/**
 	 * Gets the parent order group to maintain linkages between groups and support group nesting
 	 * 
-	 * @param returns the parent order group
+	 * @return the parent order group
 	 * @since 2.4.0
 	 */
 	public OrderGroup getParentOrderGroup() {
@@ -235,7 +235,7 @@ public class OrderGroup extends BaseChangeableOpenmrsData {
 	 * Gets the order group reason which denotes the reason why the group was
 	 * ordered
 	 * 
-	 * @param Returns the order group reason
+	 * @return the order group reason
 	 * @since 2.4.0
 	 */
 	public Concept getOrderGroupReason() {

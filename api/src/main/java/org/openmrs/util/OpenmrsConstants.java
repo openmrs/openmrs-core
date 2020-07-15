@@ -165,7 +165,8 @@ public final class OpenmrsConstants {
 	 * The name of the runtime property that a user can set that will specify where openmrs's
 	 * application directory is
 	 * 
-	 * @see #APPLICATION_DATA_DIRECTORY
+	 * @see OpenmrsUtil#getApplicationDataDirectory()
+	 * @see OpenmrsUtil#startup(java.util.Properties)
 	 */
 	public static final String APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY = "application_data_directory";
 	
