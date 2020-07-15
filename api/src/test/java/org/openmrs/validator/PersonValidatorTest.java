@@ -9,21 +9,23 @@
  */
 package org.openmrs.validator;
 
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.BindException;
@@ -57,7 +59,7 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(pa, "patient");
 		validator.validate(pa, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("birthdate"));
+		assertTrue(errors.hasFieldErrors("birthdate"));
 	}
 	
 	/**
@@ -74,7 +76,7 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(pa, "patient");
 		validator.validate(pa, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("deathDate"));
+		assertTrue(errors.hasFieldErrors("deathDate"));
 	}
 	
 	/**
@@ -90,7 +92,7 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(pa, "patient");
 		validator.validate(pa, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("birthdate"));
+		assertTrue(errors.hasFieldErrors("birthdate"));
 	}
 	
 	/**
@@ -104,8 +106,8 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(pa, "patient");
 		validator.validate(pa, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("causeOfDeath"));
-		Assert.assertEquals("Person.dead.causeOfDeathAndCauseOfDeathNonCodedNull", errors.getFieldError("causeOfDeath").getCode());
+		assertTrue(errors.hasFieldErrors("causeOfDeath"));
+		assertEquals("Person.dead.causeOfDeathAndCauseOfDeathNonCodedNull", errors.getFieldError("causeOfDeath").getCode());
 		
 	}
 	
@@ -118,7 +120,7 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 		pa.setVoided(true);
 		Errors errors = new BindException(pa, "patient");
 		validator.validate(pa, errors);
-		Assert.assertTrue(errors.hasFieldErrors("voidReason"));
+		assertTrue(errors.hasFieldErrors("voidReason"));
 	}
 	
 	/**
@@ -130,7 +132,7 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 		pa.getNames().clear();
 		Errors errors = new BindException(pa, "patient");
 		validator.validate(pa, errors);
-		Assert.assertTrue(errors.hasFieldErrors("names"));
+		assertTrue(errors.hasFieldErrors("names"));
 	}
 	
 	/**
@@ -143,7 +145,7 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 		PersonValidator personValidator = new PersonValidator();
 		personValidator.validate(person, errors);
 		
-		Assert.assertFalse(errors.hasFieldErrors("gender"));
+		assertFalse(errors.hasFieldErrors("gender"));
 	}
 	
 	/**
@@ -161,7 +163,7 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 		PersonValidator personValidator = new PersonValidator();
 		personValidator.validate(person, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -180,8 +182,8 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 		PersonValidator personValidator = new PersonValidator();
 		personValidator.validate(person, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("gender"));
-		Assert.assertTrue(errors.hasFieldErrors("personVoidReason"));
+		assertTrue(errors.hasFieldErrors("gender"));
+		assertTrue(errors.hasFieldErrors("personVoidReason"));
 	}
 
 
@@ -202,7 +204,7 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
   		Errors errors = new BindException(pa, "patient");
 		validator.validate(pa, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("deathDate"));
+		assertTrue(errors.hasFieldErrors("deathDate"));
 	}
 
 	@Test
@@ -216,8 +218,8 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(pa, "patient");
 		validator.validate(pa, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("causeOfDeath"));
-		Assert.assertEquals("Person.dead.shouldHaveOnlyOneCauseOfDeathOrCauseOfDeathNonCodedSet", errors.getFieldError("causeOfDeath").getCode());
+		assertTrue(errors.hasFieldErrors("causeOfDeath"));
+		assertEquals("Person.dead.shouldHaveOnlyOneCauseOfDeathOrCauseOfDeathNonCodedSet", errors.getFieldError("causeOfDeath").getCode());
 	}
 	
 	@Test
@@ -234,7 +236,7 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 		PersonValidator personValidator = new PersonValidator();
 		personValidator.validate(person, errors);
 
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	@Test
