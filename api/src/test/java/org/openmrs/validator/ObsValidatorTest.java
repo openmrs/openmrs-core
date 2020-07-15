@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
@@ -401,7 +402,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		
 		obs.setAccessionNumber("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 		obs.setValueModifier("too long text");
-		obs.setValueComplex("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		obs.setValueComplex(StringUtils.repeat("a", 1001));
 		obs.setVoidReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 		obs.setComment("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 		
