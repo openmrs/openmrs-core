@@ -149,7 +149,7 @@
 				<columnExists tableName="conditions" columnName="form_namespace_path"/>
 			</not>
 		</preConditions>
-		<comment>Adding "order_group_reason" column to order_group table</comment>
+		<comment>Adding "form_namespace_path" column to conditions table</comment>
 		<addColumn tableName="conditions">
 			<column name="form_namespace_path" type="varchar(255)">
 				<constraints nullable="true"/>
