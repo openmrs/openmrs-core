@@ -9,11 +9,14 @@
  */
 package org.openmrs.validator;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Date;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -45,14 +48,14 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	@Test
 	public void validate_shouldFailValidationIfAPreferredPatientIdentifierIsNotChosen() {
 		Patient pa = Context.getPatientService().getPatient(2);
-		Assert.assertNotNull(pa.getPatientIdentifier());
+		assertNotNull(pa.getPatientIdentifier());
 		//set all identifiers to be non-preferred
 		for (PatientIdentifier id : pa.getIdentifiers())
 			id.setPreferred(false);
 		
 		Errors errors = new BindException(pa, "patient");
 		validator.validate(pa, errors);
-		Assert.assertTrue(errors.hasErrors());
+		assertTrue(errors.hasErrors());
 	}
 	
 	/**
@@ -62,14 +65,14 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	public void validate_shouldFailValidationIfAPreferredPatientIdentifierIsNotChosenForVoidedPatients() {
 		Patient pa = Context.getPatientService().getPatient(432);
 		
-		Assert.assertTrue(pa.getVoided());//sanity check
-		Assert.assertNotNull(pa.getPatientIdentifier());
+		assertTrue(pa.getVoided());//sanity check
+		assertNotNull(pa.getPatientIdentifier());
 		for (PatientIdentifier id : pa.getIdentifiers())
 			id.setPreferred(false);
 		
 		Errors errors = new BindException(pa, "patient");
 		validator.validate(pa, errors);
-		Assert.assertTrue(errors.hasErrors());
+		assertTrue(errors.hasErrors());
 	}
 	
 	@Test
@@ -101,7 +104,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		Errors errors = new BindException(patient, "patient");
 		validator.validate(patient, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -113,7 +116,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		Errors errors = new BindException(pa, "patient");
 		validator.validate(pa, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("gender"));
+		assertTrue(errors.hasFieldErrors("gender"));
 	}
 	
 	/**
@@ -151,7 +154,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		Errors errors = new BindException(patient, "patient");
 		validator.validate(patient, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -190,6 +193,6 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		Errors errors = new BindException(patient, "patient");
 		validator.validate(patient, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("voidReason"));
+		assertTrue(errors.hasFieldErrors("voidReason"));
 	}
 }
