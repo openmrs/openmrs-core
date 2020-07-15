@@ -396,10 +396,5 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 		}
 		return Objects.equals(endReason, conditionToBeChecked.endReason);
 	}
-	
-	@Override
-	protected void markAsDirty(Object oldValue, Object newValue) {
-		// Do nothing
-	}
-	
+		
 }

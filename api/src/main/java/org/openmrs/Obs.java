@@ -1173,6 +1173,16 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	}
 	
 	/**
+	 * @see org.openmrs.FormRecordable#setFormField(String,String)
+	 */
+	@Override
+	public void setFormField(String namespace, String formFieldPath) {
+		String oldValue = formNamespaceAndPath;
+		super.setFormField(namespace, formFieldPath);
+		markAsDirty(oldValue, formNamespaceAndPath);
+	}
+	
+	/**
 	 * Returns true if any change has been made to an Obs instance. In general, the only time
 	 * isDirty() is going to return false is when a new Obs has just been instantiated or loaded
 	 * from the database and no method that modifies it internally has been invoked.
@@ -1189,7 +1199,6 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 		return dirty;
 	}
 	
-	@Override
 	protected void markAsDirty(Object oldValue, Object newValue) {
 		//Should we ignore the case for Strings?
 		if (!isDirty() && obsId != null && !OpenmrsUtil.nullSafeEquals(oldValue, newValue)) {

@@ -3,7 +3,7 @@
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
  * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
- * <p>
+ * 
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
@@ -18,14 +18,14 @@ import javax.persistence.MappedSuperclass;
 /**
  * This is a super class to make a bridge between an OpenMrsObject and is position in the form.
  * 
- * @since 1.4
+ * @since 2.4.0
  */
 @MappedSuperclass
 public abstract class BaseFormRecordableOpenmrsData extends BaseChangeableOpenmrsData implements FormRecordable {
 
-	private static final String FORM_NAMESPACE_PATH_SEPARATOR = "^";
+	protected static final String FORM_NAMESPACE_PATH_SEPARATOR = "^";
 
-	private static final int FORM_NAMESPACE_PATH_MAX_LENGTH = 255;
+	protected static final int FORM_NAMESPACE_PATH_MAX_LENGTH = 255;
 
 	@Column(name = "form_namespace_path")
 	protected String formNamespaceAndPath;
@@ -68,7 +68,6 @@ public abstract class BaseFormRecordableOpenmrsData extends BaseChangeableOpenmr
 	@Override
 	public void setFormField(String namespace, String formFieldPath) {
 		if (namespace == null && formFieldPath == null) {
-			markAsDirty(formNamespaceAndPath, null);
 			formNamespaceAndPath = null;
 			return;
 		}
@@ -89,11 +88,8 @@ public abstract class BaseFormRecordableOpenmrsData extends BaseChangeableOpenmr
 			throw new APIException("Obs.namespaceAndPathNotContainSeparator", (Object[]) null);
 		}
 
-		markAsDirty(this.formNamespaceAndPath, nsAndPathTemp);
 		formNamespaceAndPath = nsAndPathTemp;
 	}
-
-	protected abstract void markAsDirty(Object oldValue, Object newValue);
 
 	/**
 	 * @return Returns the formNamespaceAndPath.

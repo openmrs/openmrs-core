@@ -3,7 +3,7 @@
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
  * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
- * <p>
+ * 
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
@@ -12,10 +12,10 @@ package org.openmrs;
 /**
  * Defines the methods to make a bridge between an OpenMrsObject and is position in the form.
  *
- * @since 1.4
+ * @since  2.4.0
  */
 public interface FormRecordable {
-
+	
 	/**
 	 * Gets the namespace for the form field that was used to capture the obs details in the form
 	 *
@@ -26,7 +26,7 @@ public interface FormRecordable {
 	 * <strong>Should</strong> return null if the namespace is not specified
 	 */
 	String getFormFieldNamespace();
-
+	
 	/**
 	 * Gets the path for the form field that was used to capture the obs details in the form
 	 *
@@ -37,7 +37,7 @@ public interface FormRecordable {
 	 * <strong>Should</strong> return null if the path is not specified
 	 */
 	String getFormFieldPath();
-
+	
 	/**
 	 * Sets the namespace and path of the form field that was used to capture the obs details in the
 	 * form.<br>
