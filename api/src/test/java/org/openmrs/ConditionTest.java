@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import liquibase.util.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.APIException;
 
@@ -111,15 +112,8 @@ public class ConditionTest {
 	 */
 	@Test
 	public void setFormField_shouldRejectANamepaceAndPathCombinationLongerThanTheMaxLength() throws Exception {
-		StringBuilder nsBuffer = new StringBuilder(125);
-		for (int i = 0; i < 125; i++) {
-			nsBuffer.append("n");
-		}
-		for (int i = 0; i < 130; i++) {
-			nsBuffer.append("p");
-		}
 		
-		final String ns = nsBuffer.toString();
+		final String ns = StringUtils.repeat("x", 255);
 		final String path = "";
 		Condition condition = new Condition();
 		assertThrows(APIException.class, () -> condition.setFormField(ns, path));

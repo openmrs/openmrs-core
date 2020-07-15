@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import liquibase.util.StringUtils;
 import org.apache.commons.beanutils.BeanUtils;
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.APIException;
@@ -592,15 +593,8 @@ public class ObsTest {
 	 */
 	@Test
 	public void setFormField_shouldRejectANamepaceAndPathCombinationLongerThanTheMaxLength() throws Exception {
-		StringBuilder nsBuffer = new StringBuilder(125);
-		for (int i = 0; i < 125; i++) {
-			nsBuffer.append("n");
-		}
-		for (int i = 0; i < 130; i++) {
-			nsBuffer.append("p");
-		}
-		
-		final String ns = nsBuffer.toString();
+
+		final String ns = StringUtils.repeat("x", 255);
 		final String path = "";
 		Obs obs = new Obs();
 		assertThrows(APIException.class, () -> obs.setFormField(ns, path));
