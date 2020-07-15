@@ -35,7 +35,7 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
  * @param <T> the {@link OpenmrsObject} to be translated to or from text
  * @param <E> the {@link PropertyEditor} under test
  */
-public abstract class BasePropertyEditorTest<T extends OpenmrsObject, E extends PropertyEditor> extends BaseContextSensitiveTest {
+abstract class BasePropertyEditorTest<T extends OpenmrsObject, E extends PropertyEditor> extends BaseContextSensitiveTest {
 	
 	private static final String NON_EXISTING_ID = "999999";
 	
