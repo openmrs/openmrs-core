@@ -2253,7 +2253,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		List<Order> orders = orderService.getOrders(orderSearchCriteria);
 		assertEquals(10, orders.size());
 		for (Order order : orders) {
-			assertTrue(order.getFulfillerStatus() == null);
+			assertNull(order.getFulfillerStatus());
 		}
 	}
 	/**

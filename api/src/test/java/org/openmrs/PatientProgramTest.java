@@ -67,7 +67,7 @@ public class PatientProgramTest {
 		//then
 		assertTrue(state1.isVoided());
 		assertFalse(state2.isVoided());
-		assertTrue(state2.getEndDate() == null);
+		assertNull(state2.getEndDate());
 	}
 	
 	/**
