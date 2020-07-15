@@ -86,6 +86,11 @@
         <sql> CREATE EXTENSION IF NOT EXISTS fuzzystrmatch SCHEMA public;</sql>
     </changeSet>
     
+    <changeSet id="20200715-uuid_ossp_extension" author="aman" dbms="postgresql">
+        <comment> Extension to use UUID functions with PostgreSQL</comment>
+        <sql> CREATE EXTENSION IF NOT EXISTS "uuid-ossp" SCHEMA public;</sql>
+    </changeSet>
+        
     <changeSet id="20200615-postgresql_sequence_update" author="aman" dbms="postgresql">
 		<comment> Update the sequence values to correct ones after insertions via Liquibase change-sets</comment>
 		<sql> 
