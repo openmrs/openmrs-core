@@ -145,8 +145,6 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	
 	private Obs previousVersion;
 	
-	private String formNamespaceAndPath;
-	
 	private Boolean dirty = Boolean.FALSE;
 	
 	private Interpretation interpretation;
