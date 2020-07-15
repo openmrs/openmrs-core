@@ -2348,7 +2348,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		updateSearchIndex();
 		
 		List<Person> people = Context.getPersonService().getPeople("Johnson",true,true);
-		Assert.assertEquals(1, people.size());
+		assertEquals(1, people.size());
 		assertTrue(containsId(people, 3));
 	}
 	
