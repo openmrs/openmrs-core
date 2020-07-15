@@ -2238,9 +2238,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertEquals(2, orders.size());
 		for (Order order : orders) {
 			assertEquals(DISCONTINUE, order.getAction());
-
-			assertTrue(order.getAction() == Action.DISCONTINUE);
-
 		}
 	}
 
