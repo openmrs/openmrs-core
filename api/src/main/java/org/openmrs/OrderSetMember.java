@@ -9,24 +9,50 @@
  */
 package org.openmrs;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
 /**
  * @since 1.12
  * OrderSetMember
  */
+@Entity
+@Table(name = "order_set_member")
+@AttributeOverride(name = "name", column = @Column(name = "name", nullable = true))
 public class OrderSetMember extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 72232L;
 	
+	@Id
+	@Column(name = "order_set_member_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "order_set_member_id_gen")
+	@SequenceGenerator(name = "order_set_member_id_gen", sequenceName = "order_set_member_order_set_member_id_seq")
 	private Integer orderSetMemberId;
 	
+	@ManyToOne
+	@JoinColumn(name = "order_type", nullable = false)
 	private OrderType orderType;
 	
+	@ManyToOne
+	@JoinColumn(name = "order_set_id", insertable = false, updatable = false)
 	private OrderSet orderSet;
 	
+	@Column(name = "order_template")
 	private String orderTemplate;
 	
+	@Column(name = "order_template_type", length = 1024)
 	private String orderTemplateType;
 	
+	@ManyToOne
+	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
 	
 	/**
