@@ -41,6 +41,7 @@ public class TextHandlerTest extends BaseContextSensitiveTest {
 	public void setUp() {
 		handler = new TextHandler();
 	}
+	
     @Test
     public void shouldReturnSupportedViews() {
 		
