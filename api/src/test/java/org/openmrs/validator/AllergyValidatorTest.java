@@ -11,16 +11,15 @@ package org.openmrs.validator;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.openmrs.Allergen;
@@ -28,52 +27,35 @@ import org.openmrs.AllergenType;
 import org.openmrs.Allergies;
 import org.openmrs.Allergy;
 import org.openmrs.Concept;
-import org.openmrs.ConceptName;
 import org.openmrs.Patient;
 import org.openmrs.api.PatientService;
-import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.openmrs.test.jupiter.BaseContextMockTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(Context.class)
-@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*", "org.w3c.dom.*"})
-public class AllergyValidatorTest {
-	
+public class AllergyValidatorTest extends BaseContextMockTest {
 	
 	private Allergy allergy;
 	
 	private Errors errors;
+
+	@Mock
+	private PatientService patientService;
+
+	@Mock
+	private MessageSourceService messageSourceService;
 	
 	@InjectMocks
 	private AllergyValidator validator;
 	
-	@Mock
-	private PatientService ps;
-	
-	@Before
+	@BeforeEach
 	public void setUp() {
 		allergy = new Allergy();
 		errors = new BindException(allergy, "allergy");
 	}
 	
-	private Concept createMockConcept() {
-		return createMockConcept(null);
-	}
-	
-	private Concept createMockConcept(String uuid) {
-		Concept concept = mock(Concept.class);
-		when(concept.getUuid()).thenReturn(uuid != null ? uuid : "some uuid");
-		when(concept.getName()).thenReturn(new ConceptName());
-		return concept;
-	}
-	
-	private String getOtherNonCodedConceptUuid() {
+	private String otherNonCodedConceptUuid() {
 		return "5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	}
 	
@@ -144,11 +126,9 @@ public class AllergyValidatorTest {
 	 * @see AllergyValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfNonCodedAllergenIsNullAndAllergenIsSetToOtherNonCoded() {
+	public void validate_shouldFailIfNonCodedAllergenIsNullAndAllergenIsSetToOtherNonCoded(@Mock Concept concept, @Mock Allergen allergen) {
 		
-		Allergen allergen = mock(Allergen.class);
 		when(allergen.getAllergenType()).thenReturn(AllergenType.DRUG);
-		Concept concept = createMockConcept(getOtherNonCodedConceptUuid());
 		when(allergen.getCodedAllergen()).thenReturn(concept);
 		when(allergen.getNonCodedAllergen()).thenReturn("");
 		when(allergen.isCoded()).thenReturn(false);
@@ -164,17 +144,13 @@ public class AllergyValidatorTest {
 	 * @see AllergyValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldRejectADuplicateAllergen() {
-		
-		PowerMockito.mockStatic(Context.class);
-		MessageSourceService ms = mock(MessageSourceService.class);
-		when(Context.getMessageSourceService()).thenReturn(ms);
-		
-		Allergies allergies = new Allergies();
-		Concept aspirin = createMockConcept();
+	public void validate_shouldRejectADuplicateAllergen(@Mock Concept aspirin) {
+
+		when(aspirin.getUuid()).thenReturn("some uuid");
 		Allergen allergen1 = new Allergen(AllergenType.DRUG, aspirin, null);
+		Allergies allergies = new Allergies();
 		allergies.add(new Allergy(null, allergen1, null, null, null));
-		when(ps.getAllergies(any(Patient.class))).thenReturn(allergies);
+		when(patientService.getAllergies(any(Patient.class))).thenReturn(allergies);
 		
 		Allergen duplicateAllergen = new Allergen(AllergenType.FOOD, aspirin, null);
 		Allergy allergy = new Allergy(mock(Patient.class), duplicateAllergen, null, null, null);
@@ -190,18 +166,14 @@ public class AllergyValidatorTest {
 	 * @see AllergyValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldRejectADuplicateNonCodedAllergen() {
-		
-		PowerMockito.mockStatic(Context.class);
-		MessageSourceService ms = mock(MessageSourceService.class);
-		when(Context.getMessageSourceService()).thenReturn(ms);
-		
+	public void validate_shouldRejectADuplicateNonCodedAllergen(@Mock Concept nonCodedConcept) {
+
+		when(nonCodedConcept.getUuid()).thenReturn(otherNonCodedConceptUuid());
 		Allergies allergies = new Allergies();
-		Concept nonCodedConcept = createMockConcept(getOtherNonCodedConceptUuid());
 		final String freeText = "some text";
 		Allergen allergen1 = new Allergen(AllergenType.DRUG, nonCodedConcept, freeText);
 		allergies.add(new Allergy(null, allergen1, null, null, null));
-		when(ps.getAllergies(any(Patient.class))).thenReturn(allergies);
+		when(patientService.getAllergies(any(Patient.class))).thenReturn(allergies);
 		
 		Allergen duplicateAllergen = new Allergen(AllergenType.FOOD, nonCodedConcept, freeText);
 		Allergy allergy = new Allergy(mock(Patient.class), duplicateAllergen, null, null, null);
@@ -223,7 +195,7 @@ public class AllergyValidatorTest {
 		Concept aspirin = new Concept();
 		Allergen allergen1 = new Allergen(AllergenType.DRUG, aspirin, null);
 		allergies.add(new Allergy(null, allergen1, null, null, null));
-		when(ps.getAllergies(any(Patient.class))).thenReturn(allergies);
+		when(patientService.getAllergies(any(Patient.class))).thenReturn(allergies);
 		
 		Allergen anotherAllergen = new Allergen(AllergenType.DRUG, new Concept(), null);
 		Allergy allergy = new Allergy(mock(Patient.class), anotherAllergen, null, null, null);
