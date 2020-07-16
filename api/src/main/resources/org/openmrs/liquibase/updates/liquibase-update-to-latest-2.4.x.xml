@@ -106,8 +106,8 @@
         <addForeignKeyConstraint baseTableName="order_group"
 								 baseColumnNames="previous_order_group"
 								 constraintName="order_group_previous_order_group_fk"
-								 referencedTableName="concept"
-								 referencedColumnNames="concept_id" />
+								 referencedTableName="order_group"
+								 referencedColumnNames="order_group_id" />
     </changeSet>
     
     <changeSet id="20200615-postgresql_sequence_update" author="aman" dbms="postgresql">

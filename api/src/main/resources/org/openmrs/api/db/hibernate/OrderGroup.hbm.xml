@@ -73,7 +73,7 @@
 		<many-to-one name="orderGroupReason" class="org.openmrs.Concept"
 		    not-null="false" column="order_group_reason" />
 
-		<many-to-one name="previousOrderGroup" class="org.openmrs.Concept"
+		<many-to-one name="previousOrderGroup" class="org.openmrs.OrderGroup"
 		    not-null="false" column="previous_order_group" />
     </class>
 
