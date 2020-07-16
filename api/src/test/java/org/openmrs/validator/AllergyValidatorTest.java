@@ -59,9 +59,6 @@ public class AllergyValidatorTest extends BaseContextMockTest {
 		return "5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	}
 	
-	/**
-	 * @see AllergyValidator#validate(Object, org.springframework.validation.Errors)
-	 */
 	@Test
 	public void validate_shouldFailForANullValue() { 
 		
@@ -69,9 +66,6 @@ public class AllergyValidatorTest extends BaseContextMockTest {
 		assertThat(exception.getMessage(), is("Allergy should not be null"));
 	}
 	
-	/**
-	 * @see AllergyValidator#validate(Object, org.springframework.validation.Errors)
-	 */
 	@Test
 	public void validate_shouldFailIfPatientIsNull() {
 		
@@ -81,9 +75,6 @@ public class AllergyValidatorTest extends BaseContextMockTest {
 		assertThat(errors.getFieldError("patient").getCode(), is("allergyapi.patient.required"));
 	}
 	
-	/**
-	 * @see AllergyValidator#validate(Object, org.springframework.validation.Errors)
-	 */
 	@Test
 	public void validate_shouldFailIfAllergenIsNull() {
 		
@@ -93,9 +84,6 @@ public class AllergyValidatorTest extends BaseContextMockTest {
 		assertThat(errors.getFieldError("allergen").getCode(), is("allergyapi.allergen.required"));
 	}
 	
-	/**
-	 * @see AllergyValidator#validate(Object, org.springframework.validation.Errors)
-	 */
 	@Test
 	public void validate_shouldFailIdAllergenTypeIsNull() {
 		
@@ -107,9 +95,6 @@ public class AllergyValidatorTest extends BaseContextMockTest {
 		assertThat(errors.getFieldError("allergen").getCode(), is("allergyapi.allergenType.required"));
 	}
 	
-	/**
-	 * @see AllergyValidator#validate(Object, org.springframework.validation.Errors)
-	 */
 	@Test
 	public void validate_shouldFailIfCodedAndNonCodedAllergenAreNull() {
 		
@@ -122,9 +107,6 @@ public class AllergyValidatorTest extends BaseContextMockTest {
 		assertThat(errors.getFieldError("allergen").getCode(), is("allergyapi.allergen.codedOrNonCodedAllergen.required"));
 	}
 	
-	/**
-	 * @see AllergyValidator#validate(Object, org.springframework.validation.Errors)
-	 */
 	@Test
 	public void validate_shouldFailIfNonCodedAllergenIsNullAndAllergenIsSetToOtherNonCoded(@Mock Concept concept, @Mock Allergen allergen) {
 		
@@ -140,9 +122,6 @@ public class AllergyValidatorTest extends BaseContextMockTest {
 		assertThat(errors.getFieldError("allergen").getCode(), is("allergyapi.allergen.nonCodedAllergen.required"));
 	}
 	
-	/**
-	 * @see AllergyValidator#validate(Object, org.springframework.validation.Errors)
-	 */
 	@Test
 	public void validate_shouldRejectADuplicateAllergen(@Mock Concept aspirin) {
 
@@ -162,9 +141,6 @@ public class AllergyValidatorTest extends BaseContextMockTest {
 		assertThat(errors.getFieldError("allergen").getCode(), is("allergyapi.message.duplicateAllergen"));
 	}
 	
-	/**
-	 * @see AllergyValidator#validate(Object, org.springframework.validation.Errors)
-	 */
 	@Test
 	public void validate_shouldRejectADuplicateNonCodedAllergen(@Mock Concept nonCodedConcept) {
 
@@ -185,9 +161,6 @@ public class AllergyValidatorTest extends BaseContextMockTest {
 		assertThat(errors.getFieldError("allergen").getCode(), is("allergyapi.message.duplicateAllergen"));
 	}
 	
-	/**
-	 * @see AllergyValidator#validate(Object, org.springframework.validation.Errors)
-	 */
 	@Test
 	public void validate_shouldPassForAValidAllergy() {
 		
