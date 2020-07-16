@@ -68,10 +68,13 @@
                   column="date_changed" length="19" />
         <property name="uuid" type="java.lang.String"
                   column="uuid" length="38" unique="true" not-null="true"/>
- <many-to-one name="parentOrderGroup" class="org.openmrs.OrderGroup"
+        <many-to-one name="parentOrderGroup" class="org.openmrs.OrderGroup"
 		    not-null="false" column="parent_order_group" />
 		<many-to-one name="orderGroupReason" class="org.openmrs.Concept"
 		    not-null="false" column="order_group_reason" />
+
+		<many-to-one name="previousOrderGroup" class="org.openmrs.OrderGroup"
+		    not-null="false" column="previous_order_group" />
     </class>
 
 </hibernate-mapping>

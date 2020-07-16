@@ -90,7 +90,26 @@
         <comment> Extension to use UUID functions with PostgreSQL</comment>
         <sql> CREATE EXTENSION IF NOT EXISTS "uuid-ossp" SCHEMA public;</sql>
     </changeSet>
-        
+    
+	<changeSet id="20190815-Trunk-5651" author="gitacliff">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="order_group" columnName="previous_order_group"/>				
+			</not>
+		</preConditions>
+		<comment>Adding "previous_order_group" column to order_group table</comment>
+        <addColumn tableName="order_group">
+            <column name="previous_order_group" type="int">
+            	<constraints nullable="true"/>
+            </column>
+        </addColumn>
+        <addForeignKeyConstraint baseTableName="order_group"
+								 baseColumnNames="previous_order_group"
+								 constraintName="order_group_previous_order_group_fk"
+								 referencedTableName="order_group"
+								 referencedColumnNames="order_group_id" />
+    </changeSet>
+    
     <changeSet id="20200615-postgresql_sequence_update" author="aman" dbms="postgresql">
 		<comment> Update the sequence values to correct ones after insertions via Liquibase change-sets</comment>
 		<sql> 
