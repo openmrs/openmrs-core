@@ -11,22 +11,21 @@ package org.openmrs.test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.jupiter.BaseModuleContextSensitiveTest;
 
-@StartModule( { "org/openmrs/module/include/dssmodule-1.44.omod", "org/openmrs/module/include/atdproducer-0.51.omod" })
+@StartModule({ "org/openmrs/module/include/test1-1.0-SNAPSHOT.omod", "org/openmrs/module/include/test2-1.0-SNAPSHOT.omod" })
 public class StartModuleAnnotationTest extends BaseModuleContextSensitiveTest {
 	
 	@Test
 	public void shouldStartModules() throws ClassNotFoundException {
 		
-		Class<?> atdServiceClass = Context.loadClass("org.openmrs.module.atdproducer.service.ATDService");
-		Class<?> dssServiceClass = Context.loadClass("org.openmrs.module.dssmodule.DssService");
-		assertNotNull(atdServiceClass);
-		assertNotNull(dssServiceClass);
+		Class<?> test1ServiceClass = Context.loadClass("org.openmrs.module.test1.api.Test1Service");
+		Class<?> test2ServiceClass = Context.loadClass("org.openmrs.module.test2.api.Test2Service");
+		assertNotNull(test1ServiceClass);
+		assertNotNull(test2ServiceClass);
 		
-		assertNotNull(Context.getService(atdServiceClass));
-		assertNotNull(Context.getService(dssServiceClass));
+		assertNotNull(Context.getService(test1ServiceClass));
+		assertNotNull(Context.getService(test2ServiceClass));
 	}
 }
