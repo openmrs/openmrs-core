@@ -29,7 +29,7 @@ public interface MessageService {
 	public MessagePreparator getMessagePreparator();
 	
 	/* Send Message Methods */
-
+	
 	/**
 	 * TODO Auto generated method comment
 	 * 
@@ -86,5 +86,5 @@ public interface MessageService {
 	
 	public Template getTemplate(Integer id) throws MessageException;
 	
-	public List getTemplatesByName(String name) throws MessageException;
+	public List<Template> getTemplatesByName(String name) throws MessageException;
 }

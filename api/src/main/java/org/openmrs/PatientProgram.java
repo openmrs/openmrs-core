@@ -27,7 +27,7 @@ import java.util.Set;
 /**
  * PatientProgram
  */
-public class PatientProgram extends BaseChangeableOpenmrsData implements Customizable<PatientProgramAttribute>{
+public class PatientProgram extends BaseChangeableOpenmrsData implements Customizable<PatientProgramAttribute> {
 	
 	public static final long serialVersionUID = 0L;
 	
@@ -50,8 +50,8 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	private Concept outcome;
 	
 	private Set<PatientState> states = new HashSet<>();
-         
-        private Set<PatientProgramAttribute> attributes = new LinkedHashSet();
+	
+	private Set<PatientProgramAttribute> attributes = new LinkedHashSet<>();
 	
 	// ******************
 	// Constructors
@@ -65,10 +65,10 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	public PatientProgram(Integer patientProgramId) {
 		setPatientProgramId(patientProgramId);
 	}
-
+	
 	/**
-	 * Does a mostly-shallow copy of this PatientProgram. Does not copy patientProgramId. The
-	 * 'states' property will be deep-copied.
+	 * Does a mostly-shallow copy of this PatientProgram. Does not copy patientProgramId. The 'states'
+	 * property will be deep-copied.
 	 * 
 	 * @return a shallow copy of this PatientProgram
 	 */
@@ -114,8 +114,8 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	// ******************
 	
 	/**
-	 * Returns true if the associated {@link Patient} is enrolled in the associated {@link Program}
-	 * on the passed {@link Date}
+	 * Returns true if the associated {@link Patient} is enrolled in the associated {@link Program} on
+	 * the passed {@link Date}
 	 * 
 	 * @param onDate - Date to check for PatientProgram enrollment
 	 * @return boolean - true if the associated {@link Patient} is enrolled in the associated
@@ -133,16 +133,16 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	 * Returns true if the associated {@link Patient} is currently enrolled in the associated
 	 * {@link Program}
 	 * 
-	 * @return boolean - true if the associated {@link Patient} is currently enrolled in the
-	 *         associated {@link Program}
+	 * @return boolean - true if the associated {@link Patient} is currently enrolled in the associated
+	 *         {@link Program}
 	 */
 	public boolean getActive() {
 		return getActive(null);
 	}
 	
 	/**
-	 * Returns the {@link PatientState} associated with this PatientProgram that has an id that
-	 * matches the passed <code>patientStateId</code>
+	 * Returns the {@link PatientState} associated with this PatientProgram that has an id that matches
+	 * the passed <code>patientStateId</code>
 	 * 
 	 * @param patientStateId - The identifier to use to lookup a {@link PatientState}
 	 * @return PatientState that has an id that matches the passed <code>patientStateId</code>
@@ -158,9 +158,9 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	
 	/**
 	 * Attempts to transition the PatientProgram to the passed {@link ProgramWorkflowState} on the
-	 * passed {@link Date} by ending the most recent {@link PatientState} in the
-	 * {@link PatientProgram} and creating a new one with the passed {@link ProgramWorkflowState}
-	 * This will throw an IllegalArgumentException if the transition is invalid
+	 * passed {@link Date} by ending the most recent {@link PatientState} in the {@link PatientProgram}
+	 * and creating a new one with the passed {@link ProgramWorkflowState} This will throw an
+	 * IllegalArgumentException if the transition is invalid
 	 * 
 	 * @param programWorkflowState - The {@link ProgramWorkflowState} to transition to
 	 * @param onDate - The {@link Date} of the transition
@@ -178,10 +178,10 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 		        && OpenmrsUtil.compare(lastState.getStartDate(), onDate) > 0) {
 			throw new IllegalArgumentException("You can't change out of a state before that state started");
 		}
-		if (lastState != null
-		        && !programWorkflowState.getProgramWorkflow().isLegalTransition(lastState.getState(), programWorkflowState)) {
-			throw new IllegalArgumentException("You can't change from state " + lastState.getState() + " to "
-			        + programWorkflowState);
+		if (lastState != null && !programWorkflowState.getProgramWorkflow().isLegalTransition(lastState.getState(),
+		    programWorkflowState)) {
+			throw new IllegalArgumentException(
+			        "You can't change from state " + lastState.getState() + " to " + programWorkflowState);
 		}
 		if (lastState != null) {
 			lastState.setEndDate(onDate);
@@ -191,7 +191,7 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 		newState.setPatientProgram(this);
 		newState.setState(programWorkflowState);
 		newState.setStartDate(onDate);
-
+		
 		if (newState.getPatientProgram() != null && newState.getPatientProgram().getDateCompleted() != null) {
 			newState.setEndDate(newState.getPatientProgram().getDateCompleted());
 		}
@@ -208,12 +208,12 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	 * PatientStates exist, it will try to reset the endDate to null so that the next latest state
 	 * becomes the current {@link PatientState}
 	 * 
-	 * @param workflow - The {@link ProgramWorkflow} whose last {@link PatientState} within the
-	 *            current {@link PatientProgram} we want to void
+	 * @param workflow - The {@link ProgramWorkflow} whose last {@link PatientState} within the current
+	 *            {@link PatientProgram} we want to void
 	 * @param voidBy - The user who is voiding the {@link PatientState}
 	 * @param voidDate - The date to void the {@link PatientState}
-	 * @param voidReason - The reason for voiding the {@link PatientState}
-	 * <strong>Should</strong> void state with endDate null if startDates equal
+	 * @param voidReason - The reason for voiding the {@link PatientState} <strong>Should</strong> void
+	 *            state with endDate null if startDates equal
 	 */
 	public void voidLastState(ProgramWorkflow workflow, User voidBy, Date voidDate, String voidReason) {
 		List<PatientState> states = statesInWorkflow(workflow, false);
@@ -235,9 +235,10 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 			last.setVoidReason(voidReason);
 		}
 		if (nextToLast != null && nextToLast.getEndDate() != null) {
-			nextToLast.setEndDate(nextToLast.getPatientProgram() != null
-			        && nextToLast.getPatientProgram().getDateCompleted() != null ? nextToLast.getPatientProgram()
-			        .getDateCompleted() : null);
+			nextToLast.setEndDate(
+			    nextToLast.getPatientProgram() != null && nextToLast.getPatientProgram().getDateCompleted() != null
+			            ? nextToLast.getPatientProgram().getDateCompleted()
+			            : null);
 			nextToLast.setDateChanged(voidDate);
 			nextToLast.setChangedBy(voidBy);
 		}
@@ -247,8 +248,7 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	 * Returns the current {@link PatientState} for the passed {@link ProgramWorkflow} within this
 	 * {@link PatientProgram}.
 	 * 
-	 * @param programWorkflow The ProgramWorkflow whose current {@link PatientState} we want to
-	 *            retrieve
+	 * @param programWorkflow The ProgramWorkflow whose current {@link PatientState} we want to retrieve
 	 * @return PatientState The current {@link PatientState} for the passed {@link ProgramWorkflow}
 	 *         within this {@link PatientProgram}
 	 */
@@ -270,7 +270,8 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	 * Returns a Set&lt;PatientState&gt; of all current {@link PatientState}s for the
 	 * {@link PatientProgram}
 	 * 
-	 * @return Set&lt;PatientState&gt; of all current {@link PatientState}s for the {@link PatientProgram}
+	 * @return Set&lt;PatientState&gt; of all current {@link PatientState}s for the
+	 *         {@link PatientProgram}
 	 */
 	public Set<PatientState> getCurrentStates() {
 		Set<PatientState> ret = new HashSet<>();
@@ -287,35 +288,35 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	 * Returns a Set&lt;PatientState&gt; of all recent {@link PatientState}s for each workflow of the
 	 * {@link PatientProgram}
 	 *
-	 * @return Set&lt;PatientState&gt; of all recent {@link PatientState}s for the {@link PatientProgram}
+	 * @return Set&lt;PatientState&gt; of all recent {@link PatientState}s for the
+	 *         {@link PatientProgram}
 	 */
 	public Set<PatientState> getMostRecentStateInEachWorkflow() {
-		HashMap<ProgramWorkflow,PatientState> map = new HashMap<>();
-
+		HashMap<ProgramWorkflow, PatientState> map = new HashMap<>();
+		
 		for (PatientState state : getSortedStates()) {
 			if (!state.isVoided()) {
 				ProgramWorkflow workflow = state.getState().getProgramWorkflow();
-				map.put(workflow,state);
+				map.put(workflow, state);
 			}
 		}
-
+		
 		Set<PatientState> ret = new HashSet<>();
 		for (Map.Entry<ProgramWorkflow, PatientState> entry : map.entrySet()) {
 			ret.add(entry.getValue());
 		}
-
+		
 		return ret;
 	}
-
+	
 	/**
 	 * Returns a List&lt;PatientState&gt; of all {@link PatientState}s in the passed
 	 * {@link ProgramWorkflow} for the {@link PatientProgram}
 	 * 
 	 * @param programWorkflow - The {@link ProgramWorkflow} to check
-	 * @param includeVoided - If true, return voided {@link PatientState}s in the returned
-	 *            {@link List}
-	 * @return List&lt;PatientState&gt; of all {@link PatientState}s in the passed {@link ProgramWorkflow}
-	 *         for the {@link PatientProgram}
+	 * @param includeVoided - If true, return voided {@link PatientState}s in the returned {@link List}
+	 * @return List&lt;PatientState&gt; of all {@link PatientState}s in the passed
+	 *         {@link ProgramWorkflow} for the {@link PatientProgram}
 	 */
 	public List<PatientState> statesInWorkflow(ProgramWorkflow programWorkflow, boolean includeVoided) {
 		List<PatientState> ret = new ArrayList<>();
@@ -436,86 +437,87 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 		Collections.sort(sortedStates);
 		return sortedStates;
 	}
-
-        @Override
-        public Set<PatientProgramAttribute> getAttributes() {
-            return attributes;
-        }
-
-        @Override
-        public Collection<PatientProgramAttribute> getActiveAttributes() {
-            ArrayList<PatientProgramAttribute> ret = new ArrayList<>();
-
-            if (this.getAttributes() != null) {
-                for (PatientProgramAttribute attr : this.getAttributes()) {
-                    if (!attr.isVoided()) {
-                        ret.add(attr);
-                    }
-                }
-            }
-
-            return ret;
-        }
-
-        @Override
-        public List<PatientProgramAttribute> getActiveAttributes(CustomValueDescriptor ofType) {
-            ArrayList<PatientProgramAttribute> ret = new ArrayList<>();
-
-            if (this.getAttributes() != null) {
-                for (PatientProgramAttribute attr : this.getAttributes()) {
-                    if (attr.getAttributeType().equals(ofType) && !attr.isVoided()) {
-                        ret.add(attr);
-                    }
-                }
-            }
-
-            return ret;
-        }
-
-        @Override
-        public void addAttribute(PatientProgramAttribute attribute) {
-            if (this.getAttributes() == null) {
-                this.setAttributes(new LinkedHashSet());
-            }
-
-            this.getAttributes().add(attribute);
-            attribute.setOwner(this);
-        }
-
-        public void setAttributes(Set<PatientProgramAttribute> attributes) {
-            this.attributes = attributes;
-        }
-
-        public void setAttribute(PatientProgramAttribute attribute) {
-            if (this.getAttributes() == null) {
-                this.addAttribute(attribute);
-            } else {
-                if (this.getActiveAttributes(attribute.getAttributeType()).size() == 1) {
-                    PatientProgramAttribute patientProgramAttribute = this.getActiveAttributes(attribute.getAttributeType()).get(0);
-                    if (!patientProgramAttribute.getValue().equals(attribute.getValue())) {
-                        if (patientProgramAttribute.getId() != null) {
-                            patientProgramAttribute.setVoided(Boolean.TRUE);
-                        } else {
-                            this.getAttributes().remove(patientProgramAttribute);
-                        }
-
-                        this.getAttributes().add(attribute);
-                        attribute.setOwner(this);
-                    }
-                } else {
-                    for (PatientProgramAttribute existing : this.getActiveAttributes(attribute.getAttributeType())) {
-                        if (existing.getAttributeType().equals(attribute.getAttributeType())) {
-                            if (existing.getId() != null) {
-                                existing.setVoided(Boolean.TRUE);
-                            } else {
-                                this.getAttributes().remove(existing);
-                            }
-                        }
-                    }
-
-                    this.getAttributes().add(attribute);
-                    attribute.setOwner(this);
-                }
-            }
-        }
+	
+	@Override
+	public Set<PatientProgramAttribute> getAttributes() {
+		return attributes;
+	}
+	
+	@Override
+	public Collection<PatientProgramAttribute> getActiveAttributes() {
+		ArrayList<PatientProgramAttribute> ret = new ArrayList<>();
+		
+		if (this.getAttributes() != null) {
+			for (PatientProgramAttribute attr : this.getAttributes()) {
+				if (!attr.isVoided()) {
+					ret.add(attr);
+				}
+			}
+		}
+		
+		return ret;
+	}
+	
+	@Override
+	public List<PatientProgramAttribute> getActiveAttributes(CustomValueDescriptor ofType) {
+		ArrayList<PatientProgramAttribute> ret = new ArrayList<>();
+		
+		if (this.getAttributes() != null) {
+			for (PatientProgramAttribute attr : this.getAttributes()) {
+				if (attr.getAttributeType().equals(ofType) && !attr.isVoided()) {
+					ret.add(attr);
+				}
+			}
+		}
+		
+		return ret;
+	}
+	
+	@Override
+	public void addAttribute(PatientProgramAttribute attribute) {
+		if (this.getAttributes() == null) {
+			this.setAttributes(new LinkedHashSet<>());
+		}
+		
+		this.getAttributes().add(attribute);
+		attribute.setOwner(this);
+	}
+	
+	public void setAttributes(Set<PatientProgramAttribute> attributes) {
+		this.attributes = attributes;
+	}
+	
+	public void setAttribute(PatientProgramAttribute attribute) {
+		if (this.getAttributes() == null) {
+			this.addAttribute(attribute);
+		} else {
+			if (this.getActiveAttributes(attribute.getAttributeType()).size() == 1) {
+				PatientProgramAttribute patientProgramAttribute = this.getActiveAttributes(attribute.getAttributeType())
+				        .get(0);
+				if (!patientProgramAttribute.getValue().equals(attribute.getValue())) {
+					if (patientProgramAttribute.getId() != null) {
+						patientProgramAttribute.setVoided(Boolean.TRUE);
+					} else {
+						this.getAttributes().remove(patientProgramAttribute);
+					}
+					
+					this.getAttributes().add(attribute);
+					attribute.setOwner(this);
+				}
+			} else {
+				for (PatientProgramAttribute existing : this.getActiveAttributes(attribute.getAttributeType())) {
+					if (existing.getAttributeType().equals(attribute.getAttributeType())) {
+						if (existing.getId() != null) {
+							existing.setVoided(Boolean.TRUE);
+						} else {
+							this.getAttributes().remove(existing);
+						}
+					}
+				}
+				
+				this.getAttributes().add(attribute);
+				attribute.setOwner(this);
+			}
+		}
+	}
 }

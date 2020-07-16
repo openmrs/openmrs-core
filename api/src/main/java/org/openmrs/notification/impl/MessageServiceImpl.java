@@ -45,8 +45,8 @@ public class MessageServiceImpl implements MessageService {
 	}
 	
 	/**
-	 * Public constructor Required for use with spring's method injection. Be careful because this
-	 * class requires a DAO Context in order to work properly. Please set the DAO context
+	 * Public constructor Required for use with spring's method injection. Be careful because this class
+	 * requires a DAO Context in order to work properly. Please set the DAO context.
 	 */
 	public MessageServiceImpl() {
 	}
@@ -135,9 +135,8 @@ public class MessageServiceImpl implements MessageService {
 	}
 	
 	/**
-	 * @see org.openmrs.notification.MessageService#createMessage(java.lang.String,
-	 *      java.lang.String, java.lang.String, java.lang.String, java.lang.String,
-	 *      java.lang.String, java.lang.String)
+	 * @see org.openmrs.notification.MessageService#createMessage(java.lang.String, java.lang.String,
+	 *      java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
 	@Override
 	public Message createMessage(String recipients, String sender, String subject, String content, String attachment,
@@ -154,8 +153,8 @@ public class MessageServiceImpl implements MessageService {
 	}
 	
 	/**
-	 * Send a message using the given parameters. This is a convenience method so that the client
-	 * does not need to create its own Message object.
+	 * Send a message using the given parameters. This is a convenience method so that the client does
+	 * not need to create its own Message object.
 	 */
 	@Override
 	public void sendMessage(String recipients, String sender, String subject, String content) throws MessageException {
@@ -219,7 +218,7 @@ public class MessageServiceImpl implements MessageService {
 	}
 	
 	/**
-         * Sends a message to a group of users identifier by their role.
+	 * Sends a message to a group of users identifier by their role.
 	 */
 	@Override
 	public void sendMessage(Message message, Role role) throws MessageException {
@@ -236,8 +235,8 @@ public class MessageServiceImpl implements MessageService {
 	}
 	
 	/**
-	 * Prepare a message given the template. The template should be populated with all necessary
-	 * data including the variable name-value pairs
+	 * Prepare a message given the template. The template should be populated with all necessary data
+	 * including the variable name-value pairs
 	 *
 	 * @param template the given <code>Template</code>
 	 * @return the prepared <code>Message</code>
@@ -258,7 +257,7 @@ public class MessageServiceImpl implements MessageService {
 	@Transactional(readOnly = true)
 	public Message prepareMessage(String templateName, Map data) throws MessageException {
 		try {
-			Template template = (Template) getTemplatesByName(templateName).get(0);
+			Template template = getTemplatesByName(templateName).get(0);
 			template.setData(data);
 			return Context.getMessageService().prepareMessage(template);
 		}
@@ -298,7 +297,7 @@ public class MessageServiceImpl implements MessageService {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public List getTemplatesByName(String name) throws MessageException {
+	public List<Template> getTemplatesByName(String name) throws MessageException {
 		return templateDAO.getTemplatesByName(name);
-	}	
+	}
 }
