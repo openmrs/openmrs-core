@@ -521,15 +521,20 @@
 				<artifactId>powermock-api-mockito2</artifactId>
 				<version>2.0.9</version>
 			</dependency>
+			<!--hamcrest-core is needed to update JUnit 4 transitive dependency on hamcrest-core as explained in
+			 http://hamcrest.org/JavaHamcrest/distributables#upgrading-from-hamcrest-1x and
+			 https://github.com/hamcrest/JavaHamcrest/issues/224#issuecomment-449760045
+			 Once we remove JUnit 4 we will only need org.hamcrest:hamcrest
+			 -->
 			<dependency>
 				<groupId>org.hamcrest</groupId>
 				<artifactId>hamcrest-core</artifactId>
-				<version>2.2</version>
+				<version>${hamcrestVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hamcrest</groupId>
-				<artifactId>hamcrest-library</artifactId>
-				<version>2.2</version>
+				<artifactId>hamcrest</artifactId>
+				<version>${hamcrestVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.h2database</groupId>
@@ -1151,6 +1156,7 @@
 		<jacksonVersion>2.12.0</jacksonVersion>
 		<junitVersion>5.7.0</junitVersion>
 		<mockitoVersion>3.6.28</mockitoVersion>
+		<hamcrestVersion>2.2</hamcrestVersion>
 
 		<slf4jVersion> 1.7.30</slf4jVersion>
 		<log4jVersion>2.14.0</log4jVersion>
