@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import liquibase.util.StringUtils;
 import org.apache.commons.beanutils.BeanUtils;
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.APIException;
