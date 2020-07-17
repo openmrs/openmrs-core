@@ -21,12 +21,18 @@
    <name>openmrs-api</name>
    <description>The api that is re-used across web and modules</description>
    <dependencies>
-      <dependency>
+	   <dependency>
          <groupId>org.openmrs.test</groupId>
          <artifactId>openmrs-test</artifactId>
          <type>pom</type>
          <scope>test</scope>
-      </dependency>
+		   <exclusions>
+			   <exclusion>
+				   <groupId>org.powermock</groupId>
+				   <artifactId>powermock-module-junit4</artifactId>
+			   </exclusion>
+		   </exclusions>
+	   </dependency>
       <dependency>
          <groupId>commons-collections</groupId>
          <artifactId>commons-collections</artifactId>
