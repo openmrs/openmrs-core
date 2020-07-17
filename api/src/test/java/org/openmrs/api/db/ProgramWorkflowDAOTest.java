@@ -11,6 +11,7 @@ package org.openmrs.api.db;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Date;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
+import org.openmrs.PatientProgram;
 import org.openmrs.Program;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
@@ -93,5 +95,15 @@ public class ProgramWorkflowDAOTest extends BaseContextSensitiveTest {
 		assertEquals(program1, programs.get(0));
 		assertEquals(program2, programs.get(1));
 	}
-	
+
+	@Test
+	public void getPatientPrograms_shouldReturnListChronologicallySortedByEnrollmentDate() {
+		List<PatientProgram> patientPrograms = dao.getPatientPrograms(null, null, null, null, null, null, true);
+		assertNotNull(patientPrograms);
+		Date previousDate = patientPrograms.get(0).getDateEnrolled();
+		for (PatientProgram patientProgram : patientPrograms) {
+			assertTrue(patientProgram.getDateEnrolled().compareTo(previousDate) >= 0);
+			previousDate = patientProgram.getDateEnrolled();
+		}
+	}
 }
