@@ -13,10 +13,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.AdditionalMatchers.aryEq;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
+import static org.openmrs.api.context.Context.getAuthenticatedUser;
+import static org.openmrs.api.context.Context.getPatientService;
+import static org.openmrs.validator.PatientIdentifierValidator.validateIdentifier;
 
 import java.util.Locale;
 
@@ -63,19 +65,15 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void validateIdentifier_shouldPassValidationIfPatientIdentifierIsVoided() {
-		PatientIdentifier pi = Context.getPatientService().getPatientIdentifiers("7TU-8", null, null, null, null).get(0);
+		PatientIdentifier pi = getPatientService().getPatientIdentifiers("7TU-8", null, null, null, null).get(0);
 		pi.setIdentifier("7TU-4");
 		// First, make sure this fails
-		try {
-			PatientIdentifierValidator.validateIdentifier(pi);
-			fail("The patient identifier should be invalid prior to voiding");
-		}
-		catch (Exception e) {}
+		assertThrows(Exception.class, () -> validateIdentifier(pi));
 		pi.setVoided(true);
-		pi.setVoidedBy(Context.getAuthenticatedUser());
+		pi.setVoidedBy(getAuthenticatedUser());
 		pi.setVoidReason("Testing");
 		// Now, make sure this passes
-		PatientIdentifierValidator.validateIdentifier(pi);
+		validateIdentifier(pi);
 	}
 	
 	/**

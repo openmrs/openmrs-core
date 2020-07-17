@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
@@ -180,13 +179,7 @@ public class ObsTest {
 		assertEquals(0, obsGroup.getGroupMembers().size());
 		
 		// try to add an obs group to itself
-		try {
-			obsGroup.addGroupMember(obsGroup);
-			fail("An APIException about adding an obsGroup should have been thrown");
-		}
-		catch (APIException e) {
-			// this exception is expected
-		}
+		assertThrows(APIException.class, () -> obsGroup.addGroupMember(obsGroup));
 	}
 	
 	/**
@@ -338,7 +331,7 @@ public class ObsTest {
 	public void getValueAsBoolean_shouldReturnFalseForValue_numericConceptsIfValueIs0() throws Exception {
 		Obs obs = new Obs();
 		obs.setValueNumeric(0.0);
-		assertEquals(false, obs.getValueAsBoolean());
+		assertFalse(obs.getValueAsBoolean());
 	}
 	
 	/**

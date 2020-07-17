@@ -128,7 +128,7 @@ public class Security {
 	/**
 	 * Convenience method to convert a byte array to a string
 	 *
-	 * @param b Byte array to convert to HexString
+	 * @param block Byte array to convert to HexString
 	 * @return Hexidecimal based string
 	 */
 	private static String hexString(byte[] block) {

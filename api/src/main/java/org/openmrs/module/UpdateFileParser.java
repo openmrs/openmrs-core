@@ -103,7 +103,7 @@ public class UpdateFileParser {
 				this.currentVersion = "";
 				
 				// loop over all 'update' tags
-				for (Integer i = 0; i < nodes.getLength(); i++) {
+				for (int i = 0; i < nodes.getLength(); i++) {
 					Element currentNode = (Element) nodes.item(i);
 					String currentVersion = getElement(currentNode, configVersion, "currentVersion");
 					// if the currently saved version is less than the current tag

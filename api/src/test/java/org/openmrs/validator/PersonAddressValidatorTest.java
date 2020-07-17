@@ -9,7 +9,7 @@
  */
 package org.openmrs.validator;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Calendar;
@@ -87,7 +87,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 		personAddress.setEndDate(c.getTime());
 		Errors errors = new BindException(personAddress, "personAddress");
 		validator.validate(personAddress, errors);
-		assertEquals(false, errors.hasFieldErrors());
+		assertFalse(errors.hasFieldErrors());
 	}
 	
 	/**
@@ -100,7 +100,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 		personAddress.setEndDate(null);
 		Errors errors = new BindException(personAddress, "personAddress");
 		validator.validate(personAddress, errors);
-		assertEquals(false, errors.hasFieldErrors());
+		assertFalse(errors.hasFieldErrors());
 	}
 	
 	/**
@@ -114,7 +114,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 		personAddress.setEndDate(c.getTime());
 		Errors errors = new BindException(personAddress, "personAddress");
 		validator.validate(personAddress, errors);
-		assertEquals(false, errors.hasFieldErrors());
+		assertFalse(errors.hasFieldErrors());
 	}
 	
 	/**
@@ -128,7 +128,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 		personAddress.setEndDate(null);
 		Errors errors = new BindException(personAddress, "personAddress");
 		validator.validate(personAddress, errors);
-		assertEquals(false, errors.hasFieldErrors());
+		assertFalse(errors.hasFieldErrors());
 	}
 	
 	/**
@@ -155,7 +155,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(personAddress, "personAddress");
 		validator.validate(personAddress, errors);
-		assertEquals(false, errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -181,7 +181,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 		personAddress.setAddress5("address5");
 		Errors errors = new BindException(personAddress, "personAddress");
 		validator.validate(personAddress, errors);
-		assertEquals(false, errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -231,15 +231,15 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 		assertTrue(errors.hasFieldErrors("address3"));
 		assertTrue(errors.hasFieldErrors("address4"));
 		assertTrue(errors.hasFieldErrors("address5"));
-		assertEquals(true, errors.hasFieldErrors("address6"), "address6 missing in errors");
-		assertEquals(true, errors.hasFieldErrors("address7"), "address7 missing in errors");
-		assertEquals(true, errors.hasFieldErrors("address8"), "address8 missing in errors");
-		assertEquals(true, errors.hasFieldErrors("address9"), "address9 missing in errors");
-		assertEquals(true, errors.hasFieldErrors("address10"), "address10 missing in errors");
-		assertEquals(true, errors.hasFieldErrors("address11"), "address11 missing in errors");
-		assertEquals(true, errors.hasFieldErrors("address12"), "address12 missing in errors");
-		assertEquals(true, errors.hasFieldErrors("address13"), "address13 missing in errors");
-		assertEquals(true, errors.hasFieldErrors("address14"), "address14 missing in errors");
-		assertEquals(true, errors.hasFieldErrors("address15"), "address15 missing in errors");
+		assertTrue(errors.hasFieldErrors("address6"), "address6 missing in errors");
+		assertTrue(errors.hasFieldErrors("address7"), "address7 missing in errors");
+		assertTrue(errors.hasFieldErrors("address8"), "address8 missing in errors");
+		assertTrue(errors.hasFieldErrors("address9"), "address9 missing in errors");
+		assertTrue(errors.hasFieldErrors("address10"), "address10 missing in errors");
+		assertTrue(errors.hasFieldErrors("address11"), "address11 missing in errors");
+		assertTrue(errors.hasFieldErrors("address12"), "address12 missing in errors");
+		assertTrue(errors.hasFieldErrors("address13"), "address13 missing in errors");
+		assertTrue(errors.hasFieldErrors("address14"), "address14 missing in errors");
+		assertTrue(errors.hasFieldErrors("address15"), "address15 missing in errors");
 	}
 }

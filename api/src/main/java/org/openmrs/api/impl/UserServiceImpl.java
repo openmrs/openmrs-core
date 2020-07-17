@@ -394,7 +394,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * Convenience method to check if the authenticated user has all privileges they are giving out
 	 * 
-	 * @param new user that has privileges
+	 * @param user user that has privileges
 	 */
 	private void checkPrivileges(User user) {
 		Collection<Role> roles = user.getAllRoles();
@@ -524,7 +524,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * Convenience method to check if the authenticated user has all privileges they are giving out
 	 * to the new role
 	 * 
-	 * @param new user that has privileges
+	 * @param role 
 	 */
 	private void checkPrivileges(Role role) {
 		Optional.ofNullable(role.getPrivileges())

@@ -10,6 +10,7 @@
 package org.openmrs;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -91,7 +92,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		ConceptName newPreferredName = createConceptName(4, "Doctor", primaryLocale, null, false);
 		testConcept.setPreferredName(newPreferredName);
 		
-		assertEquals(false, initialPreferred.getLocalePreferred());
+		assertFalse(initialPreferred.getLocalePreferred());
 		assertTrue(newPreferredName.getLocalePreferred());
 	}
 	
@@ -382,7 +383,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Locale primaryLocale = Locale.US;
 		Concept testConcept = createConcept(1, primaryLocale);
 		ConceptName newPreferredName = createConceptName(3, "Aspirin", primaryLocale, null, false);
-		assertEquals(false, testConcept.getNames(primaryLocale).contains(newPreferredName));
+		assertFalse(testConcept.getNames(primaryLocale).contains(newPreferredName));
 		testConcept.setPreferredName(newPreferredName);
 		assertTrue(testConcept.getNames(primaryLocale).contains(newPreferredName));
 	}
@@ -880,7 +881,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		ConceptName newFullySpecName = new ConceptName("new name", Context.getLocale());
 		newFullySpecName.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
 		concept.addName(newFullySpecName);
-		assertEquals(false, oldFullySpecName.isFullySpecifiedName());
+		assertFalse(oldFullySpecName.isFullySpecifiedName());
 		assertEquals("new name", concept.getFullySpecifiedName(Context.getLocale()).getName());
 	}
 	
@@ -896,7 +897,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		ConceptName newPreferredName = new ConceptName("new name", Context.getLocale());
 		newPreferredName.setLocalePreferred(true);
 		concept.addName(newPreferredName);
-		assertEquals(false, oldPreferredName.isPreferred());
+		assertFalse(oldPreferredName.isPreferred());
 		assertEquals("new name", concept.getPreferredName(Context.getLocale()).getName());
 	}
 	
@@ -912,7 +913,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		ConceptName newShortName = new ConceptName("new name", Context.getLocale());
 		newShortName.setConceptNameType(ConceptNameType.SHORT);
 		concept.addName(newShortName);
-		assertEquals(false, oldShortName.isShort());
+		assertFalse(oldShortName.isShort());
 		assertEquals("new name", concept.getShortNameInLocale(Context.getLocale()).getName());
 	}
 	
@@ -1037,7 +1038,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	public void getDescriptions_shouldNotReturnNullIfDescriptionsListIsNull() {
 		Concept c = new Concept();
 		c.setDescriptions(null);
-		assertTrue(c.getDescriptions().isEmpty());
+		assertThat(c.getDescriptions(), is(empty()));
 		assertNotNull(c.getDescriptions());
 	}
 	

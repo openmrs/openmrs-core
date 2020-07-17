@@ -440,7 +440,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(visit, "visit");
 		new VisitValidator().validate(visit, errors);
-		assertEquals(false, errors.hasFieldErrors("voidReason"));
+		assertFalse(errors.hasFieldErrors("voidReason"));
 	}
 	
 	/**

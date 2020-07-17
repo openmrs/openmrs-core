@@ -11,7 +11,7 @@ package org.openmrs.api.db.hibernate;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.sql.Time;
 import java.util.Date;
@@ -70,6 +70,6 @@ public class DropMillisecondsHibernateInterceptorTest extends BaseContextSensiti
 	public void shouldNotChangeWhenInstanceOfTime() throws Exception {
 		Time[] time = { Time.valueOf("17:00:00") };
 		boolean anyChanges = dropMillisecondsHibernateInterceptor.onSave(null, null, time, null, null);
-		assertEquals(false, anyChanges);
+		assertFalse(anyChanges);
 	}
 }

@@ -9,9 +9,11 @@
  */
 package org.openmrs.liquibase;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -154,7 +156,7 @@ public class ChangeLogVersionFinderTest {
 	@Test
 	public void shouldGetNoUpdateVersionsGreaterThanFutureVersion() {
 		List<String> actual = changeLogVersionFinder.getUpdateVersionsGreaterThan(NON_EXISTING_VERSION_42_7_X);
-		assertTrue(actual.isEmpty());
+		assertThat(actual, is(empty()));
 	}
 	
 	@Test
