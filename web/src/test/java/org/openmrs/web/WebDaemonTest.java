@@ -9,9 +9,9 @@
  */
 package org.openmrs.web;
 
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.module.ModuleException;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.InputRequiredException;
