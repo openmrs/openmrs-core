@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.condition.OS.WINDOWS;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -84,6 +85,8 @@ public class BinaryStreamHandlerTest  extends BaseContextSensitiveTest {
 		String filename = "TestingComplexObsSaving";
 		byte[] content = "Teststring".getBytes();
 		
+		Obs complexObs1 = null;
+		Obs complexObs2 = null;
 		try (ByteArrayInputStream byteIn = new ByteArrayInputStream(content)) {
 			ComplexData complexData = new ComplexData(filename, byteIn);
 			// Construct 2 Obs to also cover the case where the filename exists already
@@ -95,11 +98,14 @@ public class BinaryStreamHandlerTest  extends BaseContextSensitiveTest {
 			handler.saveObs(obs1);
 			handler.saveObs(obs2);
 			
-			Obs complexObs1 = handler.getObs(obs1, "RAW_VIEW");
-			Obs complexObs2 = handler.getObs(obs2, "RAW_VIEW");
+			complexObs1 = handler.getObs(obs1, "RAW_VIEW");
+			complexObs2 = handler.getObs(obs2, "RAW_VIEW");
 			
 			assertEquals(complexObs1.getComplexData().getMimeType(), mimetype);
 			assertEquals(complexObs2.getComplexData().getMimeType(), mimetype);
+		} finally {
+			((InputStream) complexObs1.getComplexData().getData()).close();
+			((InputStream) complexObs1.getComplexData().getData()).close();
 		}
 	}
 }

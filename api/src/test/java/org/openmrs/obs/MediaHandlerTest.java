@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.condition.OS.WINDOWS;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -82,7 +83,9 @@ public class MediaHandlerTest extends BaseContextSensitiveTest {
 		
 		File sourceFile = new File(
 			"src" + File.separator + "test" + File.separator + "resources" + File.separator + "ComplexObsTestAudio.mp3");
-		
+
+		Obs complexObs1 = null;
+		Obs complexObs2 = null;
 		try (FileInputStream in1 = new FileInputStream(sourceFile);
 			 FileInputStream in2 = new FileInputStream(sourceFile)
 		) {
@@ -98,11 +101,14 @@ public class MediaHandlerTest extends BaseContextSensitiveTest {
 			handler.saveObs(obs1);
 			handler.saveObs(obs2);
 			
-			Obs complexObs1 = handler.getObs(obs1, "RAW_VIEW");
-			Obs complexObs2 = handler.getObs(obs2, "RAW_VIEW");
+			complexObs1 = handler.getObs(obs1, "RAW_VIEW");
+			complexObs2 = handler.getObs(obs2, "RAW_VIEW");
 			
 			assertEquals( "audio/mpeg", complexObs1.getComplexData().getMimeType());
 			assertEquals("audio/mpeg", complexObs2.getComplexData().getMimeType());
+		} finally {
+			((InputStream) complexObs1.getComplexData().getData()).close();
+			((InputStream) complexObs1.getComplexData().getData()).close();
 		}
 	}
 }
