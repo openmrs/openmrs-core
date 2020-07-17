@@ -11,14 +11,14 @@ package org.openmrs.web.test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.openmrs.module.ModuleFactory.getLoadedModules;
 import static org.openmrs.module.ModuleFactory.getStartedModules;
 
 import java.io.File;
 import java.net.URL;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.module.BaseModuleActivatorTest;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
