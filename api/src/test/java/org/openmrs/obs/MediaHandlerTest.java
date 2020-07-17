@@ -19,8 +19,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
@@ -71,35 +71,35 @@ public class MediaHandlerTest extends BaseContextSensitiveTest {
      
 	@Test
 	public void saveObs_shouldRetrieveCorrectMimetype() throws IOException {
-		File sourceFile = new File(
-	        "src" + File.separator + "test" + File.separator + "resources" + File.separator + "ComplexObsTestAudio.mp3");
 		
-		FileInputStream in1 = new FileInputStream(sourceFile);
-		FileInputStream in2 = new FileInputStream(sourceFile);
-		
-		ComplexData complexData1 = new ComplexData("TestingComplexObsSaving.mp3", in1);
-		ComplexData complexData2 = new ComplexData("TestingComplexObsSaving.mp3", in2);
-		
-		// Construct 2 Obs to also cover the case where the filename exists already
-		Obs obs1 = new Obs();
-		obs1.setComplexData(complexData1);
-		
-		Obs obs2 = new Obs();
-		obs2.setComplexData(complexData2);
-
 		adminService.saveGlobalProperty(new GlobalProperty(
 			OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR,
 			complexObsTestFolder.toAbsolutePath().toString()
 		));
 		
-		handler.saveObs(obs1);
-		handler.saveObs(obs2);
+		File sourceFile = new File(
+			"src" + File.separator + "test" + File.separator + "resources" + File.separator + "ComplexObsTestAudio.mp3");
 		
-		Obs complexObs1 = handler.getObs(obs1, "RAW_VIEW");
-		Obs complexObs2 = handler.getObs(obs2, "RAW_VIEW");
-		
-		assertEquals( "audio/mpeg", complexObs1.getComplexData().getMimeType());
-		assertEquals("audio/mpeg", complexObs2.getComplexData().getMimeType());
+		try (FileInputStream in1 = new FileInputStream(sourceFile);
+			 FileInputStream in2 = new FileInputStream(sourceFile)
+		) {
+			ComplexData complexData1 = new ComplexData("TestingComplexObsSaving.mp3", in1);
+			ComplexData complexData2 = new ComplexData("TestingComplexObsSaving.mp3", in2);
+			
+			// Construct 2 Obs to also cover the case where the filename exists already
+			Obs obs1 = new Obs();
+			obs1.setComplexData(complexData1);
+			Obs obs2 = new Obs();
+			obs2.setComplexData(complexData2);
+			
+			handler.saveObs(obs1);
+			handler.saveObs(obs2);
+			
+			Obs complexObs1 = handler.getObs(obs1, "RAW_VIEW");
+			Obs complexObs2 = handler.getObs(obs2, "RAW_VIEW");
+			
+			assertEquals( "audio/mpeg", complexObs1.getComplexData().getMimeType());
+			assertEquals("audio/mpeg", complexObs2.getComplexData().getMimeType());
+		}
 	}
-	
 }
