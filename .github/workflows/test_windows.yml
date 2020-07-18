@@ -1,5 +1,5 @@
 # TRUNK-5816 We currently have 2 tests that are failing on Windows (all our CI is on unix, need Windows to reproduce) see https://talk.openmrs.org/t/junit-5-migration/29273/50
-name: Reproduce failing tests on Windows
+name: TRUNK-5816 Reproduce failing Handler tests on Windows
 
 on:
   push:
@@ -22,5 +22,5 @@ jobs:
         path: ~/.m2
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}-m2
-    - name: Test failing Handler tests TRUNK-5816
+    - name: TRUNK-5816 Test failing Handler tests on Windows
       run: mvn -B clean test -Dtest=MediaHandlerTest
