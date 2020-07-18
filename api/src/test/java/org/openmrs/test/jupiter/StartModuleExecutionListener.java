@@ -7,7 +7,9 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.test;
+package org.openmrs.test.jupiter;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URL;
 import java.util.Enumeration;
@@ -18,13 +20,13 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.SerializedObjectDAOTest;
 import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleInteroperabilityTest;
 import org.openmrs.module.ModuleUtil;
+import org.openmrs.test.StartModule;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,8 +45,10 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
  * @see SerializedObjectDAOTest
  * @see ModuleInteroperabilityTest
  * @see BaseContextSensitiveTest
+ * 
+ * @since 2.4.0
  */
-public class StartModuleExecutionListener extends AbstractTestExecutionListener {
+class StartModuleExecutionListener extends AbstractTestExecutionListener {
 	
 	private static final Logger log = LoggerFactory.getLogger(StartModuleExecutionListener.class);
 	
@@ -58,7 +62,7 @@ public class StartModuleExecutionListener extends AbstractTestExecutionListener 
 	/**
 	 * called before @BeforeTransaction methods
 	 * 
-	 * @see org.springframework.test.context.support.AbstractTestExecutionListener#prepareTestInstance(org.springframework.test.context.TestContext)
+	 * @see AbstractTestExecutionListener#prepareTestInstance(TestContext)
 	 */
 	@Override
 	public void prepareTestInstance(TestContext testContext) throws Exception {
@@ -88,10 +92,10 @@ public class StartModuleExecutionListener extends AbstractTestExecutionListener 
 					log.error("Error while starting modules: ", e);
 					throw e;
 				}
-				Assert.assertTrue("Some of the modules did not start successfully for "
-				        + testContext.getTestClass().getSimpleName() + ". Only " + ModuleFactory.getStartedModules().size()
-				        + " modules started instead of " + startModuleAnnotation.value().length, startModuleAnnotation
-				        .value().length <= ModuleFactory.getStartedModules().size());
+				assertTrue(startModuleAnnotation.value().length <= ModuleFactory.getStartedModules().size(),
+					"Some of the modules did not start successfully for "
+						+ testContext.getTestClass().getSimpleName() + ". Only " + ModuleFactory.getStartedModules().size()
+						+ " modules started instead of " + startModuleAnnotation.value().length);
 				
 				/*
 				 * Refresh spring so the Services are recreated (aka serializer gets put into the SerializationService)
@@ -107,9 +111,6 @@ public class StartModuleExecutionListener extends AbstractTestExecutionListener 
 				while (list.hasMoreElements()) {
 					xmlReader.loadBeanDefinitions(new UrlResource(list.nextElement()));
 				}
-				
-				Context.setUseSystemClassLoader(false);
-				ctx.refresh();
 			}
 		}
 	}
@@ -146,7 +147,7 @@ public class StartModuleExecutionListener extends AbstractTestExecutionListener 
 	}
 	
 	@Override
-	public void afterTestClass(TestContext testContext) throws Exception {
+	public void afterTestClass(TestContext testContext) {
 		StartModule startModuleAnnotation = testContext.getTestClass().getAnnotation(StartModule.class);
 		
 		if (startModuleAnnotation != null) {
