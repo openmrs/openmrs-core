@@ -23,4 +23,4 @@ jobs:
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}-m2
     - name: TRUNK-5816 Test failing Handler tests on Windows
-      run: mvn -B clean test -Dtest=MediaHandlerTest
+      run: mvn -B clean test -Dtest=BinaryStreamHandlerTest
