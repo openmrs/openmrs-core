@@ -70,8 +70,9 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 				originalFilename = originalFilename.replace(",", "").replace(" ", "");
 				
 				if (file.exists()) {
-					FileInputStream fileInputStream = new FileInputStream(file);
-					complexData = new ComplexData(originalFilename, fileInputStream);
+					try (FileInputStream fileInputStream = new FileInputStream(file)) {
+						complexData = new ComplexData(originalFilename, fileInputStream);
+					}
 				} else {
 					log.error("Unable to find file associated with complex obs " + obs.getId());
 				}
