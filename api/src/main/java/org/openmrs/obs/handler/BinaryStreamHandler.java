@@ -12,6 +12,7 @@ package org.openmrs.obs.handler;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -108,20 +109,19 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 	 */
 	@Override
 	public Obs saveObs(Obs obs) throws APIException {
+		String fileName = obs.getComplexData().getTitle();
+		File outfile = null;
 		try {
-			// Write the File to the File System
-			String fileName = obs.getComplexData().getTitle();
-			InputStream in = (InputStream) obs.getComplexData().getData();
-			File outfile = getOutputFileToWrite(obs);
-			OutputStream out = new FileOutputStream(outfile, false);
+			outfile = getOutputFileToWrite(obs);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		try (InputStream in = (InputStream) obs.getComplexData().getData();
+			 OutputStream out = new FileOutputStream(outfile, false)) {
 			OpenmrsUtil.copyFile(in, out);
 			
-			// Store the filename in the Obs
 			obs.setComplexData(null);
 			obs.setValueComplex(fileName + "|" + outfile.getName());
-			
-			// close the stream
-			out.close();
 		}
 		catch (Exception e) {
 			throw new APIException("Obs.error.writing.binary.data.complex", null, e);
