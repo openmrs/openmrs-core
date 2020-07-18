@@ -73,7 +73,6 @@ public class MediaHandlerTest extends BaseContextSensitiveTest {
     }
      
 	@Test
-	@DisabledOnOs(WINDOWS)
 	public void saveObs_shouldRetrieveCorrectMimetype() throws IOException {
 		
 		adminService.saveGlobalProperty(new GlobalProperty(
