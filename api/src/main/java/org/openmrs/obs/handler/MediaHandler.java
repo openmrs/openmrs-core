@@ -23,6 +23,7 @@ import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.FileCopyUtils;
 
 /**
  * Handler for storing audio and video for complex obs to the file system. The mime type used is
@@ -103,7 +104,7 @@ public class MediaHandler extends AbstractHandler implements ComplexObsHandler {
 			File outfile = getOutputFileToWrite(obs);
 			OutputStream out = new FileOutputStream(outfile, false);
 			FileInputStream mediaStream = (FileInputStream) obs.getComplexData().getData();
-			OpenmrsUtil.copyFile(mediaStream, out);
+			FileCopyUtils.copy(mediaStream, out);
 			
 			// Store the filename in the Obs
 			obs.setComplexData(null);
