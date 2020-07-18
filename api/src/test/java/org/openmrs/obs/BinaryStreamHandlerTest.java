@@ -9,20 +9,23 @@
  */
 package org.openmrs.obs;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.condition.OS.WINDOWS;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.io.TempDir;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
@@ -101,7 +104,18 @@ public class BinaryStreamHandlerTest  extends BaseContextSensitiveTest {
 			complexObs2 = handler.getObs(obs2, "RAW_VIEW");
 			
 			assertEquals(complexObs1.getComplexData().getMimeType(), mimetype);
+			assertThat(
+				IOUtils.toString((FileInputStream) complexObs1.getComplexData().getData(), StandardCharsets.UTF_8.name()),
+				is("Teststring"));
+
 			assertEquals(complexObs2.getComplexData().getMimeType(), mimetype);
+			// QUESTION: is it supposed to be empty? Or simply the case because we reuse the ByteArrayInputStream which
+			// has already been consumed on the first handler.saveObs(obs1)
+			// I do not understand the above comment "Construct 2 Obs to also cover the case where the filename exists already"
+			// and how that should affect the behaviour
+			assertThat(
+				IOUtils.toString((FileInputStream) complexObs2.getComplexData().getData(), StandardCharsets.UTF_8.name()),
+				is(""));
 		} finally {
 			((InputStream) complexObs1.getComplexData().getData()).close();
 			((InputStream) complexObs1.getComplexData().getData()).close();
