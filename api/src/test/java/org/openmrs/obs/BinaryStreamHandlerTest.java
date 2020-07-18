@@ -89,13 +89,13 @@ public class BinaryStreamHandlerTest  extends BaseContextSensitiveTest {
 		
 		Obs complexObs1 = null;
 		Obs complexObs2 = null;
-		try (ByteArrayInputStream byteIn = new ByteArrayInputStream(content)) {
-			ComplexData complexData = new ComplexData(filename, byteIn);
+		try (ByteArrayInputStream byteIn1 = new ByteArrayInputStream(content);
+			 ByteArrayInputStream byteIn2 = new ByteArrayInputStream(content)) {
 			// Construct 2 Obs to also cover the case where the filename exists already
 			Obs obs1 = new Obs();
-			obs1.setComplexData(complexData);
+			obs1.setComplexData(new ComplexData(filename, byteIn1));
 			Obs obs2 = new Obs();
-			obs2.setComplexData(complexData);
+			obs2.setComplexData(new ComplexData(filename, byteIn2));
 			
 			handler.saveObs(obs1);
 			handler.saveObs(obs2);
@@ -109,13 +109,11 @@ public class BinaryStreamHandlerTest  extends BaseContextSensitiveTest {
 				is("Teststring"));
 
 			assertEquals(complexObs2.getComplexData().getMimeType(), mimetype);
-			// QUESTION: is it supposed to be empty? Or simply the case because we reuse the ByteArrayInputStream which
-			// has already been consumed on the first handler.saveObs(obs1)
-			// I do not understand the above comment "Construct 2 Obs to also cover the case where the filename exists already"
+			// QUESTION: I do not understand the above comment "Construct 2 Obs to also cover the case where the filename exists already"
 			// and how that should affect the behaviour
 			assertThat(
 				IOUtils.toString((FileInputStream) complexObs2.getComplexData().getData(), StandardCharsets.UTF_8.name()),
-				is(""));
+				is("Teststring"));
 		} finally {
 			((InputStream) complexObs1.getComplexData().getData()).close();
 			((InputStream) complexObs1.getComplexData().getData()).close();
