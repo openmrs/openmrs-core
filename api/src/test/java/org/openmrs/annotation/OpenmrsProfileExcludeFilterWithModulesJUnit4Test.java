@@ -9,15 +9,15 @@
  */
 package org.openmrs.annotation;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.Assert.assertThrows;
 
-import org.junit.jupiter.api.Test;
-import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.junit.Test;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.StartModule;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
 @StartModule({"org/openmrs/module/include/test1-1.0-SNAPSHOT.omod"})
-public class OpenmrsProfileExcludeFilterWithModulesTest extends BaseContextSensitiveTest {
+public class OpenmrsProfileExcludeFilterWithModulesJUnit4Test extends BaseContextSensitiveTest {
 	/**
 	 * @see OpenmrsProfileExcludeFilter#match(org.springframework.core.type.classreading.MetadataReader, org.springframework.core.type.classreading.MetadataReaderFactory)
 	 */
