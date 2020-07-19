@@ -111,6 +111,9 @@ class StartModuleExecutionListener extends AbstractTestExecutionListener {
 				while (list.hasMoreElements()) {
 					xmlReader.loadBeanDefinitions(new UrlResource(list.nextElement()));
 				}
+				
+				Context.setUseSystemClassLoader(false);
+				ctx.refresh();
 			}
 		}
 	}
