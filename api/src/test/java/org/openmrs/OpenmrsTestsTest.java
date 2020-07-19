@@ -29,6 +29,9 @@ import java.util.stream.Stream;
 import org.junit.Ignore;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.openmrs.annotation.OpenmrsProfileExcludeFilterWithModulesJUnit4Test;
+import org.openmrs.annotation.StartModuleAnnotationJUnit4Test;
+import org.openmrs.annotation.StartModuleAnnotationReuseJUnit4Test;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -132,12 +135,19 @@ public class OpenmrsTestsTest {
 
 	@Test
 	public void shouldNotAllowAnyNewJUnit4TestsSinceWeMigratedToJUnit5() {
-		Set<String> allowedJunit4TestClasses = Stream.of("org.openmrs.test.StartModuleAnnotationTest")
+		// These classes are running as JUnit 4 tests using the JUnit 4 BaseContextSensitiveTest to ensure module devs
+		// can still run their JUnit 4 tests as part of the 2.4.x release until we completely remove JUnit 4 support from
+		// openmrs-core. We do not allow any new JUnit 4 tests to be added unless they are for exactly that purpose.
+		// Any new tests in openmrs-core should be written using JUnit 5.
+		Set<Class> allowedJunit4TestClasses = Stream.of(StartModuleAnnotationJUnit4Test.class,
+			StartModuleAnnotationReuseJUnit4Test.class,
+			OpenmrsProfileExcludeFilterWithModulesJUnit4Test.class
+		)
 			.collect(Collectors.toSet());
 
 		List<Method> testMethodsUsingJUnit4 = getClasses(".*\\.class$")
 			.stream()
-			.filter(c -> !allowedJunit4TestClasses.contains(c.getName()))
+			.filter(c -> !allowedJunit4TestClasses.contains(c))
 			.map(c -> c.getMethods())
 			.flatMap(x -> Arrays.stream(x))
 			.filter(m -> m.getAnnotation(org.junit.Test.class) != null)
