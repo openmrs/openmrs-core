@@ -318,6 +318,10 @@
 		   <version>3.3.3</version>
 		   <scope>test</scope>
 	   </dependency>
+	   <dependency>		   
+		   <groupId>org.apache.lucene</groupId>
+		   <artifactId>lucene-analyzers-phonetic</artifactId>
+	   </dependency>
    </dependencies>
    <build>
      <resources>
@@ -394,8 +398,8 @@
 		  </plugin>
       </plugins>
    </build>
-   
-   <profiles>
+
+	<profiles>
 		<profile>
 			<id>release</id>
 			<!-- Create sources and javadocs jar -->
@@ -417,3 +421,4 @@
 		<junitVersion>5.6.2</junitVersion>
 	</properties>
 </project>
+

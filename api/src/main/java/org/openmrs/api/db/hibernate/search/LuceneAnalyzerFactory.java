@@ -16,6 +16,8 @@ import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilterFactory;
 import org.apache.lucene.analysis.ngram.EdgeNGramFilterFactory;
 import org.apache.lucene.analysis.ngram.NGramFilterFactory;
 import org.apache.lucene.analysis.standard.ClassicFilterFactory;
+import org.apache.lucene.analysis.phonetic.PhoneticFilterFactory;
+import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
 import org.hibernate.search.annotations.Factory;
 import org.hibernate.search.cfg.SearchMapping;
 
@@ -58,6 +60,12 @@ public class LuceneAnalyzerFactory {
 			.filter(NGramFilterFactory.class)
 			.param("minGramSize", "2")
 			.param("maxGramSize", "20");
+		mapping.analyzerDef(LuceneAnalyzers.SOUNDEX_ANALYZER, StandardTokenizerFactory.class)
+			.filter(ClassicFilterFactory.class) 
+			.filter(LowerCaseFilterFactory.class)
+			.filter(PhoneticFilterFactory.class)
+				.param("encoder", "Soundex");
+		
 		return mapping;
 	}
 }

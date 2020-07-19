@@ -34,6 +34,7 @@ import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
 import org.openmrs.collection.ListPart;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Performs Lucene queries.
@@ -53,8 +54,21 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	private Set<Object> skipSameValues;
 
 	boolean useOrQueryParser = false;
-
+	
+	/**
+	 * Normal uses a textual match algorithm for the search
+	 * Soundex indicates to use a Phonetic search strategy
+	 */
+	public enum MatchType
+	{
+		NORMAL, SOUNDEX
+	};
+	
 	public static <T> LuceneQuery<T> newQuery(final Class<T> type, final Session session, final String query, final Collection<String> fields) {
+		return newQuery(type, session, query, fields, MatchType.NORMAL);
+	}
+	
+	public static <T> LuceneQuery<T> newQuery(final Class<T> type, final Session session, final String query, final Collection<String> fields, MatchType matchType) {
 		return new LuceneQuery<T>(
 				type, session) {
 
@@ -63,7 +77,7 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 				if (query.isEmpty()) {
 					return new MatchAllDocsQuery();
 				}
-				return newMultipleFieldQueryParser(fields).parse(query);
+				return newMultipleFieldQueryParser(fields, matchType).parse(query);
 			}
 
 		};
@@ -231,16 +245,19 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	 */
 	protected QueryParser newQueryParser() {
 		Analyzer analyzer = getFullTextSession().getSearchFactory().getAnalyzer(getType());
-		QueryParser queryParser = new QueryParser(null, analyzer);
-
+		QueryParser queryParser = new QueryParser(null, analyzer); 
 		setDefaultOperator(queryParser);
 		return queryParser;
 	}
 
 
-	protected MultiFieldQueryParser newMultipleFieldQueryParser(Collection<String> fields) {
+	protected MultiFieldQueryParser newMultipleFieldQueryParser(Collection<String> fields, MatchType matchType) {
 		Analyzer analyzer;
-		if (getType().isAssignableFrom(PatientIdentifier.class) || getType().isAssignableFrom(PersonName.class) || getType().isAssignableFrom(PersonAttribute.class)) {
+		
+		if(matchType == MatchType.SOUNDEX) {
+			analyzer = getFullTextSession().getSearchFactory().getAnalyzer(getType());
+		}
+		else if (getType().isAssignableFrom(PatientIdentifier.class) || getType().isAssignableFrom(PersonName.class) || getType().isAssignableFrom(PersonAttribute.class)) {
 			analyzer = getFullTextSession().getSearchFactory().getAnalyzer(LuceneAnalyzers.EXACT_ANALYZER);
 		} else {
 			analyzer = getFullTextSession().getSearchFactory().getAnalyzer(getType());
