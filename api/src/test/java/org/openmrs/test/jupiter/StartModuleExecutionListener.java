@@ -9,7 +9,7 @@
  */
 package org.openmrs.test.jupiter;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.util.AssertionErrors.assertTrue;
 
 import java.net.URL;
 import java.util.Enumeration;
@@ -92,10 +92,10 @@ class StartModuleExecutionListener extends AbstractTestExecutionListener {
 					log.error("Error while starting modules: ", e);
 					throw e;
 				}
-				assertTrue(startModuleAnnotation.value().length <= ModuleFactory.getStartedModules().size(),
-					"Some of the modules did not start successfully for "
-						+ testContext.getTestClass().getSimpleName() + ". Only " + ModuleFactory.getStartedModules().size()
-						+ " modules started instead of " + startModuleAnnotation.value().length);
+				assertTrue("Some of the modules did not start successfully for "
+					+ testContext.getTestClass().getSimpleName() + ". Only " + ModuleFactory.getStartedModules().size()
+					+ " modules started instead of " + startModuleAnnotation.value().length, startModuleAnnotation
+					.value().length <= ModuleFactory.getStartedModules().size());
 				
 				/*
 				 * Refresh spring so the Services are recreated (aka serializer gets put into the SerializationService)
