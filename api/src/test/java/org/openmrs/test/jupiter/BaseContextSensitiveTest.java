@@ -60,8 +60,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmrs.ConceptName;
 import org.openmrs.Drug;
 import org.openmrs.PatientIdentifier;
@@ -120,6 +119,7 @@ import org.xml.sax.InputSource;
 @Transactional
 @Rollback
 @ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 public abstract class BaseContextSensitiveTest {
 	
 	private static final Logger log = LoggerFactory.getLogger(BaseContextSensitiveTest.class);
@@ -205,16 +205,6 @@ public abstract class BaseContextSensitiveTest {
 		loadCount++;
 		
 		instance = this;
-	}
-	
-	/**
-	 * Initializes fields annotated with {@link Mock}.
-	 * 
-	 * @since 1.11, 1.10, 1.9.9
-	 */
-	@BeforeEach
-	public void initMocks() {
-		MockitoAnnotations.initMocks(this);
 	}
 	
 	/**
