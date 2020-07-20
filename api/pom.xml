@@ -318,7 +318,7 @@
 		   <version>3.3.3</version>
 		   <scope>test</scope>
 	   </dependency>
-	   <dependency>		   
+	   <dependency>
 		   <groupId>org.apache.lucene</groupId>
 		   <artifactId>lucene-analyzers-phonetic</artifactId>
 	   </dependency>
