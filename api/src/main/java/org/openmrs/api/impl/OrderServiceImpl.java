@@ -9,6 +9,18 @@
  */
 package org.openmrs.api.impl;
 
+import static org.openmrs.Order.Action.DISCONTINUE;
+import static org.openmrs.Order.Action.REVISE;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.proxy.HibernateProxy;
 import org.openmrs.CareSetting;
@@ -51,19 +63,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
-import static org.openmrs.Order.Action.DISCONTINUE;
-import static org.openmrs.Order.Action.REVISE;
 
 /**
  * Default implementation of the Order-related services class. This method should not be invoked by
@@ -115,12 +114,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		for (Order order : orders) {
 			if (order.getId() == null) {
 				saveOrder(order, null);
-			}
-		}
-		Set<OrderGroup> nestedGroups = orderGroup.getNestedOrderGroups();
-		if (nestedGroups != null) {
-			for (OrderGroup nestedGroup : nestedGroups) {
-				Context.getOrderService().saveOrderGroup(nestedGroup);
 			}
 		}
 		return orderGroup;
