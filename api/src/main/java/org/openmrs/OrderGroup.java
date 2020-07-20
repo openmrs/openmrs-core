@@ -294,7 +294,7 @@ public class OrderGroup extends BaseChangeableOpenmrsData {
 	
 	/**
 	 * Sets the nested order groups to other order groups, to maintain linkages
-	 * between groups and support group nesting
+	 * between groups and support group nesting.
 	 * 
 	 * @param nestedOrderGroup The nested order groups to set
 	 * @since 2.4.0
