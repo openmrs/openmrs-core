@@ -69,8 +69,7 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	}
 	
 	public static <T> LuceneQuery<T> newQuery(final Class<T> type, final Session session, final String query, final Collection<String> fields, MatchType matchType) {
-		return new LuceneQuery<T>(
-				type, session) {
+		return new LuceneQuery<T>(type, session) {
 
 			@Override
 			protected Query prepareQuery() throws ParseException {
@@ -92,8 +91,7 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	 * @return the Lucene query
 	 */
 	public static <T> LuceneQuery<T> newQuery(final Class<T> type, final Session session, final String query) {
-		return new LuceneQuery<T>(
-		                          type, session) {
+		return new LuceneQuery<T>(type, session) {
 			
 			@Override
 			protected Query prepareQuery() throws ParseException {
