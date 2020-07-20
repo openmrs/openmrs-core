@@ -279,6 +279,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.apache.lucene</groupId>
+				<artifactId>lucene-analyzers-phonetic</artifactId>
+				<version>5.4.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.lucene</groupId>
 				<artifactId>lucene-queries</artifactId>
 				<version>5.5.5</version>
 			</dependency>
