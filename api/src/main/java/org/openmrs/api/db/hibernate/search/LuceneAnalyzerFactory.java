@@ -51,8 +51,8 @@ public class LuceneAnalyzerFactory {
 			.filter(LowerCaseFilterFactory.class)
 			.filter(ASCIIFoldingFilterFactory.class)
 			.filter(EdgeNGramFilterFactory.class)
-                .param("minGramSize", "2")
-                .param("maxGramSize", "20");
+			.param("minGramSize", "2")
+			.param("maxGramSize", "20");
 		mapping.analyzerDef(LuceneAnalyzers.ANYWHERE_ANALYZER, WhitespaceTokenizerFactory.class)
 			.filter(ClassicFilterFactory.class)
 			.filter(LowerCaseFilterFactory.class)
@@ -64,7 +64,7 @@ public class LuceneAnalyzerFactory {
 			.filter(ClassicFilterFactory.class) 
 			.filter(LowerCaseFilterFactory.class)
 			.filter(PhoneticFilterFactory.class)
-				.param("encoder", "Soundex");
+			.param("encoder", "Soundex");
 		
 		return mapping;
 	}
