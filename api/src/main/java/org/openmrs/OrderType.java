@@ -13,15 +13,31 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.openmrs.annotation.Independent;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 /**
  * OrderTypes are used to classify different types of Orders e.g to distinguish between Serology and
  * Radiology TestOrders
  *
  */
+@Entity
+@Table(name = "order_type")
 public class OrderType extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 23232L;
@@ -30,13 +46,25 @@ public class OrderType extends BaseChangeableOpenmrsMetadata {
 	
 	public static final String TEST_ORDER_TYPE_UUID = "52a447d3-a64a-11e3-9aeb-50e549534c5e";
 	
+	@Id
+	@Column(name = "order_type_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "order_type_id_gen")
+	@SequenceGenerator(name = "order_type_id_gen", sequenceName = "order_type_order_type_id_seq")
 	private Integer orderTypeId;
 	
+	@Column(name = "java_class_name", nullable = false)
 	private String javaClassName;
 	
+	@ManyToOne
+	@JoinColumn(name = "parent")
+	@JoinTable()
 	private OrderType parent;
 	
 	@Independent
+	@ManyToMany
+	@LazyCollection(LazyCollectionOption.TRUE)
+	@JoinTable(name = "order_type_class_map", joinColumns = @JoinColumn(name = "order_type_id", updatable = false, insertable = false), 
+		inverseJoinColumns = @JoinColumn(name = "concept_class_id", unique = true), foreignKey = "order_type_id")
 	private Collection<ConceptClass> conceptClasses;
 	
 	/**
