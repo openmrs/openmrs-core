@@ -18,7 +18,7 @@ import javax.persistence.MappedSuperclass;
 /**
  * This is a super class to make a bridge between an OpenMrsObject and is position in the form.
  *
- * @since 2.3.0
+ * @since 2.3.2
  */
 @MappedSuperclass
 public abstract class BaseFormRecordableOpenmrsData extends BaseChangeableOpenmrsData implements FormRecordable {
