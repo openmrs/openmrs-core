@@ -39,7 +39,7 @@ import javax.persistence.Transient;
  */
 @Entity
 @Table(name = "conditions")
-public class Condition extends BaseChangeableOpenmrsData {
+public class Condition extends BaseFormRecordableOpenmrsData {
 	
 	private static final long serialVersionUID = 1L;
 	
