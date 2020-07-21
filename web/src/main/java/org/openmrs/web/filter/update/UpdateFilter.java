@@ -484,9 +484,7 @@ public class UpdateFilter extends StartupFilter {
 	private void startOpenmrs(ServletContext servletContext) throws Exception {
 		
 		// Update the filter to set the Openmrs classloader on the current thread before
-		// starting OpenMRS
-		// and the spring web application context that way it is inherited by the daemon
-		// thread.
+		// starting OpenMRS and the spring web application context that way it is inherited by the daemon thread.
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 
 		// start spring
