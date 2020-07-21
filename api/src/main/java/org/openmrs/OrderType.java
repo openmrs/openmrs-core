@@ -19,6 +19,7 @@ import org.openmrs.annotation.Independent;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 
+import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -38,6 +39,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "order_type")
+@AttributeOverride(name = "name", column = @Column(name = "name", nullable = false, unique = true))
 public class OrderType extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 23232L;
@@ -57,14 +59,13 @@ public class OrderType extends BaseChangeableOpenmrsMetadata {
 	
 	@ManyToOne
 	@JoinColumn(name = "parent")
-	@JoinTable()
 	private OrderType parent;
 	
 	@Independent
 	@ManyToMany
 	@LazyCollection(LazyCollectionOption.TRUE)
 	@JoinTable(name = "order_type_class_map", joinColumns = @JoinColumn(name = "order_type_id", updatable = false, insertable = false), 
-		inverseJoinColumns = @JoinColumn(name = "concept_class_id", unique = true), foreignKey = "order_type_id")
+		inverseJoinColumns = @JoinColumn(name = "concept_class_id", unique = true))
 	private Collection<ConceptClass> conceptClasses;
 	
 	/**
