@@ -27,7 +27,7 @@ import org.openmrs.customdatatype.SingleCustomValue;
  * @see Customizable
  * @since 1.9
  */
-public interface Attribute<AT extends AttributeType, OT extends Customizable<?>> extends OpenmrsData, SingleCustomValue<AT> {
+public interface Attribute<AT extends AttributeType, OT extends Customizable<?>> extends OpenmrsData, SingleCustomValue<AT>, Comparable<Attribute> {
 	
 	/**
 	 * @return the owner that this attribute belongs to

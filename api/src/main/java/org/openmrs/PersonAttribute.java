@@ -29,7 +29,7 @@ import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.openmrs.attribute.BaseAttribute;
 /**
  * A PersonAttribute is meant as way for implementations to add arbitrary information about a
  * user/patient to their database. PersonAttributes are essentially just key-value pairs. However,
@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * @see org.openmrs.Attributable
  */
 @Indexed
-public class PersonAttribute extends BaseChangeableOpenmrsData implements java.io.Serializable, Comparable<PersonAttribute> {
+public class PersonAttribute extends BaseAttribute<PersonAttributeType, Person> implements Serializable {
 	
 	public static final long serialVersionUID = 11231211232111L;
 	
@@ -289,22 +289,6 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 		setVoidedBy(Context.getAuthenticatedUser());
 		setVoidReason(reason);
 		setDateVoided(new Date());
-	}
-	
-	/**
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 * <strong>Should</strong> return negative if other attribute is voided
-	 * <strong>Should</strong> return negative if other attribute has earlier date created
-	 * <strong>Should</strong> return negative if this attribute has lower attribute type than argument
-	 * <strong>Should</strong> return negative if other attribute has lower value
-	 * <strong>Should</strong> return negative if this attribute has lower attribute id than argument
-	 * <strong>Should</strong> not throw exception if attribute type is null
-	 * Note: this comparator imposes orderings that are inconsistent with equals
-	 */
-	@Override
-	public int compareTo(PersonAttribute other) {
-		DefaultComparator paDComparator = new DefaultComparator();
-		return paDComparator.compare(this, other);
 	}
 	
 	/**

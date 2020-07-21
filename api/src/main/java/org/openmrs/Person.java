@@ -33,6 +33,7 @@ import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
+import org.openmrs.PersonAttribute;
 
 /**
  * A Person in the system. This can be either a small person stub, or indicative of an actual
@@ -42,7 +43,7 @@ import org.springframework.util.StringUtils;
  * 
  * @see org.openmrs.Patient
  */
-public class Person extends BaseChangeableOpenmrsData {
+public class Person extends BaseCustomizableData<PersonAttribute> {
 	
 	public static final long serialVersionUID = 2L;
 	
@@ -57,7 +58,10 @@ public class Person extends BaseChangeableOpenmrsData {
 	private Set<PersonName> names = null;
 	
 	@ContainedIn
-	private Set<PersonAttribute> attributes = null;
+	@Override
+	public Set<PersonAttribute> getAttributes() {
+		return super.getAttributes();
+	}
 	
 	@Field
 	private String gender;
@@ -136,7 +140,7 @@ public class Person extends BaseChangeableOpenmrsData {
 		setUuid(person.getUuid());
 		addresses = person.getAddresses();
 		names = person.getNames();
-		attributes = person.getAttributes();
+		setAttributes(person.getAttributes());
 		
 		gender = person.getGender();
 		birthdate = person.getBirthdate();
@@ -401,19 +405,6 @@ public class Person extends BaseChangeableOpenmrsData {
 	}
 	
 	/**
-	 * @return all known attributes for person
-	 * @see org.openmrs.PersonAttribute
-	 * <strong>Should</strong> not get voided attributes
-	 * <strong>Should</strong> not fail with null attributes
-	 */
-	public Set<PersonAttribute> getAttributes() {
-		if (attributes == null) {
-			attributes = new TreeSet<>();
-		}
-		return this.attributes;
-	}
-	
-	/**
 	 * Returns only the non-voided attributes for this person
 	 * 
 	 * @return list attributes
@@ -435,7 +426,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @see org.openmrs.PersonAttribute
 	 */
 	public void setAttributes(Set<PersonAttribute> attributes) {
-		this.attributes = attributes;
+		super.setAttributes(attributes);
 		attributeMap = null;
 		allAttributeMap = null;
 	}
@@ -488,6 +479,7 @@ public class Person extends BaseChangeableOpenmrsData {
 		}
 		attributeMap = null;
 		allAttributeMap = null;
+		Set<PersonAttribute> attributes = getAttributes();
 		if (!OpenmrsUtil.collectionContains(attributes, newAttribute) && !newIsNull) {
 			attributes.add(newAttribute);
 		}
@@ -503,6 +495,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * <strong>Should</strong> remove attribute when exist
 	 */
 	public void removeAttribute(PersonAttribute attribute) {
+		Set<PersonAttribute> attributes = getAttributes(); 
 		if (attributes != null && attributes.remove(attribute)) {
 			attributeMap = null;
 			allAttributeMap = null;
