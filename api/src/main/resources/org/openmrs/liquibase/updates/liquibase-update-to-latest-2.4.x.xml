@@ -169,4 +169,19 @@
     	<dropForeignKeyConstraint baseTableName="test_order" constraintName="test_order_order_id_fk"/>
 		<addForeignKeyConstraint baseColumnNames="order_id" baseTableName="test_order" constraintName="test_order_order_id_fk" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="order_id" referencedTableName="orders"/>
 	</changeSet>
+
+	<changeSet id="20200714-Trunk-5862" author="loliveira">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="conditions" columnName="form_namespace_and_path"/>
+			</not>
+		</preConditions>
+		<comment>Adding "form_namespace_and_path" column to conditions table</comment>
+		<addColumn tableName="conditions">
+			<column name="form_namespace_and_path" type="varchar(255)">
+				<constraints nullable="true"/>
+			</column>
+		</addColumn>
+	</changeSet>
+	
 </databaseChangeLog> 
