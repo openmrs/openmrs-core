@@ -1730,9 +1730,7 @@ public class InitializationFilter extends StartupFilter {
 						setMessage("Starting OpenMRS");
 						
 						// Update the filter to set the Openmrs classloader on the current thread before
-						// starting OpenMRS
-						// and the spring web application context that way it is inherited by the daemon
-						// thread.
+						// starting OpenMRS and the spring web application context that way it is inherited by the daemon thread.
 						Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 
 						
