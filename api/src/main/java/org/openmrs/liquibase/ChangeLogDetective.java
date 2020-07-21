@@ -162,8 +162,7 @@ public class ChangeLogDetective {
 	}
 	
 	List<String> getSnapshotVersionsInDescendingOrder(Map<String, List<String>> snapshotCombinations) {
-		List<String> versions = new ArrayList<>();
-		versions.addAll(snapshotCombinations.keySet());
+		List<String> versions = new ArrayList<>(snapshotCombinations.keySet());
 		Collections.sort(versions, Collections.reverseOrder());
 		return versions;
 	}
