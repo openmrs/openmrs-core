@@ -10,7 +10,7 @@
 package org.openmrs;
 
 import liquibase.util.StringUtils;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.APIException;
 
@@ -37,7 +37,7 @@ public class BaseFormRecordableOpenmrsDataTest {
 		impl.setFormField(ns, path);
 		Field formNamespaceAndPathProperty = BaseFormRecordableOpenmrsData.class.getDeclaredField("formNamespaceAndPath");
 		formNamespaceAndPathProperty.setAccessible(true);
-		Assert.assertEquals(ns + FORM_NAMESPACE_PATH_SEPARATOR + path, formNamespaceAndPathProperty.get(impl));
+		Assertions.assertEquals(ns + FORM_NAMESPACE_PATH_SEPARATOR + path, formNamespaceAndPathProperty.get(impl));
 	}
 
 	/**
@@ -47,7 +47,7 @@ public class BaseFormRecordableOpenmrsDataTest {
 	public void getFormFieldNamespace_shouldReturnNullIfTheNamespaceIsNotSpecified() throws Exception {
 		Obs impl = new Obs();
 		impl.setFormField("", "my path");
-		Assert.assertNull(impl.getFormFieldNamespace());
+		Assertions.assertNull(impl.getFormFieldNamespace());
 	}
 
 	/**
@@ -59,7 +59,7 @@ public class BaseFormRecordableOpenmrsDataTest {
 		final String path = "my path";
 		Obs impl = new Obs();
 		impl.setFormField(ns, path);
-		Assert.assertEquals(ns, impl.getFormFieldNamespace());
+		Assertions.assertEquals(ns, impl.getFormFieldNamespace());
 	}
 
 	/**
@@ -70,7 +70,7 @@ public class BaseFormRecordableOpenmrsDataTest {
 		final String ns = "my ns";
 		Obs impl = new Obs();
 		impl.setFormField(ns, null);
-		Assert.assertEquals(ns, impl.getFormFieldNamespace());
+		Assertions.assertEquals(ns, impl.getFormFieldNamespace());
 	}
 
 	/**
@@ -80,7 +80,7 @@ public class BaseFormRecordableOpenmrsDataTest {
 	public void getFormFieldPath_shouldReturnNullIfThePathIsNotSpecified() throws Exception {
 		Obs impl = new Obs();
 		impl.setFormField("my ns", "");
-		Assert.assertNull(impl.getFormFieldPath());
+		Assertions.assertNull(impl.getFormFieldPath());
 	}
 
 	/**
@@ -92,7 +92,7 @@ public class BaseFormRecordableOpenmrsDataTest {
 		final String path = "my path";
 		Obs impl = new Obs();
 		impl.setFormField(ns, path);
-		Assert.assertEquals(path, impl.getFormFieldPath());
+		Assertions.assertEquals(path, impl.getFormFieldPath());
 	}
 
 	/**
@@ -103,7 +103,7 @@ public class BaseFormRecordableOpenmrsDataTest {
 		final String path = "my path";
 		Obs impl = new Obs();
 		impl.setFormField("", path);
-		Assert.assertEquals(path, impl.getFormFieldPath());
+		Assertions.assertEquals(path, impl.getFormFieldPath());
 	}
 
 	/**
@@ -115,7 +115,7 @@ public class BaseFormRecordableOpenmrsDataTest {
 		final String ns = StringUtils.repeat("x", 255);
 		final String path = "";
 		Obs impl = new Obs();
-		Assert.assertThrows(APIException.class, () -> impl.setFormField(ns, path));
+		Assertions.assertThrows(APIException.class, () -> impl.setFormField(ns, path));
 	}
 
 	/**
@@ -125,7 +125,7 @@ public class BaseFormRecordableOpenmrsDataTest {
 	public void setFormField_shouldRejectANamepaceContainingTheSeparator() throws Exception {
 		final String ns = "my ns" + FORM_NAMESPACE_PATH_SEPARATOR;
 		Obs impl = new Obs();
-		Assert.assertThrows(APIException.class, () -> impl.setFormField(ns, ""));
+		Assertions.assertThrows(APIException.class, () -> impl.setFormField(ns, ""));
 	}
 
 	/**
@@ -135,6 +135,6 @@ public class BaseFormRecordableOpenmrsDataTest {
 	public void setFormField_shouldRejectAPathContainingTheSeparator() throws Exception {
 		final String path = FORM_NAMESPACE_PATH_SEPARATOR + "my path";
 		Obs impl = new Obs();
-		Assert.assertThrows(APIException.class, () -> impl.setFormField("", path));
+		Assertions.assertThrows(APIException.class, () -> impl.setFormField("", path));
 	}
 }
