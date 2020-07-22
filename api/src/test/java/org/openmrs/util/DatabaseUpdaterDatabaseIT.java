@@ -27,7 +27,7 @@ public class DatabaseUpdaterDatabaseIT extends H2DatabaseIT {
 	 * This is the number of change sets defined by the Liquibase snapshot files 2.1.x and all Liquibase update
 	 * files with versions greater than 2.1.x.
 	 * 
-	 * This constant needs to be updated when adding new Liquibase update files to openmrs-core..
+	 * This constant needs to be updated when adding new Liquibase update files to openmrs-core.
 	 */
 
 	private static final int CHANGE_SET_COUNT_FOR_2_1_X = 865;
