@@ -60,6 +60,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import static org.openmrs.Order.Action.DISCONTINUE;
 import static org.openmrs.Order.Action.REVISE;
@@ -114,6 +115,12 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		for (Order order : orders) {
 			if (order.getId() == null) {
 				saveOrder(order, null);
+			}
+		}
+		Set<OrderGroup> nestedGroups = orderGroup.getNestedOrderGroups();
+		if (nestedGroups != null) {
+			for (OrderGroup nestedGroup : nestedGroups) {
+				Context.getOrderService().saveOrderGroup(nestedGroup);
 			}
 		}
 		return orderGroup;

@@ -7,15 +7,17 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.test;
+package org.openmrs.annotation;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.openmrs.api.context.Context;
+import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.StartModule;
 
 @StartModule({ "org/openmrs/module/include/test1-1.0-SNAPSHOT.omod", "org/openmrs/module/include/test2-1.0-SNAPSHOT.omod" })
-public class StartModuleAnnotationTest extends BaseModuleContextSensitiveTest {
+public class StartModuleAnnotationJUnit4Test extends BaseContextSensitiveTest {
 	
 	@Test
 	public void shouldStartModules() throws ClassNotFoundException {

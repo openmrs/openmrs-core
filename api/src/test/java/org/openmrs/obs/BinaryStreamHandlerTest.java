@@ -13,13 +13,16 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.condition.OS.WINDOWS;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.io.TempDir;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
@@ -70,38 +73,39 @@ public class BinaryStreamHandlerTest  extends BaseContextSensitiveTest {
     }
     	
 	@Test
+	@DisabledOnOs(WINDOWS)
 	public void saveObs_shouldRetrieveCorrectMimetype() throws IOException {
-		String mimetype = "application/octet-stream";
-		String filename = "TestingComplexObsSaving";
-		byte[] content = "Teststring".getBytes();
 		
-		ByteArrayInputStream byteIn = new ByteArrayInputStream(content);
-		
-		ComplexData complexData = new ComplexData(filename, byteIn);
-		
-		// Construct 2 Obs to also cover the case where the filename exists already
-		Obs obs1 = new Obs();
-		obs1.setComplexData(complexData);
-		
-		Obs obs2 = new Obs();
-		obs2.setComplexData(complexData);
-
 		adminService.saveGlobalProperty(new GlobalProperty(
 			OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR,
 			complexObsTestFolder.toAbsolutePath().toString()
 		));
 		
+		String mimetype = "application/octet-stream";
+		String filename = "TestingComplexObsSaving";
+		byte[] content = "Teststring".getBytes();
 		
-		// Execute save
-		handler.saveObs(obs1);
-		handler.saveObs(obs2);
-		
-		// Get observation
-		Obs complexObs1 = handler.getObs(obs1, "RAW_VIEW");
-		Obs complexObs2 = handler.getObs(obs2, "RAW_VIEW");
-		
-		assertEquals(complexObs1.getComplexData().getMimeType(), mimetype);
-		assertEquals(complexObs2.getComplexData().getMimeType(), mimetype);
+		Obs complexObs1 = null;
+		Obs complexObs2 = null;
+		try (ByteArrayInputStream byteIn = new ByteArrayInputStream(content)) {
+			ComplexData complexData = new ComplexData(filename, byteIn);
+			// Construct 2 Obs to also cover the case where the filename exists already
+			Obs obs1 = new Obs();
+			obs1.setComplexData(complexData);
+			Obs obs2 = new Obs();
+			obs2.setComplexData(complexData);
+			
+			handler.saveObs(obs1);
+			handler.saveObs(obs2);
+			
+			complexObs1 = handler.getObs(obs1, "RAW_VIEW");
+			complexObs2 = handler.getObs(obs2, "RAW_VIEW");
+			
+			assertEquals(complexObs1.getComplexData().getMimeType(), mimetype);
+			assertEquals(complexObs2.getComplexData().getMimeType(), mimetype);
+		} finally {
+			((InputStream) complexObs1.getComplexData().getData()).close();
+			((InputStream) complexObs1.getComplexData().getData()).close();
+		}
 	}
-	
 }
