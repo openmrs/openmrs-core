@@ -22,6 +22,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.OrderSetService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderSetDAO;
+import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.springframework.transaction.annotation.Transactional;
 
 public class OrderSetServiceImpl extends BaseOpenmrsService implements OrderSetService {
@@ -71,6 +72,8 @@ public class OrderSetServiceImpl extends BaseOpenmrsService implements OrderSetS
 	 */
 	private synchronized OrderSet saveOrderSetInternal(OrderSet orderSet) throws APIException {
 		if (CollectionUtils.isEmpty(orderSet.getOrderSetMembers())) {
+			// Why do we have to do this?
+			CustomDatatypeUtil.saveAttributesIfNecessary(orderSet);
 			return dao.save(orderSet);
 		}
 		for (OrderSetMember orderSetMember : orderSet.getOrderSetMembers()) {
@@ -85,6 +88,8 @@ public class OrderSetServiceImpl extends BaseOpenmrsService implements OrderSetS
 			}
 		}
 		
+		// Why do we have to do this?
+		CustomDatatypeUtil.saveAttributesIfNecessary(orderSet);
 		return dao.save(orderSet);
 	}
 	
