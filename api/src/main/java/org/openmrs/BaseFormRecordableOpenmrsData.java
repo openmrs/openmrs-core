@@ -16,7 +16,7 @@ import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
 /**
- * This is a super class to make a bridge between an OpenMrsObject and is position in the form.
+ * This is a super class to make a bridge between an OpenMrsObject and its position in the form.
  * 
  * @since 2.4.0
  */
