@@ -160,6 +160,7 @@ public class OrderSetServiceImpl extends BaseOpenmrsService implements OrderSetS
 	 * @see org.openmrs.api.OrderSetService#saveOrderSetAttributeType(org.openmrs.OrderSetAttributeType)
 	 */
 	@Override
+	@Transactional(readOnly = false)
 	public OrderSetAttributeType saveOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType) {
 		return dao.saveOrderSetAttributeType(orderSetAttributeType);
 	}
@@ -169,6 +170,7 @@ public class OrderSetServiceImpl extends BaseOpenmrsService implements OrderSetS
 	 *      java.lang.String)
 	 */
 	@Override
+	@Transactional(readOnly = false)
 	public OrderSetAttributeType retireOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType,
 			String reason) {
 		return dao.saveOrderSetAttributeType(orderSetAttributeType);
@@ -178,6 +180,7 @@ public class OrderSetServiceImpl extends BaseOpenmrsService implements OrderSetS
 	 * @see org.openmrs.api.OrderSetService#unretireOrderSetAttributeType(org.openmrs.OrderSetAttributeType)
 	 */
 	@Override
+	@Transactional(readOnly = false)
 	public OrderSetAttributeType unretireOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType) {
 		return Context.getOrderSetService().saveOrderSetAttributeType(orderSetAttributeType);
 	}
@@ -186,6 +189,7 @@ public class OrderSetServiceImpl extends BaseOpenmrsService implements OrderSetS
 	 * @see org.openmrs.api.OrderSetService#purgeOrderSetAttributeType(org.openmrs.OrderSetAttributeType)
 	 */
 	@Override
+	@Transactional(readOnly = false)
 	public void purgeOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType) {
 		dao.deleteOrderSetAttributeType(orderSetAttributeType);
 	}

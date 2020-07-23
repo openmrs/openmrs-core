@@ -18,8 +18,6 @@ import org.openmrs.attribute.BaseAttributeType;
  * @since 2.4.0
  */
 public class OrderSetAttributeType extends BaseAttributeType<OrderSet> implements AttributeType<OrderSet> {
-
-	private static final long serialVersionUID = 1L;
 	
 	private Integer orderSetAttributeTypeId;
 
