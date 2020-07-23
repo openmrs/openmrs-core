@@ -9,10 +9,12 @@
  */
 package org.openmrs.validator;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 import org.openmrs.PersonAttributeType;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -31,7 +33,7 @@ public class PersonAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(type, "patObj");
 		new PersonAttributeTypeValidator().validate(type, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 	}
 	
 	/**
@@ -45,7 +47,7 @@ public class PersonAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(type, "patObj");
 		new PersonAttributeTypeValidator().validate(type, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 	}
 	
 	/**
@@ -61,7 +63,7 @@ public class PersonAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(type, "patObj");
 		new PersonAttributeTypeValidator().validate(type, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -76,7 +78,7 @@ public class PersonAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(type, "patObj");
 		new PersonAttributeTypeValidator().validate(type, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("format"));
+		assertTrue(errors.hasFieldErrors("format"));
 	}
 	
 	/**
@@ -90,17 +92,17 @@ public class PersonAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(type, "type");
 		new PersonAttributeTypeValidator().validate(type, errors);
-		Assert.assertFalse(errors.hasFieldErrors("description"));
+		assertFalse(errors.hasFieldErrors("description"));
 		
 		type.setDescription("");
 		errors = new BindException(type, "type");
 		new PersonAttributeTypeValidator().validate(type, errors);
-		Assert.assertFalse(errors.hasFieldErrors("description"));
+		assertFalse(errors.hasFieldErrors("description"));
 		
 		type.setDescription(" ");
 		errors = new BindException(type, "type");
 		new PersonAttributeTypeValidator().validate(type, errors);
-		Assert.assertFalse(errors.hasFieldErrors("description"));
+		assertFalse(errors.hasFieldErrors("description"));
 	}
 	
 	/**
@@ -116,7 +118,7 @@ public class PersonAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(type, "patObj");
 		new PersonAttributeTypeValidator().validate(type, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -135,8 +137,8 @@ public class PersonAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(type, "patObj");
 		new PersonAttributeTypeValidator().validate(type, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("name"));
-		Assert.assertTrue(errors.hasFieldErrors("format"));
-		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+		assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("format"));
+		assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 }

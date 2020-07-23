@@ -9,18 +9,21 @@
  */
 package org.openmrs.validator;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -40,7 +43,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		term.setConceptSource(Context.getConceptService().getConceptSource(1));
 		Errors errors = new BindException(term, "term");
 		new ConceptReferenceTermValidator().validate(term, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("code"));
+		assertTrue(errors.hasFieldErrors("code"));
 	}
 	
 	/**
@@ -54,7 +57,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		term.setConceptSource(Context.getConceptService().getConceptSource(1));
 		Errors errors = new BindException(term, "term");
 		new ConceptReferenceTermValidator().validate(term, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("code"));
+		assertTrue(errors.hasFieldErrors("code"));
 	}
 	
 	/**
@@ -67,7 +70,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		term.setConceptSource(Context.getConceptService().getConceptSource(1));
 		Errors errors = new BindException(term, "term");
 		new ConceptReferenceTermValidator().validate(term, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("code"));
+		assertTrue(errors.hasFieldErrors("code"));
 	}
 	
 	/**
@@ -81,16 +84,16 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		term.setConceptSource(Context.getConceptService().getConceptSource(1));
 		Errors errors = new BindException(term, "term");
 		new ConceptReferenceTermValidator().validate(term, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("code"));
+		assertTrue(errors.hasFieldErrors("code"));
 	}
 	
 	/**
 	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void validate_shouldFailIfTheConceptReferenceTermObjectIsNull() {
 		Errors errors = new BindException(new ConceptReferenceTerm(), "term");
-		new ConceptReferenceTermValidator().validate(null, errors);
+		assertThrows(IllegalArgumentException.class, () -> new ConceptReferenceTermValidator().validate(null, errors));
 	}
 	
 	/**
@@ -103,14 +106,14 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		term.setCode("code");
 		Errors errors = new BindException(term, "term");
 		new ConceptReferenceTermValidator().validate(term, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("conceptSource"));
+		assertTrue(errors.hasFieldErrors("conceptSource"));
 	}
 	
 	/**
 	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Ignore
+	@Disabled
 	//we might need these back when the constraint is put back
 	public void validate_shouldFailIfTheNameIsAWhiteSpaceCharacter() {
 		ConceptReferenceTerm term = new ConceptReferenceTerm();
@@ -119,14 +122,14 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		term.setConceptSource(Context.getConceptService().getConceptSource(1));
 		Errors errors = new BindException(term, "term");
 		new ConceptReferenceTermValidator().validate(term, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 	}
 	
 	/**
 	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Ignore
+	@Disabled
 	public void validate_shouldFailIfTheNameIsAnEmptyString() {
 		ConceptReferenceTerm term = new ConceptReferenceTerm();
 		term.setName("");
@@ -134,21 +137,21 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		term.setConceptSource(Context.getConceptService().getConceptSource(1));
 		Errors errors = new BindException(term, "term");
 		new ConceptReferenceTermValidator().validate(term, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 	}
 	
 	/**
 	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Ignore
+	@Disabled
 	public void validate_shouldFailIfTheNameIsNull() {
 		ConceptReferenceTerm term = new ConceptReferenceTerm();
 		term.setCode("code");
 		term.setConceptSource(Context.getConceptService().getConceptSource(1));
 		Errors errors = new BindException(term, "term");
 		new ConceptReferenceTermValidator().validate(term, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 	}
 	
 	/**
@@ -162,7 +165,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		term.setConceptSource(Context.getConceptService().getConceptSource(1));
 		Errors errors = new BindException(term, "term");
 		new ConceptReferenceTermValidator().validate(term, errors);
-		Assert.assertEquals(false, errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -177,7 +180,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		term.setConceptSource(Context.getConceptService().getConceptSource(1));
 		Errors errors = new BindException(term, "term");
 		new ConceptReferenceTermValidator().validate(term, errors);
-		Assert.assertEquals(false, errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -192,7 +195,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		term.setConceptSource(Context.getConceptService().getConceptSource(1));
 		Errors errors = new BindException(term, "term");
 		new ConceptReferenceTermValidator().validate(term, errors);
-		Assert.assertEquals(false, errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -207,7 +210,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		term.addConceptReferenceTermMap(new ConceptReferenceTermMap(new ConceptReferenceTerm(1), null));
 		Errors errors = new BindException(term, "term");
 		new ConceptReferenceTermValidator().validate(term, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("conceptReferenceTermMaps[0].conceptMapType"));
+		assertTrue(errors.hasFieldErrors("conceptReferenceTermMaps[0].conceptMapType"));
 	}
 	
 	/**
@@ -224,7 +227,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		term.setConceptReferenceTermMaps(maps);
 		Errors errors = new BindException(term, "term");
 		new ConceptReferenceTermValidator().validate(term, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("conceptReferenceTermMaps[0].termB"));
+		assertTrue(errors.hasFieldErrors("conceptReferenceTermMaps[0].termB"));
 	}
 	
 	/**
@@ -239,7 +242,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		term.setConceptReferenceTermMaps(maps);
 		Errors errors = new BindException(term, "term");
 		new ConceptReferenceTermValidator().validate(term, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("conceptReferenceTermMaps[0].termB"));
+		assertTrue(errors.hasFieldErrors("conceptReferenceTermMaps[0].termB"));
 	}
 	
 	/**
@@ -262,7 +265,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		System.err.println(errors.getAllErrors());
 		
 		//the term for second mapping should be rejected
-		Assert.assertEquals(true, errors.hasFieldErrors("conceptReferenceTermMaps[1].termB"));
+		assertTrue(errors.hasFieldErrors("conceptReferenceTermMaps[1].termB"));
 	}
 	
 	/**
@@ -279,7 +282,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		term.setRetireReason("RetireReason");
 		Errors errors = new BindException(term, "term");
 		new ConceptReferenceTermValidator().validate(term, errors);
-		Assert.assertEquals(false, errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -301,10 +304,10 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 		Errors errors = new BindException(term, "term");
 		new ConceptReferenceTermValidator().validate(term, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("name"));
-		Assert.assertEquals(true, errors.hasFieldErrors("code"));
-		Assert.assertEquals(true, errors.hasFieldErrors("version"));
-		Assert.assertEquals(true, errors.hasFieldErrors("description"));
-		Assert.assertEquals(true, errors.hasFieldErrors("retireReason"));
+		assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("code"));
+		assertTrue(errors.hasFieldErrors("version"));
+		assertTrue(errors.hasFieldErrors("description"));
+		assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 }

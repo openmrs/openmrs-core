@@ -21,12 +21,28 @@
    <name>openmrs-api</name>
    <description>The api that is re-used across web and modules</description>
    <dependencies>
-      <dependency>
+	   <dependency>
          <groupId>org.openmrs.test</groupId>
          <artifactId>openmrs-test</artifactId>
          <type>pom</type>
          <scope>test</scope>
-      </dependency>
+		   <exclusions>
+			   <exclusion>
+				   <groupId>org.powermock</groupId>
+				   <artifactId>powermock-module-junit4</artifactId>
+			   </exclusion>
+			   <exclusion>
+				   <groupId>org.powermock</groupId>
+				   <artifactId>powermock-api-mockito2</artifactId>
+			   </exclusion>
+		   </exclusions>
+	   </dependency>
+	   <dependency>
+		   <groupId>org.powermock</groupId>
+		   <artifactId>powermock-reflect</artifactId>
+		   <version>2.0.7</version>
+		   <scope>test</scope>
+	   </dependency>
       <dependency>
          <groupId>commons-collections</groupId>
          <artifactId>commons-collections</artifactId>
@@ -193,7 +209,7 @@
       </dependency>
       <dependency>
          <groupId>javax.mail</groupId>
-         <artifactId>mail</artifactId>
+         <artifactId>javax.mail-api</artifactId>
       </dependency>
       <dependency>
          <groupId>org.liquibase</groupId>
@@ -275,9 +291,37 @@
 		    <artifactId>jakarta.xml.bind-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.glassfish.jaxb</groupId>
-			<artifactId>jaxb-runtime</artifactId>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
 	    </dependency>
+	   <dependency>
+		   <groupId>org.junit.jupiter</groupId>
+		   <artifactId>junit-jupiter-api</artifactId>
+		   <version>${junitVersion}</version>
+		   <scope>test</scope>
+	   </dependency>
+	   <dependency>
+		   <groupId>org.junit.jupiter</groupId>
+		   <artifactId>junit-jupiter-engine</artifactId>
+		   <version>${junitVersion}</version>
+		   <scope>test</scope>
+	   </dependency>
+	   <dependency>
+		   <groupId>org.junit.vintage</groupId>
+		   <artifactId>junit-vintage-engine</artifactId>
+		   <version>${junitVersion}</version>
+		   <scope>test</scope>
+	   </dependency>
+	   <dependency>
+		   <groupId>org.mockito</groupId>
+		   <artifactId>mockito-junit-jupiter</artifactId>
+		   <version>3.3.3</version>
+		   <scope>test</scope>
+	   </dependency>
+	   <dependency>
+		   <groupId>org.apache.lucene</groupId>
+		   <artifactId>lucene-analyzers-phonetic</artifactId>
+	   </dependency>
    </dependencies>
    <build>
      <resources>
@@ -354,8 +398,8 @@
 		  </plugin>
       </plugins>
    </build>
-   
-   <profiles>
+
+	<profiles>
 		<profile>
 			<id>release</id>
 			<!-- Create sources and javadocs jar -->
@@ -373,4 +417,8 @@
 			</build>
 		</profile>
 	</profiles>
+	<properties>
+		<junitVersion>5.6.2</junitVersion>
+	</properties>
 </project>
+

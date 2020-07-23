@@ -9,10 +9,13 @@
  */
 package org.openmrs.validator;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 import org.openmrs.ConceptMapType;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -30,16 +33,16 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 		mapType.setName("is a");
 		Errors errors = new BindException(mapType, "mapType");
 		new ConceptMapTypeValidator().validate(mapType, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 	}
 	
 	/**
 	 * @see ConceptMapTypeValidator#validate(Object,Errors)
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void validate_shouldFailIfTheConceptMapTypeObjectIsNull() {
 		Errors errors = new BindException(new ConceptMapType(), "mapType");
-		new ConceptMapTypeValidator().validate(null, errors);
+		assertThrows(IllegalArgumentException.class, () ->  new ConceptMapTypeValidator().validate(null, errors));
 	}
 	
 	/**
@@ -51,7 +54,7 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 		mapType.setName(" ");
 		Errors errors = new BindException(mapType, "mapType");
 		new ConceptMapTypeValidator().validate(mapType, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 	}
 	
 	/**
@@ -63,7 +66,7 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 		mapType.setName("");
 		Errors errors = new BindException(mapType, "mapType");
 		new ConceptMapTypeValidator().validate(mapType, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 	}
 	
 	/**
@@ -74,7 +77,7 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 		ConceptMapType mapType = new ConceptMapType();
 		Errors errors = new BindException(mapType, "mapType");
 		new ConceptMapTypeValidator().validate(mapType, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 	}
 	
 	/**
@@ -86,7 +89,7 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 		mapType.setName("unique-name");
 		Errors errors = new BindException(mapType, "mapType");
 		new ConceptMapTypeValidator().validate(mapType, errors);
-		Assert.assertEquals(false, errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -100,7 +103,7 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 		mapType.setRetireReason("RetireReason");
 		Errors errors = new BindException(mapType, "mapType");
 		new ConceptMapTypeValidator().validate(mapType, errors);
-		Assert.assertEquals(false, errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -116,7 +119,7 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 		Errors errors = new BindException(mapType, "mapType");
 		new ConceptMapTypeValidator().validate(mapType, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("description"));
-		Assert.assertEquals(true, errors.hasFieldErrors("retireReason"));
+		assertTrue(errors.hasFieldErrors("description"));
+		assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 }

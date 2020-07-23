@@ -9,12 +9,13 @@
  */
 package org.openmrs.patient.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.patient.UnallowedIdentifierException;
 
 /**
@@ -59,12 +60,7 @@ public class LuhnIdentifierValidatorTest {
 		//Make sure invalid identifiers throw an exception
 
 		for (String invalidIdentifier : invalidIdentifiers) {
-			try {
-				validator.getValidIdentifier(invalidIdentifier);
-				fail("Identifier " + invalidIdentifier + " should have failed.");
-			}
-			catch (UnallowedIdentifierException e) {
-			}
+			assertThrows(UnallowedIdentifierException.class, () -> validator.getValidIdentifier(invalidIdentifier));
 		}
 	}
 	
@@ -76,36 +72,16 @@ public class LuhnIdentifierValidatorTest {
 		//Make sure invalid identifiers throw an exception
 
 		for (String invalidIdentifier1 : invalidIdentifiers) {
-			try {
-				validator.isValid(invalidIdentifier1);
-				fail("Identifier " + invalidIdentifier1 + " should have failed.");
-			}
-			catch (UnallowedIdentifierException e) {
-			}
+			assertThrows(UnallowedIdentifierException.class, () -> validator.isValid(invalidIdentifier1));
 		}
 
 		for (String invalidIdentifier : invalidIdentifiers) {
-			try {
-				validator.isValid(invalidIdentifier + "-H");
-				fail("Identifier " + invalidIdentifier + " should have failed.");
-			}
-			catch (UnallowedIdentifierException e) {
-			}
+			assertThrows(UnallowedIdentifierException.class, () -> validator.isValid(invalidIdentifier + "-H"));
 		}
 
 		for (String allowedIdentifier1 : allowedIdentifiers) {
-			try {
-				validator.isValid(allowedIdentifier1 + "-X");
-				fail("Identifier " + allowedIdentifier1 + " should have failed.");
-			}
-			catch (UnallowedIdentifierException e) {
-			}
-			try {
-				validator.isValid(allowedIdentifier1 + "-10");
-				fail("Identifier " + allowedIdentifier1 + " should have failed.");
-			}
-			catch (UnallowedIdentifierException e) {
-			}
+			assertThrows(UnallowedIdentifierException.class, () -> validator.isValid(allowedIdentifier1 + "-X"));
+			assertThrows(UnallowedIdentifierException.class, () -> validator.isValid(allowedIdentifier1 + "-10"));
 		}
 		
 		//Now test allowed identifiers that just have the wrong check digit.

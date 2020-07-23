@@ -96,7 +96,7 @@
 			<dependency>
 				<groupId>javax.servlet</groupId>
 				<artifactId>javax.servlet-api</artifactId>
-				<version>3.1.0</version>
+				<version>4.0.1</version>
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
@@ -105,9 +105,9 @@
 				<version>2.0</version>
 			</dependency>
 			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>jstl</artifactId>
-				<version>1.1.2</version>
+				<groupId>javax.servlet.jsp.jstl</groupId>
+				<artifactId>javax.servlet.jsp.jstl-api</artifactId>
+				<version>1.2.2</version>
 			</dependency>
 			<dependency>
 				<groupId>taglibs</groupId>
@@ -279,6 +279,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.apache.lucene</groupId>
+				<artifactId>lucene-analyzers-phonetic</artifactId>
+				<version>5.4.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.lucene</groupId>
 				<artifactId>lucene-queries</artifactId>
 				<version>5.5.5</version>
 			</dependency>
@@ -290,7 +295,7 @@
 			<dependency>
 				<groupId>org.liquibase</groupId>
 				<artifactId>liquibase-core</artifactId>
-				<version>3.10.0</version>
+				<version>3.10.1</version>
 				<exclusions>
 					<exclusion>
 						<groupId>ch.qos.logback</groupId>
@@ -381,8 +386,8 @@
 			</dependency>
 			<dependency>
 				<groupId>javax.mail</groupId>
-				<artifactId>mail</artifactId>
-				<version>1.4.1</version>
+				<artifactId>javax.mail-api</artifactId>
+				<version>1.6.2</version>
 				<exclusions>
 					<exclusion>  <!-- declare the exclusion here -->
 						<groupId>javax.activation</groupId>
@@ -420,7 +425,7 @@
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>42.2.13</version>
+				<version>42.2.14</version>
 				<scope>runtime</scope>
 			</dependency>
 			<dependency>
@@ -472,7 +477,7 @@
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
-				<version>2.28.2</version>
+				<version>3.3.3</version>
 			</dependency>
 			<dependency>
 				<groupId>org.powermock</groupId>
@@ -555,9 +560,9 @@
 			    <version>3.0.0-RC3</version>
 			</dependency>
 			<dependency>
-			    <groupId>org.glassfish.jaxb</groupId>
-			    <artifactId>jaxb-runtime</artifactId>
-			    <version>2.3.2</version>
+				<groupId>com.sun.xml.bind</groupId>
+				<artifactId>jaxb-impl</artifactId>
+			    <version>3.0.0-M4</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -1101,8 +1106,8 @@
 		<openmrs.version.shortnumericonly>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}</openmrs.version.shortnumericonly>
 		<openmrs.version>${project.version}</openmrs.version>
 
-		<springVersion>5.2.6.RELEASE</springVersion>
-		<hibernateVersion>5.4.17.Final</hibernateVersion>
+		<springVersion>5.2.7.RELEASE</springVersion>
+		<hibernateVersion>5.4.18.Final</hibernateVersion>
 		<slf4jVersion> 1.7.30</slf4jVersion>
 		<log4jVersion>2.13.3</log4jVersion>
 		<customArgLineForTesting/>

@@ -9,17 +9,20 @@
  */
 package org.openmrs.api.db;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
@@ -30,7 +33,7 @@ import org.openmrs.ConceptSearchResult;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
  * Tests the concept word weighing logic, tests in this class assume that other factors remain
@@ -45,7 +48,7 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	@Before
+	@BeforeEach
 	public void runBeforeEachTest() {
 		
 		if (dao == null)
@@ -58,7 +61,7 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void AllConceptSources_shouldReturnAllConceptSources() {
-		Assert.assertEquals(dao.getAllConceptSources(true).size(), 5);
+		assertEquals(dao.getAllConceptSources(true).size(), 5);
 	}
 	
 	/**
@@ -66,7 +69,7 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void AllConceptSources_shouldReturnAllUnretiredConceptSources() {
-		Assert.assertEquals(dao.getAllConceptSources(false).size(), 3);
+		assertEquals(dao.getAllConceptSources(false).size(), 3);
 	}
 	
 	/**
@@ -74,7 +77,7 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void isConceptMapTypeInUse_shouldReturnTrueIfAMapTypeHasAConceptMapOrMoreUsingIt() {
-		Assert.assertTrue(dao.isConceptMapTypeInUse(Context.getConceptService().getConceptMapType(6)));
+		assertTrue(dao.isConceptMapTypeInUse(Context.getConceptService().getConceptMapType(6)));
 	}
 	
 	/**
@@ -82,7 +85,7 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void isConceptMapTypeInUse_shouldReturnTrueIfAMapTypeHasAConceptReferenceTermMapOrMoreUsingIt() {
-		Assert.assertTrue(dao.isConceptMapTypeInUse(Context.getConceptService().getConceptMapType(4)));
+		assertTrue(dao.isConceptMapTypeInUse(Context.getConceptService().getConceptMapType(4)));
 	}
 	
 	/**
@@ -90,7 +93,7 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void isConceptReferenceTermInUse_shouldReturnTrueIfATermHasAConceptMapOrMoreUsingIt() {
-		Assert.assertTrue(dao.isConceptReferenceTermInUse(Context.getConceptService().getConceptReferenceTerm(10)));
+		assertTrue(dao.isConceptReferenceTermInUse(Context.getConceptService().getConceptReferenceTerm(10)));
 	}
 	
 	/**
@@ -99,7 +102,7 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void isConceptReferenceTermInUse_shouldReturnTrueIfATermHasAConceptReferenceTermMapOrMoreUsingIt()
 	{
-		Assert.assertTrue(dao.isConceptReferenceTermInUse(Context.getConceptService().getConceptReferenceTerm(2)));
+		assertTrue(dao.isConceptReferenceTermInUse(Context.getConceptService().getConceptReferenceTerm(2)));
 	}
 	
 	/**
@@ -107,7 +110,7 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void isConceptMapTypeInUse_shouldReturnFalseIfAMapTypeHasNoMapsUsingIt() {
-		Assert.assertFalse(dao.isConceptMapTypeInUse(Context.getConceptService().getConceptMapType(3)));
+		assertFalse(dao.isConceptMapTypeInUse(Context.getConceptService().getConceptMapType(3)));
 	}
 	
 	/**
@@ -115,7 +118,7 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void isConceptReferenceTermInUse_shouldReturnFalseIfATermHasNoMapsUsingIt() {
-		Assert.assertFalse(dao.isConceptReferenceTermInUse(Context.getConceptService().getConceptReferenceTerm(11)));
+		assertFalse(dao.isConceptReferenceTermInUse(Context.getConceptService().getConceptReferenceTerm(11)));
 	}
 	
 	@Test
@@ -136,7 +139,7 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 		updateSearchIndex();
 		List<Concept> concepts = dao.getConcepts("VOIDED", null, false, new ArrayList<>(),
 				new ArrayList<>());
-		Assert.assertEquals(0, concepts.size());
+		assertEquals(0, concepts.size());
 	}
 	
 	/**
@@ -146,10 +149,10 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	public void getConceptsByAnswer_shouldReturnConceptsForTheGivenAnswerConcept() {
 		Concept concept = dao.getConcept(22);
 		List<Concept> conceptsByAnswer = dao.getConceptsByAnswer(concept);
-		Assert.assertNotNull(conceptsByAnswer);
-		Assert.assertEquals(1, conceptsByAnswer.size());
+		assertNotNull(conceptsByAnswer);
+		assertEquals(1, conceptsByAnswer.size());
 		Concept conceptByAnswer = conceptsByAnswer.get(0);
-		Assert.assertEquals(21, conceptByAnswer.getConceptId().intValue());
+		assertEquals(21, conceptByAnswer.getConceptId().intValue());
 	}
 	
 	/**
@@ -159,7 +162,7 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	 */
 	@SuppressWarnings("unchecked")
 	@Test
-	@Ignore
+	@Disabled
 	public void getConcepts_shouldReturnCorrectResultsForConceptWithNamesThatContainsWordsWithMoreWeight() {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
 		Concept conceptWithMultipleMatchingNames = dao.getConcept(3000);
@@ -171,11 +174,11 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 		        .getConcepts("trust", Collections.singletonList(Locale.ENGLISH), false, Collections.EMPTY_LIST,
 		            Collections.EMPTY_LIST, Collections.EMPTY_LIST, Collections.EMPTY_LIST, null, null, null);
 		
-		Assert.assertEquals(2, searchResults.size());
+		assertEquals(2, searchResults.size());
 		//the first concept is the one with a word with the highest weight
-		Assert.assertEquals(conceptWithMultipleMatchingNames, searchResults.get(0).getConcept());
+		assertEquals(conceptWithMultipleMatchingNames, searchResults.get(0).getConcept());
 		//For conceptId=3000, its search result should ALWAYS match on 'TRUST ME' because it is shorter THAN 'TRUST ALWAYS'
-		Assert.assertEquals(9998, searchResults.get(0).getConceptName().getConceptNameId().intValue());
+		assertEquals(9998, searchResults.get(0).getConceptName().getConceptNameId().intValue());
 	}
 	
 	/**
@@ -185,7 +188,7 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	 */
 	@SuppressWarnings("unchecked")
 	@Test
-	@Ignore
+	@Disabled
 	public void getConcepts_shouldReturnCorrectResultsIfAConceptNameContainsSameWordMoreThanOnce() {
 		ConceptService cs = Context.getConceptService();
 		ConceptClass cc = cs.getConceptClass(1);
@@ -203,8 +206,8 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 		cn1b.setLocalePreferred(true);
 		c1.addName(cn1b);
 		cs.saveConcept(c1);
-		Assert.assertTrue(cn1a.isSynonym());
-		Assert.assertTrue(cn1b.getConceptNameId() > cn1a.getConceptNameId());
+		assertTrue(cn1a.isSynonym());
+		assertTrue(cn1b.getConceptNameId() > cn1a.getConceptNameId());
 		
 		Concept c2 = new Concept();
 		ConceptName cn2a = new ConceptName("ONE TO MANY", locale);
@@ -219,9 +222,9 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 		        .getConcepts("one", Collections.singletonList(locale), false, Collections.EMPTY_LIST,
 		            Collections.EMPTY_LIST, Collections.EMPTY_LIST, Collections.EMPTY_LIST, null, null, null);
 		
-		Assert.assertEquals(2, searchResults1.size());
-		Assert.assertEquals(c1, searchResults1.get(0).getConcept());
-		Assert.assertEquals(cn1b, searchResults1.get(0).getConceptName());
+		assertEquals(2, searchResults1.size());
+		assertEquals(c1, searchResults1.get(0).getConcept());
+		assertEquals(cn1b, searchResults1.get(0).getConceptName());
 	}
 	
 }

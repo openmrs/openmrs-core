@@ -169,7 +169,7 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * The model object that holds all the properties that the rendered templates use. All attributes on
 	 * this object are made available to all templates via reflection in the
-	 * {@link #renderTemplate(String, Map, httpResponse)} method.
+	 * {@link org.openmrs.web.filter.StartupFilter#renderTemplate(String, Map, HttpServletResponse)} method.
 	 */
 	private InitializationWizardModel wizardModel = null;
 	
@@ -1566,8 +1566,7 @@ public class InitializationFilter extends StartupFilter {
 							}
 							
 							/**
-							 * @see org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback#executing(liquibase.ChangeSet,
-							 *      int)
+							 * @see ChangeSetExecutorCallback#executing(liquibase.changelog.ChangeSet, int)
 							 */
 							@Override
 							public void executing(ChangeSet changeSet, int numChangeSetsToRun) {
@@ -1766,43 +1765,6 @@ public class InitializationFilter extends StartupFilter {
 							}
 						}
 						
-						// start openmrs
-						try {
-							UpdateFilter.setUpdatesRequired(false);
-							WebDaemon.startOpenmrs(filterConfig.getServletContext());
-						}
-						catch (DatabaseUpdateException updateEx) {
-							log.warn("Error while running the database update file", updateEx);
-							reportError(ErrorMessageConstants.ERROR_DB_UPDATE, DEFAULT_PAGE, updateEx.getMessage());
-							return;
-						}
-						catch (InputRequiredException inputRequiredEx) {
-							// TODO display a page looping over the required input and ask the user for each.
-							// 		When done and the user and put in their say, call DatabaseUpdater.update(Map);
-							//		with the user's question/answer pairs
-							log.warn(
-							    "Unable to continue because user input is required for the db updates and we cannot do anything about that right now");
-							reportError(ErrorMessageConstants.ERROR_INPUT_REQ, DEFAULT_PAGE);
-							return;
-						}
-						catch (MandatoryModuleException mandatoryModEx) {
-							log.warn(
-							    "A mandatory module failed to start. Fix the error or unmark it as mandatory to continue.",
-							    mandatoryModEx);
-							reportError(ErrorMessageConstants.ERROR_MANDATORY_MOD_REQ, DEFAULT_PAGE,
-							    mandatoryModEx.getMessage());
-							return;
-						}
-						catch (OpenmrsCoreModuleException coreModEx) {
-							log.warn(
-							    "A core module failed to start. Make sure that all core modules (with the required minimum versions) are installed and starting properly.",
-							    coreModEx);
-							reportError(ErrorMessageConstants.ERROR_CORE_MOD_REQ, DEFAULT_PAGE, coreModEx.getMessage());
-							return;
-						}
-						
-						// TODO catch openmrs errors here and drop the user back out to the setup screen
-						
 						Context.openSession();
 						
 						if (!"".equals(wizardModel.implementationId)) {
@@ -1860,6 +1822,44 @@ public class InitializationFilter extends StartupFilter {
 						
 						// set this so that the wizard isn't run again on next page load
 						Context.closeSession();
+						
+						// start openmrs
+						try {
+							UpdateFilter.setUpdatesRequired(false);
+							WebDaemon.startOpenmrs(filterConfig.getServletContext());
+						}
+						catch (DatabaseUpdateException updateEx) {
+							log.warn("Error while running the database update file", updateEx);
+							reportError(ErrorMessageConstants.ERROR_DB_UPDATE, DEFAULT_PAGE, updateEx.getMessage());
+							return;
+						}
+						catch (InputRequiredException inputRequiredEx) {
+							// TODO display a page looping over the required input and ask the user for each.
+							// 		When done and the user and put in their say, call DatabaseUpdater.update(Map);
+							//		with the user's question/answer pairs
+							log.warn(
+							    "Unable to continue because user input is required for the db updates and we cannot do anything about that right now");
+							reportError(ErrorMessageConstants.ERROR_INPUT_REQ, DEFAULT_PAGE);
+							return;
+						}
+						catch (MandatoryModuleException mandatoryModEx) {
+							log.warn(
+							    "A mandatory module failed to start. Fix the error or unmark it as mandatory to continue.",
+							    mandatoryModEx);
+							reportError(ErrorMessageConstants.ERROR_MANDATORY_MOD_REQ, DEFAULT_PAGE,
+							    mandatoryModEx.getMessage());
+							return;
+						}
+						catch (OpenmrsCoreModuleException coreModEx) {
+							log.warn(
+							    "A core module failed to start. Make sure that all core modules (with the required minimum versions) are installed and starting properly.",
+							    coreModEx);
+							reportError(ErrorMessageConstants.ERROR_CORE_MOD_REQ, DEFAULT_PAGE, coreModEx.getMessage());
+							return;
+						}
+						
+						// TODO catch openmrs errors here and drop the user back out to the setup screen
+						
 					}
 					catch (IOException e) {
 						reportError(ErrorMessageConstants.ERROR_COMPLETE_STARTUP, DEFAULT_PAGE, e.getMessage());
