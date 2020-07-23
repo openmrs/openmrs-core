@@ -12,6 +12,8 @@ package org.openmrs.api;
 import java.util.List;
 
 import org.openmrs.OrderSet;
+import org.openmrs.OrderSetAttribute;
+import org.openmrs.OrderSetAttributeType;
 import org.openmrs.OrderSetMember;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.OrderSetDAO;
@@ -106,5 +108,100 @@ public interface OrderSetService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_ORDER_SETS)
 	OrderSetMember getOrderSetMemberByUuid(String uuid);
+
+	/**
+	 * @param uuid
+	 * @return the {@link OrderSetAttribute} with the given uuid
+	 * @since 2.4.0
+	 * @should get the order set attribute with the given uuid
+	 * @should return null if no order set attribute has the given uuid
+	 */
+	@Authorized(PrivilegeConstants.GET_ORDER_SETS)
+	OrderSetAttribute getOrderSetAttributeByUuid(String uuid);
+
+	/**
+	 * @return all {@link OrderSetAttributeType}s
+	 * @since 2.4.0
+	 * @should return all orderSet attribute types including retired ones
+	 */
+	@Authorized(PrivilegeConstants.GET_ORDER_SET_ATTRIBUTE_TYPES)
+	List<OrderSetAttributeType> getAllOrderSetAttributeTypes();
+
+	/**
+	 * @param id
+	 * @return the {@link OrderSetAttributeType} with the given internal id
+	 * @since 2.4.0
+	 * @should return the orderSet attribute type with the given id
+	 * @should return null if no orderSet attribute type exists with the given id
+	 */
+	@Authorized(PrivilegeConstants.GET_ORDER_SET_ATTRIBUTE_TYPES)
+	OrderSetAttributeType getOrderSetAttributeType(Integer id);
+
+	/**
+	 * @param uuid
+	 * @return the {@link OrderSetAttributeType} with the given uuid
+	 * @since 2.4.0
+	 * @should return the orderSet attribute type with the given uuid
+	 * @should return null if no orderSet attribute type exists with the given uuid
+	 */
+	@Authorized(PrivilegeConstants.GET_ORDER_SET_ATTRIBUTE_TYPES)
+	OrderSetAttributeType getOrderSetAttributeTypeByUuid(String uuid);
+
+	/**
+	 * Creates or updates the given orderSet attribute type in the database
+	 * 
+	 * @param orderSetAttributeType
+	 * @return the OrderSetAttributeType created/saved
+	 * @since 2.4.0
+	 * @should create a new orderSet attribute type
+	 * @should edit an existing orderSet attribute type
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_ORDER_SET_ATTRIBUTE_TYPES)
+	OrderSetAttributeType saveOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType);
+
+	/**
+	 * Retires the given orderSet attribute type in the database
+	 * 
+	 * @param orderSetAttributeType
+	 * @return the orderSetAttribute retired
+	 * @since 2.4.0
+	 * @should retire a orderSet attribute type
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_ORDER_SET_ATTRIBUTE_TYPES)
+	OrderSetAttributeType retireOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType, String reason);
+
+	/**
+	 * Restores a orderSet attribute type that was previous retired in the database
+	 * 
+	 * @param orderSetAttributeType
+	 * @return the OrderSetAttributeType unretired
+	 * @since 2.4.0
+	 * @should unretire a retired orderSet attribute type
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_ORDER_SET_ATTRIBUTE_TYPES)
+	OrderSetAttributeType unretireOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType);
+
+	/**
+	 * Completely removes a orderSet attribute type from the database
+	 * 
+	 * @param orderSetAttributeType
+	 * @since 2.4.0
+	 * @should completely remove a orderSet attribute type
+	 */
+	@Authorized(PrivilegeConstants.PURGE_ORDER_SET_ATTRIBUTE_TYPES)
+	void purgeOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType);
+
+	/**
+	 * Retrieves a OrderSetAttributeType object based on the name provided
+	 *
+	 * @param orderSetAttributeTypeName
+	 * @return the {@link OrderSetAttributeType} with the specified name
+	 * @since 2.4.0
+	 * @should return the orderSet attribute type with the specified name
+	 * @should return null if no orderSet attribute type exists with the specified
+	 *         name
+	 */
+	@Authorized(PrivilegeConstants.GET_ORDER_SET_ATTRIBUTE_TYPES)
+	OrderSetAttributeType getOrderSetAttributeTypeByName(String orderSetAttributeTypeName);
 
 }
