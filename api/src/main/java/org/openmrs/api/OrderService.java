@@ -9,16 +9,7 @@
  */
 package org.openmrs.api;
 
-import org.openmrs.CareSetting;
-import org.openmrs.Concept;
-import org.openmrs.ConceptClass;
-import org.openmrs.Encounter;
-import org.openmrs.Order;
-import org.openmrs.OrderFrequency;
-import org.openmrs.OrderGroup;
-import org.openmrs.OrderType;
-import org.openmrs.Patient;
-import org.openmrs.Provider;
+import org.openmrs.*;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.parameter.OrderSearchCriteria;
@@ -853,4 +844,87 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_ORDERS)
 	public List<OrderGroup> getOrderGroupsByEncounter(Encounter encounter) throws APIException;
+	/**
+	 * @return all {@link OrderGroupAttributeType}s
+	 * @should return all orderGroup attribute types including retired ones
+	 */
+	@Authorized(PrivilegeConstants.GET_ORDERS)
+	 List<OrderGroupAttributeType> getOrderGroupAttributeTypes() throws APIException;
+	
+	/**
+	 * @param id
+	 * @return the {@link OrderGroupAttributeType} with the given internal id
+	 * @should return the orderGroup attribute type with the given id
+	 * @should return null if no orderGroup attribute type exists with the given id
+	 */
+	@Authorized(PrivilegeConstants.GET_ORDERS)
+	OrderGroupAttributeType getOrderGroupAttributeTypeById(Integer id) throws APIException;
+
+	/**
+	 * @param uuid
+	 * @return the {@link OrderGroupAttributeType} with the given uuid
+	 * @should return the orderGroup attribute type with the given uuid
+	 * @should return null if no orderGroup attribute type exists with the given uuid
+	 */
+	OrderGroupAttributeType getOrderGroupAttributeTypeByUuid(String uuid) throws APIException;
+	
+	/**
+	 * Creates or updates the given orderGroup attribute type in the database
+	 *
+	 * @param orderGroupAttributeType
+	 * @return the OrderGroupAttributeType created/saved
+	 * @should create a new orderGroup attribute type
+	 * @should edit an existing orderGroup attribute type
+	 */
+    @Authorized({PrivilegeConstants.EDIT_ORDERS,PrivilegeConstants.ADD_ORDERS})
+	OrderGroupAttributeType saveOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws APIException;
+
+	/**
+	 * Retires the given orderGroup attribute type in the database
+	 *
+	 * @param orderGroupAttributeType
+	 * @return the orderGroupAttribute retired
+	 * @should retire a orderGroup attribute type
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
+	OrderGroupAttributeType retireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType,String reason) throws APIException;
+
+	/**
+	 * Restores a orderGroup attribute type that was previous retired in the database
+	 * @param orderGroupAttributeType
+	 * @return the OrderGroupAttributeType unretired
+	 * @should unretire a retired orderGroup attribute type
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
+	OrderGroupAttributeType unretireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws APIException;
+
+	/**
+	 * Completely removes a orderGroup attribute type from the database
+	 *
+	 * @param orderGroupAttributeType
+	 * @should completely remove a orderGroup attribute type
+	 */
+    @Authorized(PrivilegeConstants.PURGE_ORDERS)
+	void purgeOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws APIException;
+
+	/**
+	 * Retrieves a OrderGroupAttributeType object based on the name provided
+	 *
+	 * @param orderGroupAttributeTypeName
+	 * @return the {@link OrderGroupAttributeType} with the specified name
+	 * @should return the orderGroup attribute type with the specified name
+	 * @should return null if no orderGroup attribute type exists with the specified name
+	 */
+    @Authorized(PrivilegeConstants.GET_ORDERS)
+	OrderGroupAttributeType getOrderGroupAttributeTypeByName(String orderGroupAttributeTypeName) throws APIException;
+    
+	/**
+	 * @param uuid
+	 * @return the {@link OrderGroupAttribute} with the given uuid
+	 * @since 2.4.0
+	 * @should get the order set attribute with the given uuid
+	 * @should return null if no order set attribute has the given uuid
+	 */
+	@Authorized(PrivilegeConstants.GET_ORDERS)
+	 OrderGroupAttribute getOrderGroupAttributeByUuid(String uuid) throws APIException;
 }

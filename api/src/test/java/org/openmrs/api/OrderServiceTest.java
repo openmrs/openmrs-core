@@ -52,38 +52,14 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.openmrs.Allergy;
-import org.openmrs.CareSetting;
-import org.openmrs.Concept;
-import org.openmrs.ConceptClass;
-import org.openmrs.ConceptDatatype;
-import org.openmrs.ConceptDescription;
-import org.openmrs.ConceptName;
-import org.openmrs.Condition;
-import org.openmrs.Diagnosis;
-import org.openmrs.DosingInstructions;
-import org.openmrs.Drug;
-import org.openmrs.DrugOrder;
-import org.openmrs.Encounter;
-import org.openmrs.FreeTextDosingInstructions;
-import org.openmrs.GlobalProperty;
-import org.openmrs.Obs;
-import org.openmrs.Order;
+import org.openmrs.*;
 import org.openmrs.Order.Action;
-import org.openmrs.OrderFrequency;
-import org.openmrs.OrderGroup;
-import org.openmrs.OrderSet;
-import org.openmrs.OrderType;
-import org.openmrs.Patient;
-import org.openmrs.Provider;
-import org.openmrs.SimpleDosingInstructions;
-import org.openmrs.TestOrder;
-import org.openmrs.Visit;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.HibernateAdministrationDAO;
 import org.openmrs.api.db.hibernate.HibernateSessionFactoryBean;
 import org.openmrs.api.impl.OrderServiceImpl;
+import org.openmrs.customdatatype.datatype.FreeTextDatatype;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.order.OrderUtilTest;
@@ -105,6 +81,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	private static final String OTHER_ORDER_FREQUENCIES_XML = "org/openmrs/api/include/OrderServiceTest-otherOrderFrequencies.xml";
 
 	protected static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
+
+	private static final String ORDER_GROUP_ATTRIBUTES = "org/openmrs/api/include/OrderServiceTest-createOrderGroupAttributes.xml";
 
 	@Autowired
 	private ConceptService conceptService;
@@ -175,6 +153,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		private Boolean dispenseAsWritten = Boolean.FALSE;
 		private String drugNonCoded;
 	}
+	
 
 	/**
 	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
@@ -3749,4 +3728,84 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		APIException exception = assertThrows(APIException.class, () -> secondSavedOrderGroup.addOrder(newOrderWithInvalidPosition, secondSavedOrderGroup.getOrders().size() + 1));
 		assertThat(exception.getMessage(), is("Cannot add a member which is out of range of the list"));
 	}
+	@Test
+	public void getOrderGroupAttributeTypes_shouldReturnAllOrderGroupAttributeTypes(){
+		executeDataSet(ORDER_GROUP_ATTRIBUTES);
+		List<OrderGroupAttributeType>orderGroupAttributeTypes=orderService.getOrderGroupAttributeTypes();
+		assertEquals(4,orderGroupAttributeTypes.size());
+		
+	}
+	@Test 
+	public void getOrderGroupAttributeType_shouldReturnOrderGroupAttributeTypeGivenId(){
+		executeDataSet(ORDER_GROUP_ATTRIBUTES);
+		final Integer ID = 2;
+		final String UUID2="9cf1bbe6-d18e-11ea-87d0-0242ac130003";
+		OrderGroupAttributeType orderGroupAttributeType = orderService.getOrderGroupAttributeTypeById(ID);
+		assertEquals(orderService.getOrderGroupAttributeTypeByUuid(UUID2),orderGroupAttributeType);
+		assertEquals(orderGroupAttributeType.getUuid(),Context.getOrderService().getOrderGroupAttributeTypeByUuid(UUID2).getUuid());
+		assertEquals(ID,Context.getOrderService().getOrderGroupAttributeTypeByUuid(UUID2).getId());
+			}
+
+	@Test
+	public void getOrderGroupAttributeTypeByUuid_shouldReturnOrderGroupAttributeTypeByUuid(){
+		executeDataSet(ORDER_GROUP_ATTRIBUTES);
+		OrderGroupAttributeType orderGroupAttributeType = orderService.getOrderGroupAttributeTypeByUuid("9cf1bce0-d18e-11ea-87d0-0242ac130003");
+		assertEquals("Bacteriology",orderGroupAttributeType.getName());
+	}
+
+	@Test
+	public void saveOrderGroupAttributeType_shouldSaveOrderGroupAttributeTypeGivenOrderGroupAttributeType() throws ParseException {
+		executeDataSet(ORDER_GROUP_ATTRIBUTES);
+		int initialGroupOrderAttributeTypeCount = Context.getOrderService().getOrderGroupAttributeTypes().size();
+		OrderGroupAttributeType orderGroupAttributeType = new OrderGroupAttributeType();
+		orderGroupAttributeType.setName("Surgery");
+		orderGroupAttributeType.setDatatypeClassname(FreeTextDatatype.class.getName());
+		Context.getOrderService().saveOrderGroupAttributeType(orderGroupAttributeType);
+		assertNotNull(orderGroupAttributeType.getId());
+		assertEquals(initialGroupOrderAttributeTypeCount+1,Context.getOrderService().getOrderGroupAttributeTypes().size());
+			}
+			@Test
+			public void retireOrderGroupAttributeType_shouldRetireOrderGroupAttributeType() throws ParseException {
+				executeDataSet(ORDER_GROUP_ATTRIBUTES);
+				OrderGroupAttributeType orderGroupAttributeType = Context.getOrderService().getOrderGroupAttributeTypeById(2);
+				assertFalse(orderGroupAttributeType.getRetired());
+				assertNotNull(orderGroupAttributeType.getRetiredBy());
+				assertNull(orderGroupAttributeType.getRetireReason());
+				assertNull(orderGroupAttributeType.getDateRetired());
+				Context.getOrderService().retireOrderGroupAttributeType(orderGroupAttributeType,"Test Retire");
+				orderGroupAttributeType=Context.getOrderService().getOrderGroupAttributeTypeById(2);
+				assertTrue(orderGroupAttributeType.getRetired());
+				assertNotNull(orderGroupAttributeType.getRetiredBy());
+				assertEquals("Test Retire",orderGroupAttributeType.getRetireReason());
+				assertNotNull(orderGroupAttributeType.getDateRetired(),"True");
+			}
+			@Test
+			public void unretireOrderGroupAttributeType_shouldUnretireOrderGroupAttributeType(){
+				executeDataSet(ORDER_GROUP_ATTRIBUTES);
+				OrderService orderService = Context.getOrderService();
+				OrderGroupAttributeType orderGroupAttributeType = Context.getOrderService().getOrderGroupAttributeTypeById(4);
+                assertTrue(orderGroupAttributeType.getRetired());
+                assertNotNull(orderGroupAttributeType.getRetiredBy());
+                assertNotNull(orderGroupAttributeType.getDateRetired());
+                assertNotNull(orderGroupAttributeType.getRetireReason());
+                orderService.unretireOrderGroupAttributeType(orderGroupAttributeType);
+				assertFalse(orderGroupAttributeType.getRetired());
+				assertNull(orderGroupAttributeType.getRetiredBy());
+				assertNull(orderGroupAttributeType.getDateRetired());
+				assertNull(orderGroupAttributeType.getRetireReason());
+                
+			}
+			@Test
+			public  void getOrderGroupAttributeTypeByName_shouldReturnOrderGroupAttributeTypeUsingName(){
+		        executeDataSet(ORDER_GROUP_ATTRIBUTES);
+		        OrderGroupAttributeType orderGroupAttributeType = orderService.getOrderGroupAttributeTypeByName("Bacteriology");
+		        assertEquals("9cf1bce0-d18e-11ea-87d0-0242ac130003",orderGroupAttributeType.getUuid());
+			}
+			@Test
+			public void purgeOrderGroupAttributeType_shouldPurgeOrderGroupAttributeType(){
+				executeDataSet(ORDER_GROUP_ATTRIBUTES);
+				int initialOrderGroupAttributeTypeCount= Context.getOrderService().getOrderGroupAttributeTypes().size();
+				Context.getOrderService().purgeOrderGroupAttributeType(Context.getOrderService().getOrderGroupAttributeTypeById(4));
+				assertEquals(initialOrderGroupAttributeTypeCount-1,Context.getOrderService().getOrderGroupAttributeTypes().size());
+			}
 }
