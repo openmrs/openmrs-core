@@ -189,7 +189,7 @@
 	
 	
     
-    <changeSet id="TRUNK-5835-2020-07-09-1600-create order_set_attribute_type table" author="gitacliff" dbms="mysql">
+    <changeSet id="TRUNK-5835-2020-07-09-1600-create order_set_attribute_type table" author="gitacliff" >
     	<comment>Creating order_set_attribute_type table</comment>
         <createTable tableName="order_set_attribute_type">
             <column name="order_set_attribute_type_id" type="int" autoIncrement="true">
@@ -234,7 +234,7 @@
         </modifySql>
     </changeSet> 
     
-    <changeSet id="TRUNK-5835-2020-07-09-1700-create order_set_attribute table" author="gitacliff" dbms="mysql">
+    <changeSet id="TRUNK-5835-2020-07-09-1700-create order_set_attribute table" author="gitacliff" >
         <comment>Creating order_set_attribute table</comment>
         <createTable tableName="order_set_attribute">
             <column name="order_set_attribute_id" type="int" autoIncrement="true">
