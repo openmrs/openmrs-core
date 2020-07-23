@@ -16,7 +16,7 @@ import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
 /**
- * This is a super class to make a bridge between an OpenMrsObject and is position in the form.
+ * Base implementation of FormRecordable that bridges between a saved BaseChangeableOpenmrsData entity and the path in a form where it was recorded.
  * 
  * @since 2.4.0
  */
