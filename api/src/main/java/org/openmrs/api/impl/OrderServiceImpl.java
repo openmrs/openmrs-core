@@ -11,20 +11,8 @@ package org.openmrs.api.impl;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.proxy.HibernateProxy;
-import org.openmrs.CareSetting;
-import org.openmrs.Concept;
-import org.openmrs.ConceptClass;
-import org.openmrs.DrugOrder;
-import org.openmrs.Encounter;
-import org.openmrs.GlobalProperty;
-import org.openmrs.Order;
+import org.openmrs.*;
 import org.openmrs.Order.FulfillerStatus;
-import org.openmrs.OrderFrequency;
-import org.openmrs.OrderGroup;
-import org.openmrs.OrderType;
-import org.openmrs.Patient;
-import org.openmrs.Provider;
-import org.openmrs.TestOrder;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AmbiguousOrderException;
 import org.openmrs.api.CannotDeleteObjectInUseException;
@@ -42,6 +30,7 @@ import org.openmrs.api.OrderService;
 import org.openmrs.api.UnchangeableObjectException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderDAO;
+import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.parameter.OrderSearchCriteria;
 import org.openmrs.util.OpenmrsConstants;
@@ -109,6 +98,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Override
 	public OrderGroup saveOrderGroup(OrderGroup orderGroup) throws APIException {
 		if (orderGroup.getId() == null) {
+			CustomDatatypeUtil.saveAttributesIfNecessary(orderGroup);
 			dao.saveOrderGroup(orderGroup);
 		}
 		List<Order> orders = orderGroup.getOrders();
@@ -1083,5 +1073,51 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	public List<OrderGroup> getOrderGroupsByEncounter(Encounter encounter) throws APIException {
 		return dao.getOrderGroupsByEncounter(encounter);
 	}
-	
+
+	@Override
+	public List<OrderGroupAttributeType> getOrderGroupAttributeTypes() throws APIException {
+		return dao.getAllOrderGroupAttributeTypes();
+	}
+//TODO
+	@Override
+	public OrderGroupAttributeType getOrderGroupAttributeTypeById(Integer id) throws APIException {
+//		if(id.intValue()==)
+		return dao.getOrderGroupAttributeType(id);
+	}
+	//TODO
+	@Override
+	public OrderGroupAttributeType getOrderGroupAttributeTypeByUuid(String uuid)throws APIException {
+		return dao.getOrderGroupAttributeTypeByUuid(uuid);
+	}
+
+	@Override
+	public OrderGroupAttributeType saveOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws APIException{
+		return dao.saveOrderGroupAttributeType(orderGroupAttributeType);
+	}
+
+	@Override
+	public OrderGroupAttributeType retireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType, String reason)throws APIException {
+		return dao.saveOrderGroupAttributeType(orderGroupAttributeType);
+	}
+
+	@Override
+	public OrderGroupAttributeType unretireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType)throws APIException {
+		return Context.getOrderService().saveOrderGroupAttributeType(orderGroupAttributeType);
+	}
+
+	@Override
+	public void purgeOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws APIException{
+         dao.deleteOrderGroupAttributeType(orderGroupAttributeType);
+	}
+
+	@Override
+	public OrderGroupAttributeType getOrderGroupAttributeTypeByName(String orderGroupAttributeTypeName)throws APIException {
+		return dao.getOrderGroupAttributeTypeByName(orderGroupAttributeTypeName);
+	}
+
+	@Override
+	public OrderGroupAttribute getOrderGroupAttributeByUuid(String uuid)throws APIException {
+		return dao.getOrderGroupAttributeByUuid(uuid);
+	}
+
 }

@@ -9,26 +9,24 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
+import org.hibernate.internal.SessionFactoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openmrs.Encounter;
-import org.openmrs.Order;
-import org.openmrs.OrderGroup;
-import org.openmrs.Patient;
+import org.openmrs.*;
 import org.openmrs.api.APIException;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests the saving of orders as part of the OrderGroup
@@ -41,7 +39,8 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	private static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
 	
 	private static final String ORDER_GROUP = "org/openmrs/api/include/OrderServiceTest-createOrderGroup.xml";
-
+     
+	private static final String  UUID = "9cf1b9de-d18e-11ea-87d0-0242ac130003";
 	@BeforeEach
 	public void setUp() {
 		executeDataSet(ORDER_SET);
@@ -109,5 +108,61 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 		Patient existingPatient = Context.getPatientService().getPatient(8);
 		List<OrderGroup> ordergroups = Context.getOrderService().getOrderGroupsByPatient(existingPatient);
 		assertEquals(1, ordergroups.size());
+		
 	}
+	/**
+	 * @see {@link HibernateOrderDAO#getOrderGroupAttributeTypeByUuid(String)}
+	 * @throws Exception
+	 */
+	@Test
+	public void getOrderGroupAttributeByUuid_shouldFailGivenNullUuid(){
+		assertThrows(APIException.class,() ->dao.getOrderGroupAttributeByUuid(null));
+			}
+	/**
+	 * @see {@link HibernateOrderDAO#getAllOrderGroupAttributeTypes()}
+	 * @throws Exception
+	 */
+    @Test
+	public void getAllOrderGroupAttributeTypes_shouldGetAllOrderGroupAttributeTypes(){
+		List<OrderGroupAttributeType> orderGroupAttributeTypes = dao.getAllOrderGroupAttributeTypes();
+		assertEquals(orderGroupAttributeTypes.size(),4);
+	}
+	@Test
+	public void getOrderGroupAttributeType_shouldGetOrderGroupAttributeTypeGivenUuid(){
+		final String UUID2 ="9cf1bdb2-d18e-11ea-87d0-0242ac130003";
+    	OrderGroupAttributeType newOrderGroupAttributeType = dao.getOrderGroupAttributeTypeByUuid(UUID2);
+		assertEquals(newOrderGroupAttributeType.getName(),dao.getOrderGroupAttributeTypeByUuid(UUID2).getName());
+	}
+	@Test
+	public void getOrderGroupAttributeType_shouldReturnOrderGroupAttributeTypeGivenIntegerId(){
+    	final Integer ID = 4;
+		OrderGroupAttributeType newOrderGroupAttributeType = dao.getOrderGroupAttributeType(ID);
+		assertEquals(4,newOrderGroupAttributeType.getId());
+		
+	}
+	
+
+	/**
+	 * @see {@link HibernateOrderDAO#getOrderGroupAttributeTypeByName(String)}
+	 * @throws Exception
+	 */
+    @Test
+    public void getOrderGroupAttributeTypeByName_shouldGetOrderGroupAttributeTypeByName(){
+		final String NAME = "ECG";
+		final String UUID4="9cf1bdb2-d18e-11ea-87d0-0242ac130003";
+		OrderGroupAttributeType newOrderGroupAttributeType = dao.getOrderGroupAttributeTypeByName(NAME);
+		assertEquals(NAME,newOrderGroupAttributeType.getName());
+		assertEquals(4,newOrderGroupAttributeType.getId());
+		assertEquals(UUID4,newOrderGroupAttributeType.getUuid());
+    }
+    
+//    @Test
+//	public void deleteOrderGroupAttributeType_shouldDeleteOrderGroupAttributeTypeFromDatabase(){
+//    	String uuid = "9cf1bdb2-d18e-11ea-87d0-0242ac130003";
+//		OrderGroupAttributeType orderGroupAttributeType = dao.getOrderGroupAttributeTypeByUuid(uuid);
+//		OrderGroupAttribute orderGroupAttribute=dao.getOrderGroupAttributeByUuid(uuid);
+//		assertNotNull(orderGroupAttribute);
+//		dao.deleteOrderGroupAttributeType(orderGroupAttributeType);
+//		assertNull(dao.getOrderGroupAttributeByUuid(uuid));
+//	}
 }
