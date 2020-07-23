@@ -68,6 +68,11 @@
                   column="date_changed" length="19" />
         <property name="uuid" type="java.lang.String"
                   column="uuid" length="38" unique="true" not-null="true"/>
+          <set name="attributes" lazy="true" inverse="true" batch-size="100"
+            cascade="all-delete-orphan" order-by="voided asc">
+            <key column="order_set_id" />
+            <one-to-many class="OrderSetAttribute" />
+        </set>        
 
     </class>
 
