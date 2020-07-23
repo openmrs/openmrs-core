@@ -14,49 +14,86 @@ import static org.openmrs.Order.Action.DISCONTINUE;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.util.OpenmrsUtil;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.Table;
+
 /**
  * DrugOrder
  *
  * @version 1.0
  */
+@Entity
+@Table(name = "drug_order")
+//@PrimaryKeyJoinColumn(name = "order_id")
 public class DrugOrder extends Order {
 
 	public static final long serialVersionUID = 72232L;
 
 	// Fields
-
+	
+	@Column(name = "dose", length = 22)
 	private Double dose;
-
+	
+	@ManyToOne
+	@JoinColumn(name = "dose_units")
 	private Concept doseUnits;
 
+	@ManyToOne
+	@JoinColumn(name = "frequency")
 	private OrderFrequency frequency;
 
+	@Column(name = "as_needed", length = 1, nullable = false)
 	private Boolean asNeeded = false;
 
+	@Column(name = "quantity", length = 22)
 	private Double quantity;
 
+	@ManyToOne
+	@JoinColumn(name = "quantity_units")
 	private Concept quantityUnits;
 
+	@ManyToOne
+	@Access(AccessType.FIELD)
+	@JoinColumn(name = "drug_inventory_id")
 	private Drug drug;
 
+	@Column(name = "as_needed_condition")
 	private String asNeededCondition;
 
+	@Column(name = "dosing_type")
 	private Class<? extends DosingInstructions> dosingType = SimpleDosingInstructions.class;
 
+	@Column(name = "num_refills")
 	private Integer numRefills;
 
+	@Column(name = "dosing_instructions", length = 65535)
 	private String dosingInstructions;
 
+	@Column(name = "duration")
 	private Integer duration;
 
+	@ManyToOne
+	@JoinColumn(name = "duration_units")
 	private Concept durationUnits;
 
+	@ManyToOne
+	@JoinColumn(name = "route")
 	private Concept route;
 
+	@Column(name = "brand_name", length = 255)
 	private String brandName;
 
+	@Column(name = "dispense_as_written", length = 1, nullable = false)
 	private Boolean dispenseAsWritten = Boolean.FALSE;
 
+	@Column(name = "drug_non_coded")
 	private String drugNonCoded;
 
 	// Constructors

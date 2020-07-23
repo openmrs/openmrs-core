@@ -16,6 +16,21 @@ import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.util.OpenmrsUtil;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 /**
  * Encapsulates information about the clinical action of a provider requesting something for a
  * patient e.g requesting a test to be performed, prescribing a medication, requesting the patient
@@ -30,6 +45,9 @@ import org.openmrs.util.OpenmrsUtil;
  * 
  * @version 1.0
  */
+@Entity
+@Table(name = "orders")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Order extends BaseOpenmrsData {
 	
 	
@@ -65,40 +83,72 @@ public class Order extends BaseOpenmrsData {
 		COMPLETED
 	}
 	
+	@Id
+	@Column(name = "order_id", insertable = false, updatable = false)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+//	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "order_id_gen")
+//	@SequenceGenerator(name = "order_id_gen", sequenceName = "orders_order_id_seq")
 	private Integer orderId;
 	
+	@ManyToOne
+	@JoinColumn(name = "patient_id", nullable = false)
 	private Patient patient;
 	
+	@ManyToOne
+	@JoinColumn(name = "order_type_id", nullable = false)
 	private OrderType orderType;
 	
+	@ManyToOne
+	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
 	
+	@Column(name = "instructions", length = 65535)
 	private String instructions;
 	
+	@Column(name = "date_activated", length = 19, nullable = false)
 	private Date dateActivated;
 	
+	@Column(name = "auto_expire_date", length = 19)
 	private Date autoExpireDate;
 	
+	@ManyToOne
+	@JoinColumn(name = "encounter_id", nullable = false)
 	private Encounter encounter;
 	
+	@ManyToOne
+	@JoinColumn(name = "orderer", nullable = false)
 	private Provider orderer;
 	
+	@Access(AccessType.FIELD)
+	@Column(name = "date_stopped", length = 19)
 	private Date dateStopped;
 	
+	@ManyToOne
+	@JoinColumn(name = "order_reason")
 	private Concept orderReason;
 	
+	@Column(name = "accession_number")
 	private String accessionNumber;
 	
+	@Column(name = "order_reason_non_coded")
 	private String orderReasonNonCoded;
 	
+	@Enumerated(EnumType.STRING)
+	@Column(name = "urgency", length = 50, nullable = false)
 	private Urgency urgency = Urgency.ROUTINE;
 	
+	@Access(AccessType.FIELD)
+	@Column(name = "order_number", length = 50, nullable = false)
 	private String orderNumber;
 	
+	@Column(name = "comment_to_fulfiller", length = 1024)
 	private String commentToFulfiller;
 	
+	@ManyToOne
+	@JoinColumn(name = "care_setting", nullable = false)
 	private CareSetting careSetting;
 	
+	@Column(name = "scheduled_date", length = 19)
 	private Date scheduledDate;
 	
 	/**
@@ -106,12 +156,15 @@ public class Order extends BaseOpenmrsData {
 	 * added in the group ex - for two orders of isoniazid and ampicillin, the sequence of 1 and 2
 	 * needed to be maintained
 	 */
+	@Column(name = "sort_weight")
 	private Double sortWeight;
 	
 	/**
 	 * Allows orders to be linked to a previous order - e.g., an order discontinue ampicillin linked
 	 * to the original ampicillin order (the D/C gets its own order number)
 	 */
+	@ManyToOne
+	@JoinColumn(name = "previous_order_id")
 	private Order previousOrder;
 	
 	/**
@@ -119,22 +172,29 @@ public class Order extends BaseOpenmrsData {
 	 * 
 	 * @see org.openmrs.Order.Action
 	 */
+	@Enumerated(EnumType.STRING)
+	@Column(name = "order_action", nullable = false, length = 50)
 	private Action action = Action.NEW;
 	
 	/**
 	 * {@link org.openmrs.OrderGroup}
 	 */
+	@ManyToOne
+	@JoinColumn(name = "order_group_id")
 	private OrderGroup orderGroup;
 	
 	/**
 	 * Represents the status of an order received from a fulfiller 
 	 * @see FulfillerStatus
 	 */
+	@Enumerated(EnumType.STRING)
+	@Column(name = "fulfiller_status", length = 50)
 	private FulfillerStatus fulfillerStatus;
 	
 	/**
 	 * Represents the comment that goes along with with fulfiller status
 	 */	
+	@Column(name = "fulfiller_comment", length = 1024)
 	private String fulfillerComment;
 	
 	// Constructors
