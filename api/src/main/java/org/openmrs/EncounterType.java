@@ -34,7 +34,7 @@ public class EncounterType extends BaseChangeableOpenmrsMetadata {
 
 	@Id
 	@Column(name = "encounter_type_id", nullable = false)
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer encounterTypeId;
 	
 	@ManyToOne
