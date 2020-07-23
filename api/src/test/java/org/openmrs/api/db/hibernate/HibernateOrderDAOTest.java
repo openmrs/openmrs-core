@@ -155,6 +155,7 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 		assertEquals(4,newOrderGroupAttributeType.getId());
 		assertEquals(UUID4,newOrderGroupAttributeType.getUuid());
     }
+<<<<<<< HEAD
     
 //    @Test
 //	public void deleteOrderGroupAttributeType_shouldDeleteOrderGroupAttributeTypeFromDatabase(){
@@ -165,4 +166,6 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 //		dao.deleteOrderGroupAttributeType(orderGroupAttributeType);
 //		assertNull(dao.getOrderGroupAttributeByUuid(uuid));
 //	}
+=======
+>>>>>>> TRUNK-5410 Created OrderGroupAttribute,OrderGroupAttributeType
 }
