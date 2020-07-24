@@ -8,7 +8,7 @@ jdk:
  - openjdk12
  - openjdk13
  - openjdk14
-script: mvn clean install --batch-mode && mvn clean test -Pskip-default-test -Pintegration-test
+script: mvn clean install --batch-mode && mvn test -Pskip-default-test -Pintegration-test
 matrix:
     - jdk: openjdk8
 branches:
