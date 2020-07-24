@@ -9,16 +9,30 @@
  */
 package org.openmrs;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
 /**
  * An LocationTag allows categorization of {@link Location}s
  * 
  * @see Location
  * @since 1.5
  */
+@Entity
+@Table(name = "location_tag")
 public class LocationTag extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 7654L;
 	
+	@Id
+	@Column(name = "location_tag_id")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "location_tag_id_gen")
+	@SequenceGenerator(name = "location_tag_id_gen", sequenceName = "location_tag_location_tag_id_seq")
 	private Integer locationTagId;
 	
 	// Constructors
