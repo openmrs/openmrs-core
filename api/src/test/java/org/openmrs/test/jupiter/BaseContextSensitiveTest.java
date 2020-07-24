@@ -10,6 +10,7 @@
 package org.openmrs.test.jupiter;
 
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.springframework.test.context.TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS;
 
 import javax.swing.*;
 import java.awt.*;
