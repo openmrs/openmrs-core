@@ -11,6 +11,7 @@ package org.openmrs.api;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -26,9 +27,11 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.OrderSet;
+import org.openmrs.OrderSetAttributeType;
 import org.openmrs.OrderSetMember;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.customdatatype.datatype.FreeTextDatatype;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 public class OrderSetServiceTest extends BaseContextSensitiveTest {
@@ -40,6 +43,8 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	protected ConceptService conceptService;
 	
 	protected static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
+	
+	protected static final String ORDER_SET_ATTRIBUTES = "org/openmrs/api/include/OrderSetServiceTest-attributes.xml";
 	
 	
 	/**
@@ -350,4 +355,125 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 		orderSet.setRetired(orderSetRetired);
 		return orderSet;
 	}
+	
+
+	/**
+	 * @see OrderSetService#getOrderSetAttributeByUuid(String)
+	 */
+	@Test
+	public void getOrderSetAttributeByUuid_shouldGetTheOrderSetAttributeWithTheGivenUuid() {
+		executeDataSet(ORDER_SET_ATTRIBUTES);
+		OrderSetService service = Context.getOrderSetService();
+		assertEquals("2011-04-25",service.getOrderSetAttributeByUuid("3a4bdb18-6faa-22e0-8414-001e376eb68e").getValueReference());
+	}
+
+	/**
+	 * @see OrderSetService#getOrderSetAttributeByUuid(String)
+	 */
+	@Test
+	public void getOrderSetAttributeByUuid_shouldReturnNullIfNoOrderSetAttributeHasTheGivenUuid() {
+		executeDataSet(ORDER_SET_ATTRIBUTES);
+		OrderSetService service = Context.getOrderSetService();
+		assertNull(service.getOrderSetAttributeByUuid("not-a-uuid"));
+	}
+
+	/**
+	 * @see OrderSetService#getOrderSetAttributeTypeByUuid(String)
+	 */
+	@Test
+	public void getOrderSetAttributeTypeByUuid_shouldReturnTheOrderSetAttributeTypeWithTheGivenUuid() {
+		executeDataSet(ORDER_SET_ATTRIBUTES);
+		assertEquals("Audit Date", Context.getOrderSetService().getOrderSetAttributeTypeByUuid(
+		    "8516cc50-6f9f-33e0-8414-001e648eb67e").getName());
+	}
+
+	/**
+	 * @see OrderSetService#getOrderSetAttributeTypeByUuid(String)
+	 */
+	@Test
+	public void getOrderSetAttributeTypeByUuid_shouldReturnNullIfNoOrderSetAttributeTypeExistsWithTheGivenUuid() {
+		executeDataSet(ORDER_SET_ATTRIBUTES);
+		assertNull(Context.getOrderSetService().getOrderSetAttributeTypeByUuid("not-a-uuid"));
+	}
+
+	/**
+	 * @see OrderSetService#purgeOrderSetAttributeType(OrderSetAttributeType)
+	 */
+	@Test
+	public void purgeOrderSetAttributeType_shouldCompletelyRemoveAOrderSetAttributeType() {
+		executeDataSet(ORDER_SET_ATTRIBUTES);
+		assertEquals(2, Context.getOrderSetService().getAllOrderSetAttributeTypes().size());
+		Context.getOrderSetService().purgeOrderSetAttributeType(Context.getOrderSetService().getOrderSetAttributeType(2));
+		assertEquals(1, Context.getOrderSetService().getAllOrderSetAttributeTypes().size());
+	}
+
+	/**
+	 * @see OrderSetService#retireOrderSetAttributeType(OrderSetAttributeType,String)
+	 */
+	@Test
+	public void retireOrderSetAttributeType_shouldRetireAOrderSetAttributeType() {
+		executeDataSet(ORDER_SET_ATTRIBUTES);
+		OrderSetAttributeType vat = Context.getOrderSetService().getOrderSetAttributeType(1);
+		assertFalse(vat.getRetired());
+		assertNull(vat.getRetiredBy());
+		assertNull(vat.getDateRetired());
+		assertNull(vat.getRetireReason());
+		Context.getOrderSetService().retireOrderSetAttributeType(vat, "for testing");
+		vat = Context.getOrderSetService().getOrderSetAttributeType(1);
+		assertTrue(vat.getRetired());
+		assertNotNull(vat.getRetiredBy());
+		assertNotNull(vat.getDateRetired());
+		assertEquals("for testing", vat.getRetireReason());
+	}
+
+	/**
+	 * @see OrderSetService#saveOrderSetAttributeType(OrderSetAttributeType)
+	 */
+	@Test
+	public void saveOrderSetAttributeType_shouldCreateANewOrderSetAttributeType() {
+		executeDataSet(ORDER_SET_ATTRIBUTES);
+		assertEquals(2, Context.getOrderSetService().getAllOrderSetAttributeTypes().size());
+		OrderSetAttributeType oat = new OrderSetAttributeType();
+		oat.setName("Another one");
+		oat.setDatatypeClassname(FreeTextDatatype.class.getName());
+		Context.getOrderSetService().saveOrderSetAttributeType(oat);
+		assertNotNull(oat.getId());
+		assertEquals(3, Context.getOrderSetService().getAllOrderSetAttributeTypes().size());
+	}
+
+	/**
+	 * @see OrderSetService#saveOrderSetAttributeType(OrderSetAttributeType)
+	 */
+	@Test
+	public void saveOrderSetAttributeType_shouldEditAnExistingOrderSetAttributeType() {
+		executeDataSet(ORDER_SET_ATTRIBUTES);
+		OrderSetService service = Context.getOrderSetService();
+		assertEquals(2, service.getAllOrderSetAttributeTypes().size());
+		OrderSetAttributeType lat = service.getOrderSetAttributeType(1);
+		lat.setName("A new name");
+		service.saveOrderSetAttributeType(lat);
+		assertEquals(2, service.getAllOrderSetAttributeTypes().size());
+		assertEquals("A new name", service.getOrderSetAttributeType(1).getName());
+	}
+
+	/**
+	 * @see OrderSetService#unretireOrderSetAttributeType(OrderSetAttributeType)
+	 */
+	@Test
+	public void unretireOrderSetAttributeType_shouldUnretireARetiredOrderSetAttributeType() {
+		executeDataSet(ORDER_SET_ATTRIBUTES);
+		OrderSetService service = Context.getOrderSetService();
+		OrderSetAttributeType oat = service.getOrderSetAttributeType(2);
+		assertTrue(oat.getRetired());
+		assertNotNull(oat.getDateRetired());
+		assertNotNull(oat.getRetiredBy());
+		assertNotNull(oat.getRetireReason());
+		service.unretireOrderSetAttributeType(oat);
+		assertFalse(oat.getRetired());
+		assertNull(oat.getDateRetired());
+		assertNull(oat.getRetiredBy());
+		assertNull(oat.getRetireReason());
+	}
+
+
 }

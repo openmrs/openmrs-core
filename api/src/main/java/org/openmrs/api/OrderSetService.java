@@ -110,6 +110,8 @@ public interface OrderSetService extends OpenmrsService {
 	OrderSetMember getOrderSetMemberByUuid(String uuid);
 
 	/**
+	 * Get OrderSetAttribute by uuid
+	 * 
 	 * @param uuid
 	 * @return the {@link OrderSetAttribute} with the given uuid
 	 * @since 2.4.0
@@ -120,6 +122,8 @@ public interface OrderSetService extends OpenmrsService {
 	OrderSetAttribute getOrderSetAttributeByUuid(String uuid);
 
 	/**
+	 * Get AllOrderSetAttributeTypes
+	 * 
 	 * @return all {@link OrderSetAttributeType}s
 	 * @since 2.4.0
 	 * @should return all orderSet attribute types including retired ones
@@ -128,6 +132,8 @@ public interface OrderSetService extends OpenmrsService {
 	List<OrderSetAttributeType> getAllOrderSetAttributeTypes();
 
 	/**
+	 * Get OrderSetAttributeType
+	 * 
 	 * @param id
 	 * @return the {@link OrderSetAttributeType} with the given internal id
 	 * @since 2.4.0
@@ -138,6 +144,8 @@ public interface OrderSetService extends OpenmrsService {
 	OrderSetAttributeType getOrderSetAttributeType(Integer id);
 
 	/**
+	 * Get OrderSetAttributeType by uuid
+	 * 
 	 * @param uuid
 	 * @return the {@link OrderSetAttributeType} with the given uuid
 	 * @since 2.4.0
