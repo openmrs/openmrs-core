@@ -14,7 +14,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 /**
@@ -31,8 +30,7 @@ public class LocationTag extends BaseChangeableOpenmrsMetadata {
 	
 	@Id
 	@Column(name = "location_tag_id")
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "location_tag_id_gen")
-	@SequenceGenerator(name = "location_tag_id_gen", sequenceName = "location_tag_location_tag_id_seq")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer locationTagId;
 	
 	// Constructors
