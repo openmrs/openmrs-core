@@ -21,17 +21,7 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.SimpleExpression;
 import org.hibernate.transform.DistinctRootEntityResultTransformer;
-import org.openmrs.CareSetting;
-import org.openmrs.Concept;
-import org.openmrs.ConceptClass;
-import org.openmrs.Encounter;
-import org.openmrs.GlobalProperty;
-import org.openmrs.Order;
-import org.openmrs.OrderFrequency;
-import org.openmrs.OrderGroup;
-import org.openmrs.OrderType;
-import org.openmrs.Patient;
-import org.openmrs.User;
+import org.openmrs.*;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderDAO;
@@ -729,5 +719,40 @@ public class HibernateOrderDAO implements OrderDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(OrderGroup.class);
 		criteria.add(Restrictions.eq("encounter", encounter));
 		return criteria.list();
+	}
+
+	@Override
+	public OrderGroupAttribute getOrderGroupAttributeByUuid(String uuid) {
+		return null;
+	}
+
+	@Override
+	public List<OrderGroupAttributeType> getAllOrderGroupAttributeTypes() {
+		return null;
+	}
+
+	@Override
+	public OrderGroupAttributeType getOrderGroupAttributeType(Integer id) {
+		return null;
+	}
+
+	@Override
+	public OrderGroupAttributeType getOrderGroupAttributeTypeByUuid(String uuid) {
+		return null;
+	}
+
+	@Override
+	public OrderGroupAttributeType saveOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) {
+		return null;
+	}
+
+	@Override
+	public void deleteOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) {
+
+	}
+
+	@Override
+	public OrderGroupAttributeType getOrderGroupAttributeTypeByName(String name) {
+		return null;
 	}
 }
