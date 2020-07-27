@@ -402,7 +402,9 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void purgeOrderSetAttributeType_shouldCompletelyRemoveAOrderSetAttributeType() {
 		executeDataSet(ORDER_SET_ATTRIBUTES);
-		assertEquals(2, Context.getOrderSetService().getAllOrderSetAttributeTypes().size());
+		int initialOrderSetAttributeTypesCount = Context.getOrderSetService().getAllOrderSetAttributeTypes().size();
+		assertEquals(initialOrderSetAttributeTypesCount + 0,
+				Context.getOrderSetService().getAllOrderSetAttributeTypes().size());
 		Context.getOrderSetService().purgeOrderSetAttributeType(Context.getOrderSetService().getOrderSetAttributeType(2));
 		assertEquals(1, Context.getOrderSetService().getAllOrderSetAttributeTypes().size());
 	}
@@ -432,7 +434,9 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void saveOrderSetAttributeType_shouldCreateANewOrderSetAttributeType() {
 		executeDataSet(ORDER_SET_ATTRIBUTES);
-		assertEquals(2, Context.getOrderSetService().getAllOrderSetAttributeTypes().size());
+		int initialOrderSetAttributeTypesCount = Context.getOrderSetService().getAllOrderSetAttributeTypes().size();
+		assertEquals(initialOrderSetAttributeTypesCount + 0,
+				Context.getOrderSetService().getAllOrderSetAttributeTypes().size());
 		OrderSetAttributeType oat = new OrderSetAttributeType();
 		oat.setName("Another one");
 		oat.setDatatypeClassname(FreeTextDatatype.class.getName());
@@ -449,9 +453,9 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(ORDER_SET_ATTRIBUTES);
 		OrderSetService service = Context.getOrderSetService();
 		assertEquals(2, service.getAllOrderSetAttributeTypes().size());
-		OrderSetAttributeType lat = service.getOrderSetAttributeType(1);
-		lat.setName("A new name");
-		service.saveOrderSetAttributeType(lat);
+		OrderSetAttributeType oat = service.getOrderSetAttributeType(1);
+		oat.setName("A new name");
+		service.saveOrderSetAttributeType(oat);
 		assertEquals(2, service.getAllOrderSetAttributeTypes().size());
 		assertEquals("A new name", service.getOrderSetAttributeType(1).getName());
 	}
