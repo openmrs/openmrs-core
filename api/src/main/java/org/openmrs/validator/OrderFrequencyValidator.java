@@ -61,7 +61,7 @@ public class OrderFrequencyValidator implements Validator {
 			
 			Concept concept = orderFrequency.getConcept();
 			if (concept != null) {
-				if (!ConceptClass.FREQUENCY_UUID.equals(concept.getConceptClass().getUuid().trim())) {
+				if (!ConceptClass.FREQUENCY_UUID.equals(concept.getConceptClass().getUuid())) {
 					errors.rejectValue("concept", "OrderFrequency.concept.shouldBeClassFrequency");
 				}
 				
