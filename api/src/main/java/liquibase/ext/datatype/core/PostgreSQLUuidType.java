@@ -30,7 +30,7 @@ public class PostgreSQLUuidType extends CharType {
 	@Override
 	public DatabaseDataType toDatabaseDataType(Database database) {
 		if (database instanceof PostgresDatabase && getSize() == 38) {
-			DatabaseDataType result = new DatabaseDataType("varchar", 38);
+			DatabaseDataType result = new DatabaseDataType("CHARACTER", 36);
 			
 			log.debug("uuid type for PostgreSQL is '{}' ", result.getType());
 			
