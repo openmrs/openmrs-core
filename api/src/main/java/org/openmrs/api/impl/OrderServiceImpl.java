@@ -11,20 +11,8 @@ package org.openmrs.api.impl;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.proxy.HibernateProxy;
-import org.openmrs.CareSetting;
-import org.openmrs.Concept;
-import org.openmrs.ConceptClass;
-import org.openmrs.DrugOrder;
-import org.openmrs.Encounter;
-import org.openmrs.GlobalProperty;
-import org.openmrs.Order;
+import org.openmrs.*;
 import org.openmrs.Order.FulfillerStatus;
-import org.openmrs.OrderFrequency;
-import org.openmrs.OrderGroup;
-import org.openmrs.OrderType;
-import org.openmrs.Patient;
-import org.openmrs.Provider;
-import org.openmrs.TestOrder;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AmbiguousOrderException;
 import org.openmrs.api.CannotDeleteObjectInUseException;
@@ -1083,5 +1071,50 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	public List<OrderGroup> getOrderGroupsByEncounter(Encounter encounter) throws APIException {
 		return dao.getOrderGroupsByEncounter(encounter);
 	}
-	
+
+	@Override
+	public List<OrderGroupAttributeType> getOrderGroupAttributeTypes() {
+		return null;
+	}
+
+	@Override
+	public OrderGroupAttributeType getOrderGroupAttributeType(Integer id) {
+		return null;
+	}
+
+	@Override
+	public OrderGroupAttributeType getOrderGroupAttributeTypeByUuid(String uuid) {
+		return null;
+	}
+
+	@Override
+	public OrderGroupAttributeType saveOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) {
+		return null;
+	}
+
+	@Override
+	public OrderGroupAttributeType retireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType, String reason) {
+		return null;
+	}
+
+	@Override
+	public OrderGroupAttributeType unretireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) {
+		return null;
+	}
+
+	@Override
+	public void OrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) {
+
+	}
+
+	@Override
+	public OrderGroupAttributeType getOrderGroupAttributeTypeByName(String orderGroupAttributeTypeName) {
+		return null;
+	}
+
+	@Override
+	public OrderGroupAttribute getOrderGroupAttributeByUuid(String uuid) {
+		return null;
+	}
+
 }
