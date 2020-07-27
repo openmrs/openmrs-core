@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 /**
  * PostgreSQL returns white spaces for UUIDs since their actual length is 36 and we have set it
  * everywhere as 38 in consideration to ticket https://issues.openmrs.org/browse/TRUNK-1283. This
- * leads to validation issues. Thus we convert it to VARCHAR(38).
+ * leads to validation issues. Thus we convert it to CHAR(36).
  * 
  * @since 2.4
  */
