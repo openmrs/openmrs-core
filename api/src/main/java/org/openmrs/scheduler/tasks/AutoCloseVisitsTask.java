@@ -34,7 +34,6 @@ public class AutoCloseVisitsTask extends AbstractTask {
 	public void execute() {
 		if (!isExecuting) {
 			log.debug("Starting Auto Close Visits Task...");
-
 			startExecuting();
 			try {
 				Context.getVisitService().stopVisits(new Date());

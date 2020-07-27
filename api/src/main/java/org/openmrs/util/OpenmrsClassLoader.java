@@ -86,6 +86,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		
 		log.debug("Creating new OpenmrsClassLoader instance with parent: {}", parent);
 		
+
 		//disable caching so the jars aren't locked
 		//if performance is effected, this can be disabled in favor of
 		//copying all opened jars to a temp location
