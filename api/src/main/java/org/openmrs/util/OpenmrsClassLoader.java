@@ -84,10 +84,10 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		
 		OpenmrsClassLoaderHolder.INSTANCE = this;
 		
-		if (log.isDebugEnabled()) {
+
 			log.debug("Creating new OpenmrsClassLoader instance with parent: {}", parent);
-		}
 		
+
 		//disable caching so the jars aren't locked
 		//if performance is effected, this can be disabled in favor of
 		//copying all opened jars to a temp location
@@ -542,9 +542,9 @@ public class OpenmrsClassLoader extends URLClassLoader {
 									}
 								} else {
 									field.set(null, null);
-									if (log.isDebugEnabled()) {
-										log.debug("Set field " + field.getName() + " to null in class " + clazz.getName());
-									}
+									
+									log.debug("Set field {} to null in class {}", field.getName(), clazz.getName());
+									
 								}
 							}
 							catch (Exception t) {
