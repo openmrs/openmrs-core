@@ -85,7 +85,7 @@
 		<set name="attributes" lazy="true" inverse="true" batch-size="100"
 			 cascade="all-delete-orphan" order-by="voided asc">
 			<key column="order_set_id" />
-			<one-to-many class="OrderGroupAttribute" />
+			<one-to-many class="OrderSetAttribute" />
 		</set>
     </class>
 

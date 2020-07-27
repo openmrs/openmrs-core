@@ -720,39 +720,55 @@ public class HibernateOrderDAO implements OrderDAO {
 		criteria.add(Restrictions.eq("encounter", encounter));
 		return criteria.list();
 	}
-
+	
 	@Override
 	public OrderGroupAttribute getOrderGroupAttributeByUuid(String uuid) {
 		return null;
 	}
 
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#getAllOrderGroupAttributeTypes()
+	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<OrderGroupAttributeType> getAllOrderGroupAttributeTypes() {
-		return null;
+		return sessionFactory.getCurrentSession().createCriteria(OrderGroupAttributeType.class).list();
 	}
-
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#getOrderGroupAttributeType(java.lang.Integer)
+	 */
 	@Override
 	public OrderGroupAttributeType getOrderGroupAttributeType(Integer id) {
-		return null;
+		return sessionFactory.getCurrentSession().get(OrderGroupAttributeType.class,id);
 	}
-
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#getOrderGroupAttributeTypeByUuid(java.lang.String)
+	 */
 	@Override
 	public OrderGroupAttributeType getOrderGroupAttributeTypeByUuid(String uuid) {
-		return null;
+		return (OrderGroupAttributeType) sessionFactory.getCurrentSession().createCriteria(OrderGroupAttribute.class).add(
+			Restrictions.eq("uuid",uuid)).uniqueResult();
 	}
-
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#saveOrderGroupAttributeType(org.openmrs.OrderGroupAttributeType)
+	 */
 	@Override
 	public OrderGroupAttributeType saveOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) {
-		return null;
+		sessionFactory.getCurrentSession().saveOrUpdate(orderGroupAttributeType);
+		return orderGroupAttributeType;
 	}
-
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#deleteOrderGroupAttributeType(org.openmrs.OrderGroupAttributeType)
+	 */
 	@Override
 	public void deleteOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) {
-
+       sessionFactory.getCurrentSession().delete(orderGroupAttributeType);
 	}
 
 	@Override
 	public OrderGroupAttributeType getOrderGroupAttributeTypeByName(String name) {
-		return null;
+		return (OrderGroupAttributeType) sessionFactory.getCurrentSession().createCriteria(OrderGroupAttributeType.class).add(
+			Restrictions.eq("name",name)).uniqueResult();
+		
 	}
 }
