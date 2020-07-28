@@ -143,8 +143,8 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	public static void destroyInstance() {
 		if (ServiceContextHolder.instance != null && ServiceContextHolder.instance.services != null) {
-				for (Map.Entry<Class, Object> entry : ServiceContextHolder.instance.services.entrySet()) {
-					log.debug("Service - {} : {}", entry.getKey().getName(), entry.getValue());
+			for (Map.Entry<Class, Object> entry : ServiceContextHolder.instance.services.entrySet()) {
+				log.debug("Service - {} : {}", entry.getKey().getName(), entry.getValue());
 			}
 			
 			// Remove advice and advisors that this service added
