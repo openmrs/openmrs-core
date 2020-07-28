@@ -98,7 +98,7 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 import org.xml.sax.InputSource;
-
+import org.apache.commons.io.FileUtils;
 /**
  * This is the base for spring/context tests. Tests that NEED to use calls to the Context class and
  * use Services and/or the database should extend this class. NOTE: Tests that do not need access to
@@ -353,10 +353,17 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		runtimeProperties.setProperty(ModuleConstants.IGNORE_CORE_MODULES_PROPERTY, "true");
 		
 		try {
-			File tempappdir = File.createTempFile("appdir-for-unit-tests-", "");
+			final File tempappdir = File.createTempFile("appdir-for-unit-tests-", "");
 			tempappdir.delete(); // so we can make it into a directory
 			tempappdir.mkdir(); // turn it into a directory
-			tempappdir.deleteOnExit(); // clean up when we're done with tests
+			// clean up when we're done with tests
+			Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+				try {
+					FileUtils.deleteDirectory(tempappdir);
+				}
+				catch (IOException ignored) {
+				}
+			}));
 			
 			runtimeProperties.setProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, tempappdir
 			        .getAbsolutePath());
