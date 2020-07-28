@@ -110,9 +110,7 @@ public class TestInstallUtil {
 			}
 			
 			if (proc.waitFor() == 0) {
-					
-					log.debug("Added test data successfully");
-					
+				log.debug("Added test data successfully");
 				return true;
 			}
 			
@@ -153,9 +151,7 @@ public class TestInstallUtil {
 			while (entries.hasMoreElements()) {
 				ZipEntry entry = (ZipEntry) entries.nextElement();
 				if (entry.isDirectory()) {
-					
 					log.debug("Skipping directory: {}", entry.getName());
-					
 					continue;
 				}
 				
