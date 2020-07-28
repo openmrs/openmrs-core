@@ -9,9 +9,23 @@
  */
 package org.openmrs;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
 /**
  * ProgramWorkflowState
  */
+@Entity
+@Table(name = "program_workflow_state")
+@AttributeOverride(name = "name", column = @Column(name = "name"))
 public class ProgramWorkflowState extends BaseChangeableOpenmrsMetadata {
 	
 	private static final long serialVersionUID = 1L;
@@ -20,14 +34,24 @@ public class ProgramWorkflowState extends BaseChangeableOpenmrsMetadata {
 	// Properties
 	// ******************
 	
+	@Id
+	@Column(name = "program_workflow_state_id")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "program_workflow_state_id_gen")
+	@SequenceGenerator(name = "program_workflow_state_id_gen", sequenceName = "program_workflow_state_program_workflow_state_id_seq")
 	private Integer programWorkflowStateId;
 	
+	@ManyToOne
+	@JoinColumn(name = "program_workflow_id", insertable = false, updatable = false)
 	private ProgramWorkflow programWorkflow;
 	
+	@ManyToOne
+	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
 	
+	@Column(name = "initial", length = 1, nullable = false)
 	private Boolean initial;
 	
+	@Column(name = "terminal", length = 1, nullable = false)
 	private Boolean terminal;
 	
 	// ******************
