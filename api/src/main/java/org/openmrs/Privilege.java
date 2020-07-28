@@ -30,7 +30,6 @@ import javax.persistence.Table;
 @AttributeOverride(name = "dateCreated", column = @Column(name = "date_created", nullable = true))
 @AttributeOverride(name = "name", column = @Column(name = "name", nullable = true))
 @AttributeOverride(name = "retired", column = @Column(name = "retired", nullable = true, columnDefinition = "boolean default false"))
-@AssociationOverride(name = "creator", joinColumns = @JoinColumn(name = "creator", nullable = true))
 public class Privilege extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 312L;
