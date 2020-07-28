@@ -60,6 +60,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmrs.ConceptName;
@@ -92,6 +93,7 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import org.xml.sax.InputSource;
+
 
 /**
  * This is the base for spring/context tests. Tests that NEED to use calls to the Context class and
@@ -130,6 +132,9 @@ public abstract class BaseContextSensitiveTest {
 	 * cached runtime properties
 	 */
 	protected static Properties runtimeProperties;
+	
+	@TempDir
+	public static File tempappdir;
 	
 	/**
 	 * Used for username/password dialog

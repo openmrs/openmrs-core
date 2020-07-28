@@ -43,6 +43,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -353,10 +354,17 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		runtimeProperties.setProperty(ModuleConstants.IGNORE_CORE_MODULES_PROPERTY, "true");
 		
 		try {
-			File tempappdir = File.createTempFile("appdir-for-unit-tests-", "");
+			final File tempappdir = File.createTempFile("appdir-for-unit-tests-", "");
 			tempappdir.delete(); // so we can make it into a directory
 			tempappdir.mkdir(); // turn it into a directory
-			tempappdir.deleteOnExit(); // clean up when we're done with tests
+			// clean up when we're done with tests
+			Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+				try {
+					FileUtils.deleteDirectory(tempappdir);
+				}
+				catch (IOException ignored) {
+				}
+			}));
 			
 			runtimeProperties.setProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, tempappdir
 			        .getAbsolutePath());

@@ -122,7 +122,13 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		testAppDataDir = File.createTempFile("appdir-for-unit-tests", "");
 		testAppDataDir.delete();// so we can make turn it into a directory
 		testAppDataDir.mkdir();
-		
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			try {
+				FileUtils.deleteDirectory(testAppDataDir);
+			}
+			catch (IOException ignored) {
+			}
+		}));
 		System.setProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, testAppDataDir.getAbsolutePath());
 		OpenmrsUtil.setApplicationDataDirectory(testAppDataDir.getAbsolutePath());
 	}
