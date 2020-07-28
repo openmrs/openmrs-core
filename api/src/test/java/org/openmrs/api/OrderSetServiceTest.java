@@ -403,7 +403,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	public void purgeOrderSetAttributeType_shouldCompletelyRemoveAOrderSetAttributeType() {
 		executeDataSet(ORDER_SET_ATTRIBUTES);
 		int initialOrderSetAttributeTypesCount = Context.getOrderSetService().getAllOrderSetAttributeTypes().size();
-		assertEquals(initialOrderSetAttributeTypesCount + 0,
+		assertEquals(initialOrderSetAttributeTypesCount,
 				Context.getOrderSetService().getAllOrderSetAttributeTypes().size());
 		Context.getOrderSetService().purgeOrderSetAttributeType(Context.getOrderSetService().getOrderSetAttributeType(2));
 		assertEquals(1, Context.getOrderSetService().getAllOrderSetAttributeTypes().size());
@@ -435,7 +435,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	public void saveOrderSetAttributeType_shouldCreateANewOrderSetAttributeType() {
 		executeDataSet(ORDER_SET_ATTRIBUTES);
 		int initialOrderSetAttributeTypesCount = Context.getOrderSetService().getAllOrderSetAttributeTypes().size();
-		assertEquals(initialOrderSetAttributeTypesCount + 0,
+		assertEquals(initialOrderSetAttributeTypesCount,
 				Context.getOrderSetService().getAllOrderSetAttributeTypes().size());
 		OrderSetAttributeType orderSetAttributeType = new OrderSetAttributeType();
 		orderSetAttributeType.setName("Another one");
