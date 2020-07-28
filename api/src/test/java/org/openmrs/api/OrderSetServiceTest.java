@@ -415,17 +415,17 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void retireOrderSetAttributeType_shouldRetireAOrderSetAttributeType() {
 		executeDataSet(ORDER_SET_ATTRIBUTES);
-		OrderSetAttributeType vat = Context.getOrderSetService().getOrderSetAttributeType(1);
-		assertFalse(vat.getRetired());
-		assertNull(vat.getRetiredBy());
-		assertNull(vat.getDateRetired());
-		assertNull(vat.getRetireReason());
-		Context.getOrderSetService().retireOrderSetAttributeType(vat, "for testing");
-		vat = Context.getOrderSetService().getOrderSetAttributeType(1);
-		assertTrue(vat.getRetired());
-		assertNotNull(vat.getRetiredBy());
-		assertNotNull(vat.getDateRetired());
-		assertEquals("for testing", vat.getRetireReason());
+		OrderSetAttributeType orderSetAttributeType = Context.getOrderSetService().getOrderSetAttributeType(1);
+		assertFalse(orderSetAttributeType.getRetired());
+		assertNull(orderSetAttributeType.getRetiredBy());
+		assertNull(orderSetAttributeType.getDateRetired());
+		assertNull(orderSetAttributeType.getRetireReason());
+		Context.getOrderSetService().retireOrderSetAttributeType(orderSetAttributeType, "for testing");
+		orderSetAttributeType = Context.getOrderSetService().getOrderSetAttributeType(1);
+		assertTrue(orderSetAttributeType.getRetired());
+		assertNotNull(orderSetAttributeType.getRetiredBy());
+		assertNotNull(orderSetAttributeType.getDateRetired());
+		assertEquals("for testing", orderSetAttributeType.getRetireReason());
 	}
 
 	/**
@@ -437,11 +437,11 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 		int initialOrderSetAttributeTypesCount = Context.getOrderSetService().getAllOrderSetAttributeTypes().size();
 		assertEquals(initialOrderSetAttributeTypesCount + 0,
 				Context.getOrderSetService().getAllOrderSetAttributeTypes().size());
-		OrderSetAttributeType oat = new OrderSetAttributeType();
-		oat.setName("Another one");
-		oat.setDatatypeClassname(FreeTextDatatype.class.getName());
-		Context.getOrderSetService().saveOrderSetAttributeType(oat);
-		assertNotNull(oat.getId());
+		OrderSetAttributeType orderSetAttributeType = new OrderSetAttributeType();
+		orderSetAttributeType.setName("Another one");
+		orderSetAttributeType.setDatatypeClassname(FreeTextDatatype.class.getName());
+		Context.getOrderSetService().saveOrderSetAttributeType(orderSetAttributeType);
+		assertNotNull(orderSetAttributeType.getId());
 		assertEquals(3, Context.getOrderSetService().getAllOrderSetAttributeTypes().size());
 	}
 
@@ -453,9 +453,9 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(ORDER_SET_ATTRIBUTES);
 		OrderSetService service = Context.getOrderSetService();
 		assertEquals(2, service.getAllOrderSetAttributeTypes().size());
-		OrderSetAttributeType oat = service.getOrderSetAttributeType(1);
-		oat.setName("A new name");
-		service.saveOrderSetAttributeType(oat);
+		OrderSetAttributeType orderSetAttributeType = service.getOrderSetAttributeType(1);
+		orderSetAttributeType.setName("A new name");
+		service.saveOrderSetAttributeType(orderSetAttributeType);
 		assertEquals(2, service.getAllOrderSetAttributeTypes().size());
 		assertEquals("A new name", service.getOrderSetAttributeType(1).getName());
 	}
@@ -467,16 +467,16 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	public void unretireOrderSetAttributeType_shouldUnretireARetiredOrderSetAttributeType() {
 		executeDataSet(ORDER_SET_ATTRIBUTES);
 		OrderSetService service = Context.getOrderSetService();
-		OrderSetAttributeType oat = service.getOrderSetAttributeType(2);
-		assertTrue(oat.getRetired());
-		assertNotNull(oat.getDateRetired());
-		assertNotNull(oat.getRetiredBy());
-		assertNotNull(oat.getRetireReason());
-		service.unretireOrderSetAttributeType(oat);
-		assertFalse(oat.getRetired());
-		assertNull(oat.getDateRetired());
-		assertNull(oat.getRetiredBy());
-		assertNull(oat.getRetireReason());
+		OrderSetAttributeType orderSetAttributeType = service.getOrderSetAttributeType(2);
+		assertTrue(orderSetAttributeType.getRetired());
+		assertNotNull(orderSetAttributeType.getDateRetired());
+		assertNotNull(orderSetAttributeType.getRetiredBy());
+		assertNotNull(orderSetAttributeType.getRetireReason());
+		service.unretireOrderSetAttributeType(orderSetAttributeType);
+		assertFalse(orderSetAttributeType.getRetired());
+		assertNull(orderSetAttributeType.getDateRetired());
+		assertNull(orderSetAttributeType.getRetiredBy());
+		assertNull(orderSetAttributeType.getRetireReason());
 	}
 
 
