@@ -9,17 +9,37 @@
  */
 package org.openmrs;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
+import javax.persistence.AssociationOverride;
+import javax.persistence.AttributeOverride;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Table;
+
 /**
  * Privilege
  * 
  * @version 1.0
  */
+@Entity
+@Table(name = "privilege")
+@AttributeOverride(name = "dateCreated", column = @Column(name = "date_created", nullable = true))
+@AttributeOverride(name = "name", column = @Column(name = "name", nullable = true))
+@AttributeOverride(name = "retired", column = @Column(name = "retired", nullable = true, columnDefinition = "boolean default false"))
+@AssociationOverride(name = "creator", joinColumns = @JoinColumn(name = "creator", nullable = true))
 public class Privilege extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 312L;
 	
 	// Fields
 	
+	@Id
+	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+	@Column(name = "privilege", length = 250, nullable = false)
 	private String privilege;
 	
 	// Constructors
