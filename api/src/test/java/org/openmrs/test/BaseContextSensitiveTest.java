@@ -43,6 +43,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -98,7 +99,7 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 import org.xml.sax.InputSource;
-import org.apache.commons.io.FileUtils;
+
 /**
  * This is the base for spring/context tests. Tests that NEED to use calls to the Context class and
  * use Services and/or the database should extend this class. NOTE: Tests that do not need access to
