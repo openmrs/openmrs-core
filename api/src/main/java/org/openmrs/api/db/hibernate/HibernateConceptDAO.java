@@ -1779,9 +1779,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 		criteria.add(Restrictions.or(Restrictions.eq("locale", locale), Restrictions.like("locale", language)));
 		
 		if (Context.getAdministrationService().isDatabaseStringComparisonCaseSensitive()) {
-			criteria.add(Restrictions.ilike("name", name));
-		} else {
 			criteria.add(Restrictions.eq("name", name));
+		} else {
+			criteria.add(Restrictions.ilike("name", name));
 		}
 		
 		criteria.add(Restrictions.eq("voided", false));
