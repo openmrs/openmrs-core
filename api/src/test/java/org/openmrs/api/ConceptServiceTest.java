@@ -1468,7 +1468,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		//ensure that the association between the conceptName and the obs has been established
 		assertTrue(conceptService.hasAnyObservation(conceptName));
 		
-		Concept concept = conceptService.getConceptByName("cd4 count");
+		Concept concept = conceptService.getConceptByName("CD4 COUNT");
 		//make sure the name concept name exists
 		assertNotNull(concept);
 		assertThrows(ConceptNameInUseException.class, () -> conceptService.purgeConcept(concept));
@@ -1479,7 +1479,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveConcept_shouldCreateANewConceptNameWhenTheOldNameIsChanged() {
-		Concept concept = conceptService.getConceptByName("cd4 count");
+		Concept concept = conceptService.getConceptByName("CD4 COUNT");
 		assertEquals(3, concept.getNames(true).size());
 		ConceptName oldName = null;
 		for (ConceptName cn : concept.getNames()) {
@@ -1509,7 +1509,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveConcept_shouldVoidTheConceptNameIfTheTextOfTheNameHasChanged() {
-		Concept concept = conceptService.getConceptByName("cd4 count");
+		Concept concept = conceptService.getConceptByName("CD4 COUNT");
 		assertFalse(conceptService.getConceptName(1847).getVoided());
 		for (ConceptName cn : concept.getNames()) {
 			if (cn.getConceptNameId().equals(1847)) {
@@ -3272,12 +3272,12 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getConcepts_shouldReturnPreferredNamesHigher() {
-		Concept hivProgram = conceptService.getConceptByName("hiv program");
+		Concept hivProgram = conceptService.getConceptByName("HIV PROGRAM");
 		ConceptName synonym = new ConceptName("synonym", Context.getLocale());
 		hivProgram.addName(synonym);
 		conceptService.saveConcept(hivProgram);
 		
-		Concept mdrTbProgram = conceptService.getConceptByName("mdr-tb program");
+		Concept mdrTbProgram = conceptService.getConceptByName("MDR-TB PROGRAM");
 		synonym = new ConceptName("synonym", Context.getLocale());
 		synonym.setLocalePreferred(true);
 		mdrTbProgram.addName(synonym);
