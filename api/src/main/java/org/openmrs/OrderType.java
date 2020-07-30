@@ -9,8 +9,8 @@
  */
 package org.openmrs;
 
-import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.LazyCollection;
@@ -52,8 +52,7 @@ public class OrderType extends BaseChangeableOpenmrsMetadata {
 	
 	@Id
 	@Column(name = "order_type_id")
-	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "order_type_id_gen")
-	@SequenceGenerator(name = "order_type_id_gen", sequenceName = "order_type_order_type_id_seq")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer orderTypeId;
 	
 	@Column(name = "java_class_name", nullable = false)
@@ -68,7 +67,7 @@ public class OrderType extends BaseChangeableOpenmrsMetadata {
 	@LazyCollection(LazyCollectionOption.TRUE)
 	@JoinTable(name = "order_type_class_map", joinColumns = @JoinColumn(name = "order_type_id", updatable = false, insertable = false), 
 		inverseJoinColumns = @JoinColumn(name = "concept_class_id", unique = true))
-	private Collection<ConceptClass> conceptClasses;
+	private Set<ConceptClass> conceptClasses;
 	
 	/**
 	 * default constructor
@@ -161,7 +160,7 @@ public class OrderType extends BaseChangeableOpenmrsMetadata {
 	/**
 	 * @return Get the {@link org.openmrs.ConceptClass}es
 	 */
-	public Collection<ConceptClass> getConceptClasses() {
+	public Set<ConceptClass> getConceptClasses() {
 		if (conceptClasses == null) {
 			conceptClasses = new LinkedHashSet<>();
 		}
@@ -171,7 +170,7 @@ public class OrderType extends BaseChangeableOpenmrsMetadata {
 	/**
 	 * @param conceptClasses the collection containing the {@link org.openmrs.ConceptClass}es
 	 */
-	public void setConceptClasses(Collection<ConceptClass> conceptClasses) {
+	public void setConceptClasses(Set<ConceptClass> conceptClasses) {
 		this.conceptClasses = conceptClasses;
 	}
 	
