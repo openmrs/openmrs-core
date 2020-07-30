@@ -858,7 +858,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should return null if no orderGroup attribute type exists with the given id
 	 */
 	@Authorized(PrivilegeConstants.GET_ORDERS)
-	OrderGroupAttributeType getOrderGroupAttributeType(Integer id) throws APIException;
+	OrderGroupAttributeType getOrderGroupAttributeTypeById(Integer id) throws APIException;
 
 	/**
 	 * @param uuid

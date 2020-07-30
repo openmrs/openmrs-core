@@ -3731,7 +3731,47 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void getOrderGroupAttributeTypes_shouldReturnAllOrderGroupAttributeTypes(){
 		executeDataSet(ORDER_GROUP_ATTRIBUTES);
 		List<OrderGroupAttributeType>orderGroupAttributeTypes=orderService.getOrderGroupAttributeTypes();
-		assertEquals(1,orderGroupAttributeTypes.size());
+		assertEquals(4,orderGroupAttributeTypes.size());
+		
+	}
+	//TODO
+	@Test 
+	public void getOrderGroupAttributeType_shouldReturnOrderGroupAttributeTypeGivenId(){
+//		executeDataSet(ORDER_GROUP_ATTRIBUTES);
+		final Integer ID = 2;
+		final String UUID2="9cf1bce0-d18e-11ea-87d0-0242ac130003";
+		OrderGroupAttributeType orderGroupAttributeType = orderService.getOrderGroupAttributeTypeById(ID);
+		assertEquals(orderService.getOrderGroupAttributeTypeByUuid(UUID2),orderGroupAttributeType);
+		
+	}
+//TODO
+	@Test
+	public void getOrderGroupAttributeTypeByUuid_shouldReturnOrderGroupAttributeTypeByUuid(){
+		executeDataSet(ORDER_GROUP_ATTRIBUTES);
+		final String UUID="9cf1bce0-d18e-11ea-87d0-0242ac130003";
+		String name = "Bacteriology";
+		OrderGroupAttributeType orderGroupAttributeType = orderService.getOrderGroupAttributeTypeByUuid(UUID);
+//		assertEquals(name,orderGroupAttributeType.getName());
+		System.out.print(orderGroupAttributeType.getName());
+	}
+	@Test
+	public void saveOrderGroupAttributeType_shouldSaveOrderGroupAttributeTypeGivenOrderGroupAttributeType() throws ParseException {
+		executeDataSet(ORDER_GROUP_ATTRIBUTES);
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.S");
+		OrderGroupAttributeType orderGroupAttributeType = new OrderGroupAttributeType();
+		orderGroupAttributeType.setId(5);
+		orderGroupAttributeType.setOrderGroupAttributeTypeId(1);
+		orderGroupAttributeType.setCreator(new User());
+		orderGroupAttributeType.setName("Surgery");
+		orderGroupAttributeType.setUuid("083c6266-d25c-11ea-87d0-0242ac130003");
+		orderGroupAttributeType.setMinOccurs(6);
+		orderGroupAttributeType.setDateCreated(dateFormat.parse("2020-07-30 16:24:10.0"));
+		orderGroupAttributeType.setRetired(false);
+		orderService.saveOrderGroupAttributeType(orderGroupAttributeType);
+		
+		List<OrderGroupAttributeType>orderGroupAttributetypes = orderService.getOrderGroupAttributeTypes();
+//		assertTrue(orderGroupAttributetypes.contains(orderGroupAttributeType.getClass()));
+		System.out.print(orderGroupAttributeType);
 		
 	}
 }

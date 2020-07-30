@@ -1076,15 +1076,15 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 
 	@Override
 	public List<OrderGroupAttributeType> getOrderGroupAttributeTypes() throws APIException {
-//		return dao.getAllOrderGroupAttributeTypes();
-		return null;
+		return dao.getAllOrderGroupAttributeTypes();
 	}
-
+//TODO
 	@Override
-	public OrderGroupAttributeType getOrderGroupAttributeType(Integer id) throws APIException {
-		return null;
+	public OrderGroupAttributeType getOrderGroupAttributeTypeById(Integer id) throws APIException {
+//		if(id.intValue()==)
+		return dao.getOrderGroupAttributeType(id);
 	}
-
+	//TODO
 	@Override
 	public OrderGroupAttributeType getOrderGroupAttributeTypeByUuid(String uuid)throws APIException {
 		return null;
