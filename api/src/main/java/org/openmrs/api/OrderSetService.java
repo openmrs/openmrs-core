@@ -112,7 +112,7 @@ public interface OrderSetService extends OpenmrsService {
 	/**
 	 * Get order set attribute by uuid 
 	 * 
-	 * @param uuid
+	 * @param uuid specifies the order set attribute uuid
 	 * @return the {@link OrderSetAttribute} with the given uuid
 	 * @since 2.4.0
 	 * @should get the order set attribute with the given uuid
@@ -134,7 +134,7 @@ public interface OrderSetService extends OpenmrsService {
 	/**
 	 * Get order set attribute type from the database by a given internal id
 	 * 
-	 * @param id
+	 * @param id specifies the set attribute type id
 	 * @return the {@link OrderSetAttributeType} with the given internal id
 	 * @since 2.4.0
 	 * @should return the orderSet attribute type with the given id
@@ -146,7 +146,7 @@ public interface OrderSetService extends OpenmrsService {
 	/**
 	 * Get order set attribute type by uuid 
 	 * 
-	 * @param uuid
+	 * @param uuid specifies the order set attribute type uuid
 	 * @return the {@link OrderSetAttributeType} with the given uuid
 	 * @since 2.4.0
 	 * @should return the orderSet attribute type with the given uuid
@@ -158,7 +158,7 @@ public interface OrderSetService extends OpenmrsService {
 	/**
 	 * Creates or updates the given order set attribute type 
 	 * 
-	 * @param orderSetAttributeType
+	 * @param orderSetAttributeType the order set attribute type to save
 	 * @return the OrderSetAttributeType created/saved
 	 * @since 2.4.0
 	 * @should create a new orderSet attribute type
@@ -170,7 +170,7 @@ public interface OrderSetService extends OpenmrsService {
 	/**
 	 * Retires the given order set attribute type 
 	 * 
-	 * @param orderSetAttributeType
+	 * @param orderSetAttributeType specifies the order set attribute type to be retired 
 	 * @return the orderSetAttribute retired
 	 * @since 2.4.0
 	 * @should retire a orderSet attribute type
@@ -181,7 +181,7 @@ public interface OrderSetService extends OpenmrsService {
 	/**
 	 * Restores an order set attribute type that was previous retired 
 	 * 
-	 * @param orderSetAttributeType
+	 * @param orderSetAttributeType the order set attribute type to be un-retired
 	 * @return the OrderSetAttributeType unretired
 	 * @since 2.4.0
 	 * @should unretire a retired orderSet attribute type
@@ -192,7 +192,7 @@ public interface OrderSetService extends OpenmrsService {
 	/**
 	 * Completely removes an order set attribute type 
 	 * 
-	 * @param orderSetAttributeType
+	 * @param orderSetAttributeType the order set attribute type to be purged
 	 * @since 2.4.0
 	 * @should completely remove an order set attribute type
 	 */
@@ -202,7 +202,7 @@ public interface OrderSetService extends OpenmrsService {
 	/**
 	 * Retrieves an order set attribute type object based on the name provided
 	 *
-	 * @param orderSetAttributeTypeName
+	 * @param orderSetAttributeTypeName fetches a given order set attribute type by name
 	 * @return the {@link OrderSetAttributeType} with the specified name
 	 * @since 2.4.0
 	 * @should return the orderSet attribute type with the specified name
