@@ -156,7 +156,7 @@ public interface OrderSetService extends OpenmrsService {
 	OrderSetAttributeType getOrderSetAttributeTypeByUuid(String uuid);
 
 	/**
-	 * Creates or updates the given orderSet attribute type 
+	 * Creates or updates the given order set attribute type 
 	 * 
 	 * @param orderSetAttributeType
 	 * @return the OrderSetAttributeType created/saved
@@ -168,7 +168,7 @@ public interface OrderSetService extends OpenmrsService {
 	OrderSetAttributeType saveOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType);
 
 	/**
-	 * Retires the given orderSet attribute type 
+	 * Retires the given order set attribute type 
 	 * 
 	 * @param orderSetAttributeType
 	 * @return the orderSetAttribute retired
@@ -179,7 +179,7 @@ public interface OrderSetService extends OpenmrsService {
 	OrderSetAttributeType retireOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType, String reason);
 
 	/**
-	 * Restores a orderSet attribute type that was previous retired 
+	 * Restores an order set attribute type that was previous retired 
 	 * 
 	 * @param orderSetAttributeType
 	 * @return the OrderSetAttributeType unretired
@@ -190,17 +190,17 @@ public interface OrderSetService extends OpenmrsService {
 	OrderSetAttributeType unretireOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType);
 
 	/**
-	 * Completely removes a orderSet attribute type 
+	 * Completely removes an order set attribute type 
 	 * 
 	 * @param orderSetAttributeType
 	 * @since 2.4.0
-	 * @should completely remove a orderSet attribute type
+	 * @should completely remove a order set attribute type
 	 */
 	@Authorized(PrivilegeConstants.PURGE_ORDER_SET_ATTRIBUTE_TYPES)
 	void purgeOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType);
 
 	/**
-	 * Retrieves a OrderSetAttributeType object based on the name provided
+	 * Retrieves an order set attribute type object based on the name provided
 	 *
 	 * @param orderSetAttributeTypeName
 	 * @return the {@link OrderSetAttributeType} with the specified name

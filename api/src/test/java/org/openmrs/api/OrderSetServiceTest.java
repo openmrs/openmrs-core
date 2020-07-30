@@ -405,7 +405,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 		int initialOrderSetAttributeTypesCount = Context.getOrderSetService().getAllOrderSetAttributeTypes().size();
 		assertEquals(2, initialOrderSetAttributeTypesCount);
 		Context.getOrderSetService().purgeOrderSetAttributeType(Context.getOrderSetService().getOrderSetAttributeType(2));
-		assertEquals(1, Context.getOrderSetService().getAllOrderSetAttributeTypes().size());
+		assertEquals(initialOrderSetAttributeTypesCount - 1, Context.getOrderSetService().getAllOrderSetAttributeTypes().size());
 	}
 
 	/**
@@ -440,7 +440,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 		orderSetAttributeType.setDatatypeClassname(FreeTextDatatype.class.getName());
 		Context.getOrderSetService().saveOrderSetAttributeType(orderSetAttributeType);
 		assertNotNull(orderSetAttributeType.getId());
-		assertEquals(3, Context.getOrderSetService().getAllOrderSetAttributeTypes().size());
+		assertEquals(initialOrderSetAttributeTypesCount + 1, Context.getOrderSetService().getAllOrderSetAttributeTypes().size());
 	}
 
 	/**
