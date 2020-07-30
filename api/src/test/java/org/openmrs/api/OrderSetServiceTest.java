@@ -11,6 +11,7 @@ package org.openmrs.api;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -26,9 +27,11 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.OrderSet;
+import org.openmrs.OrderSetAttributeType;
 import org.openmrs.OrderSetMember;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.customdatatype.datatype.FreeTextDatatype;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 public class OrderSetServiceTest extends BaseContextSensitiveTest {
@@ -40,6 +43,8 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	protected ConceptService conceptService;
 	
 	protected static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
+	
+	protected static final String ORDER_SET_ATTRIBUTES = "org/openmrs/api/include/OrderSetServiceTest-attributes.xml";
 	
 	
 	/**
@@ -350,4 +355,125 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 		orderSet.setRetired(orderSetRetired);
 		return orderSet;
 	}
+	
+
+	/**
+	 * @see OrderSetService#getOrderSetAttributeByUuid(String)
+	 */
+	@Test
+	public void getOrderSetAttributeByUuid_shouldGetTheOrderSetAttributeWithTheGivenUuid() {
+		executeDataSet(ORDER_SET_ATTRIBUTES);
+		OrderSetService service = Context.getOrderSetService();
+		assertEquals("2011-04-25",service.getOrderSetAttributeByUuid("3a4bdb18-6faa-22e0-8414-001e376eb68e").getValueReference());
+	}
+
+	/**
+	 * @see OrderSetService#getOrderSetAttributeByUuid(String)
+	 */
+	@Test
+	public void getOrderSetAttributeByUuid_shouldReturnNullIfNoOrderSetAttributeHasTheGivenUuid() {
+		executeDataSet(ORDER_SET_ATTRIBUTES);
+		OrderSetService service = Context.getOrderSetService();
+		assertNull(service.getOrderSetAttributeByUuid("not-a-uuid"));
+	}
+
+	/**
+	 * @see OrderSetService#getOrderSetAttributeTypeByUuid(String)
+	 */
+	@Test
+	public void getOrderSetAttributeTypeByUuid_shouldReturnTheOrderSetAttributeTypeWithTheGivenUuid() {
+		executeDataSet(ORDER_SET_ATTRIBUTES);
+		assertEquals("Audit Date", Context.getOrderSetService().getOrderSetAttributeTypeByUuid(
+		    "8516cc50-6f9f-33e0-8414-001e648eb67e").getName());
+	}
+
+	/**
+	 * @see OrderSetService#getOrderSetAttributeTypeByUuid(String)
+	 */
+	@Test
+	public void getOrderSetAttributeTypeByUuid_shouldReturnNullIfNoOrderSetAttributeTypeExistsWithTheGivenUuid() {
+		executeDataSet(ORDER_SET_ATTRIBUTES);
+		assertNull(Context.getOrderSetService().getOrderSetAttributeTypeByUuid("not-a-uuid"));
+	}
+
+	/**
+	 * @see OrderSetService#purgeOrderSetAttributeType(OrderSetAttributeType)
+	 */
+	@Test
+	public void purgeOrderSetAttributeType_shouldCompletelyRemoveAOrderSetAttributeType() {
+		executeDataSet(ORDER_SET_ATTRIBUTES);
+		int initialOrderSetAttributeTypesCount = Context.getOrderSetService().getAllOrderSetAttributeTypes().size();
+		Context.getOrderSetService().purgeOrderSetAttributeType(Context.getOrderSetService().getOrderSetAttributeType(2));
+		assertEquals(initialOrderSetAttributeTypesCount - 1, Context.getOrderSetService().getAllOrderSetAttributeTypes().size());
+	}
+
+	/**
+	 * @see OrderSetService#retireOrderSetAttributeType(OrderSetAttributeType,String)
+	 */
+	@Test
+	public void retireOrderSetAttributeType_shouldRetireAOrderSetAttributeType() {
+		executeDataSet(ORDER_SET_ATTRIBUTES);
+		OrderSetAttributeType orderSetAttributeType = Context.getOrderSetService().getOrderSetAttributeType(1);
+		assertFalse(orderSetAttributeType.getRetired());
+		assertNull(orderSetAttributeType.getRetiredBy());
+		assertNull(orderSetAttributeType.getDateRetired());
+		assertNull(orderSetAttributeType.getRetireReason());
+		Context.getOrderSetService().retireOrderSetAttributeType(orderSetAttributeType, "for testing");
+		orderSetAttributeType = Context.getOrderSetService().getOrderSetAttributeType(1);
+		assertTrue(orderSetAttributeType.getRetired());
+		assertNotNull(orderSetAttributeType.getRetiredBy());
+		assertNotNull(orderSetAttributeType.getDateRetired());
+		assertEquals("for testing", orderSetAttributeType.getRetireReason());
+	}
+
+	/**
+	 * @see OrderSetService#saveOrderSetAttributeType(OrderSetAttributeType)
+	 */
+	@Test
+	public void saveOrderSetAttributeType_shouldCreateANewOrderSetAttributeType() {
+		executeDataSet(ORDER_SET_ATTRIBUTES);
+		int initialOrderSetAttributeTypesCount = Context.getOrderSetService().getAllOrderSetAttributeTypes().size();
+		OrderSetAttributeType orderSetAttributeType = new OrderSetAttributeType();
+		orderSetAttributeType.setName("Another one");
+		orderSetAttributeType.setDatatypeClassname(FreeTextDatatype.class.getName());
+		Context.getOrderSetService().saveOrderSetAttributeType(orderSetAttributeType);
+		assertNotNull(orderSetAttributeType.getId());
+		assertEquals(initialOrderSetAttributeTypesCount + 1, Context.getOrderSetService().getAllOrderSetAttributeTypes().size());
+	}
+
+	/**
+	 * @see OrderSetService#saveOrderSetAttributeType(OrderSetAttributeType)
+	 */
+	@Test
+	public void saveOrderSetAttributeType_shouldEditAnExistingOrderSetAttributeType() {
+		executeDataSet(ORDER_SET_ATTRIBUTES);
+		int initialOrderSetAttributeTypesCount = Context.getOrderSetService().getAllOrderSetAttributeTypes().size();
+		OrderSetService service = Context.getOrderSetService();
+		OrderSetAttributeType orderSetAttributeType = service.getOrderSetAttributeType(1);
+		orderSetAttributeType.setName("A new name");
+		service.saveOrderSetAttributeType(orderSetAttributeType);
+		assertEquals(initialOrderSetAttributeTypesCount, service.getAllOrderSetAttributeTypes().size());
+		assertEquals("A new name", service.getOrderSetAttributeType(1).getName());
+	}
+
+	/**
+	 * @see OrderSetService#unretireOrderSetAttributeType(OrderSetAttributeType)
+	 */
+	@Test
+	public void unretireOrderSetAttributeType_shouldUnretireARetiredOrderSetAttributeType() {
+		executeDataSet(ORDER_SET_ATTRIBUTES);
+		OrderSetService service = Context.getOrderSetService();
+		OrderSetAttributeType orderSetAttributeType = service.getOrderSetAttributeType(2);
+		assertTrue(orderSetAttributeType.getRetired());
+		assertNotNull(orderSetAttributeType.getDateRetired());
+		assertNotNull(orderSetAttributeType.getRetiredBy());
+		assertNotNull(orderSetAttributeType.getRetireReason());
+		service.unretireOrderSetAttributeType(orderSetAttributeType);
+		assertFalse(orderSetAttributeType.getRetired());
+		assertNull(orderSetAttributeType.getDateRetired());
+		assertNull(orderSetAttributeType.getRetiredBy());
+		assertNull(orderSetAttributeType.getRetireReason());
+	}
+
+
 }
