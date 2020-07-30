@@ -194,7 +194,7 @@ public interface OrderSetService extends OpenmrsService {
 	 * 
 	 * @param orderSetAttributeType
 	 * @since 2.4.0
-	 * @should completely remove a order set attribute type
+	 * @should completely remove an order set attribute type
 	 */
 	@Authorized(PrivilegeConstants.PURGE_ORDER_SET_ATTRIBUTE_TYPES)
 	void purgeOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType);
