@@ -23,8 +23,6 @@
             </generator>
         </id>
 
-        <discriminator column="order_group_id" insert="false" />
-
         <many-to-one name="orderSet" class="OrderSet">
             <column name="order_set_id"/>
         </many-to-one>
