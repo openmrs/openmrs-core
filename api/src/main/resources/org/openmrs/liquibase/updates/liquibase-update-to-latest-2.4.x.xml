@@ -106,7 +106,7 @@
 				<columnExists tableName="order_group" columnName="order_group_reason"/>				
 			</not>
 		</preConditions>
-		<comment>Adding "order_group_reason" column to master.xmlorder_group table</comment>
+		<comment>Adding "previous_order_group" column to order_group table</comment>
        <addColumn tableName="order_group">
             <column name="order_group_reason" type="int">
             	<constraints nullable="true"/>

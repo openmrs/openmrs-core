@@ -720,10 +720,19 @@ public class HibernateOrderDAO implements OrderDAO {
 		criteria.add(Restrictions.eq("encounter", encounter));
 		return criteria.list();
 	}
-	
+
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#getOrderGroupAttributeByUuid(String) 
+	 * @param uuid
+	 */
 	@Override
-	public OrderGroupAttribute getOrderGroupAttributeByUuid(String uuid) {
-		return null;
+	public OrderGroupAttribute getOrderGroupAttributeByUuid(String uuid)  throws DAOException{
+		if(uuid==null||uuid.isEmpty()){
+			throw  new APIException("Uuid Cannot be Empty or null");
+		}
+		return (OrderGroupAttribute) sessionFactory.getCurrentSession().createCriteria(OrderGroup.class).add(
+			Restrictions.eq("uuid",uuid)).uniqueResult();
+			
 	}
 
 	/**
@@ -731,44 +740,57 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<OrderGroupAttributeType> getAllOrderGroupAttributeTypes() {
+	public List<OrderGroupAttributeType> getAllOrderGroupAttributeTypes() throws DAOException{
 		return sessionFactory.getCurrentSession().createCriteria(OrderGroupAttributeType.class).list();
 	}
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#getOrderGroupAttributeType(java.lang.Integer)
+	 * @param id
 	 */
 	@Override
-	public OrderGroupAttributeType getOrderGroupAttributeType(Integer id) {
-		return sessionFactory.getCurrentSession().get(OrderGroupAttributeType.class,id);
+	public OrderGroupAttributeType getOrderGroupAttributeType(Integer id) throws DAOException{
+//		return sessionFactory.getCurrentSession().get(OrderGroupAttributeType.class,id);
+		return null;
 	}
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#getOrderGroupAttributeTypeByUuid(java.lang.String)
+	 * @param uuid 
 	 */
 	@Override
-	public OrderGroupAttributeType getOrderGroupAttributeTypeByUuid(String uuid) {
-		return (OrderGroupAttributeType) sessionFactory.getCurrentSession().createCriteria(OrderGroupAttribute.class).add(
+	public OrderGroupAttributeType getOrderGroupAttributeTypeByUuid(String uuid) throws DAOException{
+		if(uuid==null||uuid.isEmpty()){
+			throw  new APIException("Uuid Cannot be Empty or null");
+		}
+		return (OrderGroupAttributeType) sessionFactory.getCurrentSession().createCriteria(OrderGroupAttributeType.class).add(
 			Restrictions.eq("uuid",uuid)).uniqueResult();
+//		return  null;
 	}
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#saveOrderGroupAttributeType(org.openmrs.OrderGroupAttributeType)
+	 * @param orderGroupAttributeType 
 	 */
 	@Override
-	public OrderGroupAttributeType saveOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) {
+	public OrderGroupAttributeType saveOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType)throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(orderGroupAttributeType);
 		return orderGroupAttributeType;
+//		return null;
 	}
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#deleteOrderGroupAttributeType(org.openmrs.OrderGroupAttributeType)
+	 * @param orderGroupAttributeType 
 	 */
 	@Override
-	public void deleteOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) {
+	public void deleteOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws DAOException{
        sessionFactory.getCurrentSession().delete(orderGroupAttributeType);
 	}
 
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#getOrderGroupAttributeTypeByName(String) 
+	 * @param name
+	 */
 	@Override
-	public OrderGroupAttributeType getOrderGroupAttributeTypeByName(String name) {
+	public OrderGroupAttributeType getOrderGroupAttributeTypeByName(String name) throws DAOException{
 		return (OrderGroupAttributeType) sessionFactory.getCurrentSession().createCriteria(OrderGroupAttributeType.class).add(
 			Restrictions.eq("name",name)).uniqueResult();
-		
 	}
 }

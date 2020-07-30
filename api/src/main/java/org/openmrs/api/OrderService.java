@@ -849,7 +849,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should return all orderGroup attribute types including retired ones
 	 */
 	@Authorized(PrivilegeConstants.GET_ORDERS)
-	 List<OrderGroupAttributeType> getOrderGroupAttributeTypes();
+	 List<OrderGroupAttributeType> getOrderGroupAttributeTypes() throws APIException;
 	
 	/**
 	 * @param id
@@ -858,7 +858,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should return null if no orderGroup attribute type exists with the given id
 	 */
 	@Authorized(PrivilegeConstants.GET_ORDERS)
-	OrderGroupAttributeType getOrderGroupAttributeType(Integer id);
+	OrderGroupAttributeType getOrderGroupAttributeType(Integer id) throws APIException;
 
 	/**
 	 * @param uuid
@@ -866,7 +866,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should return the orderGroup attribute type with the given uuid
 	 * @should return null if no orderGroup attribute type exists with the given uuid
 	 */
-	OrderGroupAttributeType getOrderGroupAttributeTypeByUuid(String uuid);
+	OrderGroupAttributeType getOrderGroupAttributeTypeByUuid(String uuid) throws APIException;
 	
 	/**
 	 * Creates or updates the given orderGroup attribute type in the database
@@ -877,7 +877,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should edit an existing orderGroup attribute type
 	 */
     @Authorized({PrivilegeConstants.EDIT_ORDERS,PrivilegeConstants.ADD_ORDERS})
-	OrderGroupAttributeType saveOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType);
+	OrderGroupAttributeType saveOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws APIException;
 
 	/**
 	 * Retires the given orderGroup attribute type in the database
@@ -887,7 +887,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should retire a orderGroup attribute type
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
-	OrderGroupAttributeType retireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType,String reason);
+	OrderGroupAttributeType retireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType,String reason) throws APIException;
 
 	/**
 	 * Restores a orderGroup attribute type that was previous retired in the database
@@ -896,7 +896,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should unretire a retired orderGroup attribute type
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
-	OrderGroupAttributeType unretireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType);
+	OrderGroupAttributeType unretireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws APIException;
 
 	/**
 	 * Completely removes a orderGroup attribute type from the database
@@ -905,7 +905,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should completely remove a orderGroup attribute type
 	 */
     @Authorized(PrivilegeConstants.PURGE_ORDERS)
-	void OrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType);
+	void OrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws APIException;
 
 	/**
 	 * Retrieves a OrderGroupAttributeType object based on the name provided
@@ -916,7 +916,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should return null if no orderGroup attribute type exists with the specified name
 	 */
     @Authorized(PrivilegeConstants.GET_ORDERS)
-	OrderGroupAttributeType getOrderGroupAttributeTypeByName(String orderGroupAttributeTypeName);
+	OrderGroupAttributeType getOrderGroupAttributeTypeByName(String orderGroupAttributeTypeName) throws APIException;
     
 	/**
 	 * @param uuid
@@ -926,5 +926,5 @@ public interface OrderService extends OpenmrsService {
 	 * @should return null if no order set attribute has the given uuid
 	 */
 	@Authorized(PrivilegeConstants.GET_ORDERS)
-	 OrderGroupAttribute getOrderGroupAttributeByUuid(String uuid);
+	 OrderGroupAttribute getOrderGroupAttributeByUuid(String uuid) throws APIException;
 }

@@ -1075,47 +1075,48 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 
 	@Override
-	public List<OrderGroupAttributeType> getOrderGroupAttributeTypes() {
+	public List<OrderGroupAttributeType> getOrderGroupAttributeTypes() throws APIException {
+//		return dao.getAllOrderGroupAttributeTypes();
 		return null;
 	}
 
 	@Override
-	public OrderGroupAttributeType getOrderGroupAttributeType(Integer id) {
+	public OrderGroupAttributeType getOrderGroupAttributeType(Integer id) throws APIException {
 		return null;
 	}
 
 	@Override
-	public OrderGroupAttributeType getOrderGroupAttributeTypeByUuid(String uuid) {
+	public OrderGroupAttributeType getOrderGroupAttributeTypeByUuid(String uuid)throws APIException {
 		return null;
 	}
 
 	@Override
-	public OrderGroupAttributeType saveOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) {
+	public OrderGroupAttributeType saveOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws APIException{
 		return null;
 	}
 
 	@Override
-	public OrderGroupAttributeType retireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType, String reason) {
+	public OrderGroupAttributeType retireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType, String reason)throws APIException {
 		return null;
 	}
 
 	@Override
-	public OrderGroupAttributeType unretireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) {
+	public OrderGroupAttributeType unretireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType)throws APIException {
 		return null;
 	}
 
 	@Override
-	public void OrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) {
+	public void OrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws APIException{
 
 	}
 
 	@Override
-	public OrderGroupAttributeType getOrderGroupAttributeTypeByName(String orderGroupAttributeTypeName) {
+	public OrderGroupAttributeType getOrderGroupAttributeTypeByName(String orderGroupAttributeTypeName)throws APIException {
 		return null;
 	}
 
 	@Override
-	public OrderGroupAttribute getOrderGroupAttributeByUuid(String uuid) {
+	public OrderGroupAttribute getOrderGroupAttributeByUuid(String uuid)throws APIException {
 		return null;
 	}
 
