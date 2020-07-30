@@ -447,12 +447,12 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void saveOrderSetAttributeType_shouldEditAnExistingOrderSetAttributeType() {
 		executeDataSet(ORDER_SET_ATTRIBUTES);
+		int initialOrderSetAttributeTypesCount = Context.getOrderSetService().getAllOrderSetAttributeTypes().size();
 		OrderSetService service = Context.getOrderSetService();
-		assertEquals(2, service.getAllOrderSetAttributeTypes().size());
 		OrderSetAttributeType orderSetAttributeType = service.getOrderSetAttributeType(1);
 		orderSetAttributeType.setName("A new name");
 		service.saveOrderSetAttributeType(orderSetAttributeType);
-		assertEquals(2, service.getAllOrderSetAttributeTypes().size());
+		assertEquals(initialOrderSetAttributeTypesCount, service.getAllOrderSetAttributeTypes().size());
 		assertEquals("A new name", service.getOrderSetAttributeType(1).getName());
 	}
 
