@@ -52,33 +52,8 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.openmrs.Allergy;
-import org.openmrs.CareSetting;
-import org.openmrs.Concept;
-import org.openmrs.ConceptClass;
-import org.openmrs.ConceptDatatype;
-import org.openmrs.ConceptDescription;
-import org.openmrs.ConceptName;
-import org.openmrs.Condition;
-import org.openmrs.Diagnosis;
-import org.openmrs.DosingInstructions;
-import org.openmrs.Drug;
-import org.openmrs.DrugOrder;
-import org.openmrs.Encounter;
-import org.openmrs.FreeTextDosingInstructions;
-import org.openmrs.GlobalProperty;
-import org.openmrs.Obs;
-import org.openmrs.Order;
+import org.openmrs.*;
 import org.openmrs.Order.Action;
-import org.openmrs.OrderFrequency;
-import org.openmrs.OrderGroup;
-import org.openmrs.OrderSet;
-import org.openmrs.OrderType;
-import org.openmrs.Patient;
-import org.openmrs.Provider;
-import org.openmrs.SimpleDosingInstructions;
-import org.openmrs.TestOrder;
-import org.openmrs.Visit;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.HibernateAdministrationDAO;
@@ -105,6 +80,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	private static final String OTHER_ORDER_FREQUENCIES_XML = "org/openmrs/api/include/OrderServiceTest-otherOrderFrequencies.xml";
 
 	protected static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
+
+	private static final String ORDER_GROUP_ATTRIBUTES = "org/openmrs/api/include/OrderServiceTest-createOrderGroupAttributes.xml";
 
 	@Autowired
 	private ConceptService conceptService;
@@ -175,6 +152,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		private Boolean dispenseAsWritten = Boolean.FALSE;
 		private String drugNonCoded;
 	}
+	
 
 	/**
 	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
@@ -3748,5 +3726,12 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.build();
 		APIException exception = assertThrows(APIException.class, () -> secondSavedOrderGroup.addOrder(newOrderWithInvalidPosition, secondSavedOrderGroup.getOrders().size() + 1));
 		assertThat(exception.getMessage(), is("Cannot add a member which is out of range of the list"));
+	}
+	@Test
+	public void getOrderGroupAttributeTypes_shouldReturnAllOrderGroupAttributeTypes(){
+		executeDataSet(ORDER_GROUP_ATTRIBUTES);
+		List<OrderGroupAttributeType>orderGroupAttributeTypes=orderService.getOrderGroupAttributeTypes();
+		assertEquals(1,orderGroupAttributeTypes.size());
+		
 	}
 }

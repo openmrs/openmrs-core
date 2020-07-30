@@ -20,9 +20,9 @@ import org.openmrs.api.APIException;
  * Not all orders in an encounter need to be grouped this way, only those that have a specific connection to each other 
  * (e.g. several orders that together make up a treatment protocol for some diagnosis could be grouped).
  * 
- * @since 1.12
+ * @since 2.4.0
  */
-public class OrderGroup extends BaseCustomizableMetadata<OrderGroupAttribute> {
+public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	
 	public static final long serialVersionUID = 72232L;
 	
