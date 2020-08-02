@@ -1,0 +1,13 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    pull-request-branch-name:
+      separator: "-"
+    reviewers:
+      - "OpenMRS/dev/5"
+    commit-message:
+      prefix: "github-actions"
+      include: "scope"
