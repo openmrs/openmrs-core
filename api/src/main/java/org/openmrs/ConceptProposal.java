@@ -11,7 +11,18 @@ package org.openmrs;
 
 import java.util.Date;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.openmrs.util.OpenmrsConstants;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  * A ConceptProposal is a temporary holder for concept that should be in the system. When defining
@@ -20,36 +31,60 @@ import org.openmrs.util.OpenmrsConstants;
  * encounter that prompted this proposal is updated with a new observation pointing at the new (or
  * edited) concept.
  */
+@Entity
+@Table(name = "concept_proposal")
 public class ConceptProposal extends BaseOpenmrsObject {
 	
 	public static final long serialVersionUID = 57344L;
 	
 	// Fields
 	
+	@Id
+	@Column(name = "concept_proposal_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer conceptProposalId;
 	
+	@ManyToOne
+	@JoinColumn(name = "encounter_id")
 	private Encounter encounter;
 	
+	@ManyToOne
+	@JoinColumn(name = "obs_concept_id")
 	private Concept obsConcept;
 	
+	@ManyToOne
+	@Cascade(CascadeType.SAVE_UPDATE)
+	@JoinColumn(name = "obs_id")
 	private Obs obs;
 	
+	@ManyToOne
+	@JoinColumn(name = "concept_id")
 	private Concept mappedConcept;
 	
+	@Column(name = "original_text", nullable = false)
 	private String originalText;
 	
+	@Column(name = "final_text")
 	private String finalText;
 	
+	@Column(name = "state", length = 32, nullable = false)
 	private String state;
 	
+	@Column(name = "comments")
 	private String comments;
 	
+	@ManyToOne
+	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
 	
+	@Column(name = "date_created", length = 19, nullable = false)
 	private Date dateCreated;
 	
+	@ManyToOne
+	@JoinColumn(name = "changed_by")
 	private User changedBy;
 	
+	@Column(name = "date_changed", length = 19)
 	private Date dateChanged;
 	
 	// Constructors
