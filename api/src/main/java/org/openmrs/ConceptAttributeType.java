@@ -12,8 +12,20 @@ package org.openmrs;
 import org.openmrs.attribute.AttributeType;
 import org.openmrs.attribute.BaseAttributeType;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "concept_attribute_type")
 public class ConceptAttributeType extends BaseAttributeType<Concept> implements AttributeType<Concept> {
 	
+	@Id
+	@Column(name = "concept_attribute_type_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer conceptAttributeTypeId;
 	
 	public Integer getConceptAttributeTypeId() {
