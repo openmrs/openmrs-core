@@ -3823,6 +3823,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void saveOrderGroupAttributeType_shouldSaveOrderGroupAttributeTypeGivenOrderGroupAttributeType() throws ParseException {
 		executeDataSet(ORDER_GROUP_ATTRIBUTES);
+		int initialGroupOrderAttributeTypeCount = Context.getOrderService().getOrderGroupAttributeTypes().size();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.S");
 		OrderGroupAttributeType orderGroupAttributeType = new OrderGroupAttributeType();
 		orderGroupAttributeType.setId(5);
@@ -3831,14 +3832,19 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		orderGroupAttributeType.setName("Surgery");
 		orderGroupAttributeType.setUuid("083c6266-d25c-11ea-87d0-0242ac130003");
 		orderGroupAttributeType.setMinOccurs(6);
-		orderGroupAttributeType.setDateCreated(dateFormat.parse("2020-07-30 16:24:10.0"));
+		orderGroupAttributeType.setDateCreated(dateFormat.parse("2020-08-02 16:24:10.0"));
 		orderGroupAttributeType.setRetired(false);
-		orderService.saveOrderGroupAttributeType(orderGroupAttributeType);
+		Context.getOrderService().saveOrderGroupAttributeType(orderGroupAttributeType);
 		
 		List<OrderGroupAttributeType>orderGroupAttributetypes = orderService.getOrderGroupAttributeTypes();
+<<<<<<< HEAD
 //		assertTrue(orderGroupAttributetypes.contains(orderGroupAttributeType.getClass()));
 		System.out.print(orderGroupAttributeType);
 		
 >>>>>>> TRUNK-5410 : Added Unit Tests to HibernateOrderDAOTest for some new methods in HibernateOrderDAO
+=======
+		assertTrue(orderGroupAttributetypes.contains(orderGroupAttributeType.getClass()));
+				
+>>>>>>> Added more Tests for new Changes to HibernateOrderDAO
 	}
 }

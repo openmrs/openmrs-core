@@ -749,8 +749,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public OrderGroupAttributeType getOrderGroupAttributeType(Integer id) throws DAOException{
-//		return sessionFactory.getCurrentSession().get(OrderGroupAttributeType.class,id);
-		return null;
+		return sessionFactory.getCurrentSession().get(OrderGroupAttributeType.class,id);
 	}
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#getOrderGroupAttributeTypeByUuid(java.lang.String)
@@ -763,7 +762,6 @@ public class HibernateOrderDAO implements OrderDAO {
 		}
 		return (OrderGroupAttributeType) sessionFactory.getCurrentSession().createCriteria(OrderGroupAttributeType.class).add(
 			Restrictions.eq("uuid",uuid)).uniqueResult();
-//		return  null;
 	}
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#saveOrderGroupAttributeType(org.openmrs.OrderGroupAttributeType)
@@ -772,6 +770,10 @@ public class HibernateOrderDAO implements OrderDAO {
 	@Override
 	public OrderGroupAttributeType saveOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType)throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(orderGroupAttributeType);
+//		System.out.println("You are saving Attr  "+orderGroupAttributeType.getUuid());
+//		System.out.println("You are saving Attr  "+orderGroupAttributeType.getId());
+//		System.out.println("You are saving Attr  "+orderGroupAttributeType.getName());
+//		System.out.println("You are saving Attr  "+orderGroupAttributeType);
 		return orderGroupAttributeType;
 //		return null;
 	}
@@ -781,7 +783,10 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public void deleteOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws DAOException{
-       sessionFactory.getCurrentSession().delete(orderGroupAttributeType);
+		if(orderGroupAttributeType==null){
+			throw new APIException("OrderGroupAttributeType cannot be null");
+            }
+		       sessionFactory.getCurrentSession().delete(orderGroupAttributeType);
 	}
 
 	/**
