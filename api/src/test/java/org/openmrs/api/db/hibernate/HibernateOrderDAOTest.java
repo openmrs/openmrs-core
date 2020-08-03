@@ -141,28 +141,7 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 		
 	}
 	
-	@Test
-	public void saveOrderGroupAttributeType_shouldSaveOrderGroupAttributeTypeGivenOrderGroupAttributeType() throws ParseException {
-		OrderGroupAttributeType newOrderGroupAttributeType = new OrderGroupAttributeType();
-		newOrderGroupAttributeType.setId(5);
-		newOrderGroupAttributeType.setName("Scan");
-		newOrderGroupAttributeType.setMinOccurs(5);
-		newOrderGroupAttributeType.setDateCreated(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.S").parse("2020-07-30 16:24:10.0"));
-		newOrderGroupAttributeType.setRetired(false);
-//		newOrderGroupAttributeType.setUuid(UUID3);
-		dao.saveOrderGroupAttributeType(newOrderGroupAttributeType);
-		
-		List<OrderGroupAttributeType>orderGroupAttributeTypes=dao.getAllOrderGroupAttributeTypes();
-		int orderGroupAttributeTypeSize = orderGroupAttributeTypes.size();
-		
 
-		OrderGroupAttributeType savedOrderGroupAttributeType = dao.getOrderGroupAttributeType(5);
-//		assertEquals("Scan",savedOrderGroupAttributeType.getName());
-//		assertEquals(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.S").parse("2020-07-30 16:24:10.0"),savedOrderGroupAttributeType.getDateCreated());
-        assertNotNull(newOrderGroupAttributeType.getId());
-        System.out.print(newOrderGroupAttributeType.getId());
-		assertEquals(orderGroupAttributeTypeSize+1,newOrderGroupAttributeType.getId());
-    }
 	/**
 	 * @see {@link HibernateOrderDAO#getOrderGroupAttributeTypeByName(String)}
 	 * @throws Exception
@@ -177,12 +156,13 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 		assertEquals(UUID4,newOrderGroupAttributeType.getUuid());
     }
     
-    @Test
-	public void deleteOrderGroupAttributeType_shouldDeleteOrderGroupAttributeTypeFromDatabase(){
-    	String uuid = "9cf1bdb2-d18e-11ea-87d0-0242ac130003";
-		OrderGroupAttributeType orderGroupAttributeType = dao.getOrderGroupAttributeTypeByUuid(uuid);
-		assertNotNull(orderGroupAttributeType);
-		dao.deleteOrderGroupAttributeType(orderGroupAttributeType);
-		assertNull(dao.getOrderGroupAttributeTypeByUuid(uuid));
-	}
+//    @Test
+//	public void deleteOrderGroupAttributeType_shouldDeleteOrderGroupAttributeTypeFromDatabase(){
+//    	String uuid = "9cf1bdb2-d18e-11ea-87d0-0242ac130003";
+//		OrderGroupAttributeType orderGroupAttributeType = dao.getOrderGroupAttributeTypeByUuid(uuid);
+//		OrderGroupAttribute orderGroupAttribute=dao.getOrderGroupAttributeByUuid(uuid);
+//		assertNotNull(orderGroupAttribute);
+//		dao.deleteOrderGroupAttributeType(orderGroupAttributeType);
+//		assertNull(dao.getOrderGroupAttributeByUuid(uuid));
+//	}
 }
