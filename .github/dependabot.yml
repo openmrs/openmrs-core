@@ -11,3 +11,14 @@ updates:
     commit-message:
       prefix: "github-actions"
       include: "scope"
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    pull-request-branch-name:
+      separator: "-"
+    reviewers:
+      - "OpenMRS/dev/5"
+    commit-message:
+      prefix: "maven"
+      include: "scope"
