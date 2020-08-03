@@ -59,6 +59,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.HibernateAdministrationDAO;
 import org.openmrs.api.db.hibernate.HibernateSessionFactoryBean;
 import org.openmrs.api.impl.OrderServiceImpl;
+import org.openmrs.customdatatype.datatype.FreeTextDatatype;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.order.OrderUtilTest;
@@ -3734,44 +3735,77 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertEquals(4,orderGroupAttributeTypes.size());
 		
 	}
-	//TODO
 	@Test 
 	public void getOrderGroupAttributeType_shouldReturnOrderGroupAttributeTypeGivenId(){
-//		executeDataSet(ORDER_GROUP_ATTRIBUTES);
+		executeDataSet(ORDER_GROUP_ATTRIBUTES);
 		final Integer ID = 2;
-		final String UUID2="9cf1bce0-d18e-11ea-87d0-0242ac130003";
+		final String UUID2="9cf1bbe6-d18e-11ea-87d0-0242ac130003";
 		OrderGroupAttributeType orderGroupAttributeType = orderService.getOrderGroupAttributeTypeById(ID);
 		assertEquals(orderService.getOrderGroupAttributeTypeByUuid(UUID2),orderGroupAttributeType);
-		
-	}
-//TODO
+		assertEquals(orderGroupAttributeType.getUuid(),Context.getOrderService().getOrderGroupAttributeTypeByUuid(UUID2).getUuid());
+		assertEquals(ID,Context.getOrderService().getOrderGroupAttributeTypeByUuid(UUID2).getId());
+			}
+
 	@Test
 	public void getOrderGroupAttributeTypeByUuid_shouldReturnOrderGroupAttributeTypeByUuid(){
 		executeDataSet(ORDER_GROUP_ATTRIBUTES);
-		final String UUID="9cf1bce0-d18e-11ea-87d0-0242ac130003";
-		String name = "Bacteriology";
-		OrderGroupAttributeType orderGroupAttributeType = orderService.getOrderGroupAttributeTypeByUuid(UUID);
-//		assertEquals(name,orderGroupAttributeType.getName());
-		System.out.print(orderGroupAttributeType.getName());
+		OrderGroupAttributeType orderGroupAttributeType = orderService.getOrderGroupAttributeTypeByUuid("9cf1bce0-d18e-11ea-87d0-0242ac130003");
+		assertEquals("Bacteriology",orderGroupAttributeType.getName());
 	}
+
 	@Test
 	public void saveOrderGroupAttributeType_shouldSaveOrderGroupAttributeTypeGivenOrderGroupAttributeType() throws ParseException {
 		executeDataSet(ORDER_GROUP_ATTRIBUTES);
 		int initialGroupOrderAttributeTypeCount = Context.getOrderService().getOrderGroupAttributeTypes().size();
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.S");
 		OrderGroupAttributeType orderGroupAttributeType = new OrderGroupAttributeType();
-		orderGroupAttributeType.setId(5);
-		orderGroupAttributeType.setOrderGroupAttributeTypeId(1);
-		orderGroupAttributeType.setCreator(new User());
 		orderGroupAttributeType.setName("Surgery");
-		orderGroupAttributeType.setUuid("083c6266-d25c-11ea-87d0-0242ac130003");
-		orderGroupAttributeType.setMinOccurs(6);
-		orderGroupAttributeType.setDateCreated(dateFormat.parse("2020-08-02 16:24:10.0"));
-		orderGroupAttributeType.setRetired(false);
+		orderGroupAttributeType.setDatatypeClassname(FreeTextDatatype.class.getName());
 		Context.getOrderService().saveOrderGroupAttributeType(orderGroupAttributeType);
-		
-		List<OrderGroupAttributeType>orderGroupAttributetypes = orderService.getOrderGroupAttributeTypes();
-		assertTrue(orderGroupAttributetypes.contains(orderGroupAttributeType.getClass()));
-				
-	}
+		assertNotNull(orderGroupAttributeType.getId());
+		assertEquals(initialGroupOrderAttributeTypeCount+1,Context.getOrderService().getOrderGroupAttributeTypes().size());
+			}
+			@Test
+			public void retireOrderGroupAttributeType_shouldRetireOrderGroupAttributeType() throws ParseException {
+				executeDataSet(ORDER_GROUP_ATTRIBUTES);
+				OrderGroupAttributeType orderGroupAttributeType = Context.getOrderService().getOrderGroupAttributeTypeById(2);
+				assertFalse(orderGroupAttributeType.getRetired());
+				assertNotNull(orderGroupAttributeType.getRetiredBy());
+				assertNull(orderGroupAttributeType.getRetireReason());
+				assertNull(orderGroupAttributeType.getDateRetired());
+				Context.getOrderService().retireOrderGroupAttributeType(orderGroupAttributeType,"Test Retire");
+				orderGroupAttributeType=Context.getOrderService().getOrderGroupAttributeTypeById(2);
+				assertTrue(orderGroupAttributeType.getRetired());
+				assertNotNull(orderGroupAttributeType.getRetiredBy());
+				assertEquals("Test Retire",orderGroupAttributeType.getRetireReason());
+				assertNotNull(orderGroupAttributeType.getDateRetired(),"True");
+			}
+			@Test
+			public void unretireOrderGroupAttributeType_shouldUnretireOrderGroupAttributeType(){
+				executeDataSet(ORDER_GROUP_ATTRIBUTES);
+				OrderService orderService = Context.getOrderService();
+				OrderGroupAttributeType orderGroupAttributeType = Context.getOrderService().getOrderGroupAttributeTypeById(4);
+                assertTrue(orderGroupAttributeType.getRetired());
+                assertNotNull(orderGroupAttributeType.getRetiredBy());
+                assertNotNull(orderGroupAttributeType.getDateRetired());
+                assertNotNull(orderGroupAttributeType.getRetireReason());
+                orderService.unretireOrderGroupAttributeType(orderGroupAttributeType);
+				assertFalse(orderGroupAttributeType.getRetired());
+				assertNull(orderGroupAttributeType.getRetiredBy());
+				assertNull(orderGroupAttributeType.getDateRetired());
+				assertNull(orderGroupAttributeType.getRetireReason());
+                
+			}
+			@Test
+			public  void getOrderGroupAttributeTypeByName_shouldReturnOrderGroupAttributeTypeUsingName(){
+		     executeDataSet(ORDER_GROUP_ATTRIBUTES);
+		     OrderGroupAttributeType orderGroupAttributeType = orderService.getOrderGroupAttributeTypeByName("Bacteriology");
+		     assertEquals("9cf1bce0-d18e-11ea-87d0-0242ac130003",orderGroupAttributeType.getUuid());
+			}
+			@Test
+			public void purgeOrderGroupAttributeType_shouldpurgeOrderGroupAttributeType(){
+				executeDataSet(ORDER_GROUP_ATTRIBUTES);
+				int initialOrderGroupAttributeTypeCount= Context.getOrderService().getOrderGroupAttributeTypes().size();
+				Context.getOrderService().purgeOrderGroupAttributeType(Context.getOrderService().getOrderGroupAttributeTypeById(4));
+				assertEquals(initialOrderGroupAttributeTypeCount-1,Context.getOrderService().getOrderGroupAttributeTypes().size());
+			}
 }

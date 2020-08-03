@@ -770,12 +770,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	@Override
 	public OrderGroupAttributeType saveOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType)throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(orderGroupAttributeType);
-//		System.out.println("You are saving Attr  "+orderGroupAttributeType.getUuid());
-//		System.out.println("You are saving Attr  "+orderGroupAttributeType.getId());
-//		System.out.println("You are saving Attr  "+orderGroupAttributeType.getName());
-//		System.out.println("You are saving Attr  "+orderGroupAttributeType);
 		return orderGroupAttributeType;
-//		return null;
 	}
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#deleteOrderGroupAttributeType(org.openmrs.OrderGroupAttributeType)

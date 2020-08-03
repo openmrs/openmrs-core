@@ -1087,38 +1087,37 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	//TODO
 	@Override
 	public OrderGroupAttributeType getOrderGroupAttributeTypeByUuid(String uuid)throws APIException {
-		return null;
+		return dao.getOrderGroupAttributeTypeByUuid(uuid);
 	}
 
 	@Override
 	public OrderGroupAttributeType saveOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws APIException{
 		return dao.saveOrderGroupAttributeType(orderGroupAttributeType);
-//		return  null;
 	}
 
 	@Override
 	public OrderGroupAttributeType retireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType, String reason)throws APIException {
-		return null;
+		return dao.saveOrderGroupAttributeType(orderGroupAttributeType);
 	}
 
 	@Override
 	public OrderGroupAttributeType unretireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType)throws APIException {
-		return null;
+		return Context.getOrderService().saveOrderGroupAttributeType(orderGroupAttributeType);
 	}
 
 	@Override
-	public void OrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws APIException{
-
+	public void purgeOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws APIException{
+         dao.deleteOrderGroupAttributeType(orderGroupAttributeType);
 	}
 
 	@Override
 	public OrderGroupAttributeType getOrderGroupAttributeTypeByName(String orderGroupAttributeTypeName)throws APIException {
-		return null;
+		return dao.getOrderGroupAttributeTypeByName(orderGroupAttributeTypeName);
 	}
 
 	@Override
 	public OrderGroupAttribute getOrderGroupAttributeByUuid(String uuid)throws APIException {
-		return null;
+		return dao.getOrderGroupAttributeByUuid(uuid);
 	}
 
 }

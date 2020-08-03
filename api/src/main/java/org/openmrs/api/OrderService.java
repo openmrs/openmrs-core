@@ -905,7 +905,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should completely remove a orderGroup attribute type
 	 */
     @Authorized(PrivilegeConstants.PURGE_ORDERS)
-	void OrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws APIException;
+	void purgeOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws APIException;
 
 	/**
 	 * Retrieves a OrderGroupAttributeType object based on the name provided
