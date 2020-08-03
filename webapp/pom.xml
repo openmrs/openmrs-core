@@ -314,6 +314,6 @@
       <WEBAPP.DISPLAY.NAME>OpenMRS</WEBAPP.DISPLAY.NAME>
       <WEBAPP.DESCRIPTION>An Open-Source EMR System</WEBAPP.DESCRIPTION>
       <webapp.name>openmrs</webapp.name>
-      <tomcat.version>7.0.86</tomcat.version>
+      <tomcat.version>8.5.2</tomcat.version>
    </properties>
 </project>
