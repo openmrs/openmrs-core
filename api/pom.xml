@@ -167,16 +167,6 @@
 		   <artifactId>lucene-backward-codecs</artifactId>
 	   </dependency>
 	   <dependency>
-         <groupId>dom4j</groupId>
-         <artifactId>dom4j</artifactId>
-         <exclusions>
-         	<exclusion>
-         		<artifactId>xml-apis</artifactId>
-         		<groupId>xml-apis</groupId>
-         	</exclusion>
-         </exclusions>
-      </dependency>
-	   <dependency>
 		  <groupId>org.apache.logging.log4j</groupId>
 		  <artifactId>log4j-core</artifactId>
 	   </dependency>
