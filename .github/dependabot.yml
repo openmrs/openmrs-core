@@ -7,7 +7,7 @@ updates:
     pull-request-branch-name:
       separator: "-"
     reviewers:
-      - "OpenMRS/dev/5"
+      - "openmrs/dev-5"
     commit-message:
       prefix: "github-actions"
       include: "scope"
@@ -18,7 +18,7 @@ updates:
     pull-request-branch-name:
       separator: "-"
     reviewers:
-      - "OpenMRS/dev/5"
+      - "openmrs/dev-5"
     commit-message:
       prefix: "maven"
       include: "scope"
