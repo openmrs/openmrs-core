@@ -9,26 +9,47 @@
  */
 package org.openmrs;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.IndexedEmbedded;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  * The concept map object represents a mapping of Concept to ConceptSource. A concept can have 0 to
  * N mappings to any and all concept sources in the database.
  */
+@Entity
+@Table(name = "concept_reference_map")
 public class ConceptMap extends BaseConceptMap {
 	
 	public static final long serialVersionUID = 754677L;
 	
 	// Fields
+	@Id
 	@DocumentId
+	@Column(name = "concept_map_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer conceptMapId;
 	
 	@ContainedIn
+	@ManyToOne
+	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
-	
+
+	@ManyToOne
+	@Cascade(CascadeType.SAVE_UPDATE)
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
+	@JoinColumn(name = "concept_reference_term_id", nullable = false)
 	private ConceptReferenceTerm conceptReferenceTerm;
 	
 	// Constructors
