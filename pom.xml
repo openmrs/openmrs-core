@@ -270,12 +270,12 @@
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-search-orm</artifactId>
-				<version>5.11.5.Final</version>
+				<version>${hibernateSearchVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.lucene</groupId>
 				<artifactId>lucene-queryparser</artifactId>
-				<version>5.5.5</version>
+				<version>${luceneVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.lucene</groupId>
@@ -285,12 +285,12 @@
 			<dependency>
 				<groupId>org.apache.lucene</groupId>
 				<artifactId>lucene-queries</artifactId>
-				<version>5.5.5</version>
+				<version>${luceneVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.lucene</groupId>
 				<artifactId>lucene-backward-codecs</artifactId>
-				<version>5.5.5</version>
+				<version>${luceneVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.liquibase</groupId>
@@ -1106,10 +1106,19 @@
 		<openmrs.version.shortnumericonly>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}</openmrs.version.shortnumericonly>
 		<openmrs.version>${project.version}</openmrs.version>
 
+		<!-- Tracking important versions and version dependencies -->
+		<!-- Note that the versions of these dependencies can be limited by support for other libraries.
+			 For instance, our version of Lucene is tied to the version of Hibernate Search. Similarly, our
+			 version of Hibernate Search must be compatible with the version of Hibernate and Hibernate must
+			 be compatible with our version of Spring. -->
 		<springVersion>5.2.8.RELEASE</springVersion>
 		<hibernateVersion>5.4.18.Final</hibernateVersion>
+		<hibernateSearchVersion>5.11.5.Final</hibernateSearchVersion>
+		<luceneVersion>5.5.5</luceneVersion>
+
 		<slf4jVersion> 1.7.30</slf4jVersion>
 		<log4jVersion>2.13.3</log4jVersion>
+
 		<customArgLineForTesting/>
 
 		<sonar.host.url>https://sonar.openmrs.org</sonar.host.url>
