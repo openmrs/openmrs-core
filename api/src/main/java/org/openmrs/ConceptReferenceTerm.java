@@ -16,6 +16,18 @@ import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Field;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
 /**
  * A concept reference term is typically name for a concept by which it is referred in another
  * institution like ICD9, ICD10, SNOMED that keeps a concept dictionary or any other OpenMRS
@@ -23,21 +35,33 @@ import org.hibernate.search.annotations.Field;
  *
  * @since 1.9
  */
+@Entity
+@Table(name = "concept_reference_term")
+@AttributeOverride(name = "name", column = @Column(name = "name"))
 public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
+	@Id
 	@DocumentId
+	@Column(name = "concept_reference_term_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer conceptReferenceTermId;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "concept_source_id", nullable = false)
 	private ConceptSource conceptSource;
-	
+
 	//The unique code used to identify the reference term in it's reference terminology
 	@Field(analyze = Analyze.NO)
+	@Column(name = "code", nullable = false)
 	private String code;
-	
+
+	@Column(name = "version", length = 50)
 	private String version;
-	
+
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name = "term_a_id", nullable = false, insertable = false, updatable = false)
 	private Set<ConceptReferenceTermMap> conceptReferenceTermMaps;
 	
 	/** default constructor */
