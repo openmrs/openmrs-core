@@ -9,6 +9,16 @@
  */
 package org.openmrs;
 
+import javax.persistence.AssociationOverride;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 /**
  * The concept Reference Term map object represents a mapping between two Concept Reference Terms. A
  * concept reference term can have 0 to N concept reference term mappings to any or all Concept
@@ -16,14 +26,24 @@ package org.openmrs;
  *
  * @since 1.9
  */
+@Entity
+@Table(name = "concept_reference_term_map")
+@AssociationOverride(name = "conceptMapType", joinColumns = @JoinColumn(name = "a_is_to_b_id", nullable = false))
 public class ConceptReferenceTermMap extends BaseConceptMap {
 	
 	private static final long serialVersionUID = 1L;
 	
+	@Id
+	@Column(name = "concept_reference_term_map_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer conceptReferenceTermMapId;
 	
+	@ManyToOne
+	@JoinColumn(name = "term_a_id", nullable = false)
 	private ConceptReferenceTerm termA;
 	
+	@ManyToOne
+	@JoinColumn(name = "term_b_id", nullable = false)
 	private ConceptReferenceTerm termB;
 	
 	// Constructors

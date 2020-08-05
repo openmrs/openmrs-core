@@ -9,6 +9,10 @@
  */
 package org.openmrs;
 
+import javax.persistence.Column;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
 import java.util.Date;
 
 /**
@@ -16,16 +20,25 @@ import java.util.Date;
  * 
  * @since 1.9
  */
+@MappedSuperclass
 public abstract class BaseConceptMap extends BaseOpenmrsObject implements Auditable {
-	
+
+	@ManyToOne
+	@JoinColumn(name = "concept_map_type_id", nullable = false)
 	private ConceptMapType conceptMapType;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "changed_by")
 	private User changedBy;
-	
+
+	@Column(name = "date_created", nullable = false, length = 19)
 	private Date dateCreated;
-	
+
+	@Column(name = "date_changed", length = 19)
 	private Date dateChanged;
 	
 	/**
