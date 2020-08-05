@@ -22,3 +22,13 @@ updates:
     commit-message:
       prefix: "maven"
       include: "scope"
+    ignore:
+      - dependency-name: "org.apache.lucene:lucene-queryparser"
+        versions:
+          - ">=6.0"
+      - dependency-name: "org.apache.lucene:lucene-queries"
+        versions:
+          - ">=6.0"
+      - dependency-name: "org.apache.lucene:lucene-backward-codecs"
+        versions:
+          - ">=6.0"
