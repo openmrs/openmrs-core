@@ -14,21 +14,44 @@ import java.util.Objects;
 
 import org.openmrs.util.OpenmrsUtil;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 /**
  * @since 2.1.0
  */
+@Entity
+@Table(name = "cohort_member")
 public class CohortMembership extends BaseChangeableOpenmrsData implements Comparable<CohortMembership> {
 	
 	public static final long serialVersionUID = 0L;
 
+	@Id
+	@Column(name = "cohort_member_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer cohortMemberId;
 	
+	@ManyToOne
+	@Access(AccessType.FIELD)
+	@JoinColumn(name = "cohort_id", nullable = false)
 	private Cohort cohort;
 	
+	@Column(name = "patient_id", nullable = false)
 	private Integer patientId;
 	
+	@Column(name = "start_date", nullable = false, length = 19)
 	private Date startDate;
 	
+	@Column(name = "end_date", length = 19)
 	private Date endDate;
 	
 	// Constructor
@@ -68,7 +91,19 @@ public class CohortMembership extends BaseChangeableOpenmrsData implements Compa
 	public void setId(Integer id) {
 		setCohortMemberId(id);
 	}
-	
+
+	@Transient
+	@Override
+	public Date getDateChanged() {
+		return super.getDateChanged();
+	}
+
+	@Transient
+	@Override
+	public User getChangedBy() {
+		return super.getChangedBy();
+	}
+
 	public Integer getCohortMemberId() {
 		return cohortMemberId;
 	}
