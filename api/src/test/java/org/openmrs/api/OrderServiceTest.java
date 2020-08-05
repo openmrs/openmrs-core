@@ -52,8 +52,17 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.openmrs.*;
+import org.openmrs.Allergy;
+import org.openmrs.Condition;
+import org.openmrs.Diagnosis;
+import org.openmrs.Visit;
+import org.openmrs.ConceptDescription;
+import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptName;
+import org.openmrs.Drug;
+import org.openmrs.DosingInstructions;
 import org.openmrs.Order.Action;
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -73,6 +82,26 @@ import org.openmrs.api.builder.DrugOrderBuilder;
 >>>>>>> TRUNK-5410 Created OrderGroupAttribute,OrderGroupAttributeType
 =======
 >>>>>>> TRUNK-5410 Created OrderGroupAttribute,OrderGroupAttributeType
+=======
+import org.openmrs.DrugOrder;
+import org.openmrs.ConceptClass;
+import org.openmrs.Obs;
+import org.openmrs.Order;
+import org.openmrs.OrderGroupAttributeType;
+import org.openmrs.OrderType;
+import org.openmrs.OrderGroup;
+import org.openmrs.OrderSet;
+import org.openmrs.Patient;
+import org.openmrs.Concept;
+import org.openmrs.Encounter;
+import org.openmrs.FreeTextDosingInstructions;
+import org.openmrs.GlobalProperty;
+import org.openmrs.Provider;
+import org.openmrs.SimpleDosingInstructions;
+import org.openmrs.TestOrder;
+import org.openmrs.CareSetting;
+import org.openmrs.OrderFrequency;
+>>>>>>> TRUNK-5410 : Removed Import Wild cards from OrderService , OrderDAO ,HibernateOrderDAO and OrderServiceTest
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.HibernateAdministrationDAO;
