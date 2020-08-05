@@ -35,6 +35,8 @@ import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.hamcrest.Matchers;
+import org.junit.ClassRule;
+import org.junit.rules.TemporaryFolder;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -63,6 +65,9 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 	public static final String LIQUIBASE_UPDATE_TO_LATEST_XML = "liquibase-update-to-latest.xml";
 	
 	private DatabaseUpgradeTestUtil upgradeTestUtil;
+	
+	@ClassRule
+	public static TemporaryFolder tempappdir = TemporaryFolder.builder().assureDeletion().build();
 	
 	private static File testAppDataDir;
 	
@@ -119,10 +124,6 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 	
 	@BeforeAll
 	public static void beforeClass() throws IOException {
-		testAppDataDir = File.createTempFile("appdir-for-unit-tests", "");
-		testAppDataDir.delete();// so we can make turn it into a directory
-		testAppDataDir.mkdir();
-		
 		System.setProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, testAppDataDir.getAbsolutePath());
 		OpenmrsUtil.setApplicationDataDirectory(testAppDataDir.getAbsolutePath());
 	}

@@ -65,6 +65,8 @@ import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.H2Dialect;
+import org.junit.ClassRule;
+import org.junit.rules.TemporaryFolder;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assume;
@@ -122,6 +124,10 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	protected static final String INITIAL_XML_DATASET_PACKAGE_PATH = "org/openmrs/include/initialInMemoryTestDataSet.xml";
 	
 	protected static final String EXAMPLE_XML_DATASET_PACKAGE_PATH = "org/openmrs/include/standardTestDataset.xml";
+	
+	
+	@ClassRule
+	public static TemporaryFolder tempappdir = TemporaryFolder.builder().assureDeletion().build();
 	
 	/**
 	 * cached runtime properties
@@ -348,26 +354,15 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			//after that, just update, if there are any changes. This is for performance reasons.
 			runtimeProperties.setProperty(Environment.HBM2DDL_AUTO, "update");
 		}
-		
-		// we don't want to try to load core modules in tests
-		runtimeProperties.setProperty(ModuleConstants.IGNORE_CORE_MODULES_PROPERTY, "true");
-		
-		try {
-			File tempappdir = File.createTempFile("appdir-for-unit-tests-", "");
-			tempappdir.delete(); // so we can make it into a directory
-			tempappdir.mkdir(); // turn it into a directory
-			tempappdir.deleteOnExit(); // clean up when we're done with tests
-			
-			runtimeProperties.setProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, tempappdir
-			        .getAbsolutePath());
-			OpenmrsUtil.setApplicationDataDirectory(tempappdir.getAbsolutePath());
-		}
-		catch (IOException e) {
-			log.error("Unable to create temp dir", e);
-		}
-		
-		return runtimeProperties;
-	}
+	/** we don't want to try to load core modules in tests 
+	 * 
+	 */
+                runtimeProperties.setProperty(ModuleConstants.IGNORE_CORE_MODULES_PROPERTY, "true");
+				runtimeProperties.setProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, tempappdir
+					        .getAbsolutePath());
+					OpenmrsUtil.setApplicationDataDirectory(tempappdir.getAbsolutePath());
+					return runtimeProperties;
+			 }
 	
 	/**
 	 * This method provides the credentials to authenticate the user that is authenticated through the base setup.
