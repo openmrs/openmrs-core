@@ -9,12 +9,12 @@
  */
 package org.openmrs.annotation;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.StartModule;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 @StartModule({ "org/openmrs/module/include/test1-1.0-SNAPSHOT.omod", "org/openmrs/module/include/test2-1.0-SNAPSHOT.omod" })
 public class StartModuleAnnotationJUnit4Test extends BaseContextSensitiveTest {

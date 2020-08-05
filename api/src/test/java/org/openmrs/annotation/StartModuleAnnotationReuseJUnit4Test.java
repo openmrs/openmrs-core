@@ -9,15 +9,16 @@
  */
 package org.openmrs.annotation;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.openmrs.test.BaseContextSensitiveTest;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 import org.openmrs.test.StartModule;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 @StartModule("org/openmrs/module/include/test1-1.0-SNAPSHOT.omod")
 public class StartModuleAnnotationReuseJUnit4Test extends BaseContextSensitiveTest {
   @Test
   public void shouldPass() {
-    Assert.assertTrue(true);
+    assertTrue(true);
   }
 }
