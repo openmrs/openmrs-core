@@ -32,3 +32,5 @@ updates:
       - dependency-name: "org.apache.lucene:lucene-backward-codecs"
         versions:
           - ">=6.0"
+      - dependency-name: "org.hibernate:hibernate-search-orm" # needs to stay compatible with lucene as detailed at http://hibernate.org/search/releases/        versions:
+          - ">= 6.0"
