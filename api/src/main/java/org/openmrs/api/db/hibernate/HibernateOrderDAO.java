@@ -729,8 +729,8 @@ public class HibernateOrderDAO implements OrderDAO {
 		if(uuid==null||uuid.isEmpty()){
 			throw  new APIException("Uuid Cannot be Empty or null");
 		}
-		return (OrderGroupAttribute) sessionFactory.getCurrentSession().createCriteria(OrderGroup.class).add(
-			Restrictions.eq("uuid",uuid)).uniqueResult();
+	return (OrderGroupAttribute) sessionFactory.getCurrentSession().createQuery("from OrderGroupAttribute d where d.uuid = :uuid")
+			.setString("uuid", uuid).uniqueResult();
 			
 	}
 
