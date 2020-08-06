@@ -9,22 +9,37 @@
  */
 package org.openmrs;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Date;
 
 /**
  * A concept source is defined as any institution that keeps a concept dictionary. Examples are
  * ICD9, ICD10, SNOMED, or any other OpenMRS implementation
  */
+@Entity
+@Table(name = "concept_reference_source")
+@AttributeOverride(name = "name", column = @Column(name = "name", length = 50))
 public class ConceptSource extends BaseChangeableOpenmrsMetadata {
-	
+
 	public static final long serialVersionUID = 375L;
-	
+
 	// Fields
-	
+
+	@Id
+	@Column(name = "concept_source_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer conceptSourceId;
-	
+
+	@Column(name = "hl7_code", length = 50)
 	private String hl7Code;
-	
+
+	@Column(name = "unique_id", unique = true, length = 250)
 	private String uniqueId;
 	
 	// Constructors
