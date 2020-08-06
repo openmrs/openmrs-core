@@ -13,26 +13,48 @@ import java.util.Date;
 
 import org.openmrs.util.OpenmrsUtil;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 /**
  * This represents a single concept within a concept set.
  */
+@Entity
+@Table(name = "concept_set")
 public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.Serializable, Comparable<ConceptSet> {
-	
+
 	public static final long serialVersionUID = 3787L;
-	
+
 	// Fields
+	@Id
+	@Column(name = "concept_set_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer conceptSetId;
-	
+
 	// concept in the set
-	private Concept concept; 
-	
+	@ManyToOne
+	@JoinColumn(name = "concept_id", nullable = false)
+	private Concept concept;
+
 	// parent concept that uses this set
-	private Concept conceptSet; 
-	
+	@ManyToOne
+	@JoinColumn(name = "concept_set", nullable = false)
+	private Concept conceptSet;
+
+	@Column(name = "sort_weight", nullable = false, length = 22)
 	private Double sortWeight;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
-	
+
+	@Column(name = "date_created", nullable = false, length = 19)
 	private Date dateCreated;
 	
 	// Constructors
