@@ -11,8 +11,22 @@ package org.openmrs.api.impl;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.proxy.HibernateProxy;
-import org.openmrs.*;
+import org.openmrs.CareSetting;
+import org.openmrs.Concept;
+import org.openmrs.ConceptClass;
+import org.openmrs.Encounter;
+import org.openmrs.DrugOrder;
+import org.openmrs.Order;
+import org.openmrs.OrderFrequency;
+import org.openmrs.OrderGroup;
+import org.openmrs.OrderType;
+import org.openmrs.GlobalProperty;
+import org.openmrs.Patient;
+import org.openmrs.Provider;
 import org.openmrs.Order.FulfillerStatus;
+import org.openmrs.OrderGroupAttribute;
+import org.openmrs.OrderGroupAttributeType;
+import org.openmrs.TestOrder;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AmbiguousOrderException;
 import org.openmrs.api.CannotDeleteObjectInUseException;
@@ -1078,13 +1092,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	public List<OrderGroupAttributeType> getOrderGroupAttributeTypes() throws APIException {
 		return dao.getAllOrderGroupAttributeTypes();
 	}
-//TODO
 	@Override
 	public OrderGroupAttributeType getOrderGroupAttributeTypeById(Integer id) throws APIException {
-//		if(id.intValue()==)
 		return dao.getOrderGroupAttributeType(id);
 	}
-	//TODO
 	@Override
 	public OrderGroupAttributeType getOrderGroupAttributeTypeByUuid(String uuid)throws APIException {
 		return dao.getOrderGroupAttributeTypeByUuid(uuid);

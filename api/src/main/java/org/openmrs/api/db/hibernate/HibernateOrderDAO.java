@@ -733,17 +733,15 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 
 	/**
-	 * @see org.openmrs.api.db.OrderDAO#getOrderGroupAttributeByUuid(String) 
-	 * @param uuid
+	 * @see org.openmrs.api.db.OrderDAO#getOrderGroupAttributeByUuid(String)
 	 */
 	@Override
 	public OrderGroupAttribute getOrderGroupAttributeByUuid(String uuid)  throws DAOException{
 		if(uuid==null||uuid.isEmpty()){
 			throw  new APIException("Uuid Cannot be Empty or null");
 		}
-		return (OrderGroupAttribute) sessionFactory.getCurrentSession().createCriteria(OrderGroup.class).add(
-			Restrictions.eq("uuid",uuid)).uniqueResult();
-			
+	return (OrderGroupAttribute) sessionFactory.getCurrentSession().createQuery("from OrderGroupAttribute d where d.uuid = :uuid")
+			.setString("uuid", uuid).uniqueResult();
 	}
 
 	/**
@@ -754,17 +752,17 @@ public class HibernateOrderDAO implements OrderDAO {
 	public List<OrderGroupAttributeType> getAllOrderGroupAttributeTypes() throws DAOException{
 		return sessionFactory.getCurrentSession().createCriteria(OrderGroupAttributeType.class).list();
 	}
+	
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#getOrderGroupAttributeType(java.lang.Integer)
-	 * @param id
 	 */
 	@Override
 	public OrderGroupAttributeType getOrderGroupAttributeType(Integer id) throws DAOException{
 		return sessionFactory.getCurrentSession().get(OrderGroupAttributeType.class,id);
 	}
+	
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#getOrderGroupAttributeTypeByUuid(java.lang.String)
-	 * @param uuid 
 	 */
 	@Override
 	public OrderGroupAttributeType getOrderGroupAttributeTypeByUuid(String uuid) throws DAOException{
@@ -774,9 +772,9 @@ public class HibernateOrderDAO implements OrderDAO {
 		return (OrderGroupAttributeType) sessionFactory.getCurrentSession().createCriteria(OrderGroupAttributeType.class).add(
 			Restrictions.eq("uuid",uuid)).uniqueResult();
 	}
+	
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#saveOrderGroupAttributeType(org.openmrs.OrderGroupAttributeType)
-	 * @param orderGroupAttributeType 
 	 */
 	@Override
 	public OrderGroupAttributeType saveOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType)throws DAOException {
@@ -785,7 +783,6 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#deleteOrderGroupAttributeType(org.openmrs.OrderGroupAttributeType)
-	 * @param orderGroupAttributeType 
 	 */
 	@Override
 	public void deleteOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws DAOException{
@@ -796,8 +793,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 
 	/**
-	 * @see org.openmrs.api.db.OrderDAO#getOrderGroupAttributeTypeByName(String) 
-	 * @param name
+	 * @see org.openmrs.api.db.OrderDAO#getOrderGroupAttributeTypeByName(String)
 	 */
 	@Override
 	public OrderGroupAttributeType getOrderGroupAttributeTypeByName(String name) throws DAOException{

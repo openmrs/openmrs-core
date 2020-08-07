@@ -12,7 +12,6 @@ package org.openmrs.api.db;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
 import org.openmrs.CareSetting;
 import org.openmrs.Order;
 import org.openmrs.Encounter;

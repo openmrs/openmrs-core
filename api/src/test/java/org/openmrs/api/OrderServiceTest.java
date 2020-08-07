@@ -9,41 +9,6 @@
  */
 package org.openmrs.api;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.openmrs.Order.Action.DISCONTINUE;
-import static org.openmrs.Order.FulfillerStatus.COMPLETED;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.openmrs.test.OpenmrsMatchers.hasId;
-import static org.openmrs.test.TestUtil.containsId;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import java.lang.reflect.Field;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
@@ -52,32 +17,32 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.openmrs.Allergy;
-import org.openmrs.Condition;
-import org.openmrs.Diagnosis;
-import org.openmrs.Visit;
+import org.openmrs.Order.Action;
+import org.openmrs.TestOrder;
+import org.openmrs.Patient;
+import org.openmrs.DosingInstructions;
+import org.openmrs.SimpleDosingInstructions;
+import org.openmrs.DrugOrder;
+import org.openmrs.FreeTextDosingInstructions;
+import org.openmrs.Drug;
 import org.openmrs.ConceptDescription;
+import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptName;
-import org.openmrs.Drug;
-import org.openmrs.DosingInstructions;
-import org.openmrs.Order.Action;
-import org.openmrs.DrugOrder;
-import org.openmrs.ConceptClass;
-import org.openmrs.Obs;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Order;
-import org.openmrs.OrderGroupAttributeType;
 import org.openmrs.OrderType;
 import org.openmrs.OrderGroup;
 import org.openmrs.OrderSet;
-import org.openmrs.Patient;
-import org.openmrs.Concept;
+import org.openmrs.OrderGroupAttribute;
+import org.openmrs.OrderGroupAttributeType;
 import org.openmrs.Encounter;
-import org.openmrs.FreeTextDosingInstructions;
-import org.openmrs.GlobalProperty;
 import org.openmrs.Provider;
-import org.openmrs.SimpleDosingInstructions;
-import org.openmrs.TestOrder;
+import org.openmrs.Concept;
+import org.openmrs.Allergy;
+import org.openmrs.Diagnosis;
+import org.openmrs.Condition;
+import org.openmrs.Visit;
 import org.openmrs.CareSetting;
 import org.openmrs.OrderFrequency;
 import org.openmrs.api.builder.OrderBuilder;
@@ -89,15 +54,52 @@ import org.openmrs.customdatatype.datatype.FreeTextDatatype;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.order.OrderUtilTest;
+import org.openmrs.Obs;
 import org.openmrs.orders.TimestampOrderNumberGenerator;
 import org.openmrs.parameter.OrderSearchCriteria;
 import org.openmrs.parameter.OrderSearchCriteriaBuilder;
 import org.openmrs.test.TestUtil;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.DateUtil;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Locale;
+import java.util.GregorianCalendar;
+import java.util.LinkedHashSet;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItems;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static org.openmrs.Order.Action.DISCONTINUE;
+import static org.openmrs.Order.FulfillerStatus.COMPLETED;
+import static org.openmrs.test.OpenmrsMatchers.hasId;
+import static org.openmrs.test.TestUtil.containsId;
 
 /**
  * TODO clean up and test all methods in OrderService
@@ -3761,6 +3763,13 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertEquals(4,orderGroupAttributeTypes.size());
 		
 	}
+
+	@Test
+	public void getOrderGroupAttributeType_shouldReturnNullIfNonExistingIdIsProvided(){
+		executeDataSet(ORDER_GROUP_ATTRIBUTES);
+		assertNull(Context.getOrderService().getOrderGroupAttributeTypeById(10));
+	}
+	
 	@Test 
 	public void getOrderGroupAttributeType_shouldReturnOrderGroupAttributeTypeGivenId(){
 		executeDataSet(ORDER_GROUP_ATTRIBUTES);
@@ -3770,7 +3779,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertEquals(orderService.getOrderGroupAttributeTypeByUuid(UUID2),orderGroupAttributeType);
 		assertEquals(orderGroupAttributeType.getUuid(),Context.getOrderService().getOrderGroupAttributeTypeByUuid(UUID2).getUuid());
 		assertEquals(ID,Context.getOrderService().getOrderGroupAttributeTypeByUuid(UUID2).getId());
-			}
+			
+	}
 
 	@Test
 	public void getOrderGroupAttributeTypeByUuid_shouldReturnOrderGroupAttributeTypeByUuid(){
@@ -3790,6 +3800,29 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(orderGroupAttributeType.getId());
 		assertEquals(initialGroupOrderAttributeTypeCount+1,Context.getOrderService().getOrderGroupAttributeTypes().size());
 			}
+			
+			@Test
+			public void saveOrderGroupAttributeType_shouldEditAnExistingOrderGroupAttributeType(){
+				executeDataSet(ORDER_GROUP_ATTRIBUTES);
+				final String UUID4 ="9cf1bdb2-d18e-11ea-87d0-0242ac130003";
+				final String name ="ECG";
+				//Check for values in the database
+				OrderGroupAttributeType orderGroupAttributeType=Context.getOrderService().getOrderGroupAttributeTypeById(4);
+				assertEquals(UUID4,orderGroupAttributeType.getUuid());
+				assertEquals(name,orderGroupAttributeType.getName());
+				assertEquals("Testing unretire",orderGroupAttributeType.getRetireReason());
+                //edit existing values in the database
+				orderGroupAttributeType.setRetireReason("Change Order To Laparascopy");
+				orderGroupAttributeType.setName("Laparascopy");
+				orderService.saveOrderGroupAttributeType(orderGroupAttributeType);
+                //confirm new values are persisted
+				assertEquals("Laparascopy",orderGroupAttributeType.getName());
+				assertNotEquals(name,orderGroupAttributeType.getName());
+				assertEquals("Change Order To Laparascopy",orderGroupAttributeType.getRetireReason());
+				assertNotEquals("Testing unretire",orderGroupAttributeType.getRetireReason());
+				
+			}
+			
 			@Test
 			public void retireOrderGroupAttributeType_shouldRetireOrderGroupAttributeType() throws ParseException {
 				executeDataSet(ORDER_GROUP_ATTRIBUTES);
@@ -3823,9 +3856,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			}
 			@Test
 			public  void getOrderGroupAttributeTypeByName_shouldReturnOrderGroupAttributeTypeUsingName(){
-		        executeDataSet(ORDER_GROUP_ATTRIBUTES);
-		        OrderGroupAttributeType orderGroupAttributeType = orderService.getOrderGroupAttributeTypeByName("Bacteriology");
-		        assertEquals("9cf1bce0-d18e-11ea-87d0-0242ac130003",orderGroupAttributeType.getUuid());
+		     executeDataSet(ORDER_GROUP_ATTRIBUTES);
+		     OrderGroupAttributeType orderGroupAttributeType = orderService.getOrderGroupAttributeTypeByName("Bacteriology");
+		     assertEquals("9cf1bce0-d18e-11ea-87d0-0242ac130003",orderGroupAttributeType.getUuid());
 			}
 			@Test
 			public void purgeOrderGroupAttributeType_shouldPurgeOrderGroupAttributeType(){
@@ -3834,4 +3867,20 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				Context.getOrderService().purgeOrderGroupAttributeType(Context.getOrderService().getOrderGroupAttributeTypeById(4));
 				assertEquals(initialOrderGroupAttributeTypeCount-1,Context.getOrderService().getOrderGroupAttributeTypes().size());
 			}
+	@Test
+	public void getOrderGroupAttributeByUuid_shouldReturnNullIfNonExistingUuidIsProvided(){
+		executeDataSet(ORDER_GROUP_ATTRIBUTES);
+		final String UUID2="cbf580ee-d7fb-11ea-87d0-0242ac130003";
+		assertNull(Context.getOrderService().getOrderGroupAttributeTypeByUuid(UUID2));
+	}
+
+	@Test
+	public void getOrderGroupAttributeByUuid_shouldReturnOrderGroupAttributeGivenUuid(){
+		executeDataSet(ORDER_GROUP_ATTRIBUTES);
+		final String UUID2="86bdcc12-d18d-11ea-87d0-0242ac130003";
+		OrderGroupAttribute orderGroupAttribute = orderService.getOrderGroupAttributeByUuid(UUID2);
+		orderGroupAttribute.getValueReference();
+		assertEquals("Test 1",orderGroupAttribute.getValueReference());
+		assertEquals(1,orderGroupAttribute.getId());
+	}
 }
