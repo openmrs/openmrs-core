@@ -9,9 +9,20 @@
  */
 package org.openmrs;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 /**
  * ConceptStateConversion
  */
+@Entity
+@Table(name = "concept_state_conversion")
 public class ConceptStateConversion extends BaseOpenmrsObject {
 	
 	public static final long serialVersionUID = 3214511L;
@@ -20,12 +31,21 @@ public class ConceptStateConversion extends BaseOpenmrsObject {
 	// Properties
 	// ******************
 	
+	@Id
+	@Column(name = "concept_state_conversion_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer conceptStateConversionId;
 	
+	@ManyToOne
+	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
 	
+	@ManyToOne
+	@JoinColumn(name = "program_workflow_id", nullable = false)
 	private ProgramWorkflow programWorkflow;
 	
+	@ManyToOne
+	@JoinColumn(name = "program_workflow_state_id", nullable = false)
 	private ProgramWorkflowState programWorkflowState;
 	
 	// ******************
