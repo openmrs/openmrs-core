@@ -44,3 +44,6 @@ updates:
       - dependency-name: "org.hibernate:hibernate-ehcache" # needs to stay compatible with hibernate-search as detailed at http://hibernate.org/search/releases/
         versions:
           - ">= 6.0"
+      - dependency-name: "org.liquibase:liquibase-core"
+        versions:
+          - ">= 4.0"
