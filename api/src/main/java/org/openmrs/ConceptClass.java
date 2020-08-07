@@ -11,9 +11,18 @@ package org.openmrs;
 
 import org.hibernate.search.annotations.DocumentId;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 /**
  * ConceptClass
  */
+@Entity
+@Table(name = "concept_class")
 public class ConceptClass extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 33473L;
@@ -55,7 +64,10 @@ public class ConceptClass extends BaseChangeableOpenmrsMetadata {
 	public static final String FREQUENCY_UUID = "8e071bfe-520c-44c0-a89b-538e9129b42a";
 	
 	// Fields
+	@Id
 	@DocumentId
+	@Column(name = "concept_class_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer conceptClassId;
 	
 	// Constructors
