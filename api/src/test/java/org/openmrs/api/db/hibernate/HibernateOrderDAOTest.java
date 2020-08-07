@@ -9,8 +9,17 @@
  */
 package org.openmrs.api.db.hibernate;
 
+<<<<<<< HEAD
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+=======
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+>>>>>>> TRUNK-5410:Re-ordered imports format in OrderServiceTest and HibernateOrderDAOTest
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -19,14 +28,22 @@ import java.util.UUID;
 import org.hibernate.internal.SessionFactoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openmrs.*;
+
+import org.openmrs.Encounter;
+import org.openmrs.Order;
+import org.openmrs.OrderGroup;
+import org.openmrs.OrderGroupAttributeType;
+import org.openmrs.Patient;
 import org.openmrs.api.APIException;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
+<<<<<<< HEAD
 import static org.junit.jupiter.api.Assertions.*;
+=======
+>>>>>>> TRUNK-5410:Re-ordered imports format in OrderServiceTest and HibernateOrderDAOTest
 
 /**
  * Tests the saving of orders as part of the OrderGroup
