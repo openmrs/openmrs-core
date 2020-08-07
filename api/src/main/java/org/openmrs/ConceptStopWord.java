@@ -11,8 +11,17 @@ package org.openmrs;
 
 import java.util.Locale;
 
+import org.hibernate.annotations.BatchSize;
 import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Table;
 
 /**
  * ConceptStopWord is the real world term used to filter the words for indexing
@@ -21,15 +30,23 @@ import org.springframework.util.StringUtils;
  * 
  * @since 1.8
  */
+@Entity
+@Table(name = "concept_stop_word")
+@BatchSize(size = 25)
 public class ConceptStopWord extends BaseOpenmrsObject {
 	
 	private static final long serialVersionUID = 3671020002642184656L;
 	
 	// Fields
+	@Id
+	@Column(name = "concept_stop_word_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer conceptStopWordId;
 	
+	@Column(name = "word", nullable = false, length = 50)
 	private String value;
 	
+	@Column(name = "locale", nullable = false, length = 20)
 	private Locale locale;
 	
 	// Constructors
