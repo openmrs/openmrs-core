@@ -33,7 +33,7 @@
 			<plugin>
 				<groupId>org.liquibase</groupId>
 				<artifactId>liquibase-maven-plugin</artifactId>
-				<version>3.10.2</version>
+				<version>3.8.9</version>
 				<configuration>
 					<changeLogFile>../api/src/main/resources/${changelogfile}</changeLogFile>
 					<diffTypes>${diffTypes}</diffTypes>
