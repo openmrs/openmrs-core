@@ -9,10 +9,13 @@
  */
 package org.openmrs.validator;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 import org.openmrs.Role;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -37,12 +40,12 @@ public class RoleValidatorTest extends BaseContextSensitiveTest {
 		role.setRole("");
 		errors = new BindException(role, "role");
 		new RoleValidator().validate(role, errors);
-		Assert.assertTrue(errors.hasFieldErrors("role"));
+		assertTrue(errors.hasFieldErrors("role"));
 		
 		role.setRole(" ");
 		errors = new BindException(role, "role");
 		new RoleValidator().validate(role, errors);
-		Assert.assertTrue(errors.hasFieldErrors("role"));
+		assertTrue(errors.hasFieldErrors("role"));
 	}
 	
 	/**
@@ -56,17 +59,17 @@ public class RoleValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(role, "type");
 		new RoleValidator().validate(role, errors);
-		Assert.assertFalse(errors.hasFieldErrors("description"));
+		assertFalse(errors.hasFieldErrors("description"));
 		
 		role.setDescription("");
 		errors = new BindException(role, "role");
 		new RoleValidator().validate(role, errors);
-		Assert.assertFalse(errors.hasFieldErrors("description"));
+		assertFalse(errors.hasFieldErrors("description"));
 		
 		role.setDescription(" ");
 		errors = new BindException(role, "role");
 		new RoleValidator().validate(role, errors);
-		Assert.assertFalse(errors.hasFieldErrors("description"));
+		assertFalse(errors.hasFieldErrors("description"));
 	}
 	
 	/**
@@ -80,14 +83,14 @@ public class RoleValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(role, "type");
 		new RoleValidator().validate(role, errors);
-		Assert.assertTrue(errors.hasFieldErrors("role"));
-		Assert.assertEquals("error.trailingSpaces", errors.getFieldError("role").getCode());
+		assertTrue(errors.hasFieldErrors("role"));
+		assertEquals("error.trailingSpaces", errors.getFieldError("role").getCode());
 		
 		role.setRole("Bowling race car driver ");
 		errors = new BindException(role, "role");
 		new RoleValidator().validate(role, errors);
-		Assert.assertTrue(errors.hasFieldErrors("role"));
-		Assert.assertEquals("error.trailingSpaces", errors.getFieldError("role").getCode());
+		assertTrue(errors.hasFieldErrors("role"));
+		assertEquals("error.trailingSpaces", errors.getFieldError("role").getCode());
 	}
 	
 	/**
@@ -102,7 +105,7 @@ public class RoleValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(role, "type");
 		new RoleValidator().validate(role, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -117,7 +120,7 @@ public class RoleValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(role, "type");
 		new RoleValidator().validate(role, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -134,6 +137,6 @@ public class RoleValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(role, "type");
 		new RoleValidator().validate(role, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("role"));
+		assertTrue(errors.hasFieldErrors("role"));
 	}
 }

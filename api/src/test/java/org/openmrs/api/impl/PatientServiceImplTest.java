@@ -9,11 +9,13 @@
  */
 package org.openmrs.api.impl;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.fail;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -28,9 +30,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -51,7 +52,7 @@ import org.openmrs.api.ObsService;
 import org.openmrs.api.PatientServiceTest;
 import org.openmrs.api.context.UserContext;
 import org.openmrs.api.db.PatientDAO;
-import org.openmrs.test.BaseContextMockTest;
+import org.openmrs.test.jupiter.BaseContextMockTest;
 
 /**
  * This class tests org.openmrs.{@link PatientServiceImpl}
@@ -78,7 +79,7 @@ public class PatientServiceImplTest extends BaseContextMockTest {
 	@Mock
 	private PatientDAO patientDaoMock;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		patientService = new PatientServiceImpl();
 		patientService.setPatientDAO(patientDaoMock);
@@ -163,9 +164,6 @@ public class PatientServiceImplTest extends BaseContextMockTest {
 		final PatientIdentifierType sameIdentifierType = new PatientIdentifierType(equalIdentifierTypeId);
 		sameIdentifierType.setName(equalIdentifierTypeName);
 
-		when(patientDaoMock.getPatientIdentifierTypes(any(), any(), any(), any()))
-			.thenReturn(new ArrayList<>());
-
 		final Patient patientWithIdentifiers = new Patient();
 		final PatientIdentifier patientIdentifier = new PatientIdentifier("some identifier", identifierType,
 			mock(Location.class));
@@ -177,17 +175,10 @@ public class PatientServiceImplTest extends BaseContextMockTest {
 		patientIdentifierSameType.setIdentifier(equalIdentifier);
 		patientWithIdentifiers.addIdentifier(patientIdentifierSameType);
 
-		// when
-		try {
-			patientService.checkPatientIdentifiers(patientWithIdentifiers);
-			// then
-			fail();
-		}
-		catch (DuplicateIdentifierException e) {
-			assertNotNull(e.getPatientIdentifier());
-			assertTrue(e.getMessage().contains("Identifier1 id type #: 12345"));
-		}
-
+		DuplicateIdentifierException thrown = assertThrows(DuplicateIdentifierException.class,
+			() -> patientService.checkPatientIdentifiers(patientWithIdentifiers));
+		assertNotNull(thrown.getPatientIdentifier());
+		assertThat(thrown.getMessage(), containsString("Identifier1 id type #: 12345"));
 	}
 
 	@Test
@@ -234,7 +225,7 @@ public class PatientServiceImplTest extends BaseContextMockTest {
 		final List<Patient> duplicatePatients = patientService
 			.getDuplicatePatientsByAttributes(Arrays.asList("some attribute", "another attribute"));
 		verify(patientDaoMock, times(1)).getDuplicatePatientsByAttributes(anyList());
-		Assert.assertEquals(duplicatePatients.size(), 1);
+		assertEquals(duplicatePatients.size(), 1);
 	}
 
 	@Test
@@ -310,7 +301,7 @@ public class PatientServiceImplTest extends BaseContextMockTest {
 
 		// then
 		final Patient savedPatient = argumentCaptor.getValue();
-		assertEquals(true, savedPatient.getDead());
+		assertTrue(savedPatient.getDead());
 		assertEquals(dateDied, savedPatient.getDeathDate());
 		assertEquals(causeOfDeath, savedPatient.getCauseOfDeath());
 	}

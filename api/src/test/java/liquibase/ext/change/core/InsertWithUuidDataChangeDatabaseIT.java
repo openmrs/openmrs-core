@@ -9,6 +9,10 @@
  */
 package liquibase.ext.change.core;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,12 +20,9 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import org.junit.Assert;
-import org.junit.Test;
-import org.openmrs.util.H2DatabaseIT;
 
-import static junit.framework.TestCase.assertNotNull;
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
+import org.openmrs.util.H2DatabaseIT;
 
 public class InsertWithUuidDataChangeDatabaseIT extends H2DatabaseIT {
 	
@@ -45,7 +46,7 @@ public class InsertWithUuidDataChangeDatabaseIT extends H2DatabaseIT {
 			UUID.fromString(uuid);
 		}
 		catch (RuntimeException re) {
-			Assert.fail("uuid generated for name 'charlie' is not valid");
+			fail("uuid generated for name 'charlie' is not valid");
 		}
 	}
 	

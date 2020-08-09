@@ -11,19 +11,21 @@ package org.openmrs.validator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -48,7 +50,7 @@ public class CohortValidatorTest extends BaseContextSensitiveTest {
 
 	private Errors errors;
 	
-	@Before
+	@BeforeEach
 	public void setUp() {
 		validator = new CohortValidator();
 
@@ -85,9 +87,9 @@ public class CohortValidatorTest extends BaseContextSensitiveTest {
 
 		validator.validate(cohort, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("memberships"));
+		assertTrue(errors.hasFieldErrors("memberships"));
 		String eMessage = "Patient " + patient.getPatientId() + " is voided, cannot add voided members to a cohort";
-		Assert.assertEquals(eMessage, errors.getFieldError("memberships").getDefaultMessage());
+		assertEquals(eMessage, errors.getFieldError("memberships").getDefaultMessage());
 	}
 
 	@Test
@@ -95,8 +97,8 @@ public class CohortValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validate(cohort, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
-		Assert.assertFalse(errors.hasFieldErrors("memberships"));
+		assertFalse(errors.hasErrors());
+		assertFalse(errors.hasFieldErrors("memberships"));
 	}
 
 	@Test
@@ -106,8 +108,8 @@ public class CohortValidatorTest extends BaseContextSensitiveTest {
 
 		validator.validate(cohort, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
-		Assert.assertFalse(errors.hasFieldErrors("memberships"));
+		assertFalse(errors.hasErrors());
+		assertFalse(errors.hasFieldErrors("memberships"));
 	}
 
 	@Test
@@ -118,8 +120,8 @@ public class CohortValidatorTest extends BaseContextSensitiveTest {
 
 		validator.validate(cohort, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
-		Assert.assertFalse(errors.hasFieldErrors("memberships"));
+		assertFalse(errors.hasErrors());
+		assertFalse(errors.hasFieldErrors("memberships"));
 	}
 
 	@Test
@@ -133,6 +135,6 @@ public class CohortValidatorTest extends BaseContextSensitiveTest {
 		membership.setEndDate(endDate);
 		Errors errors = new BindException(cohort, "cohort");
 		new CohortValidator().validate(cohort, errors);
-		Assert.assertFalse(errors.hasFieldErrors("memberships"));
+		assertFalse(errors.hasFieldErrors("memberships"));
 	}
 }

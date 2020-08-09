@@ -1713,7 +1713,7 @@ public class OpenmrsUtil {
 	 * Reader/Writer object as an argument, making this method unnecessary.
 	 * 
 	 * @param props the properties object to write into
-	 * @param input the input stream to read from
+	 * @param inputStream the input stream to read from
 	 */
 	public static void loadProperties(Properties props, InputStream inputStream) {
 		InputStreamReader reader = null;

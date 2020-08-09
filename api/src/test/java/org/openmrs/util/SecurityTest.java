@@ -9,11 +9,13 @@
  */
 package org.openmrs.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Base64;
 import java.util.Base64.Decoder;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.util.StringUtils;
 
 /**
@@ -29,7 +31,7 @@ public class SecurityTest {
 	@Test
 	public void encodeString_shouldEncodeStringsTo128Characters() {
 		String hash = Security.encodeString("test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f");
-		Assert.assertEquals(HASH_LENGTH, hash.length());
+		assertEquals(HASH_LENGTH, hash.length());
 	}
 	
 	/**
@@ -38,7 +40,7 @@ public class SecurityTest {
 	@Test
 	public void encodeString_shouldEncodeStringsToXCharactersWithXCharactersSalt() {
 		String hash = Security.encodeString("test" + Security.getRandomToken());
-		Assert.assertEquals(HASH_LENGTH, hash.length());
+		assertEquals(HASH_LENGTH, hash.length());
 	}
 	
 	/**
@@ -46,7 +48,7 @@ public class SecurityTest {
 	 */
 	@Test
 	public void hashMatches_shouldMatchStringsHashedWithSha1Algorithm() {
-		Assert.assertTrue(Security.hashMatches("4a1750c8607d0fa237de36c6305715c223415189", "test"
+		assertTrue(Security.hashMatches("4a1750c8607d0fa237de36c6305715c223415189", "test"
 		        + "c788c6ad82a157b712392ca695dfcf2eed193d7f"));
 	}
 	
@@ -58,7 +60,7 @@ public class SecurityTest {
 		String password = "1d1436658853aceceadd72e92f1ae9089a0000fbb38cea519ce34eae9f28523930ecb212177dbd607d83dc275fde3e9ca648deb557d503ad0bcd01a955a394b2";
 		String passwordToHash = "test"
 		        + "0d7bb319434295261601202e14494b959cdd69c6ceb54ee3890e176ae780ce9edf797f48afde5f39906a6bd75b8a5feeac8f5339615acf7429c7dda85220d329";
-		Assert.assertTrue(Security.hashMatches(password, passwordToHash));
+		assertTrue(Security.hashMatches(password, passwordToHash));
 	}
 	
 	/**
@@ -66,7 +68,7 @@ public class SecurityTest {
 	 */
 	@Test
 	public void hashMatches_shouldMatchStringsHashedWithIncorrectSha1Algorithm() {
-		Assert.assertTrue(Security.hashMatches("4a1750c8607dfa237de36c6305715c223415189", "test"
+		assertTrue(Security.hashMatches("4a1750c8607dfa237de36c6305715c223415189", "test"
 		        + "c788c6ad82a157b712392ca695dfcf2eed193d7f"));
 	}
 	
@@ -84,7 +86,7 @@ public class SecurityTest {
 		String expected = "this is fantasmic";
 		String encrypted = "GnMz8qETyKMv+edLpYqWfBhR+lX6JlkocNGwHhmhXSY=";
 		String actual = Security.decrypt(encrypted, initVector, secretKey);
-		Assert.assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual));
+		assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual));
 		
 		expected = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus porta sapien ac nisi imperdiet posuere. Ma"
 		        + "ecenas nec felis ac enim posuere semper. In arcu turpis, elementum nec auctor id, pretium sed tortor. Quisque "
@@ -177,7 +179,7 @@ public class SecurityTest {
 		        + "t9mHrJ+FI181rG5bdf62ZsSuziuQ==";
 		
 		actual = Security.decrypt(encrypted, initVector, secretKey);
-		Assert.assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual));
+		assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual));
 	}
 	
 	/**
@@ -188,9 +190,9 @@ public class SecurityTest {
 		// small text
 		String expected = "a";
 		String encrypted = Security.encrypt(expected);
-		Assert.assertTrue(StringUtils.hasText(encrypted));
+		assertTrue(StringUtils.hasText(encrypted));
 		String actual = Security.decrypt(encrypted);
-		Assert.assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual));
+		assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual));
 		
 		// long text
 		expected = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus porta sapien ac nisi imperdiet posuere. Maecenas nec felis ac enim posuere semper. In arcu turpis, elementum nec auctor id, pretium sed tortor. Quisque sit amet erat ante. Praesent metus dui, porttitor non volutpat eu, porta sed ante. Fusce quis dignissim nisl. Vivamus id massa in nisl sollicitudin iaculis ac ut odio. Morbi et sapien non massa ultricies commodo. Nunc semper, nulla a pellentesque adipiscing, urna nisl vulputate lacus, non rutrum nulla mauris at tortor. Quisque molestie, velit nec vehicula tempor, mi eros fermentum ipsum, ut ullamcorper nisl sem at risus. Nam varius nunc sit amet velit blandit gravida sed vel purus. Nam ac justo ut metus elementum vehicula ac non ante. Aliquam pellentesque semper mauris ut pulvinar."
@@ -199,16 +201,16 @@ public class SecurityTest {
 		        + "Nulla vitae nisi vitae magna varius posuere. Curabitur non dui at odio scelerisque mattis a a risus. Suspendisse augue lacus, pulvinar vitae fringilla tempor, adipiscing vel velit. Suspendisse lorem dui, eleifend vel rhoncus ac, porta sed odio. Maecenas eget pellentesque ligula. Cras vitae auctor justo. Duis at massa vitae risus semper elementum. Proin at magna et augue volutpat tincidunt nec sed erat. Quisque id sapien tortor, ut gravida erat. Vivamus dictum, enim non sodales laoreet, ante libero suscipit erat, ac tristique purus eros sed augue. Quisque magna mi, varius ac accumsan aliquam, aliquam id risus. Phasellus dignissim dictum massa, ac consequat risus venenatis in. Morbi imperdiet bibendum sem, eu mollis urna aliquet a. In ac augue vitae ante ultrices sollicitudin vel sed elit. Nunc fringilla vestibulum egestas. Duis risus lorem, varius a vulputate at, blandit vel lectus. Sed mollis, ipsum nec fringilla accumsan, risus nibh iaculis ligula, non tristique nibh tortor vitae sem. Nulla facilisi. In id lectus vitae felis elementum lobortis. Aenean et nisi orci."
 		        + "Nam mi lorem, posuere non auctor sed, accumsan eu magna. Fusce sit amet tellus augue. Nunc eleifend, justo id pharetra hendrerit, urna augue ultricies mi, sed fringilla arcu libero quis nulla. Maecenas tristique auctor cursus. Curabitur venenatis lacus non leo aliquet ornare. Praesent justo turpis, dictum eu dictum convallis, faucibus sit amet erat. Praesent sed dui id enim euismod interdum. Integer sed fermentum neque. Curabitur enim nunc, euismod adipiscing iaculis eget, tincidunt vel nunc. Nullam at neque sem, rutrum aliquet elit. In et velit enim, tempus mollis nunc. Sed sit amet quam justo. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur convallis dolor non ligula fermentum imperdiet.";
 		encrypted = Security.encrypt(expected);
-		Assert.assertTrue(StringUtils.hasText(encrypted));
+		assertTrue(StringUtils.hasText(encrypted));
 		actual = Security.decrypt(encrypted);
-		Assert.assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual));
+		assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual));
 		
 		// foreign text
 		expected = "傑里米 (Jeremy), 潔儀 (Kitty) and 贏 (Win) like encryption :-D";
 		encrypted = Security.encrypt(expected);
-		Assert.assertTrue(StringUtils.hasText(encrypted));
+		assertTrue(StringUtils.hasText(encrypted));
 		actual = Security.decrypt(encrypted);
-		Assert.assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual));
+		assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual));
 	}
 	
 }

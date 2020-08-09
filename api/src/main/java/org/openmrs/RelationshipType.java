@@ -120,7 +120,7 @@ public class RelationshipType extends BaseChangeableOpenmrsMetadata{
 	 * 
 	 * @return the preferred status
 	 * 
-	 * @deprecated as of 2.0, use {@link #getPrefered()}
+	 * @deprecated as of 2.0, use {@link #getPreferred()}
 	 */
 	@Deprecated
 	@JsonIgnore
