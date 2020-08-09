@@ -16,18 +16,23 @@ import static org.openmrs.module.ModuleFactory.getLoadedModules;
 import static org.openmrs.module.ModuleFactory.getStartedModules;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.net.URL;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.module.BaseModuleActivatorTest;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.module.web.WebModuleUtil;
+import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.web.Listener;
 import org.springframework.context.support.AbstractRefreshableApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 
 /**
@@ -39,6 +44,7 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
  * modules is copied from ModuleListController
  */
 @ContextConfiguration(locations = { "classpath*:webModuleApplicationContext.xml" }, inheritLocations = true, loader = TestContextLoader.class)
+@SkipBaseSetup
 public class WebModuleActivatorTest extends BaseModuleActivatorTest {
 	
 	public void createWebInfFolderIfNotExist() {
@@ -239,8 +245,8 @@ public class WebModuleActivatorTest extends BaseModuleActivatorTest {
 		assertTrue(ModuleFactory.getModuleById(MODULE3_ID).isStarted());
 		
 		//and they should be only 3
-		assertThat(getLoadedModules(), hasSize(3));
-		assertThat(getStartedModules(), hasSize(3));
+		assertThat(getLoadedModules(), hasSize(5));
+		assertThat(getStartedModules(), hasSize(5));
 		
 		//now stop module1
 		ModuleFactory.stopModule(module, false, true); // stop the module with these parameters so that mandatory modules can be upgraded
@@ -270,8 +276,22 @@ public class WebModuleActivatorTest extends BaseModuleActivatorTest {
 		assertTrue(ModuleFactory.getModuleById(MODULE2_ID).isStarted());
 		assertTrue(ModuleFactory.getModuleById(MODULE3_ID).isStarted());
 		
-		//we should have 3 modules instead of 4
-		assertThat(getLoadedModules(), hasSize(3));
-		assertThat(getStartedModules(), hasSize(3));
+		//we should have 5 modules instead of 6
+		assertThat(getLoadedModules(), hasSize(5));
+		assertThat(getStartedModules(), hasSize(5));
+	}
+	
+	@BeforeEach
+	public void initializeInDatabase() throws Exception {
+		initializeInMemoryDatabase();
+		authenticate();
+	}
+	
+	@AfterEach
+	public void removeCurrentTransactionContext() throws Exception {
+		Class<?> clazz = OpenmrsClassLoader.getInstance().loadClass("org.springframework.test.context.transaction.TransactionContextHolder");
+		Method method = clazz.getDeclaredMethod("removeCurrentTransactionContext");
+		ReflectionUtils.makeAccessible(method);
+		ReflectionUtils.invokeMethod(method, null);
 	}
 }
