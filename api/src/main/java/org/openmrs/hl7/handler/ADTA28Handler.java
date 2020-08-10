@@ -12,8 +12,21 @@ package org.openmrs.hl7.handler;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import ca.uhn.hl7v2.HL7Exception;
+import ca.uhn.hl7v2.model.Message;
+import ca.uhn.hl7v2.model.v25.datatype.CX;
+import ca.uhn.hl7v2.model.v25.datatype.ID;
+import ca.uhn.hl7v2.model.v25.datatype.TS;
+import ca.uhn.hl7v2.model.v25.datatype.XPN;
+import ca.uhn.hl7v2.model.v25.message.ADT_A05;
+import ca.uhn.hl7v2.model.v25.segment.MSH;
+import ca.uhn.hl7v2.model.v25.segment.PID;
+import ca.uhn.hl7v2.protocol.ReceivingApplication;
+import ca.uhn.hl7v2.protocol.ReceivingApplicationException;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -26,18 +39,6 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.validator.PatientIdentifierValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import ca.uhn.hl7v2.HL7Exception;
-import ca.uhn.hl7v2.app.Application;
-import ca.uhn.hl7v2.app.ApplicationException;
-import ca.uhn.hl7v2.model.Message;
-import ca.uhn.hl7v2.model.v25.datatype.CX;
-import ca.uhn.hl7v2.model.v25.datatype.ID;
-import ca.uhn.hl7v2.model.v25.datatype.TS;
-import ca.uhn.hl7v2.model.v25.datatype.XPN;
-import ca.uhn.hl7v2.model.v25.message.ADT_A05;
-import ca.uhn.hl7v2.model.v25.segment.MSH;
-import ca.uhn.hl7v2.model.v25.segment.PID;
 
 /* HL7 using HAPI to handle ADT A28 Messages
  * 
@@ -92,7 +93,7 @@ import ca.uhn.hl7v2.model.v25.segment.PID;
  * 
  *  NOTE:  The ones with (*) could be useful in the near future.
  */
-public class ADTA28Handler implements Application {
+public class ADTA28Handler implements ReceivingApplication<Message> {
 	
 	private static final Logger log = LoggerFactory.getLogger(ADTA28Handler.class);
 	
@@ -111,12 +112,12 @@ public class ADTA28Handler implements Application {
 	 * Processes an ADT A28 event message
 	 */
 	@Override
-	public Message processMessage(Message message) throws ApplicationException {
+	public Message processMessage(Message message, Map<String, Object> metadata) throws ReceivingApplicationException {
 		
 		log.debug("Processing ADT_A28 message");
 		
 		if (!(message instanceof ADT_A05)) {
-			throw new ApplicationException("Invalid message sent to ADT_A28 handler");
+			throw new ReceivingApplicationException("Invalid message sent to ADT_A28 handler");
 		}
 		
 		Message response;
@@ -126,11 +127,11 @@ public class ADTA28Handler implements Application {
 		}
 		catch (ClassCastException e) {
 			log.error("Error casting " + message.getClass().getName() + " to ADT_A28", e);
-			throw new ApplicationException("Invalid message type for handler");
+			throw new ReceivingApplicationException("Invalid message type for handler");
 		}
 		catch (HL7Exception e) {
 			log.error("Error while processing ADT_A28 message", e);
-			throw new ApplicationException(e);
+			throw new ReceivingApplicationException(e);
 		}
 		
 		log.debug("Finished processing ADT_A28 message");
@@ -336,5 +337,17 @@ public class ADTA28Handler implements Application {
 		cal.set(year, month, day, hour, min, sec);
 		
 		return cal.getTime();
+	}
+
+	/**
+	 * Processes an ORU R01 event message
+	 *
+	 * This function is indented for backwards-compatibility and should not be used for new development
+	 *
+	 * @deprecated See {@link #processMessage(Message, Map)}
+	 */
+	@Deprecated
+	public Message processMessage(Message message) throws ReceivingApplicationException {
+		return processMessage(message, new HashMap<>());
 	}
 }
