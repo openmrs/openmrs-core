@@ -3803,14 +3803,15 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		orderGroup.addOrder(drugOrder);
 		drugOrder.setOrderGroup(orderGroup);
 
-		expectedValidationError = null;
+		Exception expectedGroupValidationError = null;
 		try {
 			Context.getOrderService().saveOrderGroup(orderGroup);
 		}
 		catch (Exception e) {
-			expectedValidationError = e;
+			expectedGroupValidationError = e;
 		}
 
-		Assert.assertNotNull("Validation should cause order group to fail to save", expectedValidationError);
+		Assert.assertNotNull("Validation should cause order group to fail to save", expectedGroupValidationError);
+		Assert.assertEquals(expectedValidationError.getMessage(), expectedGroupValidationError.getMessage());
 	}
 }

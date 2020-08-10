@@ -112,7 +112,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Order> orders = orderGroup.getOrders();
 		for (Order order : orders) {
 			if (order.getId() == null) {
-				saveOrder(order, null);
+				Context.getOrderService().saveOrder(order, null);
 			}
 		}
 		return orderGroup;
