@@ -551,7 +551,7 @@
 			<dependency>
 				<groupId>org.aspectj</groupId>
 				<artifactId>aspectjrt</artifactId>
-				<version>${aspectjVersion}/version>
+				<version>${aspectjVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.aspectj</groupId>
