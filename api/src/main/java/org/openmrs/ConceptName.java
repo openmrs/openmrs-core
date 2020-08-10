@@ -19,6 +19,9 @@ import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
 import org.apache.lucene.analysis.standard.StandardFilterFactory;
 import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.AnalyzerDef;
@@ -32,6 +35,19 @@ import org.hibernate.search.annotations.TokenizerDef;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.db.hibernate.search.bridge.LocaleFieldBridge;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 /**
  * ConceptName is the real world term used to express a Concept within the idiom of a particular
  * locale.
@@ -40,47 +56,75 @@ import org.openmrs.api.db.hibernate.search.bridge.LocaleFieldBridge;
 @AnalyzerDef(name = "ConceptNameAnalyzer", tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class), filters = {
         @TokenFilterDef(factory = StandardFilterFactory.class), @TokenFilterDef(factory = LowerCaseFilterFactory.class) })
 @Analyzer(definition = "ConceptNameAnalyzer")
+@Entity
+@Table(name = "concept_name")
+@BatchSize(size = 25)
 public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidable, java.io.Serializable {
 	
 	public static final long serialVersionUID = 2L;
 	
+	@Id
 	@DocumentId
+	@Column(name = "concept_name_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer conceptNameId;
 	
+	@ManyToOne
+	@JoinColumn(name = "concept_id", nullable = false)
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	private Concept concept;
 	
 	@Field
+	@Column(name = "name", length = 65535, nullable = false)
 	private String name;
 	
 	@Field(analyze = Analyze.NO)
+	@Column(name = "locale", length = 50, nullable = false)
 	@FieldBridge(impl = LocaleFieldBridge.class)
 	// ABK: upgraded from a plain string to a full locale object
 	private Locale locale; 
 	
+	@ManyToOne
+	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
 	
+	@Column(name = "date_created", nullable = false)
 	private Date dateCreated;
 	
 	@Field
+	@Column(name = "voided", nullable = false, length = 1)
 	private Boolean voided = false;
 	
+	@ManyToOne
+	@JoinColumn(name = "voided_by")
 	private User voidedBy;
 	
+	@Column(name = "date_voided", length = 19)
 	private Date dateVoided;
 	
+	@Column(name = "void_reason")
 	private String voidReason;
 	
+	@ManyToMany
+	@Cascade(CascadeType.SAVE_UPDATE)
+	@JoinTable(name = "concept_name_tag_map", joinColumns = @JoinColumn(name = "concept_name_id"), 
+		inverseJoinColumns = @JoinColumn(name = "concept_name_tag_id"))
 	private Collection<ConceptNameTag> tags;
 	
 	@Field
+	@Enumerated(EnumType.STRING)
+	@Column(name = "concept_name_type", length = 50)
 	private ConceptNameType conceptNameType;
 	
 	@Field
+	@Column(name = "locale_preferred", nullable = false, length = 1)
 	private Boolean localePreferred = false;
 	
+	@ManyToOne
+	@JoinColumn(name = "changed_by")
 	private User changedBy;
 	
+	@Column(name = "date_changed", length = 19)
 	private Date dateChanged;
 	
 	// Constructors
