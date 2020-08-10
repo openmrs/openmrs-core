@@ -120,31 +120,23 @@
       <dependency>
          <groupId>org.owasp.encoder</groupId>
          <artifactId>encoder</artifactId>
-         <version>1.2</version>
+         <version>1.2.2</version>
       </dependency>
 	   <dependency>
 		   <groupId>org.junit.jupiter</groupId>
 		   <artifactId>junit-jupiter-api</artifactId>
-		   <version>${junitVersion}</version>
-		   <scope>test</scope>
 	   </dependency>
 	   <dependency>
 		   <groupId>org.junit.jupiter</groupId>
 		   <artifactId>junit-jupiter-engine</artifactId>
-		   <version>${junitVersion}</version>
-		   <scope>test</scope>
 	   </dependency>
 	   <dependency>
 		   <groupId>org.junit.vintage</groupId>
 		   <artifactId>junit-vintage-engine</artifactId>
-		   <version>${junitVersion}</version>
-		   <scope>test</scope>
 	   </dependency>
 	   <dependency>
 		   <groupId>org.mockito</groupId>
 		   <artifactId>mockito-junit-jupiter</artifactId>
-		   <version>3.4.6</version>
-		   <scope>test</scope>
 	   </dependency>
    </dependencies>
 
@@ -205,8 +197,5 @@
 			</build>
 		</profile>
 	</profiles>
-	<properties>
-		<junitVersion>5.6.2</junitVersion>
-	</properties>
-
+	
 </project>
