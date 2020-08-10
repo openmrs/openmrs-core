@@ -118,7 +118,6 @@
 		<mapping resource="org/openmrs/api/db/hibernate/ProviderAttribute.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ProviderAttributeType.hbm.xml" />
 		
-		<mapping resource="org/openmrs/api/db/hibernate/ClobDatatypeStorage.hbm.xml" />
 		
   </session-factory>
 

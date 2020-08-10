@@ -11,17 +11,29 @@ package org.openmrs.api.db;
 
 import org.openmrs.BaseOpenmrsObject;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 /**
  * Stores a potentially-long String value, for clob-based custom datatypes
  * 
  * @since 1.9
  */
+@Entity
+@Table(name = "clob_datatype_storage")
 public class ClobDatatypeStorage extends BaseOpenmrsObject {
 	
+	@Id
+	@Column(name = "clob_datatype_storage_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
 	// inherits uuid from BaseOpenmrsObject
-	
+	@Column(name = "value")
 	String value;
 	
 	/**
