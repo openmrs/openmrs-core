@@ -436,17 +436,17 @@
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-core</artifactId>
-				<version>2.11.2</version>
+				<version>${jacksonVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-annotations</artifactId>
-				<version>2.11.2</version>
+				<version>${jacksonVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-databind</artifactId>
-				<version>2.11.2</version>
+				<version>${jacksonVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.azeckoski</groupId>
@@ -1135,6 +1135,7 @@
 		<hibernateSearchVersion>5.11.5.Final</hibernateSearchVersion>
 		<luceneVersion>5.5.5</luceneVersion>
 		<aspectjVersion>1.9.6</aspectjVersion>
+		<jacksonVersion>2.11.2</jacksonVersion>
 		<junitVersion>5.6.2</junitVersion>
 		<mockitoVersion>3.4.6</mockitoVersion>
 
