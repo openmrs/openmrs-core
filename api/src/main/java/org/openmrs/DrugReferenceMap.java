@@ -16,33 +16,59 @@ import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.IndexedEmbedded;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 /**
  * The DrugReferenceMap map object represents a mapping between a drug and alternative drug
  * terminologies.
  * 
  * @since 1.10
  */
+@Entity
+@Table(name = "drug_reference_map")
 public class DrugReferenceMap extends BaseOpenmrsObject implements Auditable, Serializable {
 	
 	public static final long serialVersionUID = 1L;
 	
+	@Id
 	@DocumentId
+	@Column(name = "drug_reference_map_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer drugReferenceMapId;
 	
 	@ContainedIn
+	@ManyToOne
+	@JoinColumn(name = "drug_id", nullable = false)
 	private Drug drug;
 	
+	@ManyToOne
+	@JoinColumn(name = "term_id", nullable = false)
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	private ConceptReferenceTerm conceptReferenceTerm;
 	
+	@ManyToOne
+	@JoinColumn(name = "concept_map_type", nullable = false)
 	private ConceptMapType conceptMapType;
 	
+	@ManyToOne
+	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
 	
+	@Column(name = "date_created", nullable = false, length = 19)
 	private Date dateCreated;
 	
+	@ManyToOne
+	@JoinColumn(name = "changed_by")
 	private User changedBy;
 	
+	@Column(name = "date_changed", length = 19)
 	private Date dateChanged;
 	
 	/** default constructor */
