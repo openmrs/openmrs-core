@@ -12,35 +12,64 @@ package org.openmrs;
 import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.annotations.BatchSize;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  * ConceptNameTag is a textual tag which can be applied to a ConceptName.
  */
+@Entity
+@Table(name = "concept_name_tag")
+@BatchSize(size = 25)
 public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Voidable, java.io.Serializable {
 	
 	public static final long serialVersionUID = 33226787L;
 	
 	// Fields
+	@Id
+	@Column(name = "concept_name_tag_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer conceptNameTagId;
 	
+	@Column(name = "tag", nullable = false, length = 50)
 	private String tag;
 	
+	@Column(name = "description", length = 65535)
 	private String description;
 	
+	@ManyToOne
+	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
 	
+	@Column(name = "date_created", nullable = false)
 	private Date dateCreated;
 	
+	@Column(name = "voided", nullable = false, length = 1)
 	private Boolean voided = false;
 	
+	@ManyToOne
+	@JoinColumn(name = "voided_by")
 	private User voidedBy;
 	
+	@Column(name = "date_voided", length = 19)
 	private Date dateVoided;
 	
+	@Column(name = "void_reason")
 	private String voidReason;
 	
+	@ManyToOne
+	@JoinColumn(name = "changed_by")
 	private User changedBy;
 	
+	@Column(name = "date_changed", length = 19)
 	private Date dateChanged;
 	
 	// Constructors
