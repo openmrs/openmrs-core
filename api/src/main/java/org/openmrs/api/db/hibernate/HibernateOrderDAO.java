@@ -737,7 +737,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public OrderGroupAttribute getOrderGroupAttributeByUuid(String uuid)  throws DAOException{
-		if(uuid==null||uuid.isEmpty()){
+		if(uuid == null || uuid.isEmpty()){
 			throw  new APIException("Uuid Cannot be Empty or null");
 		}
 	return (OrderGroupAttribute) sessionFactory.getCurrentSession().createQuery("from OrderGroupAttribute d where d.uuid = :uuid")
@@ -766,7 +766,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public OrderGroupAttributeType getOrderGroupAttributeTypeByUuid(String uuid) throws DAOException{
-		if(uuid==null||uuid.isEmpty()){
+		if(uuid == null || uuid.isEmpty()){
 			throw  new APIException("Uuid Cannot be Empty or null");
 		}
 		return (OrderGroupAttributeType) sessionFactory.getCurrentSession().createCriteria(OrderGroupAttributeType.class).add(
@@ -786,7 +786,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public void deleteOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws DAOException{
-		if(orderGroupAttributeType==null){
+		if(orderGroupAttributeType == null){
 			throw new APIException("OrderGroupAttributeType cannot be null");
             }
 		       sessionFactory.getCurrentSession().delete(orderGroupAttributeType);

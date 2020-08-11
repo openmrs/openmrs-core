@@ -24,6 +24,7 @@ public class OrderGroupAttribute extends BaseAttribute<OrderGroupAttributeType, 
 	public Integer getOrderGroupAttributeId() {
 		return orderGroupAttributeId;
 	}
+	
 	public void setOrderGroupAttributeId(Integer orderGroupAttributeId) {
 		this.orderGroupAttributeId=orderGroupAttributeId;
 	}
@@ -32,14 +33,13 @@ public class OrderGroupAttribute extends BaseAttribute<OrderGroupAttributeType, 
 	 * @return the orderGroup
 	 */
 	public OrderGroup getOrderGroup(){
-		
 		return getOwner();
 	}
+	
 	/**
 	 * @param orderGroup the orderGroup to set
 	 */
 	public void setOrderGroup(OrderGroup orderGroup){
-		
 		setOwner(orderGroup);
 	}
 	
@@ -48,7 +48,6 @@ public class OrderGroupAttribute extends BaseAttribute<OrderGroupAttributeType, 
 	 */
 	@Override
 	public Integer getId() {
-		
 		return getOrderGroupAttributeId();
 	}
 
@@ -57,7 +56,6 @@ public class OrderGroupAttribute extends BaseAttribute<OrderGroupAttributeType, 
 	 */
 	@Override
 	public void setId(Integer id) {
-		
 		setOrderGroupAttributeId(id);
 	}
 }
