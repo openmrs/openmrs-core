@@ -13,9 +13,20 @@ import java.util.Date;
 
 import org.openmrs.util.OpenmrsUtil;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 /**
  * PatientState
  */
+@Entity
+@Table(name = "patient_state")
 public class PatientState extends BaseChangeableOpenmrsData implements java.io.Serializable, Comparable<PatientState> {
 	
 	public static final long serialVersionUID = 0L;
@@ -24,14 +35,23 @@ public class PatientState extends BaseChangeableOpenmrsData implements java.io.S
 	// Properties
 	// ******************
 	
+	@Id
+	@Column(name = "patient_state_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer patientStateId;
 	
+	@ManyToOne
+	@JoinColumn(name = "patient_program_id", nullable = false)
 	private PatientProgram patientProgram;
 	
+	@ManyToOne
+	@JoinColumn(name = "state", nullable = false)
 	private ProgramWorkflowState state;
 	
+	@Column(name = "start_date", length = 19)
 	private Date startDate;
 	
+	@Column(name = "end_date", length = 19)
 	private Date endDate;
 	
 	// ******************
