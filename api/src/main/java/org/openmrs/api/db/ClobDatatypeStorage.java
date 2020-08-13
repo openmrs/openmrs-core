@@ -29,7 +29,6 @@ import javax.persistence.Table;
 public class ClobDatatypeStorage extends BaseOpenmrsObject {
 	
 	@Id
-	@Column(name = "clob_datatype_storage_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
