@@ -13,6 +13,17 @@ import org.openmrs.BaseChangeableOpenmrsData;
 import org.openmrs.Person;
 import org.openmrs.api.PersonService;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 /**
  * This class represents the audit of a merge of two persons. It provides as much details as
  * possible to allow potential recovery from an erroneous merge. The preferred <code>Person</code>
@@ -25,6 +36,8 @@ import org.openmrs.api.PersonService;
  * @see PersonService#savePersonMergeLog(PersonMergeLog)
  * @since 1.9
  */
+@Entity
+@Table(name = "person_merge_log")
 public class PersonMergeLog extends BaseChangeableOpenmrsData {
 	
 	private static final long serialVersionUID = 1L;
@@ -32,21 +45,29 @@ public class PersonMergeLog extends BaseChangeableOpenmrsData {
 	/**
 	 * The unique identifier of the person merge log entity
 	 */
+	@Id
+	@Column(name = "person_merge_log_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer personMergeLogId;
 	
 	/**
 	 * The object representing the preferred person of the merge
 	 */
+	@ManyToOne
+	@JoinColumn(name = "winner_person_id", nullable = false)
 	private Person winner;
 	
 	/**
 	 * The object representing the non-preferred person of the merge
 	 */
+	@ManyToOne
+	@JoinColumn(name = "loser_person_id", nullable = false)
 	private Person loser;
 	
 	/**
 	 * serialized data representing the details of the merge
 	 */
+	@Transient
 	private String serializedMergedData;
 	
 	/**
