@@ -34,7 +34,7 @@ public class ClobDatatypeStorage extends BaseOpenmrsObject {
 	
 	// inherits uuid from BaseOpenmrsObject
 	@Lob
-	@Column(name = "value")
+	@Column(name = "value", unique = true)
 	String value;
 	
 	/**
