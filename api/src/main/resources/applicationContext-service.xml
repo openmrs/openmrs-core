@@ -115,7 +115,6 @@
 		<property name="messageSourceService" ref="messageSourceService"/>
 		<property name="visitService" ref="visitService"/>
 		<property name="providerService" ref="providerService"/>
-		<property name="postgresService" ref="postgresService"/>
 	</bean>
 
 	<bean id="context" class="org.openmrs.api.context.Context" init-method="setAuthenticationScheme">
@@ -201,9 +200,6 @@
 		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
 	<bean id="diagnosisDAO" class="org.openmrs.api.db.hibernate.HibernateDiagnosisDAO">
-		<property name="sessionFactory" ref="sessionFactory"/>
-	</bean>
-	<bean id="postgresDAO" class="org.openmrs.postgres.db.hibernate.HibernatePostgresDAO">
 		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
 
@@ -308,9 +304,6 @@
 	</bean>
 	<bean id="messageServiceTarget" class="org.openmrs.notification.impl.MessageServiceImpl">
 		<property name="templateDAO" ref="templateDAO"/>
-	</bean>
-	<bean id="postgresServiceTarget" class="org.openmrs.postgres.impl.PostgresServiceImpl">
-		<property name="postgresDAO" ref="postgresDAO"/>
 	</bean>
 
 	<!-- SerializationService setup -->
@@ -508,12 +501,6 @@
 	<bean id="providerService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="target" ref="providerServiceTarget"/>
-		<property name="preInterceptors" ref="serviceInterceptors"/>
-		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
-	</bean>
-	<bean id="postgresService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="target" ref="postgresServiceTarget"/>
 		<property name="preInterceptors" ref="serviceInterceptors"/>
 		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
 	</bean>

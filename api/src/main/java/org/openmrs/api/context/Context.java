@@ -66,7 +66,6 @@ import org.openmrs.notification.MessageSender;
 import org.openmrs.notification.MessageService;
 import org.openmrs.notification.mail.MailMessageSender;
 import org.openmrs.notification.mail.velocity.VelocityMessagePreparator;
-import org.openmrs.postgres.PostgresService;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.util.DatabaseUpdateException;
@@ -559,13 +558,6 @@ public class Context {
 	 */
 	public static ProgramWorkflowService getProgramWorkflowService() {
 		return getServiceContext().getProgramWorkflowService();
-	}
-
-	/**
-	 * @return postgres related services
-	 */
-	public static PostgresService getPostgresService() {
-		return getServiceContext().getPostgresService();
 	}
 	
 	/**

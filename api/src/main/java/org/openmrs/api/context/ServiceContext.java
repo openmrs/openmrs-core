@@ -47,7 +47,6 @@ import org.openmrs.messagesource.impl.DefaultMessageSourceServiceImpl;
 import org.openmrs.notification.AlertService;
 import org.openmrs.notification.MessageService;
 import org.openmrs.scheduler.SchedulerService;
-import org.openmrs.postgres.PostgresService;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1045,20 +1044,6 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	public void setDatatypeService(DatatypeService datatypeService) {
 		setService(DatatypeService.class, datatypeService);
-	}
-	
-	/**
-	 * @param postgresService the postgresService to set
-	 */
-	public void setPostgresService(PostgresService postgresService) {
-		setService(PostgresService.class, postgresService);
-	}
-	
-	/**
-	 * @return postgresService related services
-	 */
-	public PostgresService getPostgresService() {
-		return getService(PostgresService.class);
 	}
 	
 }

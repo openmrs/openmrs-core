@@ -76,7 +76,6 @@ import org.openmrs.web.filter.util.FilterUtil;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
-import org.openmrs.postgres.PostgresService;
 
 /**
  * This is the first filter that is processed. It is only active when starting OpenMRS for the very
@@ -1823,8 +1822,7 @@ public class InitializationFilter extends StartupFilter {
 						
 						try {
 							// Update PostgreSQL Sequences after insertion of core data
-							PostgresService postgresService = Context.getPostgresService();
-							postgresService.updateAllSequence();							
+							Context.getAdministrationService().updatePostgresSequence();
 						}
 						catch (Exception e) {
 							log.warn("Not able to update PostgreSQL sequence. Startup failed for PostgreSQL", e);
