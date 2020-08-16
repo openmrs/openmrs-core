@@ -14,10 +14,6 @@ matrix:
 branches:
   only:
     - master
-os:
-  - windows
-  - linux
-  - osx
 after_success:
   - mvn jacoco:report coveralls:report
 notifications:
