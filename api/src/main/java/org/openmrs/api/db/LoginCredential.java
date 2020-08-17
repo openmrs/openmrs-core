@@ -16,6 +16,15 @@ import org.openmrs.OpenmrsObject;
 import org.openmrs.User;
 import org.openmrs.util.Security;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 /**
  * This class holds the minimal amount of data necessary to change a user's password without using a
  * PreparedStatement or putting the password in the User class. This should never be used by
@@ -23,22 +32,35 @@ import org.openmrs.util.Security;
  * 
  * @since 1.5
  */
+@Entity
+@Table(name = "users")
 public class LoginCredential extends BaseOpenmrsObject implements OpenmrsObject {
 	
+	@Id
+	@Column(name = "user_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer userId;
 	
+	@Column(name = "password", length = 128)
 	private String hashedPassword;
 	
+	@Column(name = "salt", length = 128)
 	private String salt;
 	
+	@Column(name = "secret_question")
 	private String secretQuestion;
 	
+	@Column(name = "secret_answer")
 	private String secretAnswer;
 	
+	@ManyToOne
+	@JoinColumn(name = "changed_by")
 	private User changedBy;
 	
+	@Column(name = "date_changed", length = 19)
 	private Date dateChanged;
 	
+	@Column(name = "activation_key")
 	private String activationKey;
 	
 	public LoginCredential() {
