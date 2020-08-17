@@ -9,6 +9,9 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.sql.Statement;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +25,7 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.jdbc.Work;
 import org.hibernate.mapping.Column;
 import org.hibernate.mapping.PersistentClass;
 import org.hibernate.metadata.ClassMetadata;
@@ -333,12 +337,20 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 			        + "SELECT setval('location_location_id_seq', (SELECT MAX(location_id) FROM location)+1);"
 			        + "SELECT setval('order_type_order_type_id_seq', (SELECT MAX(order_type_id) FROM order_type)+1);"
 			        + "SELECT setval('patient_identifier_type_patient_identifier_type_id_seq', (SELECT MAX(patient_identifier_type_id) FROM patient_identifier_type)+1);"
-			        + "SELECT setval('scheduler_task_config_task_config_id_seq', (SELECT MAX(task_config_id) FROM scheduler_task_config)+1);"
-			        + "SELECT setval('scheduler_task_config_property_task_config_property_id_seq', (SELECT MAX(task_config_property_id) FROM scheduler_task_config_property)+1)"
+			        + "SELECT setval('scheduler_task_config_property_task_config_property_id_seq', (SELECT MAX(task_config_property_id) FROM scheduler_task_config_property)+1);"
+			        + "SELECT setval('scheduler_task_config_task_config_id_seq', (SELECT MAX(task_config_id) FROM scheduler_task_config)+1)"
 			        + "";
 			Session session = sessionFactory.getCurrentSession();
-			for (String postgresSequence : postgresSequences.split(";"))
-				session.createNativeQuery(postgresSequence).list();
+			
+			session.doWork(new Work() {
+				
+				@Override
+				public void execute(Connection con) throws SQLException {
+					Statement stmt = con.createStatement();
+					stmt.addBatch(postgresSequences);
+					stmt.executeBatch();
+				}
+			});
 		}
 	}
 }
