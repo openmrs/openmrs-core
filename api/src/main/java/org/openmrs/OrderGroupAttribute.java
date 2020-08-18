@@ -19,14 +19,14 @@ import org.openmrs.attribute.BaseAttribute;
  */
 public class OrderGroupAttribute extends BaseAttribute<OrderGroupAttributeType, OrderGroup> implements Attribute<OrderGroupAttributeType, OrderGroup> {
 
-	public Integer orderGroupAttributeId; 
+	private Integer orderGroupAttributeId; 
 
 	public Integer getOrderGroupAttributeId() {
 		return orderGroupAttributeId;
 	}
 	
 	public void setOrderGroupAttributeId(Integer orderGroupAttributeId) {
-		this.orderGroupAttributeId=orderGroupAttributeId;
+		this.orderGroupAttributeId = orderGroupAttributeId;
 	}
 
 	/**

@@ -857,94 +857,94 @@ public interface OrderService extends OpenmrsService {
 	@Authorized(PrivilegeConstants.GET_ORDERS)
 	public List<OrderGroup> getOrderGroupsByEncounter(Encounter encounter) throws APIException;
 	/**
-	 * Return all OrderGroupAttributeTypes
+	 * Return all order group attribute types
 	 *
 	 * @return all {@link OrderGroupAttributeType}s
-	 * @should return all orderGroup attribute types including retired ones
+	 * @should return all order group attribute types including retired ones
 	 */
 	@Authorized(PrivilegeConstants.GET_ORDERS)
 	 List<OrderGroupAttributeType> getOrderGroupAttributeTypes() throws APIException;
 	
 	/**
-	 * Fetches OrderGroupAttributeType using provided Id
+	 * Fetches order group attribute type using provided Id
 	 * 
-	 * @param id The Id of the OrderGroupAttributeType to fetch from the database
+	 * @param id The Id of the order group attribute type to fetch from the database
 	 * @return the {@link OrderGroupAttributeType} with the given internal id
-	 * @should return the orderGroup attribute type with the using the provided id
-	 * @should return null if no orderGroup attribute type exists with the given id
+	 * @should return the order group attribute type with the using the provided id
+	 * @should return null if no order group attribute type exists with the given id
 	 */
 	@Authorized(PrivilegeConstants.GET_ORDERS)
 	OrderGroupAttributeType getOrderGroupAttributeTypeById(Integer id) throws APIException;
 
 	/**
-	 * Fetches OrderGroupAttributeType using provided Uuid 
+	 * Fetches  order group attribute type using provided Uuid 
 	 * 
-	 * @param uuid The Uuid of the OrderGroupAttributeType to Fetch from the database
+	 * @param uuid The Uuid of the order group attribute type to Fetch from the database
 	 * @return the {@link OrderGroupAttributeType} with the given uuid
-	 * @should return the orderGroup attribute type with the given uuid
-	 * @should return null if no orderGroup attribute type exists with the given uuid
+	 * @should return the order group attribute type with the given uuid
+	 * @should return null if no order group attribute type exists with the given uuid
 	 */
 	OrderGroupAttributeType getOrderGroupAttributeTypeByUuid(String uuid) throws APIException;
 	
 	/**
-	 * Creates or updates the given orderGroup attribute type in the database
+	 * Creates or updates the given order group attribute type in the database
 	 *
-	 * @param orderGroupAttributeType The OrderGroupAttributeType to Save in the database
-	 * @return the OrderGroupAttributeType created/saved
-	 * @should create a new orderGroup attribute type
-	 * @should edit an existing orderGroup attribute type
+	 * @param orderGroupAttributeType The order group attribute type to Save in the database
+	 * @return the order group attribute type created/saved
+	 * @should create a new order group attribute type
+	 * @should edit an existing order group attribute type
 	 */
     @Authorized({PrivilegeConstants.EDIT_ORDERS,PrivilegeConstants.ADD_ORDERS})
 	OrderGroupAttributeType saveOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws APIException;
 
 	/**
-	 * Retires the given OrderGroupAttributeType attribute type in the database
+	 * Retires the given order group attribute type  in the database
 	 *
-	 * @param orderGroupAttributeType The OrderGroupAttributeType oo retire
-	 * @return the orderGroupAttribute retired
-	 * @should retire a orderGroup attribute type
+	 * @param orderGroupAttributeType The order group attribute type  retire
+	 * @return the order group attribute type retired
+	 * @should retire a order group attribute type
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
 	OrderGroupAttributeType retireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType,String reason) throws APIException;
 
 	/**
-	 * Restores a OrderGroupAttributeType that was previously retired in the database
+	 * Restores a order group attribute type that was previously retired in the database
 	 * 
-	 * @param orderGroupAttributeType The OrderGroupAttributeType to unretire
-	 * @return the OrderGroupAttributeType unretired
-	 * @should unretire a retired orderGroup attribute type
+	 * @param orderGroupAttributeType The order group attribute type to unretire
+	 * @return the order group attribute type unretired
+	 * @should unretire a retired order group attribute type
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
 	OrderGroupAttributeType unretireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws APIException;
 
 	/**
-	 * Completely removes a OrderGroupAttributeType type from the database
+	 * Completely removes a order group attribute type type from the database
 	 *
-	 * @param orderGroupAttributeType The OrderGroupAttributeType to purge completely
-	 * @should completely remove a orderGroup attribute type
+	 * @param orderGroupAttributeType The order group attribute type to purge completely
+	 * @should completely remove an order group attribute type
 	 */
     @Authorized(PrivilegeConstants.PURGE_ORDERS)
 	void purgeOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws APIException;
 
 	/**
-	 * Retrieves a OrderGroupAttributeType object based on the name provided
+	 * Retrieves a order group attribute type object based on the name provided
 	 *
-	 * @param orderGroupAttributeTypeName The name of the OrderGroupAttributeType to fetch
+	 * @param orderGroupAttributeTypeName The name of the order group attribute type to fetch
 	 * @return the {@link OrderGroupAttributeType} with the specified name
-	 * @should return the orderGroup attribute type with the specified name
-	 * @should return null if no orderGroup attribute type exists with the specified name
+	 * @should return the order group attribute type with the specified name
+	 * @should return null if no order group attribute type exists with the specified name
 	 */
     @Authorized(PrivilegeConstants.GET_ORDERS)
 	OrderGroupAttributeType getOrderGroupAttributeTypeByName(String orderGroupAttributeTypeName) throws APIException;
     
 	/**
-	 * Fetches a given OrderGroupAttribute using the Provided Uuid
+	 * Fetches a given order group attribute  using the Provided Uuid
 	 * 
-	 * @param uuid The Uuid of the OrderGroupAttribute to fetch
+	 * @param uuid The Uuid of the order group attribute to fetch
 	 * @return the {@link OrderGroupAttribute} with the given uuid
 	 * @since 2.4.0
-	 * @should get the order set attribute with the given uuid
-	 * @should return null if no order Group attribute has the given uuid
+	 * @should get the order group attribute with the given uuid
+	 * @should return null if no order group attribute has the given uuid
 	 */
 	@Authorized(PrivilegeConstants.GET_ORDERS)
 	 OrderGroupAttribute getOrderGroupAttributeByUuid(String uuid) throws APIException;
