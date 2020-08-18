@@ -10,7 +10,10 @@
 package org.openmrs.attribute;
 
 import javax.persistence.Column;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
 
 import org.hibernate.search.annotations.Field;
 import org.openmrs.BaseChangeableOpenmrsData;
@@ -31,8 +34,11 @@ import org.openmrs.util.OpenmrsUtil;
 @MappedSuperclass
 public abstract class BaseAttribute<AT extends AttributeType, OwningType extends Customizable<?>> extends BaseChangeableOpenmrsData implements Attribute<AT, OwningType>, Comparable<Attribute> {
 	
+	@Transient
 	private OwningType owner;
 	
+	@ManyToOne
+	@JoinColumn(name = "attribute_type_id")
 	private AT attributeType;
 	
 	// value pulled from the database
