@@ -21,6 +21,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
@@ -29,6 +35,21 @@ import org.openmrs.util.RoleConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapKeyColumn;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 /**
  * Defines a User Account in the system. This account belongs to a {@link Person} in the system,
  * although that person may have other user accounts. Users have login credentials
@@ -36,6 +57,8 @@ import org.slf4j.LoggerFactory;
  * key-value pairs for either quick info or display specific info that needs to be persisted (like
  * locale preferences, search options, etc)
  */
+@Entity
+@Table(name = "users")
 public class User extends BaseOpenmrsObject implements java.io.Serializable, Attributable<User>, Auditable, Retireable {
 	
 	public static final long serialVersionUID = 2L ;
@@ -43,38 +66,71 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 	private static final Logger log = LoggerFactory.getLogger(User.class);
 	
 	// Fields
+	@Id
+	@Column(name = "user_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer userId;
 	
+	@ManyToOne
+	@JoinColumn(name = "person_id", nullable = false)
+	@LazyCollection(LazyCollectionOption.FALSE)
+	@Cascade(CascadeType.SAVE_UPDATE)
 	private Person person;
 	
+	@Column(name = "system_id", nullable = false, length = 50)
 	private String systemId;
 	
+	@Column(name = "username", length = 50)
 	private String username;
 	
+	@Column(name = "email", unique = true)
 	private String email;
-	
+
+	@ManyToMany
+	@JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role"))
+	@LazyCollection(LazyCollectionOption.FALSE)
+	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+	@Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.EVICT })
 	private Set<Role> roles;
-	
+
+	@ElementCollection
+	@CollectionTable(name = "user_property", joinColumns = @JoinColumn(name = "user_id", nullable = false))
+	@MapKeyColumn(name = "property", length = 100)
+	@Column(name = "property_value")
+	@Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.EVICT })
 	private Map<String, String> userProperties;
 	
+	@Transient
 	private List<Locale> proficientLocales = null;
 	
+	@Transient
 	private String parsedProficientLocalesProperty = "";
 	
+	@ManyToOne
+	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
 	
+	@Column(name = "date_created", nullable = false, length = 19)
 	private Date dateCreated;
 	
+	@ManyToOne
+	@JoinColumn(name = "changed_by")
 	private User changedBy;
 	
+	@Column(name = "date_changed", length = 19)
 	private Date dateChanged;
 	
+	@Column(name = "retired", nullable = false, length = 1)
 	private boolean retired;
 	
+	@ManyToOne
+	@JoinColumn(name = "retired_by")
 	private User retiredBy;
 	
+	@Column(name = "date_retired", length = 19)
 	private Date dateRetired;
 	
+	@Column(name = "retire_reason")
 	private String retireReason;
 	
 	// Constructors
