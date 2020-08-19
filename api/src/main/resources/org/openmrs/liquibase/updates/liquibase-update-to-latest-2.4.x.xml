@@ -233,7 +233,21 @@
         <addForeignKeyConstraint constraintName="order_set_attribute_creator_fk" baseTableName="order_set_attribute" baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id" />
         <addForeignKeyConstraint constraintName="order_set_attribute_changed_by_fk" baseTableName="order_set_attribute" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id" />
         <addForeignKeyConstraint constraintName="order_set_attribute_voided_by_fk" baseTableName="order_set_attribute" baseColumnNames="voided_by" referencedTableName="users" referencedColumnNames="user_id" />
-    </changeSet>   
+    </changeSet>
+
+	<changeSet id="20200819-Trunk-5950" author="alinmihaila">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="relationship_type" columnName="name"/>
+			</not>
+		</preConditions>
+		<comment>Adding "order_group_reason" column to order_group table</comment>
+		<addColumn tableName="relationship_type">
+			<column name="name" type="varchar(255)">
+				<constraints nullable="true"/>
+			</column>
+		</addColumn>
+	</changeSet>
     
 
 </databaseChangeLog> 
