@@ -118,7 +118,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Order> orders = orderGroup.getOrders();
 		for (Order order : orders) {
 			if (order.getId() == null) {
-				saveOrder(order, null);
+				Context.getOrderService().saveOrder(order, null);
 			}
 		}
 		Set<OrderGroup> nestedGroups = orderGroup.getNestedOrderGroups();
@@ -1092,6 +1092,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	public List<OrderGroupAttributeType> getOrderGroupAttributeTypes() throws APIException {
 		return dao.getAllOrderGroupAttributeTypes();
 	}
+<<<<<<< HEAD
+=======
+
+>>>>>>> TRUNK-5410
 	@Override
 	public OrderGroupAttributeType getOrderGroupAttributeTypeById(Integer id) throws APIException {
 		return dao.getOrderGroupAttributeType(id);

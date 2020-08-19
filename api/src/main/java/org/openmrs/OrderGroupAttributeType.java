@@ -12,7 +12,10 @@ package org.openmrs;
 import org.openmrs.attribute.AttributeType;
 import org.openmrs.attribute.BaseAttributeType;
 
+<<<<<<< HEAD
 import java.util.Date;
+=======
+>>>>>>> TRUNK-5410
 
 public class OrderGroupAttributeType extends BaseAttributeType<OrderGroup> implements AttributeType<OrderGroup> {
 	

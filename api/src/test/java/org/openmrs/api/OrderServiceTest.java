@@ -9,6 +9,23 @@
  */
 package org.openmrs.api;
 
+<<<<<<< HEAD
+
+=======
+<<<<<<< HEAD
+>>>>>>> TRUNK-5410
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+<<<<<<< HEAD
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItems;
+=======
+import static org.openmrs.Order.Action.DISCONTINUE;
+import static org.openmrs.Order.FulfillerStatus.COMPLETED;
+=======
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -17,6 +34,8 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItems;
+>>>>>>> TRUNK-5410:Re-ordered imports format in OrderServiceTest and HibernateOrderDAOTest
+>>>>>>> TRUNK-5410
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -24,6 +43,28 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+<<<<<<< HEAD
+
+import static org.openmrs.Order.Action.DISCONTINUE;
+import static org.openmrs.Order.FulfillerStatus.COMPLETED;
+=======
+<<<<<<< HEAD
+>>>>>>> TRUNK-5410
+import static org.openmrs.test.OpenmrsMatchers.hasId;
+import static org.openmrs.test.TestUtil.containsId;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+<<<<<<< HEAD
+import java.util.Locale;
+import java.util.GregorianCalendar;
+import java.util.LinkedHashSet;
+=======
+=======
 
 import static org.openmrs.Order.Action.DISCONTINUE;
 import static org.openmrs.Order.FulfillerStatus.COMPLETED;
@@ -39,6 +80,8 @@ import java.util.Set;
 import java.util.Locale;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashSet;
+>>>>>>> TRUNK-5410:Re-ordered imports format in OrderServiceTest and HibernateOrderDAOTest
+>>>>>>> TRUNK-5410
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.boot.Metadata;
@@ -48,6 +91,7 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+<<<<<<< HEAD
 import org.openmrs.Order.Action;
 import org.openmrs.TestOrder;
 import org.openmrs.Patient;
@@ -63,6 +107,23 @@ import org.openmrs.ConceptName;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
+=======
+import org.openmrs.Allergy;
+import org.openmrs.Condition;
+import org.openmrs.Diagnosis;
+import org.openmrs.Visit;
+import org.openmrs.ConceptDescription;
+import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptName;
+import org.openmrs.Drug;
+import org.openmrs.DosingInstructions;
+import org.openmrs.Order.Action;
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+import org.openmrs.OrderFrequency;
+>>>>>>> TRUNK-5410
 import org.openmrs.OrderGroup;
 import org.openmrs.OrderSet;
 import org.openmrs.OrderGroupAttribute;
@@ -74,8 +135,38 @@ import org.openmrs.Allergy;
 import org.openmrs.Diagnosis;
 import org.openmrs.Condition;
 import org.openmrs.Visit;
+<<<<<<< HEAD
 import org.openmrs.CareSetting;
 import org.openmrs.OrderFrequency;
+=======
+import org.openmrs.api.builder.DrugOrderBuilder;
+=======
+>>>>>>> TRUNK-5410 : Added Unit Tests to HibernateOrderDAOTest for some new methods in HibernateOrderDAO
+=======
+>>>>>>> TRUNK-5410 Created OrderGroupAttribute,OrderGroupAttributeType
+=======
+>>>>>>> TRUNK-5410 Created OrderGroupAttribute,OrderGroupAttributeType
+=======
+import org.openmrs.DrugOrder;
+import org.openmrs.ConceptClass;
+import org.openmrs.Obs;
+import org.openmrs.Order;
+import org.openmrs.OrderGroupAttributeType;
+import org.openmrs.OrderType;
+import org.openmrs.OrderGroup;
+import org.openmrs.OrderSet;
+import org.openmrs.Patient;
+import org.openmrs.Concept;
+import org.openmrs.Encounter;
+import org.openmrs.FreeTextDosingInstructions;
+import org.openmrs.GlobalProperty;
+import org.openmrs.Provider;
+import org.openmrs.SimpleDosingInstructions;
+import org.openmrs.TestOrder;
+import org.openmrs.CareSetting;
+import org.openmrs.OrderFrequency;
+>>>>>>> TRUNK-5410 : Removed Import Wild cards from OrderService , OrderDAO ,HibernateOrderDAO and OrderServiceTest
+>>>>>>> TRUNK-5410
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.HibernateAdministrationDAO;
@@ -96,6 +187,11 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+>>>>>>> TRUNK-5410
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.lang.reflect.Field;
@@ -104,6 +200,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 
+<<<<<<< HEAD
+=======
+>>>>>>> TRUNK-5410:Re-ordered imports format in OrderServiceTest and HibernateOrderDAOTest
+>>>>>>> TRUNK-5410
 /**
  * TODO clean up and test all methods in OrderService
  */
@@ -3759,6 +3859,68 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		APIException exception = assertThrows(APIException.class, () -> secondSavedOrderGroup.addOrder(newOrderWithInvalidPosition, secondSavedOrderGroup.getOrders().size() + 1));
 		assertThat(exception.getMessage(), is("Cannot add a member which is out of range of the list"));
 	}
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+
+	/**
+	 * @see OrderService#saveOrder(Order, OrderContext)
+	 */
+	@Test
+	public void saveOrderGroup_shouldFailValidationIfAnyOrdersFailValidation() {
+		executeDataSet(ORDER_SET);
+
+		Encounter encounter = encounterService.getEncounter(3);
+		OrderContext context = new OrderContext();
+		
+		// First we confirm that saving a Drug Order on it's own with missing required fields will fail validation
+
+		DrugOrder drugOrder = new DrugOrderBuilder().withPatient(encounter.getPatient().getPatientId())
+			.withEncounter(encounter.getEncounterId()).withCareSetting(1).withOrderer(1)
+			.withOrderType(1).withDrug(2)
+			.withUrgency(Order.Urgency.ROUTINE).withDateActivated(new Date())
+			.build();
+		
+		Exception expectedValidationError = null;
+		try {
+			Context.getOrderService().saveOrder(drugOrder, context);
+		}
+		catch (Exception e) {
+			expectedValidationError = e;
+		}
+		
+		assertNotNull(expectedValidationError);
+		assertEquals(ValidationException.class, expectedValidationError.getClass());
+		assertTrue(expectedValidationError.getMessage().contains("Dose is required"));
+
+		// Next, add this to an Order Group and save it within that group, and it should also fail
+		
+		OrderSet orderSet = Context.getOrderSetService().getOrderSet(2000);
+		OrderGroup orderGroup = new OrderGroup();
+		orderGroup.setOrderSet(orderSet);
+		orderGroup.setPatient(encounter.getPatient());
+		orderGroup.setEncounter(encounter);
+		orderGroup.addOrder(drugOrder);
+		drugOrder.setOrderGroup(orderGroup);
+
+		Exception expectedGroupValidationError = null;
+		try {
+			Context.getOrderService().saveOrderGroup(orderGroup);
+		}
+		catch (Exception e) {
+			expectedGroupValidationError = e;
+		}
+
+		assertNotNull(expectedGroupValidationError, "Validation should cause order group to fail to save");
+		assertEquals(expectedValidationError.getMessage(), expectedGroupValidationError.getMessage());
+=======
+=======
+>>>>>>> TRUNK-5410 Created OrderGroupAttribute,OrderGroupAttributeType
+=======
+>>>>>>> TRUNK-5410 Created OrderGroupAttribute,OrderGroupAttributeType
+>>>>>>> TRUNK-5410
 	@Test
 	public void getOrderGroupAttributeTypes_shouldReturnAllOrderGroupAttributeTypes(){
 		executeDataSet(ORDER_GROUP_ATTRIBUTES);
@@ -3766,13 +3928,19 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertEquals(4,orderGroupAttributeTypes.size());
 		
 	}
+<<<<<<< HEAD
 
+=======
+>>>>>>> TRUNK-5410
 	@Test
 	public void getOrderGroupAttributeType_shouldReturnNullIfNonExistingIdIsProvided(){
 		executeDataSet(ORDER_GROUP_ATTRIBUTES);
 		assertNull(Context.getOrderService().getOrderGroupAttributeTypeById(10));
 	}
+<<<<<<< HEAD
 	
+=======
+>>>>>>> TRUNK-5410
 	@Test 
 	public void getOrderGroupAttributeType_shouldReturnOrderGroupAttributeTypeGivenId(){
 		executeDataSet(ORDER_GROUP_ATTRIBUTES);
@@ -3782,8 +3950,12 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertEquals(orderService.getOrderGroupAttributeTypeByUuid(UUID2),orderGroupAttributeType);
 		assertEquals(orderGroupAttributeType.getUuid(),Context.getOrderService().getOrderGroupAttributeTypeByUuid(UUID2).getUuid());
 		assertEquals(ID,Context.getOrderService().getOrderGroupAttributeTypeByUuid(UUID2).getId());
+<<<<<<< HEAD
 			
 	}
+=======
+			}
+>>>>>>> TRUNK-5410
 
 	@Test
 	public void getOrderGroupAttributeTypeByUuid_shouldReturnOrderGroupAttributeTypeByUuid(){
@@ -3800,32 +3972,77 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		orderGroupAttributeType.setName("Surgery");
 		orderGroupAttributeType.setDatatypeClassname(FreeTextDatatype.class.getName());
 		Context.getOrderService().saveOrderGroupAttributeType(orderGroupAttributeType);
+<<<<<<< HEAD
 		assertNotNull(orderGroupAttributeType.getId());
 		assertEquals(initialGroupOrderAttributeTypeCount+1,Context.getOrderService().getOrderGroupAttributeTypes().size());
 			}
 			
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+		
+		List<OrderGroupAttributeType>orderGroupAttributetypes = orderService.getOrderGroupAttributeTypes();
+<<<<<<< HEAD
+//		assertTrue(orderGroupAttributetypes.contains(orderGroupAttributeType.getClass()));
+		System.out.print(orderGroupAttributeType);
+		
+>>>>>>> TRUNK-5410 : Added Unit Tests to HibernateOrderDAOTest for some new methods in HibernateOrderDAO
+=======
+		assertTrue(orderGroupAttributetypes.contains(orderGroupAttributeType.getClass()));
+				
+>>>>>>> Added more Tests for new Changes to HibernateOrderDAO
+	}
+=======
+=======
+>>>>>>> TRUNK-5410 Created OrderGroupAttribute,OrderGroupAttributeType
+=======
+>>>>>>> TRUNK-5410 Created OrderGroupAttribute,OrderGroupAttributeType
+		assertNotNull(orderGroupAttributeType.getId());
+		assertEquals(initialGroupOrderAttributeTypeCount+1,Context.getOrderService().getOrderGroupAttributeTypes().size());
+			}
+>>>>>>> TRUNK-5410
 			@Test
 			public void saveOrderGroupAttributeType_shouldEditAnExistingOrderGroupAttributeType(){
 				executeDataSet(ORDER_GROUP_ATTRIBUTES);
 				final String UUID4 ="9cf1bdb2-d18e-11ea-87d0-0242ac130003";
 				final String name ="ECG";
+<<<<<<< HEAD
 				//Check for values in the database
+=======
+>>>>>>> TRUNK-5410
 				OrderGroupAttributeType orderGroupAttributeType=Context.getOrderService().getOrderGroupAttributeTypeById(4);
 				assertEquals(UUID4,orderGroupAttributeType.getUuid());
 				assertEquals(name,orderGroupAttributeType.getName());
 				assertEquals("Testing unretire",orderGroupAttributeType.getRetireReason());
+<<<<<<< HEAD
                 //edit existing values in the database
 				orderGroupAttributeType.setRetireReason("Change Order To Laparascopy");
 				orderGroupAttributeType.setName("Laparascopy");
 				orderService.saveOrderGroupAttributeType(orderGroupAttributeType);
                 //confirm new values are persisted
+=======
+
+				orderGroupAttributeType.setRetireReason("Change Order To Laparascopy");
+				orderGroupAttributeType.setName("Laparascopy");
+				orderService.saveOrderGroupAttributeType(orderGroupAttributeType);
+
+>>>>>>> TRUNK-5410
 				assertEquals("Laparascopy",orderGroupAttributeType.getName());
 				assertNotEquals(name,orderGroupAttributeType.getName());
 				assertEquals("Change Order To Laparascopy",orderGroupAttributeType.getRetireReason());
 				assertNotEquals("Testing unretire",orderGroupAttributeType.getRetireReason());
+<<<<<<< HEAD
 				
 			}
 			
+=======
+
+
+
+
+			}
+>>>>>>> TRUNK-5410
 			@Test
 			public void retireOrderGroupAttributeType_shouldRetireOrderGroupAttributeType() throws ParseException {
 				executeDataSet(ORDER_GROUP_ATTRIBUTES);
@@ -3859,17 +4076,49 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			}
 			@Test
 			public  void getOrderGroupAttributeTypeByName_shouldReturnOrderGroupAttributeTypeUsingName(){
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> TRUNK-5410
 		     executeDataSet(ORDER_GROUP_ATTRIBUTES);
 		     OrderGroupAttributeType orderGroupAttributeType = orderService.getOrderGroupAttributeTypeByName("Bacteriology");
 		     assertEquals("9cf1bce0-d18e-11ea-87d0-0242ac130003",orderGroupAttributeType.getUuid());
 			}
 			@Test
+<<<<<<< HEAD
 			public void purgeOrderGroupAttributeType_shouldPurgeOrderGroupAttributeType(){
+=======
+<<<<<<< HEAD
+			public void purgeOrderGroupAttributeType_shouldpurgeOrderGroupAttributeType(){
+=======
+		        executeDataSet(ORDER_GROUP_ATTRIBUTES);
+		        OrderGroupAttributeType orderGroupAttributeType = orderService.getOrderGroupAttributeTypeByName("Bacteriology");
+		        assertEquals("9cf1bce0-d18e-11ea-87d0-0242ac130003",orderGroupAttributeType.getUuid());
+			}
+			@Test
+			public void purgeOrderGroupAttributeType_shouldPurgeOrderGroupAttributeType(){
+>>>>>>> TRUNK-5410 Created OrderGroupAttribute,OrderGroupAttributeType
+=======
+			public void purgeOrderGroupAttributeType_shouldPurgeOrderGroupAttributeType(){
+>>>>>>> TRUNK-5410:Added unit tests to OrderServiceTest.java
+>>>>>>> TRUNK-5410
 				executeDataSet(ORDER_GROUP_ATTRIBUTES);
 				int initialOrderGroupAttributeTypeCount= Context.getOrderService().getOrderGroupAttributeTypes().size();
 				Context.getOrderService().purgeOrderGroupAttributeType(Context.getOrderService().getOrderGroupAttributeTypeById(4));
 				assertEquals(initialOrderGroupAttributeTypeCount-1,Context.getOrderService().getOrderGroupAttributeTypes().size());
 			}
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> TRUNK-5410: Added Unit Tests for new methods to HibernateOrderDAO and OrderServiceImpl , cleaned out unnecessary code
+=======
+>>>>>>> TRUNK-5410 Created OrderGroupAttribute,OrderGroupAttributeType
+=======
+>>>>>>> TRUNK-5410 Created OrderGroupAttribute,OrderGroupAttributeType
+=======
+>>>>>>> TRUNK-5410
 	@Test
 	public void getOrderGroupAttributeByUuid_shouldReturnNullIfNonExistingUuidIsProvided(){
 		executeDataSet(ORDER_GROUP_ATTRIBUTES);
@@ -3886,4 +4135,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertEquals("Test 1",orderGroupAttribute.getValueReference());
 		assertEquals(1,orderGroupAttribute.getId());
 	}
+<<<<<<< HEAD
+=======
+>>>>>>> TRUNK-5410:Added unit tests to OrderServiceTest.java
+>>>>>>> TRUNK-5410
 }
