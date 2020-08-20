@@ -12,16 +12,23 @@ package org.openmrs;
 import org.hibernate.search.annotations.Indexed;
 import org.openmrs.obs.ComplexObsHandler;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
 /**
  * Child class of Concept that has a {@link ComplexObsHandler} associated with the Concept.
  *
  * @since 1.5
  */
 @Indexed
+@Entity
+@Table(name = "concept_complex")
 public class ConceptComplex extends Concept {
 	
 	public static final long serialVersionUID = 473231233L;
 	
+	@Column(name = "handler")
 	private String handler;
 	
 	/**

@@ -15,6 +15,7 @@ import java.util.TreeSet;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.search.annotations.Indexed;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -32,26 +33,35 @@ public class ConceptNumeric extends Concept {
 	
 	// Fields
 	
+	@Column(name = "hi_absolute", length = 22)
 	private Double hiAbsolute;
 	
+	@Column(name = "hi_critical", length = 22)
 	private Double hiCritical;
 	
+	@Column(name = "hi_normal", length = 22)
 	private Double hiNormal;
 	
+	@Column(name = "low_absolute", length = 22)
 	private Double lowAbsolute;
 	
+	@Column(name = "low_critical", length = 22)
 	private Double lowCritical;
 	
+	@Column(name = "low_normal", length = 22)
 	private Double lowNormal;
 	
+	@Column(name = "units", length = 50)
 	private String units;
 	
+	@Column(name = "allow_decimal", nullable = false, length = 1)
 	private Boolean allowDecimal = false;
 	
 	/**
 	 * displayPrecision, represents the number of significant digits
 	 * to be used for display of a numeric value
 	 */
+	@Column(name = "display_precision", nullable = false)
 	private Integer displayPrecision;
 	
 	// Constructors

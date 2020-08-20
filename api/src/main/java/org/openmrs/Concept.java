@@ -29,6 +29,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.SortComparator;
 import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.DocumentId;
@@ -52,11 +55,8 @@ import org.springframework.util.ObjectUtils;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -64,9 +64,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
@@ -97,6 +95,7 @@ import javax.persistence.Transient;
 @FullTextFilterDefs( { @FullTextFilterDef(name = "termsFilterFactory", impl = TermsFilterFactory.class) })
 @Entity
 @Table(name = "concept")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Concept extends BaseOpenmrsObject implements Auditable, Retireable, Serializable, Attributable<Concept>,Customizable<ConceptAttribute> {
 	
 	public static final long serialVersionUID = 57332L;
@@ -107,7 +106,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	// Fields
 	@Id
 	@DocumentId
-	@Column(name = "concept_id", insertable = false, updatable = false, nullable = false)
+	@Column(name = "concept_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer conceptId;
 
@@ -157,34 +156,42 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	
 	@AllowDirectAccess
 	@ContainedIn
+	@OneToMany(orphanRemoval = true)
 	@BatchSize(size = 25)
 	@Access(AccessType.FIELD)
-	@JoinColumn(name = "names", nullable = true, referencedColumnName = "concept_id")
-	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)     //mapped by names
+	@LazyCollection(LazyCollectionOption.TRUE)
+	@JoinColumn(name = "concept_id", nullable = false, insertable = false, updatable = false)
+	@Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.EVICT})
 	private Collection<ConceptName> names;
 	
 	@AllowDirectAccess
-	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+	@OneToMany(orphanRemoval = true)
 	@BatchSize(size = 25)
 	@OrderBy("sort_weight asc, concept_answer_id asc")
 	@Access(AccessType.FIELD)
+	@Cascade(org.hibernate.annotations.CascadeType.ALL)
+	@JoinTable(name = "concept_answer", joinColumns = @JoinColumn(name = "concept_id", nullable = false, insertable = false, updatable = false))
 	private Collection<ConceptAnswer> answers;
 	
-	@OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)      //mapped by concept_id
+	@OneToMany(orphanRemoval = true)
 	@BatchSize(size = 25)
 	@OrderBy("sort_weight asc")
+	@LazyCollection(LazyCollectionOption.TRUE)
 	@JoinTable(name = "concept_set", joinColumns = @JoinColumn(name = "concept_set", nullable = false))
 	private Collection<ConceptSet> conceptSets;
 	
 	@OrderBy("concept_description_id")
-	@JoinColumn(name = "descriptions")
+	@JoinColumn(name = "concept_id", nullable = false, insertable = false, updatable = false)
 	@BatchSize(size = 25)
-	@OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
+	@OneToMany(orphanRemoval = true)
+	@LazyCollection(LazyCollectionOption.TRUE)
+	@Cascade(org.hibernate.annotations.CascadeType.ALL)
 	private Collection<ConceptDescription> descriptions;
 	
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
-	@JoinColumn(name = "conceptMappings", nullable = true, referencedColumnName = "concept_id")
-	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+	@JoinColumn(name = "concept_id", nullable = false, insertable = false, updatable = false)
+	@OneToMany(orphanRemoval = true)
+	@Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.EVICT})
 	@BatchSize(size = 25)
 	private Collection<ConceptMap> conceptMappings;
 	
@@ -195,8 +202,9 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	@Transient
 	private Map<Locale, List<ConceptName>> compatibleCache;
 	
-	@JoinColumn(name = "attributes")
-	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+	@JoinColumn(name = "concept_id", insertable = false, updatable = false)
+	@OneToMany(orphanRemoval = true)
+	@Cascade(CascadeType.ALL)
 	@OrderBy("voided asc")
 	@BatchSize(size = 100)
 	private Set<ConceptAttribute> attributes = new LinkedHashSet<>();
