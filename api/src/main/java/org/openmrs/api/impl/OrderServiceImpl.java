@@ -1087,52 +1087,76 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	public List<OrderGroup> getOrderGroupsByEncounter(Encounter encounter) throws APIException {
 		return dao.getOrderGroupsByEncounter(encounter);
 	}
-
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeTypes()
+	 */
 	@Override
 	public List<OrderGroupAttributeType> getOrderGroupAttributeTypes() throws APIException {
 		return dao.getAllOrderGroupAttributeTypes();
 	}
-<<<<<<< HEAD
-=======
-
->>>>>>> TRUNK-5410
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeTypeById()
+	 */
 	@Override
 	public OrderGroupAttributeType getOrderGroupAttributeTypeById(Integer id) throws APIException {
 		return dao.getOrderGroupAttributeType(id);
 	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeTypeByUuid()
+	 */
 	@Override
 	public OrderGroupAttributeType getOrderGroupAttributeTypeByUuid(String uuid)throws APIException {
 		return dao.getOrderGroupAttributeTypeByUuid(uuid);
 	}
-
+	
+	/**
+	 * @see org.openmrs.api.OrderService#saveOrderGroupAttributeType()
+	 */
 	@Override
 	public OrderGroupAttributeType saveOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws APIException{
 		return dao.saveOrderGroupAttributeType(orderGroupAttributeType);
 	}
 
+	/**
+	 * @see org.openmrs.api.OrderService#retireOrderGroupAttributeType()
+	 */
 	@Override
 	public OrderGroupAttributeType retireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType, String reason)throws APIException {
 		return dao.saveOrderGroupAttributeType(orderGroupAttributeType);
 	}
 
+	/**
+	 * @see org.openmrs.api.OrderService#unretireOrderGroupAttributeType()
+	 */
 	@Override
 	public OrderGroupAttributeType unretireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType)throws APIException {
 		return Context.getOrderService().saveOrderGroupAttributeType(orderGroupAttributeType);
 	}
 
+	/**
+	 * @see org.openmrs.api.OrderService#purgeOrderGroupAttributeType()
+	 */
 	@Override
 	public void purgeOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws APIException{
          dao.deleteOrderGroupAttributeType(orderGroupAttributeType);
 	}
 
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeTypeByName()
+	 */
 	@Override
 	public OrderGroupAttributeType getOrderGroupAttributeTypeByName(String orderGroupAttributeTypeName)throws APIException {
 		return dao.getOrderGroupAttributeTypeByName(orderGroupAttributeTypeName);
 	}
 
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeByUuid()
+	 */
 	@Override
 	public OrderGroupAttribute getOrderGroupAttributeByUuid(String uuid)throws APIException {
 		return dao.getOrderGroupAttributeByUuid(uuid);
 	}
-
 }

@@ -9,32 +9,17 @@
  */
 package org.openmrs.api.db.hibernate;
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-=======
->>>>>>> TRUNK-5410
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
->>>>>>> TRUNK-5410:Re-ordered imports format in OrderServiceTest and HibernateOrderDAOTest
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-<<<<<<< HEAD
-=======
-import java.util.UUID;
 
-import org.hibernate.internal.SessionFactoryImpl;
->>>>>>> TRUNK-5410
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.OrderGroup;
@@ -45,14 +30,6 @@ import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
-
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-import static org.junit.jupiter.api.Assertions.*;
-=======
->>>>>>> TRUNK-5410:Re-ordered imports format in OrderServiceTest and HibernateOrderDAOTest
->>>>>>> TRUNK-5410
 
 /**
  * Tests the saving of orders as part of the OrderGroup
@@ -153,22 +130,26 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 		List<OrderGroupAttributeType> orderGroupAttributeTypes = dao.getAllOrderGroupAttributeTypes();
 		assertEquals(orderGroupAttributeTypes.size(),4);
 	}
+	/**
+	 * @see {@link HibernateOrderDAO#getOrderGroupAttributeTypeByUuid(String)}
+	 * @throws Exception
+	 */
 	@Test
 	public void getOrderGroupAttributeType_shouldGetOrderGroupAttributeTypeGivenUuid(){
 		final String UUID2 ="9cf1bdb2-d18e-11ea-87d0-0242ac130003";
     	OrderGroupAttributeType newOrderGroupAttributeType = dao.getOrderGroupAttributeTypeByUuid(UUID2);
 		assertEquals(newOrderGroupAttributeType.getName(),dao.getOrderGroupAttributeTypeByUuid(UUID2).getName());
 	}
+	/**
+	 * @see {@link HibernateOrderDAO#getOrderGroupAttributeType(Integer)}
+	 * @throws Exception
+	 */
 	@Test
 	public void getOrderGroupAttributeType_shouldReturnOrderGroupAttributeTypeGivenIntegerId(){
     	final Integer ID = 4;
 		OrderGroupAttributeType newOrderGroupAttributeType = dao.getOrderGroupAttributeType(ID);
 		assertEquals(4,newOrderGroupAttributeType.getId());
-		
-<<<<<<< HEAD
 	}
-	
-
 	/**
 	 * @see {@link HibernateOrderDAO#getOrderGroupAttributeTypeByName(String)}
 	 * @throws Exception
@@ -182,8 +163,10 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 		assertEquals(4,newOrderGroupAttributeType.getId());
 		assertEquals(UUID4,newOrderGroupAttributeType.getUuid());
     }
-
-    
+    /**
+	 * @see {@link HibernateOrderDAO#deleteOrderGroupAttributeType(OrderGroupAttributeType)}
+	 * @throws Exception
+	 */
     @Test
 	public void deleteOrderGroupAttributeType_shouldDeleteOrderGroupAttributeTypeFromDatabase(){
     	String uuid = "9cf1bdb2-d18e-11ea-87d0-0242ac130003";
@@ -191,35 +174,5 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 		assertNotNull(orderGroupAttributeType);
 		dao.deleteOrderGroupAttributeType(orderGroupAttributeType);
 		assertNull(dao.getOrderGroupAttributeByUuid(uuid));
-=======
->>>>>>> TRUNK-5410
 	}
-	
-
-	/**
-	 * @see {@link HibernateOrderDAO#getOrderGroupAttributeTypeByName(String)}
-	 * @throws Exception
-	 */
-    @Test
-    public void getOrderGroupAttributeTypeByName_shouldGetOrderGroupAttributeTypeByName(){
-		final String NAME = "ECG";
-		final String UUID4="9cf1bdb2-d18e-11ea-87d0-0242ac130003";
-		OrderGroupAttributeType newOrderGroupAttributeType = dao.getOrderGroupAttributeTypeByName(NAME);
-		assertEquals(NAME,newOrderGroupAttributeType.getName());
-		assertEquals(4,newOrderGroupAttributeType.getId());
-		assertEquals(UUID4,newOrderGroupAttributeType.getUuid());
-    }
-<<<<<<< HEAD
-    
-//    @Test
-//	public void deleteOrderGroupAttributeType_shouldDeleteOrderGroupAttributeTypeFromDatabase(){
-//    	String uuid = "9cf1bdb2-d18e-11ea-87d0-0242ac130003";
-//		OrderGroupAttributeType orderGroupAttributeType = dao.getOrderGroupAttributeTypeByUuid(uuid);
-//		OrderGroupAttribute orderGroupAttribute=dao.getOrderGroupAttributeByUuid(uuid);
-//		assertNotNull(orderGroupAttribute);
-//		dao.deleteOrderGroupAttributeType(orderGroupAttributeType);
-//		assertNull(dao.getOrderGroupAttributeByUuid(uuid));
-//	}
-=======
->>>>>>> TRUNK-5410 Created OrderGroupAttribute,OrderGroupAttributeType
 }

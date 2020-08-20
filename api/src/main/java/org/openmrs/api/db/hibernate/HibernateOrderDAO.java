@@ -742,10 +742,6 @@ public class HibernateOrderDAO implements OrderDAO {
 		}
 	return (OrderGroupAttribute) sessionFactory.getCurrentSession().createQuery("from OrderGroupAttribute d where d.uuid = :uuid")
 			.setString("uuid", uuid).uniqueResult();
-<<<<<<< HEAD
-=======
-			
->>>>>>> TRUNK-5410
 	}
 
 	/**
@@ -756,10 +752,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	public List<OrderGroupAttributeType> getAllOrderGroupAttributeTypes() throws DAOException{
 		return sessionFactory.getCurrentSession().createCriteria(OrderGroupAttributeType.class).list();
 	}
-<<<<<<< HEAD
-	
-=======
->>>>>>> TRUNK-5410
+
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#getOrderGroupAttributeType(java.lang.Integer)
 	 */
@@ -767,10 +760,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	public OrderGroupAttributeType getOrderGroupAttributeType(Integer id) throws DAOException{
 		return sessionFactory.getCurrentSession().get(OrderGroupAttributeType.class,id);
 	}
-<<<<<<< HEAD
-	
-=======
->>>>>>> TRUNK-5410
+
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#getOrderGroupAttributeTypeByUuid(java.lang.String)
 	 */
@@ -782,10 +772,7 @@ public class HibernateOrderDAO implements OrderDAO {
 		return (OrderGroupAttributeType) sessionFactory.getCurrentSession().createCriteria(OrderGroupAttributeType.class).add(
 			Restrictions.eq("uuid",uuid)).uniqueResult();
 	}
-<<<<<<< HEAD
-	
-=======
->>>>>>> TRUNK-5410
+
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#saveOrderGroupAttributeType(org.openmrs.OrderGroupAttributeType)
 	 */
