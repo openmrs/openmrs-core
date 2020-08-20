@@ -11,7 +11,7 @@ package org.openmrs;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.TreeSet;
 import java.util.List;
 import java.util.Set;
 
@@ -26,7 +26,7 @@ import org.openmrs.customdatatype.Customizable;
  */
 public abstract class BaseCustomizableData<A extends Attribute> extends BaseChangeableOpenmrsData implements Customizable<A> {
 	
-	private Set<A> attributes = new LinkedHashSet<>();
+	private Set<A> attributes = new TreeSet<>();
 	
 	/**
 	 * @see org.openmrs.customdatatype.Customizable#getAttributes()
@@ -81,7 +81,7 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseChan
 	@Override
 	public void addAttribute(A attribute) {
 		if (getAttributes() == null) {
-			setAttributes(new LinkedHashSet<>());
+			setAttributes(new  TreeSet<>());
 		}
 		getAttributes().add(attribute);
 		attribute.setOwner(this);

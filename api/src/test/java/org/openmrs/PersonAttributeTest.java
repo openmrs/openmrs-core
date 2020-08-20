@@ -42,9 +42,9 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 		pa.setValue("1");
 		pa.setVoided(false);
 		PersonAttribute other = new PersonAttribute(1); // a different personAttributeid than above
-		pa.setAttributeType(new PersonAttributeType(1));
-		pa.setValue("1");
-		pa.setVoided(false);
+		other.setAttributeType(new PersonAttributeType(1));
+		other.setValue("1");
+		other.setVoided(true);
 		
 		assertTrue(pa.equalsContent(other));
 	}
