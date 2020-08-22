@@ -9,7 +9,6 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -19,7 +18,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
-import org.hibernate.internal.CriteriaImpl;
 import org.hibernate.FlushMode;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
@@ -590,25 +588,11 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Visit.class);
 		addEmptyVisitsByPatientCriteria(criteria, patient, includeVoided, query);
 		
-		//A hack to remove the order_by clauses as they cause error in PostgreSQL
-		Iterator<CriteriaImpl.OrderEntry> orderIter = ((CriteriaImpl) criteria).iterateOrderings();
-		while (orderIter.hasNext()) {
-			orderIter.next();
-			orderIter.remove();
-		}
-		
 		criteria.setProjection(Projections.rowCount());
 		Integer count = ((Number) criteria.uniqueResult()).intValue();
 		
 		criteria = sessionFactory.getCurrentSession().createCriteria(Encounter.class);
 		addEncountersByPatientCriteria(criteria, patient, includeVoided, query);
-		
-		//A hack to remove the order_by clauses as they cause error in PostgreSQL
-		orderIter = ((CriteriaImpl) criteria).iterateOrderings();
-		while (orderIter.hasNext()) {
-			orderIter.next();
-			orderIter.remove();
-		}
 		
 		criteria.setProjection(Projections.rowCount());
 		count = count + ((Number) criteria.uniqueResult()).intValue();
