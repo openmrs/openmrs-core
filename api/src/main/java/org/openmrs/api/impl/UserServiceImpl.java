@@ -179,9 +179,6 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		return dao.saveUser(user, null);
 	}
 	
-	/**
-	 * @see org.openmrs.api.UserService#voidUser(org.openmrs.User, java.lang.String)
-	 */
 	public User voidUser(User user, String reason) throws APIException {
 		return Context.getUserService().retireUser(user, reason);
 	}
@@ -199,9 +196,6 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		return saveUser(user);
 	}
 	
-	/**
-	 * @see org.openmrs.api.UserService#unvoidUser(org.openmrs.User)
-	 */
 	public User unvoidUser(User user) throws APIException {
 		return Context.getUserService().unretireUser(user);
 	}
@@ -397,7 +391,6 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @param user user that has privileges
 	 */
 	private void checkPrivileges(User user) {
-		Collection<Role> roles = user.getAllRoles();
 		List<String> requiredPrivs = user.getAllRoles().stream().peek(this::checkSuperUserPrivilege)
 				.map(Role::getPrivileges).filter(Objects::nonNull).flatMap(Collection::stream)
 				.map(Privilege::getPrivilege).filter(p -> !Context.hasPrivilege(p)).sorted().collect(Collectors.toList());
@@ -752,7 +745,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.UserService#changeUserPasswordUsingActivationKey(String, String);
+	 * @see org.openmrs.api.UserService#changePasswordUsingActivationKey(String, String);
 	 */
 	@Override
 	public void changePasswordUsingActivationKey(String activationKey, String newPassword) {
