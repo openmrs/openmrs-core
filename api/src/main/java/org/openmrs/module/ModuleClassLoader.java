@@ -530,8 +530,9 @@ public class ModuleClassLoader extends URLClassLoader {
 	 */
 	public void dispose() {
 		if (log.isDebugEnabled())
+		{
 			log.debug("Disposing of ModuleClassLoader: " + this);
-
+		}
 		for (File file : libraryCache.values()) {
 			file.delete();
 		}
@@ -909,8 +910,9 @@ public class ModuleClassLoader extends URLClassLoader {
 		if (requiredModules != null) {
 			for (Module publicImport : requiredModules) {
 				if (seenModules.contains(publicImport.getModuleId()))
+				{
 					continue;
-				
+				}
 				ModuleClassLoader mcl = ModuleFactory.getModuleClassLoader(publicImport);
 				
 				if (mcl != null) {
