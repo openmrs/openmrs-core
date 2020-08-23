@@ -177,10 +177,8 @@ public class HibernatePersonDAO implements PersonDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.PersonService#getSimilarPeople(java.lang.String, java.lang.Integer,
-	 *      java.lang.String, java.lang.String)
-	 * @see org.openmrs.api.db.PersonDAO#getSimilarPeople(String name, Integer birthyear, String
-	 *      gender)
+	 * @see org.openmrs.api.PersonService#getSimilarPeople(String name, Integer birthyear, String gender)
+	 * @see org.openmrs.api.db.PersonDAO#getSimilarPeople(String name, Integer birthyear, String gender)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
@@ -192,7 +190,6 @@ public class HibernatePersonDAO implements PersonDAO {
 		name = name.replaceAll("  ", " ");
 		name = name.replace(", ", " ");
 		String[] names = name.split(" ");
-		Set<Person> result;
 		
 		StringBuilder q = new StringBuilder(
 		        "select p from Person p left join p.names as pname where p.personVoided = false and pname.voided = false and ");
@@ -398,7 +395,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.PersonService#deletePersonAttributeType(org.openmrs.PersonAttributeType)
+	 * @see org.openmrs.api.PersonService#purgePersonAttributeType(org.openmrs.PersonAttributeType)
 	 * @see org.openmrs.api.db.PersonDAO#deletePersonAttributeType(org.openmrs.PersonAttributeType)
 	 */
 	@Override
@@ -618,7 +615,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.PersonService#deleteRelationshipType(org.openmrs.RelationshipType)
+	 * @see org.openmrs.api.PersonService#purgeRelationshipType(org.openmrs.RelationshipType)
 	 * @see org.openmrs.api.db.PersonDAO#deleteRelationshipType(org.openmrs.RelationshipType)
 	 */
 	@Override
