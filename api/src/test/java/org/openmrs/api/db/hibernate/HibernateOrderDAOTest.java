@@ -45,6 +45,7 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	private static final String ORDER_GROUP = "org/openmrs/api/include/OrderServiceTest-createOrderGroup.xml";
      
 	private static final String  UUID = "9cf1b9de-d18e-11ea-87d0-0242ac130003";
+	
 	@BeforeEach
 	public void setUp() {
 		executeDataSet(ORDER_SET);
@@ -77,6 +78,7 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 			assertNull(savedOrder.getOrderId(), "Order is not saved as a part of Order Group");
 		}
 	}
+	
 	/**
 	 * @see {@link HibernateOrderDAO#getOrderGroupsByEncounter(Encounter)}
 	 * @throws Exception
@@ -85,6 +87,7 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	public void getOrderGroupsByEncounter_shouldFailGivenNullEncounter() {
 		assertThrows(APIException.class, () -> dao.getOrderGroupsByEncounter(null));
 	}
+	
 	/**
 	 * @see {@link HibernateOrderDAO#getOrderGroupsByPatient(Patient)}
 	 * @throws Exception
@@ -93,6 +96,7 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	public void getOrderGroupsByPatient_shouldFailGivenNullPatient() {
 		assertThrows(APIException.class, () -> dao.getOrderGroupsByPatient(null));
 	}
+	
 	/**
 	 * @see {@link HibernateOrderDAO#getOrderGroupsByEncounter(Encounter)}
 	 * @throws Exception
@@ -103,6 +107,7 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 		List<OrderGroup> ordergroups = Context.getOrderService().getOrderGroupsByEncounter(existingEncounter);
 		assertEquals(1, ordergroups.size());
 	}
+	
 	/**
 	 * @see {@link HibernateOrderDAO#getOrderGroupsByPatient(Patient)}
 	 * @throws Exception
@@ -114,6 +119,7 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 		assertEquals(1, ordergroups.size());
 		
 	}
+	
 	/**
 	 * @see {@link HibernateOrderDAO#getAllOrderGroupAttributeTypes()}
 	 * @throws Exception
@@ -123,6 +129,7 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 		List<OrderGroupAttributeType> orderGroupAttributeTypes = dao.getAllOrderGroupAttributeTypes();
 		assertEquals(orderGroupAttributeTypes.size(),4);
 	}
+	
 	/**
 	 * @see {@link HibernateOrderDAO#getOrderGroupAttributeTypeByUuid(String)}
 	 * @throws Exception
@@ -133,6 +140,7 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
     	OrderGroupAttributeType newOrderGroupAttributeType = dao.getOrderGroupAttributeTypeByUuid(UUID2);
 		assertEquals(newOrderGroupAttributeType.getName(),dao.getOrderGroupAttributeTypeByUuid(UUID2).getName());
 	}
+	
 	/**
 	 * @see {@link HibernateOrderDAO#getOrderGroupAttributeType(Integer)}
 	 * @throws Exception
@@ -143,6 +151,7 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 		OrderGroupAttributeType newOrderGroupAttributeType = dao.getOrderGroupAttributeType(ID);
 		assertEquals(4,newOrderGroupAttributeType.getId());
 	}
+	
 	/**
 	 * @see {@link HibernateOrderDAO#getOrderGroupAttributeTypeByName(String)}
 	 * @throws Exception
@@ -156,6 +165,7 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 		assertEquals(4,newOrderGroupAttributeType.getId());
 		assertEquals(UUID4,newOrderGroupAttributeType.getUuid());
     }
+    
     /**
 	 * @see {@link HibernateOrderDAO#deleteOrderGroupAttributeType(OrderGroupAttributeType)}
 	 * @throws Exception
