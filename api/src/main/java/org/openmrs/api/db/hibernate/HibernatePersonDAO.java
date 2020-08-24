@@ -88,7 +88,7 @@ public class HibernatePersonDAO implements PersonDAO {
 		int maxResults = HibernatePersonDAO.getMaximumSearchResults();
 		LinkedHashSet<Person> people = new LinkedHashSet<>();
 		
-		LuceneQuery<PersonName> luceneQuery = personLuceneQuery.getSoundexPersonNameQuery(query, birthyear, false, gender);;
+		LuceneQuery<PersonName> luceneQuery = personLuceneQuery.getSoundexPersonNameQuery(query, birthyear, false, gender);
 		ListPart<Object[]> names = luceneQuery.listPartProjection(0, maxResults, "person.personId");
 		names.getList().forEach(x -> people.add(getPerson((Integer) x[0])));
 		
