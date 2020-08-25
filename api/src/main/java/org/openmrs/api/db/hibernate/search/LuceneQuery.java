@@ -34,7 +34,6 @@ import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
 import org.openmrs.collection.ListPart;
-import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Performs Lucene queries.
