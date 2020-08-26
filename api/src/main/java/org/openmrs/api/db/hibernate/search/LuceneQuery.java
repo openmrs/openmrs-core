@@ -62,7 +62,7 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	public enum MatchType
 	{
 		NORMAL, SOUNDEX
-	};
+	}
 	
 	public static <T> LuceneQuery<T> newQuery(final Class<T> type, final Session session, final String query, final Collection<String> fields) {
 		return newQuery(type, session, query, fields, MatchType.NORMAL);

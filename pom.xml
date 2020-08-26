@@ -430,7 +430,7 @@
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>42.2.15</version>
+				<version>42.2.16</version>
 				<scope>runtime</scope>
 			</dependency>
 			<dependency>
@@ -1149,7 +1149,7 @@
 		<aspectjVersion>1.9.6</aspectjVersion>
 		<jacksonVersion>2.11.2</jacksonVersion>
 		<junitVersion>5.6.2</junitVersion>
-		<mockitoVersion>3.5.2</mockitoVersion>
+		<mockitoVersion>3.5.7</mockitoVersion>
 
 		<slf4jVersion> 1.7.30</slf4jVersion>
 		<log4jVersion>2.13.3</log4jVersion>
