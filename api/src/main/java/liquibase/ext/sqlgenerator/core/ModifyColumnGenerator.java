@@ -193,8 +193,8 @@ public class ModifyColumnGenerator extends AbstractSqlGenerator<ModifyColumnStat
 		String clause = "";
 		String defaultValue = column.getDefaultValue();
 		if (defaultValue != null && database instanceof MySQLDatabase) {
-		clause += " DEFAULT "
-		+ DataTypeFactory.getInstance().fromObject(defaultValue, database).objectToSql(defaultValue, database);
+		 clause += " DEFAULT "
+		  + DataTypeFactory.getInstance().fromObject(defaultValue, database).objectToSql(defaultValue, database);
 		}
 		return clause;
 	}
