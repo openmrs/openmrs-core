@@ -125,13 +125,13 @@ public class UserValidator implements Validator {
 				}
 			}
 			
-			 if (!StringUtils.isBlank(user.getEmail()) && !isEmailValid(user.getEmail())) {
-	        errors.rejectValue("email", "error.email.invalid");
-	      } else {
-	        ValidateUtil.validateFieldLengths(errors, obj.getClass(), "username", "systemId", "retireReason");
-	      }
-	   	}
-   }
+			if (!StringUtils.isBlank(user.getEmail()) && !isEmailValid(user.getEmail())) {
+			  errors.rejectValue("email", "error.email.invalid");
+			} else {
+			  ValidateUtil.validateFieldLengths(errors, obj.getClass(), "username", "systemId", "retireReason");
+			}
+		}
+	}
 	
 	/**
 	 * Convenience method to check the given username against the regular expression. <br>
