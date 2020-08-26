@@ -204,7 +204,7 @@ public class HibernateOrderDAO implements OrderDAO {
         if (searchCriteria.getAction() != null) {
             crit.add(Restrictions.eq("action", searchCriteria.getAction()));
         }
-        if (searchCriteria.getExcludeDiscontinueOrders() == true) {
+        if (searchCriteria.getExcludeDiscontinueOrders()) {
             crit.add(Restrictions.or(
                     Restrictions.ne("action", Order.Action.DISCONTINUE),
                     Restrictions.isNull("action")));
@@ -215,7 +215,7 @@ public class HibernateOrderDAO implements OrderDAO {
 		}
         Criterion fulfillerStatusCriteria = null;
         if (searchCriteria.getIncludeNullFulfillerStatus() != null ) {
-            if (searchCriteria.getIncludeNullFulfillerStatus().booleanValue() == true ) {
+            if (searchCriteria.getIncludeNullFulfillerStatus().booleanValue() ) {
                 fulfillerStatusCriteria = Restrictions.isNull("fulfillerStatus");
             } else {
                 fulfillerStatusCriteria = Restrictions.isNotNull("fulfillerStatus");
@@ -230,7 +230,7 @@ public class HibernateOrderDAO implements OrderDAO {
             crit.add(fulfillerStatusCriteria);
         }
 
-		if (searchCriteria.getExcludeCanceledAndExpired() == true) {
+		if (searchCriteria.getExcludeCanceledAndExpired()) {
 			Calendar cal = Calendar.getInstance();
 			// exclude expired orders (include only orders with autoExpireDate = null or autoExpireDate in the future)
 			crit.add(Restrictions.or(
