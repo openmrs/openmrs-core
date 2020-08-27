@@ -16,10 +16,11 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.equalTo;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 import java.util.Arrays;
@@ -29,9 +30,9 @@ import java.util.Collections;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.ConceptNumeric;
 
 /**
@@ -42,12 +43,12 @@ public class OpenmrsUtilUnitTest {
 
 	private List<String> moduleList;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		moduleList = Arrays.asList("module1", "module2");
 	}
 
-	@After
+	@AfterEach
 	public void clearSystemProperty() {
 		System.clearProperty("FUNCTIONAL_TEST_MODE");
 	}
@@ -98,22 +99,21 @@ public class OpenmrsUtilUnitTest {
 		assertThat(OpenmrsUtil.parseParameterList("||||"), equalTo(Collections.EMPTY_MAP));
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void parseParameterList_shouldFailGivenOnlyWhitespaces() {
 
-		OpenmrsUtil.parseParameterList("   ");
+		assertThrows(IllegalArgumentException.class, () -> OpenmrsUtil.parseParameterList("   "));
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void parseParameterList_shouldFailGivenOnlyAKey() {
-		
-		OpenmrsUtil.parseParameterList("role_id");
+		assertThrows(IllegalArgumentException.class, () -> OpenmrsUtil.parseParameterList("role_id"));
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void parseParameterList_shouldFailGivenOnlyKeysSeparatedByPipes() {
 
-		OpenmrsUtil.parseParameterList("role_id|patient_id");
+		assertThrows(IllegalArgumentException.class, () -> OpenmrsUtil.parseParameterList("role_id|patient_id"));
 	}
 
 	@Test

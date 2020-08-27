@@ -9,13 +9,14 @@
  */
 package org.openmrs.annotation;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.Test;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.junit.jupiter.api.Test;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
 public class OpenmrsProfileExcludeFilterTest extends BaseContextSensitiveTest {
@@ -23,9 +24,9 @@ public class OpenmrsProfileExcludeFilterTest extends BaseContextSensitiveTest {
 	/**
 	 * @see OpenmrsProfileExcludeFilter#match(org.springframework.core.type.classreading.MetadataReader, org.springframework.core.type.classreading.MetadataReaderFactory)
 	 */
-	@Test(expected = NoSuchBeanDefinitionException.class)
+	@Test
 	public void match_shouldNotIncludeBeanForOpenmrsFrom1_6To1_7() {
-		applicationContext.getBean(OpenmrsProfile1_6To1_7.class);
+		assertThrows(NoSuchBeanDefinitionException.class, () -> applicationContext.getBean(OpenmrsProfile1_6To1_7.class));
 	}
 	
 	/**
@@ -51,9 +52,9 @@ public class OpenmrsProfileExcludeFilterTest extends BaseContextSensitiveTest {
 	/**
 	 * @see OpenmrsProfileExcludeFilter#match(org.springframework.core.type.classreading.MetadataReader, org.springframework.core.type.classreading.MetadataReaderFactory)
 	 */
-	@Test(expected = NoSuchBeanDefinitionException.class)
+	@Test
 	public void match_shouldNotIncludeBeanForOpenmrs1_8AndLaterIfModuleMissing() {
-		applicationContext.getBean(OpenmrsProfile1_8WithHtmlformentry.class);
+		assertThrows(NoSuchBeanDefinitionException.class, () -> applicationContext.getBean(OpenmrsProfile1_8WithHtmlformentry.class));
 	}
 	
 	@Test

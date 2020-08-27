@@ -9,12 +9,15 @@
  */
 package org.openmrs.validator;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.EncounterType;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -34,17 +37,17 @@ public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(type, "type");
 		new EncounterTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 		
 		type.setName("");
 		errors = new BindException(type, "type");
 		new EncounterTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 		
 		type.setName(" ");
 		errors = new BindException(type, "type");
 		new EncounterTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 	}
 	
 	/**
@@ -58,17 +61,17 @@ public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(type, "type");
 		new EncounterTypeValidator().validate(type, errors);
-		Assert.assertFalse(errors.hasFieldErrors("description"));
+		assertFalse(errors.hasFieldErrors("description"));
 		
 		type.setDescription("");
 		errors = new BindException(type, "type");
 		new EncounterTypeValidator().validate(type, errors);
-		Assert.assertFalse(errors.hasFieldErrors("description"));
+		assertFalse(errors.hasFieldErrors("description"));
 		
 		type.setDescription(" ");
 		errors = new BindException(type, "type");
 		new EncounterTypeValidator().validate(type, errors);
-		Assert.assertFalse(errors.hasFieldErrors("description"));
+		assertFalse(errors.hasFieldErrors("description"));
 	}
 	
 	/**
@@ -83,7 +86,7 @@ public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(type, "type");
 		new EncounterTypeValidator().validate(type, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -92,12 +95,12 @@ public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldPassValidationWhenEditingAnExistingEncounterType() {
 		EncounterType type = Context.getEncounterService().getEncounterType("Scheduled");
-		Assert.assertNotNull(type);
+		assertNotNull(type);
 		
 		Errors errors = new BindException(type, "encounterType");
 		new EncounterTypeValidator().validate(type, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -106,13 +109,13 @@ public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldFailIfEncounterTypeNameIsDuplicate() {
 		
-		Assert.assertNotNull(Context.getEncounterService().getEncounterType("Scheduled"));
+		assertNotNull(Context.getEncounterService().getEncounterType("Scheduled"));
 		
 		EncounterType newEncounterType = new EncounterType();
 		newEncounterType.setName("Scheduled");
 		Errors errors = new BindException(newEncounterType, "encounterType");
 		new EncounterTypeValidator().validate(newEncounterType, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 		
 	}
 	
@@ -129,7 +132,7 @@ public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(type, "type");
 		new EncounterTypeValidator().validate(type, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -145,8 +148,8 @@ public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(type, "type");
 		new EncounterTypeValidator().validate(type, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("name"));
-		Assert.assertTrue(errors.hasFieldErrors("description"));
-		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+		assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("description"));
+		assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 }

@@ -9,11 +9,10 @@
  */
 package org.openmrs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * This class tests all methods that are not getter or setters in the {@link org.openmrs.OrderType}
@@ -35,7 +34,7 @@ public class OrderTypeTest {
 		Class<?> clazz = Integer.class;
 		
 		orderType.setJavaClassName(clazz.getName());
-		Assert.assertEquals(clazz, orderType.getJavaClass());
+		assertEquals(clazz, orderType.getJavaClass());
 	}
 	
 	/**

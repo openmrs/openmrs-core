@@ -9,7 +9,7 @@
  */
 package org.openmrs.propertyeditor;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.openmrs.Cohort;
 import org.openmrs.api.CohortService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class CohortEditorTest extends BasePropertyEditorTest<Cohort, CohortEdito
 	@Autowired
 	private CohortService cohortService;
 	
-	@Before
+	@BeforeEach
 	public void prepareData() {
 		executeDataSet(COHORT_XML);
 	}

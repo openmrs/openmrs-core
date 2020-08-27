@@ -9,18 +9,19 @@
  */
 package org.openmrs.util;
 
-import liquibase.exception.LockException;
-import org.junit.Test;
-import org.openmrs.liquibase.LiquibaseProvider;
-import org.openmrs.test.BaseContextSensitiveTest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static org.mockito.Mockito.verify;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import liquibase.exception.LockException;
+import org.junit.jupiter.api.Test;
+import org.openmrs.liquibase.LiquibaseProvider;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Tests methods on the {@link DatabaseUpdater} class. This class expects /metadata/model to be on
@@ -47,9 +48,9 @@ public class DatabaseUpdaterTest extends BaseContextSensitiveTest {
 		// does not run DatabaseUpdater.update() because hsqldb doesn't like single quotes in strings
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void shouldRejectNullAsChangelog() throws DatabaseUpdateException, InputRequiredException {
-		DatabaseUpdater.executeChangelog(null, (DatabaseUpdater.ChangeSetExecutorCallback) null);
+		assertThrows(IllegalArgumentException.class, () -> DatabaseUpdater.executeChangelog(null, (DatabaseUpdater.ChangeSetExecutorCallback) null));
 	}
 	
 	@Test

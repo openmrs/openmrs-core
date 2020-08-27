@@ -110,8 +110,8 @@ public class Daemon {
 	}
 
 	/**
-	 * This method should not be called directly, only {@link ContextDAO#createUser(User, String)} can
-	 * legally invoke {@link #createUser(User, String)}.
+	 * This method should not be called directly, only {@link ContextDAO#createUser(User, String, List)} can
+	 * legally invoke {@link #createUser(User, String, List)}.
 	 * 
 	 * @param user A new user to be created.
 	 * @param password The password to set for the new user.

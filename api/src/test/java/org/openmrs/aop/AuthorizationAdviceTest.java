@@ -13,22 +13,22 @@
  */
 package org.openmrs.aop;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import javax.annotation.Resource;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import javax.annotation.Resource;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.PrivilegeListener;
 import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.stereotype.Component;
 
@@ -92,10 +92,10 @@ public class AuthorizationAdviceTest extends BaseContextSensitiveTest {
 	@Component("listener2")
 	public static class Listener2 extends Listener1 {}
 	
-	@Test(expected = APIAuthenticationException.class)
+	@Test
 	public void before_shouldThrowAPIAuthenticationException() {
 		Context.getUserContext().logout();
-		Context.getConceptService().getConcept(3);
+		assertThrows(APIAuthenticationException.class, () -> Context.getConceptService().getConcept(3));
 	}
 	
 }

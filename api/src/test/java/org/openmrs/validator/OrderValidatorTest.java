@@ -9,14 +9,17 @@
  */
 package org.openmrs.validator;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.CareSetting;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
@@ -28,7 +31,7 @@ import org.openmrs.api.OrderService;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
 import org.openmrs.order.OrderUtilTest;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -43,7 +46,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	
 	protected static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
 	
-	@Before
+	@BeforeEach
 	public void setup() {
 		orderService = Context.getOrderService();
 	}
@@ -56,8 +59,8 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(new Order(), "order");
 		new OrderValidator().validate(null, errors);
 		
-		Assert.assertTrue(errors.hasErrors());
-		Assert.assertEquals("error.general", errors.getAllErrors().get(0).getCode());
+		assertTrue(errors.hasErrors());
+		assertEquals("error.general", errors.getAllErrors().get(0).getCode());
 	}
 	
 	/**
@@ -73,7 +76,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("encounter"));
+		assertTrue(errors.hasFieldErrors("encounter"));
 	}
 	
 	/**
@@ -94,7 +97,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("dateActivated"));
+		assertTrue(errors.hasFieldErrors("dateActivated"));
 	}
 	
 	/**
@@ -111,11 +114,11 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
 		
-		Assert.assertFalse(errors.hasFieldErrors("discontinued"));
-		Assert.assertTrue(errors.hasFieldErrors("voided"));
-		Assert.assertFalse(errors.hasFieldErrors("concept"));
-		Assert.assertFalse(errors.hasFieldErrors("patient"));
-		Assert.assertFalse(errors.hasFieldErrors("orderer"));
+		assertFalse(errors.hasFieldErrors("discontinued"));
+		assertTrue(errors.hasFieldErrors("voided"));
+		assertFalse(errors.hasFieldErrors("concept"));
+		assertFalse(errors.hasFieldErrors("patient"));
+		assertFalse(errors.hasFieldErrors("orderer"));
 	}
 	
 	/**
@@ -130,10 +133,10 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
 		
-		Assert.assertFalse(errors.hasFieldErrors("discontinued"));
-		Assert.assertTrue(errors.hasFieldErrors("concept"));
-		Assert.assertFalse(errors.hasFieldErrors("patient"));
-		Assert.assertFalse(errors.hasFieldErrors("orderer"));
+		assertFalse(errors.hasFieldErrors("discontinued"));
+		assertTrue(errors.hasFieldErrors("concept"));
+		assertFalse(errors.hasFieldErrors("patient"));
+		assertFalse(errors.hasFieldErrors("orderer"));
 	}
 	
 	/**
@@ -148,10 +151,10 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
 		
-		Assert.assertFalse(errors.hasFieldErrors("discontinued"));
-		Assert.assertFalse(errors.hasFieldErrors("concept"));
-		Assert.assertTrue(errors.hasFieldErrors("patient"));
-		Assert.assertFalse(errors.hasFieldErrors("orderer"));
+		assertFalse(errors.hasFieldErrors("discontinued"));
+		assertFalse(errors.hasFieldErrors("concept"));
+		assertTrue(errors.hasFieldErrors("patient"));
+		assertFalse(errors.hasFieldErrors("orderer"));
 	}
 	
 	/**
@@ -166,10 +169,10 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
 		
-		Assert.assertFalse(errors.hasFieldErrors("discontinued"));
-		Assert.assertFalse(errors.hasFieldErrors("concept"));
-		Assert.assertTrue(errors.hasFieldErrors("orderer"));
-		Assert.assertFalse(errors.hasFieldErrors("patient"));
+		assertFalse(errors.hasFieldErrors("discontinued"));
+		assertFalse(errors.hasFieldErrors("concept"));
+		assertTrue(errors.hasFieldErrors("orderer"));
+		assertFalse(errors.hasFieldErrors("patient"));
 	}
 	
 	/**
@@ -185,7 +188,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("encounter"));
+		assertTrue(errors.hasFieldErrors("encounter"));
 	}
 	
 	/**
@@ -201,7 +204,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("urgency"));
+		assertTrue(errors.hasFieldErrors("urgency"));
 	}
 	
 	/**
@@ -217,7 +220,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("action"));
+		assertTrue(errors.hasFieldErrors("action"));
 	}
 	
 	/**
@@ -238,8 +241,8 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("dateActivated"));
-		Assert.assertTrue(errors.hasFieldErrors("dateStopped"));
+		assertTrue(errors.hasFieldErrors("dateActivated"));
+		assertTrue(errors.hasFieldErrors("dateStopped"));
 	}
 	
 	/**
@@ -259,8 +262,8 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("dateActivated"));
-		Assert.assertTrue(errors.hasFieldErrors("autoExpireDate"));
+		assertTrue(errors.hasFieldErrors("dateActivated"));
+		assertTrue(errors.hasFieldErrors("autoExpireDate"));
 	}
 	
 	/**
@@ -277,13 +280,13 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		order.setScheduledDate(null);
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
-		Assert.assertTrue(errors.hasFieldErrors("scheduledDate"));
+		assertTrue(errors.hasFieldErrors("scheduledDate"));
 		
 		order.setScheduledDate(new Date());
 		order.setUrgency(Order.Urgency.STAT);
 		errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
-		Assert.assertFalse(errors.hasFieldErrors("scheduledDate"));
+		assertFalse(errors.hasFieldErrors("scheduledDate"));
 	}
 	
 	/**
@@ -300,13 +303,13 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		order.setUrgency(Order.Urgency.ROUTINE);
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
-		Assert.assertTrue(errors.hasFieldErrors("urgency"));
+		assertTrue(errors.hasFieldErrors("urgency"));
 		
 		order.setScheduledDate(new Date());
 		order.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
 		errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
-		Assert.assertFalse(errors.hasFieldErrors("urgency"));
+		assertFalse(errors.hasFieldErrors("urgency"));
 	}
 	
 	/**
@@ -322,8 +325,8 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
-		Assert.assertTrue(errors.hasFieldErrors("orderType"));
-		Assert.assertTrue(Arrays.asList(errors.getFieldError("orderType").getCodes()).contains(
+		assertTrue(errors.hasFieldErrors("orderType"));
+		assertTrue(Arrays.asList(errors.getFieldError("orderType").getCodes()).contains(
 		    "Order.error.orderTypeClassMismatchesOrderClass"));
 	}
 	
@@ -340,7 +343,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
-		Assert.assertFalse(errors.hasFieldErrors("orderType"));
+		assertFalse(errors.hasFieldErrors("orderType"));
 	}
 	
 	/**
@@ -368,7 +371,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -391,8 +394,8 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("dateActivated"));
-		Assert.assertEquals("Order.error.dateActivatedInFuture", errors.getFieldError("dateActivated").getCode());
+		assertTrue(errors.hasFieldErrors("dateActivated"));
+		assertEquals("Order.error.dateActivatedInFuture", errors.getFieldError("dateActivated").getCode());
 	}
 	
 	/**
@@ -424,7 +427,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
 
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 
 	@Test
@@ -441,7 +444,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
 		
-		Assert.assertTrue(errors.hasErrors());
+		assertTrue(errors.hasErrors());
 	}
 	
 	/**
@@ -477,10 +480,10 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
 
-		Assert.assertTrue(errors.hasFieldErrors("accessionNumber"));
-		Assert.assertTrue(errors.hasFieldErrors("orderReasonNonCoded"));
-		Assert.assertTrue(errors.hasFieldErrors("commentToFulfiller"));
-		Assert.assertTrue(errors.hasFieldErrors("voidReason"));
+		assertTrue(errors.hasFieldErrors("accessionNumber"));
+		assertTrue(errors.hasFieldErrors("orderReasonNonCoded"));
+		assertTrue(errors.hasFieldErrors("commentToFulfiller"));
+		assertTrue(errors.hasFieldErrors("voidReason"));
 	}
 	
 	@Test
@@ -498,8 +501,8 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
 
-		Assert.assertTrue(errors.hasFieldErrors("patient"));
-		Assert.assertEquals("Order.error.orderPatientAndOrderGroupPatientMismatch", errors.getFieldError("patient")
+		assertTrue(errors.hasFieldErrors("patient"));
+		assertEquals("Order.error.orderPatientAndOrderGroupPatientMismatch", errors.getFieldError("patient")
 		        .getCode());
 	}
 }

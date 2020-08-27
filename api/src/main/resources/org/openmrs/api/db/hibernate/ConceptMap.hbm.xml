@@ -19,7 +19,7 @@
  
 		<id name="conceptMapId" type="java.lang.Integer" column="concept_map_id" unsaved-value="0">
 			<generator class="native">
-				<param name="sequence">concept_map_concept_map_id_seq</param>
+				<param name="sequence">concept_reference_map_concept_map_id_seq</param>
 			</generator>
 		</id>
 		
