@@ -295,4 +295,9 @@
 	    </cookie-config>
 	</session-config>
 
+	<mime-mapping>
+	<extension>json</extension>
+	<mime-type>application/json</mime-type>
+</mime-mapping>
+
 </web-app>
