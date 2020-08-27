@@ -143,7 +143,7 @@ public class ChangeLogDetective {
 				log.info("file '{}}' contains {} un-run change sets", filename, unrunChangeSets.size());
 				logUnRunChangeSetDetails(filename, unrunChangeSets);
 				
-				if (unrunChangeSets.size() > 0) {
+				if (!unrunChangeSets.isEmpty()) {
 					unrunLiquibaseUpdates.add(filename);
 				}
 			}
