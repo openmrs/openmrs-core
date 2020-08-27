@@ -125,7 +125,7 @@ import org.w3c.dom.DocumentType;
  */
 public class OpenmrsUtil {
 
-	private OpenmrsUtil() {
+	private static volatile MimetypesFileTypeMap mimetypesFileTypeMap = null; {
 	}
 	
 	private static org.slf4j.Logger log = LoggerFactory.getLogger(OpenmrsUtil.class);
@@ -308,8 +308,12 @@ public class OpenmrsUtil {
 	 * @return mime type
 	 */
 	public static String getFileMimeType(File file) {
-		MimetypesFileTypeMap mimeMap = new MimetypesFileTypeMap();
-		return mimeMap.getContentType(file);
+		if (mimetypesFileTypeMap == null) {
+			synchronized (OpenmrsUtil.class) {
+				mimetypesFileTypeMap = new MimetypesFileTypeMap();
+			}
+		}
+		return mimetypesFileTypeMap.getContentType(file);
 	}
 	
 	/**
