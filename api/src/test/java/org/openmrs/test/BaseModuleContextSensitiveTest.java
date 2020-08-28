@@ -18,9 +18,15 @@ import org.springframework.test.context.ContextConfiguration;
  * modules found on the classpath. The ContextConfiguration annotation adds in the module
  * application context files to the config locations and the test application context (so that the
  * module services are loaded from the system classloader)
+ * @deprecated as of 2.4
+ * <p>openmrs-core migrated its tests from JUnit 4 to JUnit 5.
+ * JUnit 4 helpers are still supported so module developers can gradually migrate tests from JUnit 4 to JUnit 5.
+ * To migrate your tests follow <a href="https://wiki.openmrs.org/display/docs/How+to+migrate+to+JUnit+5">How to migrate to JUnit 5</a>.
+ * The JUnit 5 version of the class is {@link org.openmrs.test.jupiter.BaseModuleContextSensitiveTest}.<p>
  */
 @ContextConfiguration(locations = { "classpath:applicationContext-service.xml", "classpath*:TestingApplicationContext.xml",
         "classpath*:moduleApplicationContext.xml" }, inheritLocations = false)
+@Deprecated
 public abstract class BaseModuleContextSensitiveTest extends BaseContextSensitiveTest {
 
 }
