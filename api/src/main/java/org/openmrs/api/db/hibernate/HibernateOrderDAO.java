@@ -755,7 +755,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public OrderGroupAttributeType getOrderGroupAttributeType(Integer id) throws DAOException{
-		return sessionFactory.getCurrentSession().get(OrderGroupAttributeType.class,id);
+		return sessionFactory.getCurrentSession().get(OrderGroupAttributeType.class, id);
 	}
 
 	/**
@@ -764,7 +764,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	@Override
 	public OrderGroupAttributeType getOrderGroupAttributeTypeByUuid(String uuid) throws DAOException{
 		return (OrderGroupAttributeType) sessionFactory.getCurrentSession().createCriteria(OrderGroupAttributeType.class).add(
-			Restrictions.eq("uuid",uuid)).uniqueResult();
+			Restrictions.eq("uuid", uuid)).uniqueResult();
 	}
 
 	/**
@@ -790,6 +790,6 @@ public class HibernateOrderDAO implements OrderDAO {
 	@Override
 	public OrderGroupAttributeType getOrderGroupAttributeTypeByName(String name) throws DAOException{
 		return (OrderGroupAttributeType) sessionFactory.getCurrentSession().createCriteria(OrderGroupAttributeType.class).add(
-			Restrictions.eq("name",name)).uniqueResult();
+			Restrictions.eq("name", name)).uniqueResult();
 	}
 }

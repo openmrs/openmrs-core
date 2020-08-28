@@ -15,6 +15,16 @@ import org.openmrs.attribute.BaseAttributeType;
 public class OrderGroupAttributeType extends BaseAttributeType<OrderGroup> implements AttributeType<OrderGroup> {
 	
 	private Integer orderGroupAttributeTypeId;
+	
+	private Integer cycleNumber;
+	
+	private String category;
+	
+	private Integer numberOfCyclesInTheRegimen;
+	
+	private Integer lengthOfCyclesInTheRegimen;
+	
+	private String priorOrderGroup;
 
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
@@ -44,5 +54,75 @@ public class OrderGroupAttributeType extends BaseAttributeType<OrderGroup> imple
 	 */
 	public void setOrderGroupAttributeTypeId(Integer orderGroupAttributeTypeId) {
 		this.orderGroupAttributeTypeId = orderGroupAttributeTypeId;
+	}
+
+	/**
+	 * @return the cycleNumber
+	 */
+	public Integer getCycleNumber() {
+		return cycleNumber;
+	}
+
+	/**
+	 * @param cycleNumber the cycleNumber to set
+	 */
+	public void setCycleNumber(Integer cycleNumber) {
+		this.cycleNumber = cycleNumber;
+	}
+
+	/**
+	 * @return the category
+	 */
+	public String getCategory() {
+		return category;
+	}
+
+	/**
+	 * @param category the category to set
+	 */
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+	/**
+	 * @return the numberOfCyclesInTheRegimen
+	 */
+	public Integer getNumberOfCyclesInTheRegimen() {
+		return numberOfCyclesInTheRegimen;
+	}
+	
+	/**
+	 * @param numberOfCyclesInTheRegimen the number Of cycles in the Regimen to set
+	 */
+	public void setNumberOfCyclesInTheRegimen(Integer numberOfCyclesInTheRegimen) {
+		this.numberOfCyclesInTheRegimen = numberOfCyclesInTheRegimen;
+	}
+
+	/**
+	 * @return the lengthOfCyclesInTheRegimen
+	 */
+	public Integer getLengthOfCyclesInTheRegimen() {
+		return lengthOfCyclesInTheRegimen;
+	}
+
+	/**
+	 * @param lengthOfCyclesInTheRegimen the length of cycles in the Regimen to set
+	 */
+	public void setLengthOfCyclesInTheRegimen(Integer lengthOfCyclesInTheRegimen) {
+		this.lengthOfCyclesInTheRegimen = lengthOfCyclesInTheRegimen;
+	}
+
+	/**
+	 * @return the priorOrderGroup
+	 */
+	public String getPriorOrderGroup() {
+		return priorOrderGroup;
+	}
+
+	/**
+	 * @param priorOrderGroup the prior order group to set
+	 */
+	public void setPriorOrderGroup(String priorOrderGroup) {
+		this.priorOrderGroup = priorOrderGroup;
 	}
 }

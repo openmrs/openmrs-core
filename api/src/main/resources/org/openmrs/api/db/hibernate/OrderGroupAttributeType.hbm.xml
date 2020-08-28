@@ -58,6 +58,16 @@
 
 		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
 
+		<property name="cycleNumber" type="int" column="cycle_number" length="11" />
+
+		<property name="category" type="java.lang.String" column="category" length="255" />
+
+		<property name="numberOfCyclesInTheRegimen" type="int" column="number_of_cycles_in_the_regimen" length="11" />
+
+		<property name="lengthOfCyclesInTheRegimen" type="int" column="length_of_cycles_in_the_regimen" length="11" />
+
+		<property name="priorOrderGroup" type="java.lang.String" column="prior_order_group" length="255" />
+
 	</class>
 
 </hibernate-mapping>

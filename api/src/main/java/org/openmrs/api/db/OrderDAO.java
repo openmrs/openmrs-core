@@ -277,12 +277,12 @@ public interface OrderDAO {
 	public OrderGroupAttribute getOrderGroupAttributeByUuid(String uuid) throws DAOException;
 
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeTypes()
+	 * @see org.openmrs.api.OrderService#getAllOrderGroupAttributeTypes()
 	 */
 	public List<OrderGroupAttributeType> getAllOrderGroupAttributeTypes()throws DAOException;
 
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeTypeById(Integer)
+	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeType(Integer)
 	 */
 	public OrderGroupAttributeType getOrderGroupAttributeType(Integer id)throws DAOException;
 
