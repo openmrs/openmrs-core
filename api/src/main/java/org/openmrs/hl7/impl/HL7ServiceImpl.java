@@ -27,6 +27,25 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import ca.uhn.hl7v2.HL7Exception;
+import ca.uhn.hl7v2.model.Message;
+import ca.uhn.hl7v2.model.v25.datatype.CX;
+import ca.uhn.hl7v2.model.v25.datatype.ID;
+import ca.uhn.hl7v2.model.v25.datatype.PL;
+import ca.uhn.hl7v2.model.v25.datatype.TS;
+import ca.uhn.hl7v2.model.v25.datatype.XCN;
+import ca.uhn.hl7v2.model.v25.datatype.XPN;
+import ca.uhn.hl7v2.model.v25.segment.NK1;
+import ca.uhn.hl7v2.model.v25.segment.PID;
+import ca.uhn.hl7v2.parser.EncodingNotSupportedException;
+import ca.uhn.hl7v2.parser.GenericParser;
+import ca.uhn.hl7v2.protocol.ApplicationRouter;
+import ca.uhn.hl7v2.protocol.ReceivingApplication;
+import ca.uhn.hl7v2.protocol.Transportable;
+import ca.uhn.hl7v2.protocol.impl.AppRoutingDataImpl;
+import ca.uhn.hl7v2.protocol.impl.ApplicationRouterImpl;
+import ca.uhn.hl7v2.protocol.impl.TransportableImpl;
+import ca.uhn.hl7v2.util.Terser;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.openmrs.Location;
@@ -60,22 +79,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-import ca.uhn.hl7v2.HL7Exception;
-import ca.uhn.hl7v2.app.Application;
-import ca.uhn.hl7v2.app.ApplicationException;
-import ca.uhn.hl7v2.app.MessageTypeRouter;
-import ca.uhn.hl7v2.model.Message;
-import ca.uhn.hl7v2.model.v25.datatype.CX;
-import ca.uhn.hl7v2.model.v25.datatype.ID;
-import ca.uhn.hl7v2.model.v25.datatype.PL;
-import ca.uhn.hl7v2.model.v25.datatype.TS;
-import ca.uhn.hl7v2.model.v25.datatype.XCN;
-import ca.uhn.hl7v2.model.v25.datatype.XPN;
-import ca.uhn.hl7v2.model.v25.segment.NK1;
-import ca.uhn.hl7v2.model.v25.segment.PID;
-import ca.uhn.hl7v2.parser.EncodingNotSupportedException;
-import ca.uhn.hl7v2.parser.GenericParser;
-
 /**
  * OpenMRS HL7 API default methods This class shouldn't be instantiated by itself. Use the
  * {@link org.openmrs.api.context.Context}
@@ -93,7 +96,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	
 	private GenericParser parser;
 	
-	private MessageTypeRouter router;
+	private ApplicationRouter router;
 	
 	/**
 	 * Private constructor to only support on singleton instance.
@@ -137,7 +140,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 *
 	 * @param router the router to use
 	 */
-	public void setRouter(MessageTypeRouter router) {
+	public void setRouter(ApplicationRouter router) {
 		this.router = router;
 	}
 	
@@ -831,17 +834,30 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		
 		Message response;
 		try {
-			if (!router.canProcess(message)) {
+			if (!canProcess(message)) {
 				throw new HL7Exception("No route for hl7 message: " + message.getName()
 				        + ". Make sure you have a module installed that registers a hl7handler for this type");
 			}
-			response = router.processMessage(message);
+			Transportable transportable = new TransportableImpl(message.encode());
+			response = message.getParser().parse(router.processMessage(transportable).getMessage());
 		}
-		catch (ApplicationException e) {
+		catch (HL7Exception e) {
 			throw new HL7Exception("Error while processing HL7 message: " + message.getName(), e);
 		}
 		
 		return response;
+	}
+
+	private boolean canProcess(Message message) {
+		Terser t = new Terser(message);
+		ApplicationRouter.AppRoutingData routingData = null;
+		try {
+			routingData = new AppRoutingDataImpl(t.get("/MSH-9-1"), t.get("/MSH-9-2"), "*", "*");
+		} catch (HL7Exception e) {
+			e.printStackTrace();
+		}
+
+		return router.hasActiveBinding(routingData);
 	}
 	
 	/**
@@ -854,9 +870,9 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 *
 	 * @param handlers a map from MessageName to Application object
 	 */
-	public void setHL7Handlers(Map<String, Application> handlers) {
+	public void setHL7Handlers(Map<String, ReceivingApplication> handlers) {
 		// loop over all the given handlers and add them to the router
-		for (Map.Entry<String, Application> entry : handlers.entrySet()) {
+		for (Map.Entry<String, ReceivingApplication> entry : handlers.entrySet()) {
 			String messageName = entry.getKey();
 			if (!messageName.contains("_")) {
 				throw new APIException("Hl7Service.invalid.messageName", (Object[]) null);
@@ -864,8 +880,10 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 			
 			String messageType = messageName.split("_")[0];
 			String triggerEvent = messageName.split("_")[1];
-			
-			router.registerApplication(messageType, triggerEvent, entry.getValue());
+			router = new ApplicationRouterImpl();
+			// * means all processingIds and versionIds which seems equivalent to what we had before
+			ApplicationRouter.AppRoutingData routingData = new AppRoutingDataImpl(messageType, triggerEvent, "*", "*");
+			router.bindApplication(routingData, entry.getValue());
 		}
 	}
 	

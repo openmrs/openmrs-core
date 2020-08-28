@@ -12,11 +12,11 @@ package org.openmrs.hl7.handler;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -26,7 +26,6 @@ import java.util.List;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.ApplicationException;
-import ca.uhn.hl7v2.app.MessageTypeRouter;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.v25.message.ORU_R01;
 import ca.uhn.hl7v2.model.v25.segment.NK1;
@@ -34,6 +33,12 @@ import ca.uhn.hl7v2.model.v25.segment.OBR;
 import ca.uhn.hl7v2.model.v25.segment.OBX;
 import ca.uhn.hl7v2.model.v26.segment.MSH;
 import ca.uhn.hl7v2.parser.GenericParser;
+import ca.uhn.hl7v2.protocol.ApplicationRouter;
+import ca.uhn.hl7v2.protocol.Transportable;
+import ca.uhn.hl7v2.protocol.impl.AppRoutingDataImpl;
+import ca.uhn.hl7v2.protocol.impl.ApplicationRouterImpl;
+import ca.uhn.hl7v2.protocol.impl.TransportableImpl;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
@@ -71,10 +76,12 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	// hl7 parser to be used throughout
 	protected static GenericParser parser = new GenericParser();
 	
-	private static MessageTypeRouter router = new MessageTypeRouter();
-	
-	static {
-		router.registerApplication("ORU", "R01", new ORUR01Handler());
+	private static ApplicationRouter router ;
+		
+	@BeforeAll
+	public static void setupApplicationRouter() {
+		router = new ApplicationRouterImpl(parser);
+		router.bindApplication(new AppRoutingDataImpl("ORU", "R01", "*", "*"), new ORUR01Handler());
 	}
 	
 	/**
@@ -103,7 +110,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "OBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\r"
 		        + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212";
 		Message hl7message = parser.parse(hl7string);
-		router.processMessage(hl7message);
+		Transportable transportable = new TransportableImpl(hl7message.encode());
+		router.processMessage(transportable);
 		
 		Patient patient = new Patient(3);
 		
@@ -153,7 +161,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "OBX|2|NM|1553^NUMBER OF ATTEMPTS^99DCT|1|1|||||||||20080205\r"
 		        + "OBX|3|NM|1554^SUCCESSFUL^99DCT|1|1|||||||||20080205";
 		Message hl7message = parser.parse(hl7string);
-		router.processMessage(hl7message);
+		Transportable transportable = new TransportableImpl(hl7message.encode());
+		router.processMessage(transportable);
 		
 		Patient patient = new Patient(3);
 		
@@ -236,7 +245,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
 		        + "OBX|1|NM|10^CD4 COUNT^99DCT||250|||||||||20080831";
 		Message hl7message = parser.parse(hl7string);
-		router.processMessage(hl7message);
+		Transportable transportable = new TransportableImpl(hl7message.encode());
+		router.processMessage(transportable);
 		
 		Patient patient = new Patient(7);
 		Concept question = new Concept(10);
@@ -270,7 +280,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "OBR|19|||1284^PROBLEM LIST^99DCT\r"
 		        + "OBX|1|CWE|6042^PROBLEM ADDED^99DCT||PROPOSED^PELVIC MASS^99DCT|||||||||20080212";
 		Message hl7message = parser.parse(hl7string);
-		router.processMessage(hl7message);
+		Transportable transportable = new TransportableImpl(hl7message.encode());
+		router.processMessage(transportable);
 		
 		//make sure that the proposal was added
 		assertEquals(initialOccurrences + 1, Context.getConceptService().getConceptProposals("PELVIC MASS").size(), "Processing of the HL7 message did not result in the new proposal being added to the model");
@@ -297,7 +308,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "OBR|3|||1284^PROBLEM LIST^99DCT\r"
 		        + "OBX|2|CWE|6042^PROBLEM ADDED^99DCT||PROPOSED^ASDFASDFASDF^99DCT|||||||||20081003";
 		Message hl7message = parser.parse(hl7string);
-		router.processMessage(hl7message);
+		Transportable transportable = new TransportableImpl(hl7message.encode());
+		router.processMessage(transportable);
 		
 		//make sure that the proposal was added
 		assertEquals(initialOccurrences + 1, Context.getConceptService().getConceptProposals("ASDFASDFASDF").size(), "Processing of the HL7 message did not result in the new proposal being added to the model");
@@ -323,7 +335,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "OBR|1|||1284^PROBLEM LIST^99DCT\r"
 		        + "OBX|1|CWE|6042^PROBLEM ADDED^99DCT||PROPOSED^SEVERO DOLOR DE CABEZA^99DCT|||||||||20080208";
 		Message hl7message = parser.parse(hl7String);
-		router.processMessage(hl7message);
+		Transportable transportable = new TransportableImpl(hl7message.encode());
+		router.processMessage(transportable);
 		
 		Patient patient = new Patient(3);
 		
@@ -362,7 +375,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "OBR|3|||23^FOOD CONSTRUCT^99DCT\r"
 		        + "OBX|1|CWE|21^FOOD ASSISTANCE FOR ENTIRE FAMILY^99DCT||22^UNKNOWN^99DCT^2471^UNKNOWN^99NAM|||||||||20090714";
 		Message hl7message = parser.parse(hl7String);
-		router.processMessage(hl7message);
+		Transportable transportable = new TransportableImpl(hl7message.encode());
+		router.processMessage(transportable);
 		
 		List<Obs> obss = obsService.getObservationsByPersonAndConcept(patient, concept);
 		
@@ -408,7 +422,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
 		        + "OBX|1|CWE|5497^CD4, BY FACS^99DCT||^^99DCT|||||||||20080208";
 		Message hl7message = parser.parse(hl7string);
-		assertThrows(ApplicationException.class, () -> router.processMessage(hl7message));
+		Transportable transportable = new TransportableImpl(hl7message.encode());
+		assertThrows(ApplicationException.class, () -> router.processMessage(transportable));
 	}
 	
 	/**
@@ -424,7 +439,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "OBR|1|||1284^PROBLEM LIST^99DCT\r"
 		        + "OBX|1|CWE|6042^PROBLEM ADDED^99DCT||PROPOSED^^99DCT|||||||||20080208";
 		Message hl7message = parser.parse(hl7string);
-		assertThrows(ApplicationException.class, () -> router.processMessage(hl7message));
+		Transportable transportable = new TransportableImpl(hl7message.encode());
+		assertThrows(ApplicationException.class, () -> router.processMessage(transportable));
 	}
 	
 	/**
@@ -617,7 +633,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "OBX|1|CWE|21^FOOD ASSISTANCE FOR ENTIRE FAMILY^99DCT||22^UNKNOWN^99DCT^2471^UNKNOWN^99NAM|||||||||20090714";
 		
 		Message hl7message = parser.parse(hl7String);
-		router.processMessage(hl7message);
+		Transportable transportable = new TransportableImpl(hl7message.encode());
+		router.processMessage(transportable);
 		
 		// verify existing relationship
 		List<Relationship> rels = personService.getRelationships(relative, patient, new RelationshipType(3));
@@ -686,7 +703,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "OBX|2|NM|4^CIVIL STATUS^99DCT||1|||||||||20080206";
 		assertEquals("Coded", Context.getConceptService().getConcept(4).getDatatype().getName());
 		Message hl7message = parser.parse(hl7string);
-		assertThrows(ApplicationException.class, () -> router.processMessage(hl7message));
+		Transportable transportable = new TransportableImpl(hl7message.encode());
+		assertThrows(ApplicationException.class, () -> router.processMessage(transportable));
 	}
 	
 	/**
@@ -702,7 +720,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "OBX|2|NM|19^FAVORITE FOOD, NON-CODED^99DCT||1|||||||||20080206";
 		assertEquals("Text", Context.getConceptService().getConcept(19).getDatatype().getName());
 		Message hl7message = parser.parse(hl7string);
-		assertThrows(ApplicationException.class, () -> router.processMessage(hl7message));
+		Transportable transportable = new TransportableImpl(hl7message.encode());
+		assertThrows(ApplicationException.class, () -> router.processMessage(transportable));
 	}
 	
 	/**
@@ -729,7 +748,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		assertEquals("Boolean", Context.getConceptService().getConcept(18).getDatatype().getName());
 		List<Obs> oldList = os.getObservationsByPersonAndConcept(new Person(7), new Concept(18));
 		Message hl7message = parser.parse(hl7string);
-		router.processMessage(hl7message);
+		Transportable transportable = new TransportableImpl(hl7message.encode());
+		router.processMessage(transportable);
 		List<Obs> newList = os.getObservationsByPersonAndConcept(new Person(7), new Concept(18));
 		Obs newObservation = null;
 		for (Obs newObs : newList) {
@@ -757,7 +777,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		assertEquals("Coded", Context.getConceptService().getConcept(21).getDatatype().getName());
 		List<Obs> oldList = os.getObservationsByPersonAndConcept(new Person(7), new Concept(21));
 		Message hl7message = parser.parse(hl7string);
-		router.processMessage(hl7message);
+		Transportable transportable = new TransportableImpl(hl7message.encode());
+		router.processMessage(transportable);
 		// hacky way to get the newly added obs and make tests on it
 		List<Obs> newList = os.getObservationsByPersonAndConcept(new Person(7), new Concept(21));
 		Obs newObservation = null;
@@ -786,7 +807,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		assertEquals("Numeric", Context.getConceptService().getConcept(5497).getDatatype().getName());
 		List<Obs> oldList = os.getObservationsByPersonAndConcept(new Person(7), new Concept(5497));
 		Message hl7message = parser.parse(hl7string);
-		router.processMessage(hl7message);
+		Transportable transportable = new TransportableImpl(hl7message.encode());
+		router.processMessage(transportable);
 		List<Obs> newList = os.getObservationsByPersonAndConcept(new Person(7), new Concept(5497));
 		Obs newObservation = null;
 		for (Obs newObs : newList) {
@@ -815,7 +837,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		assertEquals("Numeric", Context.getConceptService().getConcept(5497).getDatatype().getName());
 		List<Obs> oldList = os.getObservationsByPersonAndConcept(new Person(7), new Concept(5497));
 		Message hl7message = parser.parse(hl7string);
-		router.processMessage(hl7message);
+		Transportable transportable = new TransportableImpl(hl7message.encode());
+		router.processMessage(transportable);
 		List<Obs> newList = os.getObservationsByPersonAndConcept(new Person(7), new Concept(5497));
 		Obs newObservation = null;
 		for (Obs newObs : newList) {
@@ -843,7 +866,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		assertEquals("Numeric", Context.getConceptService().getConcept(5497).getDatatype().getName());
 		List<Obs> oldList = os.getObservationsByPersonAndConcept(new Person(7), new Concept(5497));
 		Message hl7message = parser.parse(hl7string);
-		router.processMessage(hl7message);
+		Transportable transportable = new TransportableImpl(hl7message.encode());
+		router.processMessage(transportable);
 		List<Obs> newList = os.getObservationsByPersonAndConcept(new Person(7), new Concept(5497));
 		Obs newObservation = null;
 		for (Obs newObs : newList) {
@@ -873,7 +897,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		assertEquals("Numeric", Context.getConceptService().getConcept(5497).getDatatype().getName());
 		List<Obs> oldList = os.getObservationsByPersonAndConcept(new Person(7), new Concept(5497));
 		Message hl7message = parser.parse(hl7string);
-		router.processMessage(hl7message);
+		Transportable transportable = new TransportableImpl(hl7message.encode());
+		router.processMessage(transportable);
 		List<Obs> newList = os.getObservationsByPersonAndConcept(new Person(7), new Concept(5497));
 		
 		// get the new observation with a not-null comment; not interested in
@@ -904,7 +929,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "NTE|1|L|This should not be considered :-)";
 		List<Obs> oldList = os.getObservationsByPersonAndConcept(new Person(7), new Concept(23));
 		Message hl7message = parser.parse(hl7string);
-		router.processMessage(hl7message);
+		Transportable transportable = new TransportableImpl(hl7message.encode());
+		router.processMessage(transportable);
 		List<Obs> newList = os.getObservationsByPersonAndConcept(new Person(7), new Concept(23));
 		Obs newObservation = null;
 		for (Obs newObs : newList) {
@@ -934,7 +960,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "&L|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
 		        + "ORC|RE||||||||20080226102537|1^Super User\r" + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT";
 		Message hl7message = parser.parse(hl7string);
-		router.processMessage(hl7message);
+		Transportable transportable = new TransportableImpl(hl7message.encode());
+		router.processMessage(transportable);
 		
 		// check for the new encounter
 		List<Encounter> encForPatient2 = Context.getEncounterService().getEncountersByPatient(patient);
@@ -963,7 +990,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "PV1||O|1^Unknown Location||||1^name|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
 		        + "ORC|RE||||||||20080226102537|1^Super User\r" + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT";
 		Message hl7message = parser.parse(hl7string);
-		router.processMessage(hl7message);
+		Transportable transportable = new TransportableImpl(hl7message.encode());
+		router.processMessage(transportable);
 		
 		List<Encounter> encForPatient2 = Context.getEncounterService().getEncountersByPatient(patient);
 		assertTrue((encForPatient1.size() + 1) == encForPatient2.size(), "An encounter should have been created");
@@ -996,7 +1024,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "&L|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
 		        + "ORC|RE||||||||20080226102537|1^Super User\r" + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT";
 		Message hl7message = parser.parse(hl7string);
-		router.processMessage(hl7message);
+		Transportable transportable = new TransportableImpl(hl7message.encode());
+		router.processMessage(transportable);
 		
 		// check for the new encounter
 		List<Encounter> encForPatient2 = Context.getEncounterService().getEncountersByPatient(patient);
@@ -1030,7 +1059,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "&L|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
 		        + "ORC|RE||||||||20080226102537|1^Super User\r" + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT";
 		Message hl7message = parser.parse(hl7string);
-		router.processMessage(hl7message);
+		Transportable transportable = new TransportableImpl(hl7message.encode());
+		router.processMessage(transportable);
 		
 		// check for the new encounter
 		List<Encounter> encForPatient2 = Context.getEncounterService().getEncountersByPatient(patient);
@@ -1058,7 +1088,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "&^|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
 		        + "ORC|RE||||||||20080226102537|1^Super User\r" + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT";
 		Message hl7message = parser.parse(hl7string);
-		assertThrows(ApplicationException.class, () -> router.processMessage(hl7message));
+		Transportable transportable = new TransportableImpl(hl7message.encode());
+		assertThrows(ApplicationException.class, () -> router.processMessage(transportable));
 	}
 	
 	/**
@@ -1080,7 +1111,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "OBX|2|NM|5497^CD4 COUNT^99DCT||123|||||||||20090714";
 		
 		Message hl7message = parser.parse(hl7String);
-		router.processMessage(hl7message);
+		Transportable transportable = new TransportableImpl(hl7message.encode());
+		router.processMessage(transportable);
 		
 		// make sure an encounter was added
 		encounters = Context.getEncounterService().getEncountersByPatient(new Patient(3));
@@ -1113,7 +1145,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "OBX|2|NM|5497^CD4 COUNT^99DCT||123|||||||||20090714";
 		
 		Message hl7message = parser.parse(hl7String);
-		router.processMessage(hl7message);
+		Transportable transportable = new TransportableImpl(hl7message.encode());
+		router.processMessage(transportable);
 		
 		// make sure an encounter was added
 		encounters = Context.getEncounterService().getEncountersByPatient(new Patient(3));
@@ -1146,7 +1179,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "OBX|2|NM|5497^CD4 COUNT^99DCT||123|||||||||20090714";
 		
 		Message hl7message = parser.parse(hl7String);
-		router.processMessage(hl7message);
+		Transportable transportable = new TransportableImpl(hl7message.encode());
+		router.processMessage(transportable);
 		
 		// make sure an encounter was added
 		encounters = Context.getEncounterService().getEncountersByPatient(new Patient(3));
@@ -1178,7 +1212,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 			        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
 			        + "OBX|1|ED|6043^uiNEIHBOR^99DCT||^^^^" + data + "|||||||||20080206\r";
 			Message hl7message = parser.parse(hl7string);
-			router.processMessage(hl7message);
+			Transportable transportable = new TransportableImpl(hl7message.encode());
+			router.processMessage(transportable);
 		}
 		finally {
 			Context.getObsService().removeHandler(handlerName);

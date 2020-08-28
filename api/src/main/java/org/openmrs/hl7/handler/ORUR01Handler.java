@@ -13,43 +13,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.openmrs.Concept;
-import org.openmrs.ConceptAnswer;
-import org.openmrs.ConceptName;
-import org.openmrs.ConceptProposal;
-import org.openmrs.Drug;
-import org.openmrs.Encounter;
-import org.openmrs.EncounterRole;
-import org.openmrs.EncounterType;
-import org.openmrs.Form;
-import org.openmrs.Location;
-import org.openmrs.Obs;
-import org.openmrs.Patient;
-import org.openmrs.Person;
-import org.openmrs.PersonAttribute;
-import org.openmrs.PersonAttributeType;
-import org.openmrs.Provider;
-import org.openmrs.Relationship;
-import org.openmrs.RelationshipType;
-import org.openmrs.User;
-import org.openmrs.api.context.Context;
-import org.openmrs.hl7.HL7Constants;
-import org.openmrs.hl7.HL7InQueueProcessor;
-import org.openmrs.obs.ComplexData;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
-
 import ca.uhn.hl7v2.HL7Exception;
-import ca.uhn.hl7v2.app.Application;
-import ca.uhn.hl7v2.app.ApplicationException;
 import ca.uhn.hl7v2.model.DataTypeException;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.Type;
@@ -84,6 +55,36 @@ import ca.uhn.hl7v2.model.v25.segment.PID;
 import ca.uhn.hl7v2.model.v25.segment.PV1;
 import ca.uhn.hl7v2.parser.EncodingCharacters;
 import ca.uhn.hl7v2.parser.PipeParser;
+import ca.uhn.hl7v2.protocol.ReceivingApplication;
+import ca.uhn.hl7v2.protocol.ReceivingApplicationException;
+import org.openmrs.Concept;
+import org.openmrs.ConceptAnswer;
+import org.openmrs.ConceptName;
+import org.openmrs.ConceptProposal;
+import org.openmrs.Drug;
+import org.openmrs.Encounter;
+import org.openmrs.EncounterRole;
+import org.openmrs.EncounterType;
+import org.openmrs.Form;
+import org.openmrs.Location;
+import org.openmrs.Obs;
+import org.openmrs.Patient;
+import org.openmrs.Person;
+import org.openmrs.PersonAttribute;
+import org.openmrs.PersonAttributeType;
+import org.openmrs.Provider;
+import org.openmrs.Relationship;
+import org.openmrs.RelationshipType;
+import org.openmrs.User;
+import org.openmrs.api.context.Context;
+import org.openmrs.hl7.HL7Constants;
+import org.openmrs.hl7.HL7InQueueProcessor;
+import org.openmrs.obs.ComplexData;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 /**
  * Parses ORUR01 messages into openmrs Encounter objects Usage: GenericParser parser = new
@@ -93,7 +94,7 @@ import ca.uhn.hl7v2.parser.PipeParser;
  *
  * @see HL7InQueueProcessor
  */
-public class ORUR01Handler implements Application {
+public class ORUR01Handler implements ReceivingApplication<Message> {
 	
 	private static final Logger log = LoggerFactory.getLogger(ORUR01Handler.class);
 	
@@ -141,10 +142,10 @@ public class ORUR01Handler implements Application {
 	 * <strong>Should</strong> set complex data for obs with complex concepts
 	 */
 	@Override
-	public Message processMessage(Message message) throws ApplicationException {
+	public Message processMessage(Message message, Map<String, Object> metadata) throws ReceivingApplicationException{
 		
 		if (!(message instanceof ORU_R01)) {
-			throw new ApplicationException(Context.getMessageSourceService().getMessage("ORUR01.error.invalidMessage"));
+			throw new ReceivingApplicationException(Context.getMessageSourceService().getMessage("ORUR01.error.invalidMessage"));
 		}
 		
 		log.debug("Processing ORU_R01 message");
@@ -156,12 +157,12 @@ public class ORUR01Handler implements Application {
 		}
 		catch (ClassCastException e) {
 			log.warn("Error casting " + message.getClass().getName() + " to ORU_R01", e);
-			throw new ApplicationException(Context.getMessageSourceService().getMessage("ORUR01.error.invalidMessageType ",
+			throw new ReceivingApplicationException(Context.getMessageSourceService().getMessage("ORUR01.error.invalidMessageType ",
 			    new Object[] { message.getClass().getName() }, null), e);
 		}
 		catch (HL7Exception e) {
 			log.warn("Error while processing ORU_R01 message", e);
-			throw new ApplicationException(Context.getMessageSourceService().getMessage("ORUR01.error.WhileProcessing"), e);
+			throw new ReceivingApplicationException(Context.getMessageSourceService().getMessage("ORUR01.error.WhileProcessing"), e);
 		}
 		
 		log.debug("Finished processing ORU_R01 message");
@@ -1279,5 +1280,17 @@ public class ORUR01Handler implements Application {
 			
 		}
 		log.debug("finished discharge to location method");
+	}
+	
+	/**
+	 * Processes an ORU R01 event message
+	 *
+	 * This function is indented for backwards-compatibility and should not be used for new development
+	 *
+	 * @deprecated See {@link #processMessage(Message, Map)}
+	 */
+	@Deprecated
+	public Message processMessage(Message message) throws ReceivingApplicationException {
+		return processMessage(message, new HashMap<>());
 	}
 }

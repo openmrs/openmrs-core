@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Properties;
 
 import ca.uhn.hl7v2.HL7Exception;
-import ca.uhn.hl7v2.app.Application;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.v25.datatype.CX;
 import ca.uhn.hl7v2.model.v25.datatype.PL;
@@ -36,6 +35,7 @@ import ca.uhn.hl7v2.model.v25.message.ORU_R01;
 import ca.uhn.hl7v2.model.v25.segment.NK1;
 import ca.uhn.hl7v2.model.v25.segment.ORC;
 import ca.uhn.hl7v2.model.v25.segment.PV1;
+import ca.uhn.hl7v2.protocol.ReceivingApplication;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
@@ -202,9 +202,9 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		
 		// the application context cannot restart here to load in the moduleApplicationContext that
 		// calls the setHL7Handlers method so we're doing it manually here
-		Class<Application> c = (Class<Application>) Context.loadClass("org.openmrs.module.examplehl7handlers.ADRHandler");
-		Application classInstance = c.newInstance();
-		HashMap<String, Application> map = new HashMap<>();
+		Class<ReceivingApplication> c = (Class<ReceivingApplication>) Context.loadClass("org.openmrs.module.examplehl7handlers.ADRHandler");
+		ReceivingApplication classInstance = c.newInstance();
+		HashMap<String, ReceivingApplication> map = new HashMap<>();
 		map.put("ADR_A19", classInstance);
 		HL7ServiceImpl.getInstance().setHL7Handlers(map);
 		
@@ -253,10 +253,10 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		
 		// the application context cannot restart here to load in the moduleApplicationContext that
 		// calls the setHL7Handlers method so we're doing it manually here
-		Class<Application> c = (Class<Application>) Context
+		Class<ReceivingApplication> c = (Class<ReceivingApplication>) Context
 		        .loadClass("org.openmrs.module.examplehl7handlers.AlternateORUR01Handler");
-		Application classInstance = c.newInstance();
-		HashMap<String, Application> map = new HashMap<>();
+		ReceivingApplication classInstance = c.newInstance();
+		HashMap<String, ReceivingApplication> map = new HashMap<>();
 		map.put("ORU_R01", classInstance);
 		HL7ServiceImpl.getInstance().setHL7Handlers(map);
 		

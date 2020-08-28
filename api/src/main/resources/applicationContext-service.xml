@@ -322,7 +322,7 @@
 			<bean class="ca.uhn.hl7v2.parser.GenericParser"/>
 		</property>
 		<property name="router">
-			<bean class="ca.uhn.hl7v2.app.MessageTypeRouter"/>
+			<bean class="ca.uhn.hl7v2.protocol.impl.ApplicationRouterImpl"/>
 		</property>
 		<property name="HL7Handlers">
 			<map>
