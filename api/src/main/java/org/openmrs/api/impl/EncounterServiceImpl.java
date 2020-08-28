@@ -198,9 +198,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		addGivenObsAndTheirGroupMembersToEncounter(obsToAdd, encounter);
 		
 		// save the conditions
-		encounter.getConditions().forEach(condition -> {
-			Context.getConditionService().saveCondition(condition);
-		});
+		encounter.getConditions().forEach(Context.getConditionService()::saveCondition);
 		return encounter;
 	}
 	
