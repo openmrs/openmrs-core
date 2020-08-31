@@ -905,7 +905,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should retire a order group attribute type
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
-	OrderGroupAttributeType retireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType,String reason) throws APIException;
+	OrderGroupAttributeType retireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType, String reason) throws APIException;
 
 	/**
 	 * Restores an order group attribute type that was previously retired in the database
