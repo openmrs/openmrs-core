@@ -9,15 +9,15 @@
  */
 package org.openmrs.messagesource;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests {@link PresentationMessageMap}.
@@ -34,7 +34,7 @@ public class PresentationMessageMapTest {
 	
 	private PresentationMessageMap presentationMessages;
 	
-	@Before
+	@BeforeEach
 	public void setUp() {
 		presentationMessages = new PresentationMessageMap(Locale.ENGLISH);
 	}

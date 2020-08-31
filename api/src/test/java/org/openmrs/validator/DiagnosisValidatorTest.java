@@ -9,14 +9,16 @@
  */
 package org.openmrs.validator;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.CodedOrFreeText;
 import org.openmrs.ConditionVerificationStatus;
 import org.openmrs.Diagnosis;
 import org.openmrs.Encounter;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -28,7 +30,7 @@ public class DiagnosisValidatorTest extends BaseContextSensitiveTest {
 	private Diagnosis diagnosis;
 	private Errors errors;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		diagnosis = new Diagnosis();
 		errors = new BindException(diagnosis, "diagnosis");
@@ -41,14 +43,14 @@ public class DiagnosisValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailValidationIfEncounterIsNull(){
 		diagnosis.setEncounter(null);
 		new DiagnosisValidator().validate(diagnosis, errors);
-		Assert.assertTrue(errors.hasFieldErrors("encounter"));
+		assertTrue(errors.hasFieldErrors("encounter"));
 	}
 	@Test
 	public void validate_shouldFailValidationIfDiagnosisIsNull(){
 		diagnosis.setDiagnosis(null);
 		
 		new DiagnosisValidator().validate(diagnosis, errors);
-		Assert.assertTrue(errors.hasFieldErrors("diagnosis"));
+		assertTrue(errors.hasFieldErrors("diagnosis"));
 	}
 
 	@Test
@@ -56,7 +58,7 @@ public class DiagnosisValidatorTest extends BaseContextSensitiveTest {
 		diagnosis.setCertainty(null);
 
 		new DiagnosisValidator().validate(diagnosis, errors);
-		Assert.assertTrue(errors.hasFieldErrors("certainty"));
+		assertTrue(errors.hasFieldErrors("certainty"));
 	}
 
 	@Test
@@ -64,7 +66,7 @@ public class DiagnosisValidatorTest extends BaseContextSensitiveTest {
 		diagnosis.setRank(null);
 
 		new DiagnosisValidator().validate(diagnosis, errors);
-		Assert.assertTrue(errors.hasFieldErrors("rank"));
+		assertTrue(errors.hasFieldErrors("rank"));
 	}
 	
 	@Test
@@ -72,7 +74,7 @@ public class DiagnosisValidatorTest extends BaseContextSensitiveTest {
 		diagnosis.setRank(-1);
 		
 		new DiagnosisValidator().validate(diagnosis, errors);
-		Assert.assertTrue(errors.hasFieldErrors("rank"));
+		assertTrue(errors.hasFieldErrors("rank"));
 	}
 	
 	@Test
@@ -82,6 +84,6 @@ public class DiagnosisValidatorTest extends BaseContextSensitiveTest {
 		diagnosis.setCertainty(ConditionVerificationStatus.CONFIRMED);
 		diagnosis.setRank(1);
 
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 }

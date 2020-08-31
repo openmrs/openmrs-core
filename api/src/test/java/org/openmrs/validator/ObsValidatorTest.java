@@ -11,17 +11,17 @@ package org.openmrs.validator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.CoreMatchers;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.Drug;
@@ -29,7 +29,7 @@ import org.openmrs.Obs;
 import org.openmrs.Person;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -402,7 +402,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		
 		obs.setAccessionNumber("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 		obs.setValueModifier("too long text");
-		obs.setValueComplex("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		obs.setValueComplex(StringUtils.repeat("a", 1001));
 		obs.setVoidReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 		obs.setComment("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 		
@@ -506,9 +506,9 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(obs, "obs");
 		new ObsValidator().validate(obs, errors);
 
-		Assert.assertFalse(errors.hasFieldErrors("person"));
-		Assert.assertFalse(errors.hasFieldErrors("concept"));
-		Assert.assertFalse(errors.hasFieldErrors("obsDatetime"));
-		Assert.assertFalse(errors.hasFieldErrors("valueText"));
+		assertFalse(errors.hasFieldErrors("person"));
+		assertFalse(errors.hasFieldErrors("concept"));
+		assertFalse(errors.hasFieldErrors("obsDatetime"));
+		assertFalse(errors.hasFieldErrors("valueText"));
 	}
 }

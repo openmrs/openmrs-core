@@ -9,20 +9,20 @@
  */
 package org.openmrs.api.db;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Encounter;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.HibernateEncounterDAO;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
  * This class tests the {@link EncounterDAO} linked to from the Context. Currently that file is the
@@ -39,7 +39,7 @@ public class EncounterDAOTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	@Before
+	@BeforeEach
 	public void runBeforeEachTest() {
 		executeDataSet("org/openmrs/api/db/include/EncounterDAOTest-initialData.xml");
 		

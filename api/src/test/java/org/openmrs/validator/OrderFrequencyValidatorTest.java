@@ -11,11 +11,12 @@ package org.openmrs.validator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptName;
@@ -23,7 +24,7 @@ import org.openmrs.OrderFrequency;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -41,7 +42,7 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(new OrderFrequency(), "orderFrequency");
 		new OrderFrequencyValidator().validate(null, errors);
 		
-		Assert.assertTrue(errors.hasErrors());
+		assertTrue(errors.hasErrors());
 	}
 	
 	/**
@@ -54,7 +55,7 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(orderFrequency, "orderFrequency");
 		new OrderFrequencyValidator().validate(orderFrequency, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("concept"));
+		assertTrue(errors.hasFieldErrors("concept"));
 	}
 	
 	/**
@@ -67,7 +68,7 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(orderFrequency, "orderFrequency");
 		new OrderFrequencyValidator().validate(orderFrequency, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("concept"));
+		assertTrue(errors.hasFieldErrors("concept"));
 	}
 	
 	/**
@@ -80,7 +81,7 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(orderFrequency, "orderFrequency");
 		new OrderFrequencyValidator().validate(orderFrequency, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("concept"));
+		assertTrue(errors.hasFieldErrors("concept"));
 	}
 	
 	/**
@@ -102,7 +103,7 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(orderFrequency, "orderFrequency");
 		new OrderFrequencyValidator().validate(orderFrequency, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -115,7 +116,7 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(orderFrequency, "orderFrequency");
 		new OrderFrequencyValidator().validate(orderFrequency, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -152,7 +153,7 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(orderFrequency, "orderFrequency");
 		new OrderFrequencyValidator().validate(orderFrequency, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -178,6 +179,6 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(orderFrequency, "orderFrequency");
 		new OrderFrequencyValidator().validate(orderFrequency, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+		assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 }

@@ -9,14 +9,18 @@
  */
 package org.openmrs.api.context;
 
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Locale;
 
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Location;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
@@ -26,7 +30,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.handler.EncounterVisitHandler;
 import org.openmrs.api.handler.ExistingOrNewVisitAssignmentHandler;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.validation.Validator;
@@ -42,7 +46,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 * Methods in this class might authenticate with a different user, so log that user out after
 	 * this whole junit class is done.
 	 */
-	@AfterClass
+	@AfterAll
 	public static void logOutAfterThisTestClass() {
 		Context.logout();
 	}
@@ -97,7 +101,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 		Context.authenticate("admin", "test");
 		
 		// verif
-		Assert.assertEquals("admin", Context.getAuthenticatedUser().getUsername());
+		assertEquals("admin", Context.getAuthenticatedUser().getUsername());
 	}
 	
 	/**
@@ -106,7 +110,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	@Test
 	public void getLocale_shouldNotFailIfSessionHasntBeenOpened() {
 		Context.closeSession();
-		Assert.assertEquals(LocaleUtility.getDefaultLocale(), Context.getLocale());
+		assertEquals(LocaleUtility.getDefaultLocale(), Context.getLocale());
 	}
 	
 	/**
@@ -132,9 +136,9 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void isSessionOpen_shouldReturnTrueIfSessionIsClosed() {
-		Assert.assertTrue(Context.isSessionOpen());
+		assertTrue(Context.isSessionOpen());
 		Context.closeSession();
-		Assert.assertFalse(Context.isSessionOpen());
+		assertFalse(Context.isSessionOpen());
 	}
 	
 	/**
@@ -151,11 +155,11 @@ public class ContextTest extends BaseContextSensitiveTest {
 		Context.getUserService().saveUser(fetchedUser);
 		
 		// sanity check to make sure the cached object wasn't updated already
-		Assert.assertNotSame(Context.getAuthenticatedUser().getGivenName(), fetchedUser.getGivenName());
+		assertNotSame(Context.getAuthenticatedUser().getGivenName(), fetchedUser.getGivenName());
 		
 		Context.refreshAuthenticatedUser();
 		
-		Assert.assertEquals("new username", Context.getAuthenticatedUser().getGivenName());
+		assertEquals("new username", Context.getAuthenticatedUser().getGivenName());
 	}
 	
 	/**
@@ -164,8 +168,8 @@ public class ContextTest extends BaseContextSensitiveTest {
 	@Test
 	public void getRegisteredComponents_shouldReturnAListOfAllRegisteredBeansOfThePassedType() {
 		List<Validator> validators = Context.getRegisteredComponents(Validator.class);
-		Assert.assertTrue(validators.size() > 0);
-		Assert.assertTrue(Validator.class.isAssignableFrom(validators.iterator().next().getClass()));
+		assertTrue(validators.size() > 0);
+		assertTrue(Validator.class.isAssignableFrom(validators.iterator().next().getClass()));
 	}
 	
 	/**
@@ -174,8 +178,8 @@ public class ContextTest extends BaseContextSensitiveTest {
 	@Test
 	public void getRegisteredComponents_shouldReturnAnEmptyListIfNoBeansHaveBeenRegisteredOfThePassedType() {
 		List<Location> l = Context.getRegisteredComponents(Location.class);
-		Assert.assertNotNull(l);
-		Assert.assertEquals(0, l.size());
+		assertNotNull(l);
+		assertEquals(0, l.size());
 	}
 	
 	/**
@@ -187,7 +191,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 		EncounterVisitHandler registeredComponent = Context.getRegisteredComponent("existingOrNewVisitAssignmentHandler",
 		    EncounterVisitHandler.class);
 		
-		Assert.assertTrue(registeredComponent instanceof ExistingOrNewVisitAssignmentHandler);
+		assertTrue(registeredComponent instanceof ExistingOrNewVisitAssignmentHandler);
 	}
 	
 	/**
@@ -210,7 +214,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	public void getService_shouldReturnTheSameObjectWhenCalledMultipleTimesForTheSameClass() {
 		PatientService ps1 = Context.getService(PatientService.class);
 		PatientService ps2 = Context.getService(PatientService.class);
-		Assert.assertTrue(ps1 == ps2);
+		assertEquals(ps2, ps1);
 	}
 	
 	/**
@@ -229,8 +233,8 @@ public class ContextTest extends BaseContextSensitiveTest {
 		Context.becomeUser(user.getSystemId());
 		
 		Locale locale = Context.getLocale();
-		Assert.assertEquals("pt", locale.getLanguage());
-		Assert.assertEquals("BR", locale.getCountry());
+		assertEquals("pt", locale.getLanguage());
+		assertEquals("BR", locale.getCountry());
 		
 		Context.logout();
 	}

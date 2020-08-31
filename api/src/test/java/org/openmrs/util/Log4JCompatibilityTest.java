@@ -18,7 +18,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.layout.PatternLayout;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Class to ensure that we maintain some level of compatibility with Log4J 1.X

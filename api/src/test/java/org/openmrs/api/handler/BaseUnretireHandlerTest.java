@@ -9,10 +9,13 @@
  */
 package org.openmrs.api.handler;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Date;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Location;
 import org.openmrs.Retireable;
 import org.openmrs.User;
@@ -31,7 +34,7 @@ public class BaseUnretireHandlerTest {
 		Retireable retireable = new Location();
 		retireable.setRetired(true); // make sure isRetired is set
 		handler.handle(retireable, null, null, null);
-		Assert.assertFalse(retireable.getRetired());
+		assertFalse(retireable.getRetired());
 	}
 	
 	/**
@@ -44,7 +47,7 @@ public class BaseUnretireHandlerTest {
 		retireable.setRetired(true);
 		retireable.setRetiredBy(new User(1));
 		handler.handle(retireable, null, null, null);
-		Assert.assertNull(retireable.getRetiredBy());
+		assertNull(retireable.getRetiredBy());
 	}
 	
 	/**
@@ -57,7 +60,7 @@ public class BaseUnretireHandlerTest {
 		retireable.setRetired(true);
 		retireable.setDateRetired(new Date());
 		handler.handle(retireable, null, null, null);
-		Assert.assertNull(retireable.getDateRetired());
+		assertNull(retireable.getDateRetired());
 	}
 	
 	/**
@@ -70,7 +73,7 @@ public class BaseUnretireHandlerTest {
 		retireable.setRetired(true);
 		retireable.setRetireReason("SOME REASON");
 		handler.handle(retireable, null, null, null);
-		Assert.assertNull(retireable.getRetireReason());
+		assertNull(retireable.getRetireReason());
 	}
 	
 	/**
@@ -82,7 +85,7 @@ public class BaseUnretireHandlerTest {
 		Retireable retireable = new Location();
 		retireable.setRetired(false);
 		handler.handle(retireable, null, null, "SOME REASON");
-		Assert.assertNull(retireable.getRetireReason());
+		assertNull(retireable.getRetireReason());
 	}
 	
 	/**
@@ -98,7 +101,7 @@ public class BaseUnretireHandlerTest {
 		retireable.setDateRetired(d);
 		
 		handler.handle(retireable, null, new Date(), "SOME REASON");
-		Assert.assertTrue(retireable.getRetired());
+		assertTrue(retireable.getRetired());
 	}
 	
 }

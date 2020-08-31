@@ -17,7 +17,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 /**
@@ -78,8 +77,7 @@ public class ConceptDatatype extends BaseChangeableOpenmrsMetadata {
 	@Id
 	@DocumentId
 	@Column(name = "concept_datatype_id")
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "concept_datatype_id_gen")
-	@SequenceGenerator(name = "concept_datatype_id_gen", sequenceName = "concept_datatype_concept_datatype_id_seq")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer conceptDatatypeId;
 	
 	@Column(name = "hl7_abbreviation", length = 3)

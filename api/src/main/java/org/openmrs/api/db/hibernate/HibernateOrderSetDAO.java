@@ -16,6 +16,8 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.OrderSet;
+import org.openmrs.OrderSetAttribute;
+import org.openmrs.OrderSetAttributeType;
 import org.openmrs.OrderSetMember;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderSetDAO;
@@ -99,6 +101,67 @@ public class HibernateOrderSetDAO implements OrderSetDAO {
 	public OrderSetMember getOrderSetMemberByUuid(String uuid) throws DAOException {
 		return (OrderSetMember) sessionFactory.getCurrentSession().createQuery("from OrderSetMember osm where osm.uuid = :uuid").setString(
 				"uuid", uuid).uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.OrderSetDAO#getAllOrderSetAttributeTypes()
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<OrderSetAttributeType> getAllOrderSetAttributeTypes() {
+		return sessionFactory.getCurrentSession().createCriteria(OrderSetAttributeType.class).list();
+	}
+
+	/**
+	 * @see org.openmrs.api.db.OrderSetDAO#getOrderSetAttributeType(java.lang.Integer)
+	 */
+	@Override
+	public OrderSetAttributeType getOrderSetAttributeType(Integer id) {
+		return sessionFactory.getCurrentSession().get(OrderSetAttributeType.class, id);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.OrderSetDAO#getOrderSetAttributeTypeByUuid(java.lang.String)
+	 */
+	@Override
+	public OrderSetAttributeType getOrderSetAttributeTypeByUuid(String uuid) {
+		return (OrderSetAttributeType) sessionFactory.getCurrentSession().createCriteria(OrderSetAttributeType.class).add(
+		    Restrictions.eq("uuid", uuid)).uniqueResult();
+	}
+
+	/**
+	 * @see org.openmrs.api.db.OrderSetDAO#saveOrderSetAttributeType(org.openmrs.OrderSetAttributeType)
+	 */
+	@Override
+	public OrderSetAttributeType saveOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType) {
+		sessionFactory.getCurrentSession().saveOrUpdate(orderSetAttributeType);
+		return orderSetAttributeType;
+	}
+
+	/**
+	 * @see org.openmrs.api.db.OrderSetDAO#deleteOrderSetAttributeType(org.openmrs.OrderSetAttributeType)
+	 */
+	@Override
+	public void deleteOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType) {
+		sessionFactory.getCurrentSession().delete(orderSetAttributeType);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.OrderSetDAO#getOrderSetAttributeByUuid(java.lang.String)
+	 */
+	@Override
+	public OrderSetAttribute getOrderSetAttributeByUuid(String uuid) {
+		return (OrderSetAttribute) sessionFactory.getCurrentSession().createCriteria(OrderSetAttribute.class).add(
+		    Restrictions.eq("uuid", uuid)).uniqueResult();
+	}
+
+	/**
+	 * @see org.openmrs.api.db.OrderSetDAO#getOrderSetAttributeTypeByName(java.lang.String)
+	 */
+	@Override
+	public OrderSetAttributeType getOrderSetAttributeTypeByName(String name) {
+		return (OrderSetAttributeType) sessionFactory.getCurrentSession().createCriteria(OrderSetAttributeType.class).add(
+		    Restrictions.eq("name", name)).uniqueResult();
 	}
 
 }

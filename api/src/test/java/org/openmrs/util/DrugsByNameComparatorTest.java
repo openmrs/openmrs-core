@@ -9,8 +9,9 @@
  */
 package org.openmrs.util;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 import org.openmrs.Drug;
 
 /**
@@ -30,7 +31,7 @@ public class DrugsByNameComparatorTest {
 		drug2.setName("BCDE");
 		DrugsByNameComparator dComparator = new DrugsByNameComparator();
 		int actualValue = dComparator.compare(drug1, drug2);
-		Assert.assertEquals(actualValue, -1);
+		assertEquals(actualValue, -1);
 	}
 	
 	/**
@@ -44,7 +45,7 @@ public class DrugsByNameComparatorTest {
 		drug2.setName("abcd");
 		DrugsByNameComparator dComparator = new DrugsByNameComparator();
 		int actualValue = dComparator.compare(drug1, drug2);
-		Assert.assertEquals(actualValue, 0);
+		assertEquals(actualValue, 0);
 	}
 	
 	/**
@@ -59,7 +60,7 @@ public class DrugsByNameComparatorTest {
 		drug2.setName("ABAA");
 		DrugsByNameComparator dComparator = new DrugsByNameComparator();
 		int actualValue = dComparator.compare(drug1, drug2);
-		Assert.assertEquals(actualValue, 1);
+		assertEquals(actualValue, 1);
 	}
 	
 	/**
@@ -74,7 +75,7 @@ public class DrugsByNameComparatorTest {
 		drug2.setName("ABAA");
 		DrugsByNameComparator dComparator = new DrugsByNameComparator();
 		int actualValue = dComparator.compare(drug1, drug2);
-		Assert.assertEquals(actualValue, 1);
+		assertEquals(actualValue, 1);
 	}
 	
 }

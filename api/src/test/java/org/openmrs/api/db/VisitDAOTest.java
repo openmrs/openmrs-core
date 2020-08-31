@@ -9,15 +9,16 @@
  */
 package org.openmrs.api.db;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.openmrs.VisitType;
 import org.openmrs.api.VisitService;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
  * Contains the tests for {@link VisitDAO} methods that don't have equivalents at the
@@ -36,7 +37,7 @@ public class VisitDAOTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	@Before
+	@BeforeEach
 	public void runBeforeEachTest() {
 		
 		if (dao == null)
@@ -50,7 +51,7 @@ public class VisitDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void getVisits_shouldReturnAllUnvoidedVisitsIfIncludeEndedIsSetToTrue() {
 		executeDataSet(VISITS_WITH_DATES_XML);
-		Assert.assertEquals(13, dao.getVisits(null, null, null, null, null, null, null, null, null, true, false).size());
+		assertEquals(13, dao.getVisits(null, null, null, null, null, null, null, null, null, true, false).size());
 	}
 	
 	/**
@@ -59,7 +60,7 @@ public class VisitDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void getVisits_shouldReturnOnlyActiveVisitsIfIncludeEndedIsSetToFalse() {
 		executeDataSet(VISITS_WITH_DATES_XML);
-		Assert.assertEquals(6, dao.getVisits(null, null, null, null, null, null, null, null, null, false, false).size());
+		assertEquals(6, dao.getVisits(null, null, null, null, null, null, null, null, null, false, false).size());
 	}
 	
 	/**
@@ -73,6 +74,6 @@ public class VisitDAOTest extends BaseContextSensitiveTest {
 		Calendar cal = Calendar.getInstance();
 		cal.set(2005, 0, 4, 23, 59, 59);
 		cal.set(Calendar.MILLISECOND, 999);
-		Assert.assertEquals(105, dao.getNextVisit(dao.getVisit(1), visitTypes, cal.getTime()).getVisitId().intValue());
+		assertEquals(105, dao.getNextVisit(dao.getVisit(1), visitTypes, cal.getTime()).getVisitId().intValue());
 	}
 }

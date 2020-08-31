@@ -11,14 +11,14 @@ package org.openmrs.api;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.openmrs.Concept;
 import org.openmrs.Patient;
@@ -41,7 +41,7 @@ public class ProgramWorkflowServiceUnitTest {
 	private ProgramWorkflowService pws;
 	
 	
-	@Before
+	@BeforeEach
 	public void setup() {
 		pws = new ProgramWorkflowServiceImpl();
 	}
@@ -62,10 +62,10 @@ public class ProgramWorkflowServiceUnitTest {
 		Mockito.when(mockDao.getProgramsByName("A name", false)).thenReturn(noProgramWithGivenName);
 		Mockito.when(mockDao.getProgramsByName("A name", true)).thenReturn(noProgramWithGivenName);
 		pws.setProgramWorkflowDAO(mockDao);
-		Assert.assertNull(pws.getProgramByName("A name"));
+		assertNull(pws.getProgramByName("A name"));
 	}
 	
-	@Test(expected = org.openmrs.api.ProgramNameDuplicatedException.class)
+	@Test
 	public void getProgramByName_shouldFailWhenTwoProgramsFoundWithSameName() {
 		ProgramWorkflowDAO mockDao = Mockito.mock(ProgramWorkflowDAO.class);
 		List<Program> programsWithGivenName = new ArrayList<>();
@@ -76,7 +76,7 @@ public class ProgramWorkflowServiceUnitTest {
 		Mockito.when(mockDao.getProgramsByName("A name", false)).thenReturn(programsWithGivenName);
 		Mockito.when(mockDao.getProgramsByName("A name", true)).thenReturn(programsWithGivenName);
 		pws.setProgramWorkflowDAO(mockDao);
-		pws.getProgramByName("A name");
+		assertThrows(ProgramNameDuplicatedException.class, () -> pws.getProgramByName("A name"));
 	}
 	
 	@Test

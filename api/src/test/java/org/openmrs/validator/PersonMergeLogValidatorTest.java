@@ -9,12 +9,14 @@
  */
 package org.openmrs.validator;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 import org.openmrs.Person;
 import org.openmrs.person.PersonMergeLog;
 import org.openmrs.person.PersonMergeLogData;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -31,7 +33,7 @@ public class PersonMergeLogValidatorTest extends BaseContextSensitiveTest {
 		PersonMergeLogValidator validator = new PersonMergeLogValidator();
 		Errors errors = new BindException(personMergeLog, "personMergeLog");
 		validator.validate(personMergeLog, errors);
-		Assert.assertTrue(errors.hasFieldErrors("personMergeLogData"));
+		assertTrue(errors.hasFieldErrors("personMergeLogData"));
 	}
 	
 	/**
@@ -45,7 +47,7 @@ public class PersonMergeLogValidatorTest extends BaseContextSensitiveTest {
 		PersonMergeLogValidator validator = new PersonMergeLogValidator();
 		Errors errors = new BindException(personMergeLog, "personMergeLog");
 		validator.validate(personMergeLog, errors);
-		Assert.assertTrue(errors.hasFieldErrors("winner"));
+		assertTrue(errors.hasFieldErrors("winner"));
 	}
 	
 	/**
@@ -59,7 +61,7 @@ public class PersonMergeLogValidatorTest extends BaseContextSensitiveTest {
 		PersonMergeLogValidator validator = new PersonMergeLogValidator();
 		Errors errors = new BindException(personMergeLog, "personMergeLog");
 		validator.validate(personMergeLog, errors);
-		Assert.assertTrue(errors.hasFieldErrors("loser"));
+		assertTrue(errors.hasFieldErrors("loser"));
 	}
 	
 	/**
@@ -74,7 +76,7 @@ public class PersonMergeLogValidatorTest extends BaseContextSensitiveTest {
 		PersonMergeLogValidator validator = new PersonMergeLogValidator();
 		Errors errors = new BindException(personMergeLog, "personMergeLog");
 		validator.validate(personMergeLog, errors);
-		Assert.assertFalse(errors.hasFieldErrors());
+		assertFalse(errors.hasFieldErrors());
 	}
 	
 	/**
@@ -92,7 +94,7 @@ public class PersonMergeLogValidatorTest extends BaseContextSensitiveTest {
 		PersonMergeLogValidator validator = new PersonMergeLogValidator();
 		Errors errors = new BindException(personMergeLog, "personMergeLog");
 		validator.validate(personMergeLog, errors);
-		Assert.assertFalse(errors.hasFieldErrors());
+		assertFalse(errors.hasFieldErrors());
 	}
 	
 	/**
@@ -112,6 +114,6 @@ public class PersonMergeLogValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(personMergeLog, "personMergeLog");
 		validator.validate(personMergeLog, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("voidReason"));
+		assertTrue(errors.hasFieldErrors("voidReason"));
 	}
 }

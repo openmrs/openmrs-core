@@ -10,14 +10,14 @@
 package org.openmrs.util;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 
 import org.hamcrest.core.Is;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.api.APIException;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.databasechange.Database1_9_7UpgradeIT;
 
 public class UpgradeUtilTest extends BaseContextSensitiveTest {

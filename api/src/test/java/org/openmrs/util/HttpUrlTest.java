@@ -12,11 +12,11 @@ package org.openmrs.util;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.net.MalformedURLException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class HttpUrlTest {
 	

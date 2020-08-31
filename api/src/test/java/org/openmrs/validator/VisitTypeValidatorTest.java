@@ -9,10 +9,12 @@
  */
 package org.openmrs.validator;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 import org.openmrs.VisitType;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -31,7 +33,7 @@ public class VisitTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(visitType, "visitType");
 		new VisitTypeValidator().validate(visitType, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -50,8 +52,8 @@ public class VisitTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(visitType, "visitType");
 		new VisitTypeValidator().validate(visitType, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("name"));
-		Assert.assertTrue(errors.hasFieldErrors("description"));
-		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+		assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("description"));
+		assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 }
