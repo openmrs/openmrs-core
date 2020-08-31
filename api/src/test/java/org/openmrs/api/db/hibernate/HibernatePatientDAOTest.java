@@ -13,24 +13,24 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItems;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 
 	private HibernatePatientDAO hibernatePatientDao;
 
-	@Before
+	@BeforeEach
 	public void beforeEach() {
 		updateSearchIndex();
 		hibernatePatientDao = (HibernatePatientDAO) applicationContext.getBean("patientDAO");
@@ -44,7 +44,7 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		List<Integer> identifierIds = identifiers.stream().map(PatientIdentifier::getId)
 				.collect(Collectors.toList());
 
-		Assert.assertEquals(2, identifiers.size());
+		assertEquals(2, identifiers.size());
 		assertThat(identifierIds, hasItems(1, 3));
 	}
 
@@ -59,7 +59,7 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		List<Integer> identifierIds = identifiers.stream().map(PatientIdentifier::getId)
 				.collect(Collectors.toList());
 
-		Assert.assertEquals(2, identifiers.size());
+		assertEquals(2, identifiers.size());
 		assertThat(identifierIds, hasItems(3, 4));
 	}
 

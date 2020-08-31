@@ -13,10 +13,11 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.core.StringStartsWith.startsWith;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -34,14 +35,13 @@ import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -117,7 +117,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		propFile.deleteOnExit();
 	}
 	
-	@BeforeClass
+	@BeforeAll
 	public static void beforeClass() throws IOException {
 		testAppDataDir = File.createTempFile("appdir-for-unit-tests", "");
 		testAppDataDir.delete();// so we can make turn it into a directory
@@ -127,19 +127,19 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		OpenmrsUtil.setApplicationDataDirectory(testAppDataDir.getAbsolutePath());
 	}
 	
-	@AfterClass
+	@AfterAll
 	public static void afterClass() throws Exception {
 		FileUtils.deleteDirectory(testAppDataDir);
 		//Just to be safe, not to affect other units in the test suite
 		System.clearProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY);
 	}
 	
-	@Before
+	@BeforeEach
 	public void before() throws IOException, SQLException {
 		upgradeTestUtil = new DatabaseUpgradeTestUtil(DATABASE_PATH);
 	}
 	
-	@After
+	@AfterEach
 	public void after() throws SQLException {
 		upgradeTestUtil.close();
 	}
@@ -222,7 +222,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
 		Set<String> uniqueUnits = DatabaseUtil.getUniqueNonNullColumnValues("units", "drug_order", String.class,
 		    upgradeTestUtil.getConnection());
-		Assert.assertTrue(uniqueUnits.size() > 0);
+		assertTrue(uniqueUnits.size() > 0);
 		
 		//map the frequencies only
 		createOrderEntryUpgradeFileWithTestData("1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
@@ -238,7 +238,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
 		Set<String> uniqueFrequencies = DatabaseUtil.getUniqueNonNullColumnValues("frequency", "drug_order", String.class,
 		    upgradeTestUtil.getConnection());
-		Assert.assertTrue(uniqueFrequencies.size() > 0);
+		assertTrue(uniqueFrequencies.size() > 0);
 		
 		//map the dose units only
 		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112");
@@ -255,11 +255,11 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
 		Set<String> uniqueUnits = DatabaseUtil.getUniqueNonNullColumnValues("units", "drug_order", String.class,
 		    upgradeTestUtil.getConnection());
-		Assert.assertTrue(uniqueUnits.size() > 0);
+		assertTrue(uniqueUnits.size() > 0);
 		
 		Set<String> uniqueFrequencies = DatabaseUtil.getUniqueNonNullColumnValues("frequency", "drug_order", String.class,
 		    upgradeTestUtil.getConnection());
-		Assert.assertTrue(uniqueFrequencies.size() > 0);
+		assertTrue(uniqueFrequencies.size() > 0);
 		
 		upgradeTestUtil.executeDataset(UPGRADE_TEST_1_9_7_TO_1_10_DATASET);
 		
@@ -278,7 +278,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		//Check that we have some orders with no orderers
 		List<List<Object>> rows = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
 		    "select order_id from orders where orderer is null", true);
-		Assert.assertEquals(2, rows.size());
+		assertEquals(2, rows.size());
 		List<Integer> orderIdsWithNoOrderer = Arrays.asList((Integer) rows.get(0).get(0), (Integer) rows.get(1).get(0));
 		
 		//Sanity check that we have orders with orderer column set
@@ -288,7 +288,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		for (List<Object> row : rows) {
 			ordersAndOrderersWithAProviderAccount.add(new OrderAndPerson((Integer) row.get(0), (Integer) row.get(1)));
 		}
-		Assert.assertEquals(3, ordersAndOrderersWithAProviderAccount.size());
+		assertEquals(3, ordersAndOrderersWithAProviderAccount.size());
 		
 		Set<Integer> originalProviderIds = DatabaseUtil.getUniqueNonNullColumnValues("provider_id", "provider",
 		    Integer.class, upgradeTestUtil.getConnection());
@@ -305,9 +305,9 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 			    "select p.provider_id, p.person_id from provider p join orders o on p.provider_id = o.orderer where order_id = "
 			            + op.getOrderId(),
 			    true);
-			Assert.assertEquals(op.getPersonId(), rows.get(0).get(1));
+			assertEquals(op.getPersonId(), rows.get(0).get(1));
 			//The provider account should have been among the existing ones prior to upgrade
-			Assert.assertTrue(originalProviderIds.contains(rows.get(0).get(0)));
+			assertTrue(originalProviderIds.contains(rows.get(0).get(0)));
 		}
 		
 		//The orderer column for orders with null orderers previously should be set to Unknown Provider
@@ -317,9 +317,9 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		            + OpenmrsConstants.GP_UNKNOWN_PROVIDER_UUID + "'))",
 		    true);
 		
-		Assert.assertEquals(orderIdsWithNoOrderer.size(), rows.size());
-		Assert.assertTrue(orderIdsWithNoOrderer.contains(rows.get(0).get(0)));
-		Assert.assertTrue(orderIdsWithNoOrderer.contains(rows.get(1).get(0)));
+		assertEquals(orderIdsWithNoOrderer.size(), rows.size());
+		assertTrue(orderIdsWithNoOrderer.contains(rows.get(0).get(0)));
+		assertTrue(orderIdsWithNoOrderer.contains(rows.get(1).get(0)));
 	}
 	
 	@Test
@@ -334,9 +334,9 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		List<Map<String, String>> drugs = upgradeTestUtil.select("drug", null, "strength");
 		
 		assertThat(drugs.size(), Matchers.is(3));
-		Assert.assertTrue(drugs.get(0).containsValue("1.0tab(s)"));
-		Assert.assertTrue(drugs.get(1).containsValue("325.0mg"));
-		Assert.assertNull(drugs.get(2).get("strength"));
+		assertTrue(drugs.get(0).containsValue("1.0tab(s)"));
+		assertTrue(drugs.get(1).containsValue("325.0mg"));
+		assertNull(drugs.get(2).get("strength"));
 	}
 	
 	@Test

@@ -10,14 +10,15 @@
 
 package org.openmrs.api.db.hibernate;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.CodedOrFreeText;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
@@ -26,7 +27,7 @@ import org.openmrs.ConditionClinicalStatus;
 import org.openmrs.ConditionVerificationStatus;
 import org.openmrs.Patient;
 import org.openmrs.api.db.ConditionDAO;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class HibernateConditionDAOTest extends BaseContextSensitiveTest {
@@ -38,7 +39,7 @@ public class HibernateConditionDAOTest extends BaseContextSensitiveTest {
 	ConditionDAO dao;
 	
 	
-	@Before
+	@BeforeEach
 	public void setUp() {
 		executeDataSet(CONDITIONS_XML);
 		
@@ -131,10 +132,10 @@ public class HibernateConditionDAOTest extends BaseContextSensitiveTest {
 		String uuid = "2cc6880e-2c46-15e4-9038-a6c5e4d22fb7";
 		Condition condition = dao.getConditionByUuid(uuid);
 
-		Assert.assertNotNull(condition);
+		assertNotNull(condition);
 
 		dao.deleteCondition(condition);
 
-		Assert.assertNull(dao.getConditionByUuid(uuid));
+		assertNull(dao.getConditionByUuid(uuid));
 	}
 }

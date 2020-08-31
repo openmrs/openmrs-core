@@ -11,8 +11,10 @@ package org.openmrs.attribute;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -48,7 +50,7 @@ public class AttributeIntegrationTest extends BaseContextSensitiveTest {
 		VisitAttribute legalDate = new VisitAttribute();
 		legalDate.setAttributeType(auditDate);
 		// try using a subclass of java.util.Date, to make sure the handler can take subclasses.
-		legalDate.setValue(new java.sql.Date(new SimpleDateFormat("yyyy-MM-dd").parse("2011-04-15").getTime()));
+		legalDate.setValue(new Date(new SimpleDateFormat("yyyy-MM-dd").parse("2011-04-15").getTime()));
 		visit.addAttribute(legalDate);
 		
 		service.saveVisit(visit);
@@ -62,13 +64,7 @@ public class AttributeIntegrationTest extends BaseContextSensitiveTest {
 		// no value
 		visit.addAttribute(badDate);
 		
-		try {
-			service.saveVisit(visit);
-			fail("Should have failed because of bad date attribute");
-		}
-		catch (APIException ex) {
-			// expected this
-		}
+		assertThrows(APIException.class, () -> service.saveVisit(visit));
 	}
 	
 }

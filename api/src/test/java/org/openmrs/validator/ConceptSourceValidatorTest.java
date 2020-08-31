@@ -9,11 +9,13 @@
  */
 package org.openmrs.validator;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.ConceptSource;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -30,17 +32,17 @@ public class ConceptSourceValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(conceptSource, "conceptSource");
 		new ConceptSourceValidator().validate(conceptSource, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 		
 		conceptSource.setName("");
 		errors = new BindException(conceptSource, "conceptSource");
 		new ConceptSourceValidator().validate(conceptSource, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 		
 		conceptSource.setName("   ");
 		errors = new BindException(conceptSource, "conceptSource");
 		new ConceptSourceValidator().validate(conceptSource, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 	}
 
 	/**
@@ -55,17 +57,17 @@ public class ConceptSourceValidatorTest extends BaseContextSensitiveTest {
 		conceptSource.setDescription(null);
 		Errors errors = new BindException(conceptSource, "conceptSource");
 		new ConceptSourceValidator().validate(conceptSource, errors);
-		Assert.assertTrue(errors.hasFieldErrors("description"));
+		assertTrue(errors.hasFieldErrors("description"));
 		
 		conceptSource.setDescription("");
 		errors = new BindException(conceptSource, "conceptSource");
 		new ConceptSourceValidator().validate(conceptSource, errors);
-		Assert.assertTrue(errors.hasFieldErrors("description"));
+		assertTrue(errors.hasFieldErrors("description"));
 		
 		conceptSource.setDescription("   ");
 		errors = new BindException(conceptSource, "conceptSource");
 		new ConceptSourceValidator().validate(conceptSource, errors);
-		Assert.assertTrue(errors.hasFieldErrors("description"));
+		assertTrue(errors.hasFieldErrors("description"));
 	}
 	
 	@Test
@@ -77,17 +79,17 @@ public class ConceptSourceValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(conceptSource, "conceptSource");
 		new ConceptSourceValidator().validate(conceptSource, errors);
-		Assert.assertFalse(errors.hasFieldErrors("Hl7Code"));
+		assertFalse(errors.hasFieldErrors("Hl7Code"));
 		
 		conceptSource.setHl7Code("");
 		errors = new BindException(conceptSource, "conceptSource");
 		new ConceptSourceValidator().validate(conceptSource, errors);
-		Assert.assertFalse(errors.hasFieldErrors("Hl7Code"));
+		assertFalse(errors.hasFieldErrors("Hl7Code"));
 		
 		conceptSource.setHl7Code("   ");
 		errors = new BindException(conceptSource, "conceptSource");
 		new ConceptSourceValidator().validate(conceptSource, errors);
-		Assert.assertFalse(errors.hasFieldErrors("Hl7Code"));
+		assertFalse(errors.hasFieldErrors("Hl7Code"));
 	}
 	
 	@Test
@@ -98,7 +100,7 @@ public class ConceptSourceValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(conceptSource, "conceptSource");
 		new ConceptSourceValidator().validate(conceptSource, errors);
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	@Test
@@ -111,7 +113,7 @@ public class ConceptSourceValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(conceptSource, "conceptSource");
 		new ConceptSourceValidator().validate(conceptSource, errors);
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	@Test
@@ -124,10 +126,10 @@ public class ConceptSourceValidatorTest extends BaseContextSensitiveTest {
 		conceptSource.setRetireReason(StringUtils.repeat("a", 256));
 		Errors errors = new BindException(conceptSource, "conceptSource");
 		new ConceptSourceValidator().validate(conceptSource, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
-		Assert.assertTrue(errors.hasFieldErrors("description"));
-		Assert.assertTrue(errors.hasFieldErrors("hl7Code"));
-		Assert.assertTrue(errors.hasFieldErrors("uniqueId"));
-		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+		assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("description"));
+		assertTrue(errors.hasFieldErrors("hl7Code"));
+		assertTrue(errors.hasFieldErrors("uniqueId"));
+		assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 }

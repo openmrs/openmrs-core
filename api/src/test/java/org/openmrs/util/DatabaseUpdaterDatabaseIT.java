@@ -9,14 +9,14 @@
  */
 package org.openmrs.util;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.liquibase.ChangeLogVersionFinder;
 
 public class DatabaseUpdaterDatabaseIT extends H2DatabaseIT {
@@ -29,15 +29,16 @@ public class DatabaseUpdaterDatabaseIT extends H2DatabaseIT {
 	 * 
 	 * This constant needs to be updated when adding new Liquibase update files to openmrs-core.
 	 */
-	private static final int CHANGE_SET_COUNT_FOR_2_1_X = 862;
+
+	private static final int CHANGE_SET_COUNT_FOR_2_1_X = 866;
 	
 	
-	@Before
+	@BeforeEach
 	public void setup() {
 		DatabaseUpdater.setLiquibaseProvider(this);
 	}
 	
-	@After
+	@AfterEach
 	public void tearDown() {
 		DatabaseUpdater.unsetLiquibaseProvider();
 	}

@@ -9,12 +9,16 @@
  */
 package org.openmrs.validator;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import org.junit.jupiter.api.Test;
 import org.openmrs.ImplementationId;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -31,10 +35,10 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldThrowAPIExceptionIfImplementationIdIsNUll() {
 		try {
 			new ImplementationIdValidator().validate(null, null);
-			Assert.fail();
+			fail();
 		}
 		catch (APIException e) {
-			Assert.assertEquals(e.getMessage(), Context.getMessageSourceService().getMessage("ImplementationId.null"));
+			assertEquals(e.getMessage(), Context.getMessageSourceService().getMessage("ImplementationId.null"));
 		}
 	}
 	
@@ -50,9 +54,9 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(implementationId, "implementationId");
 		new ImplementationIdValidator().validate(implementationId, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("implementationId"));
-		Assert.assertFalse(errors.hasFieldErrors("passphrase"));
-		Assert.assertFalse(errors.hasFieldErrors("description"));
+		assertTrue(errors.hasFieldErrors("implementationId"));
+		assertFalse(errors.hasFieldErrors("passphrase"));
+		assertFalse(errors.hasFieldErrors("description"));
 	}
 	
 	/**
@@ -67,9 +71,9 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(implementationId, "implementationId");
 		new ImplementationIdValidator().validate(implementationId, errors);
 		
-		Assert.assertFalse(errors.hasFieldErrors("description"));
-		Assert.assertFalse(errors.hasFieldErrors("implementationId"));
-		Assert.assertFalse(errors.hasFieldErrors("passphrase"));
+		assertFalse(errors.hasFieldErrors("description"));
+		assertFalse(errors.hasFieldErrors("implementationId"));
+		assertFalse(errors.hasFieldErrors("passphrase"));
 	}
 	
 	/**
@@ -84,9 +88,9 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(implementationId, "implementationId");
 		new ImplementationIdValidator().validate(implementationId, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("passphrase"));
-		Assert.assertFalse(errors.hasFieldErrors("implementationId"));
-		Assert.assertFalse(errors.hasFieldErrors("description"));
+		assertTrue(errors.hasFieldErrors("passphrase"));
+		assertFalse(errors.hasFieldErrors("implementationId"));
+		assertFalse(errors.hasFieldErrors("description"));
 	}
 	
 	/**
@@ -99,9 +103,9 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(implementationId, "implementationId");
 		new ImplementationIdValidator().validate(implementationId, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("passphrase"));
-		Assert.assertTrue(errors.hasFieldErrors("implementationId"));
-		Assert.assertFalse(errors.hasFieldErrors("description"));
+		assertTrue(errors.hasFieldErrors("passphrase"));
+		assertTrue(errors.hasFieldErrors("implementationId"));
+		assertFalse(errors.hasFieldErrors("description"));
 	}
 	
 	/**
@@ -117,8 +121,8 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(invalidId, "implementationId");
 		new ImplementationIdValidator().validate(invalidId, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("implementationId"));
-		Assert.assertEquals("ImplementationId.implementationId.invalidCharacter", errors.getFieldError("implementationId")
+		assertTrue(errors.hasFieldErrors("implementationId"));
+		assertEquals("ImplementationId.implementationId.invalidCharacter", errors.getFieldError("implementationId")
 		        .getCode());
 	}
 	
@@ -136,8 +140,8 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(invalidId2, "implementationId");
 		new ImplementationIdValidator().validate(invalidId2, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("implementationId"));
-		Assert.assertEquals("ImplementationId.implementationId.invalidCharacter", errors.getFieldError("implementationId")
+		assertTrue(errors.hasFieldErrors("implementationId"));
+		assertEquals("ImplementationId.implementationId.invalidCharacter", errors.getFieldError("implementationId")
 		        .getCode());
 	}
 	
@@ -154,10 +158,10 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(implementationId, "implementationId");
 		new ImplementationIdValidator().validate(implementationId, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("name"));
-		Assert.assertFalse(errors.hasFieldErrors("implementationId"));
-		Assert.assertFalse(errors.hasFieldErrors("passphrase"));
-		Assert.assertFalse(errors.hasFieldErrors("description"));
+		assertTrue(errors.hasFieldErrors("name"));
+		assertFalse(errors.hasFieldErrors("implementationId"));
+		assertFalse(errors.hasFieldErrors("passphrase"));
+		assertFalse(errors.hasFieldErrors("description"));
 	}
 	
 }

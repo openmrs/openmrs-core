@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
@@ -180,13 +179,7 @@ public class ObsTest {
 		assertEquals(0, obsGroup.getGroupMembers().size());
 		
 		// try to add an obs group to itself
-		try {
-			obsGroup.addGroupMember(obsGroup);
-			fail("An APIException about adding an obsGroup should have been thrown");
-		}
-		catch (APIException e) {
-			// this exception is expected
-		}
+		assertThrows(APIException.class, () -> obsGroup.addGroupMember(obsGroup));
 	}
 	
 	/**
@@ -338,7 +331,7 @@ public class ObsTest {
 	public void getValueAsBoolean_shouldReturnFalseForValue_numericConceptsIfValueIs0() throws Exception {
 		Obs obs = new Obs();
 		obs.setValueNumeric(0.0);
-		assertEquals(false, obs.getValueAsBoolean());
+		assertFalse(obs.getValueAsBoolean());
 	}
 	
 	/**
@@ -396,7 +389,7 @@ public class ObsTest {
 	public void getValueAsBoolean_shouldReturnTrueForValue_numericConceptsIfValueIs1() throws Exception {
 		Obs obs = new Obs();
 		obs.setValueNumeric(1.0);
-		assertEquals(true, obs.getValueAsBoolean());
+		assertTrue(obs.getValueAsBoolean());
 	}
 	
 	/**
@@ -505,125 +498,6 @@ public class ObsTest {
 		obs.setValueCodedName(new ConceptName("True", Locale.US));
 		
 		assertEquals(VERO, obs.getValueAsString(Locale.ITALIAN));
-	}
-	
-	/**
-	 * @see Obs#setFormField(String,String)
-	 */
-	@Test
-	public void setFormField_shouldSetTheUnderlyingFormNamespaceAndPathInTheCorrectPattern() throws Exception {
-		final String ns = "my ns";
-		final String path = "my path";
-		Obs obs = new Obs();
-		obs.setFormField(ns, path);
-		java.lang.reflect.Field formNamespaceAndPathProperty = Obs.class.getDeclaredField("formNamespaceAndPath");
-		formNamespaceAndPathProperty.setAccessible(true);
-		assertEquals(ns + FORM_NAMESPACE_PATH_SEPARATOR + path, formNamespaceAndPathProperty.get(obs));
-	}
-	
-	/**
-	 * @see Obs#getFormFieldNamespace()
-	 */
-	@Test
-	public void getFormFieldNamespace_shouldReturnNullIfTheNamespaceIsNotSpecified() throws Exception {
-		Obs obs = new Obs();
-		obs.setFormField("", "my path");
-		assertNull(obs.getFormFieldNamespace());
-	}
-	
-	/**
-	 * @see Obs#getFormFieldNamespace()
-	 */
-	@Test
-	public void getFormFieldNamespace_shouldReturnTheCorrectNamespaceForAFormFieldWithAPath() throws Exception {
-		final String ns = "my ns";
-		final String path = "my path";
-		Obs obs = new Obs();
-		obs.setFormField(ns, path);
-		assertEquals(ns, obs.getFormFieldNamespace());
-	}
-	
-	/**
-	 * @see Obs#getFormFieldNamespace()
-	 */
-	@Test
-	public void getFormFieldNamespace_shouldReturnTheNamespaceForAFormFieldThatHasNoPath() throws Exception {
-		final String ns = "my ns";
-		Obs obs = new Obs();
-		obs.setFormField(ns, null);
-		assertEquals(ns, obs.getFormFieldNamespace());
-	}
-	
-	/**
-	 * @see Obs#getFormFieldPath()
-	 */
-	@Test
-	public void getFormFieldPath_shouldReturnNullIfThePathIsNotSpecified() throws Exception {
-		Obs obs = new Obs();
-		obs.setFormField("my ns", "");
-		assertNull(obs.getFormFieldPath());
-	}
-	
-	/**
-	 * @see Obs#getFormFieldPath()
-	 */
-	@Test
-	public void getFormFieldPath_shouldReturnTheCorrectPathForAFormFieldWithANamespace() throws Exception {
-		final String ns = "my ns";
-		final String path = "my path";
-		Obs obs = new Obs();
-		obs.setFormField(ns, path);
-		assertEquals(path, obs.getFormFieldPath());
-	}
-	
-	/**
-	 * @see Obs#getFormFieldPath()
-	 */
-	@Test
-	public void getFormFieldPath_shouldReturnThePathForAFormFieldThatHasNoNamespace() throws Exception {
-		final String path = "my path";
-		Obs obs = new Obs();
-		obs.setFormField("", path);
-		assertEquals(path, obs.getFormFieldPath());
-	}
-	
-	/**
-	 * @see Obs#setFormField(String,String)
-	 */
-	@Test
-	public void setFormField_shouldRejectANamepaceAndPathCombinationLongerThanTheMaxLength() throws Exception {
-		StringBuilder nsBuffer = new StringBuilder(125);
-		for (int i = 0; i < 125; i++) {
-			nsBuffer.append("n");
-		}
-		for (int i = 0; i < 130; i++) {
-			nsBuffer.append("p");
-		}
-		
-		final String ns = nsBuffer.toString();
-		final String path = "";
-		Obs obs = new Obs();
-		assertThrows(APIException.class, () -> obs.setFormField(ns, path));
-	}
-	
-	/**
-	 * @see Obs#setFormField(String,String)
-	 */
-	@Test
-	public void setFormField_shouldRejectANamepaceContainingTheSeparator() throws Exception {
-		final String ns = "my ns" + FORM_NAMESPACE_PATH_SEPARATOR;
-		Obs obs = new Obs();
-		assertThrows(APIException.class, () -> obs.setFormField(ns, ""));
-	}
-	
-	/**
-	 * @see Obs#setFormField(String,String)
-	 */
-	@Test
-	public void setFormField_shouldRejectAPathContainingTheSeparator() throws Exception {
-		final String path = FORM_NAMESPACE_PATH_SEPARATOR + "my path";
-		Obs obs = new Obs();
-		assertThrows(APIException.class, () -> obs.setFormField("", path));
 	}
 	
 	/**

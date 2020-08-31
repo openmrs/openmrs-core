@@ -214,7 +214,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	public void getService_shouldReturnTheSameObjectWhenCalledMultipleTimesForTheSameClass() {
 		PatientService ps1 = Context.getService(PatientService.class);
 		PatientService ps2 = Context.getService(PatientService.class);
-		assertTrue(ps1 == ps2);
+		assertEquals(ps2, ps1);
 	}
 	
 	/**

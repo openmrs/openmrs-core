@@ -11,19 +11,21 @@ package org.openmrs.validator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.Drug;
 import org.openmrs.DrugReferenceMap;
 import org.openmrs.api.ConceptService;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -39,7 +41,7 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 	
 	protected static final String GET_DRUG_MAPPINGS = "org/openmrs/api/include/ConceptServiceTest-getDrugMappings.xml";
 	
-	@Before
+	@BeforeEach
 	public void executeDrugMappingsDataSet() {
 		executeDataSet(GET_DRUG_MAPPINGS);
 	}
@@ -62,7 +64,7 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 		drug.setDrugReferenceMaps(Collections.singleton(new DrugReferenceMap()));
 		Errors errors = new BindException(drug, "drug");
 		new DrugValidator().validate(drug, errors);
-		Assert.assertTrue(errors.hasFieldErrors("drugReferenceMaps[0].drug"));
+		assertTrue(errors.hasFieldErrors("drugReferenceMaps[0].drug"));
 	}
 	
 	/**
@@ -74,7 +76,7 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 		drug.addDrugReferenceMap(new DrugReferenceMap());
 		Errors errors = new BindException(drug, "drug");
 		new DrugValidator().validate(drug, errors);
-		Assert.assertTrue(errors.hasFieldErrors("drugReferenceMaps[0].conceptReferenceTerm"));
+		assertTrue(errors.hasFieldErrors("drugReferenceMaps[0].conceptReferenceTerm"));
 	}
 	
 	/**
@@ -87,7 +89,7 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(drug, "drug");
 		new DrugValidator().validate(drug, errors);
 		//reference term validator should have been called which should reject a null code
-		Assert.assertTrue(errors.hasFieldErrors("drugReferenceMaps[0].conceptReferenceTerm.code"));
+		assertTrue(errors.hasFieldErrors("drugReferenceMaps[0].conceptReferenceTerm.code"));
 	}
 	
 	/**
@@ -100,7 +102,7 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(drug, "drug");
 		new DrugValidator().validate(drug, errors);
 		//concept map type validator should have been called which should reject a null name
-		Assert.assertTrue(errors.hasFieldErrors("drugReferenceMaps[0].conceptMapType.name"));
+		assertTrue(errors.hasFieldErrors("drugReferenceMaps[0].conceptMapType.name"));
 	}
 	
 	/**
@@ -115,10 +117,10 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 		        .getConceptMapType(2));
 		drug.addDrugReferenceMap(term1);
 		drug.addDrugReferenceMap(term2);
-		Assert.assertEquals(2, drug.getDrugReferenceMaps().size());
+		assertEquals(2, drug.getDrugReferenceMaps().size());
 		Errors errors = new BindException(drug, "drug");
 		new DrugValidator().validate(drug, errors);
-		Assert.assertTrue(errors.hasFieldErrors("drugReferenceMaps[1].conceptReferenceTerm"));
+		assertTrue(errors.hasFieldErrors("drugReferenceMaps[1].conceptReferenceTerm"));
 	}
 	
 	/**
@@ -131,7 +133,7 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 		        .getConceptMapType(1)));
 		Errors errors = new BindException(drug, "drug");
 		new DrugValidator().validate(drug, errors);
-		Assert.assertFalse(errors.hasFieldErrors());
+		assertFalse(errors.hasFieldErrors());
 	}
 	
 	/**
@@ -147,7 +149,7 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 		drug.setRetireReason("retireReason");
 		Errors errors = new BindException(drug, "drug");
 		new DrugValidator().validate(drug, errors);
-		Assert.assertFalse(errors.hasFieldErrors());
+		assertFalse(errors.hasFieldErrors());
 	}
 	
 	/**
@@ -166,8 +168,8 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 		Errors errors = new BindException(drug, "drug");
 		new DrugValidator().validate(drug, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
-		Assert.assertTrue(errors.hasFieldErrors("strength"));
-		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+		assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("strength"));
+		assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 }
