@@ -23,7 +23,6 @@ import org.openmrs.util.DatabaseUpdaterLiquibaseProvider;
 import org.openmrs.util.InputRequiredException;
 import org.openmrs.liquibase.ChangeLogVersionFinder;
 import org.openmrs.util.MemoryAppender;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;

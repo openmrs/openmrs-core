@@ -24,7 +24,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.zip.GZIPOutputStream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.openmrs.GlobalProperty;

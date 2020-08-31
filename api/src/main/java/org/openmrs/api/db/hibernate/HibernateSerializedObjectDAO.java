@@ -146,7 +146,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 		Criteria c = sessionFactory.getCurrentSession().createCriteria(SerializedObject.class);
 		c.add(Restrictions.or(Restrictions.eq("type", type.getName()), Restrictions.eq("subtype", type.getName())));
 		if (!includeRetired) {
-			c.add(Restrictions.like("retired", false));
+			c.add(Restrictions.eq("retired", false));
 		}
 		return (List<SerializedObject>) c.list();
 	}

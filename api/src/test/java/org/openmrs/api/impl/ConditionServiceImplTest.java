@@ -39,11 +39,12 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 	
 	protected static final String CONDITION_XML = "org/openmrs/api/include/ConditionServiceImplTest-SetupCondition.xml";
+
+	private static final String FORM_NAMESPACE_PATH_SEPARATOR = "^";
 	
 	private ConditionService conditionService;
 	
 	private PatientService patientService;
-	
 	
 	@BeforeEach
 	public void setup (){
@@ -216,5 +217,33 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 		conditionService.purgeCondition(conditionService.getCondition(conditionId));
 		Condition purgedCondition = conditionService.getCondition(conditionId);
 		assertNull(purgedCondition);
+	}
+
+
+	/**
+	 * @see ConditionService#saveCondition(Condition)
+	 */
+	@Test
+	public void saveCondition_shouldSaveConditionWithFormField(){
+
+		// Create Condition to test
+		String ns = "my ns";
+		String path = "my path";
+		Integer patientId = 2;
+		String uuid = "08002000-4469-12q3-551f-0339000c9a76";
+		CodedOrFreeText codedOrFreeText = new CodedOrFreeText();
+		Condition condition = new Condition();
+		condition.setFormField(ns, path);
+		condition.setCondition(codedOrFreeText);
+		condition.setClinicalStatus(ConditionClinicalStatus.ACTIVE);
+		condition.setUuid(uuid);
+		condition.setPatient(new Patient(patientId));
+
+		// Perform test
+		conditionService.saveCondition(condition);
+		Condition savedCondition = conditionService.getConditionByUuid(uuid);
+
+		// Validate test
+		assertEquals(ns + FORM_NAMESPACE_PATH_SEPARATOR + path, savedCondition.getFormNamespaceAndPath());
 	}
 }
