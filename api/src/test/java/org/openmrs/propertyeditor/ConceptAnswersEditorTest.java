@@ -9,13 +9,15 @@
  */
 package org.openmrs.propertyeditor;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
  *
@@ -38,8 +40,8 @@ public class ConceptAnswersEditorTest extends BaseContextSensitiveTest {
 		ConceptAnswer ca3 = service.getConceptAnswer(3);//conceptId=22
 		
 		Concept cafter = service.getConcept(21);
-		Assert.assertEquals(3, cafter.getAnswers(true).size());
-		Assert.assertTrue(ca3.getSortWeight() < ca1.getSortWeight());
-		Assert.assertTrue(ca1.getSortWeight() < ca2.getSortWeight());
+		assertEquals(3, cafter.getAnswers(true).size());
+		assertTrue(ca3.getSortWeight() < ca1.getSortWeight());
+		assertTrue(ca1.getSortWeight() < ca2.getSortWeight());
 	}
 }

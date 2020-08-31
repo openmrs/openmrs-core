@@ -16,7 +16,7 @@ import liquibase.Liquibase;
  * <li>to decouple the org.openmrs.liquibase.ChangeLogDetective class from the
  * org.openmrs.util.DatabaseUpdater class
  * <li>to support integration testing of the org.openmrs.liquibase.ChangeLogDetective class with
- * MariaDB
+ * the H2 database.
  *
  * @since 2.4
  */

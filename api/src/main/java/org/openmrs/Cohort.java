@@ -22,7 +22,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.util.Arrays;
 import java.util.Collection;
@@ -43,8 +42,7 @@ public class Cohort extends BaseChangeableOpenmrsData {
 
 	@Id
 	@Column(name = "cohort_id")
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cohort_id_gen")
-	@SequenceGenerator(name = "cohort_id_gen", sequenceName = "cohort_cohort_id_seq")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer cohortId;
 
 	@Column(nullable = false)

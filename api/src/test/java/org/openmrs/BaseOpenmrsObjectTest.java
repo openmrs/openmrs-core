@@ -9,13 +9,14 @@
  */
 package org.openmrs;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.junit.Assert;
-import org.junit.Test;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.junit.jupiter.api.Test;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 	
@@ -45,7 +46,7 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 		obj.setUuid(null);
 		
 		//then
-		Assert.assertFalse(o.equals(obj));
+		assertFalse(o.equals(obj));
 	}
 	
 	/**
@@ -60,7 +61,7 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 		Object obj = new Object();
 		
 		//then
-		Assert.assertFalse(o.equals(obj));
+		assertFalse(o.equals(obj));
 	}
 	
 	/**
@@ -75,7 +76,7 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 		BaseOpenmrsObject obj = null;
 		
 		//then
-		Assert.assertFalse(o.equals(obj));
+		assertFalse(o.equals(obj));
 	}
 	
 	/**
@@ -91,7 +92,7 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 		o.setUuid(null);
 		
 		//then
-		Assert.assertFalse(o.equals(obj));
+		assertFalse(o.equals(obj));
 	}
 	
 	/**
@@ -106,7 +107,7 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 		BaseOpenmrsObject obj = o;
 		
 		//then
-		Assert.assertTrue(o.equals(obj));
+		assertTrue(o.equals(obj));
 	}
 	
 	/**
@@ -122,7 +123,7 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 		obj.setUuid(o.getUuid());
 		
 		//then
-		Assert.assertTrue(o.equals(obj));
+		assertTrue(o.equals(obj));
 	}
 	
 	/**
@@ -145,13 +146,13 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 		Encounter encounter = new Encounter(2);
 		Order order = new Order(2);
 		
-		Assert.assertFalse(encounter.equals(order));
+		assertFalse(encounter.equals(order));
 	}
 	
 	@Test
 	public void shouldNotBeEqualWhenFirstIsNull() {
 		Encounter encounter = new Encounter(2);
-		Assert.assertFalse(encounter.equals(null));
+		assertFalse(encounter.equals(null));
 	}
 	
 	/**
@@ -188,8 +189,8 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 		Concept concept = new Concept(5);
 		Concept numeric = new ConceptNumeric();
 		numeric.setUuid(concept.getUuid());
-		Assert.assertTrue(numeric.equals(concept));
-		Assert.assertTrue(concept.equals(numeric));
+		assertTrue(numeric.equals(concept));
+		assertTrue(concept.equals(numeric));
 	}
 
 	/**
@@ -200,8 +201,8 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 		Encounter encounter = new Encounter();
 		Concept concept = new Concept(5);
 		concept.setUuid(encounter.getUuid());
-		Assert.assertFalse(encounter.equals(concept));
-		Assert.assertFalse(concept.equals(encounter));
+		assertFalse(encounter.equals(concept));
+		assertFalse(concept.equals(encounter));
 	}
 
 	/**
@@ -212,8 +213,8 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 		Order order = new Order(21);
 		DrugOrder type = new DrugOrder(21);
 		type.setUuid(order.getUuid());
-		Assert.assertTrue(type.equals(order));
-		Assert.assertTrue(order.equals(type));
+		assertTrue(type.equals(order));
+		assertTrue(order.equals(type));
 	}
 
 	/**
@@ -224,8 +225,8 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 		Order order = new Order(21);
 		OrderFrequency type = new OrderFrequency();
 		type.setUuid(order.getUuid());
-		Assert.assertFalse(type.equals(order));
-		Assert.assertFalse(order.equals(type));
+		assertFalse(type.equals(order));
+		assertFalse(order.equals(type));
 	}
 
 	/**
@@ -235,7 +236,7 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 	public void equals_shouldReturnfalseIfHibernateProxyOfOneThingIsComparedtoHibernateProxyofSomething() {
 		SessionFactory sessionFactory = (SessionFactory) applicationContext.getBean("sessionFactory");
 		Session session = sessionFactory.getCurrentSession();
-		Assert.assertFalse((session.load(Patient.class, 2)).equals((session.load(Concept.class, 11))));
+		assertFalse((session.load(Patient.class, 2)).equals((session.load(Concept.class, 11))));
 	}
 
 	/**
@@ -294,8 +295,8 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 		TestClass obj = new TestClass();
 		obj.setUuid(uid);
 
-		Assert.assertFalse(obj.equals((session.load(Patient.class, 2))));
-		Assert.assertFalse((session.load(Patient.class, 2)).equals(obj));
+		assertFalse(obj.equals((session.load(Patient.class, 2))));
+		assertFalse((session.load(Patient.class, 2)).equals(obj));
 	}
 
 	/**
@@ -388,12 +389,12 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 		AnotherTestClass anotherTestObjectsameUuid = new AnotherTestClass();
 		anotherTestObjectsameUuid.setUuid(uuid);
 
-		Assert.assertFalse(anotherTestObj.equals(testObj));
-		Assert.assertFalse(testObj.equals(anotherTestObj));
-		Assert.assertTrue(testObj.equals(testObjsameuuid));
-		Assert.assertTrue(anotherTestObj.equals(anotherTestObjectsameUuid));
-		Assert.assertTrue(testObjsameuuid.equals(testObj));
-		Assert.assertTrue(anotherTestObjectsameUuid.equals(anotherTestObj));
+		assertFalse(anotherTestObj.equals(testObj));
+		assertFalse(testObj.equals(anotherTestObj));
+		assertTrue(testObj.equals(testObjsameuuid));
+		assertTrue(anotherTestObj.equals(anotherTestObjectsameUuid));
+		assertTrue(testObjsameuuid.equals(testObj));
+		assertTrue(anotherTestObjectsameUuid.equals(anotherTestObj));
 
 	}
 
@@ -408,7 +409,7 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 		Patient patient = (Patient) session.get(Patient.class, 2);
 		Patient patientproxyobject = (Patient) session.load(Patient.class, 2);
 
-		Assert.assertTrue(patient.equals(patientproxyobject));
+		assertTrue(patient.equals(patientproxyobject));
 	}
 
 	/**
@@ -419,6 +420,6 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 		SessionFactory sessionFactory = (SessionFactory) applicationContext.getBean("sessionFactory");
 		Session session = sessionFactory.getCurrentSession();
 
-		Assert.assertTrue(session.load(Patient.class, 2).equals((session.load(Patient.class, 2)))) ;
+		assertTrue(session.load(Patient.class, 2).equals((session.load(Patient.class, 2)))) ;
 	}
 }

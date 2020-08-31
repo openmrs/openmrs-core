@@ -9,17 +9,17 @@
  */
 package org.openmrs.customdatatype.datatype;
 
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.customdatatype.InvalidCustomValueException;
 
 public class RegexValidatedTextTest {
 	
 	RegexValidatedTextDatatype datatype;
 	
-	@Before
+	@BeforeEach
 	public void before() {
 		datatype = new RegexValidatedTextDatatype();
 		datatype.setConfiguration("[a-z]+");

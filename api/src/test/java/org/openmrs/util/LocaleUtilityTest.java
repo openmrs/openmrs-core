@@ -9,18 +9,23 @@
  */
 package org.openmrs.util;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static java.util.Locale.ENGLISH;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.openmrs.util.LocaleUtility.fromSpecification;
+import static org.openmrs.util.OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE;
 
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
  * Behavior-driven unit tests for {@link LocaleUtility} class
@@ -111,7 +116,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE, "asdfasdf"));
 		
 		// check for nonnullness
-		Assert.assertNotNull(LocaleUtility.getDefaultLocale());
+		assertNotNull(LocaleUtility.getDefaultLocale());
 		
 		Context.getAdministrationService().saveGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE, ""));
@@ -126,7 +131,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE, ""));
 		
 		// check for nonnullness
-		Assert.assertNotNull(LocaleUtility.getDefaultLocale());
+		assertNotNull(LocaleUtility.getDefaultLocale());
 	}
 	
 	/**
@@ -135,11 +140,11 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	@Test
 	public void getDefaultLocale_shouldNotReturnNullIfGlobalPropertyDoesNotExist() {
 		// sanity check
-		Assert.assertNull(Context.getAdministrationService().getGlobalProperty(
+		assertNull(Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE));
 		
 		// check for nonnullness
-		Assert.assertNotNull(LocaleUtility.getDefaultLocale());
+		assertNotNull(LocaleUtility.getDefaultLocale());
 	}
 	
 	/**
@@ -154,7 +159,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 		        .saveGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE, "ja"));
 		
-		Assert.assertEquals(Locale.JAPANESE, LocaleUtility.getDefaultLocale());
+		assertEquals(Locale.JAPANESE, LocaleUtility.getDefaultLocale());
 	}
 	
 	/**
@@ -162,7 +167,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void fromSpecification_shouldGetLocaleFromTwoCharacterLanguageCode() {
-		Assert.assertEquals(Locale.ENGLISH, LocaleUtility.fromSpecification("en"));
+		assertEquals(Locale.ENGLISH, LocaleUtility.fromSpecification("en"));
 	}
 	
 	/**
@@ -170,7 +175,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void fromSpecification_shouldGetLocaleFromLanguageCodeAndCountryCode() {
-		Assert.assertEquals(Locale.UK, LocaleUtility.fromSpecification("en_GB"));
+		assertEquals(Locale.UK, LocaleUtility.fromSpecification("en_GB"));
 	}
 	
 	/**
@@ -179,9 +184,9 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	@Test
 	public void fromSpecification_shouldGetLocaleFromLanguageCodeCountryCodeAndVariant() {
 		Locale locale = LocaleUtility.fromSpecification("en_US_Traditional_WIN");
-		Assert.assertEquals(Locale.US.getLanguage(), locale.getLanguage());
-		Assert.assertEquals(Locale.US.getCountry(), locale.getCountry());
-		Assert.assertEquals("Traditional,WIN", locale.getDisplayVariant());
+		assertEquals(Locale.US.getLanguage(), locale.getLanguage());
+		assertEquals(Locale.US.getCountry(), locale.getCountry());
+		assertEquals("Traditional,WIN", locale.getDisplayVariant());
 	}
 	
 	/**
@@ -190,7 +195,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	@Test
 	public void getLocalesInOrder_shouldAlwaysHaveEnglishIncludedInTheReturnedCollection() {
 		Set<Locale> localesInOrder = LocaleUtility.getLocalesInOrder();
-		Assert.assertEquals(true, localesInOrder.contains(Locale.ENGLISH));
+		assertTrue(localesInOrder.contains(ENGLISH));
 	}
 	
 	/**
@@ -200,8 +205,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	public void getLocalesInOrder_shouldAlwaysHaveDefaultLocaleDefaultValueIncludedInTheReturnedCollection()
 	{
 		Set<Locale> localesInOrder = LocaleUtility.getLocalesInOrder();
-		Assert.assertEquals(true, localesInOrder.contains(LocaleUtility
-		        .fromSpecification(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE)));
+		assertTrue(localesInOrder.contains(fromSpecification(GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE)));
 	}
 	
 	/**
@@ -213,7 +217,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 		Context.setLocale(null);
 		
 		Set<Locale> localesInOrder = LocaleUtility.getLocalesInOrder();
-		Assert.assertEquals(LocaleUtility.getDefaultLocale(), localesInOrder.iterator().next());
+		assertEquals(LocaleUtility.getDefaultLocale(), localesInOrder.iterator().next());
 	}
 	
 	/**
@@ -225,8 +229,8 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 		Context.setLocale(lu_UG);
 		Set<Locale> localesInOrder = LocaleUtility.getLocalesInOrder();
 		Iterator<Locale> it = localesInOrder.iterator();
-		Assert.assertEquals(lu_UG, it.next());
-		Assert.assertEquals(LocaleUtility.getDefaultLocale(), it.next());
+		assertEquals(lu_UG, it.next());
+		assertEquals(LocaleUtility.getDefaultLocale(), it.next());
 	}
 	
 	/**
@@ -241,12 +245,12 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 		Context.setLocale(lu_UG);
 		Set<Locale> localesInOrder = LocaleUtility.getLocalesInOrder();
 		Iterator<Locale> it = localesInOrder.iterator();
-		Assert.assertEquals(new Locale("lu", "UG"), it.next());
-		Assert.assertEquals(LocaleUtility.getDefaultLocale(), it.next());
-		Assert.assertEquals(new Locale("lu"), it.next());
-		Assert.assertEquals(new Locale("sw", "KE"), it.next());
-		Assert.assertEquals(new Locale("en", "US"), it.next());
-		Assert.assertEquals(new Locale("en"), it.next());
+		assertEquals(new Locale("lu", "UG"), it.next());
+		assertEquals(LocaleUtility.getDefaultLocale(), it.next());
+		assertEquals(new Locale("lu"), it.next());
+		assertEquals(new Locale("sw", "KE"), it.next());
+		assertEquals(new Locale("en", "US"), it.next());
+		assertEquals(new Locale("en"), it.next());
 	}
 	
 	/**
@@ -263,7 +267,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 		Locale lu_UG = new Locale("lu", "UG");
 		Context.setLocale(lu_UG);
 		//note that unique list of locales should be lu_UG, lu, sw_KE, en_US, en
-		Assert.assertEquals(6, LocaleUtility.getLocalesInOrder().size());
+		assertEquals(6, LocaleUtility.getLocalesInOrder().size());
 		
 		Context.getAdministrationService().saveGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE, ""));
@@ -304,7 +308,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 		// This might fail if default locale is called before this test is run and so the static defaultLocale is cached
 		//
 		// verify that default locale is the OpenmrsConstant default locale
-		Assert.assertEquals(LocaleUtility.fromSpecification(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE),
+		assertEquals(LocaleUtility.fromSpecification(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE),
 		    LocaleUtility.getDefaultLocale());
 		
 		// open a session
@@ -312,7 +316,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 		authenticate();
 		
 		// verify that the default locale is the GP default locale
-		Assert.assertEquals(Locale.JAPANESE, LocaleUtility.getDefaultLocale());
+		assertEquals(Locale.JAPANESE, LocaleUtility.getDefaultLocale());
 		
 		// clear GP default locale
 		gp.setPropertyValue("");

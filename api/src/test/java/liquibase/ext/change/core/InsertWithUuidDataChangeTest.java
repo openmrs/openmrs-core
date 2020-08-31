@@ -9,14 +9,17 @@
  */
 package liquibase.ext.change.core;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.UUID;
+
 import liquibase.change.ColumnConfig;
 import liquibase.database.core.MySQLDatabase;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
 import liquibase.structure.core.Column;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class InsertWithUuidDataChangeTest {
 	@Test
@@ -32,7 +35,7 @@ public class InsertWithUuidDataChangeTest {
 		InsertStatement insertStatement = ( InsertStatement ) statements[0];
 		Object actual = insertStatement.getColumnValue( "uuid" );
 
-		Assert.assertEquals( expected, actual );
+		assertEquals( expected, actual );
 	}
 	
 	@Test
@@ -46,7 +49,7 @@ public class InsertWithUuidDataChangeTest {
 		try {
 			UUID.fromString( (String) actual );
 		} catch (RuntimeException re) {
-			Assert.fail( "generated uuid is not valid" );
+			fail("generated uuid is not valid");
 		}
 	}
 }

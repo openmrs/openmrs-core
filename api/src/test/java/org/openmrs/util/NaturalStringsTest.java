@@ -15,7 +15,7 @@ import static org.openmrs.util.NaturalStrings.compareNatural;
 import static org.openmrs.util.NaturalStrings.compareNaturalAscii;
 import static org.openmrs.util.NaturalStrings.compareNaturalIgnoreCaseAscii;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class NaturalStringsTest {
 

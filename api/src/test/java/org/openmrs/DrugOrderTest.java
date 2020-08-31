@@ -9,17 +9,17 @@
  */
 package org.openmrs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.order.OrderUtilTest;
 
 /**
@@ -48,9 +48,9 @@ public class DrugOrderTest {
 		
 		assertEquals(order.getConcept(), dcOrder.getConcept());
 		
-		assertEquals("should set previous order to anOrder", order, dcOrder.getPreviousOrder());
+		assertEquals(order, dcOrder.getPreviousOrder(), "should set previous order to anOrder");
 		
-		assertEquals("should set new order action to new", dcOrder.getAction(), Order.Action.DISCONTINUE);
+		assertEquals(dcOrder.getAction(), org.openmrs.Order.Action.DISCONTINUE, "should set new order action to new");
 		
 		assertEquals(order.getCareSetting(), dcOrder.getCareSetting());
 		
