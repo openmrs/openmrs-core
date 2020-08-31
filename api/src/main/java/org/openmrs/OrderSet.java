@@ -57,8 +57,7 @@ public class OrderSet extends BaseCustomizableMetadata<OrderSetAttribute> {
 	
 	@Id
 	@Column(name = "order_set_id")
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_set_id_gen")
-	@SequenceGenerator(name = "order_set_id_gen", sequenceName = "order_set_order_set_id_seq")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer orderSetId;
 	
 	@JoinColumn(name = "operator", nullable = false)
