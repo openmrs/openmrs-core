@@ -9,6 +9,9 @@
  */
 package org.openmrs;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -16,12 +19,19 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.Ignore;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.openmrs.annotation.OpenmrsProfileExcludeFilterWithModulesJUnit4Test;
+import org.openmrs.annotation.StartModuleAnnotationJUnit4Test;
+import org.openmrs.annotation.StartModuleAnnotationReuseJUnit4Test;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -122,7 +132,34 @@ public class OpenmrsTestsTest {
 			}
 		}
 	}
-	
+
+	@Test
+	public void shouldNotAllowAnyNewJUnit4TestsSinceWeMigratedToJUnit5() {
+		// These classes are running as JUnit 4 tests using the JUnit 4 BaseContextSensitiveTest to ensure module devs
+		// can still run their JUnit 4 tests as part of the 2.4.x release until we completely remove JUnit 4 support from
+		// openmrs-core. We do not allow any new JUnit 4 tests to be added unless they are for exactly that purpose.
+		// Any new tests in openmrs-core should be written using JUnit 5.
+		Set<Class> allowedJunit4TestClasses = Stream.of(StartModuleAnnotationJUnit4Test.class,
+			StartModuleAnnotationReuseJUnit4Test.class,
+			OpenmrsProfileExcludeFilterWithModulesJUnit4Test.class
+		)
+			.collect(Collectors.toSet());
+
+		List<Method> testMethodsUsingJUnit4 = getClasses(".*\\.class$")
+			.stream()
+			.filter(c -> !allowedJunit4TestClasses.contains(c))
+			.map(c -> c.getMethods())
+			.flatMap(x -> Arrays.stream(x))
+			.filter(m -> m.getAnnotation(org.junit.Test.class) != null)
+			.collect(Collectors.toList());
+		
+		assertThat("openmrs-api has migrated to JUnit 5. The JUnit 4 dependency is only available so we can " +
+				"allow module developers to migrate at their own pace and still write JUnit 4 tests with " +
+				"BaseContextMock/Sensitive tests. Tests in openmrs-core should be written in JUnit 5. The assertion " +
+				"error shows test methods annotated with JUnit 4s org.junit.Test. Please write them using JUnit 5." +
+				"See https://wiki.openmrs.org/display/docs/How+to+migrate+to+JUnit+5",
+			testMethodsUsingJUnit4, is(empty()));
+	}
 	/**
 	 * Get all classes ending in "Test.class".
 	 * 

@@ -41,7 +41,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "order_set")
-public class OrderSet extends BaseChangeableOpenmrsMetadata {
+public class OrderSet extends BaseCustomizableMetadata<OrderSetAttribute> {
 	
 	public static final long serialVersionUID = 72232L;
 	

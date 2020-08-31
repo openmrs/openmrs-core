@@ -1,0 +1,30 @@
+name: "Close stale pull requests"
+on:
+  schedule:
+  - cron: "0 0 * * *"
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/stale@v3
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        days-before-stale: 150
+        days-before-close: 30
+        stale-pr-message: |
+          **tl;dr** our action detected no activity on this PR and will close it in 30 days if the stale label is not removed.
+          
+          OpenMRS welcomes your contribution! It means a lot to us that you want to contribute to equity in healthcare!
+
+          This PR has not seen any activity in the last 5 months. That is why we wanted to check whether you are still working on it or need assistance from our side.
+          Please note that this is an automated message and we might very well be the reason why there has not been any activity lately. We certainly do not want to discourage you from contributing. We do need to be honest in that OpenMRS has limited resources for reviewing PRs.
+
+          If you do not have time to continue the work or have moved on you don’t need to do anything. We will automatically close the PR in 30 days. We hope to see you back soon :)
+          If you would like to continue working on it or require help from us please remove the stale label and respond by commenting on the issue.
+        close-pr-message: |
+          **tl;dr** closing this PR since it has not seen any activity in the last 6 months.
+          
+          OpenMRS welcomes your contribution! It means a lot to us that you want to contribute to equity in healthcare! We certainly do not want to discourage you from contributing. We do need to be honest in that OpenMRS has limited resources for reviewing PRs. Your PR has not seen any activity in the last 6 months. This is why we have decided to close this PR for now. This allows us OpenMRS reviewers to focus our limited time to review all other PRs in a timely and professional manner.
+          
+          Please feel free to reassign yourself to the issue you worked on in our JIRA when you have time to focus on it. After that reopen a new PR and we will be glad to work with you to get your contribution merged. Thank you very much for your help and understanding :)
