@@ -17,7 +17,7 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.StringStartsWith.startsWith;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,19 +39,18 @@ import java.util.Map;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.function.ThrowingRunnable;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Privilege;
 import org.openmrs.customdatatype.datatype.RegexValidatedTextDatatype;
 import org.openmrs.messagesource.MessageSourceService;
-import org.openmrs.test.BaseContextMockTest;
+import org.openmrs.test.jupiter.BaseContextMockTest;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
@@ -69,26 +69,26 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 
 	private static DocumentBuilder documentBuilder;
 	
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	public Path temporaryFolder;
 
 	@Mock
 	private MessageSourceService messageSourceService;
 
 	private ModuleFileParser parser;
 
-	@BeforeClass
+	@BeforeAll
 	public static void setUp() throws ParserConfigurationException {
 		documentBuilderFactory = DocumentBuilderFactory.newInstance();
 		documentBuilder = documentBuilderFactory.newDocumentBuilder();
 	}
 
-	@Before
+	@BeforeEach
 	public void setUpModuleFileParser() {
 		parser = new ModuleFileParser(messageSourceService);
 	}
 
-	@After
+	@AfterEach
 	public void after() {
 		// needed so other are not affected by tests registering a ModuleClassLoader
 		ModuleFactory.moduleClassLoaders = null;
@@ -183,7 +183,7 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 	@Test
 	public void parse_shouldFailIfModuleHasNoConfigXmlInRoot() throws Exception {
 
-		File file = temporaryFolder.newFile("modulewithoutconfig.omod");
+		File file = temporaryFolder.resolve("modulewithoutconfig.omod").toFile();
 		JarOutputStream jar = new JarOutputStream(new FileOutputStream(file));
 		jar.close();
 
@@ -196,7 +196,7 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 	@Test
 	public void parse_shouldFailIfModuleHasConfigXmlInRootWhichCannotBeParsed() throws Exception {
 
-		File file = temporaryFolder.newFile("modulewithoutconfig.omod");
+		File file = temporaryFolder.resolve("modulewithoutconfig.omod").toFile();
 		JarOutputStream jar = createJarWithConfigXmlEntry(file);
 		jar.close();
 
@@ -1165,7 +1165,7 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 		assertThat(module.getAdvicePoints(), is(equalTo(Collections.EMPTY_LIST)));
 	}
 
-	private void expectModuleExceptionWithMessage(ThrowingRunnable executable, String expectedMessage) {
+	private void expectModuleExceptionWithMessage(Executable executable, String expectedMessage) {
 		ModuleException exception = assertThrows(ModuleException.class, executable);
 		assertThat(exception.getMessage(), startsWith(expectedMessage));
 	}
@@ -1386,7 +1386,7 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 	}
 
 	private File writeConfigXmlToFile(Document config) throws IOException {
-		File file = temporaryFolder.newFile("modulefileparsertest.omod");
+		File file = temporaryFolder.resolve("modulefileparsertest.omod").toFile();
 		JarOutputStream jar = createJarWithConfigXmlEntry(file);
 		writeConfigXmlToJar(jar, config);
 		return file;
@@ -1400,7 +1400,7 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 	}
 
 	private File writeConfigXmlToFile(String config) throws IOException {
-		File file = temporaryFolder.newFile("modulefileparsertest.omod");
+		File file = temporaryFolder.resolve("modulefileparsertest.omod").toFile();
 		JarOutputStream jar = createJarWithConfigXmlEntry(file);
 		jar.write(config.getBytes());
 		jar.closeEntry();

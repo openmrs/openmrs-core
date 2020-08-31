@@ -9,6 +9,8 @@
  */
 package org.openmrs.test;
 
+import static org.springframework.test.util.AssertionErrors.assertTrue;
+
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -18,7 +20,6 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.SerializedObjectDAOTest;
 import org.openmrs.module.ModuleConstants;
@@ -88,7 +89,7 @@ public class StartModuleExecutionListener extends AbstractTestExecutionListener 
 					log.error("Error while starting modules: ", e);
 					throw e;
 				}
-				Assert.assertTrue("Some of the modules did not start successfully for "
+				assertTrue("Some of the modules did not start successfully for "
 				        + testContext.getTestClass().getSimpleName() + ". Only " + ModuleFactory.getStartedModules().size()
 				        + " modules started instead of " + startModuleAnnotation.value().length, startModuleAnnotation
 				        .value().length <= ModuleFactory.getStartedModules().size());
@@ -107,6 +108,9 @@ public class StartModuleExecutionListener extends AbstractTestExecutionListener 
 				while (list.hasMoreElements()) {
 					xmlReader.loadBeanDefinitions(new UrlResource(list.nextElement()));
 				}
+				
+				Context.setUseSystemClassLoader(false);
+				ctx.refresh();
 			}
 		}
 	}

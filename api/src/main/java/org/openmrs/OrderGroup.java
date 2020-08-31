@@ -11,6 +11,7 @@ package org.openmrs;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
@@ -72,6 +73,11 @@ public class OrderGroup extends BaseChangeableOpenmrsData {
 	@ManyToOne
 	@JoinColumn(name = "order_group_reason")
 	private Concept orderGroupReason;
+
+	private OrderGroup previousOrderGroup;
+	
+	private Set<OrderGroup> nestedOrderGroups;
+
 	/**
 	 * Gets the orderGroupId
 	 *
@@ -248,7 +254,7 @@ public class OrderGroup extends BaseChangeableOpenmrsData {
 	/**
 	 * Gets the parent order group to maintain linkages between groups and support group nesting
 	 * 
-	 * @param returns the parent order group
+	 * @return the parent order group
 	 * @since 2.4.0
 	 */
 	public OrderGroup getParentOrderGroup() {
@@ -269,7 +275,7 @@ public class OrderGroup extends BaseChangeableOpenmrsData {
 	 * Gets the order group reason which denotes the reason why the group was
 	 * ordered
 	 * 
-	 * @param Returns the order group reason
+	 * @return the order group reason
 	 * @since 2.4.0
 	 */
 	public Concept getOrderGroupReason() {
@@ -285,5 +291,49 @@ public class OrderGroup extends BaseChangeableOpenmrsData {
 	 */
 	public void setOrderGroupReason(Concept orderGroupReason) {
 		this.orderGroupReason = orderGroupReason;
+	}
+	
+	/**
+	 * Gets the previous order group to other order groups, to maintain linkages
+	 * between groups and support group nesting
+	 * 
+	 * @param returns the previous order group
+	 * @since 2.4.0
+	 */
+	public OrderGroup getPreviousOrderGroup() {
+		return previousOrderGroup;
+	}
+
+	/**
+	 * Sets the previous order group to other order groups, to maintain linkages
+	 * between groups and support group nesting
+	 * 
+	 * @param previousOrderGroup The previous order group to set
+	 * @since 2.4.0
+	 */
+	public void setPreviousOrderGroup(OrderGroup previousOrderGroup) {
+		this.previousOrderGroup = previousOrderGroup;
+	}
+	
+	/**
+	 * Gets the nested order groups to other order groups, to maintain linkages
+	 * between groups and support group nesting
+	 * 
+	 * @param returns the nested order groups
+	 * @since 2.4.0
+	 */
+	public Set<OrderGroup> getNestedOrderGroups() {
+		return this.nestedOrderGroups;
+	}
+	
+	/**
+	 * Sets the nested order groups to other order groups, to maintain linkages
+	 * between groups and support group nesting.
+	 * 
+	 * @param nestedOrderGroup The nested order groups to set
+	 * @since 2.4.0
+	 */
+	public void setNestedOrderGroups(Set<OrderGroup> nestedOrderGroups) {
+		this.nestedOrderGroups = nestedOrderGroups;
 	}
 }

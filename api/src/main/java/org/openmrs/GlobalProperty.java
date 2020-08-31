@@ -15,7 +15,6 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.CustomValueDescriptor;
-import org.openmrs.customdatatype.InvalidCustomValueException;
 import org.openmrs.customdatatype.SingleCustomValue;
 
 /**

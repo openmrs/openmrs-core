@@ -9,12 +9,15 @@
  */
 package org.openmrs.validator;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.Provider;
@@ -22,7 +25,7 @@ import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -40,7 +43,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	
 	private static final String OTHERS_PROVIDERS_XML = "org/openmrs/api/include/ProviderServiceTest-otherProviders.xml";
 	
-	@Before
+	@BeforeEach
 	public void setup() {
 		provider = new Provider();
 		errors = new BindException(provider, "provider");
@@ -68,7 +71,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 		providerValidator.validate(provider, errors);
 		
 		//then
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -83,7 +86,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 		providerValidator.validate(provider, errors);
 		
 		//then
-		Assert.assertFalse(errors.hasFieldErrors("identifier"));
+		assertFalse(errors.hasFieldErrors("identifier"));
 	}
 	
 	/**
@@ -97,16 +100,16 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 		
 		providerValidator.validate(provider, errors);
 		
-		Assert.assertTrue(errors.hasErrors());
-		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
-		Assert.assertEquals("Provider.error.retireReason.required", errors.getFieldError("retireReason").getCode());
+		assertTrue(errors.hasErrors());
+		assertTrue(errors.hasFieldErrors("retireReason"));
+		assertEquals("Provider.error.retireReason.required", errors.getFieldError("retireReason").getCode());
 		
 		errors = new BindException(provider, "provider");
 		provider.setRetireReason("getting old..");
 		
 		providerValidator.validate(provider, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -122,11 +125,11 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 		providerValidator.validate(provider, errors);
 		
 		//then
-		Assert.assertTrue(errors.hasErrors());
-		Assert.assertTrue(errors.hasFieldErrors("name"));
-		Assert.assertTrue(errors.hasFieldErrors("person"));
-		Assert.assertEquals("Provider.error.personOrName.required", errors.getFieldError("name").getCode());
-		Assert.assertEquals("Provider.error.personOrName.required", errors.getFieldError("person").getCode());
+		assertTrue(errors.hasErrors());
+		assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("person"));
+		assertEquals("Provider.error.personOrName.required", errors.getFieldError("name").getCode());
+		assertEquals("Provider.error.personOrName.required", errors.getFieldError("person").getCode());
 	}
 	
 	/**
@@ -142,7 +145,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 		providerValidator.validate(provider, errors);
 		
 		//then
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -161,7 +164,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 		provider.addAttribute(makeAttribute("one"));
 		Errors errors = new BindException(provider, "provider");
 		new ProviderValidator().validate(provider, errors);
-		Assert.assertTrue(errors.hasFieldErrors("activeAttributes"));
+		assertTrue(errors.hasFieldErrors("activeAttributes"));
 	}
 	
 	/**
@@ -177,7 +180,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 		provider.addAttribute(makeAttribute("three"));
 		provider.addAttribute(makeAttribute("four"));
 		new ProviderValidator().validate(provider, errors);
-		Assert.assertTrue(errors.hasFieldErrors("activeAttributes"));
+		assertTrue(errors.hasFieldErrors("activeAttributes"));
 	}
 	
 	private ProviderAttribute makeAttribute(String serializedValue) {
@@ -199,7 +202,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 		existingProviderToEdit.setIdentifier(duplicateProvider.getIdentifier());
 		
 		providerValidator.validate(existingProviderToEdit, errors);
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -209,13 +212,13 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldAcceptDuplicateIdentifierIfTheExistingProviderIsRetired() {
 		executeDataSet(OTHERS_PROVIDERS_XML);
 		Provider duplicateRetiredProvider = providerService.getProvider(201);
-		Assert.assertTrue(duplicateRetiredProvider.getRetired());
+		assertTrue(duplicateRetiredProvider.getRetired());
 		
 		Provider provider = providerService.getProvider(1);
 		provider.setIdentifier(duplicateRetiredProvider.getIdentifier());
 		
 		providerValidator.validate(provider, errors);
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -224,13 +227,13 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldAcceptADuplicateIdentifierForANewProviderWhichIsNotRetired() {
 		Provider duplicateProvider = providerService.getProvider(1);
-		Assert.assertFalse(duplicateProvider.getRetired());
+		assertFalse(duplicateProvider.getRetired());
 		
 		Provider provider = new Provider();
 		provider.setIdentifier(duplicateProvider.getIdentifier());
 		
 		providerValidator.validate(provider, errors);
-		Assert.assertFalse(errors.hasFieldErrors("identifier"));
+		assertFalse(errors.hasFieldErrors("identifier"));
 	}
 	
 	/**
@@ -240,14 +243,14 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldAcceptADuplicateIdentifierForANewProviderWhichIsRetired() {
 		executeDataSet(OTHERS_PROVIDERS_XML);
 		Provider duplicateProvider = providerService.getProvider(1);
-		Assert.assertFalse(duplicateProvider.getRetired());
+		assertFalse(duplicateProvider.getRetired());
 		
 		Provider providerToValidate = providerService.getProvider(201);
-		Assert.assertTrue(providerToValidate.getRetired());
+		assertTrue(providerToValidate.getRetired());
 		providerToValidate.setIdentifier(duplicateProvider.getIdentifier());
 		
 		providerValidator.validate(providerToValidate, errors);
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -268,7 +271,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 		provider.setPerson(person);
 		
 		providerValidator.validate(provider, errors);
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -285,7 +288,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(provider, "type");
 		providerValidator.validate(provider, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("identifier"));
-		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+		assertTrue(errors.hasFieldErrors("identifier"));
+		assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 }

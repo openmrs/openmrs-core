@@ -11,20 +11,12 @@ package org.openmrs;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-
 import org.hibernate.search.annotations.ContainedIn;
-import org.hibernate.search.annotations.Field;
 
 /**
  * Defines a Patient in the system. A patient is simply an extension of a person and all that that

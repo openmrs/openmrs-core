@@ -37,7 +37,7 @@ public interface LogicContext {
 	 * @param token
 	 * @return <code>Result</code> of the evaluation
 	 * @throws LogicException
-	 * @see org.openmrs.logic.LogicService#eval(Patient, String)
+	 * @see org.openmrs.logic.LogicService#eval(Integer, String)
 	 */
 	public Result eval(Integer patientId, String token) throws LogicException;
 	
@@ -49,7 +49,7 @@ public interface LogicContext {
 	 * @param parameters
 	 * @return <code>Result</code> of the evaluation
 	 * @throws LogicException
-	 * @see org.openmrs.logic.LogicService#eval(Patient, String, Map)
+	 * @see org.openmrs.logic.LogicService#eval(Integer, String, Map)
 	 */
 	public Result eval(Integer patientId, String token, Map<String, Object> parameters) throws LogicException;
 	
@@ -61,7 +61,7 @@ public interface LogicContext {
 	 * @param parameters
 	 * @return A <code>Result</code> object with the result of the evaluation
 	 * @throws LogicException
-	 * @see org.openmrs.logic.LogicService#eval(Patient, LogicCriteria, Map)
+	 * @see org.openmrs.logic.LogicService#eval(Integer, LogicCriteria, Map)
 	 */
 	public Result eval(Integer patientId, LogicCriteria criteria, Map<String, Object> parameters) throws LogicException;
 	

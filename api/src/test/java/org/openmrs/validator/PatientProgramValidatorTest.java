@@ -9,7 +9,11 @@
  */
 package org.openmrs.validator;
 
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -17,8 +21,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
@@ -26,7 +29,7 @@ import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -43,7 +46,7 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 		PatientProgram program = new PatientProgram();
 		BindException errors = new BindException(program, "program");
 		new PatientProgramValidator().validate(program, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("patient"));
+		assertTrue(errors.hasFieldErrors("patient"));
 	}
 	
 	/**
@@ -68,7 +71,7 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 		
 		BindException errors = new BindException(program, "");
 		new PatientProgramValidator().validate(program, errors);
-		Assert.assertTrue(errors.hasFieldErrors("states"));
+		assertTrue(errors.hasFieldErrors("states"));
 	}
 	
 	/**
@@ -78,14 +81,14 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailIfThereIsMoreThanOnePatientStateWithTheSameStatesAndStartDates() {
 		PatientProgram program = Context.getProgramWorkflowService().getPatientProgram(1);
 		Set<PatientState> states = program.getStates();
-		Assert.assertNotNull(states);
+		assertNotNull(states);
 		PatientState patientState = states.iterator().next();
 		PatientState duplicate = patientState.copy();
 		states.add(duplicate);
 		
 		BindException errors = new BindException(program, "");
 		new PatientProgramValidator().validate(program, errors);
-		Assert.assertTrue(errors.hasFieldErrors("states"));
+		assertTrue(errors.hasFieldErrors("states"));
 	}
 	
 	/**
@@ -99,7 +102,7 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 		
 		BindException errors = new BindException(program, "");
 		new PatientProgramValidator().validate(program, errors);
-		Assert.assertTrue(errors.hasFieldErrors("states"));
+		assertTrue(errors.hasFieldErrors("states"));
 	}
 	
 	/**
@@ -119,7 +122,7 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailIfAnyPatientStatesOverlapEachOtherInTheSameWorkFlow() throws InterruptedException {
 		PatientProgram program = Context.getProgramWorkflowService().getPatientProgram(1);
 		//Addition of new states to this program in the test data can make this test useless, so catch it her
-		Assert.assertEquals(1, program.getStates().size());
+		assertEquals(1, program.getStates().size());
 		PatientState patientState1 = program.getStates().iterator().next();
 		
 		//Add a state that comes after patientState1
@@ -135,7 +138,7 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 		
 		BindException errors = new BindException(program, "");
 		new PatientProgramValidator().validate(program, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("states"));
+		assertTrue(errors.hasFieldErrors("states"));
 	}
 	
 	/**
@@ -157,14 +160,14 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailIfAPatientProgramHasDuplicateStatesInTheSameWorkFlow() {
 		PatientProgram program = Context.getProgramWorkflowService().getPatientProgram(1);
 		Set<PatientState> states = program.getStates();
-		Assert.assertNotNull(states);
+		assertNotNull(states);
 		PatientState patientState = states.iterator().next();
 		PatientState duplicate = patientState.copy();
 		states.add(duplicate);
 		
 		BindException errors = new BindException(program, "");
 		new PatientProgramValidator().validate(program, errors);
-		Assert.assertTrue(errors.hasFieldErrors("states"));
+		assertTrue(errors.hasFieldErrors("states"));
 	}
 	
 	/**
@@ -179,7 +182,7 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 		
 		BindException errors = new BindException(program, "");
 		new PatientProgramValidator().validate(program, errors);
-		Assert.assertTrue(errors.hasFieldErrors("states"));
+		assertTrue(errors.hasFieldErrors("states"));
 	}
 	
 	/**
@@ -195,7 +198,7 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 		patientState.setEndDate(null);
 		BindException errors = new BindException(program, "");
 		new PatientProgramValidator().validate(program, errors);
-		Assert.assertTrue(errors.hasFieldErrors("states"));
+		assertTrue(errors.hasFieldErrors("states"));
 	}
 	
 	/**
@@ -221,13 +224,13 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldPassIfTheStartDateOfTheFirstPatientStateInTheWorkFlowIsNull() {
 		PatientProgram program = Context.getProgramWorkflowService().getPatientProgram(1);
-		Assert.assertEquals(1, program.getStates().size());//sanity check
+		assertEquals(1, program.getStates().size());//sanity check
 		PatientState patientState = program.getStates().iterator().next();
 		patientState.setStartDate(null);
 		
 		BindException errors = new BindException(program, "");
 		new PatientProgramValidator().validate(program, errors);
-		Assert.assertEquals(false, errors.hasFieldErrors("states"));
+		assertFalse(errors.hasFieldErrors("states"));
 	}
 	
 	/**
@@ -243,7 +246,7 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 		
 		BindException errors = new BindException(program, "");
 		new PatientProgramValidator().validate(program, errors);
-		Assert.assertEquals(false, errors.hasFieldErrors("states"));
+		assertFalse(errors.hasFieldErrors("states"));
 	}
 	
 	/**
@@ -269,7 +272,7 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 		
 		BindException errors = new BindException(pp, "");
 		new PatientProgramValidator().validate(pp, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("states"));
+		assertTrue(errors.hasFieldErrors("states"));
 	}
 	
 	/**
@@ -299,7 +302,7 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 		
 		BindException errors = new BindException(pp, "");
 		new PatientProgramValidator().validate(pp, errors);
-		Assert.assertEquals(false, errors.hasFieldErrors("states"));
+		assertFalse(errors.hasFieldErrors("states"));
 	}
 	
 	/**
@@ -317,7 +320,7 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 		
 		BindException errors = new BindException(program, "");
 		new PatientProgramValidator().validate(program, errors);
-		Assert.assertTrue(errors.hasFieldErrors("dateCompleted"));
+		assertTrue(errors.hasFieldErrors("dateCompleted"));
 	}
 	
 	/**
@@ -331,7 +334,7 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 		
 		BindException errors = new BindException(program, "");
 		new PatientProgramValidator().validate(program, errors);
-		Assert.assertTrue(errors.hasFieldErrors("dateEnrolled"));
+		assertTrue(errors.hasFieldErrors("dateEnrolled"));
 	}
 	
 	/**
@@ -345,7 +348,7 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 		
 		BindException errors = new BindException(program, "");
 		new PatientProgramValidator().validate(program, errors);
-		Assert.assertTrue(errors.hasFieldErrors("dateCompleted"));
+		assertTrue(errors.hasFieldErrors("dateCompleted"));
 	}
 	
 	/**
@@ -358,7 +361,7 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 		
 		BindException errors = new BindException(program, "");
 		new PatientProgramValidator().validate(program, errors);
-		Assert.assertTrue(errors.hasFieldErrors("dateEnrolled"));
+		assertTrue(errors.hasFieldErrors("dateEnrolled"));
 	}
 	
 	/**
@@ -378,7 +381,7 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 		
 		BindException errors = new BindException(pp, "program");
 		new PatientProgramValidator().validate(pp, errors);
-		Assert.assertEquals(false, errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -399,6 +402,6 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 		
 		BindException errors = new BindException(pp, "program");
 		new PatientProgramValidator().validate(pp, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("voidReason"));
+		assertTrue(errors.hasFieldErrors("voidReason"));
 	}
 }

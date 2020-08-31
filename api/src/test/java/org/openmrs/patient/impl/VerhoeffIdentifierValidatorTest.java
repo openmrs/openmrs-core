@@ -9,12 +9,15 @@
  */
 package org.openmrs.patient.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.Test;
+import java.util.stream.IntStream;
+
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -77,24 +80,15 @@ public class VerhoeffIdentifierValidatorTest {
 	public void isValid_shouldFailWithInvalidIdentifiers() {
 		//Make sure invalid identifiers throw an exception
 		for (String invalidIdentifier: invalidIdentifiers) {
-			try {
-				validator.isValid(invalidIdentifier);
-				fail("Identifier " + invalidIdentifier + " should have failed.");
-			} catch (Exception e) { /* Expected */ }
+			assertThrows(Exception.class, () -> validator.isValid(invalidIdentifier));
 		}
 	}
 
 	@Test
 	public void isValid_shouldFailWithInvalidSuffixes() {
 		for (String allowedIdentifier : allowedIdentifiers) {
-			try {
-				validator.isValid(allowedIdentifier + "-X");
-				fail("Identifier " + allowedIdentifier + " should have failed.");
-			} catch (Exception e) { /* Expected */ }
-			try {
-				validator.isValid(allowedIdentifier + "-10");
-				fail("Identifier " + allowedIdentifier + " should have failed.");
-			} catch (Exception e) { /* Expected */ }
+			assertThrows(Exception.class, () -> validator.isValid(allowedIdentifier + "-X"));
+			assertThrows(Exception.class, () -> validator.isValid(allowedIdentifier + "-10"));
 		}
 	}
 
@@ -116,13 +110,9 @@ public class VerhoeffIdentifierValidatorTest {
 
 	@Test
 	public void isValid_shouldFailWithNumericSuffixes() {
-		for (int i = 0; i < allowedIdentifiers.length; i++) {
-			try {
-				validator.isValid(allowedIdentifiers[i] + "-" + allowedIdentifiersCheckDigitsInt[i]);
-				fail("Identifier " + allowedIdentifiers[i] + " should have failed.");
-			}
-			catch (Exception e) { /* Expected */ }
-		}
+		IntStream.range(0, allowedIdentifiers.length).forEach (i ->
+			assertThrows(Exception.class,
+				() -> validator.isValid(allowedIdentifiers[i] + "-" + allowedIdentifiersCheckDigitsInt[i])));
 	}
 
 	@Test
@@ -164,7 +154,7 @@ public class VerhoeffIdentifierValidatorTest {
 				allowedIdentifier = allowedIdentifier.substring(1) + allowedIdentifier.charAt(0);
 			}
 		}
-		assertTrue(failures + " transposed digits were not detected:\n" + failureMsg, failures == 0);
+		assertEquals(0, failures, "transposed digits were not detected:\n" + failureMsg);
 	}
 
 }

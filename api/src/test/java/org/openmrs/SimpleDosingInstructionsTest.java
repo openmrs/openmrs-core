@@ -9,17 +9,18 @@
  */
 package org.openmrs;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.openmrs.test.TestUtil.createDateTime;
 
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Random;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -37,8 +38,8 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 		
 		new SimpleDosingInstructions().validate(drugOrder, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("durationUnits"));
-		Assert.assertEquals("DrugOrder.error.durationUnitsNotMappedToSnomedCtDurationCode", errors.getFieldError(
+		assertTrue(errors.hasFieldErrors("durationUnits"));
+		assertEquals("DrugOrder.error.durationUnitsNotMappedToSnomedCtDurationCode", errors.getFieldError(
 		    "durationUnits").getCode());
 	}
 	
@@ -55,7 +56,7 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 		
 		new SimpleDosingInstructions().validate(drugOrder, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	@Test
@@ -67,7 +68,7 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 		
 		new SimpleDosingInstructions().validate(drugOrder, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	@Test
@@ -204,6 +205,6 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 		
 		new SimpleDosingInstructions().validate(drugOrder, errors);
 		
-		assertEquals(true, errors.hasErrors());
+		assertTrue(errors.hasErrors());
 	}
 }
