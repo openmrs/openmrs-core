@@ -658,15 +658,11 @@ public class ServiceContext implements ApplicationContextAware {
 		synchronized (refreshingContextLock) {
 			try {
 				while (refreshingContext) {
-					if (log.isDebugEnabled()) {
-						log.debug("Waiting to get service: " + cls + " while the context is being refreshed");
-					}
+					log.debug("Waiting to get service: {} while the context is being refreshed", cls);
 					
 					refreshingContextLock.wait();
 					
-					if (log.isDebugEnabled()) {
-						log.debug("Finished waiting to get service " + cls + " while the context was being refreshed");
-					}
+					log.debug("Finished waiting to get service {} while the context was being refreshed", cls);
 				}
 				
 			}

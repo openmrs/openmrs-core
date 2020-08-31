@@ -63,11 +63,9 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 		// used by htmlInclude tag
 		httpRequest.setAttribute(WebConstants.INIT_REQ_UNIQUE_ID, String.valueOf(System.currentTimeMillis()));
 		
-		if (log.isDebugEnabled()) {
-			log.debug("requestURI " + httpRequest.getRequestURI());
-			log.debug("requestURL " + httpRequest.getRequestURL());
-			log.debug("request path info " + httpRequest.getPathInfo());
-		}
+		log.debug("requestURI {}", httpRequest.getRequestURI());
+		log.debug("requestURL {}", httpRequest.getRequestURL());
+		log.debug("request path info {}", httpRequest.getPathInfo());
 		
 		// User context is created if it doesn't already exist and added to the session
 		// note: this usercontext storage logic is copied to webinf/view/uncaughtexception.jsp to 
@@ -83,9 +81,7 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 			userContext = new UserContext(Context.getAuthenticationScheme());
 			httpSession.setAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR, userContext);
 			
-			if (log.isDebugEnabled()) {
-				log.debug("Just set user context " + userContext + " as attribute on session");
-			}
+			log.debug("Just set user context {} as attribute on session", userContext);
 		} else {
 			// set username as attribute on session so parent servlet container 
 			// can identify sessions easier
