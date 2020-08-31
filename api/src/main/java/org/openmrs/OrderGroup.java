@@ -44,8 +44,7 @@ public class OrderGroup extends BaseChangeableOpenmrsData {
 	
 	@Id
 	@Column(name = "order_group_id")
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_group_id_gen")
-	@SequenceGenerator(name = "order_group_id_gen", sequenceName = "order_group_order_group_id_seq")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer orderGroupId;
 	
 	@ManyToOne
