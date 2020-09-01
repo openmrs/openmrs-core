@@ -13,10 +13,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.openmrs.api.APIException;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -73,8 +78,16 @@ public class OrderGroup extends BaseChangeableOpenmrsData {
 	@JoinColumn(name = "order_group_reason")
 	private Concept orderGroupReason;
 
+	@ManyToOne
+	@JoinColumn(name = "previous_order_group")
 	private OrderGroup previousOrderGroup;
 	
+	@OneToMany
+	@Access(AccessType.FIELD)
+	@BatchSize(size = 25)
+	@Cascade(CascadeType.DELETE)
+	@OrderBy(value = "order_group_id")
+	@JoinColumn(name = "order_group_id", insertable = false, updatable = false)
 	private Set<OrderGroup> nestedOrderGroups;
 
 	/**
