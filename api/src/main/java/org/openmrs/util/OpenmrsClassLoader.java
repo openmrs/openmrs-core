@@ -544,18 +544,13 @@ public class OpenmrsClassLoader extends URLClassLoader {
 								}
 							}
 							catch (Exception t) {
-								if (log.isDebugEnabled()) {
-									log.debug("Could not set field " + field.getName() + " to null in class "
-											+ clazz.getName(), t);
-								}
+								log.debug("Could not set field {} to null in class {}", field.getName(), clazz.getName(), t);
 							}
 						}
 					}
 				}
 				catch (Exception t) {
-					if (log.isDebugEnabled()) {
-						log.debug("Could not clean fields for class " + clazz.getName(), t);
-					}
+					log.debug("Could not clean fields for class {}", clazz.getName(), t);
 				}
 			}
 		}
