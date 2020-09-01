@@ -57,12 +57,6 @@
 		<property name="retireReason" type="java.lang.String" column="retire_reason" length="255" />
 
 		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
-
-		<property name="cycleNumber" type="int" column="cycle_number" length="11" />
-
-		<property name="numberOfCyclesInTheRegimen" type="int" column="number_of_cycles_in_the_regimen" length="11" />
-
-		<property name="lengthOfCyclesInTheRegimen" type="int" column="length_of_cycles_in_the_regimen" length="11" />
 		
 	</class>
 
