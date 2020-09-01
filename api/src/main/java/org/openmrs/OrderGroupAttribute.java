@@ -21,10 +21,18 @@ public class OrderGroupAttribute extends BaseAttribute<OrderGroupAttributeType, 
 
 	private Integer orderGroupAttributeId;
 
+	// BaseAttribute<OrderGroup> has an "owner" property of type OrderGroup, which we re-expose as "orderGroup"
+
+	/**
+	 * @return the orderGroupAttributeId
+	 */
 	public Integer getOrderGroupAttributeId() {
 		return orderGroupAttributeId;
 	}
-	
+
+	/**
+	 * @param orderGroupAttributeId the orderGroupAttributeId to set
+	 */
 	public void setOrderGroupAttributeId(Integer orderGroupAttributeId) {
 		this.orderGroupAttributeId = orderGroupAttributeId;
 	}

@@ -12,6 +12,11 @@ package org.openmrs;
 import org.openmrs.attribute.AttributeType;
 import org.openmrs.attribute.BaseAttributeType;
 
+/**
+ * A user-defined extension to the {@link OrderGroup} class.
+ * @see AttributeType
+ * @since 2.4.0
+ */
 public class OrderGroupAttributeType extends BaseAttributeType<OrderGroup> implements AttributeType<OrderGroup> {
 	
 	private Integer orderGroupAttributeTypeId;

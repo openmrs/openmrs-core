@@ -1092,6 +1092,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeTypes()
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public List<OrderGroupAttributeType> getAllOrderGroupAttributeTypes() throws APIException {
 		return dao.getAllOrderGroupAttributeTypes();
 	}
@@ -1100,6 +1101,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeTypeById()
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public OrderGroupAttributeType getOrderGroupAttributeType(Integer id) throws APIException {
 		return dao.getOrderGroupAttributeType(id);
 	}
@@ -1108,6 +1110,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeTypeByUuid()
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public OrderGroupAttributeType getOrderGroupAttributeTypeByUuid(String uuid)throws APIException {
 		return dao.getOrderGroupAttributeTypeByUuid(uuid);
 	}
@@ -1148,6 +1151,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeTypeByName()
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public OrderGroupAttributeType getOrderGroupAttributeTypeByName(String orderGroupAttributeTypeName)throws APIException {
 		return dao.getOrderGroupAttributeTypeByName(orderGroupAttributeTypeName);
 	}
@@ -1156,6 +1160,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeByUuid()
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public OrderGroupAttribute getOrderGroupAttributeByUuid(String uuid)throws APIException {
 		return dao.getOrderGroupAttributeByUuid(uuid);
 	}

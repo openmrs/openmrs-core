@@ -772,7 +772,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public void deleteOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws DAOException{
-		       sessionFactory.getCurrentSession().delete(orderGroupAttributeType);
+		sessionFactory.getCurrentSession().delete(orderGroupAttributeType);
 	}
 
 	/**
