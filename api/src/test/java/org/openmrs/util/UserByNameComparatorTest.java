@@ -9,12 +9,13 @@
  */
 package org.openmrs.util;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.User;
@@ -58,9 +59,9 @@ public class UserByNameComparatorTest {
 		
 		// make sure that the users are sorted in the expected order
 		Iterator<User> it = listToSort.iterator();
-		Assert.assertTrue("Expected user1 to be the first in the sorted user list but wasn't", user1.equals(it.next()));
-		Assert.assertTrue("Expected user2 to be the second in the sorted user list but wasn't", user2.equals(it.next()));
-		Assert.assertTrue("Expected user3 to be the third in the sorted user list but wasn't", user3.equals(it.next()));
-		Assert.assertTrue("Expected user4 to be the fourth in the sorted user list but wasn't", user4.equals(it.next()));
+		assertTrue(user1.equals(it.next()), "Expected user1 to be the first in the sorted user list but wasn't");
+		assertTrue(user2.equals(it.next()), "Expected user2 to be the second in the sorted user list but wasn't");
+		assertTrue(user3.equals(it.next()), "Expected user3 to be the third in the sorted user list but wasn't");
+		assertTrue(user4.equals(it.next()), "Expected user4 to be the fourth in the sorted user list but wasn't");
 	}
 }

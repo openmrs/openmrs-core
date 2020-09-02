@@ -9,12 +9,12 @@
  */
 package org.openmrs.module;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.AfterClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests methods of the module activator that do not require refreshing of the spring application
@@ -179,7 +179,7 @@ public class ModuleActivatorTest extends BaseModuleActivatorTest {
 		assertTrue(moduleTestData.getStartedCallTime(MODULE5_ID) <= moduleTestData.getStartedCallTime(MODULE4_ID));
 	}
 	
-	@AfterClass
+	@AfterAll
 	public static void cleanUp() {
 		//ensure that we do not have any left overs to interfere with other tests
 		ModuleUtil.shutdown();

@@ -38,9 +38,8 @@ public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.
 	
 	// Fields
 	@Id
-	@Column(name = "concept_answer_id", nullable = false)
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "concept_answer_id_gen")
-	@SequenceGenerator(name = "concept_answer_id_gen", sequenceName = "concept_answer_concept_answer_id_seq")
+	@Column(name = "concept_answer_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer conceptAnswerId;
 	
 	/**

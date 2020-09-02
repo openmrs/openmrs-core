@@ -9,11 +9,13 @@
  */
 package org.openmrs.validator;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 import org.openmrs.VisitAttributeType;
 import org.openmrs.customdatatype.datatype.RegexValidatedTextDatatype;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -35,7 +37,7 @@ public class VisitAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(visitAttributeType, "visitAttributeType");
 		new VisitAttributeTypeValidator().validate(visitAttributeType, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -59,10 +61,10 @@ public class VisitAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(visitAttributeType, "visitAttributeType");
 		new VisitAttributeTypeValidator().validate(visitAttributeType, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("name"));
-		Assert.assertTrue(errors.hasFieldErrors("description"));
-		Assert.assertTrue(errors.hasFieldErrors("datatypeClassname"));
-		Assert.assertTrue(errors.hasFieldErrors("preferredHandlerClassname"));
-		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+		assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("description"));
+		assertTrue(errors.hasFieldErrors("datatypeClassname"));
+		assertTrue(errors.hasFieldErrors("preferredHandlerClassname"));
+		assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 }

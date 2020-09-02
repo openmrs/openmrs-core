@@ -9,16 +9,17 @@
  */
 package org.openmrs.propertyeditor;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.beans.PropertyEditor;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.OpenmrsObject;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
  * Serves as a base test that covers the common implementation of OpenMRS {@code PropertyEditor's}.
@@ -34,7 +35,7 @@ import org.openmrs.test.BaseContextSensitiveTest;
  * @param <T> the {@link OpenmrsObject} to be translated to or from text
  * @param <E> the {@link PropertyEditor} under test
  */
-public abstract class BasePropertyEditorTest<T extends OpenmrsObject, E extends PropertyEditor> extends BaseContextSensitiveTest {
+abstract class BasePropertyEditorTest<T extends OpenmrsObject, E extends PropertyEditor> extends BaseContextSensitiveTest {
 	
 	private static final String NON_EXISTING_ID = "999999";
 	
@@ -66,7 +67,7 @@ public abstract class BasePropertyEditorTest<T extends OpenmrsObject, E extends 
 		return NON_EXISTING_UUID;
 	}
 	
-	@Before
+	@BeforeEach
 	public void setUp() {
 		editor = getNewEditor();
 	}
@@ -95,10 +96,10 @@ public abstract class BasePropertyEditorTest<T extends OpenmrsObject, E extends 
 		assertNull(editor.getValue());
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void shouldFailToSetTheEditorValueIfGivenUuidDoesNotExist() {
 		
-		editor.setAsText(getNonExistingObjectUuid());
+		assertThrows(IllegalArgumentException.class, () -> editor.setAsText(getNonExistingObjectUuid()));
 	}
 	
 	@Test

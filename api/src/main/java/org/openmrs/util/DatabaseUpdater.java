@@ -663,7 +663,7 @@ public class DatabaseUpdater {
 		List<String> liquibaseUpdateFilenames = changeLogDetective.getUnrunLiquibaseUpdateFileNames(initialSnapshotVersion,
 		    CONTEXT, liquibaseProvider);
 		
-		if (liquibaseUpdateFilenames.size() > 0) {
+		if (!liquibaseUpdateFilenames.isEmpty()) {
 			return getUnrunDatabaseChanges(liquibaseUpdateFilenames.toArray(new String[0]));
 		}
 		

@@ -12,24 +12,26 @@ package org.openmrs.api.db;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
+import javax.annotation.Resource;
 import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
 
-import javax.annotation.Resource;
-
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.User;
 import org.openmrs.UserSessionListener;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.db.hibernate.HibernateContextDAO;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.stereotype.Component;
 
 /**
@@ -54,7 +56,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	@Before
+	@BeforeEach
 	public void runExtraSetup() {
 		executeDataSet("org/openmrs/api/db/include/contextDAOTest.xml");
 		
@@ -69,7 +71,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	 * Methods in this class might authenticate with a different user, so log that user out after
 	 * this whole junit class is done.
 	 */
-	@AfterClass
+	@AfterAll
 	public static void logOutAfterThisTest() {
 		Context.logout();
 	}
@@ -80,7 +82,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void authenticate_shouldAuthenticateGivenUsernameAndPassword() {
 		User u = dao.authenticate("admin", "test");
-		Assert.assertEquals("Should be the admin user", "admin", u.getUsername());
+		assertEquals("admin", u.getUsername(), "Should be the admin user");
 	}
 	
 	/**
@@ -89,7 +91,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void authenticate_shouldAuthenticateGivenSystemIdAndPassword() {
 		User u = dao.authenticate("1-8", "test");
-		Assert.assertEquals("Should be the 1-8 user", "1-8", u.getSystemId());
+		assertEquals("1-8", u.getSystemId(), "Should be the 1-8 user");
 	}
 	
 	/**
@@ -100,87 +102,87 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void authenticate_shouldAuthenticateGivenSystemIdWithoutHyphenAndPassword() {
 		User u = dao.authenticate("18", "test");
-		Assert.assertEquals("Should be the 1-8 user", "1-8", u.getSystemId());
+		assertEquals("1-8", u.getSystemId(), "Should be the 1-8 user");
 	}
 	
 	/**
 	 * @see ContextDAO#authenticate(String,String)
 	 */
-	@Test(expected = ContextAuthenticationException.class)
+	@Test
 	public void authenticate_shouldNotAuthenticateGivenUsernameAndIncorrectPassword() {
-		dao.authenticate("admin", "wrong");
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "wrong"));
 	}
 	
 	/**
 	 * @see ContextDAO#authenticate(String,String)
 	 */
-	@Test(expected = ContextAuthenticationException.class)
+	@Test
 	public void authenticate_shouldNotAuthenticateGivenSystemIdAndIncorrectPassword() {
-		dao.authenticate("1-8", "wrong");
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("1-8", "wrong"));
 	}
 	
 	/**
 	 * @see ContextDAO#authenticate(String,String)
 	 */
-	@Test(expected = ContextAuthenticationException.class)
+	@Test
 	public void authenticate_shouldNotAuthenticateGivenIncorrectUsername() {
-		dao.authenticate("administrator", "test");
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("administrator", "test"));
 	}
 	
 	/**
 	 * @see ContextDAO#authenticate(String,String)
 	 */
-	@Test(expected = ContextAuthenticationException.class)
+	@Test
 	public void authenticate_shouldNotAuthenticateGivenIncorrectSystemId() {
-		dao.authenticate("1-9", "test");
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("1-9", "test"));
 	}
 	
 	/**
 	 * @see ContextDAO#authenticate(String,String)
 	 */
-	@Test(expected = ContextAuthenticationException.class)
+	@Test
 	public void authenticate_shouldNotAuthenticateGivenNullLogin() {
-		dao.authenticate(null, "test");
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate(null, "test"));
 	}
 	
 	/**
 	 * @see ContextDAO#authenticate(String,String)
 	 */
-	@Test(expected = ContextAuthenticationException.class)
+	@Test
 	public void authenticate_shouldNotAuthenticateGivenEmptyLogin() {
-		dao.authenticate("", "test");
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("", "test"));
 	}
 	
 	/**
 	 * @see ContextDAO#authenticate(String,String)
 	 */
-	@Test(expected = ContextAuthenticationException.class)
+	@Test
 	public void authenticate_shouldNotAuthenticateWhenPasswordInDatabaseIsNull() {
-		dao.authenticate("admin", null);
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", null));
 	}
 	
 	/**
 	 * @see ContextDAO#authenticate(String,String)
 	 */
-	@Test(expected = ContextAuthenticationException.class)
+	@Test
 	public void authenticate_shouldNotAuthenticateGivenNonNullPasswordWhenPasswordInDatabaseIsNull() {
-		dao.authenticate("nullpassword", "password");
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("nullpassword", "password"));
 	}
 	
 	/**
 	 * @see ContextDAO#authenticate(String,String)
 	 */
-	@Test(expected = ContextAuthenticationException.class)
+	@Test
 	public void authenticate_shouldNotAuthenticateGivenNullPasswordWhenPasswordInDatabaseIsNull() {
-		dao.authenticate("nullpassword", null);
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("nullpassword", null));
 	}
 	
 	/**
 	 * @see ContextDAO#authenticate(String,String)
 	 */
-	@Test(expected = ContextAuthenticationException.class)
+	@Test
 	public void authenticate_shouldNotAuthenticateWhenPasswordInDatabaseIsEmpty() {
-		dao.authenticate("emptypassword", "");
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("emptypassword", ""));
 	}
 	
 	/**
@@ -189,7 +191,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	@Test()
 	public void authenticate_shouldGiveIdenticalErrorMessagesBetweenUsernameAndPasswordMismatch() {
 		User user = dao.authenticate("admin", "test");
-		Assert.assertNotNull("This test depends on there being an admin:test user", user);
+		assertNotNull(user, "This test depends on there being an admin:test user");
 		
 		String invalidUsernameErrorMessage = null;
 		String invalidPasswordErrorMessage = null;
@@ -211,7 +213,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 			invalidPasswordErrorMessage = invalidPasswordErrorMessage.replace("admin", "");
 		}
 		
-		Assert.assertEquals(invalidUsernameErrorMessage, invalidPasswordErrorMessage);
+		assertEquals(invalidUsernameErrorMessage, invalidPasswordErrorMessage);
 	}
 	
 	/**
@@ -229,7 +231,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 			dao.authenticate("admin", "test");
 		}
 		catch (ContextAuthenticationException authException) {
-			Assert.fail("There must be an admin:test user for this test to run properly");
+			fail("There must be an admin:test user for this test to run properly");
 		}
 		Context.logout();
 		
@@ -237,7 +239,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 			// try to authenticate with a proper 
 			try {
 				dao.authenticate("admin", "not the right password");
-				Assert.fail("Not sure why this username/password combo worked");
+				fail("Not sure why this username/password combo worked");
 			}
 			catch (ContextAuthenticationException authException) {
 				// pass
@@ -271,7 +273,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	 * 
 	 * @see ContextDAO#authenticate(String,String)
 	 */
-	@Test(expected = ContextAuthenticationException.class)
+	@Test
 	public void authenticate_shouldPassRegressionTestFor1580() {
 		// logout after the base setup
 		Context.logout();
@@ -279,7 +281,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		// first we fail a login attempt
 		try {
 			dao.authenticate("admin", "not the right password");
-			Assert.fail("Not sure why this username/password combo worked");
+			fail("Not sure why this username/password combo worked");
 		}
 		catch (ContextAuthenticationException authException) {
 			// pass
@@ -290,7 +292,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 			dao.authenticate("admin", "test");
 		}
 		catch (ContextAuthenticationException authException) {
-			Assert.fail("There must be an admin:test user for this test to run properly");
+			fail("There must be an admin:test user for this test to run properly");
 		}
 		Context.logout();
 		
@@ -298,7 +300,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 			// now we fail several login attempts 
 			try {
 				dao.authenticate("admin", "not the right password");
-				Assert.fail("Not sure why this username/password combo worked");
+				fail("Not sure why this username/password combo worked");
 			}
 			catch (ContextAuthenticationException authException) {
 				// pass
@@ -307,10 +309,10 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		
 		// those were the first eight, now the ninth request 
 		// (with the same user and right pw) should fail
-		dao.authenticate("admin", "test");
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "test"));
 	}
 	
-	@Test(expected = ContextAuthenticationException.class)
+	@Test
 	public void authenticate_shouldThrowAContextAuthenticationExceptionIfUsernameIsAnEmptyString() {
 		//update a user with a username that is an empty string for this test
 		UserService us = Context.getUserService();
@@ -320,15 +322,15 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		u.getPerson().setGender("M");
 		
 		us.saveUser(u);
-		dao.authenticate("", "password");
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("", "password"));
 		
 	}
 	
-	@Test(expected = ContextAuthenticationException.class)
+	@Test
 	public void authenticate_shouldThrowAPIExceptionIfUsernameIsWhiteSpace() {
 		// it would be illegal to save this user (with a whitespace username) but we can get it in the db via xml
 		User u = Context.getUserService().getUser(507);
-		dao.authenticate("  ", "password");
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("  ", "password"));
 	}
 	
 	/**
@@ -340,7 +342,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		Properties properties = new Properties();
 		properties.setProperty("key", "value");
 		dao.mergeDefaultRuntimeProperties(properties);
-		Assert.assertNotNull(properties.getProperty("hibernate.key"));
+		assertNotNull(properties.getProperty("hibernate.key"));
 	}
 	
 	@Component("testUserSessionListener")

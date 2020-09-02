@@ -427,7 +427,7 @@ public class Order extends BaseOpenmrsData {
 	/**
 	 * Convenience method to determine if the order is active as of the specified date
 	 * 
-	 * @param checkDate - the date on which to check order. if null, will use current date
+	 * @param aCheckDate - the date on which to check order. if null, will use current date
 	 * @return boolean indicating whether the order was active on the check date
 	 * @since 1.10.1
 	 * <strong>Should</strong> return true if an order expired on the check date
@@ -464,7 +464,7 @@ public class Order extends BaseOpenmrsData {
 	 * true only if the order has been activated. In case of scheduled orders, the scheduledDate
 	 * becomes the effective start date that gets used to determined if it is started.
 	 * 
-	 * @param checkDate - the date on which to check order. if null, will use current date
+	 * @param aCheckDate - the date on which to check order. if null, will use current date
 	 * @return boolean indicating whether the order is started as of the check date
 	 * @since 1.10.1
 	 * <strong>Should</strong> return false for a voided order
@@ -489,7 +489,7 @@ public class Order extends BaseOpenmrsData {
 	/**
 	 * Convenience method to determine if the order is discontinued as of the specified date
 	 * 
-	 * @param checkDate - the date on which to check order. if null, will use current date
+	 * @param aCheckDate - the date on which to check order. if null, will use current date
 	 * @return boolean indicating whether the order was discontinued on the input date
 	 * <strong>Should</strong> return false for a voided order
 	 * <strong>Should</strong> return false if date stopped and auto expire date are both null
@@ -530,7 +530,7 @@ public class Order extends BaseOpenmrsData {
 	/**
 	 * Convenience method to determine if order was expired at a given time
 	 * 
-	 * @param checkDate - the date on which to check order. if null, will use current date
+	 * @param aCheckDate - the date on which to check order. if null, will use current date
 	 * @return boolean indicating whether the order was expired on the input date
 	 * <strong>Should</strong> return false for a voided order
 	 * <strong>Should</strong> return false if date stopped and auto expire date are both null

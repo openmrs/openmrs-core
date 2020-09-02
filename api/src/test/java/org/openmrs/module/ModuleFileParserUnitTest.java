@@ -16,6 +16,8 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.core.StringStartsWith.startsWith;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -28,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,19 +39,18 @@ import java.util.Map;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Privilege;
 import org.openmrs.customdatatype.datatype.RegexValidatedTextDatatype;
 import org.openmrs.messagesource.MessageSourceService;
-import org.openmrs.test.BaseContextMockTest;
+import org.openmrs.test.jupiter.BaseContextMockTest;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
@@ -66,30 +68,27 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 	private static DocumentBuilderFactory documentBuilderFactory;
 
 	private static DocumentBuilder documentBuilder;
-
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
-
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	
+	@TempDir
+	public Path temporaryFolder;
 
 	@Mock
 	private MessageSourceService messageSourceService;
 
 	private ModuleFileParser parser;
 
-	@BeforeClass
+	@BeforeAll
 	public static void setUp() throws ParserConfigurationException {
 		documentBuilderFactory = DocumentBuilderFactory.newInstance();
 		documentBuilder = documentBuilderFactory.newDocumentBuilder();
 	}
 
-	@Before
+	@BeforeEach
 	public void setUpModuleFileParser() {
 		parser = new ModuleFileParser(messageSourceService);
 	}
 
-	@After
+	@AfterEach
 	public void after() {
 		// needed so other are not affected by tests registering a ModuleClassLoader
 		ModuleFactory.moduleClassLoaders = null;
@@ -98,10 +97,8 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 	@Test
 	public void moduleFileParserConstruction_shouldFailIfGivenNull() {
 
-		expectedException.expect(NullPointerException.class);
-		expectedException.expectMessage("messageSourceService must not be null");
-
-		new ModuleFileParser((MessageSourceService) null);
+		NullPointerException exception = assertThrows(NullPointerException.class, () -> new ModuleFileParser((MessageSourceService) null));
+		assertThat(exception.getMessage(), is("messageSourceService must not be null"));
 	}
 
 	@Test
@@ -110,10 +107,8 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 		String messageKey = "Module.error.fileCannotBeNull";
 		whenGettingMessageFromMessageSourceServiceWithKeyReturnSameKey(messageKey);
 
-		expectModuleExceptionWithMessage(messageKey);
-
 		ModuleFileParser moduleFileParser = new ModuleFileParser(messageSourceService);
-		moduleFileParser.parse();
+		expectModuleExceptionWithMessage(() -> moduleFileParser.parse(), messageKey);
 	}
 
 	@Test
@@ -155,9 +150,7 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 		InputStream inputStream = new FileInputStream(moduleFile);
 		inputStream.close();
 
-		expectModuleExceptionWithMessage(messageKey);
-
-		parser.parse(inputStream);
+		expectModuleExceptionWithMessage(() -> parser.parse(inputStream), messageKey);
 	}
 
 	@Test
@@ -166,9 +159,7 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 		String messageKey = "Module.error.fileCannotBeNull";
 		whenGettingMessageFromMessageSourceServiceWithKeyReturnSameKey(messageKey);
 
-		expectModuleExceptionWithMessage(messageKey);
-
-		parser.parse((File) null);
+		expectModuleExceptionWithMessage(() -> parser.parse((File) null), messageKey);
 	}
 
 	@Test
@@ -177,9 +168,7 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 		String messageKey = "Module.error.invalidFileExtension";
 		whenGettingMessageFromMessageSourceServiceWithKeyReturnSameKey(messageKey);
 
-		expectModuleExceptionWithMessage(messageKey);
-
-		parser.parse(new File("unknownmodule.jar"));
+		expectModuleExceptionWithMessage(() -> parser.parse(new File("unknownmodule.jar")), messageKey);
 	}
 
 	@Test
@@ -188,39 +177,33 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 		String messageKey = "Module.error.cannotGetJarFile";
 		whenGettingMessageFromMessageSourceServiceWithKeyReturnSameKey(messageKey);
 
-		expectModuleExceptionWithMessage(messageKey);
-
-		parser.parse(new File("unknownmodule.omod"));
+		expectModuleExceptionWithMessage(() -> parser.parse(new File("unknownmodule.omod")), messageKey);
 	}
 
 	@Test
 	public void parse_shouldFailIfModuleHasNoConfigXmlInRoot() throws Exception {
 
-		File file = temporaryFolder.newFile("modulewithoutconfig.omod");
+		File file = temporaryFolder.resolve("modulewithoutconfig.omod").toFile();
 		JarOutputStream jar = new JarOutputStream(new FileOutputStream(file));
 		jar.close();
 
 		String messageKey = "Module.error.noConfigFile";
 		whenGettingMessageFromMessageSourceServiceWithKeyReturnSameKey(messageKey);
 
-		expectModuleExceptionWithMessage(messageKey);
-
-		parser.parse(file);
+		expectModuleExceptionWithMessage(() -> parser.parse(file), messageKey);
 	}
 
 	@Test
 	public void parse_shouldFailIfModuleHasConfigXmlInRootWhichCannotBeParsed() throws Exception {
 
-		File file = temporaryFolder.newFile("modulewithoutconfig.omod");
+		File file = temporaryFolder.resolve("modulewithoutconfig.omod").toFile();
 		JarOutputStream jar = createJarWithConfigXmlEntry(file);
 		jar.close();
 
 		String messageKey = "Module.error.cannotParseConfigFile";
 		whenGettingMessageFromMessageSourceServiceWithKeyReturnSameKey(messageKey);
 
-		expectModuleExceptionWithMessage(messageKey);
-
-		parser.parse(file);
+		expectModuleExceptionWithMessage(() -> parser.parse(file), messageKey);
 	}
 
 	@Test
@@ -231,9 +214,7 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 		String messageKey = "Module.error.cannotParseConfigFile";
 		whenGettingMessageFromMessageSourceServiceWithKeyReturnSameKey(messageKey);
 
-		expectModuleExceptionWithMessage(messageKey);
-
-		parser.parse(file);
+		expectModuleExceptionWithMessage(() -> parser.parse(file), messageKey);
 	}
 
 	@Test
@@ -247,9 +228,7 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 		String messageKey = "Module.error.nameCannotBeEmpty";
 		whenGettingMessageFromMessageSourceServiceWithKeyReturnSameKey(messageKey);
 
-		expectModuleExceptionWithMessage(messageKey);
-
-		parser.parse(writeConfigXmlToFile(config));
+		expectModuleExceptionWithMessage(() -> parser.parse(writeConfigXmlToFile(config)), messageKey);
 	}
 
 	@Test
@@ -264,9 +243,7 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 		String messageKey = "Module.error.nameCannotBeEmpty";
 		whenGettingMessageFromMessageSourceServiceWithKeyReturnSameKey(messageKey);
 
-		expectModuleExceptionWithMessage(messageKey);
-
-		parser.parse(writeConfigXmlToFile(config));
+		expectModuleExceptionWithMessage(() -> parser.parse(writeConfigXmlToFile(config)), messageKey);
 	}
 
 	@Test
@@ -281,9 +258,7 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 		String messageKey = "Module.error.idCannotBeEmpty";
 		whenGettingMessageFromMessageSourceServiceWithKeyReturnSameKey(messageKey);
 
-		expectModuleExceptionWithMessage(messageKey);
-
-		parser.parse(writeConfigXmlToFile(config));
+		expectModuleExceptionWithMessage(() -> parser.parse(writeConfigXmlToFile(config)), messageKey);
 	}
 
 	@Test
@@ -299,9 +274,7 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 		String messageKey = "Module.error.idCannotBeEmpty";
 		whenGettingMessageFromMessageSourceServiceWithKeyReturnSameKey(messageKey);
 
-		expectModuleExceptionWithMessage(messageKey);
-
-		parser.parse(writeConfigXmlToFile(config));
+		expectModuleExceptionWithMessage(() -> parser.parse(writeConfigXmlToFile(config)), messageKey);
 	}
 
 	@Test
@@ -317,9 +290,7 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 		String messageKey = "Module.error.packageCannotBeEmpty";
 		whenGettingMessageFromMessageSourceServiceWithKeyReturnSameKey(messageKey);
 
-		expectModuleExceptionWithMessage(messageKey);
-
-		parser.parse(writeConfigXmlToFile(config));
+		expectModuleExceptionWithMessage(() -> parser.parse(writeConfigXmlToFile(config)), messageKey);
 	}
 
 	@Test
@@ -336,9 +307,7 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 		String messageKey = "Module.error.packageCannotBeEmpty";
 		whenGettingMessageFromMessageSourceServiceWithKeyReturnSameKey(messageKey);
 
-		expectModuleExceptionWithMessage(messageKey);
-
-		parser.parse(writeConfigXmlToFile(config));
+		expectModuleExceptionWithMessage(() -> parser.parse(writeConfigXmlToFile(config)), messageKey);
 	}
 
 	@Test
@@ -1081,22 +1050,18 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 	@Test
 	public void parse_shouldFailIfMultipleConditionalResourcesTagsFound() throws IOException {
 
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("Found multiple conditionalResources tags.");
-
 		Document config = buildOnValidConfigXml("1.2")
 			.withTextNode("conditionalResources", "")
 			.withTextNode("conditionalResources", "")
 			.build();
 
-		parser.parse(writeConfigXmlToFile(config));
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> parser.parse(writeConfigXmlToFile(config)));
+		assertThat(exception.getMessage(), startsWith("Found multiple conditionalResources tags."));
 	}
 
 	@Test
 	public void parse_shouldFailIfConditionalResourcesContainInvalidTags() throws IOException {
 
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("Found the invalidTag node under conditionalResources.");
 
 		Document config = buildOnValidConfigXml("1.2")
 			.withConditionalResource("/lib/reporting-api-1.9.*", "1.10")
@@ -1105,20 +1070,20 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 			.item(0)
 			.appendChild(config.createElement("invalidTag"));
 
-		parser.parse(writeConfigXmlToFile(config));
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> parser.parse(writeConfigXmlToFile(config)));
+		assertThat(exception.getMessage(), startsWith("Found the invalidTag node under conditionalResources."));
 	}
 
 	@Test
 	public void parse_shouldFailIfConditionalResourcePathIsBlank() throws IOException {
 
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("The path of a conditional resource must not be blank");
 
 		Document config = buildOnValidConfigXml("1.2")
 			.withConditionalResource("", "1.10")
 			.build();
 
-		parser.parse(writeConfigXmlToFile(config));
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> parser.parse(writeConfigXmlToFile(config)));
+		assertThat(exception.getMessage(), startsWith("The path of a conditional resource must not be blank"));
 	}
 
 	@Test
@@ -1200,9 +1165,9 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 		assertThat(module.getAdvicePoints(), is(equalTo(Collections.EMPTY_LIST)));
 	}
 
-	private void expectModuleExceptionWithMessage(String expectedMessage) {
-		expectedException.expect(ModuleException.class);
-		expectedException.expectMessage(expectedMessage);
+	private void expectModuleExceptionWithMessage(Executable executable, String expectedMessage) {
+		ModuleException exception = assertThrows(ModuleException.class, executable);
+		assertThat(exception.getMessage(), startsWith(expectedMessage));
 	}
 
 	private void whenGettingMessageFromMessageSourceServiceWithKeyReturnSameKey(String messageKey) {
@@ -1421,7 +1386,7 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 	}
 
 	private File writeConfigXmlToFile(Document config) throws IOException {
-		File file = temporaryFolder.newFile("modulefileparsertest.omod");
+		File file = temporaryFolder.resolve("modulefileparsertest.omod").toFile();
 		JarOutputStream jar = createJarWithConfigXmlEntry(file);
 		writeConfigXmlToJar(jar, config);
 		return file;
@@ -1435,7 +1400,7 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 	}
 
 	private File writeConfigXmlToFile(String config) throws IOException {
-		File file = temporaryFolder.newFile("modulefileparsertest.omod");
+		File file = temporaryFolder.resolve("modulefileparsertest.omod").toFile();
 		JarOutputStream jar = createJarWithConfigXmlEntry(file);
 		jar.write(config.getBytes());
 		jar.closeEntry();

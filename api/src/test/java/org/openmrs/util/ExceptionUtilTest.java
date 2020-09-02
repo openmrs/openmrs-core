@@ -9,12 +9,14 @@
  */
 package org.openmrs.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ExceptionUtilTest {
 	
@@ -38,7 +40,7 @@ public class ExceptionUtilTest {
 				ExceptionUtil.rethrowIfCause(ex, NullPointerException.class);
 			}
 			catch (Exception cause) {
-				Assert.assertNull(cause.getCause());
+				assertNull(cause.getCause());
 				innermost = cause;
 				++numFound;
 			}
@@ -48,7 +50,7 @@ public class ExceptionUtilTest {
 				ExceptionUtil.rethrowIfCause(ex, IllegalArgumentException.class);
 			}
 			catch (Exception middle) {
-				Assert.assertEquals(innermost, middle.getCause());
+				assertEquals(innermost, middle.getCause());
 				++numFound;
 			}
 			
@@ -57,11 +59,11 @@ public class ExceptionUtilTest {
 				ExceptionUtil.rethrowIfCause(ex, IllegalStateException.class);
 			}
 			catch (Exception outer) {
-				Assert.assertEquals(ex, outer);
+				assertEquals(ex, outer);
 				++numFound;
 			}
 			
-			Assert.assertEquals(3, numFound);
+			assertEquals(3, numFound);
 		}
 	}
 	

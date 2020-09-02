@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+    
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+    
+-->
+<databaseChangeLog
+	logicalFilePath="liquibase-schema-only.xml"
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd 
+		http://www.liquibase.org/xml/ns/dbchangelog 
+   		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+	
+	<changeSet author="wschlegel (hand-rolled)" id="0123456789012-3">
+		<createTable tableName="name_with_uuid">
+			<column name="name" type="VARCHAR(255)"/>
+			<column name="uuid" type="CHAR(38)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+		</createTable>
+	</changeSet>
+	<changeSet author="wschlegel (hand-rolled)" id="0123456789012-4">
+		<insert tableName="name_with_uuid">
+			<column name="name" value="alpha"/>
+			<column name="uuid" value="alpha123-alph-alph-alph-alpha1234567"/>
+		</insert>
+		<ext:insertWithUuid tableName="name_with_uuid">
+			<column name="name" value="bravo"/>
+			<column name="uuid" value="bravo123-brav-brav-brav-bravo1234567"/>
+		</ext:insertWithUuid>
+		<ext:insertWithUuid tableName="name_with_uuid">
+			<column name="name" value="charlie"/>
+		</ext:insertWithUuid>
+	</changeSet>
+</databaseChangeLog> 
+	

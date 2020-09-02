@@ -9,17 +9,16 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.LocationTag;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class HibernateLocationDAOTest extends BaseContextSensitiveTest {
@@ -29,7 +28,7 @@ public class HibernateLocationDAOTest extends BaseContextSensitiveTest {
 	
 	private static final String LOC_INITIAL_DATA_XML = "org/openmrs/api/include/LocationServiceTest-initialData.xml";
 	
-	@Before
+	@BeforeEach
 	public void runBeforeEachTest() {
 		executeDataSet(LOC_INITIAL_DATA_XML);
 	}
@@ -61,7 +60,7 @@ public class HibernateLocationDAOTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void getLocationsHavingAllTags_shouldReturnEmptyListWhenNoLocationHasTheGivenTags() {
-		Assert.assertEquals(0, dao.getLocationsHavingAllTags(
+		assertEquals(0, dao.getLocationsHavingAllTags(
 		    Collections.singletonList(dao.getLocationTagByName("Nobody got this tag"))).size());
 	}
 	
