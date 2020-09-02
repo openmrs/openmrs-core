@@ -9,17 +9,19 @@
  */
 package org.openmrs.validator;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Relationship;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.MapBindingResult;
@@ -41,7 +43,7 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 		Map<String, String> map = new HashMap<>();
 		MapBindingResult errors = new MapBindingResult(map, Relationship.class.getName());
 		new RelationshipValidator().validate(relationship, errors);
-		Assert.assertEquals(true, errors.hasErrors());
+		assertTrue(errors.hasErrors());
 	}
 	
 	/**
@@ -56,7 +58,7 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 		Map<String, String> map = new HashMap<>();
 		MapBindingResult errors = new MapBindingResult(map, Relationship.class.getName());
 		new RelationshipValidator().validate(relationship, errors);
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -70,7 +72,7 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 		Map<String, String> map = new HashMap<>();
 		MapBindingResult errors = new MapBindingResult(map, Relationship.class.getName());
 		new RelationshipValidator().validate(relationship, errors);
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -84,7 +86,7 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(relationship, "relationship");
 		new RelationshipValidator().validate(relationship, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("voidReason"));
+		assertTrue(errors.hasFieldErrors("voidReason"));
 	}
 	
 	/**
@@ -100,7 +102,7 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 		Date nextYear = cal.getTime();
 		relationship.setStartDate(nextYear);
 		new RelationshipValidator().validate(relationship, errors);
-		Assert.assertTrue(errors.hasErrors());
+		assertTrue(errors.hasErrors());
 	}
 	
 	/**
@@ -116,7 +118,7 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 		Date lastYear = cal.getTime();
 		relationship.setStartDate(lastYear);
 		new RelationshipValidator().validate(relationship, errors);
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -129,6 +131,6 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 		Relationship relationship = new Relationship(1);
 		relationship.setStartDate(null);
 		new RelationshipValidator().validate(relationship, errors);
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 }

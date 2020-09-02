@@ -9,9 +9,14 @@
  */
 package org.openmrs;
 
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import java.util.List;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.openmrs.OrderGroup;
+
+import org.junit.jupiter.api.Test;
 
 public class OrderGroupTest {
 
@@ -28,7 +33,23 @@ public class OrderGroupTest {
 
         List<Order> orders = orderGroup.getOrders();
 
-        Assert.assertNotNull("should have orderGroup in order", orders.get(0).getOrderGroup());
-        Assert.assertNotNull("should have orderGroup in order", orders.get(1).getOrderGroup());
+        assertNotNull(orders.get(0).getOrderGroup(), "should have orderGroup in order");
+        assertNotNull(orders.get(1).getOrderGroup(), "should have orderGroup in order");
     }
+
+	@Test
+	public void shouldAddPreviousOrderGroupToOderGroup() {
+		OrderGroup orderGroup = new OrderGroup();
+		OrderGroup previousrderGroup = new OrderGroup();
+		orderGroup.setPreviousOrderGroup(previousrderGroup);
+		assertNotNull(orderGroup.getPreviousOrderGroup());
+	}
+
+	@Test
+	public void shouldReturnNullWhenNoPreviousOrdeGroupIsSet() {
+		OrderGroup orderGroup = new OrderGroup();
+		assertNull(orderGroup.getPreviousOrderGroup());
+
+	}
 }
+

@@ -21,7 +21,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -38,9 +37,8 @@ public class Field extends BaseChangeableOpenmrsMetadata {
 	
 	// Fields
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "field_id_gen")
-	@SequenceGenerator(name = "field_id_gen", sequenceName = "field_field_id_seq")
-	@Column(name = "field_id", nullable = false, updatable = false)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "field_id")
 	private Integer fieldId;
 	
 	@ManyToOne

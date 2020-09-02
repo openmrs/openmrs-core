@@ -9,18 +9,29 @@
  */
 package org.openmrs;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import org.junit.Assert;
 import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.openmrs.annotation.OpenmrsProfileExcludeFilterWithModulesJUnit4Test;
+import org.openmrs.annotation.StartModuleAnnotationJUnit4Test;
+import org.openmrs.annotation.StartModuleAnnotationReuseJUnit4Test;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -43,7 +54,7 @@ public class OpenmrsTestsTest {
 	public void shouldHaveAtLeastOneTest() {
 		List<Class<?>> classes = getTestClasses();
 		
-		assertTrue("There should be more than one class but there was only " + classes.size(), classes.size() > 1);
+		assertTrue(classes.size() > 1, "There should be more than one class but there was only " + classes.size());
 	}
 	
 	/**
@@ -61,12 +72,11 @@ public class OpenmrsTestsTest {
 				
 				// make sure every "test" method (determined by having 
 				// the @Test annotation) starts with "testShould"
-				if (method.getAnnotation(Test.class) != null) {
+				if (method.getAnnotation(Test.class) != null || method.getAnnotation(org.junit.Test.class) != null) {
 					String methodName = method.getName();
 					
 					boolean passes = methodName.startsWith("should") || methodName.contains("_should");
-					assertTrue(currentClass.getName() + "#" + methodName
-					        + " is supposed to either 1) start with 'should' or 2) contain '_should' but it doesn't", passes);
+					assertTrue(passes, currentClass.getName() + "#" + methodName + " is supposed to either 1) start with 'should' or 2) contain '_should' but it doesn't");
 				}
 			}
 		}
@@ -88,9 +98,7 @@ public class OpenmrsTestsTest {
 				
 				// make sure every should___ method has an @Test annotation
 				if (methodName.startsWith("should") || methodName.contains("_should")) {
-					assertTrue(currentClass.getName() + "#" + methodName
-					        + " does not have the @Test annotation on it even though the method name starts with 'should'",
-					    method.getAnnotation(Test.class) != null);
+					assertTrue(method.getAnnotation(Test.class) != null || method.getAnnotation(org.junit.Test.class) != null, currentClass.getName() + "#" + methodName + " does not have the @Test annotation on it even though the method name starts with 'should'");
 				}
 			}
 		}
@@ -111,22 +119,47 @@ public class OpenmrsTestsTest {
 		for (Class<?> currentClass : getClasses("^.*(?<!Test|IT|PT)\\.class$")) {
 			
 			// skip over classes that are @Ignore'd
-			if (currentClass.getAnnotation(Ignore.class) == null) {
+			if (currentClass.getAnnotation(Ignore.class) == null && currentClass.getAnnotation(Disabled.class) == null) {
 				boolean foundATestMethod = false;
 				
 				for (Method method : currentClass.getMethods()) {
-					if (method.getAnnotation(Test.class) != null) {
+					if (method.getAnnotation(org.junit.Test.class) != null || method.getAnnotation(Test.class) != null) {
 						foundATestMethod = true;
 					}
 				}
 				
-				Assert.assertFalse(
-				    currentClass.getName() + " does not end with 'Test' but contains @Test annotated methods",
-				    foundATestMethod);
+				assertFalse(foundATestMethod, currentClass.getName() + " does not end with 'Test' but contains @Test annotated methods");
 			}
 		}
 	}
-	
+
+	@Test
+	public void shouldNotAllowAnyNewJUnit4TestsSinceWeMigratedToJUnit5() {
+		// These classes are running as JUnit 4 tests using the JUnit 4 BaseContextSensitiveTest to ensure module devs
+		// can still run their JUnit 4 tests as part of the 2.4.x release until we completely remove JUnit 4 support from
+		// openmrs-core. We do not allow any new JUnit 4 tests to be added unless they are for exactly that purpose.
+		// Any new tests in openmrs-core should be written using JUnit 5.
+		Set<Class> allowedJunit4TestClasses = Stream.of(StartModuleAnnotationJUnit4Test.class,
+			StartModuleAnnotationReuseJUnit4Test.class,
+			OpenmrsProfileExcludeFilterWithModulesJUnit4Test.class
+		)
+			.collect(Collectors.toSet());
+
+		List<Method> testMethodsUsingJUnit4 = getClasses(".*\\.class$")
+			.stream()
+			.filter(c -> !allowedJunit4TestClasses.contains(c))
+			.map(c -> c.getMethods())
+			.flatMap(x -> Arrays.stream(x))
+			.filter(m -> m.getAnnotation(org.junit.Test.class) != null)
+			.collect(Collectors.toList());
+		
+		assertThat("openmrs-api has migrated to JUnit 5. The JUnit 4 dependency is only available so we can " +
+				"allow module developers to migrate at their own pace and still write JUnit 4 tests with " +
+				"BaseContextMock/Sensitive tests. Tests in openmrs-core should be written in JUnit 5. The assertion " +
+				"error shows test methods annotated with JUnit 4s org.junit.Test. Please write them using JUnit 5." +
+				"See https://wiki.openmrs.org/display/docs/How+to+migrate+to+JUnit+5",
+			testMethodsUsingJUnit4, is(empty()));
+	}
 	/**
 	 * Get all classes ending in "Test.class".
 	 * 
@@ -150,7 +183,7 @@ public class OpenmrsTestsTest {
 		URL url = classLoader.getResource("org/openmrs");
 		File directory = OpenmrsUtil.url2file(url);
 		// make sure we get a directory back
-		assertTrue("org.openmrs.test should be a directory", directory.isDirectory());
+		assertTrue(directory.isDirectory(), "org.openmrs.test should be a directory");
 		
 		testClasses = getClassesInDirectory(directory, pattern);
 		
@@ -159,7 +192,7 @@ public class OpenmrsTestsTest {
 		if (url != null) {
 			directory = OpenmrsUtil.url2file(url);
 			// make sure we get a directory back
-			assertTrue("org.openmrs.web.test should be a directory", directory.isDirectory());
+			assertTrue(directory.isDirectory(), "org.openmrs.web.test should be a directory");
 			
 			testClasses.addAll(getClassesInDirectory(directory, pattern));
 		}

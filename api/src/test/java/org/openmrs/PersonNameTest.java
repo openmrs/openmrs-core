@@ -10,10 +10,12 @@
 package org.openmrs;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -59,20 +61,20 @@ public class PersonNameTest {
 		
 		PersonName copy = PersonName.newInstance(pn);
 		
-		Assert.assertEquals(personNameId, copy.getPersonNameId());
-		Assert.assertEquals(preferred, copy.getPreferred());
-		Assert.assertEquals(prefix, copy.getPrefix());
-		Assert.assertEquals(person, copy.getPerson());
-		Assert.assertEquals(givenName, copy.getGivenName());
-		Assert.assertEquals(middleName, copy.getMiddleName());
-		Assert.assertEquals(familyNamePrefix, copy.getFamilyNamePrefix());
-		Assert.assertEquals(familyName, copy.getFamilyName());
-		Assert.assertEquals(familyName2, copy.getFamilyName2());
-		Assert.assertEquals(familyNameSuffix, copy.getFamilyNameSuffix());
-		Assert.assertEquals(degree, copy.getDegree());
-		Assert.assertEquals(voided, copy.getVoided());
-		Assert.assertEquals(voidedBy, copy.getVoidedBy());
-		Assert.assertEquals(voidReason, copy.getVoidReason());
+		assertEquals(personNameId, copy.getPersonNameId());
+		assertEquals(preferred, copy.getPreferred());
+		assertEquals(prefix, copy.getPrefix());
+		assertEquals(person, copy.getPerson());
+		assertEquals(givenName, copy.getGivenName());
+		assertEquals(middleName, copy.getMiddleName());
+		assertEquals(familyNamePrefix, copy.getFamilyNamePrefix());
+		assertEquals(familyName, copy.getFamilyName());
+		assertEquals(familyName2, copy.getFamilyName2());
+		assertEquals(familyNameSuffix, copy.getFamilyNameSuffix());
+		assertEquals(degree, copy.getDegree());
+		assertEquals(voided, copy.getVoided());
+		assertEquals(voidedBy, copy.getVoidedBy());
+		assertEquals(voidReason, copy.getVoidReason());
 	}
 
 	/**
@@ -217,7 +219,7 @@ public class PersonNameTest {
 		OpenmrsConstants.OBSCURE_PATIENTS = true;
 		
 		OpenmrsConstants.OBSCURE_PATIENTS_FAMILY_NAME = "family name";
-		Assert.assertEquals("family name", new PersonName().getFamilyName());
+		assertEquals("family name", new PersonName().getFamilyName());
 		
 		OpenmrsConstants.OBSCURE_PATIENTS = false; // cleanup 
 	}
@@ -231,7 +233,7 @@ public class PersonNameTest {
 		
 		PersonName pn = new PersonName();
 		pn.setFamilyName2("a non-null name");
-		Assert.assertNull(pn.getFamilyName2());
+		assertNull(pn.getFamilyName2());
 		
 		OpenmrsConstants.OBSCURE_PATIENTS = false; // cleanup 
 	}
@@ -245,7 +247,7 @@ public class PersonNameTest {
 		
 		PersonName pn = new PersonName();
 		pn.setFamilyNamePrefix("a non-null name");
-		Assert.assertNull(pn.getFamilyNamePrefix());
+		assertNull(pn.getFamilyNamePrefix());
 		
 		OpenmrsConstants.OBSCURE_PATIENTS = false; // cleanup 
 	}
@@ -259,7 +261,7 @@ public class PersonNameTest {
 		
 		PersonName pn = new PersonName();
 		pn.setFamilyNameSuffix("a non-null name");
-		Assert.assertNull(pn.getFamilyNameSuffix());
+		assertNull(pn.getFamilyNameSuffix());
 		
 		OpenmrsConstants.OBSCURE_PATIENTS = false; // cleanup 
 	}
@@ -272,7 +274,7 @@ public class PersonNameTest {
 		OpenmrsConstants.OBSCURE_PATIENTS = true;
 		
 		OpenmrsConstants.OBSCURE_PATIENTS_GIVEN_NAME = "given name";
-		Assert.assertEquals("given name", new PersonName().getGivenName());
+		assertEquals("given name", new PersonName().getGivenName());
 		
 		OpenmrsConstants.OBSCURE_PATIENTS = false; // cleanup 
 	}
@@ -285,7 +287,7 @@ public class PersonNameTest {
 		OpenmrsConstants.OBSCURE_PATIENTS = true;
 		
 		OpenmrsConstants.OBSCURE_PATIENTS_MIDDLE_NAME = "middle name";
-		Assert.assertEquals("middle name", new PersonName().getMiddleName());
+		assertEquals("middle name", new PersonName().getMiddleName());
 		
 		OpenmrsConstants.OBSCURE_PATIENTS = false; // cleanup 
 	}
@@ -299,7 +301,7 @@ public class PersonNameTest {
 		
 		PersonName pn = new PersonName();
 		pn.setPrefix("a non-null name");
-		Assert.assertNull(pn.getPrefix());
+		assertNull(pn.getPrefix());
 		
 		OpenmrsConstants.OBSCURE_PATIENTS = false; // cleanup 
 	}
@@ -313,7 +315,7 @@ public class PersonNameTest {
 		pn.setGivenName("Bob");
 		pn.setMiddleName("");
 		pn.setFamilyName("Jones");
-		Assert.assertEquals("Bob Jones", pn.getFullName());
+		assertEquals("Bob Jones", pn.getFullName());
 	}
 	
 	/**
@@ -332,7 +334,7 @@ public class PersonNameTest {
 		pn.setFamilyNameSuffix("jr.");
 		pn.setDegree("3");
 		PersonName.setFormat(OpenmrsConstants.PERSON_NAME_FORMAT_SHORT);
-		Assert.assertEquals(pn.getFullName(), "Sr. Taylor Bob Mark");
+		assertEquals(pn.getFullName(), "Sr. Taylor Bob Mark");
 	}
 	
 	@Test
@@ -347,7 +349,7 @@ public class PersonNameTest {
 		pn.setFamilyName2("Jones");
 		pn.setFamilyNameSuffix("jr.");
 		pn.setDegree("3");
-		Assert.assertEquals(pn.getFullName(), "Sr. Taylor Bob Wilson Mark Jones jr. 3");
+		assertEquals(pn.getFullName(), "Sr. Taylor Bob Wilson Mark Jones jr. 3");
 	}
 	
 	@Test
@@ -363,7 +365,7 @@ public class PersonNameTest {
 		pn.setFamilyNameSuffix("jr.");
 		pn.setDegree("3");
 		PersonName.setFormat("");
-		Assert.assertEquals(pn.getFullName(), "Sr. Taylor Bob Mark");
+		assertEquals(pn.getFullName(), "Sr. Taylor Bob Mark");
 	}
 	
 }

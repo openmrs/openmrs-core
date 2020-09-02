@@ -9,9 +9,14 @@
  */
 package org.openmrs.hl7.handler;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -19,9 +24,18 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import ca.uhn.hl7v2.HL7Exception;
+import ca.uhn.hl7v2.app.ApplicationException;
+import ca.uhn.hl7v2.app.MessageTypeRouter;
+import ca.uhn.hl7v2.model.Message;
+import ca.uhn.hl7v2.model.v25.message.ORU_R01;
+import ca.uhn.hl7v2.model.v25.segment.NK1;
+import ca.uhn.hl7v2.model.v25.segment.OBR;
+import ca.uhn.hl7v2.model.v25.segment.OBX;
+import ca.uhn.hl7v2.model.v26.segment.MSH;
+import ca.uhn.hl7v2.parser.GenericParser;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptProposal;
@@ -44,19 +58,8 @@ import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.hl7.HL7Constants;
 import org.openmrs.obs.ComplexObsHandler;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
-
-import ca.uhn.hl7v2.HL7Exception;
-import ca.uhn.hl7v2.app.ApplicationException;
-import ca.uhn.hl7v2.app.MessageTypeRouter;
-import ca.uhn.hl7v2.model.Message;
-import ca.uhn.hl7v2.model.v25.message.ORU_R01;
-import ca.uhn.hl7v2.model.v25.segment.NK1;
-import ca.uhn.hl7v2.model.v25.segment.OBR;
-import ca.uhn.hl7v2.model.v25.segment.OBX;
-import ca.uhn.hl7v2.model.v26.segment.MSH;
-import ca.uhn.hl7v2.parser.GenericParser;
 
 /**
  * TODO finish testing all methods ORUR01Handler
@@ -80,7 +83,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	@Before
+	@BeforeEach
 	public void runBeforeEachTest() throws Exception {
 		executeDataSet(ORU_INITIAL_DATA_XML);
 	}
@@ -107,12 +110,12 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		// check for an encounter
 		List<Encounter> encForPatient3 = Context.getEncounterService().getEncountersByPatient(patient);
 		assertNotNull(encForPatient3);
-		assertTrue("There should be an encounter created", encForPatient3.size() == 1);
+		assertTrue(encForPatient3.size() == 1, "There should be an encounter created");
 		
 		// check for any obs
 		List<Obs> obsForPatient3 = obsService.getObservationsByPerson(patient);
 		assertNotNull(obsForPatient3);
-		assertTrue("There should be some obs created for #3", obsForPatient3.size() > 0);
+		assertTrue(obsForPatient3.size() > 0, "There should be some obs created for #3");
 		
 		// check for the return visit date obs
 		Concept returnVisitDateConcept = new Concept(5096);
@@ -121,12 +124,12 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		Date returnVisitDate = cal.getTime();
 		List<Obs> returnVisitDateObsForPatient3 = obsService.getObservationsByPersonAndConcept(patient,
 		    returnVisitDateConcept);
-		assertEquals("There should be a return visit date", 1, returnVisitDateObsForPatient3.size());
+		assertEquals(1, returnVisitDateObsForPatient3.size(), "There should be a return visit date");
 		
 		Obs firstObs = (Obs) returnVisitDateObsForPatient3.toArray()[0];
 		cal.setTime(firstObs.getValueDatetime());
 		Date firstObsValueDatetime = cal.getTime();
-		assertEquals("The date should be the 29th", returnVisitDate.toString(), firstObsValueDatetime.toString());
+		assertEquals(returnVisitDate.toString(), firstObsValueDatetime.toString(), "The date should be the 29th");
 		
 	}
 	
@@ -159,7 +162,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		// check for any obs
 		List<Obs> obsForPatient2 = obsService.getObservationsByPerson(patient);
 		assertNotNull(obsForPatient2);
-		assertTrue("There should be some obs created for #3", obsForPatient2.size() > 0);
+		assertTrue(obsForPatient2.size() > 0, "There should be some obs created for #3");
 		
 		// check for the missed return visit date obs
 		Concept returnVisitDateConcept = new Concept(1592);
@@ -168,7 +171,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		Date returnVisitDate = cal.getTime();
 		List<Obs> returnVisitDateObsForPatient2 = obsService.getObservationsByPersonAndConcept(patient,
 		    returnVisitDateConcept);
-		assertEquals("There should be a return visit date", 1, returnVisitDateObsForPatient2.size());
+		assertEquals(1, returnVisitDateObsForPatient2.size(), "There should be a return visit date");
 		Obs firstObs = (Obs) returnVisitDateObsForPatient2.toArray()[0];
 		
 		cal.setTime(firstObs.getValueDatetime());
@@ -176,20 +179,20 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		cal.clear(Calendar.MINUTE);
 		cal.clear(Calendar.SECOND);
 		cal.clear(Calendar.MILLISECOND);
-		assertEquals("The date should be the 1st", returnVisitDate.toString(), cal.getTime().toString());
+		assertEquals(returnVisitDate.toString(), cal.getTime().toString(), "The date should be the 1st");
 		
 		// check for the grouped obs
 		Concept contactMethod = new Concept(1558);
 		Concept phoneContact = Context.getConceptService().getConcept(1555);
 		List<Obs> contactMethodObsForPatient2 = obsService.getObservationsByPersonAndConcept(patient, contactMethod);
-		assertEquals("There should be a contact method", 1, contactMethodObsForPatient2.size());
+		assertEquals(1, contactMethodObsForPatient2.size(), "There should be a contact method");
 		Obs firstContactMethodObs = (Obs) contactMethodObsForPatient2.toArray()[0];
-		assertEquals("The contact method should be phone", phoneContact, firstContactMethodObs.getValueCoded());
+		assertEquals(phoneContact, firstContactMethodObs.getValueCoded(), "The contact method should be phone");
 		
 		// check that there is a group id
 		Obs obsGroup = firstContactMethodObs.getObsGroup();
-		assertNotNull("Their should be a grouping obs", obsGroup);
-		assertNotNull("Their should be an associated encounter", firstContactMethodObs.getEncounter());
+		assertNotNull(obsGroup, "Their should be a grouping obs");
+		assertNotNull(firstContactMethodObs.getEncounter(), "Their should be an associated encounter");
 		
 		// check that the obs that are grouped have the same group id
 		List<Integer> groupedConceptIds = new ArrayList<>();
@@ -204,7 +207,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		for (Obs obs : obsForPatient2) {
 			if (groupedConceptIds.contains(obs.getConcept().getConceptId())) {
 				groupedObsCount += 1;
-				assertEquals("All of the parent groups should match", obsGroup, obs.getObsGroup());
+				assertEquals(obsGroup, obs.getObsGroup(), "All of the parent groups should match");
 			}
 		}
 		
@@ -270,8 +273,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		router.processMessage(hl7message);
 		
 		//make sure that the proposal was added
-		Assert.assertEquals("Processing of the HL7 message did not result in the new proposal being added to the model",
-		    initialOccurrences + 1, Context.getConceptService().getConceptProposals("PELVIC MASS").size());
+		assertEquals(initialOccurrences + 1, Context.getConceptService().getConceptProposals("PELVIC MASS").size(), "Processing of the HL7 message did not result in the new proposal being added to the model");
 		
 	}
 
@@ -298,8 +300,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		router.processMessage(hl7message);
 		
 		//make sure that the proposal was added
-		Assert.assertEquals("Processing of the HL7 message did not result in the new proposal being added to the model",
-		    initialOccurrences + 1, Context.getConceptService().getConceptProposals("ASDFASDFASDF").size());
+		assertEquals(initialOccurrences + 1, Context.getConceptService().getConceptProposals("ASDFASDFASDF").size(), "Processing of the HL7 message did not result in the new proposal being added to the model");
 		
 	}
 	
@@ -327,14 +328,14 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		Patient patient = new Patient(3);
 		
 		// check for any obs
-		assertEquals("There should not be any obs created for #3", 0, obsService.getObservationsByPerson(patient).size());
+		assertEquals(0, obsService.getObservationsByPerson(patient).size(), "There should not be any obs created for #3");
 		
 		// check for a new encounter
-		assertEquals("There should be 1 new encounter created for #3", 1, encService.getEncountersByPatient(patient).size());
+		assertEquals(1, encService.getEncountersByPatient(patient).size(), "There should be 1 new encounter created for #3");
 		
 		// check for the proposed concept
 		List<ConceptProposal> proposedConcepts = conceptService.getConceptProposals("SEVERO DOLOR DE CABEZA");
-		assertEquals("There should be a proposed concept by this name", 1, proposedConcepts.size());
+		assertEquals(1, proposedConcepts.size(), "There should be a proposed concept by this name");
 		assertEquals(encService.getEncountersByPatient(patient).get(0), proposedConcepts.get(0).getEncounter());
 	}
 	
@@ -350,7 +351,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		// "Food assistance for entire family?"
 		
 		// sanity check to make sure this obs doesn't exist already
-		Assert.assertEquals(0, obsService.getObservationsByPersonAndConcept(patient, concept).size());
+		assertEquals(0, obsService.getObservationsByPersonAndConcept(patient, concept).size());
 		
 		String hl7String = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20090728170332||ORU^R01|gu99yBh4loLX2mh9cHaV|P|2.5|1||||||||4^AMRS.ELD.FORMID\r"
 		        + "PID|||3^^^^||Beren^John^Bondo||\r"
@@ -366,8 +367,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		List<Obs> obss = obsService.getObservationsByPersonAndConcept(patient, concept);
 		
 		ConceptName name = obss.get(0).getValueCodedName();
-		Assert.assertNotNull(name);
-		Assert.assertEquals("The valueCodedName should be 2471", 2471, name.getId().intValue());
+		assertNotNull(name);
+		assertEquals(2471, name.getId().intValue(), "The valueCodedName should be 2471");
 	}
 	
 	/**
@@ -375,7 +376,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getConcept_shouldReturnAConceptIfGivenLocalCodingSystem() throws Exception {
-		Assert.assertEquals(5089, new ORUR01Handler().getConcept("5089", "99DCT", "xj39bnj4k34nmf").getId().intValue());
+		assertEquals(5089, new ORUR01Handler().getConcept("5089", "99DCT", "xj39bnj4k34nmf").getId().intValue());
 	}
 	
 	/**
@@ -383,7 +384,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getConcept_shouldReturnAMappedConceptIfGivenAValidMapping() throws Exception {
-		Assert.assertEquals(5089, new ORUR01Handler().getConcept("WGT234", "SSTRM", "23498343sdnm3").getId().intValue());
+		assertEquals(5089, new ORUR01Handler().getConcept("WGT234", "SSTRM", "23498343sdnm3").getId().intValue());
 	}
 	
 	/**
@@ -391,14 +392,14 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getConcept_shouldReturnNullIfCodingSystemNotFound() throws Exception {
-		Assert.assertNull(new ORUR01Handler().getConcept("123", "a nonexistent coding system", "n3jn2345g89n4"));
-		Assert.assertNull(new ORUR01Handler().getConcept("93939434834", "SSTRM", "xcjk23h89gn34k234"));
+		assertNull(new ORUR01Handler().getConcept("123", "a nonexistent coding system", "n3jn2345g89n4"));
+		assertNull(new ORUR01Handler().getConcept("93939434834", "SSTRM", "xcjk23h89gn34k234"));
 	}
 	
 	/**
 	 * @see ORUR01Handler#processMessage(Message)
 	 */
-	@Test(expected = ApplicationException.class)
+	@Test
 	public void processMessage_shouldFailOnEmptyConceptAnswers() throws Exception {
 		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080630094800||ORU^R01|kgWdFt0SVwwClOfJm3pe|P|2.5|1||||||||15^AMRS.ELD.FORMID\r"
 		        + "PID|||3^^^^~d3811480^^^^||John3^Doe^||\r"
@@ -407,13 +408,13 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
 		        + "OBX|1|CWE|5497^CD4, BY FACS^99DCT||^^99DCT|||||||||20080208";
 		Message hl7message = parser.parse(hl7string);
-		router.processMessage(hl7message);
+		assertThrows(ApplicationException.class, () -> router.processMessage(hl7message));
 	}
 	
 	/**
 	 * @see ORUR01Handler#processMessage(Message)
 	 */
-	@Test(expected = ApplicationException.class)
+	@Test
 	public void processMessage_shouldFailOnEmptyConceptProposals() throws Exception {
 		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080630094800||ORU^R01|kgWdFt0SVwwClOfJm3pe|P|2.5|1||||||||15^AMRS.ELD.FORMID\r"
 		        + "PID|||3^^^^~d3811480^^^^||John3^Doe^||\r"
@@ -423,7 +424,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "OBR|1|||1284^PROBLEM LIST^99DCT\r"
 		        + "OBX|1|CWE|6042^PROBLEM ADDED^99DCT||PROPOSED^^99DCT|||||||||20080208";
 		Message hl7message = parser.parse(hl7string);
-		router.processMessage(hl7message);
+		assertThrows(ApplicationException.class, () -> router.processMessage(hl7message));
 	}
 	
 	/**
@@ -458,13 +459,13 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		
 		// verify relationship was created
 		List<Relationship> rels = personService.getRelationships(relative, patient, new RelationshipType(3));
-		Assert.assertTrue("new relationship was not created", !rels.isEmpty() && rels.size() == 1);
+		assertTrue(!rels.isEmpty() && rels.size() == 1, "new relationship was not created");
 	}
 	
 	/**
 	 * @see ORUR01Handler#processNK1(Patient,NK1)
 	 */
-	@Test(expected = HL7Exception.class)
+	@Test
 	public void processNK1_shouldFailIfTheCodingSystemIsNot99REL() throws Exception {
 		// process a message with an invalid coding system
 		Patient patient = new Patient(3); // the patient that is the focus of
@@ -483,13 +484,13 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		ORU_R01 oru = (ORU_R01) hl7message;
 		List<NK1> nk1List = oruHandler.getNK1List(oru);
 		for (NK1 nk1 : nk1List)
-			oruHandler.processNK1(patient, nk1);
+			assertThrows(HL7Exception.class, () -> oruHandler.processNK1(patient, nk1));
 	}
 	
 	/**
 	 * @see ORUR01Handler#processNK1(Patient,NK1)
 	 */
-	@Test(expected = HL7Exception.class)
+	@Test
 	public void processNK1_shouldFailIfTheRelationshipIdentifierIsFormattedImproperly() throws Exception {
 		// process a message with an invalid relationship identifier format
 		Patient patient = new Patient(3); // the patient that is the focus of
@@ -508,13 +509,13 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		ORU_R01 oru = (ORU_R01) hl7message;
 		List<NK1> nk1List = oruHandler.getNK1List(oru);
 		for (NK1 nk1 : nk1List)
-			oruHandler.processNK1(patient, nk1);
+			assertThrows(HL7Exception.class, () -> oruHandler.processNK1(patient, nk1));
 	}
 	
 	/**
 	 * @see ORUR01Handler#processNK1(Patient,NK1)
 	 */
-	@Test(expected = HL7Exception.class)
+	@Test
 	public void processNK1_shouldFailIfTheRelationshipTypeIsNotFound() throws Exception {
 		// process a message with a non-existent relationship type
 		Patient patient = new Patient(3); // the patient that is the focus of
@@ -533,7 +534,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		ORU_R01 oru = (ORU_R01) hl7message;
 		List<NK1> nk1List = oruHandler.getNK1List(oru);
 		for (NK1 nk1 : nk1List)
-			oruHandler.processNK1(patient, nk1);
+			assertThrows(HL7Exception.class, () -> oruHandler.processNK1(patient, nk1));
 	}
 	
 	/**
@@ -555,7 +556,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		personService.saveRelationship(rel);
 		
 		// verify relationship exists
-		Assert.assertEquals(1, personService.getRelationships(relative, patient, new RelationshipType(3)).size());
+		assertEquals(1, personService.getRelationships(relative, patient, new RelationshipType(3)).size());
 		
 		// process a message with a single NK1 segment
 		// defines relative as patient's Parent
@@ -578,7 +579,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		
 		// verify existing relationship
 		List<Relationship> rels = personService.getRelationships(relative, patient, new RelationshipType(3));
-		Assert.assertTrue("existing relationship was not retained", !rels.isEmpty() && rels.size() == 1);
+		assertTrue(!rels.isEmpty() && rels.size() == 1, "existing relationship was not retained");
 	}
 	
 	/**
@@ -600,7 +601,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		personService.saveRelationship(newRel);
 		
 		// verify relationship exists
-		Assert.assertEquals(1, personService.getRelationships(relative, patient, new RelationshipType(3)).size());
+		assertEquals(1, personService.getRelationships(relative, patient, new RelationshipType(3)).size());
 		
 		// process a new message with multiple NK1 segments
 		// this one defines patientB as patientA's Sibling and Patient
@@ -620,15 +621,15 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		
 		// verify existing relationship
 		List<Relationship> rels = personService.getRelationships(relative, patient, new RelationshipType(3));
-		Assert.assertTrue("existing relationship was not retained", !rels.isEmpty() && rels.size() == 1);
+		assertTrue(!rels.isEmpty() && rels.size() == 1, "existing relationship was not retained");
 		
 		// verify first new relationship
 		rels = personService.getRelationships(patient, relative, new RelationshipType(2));
-		Assert.assertTrue("first new relationship was not created", !rels.isEmpty() && rels.size() == 1);
+		assertTrue(!rels.isEmpty() && rels.size() == 1, "first new relationship was not created");
 		
 		// verify second new relationship
 		rels = personService.getRelationships(patient, relative, new RelationshipType(1));
-		Assert.assertTrue("second new relationship was not created", !rels.isEmpty() && rels.size() == 1);
+		assertTrue(!rels.isEmpty() && rels.size() == 1, "second new relationship was not created");
 	}
 	
 	/**
@@ -659,17 +660,17 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		
 		// find the relative in the database
 		Person relative = personService.getPersonByUuid("2178037d-f86b-4f12-8d8b-be3ebc220029");
-		Assert.assertNotNull("a new person was not created", relative);
+		assertNotNull(relative, "a new person was not created");
 		
 		// see if the relative made it into the relationship properly
 		List<Relationship> rels = personService.getRelationships(relative, patient, new RelationshipType(3));
-		Assert.assertTrue("new relationship was not created", !rels.isEmpty() && rels.size() == 1);
+		assertTrue(!rels.isEmpty() && rels.size() == 1, "new relationship was not created");
 	}
 	
 	/**
 	 * @see ORUR01Handler#processMessage(Message)
 	 */
-	@Test(expected = ApplicationException.class)
+	@Test
 	public void processMessage_shouldFailIfQuestionDatatypeIsCodedAndABooleanIsNotAValidAnswer() throws Exception {
 		GlobalProperty trueConceptGlobalProperty = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_TRUE_CONCEPT, "7",
 		        "Concept id of the concept defining the TRUE boolean concept");
@@ -683,15 +684,15 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "ORC|RE||||||||20080226102537|1^Super User\r"
 		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
 		        + "OBX|2|NM|4^CIVIL STATUS^99DCT||1|||||||||20080206";
-		Assert.assertEquals("Coded", Context.getConceptService().getConcept(4).getDatatype().getName());
+		assertEquals("Coded", Context.getConceptService().getConcept(4).getDatatype().getName());
 		Message hl7message = parser.parse(hl7string);
-		router.processMessage(hl7message);
+		assertThrows(ApplicationException.class, () -> router.processMessage(hl7message));
 	}
 	
 	/**
 	 * @see ORUR01Handler#processMessage(Message)
 	 */
-	@Test(expected = ApplicationException.class)
+	@Test
 	public void processMessage_shouldFailIfQuestionDatatypeIsNeitherBooleanNorNumericNorCoded() throws Exception {
 		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
 		        + "PID|||7^^^^||Collet^Test^Chebaskwony||\r"
@@ -699,9 +700,9 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "ORC|RE||||||||20080226102537|1^Super User\r"
 		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
 		        + "OBX|2|NM|19^FAVORITE FOOD, NON-CODED^99DCT||1|||||||||20080206";
-		Assert.assertEquals("Text", Context.getConceptService().getConcept(19).getDatatype().getName());
+		assertEquals("Text", Context.getConceptService().getConcept(19).getDatatype().getName());
 		Message hl7message = parser.parse(hl7string);
-		router.processMessage(hl7message);
+		assertThrows(ApplicationException.class, () -> router.processMessage(hl7message));
 	}
 	
 	/**
@@ -716,7 +717,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		Context.getAdministrationService().saveGlobalProperty(trueConceptGlobalProperty);
 		Context.getAdministrationService().saveGlobalProperty(falseConceptGlobalProperty);
 		ObsService os = Context.getObsService();
-		Assert.assertNull(os.getObs(17));
+		assertNull(os.getObs(17));
 		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
 		        + "PID|||7^^^^||Collet^Test^Chebaskwony||\r"
 		        + "PV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
@@ -725,7 +726,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "OBX|1|NM|18^FOOD ASSISTANCE^99DCT||0|||||||||20080206";
 		// the expected question for the obs in the hl7 message has to be
 		// Boolean
-		Assert.assertEquals("Boolean", Context.getConceptService().getConcept(18).getDatatype().getName());
+		assertEquals("Boolean", Context.getConceptService().getConcept(18).getDatatype().getName());
 		List<Obs> oldList = os.getObservationsByPersonAndConcept(new Person(7), new Concept(18));
 		Message hl7message = parser.parse(hl7string);
 		router.processMessage(hl7message);
@@ -736,7 +737,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 				newObservation = newObs;
 			}
 		}
-		Assert.assertEquals(false, newObservation.getValueBoolean());
+		assertFalse(newObservation.getValueBoolean());
 	}
 	
 	/**
@@ -753,7 +754,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
 		        + "OBX|2|NM|21^CIVIL STATUS^99DCT||1|||||||||20080206";
 		// the expected question for the obs in the hl7 message has to be coded
-		Assert.assertEquals("Coded", Context.getConceptService().getConcept(21).getDatatype().getName());
+		assertEquals("Coded", Context.getConceptService().getConcept(21).getDatatype().getName());
 		List<Obs> oldList = os.getObservationsByPersonAndConcept(new Person(7), new Concept(21));
 		Message hl7message = parser.parse(hl7string);
 		router.processMessage(hl7message);
@@ -765,7 +766,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 				newObservation = newObs;
 			}
 		}
-		Assert.assertEquals(Context.getConceptService().getTrueConcept(), newObservation.getValueCoded());
+		assertEquals(Context.getConceptService().getTrueConcept(), newObservation.getValueCoded());
 	}
 	
 	/**
@@ -782,7 +783,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "OBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206";
 		// the expected question for the obs in the hl7 message has to be
 		// numeric
-		Assert.assertEquals("Numeric", Context.getConceptService().getConcept(5497).getDatatype().getName());
+		assertEquals("Numeric", Context.getConceptService().getConcept(5497).getDatatype().getName());
 		List<Obs> oldList = os.getObservationsByPersonAndConcept(new Person(7), new Concept(5497));
 		Message hl7message = parser.parse(hl7string);
 		router.processMessage(hl7message);
@@ -793,7 +794,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 				newObservation = newObs;
 			}
 		}
-		Assert.assertEquals(450, newObservation.getValueNumeric().intValue());
+		assertEquals(450, newObservation.getValueNumeric().intValue());
 	}
 	
 	/**
@@ -811,7 +812,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "OBX|1|NM|5497^CD4, BY FACS^99DCT||1|||||||||20080206";
 		// the expected question for the obs in the hl7 message has to be
 		// numeric
-		Assert.assertEquals("Numeric", Context.getConceptService().getConcept(5497).getDatatype().getName());
+		assertEquals("Numeric", Context.getConceptService().getConcept(5497).getDatatype().getName());
 		List<Obs> oldList = os.getObservationsByPersonAndConcept(new Person(7), new Concept(5497));
 		Message hl7message = parser.parse(hl7string);
 		router.processMessage(hl7message);
@@ -822,7 +823,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 				newObservation = newObs;
 			}
 		}
-		Assert.assertEquals(1, newObservation.getValueNumeric().intValue());
+		assertEquals(1, newObservation.getValueNumeric().intValue());
 	}
 	
 	/**
@@ -839,7 +840,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "OBX|1|NM|5497^CD4, BY FACS^99DCT||1|||||||||20080206\r" + "NTE|1|L|This is a comment";
 		// the expected question for the obs in the hl7 message has to be
 		// numeric
-		Assert.assertEquals("Numeric", Context.getConceptService().getConcept(5497).getDatatype().getName());
+		assertEquals("Numeric", Context.getConceptService().getConcept(5497).getDatatype().getName());
 		List<Obs> oldList = os.getObservationsByPersonAndConcept(new Person(7), new Concept(5497));
 		Message hl7message = parser.parse(hl7string);
 		router.processMessage(hl7message);
@@ -850,7 +851,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 				newObservation = newObs;
 			}
 		}
-		Assert.assertEquals("This is a comment", newObservation.getComment());
+		assertEquals("This is a comment", newObservation.getComment());
 	}
 	
 	/**
@@ -869,7 +870,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "NTE|2|L|that spans two lines\r" + "OBX|2|NM|5497^CD4, BY FACS^99DCT||2|||||||||20080206";
 		// the expected question for the obs in the hl7 message has to be
 		// numeric
-		Assert.assertEquals("Numeric", Context.getConceptService().getConcept(5497).getDatatype().getName());
+		assertEquals("Numeric", Context.getConceptService().getConcept(5497).getDatatype().getName());
 		List<Obs> oldList = os.getObservationsByPersonAndConcept(new Person(7), new Concept(5497));
 		Message hl7message = parser.parse(hl7string);
 		router.processMessage(hl7message);
@@ -884,7 +885,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 			if (!oldList.contains(newObs) && !newObs.isObsGrouping() && newObs.getComment() != null)
 				newObservation = newObs;
 		}
-		Assert.assertEquals("This is a comment that spans two lines", newObservation.getComment());
+		assertEquals("This is a comment that spans two lines", newObservation.getComment());
 	}
 	
 	/**
@@ -911,7 +912,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 				newObservation = newObs;
 			}
 		}
-		Assert.assertEquals("This is a comment", newObservation.getComment());
+		assertEquals("This is a comment", newObservation.getComment());
 	}
 	
 	/**
@@ -938,12 +939,12 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		// check for the new encounter
 		List<Encounter> encForPatient2 = Context.getEncounterService().getEncountersByPatient(patient);
 		encForPatient2.removeAll(encForPatient1);//retain only the new encounter
-		Assert.assertTrue(encForPatient2.size() == 1);
+		assertThat(encForPatient2, hasSize(1));
 		
 		Provider newProvider = encForPatient2.get(0).getProvidersByRole(
 		    Context.getEncounterService().getEncounterRoleByUuid(EncounterRole.UNKNOWN_ENCOUNTER_ROLE_UUID)).iterator()
 		        .next();
-		Assert.assertEquals("a2c3868a-6b90-11e0-93c3-18a905e044dc", newProvider.getUuid());
+		assertEquals("a2c3868a-6b90-11e0-93c3-18a905e044dc", newProvider.getUuid());
 	}
 	
 	/**
@@ -965,15 +966,15 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		router.processMessage(hl7message);
 		
 		List<Encounter> encForPatient2 = Context.getEncounterService().getEncountersByPatient(patient);
-		assertTrue("An encounter should have been created", (encForPatient1.size() + 1) == encForPatient2.size());
+		assertTrue((encForPatient1.size() + 1) == encForPatient2.size(), "An encounter should have been created");
 		
 		encForPatient2.removeAll(encForPatient1);
-		Assert.assertTrue(encForPatient2.size() == 1);
+		assertThat(encForPatient2, hasSize(1));
 		
 		Provider newProvider = encForPatient2.get(0).getProvidersByRole(
 		    Context.getEncounterService().getEncounterRoleByUuid(EncounterRole.UNKNOWN_ENCOUNTER_ROLE_UUID)).iterator()
 		        .next();
-		Assert.assertEquals("c2299800-cca9-11e0-9572-0800200c9a66", newProvider.getUuid());
+		assertEquals("c2299800-cca9-11e0-9572-0800200c9a66", newProvider.getUuid());
 	}
 	
 	/**
@@ -1000,12 +1001,12 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		// check for the new encounter
 		List<Encounter> encForPatient2 = Context.getEncounterService().getEncountersByPatient(patient);
 		encForPatient2.removeAll(encForPatient1);
-		Assert.assertTrue(encForPatient2.size() == 1);
+		assertThat(encForPatient2, hasSize(1));
 		
 		Provider newProvider = encForPatient2.get(0).getProvidersByRole(
 		    Context.getEncounterService().getEncounterRoleByUuid(EncounterRole.UNKNOWN_ENCOUNTER_ROLE_UUID)).iterator()
 		        .next();
-		Assert.assertEquals("1f9e8336-6b95-11e0-93c3-18a905e044dc", newProvider.getUuid());
+		assertEquals("1f9e8336-6b95-11e0-93c3-18a905e044dc", newProvider.getUuid());
 	}
 	
 	/**
@@ -1034,18 +1035,18 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		// check for the new encounter
 		List<Encounter> encForPatient2 = Context.getEncounterService().getEncountersByPatient(patient);
 		encForPatient2.removeAll(encForPatient1);
-		Assert.assertTrue(encForPatient2.size() == 1);
+		assertThat(encForPatient2, hasSize(1));
 		
 		Provider newProvider = encForPatient2.get(0).getProvidersByRole(
 		    Context.getEncounterService().getEncounterRoleByUuid(EncounterRole.UNKNOWN_ENCOUNTER_ROLE_UUID)).iterator()
 		        .next();
-		Assert.assertEquals(4, newProvider.getId().intValue());
+		assertEquals(4, newProvider.getId().intValue());
 	}
 	
 	/**
 	 * @see ORUR01Handler#processMessage(Message)
 	 */
-	@Test(expected = ApplicationException.class)
+	@Test
 	public void processMessage_shouldFailIfTheProviderNameTypeCodeIsNotSpecifiedAndIsNotAPersonId() throws Exception {
 		int patientId = 2;
 		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
@@ -1057,7 +1058,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "&^|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
 		        + "ORC|RE||||||||20080226102537|1^Super User\r" + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT";
 		Message hl7message = parser.parse(hl7string);
-		router.processMessage(hl7message);
+		assertThrows(ApplicationException.class, () -> router.processMessage(hl7message));
 	}
 	
 	/**
@@ -1083,14 +1084,14 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		
 		// make sure an encounter was added
 		encounters = Context.getEncounterService().getEncountersByPatient(new Patient(3));
-		Assert.assertEquals(originalEncounters + 1, encounters.size());
+		assertEquals(originalEncounters + 1, encounters.size());
 		
 		// get last encounter
 		Encounter enc = encounters.get(encounters.size() - 1);
 		
 		// check the form uuid
 		Form form = enc.getForm();
-		Assert.assertEquals("d9218f76-6c39-45f4-8efa-4c5c6c199f50", form.getUuid());
+		assertEquals("d9218f76-6c39-45f4-8efa-4c5c6c199f50", form.getUuid());
 	}
 	
 	/**
@@ -1116,14 +1117,14 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		
 		// make sure an encounter was added
 		encounters = Context.getEncounterService().getEncountersByPatient(new Patient(3));
-		Assert.assertEquals(originalEncounters + 1, encounters.size());
+		assertEquals(originalEncounters + 1, encounters.size());
 		
 		// get last encounter
 		Encounter enc = encounters.get(encounters.size() - 1);
 		
 		// check the form uuid
 		Form form = enc.getForm();
-		Assert.assertEquals("c156e1a8-6731-4ebd-89ff-d0d1c45eb004", form.getUuid());
+		assertEquals("c156e1a8-6731-4ebd-89ff-d0d1c45eb004", form.getUuid());
 	}
 	
 	/**
@@ -1149,14 +1150,14 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		
 		// make sure an encounter was added
 		encounters = Context.getEncounterService().getEncountersByPatient(new Patient(3));
-		Assert.assertEquals(originalEncounters + 1, encounters.size());
+		assertEquals(originalEncounters + 1, encounters.size());
 		
 		// get last encounter
 		Encounter enc = encounters.get(encounters.size() - 1);
 		
 		// check the form id
 		Form form = enc.getForm();
-		Assert.assertEquals(1, form.getId().intValue());
+		assertEquals(1, form.getId().intValue());
 	}
 	
 	/**
@@ -1182,7 +1183,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		finally {
 			Context.getObsService().removeHandler(handlerName);
 		}
-		Assert.assertEquals(data, handler.getCreatedObs().getComplexData().getData());
+		assertEquals(data, handler.getCreatedObs().getComplexData().getData());
 	}
 	
 	private class ObsHandler implements ComplexObsHandler {
@@ -1251,7 +1252,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		ORU_R01 oru = (ORU_R01) hl7message;
 		ca.uhn.hl7v2.model.v25.segment.MSH msh = oru.getMSH();
 		Form form = oruHandler.getForm(msh);
-		Assert.assertNull(form);
+		assertNull(form);
 	}
 
 	/**
@@ -1274,6 +1275,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		ORU_R01 oru = (ORU_R01) hl7message;
 		ca.uhn.hl7v2.model.v25.segment.MSH msh = oru.getMSH();
 		Form form = oruHandler.getForm(msh);
-		Assert.assertNotNull(form);	
+		assertNotNull(form);	
 		}
 }

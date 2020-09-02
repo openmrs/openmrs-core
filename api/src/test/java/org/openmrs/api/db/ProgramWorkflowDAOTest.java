@@ -9,16 +9,20 @@
  */
 package org.openmrs.api.db;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
+import org.openmrs.PatientProgram;
 import org.openmrs.Program;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 public class ProgramWorkflowDAOTest extends BaseContextSensitiveTest {
 	
@@ -26,11 +30,11 @@ public class ProgramWorkflowDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * Run this before each unit test in this class. The "@Before" method in
-	 * {@link org.openmrs.test.BaseContextSensitiveTest} is run right before this method.
+	 * {@link BaseContextSensitiveTest} is run right before this method.
 	 *
 	 * @throws Exception
 	 */
-	@Before
+	@BeforeEach
 	public void runBeforeEachTest() {
 		// fetch the dao from the spring application context
 		// this bean name matches the name in /metadata/spring/applicationContext-service.xml
@@ -60,7 +64,7 @@ public class ProgramWorkflowDAOTest extends BaseContextSensitiveTest {
 		
 		clearHibernateCache();
 		Program savedProgram = dao.getProgram(id);
-		Assert.assertEquals(3, savedProgram.getOutcomesConcept().getId().intValue());
+		assertEquals(3, savedProgram.getOutcomesConcept().getId().intValue());
 	}
 	
 	@Test
@@ -70,8 +74,8 @@ public class ProgramWorkflowDAOTest extends BaseContextSensitiveTest {
 		dao.saveProgram(program);
 		clearHibernateCache();
 		List<Program> programs = dao.getProgramsByName("testProgramName", true);
-		Assert.assertNotNull(programs);
-		Assert.assertEquals(0, programs.size());
+		assertNotNull(programs);
+		assertEquals(0, programs.size());
 	}
 	
 	@Test
@@ -87,9 +91,19 @@ public class ProgramWorkflowDAOTest extends BaseContextSensitiveTest {
 		dao.saveProgram(program3);
 		clearHibernateCache();
 		List<Program> programs = dao.getProgramsByName("testProgramName", true);
-		Assert.assertEquals(2, programs.size());
-		Assert.assertEquals(program1, programs.get(0));
-		Assert.assertEquals(program2, programs.get(1));
+		assertEquals(2, programs.size());
+		assertEquals(program1, programs.get(0));
+		assertEquals(program2, programs.get(1));
 	}
-	
+
+	@Test
+	public void getPatientPrograms_shouldReturnListChronologicallySortedByEnrollmentDate() {
+		List<PatientProgram> patientPrograms = dao.getPatientPrograms(null, null, null, null, null, null, true);
+		assertNotNull(patientPrograms);
+		Date previousDate = patientPrograms.get(0).getDateEnrolled();
+		for (PatientProgram patientProgram : patientPrograms) {
+			assertTrue(patientProgram.getDateEnrolled().compareTo(previousDate) >= 0);
+			previousDate = patientProgram.getDateEnrolled();
+		}
+	}
 }

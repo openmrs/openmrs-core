@@ -9,13 +9,15 @@
  */
 package org.openmrs.api;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -24,15 +26,14 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
 import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
  * Tests methods in the CohortService class TODO add all the rest of the tests
@@ -51,7 +52,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	@Before
+	@BeforeEach
 	public void runBeforeAllTests() {
 		service = Context.getCohortService();
 	}
@@ -86,7 +87,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(COHORT_XML);
 		String uuid = "h9a9m0i6-15e6-467c-9d4b-mbi7teu9lf0f";
 		Cohort cohort = Context.getCohortService().getCohortByUuid(uuid);
-		Assert.assertEquals(1, (int) cohort.getCohortId());
+		assertEquals(1, (int) cohort.getCohortId());
 	}
 	
 	/**
@@ -105,7 +106,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(COHORT_XML);
 		String uuid = "v9a9m5i6-17e6-407c-9d4v-hbi8teu9lf0f";
 		CohortMembership byUuid = Context.getCohortService().getCohortMembershipByUuid(uuid);
-		Assert.assertEquals(1, (int) byUuid.getId());
+		assertEquals(1, (int) byUuid.getId());
 	}
 	
 	/**
@@ -190,23 +191,24 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void voidCohort_shouldFailIfReasonIsEmpty() {
+		// TODO its unclear why these tests have these 2 groups of get a non-voided with a few assertions and then try
+		// to void the Cohort
+		// Cohort.voidCohort(Cohort,String) ignores the reason; so these tests fail due to another reason which is
+		// hidden because we do not assert on the error message
+		// should voidCohort fail given "" or null for reason?
 		executeDataSet(COHORT_XML);
 		
 		// Get a non-voided, valid Cohort and try to void it with a null reason
-		Cohort exampleCohort = service.getCohortByName("Example Cohort");
+		final Cohort exampleCohort = service.getCohortByName("Example Cohort");
 		assertNotNull(exampleCohort);
 		assertFalse(exampleCohort.getVoided());
 		
 		// Now get the Cohort and try to void it with an empty reason
-		exampleCohort = service.getCohortByName("Example Cohort");
-		assertNotNull(exampleCohort);
-		assertFalse(exampleCohort.getVoided());
+		final Cohort cohort = service.getCohortByName("Example Cohort");
+		assertNotNull(cohort);
+		assertFalse(cohort.getVoided());
 		
-		try {
-			service.voidCohort(exampleCohort, "");
-			Assert.fail("voidCohort should fail with exception if reason is empty");
-		}
-		catch (Exception e) {}
+		assertThrows(Exception.class, () -> service.voidCohort(cohort, ""));
 	}
 	
 	/**
@@ -214,29 +216,26 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void voidCohort_shouldFailIfReasonIsNull() {
+		// TODO its unclear why these tests have these 2 groups of get a non-voided with a few assertions and then try
+		// to void the Cohort
+		// Cohort.voidCohort(Cohort,String) ignores the reason; so these tests fail due to another reason which is
+		// hidden because we do not assert on the error message
+		// should voidCohort fail given "" or null for reason?
 		executeDataSet(COHORT_XML);
 		
 		// Get a non-voided, valid Cohort and try to void it with a null reason
-		Cohort exampleCohort = service.getCohortByName("Example Cohort");
+		final Cohort exampleCohort = service.getCohortByName("Example Cohort");
 		assertNotNull(exampleCohort);
 		assertFalse(exampleCohort.getVoided());
 		
-		try {
-			service.voidCohort(exampleCohort, null);
-			Assert.fail("voidCohort should fail with exception if reason is null.");
-		}
-		catch (Exception e) {}
+		assertThrows(Exception.class, () -> service.voidCohort(exampleCohort, null));
 		
 		// Now get the Cohort and try to void it with an empty reason
-		exampleCohort = service.getCohortByName("Example Cohort");
-		assertNotNull(exampleCohort);
-		assertFalse(exampleCohort.getVoided());
+		final Cohort cohort = service.getCohortByName("Example Cohort");
+		assertNotNull(cohort);
+		assertFalse(cohort.getVoided());
 		
-		try {
-			service.voidCohort(exampleCohort, "");
-			Assert.fail("voidCohort should fail with exception if reason is empty");
-		}
-		catch (Exception e) {}
+		assertThrows(Exception.class, () -> service.voidCohort(cohort, ""));
 	}
 	
 	/**
@@ -291,7 +290,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		
 		Cohort cohortToGet = service.getCohort(2);
 		assertNotNull(cohortToGet);
-		assertTrue(cohortToGet.getCohortId() == 2);
+		assertEquals(2, cohortToGet.getCohortId());
 	}
 	
 	/**
@@ -302,7 +301,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(COHORT_XML);
 		
 		Cohort cohortToGet = service.getCohortByName("Example Cohort");
-		assertTrue(cohortToGet.getCohortId() == 2);
+		assertEquals(2, cohortToGet.getCohortId());
 	}
 	
 	/**
@@ -319,12 +318,12 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		assertTrue(allCohorts.get(0).getVoided());
 		assertFalse(allCohorts.get(1).getVoided());
 		// the non-voided cohort should have an id of 2
-		assertTrue(allCohorts.get(1).getCohortId() == 2);
+		assertEquals(2, allCohorts.get(1).getCohortId());
 		
 		// ask for the cohort by name
 		Cohort cohortToGet = service.getCohortByName("Example Cohort");
 		// see if the non-voided one got returned
-		assertTrue(cohortToGet.getCohortId() == 2);
+		assertEquals(2, cohortToGet.getCohortId());
 	}
 	
 	@Test
@@ -467,7 +466,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 			service.addPatientToCohort(service.getCohort(2), patientToAdd);
 		}
 		catch (Exception e) {
-			Assert.fail("addPatientToCohort(Cohort,Patient) fails when cohort already contains patient.");
+			fail("addPatientToCohort(Cohort,Patient) fails when cohort already contains patient.");
 		}
 	}
 	
@@ -484,7 +483,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 			service.removePatientFromCohort(service.getCohort(2), notInCohort);
 		}
 		catch (Exception e) {
-			Assert.fail("removePatientFromCohort(Cohort,Patient) should not fail if cohort doesn't contain patient");
+			fail("removePatientFromCohort(Cohort,Patient) should not fail if cohort doesn't contain patient");
 		}
 	}
 	

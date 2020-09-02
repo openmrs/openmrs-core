@@ -534,7 +534,7 @@ public final class Module {
 		}
 		
 		for (Extension ext : extensions) {
-			if (extensionNames.get(ext.getPointId()) != ext.getClass().getName()) {
+			if (!extensionNames.get(ext.getPointId()).equals(ext.getClass().getName())) {
 				return false;
 			}
 		}
