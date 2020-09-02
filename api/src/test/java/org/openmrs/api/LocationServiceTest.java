@@ -9,13 +9,13 @@
  */
 package org.openmrs.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,9 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.LocationAttribute;
@@ -33,7 +32,7 @@ import org.openmrs.LocationAttributeType;
 import org.openmrs.LocationTag;
 import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.datatype.FreeTextDatatype;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -52,7 +51,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	@Before
+	@BeforeEach
 	public void runBeforeEachTest() {
 		executeDataSet(LOC_INITIAL_DATA_XML);
 	}
@@ -82,9 +81,9 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		
 		Location newSavedLocation = ls.getLocation(location.getLocationId());
 		
-		assertNotNull("The saved location should have an id now", location.getLocationId());
-		assertNotNull("We should get back a location", newSavedLocation);
-		assertTrue("The created location needs to equal the pojo location", location.equals(newSavedLocation));
+		assertNotNull(location.getLocationId(), "The saved location should have an id now");
+		assertNotNull(newSavedLocation, "We should get back a location");
+		assertTrue(location.equals(newSavedLocation), "The created location needs to equal the pojo location");
 	}
 	
 	/**
@@ -116,10 +115,10 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		// fetch that encounter from the db
 		Location newestLoc = ls.getLocation(location.getLocationId());
 		
-		assertFalse("The name should be different", origName.equals(newName));
-		assertTrue("The name should be the same", newestLoc.getName().equals(newName));
-		assertFalse("The name should be different", origDesc.equals(newDesc));
-		assertTrue("The name should be the same", newestLoc.getDescription().equals(newDesc));
+		assertFalse(origName.equals(newName), "The name should be different");
+		assertTrue(newestLoc.getName().equals(newName), "The name should be the same");
+		assertFalse(origDesc.equals(newDesc), "The name should be different");
+		assertTrue(newestLoc.getDescription().equals(newDesc), "The name should be the same");
 	}
 	
 	/**
@@ -159,7 +158,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(childB.getLocationId());
 		
 		// Saved parent location should have child locations
-		assertNotNull("newSavedLocation.childLocations must be not null", newSavedLocation.getChildLocations());
+		assertNotNull(newSavedLocation.getChildLocations(), "newSavedLocation.childLocations must be not null");
 		
 		// Saved parent location should have exactly 1 child location
 		assertEquals(1, newSavedLocation.getChildLocations().size());
@@ -167,17 +166,16 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		Location newChildA = newSavedLocation.getChildLocations().iterator().next();
 		
 		// Child location must be the previously added object
-		assertTrue("Child location must be the previously created childA", newChildA.equals(childA));
+		assertTrue(newChildA.equals(childA), "Child location must be the previously created childA");
 		
 		// Saved level A child location should have child locations
-		assertNotNull("newSavedLocation.childLocations must be not null", newChildA.getChildLocations());
+		assertNotNull(newChildA.getChildLocations(), "newSavedLocation.childLocations must be not null");
 		
 		// Saved level A child location should have exactly 1 child location
 		assertEquals(1, newSavedLocation.getChildLocations().size());
 		
 		// Level B child location must be the previously added object
-		assertTrue("Level B child location must be the previously created childB", newChildA.getChildLocations().iterator()
-		        .next().equals(childB));
+		assertTrue(newChildA.getChildLocations().iterator().next().equals(childB), "Level B child location must be the previously created childB");
 	}
 	
 	/**
@@ -211,7 +209,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCATION_NAME,
 		        "Test Parent Location", "Testing default Location");
 		Context.getAdministrationService().saveGlobalProperty(gp);
-		Assert.assertEquals("Test Parent Location", Context.getLocationService().getDefaultLocation().getName());
+		assertEquals("Test Parent Location", Context.getLocationService().getDefaultLocation().getName());
 	}
 	
 	/**
@@ -219,7 +217,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getLocation_shouldReturnNullWhenNoLocationMatchGivenLocationId() {
-		Assert.assertNull(Context.getLocationService().getLocation(1337));
+		assertNull(Context.getLocationService().getLocation(1337));
 	}
 	
 	/**
@@ -227,7 +225,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getLocation_shouldReturnNullWhenNoLocationMatchGivenLocationName() {
-		Assert.assertNull(Context.getLocationService().getLocation("Princeton Plainsboro"));
+		assertNull(Context.getLocationService().getLocation("Princeton Plainsboro"));
 	}
 	
 	/**
@@ -237,7 +235,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getAllLocations_shouldReturnAllLocationsIncludingRetired() {
 		List<Location> locations = Context.getLocationService().getAllLocations();
 		
-		Assert.assertEquals(6, locations.size());
+		assertEquals(6, locations.size());
 	}
 	
 	/**
@@ -247,7 +245,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getRootLocations_shouldReturnRootLocationsIncludingRetired() {
 		List<Location> locations = Context.getLocationService().getRootLocations(true);
 		
-		Assert.assertEquals(3, locations.size());
+		assertEquals(3, locations.size());
 	}
 	
 	/**
@@ -257,7 +255,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getRootLocations_shouldReturnOnlyUnretiredRootLocations() {
 		List<Location> locations = Context.getLocationService().getRootLocations(false);
 		
-		Assert.assertEquals(2, locations.size());
+		assertEquals(2, locations.size());
 	}
 	
 	/**
@@ -267,7 +265,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getAllLocations_shouldReturnAllLocationsWhenIncludeRetiredIsTrue() {
 		List<Location> locations = Context.getLocationService().getAllLocations(true);
 		
-		Assert.assertEquals(6, locations.size());
+		assertEquals(6, locations.size());
 	}
 	
 	/**
@@ -277,7 +275,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getAllLocations_shouldReturnOnlyUnretiredLocationsWhenIncludeRetiresIsFalse() {
 		List<Location> locations = Context.getLocationService().getAllLocations(false);
 		
-		Assert.assertEquals(5, locations.size());
+		assertEquals(5, locations.size());
 	}
 	
 	/**
@@ -285,7 +283,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getLocations_shouldReturnEmptyListWhenNoLocationMatchTheNameFragment() {
-		Assert.assertEquals(0, Context.getLocationService().getLocations("Mansion").size());
+		assertEquals(0, Context.getLocationService().getLocations("Mansion").size());
 	}
 	
 	/**
@@ -303,7 +301,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		
 		Map<LocationAttributeType, Object> attrValues = new HashMap<>();
 		attrValues.put(phoneAttrType, "xxxxxx");
-		Assert.assertEquals(0, Context.getLocationService().getLocations(null, null, attrValues, true, null, null).size());
+		assertEquals(0, Context.getLocationService().getLocations(null, null, attrValues, true, null, null).size());
 	}
 	
 	/**
@@ -354,8 +352,8 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		
 		// Check that only location #1 is returned
 		List<Location> locations = Context.getLocationService().getLocations(null, null, attrValues, false, null, null);
-		Assert.assertEquals(1, locations.size());
-		Assert.assertEquals(location1, locations.get(0));
+		assertEquals(1, locations.size());
+		assertEquals(location1, locations.get(0));
 	}
 	
 	/**
@@ -378,7 +376,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getLocationsByTag_shouldReturnEmptyListWhenNoLocationsHasTheGivenTag() {
 		LocationService ls = Context.getLocationService();
-		Assert.assertEquals(0, ls.getLocationsByTag(ls.getLocationTagByName("Retired")).size());
+		assertEquals(0, ls.getLocationsByTag(ls.getLocationTagByName("Retired")).size());
 	}
 	
 	@Test
@@ -398,7 +396,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getLocationsHavingAllTags_shouldReturnAllUnretiredLocationsGivenAnEmptyTagList() {
 		LocationService ls = Context.getLocationService();
-		Assert.assertEquals(5, ls.getLocationsHavingAllTags(Collections.EMPTY_LIST).size());
+		assertEquals(5, ls.getLocationsHavingAllTags(Collections.EMPTY_LIST).size());
 	}
 	
 	/**
@@ -434,7 +432,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getLocationsHavingAnyTag_shouldReturnEmptyListWhenNoLocationHasTheGivenTags() {
 		LocationService ls = Context.getLocationService();
-		Assert.assertEquals(0, ls.getLocationsHavingAnyTag(Collections.singletonList(ls.getLocationTagByName("Retired")))
+		assertEquals(0, ls.getLocationsHavingAnyTag(Collections.singletonList(ls.getLocationTagByName("Retired")))
 		        .size());
 	}
 	
@@ -444,7 +442,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getLocationsHavingAnyTag_shouldReturnEmptyListWhenGivenAnEmptyTagList() {
 		LocationService ls = Context.getLocationService();
-		Assert.assertEquals(0, ls.getLocationsHavingAnyTag(new ArrayList<>()).size());
+		assertEquals(0, ls.getLocationsHavingAnyTag(new ArrayList<>()).size());
 	}
 	
 	/**
@@ -488,13 +486,13 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		LocationService ls = Context.getLocationService();
 		
 		Location loc = ls.getLocation("Test Retired Location");
-		Assert.assertTrue(loc.getRetired());
+		assertTrue(loc.getRetired());
 		
 		Location newLoc = ls.unretireLocation(loc);
-		Assert.assertEquals(loc, newLoc);
-		Assert.assertFalse(loc.getRetired());
-		Assert.assertNull(loc.getRetiredBy());
-		Assert.assertNull(loc.getRetireReason());
+		assertEquals(loc, newLoc);
+		assertFalse(loc.getRetired());
+		assertNull(loc.getRetiredBy());
+		assertNull(loc.getRetireReason());
 	}
 	
 	/**
@@ -515,7 +513,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		// try to refetch the location. should get a null object
 		Location l = ls.getLocation(locationToDelete.getLocationId());
 		
-		assertNull("We shouldn't find the location after deletion", l);
+		assertNull(l, "We shouldn't find the location after deletion");
 	}
 	
 	/**
@@ -535,9 +533,9 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		
 		LocationTag newSavedTag = ls.getLocationTag(tag.getLocationTagId());
 		
-		assertNotNull("The saved tag should have an id now", tag.getLocationTagId());
-		assertNotNull("We should get back a tag", newSavedTag);
-		assertTrue("The created tag needs to equal the pojo location", tag.equals(newSavedTag));
+		assertNotNull(tag.getLocationTagId(), "The saved tag should have an id now");
+		assertNotNull(newSavedTag, "We should get back a tag");
+		assertTrue(tag.equals(newSavedTag), "The created tag needs to equal the pojo location");
 	}
 	
 	/**
@@ -582,10 +580,10 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		// fetch that encounter from the db
 		LocationTag newestTag = ls.getLocationTag(tag.getLocationTagId());
 		
-		assertFalse("The name should be different", origName.equals(newName));
-		assertTrue("The name should NOT be different", newestTag.getName().equals(newName));
-		assertFalse("The name should be different", origDesc.equals(newDesc));
-		assertTrue("The name should NOT be different", newestTag.getDescription().equals(newDesc));
+		assertFalse(origName.equals(newName), "The name should be different");
+		assertTrue(newestTag.getName().equals(newName), "The name should NOT be different");
+		assertFalse(origDesc.equals(newDesc), "The name should be different");
+		assertTrue(newestTag.getDescription().equals(newDesc), "The name should NOT be different");
 	}
 	
 	/**
@@ -615,13 +613,13 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		Location newSavedLocation = ls.getLocation(location.getLocationId());
 		
 		// Saved parent location should have tags
-		assertNotNull("newSavedLocation.tags must be not null", newSavedLocation.getTags());
+		assertNotNull(newSavedLocation.getTags(), "newSavedLocation.tags must be not null");
 		
 		// Saved parent location should have exactly 1 tag
 		assertEquals(1, newSavedLocation.getTags().size());
 		
 		// Tag must be the previously added object
-		assertTrue("Tag must be the previously added tag", newSavedLocation.getTags().iterator().next().equals(tag));
+		assertTrue(newSavedLocation.getTags().iterator().next().equals(tag), "Tag must be the previously added tag");
 	}
 	
 	/**
@@ -648,7 +646,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		assertEquals(1, newSavedLocation.getTags().size());
 		
 		// Tag must be overwritten with tag with locationTagId == 1
-		assertNotNull("Location tag should have an ID now", newSavedLocation.getTags().iterator().next().getLocationTagId());
+		assertNotNull(newSavedLocation.getTags().iterator().next().getLocationTagId(), "Location tag should have an ID now");
 		assertEquals(1, newSavedLocation.getTags().iterator().next().getLocationTagId().intValue());
 	}
 	
@@ -679,7 +677,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getLocationTag_shouldReturnNullWhenNoLocationTagMatchGivenId() {
-		Assert.assertNull(Context.getLocationService().getLocationTag(9999));
+		assertNull(Context.getLocationService().getLocationTag(9999));
 	}
 	
 	/**
@@ -705,7 +703,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getAllLocationTags_shouldReturnAllLocationTagsIncludingRetired() {
 		List<LocationTag> tags = Context.getLocationService().getAllLocationTags();
 		
-		Assert.assertEquals(6, tags.size());
+		assertEquals(6, tags.size());
 	}
 	
 	/**
@@ -715,7 +713,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getAllLocationTags_shouldReturnAllLocationTagsIfIncludeRetiredIsTrue() {
 		List<LocationTag> tags = Context.getLocationService().getAllLocationTags(true);
 		
-		Assert.assertEquals(6, tags.size());
+		assertEquals(6, tags.size());
 	}
 	
 	/**
@@ -725,7 +723,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getAllLocationTags_shouldReturnOnlyUnretiredLocationTagsIfIncludeRetiredIsFalse() {
 		List<LocationTag> tags = Context.getLocationService().getAllLocationTags(false);
 		
-		Assert.assertEquals(5, tags.size());
+		assertEquals(5, tags.size());
 	}
 	
 	/**
@@ -733,7 +731,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getLocationTagByName_shouldReturnNullWhenNoLocationTagMatchGivenName() {
-		Assert.assertNull(Context.getLocationService().getLocationTagByName("Hospital of the year 2222"));
+		assertNull(Context.getLocationService().getLocationTagByName("Hospital of the year 2222"));
 	}
 	
 	/**
@@ -741,7 +739,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getLocationTags_shouldReturnEmptyListWhenNoLocationTagMatchGivenSearchString() {
-		Assert.assertEquals(0, Context.getLocationService().getLocationTags("!!!").size());
+		assertEquals(0, Context.getLocationService().getLocationTags("!!!").size());
 	}
 	
 	/**
@@ -788,14 +786,14 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		LocationService ls = Context.getLocationService();
 		
 		LocationTag tag = ls.getLocationTag(1);
-		Assert.assertFalse(tag.getRetired());
+		assertFalse(tag.getRetired());
 		
 		String reason = "because i can";
 		LocationTag newTag = ls.retireLocationTag(tag, reason);
 		
-		Assert.assertEquals(tag, newTag);
-		Assert.assertTrue(tag.getRetired());
-		Assert.assertEquals(reason, tag.getRetireReason());
+		assertEquals(tag, newTag);
+		assertTrue(tag.getRetired());
+		assertEquals(reason, tag.getRetireReason());
 	}
 	
 	/**
@@ -806,14 +804,14 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		LocationService ls = Context.getLocationService();
 		LocationTag tag = ls.getLocationTagByName("Test Retired Tag");
 		
-		Assert.assertTrue(tag.getRetired());
+		assertTrue(tag.getRetired());
 		
 		LocationTag newTag = ls.unretireLocationTag(tag);
 		
-		Assert.assertEquals(tag, newTag);
-		Assert.assertFalse(tag.getRetired());
-		Assert.assertNull(tag.getRetiredBy());
-		Assert.assertNull(tag.getRetireReason());
+		assertEquals(tag, newTag);
+		assertFalse(tag.getRetired());
+		assertNull(tag.getRetiredBy());
+		assertNull(tag.getRetireReason());
 	}
 	
 	/**
@@ -833,7 +831,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		// Try to refetch the location. should get a null object
 		LocationTag t = ls.getLocationTag(tag.getLocationTagId());
 		
-		assertNull("We shouldn't find the tag after deletion", t);
+		assertNull(t, "We shouldn't find the tag after deletion");
 	}
 	
 	/**
@@ -845,7 +843,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		location.setName("Some name");
 		location.setDescription("Some description");
 		Location savedLocation = Context.getLocationService().saveLocation(location);
-		Assert.assertEquals(location, savedLocation);
+		assertEquals(location, savedLocation);
 	}
 	
 	/**
@@ -877,7 +875,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void saveLocationTag_shouldReturnSavedObject() {
 		LocationTag locationTag = new LocationTag("Some tag name", "Some description");
 		LocationTag savedLocationTag = Context.getLocationService().saveLocationTag(locationTag);
-		Assert.assertEquals(locationTag, savedLocationTag);
+		assertEquals(locationTag, savedLocationTag);
 	}
 	
 	/**
@@ -900,7 +898,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getLocationByUuid_shouldFindObjectGivenValidUuid() {
 		String uuid = "f08ba64b-ea57-4a41-b33c-9dfc59b0c60a";
 		Location location = Context.getLocationService().getLocationByUuid(uuid);
-		Assert.assertEquals(1, (int) location.getLocationId());
+		assertEquals(1, (int) location.getLocationId());
 	}
 	
 	/**
@@ -908,7 +906,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getLocationByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
-		Assert.assertNull(Context.getLocationService().getLocationByUuid("some invalid uuid"));
+		assertNull(Context.getLocationService().getLocationByUuid("some invalid uuid"));
 	}
 	
 	/**
@@ -916,7 +914,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getLocationTagByUuid_shouldFindObjectGivenValidUuid() {
-		Assert.assertEquals(Integer.valueOf(3), Context.getLocationService().getLocationTagByUuid(
+		assertEquals(Integer.valueOf(3), Context.getLocationService().getLocationTagByUuid(
 		    "0d0eaea2-47ed-11df-bc8b-001e378eb67e").getLocationTagId());
 	}
 	
@@ -925,7 +923,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getLocationTagByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
-		Assert.assertNull(Context.getLocationService().getLocationTagByUuid("ffffffff-47ed-11df-bc8b-001e378eb67e"));
+		assertNull(Context.getLocationService().getLocationTagByUuid("ffffffff-47ed-11df-bc8b-001e378eb67e"));
 	}
 	
 	/**
@@ -938,7 +936,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCATION_NAME,
 		        "None existent Location", "Testing");
 		Context.getAdministrationService().saveGlobalProperty(gp);
-		Assert.assertEquals("Unknown Location", Context.getLocationService().getDefaultLocation().getName());
+		assertEquals("Unknown Location", Context.getLocationService().getDefaultLocation().getName());
 	}
 	
 	/**
@@ -952,10 +950,8 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		// Get all locations.
 		List<Location> locations = ls.getAllLocations();
 		//The 2 retired locations should be always be at the end
-		Assert.assertTrue("Retired locations should be at the end of the list", locations.get(locations.size() - 1)
-		        .getRetired());
-		Assert.assertTrue("Retired locations should be at the end of the list", locations.get(locations.size() - 2)
-		        .getRetired());
+		assertTrue(locations.get(locations.size() - 1).getRetired(), "Retired locations should be at the end of the list");
+		assertTrue(locations.get(locations.size() - 2).getRetired(), "Retired locations should be at the end of the list");
 	}
 	
 	/**
@@ -964,7 +960,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAllLocationAttributeTypes_shouldReturnAllLocationAttributeTypesIncludingRetiredOnes() {
 		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
-		Assert.assertEquals(2, Context.getLocationService().getAllLocationAttributeTypes().size());
+		assertEquals(2, Context.getLocationService().getAllLocationAttributeTypes().size());
 	}
 	
 	/**
@@ -973,7 +969,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getLocationAttributeType_shouldReturnTheLocationAttributeTypeWithTheGivenId() {
 		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
-		Assert.assertEquals("Audit Date", Context.getLocationService().getLocationAttributeType(1).getName());
+		assertEquals("Audit Date", Context.getLocationService().getLocationAttributeType(1).getName());
 	}
 	
 	/**
@@ -982,7 +978,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getLocationAttributeType_shouldReturnNullIfNoLocationAttributeTypeExistsWithTheGivenId() {
 		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
-		Assert.assertNull(Context.getLocationService().getLocationAttributeType(999));
+		assertNull(Context.getLocationService().getLocationAttributeType(999));
 	}
 	
 	/**
@@ -991,7 +987,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getLocationAttributeTypeByUuid_shouldReturnTheLocationAttributeTypeWithTheGivenUuid() {
 		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
-		Assert.assertEquals("Audit Date", Context.getLocationService().getLocationAttributeTypeByUuid(
+		assertEquals("Audit Date", Context.getLocationService().getLocationAttributeTypeByUuid(
 		    "9516cc50-6f9f-11e0-8414-001e378eb67e").getName());
 	}
 	
@@ -1002,7 +998,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getLocationAttributeTypeByUuid_shouldReturnNullIfNoLocationAttributeTypeExistsWithTheGivenUuid()
 	{
 		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
-		Assert.assertNull(Context.getLocationService().getLocationAttributeTypeByUuid("not-a-uuid"));
+		assertNull(Context.getLocationService().getLocationAttributeTypeByUuid("not-a-uuid"));
 	}
 	
 	/**
@@ -1011,9 +1007,9 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void purgeLocationAttributeType_shouldCompletelyRemoveALocationAttributeType() {
 		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
-		Assert.assertEquals(2, Context.getLocationService().getAllLocationAttributeTypes().size());
+		assertEquals(2, Context.getLocationService().getAllLocationAttributeTypes().size());
 		Context.getLocationService().purgeLocationAttributeType(Context.getLocationService().getLocationAttributeType(2));
-		Assert.assertEquals(1, Context.getLocationService().getAllLocationAttributeTypes().size());
+		assertEquals(1, Context.getLocationService().getAllLocationAttributeTypes().size());
 	}
 	
 	/**
@@ -1023,16 +1019,16 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void retireLocationAttributeType_shouldRetireALocationAttributeType() {
 		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
 		LocationAttributeType vat = Context.getLocationService().getLocationAttributeType(1);
-		Assert.assertFalse(vat.getRetired());
-		Assert.assertNull(vat.getRetiredBy());
-		Assert.assertNull(vat.getDateRetired());
-		Assert.assertNull(vat.getRetireReason());
+		assertFalse(vat.getRetired());
+		assertNull(vat.getRetiredBy());
+		assertNull(vat.getDateRetired());
+		assertNull(vat.getRetireReason());
 		Context.getLocationService().retireLocationAttributeType(vat, "for testing");
 		vat = Context.getLocationService().getLocationAttributeType(1);
-		Assert.assertTrue(vat.getRetired());
-		Assert.assertNotNull(vat.getRetiredBy());
-		Assert.assertNotNull(vat.getDateRetired());
-		Assert.assertEquals("for testing", vat.getRetireReason());
+		assertTrue(vat.getRetired());
+		assertNotNull(vat.getRetiredBy());
+		assertNotNull(vat.getDateRetired());
+		assertEquals("for testing", vat.getRetireReason());
 	}
 	
 	/**
@@ -1041,13 +1037,13 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void saveLocationAttributeType_shouldCreateANewLocationAttributeType() {
 		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
-		Assert.assertEquals(2, Context.getLocationService().getAllLocationAttributeTypes().size());
+		assertEquals(2, Context.getLocationService().getAllLocationAttributeTypes().size());
 		LocationAttributeType lat = new LocationAttributeType();
 		lat.setName("Another one");
 		lat.setDatatypeClassname(FreeTextDatatype.class.getName());
 		Context.getLocationService().saveLocationAttributeType(lat);
-		Assert.assertNotNull(lat.getId());
-		Assert.assertEquals(3, Context.getLocationService().getAllLocationAttributeTypes().size());
+		assertNotNull(lat.getId());
+		assertEquals(3, Context.getLocationService().getAllLocationAttributeTypes().size());
 	}
 	
 	/**
@@ -1057,12 +1053,12 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void saveLocationAttributeType_shouldEditAnExistingLocationAttributeType() {
 		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
 		LocationService service = Context.getLocationService();
-		Assert.assertEquals(2, service.getAllLocationAttributeTypes().size());
+		assertEquals(2, service.getAllLocationAttributeTypes().size());
 		LocationAttributeType lat = service.getLocationAttributeType(1);
 		lat.setName("A new name");
 		service.saveLocationAttributeType(lat);
-		Assert.assertEquals(2, service.getAllLocationAttributeTypes().size());
-		Assert.assertEquals("A new name", service.getLocationAttributeType(1).getName());
+		assertEquals(2, service.getAllLocationAttributeTypes().size());
+		assertEquals("A new name", service.getLocationAttributeType(1).getName());
 	}
 	
 	/**
@@ -1073,15 +1069,15 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
 		LocationService service = Context.getLocationService();
 		LocationAttributeType lat = service.getLocationAttributeType(2);
-		Assert.assertTrue(lat.getRetired());
-		Assert.assertNotNull(lat.getDateRetired());
-		Assert.assertNotNull(lat.getRetiredBy());
-		Assert.assertNotNull(lat.getRetireReason());
+		assertTrue(lat.getRetired());
+		assertNotNull(lat.getDateRetired());
+		assertNotNull(lat.getRetiredBy());
+		assertNotNull(lat.getRetireReason());
 		service.unretireLocationAttributeType(lat);
-		Assert.assertFalse(lat.getRetired());
-		Assert.assertNull(lat.getDateRetired());
-		Assert.assertNull(lat.getRetiredBy());
-		Assert.assertNull(lat.getRetireReason());
+		assertFalse(lat.getRetired());
+		assertNull(lat.getDateRetired());
+		assertNull(lat.getRetiredBy());
+		assertNull(lat.getRetireReason());
 	}
 	
 	/**
@@ -1091,7 +1087,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getLocationAttributeByUuid_shouldGetTheLocationAttributeWithTheGivenUuid() {
 		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
 		LocationService service = Context.getLocationService();
-		Assert.assertEquals("2011-04-25", service.getLocationAttributeByUuid("3a2bdb18-6faa-11e0-8414-001e378eb67e")
+		assertEquals("2011-04-25", service.getLocationAttributeByUuid("3a2bdb18-6faa-11e0-8414-001e378eb67e")
 		        .getValueReference());
 	}
 	
@@ -1102,7 +1098,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getLocationAttributeByUuid_shouldReturnNullIfNoLocationAttributeHasTheGivenUuid() {
 		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
 		LocationService service = Context.getLocationService();
-		Assert.assertNull(service.getLocationAttributeByUuid("not-a-uuid"));
+		assertNull(service.getLocationAttributeByUuid("not-a-uuid"));
 	}
 	
 	/**
@@ -1115,9 +1111,9 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		LocationService ls = Context.getLocationService();
 		
 		Location location = ls.getLocation(1);
-		Assert.assertNotNull(location);
-		Assert.assertNull(location.getDateChanged());
-		Assert.assertNull(location.getChangedBy());
+		assertNotNull(location);
+		assertNull(location.getDateChanged());
+		assertNull(location.getChangedBy());
 		
 		location.setName("edited name");
 		ls.saveLocation(location);
@@ -1125,8 +1121,8 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		Location editedLocation = Context.getLocationService().saveLocation(location);
 		Context.flushSession();
 		
-		Assert.assertNotNull(editedLocation.getDateChanged());
-		Assert.assertNotNull(editedLocation.getChangedBy());
+		assertNotNull(editedLocation.getDateChanged());
+		assertNotNull(editedLocation.getChangedBy());
 		
 	}
 	
@@ -1140,8 +1136,8 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		LocationService ls = Context.getLocationService();
 		LocationTag tag = ls.getLocationTag(1);
 		
-		Assert.assertNull(tag.getDateChanged());
-		Assert.assertNull(tag.getChangedBy());
+		assertNull(tag.getDateChanged());
+		assertNull(tag.getChangedBy());
 		
 		tag.setName("testing");
 		tag.setDescription("desc");
@@ -1149,8 +1145,8 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		LocationTag editedTag = Context.getLocationService().saveLocationTag(tag);
 		Context.flushSession();
 		
-		Assert.assertNotNull(editedTag.getDateChanged());
-		Assert.assertNotNull(editedTag.getChangedBy());
+		assertNotNull(editedTag.getDateChanged());
+		assertNotNull(editedTag.getChangedBy());
 	}
 	
 	/**
@@ -1161,8 +1157,8 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
 		LocationAttributeType locationAttributeType = Context.getLocationService().getLocationAttributeTypeByName(
 		    "Audit Date");
-		Assert.assertNotNull(locationAttributeType);
-		Assert.assertEquals("Audit Date", locationAttributeType.getName());
+		assertNotNull(locationAttributeType);
+		assertEquals("Audit Date", locationAttributeType.getName());
 	}
 	
 	/**
@@ -1172,7 +1168,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getLocationAttributeTypeByName_shouldReturnNullIfNoLocationAttributeTypeExistsWithTheSpecifiedName()
 	{
 		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
-		Assert.assertNull(Context.getLocationService().getLocationAttributeTypeByName("not-a-name"));
+		assertNull(Context.getLocationService().getLocationAttributeTypeByName("not-a-name"));
 	}
 	
 	/**
@@ -1186,7 +1182,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		LocationTag tag = new LocationTag(1);
 		location.addTag(tag);
 		locationService.retireLocation(location, "test retire reason");
-		Assert.assertFalse(tag.getRetired());
+		assertFalse(tag.getRetired());
 	}
 	
 }

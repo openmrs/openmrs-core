@@ -9,17 +9,18 @@
  */
 package org.openmrs.api.context;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Properties;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.module.ModuleClassLoader;
 import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleInteroperabilityTest;
 import org.openmrs.module.ModuleUtil;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
  * This test class is meant just for testing the {@link Context#loadClass(String)} method. This
@@ -30,12 +31,12 @@ import org.openmrs.test.BaseContextSensitiveTest;
  */
 public class ContextWithModuleTest extends BaseContextSensitiveTest {
 	
-	@Before
+	@BeforeEach
 	public void startupBeforeEachTest() {
 		ModuleUtil.startup(getRuntimeProperties());
 	}
 	
-	@After
+	@AfterEach
 	public void cleanupAfterEachTest() {
 		ModuleUtil.shutdown();
 	}
@@ -66,7 +67,7 @@ public class ContextWithModuleTest extends BaseContextSensitiveTest {
 	@Test
 	public void loadClass_shouldLoadClassWithOpenmrsClassLoader() throws ClassNotFoundException {
 		Class<?> c = Context.loadClass("org.openmrs.module.test1.api.Test1Service");
-		Assert.assertTrue("Should be loaded by OpenmrsClassLoader", c.getClassLoader() instanceof ModuleClassLoader);
+		assertTrue(c.getClassLoader() instanceof ModuleClassLoader, "Should be loaded by OpenmrsClassLoader");
 	}
 	
 }

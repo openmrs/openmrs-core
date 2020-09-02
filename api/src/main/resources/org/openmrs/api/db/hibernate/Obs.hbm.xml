@@ -45,7 +45,7 @@
 		<property name="valueText" type="java.lang.String"
 			column="value_text" length="65535" />
 		<property name="valueComplex" type="java.lang.String"
-		    column="value_complex" length="255" />
+		    column="value_complex" length="1000" />
 			
 		<property name="comment" type="java.lang.String"
 			column="comments" length="255" />

@@ -31,6 +31,16 @@
          <artifactId>openmrs-test</artifactId>
          <type>pom</type>
          <scope>test</scope>
+		  <exclusions>
+			  <exclusion>
+				  <groupId>org.powermock</groupId>
+				  <artifactId>powermock-module-junit4</artifactId>
+			  </exclusion>
+			  <exclusion>
+				  <groupId>org.powermock</groupId>
+				  <artifactId>powermock-api-mockito2</artifactId>
+			  </exclusion>
+		  </exclusions>
       </dependency>
       <!-- Test-jar for sharing api test resources in web tests -->
       <dependency>
@@ -106,11 +116,17 @@
       <dependency>
 		 <groupId>org.apache.velocity</groupId>
 		 <artifactId>velocity-tools</artifactId>
-	  </dependency>
+		 <exclusions>
+		 	<exclusion>
+		 		<groupId>dom4j</groupId>
+		 		<artifactId>dom4j</artifactId>
+		 	</exclusion>
+		 </exclusions>
+      </dependency>
       <dependency>
          <groupId>org.owasp.encoder</groupId>
          <artifactId>encoder</artifactId>
-         <version>1.2</version>
+         <version>1.2.2</version>
       </dependency>
    </dependencies>
 
@@ -171,5 +187,5 @@
 			</build>
 		</profile>
 	</profiles>
-
+	
 </project>

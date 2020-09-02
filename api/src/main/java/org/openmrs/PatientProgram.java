@@ -54,8 +54,7 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	
 	@Id
 	@Column(name = "patient_program_id")
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "patient_program_id_gen")
-	@SequenceGenerator(name = "patient_program_id_gen", sequenceName = "patient_program_patient_program_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer patientProgramId;
 	
 	@ManyToOne

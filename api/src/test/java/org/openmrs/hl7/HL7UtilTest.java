@@ -9,15 +9,15 @@
  */
 package org.openmrs.hl7;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 import ca.uhn.hl7v2.HL7Exception;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests methods on the {@link HL7Util} class
@@ -36,7 +36,7 @@ public class HL7UtilTest {
 		TimeZone.setDefault(TimeZone.getTimeZone("EST"));
 		
 		Date d = HL7Util.parseHL7Date("20091225003000");
-		Assert.assertEquals(25, d.getDate());
+		assertEquals(25, d.getDate());
 		
 		// reset the timezone
 		TimeZone.setDefault(originalTimeZone);
@@ -49,7 +49,7 @@ public class HL7UtilTest {
 	@Test
 	public void parseHL7Timestamp_shouldHandle197804110615dash0200() throws HL7Exception {
 		Date d = HL7Util.parseHL7Date("197804110615-0200");
-		Assert.assertEquals(new Long("261130500000"), (Long) d.getTime());
+		assertEquals(new Long("261130500000"), (Long) d.getTime());
 	}
 	
 	/**
@@ -62,7 +62,7 @@ public class HL7UtilTest {
 		TimeZone originalTimeZone = TimeZone.getDefault();
 		TimeZone.setDefault(TimeZone.getTimeZone("GMT-05:00"));
 		
-		Assert.assertEquals("-0500", HL7Util.getTimeZoneOffset("197804110615", new SimpleDateFormat("yyyyMMdd")
+		assertEquals("-0500", HL7Util.getTimeZoneOffset("197804110615", new SimpleDateFormat("yyyyMMdd")
 		        .parse("20091225")));
 		
 		// reset the timezone
@@ -74,7 +74,7 @@ public class HL7UtilTest {
 	 */
 	@Test
 	public void getTimeZoneOffset_shouldReturnTimezoneStringIfExistsInGivenString() {
-		Assert.assertEquals("+1100", HL7Util.getTimeZoneOffset("348934934934+1100", new Date()));
+		assertEquals("+1100", HL7Util.getTimeZoneOffset("348934934934+1100", new Date()));
 	}
 	
 	/**
@@ -89,8 +89,8 @@ public class HL7UtilTest {
 		TimeZone.setDefault(TimeZone.getTimeZone("EAT"));
 		
 		Date parsedDate = HL7Util.parseHL7Time("0615");
-		Assert.assertEquals(6, parsedDate.getHours());
-		Assert.assertEquals(15, parsedDate.getMinutes());
+		assertEquals(6, parsedDate.getHours());
+		assertEquals(15, parsedDate.getMinutes());
 		
 		// reset the timezone
 		TimeZone.setDefault(originalTimeZone);

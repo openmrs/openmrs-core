@@ -9,9 +9,10 @@
  */
 package org.openmrs;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.openmrs.test.BaseContextSensitiveTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
  * Contains test methods for {@link org.openmrs.Drug}.
@@ -35,7 +36,7 @@ public class DrugTest extends BaseContextSensitiveTest {
 		DrugReferenceMap map = new DrugReferenceMap();
 		map.setDrug(drug2);
 		drug1.addDrugReferenceMap(map);
-		Assert.assertEquals(drug1, drug1.getDrugReferenceMaps().iterator().next().getDrug());
+		assertEquals(drug1, drug1.getDrugReferenceMaps().iterator().next().getDrug());
 	}
 	
 	/**
@@ -56,6 +57,6 @@ public class DrugTest extends BaseContextSensitiveTest {
 		drug.addDrugReferenceMap(map2);
 		drug.addDrugReferenceMap(map2Duplicate);
 		
-		Assert.assertEquals(2, drug.getDrugReferenceMaps().size());
+		assertEquals(2, drug.getDrugReferenceMaps().size());
 	}
 }

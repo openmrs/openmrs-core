@@ -169,7 +169,7 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * The model object that holds all the properties that the rendered templates use. All attributes on
 	 * this object are made available to all templates via reflection in the
-	 * {@link #renderTemplate(String, Map, httpResponse)} method.
+	 * {@link org.openmrs.web.filter.StartupFilter#renderTemplate(String, Map, HttpServletResponse)} method.
 	 */
 	private InitializationWizardModel wizardModel = null;
 	
@@ -1566,8 +1566,7 @@ public class InitializationFilter extends StartupFilter {
 							}
 							
 							/**
-							 * @see org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback#executing(liquibase.ChangeSet,
-							 *      int)
+							 * @see ChangeSetExecutorCallback#executing(liquibase.changelog.ChangeSet, int)
 							 */
 							@Override
 							public void executing(ChangeSet changeSet, int numChangeSetsToRun) {
@@ -1820,6 +1819,17 @@ public class InitializationFilter extends StartupFilter {
 							log.warn("Unable to complete the startup.", e);
 							return;
 						}
+						
+						try {
+							// Update PostgreSQL Sequences after insertion of core data
+							Context.getAdministrationService().updatePostgresSequence();
+						}
+						catch (Exception e) {
+							log.warn("Not able to update PostgreSQL sequence. Startup failed for PostgreSQL", e);
+							reportError(ErrorMessageConstants.ERROR_COMPLETE_STARTUP, DEFAULT_PAGE, e.getMessage());
+							return;
+						}
+
 						
 						// set this so that the wizard isn't run again on next page load
 						Context.closeSession();

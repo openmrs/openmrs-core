@@ -9,8 +9,8 @@
  */
 package org.openmrs.propertyeditor;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Provider;
 import org.openmrs.api.ProviderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,7 @@ public class ProviderEditorTest extends BasePropertyEditorTest<Provider, Provide
 	
 	@Override
 	@Test
-	@Ignore("see TRUNK-5153 that ProviderDAO throws different exception")
+	@Disabled("see TRUNK-5153 that ProviderDAO throws different exception")
 	public void shouldSetTheEditorValueToNullIfGivenIdDoesNotExist() {
 	}
 }

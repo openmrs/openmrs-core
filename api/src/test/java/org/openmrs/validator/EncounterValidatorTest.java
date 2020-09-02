@@ -11,21 +11,23 @@ package org.openmrs.validator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Patient;
 import org.openmrs.Visit;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -41,7 +43,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	
 	private Errors errors;
 	
-	@Before
+	@BeforeEach
 	public void setUp() {
 		encounterValidator = new EncounterValidator();
 		
@@ -77,7 +79,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 		
 		encounterValidator.validate(encounter, errors);
 		
-		Assert.assertEquals("Encounter.visit.patients.dontMatch", errors.getFieldError("visit").getCode());
+		assertEquals("Encounter.visit.patients.dontMatch", errors.getFieldError("visit").getCode());
 	}
 	
 	/**
@@ -92,7 +94,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 		
 		encounterValidator.validate(encounter, errors);
 		
-		Assert.assertEquals("Encounter.visit.patients.dontMatch", errors.getFieldError("visit").getCode());
+		assertEquals("Encounter.visit.patients.dontMatch", errors.getFieldError("visit").getCode());
 	}
 	
 	/**
@@ -103,7 +105,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 		
 		encounterValidator.validate(encounter, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("patient"));
+		assertTrue(errors.hasFieldErrors("patient"));
 	}
 	
 	/**
@@ -123,7 +125,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 		
 		encounterValidator.validate(encounter, errors);
 		
-		Assert.assertEquals(true, errors.hasFieldErrors("encounterDatetime"));
+		assertTrue(errors.hasFieldErrors("encounterDatetime"));
 	}
 	
 	/**
@@ -144,7 +146,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 		
 		encounterValidator.validate(encounter, errors);
 		
-		Assert.assertEquals(true, errors.hasFieldErrors("encounterDatetime"));
+		assertTrue(errors.hasFieldErrors("encounterDatetime"));
 	}
 	
 	/**
@@ -163,7 +165,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 		
 		encounterValidator.validate(encounter, errors);
 		
-		Assert.assertEquals(true, errors.hasFieldErrors("encounterDatetime"));
+		assertTrue(errors.hasFieldErrors("encounterDatetime"));
 	}
 	
 	/**
@@ -174,7 +176,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 		
 		encounterValidator.validate(encounter, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("encounterDatetime"));
+		assertTrue(errors.hasFieldErrors("encounterDatetime"));
 	}
 	
 	/**
@@ -185,7 +187,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 		
 		encounterValidator.validate(encounter, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("encounterType"));
+		assertTrue(errors.hasFieldErrors("encounterType"));
 	}
 	
 	/**
@@ -201,7 +203,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 		
 		encounterValidator.validate(encounter, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -218,6 +220,6 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 		
 		encounterValidator.validate(encounter, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("voidReason"));
+		assertTrue(errors.hasFieldErrors("voidReason"));
 	}
 }

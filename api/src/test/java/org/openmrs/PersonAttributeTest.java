@@ -9,10 +9,12 @@
  */
 package org.openmrs;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
  * Tests methods on the PersonAttribute class
@@ -27,7 +29,7 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 		// type = CIVIL STATUS, concept = MARRIED
 		PersonAttributeType type = Context.getPersonService().getPersonAttributeType(8);
 		PersonAttribute attr = new PersonAttribute(type, "6");
-		Assert.assertEquals("MARRIED", attr.toString());
+		assertEquals("MARRIED", attr.toString());
 	}
 	
 	/**
@@ -44,7 +46,7 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 		pa.setValue("1");
 		pa.setVoided(false);
 		
-		Assert.assertTrue(pa.equalsContent(other));
+		assertTrue(pa.equalsContent(other));
 	}
 	
 	/**
@@ -60,7 +62,7 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 		pa.setValue("5089");
 		
 		Concept concept = (Concept) pa.getHydratedObject();
-		Assert.assertEquals(5089, concept.getConceptId().intValue());
+		assertEquals(5089, concept.getConceptId().intValue());
 	}
 	
 	/**
@@ -77,7 +79,7 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 		pa.setValue("1");
 		
 		Object value = pa.getHydratedObject();
-		Assert.assertTrue("should load user class in format property", (value instanceof User));
+		assertTrue((value instanceof User), "should load user class in format property");
 	}
 	
 	/**
@@ -94,7 +96,7 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 		pa.setValue("lalapalooza");
 		
 		String value = (String) pa.getHydratedObject();
-		Assert.assertEquals("lalapalooza", value);
+		assertEquals("lalapalooza", value);
 	}
 	
 	/**
@@ -105,7 +107,7 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 		PersonAttribute pa = new PersonAttribute(2);
 		pa.setVoided(false);
 		pa.voidAttribute("Because");
-		Assert.assertTrue(pa.getVoided());
+		assertTrue(pa.getVoided());
 	}
 	
 }

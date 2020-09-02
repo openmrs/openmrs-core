@@ -9,10 +9,14 @@
  */
 package org.openmrs;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
  * Tests the {@link ConceptNumeric} object
@@ -29,8 +33,8 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 		ConceptNumeric cn = new ConceptNumeric(123);
 		Concept c = new Concept(123);
 		
-		Assert.assertNotSame(c, cn);
-		Assert.assertNotSame(cn, c);
+		assertNotSame(c, cn);
+		assertNotSame(cn, c);
 	}
 	
 	@Test
@@ -38,12 +42,12 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 		Concept c = new Concept(123);
 		ConceptNumeric cn = new ConceptNumeric(c);
 		
-		Assert.assertNotSame(c.getAnswers(), cn.getAnswers());
-		Assert.assertNotSame(c.getConceptSets(), cn.getConceptSets());
-		Assert.assertNotSame(cn.getConceptSets(), c.getConceptSets());
-		Assert.assertNotSame(c.getNames(), cn.getNames());
-		Assert.assertNotSame(c.getConceptMappings(), cn.getConceptMappings());
-		Assert.assertNotSame(c.getDescriptions(), cn.getDescriptions());
+		assertNotSame(c.getAnswers(), cn.getAnswers());
+		assertNotSame(c.getConceptSets(), cn.getConceptSets());
+		assertNotSame(cn.getConceptSets(), c.getConceptSets());
+		assertNotSame(c.getNames(), cn.getNames());
+		assertNotSame(c.getConceptMappings(), cn.getConceptMappings());
+		assertNotSame(c.getDescriptions(), cn.getDescriptions());
 	}
 	
 	@Test
@@ -54,7 +58,7 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 		ConceptNumeric cn = new ConceptNumeric(c);
 		
 		for (ConceptAnswer cAnswer : cn.getAnswers()) {
-			Assert.assertSame(cn, cAnswer.getConcept());
+			assertSame(cn, cAnswer.getConcept());
 		}
 	}
 	
@@ -66,7 +70,7 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 		ConceptNumeric cn = new ConceptNumeric(c);
 		
 		for (ConceptSet cSet : cn.getConceptSets()) {
-			Assert.assertSame(cn, cSet.getConceptSet());
+			assertSame(cn, cSet.getConceptSet());
 		}
 	}
 	
@@ -78,7 +82,7 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 		ConceptNumeric cn = new ConceptNumeric(c);
 		
 		for (ConceptName cName : cn.getNames()) {
-			Assert.assertSame(cn, cName.getConcept());
+			assertSame(cn, cName.getConcept());
 		}
 	}
 	
@@ -90,7 +94,7 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 		ConceptNumeric cn = new ConceptNumeric(c);
 		
 		for (ConceptDescription cDesc : cn.getDescriptions()) {
-			Assert.assertSame(cn, cDesc.getConcept());
+			assertSame(cn, cDesc.getConcept());
 		}
 	}
 	
@@ -102,7 +106,7 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 		ConceptNumeric cn = new ConceptNumeric(c);
 		
 		for (ConceptMap cMap : cn.getConceptMappings()) {
-			Assert.assertSame(cn, cMap.getConcept());
+			assertSame(cn, cMap.getConcept());
 		}
 	}
 	
@@ -116,10 +120,10 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 		cn.addDescription(new ConceptDescription("some description", null));
 		
 		Context.getConceptService().saveConcept(cn);
-		Assert.assertFalse(Context.getConceptService().getConceptNumeric(22).getAllowDecimal());
+		assertFalse(Context.getConceptService().getConceptNumeric(22).getAllowDecimal());
 		
 		cn.setAllowDecimal(true);
 		Context.getConceptService().saveConcept(cn);
-		Assert.assertTrue(Context.getConceptService().getConceptNumeric(22).getAllowDecimal());
+		assertTrue(Context.getConceptService().getConceptNumeric(22).getAllowDecimal());
 	}
 }
