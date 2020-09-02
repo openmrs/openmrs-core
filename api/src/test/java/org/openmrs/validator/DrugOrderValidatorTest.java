@@ -9,19 +9,20 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isIn;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.CustomDosingInstructions;
@@ -38,7 +39,7 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.order.OrderUtilTest;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -66,7 +67,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("asNeeded"));
+		assertTrue(errors.hasFieldErrors("asNeeded"));
 	}
 	
 	/**
@@ -81,7 +82,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("dosingType"));
+		assertTrue(errors.hasFieldErrors("dosingType"));
 	}
 	
 	/**
@@ -95,7 +96,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
 		
-		Assert.assertFalse(errors.hasFieldErrors("drug"));
+		assertFalse(errors.hasFieldErrors("drug"));
 	}
 	
 	/**
@@ -127,7 +128,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -140,14 +141,14 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		OutpatientOrder.setQuantity(null);
 		Errors OutpatientOrderErrors = new BindException(OutpatientOrder, "order");
 		new DrugOrderValidator().validate(OutpatientOrder, OutpatientOrderErrors);
-		Assert.assertTrue(OutpatientOrderErrors.hasFieldErrors("quantity"));
+		assertTrue(OutpatientOrderErrors.hasFieldErrors("quantity"));
 		
 		DrugOrder inPatientOrder = new DrugOrder();
 		inPatientOrder.setCareSetting(Context.getOrderService().getCareSetting(2));
 		inPatientOrder.setQuantity(null);
 		Errors InpatientOrderErrors = new BindException(inPatientOrder, "order");
 		new DrugOrderValidator().validate(inPatientOrder, InpatientOrderErrors);
-		Assert.assertFalse(InpatientOrderErrors.hasFieldErrors("quantity"));
+		assertFalse(InpatientOrderErrors.hasFieldErrors("quantity"));
 	}
 	
 	/**
@@ -160,14 +161,14 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		OutpatientOrder.setNumRefills(null);
 		Errors OutpatientOrderErrors = new BindException(OutpatientOrder, "order");
 		new DrugOrderValidator().validate(OutpatientOrder, OutpatientOrderErrors);
-		Assert.assertTrue(OutpatientOrderErrors.hasFieldErrors("numRefills"));
+		assertTrue(OutpatientOrderErrors.hasFieldErrors("numRefills"));
 		
 		DrugOrder inPatientOrder = new DrugOrder();
 		inPatientOrder.setCareSetting(Context.getOrderService().getCareSetting(2));
 		inPatientOrder.setNumRefills(null);
 		Errors InpatientOrderErrors = new BindException(inPatientOrder, "order");
 		new DrugOrderValidator().validate(inPatientOrder, InpatientOrderErrors);
-		Assert.assertFalse(InpatientOrderErrors.hasFieldErrors("numRefills"));
+		assertFalse(InpatientOrderErrors.hasFieldErrors("numRefills"));
 	}
 	
 	/**
@@ -180,7 +181,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setDose(null);
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		Assert.assertTrue(errors.hasFieldErrors("dose"));
+		assertTrue(errors.hasFieldErrors("dose"));
 	}
 	
 	/**
@@ -193,7 +194,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setDoseUnits(null);
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		Assert.assertTrue(errors.hasFieldErrors("doseUnits"));
+		assertTrue(errors.hasFieldErrors("doseUnits"));
 	}
 	
 	/**
@@ -206,7 +207,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setRoute(null);
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		Assert.assertTrue(errors.hasFieldErrors("route"));
+		assertTrue(errors.hasFieldErrors("route"));
 	}
 	
 	/**
@@ -219,7 +220,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setFrequency(null);
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		Assert.assertTrue(errors.hasFieldErrors("frequency"));
+		assertTrue(errors.hasFieldErrors("frequency"));
 	}
 	
 	/**
@@ -233,7 +234,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setDosingInstructions(null);
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		Assert.assertTrue(errors.hasFieldErrors("dosingInstructions"));
+		assertTrue(errors.hasFieldErrors("dosingInstructions"));
 	}
 	
 	/**
@@ -247,7 +248,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setDoseUnits(null);
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		Assert.assertTrue(errors.hasFieldErrors("doseUnits"));
+		assertTrue(errors.hasFieldErrors("doseUnits"));
 	}
 	
 	/**
@@ -261,7 +262,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setQuantityUnits(null);
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		Assert.assertTrue(errors.hasFieldErrors("quantityUnits"));
+		assertTrue(errors.hasFieldErrors("quantityUnits"));
 	}
 	
 	/**
@@ -275,7 +276,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setDurationUnits(null);
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		Assert.assertTrue(errors.hasFieldErrors("durationUnits"));
+		assertTrue(errors.hasFieldErrors("durationUnits"));
 	}
 	
 	/**
@@ -288,13 +289,13 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		Concept concept = Context.getConceptService().getConcept(792);
 		order.setDrug(drug);
 		order.setConcept(concept); // the actual concept which matches with drug is "88"
-		Assert.assertNotEquals(drug.getConcept(), concept);
+		assertNotEquals(drug.getConcept(), concept);
 		
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("concept"));
-		Assert.assertTrue(errors.hasFieldErrors("drug"));
+		assertTrue(errors.hasFieldErrors("concept"));
+		assertTrue(errors.hasFieldErrors("drug"));
 	}
 	
 	/**
@@ -318,7 +319,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(discontinuationOrder, "order");
 		new DrugOrderValidator().validate(discontinuationOrder, errors);
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -340,7 +341,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		Assert.assertTrue(errors.hasFieldErrors("doseUnits"));
+		assertTrue(errors.hasFieldErrors("doseUnits"));
 	}
 	
 	/**
@@ -362,7 +363,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		Assert.assertTrue(errors.hasFieldErrors("quantityUnits"));
+		assertTrue(errors.hasFieldErrors("quantityUnits"));
 	}
 	
 	/**
@@ -384,7 +385,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		Assert.assertTrue(errors.hasFieldErrors("durationUnits"));
+		assertTrue(errors.hasFieldErrors("durationUnits"));
 	}
 	
 	/**
@@ -407,8 +408,8 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		Assert.assertTrue(errors.hasFieldErrors("route"));
-		Assert.assertEquals("DrugOrder.error.routeNotAmongAllowedConcepts", errors.getFieldError("route").getCode());
+		assertTrue(errors.hasFieldErrors("route"));
+		assertEquals("DrugOrder.error.routeNotAmongAllowedConcepts", errors.getFieldError("route").getCode());
 	}
 	
 	/**
@@ -421,7 +422,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("concept"));
+		assertTrue(errors.hasFieldErrors("concept"));
 	}
 	
 	/**
@@ -436,7 +437,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(order, "order");
 		adminService.validate(order, errors);
-		Assert.assertTrue(errors.hasFieldErrors("concept"));
+		assertTrue(errors.hasFieldErrors("concept"));
 	}
 	
 	/**
@@ -459,7 +460,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
 		
-		Assert.assertFalse(errors.hasFieldErrors());
+		assertFalse(errors.hasFieldErrors());
 	}
 	
 	/**
@@ -490,7 +491,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		Assert.assertTrue(errors.hasFieldErrors("brandName"));
+		assertTrue(errors.hasFieldErrors("brandName"));
 	}
 	
 	/**
@@ -503,7 +504,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setDosingInstructions(null);
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		Assert.assertFalse(errors.hasFieldErrors("dosingInstructions"));
+		assertFalse(errors.hasFieldErrors("dosingInstructions"));
 	}
 	
 	/**
@@ -533,7 +534,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setDosingInstructions("Test Instruction");
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		Assert.assertTrue(errors.hasFieldErrors("drug"));
+		assertTrue(errors.hasFieldErrors("drug"));
 	}
 	
 	/**
@@ -562,7 +563,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setDosingInstructions("Test Instruction");
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		Assert.assertFalse(errors.hasFieldErrors());
+		assertFalse(errors.hasFieldErrors());
 	}
 	
 	/**
@@ -593,7 +594,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setDosingInstructions("Test Instruction");
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		Assert.assertFalse(errors.hasFieldErrors());
+		assertFalse(errors.hasFieldErrors());
 	}
 	
 	/**
@@ -659,7 +660,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 
 	/**
@@ -696,8 +697,8 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 
         Errors errors = new BindException(order, "order");
         new DrugOrderValidator().validate(order, errors);
-        Assert.assertTrue(errors.hasFieldErrors("asNeededCondition"));
-        Assert.assertTrue(errors.hasFieldErrors("brandName"));
+        assertTrue(errors.hasFieldErrors("asNeededCondition"));
+        assertTrue(errors.hasFieldErrors("brandName"));
     }
 
 	@Test
@@ -724,7 +725,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setDosingInstructions("Test Instruction");
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		Assert.assertTrue(errors.hasFieldErrors());
+		assertTrue(errors.hasFieldErrors());
 		assertEquals("DrugOrder.error.drugNonCodedIsRequired", errors.getFieldError("drugNonCoded").getCode());
 	}
 
@@ -753,7 +754,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setDosingInstructions("Test Instruction");
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		Assert.assertFalse(errors.hasFieldErrors());
+		assertFalse(errors.hasFieldErrors());
 	}
 
 	@Test
@@ -779,7 +780,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setDosingInstructions("Test Instruction");
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		Assert.assertTrue(errors.hasFieldErrors());
+		assertTrue(errors.hasFieldErrors());
 		assertEquals("DrugOrder.error.onlyOneOfDrugOrNonCodedShouldBeSet", errors.getFieldError("concept").getCode());
 	}
 
@@ -805,7 +806,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setDosingInstructions("Test Instruction");
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		Assert.assertTrue(errors.hasFieldErrors());
+		assertTrue(errors.hasFieldErrors());
 		assertEquals("DrugOrder.error.drugIsRequired", errors.getFieldError("drug").getCode());
 	}
 
@@ -832,6 +833,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setDosingInstructions("Test Instruction");
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		Assert.assertFalse(errors.hasFieldErrors());
+		assertFalse(errors.hasFieldErrors());
 	}
 }

@@ -19,7 +19,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 /**
@@ -32,9 +31,8 @@ public class AllergyReaction extends BaseOpenmrsObject implements java.io.Serial
 	public static final long serialVersionUID = 1;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_generator")
-	@SequenceGenerator(name = "id_generator", sequenceName = "allergy_reaction_allergy_reaction_id_seq")
-	@Column(name = "allergy_reaction_id", nullable = false, updatable = false)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "allergy_reaction_id")
 	private Integer allergyReactionId;
 	
 	@ManyToOne

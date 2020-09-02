@@ -84,3 +84,6 @@ nb-configuration.xml
 
 !.editorconfig
 
+### Liquibase snapshot files ###
+liquibase/snapshots/*.xml
+#############

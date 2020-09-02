@@ -9,16 +9,18 @@
  */
 package org.openmrs.web;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
 import org.openmrs.module.ModuleException;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.InputRequiredException;
 
 public class WebDaemonTest {
 	
-	@Test(expected = ModuleException.class)
+	@Test
 	public void startOpenmrs_shouldThrowExceptionGivenNull() throws DatabaseUpdateException, InputRequiredException {
-		WebDaemon.startOpenmrs(null);
+		assertThrows(ModuleException.class, () -> WebDaemon.startOpenmrs(null));
 	}
 
 }

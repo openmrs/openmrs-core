@@ -9,15 +9,16 @@
  */
 package liquibase.ext.sqlgenerator.core;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Arrays;
+
 import liquibase.change.ColumnConfig;
 import liquibase.database.core.MySQLDatabase;
 import liquibase.statement.SqlStatement;
 import liquibase.structure.core.Column;
 import liquibase.structure.core.DataType;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
 
 public class ModifyColumnChangeTest {
 	

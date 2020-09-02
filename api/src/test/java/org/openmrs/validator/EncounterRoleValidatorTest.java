@@ -9,11 +9,14 @@
  */
 package org.openmrs.validator;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 import org.openmrs.EncounterRole;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -32,19 +35,19 @@ public class EncounterRoleValidatorTest extends BaseContextSensitiveTest {
 		encounterRoleNo1.setName(null);
 		Errors errorsNo1 = new BindException(encounterRoleNo1, "encounterRole");
 		new EncounterRoleValidator().validate(encounterRoleNo1, errorsNo1);
-		Assert.assertTrue(errorsNo1.hasFieldErrors("name"));
+		assertTrue(errorsNo1.hasFieldErrors("name"));
 		
 		EncounterRole encounterRoleNo2 = new EncounterRole();
 		encounterRoleNo2.setName("");
 		Errors errorsNo2 = new BindException(encounterRoleNo2, "encounterRole");
 		new EncounterRoleValidator().validate(encounterRoleNo2, errorsNo2);
-		Assert.assertTrue(errorsNo2.hasFieldErrors("name"));
+		assertTrue(errorsNo2.hasFieldErrors("name"));
 		
 		EncounterRole encounterRoleNo3 = new EncounterRole();
 		encounterRoleNo3.setName("  ");
 		Errors errorsNo3 = new BindException(encounterRoleNo3, "encounterRole");
 		new EncounterRoleValidator().validate(encounterRoleNo3, errorsNo3);
-		Assert.assertTrue(errorsNo3.hasFieldErrors("name"));
+		assertTrue(errorsNo3.hasFieldErrors("name"));
 	}
 	
 	/**
@@ -53,13 +56,13 @@ public class EncounterRoleValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldFailIfEncounterRoleNameIsDuplicate() {
 		
-		Assert.assertNotNull(Context.getEncounterService().getEncounterRoleByName("Unknown"));
+		assertNotNull(Context.getEncounterService().getEncounterRoleByName("Unknown"));
 		
 		EncounterRole newEncounterRole = new EncounterRole();
 		newEncounterRole.setName("Unknown");
 		Errors errors = new BindException(newEncounterRole, "encounterRole");
 		new EncounterRoleValidator().validate(newEncounterRole, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 		
 	}
 	
@@ -70,12 +73,12 @@ public class EncounterRoleValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldPassEditingEncounterRoleName() {
 		
 		EncounterRole encounterRole = Context.getEncounterService().getEncounterRoleByName("Unknown");
-		Assert.assertNotNull(encounterRole);
+		assertNotNull(encounterRole);
 		encounterRole.setName("Lab");
 		encounterRole.setDescription("desc");
 		Errors errors = new BindException(encounterRole, "encounterRole");
 		new EncounterRoleValidator().validate(encounterRole, errors);
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 		
 	}
 	
@@ -86,13 +89,13 @@ public class EncounterRoleValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		
 		EncounterRole encounterRole = Context.getEncounterService().getEncounterRoleByName("Unknown");
-		Assert.assertNotNull(encounterRole);
+		assertNotNull(encounterRole);
 		encounterRole.setName("name");
 		encounterRole.setDescription("desc");
 		encounterRole.setRetireReason("retireReason");
 		Errors errors = new BindException(encounterRole, "encounterRole");
 		new EncounterRoleValidator().validate(encounterRole, errors);
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -110,8 +113,8 @@ public class EncounterRoleValidatorTest extends BaseContextSensitiveTest {
 		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 		Errors errors = new BindException(encounterRole, "encounterRole");
 		new EncounterRoleValidator().validate(encounterRole, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
-		Assert.assertTrue(errors.hasFieldErrors("description"));
-		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+		assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("description"));
+		assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 }

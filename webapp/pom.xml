@@ -23,12 +23,6 @@
    <description>The web application of openmrs</description>
 
    <dependencies>
-       <dependency>
-         <groupId>org.openmrs.test</groupId>
-         <artifactId>openmrs-test</artifactId>
-         <type>pom</type>
-         <scope>test</scope>
-      </dependency>
       <dependency>
          <groupId>org.openmrs.api</groupId>
          <artifactId>openmrs-api</artifactId>
@@ -71,7 +65,7 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-antrun-plugin</artifactId>
-            <version>1.4</version>
+            <version>3.0.0</version>
             <executions>
                <execution>
                   <phase>process-resources</phase>
@@ -79,9 +73,9 @@
                      <goal>run</goal>
                   </goals>
                   <configuration>
-                     <tasks>
+                     <target>
                         <unzip src="src/main/resources/liquibase-demo-data.zip" dest="${project.build.outputDirectory}" />
-                     </tasks>
+                     </target>
                   </configuration>
                </execution>
             </executions>
@@ -106,7 +100,7 @@
          <plugin>
              <groupId>org.eclipse.jetty</groupId>
              <artifactId>jetty-maven-plugin</artifactId>
-             <version>9.4.25.v20191220</version>
+             <version>9.4.31.v20200723</version>
              <configuration>
                <webApp>
                	  <descriptor>${project.build.directory}/jetty/WEB-INF/web.xml</descriptor>
@@ -136,6 +130,98 @@
 		        <configuration>
 		          <path>/${project.build.finalName}</path>
 		        </configuration>
+		        <dependencies>
+		          <dependency>
+		            <groupId>org.apache.tomcat.embed</groupId>
+		            <artifactId>tomcat-embed-core</artifactId>
+		            <version>${tomcat.version}</version>
+		          </dependency>
+		          <dependency>
+		            <groupId>org.apache.tomcat</groupId>
+		            <artifactId>tomcat-util</artifactId>
+		            <version>${tomcat.version}</version>
+		          </dependency>
+		          <dependency>
+		            <groupId>org.apache.tomcat</groupId>
+		            <artifactId>tomcat-coyote</artifactId>
+		            <version>${tomcat.version}</version>
+		          </dependency>
+		          <dependency>
+		            <groupId>org.apache.tomcat</groupId>
+		            <artifactId>tomcat-api</artifactId>
+		            <version>${tomcat.version}</version>
+		          </dependency>
+		          <dependency>
+		            <groupId>org.apache.tomcat</groupId>
+		            <artifactId>tomcat-jdbc</artifactId>
+		            <version>${tomcat.version}</version>
+		          </dependency>
+		          <dependency>
+		            <groupId>org.apache.tomcat</groupId>
+		            <artifactId>tomcat-dbcp</artifactId>
+		            <version>${tomcat.version}</version>
+		          </dependency>
+		          <dependency>
+		            <groupId>org.apache.tomcat</groupId>
+		            <artifactId>tomcat-servlet-api</artifactId>
+		            <version>${tomcat.version}</version>
+		          </dependency>
+		          <dependency>
+		            <groupId>org.apache.tomcat</groupId>
+		            <artifactId>tomcat-jsp-api</artifactId>
+		            <version>${tomcat.version}</version>
+		          </dependency>
+		          <dependency>
+		            <groupId>org.apache.tomcat</groupId>
+		            <artifactId>tomcat-jasper</artifactId>
+		            <version>${tomcat.version}</version>
+		          </dependency>
+		          <dependency>
+		            <groupId>org.apache.tomcat</groupId>
+		            <artifactId>tomcat-jasper-el</artifactId>
+		            <version>${tomcat.version}</version>
+		          </dependency>
+		          <dependency>
+		            <groupId>org.apache.tomcat</groupId>
+		            <artifactId>tomcat-el-api</artifactId>
+		            <version>${tomcat.version}</version>
+		          </dependency>
+		          <dependency>
+		            <groupId>org.apache.tomcat</groupId>
+		            <artifactId>tomcat-catalina</artifactId>
+		            <version>${tomcat.version}</version>
+		          </dependency>
+		          <dependency>
+		            <groupId>org.apache.tomcat</groupId>
+		            <artifactId>tomcat-tribes</artifactId>
+		            <version>${tomcat.version}</version>
+		          </dependency>
+		          <dependency>
+		            <groupId>org.apache.tomcat</groupId>
+		            <artifactId>tomcat-catalina-ha</artifactId>
+		            <version>${tomcat.version}</version>
+		          </dependency>
+		          <dependency>
+		            <groupId>org.apache.tomcat</groupId>
+		            <artifactId>tomcat-annotations-api</artifactId>
+		            <version>${tomcat.version}</version>
+		          </dependency>
+		          <dependency>
+		            <groupId>org.apache.tomcat</groupId>
+		            <artifactId>tomcat-juli</artifactId>
+		            <version>${tomcat.version}</version>
+		          </dependency>
+		          <dependency>
+		            <groupId>org.apache.tomcat.embed</groupId>
+		            <artifactId>tomcat-embed-logging-juli</artifactId>
+		            <version>${tomcat.version}</version>
+		          </dependency>
+		          <dependency>
+		            <groupId>org.apache.tomcat.embed</groupId>
+		            <artifactId>tomcat-embed-logging-log4j</artifactId>
+		            <version>${tomcat.version}</version>
+		          </dependency>
+        		</dependencies>
          </plugin>
 		  <plugin>
 			  <groupId>com.mycila</groupId>
@@ -228,5 +314,6 @@
       <WEBAPP.DISPLAY.NAME>OpenMRS</WEBAPP.DISPLAY.NAME>
       <WEBAPP.DESCRIPTION>An Open-Source EMR System</WEBAPP.DESCRIPTION>
       <webapp.name>openmrs</webapp.name>
+      <tomcat.version>8.5.2</tomcat.version>
    </properties>
 </project>
