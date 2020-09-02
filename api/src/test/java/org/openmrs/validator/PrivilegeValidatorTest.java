@@ -9,10 +9,14 @@
  */
 package org.openmrs.validator;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 import org.openmrs.Privilege;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -32,17 +36,17 @@ public class PrivilegeValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(priv, "priv");
 		new PrivilegeValidator().validate(priv, errors);
-		Assert.assertTrue(errors.hasFieldErrors("privilege"));
+		assertTrue(errors.hasFieldErrors("privilege"));
 		
 		priv.setPrivilege("");
 		errors = new BindException(priv, "priv");
 		new PrivilegeValidator().validate(priv, errors);
-		Assert.assertTrue(errors.hasFieldErrors("privilege"));
+		assertTrue(errors.hasFieldErrors("privilege"));
 		
 		priv.setPrivilege(" ");
 		errors = new BindException(priv, "priv");
 		new PrivilegeValidator().validate(priv, errors);
-		Assert.assertTrue(errors.hasFieldErrors("privilege"));
+		assertTrue(errors.hasFieldErrors("privilege"));
 	}
 	
 	/**
@@ -56,17 +60,17 @@ public class PrivilegeValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(priv, "priv");
 		new PrivilegeValidator().validate(priv, errors);
-		Assert.assertFalse(errors.hasFieldErrors("description"));
+		assertFalse(errors.hasFieldErrors("description"));
 		
 		priv.setDescription("");
 		errors = new BindException(priv, "priv");
 		new PrivilegeValidator().validate(priv, errors);
-		Assert.assertFalse(errors.hasFieldErrors("description"));
+		assertFalse(errors.hasFieldErrors("description"));
 		
 		priv.setDescription(" ");
 		errors = new BindException(priv, "priv");
 		new PrivilegeValidator().validate(priv, errors);
-		Assert.assertFalse(errors.hasFieldErrors("description"));
+		assertFalse(errors.hasFieldErrors("description"));
 	}
 	
 	/**
@@ -81,9 +85,9 @@ public class PrivilegeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(priv, "priv");
 		new PrivilegeValidator().validate(priv, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
-		Assert.assertNotNull(priv.getName());
-		Assert.assertEquals(priv.getPrivilege(), "Wallhacking");
+		assertFalse(errors.hasErrors());
+		assertNotNull(priv.getName());
+		assertEquals(priv.getPrivilege(), "Wallhacking");
 	}
 	
 	/**
@@ -98,7 +102,7 @@ public class PrivilegeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(priv, "priv");
 		new PrivilegeValidator().validate(priv, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -115,7 +119,7 @@ public class PrivilegeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(priv, "priv");
 		new PrivilegeValidator().validate(priv, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("privilege"));
-		Assert.assertTrue(errors.hasFieldErrors("description"));
+		assertTrue(errors.hasFieldErrors("privilege"));
+		assertTrue(errors.hasFieldErrors("description"));
 	}
 }

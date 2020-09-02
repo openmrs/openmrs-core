@@ -9,10 +9,12 @@
  */
 package org.openmrs.validator;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 import org.openmrs.Form;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -32,8 +34,8 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(form, "form");
 		new FormValidator().validate(form, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("name"));
-		Assert.assertFalse(errors.hasFieldErrors("version"));
+		assertTrue(errors.hasFieldErrors("name"));
+		assertFalse(errors.hasFieldErrors("version"));
 	}
 	
 	/**
@@ -47,8 +49,8 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(form, "form");
 		new FormValidator().validate(form, errors);
 		
-		Assert.assertFalse(errors.hasFieldErrors("name"));
-		Assert.assertTrue(errors.hasFieldErrors("version"));
+		assertFalse(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("version"));
 	}
 	
 	/**
@@ -63,8 +65,8 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(form, "form");
 		new FormValidator().validate(form, errors);
 		
-		Assert.assertFalse(errors.hasFieldErrors("name"));
-		Assert.assertTrue(errors.hasFieldErrors("version"));
+		assertFalse(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("version"));
 	}
 	
 	/**
@@ -80,9 +82,9 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(form, "form");
 		new FormValidator().validate(form, errors);
 		
-		Assert.assertFalse(errors.hasFieldErrors("name"));
-		Assert.assertFalse(errors.hasFieldErrors("version"));
-		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+		assertFalse(errors.hasFieldErrors("name"));
+		assertFalse(errors.hasFieldErrors("version"));
+		assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 	
 	/**
@@ -97,7 +99,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(form, "form");
 		new FormValidator().validate(form, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -114,7 +116,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(form, "form");
 		new FormValidator().validate(form, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+		assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 	
 	/**
@@ -131,7 +133,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(form, "form");
 		new FormValidator().validate(form, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -151,9 +153,9 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(form, "form");
 		new FormValidator().validate(form, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("name"));
-		Assert.assertTrue(errors.hasFieldErrors("version"));
-		Assert.assertTrue(errors.hasFieldErrors("description"));
-		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+		assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("version"));
+		assertTrue(errors.hasFieldErrors("description"));
+		assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 }

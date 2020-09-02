@@ -9,15 +9,17 @@
  */
 package org.openmrs.customdatatype.datatype;
 
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.customdatatype.InvalidCustomValueException;
 
 public class RegexValidatedTextTest {
 	
 	RegexValidatedTextDatatype datatype;
 	
-	@Before
+	@BeforeEach
 	public void before() {
 		datatype = new RegexValidatedTextDatatype();
 		datatype.setConfiguration("[a-z]+");
@@ -34,16 +36,16 @@ public class RegexValidatedTextTest {
 	/**
 	 * @see RegexValidatedTextDatatype#validate(String)
 	 */
-	@Test(expected = InvalidCustomValueException.class)
+	@Test
 	public void validate_shouldFailIfTheStringDoesNotMatchTheRegex() {
-		datatype.validate("spaces not allowed");
+		assertThrows(InvalidCustomValueException.class, () -> datatype.validate("spaces not allowed"));
 	}
 	
 	/**
 	 * @see RegexValidatedTextDatatype#save(String, String))
 	 */
-	@Test(expected = InvalidCustomValueException.class)
+	@Test
 	public void toPersistentString_shouldFailIfTheStringDoesNotMatchTheRegex() {
-		datatype.save("spaces not allowed", null);
+		assertThrows(InvalidCustomValueException.class, () -> datatype.save("spaces not allowed", null));
 	}
 }

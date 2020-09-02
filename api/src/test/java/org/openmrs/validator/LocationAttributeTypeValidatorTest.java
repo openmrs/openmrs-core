@@ -9,12 +9,15 @@
  */
 package org.openmrs.validator;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.LocationAttributeType;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -32,7 +35,7 @@ public class LocationAttributeTypeValidatorTest extends BaseContextSensitiveTest
 	 *
 	 * @throws Exception
 	 */
-	@Before
+	@BeforeEach
 	public void runBeforeEachTest() {
 		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
 	}
@@ -48,17 +51,17 @@ public class LocationAttributeTypeValidatorTest extends BaseContextSensitiveTest
 		
 		Errors errors = new BindException(type, "type");
 		new LocationAttributeTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 		
 		type.setName("");
 		errors = new BindException(type, "type");
 		new LocationAttributeTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 		
 		type.setName(" ");
 		errors = new BindException(type, "type");
 		new LocationAttributeTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 	}
 	
 	/**
@@ -73,7 +76,7 @@ public class LocationAttributeTypeValidatorTest extends BaseContextSensitiveTest
 		Errors errors = new BindException(type, "type");
 		new LocationAttributeTypeValidator().validate(type, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -82,14 +85,14 @@ public class LocationAttributeTypeValidatorTest extends BaseContextSensitiveTest
 	@Test
 	public void validate_shouldFailIfLocationAttributeTypeNameIsDuplicate() {
 		
-		Assert.assertNotNull(Context.getLocationService().getLocationAttributeTypeByName("Audit Date"));
+		assertNotNull(Context.getLocationService().getLocationAttributeTypeByName("Audit Date"));
 		
 		LocationAttributeType type = new LocationAttributeType();
 		type.setName("Audit Date");
 		type.setDatatypeClassname("org.openmrs.customdatatype.datatype.FreeTextDatatype");
 		Errors errors = new BindException(type, "locationAttributeType");
 		new LocationAttributeTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 		
 	}
 	
@@ -100,10 +103,10 @@ public class LocationAttributeTypeValidatorTest extends BaseContextSensitiveTest
 	public void validate_shouldPassEditingLocationAttributeTypeName() {
 		
 		LocationAttributeType et = Context.getLocationService().getLocationAttributeTypeByName("Audit Date");
-		Assert.assertNotNull(et);
+		assertNotNull(et);
 		Errors errors = new BindException(et, "locationAttributeType");
 		new LocationAttributeTypeValidator().validate(et, errors);
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 		
 	}
 	
@@ -121,7 +124,7 @@ public class LocationAttributeTypeValidatorTest extends BaseContextSensitiveTest
 		Errors errors = new BindException(type, "type");
 		new LocationAttributeTypeValidator().validate(type, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -144,10 +147,10 @@ public class LocationAttributeTypeValidatorTest extends BaseContextSensitiveTest
 		Errors errors = new BindException(type, "type");
 		new LocationAttributeTypeValidator().validate(type, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("name"));
-		Assert.assertTrue(errors.hasFieldErrors("datatypeClassname"));
-		Assert.assertTrue(errors.hasFieldErrors("description"));
-		Assert.assertTrue(errors.hasFieldErrors("preferredHandlerClassname"));
-		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+		assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("datatypeClassname"));
+		assertTrue(errors.hasFieldErrors("description"));
+		assertTrue(errors.hasFieldErrors("preferredHandlerClassname"));
+		assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 }

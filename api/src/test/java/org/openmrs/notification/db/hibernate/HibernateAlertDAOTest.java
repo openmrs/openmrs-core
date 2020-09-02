@@ -9,14 +9,14 @@
  */
 package org.openmrs.notification.db.hibernate;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.Alert;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -30,7 +30,7 @@ public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 	@Autowired
 	private HibernateAlertDAO hibernateAlertDAO;
 	
-	@Before
+	@BeforeEach
 	public void setUp() {
 		executeDataSet(DATA_XML);
 	}
@@ -41,32 +41,32 @@ public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 		alert.setText("Coding time");
 		alert.setId(5);
 	    hibernateAlertDAO.saveAlert(alert);
-		Assert.assertNotNull(hibernateAlertDAO.getAlert(5));
+		Assertions.assertNotNull(hibernateAlertDAO.getAlert(5));
 	}
 	
 	@Test
 	public void getAlert_shouldGetAlertById() {
 		Alert savedAlert = hibernateAlertDAO.getAlert(2);
-		Assert.assertEquals((int) savedAlert.getAlertId(), 2);
+		Assertions.assertEquals((int) savedAlert.getAlertId(), 2);
 	}
 	
 	@Test
 	public void deleteAlert_shouldReturnNullAfterDeleting() {
 		Alert savedAlert = hibernateAlertDAO.getAlert(2);
-		Assert.assertNotNull(savedAlert);
+		Assertions.assertNotNull(savedAlert);
 		hibernateAlertDAO.deleteAlert(savedAlert);
-		Assert.assertNull(hibernateAlertDAO.getAlert(2));
+		Assertions.assertNull(hibernateAlertDAO.getAlert(2));
 	}
 	
 	@Test
 	public void getAllAlerts_shouldReturnOnlyNonExpiredAllerts() {
-		Assert.assertEquals(hibernateAlertDAO.getAllAlerts(false).size(), 1);
+		Assertions.assertEquals(hibernateAlertDAO.getAllAlerts(false).size(), 1);
 	}
 	
 	@Test
 	public void getAlerts_shouldReturnAllAlertsWhenUserIsSpecified() {
 		User user = Context.getUserService().getUserByUuid("c1d8f5c2-e131-11de-babe-001e378eb77e");
-		Assert.assertEquals(hibernateAlertDAO.getAlerts(user, true, false).size(), 1);
+		Assertions.assertEquals(hibernateAlertDAO.getAlerts(user, true, false).size(), 1);
 	}
 
 }

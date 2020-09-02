@@ -657,12 +657,10 @@ public class WebModuleUtil {
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
-			db.setEntityResolver((publicId, systemId) -> {
-				// When asked to resolve external entities (such as a DTD) we return an InputSource
-				// with no data at the end, causing the parser to ignore the DTD.
-				return new InputSource(new StringReader(""));
-			});
-			
+
+			// When asked to resolve external entities (such as a DTD) we return an InputSource
+			// with no data at the end, causing the parser to ignore the DTD.
+			db.setEntityResolver((publicId, systemId) -> new InputSource(new StringReader("")));
 			dwrmodulexml = db.parse(inputStream);
 		}
 		catch (Exception e) {

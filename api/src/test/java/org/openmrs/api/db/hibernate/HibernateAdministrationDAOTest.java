@@ -9,13 +9,15 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.hibernate.SessionFactory;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Location;
 import org.openmrs.Role;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -28,7 +30,7 @@ public class HibernateAdministrationDAOTest extends BaseContextSensitiveTest {
 	
 	private SessionFactory sessionFactory;
 	
-	@Before
+	@BeforeEach
 	public void getSessionFactory() {
 		sessionFactory = (SessionFactory) applicationContext.getBean("sessionFactory");
 	}
@@ -79,7 +81,7 @@ public class HibernateAdministrationDAOTest extends BaseContextSensitiveTest {
 		
 		for (String feilds : LocationFields) {
 			FieldError fielderror = errors.getFieldError(feilds);
-			Assert.assertTrue(errorCode.equals(fielderror.getCode()));
+			assertTrue(errorCode.equals(fielderror.getCode()));
 		}
 		
 	}
@@ -99,7 +101,7 @@ public class HibernateAdministrationDAOTest extends BaseContextSensitiveTest {
 		
 		for (String feilds : RoleFeilds) {
 			FieldError fielderror = errors.getFieldError(feilds);
-			Assert.assertTrue(errorCode.equals(fielderror.getCode()));
+			assertTrue(errorCode.equals(fielderror.getCode()));
 		}
 		
 	}
@@ -130,7 +132,7 @@ public class HibernateAdministrationDAOTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(location, "location");
 		dao.validate(location, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 		
 	}
 	
@@ -144,6 +146,6 @@ public class HibernateAdministrationDAOTest extends BaseContextSensitiveTest {
 		role.setDescription("description");
 		Errors errors = new BindException(role, "type");
 		dao.validate(role, errors);
-		Assert.assertFalse(errors.hasFieldErrors("role"));
+		assertFalse(errors.hasFieldErrors("role"));
 	}
 }
