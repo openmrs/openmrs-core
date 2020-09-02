@@ -9,9 +9,15 @@
  */
 package org.openmrs.hl7;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.openmrs.util.OpenmrsUtil.deleteDirectory;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,25 +25,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
-
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.openmrs.Concept;
-import org.openmrs.GlobalProperty;
-import org.openmrs.Obs;
-import org.openmrs.Patient;
-import org.openmrs.Person;
-import org.openmrs.api.context.Context;
-import org.openmrs.hl7.handler.ORUR01Handler;
-import org.openmrs.hl7.impl.HL7ServiceImpl;
-import org.openmrs.module.ModuleConstants;
-import org.openmrs.module.ModuleUtil;
-import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.Application;
@@ -49,6 +36,22 @@ import ca.uhn.hl7v2.model.v25.message.ORU_R01;
 import ca.uhn.hl7v2.model.v25.segment.NK1;
 import ca.uhn.hl7v2.model.v25.segment.ORC;
 import ca.uhn.hl7v2.model.v25.segment.PV1;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.openmrs.Concept;
+import org.openmrs.GlobalProperty;
+import org.openmrs.Obs;
+import org.openmrs.Patient;
+import org.openmrs.Person;
+import org.openmrs.api.context.Context;
+import org.openmrs.hl7.handler.ORUR01Handler;
+import org.openmrs.hl7.impl.HL7ServiceImpl;
+import org.openmrs.module.ModuleConstants;
+import org.openmrs.module.ModuleUtil;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.OpenmrsConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Tests methods in the {@link HL7Service}
@@ -71,7 +74,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		hl7.setMessageState(HL7Constants.HL7_STATUS_PROCESSING);
 		
 		Context.getHL7Service().saveHL7InQueue(hl7);
-		Assert.assertNotNull(hl7.getUuid());
+		assertNotNull(hl7.getUuid());
 	}
 	
 	/**
@@ -86,7 +89,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		File tempDir = new File(System.getProperty("java.io.tmpdir"), HL7Constants.HL7_ARCHIVE_DIRECTORY_NAME);
 		
 		if (tempDir.exists() && tempDir.isDirectory())
-			Assert.assertEquals(true, OpenmrsUtil.deleteDirectory(tempDir));
+			assertTrue(deleteDirectory(tempDir));
 		
 		//set a global property for the archives directory as a temporary folder
 		GlobalProperty gp = new GlobalProperty();
@@ -96,12 +99,12 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		Context.getAdministrationService().saveGlobalProperty(gp);
 		
 		HL7Service hl7service = Context.getHL7Service();
-		Assert.assertEquals(0, hl7service.getAllHL7InArchives().size());
+		assertEquals(0, hl7service.getAllHL7InArchives().size());
 		
 		HL7InQueue queueItem = hl7service.getHL7InQueue(1);
 		hl7service.processHL7InQueue(queueItem);
 		
-		Assert.assertEquals(1, hl7service.getAllHL7InArchives().size());
+		assertEquals(1, hl7service.getAllHL7InArchives().size());
 	}
 	
 	/**
@@ -114,26 +117,26 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		
 		// sanity check, make sure there aren't any error items
 		HL7Service hl7service = Context.getHL7Service();
-		Assert.assertEquals(0, hl7service.getAllHL7InErrors().size());
+		assertEquals(0, hl7service.getAllHL7InErrors().size());
 		
 		HL7InQueue queueItem = hl7service.getHL7InQueue(2);
 		hl7service.processHL7InQueue(queueItem);
 		
-		Assert.assertEquals(1, hl7service.getAllHL7InErrors().size());
+		assertEquals(1, hl7service.getAllHL7InErrors().size());
 	}
 	
 	/**
 	 * @throws HL7Exception
 	 * @see HL7Service#processHL7InQueue(HL7InQueue)
 	 */
-	@Test(expected = HL7Exception.class)
+	@Test
 	public void processHL7InQueue_shouldFailIfGivenInQueueIsAlreadyMarkedAsProcessing() throws HL7Exception {
 		executeDataSet("org/openmrs/hl7/include/ORUTest-initialData.xml");
 		
 		HL7Service hl7service = Context.getHL7Service();
 		HL7InQueue queueItem = hl7service.getHL7InQueue(1);
 		queueItem.setMessageState(HL7Constants.HL7_STATUS_PROCESSING); // set this to processing
-		hl7service.processHL7InQueue(queueItem);
+		assertThrows(HL7Exception.class, () -> hl7service.processHL7InQueue(queueItem));
 	}
 	
 	/**
@@ -154,14 +157,14 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
 		
 		Message result = hl7service.processHL7Message(message);
-		Assert.assertNotNull(result);
+		assertNotNull(result);
 		
 		Concept returnVisitDateConcept = new Concept(5096);
 		Calendar cal = Calendar.getInstance();
 		cal.set(2008, Calendar.FEBRUARY, 29, 0, 0, 0);
 		List<Obs> returnVisitDateObsForPatient3 = Context.getObsService().getObservationsByPersonAndConcept(new Patient(3),
 		    returnVisitDateConcept);
-		assertEquals("There should be a return visit date", 1, returnVisitDateObsForPatient3.size());
+		assertEquals(1, returnVisitDateObsForPatient3.size(), "There should be a return visit date");
 		
 	}
 	
@@ -180,14 +183,14 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		                + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
 		                + "OBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\r"
 		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
-		Assert.assertNotNull(message);
+		assertNotNull(message);
 	}
 	
 	/**
 	 * @see HL7Service#processHL7Message(Message)
 	 */
 	@Test
-	@Ignore("TRUNK-3945")
+	@Disabled("TRUNK-3945")
 	public void processHL7Message_shouldParseMessageTypeSuppliedByModule() throws Exception {
 		Properties props = super.getRuntimeProperties();
 		
@@ -214,18 +217,18 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		                + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
 		                + "OBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\r"
 		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
-		Assert.assertNotNull(message);
+		assertNotNull(message);
 		
 		try {
 			hl7service.processHL7Message(message);
-			Assert.fail("Should not be here. The ADR_A19 parser provided by the module throws an ApplicationException.");
+			fail("Should not be here. The ADR_A19 parser provided by the module throws an ApplicationException.");
 		}
 		catch (HL7Exception e) {
 			if (e.getCause() != null)
-				Assert.assertEquals("In ADR A19 parser", e.getCause().getMessage());
+				assertEquals("In ADR A19 parser", e.getCause().getMessage());
 			else {
 				log.error("unable to parse message", e);
-				Assert.fail("something bad happened, check the log statement 1 line up");
+				fail("something bad happened, check the log statement 1 line up");
 			}
 		}
 		
@@ -236,7 +239,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	 * @see HL7Service#processHL7InQueue(HL7InQueue)
 	 */
 	@Test
-	@Ignore("TRUNK-3945")
+	@Disabled("TRUNK-3945")
 	public void processHL7InQueue_shouldParseOruR01MessageUsingOverriddenParserProvidedByAModule() throws Exception {
 		executeDataSet("org/openmrs/hl7/include/ORUTest-initialData.xml");
 		
@@ -265,7 +268,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		
 		List<HL7InError> errors = hl7service.getAllHL7InErrors();
 		HL7InError error = errors.get(errors.size() - 1); // get the last error, the one made by this test presumably
-		Assert.assertTrue(error.getErrorDetails().contains("In alternate oru r01 parser"));
+		assertTrue(error.getErrorDetails().contains("In alternate oru r01 parser"));
 		
 		ModuleUtil.shutdown();
 	}
@@ -289,10 +292,10 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
 		ORU_R01 oru = (ORU_R01) message;
 		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
-		Assert.assertEquals("too many NK1s parsed out", 1, nk1List.size());
+		assertEquals(1, nk1List.size(), "too many NK1s parsed out");
 		Person result = hl7service.resolvePersonFromIdentifiers(nk1List.get(0).getNextOfKinAssociatedPartySIdentifiers());
-		Assert.assertNotNull("should have found a person", result);
-		Assert.assertEquals("found the wrong person", 2, result.getId().intValue());
+		assertNotNull(result, "should have found a person");
+		assertEquals(2, result.getId().intValue(), "found the wrong person");
 	}
 	
 	/**
@@ -314,10 +317,10 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
 		ORU_R01 oru = (ORU_R01) message;
 		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
-		Assert.assertEquals("too many NK1s parsed out", 1, nk1List.size());
+		assertEquals(1, nk1List.size(), "too many NK1s parsed out");
 		Person result = hl7service.resolvePersonFromIdentifiers(nk1List.get(0).getNextOfKinAssociatedPartySIdentifiers());
-		Assert.assertNotNull("should have found a person", result);
-		Assert.assertEquals("found the wrong person", 2, result.getId().intValue());
+		assertNotNull(result, "should have found a person");
+		assertEquals(2, result.getId().intValue(), "found the wrong person");
 	}
 	
 	/**
@@ -339,10 +342,10 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
 		ORU_R01 oru = (ORU_R01) message;
 		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
-		Assert.assertEquals("too many NK1s parsed out", 1, nk1List.size());
+		assertEquals(1, nk1List.size(), "too many NK1s parsed out");
 		Person result = hl7service.resolvePersonFromIdentifiers(nk1List.get(0).getNextOfKinAssociatedPartySIdentifiers());
-		Assert.assertNotNull("should have found a person", result);
-		Assert.assertEquals("found the wrong person", 2, result.getId().intValue());
+		assertNotNull(result, "should have found a person");
+		assertEquals(2, result.getId().intValue(), "found the wrong person");
 	}
 	
 	/**
@@ -364,16 +367,16 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
 		ORU_R01 oru = (ORU_R01) message;
 		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
-		Assert.assertEquals("too many NK1s parsed out", 1, nk1List.size());
+		assertEquals( 1, nk1List.size(), "too many NK1s parsed out");
 		Person result = hl7service.resolvePersonFromIdentifiers(nk1List.get(0).getNextOfKinAssociatedPartySIdentifiers());
-		Assert.assertNull("should not have found a person", result);
+		assertNull(result, "should not have found a person");
 	}
 	
 	/**
 	 * @throws HL7Exception
 	 * @see HL7Service#createPersonFromNK1(NK1)
 	 */
-	@Test(expected = HL7Exception.class)
+	@Test
 	public void getPersonFromNK1_shouldFailIfAPersonWithTheSameUUIDExists() throws HL7Exception {
 		executeDataSet("org/openmrs/hl7/include/ORUTest-initialData.xml");
 		HL7Service hl7service = Context.getHL7Service();
@@ -388,15 +391,14 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
 		ORU_R01 oru = (ORU_R01) message;
 		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
-		hl7service.createPersonFromNK1(nk1List.get(0));
-		Assert.fail("should have thrown an exception");
+		assertThrows(HL7Exception.class, () -> hl7service.createPersonFromNK1(nk1List.get(0)));
 	}
 	
 	/**
 	 * @throws HL7Exception
 	 * @see HL7Service#createPersonFromNK1(NK1)
 	 */
-	@Test(expected = HL7Exception.class)
+	@Test
 	public void getPersonFromNK1_shouldFailIfNoBirthdateSpecified() throws HL7Exception {
 		HL7Service hl7service = Context.getHL7Service();
 		Message message = hl7service
@@ -410,15 +412,14 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
 		ORU_R01 oru = (ORU_R01) message;
 		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
-		hl7service.createPersonFromNK1(nk1List.get(0));
-		Assert.fail("should have thrown an exception");
+		assertThrows(HL7Exception.class, () -> hl7service.createPersonFromNK1(nk1List.get(0)));
 	}
 	
 	/**
 	 * @throws HL7Exception
 	 * @see HL7Service#createPersonFromNK1(NK1)
 	 */
-	@Test(expected = HL7Exception.class)
+	@Test
 	public void getPersonFromNK1_shouldFailIfNoGenderSpecified() throws HL7Exception {
 		HL7Service hl7service = Context.getHL7Service();
 		Message message = hl7service
@@ -432,15 +433,14 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
 		ORU_R01 oru = (ORU_R01) message;
 		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
-		hl7service.createPersonFromNK1(nk1List.get(0));
-		Assert.fail("should have thrown an exception");
+		assertThrows(HL7Exception.class, () -> hl7service.createPersonFromNK1(nk1List.get(0)));
 	}
 	
 	/**
 	 * @throws HL7Exception
 	 * @see HL7Service#createPersonFromNK1(NK1)
 	 */
-	@Test(expected = HL7Exception.class)
+	@Test
 	public void getPersonFromNK1_shouldFailOnAnInvalidGender() throws HL7Exception {
 		HL7Service hl7service = Context.getHL7Service();
 		Message message = hl7service
@@ -454,8 +454,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
 		ORU_R01 oru = (ORU_R01) message;
 		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
-		hl7service.createPersonFromNK1(nk1List.get(0));
-		Assert.fail("should have thrown an exception");
+		assertThrows(HL7Exception.class, () -> hl7service.createPersonFromNK1(nk1List.get(0)));
 	}
 	
 	/**
@@ -477,8 +476,8 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		ORU_R01 oru = (ORU_R01) message;
 		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
 		Person result = hl7service.createPersonFromNK1(nk1List.get(0));
-		Assert.assertNotNull("should have returned a person", result);
-		Assert.assertNotNull("the person should exist", Context.getPersonService().getPersonByUuid(result.getUuid()));
+		assertNotNull(result, "should have returned a person");
+		assertNotNull(Context.getPersonService().getPersonByUuid(result.getUuid()), "the person should exist");
 	}
 	
 	/**
@@ -501,8 +500,8 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		ORU_R01 oru = (ORU_R01) message;
 		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
 		Person result = hl7service.createPersonFromNK1(nk1List.get(0));
-		Assert.assertNotNull("should have returned something", result);
-		Assert.assertTrue("should have returned a Patient", result instanceof Patient);
+		assertNotNull(result, "should have returned something");
+		assertTrue(result instanceof Patient, "should have returned a Patient");
 	}
 	
 	/**
@@ -526,7 +525,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
 		CX[] identifiers = nk1List.get(0).getNextOfKinAssociatedPartySIdentifiers();
 		String result = hl7service.getUuidFromIdentifiers(identifiers);
-		Assert.assertEquals("2178037d-f86b-4f12-8d8b-be3ebc220022", result);
+		assertEquals("2178037d-f86b-4f12-8d8b-be3ebc220022", result);
 		result = null;
 		
 		// at the end of the list
@@ -543,7 +542,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		nk1List = new ORUR01Handler().getNK1List(oru);
 		identifiers = nk1List.get(0).getNextOfKinAssociatedPartySIdentifiers();
 		result = hl7service.getUuidFromIdentifiers(identifiers);
-		Assert.assertEquals("2178037d-f86b-4f12-8d8b-be3ebc220022", result);
+		assertEquals("2178037d-f86b-4f12-8d8b-be3ebc220022", result);
 		result = null;
 		
 		// middle of the list
@@ -560,7 +559,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		nk1List = new ORUR01Handler().getNK1List(oru);
 		identifiers = nk1List.get(0).getNextOfKinAssociatedPartySIdentifiers();
 		result = hl7service.getUuidFromIdentifiers(identifiers);
-		Assert.assertEquals("2178037d-f86b-4f12-8d8b-be3ebc220022", result);
+		assertEquals("2178037d-f86b-4f12-8d8b-be3ebc220022", result);
 	}
 	
 	/**
@@ -583,7 +582,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
 		CX[] identifiers = nk1List.get(0).getNextOfKinAssociatedPartySIdentifiers();
 		String result = hl7service.getUuidFromIdentifiers(identifiers);
-		Assert.assertNull("should have returned null", result);
+		assertNull(result, "should have returned null");
 	}
 	
 	/**
@@ -606,14 +605,14 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
 		CX[] identifiers = nk1List.get(0).getNextOfKinAssociatedPartySIdentifiers();
 		String result = hl7service.getUuidFromIdentifiers(identifiers);
-		Assert.assertEquals("2178037d-f86b-4f12-8d8b-be3ebc220022", result);
+		assertEquals("2178037d-f86b-4f12-8d8b-be3ebc220022", result);
 	}
 	
 	/**
 	 * @throws HL7Exception
 	 * @see HL7Service#getUuidFromIdentifiers(null)
 	 */
-	@Test(expected = HL7Exception.class)
+	@Test
 	public void getUuidFromIdentifiers_shouldFailIfMultipleDifferentUUIDsExistInIdentifiers() throws HL7Exception {
 		HL7Service hl7service = Context.getHL7Service();
 		Message message = hl7service
@@ -628,8 +627,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		ORU_R01 oru = (ORU_R01) message;
 		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
 		CX[] identifiers = nk1List.get(0).getNextOfKinAssociatedPartySIdentifiers();
-		hl7service.getUuidFromIdentifiers(identifiers);
-		Assert.fail("should have failed");
+		assertThrows(HL7Exception.class, () -> hl7service.getUuidFromIdentifiers(identifiers));
 	}
 	
 	/**
@@ -674,10 +672,10 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
 		ORU_R01 oru = (ORU_R01) message;
 		PV1 pv1 = oru.getPATIENT_RESULT().getPATIENT().getVISIT().getPV1();
-		Assert.assertNotNull("PV1 parsed as null", pv1);
+		assertNotNull(pv1, "PV1 parsed as null");
 		PL hl7Location = pv1.getAssignedPatientLocation();
 		Integer locationId = hl7service.resolveLocationId(hl7Location);
-		Assert.assertEquals("Resolved and given locationId shoud be equals", Integer.valueOf(1), locationId);
+		assertEquals(Integer.valueOf(1), locationId, "Resolved and given locationId shoud be equals");
 	}
 	
 	/**
@@ -699,10 +697,10 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
 		ORU_R01 oru = (ORU_R01) message;
 		PV1 pv1 = oru.getPATIENT_RESULT().getPATIENT().getVISIT().getPV1();
-		Assert.assertNotNull("PV1 parsed as null", pv1);
+		assertNotNull(pv1, "PV1 parsed as null");
 		PL hl7Location = pv1.getAssignedPatientLocation();
 		Integer locationId = hl7service.resolveLocationId(hl7Location);
-		Assert.assertEquals("Resolved and given locationId shoud be equals", Integer.valueOf(1), locationId);
+		assertEquals(Integer.valueOf(1),locationId, "Resolved and given locationId shoud be equals");
 	}
 	
 	/**
@@ -724,10 +722,10 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
 		ORU_R01 oru = (ORU_R01) message;
 		PV1 pv1 = oru.getPATIENT_RESULT().getPATIENT().getVISIT().getPV1();
-		Assert.assertNotNull("PV1 parsed as null", pv1);
+		assertNotNull(pv1, "PV1 parsed as null");
 		PL hl7Location = pv1.getAssignedPatientLocation();
 		Integer locationId = hl7service.resolveLocationId(hl7Location);
-		Assert.assertNull(locationId);
+		assertNull(locationId);
 	}
 	
 	/**
@@ -753,7 +751,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		XCN xcn = orc.getEnteredBy(0);
 		//userId should be null since there exist two ambiguous users that has givename=Super and lastname=User.
 		Integer userId = hl7service.resolveUserId(xcn);
-		Assert.assertNull(userId);
+		assertNull(userId);
 	}
 
 	/**

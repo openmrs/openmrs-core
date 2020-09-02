@@ -9,11 +9,15 @@
  */
 package org.openmrs.api;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Allergen;
 import org.openmrs.AllergenType;
 import org.openmrs.Allergies;
@@ -22,7 +26,7 @@ import org.openmrs.AllergyReaction;
 import org.openmrs.Concept;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -34,7 +38,7 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 	private static final String ALLERGY_OTHER_NONCODED_TEST_DATASET = "org/openmrs/api/include/otherNonCodedConcept.xml";
 	
 	private PatientService allergyService;
-	@Before
+	@BeforeEach
 	public void runBeforeAllTests() {
 		if (allergyService == null) {
 			allergyService = Context.getPatientService();
@@ -53,7 +57,7 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAllergyByUuid_shouldGetAllergyByUuid() {
 		Allergy allergy = allergyService.getAllergyByUuid("21543629-7d8c-11e1-909d-c80aa9edcf4e");		
-		Assert.assertNotNull(allergy);
+		assertNotNull(allergy);
 	}
 	
 	/**
@@ -64,20 +68,20 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 		//get a patient with some allergies
 		Patient patient = allergyService.getPatient(2);
 		Allergies allergies = allergyService.getAllergies(patient);
-		Assert.assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
-		Assert.assertEquals(4, allergies.size());
+		assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
+		assertEquals(4, allergies.size());
 		
 		//should properly load reactions
-		Assert.assertEquals(2, allergies.get(0).getReactions().size());
-		Assert.assertEquals(2, allergies.get(1).getReactions().size());
-		Assert.assertEquals(0, allergies.get(2).getReactions().size());
-		Assert.assertEquals(0, allergies.get(3).getReactions().size());
+		assertEquals(2, allergies.get(0).getReactions().size());
+		assertEquals(2, allergies.get(1).getReactions().size());
+		assertEquals(0, allergies.get(2).getReactions().size());
+		assertEquals(0, allergies.get(3).getReactions().size());
 		
 		//get a patient without allergies
 		patient = allergyService.getPatient(6);
 		allergies = allergyService.getAllergies(patient);
-		Assert.assertEquals(Allergies.UNKNOWN, allergies.getAllergyStatus());
-		Assert.assertEquals(0, allergies.size());
+		assertEquals(Allergies.UNKNOWN, allergies.getAllergyStatus());
+		assertEquals(0, allergies.size());
 	}
 	
 	/**
@@ -88,8 +92,8 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 		//get a patient without any allergies
 		Patient patient = allergyService.getPatient(7);
 		Allergies allergies = allergyService.getAllergies(patient);
-		Assert.assertEquals(Allergies.UNKNOWN, allergies.getAllergyStatus());
-		Assert.assertEquals(0, allergies.size());
+		assertEquals(Allergies.UNKNOWN, allergies.getAllergyStatus());
+		assertEquals(0, allergies.size());
 		
 		//save some allergies for this patient
 		Allergen allergen = new Allergen(AllergenType.DRUG, new Concept(3), null);
@@ -103,9 +107,9 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 		
 		//now the patient should have allergies and the correct allergy status
 		allergies = allergyService.getAllergies(patient);
-		Assert.assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
-		Assert.assertEquals(1, allergies.size());
-		Assert.assertEquals(1, allergies.get(0).getReactions().size());
+		assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
+		assertEquals(1, allergies.size());
+		assertEquals(1, allergies.get(0).getReactions().size());
 	}
 	
 	/**
@@ -117,8 +121,8 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 		//get a patient with some allergies
 		Patient patient = allergyService.getPatient(2);
 		Allergies allergies = allergyService.getAllergies(patient);
-		Assert.assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
-		Assert.assertEquals(4, allergies.size());
+		assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
+		assertEquals(4, allergies.size());
 		
 		//remove one allergy
 		allergies.remove(0);
@@ -134,11 +138,11 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 		
 		//should remain with three un voided allergies and status maintained as see list
 		allergies = allergyService.getAllergies(patient);
-		Assert.assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
-		Assert.assertEquals(3, allergies.size());
-		Assert.assertEquals(1, allergies.get(0).getReactions().size());
-		Assert.assertEquals(0, allergies.get(1).getReactions().size());
-		Assert.assertEquals(1, allergies.get(2).getReactions().size());
+		assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
+		assertEquals(3, allergies.size());
+		assertEquals(1, allergies.get(0).getReactions().size());
+		assertEquals(0, allergies.get(1).getReactions().size());
+		assertEquals(1, allergies.get(2).getReactions().size());
 	}
 	
 	/**
@@ -149,8 +153,8 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 		//get a patient with some allergies
 		Patient patient = allergyService.getPatient(2);
 		Allergies allergies = allergyService.getAllergies(patient);
-		Assert.assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
-		Assert.assertEquals(4, allergies.size());
+		assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
+		assertEquals(4, allergies.size());
 		
 		//remove all allergies
 		while (allergies.size() > 0) {
@@ -161,8 +165,8 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 		
 		//all allergies should be voided and status set to unknown
 		allergies = allergyService.getAllergies(patient);
-		Assert.assertEquals(Allergies.UNKNOWN, allergies.getAllergyStatus());
-		Assert.assertEquals(0, allergies.size());
+		assertEquals(Allergies.UNKNOWN, allergies.getAllergyStatus());
+		assertEquals(0, allergies.size());
 	}
 	
 	/**
@@ -174,8 +178,8 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 		//get a patient with some allergies
 		Patient patient = allergyService.getPatient(2);
 		Allergies allergies = allergyService.getAllergies(patient);
-		Assert.assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
-		Assert.assertEquals(4, allergies.size());
+		assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
+		assertEquals(4, allergies.size());
 		
 		//remove all allergies
 		while (allergies.size() > 0) {
@@ -188,8 +192,8 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 		
 		//all allergies should be voided and status set to no known allergies
 		allergies = allergyService.getAllergies(patient);
-		Assert.assertEquals(Allergies.NO_KNOWN_ALLERGIES, allergies.getAllergyStatus());
-		Assert.assertEquals(0, allergies.size());
+		assertEquals(Allergies.NO_KNOWN_ALLERGIES, allergies.getAllergyStatus());
+		assertEquals(0, allergies.size());
 	}
 	
 	/**
@@ -201,8 +205,8 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 		//get a patient without any allergies
 		Patient patient = allergyService.getPatient(7);
 		Allergies allergies = allergyService.getAllergies(patient);
-		Assert.assertEquals(Allergies.UNKNOWN, allergies.getAllergyStatus());
-		Assert.assertEquals(0, allergies.size());
+		assertEquals(Allergies.UNKNOWN, allergies.getAllergyStatus());
+		assertEquals(0, allergies.size());
 		
 		//confirm that patient has no known allergies
 		allergies = new Allergies();
@@ -211,8 +215,8 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 		
 		//now the patient should have the no known allergies status
 		allergies = allergyService.getAllergies(patient);
-		Assert.assertEquals(Allergies.NO_KNOWN_ALLERGIES, allergies.getAllergyStatus());
-		Assert.assertEquals(0, allergies.size());
+		assertEquals(Allergies.NO_KNOWN_ALLERGIES, allergies.getAllergyStatus());
+		assertEquals(0, allergies.size());
 	}
 	
 	/**
@@ -225,8 +229,8 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 		//get a patient with some allergies
 		Patient patient = allergyService.getPatient(2);
 		Allergies allergies = allergyService.getAllergies(patient);
-		Assert.assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
-		Assert.assertEquals(4, allergies.size());
+		assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
+		assertEquals(4, allergies.size());
 				
 		Allergy editedAllergy = allergies.get(0);
 		//clear any cache for this object such that the next calls fetch it from the database
@@ -234,17 +238,17 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 		//edit comment
 		editedAllergy.setComment("edited comment");
 		
-		Assert.assertTrue(allergies.contains(editedAllergy));
+		assertTrue(allergies.contains(editedAllergy));
 
 		allergyService.setAllergies(patient, allergies);
 		
 		//should remain with four unvoided allergies and status maintained as see list
 		allergies = allergyService.getAllergies(patient);
-		Assert.assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
-		Assert.assertEquals(4, allergies.size());
+		assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
+		assertEquals(4, allergies.size());
 		
 		//the edited allergy should have been voided
-		Assert.assertFalse(allergies.contains(editedAllergy));
+		assertFalse(allergies.contains(editedAllergy));
 	}
 	
 	/**
@@ -257,8 +261,8 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 		//get a patient with some allergies
 		Patient patient = allergyService.getPatient(2);
 		Allergies allergies = allergyService.getAllergies(patient);
-		Assert.assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
-		Assert.assertEquals(4, allergies.size());
+		assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
+		assertEquals(4, allergies.size());
 				
 		Allergy editedAllergy = allergies.get(0);
 		//clear any cache for this object such that the next calls fetch it from the database
@@ -266,17 +270,17 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 		//edit severity
 		editedAllergy.setSeverity(new Concept(24));
 		
-		Assert.assertTrue(allergies.contains(editedAllergy));
+		assertTrue(allergies.contains(editedAllergy));
 
 		allergyService.setAllergies(patient, allergies);
 		
 		//should remain with four unvoided allergies and status maintained as see list
 		allergies = allergyService.getAllergies(patient);
-		Assert.assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
-		Assert.assertEquals(4, allergies.size());
+		assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
+		assertEquals(4, allergies.size());
 		
 		//the edited allergy should have been voided
-		Assert.assertFalse(allergies.contains(editedAllergy));
+		assertFalse(allergies.contains(editedAllergy));
 	}
 	
 	/**
@@ -289,8 +293,8 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 		//get a patient with some allergies
 		Patient patient = allergyService.getPatient(2);
 		Allergies allergies = allergyService.getAllergies(patient);
-		Assert.assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
-		Assert.assertEquals(4, allergies.size());
+		assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
+		assertEquals(4, allergies.size());
 				
 		Allergy editedAllergy = allergies.get(0);
 		//clear any cache for this object such that the next calls fetch it from the database
@@ -298,17 +302,17 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 		//edit coded allergen
 		editedAllergy.getAllergen().setCodedAllergen(new Concept(24));
 		
-		Assert.assertTrue(allergies.contains(editedAllergy));
+		assertTrue(allergies.contains(editedAllergy));
 
 		allergyService.setAllergies(patient, allergies);
 		
 		//should remain with four unvoided allergies and status maintained as see list
 		allergies = allergyService.getAllergies(patient);
-		Assert.assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
-		Assert.assertEquals(4, allergies.size());
+		assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
+		assertEquals(4, allergies.size());
 		
 		//the edited allergy should have been voided
-		Assert.assertFalse(allergies.contains(editedAllergy));
+		assertFalse(allergies.contains(editedAllergy));
 	}
 	
 	/**
@@ -321,8 +325,8 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 		//get a patient with some allergies
 		Patient patient = allergyService.getPatient(2);
 		Allergies allergies = allergyService.getAllergies(patient);
-		Assert.assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
-		Assert.assertEquals(4, allergies.size());
+		assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
+		assertEquals(4, allergies.size());
 				
 		Allergy editedAllergy = allergies.get(0);
 		//clear any cache for this object such that the next calls fetch it from the database
@@ -330,17 +334,17 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 		//edit non coded allergen
 		editedAllergy.getAllergen().setNonCodedAllergen("some non coded allergen");
 		
-		Assert.assertTrue(allergies.contains(editedAllergy));
+		assertTrue(allergies.contains(editedAllergy));
 
 		allergyService.setAllergies(patient, allergies);
 		
 		//should remain with four unvoided allergies and status maintained as see list
 		allergies = allergyService.getAllergies(patient);
-		Assert.assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
-		Assert.assertEquals(4, allergies.size());
+		assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
+		assertEquals(4, allergies.size());
 		
 		//the edited allergy should have been voided
-		Assert.assertFalse(allergies.contains(editedAllergy));
+		assertFalse(allergies.contains(editedAllergy));
 	}
 	
 	/**
@@ -353,8 +357,8 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 		//get a patient with some allergies
 		Patient patient = allergyService.getPatient(2);
 		Allergies allergies = allergyService.getAllergies(patient);
-		Assert.assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
-		Assert.assertEquals(4, allergies.size());
+		assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
+		assertEquals(4, allergies.size());
 				
 		Allergy editedAllergy = allergies.get(0);
 		//clear any cache for this object such that the next calls fetch it from the database
@@ -362,17 +366,17 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 		//remove a reaction
 		editedAllergy.getReactions().remove(0);
 		
-		Assert.assertTrue(allergies.contains(editedAllergy));
+		assertTrue(allergies.contains(editedAllergy));
 
 		allergyService.setAllergies(patient, allergies);
 		
 		//should remain with four unvoided allergies and status maintained as see list
 		allergies = allergyService.getAllergies(patient);
-		Assert.assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
-		Assert.assertEquals(4, allergies.size());
+		assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
+		assertEquals(4, allergies.size());
 		
 		//the edited allergy should have been voided
-		Assert.assertFalse(allergies.contains(editedAllergy));
+		assertFalse(allergies.contains(editedAllergy));
 	}
 	
 	/**
@@ -385,8 +389,8 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 		//get a patient with some allergies
 		Patient patient = allergyService.getPatient(2);
 		Allergies allergies = allergyService.getAllergies(patient);
-		Assert.assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
-		Assert.assertEquals(4, allergies.size());
+		assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
+		assertEquals(4, allergies.size());
 				
 		Allergy editedAllergy = allergies.get(0);
 		//clear any cache for this object such that the next calls fetch it from the database
@@ -395,17 +399,17 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 		AllergyReaction reaction = new AllergyReaction(null, new Concept(22), null);
 		editedAllergy.addReaction(reaction);
 		
-		Assert.assertTrue(allergies.contains(editedAllergy));
+		assertTrue(allergies.contains(editedAllergy));
 
 		allergyService.setAllergies(patient, allergies);
 		
 		//should remain with four unvoided allergies and status maintained as see list
 		allergies = allergyService.getAllergies(patient);
-		Assert.assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
-		Assert.assertEquals(4, allergies.size());
+		assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
+		assertEquals(4, allergies.size());
 		
 		//the edited allergy should have been voided
-		Assert.assertFalse(allergies.contains(editedAllergy));
+		assertFalse(allergies.contains(editedAllergy));
 	}
 	
 	/**
@@ -418,8 +422,8 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 		//get a patient with some allergies
 		Patient patient = allergyService.getPatient(2);
 		Allergies allergies = allergyService.getAllergies(patient);
-		Assert.assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
-		Assert.assertEquals(4, allergies.size());
+		assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
+		assertEquals(4, allergies.size());
 				
 		Allergy editedAllergy = allergies.get(0);
 		//clear any cache for this object such that the next calls fetch it from the database
@@ -428,17 +432,17 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 		AllergyReaction reaction = editedAllergy.getReactions().get(0);
 		reaction.setReaction(new Concept(11));
 		
-		Assert.assertTrue(allergies.contains(editedAllergy));
+		assertTrue(allergies.contains(editedAllergy));
 
 		allergyService.setAllergies(patient, allergies);
 		
 		//should remain with four unvoided allergies and status maintained as see list
 		allergies = allergyService.getAllergies(patient);
-		Assert.assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
-		Assert.assertEquals(4, allergies.size());
+		assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
+		assertEquals(4, allergies.size());
 		
 		//the edited allergy should have been voided
-		Assert.assertFalse(allergies.contains(editedAllergy));
+		assertFalse(allergies.contains(editedAllergy));
 	}
 	
 	/**
@@ -451,8 +455,8 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 		//get a patient with some allergies
 		Patient patient = allergyService.getPatient(2);
 		Allergies allergies = allergyService.getAllergies(patient);
-		Assert.assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
-		Assert.assertEquals(4, allergies.size());
+		assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
+		assertEquals(4, allergies.size());
 				
 		Allergy editedAllergy = allergies.get(0);
 		//clear any cache for this object such that the next calls fetch it from the database
@@ -461,17 +465,17 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 		AllergyReaction reaction = editedAllergy.getReactions().get(0);
 		reaction.setReactionNonCoded("some non coded text");
 		
-		Assert.assertTrue(allergies.contains(editedAllergy));
+		assertTrue(allergies.contains(editedAllergy));
 
 		allergyService.setAllergies(patient, allergies);
 		
 		//should remain with four unvoided allergies and status maintained as see list
 		allergies = allergyService.getAllergies(patient);
-		Assert.assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
-		Assert.assertEquals(4, allergies.size());
+		assertEquals(Allergies.SEE_LIST, allergies.getAllergyStatus());
+		assertEquals(4, allergies.size());
 		
 		//the edited allergy should have been voided
-		Assert.assertFalse(allergies.contains(editedAllergy));
+		assertFalse(allergies.contains(editedAllergy));
 	}
 
 	@Test
@@ -482,6 +486,6 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
         Allergies allergies = allergyService.getAllergies(patient);
         allergies.add(allergy);
         allergyService.setAllergies(patient, allergies);
-        Assert.assertFalse(allergy.getAllergen().isCoded());
+        assertFalse(allergy.getAllergen().isCoded());
     }
 }

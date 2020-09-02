@@ -39,7 +39,6 @@ import org.openmrs.util.PrivilegeConstants;
  * people, or encounters
  * 
  * @see org.openmrs.Obs
- * @see org.openmrs.MimeType
  * @see org.openmrs.api.context.Context
  */
 public interface ObsService extends OpenmrsService {
@@ -77,7 +76,7 @@ public interface ObsService extends OpenmrsService {
 	/**
 	 * Get Revision Obs for initial Obs
 	 *
-	 * @param obs
+	 * @param initialObs
 	 * @return obs or null
 	 * @since 2.1
 	 * <strong>Should</strong> find revision obs for given valid obs

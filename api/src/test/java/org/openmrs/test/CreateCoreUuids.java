@@ -13,12 +13,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.openmrs.OpenmrsMetadata;
 import org.openmrs.RelationshipType;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -26,7 +27,7 @@ import org.openmrs.util.OpenmrsConstants;
  * dataset. See ticket <a href="http://dev.openmrs.org/ticket/1842">#1842</a>:
  * "Synchronize core metadata UUIDs across sites".
  */
-@Ignore
+@Disabled
 public class CreateCoreUuids extends BaseContextSensitiveTest {
 	
 	//@Test

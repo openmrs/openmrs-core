@@ -24,12 +24,10 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Person;
 import org.openmrs.Privilege;
-import org.openmrs.PrivilegeListener;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Logging;
-import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.CannotDeleteRoleWithChildrenException;
@@ -49,7 +47,6 @@ import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -179,9 +176,6 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		return dao.saveUser(user, null);
 	}
 	
-	/**
-	 * @see org.openmrs.api.UserService#voidUser(org.openmrs.User, java.lang.String)
-	 */
 	public User voidUser(User user, String reason) throws APIException {
 		return Context.getUserService().retireUser(user, reason);
 	}
@@ -199,9 +193,6 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		return saveUser(user);
 	}
 	
-	/**
-	 * @see org.openmrs.api.UserService#unvoidUser(org.openmrs.User)
-	 */
 	public User unvoidUser(User user) throws APIException {
 		return Context.getUserService().unretireUser(user);
 	}
@@ -394,10 +385,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * Convenience method to check if the authenticated user has all privileges they are giving out
 	 * 
-	 * @param new user that has privileges
+	 * @param user user that has privileges
 	 */
 	private void checkPrivileges(User user) {
-		Collection<Role> roles = user.getAllRoles();
 		List<String> requiredPrivs = user.getAllRoles().stream().peek(this::checkSuperUserPrivilege)
 				.map(Role::getPrivileges).filter(Objects::nonNull).flatMap(Collection::stream)
 				.map(Privilege::getPrivilege).filter(p -> !Context.hasPrivilege(p)).sorted().collect(Collectors.toList());
@@ -524,7 +514,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * Convenience method to check if the authenticated user has all privileges they are giving out
 	 * to the new role
 	 * 
-	 * @param new user that has privileges
+	 * @param role 
 	 */
 	private void checkPrivileges(Role role) {
 		Optional.ofNullable(role.getPrivileges())
@@ -752,7 +742,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.UserService#changeUserPasswordUsingActivationKey(String, String);
+	 * @see org.openmrs.api.UserService#changePasswordUsingActivationKey(String, String);
 	 */
 	@Override
 	public void changePasswordUsingActivationKey(String activationKey, String newPassword) {

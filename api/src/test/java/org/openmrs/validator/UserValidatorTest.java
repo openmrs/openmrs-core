@@ -9,15 +9,18 @@
  */
 package org.openmrs.validator;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindException;
@@ -38,7 +41,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void isUserNameValid_shouldValidateUsernameWithOnlyAlphaNumerics() {
-		Assert.assertTrue(validator.isUserNameValid("AB"));
+		assertTrue(validator.isUserNameValid("AB"));
 	}
 	
 	/**
@@ -46,7 +49,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void isUserNameValid_shouldValidateUsernameWithAlphaDashAndUnderscore() {
-		Assert.assertTrue(validator.isUserNameValid("A-_."));
+		assertTrue(validator.isUserNameValid("A-_."));
 	}
 	
 	/**
@@ -54,7 +57,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void isUserNameValid_shouldValidateUsernameWithAlphaDashUnderscoreAndDot() {
-		Assert.assertTrue(validator.isUserNameValid("A-_.B"));
+		assertTrue(validator.isUserNameValid("A-_.B"));
 	}
 	
 	/**
@@ -63,9 +66,9 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void isUserNameValid_shouldValidateUsernameWithExactlyMaxSizeName() {
 		String username = "12345678901234567890123456789012345678901234567890";
-		Assert.assertEquals(50, username.length());
+		assertEquals(50, username.length());
 		
-		Assert.assertTrue(validator.isUserNameValid(username));
+		assertTrue(validator.isUserNameValid(username));
 	}
 	
 	/**
@@ -73,7 +76,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void isUserNameValid_shouldNotValidateUsernameWithLessThanMinimumLength() {
-		Assert.assertFalse(validator.isUserNameValid("A"));
+		assertFalse(validator.isUserNameValid("A"));
 	}
 	
 	/**
@@ -81,7 +84,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void isUserNameValid_shouldNotValidateUsernameWithInvalidCharacter() {
-		Assert.assertFalse(validator.isUserNameValid("A*"));
+		assertFalse(validator.isUserNameValid("A*"));
 	}
 	
 	/**
@@ -90,8 +93,8 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void isUserNameValid_shouldNotValidateUsernameWithMoreThanMaximumSize() {
 		String username = "12345678901234567890123456789012345678901AAAAABBBAABABABABA";
-		Assert.assertTrue(username.length() > 50);
-		Assert.assertFalse(validator.isUserNameValid(username));
+		assertTrue(username.length() > 50);
+		assertFalse(validator.isUserNameValid(username));
 	}
 
 	/**
@@ -129,7 +132,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(user, "user");
 		validator.validate(user, errors);
-		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+		assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 
 	/**
@@ -148,7 +151,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(user, "user");
 		validator.validate(user, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -156,7 +159,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void isUserNameValid_shouldValidateWhenUsernameIsNull() {
-		Assert.assertTrue(validator.isUserNameValid(null));
+		assertTrue(validator.isUserNameValid(null));
 	}
 	
 	/**
@@ -164,7 +167,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void isUserNameValid_shouldValidateWhenUsernameIsTheEmptyString() {
-		Assert.assertTrue(validator.isUserNameValid(""));
+		assertTrue(validator.isUserNameValid(""));
 	}
 	
 	/**
@@ -172,7 +175,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void isUserNameValid_shouldNotValidateWhenUsernameIsWhitespaceOnly() {
-		Assert.assertFalse(validator.isUserNameValid("  "));
+		assertFalse(validator.isUserNameValid("  "));
 	}
 	
 	/**
@@ -183,7 +186,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 		String[] invalids = new String[] { "mkyong", "mkyong123@.com", "my@kong", "my.kong", 
 				"my.@kong", "@kong.my" };
 		for (String email : invalids) {
-			Assert.assertFalse(validator.isUserNameAsEmailValid(email));
+			assertFalse(validator.isUserNameAsEmailValid(email));
 		}
 	}
 	
@@ -196,7 +199,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 		        "mkyong111@mkyong.com", "mkyong-100@mkyong.net", "mkyong.100@mkyong.com.au", "mkyong@1.com",
 		        "mkyong@gmail.com.com", "mk@t-yong.de" };
 		for (String email : valids) {
-			Assert.assertTrue(validator.isUserNameAsEmailValid(email));
+			assertTrue(validator.isUserNameAsEmailValid(email));
 		}
 	}
 	
@@ -214,7 +217,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(user, "user");
 		validator.validate(user, errors);
 		
-		Assert.assertFalse(errors.hasFieldErrors("username"));
+		assertFalse(errors.hasFieldErrors("username"));
 	}
 	
 	/**
@@ -231,7 +234,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(user, "user");
 		validator.validate(user, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("username"));
+		assertTrue(errors.hasFieldErrors("username"));
 	}
 	
 	/**
@@ -241,7 +244,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldNotThrowNPEWhenUserIsNull() {
 		Errors errors = new BindException(new User(), "user");
 		validator.validate(null, errors);
-		Assert.assertTrue(true);
+		assertTrue(true);
 	}
 	
 	/**
@@ -260,7 +263,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(user, "user");
 		validator.validate(user, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -279,13 +282,13 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(user, "user");
 		validator.validate(user, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("username"));
-		Assert.assertTrue(errors.hasFieldErrors("systemId"));
-		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
-		Assert.assertTrue(errors.hasFieldErrors("person.names[0].givenName"));
-		Assert.assertTrue(errors.hasFieldErrors("person.names[0].middleName"));
-		Assert.assertTrue(errors.hasFieldErrors("person.names[0].familyName"));
-		Assert.assertTrue(errors.hasFieldErrors("person.gender"));
+		assertTrue(errors.hasFieldErrors("username"));
+		assertTrue(errors.hasFieldErrors("systemId"));
+		assertTrue(errors.hasFieldErrors("retireReason"));
+		assertTrue(errors.hasFieldErrors("person.names[0].givenName"));
+		assertTrue(errors.hasFieldErrors("person.names[0].middleName"));
+		assertTrue(errors.hasFieldErrors("person.names[0].familyName"));
+		assertTrue(errors.hasFieldErrors("person.gender"));
 	}
 	
 	/**
@@ -298,7 +301,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(user, "user");
 		validator.validate(user, errors);		
-		Assert.assertTrue(errors.hasFieldErrors("email"));
+		assertTrue(errors.hasFieldErrors("email"));
 	}
 	
 	/**
@@ -311,6 +314,6 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 				
 		Errors errors = new BindException(user, "user");
 		validator.validate(user, errors);	
-		Assert.assertFalse(errors.hasFieldErrors("email"));
+		assertFalse(errors.hasFieldErrors("email"));
 	}
 }

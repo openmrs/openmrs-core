@@ -9,11 +9,15 @@
  */
 package org.openmrs.notification.db.hibernate;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
-import org.openmrs.notification.AlertService;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.notification.Alert;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This class tests the hibernate alert data access. TODO Consider changing this and all subsequent
@@ -21,22 +25,48 @@ import org.openmrs.test.BaseContextSensitiveTest;
  */
 public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 	
-	@Before
-	public void runBeforeEachTest() {
-		authenticate();
-	}
+	private static final String DATA_XML = "org/openmrs/api/db/hibernate/include/HibernateAlertDAOTestDataSet.xml";
 	
-	/**
-	 * Test that you can get alerts
-	 * 
-	 * @throws Exception
-	 */
+	@Autowired
+	private HibernateAlertDAO hibernateAlertDAO;
+	
+	@BeforeEach
+	public void setUp() {
+		executeDataSet(DATA_XML);
+	}
+
 	@Test
-	public void shouldGetAlerts() {
-		
-		AlertService as = Context.getAlertService();
-		//System.out.println(as.getAllAlerts());
-		
+	public void saveAlert_shouldSaveAlertToDb() {
+		Alert alert=new Alert();
+		alert.setText("Coding time");
+		alert.setId(5);
+	    hibernateAlertDAO.saveAlert(alert);
+		Assertions.assertNotNull(hibernateAlertDAO.getAlert(5));
 	}
 	
+	@Test
+	public void getAlert_shouldGetAlertById() {
+		Alert savedAlert = hibernateAlertDAO.getAlert(2);
+		Assertions.assertEquals((int) savedAlert.getAlertId(), 2);
+	}
+	
+	@Test
+	public void deleteAlert_shouldReturnNullAfterDeleting() {
+		Alert savedAlert = hibernateAlertDAO.getAlert(2);
+		Assertions.assertNotNull(savedAlert);
+		hibernateAlertDAO.deleteAlert(savedAlert);
+		Assertions.assertNull(hibernateAlertDAO.getAlert(2));
+	}
+	
+	@Test
+	public void getAllAlerts_shouldReturnOnlyNonExpiredAllerts() {
+		Assertions.assertEquals(hibernateAlertDAO.getAllAlerts(false).size(), 1);
+	}
+	
+	@Test
+	public void getAlerts_shouldReturnAllAlertsWhenUserIsSpecified() {
+		User user = Context.getUserService().getUserByUuid("c1d8f5c2-e131-11de-babe-001e378eb77e");
+		Assertions.assertEquals(hibernateAlertDAO.getAlerts(user, true, false).size(), 1);
+	}
+
 }

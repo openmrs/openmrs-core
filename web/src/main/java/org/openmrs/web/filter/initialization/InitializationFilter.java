@@ -86,6 +86,14 @@ public class InitializationFilter extends StartupFilter {
 	
 	private static final org.slf4j.Logger log = LoggerFactory.getLogger(InitializationFilter.class);
 	
+	private static final String DATABASE_POSTGRESQL = "postgresql";
+	
+	private static final String DATABASE_MYSQL = "mysql";
+	
+	private static final String DATABASE_SQLSERVER = "sqlserver";
+	
+	private static final String DATABASE_H2 = "h2";
+	
 	private static final String LIQUIBASE_DEMO_DATA = "liquibase-demo-data.xml";
 	
 	/**
@@ -161,7 +169,7 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * The model object that holds all the properties that the rendered templates use. All attributes on
 	 * this object are made available to all templates via reflection in the
-	 * {@link #renderTemplate(String, Map, httpResponse)} method.
+	 * {@link org.openmrs.web.filter.StartupFilter#renderTemplate(String, Map, HttpServletResponse)} method.
 	 */
 	private InitializationWizardModel wizardModel = null;
 	
@@ -1133,6 +1141,13 @@ public class InitializationFilter extends StartupFilter {
 		}
 	}
 	
+	private boolean isCurrentDatabase(String database) {
+		if (wizardModel.databaseConnection.contains(database)) {
+			return true;
+		}
+		return false;
+	}
+	
 	/**
 	 * @param silent if this statement fails do not display stack trace or record an error in the wizard
 	 *            object.
@@ -1150,8 +1165,11 @@ public class InitializationFilter extends StartupFilter {
 			String replacedSql = sql;
 			
 			// TODO how to get the driver for the other dbs...
-			if (wizardModel.databaseConnection.contains("mysql")) {
+			if (isCurrentDatabase(DATABASE_MYSQL)) {
 				Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
+			} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
+				Class.forName("org.postgresql.Driver").newInstance();
+				replacedSql = replacedSql.replaceAll("`", "\"");
 			} else {
 				replacedSql = replacedSql.replaceAll("`", "\"");
 			}
@@ -1381,11 +1399,11 @@ public class InitializationFilter extends StartupFilter {
 							setExecutingTask(WizardTask.CREATE_SCHEMA);
 							// connect via jdbc and create a database
 							String sql;
-							if (wizardModel.databaseConnection.contains("mysql")) {
+							if (isCurrentDatabase(DATABASE_MYSQL)) {
 								sql = "create database if not exists `?` default character set utf8";
-							} else if (wizardModel.databaseConnection.contains("postgresql")) {
+							} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
 								sql = "create database `?` encoding 'utf8'";
-							} else if (wizardModel.databaseConnection.contains("h2")) {
+							} else if (isCurrentDatabase(DATABASE_H2)) {
 								sql = null;
 							} else {
 								sql = "create database `?`";
@@ -1434,10 +1452,23 @@ public class InitializationFilter extends StartupFilter {
 							        || wizardModel.databaseConnection.contains("127.0.0.1")) {
 								host = "'localhost'";
 							}
-							String sql = "drop user '?'@" + host;
+							
+							String sql = "";
+							if (isCurrentDatabase(DATABASE_MYSQL)) {
+								sql = "drop user '?'@" + host;
+							} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
+								sql = "drop user `?`";
+							}
+							
 							executeStatement(true, wizardModel.createUserUsername, wizardModel.createUserPassword, sql,
 							    connectionUsername);
-							sql = "create user '?'@" + host + " identified by '?'";
+							
+							if (isCurrentDatabase(DATABASE_MYSQL)) {
+								sql = "create user '?'@" + host + " identified by '?'";
+							} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
+								sql = "create user `?` with password '?'";
+							}
+							
 							if (-1 != executeStatement(false, wizardModel.createUserUsername, wizardModel.createUserPassword,
 							    sql, connectionUsername, connectionPassword.toString())) {
 								wizardModel.workLog.add("Created user " + connectionUsername);
@@ -1448,9 +1479,17 @@ public class InitializationFilter extends StartupFilter {
 							}
 							
 							// grant the roles
-							sql = "GRANT ALL ON `?`.* TO '?'@" + host;
-							int result = executeStatement(false, wizardModel.createUserUsername,
-							    wizardModel.createUserPassword, sql, wizardModel.databaseName, connectionUsername);
+							int result = 1;
+							if (isCurrentDatabase(DATABASE_MYSQL)) {
+								sql = "GRANT ALL ON `?`.* TO '?'@" + host;
+								result = executeStatement(false, wizardModel.createUserUsername,
+								    wizardModel.createUserPassword, sql, wizardModel.databaseName, connectionUsername);
+							} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
+								sql = "ALTER USER `?` WITH SUPERUSER";
+								result = executeStatement(false, wizardModel.createUserUsername,
+								    wizardModel.createUserPassword, sql, connectionUsername);
+							}
+							
 							// throw the user back to the main screen if this error occurs
 							if (result < 0) {
 								reportError(ErrorMessageConstants.ERROR_DB_GRANT_PRIV, DEFAULT_PAGE);
@@ -1491,13 +1530,13 @@ public class InitializationFilter extends StartupFilter {
 						if (StringUtils.hasText(wizardModel.databaseDriver)) {
 							runtimeProperties.put("connection.driver_class", wizardModel.databaseDriver);
 						}
-						if (finalDatabaseConnectionString.contains("postgres")) {
-							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+						if (finalDatabaseConnectionString.contains(DATABASE_POSTGRESQL)) {
+							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQL82Dialect");
 						}
-						if (finalDatabaseConnectionString.contains("sqlserver")) {
+						if (finalDatabaseConnectionString.contains(DATABASE_SQLSERVER)) {
 							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.SQLServerDialect");
 						}
-						if (finalDatabaseConnectionString.contains("h2")) {
+						if (finalDatabaseConnectionString.contains(DATABASE_H2)) {
 							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
 						}
 						runtimeProperties.put("module.allow_web_admin", wizardModel.moduleWebAdmin.toString());
@@ -1527,8 +1566,7 @@ public class InitializationFilter extends StartupFilter {
 							}
 							
 							/**
-							 * @see org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback#executing(liquibase.ChangeSet,
-							 *      int)
+							 * @see ChangeSetExecutorCallback#executing(liquibase.changelog.ChangeSet, int)
 							 */
 							@Override
 							public void executing(ChangeSet changeSet, int numChangeSetsToRun) {
@@ -1727,43 +1765,6 @@ public class InitializationFilter extends StartupFilter {
 							}
 						}
 						
-						// start openmrs
-						try {
-							UpdateFilter.setUpdatesRequired(false);
-							WebDaemon.startOpenmrs(filterConfig.getServletContext());
-						}
-						catch (DatabaseUpdateException updateEx) {
-							log.warn("Error while running the database update file", updateEx);
-							reportError(ErrorMessageConstants.ERROR_DB_UPDATE, DEFAULT_PAGE, updateEx.getMessage());
-							return;
-						}
-						catch (InputRequiredException inputRequiredEx) {
-							// TODO display a page looping over the required input and ask the user for each.
-							// 		When done and the user and put in their say, call DatabaseUpdater.update(Map);
-							//		with the user's question/answer pairs
-							log.warn(
-							    "Unable to continue because user input is required for the db updates and we cannot do anything about that right now");
-							reportError(ErrorMessageConstants.ERROR_INPUT_REQ, DEFAULT_PAGE);
-							return;
-						}
-						catch (MandatoryModuleException mandatoryModEx) {
-							log.warn(
-							    "A mandatory module failed to start. Fix the error or unmark it as mandatory to continue.",
-							    mandatoryModEx);
-							reportError(ErrorMessageConstants.ERROR_MANDATORY_MOD_REQ, DEFAULT_PAGE,
-							    mandatoryModEx.getMessage());
-							return;
-						}
-						catch (OpenmrsCoreModuleException coreModEx) {
-							log.warn(
-							    "A core module failed to start. Make sure that all core modules (with the required minimum versions) are installed and starting properly.",
-							    coreModEx);
-							reportError(ErrorMessageConstants.ERROR_CORE_MOD_REQ, DEFAULT_PAGE, coreModEx.getMessage());
-							return;
-						}
-						
-						// TODO catch openmrs errors here and drop the user back out to the setup screen
-						
 						Context.openSession();
 						
 						if (!"".equals(wizardModel.implementationId)) {
@@ -1819,8 +1820,57 @@ public class InitializationFilter extends StartupFilter {
 							return;
 						}
 						
+						try {
+							// Update PostgreSQL Sequences after insertion of core data
+							Context.getAdministrationService().updatePostgresSequence();
+						}
+						catch (Exception e) {
+							log.warn("Not able to update PostgreSQL sequence. Startup failed for PostgreSQL", e);
+							reportError(ErrorMessageConstants.ERROR_COMPLETE_STARTUP, DEFAULT_PAGE, e.getMessage());
+							return;
+						}
+
+						
 						// set this so that the wizard isn't run again on next page load
 						Context.closeSession();
+						
+						// start openmrs
+						try {
+							UpdateFilter.setUpdatesRequired(false);
+							WebDaemon.startOpenmrs(filterConfig.getServletContext());
+						}
+						catch (DatabaseUpdateException updateEx) {
+							log.warn("Error while running the database update file", updateEx);
+							reportError(ErrorMessageConstants.ERROR_DB_UPDATE, DEFAULT_PAGE, updateEx.getMessage());
+							return;
+						}
+						catch (InputRequiredException inputRequiredEx) {
+							// TODO display a page looping over the required input and ask the user for each.
+							// 		When done and the user and put in their say, call DatabaseUpdater.update(Map);
+							//		with the user's question/answer pairs
+							log.warn(
+							    "Unable to continue because user input is required for the db updates and we cannot do anything about that right now");
+							reportError(ErrorMessageConstants.ERROR_INPUT_REQ, DEFAULT_PAGE);
+							return;
+						}
+						catch (MandatoryModuleException mandatoryModEx) {
+							log.warn(
+							    "A mandatory module failed to start. Fix the error or unmark it as mandatory to continue.",
+							    mandatoryModEx);
+							reportError(ErrorMessageConstants.ERROR_MANDATORY_MOD_REQ, DEFAULT_PAGE,
+							    mandatoryModEx.getMessage());
+							return;
+						}
+						catch (OpenmrsCoreModuleException coreModEx) {
+							log.warn(
+							    "A core module failed to start. Make sure that all core modules (with the required minimum versions) are installed and starting properly.",
+							    coreModEx);
+							reportError(ErrorMessageConstants.ERROR_CORE_MOD_REQ, DEFAULT_PAGE, coreModEx.getMessage());
+							return;
+						}
+						
+						// TODO catch openmrs errors here and drop the user back out to the setup screen
+						
 					}
 					catch (IOException e) {
 						reportError(ErrorMessageConstants.ERROR_COMPLETE_STARTUP, DEFAULT_PAGE, e.getMessage());

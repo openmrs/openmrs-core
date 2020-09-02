@@ -9,12 +9,14 @@
  */
 package org.openmrs.validator;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 import org.openmrs.ConceptStateConversion;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -36,7 +38,7 @@ public class StateConversionValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(csc, "csc");
 		new StateConversionValidator().validate(csc, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("concept"));
+		assertTrue(errors.hasFieldErrors("concept"));
 	}
 	
 	/**
@@ -54,7 +56,7 @@ public class StateConversionValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(csc, "csc");
 		new StateConversionValidator().validate(csc, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("programWorkflow"));
+		assertTrue(errors.hasFieldErrors("programWorkflow"));
 	}
 	
 	/**
@@ -72,7 +74,7 @@ public class StateConversionValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(csc, "csc");
 		new StateConversionValidator().validate(csc, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("programWorkflowState"));
+		assertTrue(errors.hasFieldErrors("programWorkflowState"));
 	}
 	
 	/**
@@ -89,6 +91,6 @@ public class StateConversionValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(csc, "csc");
 		new StateConversionValidator().validate(csc, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 }

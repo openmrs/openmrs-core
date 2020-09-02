@@ -9,15 +9,21 @@
  */
 package org.openmrs.module;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 public class ModuleFactoryTest extends BaseContextSensitiveTest {
 	
@@ -32,7 +38,7 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 	protected static final String MODULE3 = "test3";
 	protected static final String MODULE3_PATH = "org/openmrs/module/include/test3-1.0-SNAPSHOT.omod";
 	
-	@Before
+	@BeforeEach
 	public void before() {
 		ModuleUtil.shutdown();
 		
@@ -42,7 +48,7 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		ModuleUtil.startup(runtimeProperties);
 	}
 	
-	@AfterClass
+	@AfterAll
 	public static void cleanUp() {
 		//ensure that we do not have any left overs to interfere with other tests
 		ModuleUtil.shutdown();
@@ -54,19 +60,19 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		
 		//verify that module test2 is started
 		ModuleFactory.startModule(test2);
-		Assert.assertTrue(ModuleFactory.getLoadedModules().contains(test2));
+		assertTrue(ModuleFactory.getLoadedModules().contains(test2));
 	}
 	
-	@Test(expected = ModuleException.class)
+	@Test
 	public void loadModule_shouldNotLoadModuleIfAlreadyLoaded() {
 		Module test1 = ModuleFactory.getModuleById(MODULE1);
 		
 		//verify that module test1 is started
-		Assert.assertNotNull(ModuleFactory.getStartedModuleById(MODULE1));
-		Assert.assertTrue(test1.isStarted());
+		assertNotNull(ModuleFactory.getStartedModuleById(MODULE1));
+		assertTrue(test1.isStarted());
 		
 		//this should throw an exception for trying to load this module again
-		ModuleFactory.loadModule(test1, false);
+		assertThrows(ModuleException.class, () -> ModuleFactory.loadModule(test1, false));
 	}
 
 	@Test
@@ -76,10 +82,10 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		Module newModule = loadModule(MODULE1_PATH, MODULE1, true);
 		
 	    //verify that module test1 is stopped and newModule loaded
-		Assert.assertNull(ModuleFactory.getStartedModuleById(MODULE1));
-		Assert.assertFalse(test1.isStarted());
+		assertNull(ModuleFactory.getStartedModuleById(MODULE1));
+		assertFalse(test1.isStarted());
 		
-		Assert.assertTrue(ModuleFactory.getLoadedModules().contains(newModule));
+		assertTrue(ModuleFactory.getLoadedModules().contains(newModule));
 	}
 		
 	@Test
@@ -89,10 +95,10 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		Module newModule = loadModule(MODULE1_UPDATE_PATH, MODULE1, true);
 		
 		//verify updated module is loaded and old shut down.
-		Assert.assertNull(ModuleFactory.getStartedModuleById(MODULE1));
-		Assert.assertFalse(test1.isStarted());
+		assertNull(ModuleFactory.getStartedModuleById(MODULE1));
+		assertFalse(test1.isStarted());
 		
-		Assert.assertTrue(ModuleFactory.getLoadedModules().contains(newModule));
+		assertTrue(ModuleFactory.getLoadedModules().contains(newModule));
 	}
 	
 	@Test
@@ -101,13 +107,13 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		Module newModule = loadModule(MODULE1_UPDATE_PATH, MODULE1, true);
 		
 		//first upgrade to a newer version so a revert can be tried
-		Assert.assertNotNull(ModuleFactory.getLoadedModules().contains(newModule));
+		assertNotNull(ModuleFactory.getLoadedModules().contains(newModule));
 		
 		//now verify that a rollback simply returns the newer version's module.
 		Module oldModule = loadModule(MODULE1_PATH, MODULE1, true);
 		
-		Assert.assertEquals(newModule, oldModule);
-		Assert.assertNotNull(ModuleFactory.getLoadedModules().contains(oldModule));
+		assertEquals(newModule, oldModule);
+		assertNotNull(ModuleFactory.getLoadedModules().contains(oldModule));
 	}
 	
 	@Test
@@ -117,10 +123,10 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		
 		ModuleFactory.startModule(test2);
 		
-		Assert.assertNotNull(ModuleFactory.getStartedModuleById("test1")); // test1 should have been started, just by starting test2
-		Assert.assertNotNull(ModuleFactory.getStartedModuleById("test2")); // should be started after starting all dependencies
-		Assert.assertTrue(test1.isStarted());
-		Assert.assertTrue(test2.isStarted());
+		assertNotNull(ModuleFactory.getStartedModuleById("test1")); // test1 should have been started, just by starting test2
+		assertNotNull(ModuleFactory.getStartedModuleById("test2")); // should be started after starting all dependencies
+		assertTrue(test1.isStarted());
+		assertTrue(test2.isStarted());
 	}
 	
 	@Test
@@ -134,7 +140,7 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		modulesToLoad.add(moduleToLoad);
 		ModuleFactory.loadModules(modulesToLoad);
 		
-		Assert.assertEquals(0, ModuleFactory.getLoadedModules().size());
+		assertEquals(0, ModuleFactory.getLoadedModules().size());
 	}
 	
 	@Test
@@ -144,15 +150,15 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		List<File> modulesToLoad = getModuleFiles();
 		
 		ModuleFactory.loadModules(modulesToLoad);
-		Assert.assertEquals(3, ModuleFactory.getLoadedModules().size());
+		assertEquals(3, ModuleFactory.getLoadedModules().size());
 		
 		Module test1 = ModuleFactory.getModuleById(MODULE1);
 		Module test2 = ModuleFactory.getModuleById(MODULE2);
 		Module test3 = ModuleFactory.getModuleById(MODULE3);
 		
-		Assert.assertEquals(0, test1.getRequiredModules().size());
-		Assert.assertEquals(1, test2.getRequiredModules().size());
-		Assert.assertEquals(1, test3.getRequiredModules().size());
+		assertEquals(0, test1.getRequiredModules().size());
+		assertEquals(1, test2.getRequiredModules().size());
+		assertEquals(1, test3.getRequiredModules().size());
 	}
 	
 	@Test
@@ -162,15 +168,15 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		List<File> modulesToLoad = getModuleFiles();
 		
 		ModuleFactory.loadModules(modulesToLoad);
-		Assert.assertEquals(3, ModuleFactory.getLoadedModules().size());
+		assertEquals(3, ModuleFactory.getLoadedModules().size());
 		
 		Module test1 = ModuleFactory.getModuleById(MODULE1);
 		Module test2 = ModuleFactory.getModuleById(MODULE2);
 		Module test3 = ModuleFactory.getModuleById(MODULE3);
 		
-		Assert.assertFalse(test1.isStarted());
-		Assert.assertFalse(test2.isStarted());
-		Assert.assertFalse(test3.isStarted());
+		assertFalse(test1.isStarted());
+		assertFalse(test2.isStarted());
+		assertFalse(test3.isStarted());
 	}
 	
 	private Module loadModule(String location, String moduleName, boolean replace) {

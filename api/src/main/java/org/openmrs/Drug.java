@@ -32,7 +32,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 /**
@@ -49,8 +48,7 @@ public class Drug extends BaseChangeableOpenmrsMetadata {
 	// Fields
 	@Id
 	@DocumentId
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_generator")
-	@SequenceGenerator(name = "id_generator", sequenceName = "drug_drug_id_seq")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "drug_id", updatable = false, nullable = false)
 	private Integer drugId;
 
@@ -320,7 +318,7 @@ public class Drug extends BaseChangeableOpenmrsMetadata {
 	 * Gets the doseLimitUnits which represents the units of the existing maximumDailyDose and
 	 * minimumDailyDose
 	 * 
-	 * @param Returns the doseLimitUnits.
+	 * @return the doseLimitUnits.
 	 * @since 2.3.0
 	 */
 	public Concept getDoseLimitUnits() {

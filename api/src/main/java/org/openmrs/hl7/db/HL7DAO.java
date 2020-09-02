@@ -49,7 +49,7 @@ public interface HL7DAO {
 	public List<HL7Source> getAllHL7Sources() throws DAOException;
 	
 	/**
-	 * @see org.openmrs.hl7.HL7Service#deleteHL7Source(org.openmrs.hl7.HL7Source)
+	 * @see org.openmrs.hl7.HL7Service#purgeHL7Source(org.openmrs.hl7.HL7Source)
 	 */
 	public void deleteHL7Source(HL7Source hl7Source) throws DAOException;
 	
@@ -81,7 +81,7 @@ public interface HL7DAO {
 	public HL7InQueue getNextHL7InQueue() throws DAOException;
 	
 	/**
-	 * @see org.openmrs.hl7.HL7Service#deleteHL7InQueue(org.openmrs.hl7.HL7InQueue)
+	 * @see org.openmrs.hl7.HL7Service#purgeHL7InQueue(org.openmrs.hl7.HL7InQueue)
 	 */
 	public void deleteHL7InQueue(HL7InQueue hl7InQueue) throws DAOException;
 	
@@ -150,7 +150,7 @@ public interface HL7DAO {
 	public List<HL7InArchive> getAllHL7InArchives(Integer maxResults);
 	
 	/**
-	 * @see org.openmrs.hl7.HL7Service#deleteHL7InArchive(org.openmrs.hl7.HL7InArchive)
+	 * @see org.openmrs.hl7.HL7Service#purgeHL7InArchive(org.openmrs.hl7.HL7InArchive)
 	 */
 	public void deleteHL7InArchive(HL7InArchive hl7InArchive) throws DAOException;
 	
@@ -182,7 +182,7 @@ public interface HL7DAO {
 	public List<HL7InError> getAllHL7InErrors() throws DAOException;
 	
 	/**
-	 * @see org.openmrs.hl7.HL7Service#deleteHL7InError(org.openmrs.hl7.HL7InError)
+	 * @see org.openmrs.hl7.HL7Service#purgeHL7InError(org.openmrs.hl7.HL7InError)
 	 */
 	public void deleteHL7InError(HL7InError hl7InError) throws DAOException;
 	
