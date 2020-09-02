@@ -9,6 +9,8 @@
  */
 package org.openmrs.layout.name;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,17 +18,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.PersonName;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 public class NameTemplateTest extends BaseContextSensitiveTest {
 	
 	private NameSupport nameSupport;
 	
-	@Before
+	@BeforeEach
 	public void setup() {
 		nameSupport = NameSupport.getInstance();
 		nameSupport.setSpecialTokens(Arrays.asList("prefix", "givenName", "middleName", "familyNamePrefix",
@@ -59,7 +60,7 @@ public class NameTemplateTest extends BaseContextSensitiveTest {
 		personName.setGivenName("Mark");
 		personName.setFamilyName("Goodrich");
 		
-		Assert.assertEquals("Mark Goodrich", nameTemplate.format(personName));
+		assertEquals("Mark Goodrich", nameTemplate.format(personName));
 		
 	}
 	
@@ -93,7 +94,7 @@ public class NameTemplateTest extends BaseContextSensitiveTest {
 		personName.setFamilyName("Goodrich");
 		personName.setMiddleName("Blue State");
 		
-		Assert.assertEquals("Goodrich, Mark \"Blue State\"", nameTemplate.format(personName));
+		assertEquals("Goodrich, Mark \"Blue State\"", nameTemplate.format(personName));
 		
 	}
 	

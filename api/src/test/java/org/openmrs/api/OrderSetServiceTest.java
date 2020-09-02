@@ -9,10 +9,14 @@
  */
 package org.openmrs.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,15 +24,15 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.OrderSet;
+import org.openmrs.OrderSetAttributeType;
 import org.openmrs.OrderSetMember;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.customdatatype.datatype.FreeTextDatatype;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	
@@ -40,8 +44,8 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
 	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
+	protected static final String ORDER_SET_ATTRIBUTES = "org/openmrs/api/include/OrderSetServiceTest-attributes.xml";
+	
 	
 	/**
 	 * Run this before each unit test in this class. The "@Before" method in
@@ -49,7 +53,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	 *
 	 * @throws Exception
 	 */
-	@Before
+	@BeforeEach
 	public void runBeforeAllTests() {
 		if (null == orderSetService) {
 			orderSetService = Context.getOrderSetService();
@@ -73,9 +77,8 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 		
 		List<OrderSet> orderSets = orderSetService.getOrderSets(false);
 		
-		assertEquals("A new order set was saved to the exisiting list of order sets", initialNumberOfOrderSets + 1,
-		    orderSets.size());
-		assertNotNull("OrderSet has a order_set_id", orderSetObj.getId());
+		assertEquals(initialNumberOfOrderSets + 1, orderSets.size(), "A new order set was saved to the exisiting list of order sets");
+		assertNotNull(orderSetObj.getId(), "OrderSet has a order_set_id");
 	}
 	
 	@Test
@@ -89,18 +92,18 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 		orderSetObj.setOperator(OrderSet.Operator.ONE);
 		orderSetObj.setDescription("Test Order Set Description Updated");
 		
-		assertNull("OrderSet is new and is not changed", orderSetObj.getChangedBy());
-		assertNull("OrderSet is new and has no change date", orderSetObj.getDateChanged());
+		assertNull(orderSetObj.getChangedBy(), "OrderSet is new and is not changed");
+		assertNull(orderSetObj.getDateChanged(), "OrderSet is new and has no change date");
 		
 		orderSetService.saveOrderSet(orderSetObj);
 		Context.flushSession();
 		
-		assertNotNull("OrderSet has a order_set_id", orderSetObj.getId());
-		assertEquals("OrderSet has updated description", "Test Order Set Description Updated", orderSetObj.getDescription());
-		assertEquals("OrderSet has updated operator", "ONE", orderSetObj.getOperator().toString());
+		assertNotNull(orderSetObj.getId(), "OrderSet has a order_set_id");
+		assertEquals("Test Order Set Description Updated", orderSetObj.getDescription(), "OrderSet has updated description");
+		assertEquals("ONE", orderSetObj.getOperator().toString(), "OrderSet has updated operator");
 		
-		assertNotNull("OrderSet has been changed", orderSetObj.getChangedBy());
-		assertNotNull("OrderSet has been changed on some date", orderSetObj.getDateChanged());
+		assertNotNull(orderSetObj.getChangedBy(), "OrderSet has been changed");
+		assertNotNull(orderSetObj.getDateChanged(), "OrderSet has been changed on some date");
 		
 	}
 	
@@ -109,11 +112,11 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(ORDER_SET);
 		OrderSet orderSet = orderSetService.getOrderSet(2001);
 		
-		assertEquals("OrderSet should contain orderSetmembers", 2, orderSet.getOrderSetMembers().size());
+		assertEquals(2, orderSet.getOrderSetMembers().size(), "OrderSet should contain orderSetmembers");
 		
 		OrderSet orderSet1 = orderSetService.getOrderSet(2000);
 		
-		assertEquals("OrderSet should not contain retired orderSetMembers", 2, orderSet1.getOrderSetMembers().size());
+		assertEquals(2, orderSet1.getOrderSetMembers().size(), "OrderSet should not contain retired orderSetMembers");
 	}
 	
 	@Test
@@ -150,9 +153,8 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 		
 		OrderSet savedOrderSet = Context.getOrderSetService().getOrderSetByUuid(orderSet.getUuid());
 		
-		assertEquals("Size of the orderSetMembers got updated", initialSize + 1, savedOrderSet.getOrderSetMembers().size());
-		assertEquals("New OrderSetMember got added at last position", newOrderSetMember.getUuid(), savedOrderSet
-		        .getOrderSetMembers().get(initialSize).getUuid());
+		assertEquals(initialSize + 1, savedOrderSet.getOrderSetMembers().size(), "Size of the orderSetMembers got updated");
+		assertEquals(newOrderSetMember.getUuid(), savedOrderSet.getOrderSetMembers().get(initialSize).getUuid(), "New OrderSetMember got added at last position");
 	}
 	
 	@Test
@@ -178,9 +180,8 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 		
 		OrderSet savedOrderSet = Context.getOrderSetService().getOrderSetByUuid(orderSet.getUuid());
 		
-		assertEquals("Size of the orderSetMembers got updated", initialSize + 1, savedOrderSet.getOrderSetMembers().size());
-		assertEquals("New OrderSetMember got added at given position", newOrderSetMember.getUuid(), savedOrderSet
-		        .getOrderSetMembers().get(position).getUuid());
+		assertEquals(initialSize + 1, savedOrderSet.getOrderSetMembers().size(), "Size of the orderSetMembers got updated");
+		assertEquals( newOrderSetMember.getUuid(), savedOrderSet.getOrderSetMembers().get(position).getUuid(), "New OrderSetMember got added at given position");
 		
 		Integer newPosition = savedOrderSet.getOrderSetMembers().size() + 1;
 		OrderSetMember orderSetMemberToBeAddedAtPosition = new OrderSetMember();
@@ -190,9 +191,8 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 		orderSetMemberToBeAddedAtPosition.setDateCreated(new Date());
 		orderSetMemberToBeAddedAtPosition.setRetired(false);
 		
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage("Cannot add a member which is out of range of the list");
-		orderSet.addOrderSetMember(orderSetMemberToBeAddedAtPosition, newPosition);
+		APIException exception = assertThrows(APIException.class, () -> orderSet.addOrderSetMember(orderSetMemberToBeAddedAtPosition, newPosition));
+		assertThat(exception.getMessage(), is("Cannot add a member which is out of range of the list"));
 	}
 	
 	@Test
@@ -260,9 +260,8 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 		
 		OrderSet savedOrderSet = Context.getOrderSetService().getOrderSetByUuid(orderSet.getUuid());
 		
-		assertEquals("Size of the orderSetMembers got updated", initialSize + 1, savedOrderSet.getOrderSetMembers().size());
-		assertEquals("New OrderSetMember got added at given position", newOrderSetMember.getUuid(), savedOrderSet
-		        .getOrderSetMembers().get(position + initialSize + 1).getUuid());
+		assertEquals(initialSize + 1, savedOrderSet.getOrderSetMembers().size(), "Size of the orderSetMembers got updated");
+		assertEquals(newOrderSetMember.getUuid(), savedOrderSet.getOrderSetMembers().get(position + initialSize + 1).getUuid(), "New OrderSetMember got added at given position");
 		
 	}
 
@@ -280,11 +279,11 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 		Context.flushSession();
 
 		OrderSet savedOrderSet = orderSetService.getOrderSetByUuid(orderSet.getUuid());
-		assertEquals("Count of orderSetMembers are not changed if we get all members", initialCountOfMembers, savedOrderSet.getOrderSetMembers().size());
+		assertEquals(initialCountOfMembers, savedOrderSet.getOrderSetMembers().size(), "Count of orderSetMembers are not changed if we get all members");
 
 		//Fetching the unRetired members
 		int finalSize = savedOrderSet.getUnRetiredOrderSetMembers().size();
-		assertEquals("Count of orderSetMembers gets modified if we filter out the retired members", initialCountOfMembers-1, finalSize);
+		assertEquals(initialCountOfMembers-1, finalSize, "Count of orderSetMembers gets modified if we filter out the retired members");
 	}
 
 	@Test
@@ -301,7 +300,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 		Context.flushSession();
 
 		OrderSet savedOrderSet = orderSetService.getOrderSetByUuid(orderSet.getUuid());
-		assertEquals("Count of orderSetMembers changes after removing a member from the orderSet", initialCountOfMembers-1, savedOrderSet.getOrderSetMembers().size());
+		assertEquals(initialCountOfMembers-1, savedOrderSet.getOrderSetMembers().size(), "Count of orderSetMembers changes after removing a member from the orderSet");
 	}
 
 	@Test
@@ -327,7 +326,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 		assertEquals(initialNumberOfOrderSets-1,numberOfOrderSetsAfterRetire);
 
 		OrderSet retiredOrderSet = orderSetService.getOrderSet(2001);
-		assertEquals(true, retiredOrderSet.getRetired());
+		assertTrue(retiredOrderSet.getRetired());
 
 		List<OrderSetMember> orderSetMembers = retiredOrderSet.getOrderSetMembers();
 		for (OrderSetMember orderSetMember : orderSetMembers) {
@@ -356,4 +355,125 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 		orderSet.setRetired(orderSetRetired);
 		return orderSet;
 	}
+	
+
+	/**
+	 * @see OrderSetService#getOrderSetAttributeByUuid(String)
+	 */
+	@Test
+	public void getOrderSetAttributeByUuid_shouldGetTheOrderSetAttributeWithTheGivenUuid() {
+		executeDataSet(ORDER_SET_ATTRIBUTES);
+		OrderSetService service = Context.getOrderSetService();
+		assertEquals("2011-04-25",service.getOrderSetAttributeByUuid("3a4bdb18-6faa-22e0-8414-001e376eb68e").getValueReference());
+	}
+
+	/**
+	 * @see OrderSetService#getOrderSetAttributeByUuid(String)
+	 */
+	@Test
+	public void getOrderSetAttributeByUuid_shouldReturnNullIfNoOrderSetAttributeHasTheGivenUuid() {
+		executeDataSet(ORDER_SET_ATTRIBUTES);
+		OrderSetService service = Context.getOrderSetService();
+		assertNull(service.getOrderSetAttributeByUuid("not-a-uuid"));
+	}
+
+	/**
+	 * @see OrderSetService#getOrderSetAttributeTypeByUuid(String)
+	 */
+	@Test
+	public void getOrderSetAttributeTypeByUuid_shouldReturnTheOrderSetAttributeTypeWithTheGivenUuid() {
+		executeDataSet(ORDER_SET_ATTRIBUTES);
+		assertEquals("Audit Date", Context.getOrderSetService().getOrderSetAttributeTypeByUuid(
+		    "8516cc50-6f9f-33e0-8414-001e648eb67e").getName());
+	}
+
+	/**
+	 * @see OrderSetService#getOrderSetAttributeTypeByUuid(String)
+	 */
+	@Test
+	public void getOrderSetAttributeTypeByUuid_shouldReturnNullIfNoOrderSetAttributeTypeExistsWithTheGivenUuid() {
+		executeDataSet(ORDER_SET_ATTRIBUTES);
+		assertNull(Context.getOrderSetService().getOrderSetAttributeTypeByUuid("not-a-uuid"));
+	}
+
+	/**
+	 * @see OrderSetService#purgeOrderSetAttributeType(OrderSetAttributeType)
+	 */
+	@Test
+	public void purgeOrderSetAttributeType_shouldCompletelyRemoveAOrderSetAttributeType() {
+		executeDataSet(ORDER_SET_ATTRIBUTES);
+		int initialOrderSetAttributeTypesCount = Context.getOrderSetService().getAllOrderSetAttributeTypes().size();
+		Context.getOrderSetService().purgeOrderSetAttributeType(Context.getOrderSetService().getOrderSetAttributeType(2));
+		assertEquals(initialOrderSetAttributeTypesCount - 1, Context.getOrderSetService().getAllOrderSetAttributeTypes().size());
+	}
+
+	/**
+	 * @see OrderSetService#retireOrderSetAttributeType(OrderSetAttributeType,String)
+	 */
+	@Test
+	public void retireOrderSetAttributeType_shouldRetireAOrderSetAttributeType() {
+		executeDataSet(ORDER_SET_ATTRIBUTES);
+		OrderSetAttributeType orderSetAttributeType = Context.getOrderSetService().getOrderSetAttributeType(1);
+		assertFalse(orderSetAttributeType.getRetired());
+		assertNull(orderSetAttributeType.getRetiredBy());
+		assertNull(orderSetAttributeType.getDateRetired());
+		assertNull(orderSetAttributeType.getRetireReason());
+		Context.getOrderSetService().retireOrderSetAttributeType(orderSetAttributeType, "for testing");
+		orderSetAttributeType = Context.getOrderSetService().getOrderSetAttributeType(1);
+		assertTrue(orderSetAttributeType.getRetired());
+		assertNotNull(orderSetAttributeType.getRetiredBy());
+		assertNotNull(orderSetAttributeType.getDateRetired());
+		assertEquals("for testing", orderSetAttributeType.getRetireReason());
+	}
+
+	/**
+	 * @see OrderSetService#saveOrderSetAttributeType(OrderSetAttributeType)
+	 */
+	@Test
+	public void saveOrderSetAttributeType_shouldCreateANewOrderSetAttributeType() {
+		executeDataSet(ORDER_SET_ATTRIBUTES);
+		int initialOrderSetAttributeTypesCount = Context.getOrderSetService().getAllOrderSetAttributeTypes().size();
+		OrderSetAttributeType orderSetAttributeType = new OrderSetAttributeType();
+		orderSetAttributeType.setName("Another one");
+		orderSetAttributeType.setDatatypeClassname(FreeTextDatatype.class.getName());
+		Context.getOrderSetService().saveOrderSetAttributeType(orderSetAttributeType);
+		assertNotNull(orderSetAttributeType.getId());
+		assertEquals(initialOrderSetAttributeTypesCount + 1, Context.getOrderSetService().getAllOrderSetAttributeTypes().size());
+	}
+
+	/**
+	 * @see OrderSetService#saveOrderSetAttributeType(OrderSetAttributeType)
+	 */
+	@Test
+	public void saveOrderSetAttributeType_shouldEditAnExistingOrderSetAttributeType() {
+		executeDataSet(ORDER_SET_ATTRIBUTES);
+		int initialOrderSetAttributeTypesCount = Context.getOrderSetService().getAllOrderSetAttributeTypes().size();
+		OrderSetService service = Context.getOrderSetService();
+		OrderSetAttributeType orderSetAttributeType = service.getOrderSetAttributeType(1);
+		orderSetAttributeType.setName("A new name");
+		service.saveOrderSetAttributeType(orderSetAttributeType);
+		assertEquals(initialOrderSetAttributeTypesCount, service.getAllOrderSetAttributeTypes().size());
+		assertEquals("A new name", service.getOrderSetAttributeType(1).getName());
+	}
+
+	/**
+	 * @see OrderSetService#unretireOrderSetAttributeType(OrderSetAttributeType)
+	 */
+	@Test
+	public void unretireOrderSetAttributeType_shouldUnretireARetiredOrderSetAttributeType() {
+		executeDataSet(ORDER_SET_ATTRIBUTES);
+		OrderSetService service = Context.getOrderSetService();
+		OrderSetAttributeType orderSetAttributeType = service.getOrderSetAttributeType(2);
+		assertTrue(orderSetAttributeType.getRetired());
+		assertNotNull(orderSetAttributeType.getDateRetired());
+		assertNotNull(orderSetAttributeType.getRetiredBy());
+		assertNotNull(orderSetAttributeType.getRetireReason());
+		service.unretireOrderSetAttributeType(orderSetAttributeType);
+		assertFalse(orderSetAttributeType.getRetired());
+		assertNull(orderSetAttributeType.getDateRetired());
+		assertNull(orderSetAttributeType.getRetiredBy());
+		assertNull(orderSetAttributeType.getRetireReason());
+	}
+
+
 }

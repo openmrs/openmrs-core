@@ -196,7 +196,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 	
 	/**
-	 * @see org.openmrs.api.ProgramWorkflowService#retireProgram(org.openmrs.Program)
+	 * @see org.openmrs.api.ProgramWorkflowService#retireProgram(org.openmrs.Program, java.lang.String)
 	 */
 	@Override
 	public Program retireProgram(Program program, String reason) throws APIException {
@@ -211,7 +211,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 	
 	/**
-	 * @see org.openmrs.api.ProgramWorkflowService#retireProgram(org.openmrs.Program)
+	 * @see org.openmrs.api.ProgramWorkflowService#unretireProgram(org.openmrs.Program)
 	 */
 	@Override
 	public Program unretireProgram(Program program) throws APIException {

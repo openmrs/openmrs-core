@@ -9,8 +9,10 @@
  */
 package org.openmrs.annotation;
 
-import org.junit.Test;
-import org.openmrs.test.BaseContextSensitiveTest;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.test.StartModule;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
@@ -19,8 +21,8 @@ public class OpenmrsProfileExcludeFilterWithModulesTest extends BaseContextSensi
 	/**
 	 * @see OpenmrsProfileExcludeFilter#match(org.springframework.core.type.classreading.MetadataReader, org.springframework.core.type.classreading.MetadataReaderFactory)
 	 */
-	@Test(expected = NoSuchBeanDefinitionException.class)
+	@Test
 	public void match_shouldNotIncludeBeanIfModuleIsStarted() {
-		applicationContext.getBean(OpenmrsProfileWithoutTest1Module.class);
+		assertThrows(NoSuchBeanDefinitionException.class, () -> applicationContext.getBean(OpenmrsProfileWithoutTest1Module.class));
 	}
 }

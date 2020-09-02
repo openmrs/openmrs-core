@@ -17,7 +17,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.util.Date;
 
@@ -35,8 +34,7 @@ public class Relationship extends BaseChangeableOpenmrsData {
 
 	@Id
 	@Column(name = "relationship_id", nullable = false, unique = true)
-	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "relationship_id_gen")
-	@SequenceGenerator(name = "relationship_id_gen", sequenceName = "relationship_relationship_id_seq")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer relationshipId;
 
 	@ManyToOne

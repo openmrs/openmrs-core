@@ -9,7 +9,7 @@
  */
 package org.openmrs.propertyeditor;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.openmrs.ConceptAttributeType;
 import org.openmrs.api.ConceptService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class ConceptAttributeTypeEditorTest extends BasePropertyEditorTest<Conce
 	@Autowired
 	private ConceptService conceptService;
 	
-	@Before
+	@BeforeEach
 	public void initializeDb() {
 		executeDataSet(DATA);
 	}

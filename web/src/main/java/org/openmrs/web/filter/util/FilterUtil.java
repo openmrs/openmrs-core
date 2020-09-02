@@ -130,7 +130,7 @@ public class FilterUtil {
 	 */
 	public static String readSystemDefaultLocale(Connection connection) {
 		String systemDefaultLocale = null;
-		Boolean needToCloseConection = false;
+		boolean needToCloseConection = false;
 		try {
 			if (connection == null) {
 				connection = DatabaseUpdater.getConnection();
