@@ -36,7 +36,7 @@ public class ConceptDatatype extends BaseOpenmrsDatatype<Concept> {
 	}
 	
 	/**
-	 * @see BaseOpenmrsDatatype#doGetTextSummary(Object)
+	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#doGetTextSummary(Object)
 	 * <strong>Should</strong> use the name in summary instance
 	 */
 	@Override

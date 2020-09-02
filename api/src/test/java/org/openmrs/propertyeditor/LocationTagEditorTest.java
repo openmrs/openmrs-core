@@ -9,7 +9,7 @@
  */
 package org.openmrs.propertyeditor;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.openmrs.LocationTag;
 import org.openmrs.api.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class LocationTagEditorTest extends BasePropertyEditorTest<LocationTag, L
 	@Autowired
 	private LocationService locationService;
 	
-	@Before
+	@BeforeEach
 	public void prepareData() {
 		executeDataSet(LOC_INITIAL_DATA_XML);
 	}

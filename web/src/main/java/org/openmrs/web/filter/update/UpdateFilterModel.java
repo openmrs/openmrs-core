@@ -11,7 +11,6 @@ package org.openmrs.web.filter.update;
 
 import java.util.List;
 import org.openmrs.liquibase.LiquibaseProvider;
-import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.DatabaseUpdater.OpenMRSChangeSet;
 import org.openmrs.util.DatabaseUpdaterLiquibaseProvider;
 import org.openmrs.web.filter.StartupFilter;
@@ -33,11 +32,13 @@ public class UpdateFilterModel {
 	
 	private LiquibaseProvider liquibaseProvider;
 	
+	private DatabaseUpdaterWrapper databaseUpdaterWrapper;
+	
 	/**
 	 * Default constructor that sets up some of the properties
 	 */
 	public UpdateFilterModel() {
-		this(new DatabaseUpdaterLiquibaseProvider());
+		this(new DatabaseUpdaterLiquibaseProvider(), new DatabaseUpdaterWrapper());
 		log.debug("executing default constructor...");
 	}
 	
@@ -46,9 +47,10 @@ public class UpdateFilterModel {
 	 * 
 	 * @param liquibaseProvider a Liquibase provider
 	 */
-	public UpdateFilterModel(LiquibaseProvider liquibaseProvider) {
+	public UpdateFilterModel(LiquibaseProvider liquibaseProvider, DatabaseUpdaterWrapper databaseUpdaterWrapper) {
 		log.debug("executing non-default constructor...");
 		this.liquibaseProvider = liquibaseProvider;
+		this.databaseUpdaterWrapper = databaseUpdaterWrapper;
 		
 		updateChanges();
 		
@@ -56,7 +58,7 @@ public class UpdateFilterModel {
 			if (changes != null && !changes.isEmpty()) {
 				updateRequired = true;
 			} else {
-				updateRequired = DatabaseUpdater.updatesRequired();
+				updateRequired = databaseUpdaterWrapper.updatesRequired();
 			}
 		}
 		catch (Exception e) {
@@ -71,11 +73,11 @@ public class UpdateFilterModel {
 	public void updateChanges() {
 		log.debug("executing updateChanges()...");
 		try {
-			changes = DatabaseUpdater.getUnrunDatabaseChanges(liquibaseProvider);
+			changes = databaseUpdaterWrapper.getUnrunDatabaseChanges(liquibaseProvider);
 			
 			// not sure why this is necessary...
-			if (changes == null && DatabaseUpdater.isLocked()) {
-				changes = DatabaseUpdater.getUnrunDatabaseChanges(liquibaseProvider);
+			if (changes == null && databaseUpdaterWrapper.isLocked()) {
+				changes = databaseUpdaterWrapper.getUnrunDatabaseChanges(liquibaseProvider);
 			}
 		}
 		catch (Exception e) {

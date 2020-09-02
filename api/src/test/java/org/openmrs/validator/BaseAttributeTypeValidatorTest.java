@@ -9,15 +9,17 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.VisitAttributeType;
 import org.openmrs.customdatatype.datatype.RegexValidatedTextDatatype;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 
 /**
@@ -31,7 +33,7 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	
 	private BindException errors;
 	
-	@Before
+	@BeforeEach
 	public void before() {
 		validator = new CustomVisitAttributeTypeValidator();
 		attributeType = new VisitAttributeType();
@@ -55,8 +57,8 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validate(null, errors);
 		
-		Assert.assertTrue(errors.hasErrors());
-		Assert.assertEquals("error.general", errors.getAllErrors().get(0).getCode());
+		assertTrue(errors.hasErrors());
+		assertEquals("error.general", errors.getAllErrors().get(0).getCode());
 	}
 	
 	@Test
@@ -64,7 +66,7 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validate(attributeType, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 		assertThat(errors.getFieldErrors("name").get(0).getCode(), is("error.name"));
 	}
 	
@@ -75,7 +77,7 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validate(attributeType, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 		assertThat(errors.getFieldErrors("name").get(0).getCode(), is("error.name"));
 	}
 
@@ -86,7 +88,7 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validate(attributeType, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 		assertThat(errors.getFieldErrors("name").get(0).getCode(), is("error.name"));
 	}
 	
@@ -97,7 +99,7 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validate(attributeType, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("minOccurs"));
+		assertTrue(errors.hasFieldErrors("minOccurs"));
 		assertThat(errors.getFieldErrors("minOccurs").get(0).getCode(), is("error.null"));
 	}
 	
@@ -108,7 +110,7 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validate(attributeType, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("minOccurs"));
+		assertTrue(errors.hasFieldErrors("minOccurs"));
 		assertThat(errors.getFieldErrors("minOccurs").get(0).getCode(),
 		    is("AttributeType.minOccursShouldNotBeLessThanZero"));
 	}
@@ -120,7 +122,7 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validate(attributeType, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("maxOccurs"));
+		assertTrue(errors.hasFieldErrors("maxOccurs"));
 		assertThat(errors.getFieldErrors("maxOccurs").get(0).getCode(), is("AttributeType.maxOccursShouldNotBeLessThanOne"));
 	}
 	
@@ -132,7 +134,7 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validate(attributeType, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("maxOccurs"));
+		assertTrue(errors.hasFieldErrors("maxOccurs"));
 		assertThat(errors.getFieldErrors("maxOccurs").get(0).getCode(),
 		    is("AttributeType.maxOccursShouldNotBeLessThanMinOccurs"));
 	}
@@ -142,7 +144,7 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validate(attributeType, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("datatypeClassname"));
+		assertTrue(errors.hasFieldErrors("datatypeClassname"));
 		assertThat(errors.getFieldErrors("datatypeClassname").get(0).getCode(), is("error.null"));
 	}
 	
@@ -154,7 +156,7 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validate(attributeType, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("datatypeConfig"));
+		assertTrue(errors.hasFieldErrors("datatypeConfig"));
 		assertThat(errors.getFieldErrors("datatypeConfig").get(0).getCode(), is("error.null"));
 	}
 	
@@ -166,7 +168,7 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validate(attributeType, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("datatypeConfig"));
+		assertTrue(errors.hasFieldErrors("datatypeConfig"));
 		assertThat(errors.getFieldErrors("datatypeConfig").get(0).getCode(), is("AttributeType.datatypeConfig.invalid"));
 	}
 
@@ -179,7 +181,7 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validate(attributeType, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("preferredHandlerClassname"));
+		assertTrue(errors.hasFieldErrors("preferredHandlerClassname"));
 		assertThat(errors.getFieldErrors("preferredHandlerClassname").get(0).getCode(),
 		    is("AttributeType.preferredHandlerClassname.wrongDatatype"));
 	}
@@ -193,7 +195,7 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validate(attributeType, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("handlerConfig"));
+		assertTrue(errors.hasFieldErrors("handlerConfig"));
 		assertThat(errors.getFieldErrors("handlerConfig").get(0).getCode(),
 		    is("AttributeType.handlerConfig.invalid"));
 	}
@@ -209,8 +211,8 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validate(attributeType, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("datatypeConfig"));
-		Assert.assertTrue(errors.hasFieldErrors("handlerConfig"));
+		assertTrue(errors.hasFieldErrors("datatypeConfig"));
+		assertTrue(errors.hasFieldErrors("handlerConfig"));
 	}
 	
 	@Test
@@ -224,7 +226,7 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validate(attributeType, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	@Test
@@ -237,6 +239,6 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validate(attributeType, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 }

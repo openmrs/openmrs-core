@@ -9,10 +9,12 @@
  */
 package org.openmrs.validator;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 import org.openmrs.Location;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -32,8 +34,8 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(location, "location");
 		new LocationValidator().validate(location, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("name"));
-		Assert.assertFalse(errors.hasFieldErrors("description"));
+		assertTrue(errors.hasFieldErrors("name"));
+		assertFalse(errors.hasFieldErrors("description"));
 	}
 	
 	/**
@@ -48,7 +50,7 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(location, "location");
 		new LocationValidator().validate(location, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+		assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 	
 	/**
@@ -63,7 +65,7 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(location, "location");
 		new LocationValidator().validate(location, errors);
 		
-		Assert.assertFalse(location.getRetired());
+		assertFalse(location.getRetired());
 	}
 	
 	/**
@@ -78,7 +80,7 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(location, "location");
 		new LocationValidator().validate(location, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -95,7 +97,7 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(location, "location");
 		new LocationValidator().validate(location, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -116,7 +118,7 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(location1, "location");
 		new LocationValidator().validate(location1, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("parentLocation"));
+		assertTrue(errors.hasFieldErrors("parentLocation"));
 	}
 	
 	/**
@@ -131,7 +133,7 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(location, "location");
 		new LocationValidator().validate(location, errors);
 		
-		Assert.assertTrue(errors.hasErrors());
+		assertTrue(errors.hasErrors());
 	}
 	
 	/**
@@ -160,7 +162,7 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(location, "location");
 		new LocationValidator().validate(location, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -199,30 +201,30 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(location, "location");
 		new LocationValidator().validate(location, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("name"));
-		Assert.assertTrue(errors.hasFieldErrors("description"));
-		Assert.assertTrue(errors.hasFieldErrors("address1"));
-		Assert.assertTrue(errors.hasFieldErrors("address2"));
-		Assert.assertTrue(errors.hasFieldErrors("address3"));
-		Assert.assertTrue(errors.hasFieldErrors("address4"));
-		Assert.assertTrue(errors.hasFieldErrors("address5"));
-		Assert.assertTrue(errors.hasFieldErrors("address6"));
-		Assert.assertTrue(errors.hasFieldErrors("address7"));
-		Assert.assertTrue(errors.hasFieldErrors("address8"));
-		Assert.assertTrue(errors.hasFieldErrors("address9"));
-		Assert.assertTrue(errors.hasFieldErrors("address10"));
-		Assert.assertTrue(errors.hasFieldErrors("address11"));
-		Assert.assertTrue(errors.hasFieldErrors("address12"));
-		Assert.assertTrue(errors.hasFieldErrors("address13"));
-		Assert.assertTrue(errors.hasFieldErrors("address14"));
-		Assert.assertTrue(errors.hasFieldErrors("address15"));
-		Assert.assertTrue(errors.hasFieldErrors("cityVillage"));
-		Assert.assertTrue(errors.hasFieldErrors("stateProvince"));
-		Assert.assertTrue(errors.hasFieldErrors("country"));
-		Assert.assertTrue(errors.hasFieldErrors("postalCode"));
-		Assert.assertTrue(errors.hasFieldErrors("latitude"));
-		Assert.assertTrue(errors.hasFieldErrors("longitude"));
-		Assert.assertTrue(errors.hasFieldErrors("countyDistrict"));
-		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+		assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("description"));
+		assertTrue(errors.hasFieldErrors("address1"));
+		assertTrue(errors.hasFieldErrors("address2"));
+		assertTrue(errors.hasFieldErrors("address3"));
+		assertTrue(errors.hasFieldErrors("address4"));
+		assertTrue(errors.hasFieldErrors("address5"));
+		assertTrue(errors.hasFieldErrors("address6"));
+		assertTrue(errors.hasFieldErrors("address7"));
+		assertTrue(errors.hasFieldErrors("address8"));
+		assertTrue(errors.hasFieldErrors("address9"));
+		assertTrue(errors.hasFieldErrors("address10"));
+		assertTrue(errors.hasFieldErrors("address11"));
+		assertTrue(errors.hasFieldErrors("address12"));
+		assertTrue(errors.hasFieldErrors("address13"));
+		assertTrue(errors.hasFieldErrors("address14"));
+		assertTrue(errors.hasFieldErrors("address15"));
+		assertTrue(errors.hasFieldErrors("cityVillage"));
+		assertTrue(errors.hasFieldErrors("stateProvince"));
+		assertTrue(errors.hasFieldErrors("country"));
+		assertTrue(errors.hasFieldErrors("postalCode"));
+		assertTrue(errors.hasFieldErrors("latitude"));
+		assertTrue(errors.hasFieldErrors("longitude"));
+		assertTrue(errors.hasFieldErrors("countyDistrict"));
+		assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 }

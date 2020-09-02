@@ -9,13 +9,13 @@
  */
 package org.openmrs.util;
 
-import org.junit.Test;
-
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.openmrs.util.NaturalStrings.compareNatural;
 import static org.openmrs.util.NaturalStrings.compareNaturalAscii;
 import static org.openmrs.util.NaturalStrings.compareNaturalIgnoreCaseAscii;
+
+import org.junit.jupiter.api.Test;
 
 public class NaturalStringsTest {
 

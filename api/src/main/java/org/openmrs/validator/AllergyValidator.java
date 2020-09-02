@@ -15,7 +15,7 @@ import org.openmrs.Allergies;
 import org.openmrs.Allergy;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.PatientService;
-import org.openmrs.api.context.Context;
+import org.openmrs.messagesource.MessageSourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -25,6 +25,9 @@ import org.springframework.validation.Validator;
 @Component("allergyValidator")
 @Handler(supports = { Allergy.class }, order = 50)
 public class AllergyValidator implements Validator {
+	
+	@Autowired
+	private MessageSourceService messageSourceService;
 	
 	@Autowired
 	private PatientService patientService;
@@ -77,7 +80,7 @@ public class AllergyValidator implements Validator {
 				Allergies existingAllergies = patientService.getAllergies(allergy.getPatient());
 				if (existingAllergies.containsAllergen(allergy)) {
 					String key = "ui.i18n.Concept.name." + allergen.getCodedAllergen().getUuid();
-					String name = Context.getMessageSourceService().getMessage(key);
+					String name = messageSourceService.getMessage(key);
 					if (key.equals(name)) {
 						name = allergen.toString();
 					}

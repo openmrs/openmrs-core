@@ -9,8 +9,9 @@
  */
 package org.openmrs.api;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.attribute.handler.DateDatatypeHandler;
 import org.openmrs.attribute.handler.LocationDatatypeHandler;
@@ -18,7 +19,7 @@ import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.datatype.DateDatatype;
 import org.openmrs.customdatatype.datatype.LocationDatatype;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 public class DatatypeServiceTest extends BaseContextSensitiveTest {
 	
@@ -29,7 +30,7 @@ public class DatatypeServiceTest extends BaseContextSensitiveTest {
 	public void getHandler_shouldReturnAHandlerForTheSpecifiedDatatype() {
 		DatatypeService service = Context.getDatatypeService();
 		CustomDatatype dateDatatype = CustomDatatypeUtil.getDatatype(DateDatatype.class.getName(), null);
-		Assert.assertEquals(DateDatatypeHandler.class, service.getHandler(dateDatatype, null).getClass());
+		assertEquals(DateDatatypeHandler.class, service.getHandler(dateDatatype, null).getClass());
 	}
 	
 	/**
@@ -39,6 +40,6 @@ public class DatatypeServiceTest extends BaseContextSensitiveTest {
 	public void getHandler_shouldReturnAHandlerForADatatypeThatExtendsAGenericSuperclass() {
 		DatatypeService service = Context.getDatatypeService();
 		CustomDatatype locationDatatype = CustomDatatypeUtil.getDatatype(LocationDatatype.class.getName(), null);
-		Assert.assertEquals(LocationDatatypeHandler.class, service.getHandler(locationDatatype, null).getClass());
+		assertEquals(LocationDatatypeHandler.class, service.getHandler(locationDatatype, null).getClass());
 	}
 }

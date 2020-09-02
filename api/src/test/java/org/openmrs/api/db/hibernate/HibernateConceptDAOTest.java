@@ -9,15 +9,15 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 import java.util.Locale;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAttributeType;
 import org.openmrs.ConceptClass;
@@ -26,7 +26,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.Drug;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
@@ -37,7 +37,7 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	@Autowired
 	private HibernateConceptDAO dao;
 	
-	@Before
+	@BeforeEach
 	public void setUp() {
 		executeDataSet(PROVIDERS_INITIAL_XML);
 		
@@ -55,7 +55,7 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 		// Drug_name as "COUGH" so return two distinct drugs that means search
 		// either drug name or concept name match the phase
 		List<Drug> drugList = dao.getDrugs("COUGH", concept, true, true, false, 0, 10);
-		Assert.assertEquals(2, drugList.size());
+		assertEquals(2, drugList.size());
 	}
 	
 	/**
@@ -66,7 +66,7 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 		Concept concept1 = dao.getConcept(14);
 		
 		List<Drug> drugList = dao.getDrugs("TEST_DRUG", concept1, true, true, false, 0, 10);
-		Assert.assertEquals(1, drugList.size());
+		assertEquals(1, drugList.size());
 		
 	}
 	
@@ -76,10 +76,10 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void getDrugs_shouldReturnDrugIf_EitherDrugNameIsUpperOrLowerCase() {
 		List<Drug> drugList1 = dao.getDrugs("Triomune-30", null, true);
-		Assert.assertEquals(1, drugList1.size());
+		assertEquals(1, drugList1.size());
 		
 		List<Drug> drugList2 = dao.getDrugs("triomune-30", null, true);
-		Assert.assertEquals(1, drugList2.size());
+		assertEquals(1, drugList2.size());
 		
 	}
 	
@@ -95,7 +95,7 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 		// Drug name match with "Trimonue" so no need to match both drug_name
 		// and the concept_name to find drug
 		List<Drug> drugList = dao.getDrugs("Triomune", concept2, true, true, false, 0, 10);
-		Assert.assertEquals(1, drugList.size());
+		assertEquals(1, drugList.size());
 		
 	}
 	
@@ -110,7 +110,7 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 		//match with "VOIDED" so this prove no need to match both drug_name and the
 		//concept_name
 		List<Drug> drugList = dao.getDrugs("VOIDED", concept4, true, true, false, 0, 10);
-		Assert.assertEquals(1, drugList.size());
+		assertEquals(1, drugList.size());
 		
 	}
 	
@@ -121,7 +121,7 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	public void getDrugs_shouldReturnDrugWhenPhraseMatchDrugNameEvenSerchDrugConceeptNameIsfalse() {
 		
 		List<Drug> drugList = dao.getDrugs("Triomune-30", null, true, false, false, 0, 10);
-		Assert.assertEquals(1, drugList.size());
+		assertEquals(1, drugList.size());
 		
 	}
 	
@@ -132,7 +132,7 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	public void getDrugs_shouldNotReturnRetired() {
 		
 		List<Drug> drugList = dao.getDrugs("TEST_DRUG_NAME_RETIRED");
-		Assert.assertEquals(0, drugList.size());
+		assertEquals(0, drugList.size());
 		
 	}
 	
@@ -143,14 +143,14 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	public void getDrugs_shouldReturnNonRetired() {
 		
 		List<Drug> drugList = dao.getDrugs("TEST_DRUG_NAME");
-		Assert.assertEquals(1, drugList.size());
+		assertEquals(1, drugList.size());
 		
 	}
 
 	@Test
 	public void getDrugs_shouldReturnDrugEvenIf_DrugNameHasSpecialCharacters() {
 		List<Drug> drugList1 = dao.getDrugs("DRUG_NAME_WITH_SPECIAL_CHARACTERS (", null, true);
-		Assert.assertEquals(1, drugList1.size());
+		assertEquals(1, drugList1.size());
 
 	}
 
@@ -161,8 +161,8 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	public void shouldGetConceptAttributeCountForAttributeType() {
 		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
 		ConceptAttributeType conceptAttributeType = Context.getConceptService().getConceptAttributeType(1);
-		Assert.assertEquals(1, dao.getConceptAttributeCount(conceptAttributeType));
-		Assert.assertEquals(0, dao.getConceptAttributeCount(null));
+		assertEquals(1, dao.getConceptAttributeCount(conceptAttributeType));
+		assertEquals(0, dao.getConceptAttributeCount(null));
 	}
 
 	@Test //TRUNK-4967

@@ -44,7 +44,7 @@ public class NameTemplate extends LayoutTemplate {
 		try {
 			for (List<Map<String, String>> line : lines) {
 				StringBuilder nameLine = new StringBuilder();
-				Boolean hasToken = false;
+				boolean hasToken = false;
 				for (Map<String, String> lineToken : line) {
 					if (lineToken.get("isToken").equals(layoutToken)) {
 						String tokenValue = BeanUtils.getProperty(personName, lineToken.get("codeName"));

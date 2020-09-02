@@ -40,9 +40,8 @@ public class Form extends BaseChangeableOpenmrsMetadata {
 	
 	// Fields
 	@Id
-	@Column(name = "form_id", nullable = false)
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "form_id_gen")
-	@SequenceGenerator(name = "form_id_gen", sequenceName = "form_form_id_seq")
+	@Column(name = "form_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer formId;
 	
 	@Column(name = "version", length = 50, nullable = false)

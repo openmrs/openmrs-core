@@ -10,16 +10,21 @@
 package org.openmrs.util;
 
 import java.io.Serializable;
+import java.lang.ref.SoftReference;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
-import org.apache.commons.collections.buffer.CircularFifoBuffer;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Core;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.StringLayout;
 import org.apache.logging.log4j.core.appender.AbstractAppender;
 import org.apache.logging.log4j.core.config.Property;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
@@ -29,35 +34,35 @@ import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 
 /**
  * This class stores a configurable number lines of the output from the log file.
+ *
+ * Note that this class is implemented as a single-buffer-per-appender-name meaning that each appender name can only support
+ * a single configuration (the most recent applied)
  */
 @Plugin(name = "Memory", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE)
 public class MemoryAppender extends AbstractAppender {
-	
-	private CircularFifoBuffer buffer;
-	
+
+	// we store the MemoryAppenders by name, using SoftReferences to allow them to be garbage collected
+	// as an implementation detail, we expect this class to only have a single instance, so our map
+	// is only allocated an initial capacity of 1
+	private final static Map<String, SoftReference<MemoryAppender>> APPENDERS = new HashMap<>(1);
+
+	private ThreadSafeCircularFifoQueue<LogEvent> buffer;
+
 	private int bufferSize;
-	
-	public static class MemoryAppenderBuilder extends AbstractAppender.Builder<MemoryAppenderBuilder> {
-		private int bufferSize = 100;
-		
-		public MemoryAppenderBuilder setBufferSize(int bufferSize) {
-			if (bufferSize < 0) {
-				throw new IllegalArgumentException("bufferSize must be a positive number or 0");
-			}
-			
-			this.bufferSize = bufferSize;
-			return asBuilder();
-		}
-		
-		public MemoryAppender build() {
-			return new MemoryAppender(getName(), getFilter(), getLayout(), isIgnoreExceptions(), getPropertyArray(), bufferSize);
-		}
+
+	private MemoryAppender(String name, Filter filter,
+		StringLayout layout, boolean ignoreExceptions,
+		Property[] properties, int bufferSize) {
+		super(name, filter, layout, ignoreExceptions, properties);
+
+		this.buffer = new ThreadSafeCircularFifoQueue<>(bufferSize);
+		this.bufferSize = bufferSize;
 	}
-	
+
 	public static MemoryAppenderBuilder newBuilder() {
 		return new MemoryAppenderBuilder();
 	}
-	
+
 	@PluginFactory
 	@SuppressWarnings("unused")
 	protected static MemoryAppender createAppender(
@@ -65,57 +70,84 @@ public class MemoryAppender extends AbstractAppender {
 		@PluginAttribute("bufferSize") final int bufferSize,
 		@PluginAttribute(value = "ignoreExceptions", defaultBoolean = true) final boolean ignoreExceptions,
 		@PluginElement("Filter") final Filter filter,
-		@PluginElement("Layout") final Layout<? extends Serializable> layout
+		@PluginElement("Layout") final StringLayout layout
 	) {
-		return new MemoryAppender(name, filter, layout, ignoreExceptions, null,
-			bufferSize <= 0 ? 100 : bufferSize);
-	}
-	
-	private MemoryAppender(String name, Filter filter,
-		Layout<? extends Serializable> layout, boolean ignoreExceptions,
-		Property[] properties, int bufferSize) {
-		super(name, filter, layout, ignoreExceptions, properties);
-		this.bufferSize = bufferSize;
+		final int theBufferSize = bufferSize <= 0 ? 100 : bufferSize;
+		MemoryAppender appender = null;
+		if (APPENDERS.containsKey(name)) {
+			appender = APPENDERS.get(name).get();
+
+			if (appender != null) {
+				if (appender.bufferSize != theBufferSize) {
+					ThreadSafeCircularFifoQueue<LogEvent> oldBuffer = appender.buffer;
+					appender.buffer = new ThreadSafeCircularFifoQueue<>(theBufferSize);
+					appender.bufferSize = theBufferSize;
+					appender.buffer.addAll(oldBuffer);
+				}
+			}
+		}
+
+		if (appender == null) {
+			appender = new MemoryAppender(name, filter, layout, ignoreExceptions, null, theBufferSize);
+			APPENDERS.put(name, new SoftReference<>(appender));
+		}
+
+		return appender;
 	}
 
 	@Override
 	public void append(LogEvent logEvent) {
-		if (buffer != null) {
-			// log4j2 reuses events when possible, so we need an immutable copy to store
-			logEvent = logEvent.toImmutable();
-			buffer.add(logEvent);
-		}
+		buffer.add(logEvent.toImmutable());
 	}
 
-	@Override
-	public void start() {
-		this.buffer = new CircularFifoBuffer(bufferSize);
-		super.start();
-	}
-
-	@Override
-	protected boolean stop(long timeout, TimeUnit timeUnit, boolean changeLifeCycleState) {
-		buffer.clear();
-		return super.stop(timeout, timeUnit, changeLifeCycleState);
-	}
-	
 	public List<String> getLogLines() {
 		if (buffer == null) {
-			return new ArrayList<>();
+			return new ArrayList<>(0);
 		}
-		
-		List<String> logLines = new ArrayList<>(buffer.size());
-		Layout<? extends Serializable> layout = this.getLayout();
-		for (Object aBuffer : buffer) {
-			LogEvent logEvent = (LogEvent) aBuffer;
-			logLines.add((String) layout.toSerializable(logEvent));
-		}
-		return logLines;
+
+		LogEvent[] events = buffer.toArray(new LogEvent[0]);
+		return Arrays.stream(events).filter(Objects::nonNull).map(((StringLayout) getLayout())::toSerializable)
+			.collect(Collectors.toList());
 	}
-	
-	@SuppressWarnings("unused")
-	public int getBufferSize() {
-		return bufferSize;
+
+	public static class MemoryAppenderBuilder extends AbstractAppender.Builder<MemoryAppenderBuilder> {
+
+		private int bufferSize = 100;
+
+		private StringLayout layout;
+
+		public MemoryAppenderBuilder setBufferSize(int bufferSize) {
+			if (bufferSize < 0) {
+				throw new IllegalArgumentException("bufferSize must be a positive number or 0");
+			}
+
+			this.bufferSize = bufferSize;
+			return asBuilder();
+		}
+
+		@Override
+		public Layout<? extends Serializable> getLayout() {
+			return layout;
+		}
+
+		@Override
+		public MemoryAppenderBuilder setLayout(Layout<? extends Serializable> layout) {
+			if (layout instanceof StringLayout) {
+				return setLayout((StringLayout) layout);
+			}
+
+			throw new IllegalArgumentException("MemoryAppender layouts must output string values");
+		}
+
+		public MemoryAppenderBuilder setLayout(StringLayout layout) {
+			this.layout = layout;
+			return asBuilder();
+		}
+
+		public MemoryAppender build() {
+			return new MemoryAppender(getName(), getFilter(), layout, isIgnoreExceptions(), getPropertyArray(),
+				bufferSize);
+		}
 	}
 
 }

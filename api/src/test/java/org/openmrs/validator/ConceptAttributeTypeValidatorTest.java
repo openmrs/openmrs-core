@@ -9,18 +9,20 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.ConceptAttributeType;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -44,7 +46,7 @@ public class ConceptAttributeTypeValidatorTest extends BaseContextSensitiveTest 
 	 *
 	 * @throws Exception
 	 */
-	@Before
+	@BeforeEach
 	public void setUp() {
 		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
 		
@@ -61,7 +63,7 @@ public class ConceptAttributeTypeValidatorTest extends BaseContextSensitiveTest 
 		
 		validator.validate(type, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 		assertThat(errors.getFieldErrors("name").get(0).getCode(), is("error.name"));
 	}
 	
@@ -73,7 +75,7 @@ public class ConceptAttributeTypeValidatorTest extends BaseContextSensitiveTest 
 		
 		validator.validate(type, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 		assertThat(errors.getFieldErrors("name").get(0).getCode(), is("error.name"));
 	}
 	
@@ -85,7 +87,7 @@ public class ConceptAttributeTypeValidatorTest extends BaseContextSensitiveTest 
 		
 		validator.validate(type, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 		assertThat(errors.getFieldErrors("name").get(0).getCode(), is("error.name"));
 	}
 	
@@ -95,13 +97,13 @@ public class ConceptAttributeTypeValidatorTest extends BaseContextSensitiveTest 
 	@Test
 	public void validate_shouldFailIfConceptAttributeTypeNameIsDuplicate() {
 		
-		Assert.assertNotNull(Context.getConceptService().getConceptAttributeTypeByName("Audit Date"));
+		assertNotNull(Context.getConceptService().getConceptAttributeTypeByName("Audit Date"));
 		type.setName("Audit Date");
 		type.setDatatypeClassname("org.openmrs.customdatatype.datatype.FreeTextDatatype");
 		
 		validator.validate(type, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 		assertThat(errors.getFieldErrors("name").get(0).getCode(), is("ConceptAttributeType.error.nameAlreadyInUse"));
 	}
 	
@@ -112,12 +114,12 @@ public class ConceptAttributeTypeValidatorTest extends BaseContextSensitiveTest 
 	public void validate_shouldPassEditingConceptAttributeTypeName() {
 		
 		ConceptAttributeType et = Context.getConceptService().getConceptAttributeTypeByName("Audit Date");
-		Assert.assertNotNull(et);
+		assertNotNull(et);
 		Errors errors = new BindException(et, "conceptAttributeType");
 		
 		validator.validate(et, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -151,7 +153,7 @@ public class ConceptAttributeTypeValidatorTest extends BaseContextSensitiveTest 
 		
 		validator.validate(type, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	@Test
@@ -162,11 +164,11 @@ public class ConceptAttributeTypeValidatorTest extends BaseContextSensitiveTest 
 		
 		validator.validate(type, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	private void assertThatFieldExceedsMaxLength(String field) {
-		Assert.assertTrue(String.format("Field '%s' has error(s)", field), errors.hasFieldErrors(field));
+		assertTrue(errors.hasFieldErrors(field), String.format("Field '%s' has error(s)", field));
 		assertThat(errors.getFieldErrors(field).get(0).getCode(), is("error.exceededMaxLengthOfField"));
 	}
 }
