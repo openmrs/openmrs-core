@@ -80,6 +80,7 @@ import org.openmrs.SimpleDosingInstructions;
 import org.openmrs.TestOrder;
 import org.openmrs.Visit;
 import org.openmrs.VisitAttributeType;
+import org.openmrs.api.builder.DrugOrderBuilder;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.HibernateAdministrationDAO;
@@ -3750,5 +3751,57 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.build();
 		APIException exception = assertThrows(APIException.class, () -> secondSavedOrderGroup.addOrder(newOrderWithInvalidPosition, secondSavedOrderGroup.getOrders().size() + 1));
 		assertThat(exception.getMessage(), is("Cannot add a member which is out of range of the list"));
+	}
+
+	/**
+	 * @see OrderService#saveOrder(Order, OrderContext)
+	 */
+	@Test
+	public void saveOrderGroup_shouldFailValidationIfAnyOrdersFailValidation() {
+		executeDataSet(ORDER_SET);
+
+		Encounter encounter = encounterService.getEncounter(3);
+		OrderContext context = new OrderContext();
+		
+		// First we confirm that saving a Drug Order on it's own with missing required fields will fail validation
+
+		DrugOrder drugOrder = new DrugOrderBuilder().withPatient(encounter.getPatient().getPatientId())
+			.withEncounter(encounter.getEncounterId()).withCareSetting(1).withOrderer(1)
+			.withOrderType(1).withDrug(2)
+			.withUrgency(Order.Urgency.ROUTINE).withDateActivated(new Date())
+			.build();
+		
+		Exception expectedValidationError = null;
+		try {
+			Context.getOrderService().saveOrder(drugOrder, context);
+		}
+		catch (Exception e) {
+			expectedValidationError = e;
+		}
+		
+		assertNotNull(expectedValidationError);
+		assertEquals(ValidationException.class, expectedValidationError.getClass());
+		assertTrue(expectedValidationError.getMessage().contains("Dose is required"));
+
+		// Next, add this to an Order Group and save it within that group, and it should also fail
+		
+		OrderSet orderSet = Context.getOrderSetService().getOrderSet(2000);
+		OrderGroup orderGroup = new OrderGroup();
+		orderGroup.setOrderSet(orderSet);
+		orderGroup.setPatient(encounter.getPatient());
+		orderGroup.setEncounter(encounter);
+		orderGroup.addOrder(drugOrder);
+		drugOrder.setOrderGroup(orderGroup);
+
+		Exception expectedGroupValidationError = null;
+		try {
+			Context.getOrderService().saveOrderGroup(orderGroup);
+		}
+		catch (Exception e) {
+			expectedGroupValidationError = e;
+		}
+
+		assertNotNull(expectedGroupValidationError, "Validation should cause order group to fail to save");
+		assertEquals(expectedValidationError.getMessage(), expectedGroupValidationError.getMessage());
 	}
 }

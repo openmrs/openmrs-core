@@ -34,7 +34,6 @@ import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
 import org.openmrs.collection.ListPart;
-import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Performs Lucene queries.
@@ -62,7 +61,7 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	public enum MatchType
 	{
 		NORMAL, SOUNDEX
-	};
+	}
 	
 	public static <T> LuceneQuery<T> newQuery(final Class<T> type, final Session session, final String query, final Collection<String> fields) {
 		return newQuery(type, session, query, fields, MatchType.NORMAL);

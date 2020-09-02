@@ -302,7 +302,7 @@ public class HibernateUserDAO implements UserDAO {
 		
 		log.debug("updating password");
 		//update the user with the new password
-		String salt = getLoginCredential(u).getSalt();
+		String salt = Security.getRandomToken();
 		String newHashedPassword = Security.encodeString(pw + salt);
 		
 		updateUserPassword(newHashedPassword, salt, authUser.getUserId(), new Date(), u.getUserId());
@@ -360,10 +360,10 @@ public class HibernateUserDAO implements UserDAO {
 			throw new DAOException("Passwords don't match");
 		}
 		
-		log.info("updating password for " + u.getUsername());
+		log.info("updating password for {}", u.getUsername());
 		
 		// update the user with the new password
-		String salt = getLoginCredential(u).getSalt();
+		String salt = Security.getRandomToken();
 		String newHashedPassword = Security.encodeString(pw2 + salt);
 		updateUserPassword(newHashedPassword, salt, u.getUserId(), new Date(), u.getUserId());
 	}
