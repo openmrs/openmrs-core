@@ -12,10 +12,26 @@ package org.openmrs;
 import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.NotYetPersistedException;
 import org.openmrs.customdatatype.SingleCustomValue;
+
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.AttributeOverride;
+import javax.persistence.Cacheable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * A FormResource is meant as a way for modules to add arbitrary information to
@@ -29,32 +45,54 @@ import org.openmrs.customdatatype.SingleCustomValue;
  *
  * @since 1.9
  */
+@Entity
+@Table(name = "form_resource")
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@AttributeOverride(name = "uuid", column = @Column(name = "uuid", unique = true, nullable = false, length = 38))
 public class FormResource extends BaseOpenmrsObject implements CustomValueDescriptor, SingleCustomValue<FormResource> {
 
 	private static final long serialVersionUID = 1L;
 
+	@Id
+	@Column(name = "form_resource_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer formResourceId;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "form_id", nullable = false)
 	private Form form;
-	
+
+	@Column(name = "name")
 	private String name;
-	
+
+	@Access(AccessType.FIELD)
+	@Column(name = "value_reference", length = 65535)
 	private String valueReference;
-	
+
+	@JoinColumn(name = "datatype")
 	private String datatypeClassname;
-	
+
+	@Column(name = "datatype_config", length = 65535)
 	private String datatypeConfig;
-	
+
+	@Column(name = "preferred_handler")
 	private String preferredHandlerClassname;
-	
+
+	@Column(name = "handler_config")
 	private String handlerConfig;
-	
+
+	@Transient
 	private transient boolean dirty = false;
-	
+
+	@Transient
 	private transient Object typedValue;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "changed_by")
 	private User changedBy;
-	
+
+	@Column(name = "date_changed", length = 19)
 	private Date dateChanged;
 	
 	public FormResource() {
