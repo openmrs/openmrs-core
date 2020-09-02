@@ -9,16 +9,20 @@
  */
 package org.openmrs.validator;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.AdditionalMatchers.aryEq;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
+import static org.openmrs.api.context.Context.getAuthenticatedUser;
+import static org.openmrs.api.context.Context.getPatientService;
+import static org.openmrs.validator.PatientIdentifierValidator.validateIdentifier;
 
 import java.util.Locale;
 
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.openmrs.Location;
@@ -35,7 +39,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -44,8 +48,6 @@ import org.springframework.validation.Errors;
  */
 public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	
 	@Mock
 	MessageSourceService messageSourceService;
@@ -53,9 +55,9 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	/**
 	 * @see PatientIdentifierValidator#validateIdentifier(PatientIdentifier)
 	 */
-	@Test(expected = BlankIdentifierException.class)
+	@Test
 	public void validateIdentifier_shouldFailValidationIfPatientIdentifierIsNull() {
-		PatientIdentifierValidator.validateIdentifier(null);
+		assertThrows(BlankIdentifierException.class, () -> PatientIdentifierValidator.validateIdentifier(null));
 	}
 	
 	/**
@@ -63,54 +65,50 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void validateIdentifier_shouldPassValidationIfPatientIdentifierIsVoided() {
-		PatientIdentifier pi = Context.getPatientService().getPatientIdentifiers("7TU-8", null, null, null, null).get(0);
+		PatientIdentifier pi = getPatientService().getPatientIdentifiers("7TU-8", null, null, null, null).get(0);
 		pi.setIdentifier("7TU-4");
 		// First, make sure this fails
-		try {
-			PatientIdentifierValidator.validateIdentifier(pi);
-			Assert.fail("The patient identifier should be invalid prior to voiding");
-		}
-		catch (Exception e) {}
+		assertThrows(Exception.class, () -> validateIdentifier(pi));
 		pi.setVoided(true);
-		pi.setVoidedBy(Context.getAuthenticatedUser());
+		pi.setVoidedBy(getAuthenticatedUser());
 		pi.setVoidReason("Testing");
 		// Now, make sure this passes
-		PatientIdentifierValidator.validateIdentifier(pi);
+		validateIdentifier(pi);
 	}
 	
 	/**
 	 * @see PatientIdentifierValidator#validateIdentifier(PatientIdentifier)
 	 */
-	@Test(expected = IdentifierNotUniqueException.class)
+	@Test
 	public void validateIdentifier_shouldFailValidationIfAnotherPatientHasAMatchingIdentifierOfTheSameType()
 	{
 		PatientIdentifier pi = Context.getPatientService().getPatientIdentifiers("7TU-8", null, null, null, null).get(0);
 		pi.setIdentifier("101-6");
-		PatientIdentifierValidator.validateIdentifier(pi);
+		assertThrows(IdentifierNotUniqueException.class, () -> PatientIdentifierValidator.validateIdentifier(pi));
 	}
 	
 	/**
 	 * @see PatientIdentifierValidator#validateIdentifier(String,PatientIdentifierType)
 	 */
-	@Test(expected = BlankIdentifierException.class)
+	@Test
 	public void validateIdentifier_shouldFailValidationIfPatientIdentifierTypeIsNull() {
-		PatientIdentifierValidator.validateIdentifier("ABC", null);
+		assertThrows(BlankIdentifierException.class, () -> PatientIdentifierValidator.validateIdentifier("ABC", null));
 	}
 	
 	/**
 	 * @see PatientIdentifierValidator#checkIdentifierAgainstFormat(String,String)
 	 */
-	@Test(expected = BlankIdentifierException.class)
+	@Test
 	public void checkIdentifierAgainstFormat_shouldFailValidationIfIdentifierIsBlank() {
-		PatientIdentifierValidator.validateIdentifier("", new PatientIdentifierType(1));
+		assertThrows(BlankIdentifierException.class, () -> PatientIdentifierValidator.validateIdentifier("", new PatientIdentifierType(1)));
 	}
 	
 	/**
 	 * @see PatientIdentifierValidator#checkIdentifierAgainstFormat(String,String)
 	 */
-	@Test(expected = InvalidIdentifierFormatException.class)
+	@Test
 	public void checkIdentifierAgainstFormat_shouldFailValidationIfIdentifierDoesNotMatchTheFormat() {
-		PatientIdentifierValidator.checkIdentifierAgainstFormat("111-222-333", "[0-9]{3}\\-[0-9]{2}\\-[0-9]{4}", null);
+		assertThrows(InvalidIdentifierFormatException.class, () -> PatientIdentifierValidator.checkIdentifierAgainstFormat("111-222-333", "[0-9]{3}\\-[0-9]{2}\\-[0-9]{4}", null));
 	}
 	
 	/**
@@ -132,17 +130,17 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	/**
 	 * @see PatientIdentifierValidator#checkIdentifierAgainstValidator(String,IdentifierValidator)
 	 */
-	@Test(expected = BlankIdentifierException.class)
+	@Test
 	public void checkIdentifierAgainstValidator_shouldFailValidationIfIdentifierIsBlank() {
-		PatientIdentifierValidator.checkIdentifierAgainstValidator("", new LuhnIdentifierValidator());
+		assertThrows(BlankIdentifierException.class, () -> PatientIdentifierValidator.checkIdentifierAgainstValidator("", new LuhnIdentifierValidator()));
 	}
 	
 	/**
 	 * @see PatientIdentifierValidator#checkIdentifierAgainstValidator(String,IdentifierValidator)
 	 */
-	@Test(expected = InvalidCheckDigitException.class)
+	@Test
 	public void checkIdentifierAgainstValidator_shouldFailValidationIfIdentifierIsInvalid() {
-		PatientIdentifierValidator.checkIdentifierAgainstValidator("7TU-4", new LuhnIdentifierValidator());
+		assertThrows(InvalidCheckDigitException.class, () -> PatientIdentifierValidator.checkIdentifierAgainstValidator("7TU-4", new LuhnIdentifierValidator()));
 	}
 	
 	/**
@@ -164,10 +162,10 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	/**
 	 * @see PatientIdentifierValidator#validateIdentifier(String,PatientIdentifierType)
 	 */
-	@Test(expected = BlankIdentifierException.class)
+	@Test
 	public void validateIdentifier_shouldFailValidationIfIdentifierIsBlank() {
 		PatientIdentifier identifier = new PatientIdentifier("", new PatientIdentifierType(1), new Location(1));
-		PatientIdentifierValidator.validateIdentifier(identifier);
+		assertThrows(BlankIdentifierException.class, () -> PatientIdentifierValidator.validateIdentifier(identifier));
 	}
 	
 	/**
@@ -177,7 +175,7 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	public void validateIdentifier_shouldPassIfInUseAndIdTypeUniquenessIsSetToNonUnique() {
 		PatientService patientService = Context.getPatientService();
 		PatientIdentifier duplicateId = patientService.getPatientIdentifier(1);
-		Assert.assertNotNull(duplicateId.getLocation());
+		assertNotNull(duplicateId.getLocation());
 		
 		PatientIdentifierType idType = duplicateId.getIdentifierType();
 		idType.setUniquenessBehavior(UniquenessBehavior.NON_UNIQUE);
@@ -201,12 +199,12 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	/**
 	 * @see PatientIdentifierValidator#validateIdentifier(PatientIdentifier)
 	 */
-	@Test(expected = PatientIdentifierException.class)
+	@Test
 	public void validateIdentifier_shouldPassIfLocationBehaviorIsRequiredAndLocationIsNull() {
 		PatientIdentifier pi = new PatientIdentifier("1TU-8", new PatientIdentifierType(1), null);
 		PatientIdentifierType idType = pi.getIdentifierType();
 		idType.setLocationBehavior(PatientIdentifierType.LocationBehavior.REQUIRED);
-		PatientIdentifierValidator.validateIdentifier(pi);
+		assertThrows(PatientIdentifierException.class, () -> PatientIdentifierValidator.validateIdentifier(pi));
 	}
 	
 	/**
@@ -222,7 +220,7 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(pi, "pi");
 		new PatientIdentifierValidator().validate(pi, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -240,8 +238,8 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(pi, "pi");
 		new PatientIdentifierValidator().validate(pi, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("identifier"));
-		Assert.assertTrue(errors.hasFieldErrors("voidReason"));
+		assertTrue(errors.hasFieldErrors("identifier"));
+		assertTrue(errors.hasFieldErrors("voidReason"));
 	}
 	
 	/**
@@ -259,11 +257,7 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 		    messageSourceService.getMessage(eq("PatientIdentifier.error.invalidFormat"),
 		        aryEq(new String[] { "abc", format }), isA(Locale.class))).thenReturn(expectedErrorMessage);
 		
-		expectedException.expect(InvalidIdentifierFormatException.class);
-		//expectedException.expectMessage(expectedErrorMessage);
-		
-		PatientIdentifierValidator.checkIdentifierAgainstFormat("abc", format, formatDescription);
-		
+		assertThrows(InvalidIdentifierFormatException.class, () -> PatientIdentifierValidator.checkIdentifierAgainstFormat("abc", format, formatDescription));
 	}
 	
 	/**
@@ -280,11 +274,7 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 		    messageSourceService.getMessage(eq("PatientIdentifier.error.invalidFormat"), aryEq(new String[] { "abc",
 		            formatDescription }), isA(Locale.class))).thenReturn(expectedErrorMessage);
 		
-		expectedException.expect(InvalidIdentifierFormatException.class);
-		//expectedException.expectMessage(expectedErrorMessage);
-		
-		PatientIdentifierValidator.checkIdentifierAgainstFormat("abc", format, formatDescription);
-		
+		assertThrows(InvalidIdentifierFormatException.class, () -> PatientIdentifierValidator.checkIdentifierAgainstFormat("abc", format, formatDescription));
 	}
 	
 }

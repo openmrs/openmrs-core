@@ -33,8 +33,7 @@ public class FieldType extends BaseChangeableOpenmrsMetadata {
 	
 	@Id
 	@Column(name = "field_type_id", nullable = false)
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "field_type_id_gen")
-	@SequenceGenerator(name = "field_type_id_gen", sequenceName = "field_type_field_type_id_seq")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer fieldTypeId;
 	
 	@Column(name = "is_set", length = 1, nullable = false)

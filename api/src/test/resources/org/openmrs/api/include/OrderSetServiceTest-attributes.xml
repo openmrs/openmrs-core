@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+    
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+    
+-->
+
+<dataset>
+ <order_set order_set_id="1" name="Order_Set_1" description="Order_Set_1_desc" operator="ALL" creator="1" date_created="2008-08-15 15:49:04.0" retired="0" uuid="2d3fb1d0-ae06-22e3-a5e2-0140211c1001" />
+  <order_set_attribute_type order_set_attribute_type_id="1" name="Audit Date" datatype="org.openmrs.customdatatype.datatype.DateDatatype" uuid="8516cc50-6f9f-33e0-8414-001e648eb67e" creator="1" date_created="2005-01-01 00:00:00.0" min_occurs="0" retired="false" />
+  <order_set_attribute_type order_set_attribute_type_id="2" name="A Date We Don't Care About" datatype="org.openmrs.customdatatype.datatype.DateDatatype" uuid="9545cc50-6f9f-55e0-8414-001e378eb69f" creator="1" date_created="2005-01-01 00:00:00.0" min_occurs="0" retired="true" retired_by="1" date_retired="2005-01-01 02:00:00.0" retire_reason="for fun and profit" />
+  <order_set_attribute order_set_attribute_id="1" order_set_id="1" attribute_type_id="1" value_reference="2011-04-25" uuid="3a4bdb18-6faa-22e0-8414-001e376eb68e" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" />
+</dataset>
