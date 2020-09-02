@@ -14,8 +14,8 @@ import static org.hamcrest.Matchers.contains;
 
 import java.util.Locale;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.GlobalProperty;
 import org.openmrs.util.OpenmrsConstants;
 
@@ -26,7 +26,7 @@ public class GlobalLocaleListTest {
 
 	private GlobalLocaleList globalLocaleList;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		globalLocaleList = new GlobalLocaleList();
 	}

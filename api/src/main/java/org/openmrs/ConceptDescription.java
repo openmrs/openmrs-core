@@ -36,8 +36,7 @@ public class ConceptDescription extends BaseOpenmrsObject implements Auditable, 
 	// Fields
 	@Id
 	@Column(name = "concept_description_id")
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "concept_description_id_gen")
-	@SequenceGenerator(name = "concept_description_id_gen", sequenceName = "concept_description_concept_description_id_seq")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer conceptDescriptionId;
 
 	@ManyToOne

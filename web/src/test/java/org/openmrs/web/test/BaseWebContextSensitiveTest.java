@@ -9,7 +9,7 @@
  */
 package org.openmrs.web.test;
 
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.test.context.ContextConfiguration;
 
 /**

@@ -9,8 +9,9 @@
  */
 package org.openmrs.web.context;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Authenticated;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Credentials;
@@ -33,8 +34,8 @@ public class AltAuthSchemeContextTest extends BaseWebContextSensitiveTest {
     Authenticated authenticated = Context.authenticate(new TestUsernameCredentials("admin"));
 
     // verif
-    Assert.assertEquals("test-scheme", authenticated.getAuthenticationScheme());
-    Assert.assertEquals(Context.getAuthenticatedUser().getUuid(), authenticated.getUser().getUuid());
-    Assert.assertEquals("admin", Context.getAuthenticatedUser().getUsername());
+    assertEquals("test-scheme", authenticated.getAuthenticationScheme());
+    assertEquals(Context.getAuthenticatedUser().getUuid(), authenticated.getUser().getUuid());
+    assertEquals("admin", Context.getAuthenticatedUser().getUsername());
   }
 }

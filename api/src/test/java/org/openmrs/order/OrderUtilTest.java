@@ -9,8 +9,8 @@
  */
 package org.openmrs.order;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.Field;
 import java.text.DateFormat;
@@ -19,7 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
 

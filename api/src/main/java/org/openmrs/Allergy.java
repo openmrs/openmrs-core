@@ -75,7 +75,7 @@ public class Allergy extends BaseChangeableOpenmrsData {
 	 * @param patient the patient to set.
 	 * @param allergen the allergen to set
 	 * @param severity the severity to set
-	 * @param comment the comment to set
+	 * @param comments the comment to set
 	 * @param reactions the reactions to set
 	 */
 	public Allergy(Patient patient, Allergen allergen, Concept severity, String comments, List<AllergyReaction> reactions) {
@@ -143,14 +143,14 @@ public class Allergy extends BaseChangeableOpenmrsData {
 	
 	/**
 	 * set the allergyType of the Allergy
-	 * @param allergyType the allergyType to set
+	 * @param allergenType the allergyType to set
 	 */
 	public void setAllergenType(AllergenType allergenType) {
 		this.allergen.setAllergenType(allergenType);
 	}
 	
 	/**
-	 * set the allergyType of the Allergy. Here the allergy type will be chosen from the enum values in the {@link AllergyType}, according to the given String type. 
+	 * set the allergyType of the Allergy. Here the allergy type will be chosen from the enum values in the {@link AllergenType}, according to the given String type. 
 	 * @param type the allergyType to set   
 	 */
 	public void setAllergenType(String type) {

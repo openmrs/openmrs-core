@@ -541,12 +541,18 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	        Integer start, Integer length) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Encounter.class);
 		addEncountersByPatientCriteria(criteria, patient, includeVoided, query);
+		criteria.addOrder(Order.desc("visit.startDatetime"));
+		criteria.addOrder(Order.desc("visit.visitId"));
+		criteria.addOrder(Order.desc("encounterDatetime"));
+		criteria.addOrder(Order.desc("encounterId"));
 		
 		@SuppressWarnings("unchecked")
 		List<Encounter> encounters = criteria.list();
 		
 		criteria = sessionFactory.getCurrentSession().createCriteria(Visit.class);
 		addEmptyVisitsByPatientCriteria(criteria, patient, includeVoided, query);
+		criteria.addOrder(Order.desc("startDatetime"));
+		criteria.addOrder(Order.desc("visitId"));
 		
 		@SuppressWarnings("unchecked")
 		List<Visit> emptyVisits = criteria.list();
@@ -618,8 +624,6 @@ public class HibernateEncounterDAO implements EncounterDAO {
 			or.add(Restrictions.ilike("location.name", query, MatchMode.ANYWHERE));
 		}
 		
-		criteria.addOrder(Order.desc("startDatetime"));
-		criteria.addOrder(Order.desc("visitId"));
 	}
 	
 	private void addEncountersByPatientCriteria(Criteria criteria, Patient patient, boolean includeVoided, String query) {
@@ -644,10 +648,6 @@ public class HibernateEncounterDAO implements EncounterDAO {
 			or.add(Restrictions.ilike("encounterType.name", query, MatchMode.ANYWHERE));
 		}
 		
-		criteria.addOrder(Order.desc("visit.startDatetime"));
-		criteria.addOrder(Order.desc("visit.visitId"));
-		criteria.addOrder(Order.desc("encounterDatetime"));
-		criteria.addOrder(Order.desc("encounterId"));
 	}
 	
 	/**

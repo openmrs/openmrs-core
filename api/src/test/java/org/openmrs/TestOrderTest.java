@@ -9,12 +9,12 @@
  */
 package org.openmrs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.order.OrderUtilTest;
 
 /**
@@ -66,10 +66,9 @@ public class TestOrderTest {
 		
 		assertEquals(anOrder.getConcept(), orderThatCanDiscontinueTheOrder.getConcept());
 		
-		assertEquals("should set previous order to anOrder", anOrder, orderThatCanDiscontinueTheOrder.getPreviousOrder());
+		assertEquals(anOrder, orderThatCanDiscontinueTheOrder.getPreviousOrder(), "should set previous order to anOrder");
 		
-		assertEquals("should set new order action to new", orderThatCanDiscontinueTheOrder.getAction(),
-		    Order.Action.DISCONTINUE);
+		assertEquals(orderThatCanDiscontinueTheOrder.getAction(), Order.Action.DISCONTINUE, "should set new order action to new");
 		
 		assertEquals(anOrder.getCareSetting(), orderThatCanDiscontinueTheOrder.getCareSetting());
 		

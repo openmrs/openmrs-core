@@ -80,4 +80,9 @@ public interface AdministrationDAO {
 	 * @see AdministrationService#isDatabaseStringComparisonCaseSensitive()
 	 */
 	public boolean isDatabaseStringComparisonCaseSensitive() throws DAOException;
+	
+	/**
+	 * @see AdministrationService#updatePostgresSequence()
+	 */
+	public void updatePostgresSequence() throws DAOException;
 }

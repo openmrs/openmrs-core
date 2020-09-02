@@ -92,7 +92,6 @@ public class DatabaseUtil {
 		final String query = sql;
 		final boolean sessionDataManipulation = dataManipulation;
 		
-		//todo replace with lambdas after moving on to Java 8
 		session.doWork(conn -> populateResultsFromSQLQuery(conn, query, sessionDataManipulation, result));
 		
 		return result;

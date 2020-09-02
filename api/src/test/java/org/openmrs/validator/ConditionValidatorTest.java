@@ -11,13 +11,14 @@ package org.openmrs.validator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Locale;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.CodedOrFreeText;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
@@ -41,7 +42,7 @@ public class ConditionValidatorTest {
 
 	private Errors errors;
 
-	@Before
+	@BeforeEach
 	public void setUp(){
 		validator = new ConditionValidator();
 		condition = new Condition();
@@ -64,8 +65,8 @@ public class ConditionValidatorTest {
 	public void shouldFailIfGivenConditionWithNullConditionProperties(){
 		Condition condition = new Condition();
 		validator.validate(condition, errors);
-		Assert.assertTrue(errors.hasFieldErrors("condition"));
-		Assert.assertTrue(errors.hasFieldErrors("clinicalStatus"));
+		assertTrue(errors.hasFieldErrors("condition"));
+		assertTrue(errors.hasFieldErrors("clinicalStatus"));
 	}
 
 	@Test
@@ -74,7 +75,7 @@ public class ConditionValidatorTest {
 		condition.setCondition(new CodedOrFreeText(new Concept(), new ConceptName("name", new Locale("en")), "nonCoded"));
 		condition.setClinicalStatus(ConditionClinicalStatus.ACTIVE);
 		validator.validate(condition, errors);
-		Assert.assertFalse(errors.hasFieldErrors("condition"));
-		Assert.assertFalse(errors.hasFieldErrors("clinicalStatus"));
+		assertFalse(errors.hasFieldErrors("condition"));
+		assertFalse(errors.hasFieldErrors("clinicalStatus"));
 	}
 }
