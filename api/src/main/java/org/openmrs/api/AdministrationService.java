@@ -380,4 +380,16 @@ public interface AdministrationService extends OpenmrsService {
 	 * @since 1.9.9, 1.10.2, 1.11
 	 */
 	public boolean isDatabaseStringComparisonCaseSensitive();
+	
+	/**
+	 * <ul>
+	 * <li>Unlike MySQL which uses identifier strategy, PostgreSQL follows sequence strategy</li>
+	 * <li>So as to bridge the gap between these two strategies, this method has been created.</li>
+	 * <li>It will perform task of updating the sequence values after insertions are done from core
+	 * data or concepts are inserted (present in Reference Metadata Module)</li>
+	 * </ul>
+	 * 
+	 * @since 2.4
+	 */
+	public void updatePostgresSequence();
 }

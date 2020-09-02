@@ -52,7 +52,6 @@ public class AlertReminderTask extends AbstractTask {
 	 * Send alerts
 	 * 
 	 * @param alerts the unread alerts
-	 * @param users the users who have not read the alerts
 	 */
 	private void sendAlertNotifications(Collection<Alert> alerts) {
 		
@@ -77,7 +76,7 @@ public class AlertReminderTask extends AbstractTask {
 	 * Get the recipients of all unread alerts.
 	 * 
 	 * @param alerts
-	 * @return
+	 * @return the users who have not read the alerts
 	 */
 	private Collection<User> getRecipients(Collection<Alert> alerts) {
 		Collection<User> users = new HashSet<>();

@@ -23,7 +23,6 @@ import org.openmrs.api.context.Context;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -36,7 +35,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 /**
@@ -60,9 +58,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	
 	@Id
 	@Column(name = "location_id", nullable = false)
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "location_id_gen")
-	@SequenceGenerator(name = "location_id_gen", sequenceName = "location_location_id_seq")
-	private Integer locationId;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	
 	@Column(name = "address1")
 	private String address1;

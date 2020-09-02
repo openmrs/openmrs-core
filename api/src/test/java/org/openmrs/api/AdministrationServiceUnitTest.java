@@ -12,6 +12,7 @@ package org.openmrs.api;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -22,8 +23,8 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.api.impl.AdministrationServiceImpl;
 
@@ -38,7 +39,7 @@ public class AdministrationServiceUnitTest {
 	
 	private AdministrationService adminService;
 	
-	@Before
+	@BeforeEach
 	public void setUp() {
 		
 		adminService = new AdministrationServiceImpl();
@@ -64,10 +65,10 @@ public class AdministrationServiceUnitTest {
 		verify(adminDAO, never()).executeSQL(anyString(), anyBoolean());
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void getGlobalPropertyValue_shouldFailIfDefaultValueIsNull() {
 
-		adminService.getGlobalPropertyValue("valid.double", null);
+		assertThrows(IllegalArgumentException.class, () -> adminService.getGlobalPropertyValue("valid.double", null));
 	}
 
 	@Test

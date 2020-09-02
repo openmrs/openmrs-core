@@ -9,17 +9,18 @@
  */
 package org.openmrs.module;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+
 
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 	
@@ -27,7 +28,7 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 	
 	Map<String, String> mockModules;
 	
-	@Before
+	@BeforeEach
 	public void before() {
 		mockModule = new Module("mockmodule", "mockmodule", "org.openmrs.module.mockmodule", "author", "description", "1.0");
 		mockModules = new HashMap<>();

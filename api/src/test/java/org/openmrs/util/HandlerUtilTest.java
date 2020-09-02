@@ -9,23 +9,23 @@
  */
 package org.openmrs.util;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 import org.openmrs.DrugOrder;
 import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.validator.DrugOrderValidator;
 import org.openmrs.validator.OrderValidator;
 import org.openmrs.validator.PatientValidator;
@@ -37,8 +37,6 @@ import org.springframework.validation.Validator;
  */
 public class HandlerUtilTest extends BaseContextSensitiveTest {
 	
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 	
 	/**
 	 * @see HandlerUtil#getHandlerForType(Class, Class)
@@ -46,10 +44,10 @@ public class HandlerUtilTest extends BaseContextSensitiveTest {
 	@Test
 	public void getHandlersForType_shouldReturnAListOfAllClassesThatCanHandleThePassedType() {
 		List<Validator> l = HandlerUtil.getHandlersForType(Validator.class, Order.class);
-		Assert.assertEquals(1, l.size());
-		Assert.assertEquals(OrderValidator.class, l.iterator().next().getClass());
+		assertEquals(1, l.size());
+		assertEquals(OrderValidator.class, l.iterator().next().getClass());
 		l = HandlerUtil.getHandlersForType(Validator.class, DrugOrder.class);
-		Assert.assertEquals(2, l.size());
+		assertEquals(2, l.size());
 	}
 
 	/**
@@ -58,8 +56,8 @@ public class HandlerUtilTest extends BaseContextSensitiveTest {
 	@Test
 	public void getHandlersForType_shouldReturnAnEmptyListIfNoClassesCanHandleThePassedType() {
 		List<Validator> l = HandlerUtil.getHandlersForType(Validator.class, PatientValidator.class);
-		Assert.assertNotNull(l);
-		Assert.assertEquals(0, l.size());
+		assertNotNull(l);
+		assertEquals(0, l.size());
 	}
 	
 	/**
@@ -68,18 +66,17 @@ public class HandlerUtilTest extends BaseContextSensitiveTest {
 	@Test
 	public void getPreferredHandler_shouldReturnThePreferredHandlerForThePassedHandlerAndType() {
 		Validator v = HandlerUtil.getPreferredHandler(Validator.class, DrugOrder.class);
-		Assert.assertEquals(DrugOrderValidator.class, v.getClass());
+		assertEquals(DrugOrderValidator.class, v.getClass());
 	}
 	
 	/**
 	 * @see HandlerUtil#getPreferredHandler(Class, Class)
 	 */
 	@Test
-	public void getPreferredHandler_shouldThrowAAPIExceptionExceptionIfNoHandlerIsFound() {
-		thrown.expect(APIException.class);
-		thrown.expectMessage(Context.getMessageSourceService().getMessage("handler.type.not.found", new Object[] { Validator.class.toString(), Integer.class }, null));
+	public void getPreferredHandler_shouldThrowAAPIExceptionExceptionIfNoHandlerIsFound() { 
 		
-		HandlerUtil.getPreferredHandler(Validator.class, Integer.class);
+		APIException exception = assertThrows(APIException.class, () -> HandlerUtil.getPreferredHandler(Validator.class, Integer.class));
+		assertThat(exception.getMessage(), is(Context.getMessageSourceService().getMessage("handler.type.not.found", new Object[] { Validator.class.toString(), Integer.class }, null)));
 	}
 	
 	@Test

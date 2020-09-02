@@ -20,7 +20,7 @@ import org.openmrs.customdatatype.CustomDatatype;
 public abstract class BaseMetadataDatatype<T extends OpenmrsMetadata> extends BaseOpenmrsDatatype<T> {
 	
 	/**
-	 * @see BaseOpenmrsDatatype#doGetTextSummary(Object)
+	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#doGetTextSummary(Object)
 	 * <strong>Should</strong> use the name in summary instance
 	 */
 	@Override
