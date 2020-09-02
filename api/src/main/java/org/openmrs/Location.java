@@ -57,8 +57,9 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	// Fields
 	
 	@Id
-	@Column(name = "location_id", nullable = false)
+	@Column(name = "location_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer locationId;
 	
 	@Column(name = "address1")
 	private String address1;
