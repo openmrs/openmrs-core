@@ -22,12 +22,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.openmrs.messagesource.MessageSourceService;
-import org.openmrs.test.BaseContextMockTest;
+import org.openmrs.test.jupiter.BaseContextMockTest;
 
 /**
  * Tests for {@link Module#getExtensions()}.
@@ -45,12 +45,12 @@ public class ModuleExtensionsTest extends BaseContextMockTest {
 
 	private Module module;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		module = new Module("Extension Test", "extensiontest", "org.openmrs.module.extensiontest", "", "", "0.0.1");
 	}
 	
-	@After
+	@AfterEach
 	public void after() {
 		// needed so other tests which rely on no ModuleClassLoaderFound
 		// are not affected by tests registering one

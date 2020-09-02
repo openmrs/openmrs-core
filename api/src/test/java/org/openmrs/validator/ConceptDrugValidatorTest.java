@@ -9,8 +9,10 @@
  */
 package org.openmrs.validator;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 import org.openmrs.Drug;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -28,7 +30,7 @@ public class ConceptDrugValidatorTest {
 		Drug drug = new Drug();
 		Errors errors = new BindException(drug, "drug");
 		new ConceptDrugValidator().validate(drug, errors);
-		Assert.assertTrue(errors.hasErrors());
+		assertTrue(errors.hasErrors());
 	}
 	
 	/**
@@ -36,7 +38,7 @@ public class ConceptDrugValidatorTest {
 	 */
 	@Test
 	public void supports_shouldRejectClassesNotExtendingDrug() {
-		Assert.assertFalse(new ConceptDrugValidator().supports(String.class));
+		assertFalse(new ConceptDrugValidator().supports(String.class));
 	}
 	
 	/**
@@ -44,7 +46,7 @@ public class ConceptDrugValidatorTest {
 	 */
 	@Test
 	public void supports_shouldSupportDrug() {
-		Assert.assertTrue(new ConceptDrugValidator().supports(Drug.class));
+		assertTrue(new ConceptDrugValidator().supports(Drug.class));
 	}
 	
 }

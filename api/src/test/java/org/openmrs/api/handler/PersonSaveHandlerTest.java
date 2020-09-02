@@ -9,15 +9,16 @@
  */
 package org.openmrs.api.handler;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Date;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
 import org.openmrs.User;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
  * Tests the {@link PersonSaveHandler} class
@@ -39,6 +40,6 @@ public class PersonSaveHandlerTest extends BaseContextSensitiveTest {
         person.addAddress(personAddress);
 
         handler.handle(person,null,null,null);
-        Assert.assertEquals(0,person.getAddresses().size());
+        assertEquals(0,person.getAddresses().size());
     }
 }

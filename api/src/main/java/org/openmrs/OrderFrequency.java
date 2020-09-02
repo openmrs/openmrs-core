@@ -17,7 +17,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 /**
@@ -36,8 +35,7 @@ public class OrderFrequency extends BaseChangeableOpenmrsMetadata {
 	
 	@Id
 	@Column(name = "order_frequency_id")
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_frequency_id_gen")
-	@SequenceGenerator(name = "order_frequency_id_gen", sequenceName = "order_frequency_id_seq")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer orderFrequencyId;
 	
 	@Column(name = "frequency_per_day", length = 22)

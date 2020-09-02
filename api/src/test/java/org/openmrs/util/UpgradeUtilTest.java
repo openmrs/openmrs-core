@@ -9,13 +9,15 @@
  */
 package org.openmrs.util;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.io.IOException;
 
 import org.hamcrest.core.Is;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.api.APIException;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.databasechange.Database1_9_7UpgradeIT;
 
 public class UpgradeUtilTest extends BaseContextSensitiveTest {
@@ -31,17 +33,16 @@ public class UpgradeUtilTest extends BaseContextSensitiveTest {
 		
 		Integer conceptId = UpgradeUtil.getConceptIdForUnits("drug_order_quantity_units");
 		
-		Assert.assertThat(conceptId, Is.is(5403));
+		assertThat(conceptId, Is.is(5403));
 	}
 	
 	/**
 	 * @throws IOException
 	 * @see org.openmrs.util.UpgradeUtil#getConceptIdForUnits(String)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void getConceptIdForUnits_shouldFailIfUnitsIsNotSpecified() throws IOException {
 		Database1_9_7UpgradeIT.createOrderEntryUpgradeFileWithTestData("mg=540" + "\n" + "ounces=5402");
-		
-		UpgradeUtil.getConceptIdForUnits("drug_order_quantity_units");
+		assertThrows(APIException.class, () -> UpgradeUtil.getConceptIdForUnits("drug_order_quantity_units"));
 	}
 }

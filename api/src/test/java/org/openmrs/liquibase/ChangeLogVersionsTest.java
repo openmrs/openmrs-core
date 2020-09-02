@@ -9,19 +9,20 @@
  */
 package org.openmrs.liquibase;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-
-import static org.junit.Assert.assertEquals;
 
 public class ChangeLogVersionsTest {
 	
@@ -44,7 +45,7 @@ public class ChangeLogVersionsTest {
 	
 	private ChangeLogVersions changeLogVersions;
 	
-	@Before
+	@BeforeEach
 	public void setup() {
 		changeLogVersions = new ChangeLogVersions();
 	}

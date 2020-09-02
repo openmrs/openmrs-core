@@ -9,21 +9,24 @@
  */
 package org.openmrs.validator;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Locale;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.CodedOrFreeText;
 import org.openmrs.Cohort;
+import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.Condition;
-import org.openmrs.Concept;
 import org.openmrs.ConditionClinicalStatus;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
-
-import java.util.Locale;
 
 /**
  * Class to implement tests for {@link ConditionValidator}
@@ -32,17 +35,14 @@ public class ConditionValidatorTest {
 
 	private static final String NULL_ERROR_MESSAGE = "The object parameter should not be null";
 	private static final String INCOMPATIBLE_ERROR_MESSAGE = "The object parameter should be of type " + Condition.class;
-
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
-
+	
 	private ConditionValidator validator;
 
 	private Condition condition;
 
 	private Errors errors;
 
-	@Before
+	@BeforeEach
 	public void setUp(){
 		validator = new ConditionValidator();
 		condition = new Condition();
@@ -51,24 +51,22 @@ public class ConditionValidatorTest {
 
 	@Test
 	public void shouldFailIfGivenNull(){
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage(NULL_ERROR_MESSAGE);
-		validator.validate(null, errors);
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> validator.validate(null, errors));
+		assertThat(exception.getMessage(), is(NULL_ERROR_MESSAGE));
 	}
 
 	@Test
 	public void shouldFailIfGivenInstanceOfClassOtherThanCondition(){
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage(INCOMPATIBLE_ERROR_MESSAGE);
-		validator.validate(new Cohort(), errors);
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> validator.validate(new Cohort(), errors));
+		assertThat(exception.getMessage(), is(INCOMPATIBLE_ERROR_MESSAGE));
 	}
 	
 	@Test
 	public void shouldFailIfGivenConditionWithNullConditionProperties(){
 		Condition condition = new Condition();
 		validator.validate(condition, errors);
-		Assert.assertTrue(errors.hasFieldErrors("condition"));
-		Assert.assertTrue(errors.hasFieldErrors("clinicalStatus"));
+		assertTrue(errors.hasFieldErrors("condition"));
+		assertTrue(errors.hasFieldErrors("clinicalStatus"));
 	}
 
 	@Test
@@ -77,7 +75,7 @@ public class ConditionValidatorTest {
 		condition.setCondition(new CodedOrFreeText(new Concept(), new ConceptName("name", new Locale("en")), "nonCoded"));
 		condition.setClinicalStatus(ConditionClinicalStatus.ACTIVE);
 		validator.validate(condition, errors);
-		Assert.assertFalse(errors.hasFieldErrors("condition"));
-		Assert.assertFalse(errors.hasFieldErrors("clinicalStatus"));
+		assertFalse(errors.hasFieldErrors("condition"));
+		assertFalse(errors.hasFieldErrors("clinicalStatus"));
 	}
 }

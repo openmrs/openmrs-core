@@ -17,14 +17,15 @@ import org.dbunit.database.ForwardOnlyResultSetTableFactory;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
  * Creates conceptDictionaryDataSet.xml. You must set connection details in
  * hibernate.default.properties.
  */
-@Ignore
+@Disabled
 public class CreateConceptDictionaryDataSet extends BaseContextSensitiveTest {
 	
 	@Override

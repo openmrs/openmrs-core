@@ -9,10 +9,13 @@
  */
 package org.openmrs.validator;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 import org.openmrs.scheduler.TaskDefinition;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -33,17 +36,17 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(def, "def");
 		new SchedulerFormValidator().validate(def, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 		
 		def.setName("");
 		errors = new BindException(def, "def");
 		new SchedulerFormValidator().validate(def, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 		
 		def.setName(" ");
 		errors = new BindException(def, "def");
 		new SchedulerFormValidator().validate(def, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 	}
 	
 	/**
@@ -58,12 +61,12 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(def, "def");
 		new SchedulerFormValidator().validate(def, errors);
-		Assert.assertTrue(errors.hasFieldErrors("taskClass"));
+		assertTrue(errors.hasFieldErrors("taskClass"));
 		
 		def.setTaskClass(" ");
 		errors = new BindException(def, "def");
 		new SchedulerFormValidator().validate(def, errors);
-		Assert.assertTrue(errors.hasFieldErrors("taskClass"));
+		assertTrue(errors.hasFieldErrors("taskClass"));
 	}
 	
 	/**
@@ -77,12 +80,12 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(def, "def");
 		new SchedulerFormValidator().validate(def, errors);
-		Assert.assertTrue(errors.hasFieldErrors("repeatInterval"));
+		assertTrue(errors.hasFieldErrors("repeatInterval"));
 		
 		def.setTaskClass(" ");
 		errors = new BindException(def, "def");
 		new SchedulerFormValidator().validate(def, errors);
-		Assert.assertTrue(errors.hasFieldErrors("repeatInterval"));
+		assertTrue(errors.hasFieldErrors("repeatInterval"));
 	}
 	
 	/**
@@ -98,8 +101,8 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(def, "def");
 		new SchedulerFormValidator().validate(def, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("taskClass"));
-		Assert.assertEquals("Scheduler.taskForm.classDoesNotImplementTask", errors.getFieldError("taskClass").getCode());
+		assertTrue(errors.hasFieldErrors("taskClass"));
+		assertEquals("Scheduler.taskForm.classDoesNotImplementTask", errors.getFieldError("taskClass").getCode());
 	}
 	
 	/**
@@ -115,8 +118,8 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(def, "def");
 		new SchedulerFormValidator().validate(def, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("taskClass"));
-		Assert.assertEquals("Scheduler.taskForm.classNotFoundException", errors.getFieldError("taskClass").getCode());
+		assertTrue(errors.hasFieldErrors("taskClass"));
+		assertEquals("Scheduler.taskForm.classNotFoundException", errors.getFieldError("taskClass").getCode());
 	}
 	
 	/**
@@ -132,8 +135,8 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(def, "def");
 		new SchedulerFormValidator().validate(def, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("taskClass"));
-		Assert.assertEquals("Scheduler.taskForm.instantiationException", errors.getFieldError("taskClass").getCode());
+		assertTrue(errors.hasFieldErrors("taskClass"));
+		assertEquals("Scheduler.taskForm.instantiationException", errors.getFieldError("taskClass").getCode());
 	}
 	
 	/**
@@ -149,8 +152,8 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(def, "def");
 		new SchedulerFormValidator().validate(def, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("taskClass"));
-		Assert.assertEquals("Scheduler.taskForm.classNotFoundException", errors.getFieldError("taskClass").getCode());
+		assertTrue(errors.hasFieldErrors("taskClass"));
+		assertEquals("Scheduler.taskForm.classNotFoundException", errors.getFieldError("taskClass").getCode());
 	}
 	
 	/**
@@ -166,7 +169,7 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(def, "def");
 		new SchedulerFormValidator().validate(def, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -184,7 +187,7 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(def, "def");
 		new SchedulerFormValidator().validate(def, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -206,9 +209,9 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(def, "def");
 		new SchedulerFormValidator().validate(def, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("name"));
-		Assert.assertTrue(errors.hasFieldErrors("taskClass"));
-		Assert.assertTrue(errors.hasFieldErrors("description"));
-		Assert.assertTrue(errors.hasFieldErrors("startTimePattern"));
+		assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("taskClass"));
+		assertTrue(errors.hasFieldErrors("description"));
+		assertTrue(errors.hasFieldErrors("startTimePattern"));
 	}
 }
