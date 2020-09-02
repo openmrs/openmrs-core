@@ -9,10 +9,9 @@
  */
 package org.openmrs;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,9 +24,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.Test;
 
 /**
  * Behavior-driven tests of the Cohort class.
@@ -168,7 +167,7 @@ public class CohortTest {
         c.setMemberIds(ids);
         long endTime = System.currentTimeMillis();
         double secondsToSet = (endTime - startTime)/1000;
-        Assert.assertTrue("Setting cohort of size " + cohortSize + " took " + secondsToSet + " seconds", secondsToSet < 5);
+        assertTrue(secondsToSet < 5, "Setting cohort of size " + cohortSize + " took " + secondsToSet + " seconds");
     }
 	
 	

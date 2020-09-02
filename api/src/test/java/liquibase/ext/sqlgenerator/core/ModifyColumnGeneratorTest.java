@@ -9,10 +9,15 @@
  */
 package liquibase.ext.sqlgenerator.core;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Set;
+
 import liquibase.change.ColumnConfig;
 import liquibase.change.ConstraintsConfig;
 import liquibase.database.AbstractJdbcDatabase;
@@ -33,13 +38,9 @@ import liquibase.database.core.UnsupportedDatabase;
 import liquibase.exception.ValidationErrors;
 import liquibase.sql.Sql;
 import liquibase.structure.core.Column;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public class ModifyColumnGeneratorTest {
 	@Test

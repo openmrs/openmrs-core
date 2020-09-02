@@ -9,9 +9,11 @@
  */
 package org.openmrs.api.handler;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.Person;
@@ -19,7 +21,7 @@ import org.openmrs.User;
 import org.openmrs.Voidable;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
  * Tests for the {@link RequireVoidReasonSaveHandler} class.
@@ -29,34 +31,34 @@ public class RequiredReasonVoidSaveHandlerTest extends BaseContextSensitiveTest 
 	/**
 	 * @see RequireVoidReasonSaveHandler#handle(Voidable,User,Date,String)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void handle_shouldThrowAPIExceptionIfPatientVoidReasonIsNull() {
 		Patient p = Context.getPatientService().getPatient(2);
 		p.setVoided(true);
 		p.setVoidReason(null);
-		Context.getPatientService().savePatient(p);
+		assertThrows(APIException.class, () -> Context.getPatientService().savePatient(p));
 	}
 	
 	/**
 	 * @see RequireVoidReasonSaveHandler#handle(Voidable,User,Date,String)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void handle_shouldThrowAPIExceptionIfEncounterVoidReasonIsEmpty() {
 		Encounter e = Context.getEncounterService().getEncounter(3);
 		e.setVoided(true);
 		e.setVoidReason("");
-		Context.getEncounterService().saveEncounter(e);
+		assertThrows(APIException.class, () -> Context.getEncounterService().saveEncounter(e));
 	}
 	
 	/**
 	 * @see RequireVoidReasonSaveHandler#handle(Voidable,User,Date,String)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void handle_shouldThrowAPIExceptionIfObsVoidReasonIsBlank() {
 		Encounter e = Context.getEncounterService().getEncounter(3);
 		e.setVoided(true);
 		e.setVoidReason("  ");
-		Context.getEncounterService().saveEncounter(e);
+		assertThrows(APIException.class, () -> Context.getEncounterService().saveEncounter(e));
 	}
 	
 	/**

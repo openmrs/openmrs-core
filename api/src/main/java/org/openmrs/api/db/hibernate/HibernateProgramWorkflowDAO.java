@@ -195,6 +195,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 		if (!includeVoided) {
 			crit.add(Restrictions.eq("voided", false));
 		}
+		crit.addOrder(Order.asc("dateEnrolled"));
 		return crit.list();
 	}
 	

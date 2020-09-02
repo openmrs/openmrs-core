@@ -11,9 +11,10 @@ package org.openmrs.validator;
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.openmrs.test.matchers.HasFieldErrors.hasFieldErrors;
 
 import java.text.ParseException;
@@ -22,10 +23,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.Visit;
@@ -33,7 +34,7 @@ import org.openmrs.VisitAttribute;
 import org.openmrs.api.APIException;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.GlobalPropertiesTestHelper;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.validation.BindException;
@@ -55,7 +56,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	
 	private static long DATE_TIME_2014_02_11_00_00_00_0 = 1392073200000L;
 	
-	@Before
+	@BeforeEach
 	public void before() throws ParseException {
 		executeDataSet(DATA_XML);
 		visitService = Context.getVisitService();
@@ -75,7 +76,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		calendar = Calendar.getInstance();
 	}
 	
-	@After
+	@AfterEach
 	public void tearDown() {
 		globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ALLOW_OVERLAPPING_VISITS, "true");
 	}
@@ -94,24 +95,24 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	/**
 	 * @see VisitValidator#validate(Object,Errors)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void validate_shouldRejectAVisitIfItHasFewerThanMinOccursOfAnAttribute() {
 		Visit visit = makeVisit();
 		visit.addAttribute(makeAttribute("one"));
-		ValidateUtil.validate(visit);
+		assertThrows(APIException.class, () -> ValidateUtil.validate(visit));
 	}
 	
 	/**
 	 * @see VisitValidator#validate(Object,Errors)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void validate_shouldRejectAVisitIfItHasMoreThanMaxOccursOfAnAttribute() {
 		Visit visit = makeVisit();
 		visit.addAttribute(makeAttribute("one"));
 		visit.addAttribute(makeAttribute("two"));
 		visit.addAttribute(makeAttribute("three"));
 		visit.addAttribute(makeAttribute("four"));
-		ValidateUtil.validate(visit);
+		assertThrows(APIException.class, () -> ValidateUtil.validate(visit));
 	}
 	
 	private Visit makeVisit() {
@@ -186,7 +187,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		visit.setStopDatetime(c.getTime());
 		Errors errors = new BindException(visit, "visit");
 		new VisitValidator().validate(visit, errors);
-		assertEquals(true, errors.hasFieldErrors("stopDatetime"));
+		assertTrue(errors.hasFieldErrors("stopDatetime"));
 	}
 	
 	/**
@@ -208,7 +209,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(visit, "visit");
 		new VisitValidator().validate(visit, errors);
-		assertEquals(true, errors.hasFieldErrors("startDatetime"));
+		assertTrue(errors.hasFieldErrors("startDatetime"));
 	}
 	
 	/**
@@ -230,7 +231,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(visit, "visit");
 		new VisitValidator().validate(visit, errors);
-		assertEquals(true, errors.hasFieldErrors("stopDatetime"));
+		assertTrue(errors.hasFieldErrors("stopDatetime"));
 	}
 	
 	/**
@@ -240,7 +241,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	// This test will throw org.hibernate.PropertyValueException: not-null property references a null or transient value: org.openmrs.VisitAttribute.valueReference
 	// This is a general problem, i.e. that validators on Customizable can't really be called unless you set Hibernate's flushMode to MANUAL.  
 	// Once we figure it out, this test can be un-Ignored
-	@Ignore
+	@Disabled
 	public void validate_shouldFailIfAnAttributeIsBad() {
 		Visit visit = visitService.getVisit(1);
 		visit.addAttribute(makeAttribute(new Date()));
@@ -248,7 +249,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		visit.getActiveAttributes();
 		Errors errors = new BindException(visit, "visit");
 		new VisitValidator().validate(visit, errors);
-		assertEquals(true, errors.hasFieldErrors("attributes"));
+		assertTrue(errors.hasFieldErrors("attributes"));
 	}
 	
 	/**
@@ -439,7 +440,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(visit, "visit");
 		new VisitValidator().validate(visit, errors);
-		assertEquals(false, errors.hasFieldErrors("voidReason"));
+		assertFalse(errors.hasFieldErrors("voidReason"));
 	}
 	
 	/**
@@ -453,7 +454,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(visit, "visit");
 		new VisitValidator().validate(visit, errors);
-		assertEquals(true, errors.hasFieldErrors("voidReason"));
+		assertTrue(errors.hasFieldErrors("voidReason"));
 	}
 	
 	@Test

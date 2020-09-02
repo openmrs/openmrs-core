@@ -46,9 +46,8 @@ public class CareSetting extends BaseChangeableOpenmrsMetadata {
 	}
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "care_setting_id_gen")
-	@SequenceGenerator(name = "care_setting_id_gen", sequenceName = "care_setting_care_setting_id_seq")
-	@Column(name = "care_setting_id", nullable = false, updatable = false)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "care_setting_id")
 	private Integer careSettingId;
 	
 	@Column(name = "care_setting_type", nullable = false, length = 50)

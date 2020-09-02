@@ -9,8 +9,8 @@
  */
 package org.openmrs.module;
 
-import org.junit.Before;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
  * Has functionality commonly used by unit tests for module activator
@@ -29,7 +29,7 @@ public abstract class BaseModuleActivatorTest extends BaseContextSensitiveTest {
 	
 	protected ModuleTestData moduleTestData;
 	
-	@Before
+	@BeforeEach
 	public void beforeEachTest() {
 		moduleTestData = ModuleTestData.getInstance();
 		

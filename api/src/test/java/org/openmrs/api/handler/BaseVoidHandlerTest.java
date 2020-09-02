@@ -9,10 +9,13 @@
  */
 package org.openmrs.api.handler;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Date;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.Voidable;
@@ -31,7 +34,7 @@ public class BaseVoidHandlerTest {
 		Voidable voidable = new Person();
 		voidable.setVoided(false);
 		handler.handle(voidable, null, null, " ");
-		Assert.assertTrue(voidable.getVoided());
+		assertTrue(voidable.getVoided());
 	}
 	
 	/**
@@ -42,7 +45,7 @@ public class BaseVoidHandlerTest {
 		VoidHandler<Voidable> handler = new BaseVoidHandler();
 		Voidable voidable = new Person();
 		handler.handle(voidable, null, null, "THE REASON");
-		Assert.assertEquals("THE REASON", voidable.getVoidReason());
+		assertEquals("THE REASON", voidable.getVoidReason());
 	}
 	
 	/**
@@ -53,7 +56,7 @@ public class BaseVoidHandlerTest {
 		VoidHandler<Voidable> handler = new BaseVoidHandler();
 		Voidable voidable = new Person();
 		handler.handle(voidable, new User(2), null, " ");
-		Assert.assertEquals(2, voidable.getVoidedBy().getId().intValue());
+		assertEquals(2, voidable.getVoidedBy().getId().intValue());
 	}
 	
 	/**
@@ -65,7 +68,7 @@ public class BaseVoidHandlerTest {
 		Voidable voidable = new Person();
 		voidable.setVoidedBy(new User(3));
 		handler.handle(voidable, new User(2), null, " ");
-		Assert.assertEquals(3, voidable.getVoidedBy().getId().intValue());
+		assertEquals(3, voidable.getVoidedBy().getId().intValue());
 	}
 	
 	/**
@@ -78,7 +81,7 @@ public class BaseVoidHandlerTest {
 		VoidHandler<Voidable> handler = new BaseVoidHandler();
 		Voidable voidable = new Person();
 		handler.handle(voidable, null, d, " ");
-		Assert.assertEquals(d, voidable.getDateVoided());
+		assertEquals(d, voidable.getDateVoided());
 	}
 	
 	/**
@@ -93,7 +96,7 @@ public class BaseVoidHandlerTest {
 		voidable.setDateVoided(d); // make dateVoided non null
 		
 		handler.handle(voidable, null, new Date(), " ");
-		Assert.assertEquals(d, voidable.getDateVoided());
+		assertEquals(d, voidable.getDateVoided());
 	}
 	
 	/**
@@ -106,7 +109,7 @@ public class BaseVoidHandlerTest {
 		voidable.setVoided(true);
 		voidable.setVoidedBy(new User(1));
 		handler.handle(voidable, null, null, "THE REASON");
-		Assert.assertNull(voidable.getVoidReason());
+		assertNull(voidable.getVoidReason());
 	}
 	
 	/**
@@ -119,6 +122,6 @@ public class BaseVoidHandlerTest {
 		voidable.setVoided(true);
 		
 		handler.handle(voidable, null, null, "THE REASON");
-		Assert.assertEquals("THE REASON", voidable.getVoidReason());
+		assertEquals("THE REASON", voidable.getVoidReason());
 	}
 }

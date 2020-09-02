@@ -1,11 +1,12 @@
 <templateSet group="OpenMRS">
-  <template name="test" value="@Test&#10;public void $SHOULD_SENTENCE$() {&#10;    $END$&#10;}" description="OpenMRS Style JUnit 4 Test" toReformat="true" toShortenFQNames="true" useStaticImport="true">
-    <variable name="SHOULD_SENTENCE" expression="" defaultValue="" alwaysStopAt="true" />
+  <template name="test" value="@org.junit.Test&#10;public void $SHOULD_SENTENCE$() {&#10;&#9;&#10;&#9;$BODY$&#10;}" description="OpenMRS Style JUnit 4 Test" toReformat="true" toShortenFQNames="true" useStaticImport="true">
+    <variable name="SHOULD_SENTENCE" expression="" defaultValue="&quot;should&quot;" alwaysStopAt="true" />
+    <variable name="BODY" expression="" defaultValue="&quot;org.junit.Assert.fail(\&quot;not yet implemented\&quot;);&quot;" alwaysStopAt="true" />
     <context>
       <option name="JAVA_DECLARATION" value="true" />
     </context>
   </template>
-  <template name="beforeTest" value="@Before&#10;public void setUp() {&#10;    $BODY$&#10;}" description="OpenMRS Style JUnit 4 Test Before" toReformat="true" toShortenFQNames="true">
+  <template name="beforeTest" value="@org.junit.Before&#10;public void setUp() {&#10;&#9;$BODY$&#10;}" description="OpenMRS Style JUnit 4 Test Before" toReformat="true" toShortenFQNames="true">
     <variable name="BODY" expression="" defaultValue="" alwaysStopAt="true" />
     <context>
       <option name="JAVA_DECLARATION" value="true" />
@@ -78,11 +79,31 @@
       <option name="JAVA_STATEMENT" value="true" />
     </context>
   </template>
-  <template name="testException" value="@Test&#10;public void $SHOULD_FAIL_SENTENCE$() {&#10;&#9;$EXPECT$.expect($EXCEPTION$);&#10;&#9;$EXPECT$.expectMessage(&quot;$EXCEPTION_MESSAGE$&quot;);&#10;    $END$&#10;}" description="OpenMRS Style JUnit 4 Test for exception" toReformat="true" toShortenFQNames="true" useStaticImport="true">
-    <variable name="SHOULD_FAIL_SENTENCE" expression="" defaultValue="" alwaysStopAt="true" />
-    <variable name="EXPECT" expression="variableOfType(&quot;org.junit.rules.ExpectedException&quot;)" defaultValue="" alwaysStopAt="true" />
-    <variable name="EXCEPTION" expression="" defaultValue="" alwaysStopAt="true" />
-    <variable name="EXCEPTION_MESSAGE" expression="" defaultValue="&quot;Fail Due To&quot;" alwaysStopAt="true" />
+  <template name="testException" value="@org.junit.Test&#10;public void $SHOULD_FAIL_SENTENCE$() {&#10;&#9;&#10;&#9;org.junit.Assert.assertThrows($EXCEPTION$, () -&gt; $BODY$);&#10;}" description="OpenMRS Style JUnit 4 Test for exception" toReformat="true" toShortenFQNames="true" useStaticImport="true">
+    <variable name="SHOULD_FAIL_SENTENCE" expression="" defaultValue="&quot;shouldFailGiven&quot;" alwaysStopAt="true" />
+    <variable name="EXCEPTION" expression="" defaultValue="&quot;IllegalArgumentException.class&quot;" alwaysStopAt="true" />
+    <variable name="BODY" expression="" defaultValue="&quot;{}&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="JAVA_DECLARATION" value="true" />
+    </context>
+  </template>
+  <template name="beforeTest5" value="@org.junit.jupiter.api.BeforeEach&#10;public void setUp() {&#10;&#9;$BODY$&#10;}" description="OpenMRS Style JUnit 5 Test Before" toReformat="true" toShortenFQNames="true" useStaticImport="true">
+    <variable name="BODY" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="JAVA_DECLARATION" value="true" />
+    </context>
+  </template>
+  <template name="test5" value="@org.junit.jupiter.api.Test&#10;public void $SHOULD_SENTENCE$() {&#10;&#9;&#10;&#9;$BODY$&#10;}" description="OpenMRS Style JUnit 5 Test" toReformat="true" toShortenFQNames="true" useStaticImport="true">
+    <variable name="SHOULD_SENTENCE" expression="" defaultValue="&quot;should&quot;" alwaysStopAt="true" />
+    <variable name="BODY" expression="" defaultValue="&quot;org.junit.jupiter.api.Assertions.fail(\&quot;not yet implemented\&quot;);&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="JAVA_DECLARATION" value="true" />
+    </context>
+  </template>
+  <template name="testException5" value="@org.junit.jupiter.api.Test&#10;public void $SHOULD_FAIL_SENTENCE$() {&#10;&#10;&#9;org.junit.jupiter.api.Assertions.assertThrows($EXCEPTION$, () -&gt; $BODY$);&#10;}" description="OpenMRS Style JUnit 5 Test for exception" toReformat="true" toShortenFQNames="true" useStaticImport="true">
+    <variable name="SHOULD_FAIL_SENTENCE" expression="" defaultValue="&quot;shouldFailGiven&quot;" alwaysStopAt="true" />
+    <variable name="EXCEPTION" expression="" defaultValue="&quot;IllegalArgumentException.class&quot;" alwaysStopAt="true" />
+    <variable name="BODY" expression="" defaultValue="&quot;{}&quot;" alwaysStopAt="true" />
     <context>
       <option name="JAVA_DECLARATION" value="true" />
     </context>

@@ -13,13 +13,14 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
@@ -28,11 +29,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.openmrs.GlobalProperty;
 import org.openmrs.ImplementationId;
@@ -42,7 +41,7 @@ import org.openmrs.customdatatype.datatype.BooleanDatatype;
 import org.openmrs.customdatatype.datatype.DateDatatype;
 import org.openmrs.messagesource.MutableMessageSource;
 import org.openmrs.messagesource.impl.MutableResourceBundleMessageSource;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.HttpClient;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
@@ -65,10 +64,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 
 	private CacheManager cacheManager;
 	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
-	
-	@Before
+	@BeforeEach
 	public void runBeforeEachTest() {
 		adminService = Context.getAdministrationService();
 		implementationHttpClient = mock(HttpClient.class);
@@ -91,7 +87,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		// save a null impl id. no exception thrown
 		adminService.setImplementationId(null);
 		ImplementationId afterNull = adminService.getImplementationId();
-		assertNull("There shouldn't be an impl id defined after setting a null impl id", afterNull);
+		assertNull(afterNull, "There shouldn't be an impl id defined after setting a null impl id");
 	}
 	
 	/**
@@ -102,15 +98,9 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	@Test()
 	public void setImplementationId_shouldThrowAPIExceptionIfGivenEmptyImplementationIdObject() {
 		// save a blank impl id. exception thrown
-		try {
-			adminService.setImplementationId(new ImplementationId());
-			fail("An exception should be thrown on a blank impl id save");
-		}
-		catch (APIException e) {
-			// expected exception
-		}
+		assertThrows(APIException.class, () -> adminService.setImplementationId(new ImplementationId()));
 		ImplementationId afterBlank = adminService.getImplementationId();
-		assertNull("There shouldn't be an impl id defined after setting a blank impl id", afterBlank);
+		assertNull(afterBlank, "There shouldn't be an impl id defined after setting a blank impl id");
 	}
 	
 	/**
@@ -124,15 +114,9 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		invalidId.setName("an invalid impl id for a unit test");
 		invalidId.setPassphrase("some valid passphrase");
 		invalidId.setDescription("Some valid description");
-		try {
-			adminService.setImplementationId(invalidId);
-			fail("An exception should be thrown on an invalid impl id save");
-		}
-		catch (APIException e) {
-			// expected exception
-		}
+		assertThrows(APIException.class, () -> adminService.setImplementationId(invalidId));
 		ImplementationId afterInvalid = adminService.getImplementationId();
-		assertNull("There shouldn't be an impl id defined after setting an invalid impl id", afterInvalid);
+		assertNull(afterInvalid, "There shouldn't be an impl id defined after setting an invalid impl id");
 	}
 	
 	@Test
@@ -143,19 +127,13 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		invalidId2.setName("an invalid impl id for a unit test");
 		invalidId2.setPassphrase("some valid passphrase");
 		invalidId2.setDescription("Some valid description");
-		try {
-			adminService.setImplementationId(invalidId2);
-			fail("An exception should be thrown on an invalid impl id save");
-		}
-		catch (APIException e) {
-			// expected exception
-		}
+		assertThrows(APIException.class, () -> adminService.setImplementationId(invalidId2));
 		ImplementationId afterInvalid2 = adminService.getImplementationId();
-		assertNull("There shouldn't be an impl id defined after setting an invalid impl id", afterInvalid2);
+		assertNull(afterInvalid2, "There shouldn't be an impl id defined after setting an invalid impl id");
 	}
 	
 	@Test
-	@Ignore
+	@Disabled
 	public void setImplementationId_shouldCreateImplementationIdInDatabase() {
 		// save a valid impl id
 		ImplementationId validId = new ImplementationId();
@@ -169,7 +147,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Ignore
+	@Disabled
 	public void setImplementationId_shouldOverwriteImplementationIdInDatabaseIfExists() {
 		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-general.xml");
 		
@@ -188,7 +166,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Ignore
+	@Disabled
 	public void setImplementationId_shouldSetUuidOnImplementationIdGlobalProperty() {
 		ImplementationId validId = new ImplementationId();
 		validId.setImplementationId("JUNIT-TEST");
@@ -234,10 +212,10 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		assertEquals("new-value", newValue);
 	}
 	
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void updateGlobalProperty_shouldFailIfGlobalPropertyBeingUpdatedDoesNotAlreadyExist() {
 		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
-		adminService.updateGlobalProperty("a_invalid_gp_key", "asdfsadfsafd");
+		assertThrows(IllegalStateException.class, () -> adminService.updateGlobalProperty("a_invalid_gp_key", "asdfsadfsafd"));
 	}
 	
 	@Test
@@ -390,7 +368,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Ignore
+	@Disabled
 	//TODO: This test fails for some reason
 	public void getPresentationLocales_shouldReturnAtLeastOneLocaleIfNoLocalesDefinedInDatabaseYet() {
 		assertTrue(adminService.getPresentationLocales().size() > 0);
@@ -443,11 +421,9 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		assertThat("localeList contains default locale but should not for this test case", localeList,
 			not(containsString(LocaleUtility.getDefaultLocale().toString())));
 
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage("can not be removed from allowed locales list because it is the default locale");
 		
-		adminService.saveGlobalProperty(
-			new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, localeList));
+		APIException exception = assertThrows(APIException.class, () -> adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, localeList)));
+		assertThat(exception.getMessage(), containsString("can not be removed from allowed locales list because it is the default locale"));
 	}
 
 	@Test
@@ -455,11 +431,9 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 
 		Locale defaultLocale = new Locale("fr");
 
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage("is not in allowed locales list");
 
-		adminService.saveGlobalProperty(
-			new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE, defaultLocale.toString()));
+		APIException exception = assertThrows(APIException.class, () -> adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE, defaultLocale.toString())));
+		assertThat(exception.getMessage(), containsString("is not in allowed locales list"));
 	}
 	
 	@Test
@@ -590,10 +564,10 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		List<Locale> searchLocales = adminService.getSearchLocales();
 		
 		//then
-		assertTrue("en_US", searchLocales.contains(new Locale("en", "US")));
-		assertTrue("pl", searchLocales.contains(new Locale("pl")));
-		assertTrue("es", searchLocales.contains(new Locale("es")));
-		assertFalse("es_CL", searchLocales.contains(new Locale("es", "CL")));
+		assertTrue(searchLocales.contains(new Locale("en", "US")), "en_US");
+		assertTrue(searchLocales.contains(new Locale("pl")), "pl");
+		assertTrue(searchLocales.contains(new Locale("es")), "es");
+		assertFalse(searchLocales.contains(new Locale("es", "CL")), "es_CL");
 	}
 	
 	@Test
@@ -628,15 +602,15 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		List<Locale> searchLocales = adminService.getSearchLocales();
 		
 		//then
-		assertTrue("en_GB", searchLocales.contains(new Locale("en", "GB")));
-		assertTrue("en_US", searchLocales.contains(new Locale("en", "US")));
-		assertFalse("pl", searchLocales.contains(new Locale("pl")));
+		assertTrue(searchLocales.contains(new Locale("en", "GB")), "en_GB");
+		assertTrue(searchLocales.contains(new Locale("en", "US")), "en_US");
+		assertFalse(searchLocales.contains(new Locale("pl")), "pl");
 	}
 	
-	@Test(expected = APIException.class)
+	@Test
 	public void validate_shouldThrowThrowAPIExceptionIfTheInputIsNull() {
 		BindException errors = new BindException(new Object(), "");
-		adminService.validate(null, errors);
+		assertThrows(APIException.class, () -> adminService.validate(null, errors));
 	}
 	
 	@Test
@@ -663,8 +637,8 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Context.getMessageSourceService().setActiveMessageSource(mutableMessageSource);
 		
 		assertEquals(2, presentationLocales.size());
-		assertTrue("en", presentationLocales.contains(new Locale("en")));
-		assertTrue("es_CL", presentationLocales.contains(new Locale("es", "CL")));
+		assertTrue(presentationLocales.contains(new Locale("en")), "en");
+		assertTrue(presentationLocales.contains(new Locale("es", "CL")), "es_CL");
 	}
 	
 	@Test
@@ -692,9 +666,9 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Context.getMessageSourceService().setActiveMessageSource(mutableMessageSource);
 		
 		assertEquals(3, presentationLocales.size());
-		assertTrue("es_CL", presentationLocales.contains(new Locale("es", "CL")));
-		assertTrue("es_SN", presentationLocales.contains(new Locale("es", "SN")));
-		assertTrue("en", presentationLocales.contains(new Locale("en")));
+		assertTrue(presentationLocales.contains(new Locale("es", "CL")), "es_CL");
+		assertTrue(presentationLocales.contains(new Locale("es", "SN")), "es_SN");
+		assertTrue(presentationLocales.contains(new Locale("en")), "en");
 	}
 	
 	@Test
@@ -720,8 +694,8 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Context.getMessageSourceService().setActiveMessageSource(mutableMessageSource);
 		
 		assertEquals(2, presentationLocales.size());
-		assertTrue("en", presentationLocales.contains(new Locale("en")));
-		assertTrue("es", presentationLocales.contains(new Locale("es")));
+		assertTrue(presentationLocales.contains(new Locale("en")), "en");
+		assertTrue(presentationLocales.contains(new Locale("es")), "es");
 	}
 	
 	@Test
@@ -747,8 +721,8 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Context.getMessageSourceService().setActiveMessageSource(mutableMessageSource);
 		
 		assertEquals(2, presentationLocales.size());
-		assertTrue("en", presentationLocales.contains(new Locale("en")));
-		assertTrue("es", presentationLocales.contains(new Locale("es")));
+		assertTrue(presentationLocales.contains(new Locale("en")), "en");
+		assertTrue(presentationLocales.contains(new Locale("es")), "es");
 	}
 	
 	@Test

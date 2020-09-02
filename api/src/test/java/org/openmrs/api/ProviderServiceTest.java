@@ -9,11 +9,13 @@
  */
 package org.openmrs.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -24,9 +26,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
@@ -35,7 +36,7 @@ import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
 import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.datatype.FreeTextDatatype;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -53,7 +54,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	private ProviderService service;
 	
-	@Before
+	@BeforeEach
 	public void before() {
 		service = Context.getProviderService();
 		executeDataSet(PROVIDERS_INITIAL_XML);
@@ -265,11 +266,11 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		Person person = Context.getPersonService().getPerson(999);
 		provider.setPerson(person);
 		service.saveProvider(provider);
-		Assert.assertNotNull(provider.getId());
-		Assert.assertNotNull(provider.getUuid());
-		Assert.assertNotNull(provider.getCreator());
-		Assert.assertNotNull(provider.getDateCreated());
-		Assert.assertEquals(999, provider.getPerson().getId().intValue());
+		assertNotNull(provider.getId());
+		assertNotNull(provider.getUuid());
+		assertNotNull(provider.getCreator());
+		assertNotNull(provider.getDateCreated());
+		assertEquals(999, provider.getPerson().getId().intValue());
 		
 	}
 	
@@ -319,8 +320,8 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		Map<ProviderAttributeType, Object> attributes = new HashMap<>();
 		attributes.put(service.getProviderAttributeType(1), new SimpleDateFormat("yyyy-MM-dd").parse("2011-04-25"));
 		List<Provider> providers = service.getProviders("RobertClive", 0, null, attributes);
-		Assert.assertEquals(1, providers.size());
-		Assert.assertEquals(Integer.valueOf(1), providers.get(0).getProviderId());
+		assertEquals(1, providers.size());
+		assertEquals(Integer.valueOf(1), providers.get(0).getProviderId());
 	}
 	
 	/**
@@ -332,7 +333,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		Map<ProviderAttributeType, Object> attributes = new HashMap<>();
 		attributes.put(service.getProviderAttributeType(1), new SimpleDateFormat("yyyy-MM-dd").parse("1411-04-25"));
 		List<Provider> providers = service.getProviders("RobertClive", 0, null, attributes);
-		Assert.assertEquals(0, providers.size());
+		assertEquals(0, providers.size());
 	}
 	
 	/**
@@ -341,7 +342,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getProviders_shouldReturnRetiredProvidersByDefault() {
 		List<Provider> providers = service.getProviders(null, null, null, null);
-		Assert.assertEquals(9, providers.size());
+		assertEquals(9, providers.size());
 	}
 	
 	/**
@@ -350,21 +351,20 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getProviders_shouldNotReturnRetiredProvidersIfIncludeRetiredIsFalse() {
 		List<Provider> providers = service.getProviders(null, null, null, null, false);
-		Assert.assertEquals(7, providers.size());
+		assertEquals(7, providers.size());
 	}
 	
 	/**
 	 * @see ProviderService#getProvidersByPerson(Person)
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void getProvidersByPerson_shouldFailIfPersonIsNull() {
 		//given
 		
 		//when
-		service.getProvidersByPerson(null);
+		assertThrows(IllegalArgumentException.class, () -> service.getProvidersByPerson(null));
 		
 		//then
-		Assert.fail();
 	}
 	
 	/**
@@ -383,8 +383,8 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		Collection<Provider> providers = service.getProvidersByPerson(person);
 		
 		//then
-		Assert.assertEquals(1, providers.size());
-		Assert.assertTrue(providers.contains(provider));
+		assertEquals(1, providers.size());
+		assertTrue(providers.contains(provider));
 	}
 	
 	/**
@@ -399,7 +399,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		List<Provider> providers = service.getProviders("", null, null, null, true);
 		
 		//then
-		Assert.assertEquals(allProviders.size(), providers.size());
+		assertEquals(allProviders.size(), providers.size());
 	}
 	
 	/**
@@ -412,7 +412,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		
 		Provider existingProviderToEdit = service.getProvider(1);
 		existingProviderToEdit.setIdentifier(duplicateProvider.getIdentifier());
-		Assert.assertFalse(service.isProviderIdentifierUnique(existingProviderToEdit));
+		assertFalse(service.isProviderIdentifierUnique(existingProviderToEdit));
 	}
 	
 	/**
@@ -422,10 +422,10 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	public void getProviderByIdentifier_shouldGetAProviderMatchingTheSpecifiedIdentifierIgnoringCase() {
 		String identifier = "8a760";
 		Provider provider = service.getProviderByIdentifier(identifier);
-		Assert.assertEquals("a2c3868a-6b90-11e0-93c3-18a905e044dc", provider.getUuid());
+		assertEquals("a2c3868a-6b90-11e0-93c3-18a905e044dc", provider.getUuid());
 		//ensures that the case sensitive test stays valid just in case 
 		//the test dataset is edited and the case is changed
-		Assert.assertNotSame(identifier, provider.getIdentifier());
+		assertNotSame(identifier, provider.getIdentifier());
 	}
 	
 	/**
@@ -437,7 +437,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		List<Provider> providers = service.getProviders(identifier, null, null, null, true);
 		Provider provider = service.getProviderByIdentifier(identifier);
 		
-		Assert.assertTrue(providers.contains(provider));
+		assertTrue(providers.contains(provider));
 	}
 	
 	/**
@@ -446,7 +446,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void isProviderIdentifierUnique_shouldReturnTrueIfTheIdentifierIsNull() {
 		Provider provider = new Provider();
-		Assert.assertTrue(service.isProviderIdentifierUnique(provider));
+		assertTrue(service.isProviderIdentifierUnique(provider));
 	}
 	
 	/**
@@ -456,7 +456,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	public void isProviderIdentifierUnique_shouldReturnTrueIfTheIdentifierIsABlankString() {
 		Provider provider = new Provider();
 		provider.setIdentifier("");
-		Assert.assertTrue(service.isProviderIdentifierUnique(provider));
+		assertTrue(service.isProviderIdentifierUnique(provider));
 	}
 	
 	/**

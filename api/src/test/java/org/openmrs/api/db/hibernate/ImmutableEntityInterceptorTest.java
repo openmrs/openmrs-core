@@ -9,23 +9,21 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Order;
 import org.openmrs.api.UnchangeableObjectException;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
  * Contains tests for ImmutableEntityInterceptor
  */
 public class ImmutableEntityInterceptorTest extends BaseContextSensitiveTest {
 	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	
 	private static class SomeImmutableEntityInterceptor extends ImmutableEntityInterceptor {
 		
@@ -68,10 +66,8 @@ public class ImmutableEntityInterceptorTest extends BaseContextSensitiveTest {
 		String[] previousState = new String[] { "old" };
 		String[] currentState = new String[] { "new" };
 		ImmutableEntityInterceptor interceptor = new SomeImmutableEntityInterceptor();
-		expectedException.expect(UnchangeableObjectException.class);
-		expectedException.expectMessage(is(Context.getMessageSourceService().getMessage("editing.fields.not.allowed",
-		    new Object[] { "[immutable]", Order.class.getSimpleName() }, null)));
-		interceptor.onFlushDirty(new Order(), null, currentState, previousState, propertyNames, null);
+		UnchangeableObjectException exception = assertThrows(UnchangeableObjectException.class, () -> interceptor.onFlushDirty(new Order(), null, currentState, previousState, propertyNames, null));
+		assertThat(exception.getMessage(), is(Context.getMessageSourceService().getMessage("editing.fields.not.allowed", new Object[] { "[immutable]", Order.class.getSimpleName() }, null)));
 	}
 	
 	/**
@@ -97,12 +93,10 @@ public class ImmutableEntityInterceptorTest extends BaseContextSensitiveTest {
 		String[] previousState = new String[] { "old" };
 		String[] currentState = new String[] { "new" };
 		ImmutableEntityInterceptor interceptor = new SomeImmutableEntityInterceptor();
-		expectedException.expect(UnchangeableObjectException.class);
-		expectedException.expectMessage(is(Context.getMessageSourceService().getMessage("editing.fields.not.allowed",
-		    new Object[] { "[immutable]", Order.class.getSimpleName() }, null)));
 		Order order = new Order();
 		order.setVoided(true);
-		interceptor.onFlushDirty(order, null, currentState, previousState, propertyNames, null);
+		UnchangeableObjectException exception = assertThrows(UnchangeableObjectException.class, () -> interceptor.onFlushDirty(order, null, currentState, previousState, propertyNames, null));
+		assertThat(exception.getMessage(), is(Context.getMessageSourceService().getMessage("editing.fields.not.allowed", new Object[] { "[immutable]", Order.class.getSimpleName() }, null)));
 	}
 	
 	/**
