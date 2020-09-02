@@ -17,7 +17,7 @@ import java.util.Set;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.api.OrderServiceTest;
 import org.openmrs.liquibase.ChangeLogVersionFinder;
 import org.openmrs.util.H2DatabaseIT;

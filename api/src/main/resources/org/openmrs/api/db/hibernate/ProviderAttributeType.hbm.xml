@@ -19,7 +19,9 @@
 	<class name="ProviderAttributeType" table="provider_attribute_type">
 
         <id name="providerAttributeTypeId" type="int" column="provider_attribute_type_id">
-            <generator class="native" />
+			<generator class="native">
+				<param name="sequence">provider_attribute_type_provider_attribute_type_id_seq</param>
+			</generator>
         </id>
 
         

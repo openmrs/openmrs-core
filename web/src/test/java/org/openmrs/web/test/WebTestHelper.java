@@ -9,12 +9,14 @@
  */
 package org.openmrs.web.test;
 
-import java.util.List;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
-import org.junit.Assert;
 import org.openmrs.api.context.Context;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -113,20 +115,20 @@ public class WebTestHelper {
 				break;
 			}
 		}
-		Assert.assertNotNull("The requested URI has no mapping: " + request.getRequestURI(), handlerChain);
+		assertNotNull(handlerChain, "The requested URI has no mapping: " + request.getRequestURI());
 		
 		boolean supported = false;
 		for (HandlerAdapter handlerAdapter : handlerAdapters) {
 			final Object handler = handlerChain.getHandler();
 			if (handlerAdapter.supports(handler)) {
-				Assert.assertFalse("The requested URI has more than one handler: " + request.getRequestURI(), supported);
+				assertFalse(supported, "The requested URI has more than one handler: " + request.getRequestURI());
 				
 				modelAndView = handlerAdapter.handle(request, response, handler);
 				supported = true;
 			}
 		}
 		
-		Assert.assertTrue("The requested URI has no handlers: " + request.getRequestURI(), supported);
+		assertTrue(supported, "The requested URI has no handlers: " + request.getRequestURI());
 		
 		return new Response(response, request.getSession(), modelAndView);
 	}

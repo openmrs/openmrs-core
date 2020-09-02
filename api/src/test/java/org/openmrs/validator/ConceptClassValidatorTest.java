@@ -9,10 +9,12 @@
  */
 package org.openmrs.validator;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 import org.openmrs.ConceptClass;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -32,17 +34,17 @@ public class ConceptClassValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(cc, "cc");
 		new ConceptClassValidator().validate(cc, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 		
 		cc.setName("");
 		errors = new BindException(cc, "cc");
 		new ConceptClassValidator().validate(cc, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 		
 		cc.setName(" ");
 		errors = new BindException(cc, "cc");
 		new ConceptClassValidator().validate(cc, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 	}
 	
 	@Test
@@ -53,17 +55,17 @@ public class ConceptClassValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(cc, "cc");
 		new ConceptClassValidator().validate(cc, errors);
-		Assert.assertFalse(errors.hasFieldErrors("description"));
+		assertFalse(errors.hasFieldErrors("description"));
 		
 		cc.setDescription("");
 		errors = new BindException(cc, "cc");
 		new ConceptClassValidator().validate(cc, errors);
-		Assert.assertFalse(errors.hasFieldErrors("description"));
+		assertFalse(errors.hasFieldErrors("description"));
 		
 		cc.setDescription(" ");
 		errors = new BindException(cc, "cc");
 		new ConceptClassValidator().validate(cc, errors);
-		Assert.assertFalse(errors.hasFieldErrors("description"));
+		assertFalse(errors.hasFieldErrors("description"));
 		
 	}
 	
@@ -79,7 +81,7 @@ public class ConceptClassValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(cc, "cc");
 		new ConceptClassValidator().validate(cc, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -94,7 +96,7 @@ public class ConceptClassValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(cc, "cc");
 		new ConceptClassValidator().validate(cc, errors);
 		
-		Assert.assertTrue(errors.hasErrors());
+		assertTrue(errors.hasErrors());
 	}
 	
 	/**
@@ -110,7 +112,7 @@ public class ConceptClassValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(cc, "cc");
 		new ConceptClassValidator().validate(cc, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -129,8 +131,8 @@ public class ConceptClassValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(cc, "cc");
 		new ConceptClassValidator().validate(cc, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("name"));
-		Assert.assertTrue(errors.hasFieldErrors("description"));
-		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+		assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("description"));
+		assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 }

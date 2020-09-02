@@ -9,17 +9,17 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.OrderGroup;
@@ -27,7 +27,7 @@ import org.openmrs.Patient;
 import org.openmrs.api.APIException;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -42,7 +42,7 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	
 	private static final String ORDER_GROUP = "org/openmrs/api/include/OrderServiceTest-createOrderGroup.xml";
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		executeDataSet(ORDER_SET);
 		executeDataSet(ORDER_GROUP);
@@ -68,10 +68,10 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 		});
 		
 		OrderGroup savedOrderGroup = dao.saveOrderGroup(newOrderGroup);
-		assertNotNull("OrderGroup gets saved", savedOrderGroup.getOrderGroupId());
+		assertNotNull(savedOrderGroup.getOrderGroupId(), "OrderGroup gets saved");
 		
 		for (Order savedOrder : savedOrderGroup.getOrders()) {
-			assertNull("Order is not saved as a part of Order Group", savedOrder.getOrderId());
+			assertNull(savedOrder.getOrderId(), "Order is not saved as a part of Order Group");
 		}
 	}
 	/**

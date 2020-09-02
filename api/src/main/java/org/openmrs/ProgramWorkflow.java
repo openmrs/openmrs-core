@@ -32,7 +32,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 /**
@@ -51,8 +50,7 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	
 	@Id
 	@Column(name = "program_workflow_id")
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "program_workflow_id_gen")
-	@SequenceGenerator(name = "program_workflow_id_gen", sequenceName = "program_workflow_program_workflow_id_seq")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer programWorkflowId;
 	
 	@ManyToOne

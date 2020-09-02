@@ -21,11 +21,14 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.persistence.Transient;
-
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.ContainedIn;
+import org.hibernate.search.annotations.DateBridge;
 import org.hibernate.search.annotations.DocumentId;
+import org.hibernate.search.annotations.EncodingType;
 import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Resolution;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +62,9 @@ public class Person extends BaseChangeableOpenmrsData {
 	@Field
 	private String gender;
 	
+
+	@Field(analyze = Analyze.YES)
+	@DateBridge(encoding = EncodingType.STRING, resolution = Resolution.DAY)
 	private Date birthdate;
 	
 	private Date birthtime;

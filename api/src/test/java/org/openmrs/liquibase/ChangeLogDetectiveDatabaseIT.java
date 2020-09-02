@@ -9,14 +9,14 @@
  */
 package org.openmrs.liquibase;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.util.H2DatabaseIT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +52,7 @@ public class ChangeLogDetectiveDatabaseIT extends H2DatabaseIT {
 			fail("IllegalStateException was expected but not raised");
 		}
 		catch (IllegalStateException ise) {
-			Assert.assertTrue("IllegalStateException was raised as expected", true);
+			assertTrue(true, "IllegalStateException was raised as expected");
 		}
 	}
 	

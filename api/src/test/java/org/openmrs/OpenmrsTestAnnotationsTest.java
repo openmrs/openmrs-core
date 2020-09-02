@@ -9,11 +9,13 @@
  */
 package org.openmrs;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
  * Runs tests on the "@SkipBaseSetup" annotation that OpenMRS unit tests use.
@@ -28,9 +30,9 @@ public class OpenmrsTestAnnotationsTest extends BaseContextSensitiveTest {
 	@Test
 	public void shouldCallBaseSetupMethod() {
 		// make sure we're authenticated
-		Assert.assertTrue(Context.isAuthenticated());
+		assertTrue(Context.isAuthenticated());
 		// make sure we have some data from the EXAMPLE_XML_DATASET_PACKAGE_PATH
-		Assert.assertTrue(Context.getEncounterService().getAllEncounterTypes().size() > 0);
+		assertTrue(Context.getEncounterService().getAllEncounterTypes().size() > 0);
 		// make sure we have the data from the INITIAL_DATA_SET_XML_FILENAME
 		Context.authenticate("admin", "test");
 		
@@ -51,7 +53,7 @@ public class OpenmrsTestAnnotationsTest extends BaseContextSensitiveTest {
 		
 		// this depends on Context.logout() being in the previous test method
 		
-		Assert.assertFalse(Context.isAuthenticated());
+		assertFalse(Context.isAuthenticated());
 	}
 	
 }
