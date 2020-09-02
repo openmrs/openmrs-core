@@ -9,9 +9,10 @@
  */
 package org.openmrs.propertyeditor;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.openmrs.test.BaseContextSensitiveTest;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import org.junit.jupiter.api.Test;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 public class RoleEditorTest extends BaseContextSensitiveTest {
 	
@@ -22,7 +23,7 @@ public class RoleEditorTest extends BaseContextSensitiveTest {
 	public void setAsText_shouldSetUsingName() {
 		RoleEditor editor = new RoleEditor();
 		editor.setAsText("Provider");
-		Assert.assertNotNull(editor.getValue());
+		assertNotNull(editor.getValue());
 	}
 	
 	/**
@@ -32,6 +33,6 @@ public class RoleEditorTest extends BaseContextSensitiveTest {
 	public void setAsText_shouldSetUsingUuid() {
 		RoleEditor editor = new RoleEditor();
 		editor.setAsText("3480cb6d-c291-46c8-8d3a-96dc33d199fb");
-		Assert.assertNotNull(editor.getValue());
+		assertNotNull(editor.getValue());
 	}
 }

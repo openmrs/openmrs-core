@@ -9,6 +9,12 @@
  */
 package org.openmrs.serialization;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.beans.EventHandler;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
@@ -16,19 +22,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.openmrs.OpenmrsObject;
-
 import com.thoughtworks.xstream.XStreamException;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.Test;
+import org.openmrs.OpenmrsObject;
 
 public class SimpleXStreamSerializerTest {
 	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	
 	/**
 	 * @throws SerializationException
@@ -52,7 +52,7 @@ public class SimpleXStreamSerializerTest {
 		
 		String serializedFoo = serializer.serialize(foo);
 		
-		Assert.assertTrue(StringUtils.deleteWhitespace(serializedFoo).equals(
+		assertTrue(StringUtils.deleteWhitespace(serializedFoo).equals(
 		    StringUtils.deleteWhitespace("<org.openmrs.serialization.Foo>\n" + "  <attributeString>test</attributeString>\n"
 		            + "  <attributeInt>1</attributeInt>\n" + "  <attributeList>\n" + "    <string>foo</string>\n"
 		            + "    <string>bar</string>\n" + "  </attributeList>\n" + "  <attributeMap>\n" + "    <entry>\n"
@@ -81,19 +81,19 @@ public class SimpleXStreamSerializerTest {
 		
 		Foo foo = serializer.deserialize(serializedFoo, Foo.class);
 		
-		Assert.assertTrue(foo.getAttributeString().equals("Testing"));
-		Assert.assertTrue(foo.getAttributeInt() == 4);
-		
-		List newList = foo.getAttributeList();
-		Assert.assertTrue(newList.size() == 2);
-		Assert.assertTrue(newList.get(0).equals("fooBar"));
-		Assert.assertTrue(newList.get(1).equals("bar"));
-		
+		assertTrue(foo.getAttributeString().equals("Testing"));
+		assertEquals(4, foo.getAttributeInt());
+
+		List<String> newList = foo.getAttributeList();
+		assertThat(newList, hasSize(2));
+		assertTrue(newList.get(0).equals("fooBar"));
+		assertTrue(newList.get(1).equals("bar"));
+
 		Map newMap = foo.getAttributeMap();
-		Assert.assertTrue(newMap.size() == 3);
-		Assert.assertTrue(newMap.get(10).equals("foo"));
-		Assert.assertTrue(newMap.get(20).equals("fooBar"));
-		Assert.assertTrue(newMap.get(30).equals("bar"));
+		assertEquals(3, newMap.size());
+		assertTrue(newMap.get(10).equals("foo"));
+		assertTrue(newMap.get(20).equals("fooBar"));
+		assertTrue(newMap.get(30).equals("bar"));
 		
 	}
 	
@@ -108,8 +108,7 @@ public class SimpleXStreamSerializerTest {
 		        + "<command>" + "<string>someApp</string>" + "</command></target>" + "<action>start</action>" + "</handler>"
 		        + "</dynamic-proxy>";
 		
-		expectedException.expect(SerializationException.class);
-		new SimpleXStreamSerializer().deserialize(serialized, OpenmrsObject.class);
+		assertThrows(SerializationException.class, () -> new SimpleXStreamSerializer().deserialize(serialized, OpenmrsObject.class));
 	}
 	
 	/**
@@ -121,8 +120,7 @@ public class SimpleXStreamSerializerTest {
 		String xml = "<!DOCTYPE ZSL [<!ENTITY xxe1 \"some attribute value\" >]>" + "<org.openmrs.serialization.Foo>"
 		        + "<attributeString>&xxe1;</attributeString>" + "</org.openmrs.serialization.Foo>";
 		
-		expectedException.expect(SerializationException.class);
-		new SimpleXStreamSerializer().deserialize(xml, Foo.class);
+		assertThrows(SerializationException.class, () -> new SimpleXStreamSerializer().deserialize(xml, Foo.class));
 	}
 	
 	/**
@@ -133,7 +131,6 @@ public class SimpleXStreamSerializerTest {
 	public void serialize_shouldNotSerializeProxies() throws SerializationException {
 		EventHandler h = new EventHandler(new ProcessBuilder("someApp"), "start", null, null);
 		Object proxy = Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class[] { OpenmrsObject.class }, h);
-		expectedException.expect(XStreamException.class);
-		new SimpleXStreamSerializer().serialize(proxy);
+		assertThrows(XStreamException.class, () -> new SimpleXStreamSerializer().serialize(proxy));
 	}
 }

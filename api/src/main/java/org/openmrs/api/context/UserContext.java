@@ -98,7 +98,7 @@ public class UserContext implements Serializable {
 	/**
 	 * Authenticate user with the provided credentials. The authentication scheme must be Spring wired, see {@link Context#getAuthenticationScheme()}.
 	 * 
-	 * @param The credentials to use to authenticate
+	 * @param credentials The credentials to use to authenticate
 	 * @return The authenticated client information
 	 * @throws ContextAuthenticationException
 	 * 

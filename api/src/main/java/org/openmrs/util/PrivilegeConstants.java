@@ -569,4 +569,12 @@ public class PrivilegeConstants {
 	@AddOnStartup(description = "Able to delete diagnoses")
 	public static final String DELETE_DIAGNOSES = "Delete Diagnoses";
 
+	@AddOnStartup(description = "Able to get order set attribute types")
+	public static final String GET_ORDER_SET_ATTRIBUTE_TYPES = "Get Order Set Attribute Types";
+
+	@AddOnStartup(description = "Able to add/edit/retire order set attribute types")
+	public static final String MANAGE_ORDER_SET_ATTRIBUTE_TYPES = "Manage Order Set Attribute Types";
+
+	public static final String PURGE_ORDER_SET_ATTRIBUTE_TYPES = "Purge Order Set Attribute Types";
+
 }

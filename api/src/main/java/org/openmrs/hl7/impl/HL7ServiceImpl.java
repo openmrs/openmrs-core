@@ -1000,7 +1000,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 */
 	@Override
 	public String getUuidFromIdentifiers(CX[] identifiers) throws HL7Exception {
-		Boolean found = false;
+		boolean found = false;
 		String uuid = null;
 		for (CX identifier : identifiers) {
 			// check for UUID as the assigning authority

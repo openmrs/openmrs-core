@@ -23,8 +23,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.hamcrest.CoreMatchers;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class HttpClientTest {
 	
@@ -32,7 +32,7 @@ public class HttpClientTest {
 	
 	private HttpURLConnection connection;
 	
-	@Before
+	@BeforeEach
 	public void setUp() throws IOException {
 		HttpUrl url = mock(HttpUrl.class);
 		client = new HttpClient(url);

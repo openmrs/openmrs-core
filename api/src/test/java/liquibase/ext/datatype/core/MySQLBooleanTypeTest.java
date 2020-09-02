@@ -9,10 +9,14 @@
  */
 package liquibase.ext.datatype.core;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Set;
+
 import liquibase.database.AbstractJdbcDatabase;
 import liquibase.database.Database;
 import liquibase.database.core.AbstractDb2Database;
@@ -21,12 +25,9 @@ import liquibase.database.core.MySQLDatabase;
 import liquibase.database.core.UnsupportedDatabase;
 import liquibase.datatype.DatabaseDataType;
 import liquibase.datatype.core.BooleanType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class MySQLBooleanTypeTest {
 	

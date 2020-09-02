@@ -127,7 +127,21 @@ public class CohortMembership extends BaseChangeableOpenmrsData implements Compa
 	 * </ol>
 	 *
 	 * @param o other membership to compare this to
-	 * @return
+	 * @return value greater than <code>0</code> if this is not voided and o is voided; or value less
+	 *         than <code>0</code> if this is voided and o is not voided; if both is voided or not then
+	 *         value greater than <code>0</code> if o.getEndDate() return null; or value less than
+	 *         <code>0</code> if this.getEndDate() return null; if both are null or not then value
+	 *         greater than <code>0</code> if this.getEndDate() is before o.getEndDate(); or value less
+	 *         than <code>0</code> if this.getEndDate() is after o.getEndDate(); if are equal then value
+	 *         greater than <code>0</code> if this.getStartDate() return null; or value less than
+	 *         <code>0</code> if o.getStartDate() return null; if both are null or not then value greater
+	 *         than <code>0</code> if this.getStartDate() is before o.getStartDate(); or value less than
+	 *         <code>0</code> if this.getStartDate() is after o.getStartDate(); if are equal then value
+	 *         greater than <code>0</code> if o.getPatientId() is greater than this.getPatientId(); or
+	 *         value less than <code>0</code> if o.getPatientId() is less than this.getPatientId(); if
+	 *         are equal then value greater than <code>0</code> if o.getUuid() is greater than
+	 *         this.getUuid(); or value less than <code>0</code> if o.getUuid() is less than
+	 *         this.getUuid(); or <code>0</code> if are equal
 	 */
 	@Override
 	public int compareTo(CohortMembership o) {

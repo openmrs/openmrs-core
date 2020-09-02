@@ -9,14 +9,16 @@
  */
 package org.openmrs.api.handler;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.Date;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.User;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
  * Tests the {@link ConceptNameSaveHandler} class.
@@ -46,9 +48,9 @@ public class ConceptNameSaveHandlerTest extends BaseContextSensitiveTest {
 		handler.handle(name, null, null, null);
 		for (ConceptNameTag tag : name.getTags()) {
 			if (tag.getTag().equals("preferred")) {
-				Assert.assertEquals(4, tag.getConceptNameTagId().intValue());
+				assertEquals(4, tag.getConceptNameTagId().intValue());
 			} else if (tag.getTag().equals("short")) {
-				Assert.assertEquals(2, tag.getConceptNameTagId().intValue());
+				assertEquals(2, tag.getConceptNameTagId().intValue());
 			}
 		}
 	}
@@ -63,7 +65,7 @@ public class ConceptNameSaveHandlerTest extends BaseContextSensitiveTest {
 		name.addTag(new ConceptNameTag("Some randome tag name", "")); // this tag has a null id
 		handler.handle(name, null, null, null);
 		ConceptNameTag newTag = name.getTags().iterator().next();
-		Assert.assertNull(newTag.getConceptNameTagId());
+		assertNull(newTag.getConceptNameTagId());
 	}
 	
 	/**
@@ -78,6 +80,6 @@ public class ConceptNameSaveHandlerTest extends BaseContextSensitiveTest {
 		name.addTag(tag);
 		handler.handle(name, null, null, null);
 		ConceptNameTag newTag = name.getTags().iterator().next();
-		Assert.assertEquals(34, newTag.getConceptNameTagId().intValue());
+		assertEquals(34, newTag.getConceptNameTagId().intValue());
 	}
 }
