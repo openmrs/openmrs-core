@@ -9,14 +9,20 @@
  */
 package org.openmrs.api.context;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.User;
@@ -26,15 +32,13 @@ import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.tasks.AbstractTask;
 import org.openmrs.scheduler.tasks.HelloWorldTask;
 import org.openmrs.scheduler.timer.TimerSchedulerTask;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
  * Tests the methods on the {@link Daemon} class
  */
 public class DaemonTest extends BaseContextSensitiveTest {
 	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	
 	/**
 	 * @see Daemon#executeScheduledTask(Task)
@@ -43,10 +47,10 @@ public class DaemonTest extends BaseContextSensitiveTest {
 	public void executeScheduledTask_shouldNotBeCalledFromOtherMethodsOtherThanTimerSchedulerTask() throws Throwable {
 		try {
 			Daemon.executeScheduledTask(new HelloWorldTask());
-			Assert.fail("Should not be here, an exception should have been thrown in the line above");
+			fail("Should not be here, an exception should have been thrown in the line above");
 		}
 		catch (APIException e) {
-			Assert.assertTrue(e.getMessage().startsWith(Context.getMessageSourceService().getMessage("Scheduler.timer.task.only", new Object[] { this.getClass().getName() }, null)));
+			assertTrue(e.getMessage().startsWith(Context.getMessageSourceService().getMessage("Scheduler.timer.task.only", new Object[] { this.getClass().getName() }, null)));
 		}
 	}
 	
@@ -60,17 +64,16 @@ public class DaemonTest extends BaseContextSensitiveTest {
 	@Test
 	public void executeScheduledTask_shouldNotThrowErrorIfCalledFromATimerSchedulerTaskClass() throws Throwable {
 		Task task = new PrivateTask();
-		Assert.assertTrue(new PrivateSchedulerTask(task).runTheTest());
+		assertTrue(new PrivateSchedulerTask(task).runTheTest());
 	}
 	
 	@Test 
 	public void createUser_shouldThrowWhenCalledOutsideContextDAO() throws Throwable {
 		// verif
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage(Context.getMessageSourceService().getMessage("Context.DAO.only", new Object[] { this.getClass().getName() }, null));
 		
 		// replay
-		Daemon.createUser(new User(), "password", null);
+		APIException exception = assertThrows(APIException.class, () -> Daemon.createUser(new User(), "password", null));
+		assertThat(exception.getMessage(), is(Context.getMessageSourceService().getMessage("Context.DAO.only", new Object[] { this.getClass().getName() }, null)));
 	}
 	
 	@Test
@@ -86,10 +89,10 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		User createdUser = Context.getContextDAO().createUser(u, "P@ssw0rd", Arrays.asList("Provider", "Foobar Role"));
 		
 		// verif
-		Assert.assertNotNull(createdUser.getId());
+		assertNotNull(createdUser.getId());
 		Set<String> roleNames = createdUser.getRoles().stream().map(r -> r.getName()).collect(Collectors.toSet());
-		Assert.assertTrue(roleNames.contains("Provider"));
-		Assert.assertFalse(roleNames.contains("Foobar Role")); // a bogus role name has just no impact on the created user
+		assertTrue(roleNames.contains("Provider"));
+		assertFalse(roleNames.contains("Foobar Role")); // a bogus role name has just no impact on the created user
 	}
 	
 	@Test 
@@ -98,11 +101,10 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		User u = Context.getUserService().getUser(501);
 		
 		// verif
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage(Context.getMessageSourceService().getMessage("User.creating.already.exists", new Object[] { u.getDisplayString() }, null));
 		
 		// replay
-		Context.getContextDAO().createUser(u, "P@ssw0rd", null);
+		APIException exception = assertThrows(APIException.class, () -> Context.getContextDAO().createUser(u, "P@ssw0rd", null));
+		assertThat(exception.getMessage(), is(Context.getMessageSourceService().getMessage("User.creating.already.exists", new Object[] { u.getDisplayString() }, null)));
 	}
 	
 	/**
@@ -114,10 +116,10 @@ public class DaemonTest extends BaseContextSensitiveTest {
 			Daemon.runInNewDaemonThread(() -> {
 				// do nothing
 			});
-			Assert.assertTrue("Should not hit this line, since the previous needed to throw an exception", false);
+			assertTrue(false, "Should not hit this line, since the previous needed to throw an exception");
 		}
 		catch (APIAuthenticationException ex) {
-			Assert.assertEquals("Only daemon threads can spawn new daemon threads", ex.getMessage());
+			assertEquals("Only daemon threads can spawn new daemon threads", ex.getMessage());
 		}
 	}
 	
@@ -127,7 +129,7 @@ public class DaemonTest extends BaseContextSensitiveTest {
 	@Test
 	public void runInNewDaemonThread_shouldNotThrowErrorIfCalledFromADaemonThread() throws Throwable {
 		Task taskThatStartsAnotherThread = new TaskThatStartsAnotherThread();
-		Assert.assertTrue(new PrivateSchedulerTask(taskThatStartsAnotherThread).runTheTest());
+		assertTrue(new PrivateSchedulerTask(taskThatStartsAnotherThread).runTheTest());
 	}
 	
 	/**
@@ -138,10 +140,10 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		try {
 			TestTask task = new TestTask();
 			new PrivateSchedulerTask(task).runTask();
-			Assert.assertTrue(true);
+			assertTrue(true);
 		}
 		catch (NullPointerException e) {
-			Assert.fail("Daemon user should have an associated person");
+			fail("Daemon user should have an associated person");
 		}
 	}
 	
@@ -223,7 +225,7 @@ public class DaemonTest extends BaseContextSensitiveTest {
 	public void isDaemonUser_shouldReturnTrueForADaemonUser() {
 		User user = new User();
 		user.setUuid(Daemon.DAEMON_USER_UUID);
-		Assert.assertTrue(Daemon.isDaemonUser(user));
+		assertTrue(Daemon.isDaemonUser(user));
 	}
 	
 	/**
@@ -234,6 +236,6 @@ public class DaemonTest extends BaseContextSensitiveTest {
 	public void isDaemonUser_shouldReturnFalseIFTheUserIsNotADaemon() {
 		User user = new User();
 		user.setUuid("any other value");
-		Assert.assertFalse(Daemon.isDaemonUser(user));
+		assertFalse(Daemon.isDaemonUser(user));
 	}
 }

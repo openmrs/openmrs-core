@@ -9,13 +9,17 @@
  */
 package org.openmrs.logic.result;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Encounter;
 import org.openmrs.api.context.Context;
 import org.openmrs.logic.LogicException;
@@ -31,7 +35,7 @@ public class ResultTest {
 	public void toObject_shouldReturnResultObjectForSingleResults() {
 		Result firstResult = new Result(new Date(), "some value", new Encounter(123));
 		
-		Assert.assertEquals(123, ((Encounter) firstResult.toObject()).getId().intValue());
+		assertEquals(123, ((Encounter) firstResult.toObject()).getId().intValue());
 	}
 	
 	@Test
@@ -58,7 +62,7 @@ public class ResultTest {
 		parentResult.add(firstResult);
 		parentResult.add(secondResult);
 		
-		Assert.assertEquals("some value", parentResult.earliest().toString());
+		assertEquals("some value", parentResult.earliest().toString());
 	}
 	
 	@Test
@@ -70,13 +74,13 @@ public class ResultTest {
 		parentResult.add(firstResult);
 		parentResult.add(secondResult);
 		
-		Assert.assertEquals("some value", parentResult.earliest().toString());
+		assertEquals("some value", parentResult.earliest().toString());
 	}
 	
 	@Test
 	public void earliest_shouldGetAnEmptyResultGivenAnEmptyResult() {
 		Result parentResult = new EmptyResult();
-		Assert.assertEquals(new EmptyResult(), parentResult.earliest());
+		assertEquals(new EmptyResult(), parentResult.earliest());
 	}
 	
 	@Test
@@ -88,7 +92,7 @@ public class ResultTest {
 		parentResult.add(firstResult);
 		parentResult.add(secondResult);
 		
-		Assert.assertEquals("some other value", parentResult.earliest().toString());
+		assertEquals("some other value", parentResult.earliest().toString());
 	}
 	
 	@Test
@@ -100,12 +104,12 @@ public class ResultTest {
 		parentResult.add(firstResult);
 		parentResult.add(secondResult);
 		
-		Assert.assertEquals("some value", parentResult.earliest().toString());
+		assertEquals("some value", parentResult.earliest().toString());
 	}
 	
 	@Test
 	public void equals_shouldReturnTrueOnTwoEmptyResults() {
-		Assert.assertTrue(new EmptyResult().equals(new Result()));
+		assertTrue(new EmptyResult().equals(new Result()));
 	}
 	
 	@Test
@@ -118,12 +122,12 @@ public class ResultTest {
 		parentResult.add(secondResult);
 		
 		// 3 is greater than the number of entries in the parentResult
-		Assert.assertEquals(new EmptyResult(), parentResult.get(3));
+		assertEquals(new EmptyResult(), parentResult.get(3));
 	}
 	
 	@Test
 	public void isNull_shouldReturnFalse() {
-		Assert.assertFalse(new Result().isNull());
+		assertFalse(new Result().isNull());
 	}
 	
 	@Test
@@ -135,19 +139,19 @@ public class ResultTest {
 		parentResult.add(firstResult);
 		parentResult.add(secondResult);
 		
-		Assert.assertEquals("some value", parentResult.latest().toString());
+		assertEquals("some value", parentResult.latest().toString());
 	}
 	
 	@Test
 	public void latest_shouldGetTheResultGivenASingleResult() throws ParseException {
 		Result result = new Result(Context.getDateFormat().parse("12/08/2008"), "some other value", new Encounter(124));
 		
-		Assert.assertEquals("some other value", result.latest().toString());
+		assertEquals("some other value", result.latest().toString());
 	}
 	
 	@Test
 	public void latest_shouldGetAnEmptyResultGivenAnEmptyResult() {
-		Assert.assertEquals(new EmptyResult(), new Result().latest());
+		assertEquals(new EmptyResult(), new Result().latest());
 	}
 	
 	@Test
@@ -159,10 +163,10 @@ public class ResultTest {
 		parentResult.add(firstResult);
 		parentResult.add(secondResult);
 		
-		Assert.assertEquals("some value", parentResult.latest().toString());
+		assertEquals("some value", parentResult.latest().toString());
 	}
 	
-	@Test(expected = LogicException.class)
+	@Test
 	public void toObject_shouldFailWhenContainsMultipleResults() throws ParseException {
 		Result parentResult = new Result();
 		Result firstResult = new Result(Context.getDateFormat().parse("12/08/2008"), "some value", new Encounter(123));
@@ -171,7 +175,6 @@ public class ResultTest {
 		parentResult.add(firstResult);
 		parentResult.add(secondResult);
 		
-		Object toObject = parentResult.toObject();
-		Assert.assertNull(toObject);
+		assertThrows(LogicException.class, () -> parentResult.toObject());
 	}
 }

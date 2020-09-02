@@ -9,31 +9,24 @@
  */
 package org.openmrs.module.filter;
 
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.w3c.dom.Document;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import org.xml.sax.InputSource;
 import java.io.StringReader;
-
 import java.util.List;
 
+import org.junit.jupiter.api.Test;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleException;
 import org.openmrs.module.web.filter.ModuleFilterDefinition;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
-import org.junit.rules.ExpectedException;
-import org.junit.Rule;
-import org.junit.Test;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-
-@PrepareForTest(ModuleFilterDefinition.class)
 public class ModuleFilterDefinitionTest {
-	@Rule
-	public final ExpectedException expectedException = ExpectedException.none();
 	
 	public static Document getDocument(String xmlString) {
 		try {
@@ -52,10 +45,9 @@ public class ModuleFilterDefinitionTest {
 	 */
 	@Test
 	public void retrieveFilterDefinitions_shouldThrowModuleExceptionIfNoConfig() {
-		expectedException.expect(ModuleException.class);
-		expectedException.expectMessage("Unable to parse filters in module configuration.");
 		Module module = new Module("test");
-		ModuleFilterDefinition.retrieveFilterDefinitions(module);
+		ModuleException exception = assertThrows(ModuleException.class, () -> ModuleFilterDefinition.retrieveFilterDefinitions(module));
+		assertThat(exception.getMessage(), is("Unable to parse filters in module configuration."));
 	}
 
 	/**
@@ -70,7 +62,7 @@ public class ModuleFilterDefinitionTest {
 		module.setConfig(getDocument(xmlString));
 
 		List<ModuleFilterDefinition> out = ModuleFilterDefinition.retrieveFilterDefinitions(module);
-		assertTrue(out.isEmpty());
+		assertThat(out, is(empty()));
 	}
 	
 	/**

@@ -9,16 +9,22 @@
  */
 package org.openmrs.api.handler;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.openmrs.api.context.Context.getUserService;
 
 import java.util.Date;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
  * Tests for the {@link PersonVoidHandler} class.
@@ -34,7 +40,7 @@ public class PersonVoidHandlerTest extends BaseContextSensitiveTest {
 		Person person = new Person();
 		person.setPersonVoided(false); // make sure personVoided is false
 		handler.handle(person, null, null, " ");
-		Assert.assertTrue(person.getPersonVoided());
+		assertTrue(person.getPersonVoided());
 	}
 	
 	/**
@@ -109,7 +115,7 @@ public class PersonVoidHandlerTest extends BaseContextSensitiveTest {
 		person.setPersonVoided(true);
 		
 		handler.handle(person, null, null, "THE REASON");
-		Assert.assertNull(person.getPersonVoidReason());
+		assertNull(person.getPersonVoidReason());
 	}
 	
 	/**
@@ -122,13 +128,13 @@ public class PersonVoidHandlerTest extends BaseContextSensitiveTest {
 		Person person = Context.getPersonService().getPerson(2);
 		User user = new User(person);
 		Context.getUserService().createUser(user, "Admin123");
-		Assert.assertFalse(Context.getUserService().getUsersByPerson(person, false).isEmpty());
+		assertFalse(Context.getUserService().getUsersByPerson(person, false).isEmpty());
 		
 		//when
 		handler.handle(person, null, null, "reason");
 		
 		//then
-		Assert.assertTrue(Context.getUserService().getUsersByPerson(person, false).isEmpty());
+		assertThat(getUserService().getUsersByPerson(person, false), is(empty()));
 	}
 	
 }

@@ -9,17 +9,17 @@
  */
 package org.openmrs;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
@@ -35,8 +35,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.api.APIException;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.util.Reflect;
@@ -94,8 +93,8 @@ public class ObsTest {
 			Object newFieldValue = generateValue(field, setAlternateValue);
 			//sanity check
 			if (setAlternateValue) {
-				assertNotEquals("The old and new values should be different for field: Obs." + field.getName(),
-				    oldFieldValue, newFieldValue);
+				assertNotEquals(oldFieldValue,
+					newFieldValue, "The old and new values should be different for field: Obs." + field.getName());
 			}
 			
 			field.set(obs, newFieldValue);
@@ -164,14 +163,13 @@ public class ObsTest {
 		// check duplicate add. should only be one
 		obsGroup.addGroupMember(obs);
 		assertTrue(obsGroup.hasGroupMembers(false));
-		assertEquals("Duplicate add should not increase the grouped obs size", 1, obsGroup.getGroupMembers().size());
+		assertEquals(1, obsGroup.getGroupMembers().size(), "Duplicate add should not increase the grouped obs size");
 		
 		Obs obs2 = new Obs(2);
 		
 		obsGroup.removeGroupMember(obs2);
 		assertTrue(obsGroup.hasGroupMembers(false));
-		assertEquals("Removing a non existent obs should not decrease the number of grouped obs", 1, obsGroup
-		        .getGroupMembers().size());
+		assertEquals(1, obsGroup.getGroupMembers().size(), "Removing a non existent obs should not decrease the number of grouped obs");
 		
 		// testing removing an obs from a group that has a null obs list
 		new Obs().removeGroupMember(obs2);
@@ -181,13 +179,7 @@ public class ObsTest {
 		assertEquals(0, obsGroup.getGroupMembers().size());
 		
 		// try to add an obs group to itself
-		try {
-			obsGroup.addGroupMember(obsGroup);
-			fail("An APIException about adding an obsGroup should have been thrown");
-		}
-		catch (APIException e) {
-			// this exception is expected
-		}
+		assertThrows(APIException.class, () -> obsGroup.addGroupMember(obsGroup));
 	}
 	
 	/**
@@ -311,25 +303,25 @@ public class ObsTest {
 		Obs obs = new Obs();
 		obs.setConcept(complexConcept);
 		
-		Assert.assertTrue(obs.isComplex());
+		assertTrue(obs.isComplex());
 	}
 	
 	/**
 	 * @see Obs#setValueAsString(String)
 	 */
-	@Test(expected = RuntimeException.class)
+	@Test
 	public void setValueAsString_shouldFailIfTheValueOfTheStringIsEmpty() throws Exception {
 		Obs obs = new Obs();
-		obs.setValueAsString("");
+		assertThrows(RuntimeException.class, () -> obs.setValueAsString(""));
 	}
 	
 	/**
 	 * @see Obs#setValueAsString(String)
 	 */
-	@Test(expected = RuntimeException.class)
+	@Test
 	public void setValueAsString_shouldFailIfTheValueOfTheStringIsNull() throws Exception {
 		Obs obs = new Obs();
-		obs.setValueAsString(null);
+		assertThrows(RuntimeException.class, () -> obs.setValueAsString(null));
 	}
 	
 	/**
@@ -339,7 +331,7 @@ public class ObsTest {
 	public void getValueAsBoolean_shouldReturnFalseForValue_numericConceptsIfValueIs0() throws Exception {
 		Obs obs = new Obs();
 		obs.setValueNumeric(0.0);
-		Assert.assertEquals(false, obs.getValueAsBoolean());
+		assertFalse(obs.getValueAsBoolean());
 	}
 	
 	/**
@@ -349,7 +341,7 @@ public class ObsTest {
 	public void getValueAsBoolean_shouldReturnNullForValue_numericConceptsIfValueIsNeither1Nor0() throws Exception {
 		Obs obs = new Obs();
 		obs.setValueNumeric(24.8);
-		Assert.assertNull(obs.getValueAsBoolean());
+		assertNull(obs.getValueAsBoolean());
 	}
 	
 	@Test
@@ -363,7 +355,7 @@ public class ObsTest {
 		cn.setAllowDecimal(false);
 		obs.setConcept(cn);
 		String str = "25";
-		Assert.assertEquals(str, obs.getValueAsString(Locale.US));
+		assertEquals(str, obs.getValueAsString(Locale.US));
 	}
 	
 	@Test
@@ -371,7 +363,7 @@ public class ObsTest {
 		Obs obs = new Obs();
 		obs.setValueNumeric(123456789.0);
 		String str = "123456789.0";
-		Assert.assertEquals(str, obs.getValueAsString(Locale.US));
+		assertEquals(str, obs.getValueAsString(Locale.US));
 	}
 	
 	@Test
@@ -387,7 +379,7 @@ public class ObsTest {
 		Date utilDate = new Date();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		String dateString = dateFormat.format(utilDate);
-		Assert.assertEquals(dateString, obs.getValueAsString(Locale.US));
+		assertEquals(dateString, obs.getValueAsString(Locale.US));
 	}
 	
 	/**
@@ -397,7 +389,7 @@ public class ObsTest {
 	public void getValueAsBoolean_shouldReturnTrueForValue_numericConceptsIfValueIs1() throws Exception {
 		Obs obs = new Obs();
 		obs.setValueNumeric(1.0);
-		Assert.assertEquals(true, obs.getValueAsBoolean());
+		assertTrue(obs.getValueAsBoolean());
 	}
 	
 	/**
@@ -414,11 +406,11 @@ public class ObsTest {
 		members.add(voided);
 		parent.setGroupMembers(members);
 		members = parent.getGroupMembers(true);
-		assertEquals("set of all members should have length of 3", 3, members.size());
+		assertEquals(3, members.size(), "set of all members should have length of 3");
 		members = parent.getGroupMembers(false);
-		assertEquals("set of non-voided should have length of 2", 2, members.size());
+		assertEquals(2, members.size(), "set of non-voided should have length of 2");
 		members = parent.getGroupMembers(); // should be same as false
-		assertEquals("default should return non-voided with length of 2", 2, members.size());
+		assertEquals(2, members.size(), "default should return non-voided with length of 2");
 	}
 	
 	/**
@@ -430,9 +422,9 @@ public class ObsTest {
 		Obs child = new Obs(33);
 		child.setVoided(true);
 		parent.addGroupMember(child); // Only contains 1 voided child
-		assertTrue("When checking for all members, should return true", parent.hasGroupMembers(true));
-		assertFalse("When checking for non-voided, should return false", parent.hasGroupMembers(false));
-		assertFalse("Default should check for non-voided", parent.hasGroupMembers());
+		assertTrue(parent.hasGroupMembers(true), "When checking for all members, should return true");
+		assertFalse(parent.hasGroupMembers(false), "When checking for non-voided, should return false");
+		assertFalse(parent.hasGroupMembers(), "Default should check for non-voided");
 	}
 	
 	/**
@@ -444,7 +436,7 @@ public class ObsTest {
 		Obs child = new Obs(33);
 		child.setVoided(true);
 		parent.addGroupMember(child);
-		assertTrue("When checking for Obs grouping, should include voided Obs", parent.isObsGrouping());
+		assertTrue(parent.isObsGrouping(), "When checking for Obs grouping, should include voided Obs");
 	}
 	
 	/**
@@ -455,7 +447,7 @@ public class ObsTest {
 		Obs obs = new Obs();
 		obs.setValueNumeric(123456789.3);
 		String str = "123456789,3";
-		Assert.assertEquals(str, obs.getValueAsString(Locale.GERMAN));
+		assertEquals(str, obs.getValueAsString(Locale.GERMAN));
 	}
 	
 	/**
@@ -466,7 +458,7 @@ public class ObsTest {
 		Obs obs = new Obs();
 		obs.setValueNumeric(123456789.0);
 		String str = "123456789.0";
-		Assert.assertEquals(str, obs.getValueAsString(Locale.ENGLISH));
+		assertEquals(str, obs.getValueAsString(Locale.ENGLISH));
 	}
 	
 	/**
@@ -477,7 +469,7 @@ public class ObsTest {
 		Obs obs = new Obs();
 		obs.setValueNumeric(1234567890.0);
 		String str = "1234567890.0";
-		Assert.assertEquals(str, obs.getValueAsString(Locale.ENGLISH));
+		assertEquals(str, obs.getValueAsString(Locale.ENGLISH));
 	}
 	
 	/**
@@ -488,7 +480,7 @@ public class ObsTest {
 		Obs obs = new Obs();
 		obs.setValueNumeric(123456789.012345);
 		String str = "123456789.012345";
-		Assert.assertEquals(str, obs.getValueAsString(Locale.ENGLISH));
+		assertEquals(str, obs.getValueAsString(Locale.ENGLISH));
 	}
 	
 	@Test
@@ -505,126 +497,7 @@ public class ObsTest {
 		obs.setConcept(cn);
 		obs.setValueCodedName(new ConceptName("True", Locale.US));
 		
-		Assert.assertEquals(VERO, obs.getValueAsString(Locale.ITALIAN));
-	}
-	
-	/**
-	 * @see Obs#setFormField(String,String)
-	 */
-	@Test
-	public void setFormField_shouldSetTheUnderlyingFormNamespaceAndPathInTheCorrectPattern() throws Exception {
-		final String ns = "my ns";
-		final String path = "my path";
-		Obs obs = new Obs();
-		obs.setFormField(ns, path);
-		java.lang.reflect.Field formNamespaceAndPathProperty = Obs.class.getDeclaredField("formNamespaceAndPath");
-		formNamespaceAndPathProperty.setAccessible(true);
-		Assert.assertEquals(ns + FORM_NAMESPACE_PATH_SEPARATOR + path, formNamespaceAndPathProperty.get(obs));
-	}
-	
-	/**
-	 * @see Obs#getFormFieldNamespace()
-	 */
-	@Test
-	public void getFormFieldNamespace_shouldReturnNullIfTheNamespaceIsNotSpecified() throws Exception {
-		Obs obs = new Obs();
-		obs.setFormField("", "my path");
-		Assert.assertNull(obs.getFormFieldNamespace());
-	}
-	
-	/**
-	 * @see Obs#getFormFieldNamespace()
-	 */
-	@Test
-	public void getFormFieldNamespace_shouldReturnTheCorrectNamespaceForAFormFieldWithAPath() throws Exception {
-		final String ns = "my ns";
-		final String path = "my path";
-		Obs obs = new Obs();
-		obs.setFormField(ns, path);
-		Assert.assertEquals(ns, obs.getFormFieldNamespace());
-	}
-	
-	/**
-	 * @see Obs#getFormFieldNamespace()
-	 */
-	@Test
-	public void getFormFieldNamespace_shouldReturnTheNamespaceForAFormFieldThatHasNoPath() throws Exception {
-		final String ns = "my ns";
-		Obs obs = new Obs();
-		obs.setFormField(ns, null);
-		Assert.assertEquals(ns, obs.getFormFieldNamespace());
-	}
-	
-	/**
-	 * @see Obs#getFormFieldPath()
-	 */
-	@Test
-	public void getFormFieldPath_shouldReturnNullIfThePathIsNotSpecified() throws Exception {
-		Obs obs = new Obs();
-		obs.setFormField("my ns", "");
-		Assert.assertNull(obs.getFormFieldPath());
-	}
-	
-	/**
-	 * @see Obs#getFormFieldPath()
-	 */
-	@Test
-	public void getFormFieldPath_shouldReturnTheCorrectPathForAFormFieldWithANamespace() throws Exception {
-		final String ns = "my ns";
-		final String path = "my path";
-		Obs obs = new Obs();
-		obs.setFormField(ns, path);
-		Assert.assertEquals(path, obs.getFormFieldPath());
-	}
-	
-	/**
-	 * @see Obs#getFormFieldPath()
-	 */
-	@Test
-	public void getFormFieldPath_shouldReturnThePathForAFormFieldThatHasNoNamespace() throws Exception {
-		final String path = "my path";
-		Obs obs = new Obs();
-		obs.setFormField("", path);
-		Assert.assertEquals(path, obs.getFormFieldPath());
-	}
-	
-	/**
-	 * @see Obs#setFormField(String,String)
-	 */
-	@Test(expected = APIException.class)
-	public void setFormField_shouldRejectANamepaceAndPathCombinationLongerThanTheMaxLength() throws Exception {
-		StringBuilder nsBuffer = new StringBuilder(125);
-		for (int i = 0; i < 125; i++) {
-			nsBuffer.append("n");
-		}
-		for (int i = 0; i < 130; i++) {
-			nsBuffer.append("p");
-		}
-		
-		final String ns = nsBuffer.toString();
-		final String path = "";
-		Obs obs = new Obs();
-		obs.setFormField(ns, path);
-	}
-	
-	/**
-	 * @see Obs#setFormField(String,String)
-	 */
-	@Test(expected = APIException.class)
-	public void setFormField_shouldRejectANamepaceContainingTheSeparator() throws Exception {
-		final String ns = "my ns" + FORM_NAMESPACE_PATH_SEPARATOR;
-		Obs obs = new Obs();
-		obs.setFormField(ns, "");
-	}
-	
-	/**
-	 * @see Obs#setFormField(String,String)
-	 */
-	@Test(expected = APIException.class)
-	public void setFormField_shouldRejectAPathContainingTheSeparator() throws Exception {
-		final String path = FORM_NAMESPACE_PATH_SEPARATOR + "my path";
-		Obs obs = new Obs();
-		obs.setFormField("", path);
+		assertEquals(VERO, obs.getValueAsString(Locale.ITALIAN));
 	}
 	
 	/**
@@ -688,7 +561,7 @@ public class ObsTest {
 			} else {
 				BeanUtils.setProperty(obs, fieldName, generateValue(field, true));
 			}
-			assertEquals("Obs was not marked as dirty after changing: " + fieldName, obs.isDirty(), assertion);
+			assertEquals(obs.isDirty(), assertion, "Obs was not marked as dirty after changing: " + fieldName);
 			if ("person".equals(fieldName)) {
 				//Because setPerson updates the personId we need to reset personId to its original value 
 				//that matches that of person otherwise the test will fail for the personId field

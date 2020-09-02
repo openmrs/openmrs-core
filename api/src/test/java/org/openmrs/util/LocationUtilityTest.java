@@ -9,14 +9,16 @@
  */
 package org.openmrs.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.GlobalProperty;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
  * Consists of the tests for the methods in the location utility class
@@ -30,10 +32,10 @@ public class LocationUtilityTest extends BaseContextSensitiveTest {
 	public void getDefaultLocation_shouldReturnTheUpdatedDefaultLocationWhenTheValueOfTheGlobalPropertyIsChanged()
 	{
 		//sanity check
-		Assert.assertEquals("Unknown Location", LocationUtility.getDefaultLocation().getName());
+		assertEquals("Unknown Location", LocationUtility.getDefaultLocation().getName());
 		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCATION_NAME, "Xanadu", "Testing");
 		Context.getAdministrationService().saveGlobalProperty(gp);
-		Assert.assertEquals("Xanadu", LocationUtility.getDefaultLocation().getName());
+		assertEquals("Xanadu", LocationUtility.getDefaultLocation().getName());
 	}
 	
 	/**
@@ -42,13 +44,13 @@ public class LocationUtilityTest extends BaseContextSensitiveTest {
 	@Test
 	public void getUserDefaultLocation_shouldReturnTheUserSpecifiedLocationIfAnyIsSet() {
 		//sanity check
-		Assert.assertNull(LocationUtility.getUserDefaultLocation());
+		assertNull(LocationUtility.getUserDefaultLocation());
 		User user = Context.getAuthenticatedUser();
 		Map<String, String> properties = user.getUserProperties();
 		properties.put(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION, "2");
 		user.setUserProperties(properties);
 		Context.getUserService().saveUser(user);
 		Context.refreshAuthenticatedUser();
-		Assert.assertEquals("Xanadu", LocationUtility.getUserDefaultLocation().getName());
+		assertEquals("Xanadu", LocationUtility.getUserDefaultLocation().getName());
 	}
 }

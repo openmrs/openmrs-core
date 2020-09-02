@@ -9,8 +9,8 @@
  */
 package org.openmrs.util;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -23,8 +23,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.hamcrest.CoreMatchers;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class HttpClientTest {
 	
@@ -32,7 +32,7 @@ public class HttpClientTest {
 	
 	private HttpURLConnection connection;
 	
-	@Before
+	@BeforeEach
 	public void setUp() throws IOException {
 		HttpUrl url = mock(HttpUrl.class);
 		client = new HttpClient(url);

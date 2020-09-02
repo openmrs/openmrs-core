@@ -852,4 +852,13 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	public boolean isDatabaseStringComparisonCaseSensitive() {
 		return dao.isDatabaseStringComparisonCaseSensitive();
 	}
+	
+	/**
+	 * @see org.openmrs.api.AdministrationService#updatePostgresSequence()
+	 */
+	@Override
+	public void updatePostgresSequence() {
+		dao.updatePostgresSequence();
+	}
+	
 }

@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+	<notification_alert alert_id="2" creator="1" text="Testing hibernate Dao" date_created="2019-01-01 00:00:00.0"  date_to_expire="2021-08-08 00:00:00.0" satisfied_by_any="1" alert_read="1" uuid="16914264-e162-11df-9195-001e378eb69e"/>
+	<notification_alert alert_id="3" creator="1" text="A running instance" date_created="2018-01-01 00:00:00.1"  date_to_expire="2019-01-01 00:00:00.1" satisfied_by_any="1" alert_read="1" uuid="16914264-e162-11df-9195-001e378eb67e"/>
+	<users user_id="102" person_id="501" system_id="2-6" username="bruno" password="ff6d1655327d385e11a04e1632b4f33ceb8fafd2" salt="5d32c5fd9fde391c755f1f4dfd5e1d6e3debe6" secret_question="" creator="1" date_created="2008-08-15 15:46:47.0" changed_by="1" date_changed="2008-08-15 15:47:07.0" retired="false"  uuid="c1d8f5c2-e131-11de-babe-001e378eb77e"/>
+	<notification_alert_recipient alert_id="2" user_id="102" alert_read="1"  uuid="18514274-e162-11df-9195-001e378eb67e"/>
+</dataset>

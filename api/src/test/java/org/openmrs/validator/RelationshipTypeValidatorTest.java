@@ -9,10 +9,12 @@
  */
 package org.openmrs.validator;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 import org.openmrs.RelationshipType;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -32,17 +34,17 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("aIsToB"));
+		assertTrue(errors.hasFieldErrors("aIsToB"));
 		
 		type.setaIsToB("");
 		errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("aIsToB"));
+		assertTrue(errors.hasFieldErrors("aIsToB"));
 		
 		type.setaIsToB(" ");
 		errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("aIsToB"));
+		assertTrue(errors.hasFieldErrors("aIsToB"));
 	}
 	
 	/**
@@ -54,17 +56,17 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("bIsToA"));
+		assertTrue(errors.hasFieldErrors("bIsToA"));
 		
 		type.setbIsToA("");
 		errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("bIsToA"));
+		assertTrue(errors.hasFieldErrors("bIsToA"));
 		
 		type.setbIsToA(" ");
 		errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("bIsToA"));
+		assertTrue(errors.hasFieldErrors("bIsToA"));
 	}
 	
 	/**
@@ -76,17 +78,17 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("description"));
+		assertTrue(errors.hasFieldErrors("description"));
 		
 		type.setDescription("");
 		errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("description"));
+		assertTrue(errors.hasFieldErrors("description"));
 		
 		type.setDescription(" ");
 		errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("description"));
+		assertTrue(errors.hasFieldErrors("description"));
 	}
 	
 	/**
@@ -101,7 +103,7 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 		type.setDescription("Description");
 		Errors errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -115,7 +117,7 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasErrors());
+		assertTrue(errors.hasErrors());
 	}
 	
 	/**
@@ -131,7 +133,7 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 		type.setRetireReason("retireReason");
 		Errors errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -151,9 +153,9 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 		Errors errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("aIsToB"));
-		Assert.assertTrue(errors.hasFieldErrors("bIsToA"));
-		Assert.assertTrue(errors.hasFieldErrors("description"));
-		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+		assertTrue(errors.hasFieldErrors("aIsToB"));
+		assertTrue(errors.hasFieldErrors("bIsToA"));
+		assertTrue(errors.hasFieldErrors("description"));
+		assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 }

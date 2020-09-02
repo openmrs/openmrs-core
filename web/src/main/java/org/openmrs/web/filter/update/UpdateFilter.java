@@ -23,7 +23,6 @@ import org.openmrs.util.DatabaseUpdaterLiquibaseProvider;
 import org.openmrs.util.InputRequiredException;
 import org.openmrs.liquibase.ChangeLogVersionFinder;
 import org.openmrs.util.MemoryAppender;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
@@ -40,6 +39,7 @@ import org.springframework.web.context.ContextLoader;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -318,7 +318,7 @@ public class UpdateFilter extends StartupFilter {
 	
 	/**
 	 * Look in the users table for a user with this username and password and see if they have a role of
-	 * {@link OpenmrsConstants#SUPERUSER_ROLE}.
+	 * {@link RoleConstants#SUPERUSER}.
 	 *
 	 * @param usernameOrSystemId user entered username
 	 * @param password user entered password
@@ -446,7 +446,7 @@ public class UpdateFilter extends StartupFilter {
 	}
 	
 	/**
-	 * Checks the given user to see if they have been given the {@link OpenmrsConstants#SUPERUSER_ROLE}
+	 * Checks the given user to see if they have been given the {@link RoleConstants#SUPERUSER}
 	 * role. This method does not look at child roles.
 	 *
 	 * @param connection the java sql connection to use
@@ -562,7 +562,8 @@ public class UpdateFilter extends StartupFilter {
 	 *
 	 * @return true if updates have been determined to be required
 	 * @see #init(FilterConfig)
-	 * @see Listener#setupNeeded
+	 * @see Listener#isSetupNeeded()
+	 * @see Listener#contextInitialized(ServletContextEvent)
 	 */
 	public static synchronized boolean updatesRequired() {
 		return updatesRequired;
@@ -708,8 +709,7 @@ public class UpdateFilter extends StartupFilter {
 							}
 							
 							/**
-							 * @see org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback#executing(liquibase.ChangeSet,
-							 *      int)
+							 * @see ChangeSetExecutorCallback#executing(liquibase.changelog.ChangeSet, int)
 							 */
 							@Override
 							public void executing(ChangeSet changeSet, int numChangeSetsToRun) {
