@@ -128,6 +128,8 @@ public class OpenmrsUtil {
 	private OpenmrsUtil() {
 	}
 	
+	private static volatile MimetypesFileTypeMap mimetypesFileTypeMap = null;
+	
 	private static org.slf4j.Logger log = LoggerFactory.getLogger(OpenmrsUtil.class);
 	
 	private static Map<Locale, SimpleDateFormat> dateFormatCache = new HashMap<>();
@@ -308,8 +310,12 @@ public class OpenmrsUtil {
 	 * @return mime type
 	 */
 	public static String getFileMimeType(File file) {
-		MimetypesFileTypeMap mimeMap = new MimetypesFileTypeMap();
-		return mimeMap.getContentType(file);
+		if (mimetypesFileTypeMap == null) {
+			synchronized (OpenmrsUtil.class) {
+				mimetypesFileTypeMap = new MimetypesFileTypeMap();
+			}
+		}
+		return mimetypesFileTypeMap.getContentType(file);
 	}
 	
 	/**
