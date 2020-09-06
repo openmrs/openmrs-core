@@ -38,14 +38,14 @@ public class OrderGroupAttributeType extends BaseAttributeType<OrderGroup> imple
 	}
 
 	/**
-	 * @return the orderGroupAttributeTypeId
+	 * @return the order group attribute Id
 	 */
 	public Integer getOrderGroupAttributeTypeId() {
 		return orderGroupAttributeTypeId;
 	}
 
 	/**
-	 * @param orderGroupAttributeTypeId the orderGroupAttributeTypeId to set
+	 * @param orderGroupAttributeTypeId the order group attribute type Id to set
 	 */
 	public void setOrderGroupAttributeTypeId(Integer orderGroupAttributeTypeId) {
 		this.orderGroupAttributeTypeId = orderGroupAttributeTypeId;
