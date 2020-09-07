@@ -13,7 +13,7 @@ import org.openmrs.attribute.Attribute;
 import org.openmrs.attribute.BaseAttribute;
 
 /**
- * A value for a user-defined {@link OrderGroupAttributeType} that is stored on a {@link OrderGroup}.
+ * A value for a user-defined {@link OrderGroupAttributeType} that is stored in an {@link OrderGroup}.
  * @see Attribute
  * @since 2.4.0
  */
