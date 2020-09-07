@@ -36,7 +36,6 @@ import java.util.Locale;
  */
 public interface OrderService extends OpenmrsService {
 	
-	
 	public static final String PARALLEL_ORDERS = "PARALLEL_ORDERS";
 	
 	/**
@@ -311,7 +310,6 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.EDIT_ORDERS)
 	public Order updateOrderFulfillerStatus(Order order, Order.FulfillerStatus orderFulfillerStatus, String fullFillerComment, String accessionNumber);
-	
 	
 	/**
 	 * Gets the order identified by a given order number
