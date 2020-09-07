@@ -305,5 +305,4 @@ public interface OrderDAO {
 	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeTypeByName(String)
 	 */
 	public OrderGroupAttributeType getOrderGroupAttributeTypeByName(String name)throws DAOException;
-	
 }
