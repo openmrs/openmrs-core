@@ -135,8 +135,8 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getOrderGroupAttributeType_shouldGetOrderGroupAttributeTypeGivenUuid(){
-    	OrderGroupAttributeType newOrderGroupAttributeType = dao.getOrderGroupAttributeTypeByUuid("9cf1bce0-d18e-11ea-87d0-0242ac130003");
-		assertEquals("Bacteriology", newOrderGroupAttributeType.getName());
+    	OrderGroupAttributeType orderGroupAttributeType = dao.getOrderGroupAttributeTypeByUuid("9cf1bce0-d18e-11ea-87d0-0242ac130003");
+		assertEquals("Bacteriology", orderGroupAttributeType.getName());
 	}
 	
 	/**
@@ -144,9 +144,9 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void getOrderGroupAttributeType_shouldReturnOrderGroupAttributeTypeGivenIntegerId(){
-		OrderGroupAttributeType newOrderGroupAttributeType = dao.getOrderGroupAttributeType(4);
-		assertEquals("ECG", newOrderGroupAttributeType.getName());
+	public void getOrderGroupAttributeType_shouldReturnOrderGroupAttributeType(){
+		OrderGroupAttributeType orderGroupAttributeType = dao.getOrderGroupAttributeType(4);
+		assertEquals("ECG", orderGroupAttributeType.getName());
 	}
 	
 	/**

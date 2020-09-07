@@ -121,7 +121,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	 * @see org.openmrs.api.db.OrderDAO#getOrders(org.openmrs.OrderType, java.util.List,
 	 *      java.util.List, java.util.List, java.util.List)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
 	public List<Order> getOrders(OrderType orderType, List<Patient> patients, List<Concept> concepts, List<User> orderers,
 	        List<Encounter> encounters) {
 		
