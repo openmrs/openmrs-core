@@ -21,21 +21,23 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.SimpleExpression;
 import org.hibernate.transform.DistinctRootEntityResultTransformer;
-import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
+import org.openmrs.CareSetting;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Order;
 import org.openmrs.OrderFrequency;
 import org.openmrs.OrderGroup;
+import org.openmrs.OrderGroupAttribute;
+import org.openmrs.OrderGroupAttributeType;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
-import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.parameter.OrderSearchCriteria;
+import org.openmrs.User;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
@@ -120,7 +122,6 @@ public class HibernateOrderDAO implements OrderDAO {
 	 *      java.util.List, java.util.List, java.util.List)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<Order> getOrders(OrderType orderType, List<Patient> patients, List<Concept> concepts, List<User> orderers,
 	        List<Encounter> encounters) {
 		
@@ -729,5 +730,66 @@ public class HibernateOrderDAO implements OrderDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(OrderGroup.class);
 		criteria.add(Restrictions.eq("encounter", encounter));
 		return criteria.list();
+	}
+
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#getAllOrderGroupAttributeTypes()
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<OrderGroupAttributeType> getAllOrderGroupAttributeTypes() throws DAOException{
+		return sessionFactory.getCurrentSession().createCriteria(OrderGroupAttributeType.class).list();
+	}
+
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#getOrderGroupAttributeType(java.lang.Integer)
+	 */
+	@Override
+	public OrderGroupAttributeType getOrderGroupAttributeType(Integer orderGroupAttributeTypeId) throws DAOException{
+		return sessionFactory.getCurrentSession().get(OrderGroupAttributeType.class, orderGroupAttributeTypeId);
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#getOrderGroupAttributeTypeByUuid(java.lang.String)
+	 */
+	@Override
+	public OrderGroupAttributeType getOrderGroupAttributeTypeByUuid(String uuid) throws DAOException{
+		return (OrderGroupAttributeType) sessionFactory.getCurrentSession().createCriteria(OrderGroupAttributeType.class).add(
+			Restrictions.eq("uuid", uuid)).uniqueResult();
+	}
+
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#saveOrderGroupAttributeType(org.openmrs.OrderGroupAttributeType)
+	 */
+	@Override
+	public OrderGroupAttributeType saveOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType)throws DAOException {
+		sessionFactory.getCurrentSession().saveOrUpdate(orderGroupAttributeType);
+		return orderGroupAttributeType;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#deleteOrderGroupAttributeType(org.openmrs.OrderGroupAttributeType)
+	 */
+	@Override
+	public void deleteOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws DAOException{
+		sessionFactory.getCurrentSession().delete(orderGroupAttributeType);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#getOrderGroupAttributeByUuid(String)
+	 */
+	@Override
+	public OrderGroupAttribute getOrderGroupAttributeByUuid(String uuid)  throws DAOException{
+		return (OrderGroupAttribute) sessionFactory.getCurrentSession().createQuery("from OrderGroupAttribute d where d.uuid = :uuid")
+			.setString("uuid", uuid).uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#getOrderGroupAttributeTypeByName(String)
+	 */
+	@Override
+	public OrderGroupAttributeType getOrderGroupAttributeTypeByName(String name) throws DAOException{
+		return (OrderGroupAttributeType) sessionFactory.getCurrentSession().createCriteria(OrderGroupAttributeType.class).add(
+			Restrictions.eq("name", name)).uniqueResult();
 	}
 }

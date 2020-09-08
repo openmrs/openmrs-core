@@ -10,12 +10,12 @@
 package org.openmrs.api;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItems;
 import static org.openmrs.Order.Action.DISCONTINUE;
 import static org.openmrs.Order.FulfillerStatus.COMPLETED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,15 +34,15 @@ import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.Locale;
+import java.util.GregorianCalendar;
+import java.util.LinkedHashSet;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.boot.Metadata;
@@ -50,41 +50,47 @@ import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
+import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.openmrs.Allergy;
-import org.openmrs.CareSetting;
-import org.openmrs.Concept;
+
+import org.openmrs.Order.Action;
+import org.openmrs.TestOrder;
+import org.openmrs.Patient;
+import org.openmrs.DosingInstructions;
+import org.openmrs.SimpleDosingInstructions;
+import org.openmrs.DrugOrder;
+import org.openmrs.FreeTextDosingInstructions;
+import org.openmrs.Drug;
+import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
-import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptName;
+import org.openmrs.GlobalProperty;
+import org.openmrs.Order;
+import org.openmrs.OrderType;
+import org.openmrs.Allergy;
 import org.openmrs.Condition;
 import org.openmrs.Diagnosis;
-import org.openmrs.DosingInstructions;
-import org.openmrs.Drug;
-import org.openmrs.DrugOrder;
-import org.openmrs.Encounter;
-import org.openmrs.FreeTextDosingInstructions;
-import org.openmrs.GlobalProperty;
-import org.openmrs.Obs;
-import org.openmrs.Order;
-import org.openmrs.Order.Action;
+import org.openmrs.Visit;
 import org.openmrs.OrderFrequency;
 import org.openmrs.OrderGroup;
 import org.openmrs.OrderSet;
-import org.openmrs.OrderType;
-import org.openmrs.Patient;
+import org.openmrs.OrderGroupAttribute;
+import org.openmrs.OrderGroupAttributeType;
+import org.openmrs.Encounter;
 import org.openmrs.Provider;
-import org.openmrs.SimpleDosingInstructions;
-import org.openmrs.TestOrder;
-import org.openmrs.Visit;
+import org.openmrs.Concept;
+import org.openmrs.CareSetting;
 import org.openmrs.api.builder.DrugOrderBuilder;
+import org.openmrs.Obs;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.HibernateAdministrationDAO;
 import org.openmrs.api.db.hibernate.HibernateSessionFactoryBean;
 import org.openmrs.api.impl.OrderServiceImpl;
+import org.openmrs.customdatatype.datatype.FreeTextDatatype;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.order.OrderUtilTest;
@@ -106,6 +112,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	private static final String OTHER_ORDER_FREQUENCIES_XML = "org/openmrs/api/include/OrderServiceTest-otherOrderFrequencies.xml";
 
 	protected static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
+
+	private static final String ORDER_GROUP_ATTRIBUTES = "org/openmrs/api/include/OrderServiceTest-createOrderGroupAttributes.xml";
 
 	@Autowired
 	private ConceptService conceptService;
@@ -130,6 +138,11 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 	@Autowired
 	private MessageSourceService messageSourceService;
+	
+	@BeforeEach
+	public void setUp(){
+		executeDataSet(ORDER_GROUP_ATTRIBUTES);
+	}
 
 	@Entity
 	public class SomeTestOrder extends TestOrder {
@@ -176,6 +189,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		private Boolean dispenseAsWritten = Boolean.FALSE;
 		private String drugNonCoded;
 	}
+	
 
 	/**
 	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
@@ -3760,7 +3774,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 		Encounter encounter = encounterService.getEncounter(3);
 		OrderContext context = new OrderContext();
-		
+
 		// First we confirm that saving a Drug Order on it's own with missing required fields will fail validation
 
 		DrugOrder drugOrder = new DrugOrderBuilder().withPatient(encounter.getPatient().getPatientId())
@@ -3768,21 +3782,20 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.withOrderType(1).withDrug(2)
 			.withUrgency(Order.Urgency.ROUTINE).withDateActivated(new Date())
 			.build();
-		
+
 		Exception expectedValidationError = null;
 		try {
 			Context.getOrderService().saveOrder(drugOrder, context);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			expectedValidationError = e;
 		}
-		
+
 		assertNotNull(expectedValidationError);
 		assertEquals(ValidationException.class, expectedValidationError.getClass());
 		assertTrue(expectedValidationError.getMessage().contains("Dose is required"));
 
 		// Next, add this to an Order Group and save it within that group, and it should also fail
-		
+
 		OrderSet orderSet = Context.getOrderSetService().getOrderSet(2000);
 		OrderGroup orderGroup = new OrderGroup();
 		orderGroup.setOrderSet(orderSet);
@@ -3794,12 +3807,115 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Exception expectedGroupValidationError = null;
 		try {
 			Context.getOrderService().saveOrderGroup(orderGroup);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			expectedGroupValidationError = e;
 		}
 
 		assertNotNull(expectedGroupValidationError, "Validation should cause order group to fail to save");
 		assertEquals(expectedValidationError.getMessage(), expectedGroupValidationError.getMessage());
+	}
+	
+	@Test
+	public void getOrderGroupAttributeTypes_shouldReturnAllOrderGroupAttributeTypes() {
+		List<OrderGroupAttributeType> orderGroupAttributeTypes = orderService.getAllOrderGroupAttributeTypes();
+		assertEquals(4, orderGroupAttributeTypes.size());
+	}
+	
+	@Test
+	public void getOrderGroupAttributeType_shouldReturnNullIfNoOrderGroupAttributeTypeHasTheGivenId() {
+		assertNull(orderService.getOrderGroupAttributeType(10));
+	}
+	
+	@Test
+	public void getOrderGroupAttributeType_shouldReturnOrderGroupAttributeType() {
+		OrderGroupAttributeType orderGroupAttributeType = orderService.getOrderGroupAttributeType(2);
+		assertThat(orderGroupAttributeType.getId(), is(2));
+	}
+	
+	@Test
+	public void getOrderGroupAttributeTypeByUuid_shouldReturnOrderGroupAttributeTypeByUuid() {
+		OrderGroupAttributeType orderGroupAttributeType = orderService
+		        .getOrderGroupAttributeTypeByUuid("9cf1bce0-d18e-11ea-87d0-0242ac130003");
+		assertEquals("Bacteriology", orderGroupAttributeType.getName());
+	}
+	
+	@Test
+	public void saveOrderGroupAttributeType_shouldSaveOrderGroupAttributeTypeGivenOrderGroupAttributeType()
+	        throws ParseException {
+		int initialGroupOrderAttributeTypeCount = orderService.getAllOrderGroupAttributeTypes().size();
+		OrderGroupAttributeType orderGroupAttributeType = new OrderGroupAttributeType();
+		orderGroupAttributeType.setName("Surgery");
+		orderGroupAttributeType.setDatatypeClassname(FreeTextDatatype.class.getName());
+		orderService.saveOrderGroupAttributeType(orderGroupAttributeType);
+		assertNotNull(orderGroupAttributeType.getId());
+		assertEquals(initialGroupOrderAttributeTypeCount + 1, orderService.getAllOrderGroupAttributeTypes().size());
+	}
+	
+	@Test
+	public void saveOrderGroupAttributeType_shouldEditAnExistingOrderGroupAttributeType() {
+		//Check for values in the database
+		OrderGroupAttributeType orderGroupAttributeType = orderService.getOrderGroupAttributeType(4);
+		assertEquals("ECG", orderGroupAttributeType.getName());
+		//edit existing values in the database
+		orderGroupAttributeType.setName("Laparascopy");
+		orderService.saveOrderGroupAttributeType(orderGroupAttributeType);
+		//confirm new values are persisted
+		assertEquals("Laparascopy", orderGroupAttributeType.getName());
+	}
+	
+	@Test
+	public void retireOrderGroupAttributeType_shouldRetireOrderGroupAttributeType() throws ParseException {
+		OrderGroupAttributeType orderGroupAttributeType = orderService.getOrderGroupAttributeType(2);
+		assertFalse(orderGroupAttributeType.getRetired());
+		assertNotNull(orderGroupAttributeType.getRetiredBy());
+		assertNull(orderGroupAttributeType.getRetireReason());
+		assertNull(orderGroupAttributeType.getDateRetired());
+		orderService.retireOrderGroupAttributeType(orderGroupAttributeType, "Test Retire");
+		orderGroupAttributeType = orderService.getOrderGroupAttributeType(2);
+		assertTrue(orderGroupAttributeType.getRetired());
+		assertNotNull(orderGroupAttributeType.getRetiredBy());
+		assertEquals("Test Retire", orderGroupAttributeType.getRetireReason());
+		assertNotNull(orderGroupAttributeType.getDateRetired());
+	}
+	
+	@Test
+	public void unretireOrderGroupAttributeType_shouldUnretireOrderGroupAttributeType() {
+		OrderGroupAttributeType orderGroupAttributeType = orderService.getOrderGroupAttributeType(4);
+		assertTrue(orderGroupAttributeType.getRetired());
+		assertNotNull(orderGroupAttributeType.getRetiredBy());
+		assertNotNull(orderGroupAttributeType.getDateRetired());
+		assertNotNull(orderGroupAttributeType.getRetireReason());
+		orderService.unretireOrderGroupAttributeType(orderGroupAttributeType);
+		assertFalse(orderGroupAttributeType.getRetired());
+		assertNull(orderGroupAttributeType.getRetiredBy());
+		assertNull(orderGroupAttributeType.getDateRetired());
+		assertNull(orderGroupAttributeType.getRetireReason());
+	}
+	
+	@Test
+	public void getOrderGroupAttributeTypeByName_shouldReturnOrderGroupAttributeTypeUsingName() {
+		OrderGroupAttributeType orderGroupAttributeType = orderService.getOrderGroupAttributeTypeByName("Bacteriology");
+		assertEquals("9cf1bce0-d18e-11ea-87d0-0242ac130003", orderGroupAttributeType.getUuid());
+	}
+	
+	@Test
+	public void purgeOrderGroupAttributeType_shouldPurgeOrderGroupAttributeType() {
+		int initialOrderGroupAttributeTypeCount = orderService.getAllOrderGroupAttributeTypes().size();
+		orderService.purgeOrderGroupAttributeType(orderService.getOrderGroupAttributeType(4));
+		assertEquals(initialOrderGroupAttributeTypeCount - 1, orderService.getAllOrderGroupAttributeTypes().size());
+	}
+	
+	@Test
+	public void getOrderGroupAttributeByUuid_shouldReturnNullIfNonExistingUuidIsProvided() {
+		assertNull(orderService.getOrderGroupAttributeTypeByUuid("cbf580ee-d7fb-11ea-87d0-0242ac130003"));
+	}
+	
+	@Test
+	public void getOrderGroupAttributeByUuid_shouldReturnOrderGroupAttributeGivenUuid() {
+		OrderGroupAttribute orderGroupAttribute = orderService
+		        .getOrderGroupAttributeByUuid("86bdcc12-d18d-11ea-87d0-0242ac130003");
+		orderGroupAttribute.getValueReference();
+		assertEquals("Test 1", orderGroupAttribute.getValueReference());
+		assertEquals(1, orderGroupAttribute.getId());
 	}
 }
