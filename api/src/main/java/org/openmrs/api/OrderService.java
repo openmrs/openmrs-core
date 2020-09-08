@@ -887,11 +887,7 @@ public interface OrderService extends OpenmrsService {
 	/**
 	 * Creates or updates the given order group attribute type in the database
 	 *
-<<<<<<< HEAD
 	 * @param orderGroupAttributeType The order group attribute type to save in the database
-=======
-	 * @param orderGroupAttributeType The order group attribute type to Save in the database
->>>>>>> TRUNK-5410
 	 * @return the order group attribute type created or saved
 	 * @should create a new order group attribute type
 	 * @should edit an existing order group attribute type
@@ -903,10 +899,7 @@ public interface OrderService extends OpenmrsService {
 	 * Retires the given order group attribute type in the database
 	 *
 	 * @param orderGroupAttributeType The order group attribute type to retire
-<<<<<<< HEAD
-=======
 	 * @param reason The reason why the order group attribute type is being retired
->>>>>>> TRUNK-5410
 	 * @return the order group attribute type retired
 	 * @should retire an order group attribute type
 	 */
