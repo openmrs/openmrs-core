@@ -745,8 +745,8 @@ public class HibernateOrderDAO implements OrderDAO {
 	 * @see org.openmrs.api.db.OrderDAO#getOrderGroupAttributeType(java.lang.Integer)
 	 */
 	@Override
-	public OrderGroupAttributeType getOrderGroupAttributeType(Integer id) throws DAOException{
-		return sessionFactory.getCurrentSession().get(OrderGroupAttributeType.class, id);
+	public OrderGroupAttributeType getOrderGroupAttributeType(Integer orderGroupAttributeTypeId) throws DAOException{
+		return sessionFactory.getCurrentSession().get(OrderGroupAttributeType.class, orderGroupAttributeTypeId);
 	}
 	
 	/**

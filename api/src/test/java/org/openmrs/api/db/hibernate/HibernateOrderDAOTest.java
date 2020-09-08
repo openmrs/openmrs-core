@@ -168,10 +168,10 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	 */
     @Test
 	public void deleteOrderGroupAttributeType_shouldDeleteOrderGroupAttributeTypeFromDatabase(){
-    	final String UUID1 = "9cf1bdb2-d18e-11ea-87d0-0242ac130003";
-		OrderGroupAttributeType orderGroupAttributeType = dao.getOrderGroupAttributeTypeByUuid(UUID1);
+    	final String UUID = "9cf1bdb2-d18e-11ea-87d0-0242ac130003";
+		OrderGroupAttributeType orderGroupAttributeType = dao.getOrderGroupAttributeTypeByUuid(UUID);
 		assertNotNull(orderGroupAttributeType);
 		dao.deleteOrderGroupAttributeType(orderGroupAttributeType);
-		assertNull(dao.getOrderGroupAttributeByUuid(UUID1));
+		assertNull(dao.getOrderGroupAttributeByUuid(UUID));
 	}
 }
