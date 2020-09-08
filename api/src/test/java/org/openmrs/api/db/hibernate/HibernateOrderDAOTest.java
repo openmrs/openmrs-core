@@ -123,8 +123,8 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	 * @see {@link HibernateOrderDAO#getAllOrderGroupAttributeTypes()}
 	 * @throws Exception
 	 */
-    @Test
-	public void getAllOrderGroupAttributeTypes_shouldGetAllOrderGroupAttributeTypes(){
+	@Test
+	public void getAllOrderGroupAttributeTypes_shouldGetAllOrderGroupAttributeTypes() {
 		List<OrderGroupAttributeType> orderGroupAttributeTypes = dao.getAllOrderGroupAttributeTypes();
 		assertEquals(orderGroupAttributeTypes.size(), 4);
 	}
@@ -134,8 +134,9 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void getOrderGroupAttributeType_shouldGetOrderGroupAttributeTypeGivenUuid(){
-    	OrderGroupAttributeType orderGroupAttributeType = dao.getOrderGroupAttributeTypeByUuid("9cf1bce0-d18e-11ea-87d0-0242ac130003");
+	public void getOrderGroupAttributeType_shouldGetOrderGroupAttributeTypeGivenUuid() {
+		OrderGroupAttributeType orderGroupAttributeType = dao
+		        .getOrderGroupAttributeTypeByUuid("9cf1bce0-d18e-11ea-87d0-0242ac130003");
 		assertEquals("Bacteriology", orderGroupAttributeType.getName());
 	}
 	
@@ -144,7 +145,7 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void getOrderGroupAttributeType_shouldReturnOrderGroupAttributeType(){
+	public void getOrderGroupAttributeType_shouldReturnOrderGroupAttributeType() {
 		OrderGroupAttributeType orderGroupAttributeType = dao.getOrderGroupAttributeType(4);
 		assertEquals("ECG", orderGroupAttributeType.getName());
 	}
@@ -153,22 +154,22 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	 * @see {@link HibernateOrderDAO#getOrderGroupAttributeTypeByName(String)}
 	 * @throws Exception
 	 */
-    @Test
-    public void getOrderGroupAttributeTypeByName_shouldGetOrderGroupAttributeTypeByName(){
+	@Test
+	public void getOrderGroupAttributeTypeByName_shouldGetOrderGroupAttributeTypeByName() {
 		final String NAME = "ECG";
 		OrderGroupAttributeType newOrderGroupAttributeType = dao.getOrderGroupAttributeTypeByName(NAME);
 		assertEquals(NAME, newOrderGroupAttributeType.getName());
 		assertEquals(4, newOrderGroupAttributeType.getId());
 		assertEquals("9cf1bdb2-d18e-11ea-87d0-0242ac130003", newOrderGroupAttributeType.getUuid());
-    }
-    
-    /**
+	}
+	
+	/**
 	 * @see {@link HibernateOrderDAO#deleteOrderGroupAttributeType(OrderGroupAttributeType)}
 	 * @throws Exception
 	 */
-    @Test
-	public void deleteOrderGroupAttributeType_shouldDeleteOrderGroupAttributeTypeFromDatabase(){
-    	final String UUID = "9cf1bdb2-d18e-11ea-87d0-0242ac130003";
+	@Test
+	public void deleteOrderGroupAttributeType_shouldDeleteOrderGroupAttributeTypeFromDatabase() {
+		final String UUID = "9cf1bdb2-d18e-11ea-87d0-0242ac130003";
 		OrderGroupAttributeType orderGroupAttributeType = dao.getOrderGroupAttributeTypeByUuid(UUID);
 		assertNotNull(orderGroupAttributeType);
 		dao.deleteOrderGroupAttributeType(orderGroupAttributeType);

@@ -3816,51 +3816,54 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void getOrderGroupAttributeTypes_shouldReturnAllOrderGroupAttributeTypes(){
+	public void getOrderGroupAttributeTypes_shouldReturnAllOrderGroupAttributeTypes() {
 		List<OrderGroupAttributeType> orderGroupAttributeTypes = orderService.getAllOrderGroupAttributeTypes();
 		assertEquals(4, orderGroupAttributeTypes.size());
 	}
 	
 	@Test
-	public void getOrderGroupAttributeType_shouldReturnNullIfNoOrderGroupAttributeTypeHasTheGivenId(){
+	public void getOrderGroupAttributeType_shouldReturnNullIfNoOrderGroupAttributeTypeHasTheGivenId() {
 		assertNull(Context.getOrderService().getOrderGroupAttributeType(10));
 	}
-
-	@Test 
-	public void getOrderGroupAttributeType_shouldReturnOrderGroupAttributeType(){
+	
+	@Test
+	public void getOrderGroupAttributeType_shouldReturnOrderGroupAttributeType() {
 		OrderGroupAttributeType orderGroupAttributeType = orderService.getOrderGroupAttributeType(2);
 		assertThat(orderGroupAttributeType.getId(), is(2));
 	}
-
+	
 	@Test
-	public void getOrderGroupAttributeTypeByUuid_shouldReturnOrderGroupAttributeTypeByUuid(){
-		OrderGroupAttributeType orderGroupAttributeType = orderService.getOrderGroupAttributeTypeByUuid("9cf1bce0-d18e-11ea-87d0-0242ac130003");
+	public void getOrderGroupAttributeTypeByUuid_shouldReturnOrderGroupAttributeTypeByUuid() {
+		OrderGroupAttributeType orderGroupAttributeType = orderService
+		        .getOrderGroupAttributeTypeByUuid("9cf1bce0-d18e-11ea-87d0-0242ac130003");
 		assertEquals("Bacteriology", orderGroupAttributeType.getName());
 	}
-
+	
 	@Test
-	public void saveOrderGroupAttributeType_shouldSaveOrderGroupAttributeTypeGivenOrderGroupAttributeType() throws ParseException {
+	public void saveOrderGroupAttributeType_shouldSaveOrderGroupAttributeTypeGivenOrderGroupAttributeType()
+	        throws ParseException {
 		int initialGroupOrderAttributeTypeCount = Context.getOrderService().getAllOrderGroupAttributeTypes().size();
 		OrderGroupAttributeType orderGroupAttributeType = new OrderGroupAttributeType();
 		orderGroupAttributeType.setName("Surgery");
 		orderGroupAttributeType.setDatatypeClassname(FreeTextDatatype.class.getName());
 		Context.getOrderService().saveOrderGroupAttributeType(orderGroupAttributeType);
 		assertNotNull(orderGroupAttributeType.getId());
-		assertEquals(initialGroupOrderAttributeTypeCount + 1, Context.getOrderService().getAllOrderGroupAttributeTypes().size());
+		assertEquals(initialGroupOrderAttributeTypeCount + 1,
+		    Context.getOrderService().getAllOrderGroupAttributeTypes().size());
 	}
-		
+	
 	@Test
-	public void saveOrderGroupAttributeType_shouldEditAnExistingOrderGroupAttributeType(){
+	public void saveOrderGroupAttributeType_shouldEditAnExistingOrderGroupAttributeType() {
 		//Check for values in the database
 		OrderGroupAttributeType orderGroupAttributeType = Context.getOrderService().getOrderGroupAttributeType(4);
 		assertEquals("ECG", orderGroupAttributeType.getName());
-        //edit existing values in the database
-	    orderGroupAttributeType.setName("Laparascopy");
+		//edit existing values in the database
+		orderGroupAttributeType.setName("Laparascopy");
 		orderService.saveOrderGroupAttributeType(orderGroupAttributeType);
-        //confirm new values are persisted
+		//confirm new values are persisted
 		assertEquals("Laparascopy", orderGroupAttributeType.getName());
 	}
-			
+	
 	@Test
 	public void retireOrderGroupAttributeType_shouldRetireOrderGroupAttributeType() throws ParseException {
 		OrderGroupAttributeType orderGroupAttributeType = Context.getOrderService().getOrderGroupAttributeType(2);
@@ -3877,41 +3880,42 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void unretireOrderGroupAttributeType_shouldUnretireOrderGroupAttributeType(){
+	public void unretireOrderGroupAttributeType_shouldUnretireOrderGroupAttributeType() {
 		OrderService orderService = Context.getOrderService();
 		OrderGroupAttributeType orderGroupAttributeType = Context.getOrderService().getOrderGroupAttributeType(4);
-        assertTrue(orderGroupAttributeType.getRetired());
-        assertNotNull(orderGroupAttributeType.getRetiredBy());
-        assertNotNull(orderGroupAttributeType.getDateRetired());
-        assertNotNull(orderGroupAttributeType.getRetireReason());
-        orderService.unretireOrderGroupAttributeType(orderGroupAttributeType);
+		assertTrue(orderGroupAttributeType.getRetired());
+		assertNotNull(orderGroupAttributeType.getRetiredBy());
+		assertNotNull(orderGroupAttributeType.getDateRetired());
+		assertNotNull(orderGroupAttributeType.getRetireReason());
+		orderService.unretireOrderGroupAttributeType(orderGroupAttributeType);
 		assertFalse(orderGroupAttributeType.getRetired());
 		assertNull(orderGroupAttributeType.getRetiredBy());
 		assertNull(orderGroupAttributeType.getDateRetired());
 		assertNull(orderGroupAttributeType.getRetireReason());
 	}
-			
+	
 	@Test
-	public  void getOrderGroupAttributeTypeByName_shouldReturnOrderGroupAttributeTypeUsingName(){
+	public void getOrderGroupAttributeTypeByName_shouldReturnOrderGroupAttributeTypeUsingName() {
 		OrderGroupAttributeType orderGroupAttributeType = orderService.getOrderGroupAttributeTypeByName("Bacteriology");
 		assertEquals("9cf1bce0-d18e-11ea-87d0-0242ac130003", orderGroupAttributeType.getUuid());
 	}
-			
+	
 	@Test
-	public void purgeOrderGroupAttributeType_shouldPurgeOrderGroupAttributeType(){
+	public void purgeOrderGroupAttributeType_shouldPurgeOrderGroupAttributeType() {
 		int initialOrderGroupAttributeTypeCount = orderService.getAllOrderGroupAttributeTypes().size();
 		orderService.purgeOrderGroupAttributeType(orderService.getOrderGroupAttributeType(4));
 		assertEquals(initialOrderGroupAttributeTypeCount - 1, orderService.getAllOrderGroupAttributeTypes().size());
 	}
-
+	
 	@Test
-	public void getOrderGroupAttributeByUuid_shouldReturnNullIfNonExistingUuidIsProvided(){
+	public void getOrderGroupAttributeByUuid_shouldReturnNullIfNonExistingUuidIsProvided() {
 		assertNull(orderService.getOrderGroupAttributeTypeByUuid("cbf580ee-d7fb-11ea-87d0-0242ac130003"));
 	}
-
+	
 	@Test
-	public void getOrderGroupAttributeByUuid_shouldReturnOrderGroupAttributeGivenUuid(){
-		OrderGroupAttribute orderGroupAttribute = orderService.getOrderGroupAttributeByUuid("86bdcc12-d18d-11ea-87d0-0242ac130003");
+	public void getOrderGroupAttributeByUuid_shouldReturnOrderGroupAttributeGivenUuid() {
+		OrderGroupAttribute orderGroupAttribute = orderService
+		        .getOrderGroupAttributeByUuid("86bdcc12-d18d-11ea-87d0-0242ac130003");
 		orderGroupAttribute.getValueReference();
 		assertEquals("Test 1", orderGroupAttribute.getValueReference());
 		assertEquals(1, orderGroupAttribute.getId());
