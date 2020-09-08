@@ -42,8 +42,6 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	private static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
 	
 	private static final String ORDER_GROUP = "org/openmrs/api/include/OrderServiceTest-createOrderGroup.xml";
-     
-	private static final String  UUID = "9cf1b9de-d18e-11ea-87d0-0242ac130003";
 	
 	@BeforeEach
 	public void setUp() {
@@ -134,7 +132,7 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void getOrderGroupAttributeType_shouldGetOrderGroupAttributeTypeGivenUuid() {
+	public void getOrderGroupAttributeTypeByUuid_shouldGetOrderGroupAttributeTypeGivenUuid() {
 		OrderGroupAttributeType orderGroupAttributeType = dao
 		        .getOrderGroupAttributeTypeByUuid("9cf1bce0-d18e-11ea-87d0-0242ac130003");
 		assertEquals("Bacteriology", orderGroupAttributeType.getName());
