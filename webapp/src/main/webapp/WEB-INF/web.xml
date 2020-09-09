@@ -296,8 +296,14 @@
 	</session-config>
 	
 	<mime-mapping>
+<<<<<<< HEAD
 		<extension>json</extension>
 		<mime-type>application/json</mime-type>
 	</mime-mapping>
+=======
+	    <extension>js</extension>
+	    <mime-type>text/javascript</mime-type>
+    </mime-mapping>
+>>>>>>> TRUNK-5712:javascript MIME Type
 
 </web-app>
