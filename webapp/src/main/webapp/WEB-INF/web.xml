@@ -297,6 +297,7 @@
 	
 	<mime-mapping>
 <<<<<<< HEAD
+<<<<<<< HEAD
 		<extension>json</extension>
 		<mime-type>application/json</mime-type>
 	</mime-mapping>
@@ -305,5 +306,10 @@
 	    <mime-type>text/javascript</mime-type>
     </mime-mapping>
 >>>>>>> TRUNK-5712:javascript MIME Type
+=======
+	    <extension>js</extension>
+	    <mime-type>text/javascript</mime-type>
+    </mime-mapping>
+>>>>>>> 6792cf8b36a3740327befc6b5f0c607e8cb471c5
 
 </web-app>
