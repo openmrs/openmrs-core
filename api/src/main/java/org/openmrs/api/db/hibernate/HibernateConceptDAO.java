@@ -497,6 +497,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#saveConceptDatatype(org.openmrs.ConceptDatatype)
@@ -521,6 +522,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 =======
 		
 >>>>>>> f57b7f645... TRUNK-1824 : Refactoring and adding more javadocs to ConceptDAO
+=======
+		
+>>>>>>> 34bf244e7583661b01a7a249092ea16f43e7c6c6
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptNumeric(java.lang.Integer)
 	 */

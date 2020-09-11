@@ -128,6 +128,8 @@ public class OpenmrsUtil {
 	private OpenmrsUtil() {
 	}
 	
+	private static volatile MimetypesFileTypeMap mimetypesFileTypeMap = null;
+	
 	private static org.slf4j.Logger log = LoggerFactory.getLogger(OpenmrsUtil.class);
 	
 	private static Map<Locale, SimpleDateFormat> dateFormatCache = new HashMap<>();
@@ -308,8 +310,12 @@ public class OpenmrsUtil {
 	 * @return mime type
 	 */
 	public static String getFileMimeType(File file) {
-		MimetypesFileTypeMap mimeMap = new MimetypesFileTypeMap();
-		return mimeMap.getContentType(file);
+		if (mimetypesFileTypeMap == null) {
+			synchronized (OpenmrsUtil.class) {
+				mimetypesFileTypeMap = new MimetypesFileTypeMap();
+			}
+		}
+		return mimetypesFileTypeMap.getContentType(file);
 	}
 	
 	/**
@@ -1160,14 +1166,14 @@ public class OpenmrsUtil {
 	}
 	
 	/**
-	 * Checks whether the current JVM version is at least Java 6.
+	 * Checks whether the current JVM version is at least Java 8.
 	 * 
-	 * @throws ApplicationContextException if the current JVM version is earlier than Java 6
+	 * @throws ApplicationContextException if the current JVM version is earlier than Java 8
 	 */
 	public static void validateJavaVersion() {
-		// check whether the current JVM version is at least Java 6
-		if (JdkVersion.getJavaVersion().matches("1.(0|1|2|3|4|5).(.*)")) {
-			throw new APIException("OpenMRS requires Java 6, but is running under " + JdkVersion.getJavaVersion());
+		// check whether the current JVM version is at least Java 8
+		if (JdkVersion.getJavaVersion().matches("1.(0|1|2|3|4|5|6|7).(.*)")) {
+			throw new APIException("OpenMRS requires Java 8 and above, but is running under " + JdkVersion.getJavaVersion());
 		}
 	}
 	

@@ -143,7 +143,7 @@ public class ChangeLogDetective {
 				log.info("file '{}}' contains {} un-run change sets", filename, unrunChangeSets.size());
 				logUnRunChangeSetDetails(filename, unrunChangeSets);
 				
-				if (unrunChangeSets.size() > 0) {
+				if (!unrunChangeSets.isEmpty()) {
 					unrunLiquibaseUpdates.add(filename);
 				}
 			}
@@ -162,8 +162,7 @@ public class ChangeLogDetective {
 	}
 	
 	List<String> getSnapshotVersionsInDescendingOrder(Map<String, List<String>> snapshotCombinations) {
-		List<String> versions = new ArrayList<>();
-		versions.addAll(snapshotCombinations.keySet());
+		List<String> versions = new ArrayList<>(snapshotCombinations.keySet());
 		Collections.sort(versions, Collections.reverseOrder());
 		return versions;
 	}

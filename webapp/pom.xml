@@ -23,12 +23,6 @@
    <description>The web application of openmrs</description>
 
    <dependencies>
-       <dependency>
-         <groupId>org.openmrs.test</groupId>
-         <artifactId>openmrs-test</artifactId>
-         <type>pom</type>
-         <scope>test</scope>
-      </dependency>
       <dependency>
          <groupId>org.openmrs.api</groupId>
          <artifactId>openmrs-api</artifactId>
@@ -71,7 +65,7 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-antrun-plugin</artifactId>
-            <version>1.4</version>
+            <version>3.0.0</version>
             <executions>
                <execution>
                   <phase>process-resources</phase>
@@ -79,9 +73,9 @@
                      <goal>run</goal>
                   </goals>
                   <configuration>
-                     <tasks>
+                     <target>
                         <unzip src="src/main/resources/liquibase-demo-data.zip" dest="${project.build.outputDirectory}" />
-                     </tasks>
+                     </target>
                   </configuration>
                </execution>
             </executions>
@@ -106,7 +100,7 @@
          <plugin>
              <groupId>org.eclipse.jetty</groupId>
              <artifactId>jetty-maven-plugin</artifactId>
-             <version>9.4.25.v20191220</version>
+             <version>9.4.31.v20200723</version>
              <configuration>
                <webApp>
                	  <descriptor>${project.build.directory}/jetty/WEB-INF/web.xml</descriptor>
@@ -320,6 +314,6 @@
       <WEBAPP.DISPLAY.NAME>OpenMRS</WEBAPP.DISPLAY.NAME>
       <WEBAPP.DESCRIPTION>An Open-Source EMR System</WEBAPP.DESCRIPTION>
       <webapp.name>openmrs</webapp.name>
-      <tomcat.version>7.0.86</tomcat.version>
+      <tomcat.version>8.5.2</tomcat.version>
    </properties>
 </project>
