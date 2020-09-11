@@ -39,7 +39,7 @@ public class AlertValidatorTest extends BaseContextSensitiveTest {
 		
 		errors = new BindException(alert, "alert");
 	}
-	
+
 	@Test
 	public void shouldFailValidationIfAlertTextIsNull() {
 		
