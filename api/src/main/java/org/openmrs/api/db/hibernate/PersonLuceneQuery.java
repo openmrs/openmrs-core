@@ -134,7 +134,7 @@ public class PersonLuceneQuery {
 		
 		// If an empty search request is given it will translated into a Lucene syntax
 		String query = secondName;
-		if(secondName == "") {
+		if(secondName.equals("")) {
 			 query = "*:* AND -(middleNameSoundex:[* TO *] AND  familyNameSoundex:[* TO *] AND familyName2Soundex:[* TO *])" ;
 		}
 		return buildSoundexLuceneQuery(query, fields, birthyear, includeVoided, gender);

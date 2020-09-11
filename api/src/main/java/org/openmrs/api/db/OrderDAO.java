@@ -12,17 +12,18 @@ package org.openmrs.api.db;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
 import org.openmrs.CareSetting;
+import org.openmrs.Order;
+import org.openmrs.Encounter;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
-import org.openmrs.Encounter;
-import org.openmrs.Order;
-import org.openmrs.OrderFrequency;
 import org.openmrs.OrderGroup;
 import org.openmrs.OrderType;
+import org.openmrs.OrderGroupAttribute;
+import org.openmrs.OrderGroupAttributeType;
 import org.openmrs.Patient;
 import org.openmrs.User;
+import org.openmrs.OrderFrequency;
 import org.openmrs.api.APIException;
 import org.openmrs.parameter.OrderSearchCriteria;
 
@@ -269,4 +270,39 @@ public interface OrderDAO {
 	 * @see org.openmrs.api.OrderService#getOrderGroupsByEncounter(Encounter)
 	 */
 	public List<OrderGroup> getOrderGroupsByEncounter(Encounter encounter) throws DAOException;
+	
+	/**
+	 * @see  org.openmrs.api.OrderService#getOrderGroupAttributeByUuid(String)
+	 */
+	public OrderGroupAttribute getOrderGroupAttributeByUuid(String uuid) throws DAOException;
+
+	/**
+	 * @see org.openmrs.api.OrderService#getAllOrderGroupAttributeTypes()
+	 */
+	public List<OrderGroupAttributeType> getAllOrderGroupAttributeTypes()throws DAOException;
+
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeType(Integer)
+	 */
+	public OrderGroupAttributeType getOrderGroupAttributeType(Integer orderGroupAttributeTypeId)throws DAOException;
+
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeTypeByUuid(String)
+	 */
+	public OrderGroupAttributeType getOrderGroupAttributeTypeByUuid(String uuid)throws DAOException;
+
+	/**
+	 * @see org.openmrs.api.OrderService#saveOrderGroupAttributeType(OrderGroupAttributeType)
+	 */
+	public OrderGroupAttributeType  saveOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType)throws DAOException;
+	
+	/**
+	 * @see org.openmrs.api.OrderService#purgeOrderGroupAttributeType(OrderGroupAttributeType)
+	 */
+	public  void deleteOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType)throws DAOException;
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeTypeByName(String)
+	 */
+	public OrderGroupAttributeType getOrderGroupAttributeTypeByName(String name)throws DAOException;
 }

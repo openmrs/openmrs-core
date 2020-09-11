@@ -12,7 +12,6 @@ jobs:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         days-before-stale: 150
         days-before-close: 30
-        debug-only: true
         stale-pr-message: |
           **tl;dr** our action detected no activity on this PR and will close it in 30 days if the stale label is not removed.
           

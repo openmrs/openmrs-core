@@ -11,6 +11,7 @@ package org.openmrs;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.openmrs.api.APIException;
 
@@ -21,7 +22,7 @@ import org.openmrs.api.APIException;
  * 
  * @since 1.12
  */
-public class OrderGroup extends BaseChangeableOpenmrsData {
+public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	
 	public static final long serialVersionUID = 72232L;
 	
@@ -40,6 +41,8 @@ public class OrderGroup extends BaseChangeableOpenmrsData {
 	private Concept orderGroupReason;
 
 	private OrderGroup previousOrderGroup;
+	
+	private Set<OrderGroup> nestedOrderGroups;
 
 	/**
 	 * Gets the orderGroupId
@@ -276,5 +279,27 @@ public class OrderGroup extends BaseChangeableOpenmrsData {
 	 */
 	public void setPreviousOrderGroup(OrderGroup previousOrderGroup) {
 		this.previousOrderGroup = previousOrderGroup;
+	}
+	
+	/**
+	 * Gets the nested order groups to other order groups, to maintain linkages
+	 * between groups and support group nesting
+	 * 
+	 * @param returns the nested order groups
+	 * @since 2.4.0
+	 */
+	public Set<OrderGroup> getNestedOrderGroups() {
+		return this.nestedOrderGroups;
+	}
+	
+	/**
+	 * Sets the nested order groups to other order groups, to maintain linkages
+	 * between groups and support group nesting.
+	 * 
+	 * @param nestedOrderGroup The nested order groups to set
+	 * @since 2.4.0
+	 */
+	public void setNestedOrderGroups(Set<OrderGroup> nestedOrderGroups) {
+		this.nestedOrderGroups = nestedOrderGroups;
 	}
 }

@@ -1820,6 +1820,17 @@ public class InitializationFilter extends StartupFilter {
 							return;
 						}
 						
+						try {
+							// Update PostgreSQL Sequences after insertion of core data
+							Context.getAdministrationService().updatePostgresSequence();
+						}
+						catch (Exception e) {
+							log.warn("Not able to update PostgreSQL sequence. Startup failed for PostgreSQL", e);
+							reportError(ErrorMessageConstants.ERROR_COMPLETE_STARTUP, DEFAULT_PAGE, e.getMessage());
+							return;
+						}
+
+						
 						// set this so that the wizard isn't run again on next page load
 						Context.closeSession();
 						
