@@ -42,8 +42,6 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	private static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
 	
 	private static final String ORDER_GROUP = "org/openmrs/api/include/OrderServiceTest-createOrderGroup.xml";
-     
-	private static final String  UUID = "9cf1b9de-d18e-11ea-87d0-0242ac130003";
 	
 	@BeforeEach
 	public void setUp() {
@@ -134,7 +132,7 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void getOrderGroupAttributeType_shouldGetOrderGroupAttributeTypeGivenUuid() {
+	public void getOrderGroupAttributeTypeByUuid_shouldGetOrderGroupAttributeTypeGivenUuid() {
 		OrderGroupAttributeType orderGroupAttributeType = dao
 		        .getOrderGroupAttributeTypeByUuid("9cf1bce0-d18e-11ea-87d0-0242ac130003");
 		assertEquals("Bacteriology", orderGroupAttributeType.getName());
@@ -157,10 +155,10 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void getOrderGroupAttributeTypeByName_shouldGetOrderGroupAttributeTypeByName() {
 		final String NAME = "ECG";
-		OrderGroupAttributeType newOrderGroupAttributeType = dao.getOrderGroupAttributeTypeByName(NAME);
-		assertEquals(NAME, newOrderGroupAttributeType.getName());
-		assertEquals(4, newOrderGroupAttributeType.getId());
-		assertEquals("9cf1bdb2-d18e-11ea-87d0-0242ac130003", newOrderGroupAttributeType.getUuid());
+		OrderGroupAttributeType OrderGroupAttributeType = dao.getOrderGroupAttributeTypeByName(NAME);
+		assertEquals(NAME, OrderGroupAttributeType.getName());
+		assertEquals(4, OrderGroupAttributeType.getId());
+		assertEquals("9cf1bdb2-d18e-11ea-87d0-0242ac130003", OrderGroupAttributeType.getUuid());
 	}
 	
 	/**
