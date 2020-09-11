@@ -198,6 +198,7 @@ public interface ConceptDAO {
 	 */
 	public ConceptDatatype getConceptDatatype(Integer i) throws DAOException;
 	
+<<<<<<< HEAD
 	/**
 	 * @see org.openmrs.api.ConceptService#saveConceptDatatype(org.openmrs.ConceptDatatype)
 	 */
@@ -208,6 +209,8 @@ public interface ConceptDAO {
 	 */
 	public void purgeConceptDatatype(ConceptDatatype cd) throws DAOException;
 	
+=======
+>>>>>>> bae085a53... TRUNK-1824: Removing  ConceptDAO.saveConceptDatatype() , ConceptDAO.purgeConceptDatatype() , HibernateConceptDAO.saveConceptDatatype() and  HibernateConceptDAO.purgeConceptDatatype()
 	/**
 	 * @see org.openmrs.api.ConceptService#getConceptSetsByConcept(org.openmrs.Concept)
 	 */

@@ -495,6 +495,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		}
 		return (ConceptDatatype) criteria.uniqueResult();
 	}
+<<<<<<< HEAD
 	
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#saveConceptDatatype(org.openmrs.ConceptDatatype)
@@ -513,6 +514,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 		sessionFactory.getCurrentSession().delete(cd);
 	}
 	
+=======
+		
+>>>>>>> bae085a53... TRUNK-1824: Removing  ConceptDAO.saveConceptDatatype() , ConceptDAO.purgeConceptDatatype() , HibernateConceptDAO.saveConceptDatatype() and  HibernateConceptDAO.purgeConceptDatatype()
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptNumeric(java.lang.Integer)
 	 */
