@@ -42,9 +42,9 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 
 /**
- * Concept-related database functions
+ * Concept-related database functions   
  * 
- * @see ConceptService
+ * @see org.openmrs.api.ConceptService
  */
 public interface ConceptDAO {
 	
@@ -60,11 +60,10 @@ public interface ConceptDAO {
 	public void purgeConcept(Concept concept) throws DAOException;
 	
 	/**
-	 * Get a ConceptComplex. The Concept.getDatatype() is "Complex" and the Concept.getHandler() is
-	 * the class name for the ComplexObsHandler key associated with this ConceptComplex.
+	 * Get the concept complex
 	 * 
-	 * @param conceptId
-	 * @return the ConceptComplex
+	 * @param conceptId The id of the concept complex to return
+	 * @return the concept complex using the specified conceptId
 	 */
 	public ConceptComplex getConceptComplex(Integer conceptId);
 	
@@ -84,24 +83,30 @@ public interface ConceptDAO {
 	public Concept getConcept(Integer conceptId) throws DAOException;
 	
 	/**
+	 * Get the concept name
+	 * 
 	 * @see org.openmrs.api.ConceptService#getConceptName(java.lang.Integer)
-	 * @param conceptNameId
-	 * @return The ConceptName matching the specified conceptNameId
+	 * @param conceptNameId The concept name id
+	 * @return The concept name matching the specified conceptNameId
+	 * @throws DAOException
 	 */
 	public ConceptName getConceptName(Integer conceptNameId) throws DAOException;
 	
 	/**
+	 * Returns all concepts
+	 * 
 	 * @see org.openmrs.api.ConceptService#getAllConcepts(java.lang.String, boolean, boolean)
+	 * @throws DAOException
 	 */
 	public List<Concept> getAllConcepts(String sortBy, boolean asc, boolean includeRetired) throws DAOException;
 	
 	/**
 	 * Returns a list of concepts based on the search criteria
 	 * 
-	 * @param name
-	 * @param loc
+	 * @param name The name of the concept to search
+	 * @param loc The locale to look in
 	 * @param searchOnPhrase This puts wildcard characters around the concept name search criteria
-	 * @return List&lt;Concept&gt;
+	 * @return a list of concepts based on search criteria
 	 * @throws DAOException
 	 * <strong>Should</strong> not return concepts with matching names that are voided
 	 */
@@ -109,17 +114,43 @@ public interface ConceptDAO {
 	        List<ConceptDatatype> datatypes) throws DAOException;
 	
 	/**
+	 * Return a list of concept results based on search criteria
+	 * 
 	 * @see ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept,
 	 *      Integer, Integer)
+	 * @param phrase 
+	 * @param locales A list of locales
+	 * @param includeRetired 
+	 * @param requireClasses 
+	 * @param excludeClasses 
+	 * @param requireDatatypes 
+	 * @param excludeDatatypes 
+	 * @param answersToConcept 
+	 * @param start 
+	 * @param size 
+	 * @return a list of concept results
 	 * @throws DAOException
-	 * <strong>Should</strong> return correct results for concept with names that contains words with more weight
+	 * <strong>Should</strong> return correct results for concept with names that contain words with more weight
 	 * <strong>Should</strong> return correct results if a concept name contains same word more than once
 	 */
 	public List<ConceptSearchResult> getConcepts(String phrase, List<Locale> locales, boolean includeRetired,
 	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
 	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, Integer start, Integer size)
 	        throws DAOException;
-	
+	/**
+	 * Returns count of concepts
+	 * 
+	 * @param phrase
+	 * @param locales 
+	 * @param includeRetired 
+	 * @param requireClasses 
+	 * @param excludeClasses 
+	 * @param requireDatatypes 
+	 * @param excludeDatatypes 
+	 * @param answersToConcept 
+	 * @return the concept count
+	 * @throws DAOException
+	*/
 	public Integer getCountOfConcepts(String phrase, List<Locale> locales, boolean includeRetired,
 	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
 	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept) throws DAOException;
@@ -135,12 +166,12 @@ public interface ConceptDAO {
 	public Drug getDrug(Integer drugId) throws DAOException;
 	
 	/**
-	 * DAO for retrieving a list of drugs based on the following criteria
+	 * Retrieve a list of drugs based on the supplied criteria
 	 * 
-	 * @param drugName
-	 * @param concept
-	 * @param includeRetired
-	 * @return List&lt;Drug&gt;
+	 * @param drugName The name of the drug to required
+	 * @param concept The concept required
+	 * @param includeRetired The include retired flag or option
+	 * @return a list of drugs
 	 * @throws DAOException
 	 */
 	public List<Drug> getDrugs(String drugName, Concept concept, boolean includeRetired) throws DAOException;
@@ -186,7 +217,9 @@ public interface ConceptDAO {
 	public List<ConceptDatatype> getAllConceptDatatypes(boolean includeRetired) throws DAOException;
 	
 	/**
-	 * @param name
+	 * Returns a concept data type which matches the provided name
+	 * 
+	 * @param name The name of the concept data type
 	 * @return the {@link ConceptDatatype} that matches <em>name</em> exactly or null if one does
 	 *         not exist.
 	 * @throws DAOException
@@ -200,6 +233,7 @@ public interface ConceptDAO {
 	
 <<<<<<< HEAD
 	/**
+<<<<<<< HEAD
 	 * @see org.openmrs.api.ConceptService#saveConceptDatatype(org.openmrs.ConceptDatatype)
 	 */
 	public ConceptDatatype saveConceptDatatype(ConceptDatatype cd) throws DAOException;
@@ -212,6 +246,8 @@ public interface ConceptDAO {
 =======
 >>>>>>> bae085a53... TRUNK-1824: Removing  ConceptDAO.saveConceptDatatype() , ConceptDAO.purgeConceptDatatype() , HibernateConceptDAO.saveConceptDatatype() and  HibernateConceptDAO.purgeConceptDatatype()
 	/**
+=======
+>>>>>>> f57b7f645... TRUNK-1824 : Refactoring and adding more javadocs to ConceptDAO
 	 * @see org.openmrs.api.ConceptService#getConceptSetsByConcept(org.openmrs.Concept)
 	 */
 	public List<ConceptSet> getConceptSetsByConcept(Concept c) throws DAOException;
@@ -227,8 +263,13 @@ public interface ConceptDAO {
 	public ConceptNumeric getConceptNumeric(Integer conceptId) throws DAOException;
 	
 	/**
+	 * Returns all possible Concepts to which this concept is a value-coded answer. 
+	 * 
 	 * @see org.openmrs.api.ConceptService#getConceptsByAnswer(org.openmrs.Concept)
 	 * <strong>Should</strong> return concepts for the given answer concept
+	 * @param concept The concept
+	 * @return a list of concepts to which this concept is a value-coded answer
+	 * @throws DAOException
 	 */
 	public List<Concept> getConceptsByAnswer(Concept concept) throws DAOException;
 	
@@ -276,11 +317,23 @@ public interface ConceptDAO {
 	 * @see org.openmrs.api.ConceptService#getConceptsWithDrugsInFormulary()
 	 */
 	public List<Concept> getConceptsWithDrugsInFormulary() throws DAOException;
-	
+
+	/**
+	 * Saves the concept name tag
+	 * 
+	 * @param nameTag
+	 * @return
+	 */
 	public ConceptNameTag saveConceptNameTag(ConceptNameTag nameTag);
-	
+
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptNameTag(java.lang.Integer)
+	 */
 	public ConceptNameTag getConceptNameTag(Integer i);
-	
+
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptNameTagByName(java.lang.String)
+	 */
 	public ConceptNameTag getConceptNameTagByName(String name);
 	
 	/**
@@ -290,11 +343,13 @@ public interface ConceptDAO {
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#getConceptSource(java.lang.Integer)
+	 * @throws DAOException
 	 */
 	public ConceptSource getConceptSource(Integer conceptSourceId) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#getAllConceptSources(boolean)
+	 * @throws DAOException
 	 */
 	public List<ConceptSource> getAllConceptSources(boolean includeRetired) throws DAOException;
 	
@@ -329,55 +384,127 @@ public interface ConceptDAO {
 	public List<Concept> getConceptsByMapping(String code, String sourceName, boolean includeRetired);
 	
 	/**
-	 * @param uuid
+	 * Retrieves a concept using the provided uuid
+	 * 
+	 * @see org.openmrs.api.ConceptService#getConceptByUuid(java.lang.String) 
+	 * @param uuid the uuid provided to retrieve the concept
 	 * @return concept or null
 	 */
 	public Concept getConceptByUuid(String uuid);
 	
 	/**
-	 * @param uuid
+	 * Retrieves a concept class using the provided uuid
+	 * 
+	 * @see org.openmrs.api.ConceptService#getConceptClassByUuid(java.lang.String) 
+	 * @param uuid the uuid provided to retrieve the concept class
 	 * @return concept class or null
 	 */
 	public ConceptClass getConceptClassByUuid(String uuid);
-	
+
+	/**
+	 * Retrieves a concept answer using the provided uuid
+	 *
+	 * @see org.openmrs.api.ConceptService#getConceptAnswerByUuid(java.lang.String) 
+	 * @param uuid the uuid provided to retrieve the concept answer
+	 * @return concept class or null
+	 */
 	public ConceptAnswer getConceptAnswerByUuid(String uuid);
-	
+
+	/**
+	 * Retrieves a concept name using the provided uuid
+	 *  
+	 * @see org.openmrs.api.ConceptService#getConceptNameByUuid(java.lang.String) 
+	 * @param uuid the uuid provided to retrieve the concept name
+	 * @return concept name or null
+	 */
 	public ConceptName getConceptNameByUuid(String uuid);
-	
+
+	/**
+	 * Retrieves a concept set using the provided uuid
+	 * 
+	 * @see org.openmrs.api.ConceptService#getConceptSetByUuid(java.lang.String) 
+	 * @param uuid the uuid provided to retrieve the concept set
+	 * @return concept set or null
+	 */
 	public ConceptSet getConceptSetByUuid(String uuid);
-	
+
+	/**
+	 * Retrieves a concept source using the provided uuid
+	 *
+	 * @see org.openmrs.api.ConceptService#getConceptSourceByUuid(java.lang.String) 
+	 * @param uuid the uuid provided to retrieve the concept source
+	 * @return concept source or null
+	 */
 	public ConceptSource getConceptSourceByUuid(String uuid);
 	
 	/**
-	 * @param uuid
+	 * Retrieves a concept data type using the provided uuid
+	 * 
+	 * @see org.openmrs.api.ConceptService#getConceptDatatypeByUuid(java.lang.String) 
+	 * @param uuid the uuid provided to retrieve the concept data type
 	 * @return concept data type or null
 	 */
 	public ConceptDatatype getConceptDatatypeByUuid(String uuid);
 	
 	/**
-	 * @param uuid
+	 * Retrieves a concept numeric using the provided uuid
+	 * 
+	 * @see org.openmrs.api.ConceptService#getConceptNumericByUuid(java.lang.String) 
+	 * @param uuid the uuid provided to retrieve the concept numeric
 	 * @return concept numeric or null
 	 */
 	public ConceptNumeric getConceptNumericByUuid(String uuid);
 	
 	/**
-	 * @param uuid
+	 * Retrieves a concept proposal using the provided uuid
+	 * 
+	 * @see org.openmrs.api.ConceptService#getConceptProposalByUuid(java.lang.String)
+	 * @param uuid the uuid provided to retrieve the concept proposal
 	 * @return concept proposal or null
 	 */
 	public ConceptProposal getConceptProposalByUuid(String uuid);
 	
 	/**
-	 * @param uuid
+	 * Gets a drug using provided uuid
+	 * 
+	 *@see org.openmrs.api.ConceptService#getDrugByUuid(java.lang.String) 
+	 * @param uuid the uuid of the drug to get
 	 * @return drug or null
 	 */
 	public Drug getDrugByUuid(String uuid);
-	
+
+	/**
+	 * Gets a drug ingredient using provided uuid
+	 *
+	 * @see org.openmrs.api.ConceptService#getDrugIngredientByUuid(java.lang.String) 
+	 * @param uuid the uuid of the drug ingredient to get
+	 * @return the drug ingredient if found, else null 
+	 */
 	public DrugIngredient getDrugIngredientByUuid(String uuid);
-	
+
+	/**
+	 * Returns a map of concepts uuids
+	 * 
+	 * @return key value pairs of concept uuids
+	 */
 	public Map<Integer, String> getConceptUuids();
-	
+
+	/**
+	 * Retrieves concept description using the provided uuid
+	 * 
+	 * @see org.openmrs.api.ConceptService#getConceptDescriptionByUuid(java.lang.String) 
+	 * @param uuid The uuid of the concept description
+	 * @return concept description or null
+	 */
 	public ConceptDescription getConceptDescriptionByUuid(String uuid);
-	
+
+	/**
+	 * Retrieves concept name tag using the provided uuid
+	 * 
+	 * @see org.openmrs.api.ConceptService#getConceptNameByUuid(java.lang.String) 
+	 * @param uuid The uuid of the concept name tag
+	 * @return concept name or null 
+	 */
 	public ConceptNameTag getConceptNameTagByUuid(String uuid);
 	
 	/**
@@ -405,8 +532,8 @@ public interface ConceptDAO {
 	 * bypassing any caches. This is used prior to saving an concept so that we can change the obs
 	 * if need be
 	 * 
-	 * @param concept for which the conceptDatatype should be fetched
-	 * @return the conceptDatatype currently in the database for this concept
+	 * @param concept The concept for which the concept data type should be fetched
+	 * @return the concept data type currently in the database for this concept
 	 * <strong>Should</strong> get saved conceptDatatype from database
 	 */
 	public ConceptDatatype getSavedConceptDatatype(Concept concept);
@@ -416,8 +543,8 @@ public interface ConceptDAO {
 	 * conceptName, bypassing any caches. This is used prior to saving an concept so that we can
 	 * change the obs if need be or avoid breaking any obs referencing it.
 	 * 
-	 * @param conceptName ConceptName to fetch from the database
-	 * @return the persisted copy of the conceptName currently saved in the database for this
+	 * @param conceptName The concept name to fetch from the database
+	 * @return the persisted copy of the concept name currently saved in the database for this
 	 *         conceptName
 	 */
 	public ConceptName getSavedConceptName(ConceptName conceptName);
@@ -443,104 +570,119 @@ public interface ConceptDAO {
 	public List<ConceptStopWord> getAllConceptStopWords();
 	
 	/**
-	 * @see ConceptService#getCountOfDrugs(String, Concept, boolean, boolean, boolean)
+	 * @see org.openmrs.api.ConceptService#getCountOfDrugs(String, Concept, boolean, boolean, boolean)
+	 * @throws DAOException
 	 */
 	public Long getCountOfDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
 	        boolean includeRetired) throws DAOException;
 	
 	/**
 	 * @see ConceptService#getDrugs(String, Concept, boolean, boolean, boolean, Integer, Integer)
+	 * @throws DAOException
 	 */
 	public List<Drug> getDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
 	        boolean includeRetired, Integer start, Integer length) throws DAOException;
 	
 	/**
-	 * @see ConceptService#getDrugsByIngredient(Concept)
+	 * @see org.openmrs.api.ConceptService#getDrugsByIngredient(org.openmrs.Concept)
 	 */
 	public List<Drug> getDrugsByIngredient(Concept ingredient);
 	
 	/**
 	 * @see ConceptService#getConceptMapTypes(boolean, boolean)
+	 * @throws DAOException
 	 */
 	public List<ConceptMapType> getConceptMapTypes(boolean includeRetired, boolean includeHidden) throws DAOException;
 	
 	/**
-	 * @see ConceptService#getConceptMapType(Integer)
+	 * @see org.openmrs.api.ConceptService#getConceptMapType(java.lang.Integer)
+	 * @throws DAOException
 	 */
 	public ConceptMapType getConceptMapType(Integer conceptMapTypeId) throws DAOException;
 	
 	/**
-	 * @see ConceptService#getConceptMapTypeByUuid(String)
+	 * @see org.openmrs.api.ConceptService#getConceptMapTypeByUuid(java.lang.String)
+	 * @throws DAOException
 	 */
 	public ConceptMapType getConceptMapTypeByUuid(String uuid) throws DAOException;
 	
 	/**
-	 * @see ConceptService#getConceptMapTypeByName(String)
+	 * @see org.openmrs.api.ConceptService#getConceptMapTypeByName(java.lang.String)
+	 * @throws DAOException
 	 */
 	public ConceptMapType getConceptMapTypeByName(String name) throws DAOException;
 	
 	/**
 	 * @see ConceptService#saveConceptMapType(ConceptMapType)
+	 * @throws DAOException
 	 */
 	public ConceptMapType saveConceptMapType(ConceptMapType conceptMapType) throws DAOException;
 	
 	/**
 	 * @see ConceptService#purgeConceptMapType(ConceptMapType)
+	 * @throws DAOException
 	 */
 	public void deleteConceptMapType(ConceptMapType conceptMapType) throws DAOException;
 	
 	/**
 	 * @see ConceptService#getConceptReferenceTerms(boolean)
+	 * @throws DAOException
 	 */
 	public List<ConceptReferenceTerm> getConceptReferenceTerms(boolean includeRetired) throws DAOException;
 	
 	/**
-	 * @see ConceptService#getConceptReferenceTerm(Integer)
+	 * @see org.openmrs.api.ConceptService#getConceptReferenceTerm(java.lang.Integer)
+	 * @throws DAOException
 	 */
 	public ConceptReferenceTerm getConceptReferenceTerm(Integer conceptReferenceTermId) throws DAOException;
 	
 	/**
-	 * @see ConceptService#getConceptReferenceTermByUuid(String)
+	 * @see org.openmrs.api.ConceptService#getConceptReferenceTermByUuid(java.lang.String)
+	 * @throws DAOException
 	 */
 	public ConceptReferenceTerm getConceptReferenceTermByUuid(String uuid) throws DAOException;
-	
+
+	/**
+	 * @see org.openmrs.api.ConceptService#getCountOfConceptReferenceTerms(String, ConceptSource, boolean) 
+	 * @throws DAOException
+	 */
 	public List<ConceptReferenceTerm> getConceptReferenceTermsBySource(ConceptSource conceptSource) throws DAOException;
 	
 	/**
-	 * @see ConceptService#getConceptReferenceTermByName(String, ConceptSource)
+	 * @see org.openmrs.api.ConceptService#getConceptReferenceTermByName(String, ConceptSource)
 	 */
 	public ConceptReferenceTerm getConceptReferenceTermByName(String name, ConceptSource conceptSource) throws DAOException;
 	
 	/**
-	 * @see ConceptService#getConceptReferenceTermByCode(String, ConceptSource)
+	 * @see org.openmrs.api.ConceptService#getConceptReferenceTermByCode(String, ConceptSource)
 	 */
 	public ConceptReferenceTerm getConceptReferenceTermByCode(String code, ConceptSource conceptSource) throws DAOException;
 	
 	/**
-	 * @see ConceptService#saveConceptReferenceTerm(ConceptReferenceTerm)
+	 * @see org.openmrs.api.ConceptService#saveConceptReferenceTerm(ConceptReferenceTerm)
 	 */
 	public ConceptReferenceTerm saveConceptReferenceTerm(ConceptReferenceTerm conceptReferenceTerm) throws DAOException;
 	
 	/**
-	 * @see ConceptService#purgeConceptReferenceTerm(ConceptReferenceTerm)
+	 * @see org.openmrs.api.ConceptService#purgeConceptReferenceTerm(ConceptReferenceTerm)
 	 */
 	public void deleteConceptReferenceTerm(ConceptReferenceTerm conceptReferenceTerm) throws DAOException;
 	
 	/**
-	 * @see ConceptService#getCountOfConceptReferenceTerms(String, ConceptSource, boolean)
+	 * @see org.openmrs.api.ConceptService#getCountOfConceptReferenceTerms(String, ConceptSource, boolean)
 	 */
 	public Long getCountOfConceptReferenceTerms(String query, ConceptSource conceptSource, boolean includeRetired)
 	        throws DAOException;
 	
 	/**
-	 * @see ConceptService#getConceptReferenceTerms(String, ConceptSource, Integer, Integer,
+	 * @see org.openmrs.api.ConceptService#getConceptReferenceTerms(String, ConceptSource, Integer, Integer,
 	 *      boolean)
 	 */
 	public List<ConceptReferenceTerm> getConceptReferenceTerms(String query, ConceptSource conceptSource, Integer start,
 	        Integer length, boolean includeRetired) throws APIException;
 	
 	/**
-	 * @see ConceptService#getReferenceTermMappingsTo(ConceptReferenceTerm)
+	 * @see org.openmrs.api.ConceptService#getReferenceTermMappingsTo(ConceptReferenceTerm)
 	 */
 	public List<ConceptReferenceTermMap> getReferenceTermMappingsTo(ConceptReferenceTerm term) throws DAOException;
 	
@@ -571,12 +713,12 @@ public interface ConceptDAO {
 	public boolean isConceptMapTypeInUse(ConceptMapType mapType) throws DAOException;
 	
 	/**
-	 * @see ConceptService#getConceptsByName(String, Locale, Boolean)
+	 * @see org.openmrs.api.ConceptService#getConceptsByName(String, Locale, Boolean)
 	 */
 	public List<Concept> getConceptsByName(String name, Locale locale, Boolean exactLocal);
 	
 	/**
-	 * @see ConceptService#getConceptByName(String)
+	 * @see org.openmrs.api.ConceptService#getConceptByName(String)
 	 */
 	public Concept getConceptByName(String name);
 	
@@ -585,12 +727,12 @@ public interface ConceptDAO {
 	 * flushes in {@link ConceptService#saveConcept(Concept)}. It will be removed in 1.10 when we
 	 * have a better way to manage flush modes.
 	 * 
-	 * @see ConceptService#getDefaultConceptMapType()
+	 * @see org.openmrs.api.ConceptService#getDefaultConceptMapType()
 	 */
 	public ConceptMapType getDefaultConceptMapType() throws DAOException;
 	
 	/**
-	 * @see ConceptService#isConceptNameDuplicate(ConceptName)
+	 * @see org.openmrs.api.ConceptService#isConceptNameDuplicate(ConceptName)
 	 */
 	public boolean isConceptNameDuplicate(ConceptName name);
 	
@@ -613,50 +755,53 @@ public interface ConceptDAO {
 	        Collection<ConceptMapType> withAnyOfTheseTypesOrOrderOfPreference) throws DAOException;
 
 	/**
-	 * @see ConceptService#getAllConceptAttributeTypes()
+	 * @see org.openmrs.api.ConceptService#getAllConceptAttributeTypes()
 	 */
 
 	List<ConceptAttributeType> getAllConceptAttributeTypes();
 
 	/**
-	 * @see ConceptService#saveConceptAttributeType(ConceptAttributeType)
+	 * @see org.openmrs.api.ConceptService#saveConceptAttributeType(ConceptAttributeType)
 	 */
 	ConceptAttributeType saveConceptAttributeType(ConceptAttributeType conceptAttributeType);
 
 	/**
-	 * @see ConceptService#getConceptAttributeType(Integer)
+	 * @see org.openmrs.api.ConceptService#getConceptAttributeType(java.lang.Integer)
 	 */
 	ConceptAttributeType getConceptAttributeType(Integer id);
 
 	/**
-	 * @see ConceptService#getConceptAttributeTypeByUuid(String)
+	 * @see org.openmrs.api.ConceptService#getConceptAttributeTypeByUuid(java.lang.String)
 	 */
 	ConceptAttributeType getConceptAttributeTypeByUuid(String uuid);
 
 	/**
-	 * @see ConceptService#purgeConceptAttributeType(ConceptAttributeType)
+	 * @see org.openmrs.api.ConceptService#purgeConceptAttributeType(ConceptAttributeType)
 	 */
 	public void deleteConceptAttributeType(ConceptAttributeType conceptAttributeType);
 
 	/**
-	 * @see ConceptService#getConceptAttributeTypes(String)
+	 * @see org.openmrs.api.ConceptService#getConceptAttributeTypes(java.lang.String)
 	 */
 	public List<ConceptAttributeType> getConceptAttributeTypes(String name);
 
 	/**
-	 * @see ConceptService#getConceptAttributeTypeByName(String)
+	 * @see org.openmrs.api.ConceptService#getConceptAttributeTypeByName(java.lang.String)
 	 */
 	public ConceptAttributeType getConceptAttributeTypeByName(String exactName);
 
 	/**
-	 * @see ConceptService#getConceptAttributeByUuid(String)
+	 * @see org.openmrs.api.ConceptService#getConceptAttributeByUuid(java.lang.String)
 	 */
 	public ConceptAttribute getConceptAttributeByUuid(String uuid);
 
 	/**
-	 * @see ConceptService#hasAnyConceptAttribute(ConceptAttributeType)
+	 * @see org.openmrs.api.ConceptService#hasAnyConceptAttribute(ConceptAttributeType)
 	 */
 	public long getConceptAttributeCount(ConceptAttributeType conceptAttributeType);
 
+	/**
+	 *@see org.openmrs.api.ConceptService#getConceptsByClass(ConceptClass) 
+	 */
 	List<Concept> getConceptsByClass(ConceptClass conceptClass);
 }
