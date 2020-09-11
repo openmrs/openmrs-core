@@ -310,7 +310,7 @@
 			</and>
 		</preConditions>
 		<comment>Adding index to order_number column in Orders table</comment>
-		<createIndex  indexName="orders_order_number" tableName="orders" unique="true">
+		<createIndex  indexName="orders_order_number" tableName="orders">
 			<column   name="order_number"/>
 		</createIndex>
 	</changeSet>
@@ -325,7 +325,7 @@
 			</and>
 		</preConditions>
 		<comment>Adding index to accession_number column in Orders table</comment>
-		<createIndex  indexName="orders_accession_number"  tableName="orders" unique="true">
+		<createIndex  indexName="orders_accession_number"  tableName="orders">
 			<column   name="accession_number"/>
 		</createIndex>
 	</changeSet>
