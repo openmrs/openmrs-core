@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -107,4 +108,22 @@ public class ImageHandlerTest extends BaseContextSensitiveTest {
 		assertEquals(complexObs2.getComplexData().getMimeType(), mimetype);
 	}
 	
+	@Test
+	public void saveObs_shouldHandleByteArrays() throws IOException {
+		File sourceFile = new File(
+		       "src" + File.separator + "test" + File.separator + "resources" + File.separator + "ComplexObsTestImage.png");
+			
+		byte[] bytes = FileUtils.readFileToByteArray(sourceFile);
+		ComplexData complexData = new ComplexData("TestingComplexObsSaving.png", bytes);
+			
+		Obs obs = new Obs();
+		obs.setComplexData(complexData);
+			
+		adminService.saveGlobalProperty(new GlobalProperty(
+			OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR,
+			complexObsTestFolder.toAbsolutePath().toString()
+		));		
+
+		handler.saveObs(obs);
+	}
 }

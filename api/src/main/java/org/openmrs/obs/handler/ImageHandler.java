@@ -28,6 +28,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.OpenmrsUtil;
+import java.io.ByteArrayInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -136,7 +137,16 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 		Object data = obs.getComplexData().getData();
 		if (data instanceof BufferedImage) {
 			img = (BufferedImage) obs.getComplexData().getData();
-		} else if (data instanceof InputStream) {
+		} else if (data instanceof byte[]) {
+			  ByteArrayInputStream bis = new ByteArrayInputStream((byte[]) data);
+			    try {
+			      img = ImageIO.read(bis);
+			    }
+			    catch (IOException e) {
+			      throw new APIException("Obs.error.unable.convert.complex.data", new Object[] { "input stream" }, e);
+			    }
+			}
+		 else if (data instanceof InputStream) {
 			try {
 				img = ImageIO.read((InputStream) data);
 				if (img == null) {
