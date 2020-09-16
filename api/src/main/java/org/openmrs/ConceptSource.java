@@ -52,42 +52,6 @@ public class ConceptSource extends BaseChangeableOpenmrsMetadata {
 		this.conceptSourceId = conceptSourceId;
 	}
 	
-	@Override
-	public User getCreator() {
-		return super.getCreator();
-	}
-	
-	@Override
-	public void setCreator(User creator) {
-		super.setCreator(creator);
-	}
-	
-	/**
-	 * @return Returns the dateCreated.
-	 */
-	@Override
-	public Date getDateCreated() {
-		return super.getDateCreated();
-	}
-	
-	/**
-	 * @param dateCreated The dateCreated to set.
-	 */
-	@Override
-	public void setDateCreated(Date dateCreated) {
-		super.setDateCreated(dateCreated);
-	}
-	
-	@Override
-	public String getDescription() {
-		return super.getDescription();
-	}
-	
-	@Override
-	public void setDescription(String description) {
-		super.setDescription(description);
-	}
-	
 	/**
 	 * @return Returns the hl7Code.
 	 */
@@ -114,16 +78,6 @@ public class ConceptSource extends BaseChangeableOpenmrsMetadata {
 	 */
 	public void setUniqueId(String uniqueId) {
 		this.uniqueId = uniqueId;
-	}
-	
-	@Override
-	public String getName() {
-		return super.getName();
-	}
-	
-	@Override
-	public void setName(String name) {
-		super.setName(name);
 	}
 	
 	/**
