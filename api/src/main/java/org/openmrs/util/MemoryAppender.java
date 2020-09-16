@@ -77,13 +77,11 @@ public class MemoryAppender extends AbstractAppender {
 		if (APPENDERS.containsKey(name)) {
 			appender = APPENDERS.get(name).get();
 
-			if (appender != null) {
-				if (appender.bufferSize != theBufferSize) {
-					ThreadSafeCircularFifoQueue<LogEvent> oldBuffer = appender.buffer;
-					appender.buffer = new ThreadSafeCircularFifoQueue<>(theBufferSize);
-					appender.bufferSize = theBufferSize;
-					appender.buffer.addAll(oldBuffer);
-				}
+			if (appender != null && appender.bufferSize != theBufferSize) {
+				ThreadSafeCircularFifoQueue<LogEvent> oldBuffer = appender.buffer;
+				appender.buffer = new ThreadSafeCircularFifoQueue<>(theBufferSize);
+				appender.bufferSize = theBufferSize;
+				appender.buffer.addAll(oldBuffer);
 			}
 		}
 
