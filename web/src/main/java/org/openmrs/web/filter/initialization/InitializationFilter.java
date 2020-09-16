@@ -1142,10 +1142,7 @@ public class InitializationFilter extends StartupFilter {
 	}
 	
 	private boolean isCurrentDatabase(String database) {
-		if (wizardModel.databaseConnection.contains(database)) {
-			return true;
-		}
-		return false;
+		return wizardModel.databaseConnection.contains(database);
 	}
 	
 	/**
