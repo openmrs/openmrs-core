@@ -121,6 +121,12 @@ public abstract class JdkVersion {
 	}
 	
 	/**
+	 * Private constructor to override the default constructor to prevent it from being instantiated.
+	 */
+	private JdkVersion() {
+	}
+	
+	/**
 	 * Return the full Java version string, as returned by
 	 * {@code System.getProperty("java.version")}.
 	 * @return the full Java version string

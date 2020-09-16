@@ -48,6 +48,12 @@ public class Daemon {
 	protected static final ThreadLocal<User> daemonThreadUser = new ThreadLocal<>();
 	
 	/**
+	 * Protected constructor to override the default constructor to prevent it from being instantiated.
+	 */
+	protected Daemon() {
+	}
+	
+	/**
 	 * @see #startModule(Module, boolean, AbstractRefreshableApplicationContext)
 	 */
 	public static Module startModule(Module module) throws ModuleException {
