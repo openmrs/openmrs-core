@@ -163,6 +163,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		}
 		
 	}
+	
 	public List<Patient> getPatients(String query, List<PatientIdentifierType> identifierTypes,
 		boolean matchIdentifierExactly, Integer start, Integer length) throws DAOException{
 		
@@ -180,10 +181,7 @@ public class HibernatePatientDAO implements PatientDAO {
 			tmpLength = HibernatePersonDAO.getMaximumSearchResults();
 		}
 		
-		List<Patient> patients = findPatients(query, identifierTypes, matchIdentifierExactly, tmpStart, tmpLength);
-		
-		return patients;
-		
+		return findPatients(query, identifierTypes, matchIdentifierExactly, tmpStart, tmpLength);
 	}
 	
 	/**
