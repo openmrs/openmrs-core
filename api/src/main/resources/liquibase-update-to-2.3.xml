@@ -119,5 +119,35 @@
 			</column>
 		</addColumn>
 	</changeSet>
+
+	<changeSet id="2020-08-29-2200-TRUNK-5821" author="miirochristopher">
+		<preConditions onFail="MARK_RAN" onFailMessage="Table orders does not exist or the index orders_order_number already exists.">
+			<tableExists tableName="orders"/>
+			<and>
+				<not>
+					<indexExists indexName="orders_order_number" />
+				</not>
+			</and>
+		</preConditions>
+		<comment>Adding index to order_number column in Orders table</comment>
+		<createIndex  indexName="orders_order_number" tableName="orders">
+			<column   name="order_number"/>
+		</createIndex>
+	</changeSet>
+
+	<changeSet id="2020-08-30-100-TRUNK-5821" author="miirochristopher">
+		<preConditions onFail="MARK_RAN" onFailMessage="Table orders does not exist or the index orders_accession_number already exists.">
+			<tableExists tableName="orders"/>
+			<and>
+				<not>
+					<indexExists indexName="orders_accession_number" />
+				</not>
+			</and>
+		</preConditions>
+		<comment>Adding index to accession_number column in Orders table</comment>
+		<createIndex  indexName="orders_accession_number"  tableName="orders">
+			<column   name="accession_number"/>
+		</createIndex>
+	</changeSet>
     
 </databaseChangeLog>
