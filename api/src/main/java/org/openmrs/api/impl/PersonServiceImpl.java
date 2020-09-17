@@ -491,6 +491,10 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 */
 	@Override
 	public Relationship voidRelationship(Relationship relationship, String voidReason) throws APIException {
+		
+		if (relationship == null) {
+		    return null;
+		}
 
 		return Context.getPersonService().saveRelationship(relationship);
 	}
