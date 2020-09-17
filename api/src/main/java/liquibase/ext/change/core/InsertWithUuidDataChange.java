@@ -30,7 +30,7 @@ public class InsertWithUuidDataChange extends InsertDataChange {
 		// Check if the insert change set specifies a value for the uuid column. If that is the case nothing else needs to be done.
 		//
 		for (final ColumnConfig column : getColumns()) {
-			if (column.getName().toLowerCase().equals(UUID)) {
+			if (column.getName().equalsIgnoreCase(UUID)) {
 				return super.generateStatements(database);
 			}
 		}
