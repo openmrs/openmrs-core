@@ -1861,7 +1861,6 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		obs.setValueNumeric(5.0);
 		Obs o2 = Context.getObsService().saveObs(obs, "just testing");
 		assertNotNull(obs.getFormFieldNamespace());
-
 		// fetch the obs from the database again
 		obs = Context.getObsService().getObs(o2.getObsId());
 		assertNotNull(obs.getFormFieldNamespace());

@@ -425,8 +425,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		enc.setLocation(Context.getLocationService().getLocation(1));
 		enc.setEncounterType(Context.getEncounterService().getEncounterType(1));
 		enc.setEncounterDatetime(new Date());
-		enc.setPatient(Context.getPatientService().getPatient(3));
-		enc.addProvider(Context.getEncounterService().getEncounterRole(1), Context.getProviderService().getProvider(1));
+		enc.setPatient(Context.getPatientService().getPatient(2));
+		enc.addProvider(Context.getEncounterService().getEncounterRole(2), Context.getProviderService().getProvider(1));
 		return enc;
 	}
 	
@@ -810,8 +810,10 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// create and add an obs to this encounter
 		Obs obs = new Obs(new Patient(2), cs.getConcept(1), new Date(), new Location(1));
 		obs.setDateCreated(date);
+		obs.setPerson(new Patient(2));
 		obs.setCreator(creator);
 		obs.setValueNumeric(50d);
+		
 		encounter.addObs(obs);
 		
 		OrderService os = Context.getOrderService();
@@ -840,6 +842,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// make sure the obs date created and creator are the same as what we
 		// set
 		Obs createdObs = Context.getObsService().getObs(obs.getObsId());
+		assertEquals(createdObs.getPerson(),createdObs.getEncounter().getPatient().getPerson());
 		assertEquals(DateUtil.truncateToSeconds(date), createdObs.getDateCreated());
 		assertEquals(creator, createdObs.getCreator());
 		

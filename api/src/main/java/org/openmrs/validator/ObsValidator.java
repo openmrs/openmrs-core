@@ -11,7 +11,7 @@ package org.openmrs.validator;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Objects;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptNumeric;
@@ -77,7 +77,16 @@ public class ObsValidator implements Validator {
 		} else if (obs.getVoided()) {
 			return;
 		}
-		List<Obs> ancestors = new ArrayList<>();
+	
+		if (obs.getPerson() != null && obs.getEncounter() != null && obs.getEncounter().getPatient() != null) {
+			if (!Objects.equals(obs.getPerson(),obs.getEncounter().getPatient().getPerson())) {
+				errors.reject("Person objects of the obs and the encounter do not match");
+
+			}
+
+		}
+	
+	List<Obs> ancestors = new ArrayList<>();
 		validateHelper(obs, errors, ancestors, true);
 		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "accessionNumber", "valueModifier", "valueComplex",
 		    "comment", "voidReason");
@@ -249,7 +258,8 @@ public class ObsValidator implements Validator {
 			        && !obs.getValueDrug().getConcept().equals(obs.getValueCoded())) {
 				errors.rejectValue("valueDrug", "Obs.error.invalidDrug");
 			}
-		}
-	}
 	
+	}
+  }
 }
+	
