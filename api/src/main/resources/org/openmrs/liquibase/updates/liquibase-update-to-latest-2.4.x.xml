@@ -329,4 +329,5 @@
 			<column   name="accession_number"/>
 		</createIndex>
 	</changeSet>
+	
 </databaseChangeLog> 
