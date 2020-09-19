@@ -185,7 +185,7 @@ public class Context {
 	/**
 	 * Spring init method that sets the authentication scheme.
 	 */
-	static private void setAuthenticationScheme() {
+	private static void setAuthenticationScheme() {
 
 		authenticationScheme = new UsernamePasswordAuthenticationScheme();
 
