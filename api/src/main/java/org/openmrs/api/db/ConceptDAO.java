@@ -60,7 +60,10 @@ public interface ConceptDAO {
 	public void purgeConcept(Concept concept) throws DAOException;
 	
 	/**
-	 * Get the concept complex
+	 * Get a ConceptComplex for the given concept id.
+	 * A ConceptComplex is a concept that has a datatype 
+	 * of `complex` and an associated ComplexObsHandler class 
+	 * that handles saving and loading the data associated with this concept.
 	 * 
 	 * @param conceptId The id of the concept complex to return
 	 * @return the concept complex using the specified conceptId
@@ -106,6 +109,8 @@ public interface ConceptDAO {
 	 * @param name The name of the concept to search
 	 * @param loc The locale to look in
 	 * @param searchOnPhrase This puts wildcard characters around the concept name search criteria
+	 * @param classes A list of concept classes
+	 * @param datatypes A list of concept data types
 	 * @return a list of concepts based on search criteria
 	 * @throws DAOException
 	 * <strong>Should</strong> not return concepts with matching names that are voided
@@ -114,20 +119,22 @@ public interface ConceptDAO {
 	        List<ConceptDatatype> datatypes) throws DAOException;
 	
 	/**
-	 * Return a list of concept results based on search criteria
+	 * Searches for concepts by the given parameters.
 	 * 
 	 * @see ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept,
 	 *      Integer, Integer)
-	 * @param phrase 
+	 * @param phrase matched to the start of any word in any of the names of a concept (if 
+	 *            blank/null, matches all concepts)
 	 * @param locales A list of locales
-	 * @param includeRetired 
-	 * @param requireClasses 
-	 * @param excludeClasses 
-	 * @param requireDatatypes 
-	 * @param excludeDatatypes 
-	 * @param answersToConcept 
-	 * @param start 
-	 * @param size 
+	 * @param includeRetired boolean if false, will exclude retired concepts
+	 * @param requireClasses List&lt;ConceptClass&gt; to restrict to
+	 * @param excludeClasses List&lt;ConceptClass&gt; to leave out of results
+	 * @param requireDatatypes List&lt;ConceptDatatype&gt; to restrict to
+	 * @param excludeDatatypes List&lt;ConceptDatatype&gt; to leave out of results
+	 * @param answersToConcept all results will be a possible answer to this concept
+	 * @param start all results less than this number will be removed
+	 * @param size if non zero, all results after <code>start</code> + <code>size</code> will be
+	 *            removed   
 	 * @return a list of concept results
 	 * @throws DAOException
 	 * <strong>Should</strong> return correct results for concept with names that contain words with more weight
@@ -138,17 +145,17 @@ public interface ConceptDAO {
 	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, Integer start, Integer size)
 	        throws DAOException;
 	/**
-	 * Returns count of concepts
+	 * Returns the number of concepts matching a search phrase and the specified arguments
 	 * 
-	 * @param phrase
-	 * @param locales 
-	 * @param includeRetired 
-	 * @param requireClasses 
-	 * @param excludeClasses 
-	 * @param requireDatatypes 
-	 * @param excludeDatatypes 
-	 * @param answersToConcept 
-	 * @return the concept count
+	 * @param phrase matched to the start of any word in any of the names of a concept
+	 * @param locales List&lt;Locale&gt; to restrict to
+	 * @param includeRetired Specifies whether to include retired concepts
+	 * @param requireClasses List&lt;ConceptClass&gt; to restrict to
+	 * @param excludeClasses List&lt;ConceptClass&gt; to leave out of results
+	 * @param requireDatatypes List&lt;ConceptDatatype&gt; to restrict to
+	 * @param excludeDatatypes ist&lt;ConceptDatatype&gt; to leave out of results
+	 * @param answersToConcept all results will be a possible answer to this concept
+	 * @return the number of concepts matching the given search phrase
 	 * @throws DAOException
 	*/
 	public Integer getCountOfConcepts(String phrase, List<Locale> locales, boolean includeRetired,
@@ -168,11 +175,11 @@ public interface ConceptDAO {
 	/**
 	 * Retrieve a list of drugs based on the supplied criteria
 	 * 
-	 * @param drugName The name of the drug to required
-	 * @param concept The concept required
-	 * @param includeRetired The include retired flag or option
+	 * @param drugName The name of the drug to search for
+	 * @param concept The concept representing the drug to search for
+	 * @param includeRetired Used to indicate if retired concepts should be returned
 	 * @return a list of drugs
-	 * @throws DAOException
+	 * @throws DAOException 
 	 */
 	public List<Drug> getDrugs(String drugName, Concept concept, boolean includeRetired) throws DAOException;
 	
@@ -231,26 +238,7 @@ public interface ConceptDAO {
 	 */
 	public ConceptDatatype getConceptDatatype(Integer i) throws DAOException;
 	
-<<<<<<< HEAD
 	/**
-<<<<<<< HEAD
-<<<<<<< HEAD
-	 * @see org.openmrs.api.ConceptService#saveConceptDatatype(org.openmrs.ConceptDatatype)
-	 */
-	public ConceptDatatype saveConceptDatatype(ConceptDatatype cd) throws DAOException;
-	
-	/**
-	 * @see org.openmrs.api.ConceptService#purgeConceptDatatype(org.openmrs.ConceptDatatype)
-	 */
-	public void purgeConceptDatatype(ConceptDatatype cd) throws DAOException;
-	
-=======
->>>>>>> bae085a53... TRUNK-1824: Removing  ConceptDAO.saveConceptDatatype() , ConceptDAO.purgeConceptDatatype() , HibernateConceptDAO.saveConceptDatatype() and  HibernateConceptDAO.purgeConceptDatatype()
-	/**
-=======
->>>>>>> f57b7f645... TRUNK-1824 : Refactoring and adding more javadocs to ConceptDAO
-=======
->>>>>>> 34bf244e7583661b01a7a249092ea16f43e7c6c6
 	 * @see org.openmrs.api.ConceptService#getConceptSetsByConcept(org.openmrs.Concept)
 	 */
 	public List<ConceptSet> getConceptSetsByConcept(Concept c) throws DAOException;
