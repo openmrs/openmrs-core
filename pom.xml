@@ -14,7 +14,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openmrs</groupId>
 	<artifactId>openmrs</artifactId>
-	<version>2.4.0-SNAPSHOT</version>
+	<version>2.5.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>OpenMRS</name>
 	<description>Master project for the modules of OpenMRS</description>
@@ -41,7 +41,8 @@
 		<connection>scm:git:git@github.com:openmrs/openmrs-core</connection>
 		<developerConnection>scm:git:git@github.com:openmrs/openmrs-core</developerConnection>
 		<url>https://github.com/openmrs/openmrs-core</url>
-	</scm>
+	  <tag>HEAD</tag>
+  </scm>
 
 	<ciManagement>
 		<system>Bamboo</system>
@@ -492,7 +493,7 @@
 			<dependency>
 				<groupId>org.junit.jupiter</groupId>
 				<artifactId>junit-jupiter-params</artifactId>
-				<version>5.7.0</version>
+				<version>${junitVersion}</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
@@ -771,7 +772,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore/>
+										<ignore />
 									</action>
 								</pluginExecution>
 								<pluginExecution>
@@ -790,7 +791,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore/>
+										<ignore />
 									</action>
 								</pluginExecution>
 								<pluginExecution>
@@ -811,7 +812,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore/>
+										<ignore />
 									</action>
 								</pluginExecution>
 							</pluginExecutions>
@@ -1149,12 +1150,12 @@
 		<aspectjVersion>1.9.6</aspectjVersion>
 		<jacksonVersion>2.11.2</jacksonVersion>
 		<junitVersion>5.7.0</junitVersion>
-		<mockitoVersion>3.5.10</mockitoVersion>
+		<mockitoVersion>3.5.11</mockitoVersion>
 
 		<slf4jVersion> 1.7.30</slf4jVersion>
 		<log4jVersion>2.13.3</log4jVersion>
 
-		<customArgLineForTesting/>
+		<customArgLineForTesting />
 
 		<sonar.host.url>https://sonar.openmrs.org</sonar.host.url>
 		<sonar.issuesReport.html.enable>true</sonar.issuesReport.html.enable>
