@@ -1,30 +1,24 @@
 language: java
 dist: trusty
 jdk:
- - openjdk8
- - openjdk9
- - openjdk10
+ #- openjdk8
+ #- openjdk9
+ #- openjdk10
  - openjdk11
- - openjdk12
- - openjdk13
- - openjdk14
-script: mvn clean install --batch-mode && mvn test -Pskip-default-test -Pintegration-test
-matrix:
+ #- openjdk12
+ #- openjdk13
+ #- openjdk14
+script: mvn clean install --batch-mode && mvn test -Pintegration-test
+jobs:
     - jdk: openjdk8
 branches:
   only:
     - master
 after_success:
   - mvn jacoco:report coveralls:report
+  - bash <(curl -s https://codecov.io/bash)
 notifications:
-  email: false
-  irc:
-    channels:
-      - "irc.freenode.org#openmrs"
-    template:
-      - "%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message}"
-      - "Change view : %{compare_url}"
-      - "Build details : %{build_url}"
-    use_notice: true
-    skip_join: true
-sudo: false
+  email: 
+env:
+  global:
+    - CODECOV_TOKEN=:5275cf32-c3bc-4b85-b625-3d26cb79a7cd
