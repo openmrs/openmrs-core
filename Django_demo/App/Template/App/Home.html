@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <style>
+        .button {
+        background-color: #4CAF50; /* Green */
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+      }
+
+}
+    </style>
+    <h1>
+        
+        
+        
+
+    </h1>
+    <center>
+        <body>
+            <form action="/redirect/" method="post">
+                {% csrf_token %}
+                
+                <label for="f_name">f_name</label>: </label>
+                <input id="f_name" type="text" name="f_name" maxlength="30" required></br>
+                <label for="f_name">l_name</label>: </label>
+                <input id="l_name" type="text" name="l_name" maxlength="30" required></br>
+                <input type="submit" onclick="alert('welcome')"   value="Submit request" />
+            </form>
+    
+    
+        </body>
+    </center>
+
+
+</html>
