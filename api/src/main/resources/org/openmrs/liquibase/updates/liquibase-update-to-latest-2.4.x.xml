@@ -314,7 +314,6 @@
 			<column   name="order_number"/>
 		</createIndex>
 	</changeSet>
-
 	<changeSet id="2020-08-32-100-TRUNK-5821" author="miirochristopher">
 		<preConditions onFail="MARK_RAN" onFailMessage="Table orders does not exist or the index orders_accession_number already exists.">
 			<tableExists tableName="orders"/>

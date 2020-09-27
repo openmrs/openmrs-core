@@ -31,7 +31,12 @@ import org.openmrs.util.OpenmrsConstants;
 public class PersonLuceneQuery {
 
 	private SessionFactory sessionFactory;
-
+	static final String THREE_NAME_QUERY = "((givenNameSoundex:n1^6 OR givenNameSoundex:n2^2 OR givenNameSoundex:n3) OR " +
+			"(middleNameSoundex:n1^2 OR middleNameSoundex:n2^6 OR middleNameSoundex:n3^1) OR " +
+			"(familyNameSoundex:n1^1 OR familyNameSoundex:n2^2 OR familyNameSoundex:n3^6) OR " +
+			"(familyName2Soundex:n1^1 OR familyName2Soundex:n2^2 OR familyName2Soundex:n3^6))";
+	
+	
 	public PersonLuceneQuery(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
@@ -112,6 +117,24 @@ public class PersonLuceneQuery {
 	 * @param gender the gender of the person to search  
 	 * @return the LuceneQuery that returns Persons with a soundex representation of the firstName and other defined search criteria
 	 */
+	public LuceneQuery<PersonName> getSoundexPersonNameSearchOnThreeNames(String n1, String n2, String n3,  Integer birthyear, boolean includeVoided, String gender) {
+		
+		String threeNameQuery =  THREE_NAME_QUERY.replace("n1", LuceneQuery.escapeQuery(n1))
+			.replace("n2", LuceneQuery.escapeQuery(n2))
+			.replace("n3", LuceneQuery.escapeQuery(n3));
+		
+		return getSoundexPersonNameQuery(threeNameQuery, birthyear, includeVoided, gender);
+	}		
+		
+	/**
+		 * This method creates a Lucene search query for a Person based on a soundex search on the first name
+		 * 
+		 * @param firstName the name to be searched in attribute firstName
+		 * @param birthyear the birthyear the searched person should have 
+		 * @param includeVoided is true if voided person should be matched
+		 * @param gender the gender of the person to search  
+		 * @return the LuceneQuery that returns Persons with a soundex representation of the firstName and other defined search criteria
+	 */
 	public LuceneQuery<PersonName> getSoundexPersonFirstNameQuery(String firstName, Integer birthyear, boolean includeVoided, String gender) {
 		List<String> fields = new ArrayList<>();
 		fields.addAll(Arrays.asList("givenNameSoundex"));
@@ -186,7 +209,7 @@ public class PersonLuceneQuery {
 		if(gender != null) {
 			String[] searchedGenders = new String[] {gender.toLowerCase()};
 			luceneQuery.include("person.gender", searchedGenders);
-		}		
+		}
 		return luceneQuery;
 	}
 		

@@ -520,6 +520,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		assertTrue(containsId(matches, 1012));
 	}
 	
+	
 	/**
 	 * @see PersonService#getSimilarPeople(String,Integer,String)
 	 */
@@ -531,7 +532,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		Set<Person> matches = Context.getPersonService().getSimilarPeople("D Graham", 1979, "M");
 		assertEquals(3, matches.size());
 		assertTrue(containsId(matches, 1010));
-		
 		assertTrue(containsId(matches, 1011));
 		assertTrue(containsId(matches, 1013));
 	}
@@ -547,20 +547,21 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		
 		Set<Person> matches = Context.getPersonService().getSimilarPeople("D Graham", 1979, "M");
 		assertEquals(3, matches.size());
+
 		assertTrue(containsId(matches, 1010));
 		assertTrue(containsId(matches, 1011));
 		assertTrue(containsId(matches, 1013));
 	}
-	
-	
+
 	/**
 	 * @see PersonService#getSimilarPeople(String,Integer,String)
 	 */
 	@Test
 	public void getSimilarPeople_shouldMatchThreeWordSearchToAnyNamePart() throws Exception {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-names.xml");
+		updateSearchIndex();
+		
 		Set<Person> matches = Context.getPersonService().getSimilarPeople("Darius Graham Jazayeri", 1979, "M");
-		assertEquals(5, matches.size());
 		assertTrue(containsId(matches, 1003));
 		assertTrue(containsId(matches, 1006));
 		assertTrue(containsId(matches, 1007));
