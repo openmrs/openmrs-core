@@ -299,7 +299,6 @@
 		<addForeignKeyConstraint constraintName="order_group_attribute_changed_by_fk" baseTableName="order_group_attribute" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id" />
 		<addForeignKeyConstraint constraintName="order_group_attribute_voided_by_fk" baseTableName="order_group_attribute" baseColumnNames="voided_by" referencedTableName="users" referencedColumnNames="user_id" />
 	</changeSet>
-
 	<changeSet id="2020-08-31-2200-TRUNK-5821" author="miirochristopher">
 		<preConditions onFail="MARK_RAN" onFailMessage="Table orders does not exist or the index orders_order_number already exists.">
 			<tableExists tableName="orders"/>
