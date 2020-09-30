@@ -602,7 +602,20 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		} else {
 			log.error(MarkerFactory.getMarker("FATAL"), "Should not be here.");
 		}
-		return result;
+		
+		List<String> attrTypes = new ArrayList<>();
+		for (String res : result) {
+			for (String attrType : res.split(",")) {
+				if (attrType != null) {
+					attrType = attrType.trim();
+					if (!attrType.isEmpty()) {
+						attrTypes.add(attrType);
+					}
+				}
+			}
+		}
+		
+		return attrTypes;
 	}
 
 	private List<String> combineAttributes(String patientAttributeProperty, String userAttributeProperty, PERSON_TYPE personType) {
