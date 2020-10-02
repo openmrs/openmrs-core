@@ -125,10 +125,8 @@ public class UserValidator implements Validator {
 				}
 			}
 			
-			if (!StringUtils.isBlank(user.getEmail())) {
-				if(!isEmailValid(user.getEmail())) {
-					errors.rejectValue("email", "error.email.invalid");
-				}
+			if (!StringUtils.isBlank(user.getEmail()) && !isEmailValid(user.getEmail())) {
+				errors.rejectValue("email", "error.email.invalid");
 			}
 			
 			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "username", "systemId", "retireReason");
