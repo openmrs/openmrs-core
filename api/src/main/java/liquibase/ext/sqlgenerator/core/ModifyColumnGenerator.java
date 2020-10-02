@@ -128,12 +128,7 @@ public class ModifyColumnGenerator extends AbstractSqlGenerator<ModifyColumnStat
 	 * @return true/false whether extra information can be included
 	 */
 	boolean supportsExtraMetaData(Database database) {
-		if (database instanceof MSSQLDatabase
-			|| database instanceof MySQLDatabase) {
-			return true;
-		}
-
-		return false;
+		return database instanceof MSSQLDatabase || database instanceof MySQLDatabase;
 	}
 
 	/**
