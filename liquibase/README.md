@@ -23,7 +23,8 @@ of `openmrs-api`:
 
 * `openmrs-core/api/src/main/resources`
 
-**Since** the introduction of snapshots, the respective change log files are no longer stored in the resource folder 
+**Since** the introduction of snapshots, the respective change log files are no longer stored in 
+`openmrs-core/api/src/main/resources` 
 but in the following subfolders:
 
 *  `openmrs-core/api/src/main/resources/org/openmrs/liquibase/snapshots` contains all Liquibase snapshot files.
@@ -79,8 +80,15 @@ a **snapshot** generated from OpenMRS 4.7.x.
 * `org/openmrs/liquibase/updates/liquibase-update-to-latest-4.8.x.xml` contains database changes introduced by 
 OpenMRS 4.8.x
 
-### Further Liquibase files 
-* `liquibase-update-to-latest.xml` is used by integration tests and includes references to 
+### Further Liquibase files
+The folder `openmrs-core/api/src/main/resources` contains further Liquibase files: 
+* `liquibase-schema-only.xml` references the latest snapshot file for creating the OpenMRS schema and continues to
+be used by other OpenMRS projects, e.g. openmrs-standalone.   
+* `liquibase-core-data.xml` references the latest snapshot file for OpenMRS data and continues to
+be used by other OpenMRS projects, e.g. openmrs-standalone.   
+* `liquibase-update-to-latest.xml` references the latest update file for the OpenMRS database and continues to
+be used by other OpenMRS projects, e.g. openmrs-standalone.   
+* `liquibase-update-to-latest-from-1.9.x.xml` is used by integration tests and includes references to 
 multiple `org/openmrs/liquibase/updates/liquibase-update-to-latest-a.b.x.xml` files.
   
 * `liquibase-empty-changelog.xml` is used as a default Liquibase file by the org.openmrs.util.DatabaseUpdater class.
@@ -266,9 +274,16 @@ sets that are introduced
 * *after* OpenMRS version 2.2 was created 
 * and *before* OpenMRS version 2.3 will be created
 
-Include the new file in `resources/liquibase-update-to-latest.xml`, it is used by integration tests (as mentioned above).
+Include the new file in `resources/liquibase-update-to-latest-from-1.9.x.xml`, it is used by integration tests (as mentioned above).
 
-#### Step 3 - Make OpenMRS aware of the new versions
+#### Step 3 - Update references in legacy Liquibase change log files
+The following files in `openmrs-core/api/src/main/resources` contain references to the latest Liquibase snapshot and 
+update change logs and need to be updated after the new change log files were added:
+* `liquibase-schema-only.xml`
+* `liquibase-core-data.xml`
+* `liquibase-update-to-latest.xml`
+
+#### Step 4 - Make OpenMRS aware of the new versions
 New snapshot and update versions need to be added to the `org.openmrs.liquibase.ChangeLogVersions` class. 
 
 After adding the new change log files and updating the `ChangeLogVersions` class, run the 
@@ -276,7 +291,7 @@ test `org.openmrs.liquibase.ChangeLogVersionsTest` to ensure that the definition
 change log files are in sync. The test fails if either versions are missing in the `ChangeLogVersions` class or if 
 change log files are missing in the resource folder.
 
-#### Step 4 - Validate Hibernate mappings
+#### Step 5 - Validate Hibernate mappings
 
 Run `org.openmrs.util.databasechange.ValidateHibernateMappingsDatabaseIT` to check whether the data types in the new 
 liquibase files are compatible with the data types specified in the Hibernate mappings. 
@@ -286,7 +301,7 @@ The test can be run in two ways:
 * By running `mvn clean test -Pskip-default-test -Pintegration-test -Dtest=ValidateHibernateMappingsIT2` in the console
 * Alternatively, by running the test in IntelliJ or another IDE 
 
-#### Step 5 - Build and initialise OpenMRS with the new snapshot and update files
+#### Step 6 - Build and initialise OpenMRS with the new snapshot and update files
 Drop your local OpenMRS database and build and initialise OpenMRS as described in the section "How to generate 
 Liquibase snapshots".
 
