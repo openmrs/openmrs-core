@@ -10,6 +10,10 @@
     graphic logo is a trademark of OpenMRS Inc.
 
 -->
+<!--
+	This file is provided to be backward compatible with build processes that continue to use 
+	api/src/main/resources/liquibase-schema-only.xml to initialise the OpenMRS database.
+-->
 <databaseChangeLog 
 	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -19,11 +23,6 @@
 		http://www.liquibase.org/xml/ns/dbchangelog 
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
-	<include file="org/openmrs/liquibase/updates/liquibase-update-to-latest-1.9.x.xml"/>
-	<include file="org/openmrs/liquibase/updates/liquibase-update-to-latest-2.0.x.xml"/>
-	<include file="org/openmrs/liquibase/updates/liquibase-update-to-latest-2.1.x.xml"/>
-	<include file="org/openmrs/liquibase/updates/liquibase-update-to-latest-2.2.x.xml"/>
-	<include file="org/openmrs/liquibase/updates/liquibase-update-to-latest-2.3.x.xml"/>
 	<include file="org/openmrs/liquibase/updates/liquibase-update-to-latest-2.4.x.xml"/>
 
 </databaseChangeLog>

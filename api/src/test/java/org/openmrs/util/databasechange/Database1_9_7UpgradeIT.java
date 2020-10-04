@@ -9,16 +9,6 @@
  */
 package org.openmrs.util.databasechange;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.core.StringStartsWith.startsWith;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -32,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-
 import org.apache.commons.io.FileUtils;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterAll;
@@ -45,6 +34,16 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.core.StringStartsWith.startsWith;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests database upgrade from OpenMRS 1.9.7.
@@ -60,12 +59,11 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 	
 	public final static String DATABASE_PATH = TEST_DATA_DIR + "openmrs-1.9.7.h2.db";
 	
-	public static final String LIQUIBASE_UPDATE_TO_LATEST_XML = "liquibase-update-to-latest.xml";
+	public static final String LIQUIBASE_UPDATE_TO_LATEST_XML = "liquibase-update-to-latest-from-1.9.x.xml";
 	
 	private DatabaseUpgradeTestUtil upgradeTestUtil;
 	
 	private static File testAppDataDir;
-	
 	
 	private Map<String, String> row(String... values) {
 		Map<String, String> row = new HashMap<>();
@@ -228,7 +226,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		createOrderEntryUpgradeFileWithTestData("1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
 		String errorMsgSubString1 = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201401101647-TRUNK-4187::wyclif";
-		IOException exception =assertThrows(IOException.class, () -> upgradeTestUtil.upgrade());
+		IOException exception = assertThrows(IOException.class, () -> upgradeTestUtil.upgrade());
 		assertThat(exception.getMessage(), startsWith(errorMsgSubString1));
 	}
 	

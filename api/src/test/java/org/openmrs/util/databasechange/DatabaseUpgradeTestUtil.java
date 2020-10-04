@@ -217,17 +217,17 @@ public class DatabaseUpgradeTestUtil {
 	}
 	
 	public void upgrade() throws IOException, SQLException {
-		upgrade("liquibase-update-to-latest.xml");
+		upgrade("liquibase-update-to-latest-from-1.9.x.xml");
 	}
 	
 	public void upgrade(String filename) throws IOException, SQLException {
 		try {
 			Liquibase liquibase = new Liquibase(filename, new ClassLoaderResourceAccessor(getClass().getClassLoader()),
 			        liqubaseConnection);
-
+			
 			DataTypeFactory dataTypeFactory = DataTypeFactory.getInstance();
-			dataTypeFactory.register( MySQLBooleanType.class );
-
+			dataTypeFactory.register(MySQLBooleanType.class);
+			
 			liquibase.update("");
 			
 			connection.commit();
