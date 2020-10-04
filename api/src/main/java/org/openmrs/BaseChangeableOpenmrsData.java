@@ -16,5 +16,4 @@ import java.util.Date;
  * 
  * @since 2.2
  */
-public abstract class BaseChangeableOpenmrsData extends BaseOpenmrsData {
-}
+public abstract class BaseChangeableOpenmrsData extends BaseOpenmrsData {}
