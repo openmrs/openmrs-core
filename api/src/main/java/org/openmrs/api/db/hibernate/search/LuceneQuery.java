@@ -69,7 +69,6 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	
 	public static <T> LuceneQuery<T> newQuery(final Class<T> type, final Session session, final String query, final Collection<String> fields, MatchType matchType) {
 		return new LuceneQuery<T>(type, session) {
-
 			@Override
 			protected Query prepareQuery() throws ParseException {
 				if (query.isEmpty()) {
@@ -77,7 +76,6 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 				}
 				return newMultipleFieldQueryParser(fields, matchType).parse(query);
 			}
-
 		};
 	}
 

@@ -148,6 +148,30 @@ public class HibernatePersonDAO implements PersonDAO {
 		return people;
 	}
 	
+	
+	/**
+	 * This method executes a Lucene search on persons based on the soundex filter with three name elements given
+	 *
+	 * @param name1 basically represents the first name to be searched for in a person name
+	 * @param name2 basically represents the middle name to be searched for in a person name	 
+	 * @param name3 basically represents the family name to be searched for in a person name
+	 * @param birthyear the birthyear the searched person should have 
+	 * @param includeVoided true if voided person should be included 
+	 * @param gender of the person to search for 
+	 * @return the set of Persons that match the search criteria 
+	 */
+	private Set<Person> executeSoundexThreePersonNamesQuery(String name1, String name2, String name3, Integer birthyear, boolean includeVoided , String gender) {
+		PersonLuceneQuery personLuceneQuery = new PersonLuceneQuery(sessionFactory);
+		int maxResults = HibernatePersonDAO.getMaximumSearchResults();
+		LinkedHashSet<Person> people = new LinkedHashSet<>();
+		
+		LuceneQuery<PersonName> luceneQuery = personLuceneQuery.getSoundexPersonNameSearchOnThreeNames(name1, name2, name3, birthyear, false, gender);;
+		ListPart<Object[]> names = luceneQuery.listPartProjection(0, maxResults, "person.personId");
+		names.getList().forEach(x -> people.add(getPerson((Integer) x[0])));
+		
+		return people;
+	}	
+	
 	/**
 	 * This method executes a search on either firstName or lastName attributes of person
 	 * 
@@ -191,31 +215,12 @@ public class HibernatePersonDAO implements PersonDAO {
 		name = name.replace(", ", " ");
 		String[] names = name.split(" ");
 		
-		StringBuilder q = new StringBuilder(
-		        "select p from Person p left join p.names as pname where p.personVoided = false and pname.voided = false and ");
-		
 		if (names.length == 1) {
 			return  executeSoundexOnePersonNameQuery(name, birthyear, false, gender);
 		} else if (names.length == 2) {
 			return executeSoundexTwoPersonNameQuery(names[0], names[1], birthyear, false, gender);
 		} else if (names.length == 3) {
-			q.append("(").append(" case").append("  when pname.givenName is null then 0").append(
-			    "  when soundex(pname.givenName) = soundex(:n1) then 3").append(
-			    "  when soundex(pname.givenName) = soundex(:n2) then 2").append(
-			    "  when soundex(pname.givenName) = soundex(:n3) then 1").append("  else 0 ").append(" end").append(" + ")
-			        .append(" case").append("  when pname.middleName is null then 0").append(
-			            "  when soundex(pname.middleName) = soundex(:n1) then 2").append(
-			            "  when soundex(pname.middleName) = soundex(:n2) then 3").append(
-			            "  when soundex(pname.middleName) = soundex(:n3) then 1").append("  else 0").append(" end").append(
-			            " + ").append(" case").append("  when pname.familyName is null then 0").append(
-			            "  when soundex(pname.familyName) = soundex(:n1) then 1").append(
-			            "  when soundex(pname.familyName) = soundex(:n2) then 2").append(
-			            "  when soundex(pname.familyName) = soundex(:n3) then 3").append("  else 0").append(" end").append(
-			            " +").append(" case").append("  when pname.familyName2 is null then 0").append(
-			            "  when soundex(pname.familyName2) = soundex(:n1) then 1").append(
-			            "  when soundex(pname.familyName2) = soundex(:n2) then 2").append(
-			            "  when soundex(pname.familyName2) = soundex(:n3) then 3").append("  else 0").append(" end").append(
-			            ") >= 5");
+			return executeSoundexThreePersonNamesQuery(names[0], names[1], names[2], birthyear, false, gender);
 		} else {
 			
 			// This is simply an alternative method of name matching which scales better
@@ -223,57 +228,61 @@ public class HibernatePersonDAO implements PersonDAO {
 			// six or so tokens.  This can be easily updated to attain more desirable
 			// results; it is just a working alternative to throwing an exception.
 			
+			StringBuilder q = new StringBuilder(
+				"select p from Person p left join p.names as pname where p.personVoided = false and pname.voided = false and ");
+			
 			q.append("(").append(" case").append("  when pname.givenName is null then 0");
 			for (int i = 0; i < names.length; i++) {
 				q.append("  when soundex(pname.givenName) = soundex(:n").append(i + 1).append(") then 1");
 			}
 			q.append("  else 0").append(" end").append(")").append("+").append("(").append(" case").append(
-			    "  when pname.middleName is null then 0");
+				"  when pname.middleName is null then 0");
 			for (int i = 0; i < names.length; i++) {
 				q.append("  when soundex(pname.middleName) = soundex(:n").append(i + 1).append(") then 1");
 			}
 			q.append("  else 0").append(" end").append(")").append("+").append("(").append(" case").append(
-			    "  when pname.familyName is null then 0");
+				"  when pname.familyName is null then 0");
 			for (int i = 0; i < names.length; i++) {
 				q.append("  when soundex(pname.familyName) = soundex(:n").append(i + 1).append(") then 1");
 			}
 			q.append("  else 0").append(" end").append(")").append("+").append("(").append(" case").append(
-			    "  when pname.familyName2 is null then 0");
+				"  when pname.familyName2 is null then 0");
 			for (int i = 0; i < names.length; i++) {
 				q.append("  when soundex(pname.familyName2) = soundex(:n").append(i + 1).append(") then 1");
 			}
 			// if most of the names have at least a hit somewhere
-			q.append("  else 0").append(" end").append(") >= ").append((int) (names.length * .75)); 
+			q.append("  else 0").append(" end").append(") >= ").append((int) (names.length * .75));
+			
+			String birthdayMatch = " (year(p.birthdate) between " + (birthyear - 1) + " and " + (birthyear + 1)
+				+ " or p.birthdate is null) ";
+			
+			String genderMatch = " (p.gender = :gender or p.gender = '') ";
+			
+			if (birthyear != 0 && gender != null) {
+				q.append(" and (").append(birthdayMatch).append("and ").append(genderMatch).append(") ");
+			} else if (birthyear != 0) {
+				q.append(" and ").append(birthdayMatch);
+			} else if (gender != null) {
+				q.append(" and ").append(genderMatch);
+			}
+			
+			q.append(" order by pname.givenName asc,").append(" pname.middleName asc,").append(" pname.familyName asc,")
+				.append(
+					" pname.familyName2 asc");
+			
+			String qStr = q.toString();
+			Query query = sessionFactory.getCurrentSession().createQuery(qStr);
+			
+			for (int nameIndex = 0; nameIndex < names.length; nameIndex++) {
+				query.setString("n" + (nameIndex + 1), names[nameIndex]);
+			}
+			
+			if (qStr.contains(":gender")) {
+				query.setString("gender", gender);
+			}
+			
+			return new LinkedHashSet<Person>(query.list());
 		}
-		
-		String birthdayMatch = " (year(p.birthdate) between " + (birthyear - 1) + " and " + (birthyear + 1)
-		        + " or p.birthdate is null) ";
-		
-		String genderMatch = " (p.gender = :gender or p.gender = '') ";
-		
-		if (birthyear != 0 && gender != null) {
-			q.append(" and (").append(birthdayMatch).append("and ").append(genderMatch).append(") ");
-		} else if (birthyear != 0) {
-			q.append(" and ").append(birthdayMatch);
-		} else if (gender != null) {
-			q.append(" and ").append(genderMatch);
-		}
-		
-		q.append(" order by pname.givenName asc,").append(" pname.middleName asc,").append(" pname.familyName asc,").append(
-		    " pname.familyName2 asc");
-		
-		String qStr = q.toString();
-		Query query = sessionFactory.getCurrentSession().createQuery(qStr);
-		
-		for (int nameIndex = 0; nameIndex < names.length; nameIndex++) {
-			query.setString("n" + (nameIndex + 1), names[nameIndex]);
-		}
-		
-		if (qStr.contains(":gender")) {
-			query.setString("gender", gender);
-		}
-
-		return new LinkedHashSet<Person>(query.list());
 	}
 	
 	/**
