@@ -1401,7 +1401,7 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#getConditions()
 	 */
 	@Test
-	public void getConditionsShouldReturnAllCondition(){
+	public void getConditions_shouldReturnAllCondition(){
 		Encounter encounter = new Encounter();
 		
 		Condition activeCondition = new Condition();
@@ -1427,7 +1427,7 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#getActiveConditions()
 	 */
 	@Test
-	public void getActiveConditionsShouldReturnActiveCondition(){
+	public void getActiveConditions_shouldReturnActiveCondition(){
 		Encounter encounter = new Encounter();
 
 		Condition activeCondition = new Condition();
