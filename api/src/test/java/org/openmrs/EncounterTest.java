@@ -989,13 +989,13 @@ public class EncounterTest extends BaseContextSensitiveTest {
 		condition.setId(100);
 		encounter.addCondition(condition);
 		
-		assertEquals(1, encounter.getConditions().size());
+		assertEquals(1, encounter.getActiveConditions().size());
 		
 		// replay
 		encounter.removeCondition(condition);
 		
 		// verify
-		assertEquals(0, encounter.getConditions().size());
+		assertEquals(0, encounter.getActiveConditions().size());
 	}
 	
 	/**
@@ -1397,4 +1397,55 @@ public class EncounterTest extends BaseContextSensitiveTest {
 		assertFalse(encounter.hasDiagnosis(diagnosis));
 	}
 
+	/**
+	 * @see Encounter#getConditions()
+	 */
+	@Test
+	public void getConditionsShouldReturnAllCondition(){
+		Encounter encounter = new Encounter();
+		
+		Condition activeCondition = new Condition();
+		activeCondition.setClinicalStatus(ConditionClinicalStatus.ACTIVE);
+		CodedOrFreeText freeText = new CodedOrFreeText();
+		freeText.setNonCoded("Free text");
+		activeCondition.setCondition(freeText);
+		encounter.addCondition(activeCondition);
+
+		Condition voidedCondition = new Condition();
+		voidedCondition.setVoided(true);
+		voidedCondition.setClinicalStatus(ConditionClinicalStatus.HISTORY_OF);
+		CodedOrFreeText freeText01 = new CodedOrFreeText();
+		freeText01.setNonCoded("Free text");
+		voidedCondition.setCondition(freeText01);
+		encounter.addCondition(voidedCondition);
+		
+
+		assertEquals(2,encounter.getConditions().size());
+	}
+	
+	/**
+	 * @see Encounter#getActiveConditions()
+	 */
+	@Test
+	public void getActiveConditionsShouldReturnActiveCondition(){
+		Encounter encounter = new Encounter();
+
+		Condition activeCondition = new Condition();
+		activeCondition.setClinicalStatus(ConditionClinicalStatus.ACTIVE);
+		CodedOrFreeText freeText = new CodedOrFreeText();
+		freeText.setNonCoded("Free text");
+		activeCondition.setCondition(freeText);
+		encounter.addCondition(activeCondition);
+
+		Condition voidedCondition = new Condition();
+		voidedCondition.setVoided(true);
+		voidedCondition.setClinicalStatus(ConditionClinicalStatus.HISTORY_OF);
+		CodedOrFreeText freeText01 = new CodedOrFreeText();
+		freeText01.setNonCoded("Free text");
+		voidedCondition.setCondition(freeText01);
+		encounter.addCondition(voidedCondition);
+
+
+		assertEquals(1,encounter.getActiveConditions().size());
+	}
 }

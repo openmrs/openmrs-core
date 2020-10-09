@@ -503,6 +503,22 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	}
 
 	/**
+	 * Returns only the non-voided conditions for this encounter. If you want <u>all</u>
+	 * conditions, use {@link #getConditions()}
+	 *
+	 * @return list of non-voided conditions for this encounter
+	 * @see #getConditions()
+	 */
+	public Set<Condition> getActiveConditions() {
+		Set<Condition> activeConditions = new LinkedHashSet<>();
+		Set<Condition> conditions = getConditions();
+		if (conditions != null && !conditions.isEmpty()) {
+			activeConditions = conditions.stream().filter(p -> !p.getVoided()).collect(Collectors.toSet());
+		}
+		return activeConditions;
+	}
+
+	/**
 	 * Basic property setter for conditions
 	 *  
 	 * @param conditions - set of conditions
@@ -528,8 +544,17 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * @param condition - the condition to remove
 	 */
 	public void removeCondition(Condition condition) {
-		if (conditions != null) {
-			conditions.remove(condition);
+		if(conditions==null){
+			return;
+		}
+		
+		for (Condition encounterCondition : conditions) {
+			if (encounterCondition.equals(condition) && !encounterCondition.getVoided()) {
+				encounterCondition.setVoided(true);
+				encounterCondition.setDateVoided(new Date());
+				encounterCondition.setVoidedBy(Context.getAuthenticatedUser());
+				return;
+			}
 		}
 	}
 	
