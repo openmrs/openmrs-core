@@ -285,9 +285,7 @@ public class HibernateContextDAO implements ContextDAO {
 	public void openSession() {
 		log.debug("HibernateContext: Opening Hibernate Session");
 		if (TransactionSynchronizationManager.hasResource(sessionFactory)) {
-			if (log.isDebugEnabled()) {
-				log.debug("Participating in existing session (" + sessionFactory.hashCode() + ")");
-			}
+			log.debug("Participating in existing session ({})", sessionFactory.hashCode());
 			participate = true;
 		} else {
 			log.debug("Registering session with synchronization manager ({})", sessionFactory.hashCode());
@@ -304,7 +302,7 @@ public class HibernateContextDAO implements ContextDAO {
 	public void closeSession() {
 		log.debug("HibernateContext: closing Hibernate Session");
 		if (!participate) {
-			log.debug("Unbinding session from synchronization manager (" + sessionFactory.hashCode() + ")");
+			log.debug("Unbinding session from synchronization manager ({})", sessionFactory.hashCode());
 			
 			if (TransactionSynchronizationManager.hasResource(sessionFactory)) {
 				Object value = TransactionSynchronizationManager.unbindResource(sessionFactory);

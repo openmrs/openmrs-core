@@ -315,14 +315,10 @@ public class ModuleClassLoader extends URLClassLoader {
 					    startedRelatedModules);
 					
 					if (include) {
-						if (log.isDebugEnabled()) {
-							log.debug("Including file in classpath: " + fileUrl);
-						}
+						log.debug("Including file in classpath: {}", fileUrl);
 						result.add(fileUrl);
 					} else {
-						if (log.isDebugEnabled()) {
-							log.debug("Excluding file from classpath: " + fileUrl);
-						}
+						log.debug("Excluding file from classpath: {}", fileUrl);
 					}
 				}
 			}
