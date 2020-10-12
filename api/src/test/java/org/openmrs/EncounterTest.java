@@ -1348,4 +1348,55 @@ public class EncounterTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(encounter.hasDiagnosis(diagnosis));
 	}
 
+	/**
+	 * @see Encounter#getConditions()
+	 */
+	@Test
+	public void getAllConditions_shouldReturnAllCondition(){
+		Encounter encounter = new Encounter();
+
+		Condition activeCondition = new Condition();
+		activeCondition.setClinicalStatus(ConditionClinicalStatus.ACTIVE);
+		CodedOrFreeText freeText = new CodedOrFreeText();
+		freeText.setNonCoded("Free text");
+		activeCondition.setCondition(freeText);
+		encounter.addCondition(activeCondition);
+
+		Condition voidedCondition = new Condition();
+		voidedCondition.setVoided(true);
+		voidedCondition.setClinicalStatus(ConditionClinicalStatus.HISTORY_OF);
+		CodedOrFreeText freeText01 = new CodedOrFreeText();
+		freeText01.setNonCoded("Free text");
+		voidedCondition.setCondition(freeText01);
+		encounter.addCondition(voidedCondition);
+
+
+		assertEquals(2,encounter.getAllConditions(true).size());
+	}
+
+	/**
+	 * @see Encounter#getConditions()
+	 */
+	@Test
+	public void getConditions_shouldReturnActiveCondition(){
+		Encounter encounter = new Encounter();
+
+		Condition activeCondition = new Condition();
+		activeCondition.setClinicalStatus(ConditionClinicalStatus.ACTIVE);
+		CodedOrFreeText freeText = new CodedOrFreeText();
+		freeText.setNonCoded("Free text");
+		activeCondition.setCondition(freeText);
+		encounter.addCondition(activeCondition);
+
+		Condition voidedCondition = new Condition();
+		voidedCondition.setVoided(true);
+		voidedCondition.setClinicalStatus(ConditionClinicalStatus.HISTORY_OF);
+		CodedOrFreeText freeText01 = new CodedOrFreeText();
+		freeText01.setNonCoded("Free text");
+		voidedCondition.setCondition(freeText01);
+		encounter.addCondition(voidedCondition);
+
+
+		assertEquals(1,encounter.getConditions().size());
+	}
 }

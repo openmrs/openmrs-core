@@ -456,12 +456,42 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * @since 2.4.0, 2.3.1
 	 */
 	public Set<Condition> getConditions() {
-		if (conditions == null) {
-			conditions = new LinkedHashSet<>();
-		}
-		return conditions;
+
+		return getAllConditions();
 	}
 
+	/**
+	 * Returns all conditions where conditions.encounterId = Encounter.encounterId In practice, this method should
+	 * not be used very often...
+	 *
+	 * @param includeVoided specifies whether or not to include voided Conditions
+	 * @return Returns the all Conditions.
+	 * <strong>Should</strong> not return null with null conditions set
+	 * <strong>Should</strong> get conditions
+	 */
+	public Set<Condition> getAllConditions(boolean includeVoided) {
+		if (includeVoided && conditions != null) {
+			return conditions;
+		}
+
+		Set<Condition> ret = new LinkedHashSet<>();
+
+		if (this.conditions != null) {
+			ret = this.conditions.stream().filter(o -> includeVoided || !o.getVoided()).collect(Collectors.toSet());
+		}
+		return ret;
+	}
+
+	/**
+	 * Convenience method to call {@link #getAllConditions(boolean)} with a false parameter
+	 *
+	 * @return all non-voided conditions
+	 * <strong>Should</strong> not get voided conditions
+	 */
+	public Set<Condition> getAllConditions() {
+		return getAllConditions(false);
+	}
+	
 	/**
 	 * Basic property setter for conditions
 	 *  
@@ -478,8 +508,14 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * @param condition - the condition to add
 	 */
 	public void addCondition(Condition condition) {
-		condition.setEncounter(this);
-		getConditions().add(condition);
+		if (conditions == null) {
+			conditions = new LinkedHashSet<>();
+		}
+
+		if (condition != null) {
+			condition.setEncounter(this);
+			conditions.add(condition);
+		}
 	}
 	
 	/**
@@ -488,8 +524,18 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * @param condition - the condition to remove
 	 */
 	public void removeCondition(Condition condition) {
-		if (conditions != null) {
-			conditions.remove(condition);
+
+		if (conditions == null) {
+			return;
+		}
+
+		for (Condition encounterCondition : conditions) {
+			if (encounterCondition.equals(condition) && !encounterCondition.getVoided()) {
+				encounterCondition.setVoided(true);
+				encounterCondition.setDateVoided(new Date());
+				encounterCondition.setVoidedBy(Context.getAuthenticatedUser());
+				return;
+			}
 		}
 	}
 	
