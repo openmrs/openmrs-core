@@ -410,8 +410,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		// verify
 		Object[] conditionsArray = encounter.getConditions().toArray();
-		pregnancy = (Condition) conditionsArray[0];
-		edema = (Condition) conditionsArray[1];
+		edema = (Condition) conditionsArray[0];
+		pregnancy = (Condition) conditionsArray[1];
 		assertEquals(2, conditionsArray.length);
 		assertNotNull(pregnancy.getId());
 		assertEquals("Pregnancy", pregnancy.getCondition().getNonCoded());

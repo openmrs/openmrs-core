@@ -989,13 +989,13 @@ public class EncounterTest extends BaseContextSensitiveTest {
 		condition.setId(100);
 		encounter.addCondition(condition);
 		
-		assertEquals(1, encounter.getActiveConditions().size());
+		assertEquals(1, encounter.getConditions().size());
 		
 		// replay
 		encounter.removeCondition(condition);
 		
 		// verify
-		assertEquals(0, encounter.getActiveConditions().size());
+		assertEquals(0, encounter.getConditions().size());
 	}
 	
 	/**
@@ -1401,7 +1401,7 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#getConditions()
 	 */
 	@Test
-	public void getConditions_shouldReturnAllCondition(){
+	public void getAllConditions_shouldReturnAllCondition(){
 		Encounter encounter = new Encounter();
 		
 		Condition activeCondition = new Condition();
@@ -1420,14 +1420,14 @@ public class EncounterTest extends BaseContextSensitiveTest {
 		encounter.addCondition(voidedCondition);
 		
 
-		assertEquals(2,encounter.getConditions().size());
+		assertEquals(2,encounter.getAllConditions(true).size());
 	}
 	
 	/**
-	 * @see Encounter#getActiveConditions()
+	 * @see Encounter#getConditions()
 	 */
 	@Test
-	public void getActiveConditions_shouldReturnActiveCondition(){
+	public void getConditions_shouldReturnActiveCondition(){
 		Encounter encounter = new Encounter();
 
 		Condition activeCondition = new Condition();
@@ -1446,6 +1446,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 		encounter.addCondition(voidedCondition);
 
 
-		assertEquals(1,encounter.getActiveConditions().size());
+		assertEquals(1,encounter.getConditions().size());
 	}
 }
