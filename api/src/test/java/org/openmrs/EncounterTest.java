@@ -1419,7 +1419,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 		voidedCondition.setCondition(freeText01);
 		encounter.addCondition(voidedCondition);
 
-
 		assertEquals(2,encounter.getAllConditions(true).size());
 	}
 
@@ -1444,8 +1443,39 @@ public class EncounterTest extends BaseContextSensitiveTest {
 		freeText01.setNonCoded("Free text");
 		voidedCondition.setCondition(freeText01);
 		encounter.addCondition(voidedCondition);
-
-
+		
 		assertEquals(1,encounter.getConditions().size());
+	}
+
+	/**
+	 * @see Encounter#getConditions()
+	 */
+	@Test
+	public void removeConditions_shouldRemoveCondition(){
+		Encounter encounter = new Encounter();
+
+		Condition activeCondition = new Condition();
+		activeCondition.setClinicalStatus(ConditionClinicalStatus.ACTIVE);
+		CodedOrFreeText freeText = new CodedOrFreeText();
+		freeText.setNonCoded("Free text");
+		activeCondition.setCondition(freeText);
+		encounter.addCondition(activeCondition);
+		// The condition should be voided
+		encounter.removeCondition(activeCondition);
+
+
+		Condition voidedCondition = new Condition();
+		voidedCondition.setVoided(true);
+		voidedCondition.setClinicalStatus(ConditionClinicalStatus.HISTORY_OF);
+		CodedOrFreeText freeText01 = new CodedOrFreeText();
+		freeText01.setNonCoded("Free text");
+		voidedCondition.setCondition(freeText01);
+		encounter.addCondition(voidedCondition);
+
+
+		Set<Condition> a = encounter.getConditions();
+		Set<Condition> b = encounter.getAllConditions(true);
+		assertEquals(0,encounter.getConditions().size());
+		assertEquals(2,encounter.getAllConditions(true).size());
 	}
 }
