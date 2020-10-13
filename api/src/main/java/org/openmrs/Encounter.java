@@ -517,7 +517,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 			conditions.add(condition);
 		}
 	}
-	
+
 	/**
 	 * Remove the given condition from the set of conditions for this Encounter
 	 *
@@ -529,14 +529,11 @@ public class Encounter extends BaseChangeableOpenmrsData {
 			return;
 		}
 
-		for (Condition encounterCondition : conditions) {
-			if (encounterCondition.equals(condition) && !encounterCondition.getVoided()) {
-				encounterCondition.setVoided(true);
-				encounterCondition.setDateVoided(new Date());
-				encounterCondition.setVoidedBy(Context.getAuthenticatedUser());
-				return;
-			}
-		}
+		conditions.stream().filter(c -> !c.getVoided()).filter(c -> c.equals(condition)).forEach(c -> {
+			c.setVoided(true);
+			c.setDateVoided(new Date());
+			c.setVoidedBy(Context.getAuthenticatedUser());
+		});
 	}
 	
 	/**
