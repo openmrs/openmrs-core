@@ -13,8 +13,6 @@ import liquibase.changelog.ChangeSet;
 import liquibase.exception.LockException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Appender;
-import org.apache.log4j.Logger;
 import org.openmrs.liquibase.ChangeLogDetective;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
@@ -22,7 +20,6 @@ import org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback;
 import org.openmrs.util.DatabaseUpdaterLiquibaseProvider;
 import org.openmrs.util.InputRequiredException;
 import org.openmrs.liquibase.ChangeLogVersionFinder;
-import org.openmrs.util.MemoryAppender;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
@@ -274,18 +271,8 @@ public class UpdateFilter extends StartupFilter {
 				result.put("message", updateJob.getMessage());
 				result.put("changesetIds", updateJob.getChangesetIds());
 				result.put("executingChangesetId", updateJob.getExecutingChangesetId());
-				Appender appender = Logger.getRootLogger().getAppender("MEMORY_APPENDER");
-				if (appender instanceof MemoryAppender) {
-					MemoryAppender memoryAppender = (MemoryAppender) appender;
-					List<String> logLines = memoryAppender.getLogLines();
-					// truncate the list to the last five so we don't overwhelm jquery
-					if (logLines.size() > 5) {
-						logLines = logLines.subList(logLines.size() - 5, logLines.size());
-					}
-					result.put("logLines", logLines);
-				} else {
-					result.put("logLines", new ArrayList<String>());
-				}
+				
+				addLogLinesToResponse(result);
 			}
 			
 			String jsonText = toJSONString(result);

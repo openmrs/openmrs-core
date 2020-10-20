@@ -494,6 +494,16 @@ public class OpenmrsUtil {
 		applyLogLevels();
 	}
 	
+	public static MemoryAppender getMemoryAppender() {
+		MemoryAppender memoryAppender = ((LoggerContext) LogManager.getContext()).getConfiguration().getAppender("MEMORY_APPENDER");
+		if (memoryAppender != null) {
+			if (!memoryAppender.isStarted()) {
+				memoryAppender.start();
+			}
+		}
+		return memoryAppender;
+	}
+	
 	/**
 	 * Set the org.openmrs log4j logger's level if global property log.level.openmrs (
 	 * OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL ) exists. Valid values for global property are
