@@ -529,7 +529,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 			return;
 		}
 
-		conditions.stream().filter(c -> !c.getVoided()).filter(c -> c.equals(condition)).forEach(c -> {
+		conditions.stream().filter(c -> !c.getVoided() && c.getUuid().equals(condition.getUuid())).forEach(c -> {
 			c.setVoided(true);
 			c.setDateVoided(new Date());
 			c.setVoidedBy(Context.getAuthenticatedUser());
