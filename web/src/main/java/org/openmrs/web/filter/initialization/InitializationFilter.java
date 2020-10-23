@@ -18,9 +18,7 @@ import java.io.PrintWriter;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -1079,8 +1077,9 @@ public class InitializationFilter extends StartupFilter {
 	public void init(FilterConfig filterConfig) throws ServletException {
 		super.init(filterConfig);
 		wizardModel = new InitializationWizardModel();
+		DatabaseDetective databaseDetective = new DatabaseDetective();
 		//set whether need to do initialization work
-		if (isDatabaseEmpty(OpenmrsUtil.getRuntimeProperties(WebConstants.WEBAPP_NAME))) {
+		if (databaseDetective.isDatabaseEmpty(OpenmrsUtil.getRuntimeProperties(WebConstants.WEBAPP_NAME))) {
 			//if runtime-properties file doesn't exist, have to do initialization work
 			setInitializationComplete(false);
 		} else {
@@ -1875,71 +1874,6 @@ public class InitializationFilter extends StartupFilter {
 			};
 			
 			thread = new Thread(r);
-		}
-	}
-	
-	/**
-	 * Check whether openmrs database is empty. Having just one non-liquibase table in the given
-	 * database qualifies this as a non-empty database.
-	 *
-	 * @param props the runtime properties
-	 * @return true/false whether openmrs database is empty or doesn't exist yet
-	 */
-	private static boolean isDatabaseEmpty(Properties props) {
-		if (props != null) {
-			String databaseConnectionFinalUrl = props.getProperty("connection.url");
-			if (databaseConnectionFinalUrl == null) {
-				return true;
-			}
-			
-			String connectionUsername = props.getProperty("connection.username");
-			if (connectionUsername == null) {
-				return true;
-			}
-			
-			String connectionPassword = props.getProperty("connection.password");
-			if (connectionPassword == null) {
-				return true;
-			}
-			
-			Connection connection = null;
-			try {
-				DatabaseUtil.loadDatabaseDriver(databaseConnectionFinalUrl, null);
-				connection = DriverManager.getConnection(databaseConnectionFinalUrl, connectionUsername, connectionPassword);
-				
-				DatabaseMetaData dbMetaData = (DatabaseMetaData) connection.getMetaData();
-				
-				String[] types = { "TABLE" };
-				
-				//get all tables
-				ResultSet tbls = dbMetaData.getTables(null, null, null, types);
-				
-				while (tbls.next()) {
-					String tableName = tbls.getString("TABLE_NAME");
-					//if any table exist besides "liquibasechangelog" or "liquibasechangeloglock", return false
-					if (!("liquibasechangelog".equals(tableName)) && !("liquibasechangeloglock".equals(tableName))) {
-						return false;
-					}
-				}
-				return true;
-			}
-			catch (Exception e) {
-				//pass
-			}
-			finally {
-				try {
-					if (connection != null) {
-						connection.close();
-					}
-				}
-				catch (Exception e) {
-					//pass
-				}
-			}
-			//if catch an exception while query database, then consider as database is empty.
-			return true;
-		} else {
-			return true;
 		}
 	}
 	

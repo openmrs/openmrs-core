@@ -33,6 +33,8 @@ public class H2DatabaseIT implements LiquibaseProvider {
 	
 	private static final Logger log = LoggerFactory.getLogger(H2DatabaseIT.class);
 	
+	public static final String CONNECTION_URL = "jdbc:h2:mem:openmrs;DB_CLOSE_DELAY=-1";
+	
 	private static final String CONTEXT = "some context";
 	
 	protected static final String USER_NAME = "another_user";
@@ -96,7 +98,7 @@ public class H2DatabaseIT implements LiquibaseProvider {
 	}
 
 	protected Connection getConnection() throws SQLException {
-		Connection connection = DriverManager.getConnection("jdbc:h2:mem:openmrs;DB_CLOSE_DELAY=-1", USER_NAME, PASSWORD);
+		Connection connection = DriverManager.getConnection(CONNECTION_URL, USER_NAME, PASSWORD);
 		connection.setAutoCommit( false );
 		return connection;
 	}
