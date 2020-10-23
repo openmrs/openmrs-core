@@ -590,7 +590,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 							    field.getName(), instance.getClass().getName(), valueClass.getName());
 						} else {
 							field.set(instance, null);
-							log.debug("Set field {} to null in class", field.getName(), instance.getClass().getName());
+							log.debug("Set field {} to null in class {}", field.getName(), instance.getClass().getName());
 						}
 					}
 				} 
