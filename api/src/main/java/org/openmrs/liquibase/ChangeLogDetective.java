@@ -36,6 +36,8 @@ public class ChangeLogDetective {
 	
 	private static final String BEN = "ben";
 	
+	private static final String DEFAULT_SNAPSHOT_VERSION = "1.9.x";
+	
 	private static final String DISABLE_FOREIGN_KEY_CHECKS = "disable-foreign-key-checks";
 	
 	private static final String ENABLE_FOREIGN_KEY_CHECKS = "enable-foreign-key-checks";
@@ -57,7 +59,7 @@ public class ChangeLogDetective {
 	 * database. The version is needed to determine which Liquibase update files need to be checked for
 	 * un-run change sets and may need to be (re-)run to apply the latest changes to the OpenMRS
 	 * database.
-	 *
+	 * 
 	 * @param liquibaseProvider provides access to a Liquibase instance
 	 * @return the version of the Liquibase snapshot that had been used to initialise the OpenMRS
 	 *         database
@@ -100,7 +102,8 @@ public class ChangeLogDetective {
 				if (liquibase != null) {
 					try {
 						liquibase.close();
-					} catch ( Exception e ) {
+					}
+					catch (Exception e) {
 						// ignore exceptions triggered by closing liquibase a second time 
 					}
 				}
@@ -113,8 +116,11 @@ public class ChangeLogDetective {
 			}
 		}
 		
-		throw new IllegalStateException(
-		        "identifying the snapshot version that had been used to initialize the OpenMRS database failed as no candidate change set resulted in zero un-run changes");
+		log.info(
+		    "the snapshot version that had been used to initialize the OpenMRS database could not be identified, falling back to the default version '{}'",
+		    DEFAULT_SNAPSHOT_VERSION);
+		
+		return DEFAULT_SNAPSHOT_VERSION;
 	}
 	
 	/**
@@ -152,7 +158,8 @@ public class ChangeLogDetective {
 			if (liquibase != null) {
 				try {
 					liquibase.close();
-				} catch ( Exception e ) {
+				}
+				catch (Exception e) {
 					// ignore exceptions triggered by closing liquibase a second time 
 				}
 			}
@@ -188,16 +195,16 @@ public class ChangeLogDetective {
 		}
 		return false;
 	}
-
+	
 	/**
 	 * Logs un-run change sets no more than a given number and only for the 1.9.x Liquibase snapshots.
 	 * 
-	 * @return a boolean value indicating whether the change sets were logged. The value is used for testing.
+	 * @return a boolean value indicating whether the change sets were logged. The value is used for
+	 *         testing.
 	 */
 	boolean logUnRunChangeSetDetails(String filename, List<ChangeSet> changeSets) {
-		if (changeSets.size() < MAX_NUMBER_OF_CHANGE_SETS_TO_LOG
-		        && (filename.contains(LIQUIBASE_CORE_DATA_1_9_X_FILENAME)
-		                || filename.contains(LIQUIBASE_SCHEMA_ONLY_1_9_X_FILENAME))) {
+		if (changeSets.size() < MAX_NUMBER_OF_CHANGE_SETS_TO_LOG && (filename.contains(LIQUIBASE_CORE_DATA_1_9_X_FILENAME)
+		        || filename.contains(LIQUIBASE_SCHEMA_ONLY_1_9_X_FILENAME))) {
 			for (ChangeSet changeSet : changeSets) {
 				log.info("file '{}' contains un-run change set with id '{}' by author '{}'", filename, changeSet.getId(),
 				    changeSet.getAuthor());
