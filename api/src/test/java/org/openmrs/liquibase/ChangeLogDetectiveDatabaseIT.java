@@ -9,22 +9,21 @@
  */
 package org.openmrs.liquibase;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import java.util.List;
 import java.util.Map;
-
 import org.junit.jupiter.api.Test;
 import org.openmrs.util.H2DatabaseIT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class ChangeLogDetectiveDatabaseIT extends H2DatabaseIT {
 	
 	private static final Logger log = LoggerFactory.getLogger(ChangeLogDetectiveDatabaseIT.class);
-	
+
+	private static final String VERSION_1_9_X = "1.9.x";
+
 	private static final String VERSION_2_1_X = "2.1.x";
 	
 	
@@ -45,15 +44,13 @@ public class ChangeLogDetectiveDatabaseIT extends H2DatabaseIT {
 	}
 	
 	@Test
-	public void shouldRecogniseThatAllSnapshotsContainUnrunChangeSets() throws Exception {
+	public void shouldReturnDefaultSnapshotVersion() throws Exception {
 		ChangeLogDetective changeLogDetective = new ChangeLogDetective();
-		try {
-			changeLogDetective.getInitialLiquibaseSnapshotVersion("some context", this);
-			fail("IllegalStateException was expected but not raised");
-		}
-		catch (IllegalStateException ise) {
-			assertTrue(true, "IllegalStateException was raised as expected");
-		}
+
+		String expected = VERSION_1_9_X;
+		String actual = changeLogDetective.getInitialLiquibaseSnapshotVersion("some context", this);
+
+		assertEquals(expected, actual);
 	}
 	
 	@Test
