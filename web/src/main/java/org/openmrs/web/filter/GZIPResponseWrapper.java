@@ -111,8 +111,6 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 		super.sendError(error, message);
 		this.error = error;
 		
-		if (log.isDebugEnabled()) {
-			log.debug("sending error: " + error + " [" + message + "]");
-		}
+		log.debug("sending error: {} [{}]", error, message);
 	}
 }

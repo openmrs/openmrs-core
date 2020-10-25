@@ -29,13 +29,13 @@ import org.hibernate.search.FullTextSession;
 import org.hibernate.stat.QueryStatistics;
 import org.hibernate.stat.Statistics;
 import org.hibernate.type.StandardBasicTypes;
-import org.openmrs.api.db.FullTextSessionFactory;
 import org.openmrs.GlobalProperty;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.Daemon;
 import org.openmrs.api.db.ContextDAO;
+import org.openmrs.api.db.FullTextSessionFactory;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -118,9 +118,7 @@ public class HibernateContextDAO implements ContextDAO {
 
 		// only continue if this is a valid username and a nonempty password
 		if (candidateUser != null && password != null) {
-			if (log.isDebugEnabled()) {
-				log.debug("Candidate user id: " + candidateUser.getUserId());
-			}
+			log.debug("Candidate user id: {}", candidateUser.getUserId());
 
 			String lockoutTimeString = candidateUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, null);
 			Long lockoutTime = null;
@@ -287,14 +285,10 @@ public class HibernateContextDAO implements ContextDAO {
 	public void openSession() {
 		log.debug("HibernateContext: Opening Hibernate Session");
 		if (TransactionSynchronizationManager.hasResource(sessionFactory)) {
-			if (log.isDebugEnabled()) {
-				log.debug("Participating in existing session (" + sessionFactory.hashCode() + ")");
-			}
+			log.debug("Participating in existing session ({})", sessionFactory.hashCode());
 			participate = true;
 		} else {
-			if (log.isDebugEnabled()) {
-				log.debug("Registering session with synchronization manager (" + sessionFactory.hashCode() + ")");
-			}
+			log.debug("Registering session with synchronization manager ({})", sessionFactory.hashCode());
 			Session session = sessionFactory.openSession();
 			session.setHibernateFlushMode(FlushMode.MANUAL);
 			TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(session));
