@@ -225,9 +225,7 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 			}
 		}
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Total roles: " + allRoles);
-		}
+		log.debug("Total roles: {}", allRoles);
 		
 		return allRoles;
 	}
@@ -320,9 +318,7 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 			}
 		}
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Total roles: " + allRoles);
-		}
+		log.debug("Total roles: {}", allRoles);
 		
 		return allRoles;
 	}
