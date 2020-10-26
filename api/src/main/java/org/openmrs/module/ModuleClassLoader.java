@@ -89,9 +89,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			throw new IllegalArgumentException("Parent must not be ModuleClassLoader");
 		}
 		
-		if (log.isDebugEnabled()){
-			log.debug("URLs length: " + urls.size());
-		}
+		log.debug("URLs length: {}", urls.size());
 		this.module = module;
 		requiredModules = collectRequiredModuleImports(module);
 		awareOfModules = collectAwareOfModuleImports(module);
@@ -276,9 +274,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		
 		// add each defined jar in the /lib folder, add as a url in the classpath of the classloader
 		try {
-			if (log.isDebugEnabled()) {
-				log.debug("Expanding /lib folder in module");
-			}
+			log.debug("Expanding /lib folder in module");
 			
 			ModuleUtil.expandJar(module.getFile(), tmpModuleDir, "lib", true);
 			File libdir = new File(tmpModuleDir, "lib");
@@ -319,14 +315,10 @@ public class ModuleClassLoader extends URLClassLoader {
 					    startedRelatedModules);
 					
 					if (include) {
-						if (log.isDebugEnabled()) {
-							log.debug("Including file in classpath: " + fileUrl);
-						}
+						log.debug("Including file in classpath: {}", fileUrl);
 						result.add(fileUrl);
 					} else {
-						if (log.isDebugEnabled()) {
-							log.debug("Excluding file from classpath: " + fileUrl);
-						}
+						log.debug("Excluding file from classpath: {}", fileUrl);
 					}
 				}
 			}
@@ -529,9 +521,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * @see org.openmrs.module.ModuleFactory#stopModule(Module, boolean)
 	 */
 	public void dispose() {
-		if (log.isDebugEnabled()) {
-			log.debug("Disposing of ModuleClassLoader: " + this);
-		}
+		log.debug("Disposing of ModuleClassLoader: {}", this);
 		for (File file : libraryCache.values()) {
 			file.delete();
 		}
@@ -822,10 +812,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			// save a link to the cached file
 			libraryCache.put(libUri, result);
 			
-			if (log.isDebugEnabled()) {
-				log.debug("library " + libname + " successfully cached from URL " + libUrl + " and saved to local file "
-				        + result);
-			}
+			log.debug("library {} successfully cached from URL {} and saved to local file {}", libname, libUrl, result);
 			
 		}
 		catch (IOException ioe) {

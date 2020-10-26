@@ -51,6 +51,7 @@ import org.openmrs.util.MemoryLeakUtil;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.web.filter.initialization.DatabaseDetective;
 import org.openmrs.web.filter.initialization.InitializationFilter;
 import org.openmrs.web.filter.update.UpdateFilter;
 import org.slf4j.LoggerFactory;
@@ -211,6 +212,11 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 */
 	private boolean setupNeeded() throws Exception {
 		if (!runtimePropertiesFound) {
+			return true;
+		}
+		
+		DatabaseDetective databaseDetective = new DatabaseDetective();
+		if (databaseDetective.isDatabaseEmpty(OpenmrsUtil.getRuntimeProperties(WebConstants.WEBAPP_NAME))) {
 			return true;
 		}
 		
