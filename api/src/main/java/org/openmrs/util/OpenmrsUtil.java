@@ -1094,15 +1094,14 @@ public class OpenmrsUtil {
 		
 		if (filepath == null) {
 			if (OpenmrsConstants.UNIX_BASED_OPERATING_SYSTEM) {
-				filepath = System.getenv("appdata") + File.separator + "OpenMRS";
+				filepath = System.getProperty("user.home") + File.separator + "." + openmrsDir;
 				if (!canWrite(new File(filepath))) {
 					log.warn("Unable to write to users home dir, fallback to: "
 					        + OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_UNIX);
 					filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_UNIX + File.separator + openmrsDir;
 				}
 			} else {
-				filepath = System.getProperty("user.home") + File.separator + "Application Data" + File.separator
-				        + "OpenMRS";
+				filepath = System.getenv("appdata") + File.separator + "OpenMRS";
 				if (!canWrite(new File(filepath))) {
 					log.warn("Unable to write to users home dir, fallback to: "
 					        + OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_WIN);
