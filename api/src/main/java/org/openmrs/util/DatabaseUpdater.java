@@ -37,7 +37,6 @@ import liquibase.Liquibase;
 import liquibase.RuntimeEnvironment;
 import liquibase.changelog.ChangeLogHistoryServiceFactory;
 import liquibase.changelog.ChangeLogIterator;
-import liquibase.changelog.ChangeLogParameters;
 import liquibase.changelog.ChangeSet;
 import liquibase.changelog.DatabaseChangeLog;
 import liquibase.changelog.filter.ChangeSetFilterResult;
@@ -52,7 +51,6 @@ import liquibase.exception.LiquibaseException;
 import liquibase.exception.LockException;
 import liquibase.lockservice.LockService;
 import liquibase.lockservice.LockServiceFactory;
-import liquibase.parser.core.xml.XMLChangeLogSAXParser;
 import liquibase.resource.CompositeResourceAccessor;
 import liquibase.resource.FileSystemResourceAccessor;
 import liquibase.resource.ResourceAccessor;
@@ -200,27 +198,6 @@ public class DatabaseUpdater {
 	 */
 	public static List<String> executeChangelog(String changeLogFile, Contexts contexts, ChangeSetExecutorCallback callback,
 	        ClassLoader cl) throws Exception {
-		final class OpenmrsUpdateVisitor extends UpdateVisitor {
-			
-			private ChangeSetExecutorCallback callback;
-			
-			private int numChangeSetsToRun;
-			
-			public OpenmrsUpdateVisitor(Database database, ChangeSetExecutorCallback callback, int numChangeSetsToRun) {
-				super(database, null);
-				this.callback = callback;
-				this.numChangeSetsToRun = numChangeSetsToRun;
-			}
-			
-			@Override
-			public void visit(ChangeSet changeSet, DatabaseChangeLog databaseChangeLog, Database database,
-			        Set<ChangeSetFilterResult> filterResults) throws LiquibaseException {
-				if (callback != null) {
-					callback.executing(changeSet, numChangeSetsToRun);
-				}
-				super.visit(changeSet, databaseChangeLog, database, filterResults);
-			}
-		}
 		
 		if (cl == null) {
 			cl = OpenmrsClassLoader.getInstance();
@@ -238,11 +215,7 @@ public class DatabaseUpdater {
 			lockHandler = LockServiceFactory.getInstance().getLockService(database);
 			lockHandler.waitForLock();
 			
-			ResourceAccessor openmrsFO = new ClassLoaderFileOpener(cl);
-			ResourceAccessor fsFO = new FileSystemResourceAccessor();
-			
-			DatabaseChangeLog changeLog = new XMLChangeLogSAXParser().parse(changeLogFile, new ChangeLogParameters(),
-			    new CompositeResourceAccessor(openmrsFO, fsFO));
+			DatabaseChangeLog changeLog = liquibase.getDatabaseChangeLog();
 			changeLog.setChangeLogParameters(liquibase.getChangeLogParameters());
 			changeLog.validate(database);
 			
@@ -256,18 +229,20 @@ public class DatabaseUpdater {
 			logIterator.run(new OpenmrsUpdateVisitor(database, callback, numChangeSetsToRun),
 			    new RuntimeEnvironment(database, contexts, new LabelExpression()));
 		}
-		catch (LiquibaseException e) {
-			throw e;
-		}
 		finally {
 			try {
-				lockHandler.releaseLock();
+				if (lockHandler != null) {
+					lockHandler.releaseLock();
+				}
 			}
 			catch (Exception e) {
 				log.error("Could not release lock", e);
 			}
+
 			try {
-				database.getConnection().close();
+				if (database != null && database.getConnection() != null) {
+					database.getConnection().close();
+				}
 			}
 			catch (Exception e) {
 				//pass
@@ -848,6 +823,28 @@ public class DatabaseUpdater {
 			catch (Exception e) {
 				// pass
 			}
+		}
+	}
+
+	private final static class OpenmrsUpdateVisitor extends UpdateVisitor {
+
+		private final ChangeSetExecutorCallback callback;
+
+		private final int numChangeSetsToRun;
+
+		public OpenmrsUpdateVisitor(Database database, ChangeSetExecutorCallback callback, int numChangeSetsToRun) {
+			super(database, null);
+			this.callback = callback;
+			this.numChangeSetsToRun = numChangeSetsToRun;
+		}
+
+		@Override
+		public void visit(ChangeSet changeSet, DatabaseChangeLog databaseChangeLog, Database database,
+			Set<ChangeSetFilterResult> filterResults) throws LiquibaseException {
+			if (callback != null) {
+				callback.executing(changeSet, numChangeSetsToRun);
+			}
+			super.visit(changeSet, databaseChangeLog, database, filterResults);
 		}
 	}
 }
