@@ -1189,11 +1189,26 @@ public class Context {
 	 *
 	 * @param userInput (can be null) responses from the user about needed input
 	 * @throws DatabaseUpdateException if an error occurred while updating
-	 * @throws InputRequiredException if user input is required
 	 * @since 1.5
+	 * @deprecated as of 2.4; see {@link #updateDatabase()}
+	 * 
 	 */
-	public static void updateDatabase(Map<String, Object> userInput) throws DatabaseUpdateException, InputRequiredException {
-		DatabaseUpdater.executeChangelog(null, userInput);
+	@Deprecated
+	public static void updateDatabase(Map<String, Object> userInput) throws DatabaseUpdateException {
+		DatabaseUpdater.executeChangelog();
+	}
+
+	/**
+	 * Updates the openmrs database to the latest. This is only needed if using the API alone. <br>
+	 * <br>
+	 * The typical use-case would be: Try to {@link #startup(String, String, String, Properties)},
+	 * if that fails, call this method to get the database up to speed.
+	 * 
+	 * @throws DatabaseUpdateException if an error occurred while updating
+	 * @since 2.4
+	 */
+	public static void updateDatabase() throws DatabaseUpdateException {
+		DatabaseUpdater.executeChangelog();
 	}
 
 	/**
