@@ -72,4 +72,11 @@ public class DropMillisecondsHibernateInterceptorTest extends BaseContextSensiti
 		boolean anyChanges = dropMillisecondsHibernateInterceptor.onSave(null, null, time, null, null);
 		assertEquals(false, anyChanges);
 	}
+	
+	@Test
+	public void shouldNotThrowUnsupportedOperationExceptionWhenInstanceOfSqlDate() throws Exception {
+		Date[] sqlDate = {new java.sql.Date(567L)};
+		boolean anyChanges = dropMillisecondsHibernateInterceptor.onSave(null, null, sqlDate, null, null);
+		assertFalse(anyChanges);
+	}
 }
