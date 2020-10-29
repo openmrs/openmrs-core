@@ -66,7 +66,7 @@ public class DropMillisecondsHibernateInterceptor extends EmptyInterceptor {
 		boolean anyChanges = false;
 		for (int i = fieldValues.length - 1; i >= 0; --i) {
 			Object candidate = fieldValues[i];
-			if (!(candidate instanceof Time) && candidate instanceof Date) {
+			if (!(candidate instanceof Time || candidate instanceof java.sql.Date) && candidate instanceof Date) {
 				Date noMilliseconds = DateUtil.truncateToSeconds((Date) candidate);
 				if (!noMilliseconds.equals(candidate)) {
 					fieldValues[i] = noMilliseconds;
