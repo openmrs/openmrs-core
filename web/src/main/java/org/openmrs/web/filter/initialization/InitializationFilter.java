@@ -52,7 +52,7 @@ import org.openmrs.module.OpenmrsCoreModuleException;
 import org.openmrs.module.web.WebModuleUtil;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
-import org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback;
+import org.openmrs.liquibase.ChangeSetExecutorCallback;
 import org.openmrs.util.DatabaseUpdaterLiquibaseProvider;
 import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.InputRequiredException;
