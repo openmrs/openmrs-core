@@ -3,7 +3,7 @@ jdk:
  - oraclejdk8
 script: mvn clean install --batch-mode
 matrix:
-    - jdk: oraclejdk8
+    - jdk: openjdk8
 branches:
   only:
     - 2.1.x
