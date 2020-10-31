@@ -55,10 +55,8 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	 */
 	public void processHL7InQueue(HL7InQueue hl7InQueue) {
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Processing HL7 inbound queue (id=" + hl7InQueue.getHL7InQueueId() + ",key="
-			        + hl7InQueue.getHL7SourceKey() + ")");
-		}
+		log.debug("Processing HL7 inbound queue (id={} ,key={})", hl7InQueue.getHL7InQueueId(),
+		    hl7InQueue.getHL7SourceKey());
 		
 		try {
 			Context.getHL7Service().processHL7InQueue(hl7InQueue);

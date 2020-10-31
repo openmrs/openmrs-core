@@ -755,22 +755,20 @@ public class ServiceContext implements ApplicationContextAware {
 				
 				if (cls != null && log.isDebugEnabled()) {
 					try {
-						log.debug("cls classloader: " + cls.getClass().getClassLoader() + " uid: "
-						        + cls.getClass().getClassLoader().hashCode());
+						log.debug("cls classloader: {} uid: {}", cls.getClass().getClassLoader(),
+						    cls.getClass().getClassLoader().hashCode());
 					}
 					catch (Exception e) { /*pass*/}
 				}
 			} else if (useSystemClassLoader) {
 				try {
 					cls = Class.forName(classString);
-					if (log.isDebugEnabled()) {
-						log.debug("cls2 classloader: " + cls.getClass().getClassLoader() + " uid: "
-						        + cls.getClass().getClassLoader().hashCode());
-						//pay attention that here, cls = Class.forName(classString), the system class loader and
-						//cls2 is the openmrs class loader, like above.
-						log.debug("cls==cls2: "
-						        + String.valueOf(cls == OpenmrsClassLoader.getInstance().loadClass(classString)));
-					}
+					log.debug("cls2 classloader: {} uid: {}", cls.getClass().getClassLoader(),
+					    cls.getClass().getClassLoader().hashCode());
+					//pay attention that here, cls = Class.forName(classString), the system class loader and
+					//cls2 is the openmrs class loader, like above.
+					log.debug("cls==cls2: {}",
+					    String.valueOf(cls == OpenmrsClassLoader.getInstance().loadClass(classString)));
 				}
 				catch (Exception e) { /*pass*/}
 			}
