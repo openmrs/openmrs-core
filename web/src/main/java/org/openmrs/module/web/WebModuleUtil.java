@@ -17,13 +17,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
@@ -114,9 +114,7 @@ public class WebModuleUtil {
 	 */
 	public static boolean startModule(Module mod, ServletContext servletContext, boolean delayContextRefresh) {
 		
-		if (log.isDebugEnabled()) {
-			log.debug("trying to start module " + mod);
-		}
+		log.debug("trying to start module {}", mod);
 		
 		// only try and start this module if the api started it without a
 		// problem.
@@ -170,9 +168,7 @@ public class WebModuleUtil {
 						// if a module id has a . in it, we should treat that as a /, i.e. files in the module
 						// ui.springmvc should go in folder names like .../ui/springmvc/...
 						absPath.append(mod.getModuleIdAsPath()).append("/").append(filepath);
-						if (log.isDebugEnabled()) {
-							log.debug("Moving file from: " + name + " to " + absPath);
-						}
+						log.debug("Moving file from: {} to {}", name, absPath);
 						
 						// get the output file
 						File outFile = new File(absPath.toString().replace("/", File.separator));
@@ -304,9 +300,7 @@ public class WebModuleUtil {
 			// refresh the spring web context to get the just-created xml
 			// files into it (if we copied an xml file)
 			if (moduleNeedsContextRefresh && !delayContextRefresh) {
-				if (log.isDebugEnabled()) {
-					log.debug("Refreshing context for module" + mod);
-				}
+				log.debug("Refreshing context for module {}", mod);
 				
 				try {
 					refreshWAC(servletContext, false, mod);
@@ -830,9 +824,7 @@ public class WebModuleUtil {
 	        Module startedModule) {
 		XmlWebApplicationContext wac = (XmlWebApplicationContext) WebApplicationContextUtils
 		        .getWebApplicationContext(servletContext);
-		if (log.isDebugEnabled()) {
-			log.debug("Refreshing web application Context of class: " + wac.getClass().getName());
-		}
+		log.debug("Refreshing web application Context of class: {}", wac.getClass().getName());
 		
 		if (dispatcherServlet != null) {
 			dispatcherServlet.stopAndCloseApplicationContext();
