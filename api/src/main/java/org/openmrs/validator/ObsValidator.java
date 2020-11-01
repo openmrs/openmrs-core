@@ -81,9 +81,7 @@ public class ObsValidator implements Validator {
 		if (obs.getPerson() != null && obs.getEncounter() != null && obs.getEncounter().getPatient() != null) {
 			if (!Objects.equals(obs.getPerson(),obs.getEncounter().getPatient().getPerson())) {
 				errors.reject("Person objects of the obs and the encounter do not match");
-
 			}
-
 		}
 	
 	List<Obs> ancestors = new ArrayList<>();
