@@ -36,12 +36,12 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
  * 
  * @see Encounter
  */
-public class EncounterTest extends BaseContextSensitiveTest {
-	
+public class EncounterTest extends BaseContextMockTest {
+
 	@Mock
 	private EncounterService encounterService;
 
-	Encounter encounter;
+	private Encounter encounter;
 
 	@BeforeEach
 	public void before() {
@@ -1399,10 +1399,10 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see Encounter#getConditions()
+	 * @see Encounter#removeCondition()
 	 */
 	@Test
-	public void removeConditions_shouldRemoveConditions() {
+	public void removeCondition_shouldRemoveConditions() {
 
 		Condition activeCondition = new Condition();
 		activeCondition.setClinicalStatus(ConditionClinicalStatus.ACTIVE);
