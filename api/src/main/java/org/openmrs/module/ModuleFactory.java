@@ -9,7 +9,28 @@
  */
 package org.openmrs.module;
 
-import liquibase.Contexts;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.rmi.activation.Activator;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.aopalliance.aop.Advice;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Privilege;
@@ -32,27 +53,7 @@ import org.springframework.aop.Advisor;
 import org.springframework.context.support.AbstractRefreshableApplicationContext;
 import org.springframework.util.StringUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.rmi.activation.Activator;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.WeakHashMap;
-import java.util.concurrent.ConcurrentHashMap;
+import liquibase.Contexts;
 
 /**
  * Methods for loading, starting, stopping, and storing OpenMRS modules
@@ -128,9 +129,7 @@ public class ModuleFactory {
 	 */
 	public static Module loadModule(Module module, Boolean replaceIfExists) throws ModuleException {
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Adding module " + module.getName() + " to the module queue");
-		}
+		log.debug("Adding module {} to the module queue", module.getName());
 		
 		Module oldModule = getLoadedModulesMap().get(module.getModuleId());
 		if (oldModule != null) {
@@ -165,9 +164,7 @@ public class ModuleFactory {
 		// load modules from the user's module repository directory
 		File modulesFolder = ModuleUtil.getModuleRepository();
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Loading modules from: " + modulesFolder.getAbsolutePath());
-		}
+		log.debug("Loading modules from: {}", modulesFolder.getAbsolutePath());
 		
 		File[] files = modulesFolder.listFiles();
 		if (modulesFolder.isDirectory() && files != null) {
@@ -261,9 +258,7 @@ public class ModuleFactory {
 				}
 				
 				try {
-					if (log.isDebugEnabled()) {
-						log.debug("starting module: " + mod.getModuleId());
-					}
+					log.debug("starting module: {}", mod.getModuleId());
 					startModule(mod);
 				}
 				catch (Exception e) {

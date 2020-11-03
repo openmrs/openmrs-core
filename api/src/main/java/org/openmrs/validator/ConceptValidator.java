@@ -194,9 +194,7 @@ public class ConceptValidator extends BaseCustomizableValidator implements Valid
 					        + "' is a duplicate name in locale '" + conceptNameLocale.toString() + "' for the same concept");
 				}
 				
-				if (log.isDebugEnabled()) {
-					log.debug("Valid name found: " + nameInLocale.getName());
-				}
+				log.debug("Valid name found: {}", nameInLocale.getName());
 			}
 		}
 		

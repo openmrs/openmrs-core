@@ -163,9 +163,7 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 		
 		Set<Role> tmproles = getAllRoles();
 		
-		if (log.isDebugEnabled()) {
-			log.debug("User #" + userId + " has roles: " + tmproles);
-		}
+		log.debug("User # {} has roles: {}", userId, tmproles);
 		
 		return containsRole(r);
 	}
@@ -230,9 +228,7 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 			totalRoles.addAll(getRoles());
 		}
 		
-		if (log.isDebugEnabled()) {
-			log.debug("User's base roles: " + baseRoles);
-		}
+		log.debug("User's base roles: {}", baseRoles);
 		
 		try {
 			for (Role r : baseRoles) {

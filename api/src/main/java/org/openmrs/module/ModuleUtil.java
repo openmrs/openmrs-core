@@ -154,9 +154,7 @@ public class ModuleUtil {
 		List<Module> modules = new ArrayList<>(ModuleFactory.getStartedModules());
 		
 		for (Module mod : modules) {
-			if (log.isDebugEnabled()) {
-				log.debug("stopping module: " + mod.getModuleId());
-			}
+			log.debug("stopping module: {}", mod.getModuleId());
 			
 			if (mod.isStarted()) {
 				ModuleFactory.stopModule(mod, true, true);
@@ -624,9 +622,7 @@ public class ModuleUtil {
 	 * @throws IOException if an error occurred while copying
 	 */
 	private static File expand(InputStream input, String fileDir, String name) throws IOException {
-		if (log.isDebugEnabled()) {
-			log.debug("expanding: " + name);
-		}
+		log.debug("expanding: {}", name);
 		
 		File file = new File(fileDir, name);
 		FileOutputStream outStream = null;
@@ -901,9 +897,7 @@ public class ModuleUtil {
 		OpenmrsClassLoader.setThreadsToNewClassLoader();
 		
 		// reload the advice points that were lost when refreshing Spring
-		if (log.isDebugEnabled()) {
-			log.debug("Reloading advice for all started modules: " + startedModules.size());
-		}
+		log.debug("Reloading advice for all started modules: {}", startedModules.size());
 		
 		try {
 			//The call backs in this block may need lazy loading of objects
