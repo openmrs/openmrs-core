@@ -42,10 +42,29 @@ public class EncounterTest extends BaseContextMockTest {
 	private EncounterService encounterService;
 
 	private Encounter encounter;
+	
+	private Condition activeCondition;
+	
+	private Condition voidedCondition;
 
 	@BeforeEach
 	public void before() {
 		encounter = new Encounter();
+
+		activeCondition = new Condition();
+		activeCondition.setClinicalStatus(ConditionClinicalStatus.ACTIVE);
+		CodedOrFreeText freeText = new CodedOrFreeText();
+		freeText.setNonCoded("Free text");
+		activeCondition.setCondition(freeText);
+		encounter.addCondition(activeCondition);
+
+		voidedCondition = new Condition();
+		voidedCondition.setVoided(true);
+		voidedCondition.setClinicalStatus(ConditionClinicalStatus.HISTORY_OF);
+		CodedOrFreeText freeText01 = new CodedOrFreeText();
+		freeText01.setNonCoded("Free text");
+		voidedCondition.setCondition(freeText01);
+		encounter.addCondition(voidedCondition);
 	}
 
 	/**
@@ -1355,23 +1374,8 @@ public class EncounterTest extends BaseContextMockTest {
 	 */
 	@Test
 	public void getAllConditions_shouldReturnAllConditions() {
-
-		Condition activeCondition = new Condition();
-		activeCondition.setClinicalStatus(ConditionClinicalStatus.ACTIVE);
-		CodedOrFreeText freeText = new CodedOrFreeText();
-		freeText.setNonCoded("Free text");
-		activeCondition.setCondition(freeText);
-		encounter.addCondition(activeCondition);
-
-		Condition voidedCondition = new Condition();
-		voidedCondition.setVoided(true);
-		voidedCondition.setClinicalStatus(ConditionClinicalStatus.HISTORY_OF);
-		CodedOrFreeText freeText01 = new CodedOrFreeText();
-		freeText01.setNonCoded("Free text");
-		voidedCondition.setCondition(freeText01);
-		encounter.addCondition(voidedCondition);
-
-		assertEquals(2, encounter.getAllConditions(true).size());
+		
+		assertEquals(2, encounter.getConditions(true).size());
 	}
 
 	/**
@@ -1379,51 +1383,22 @@ public class EncounterTest extends BaseContextMockTest {
 	 */
 	@Test
 	public void getConditions_shouldReturnActiveConditions() {
-
-		Condition activeCondition = new Condition();
-		activeCondition.setClinicalStatus(ConditionClinicalStatus.ACTIVE);
-		CodedOrFreeText freeText = new CodedOrFreeText();
-		freeText.setNonCoded("Free text");
-		activeCondition.setCondition(freeText);
-		encounter.addCondition(activeCondition);
-
-		Condition voidedCondition = new Condition();
-		voidedCondition.setVoided(true);
-		voidedCondition.setClinicalStatus(ConditionClinicalStatus.HISTORY_OF);
-		CodedOrFreeText freeText01 = new CodedOrFreeText();
-		freeText01.setNonCoded("Free text");
-		voidedCondition.setCondition(freeText01);
-		encounter.addCondition(voidedCondition);
-
+		
 		assertEquals(1, encounter.getConditions().size());
 	}
 
 	/**
-	 * @see Encounter#removeCondition()
+	 * @see Encounter#removeCondition(Condition)
 	 */
 	@Test
 	public void removeCondition_shouldRemoveConditions() {
 
-		Condition activeCondition = new Condition();
-		activeCondition.setClinicalStatus(ConditionClinicalStatus.ACTIVE);
-		CodedOrFreeText freeText = new CodedOrFreeText();
-		freeText.setNonCoded("Free text");
-		activeCondition.setCondition(freeText);
-		encounter.addCondition(activeCondition);
 		// The condition should be voided
 		encounter.removeCondition(activeCondition);
 
-		Condition voidedCondition = new Condition();
-		voidedCondition.setVoided(true);
-		voidedCondition.setClinicalStatus(ConditionClinicalStatus.HISTORY_OF);
-		CodedOrFreeText freeText01 = new CodedOrFreeText();
-		freeText01.setNonCoded("Free text");
-		voidedCondition.setCondition(freeText01);
-		encounter.addCondition(voidedCondition);
-
 		Set<Condition> a = encounter.getConditions();
-		Set<Condition> b = encounter.getAllConditions(true);
+		Set<Condition> b = encounter.getConditions(true);
 		assertEquals(0, encounter.getConditions().size());
-		assertEquals(2, encounter.getAllConditions(true).size());
+		assertEquals(2, encounter.getConditions(true).size());
 	}
 }
