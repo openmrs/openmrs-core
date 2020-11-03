@@ -9,15 +9,7 @@
  */
 package org.openmrs;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.persistence.Access;
@@ -492,12 +484,13 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	/**
 	 * Basic property getter for conditions
 	 * 
-	 * @return conditions - set of conditions
+	 * @return all non-voided conditions
+	 * <strong>Should</strong> not get voided conditions
 	 * @since 2.4.0, 2.3.1
 	 */
 	public Set<Condition> getConditions() {
-
-		return getAllConditions();
+		
+		return getConditions(false);
 	}
 
 	/**
@@ -509,29 +502,13 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * <strong>Should</strong> not return null with null conditions set
 	 * <strong>Should</strong> get conditions
 	 */
-	public Set<Condition> getAllConditions(boolean includeVoided) {
-		if (includeVoided && conditions != null) {
-			return conditions;
-		}
+	public Set<Condition> getConditions(boolean includeVoided) {
 
-		Set<Condition> ret = new LinkedHashSet<>();
+		return Optional.ofNullable(conditions).orElse(new LinkedHashSet<>())
+			.stream().filter(o -> includeVoided || !o.getVoided()).collect(Collectors.toSet());
 
-		if (this.conditions != null) {
-			ret = this.conditions.stream().filter(o -> includeVoided || !o.getVoided()).collect(Collectors.toSet());
-		}
-		return ret;
 	}
-
-	/**
-	 * Convenience method to call {@link #getAllConditions(boolean)} with a false parameter
-	 *
-	 * @return all non-voided conditions
-	 * <strong>Should</strong> not get voided conditions
-	 */
-	public Set<Condition> getAllConditions() {
-		return getAllConditions(false);
-	}
-	
+		
 	/**
 	 * Basic property setter for conditions
 	 *  
@@ -564,12 +541,8 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * @param condition - the condition to remove
 	 */
 	public void removeCondition(Condition condition) {
-
-		if (conditions == null) {
-			return;
-		}
-
-		conditions.stream().filter(c -> !c.getVoided() && c.getUuid().equals(condition.getUuid())).forEach(c -> {
+		
+		Optional.ofNullable(conditions).orElse(new LinkedHashSet<>()).stream().filter(c -> !c.getVoided() && c.getUuid().equals(condition.getUuid())).forEach(c -> {
 			c.setVoided(true);
 			c.setDateVoided(new Date());
 			c.setVoidedBy(Context.getAuthenticatedUser());
