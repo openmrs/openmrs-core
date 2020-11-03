@@ -254,9 +254,7 @@ public class WebUtil implements GlobalPropertyListener {
 	 * @return filename stripped down
 	 */
 	public static String stripFilename(String filename) {
-		if (log.isDebugEnabled()) {
-			log.debug("Stripping filename from: " + filename);
-		}
+		log.debug("Stripping filename from: {}", filename);
 		
 		// for unix based filesystems
 		String tmpFilename = filename;
@@ -271,9 +269,7 @@ public class WebUtil implements GlobalPropertyListener {
 			tmpFilename = tmpFilename.substring(index + 1);
 		}
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Returning stripped down filename: " + tmpFilename);
-		}
+		log.debug("Returning stripped down filename: {}", tmpFilename);
 		
 		return tmpFilename;
 	}
