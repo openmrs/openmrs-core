@@ -1373,9 +1373,11 @@ public class EncounterTest extends BaseContextMockTest {
 	 * @see Encounter#getConditions()
 	 */
 	@Test
-	public void getAllConditions_shouldReturnAllConditions() {
+	public void getConditions_shouldReturnAllConditions() {
 		
 		assertEquals(2, encounter.getConditions(true).size());
+		assertTrue(encounter.getConditions(true).contains(activeCondition));
+		assertTrue(encounter.getConditions(true).contains(voidedCondition));
 	}
 
 	/**
@@ -1385,6 +1387,8 @@ public class EncounterTest extends BaseContextMockTest {
 	public void getConditions_shouldReturnActiveConditions() {
 		
 		assertEquals(1, encounter.getConditions().size());
+		assertTrue(encounter.getConditions().contains(activeCondition));
+		assertFalse(encounter.getConditions().contains(voidedCondition));
 	}
 
 	/**
