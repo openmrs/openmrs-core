@@ -9,17 +9,38 @@
  */
 package org.openmrs.web.filter.update;
 
-import liquibase.changelog.ChangeSet;
-import liquibase.exception.LockException;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.liquibase.ChangeLogDetective;
+import org.openmrs.liquibase.ChangeLogVersionFinder;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.liquibase.ChangeSetExecutorCallback;
 import org.openmrs.util.DatabaseUpdaterLiquibaseProvider;
 import org.openmrs.util.InputRequiredException;
-import org.openmrs.liquibase.ChangeLogVersionFinder;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
@@ -33,27 +54,8 @@ import org.openmrs.web.filter.util.FilterUtil;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.ContextLoader;
 
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import liquibase.changelog.ChangeSet;
+import liquibase.exception.LockException;
 
 /**
  * This is the second filter that is processed. It is only active when OpenMRS has some liquibase
@@ -506,10 +508,8 @@ public class UpdateFilter extends StartupFilter {
 				} else if (updateFilterModel.changes == null) {
 					setUpdatesRequired(false);
 				} else {
-					if (log.isDebugEnabled()) {
-						log.debug("Setting updates required to " + (!updateFilterModel.changes.isEmpty())
-						        + " because of the size of unrun changes");
-					}
+					log.debug("Setting updates required to {} because of the size of unrun changes",
+					    (!updateFilterModel.changes.isEmpty()));
 					setUpdatesRequired(!updateFilterModel.changes.isEmpty());
 				}
 			}
