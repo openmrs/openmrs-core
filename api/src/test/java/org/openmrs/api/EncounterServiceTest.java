@@ -794,7 +794,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
-	public void saveEncounter_shouldNotOverwriteObsAndOrdersCreatorOrDateCreated()
+	public void saveEncounter/*_shouldNotOverwriteObsAndOrdersCreatorOrDateCreated*/()
 	        throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		EncounterService encounterService = Context.getEncounterService();
 		
@@ -811,6 +811,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Obs obs = new Obs(new Patient(2), cs.getConcept(1), new Date(), new Location(1));
 		obs.setDateCreated(date);
 		obs.setCreator(creator);
+		obs.setPerson(new Person(2));
 		obs.setValueNumeric(50d);
 		obs.setObsId(2);
 		
