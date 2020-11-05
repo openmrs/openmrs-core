@@ -810,9 +810,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// create and add an obs to this encounter
 		Obs obs = new Obs(new Patient(2), cs.getConcept(1), new Date(), new Location(1));
 		obs.setDateCreated(date);
-		obs.setPerson(new Patient(2));
 		obs.setCreator(creator);
 		obs.setValueNumeric(50d);
+		obs.setObsId(2);
 		
 		encounter.addObs(obs);
 		
