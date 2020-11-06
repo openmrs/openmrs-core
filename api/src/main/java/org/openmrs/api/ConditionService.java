@@ -25,25 +25,6 @@ import java.util.List;
 public interface ConditionService extends OpenmrsService {
 
 	/**
-	 * Saves a condition
-	 *
-	 * @param condition - the condition to be saved
-	 * @throws APIException   
-	 */
-	@Authorized({ PrivilegeConstants.EDIT_CONDITIONS })
-	Condition saveCondition(Condition condition) throws APIException;
-
-	/**
-	 * Voids a condition
-	 *
-	 * @param condition - the condition to be voided
-	 * @param voidReason - the reason for voiding the condition
-	 * @throws APIException   
-	 */
-	@Authorized({ PrivilegeConstants.EDIT_CONDITIONS })
-	Condition voidCondition(Condition condition, String voidReason) throws APIException;
-
-	/**
 	 * Gets a condition based on the uuid
 	 *
 	 * @param uuid - uuid of the condition to be returned
@@ -87,7 +68,7 @@ public interface ConditionService extends OpenmrsService {
 	/**
 	 * Gets a condition by id
 	 *
-	 * @param conditionId - the id of the Condition to retrieve
+	 * @param conditionId the id of the Condition to retrieve
 	 * @return the Condition with the given id, or null if none exists
 	 * @throws APIException
 	 */
@@ -95,7 +76,26 @@ public interface ConditionService extends OpenmrsService {
 	Condition getCondition(Integer conditionId) throws APIException;
 
 	/**
-	 * Revive a condition (pull a Lazarus)
+	 * Saves a condition
+	 *
+	 * @param condition - the condition to be saved
+	 * @throws APIException
+	 */
+	@Authorized({ PrivilegeConstants.EDIT_CONDITIONS })
+	Condition saveCondition(Condition condition) throws APIException;
+
+	/**
+	 * Voids a condition
+	 *
+	 * @param condition the condition to be voided
+	 * @param voidReason the reason for voiding the condition
+	 * @throws APIException if an error occurs while voiding the condition
+	 */
+	@Authorized({ PrivilegeConstants.EDIT_CONDITIONS })
+	Condition voidCondition(Condition condition, String voidReason) throws APIException;
+
+	/**
+	 * Revive a previously voided condition
 	 *
 	 * @param condition Condition to unvoid
 	 * @throws APIException
@@ -116,5 +116,4 @@ public interface ConditionService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.DELETE_CONDITIONS)
 	void purgeCondition(Condition condition) throws APIException;
-	
 }
