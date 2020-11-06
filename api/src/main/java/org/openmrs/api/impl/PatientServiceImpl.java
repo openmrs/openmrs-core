@@ -223,7 +223,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		try {
 			patient = Context.getPatientService().getPatient(patientOrPersonId);
 		}
-		catch (ClassCastException ex) {
+		catch (Exception ex) {
 			// If the id refers to Person not Patient, it sometimes will cause class cast exception
 			// We will attempt to retrieve the Person and promote to Patient
 		}
