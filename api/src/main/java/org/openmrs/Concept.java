@@ -1562,7 +1562,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * set members of current concept, else retired concept set members are excluded.
 	 *
 	 * @param includeRetired true/false whether to also include/exclude the retired concepts
-	 * @since 2.3
+	 * @since 2.5
 	 */
 	public List<Concept> getSetMembers(boolean includeRetired) {
 		if (includeRetired) {
