@@ -53,17 +53,17 @@ public class EncounterTest extends BaseContextMockTest {
 
 		activeCondition = new Condition();
 		activeCondition.setClinicalStatus(ConditionClinicalStatus.ACTIVE);
-		CodedOrFreeText freeText = new CodedOrFreeText();
-		freeText.setNonCoded("Free text");
-		activeCondition.setCondition(freeText);
+		CodedOrFreeText freeText1 = new CodedOrFreeText();
+		freeText1.setNonCoded("Asthma non-coded");
+		activeCondition.setCondition(freeText1);
 		encounter.addCondition(activeCondition);
 
 		voidedCondition = new Condition();
 		voidedCondition.setVoided(true);
 		voidedCondition.setClinicalStatus(ConditionClinicalStatus.HISTORY_OF);
-		CodedOrFreeText freeText01 = new CodedOrFreeText();
-		freeText01.setNonCoded("Free text");
-		voidedCondition.setCondition(freeText01);
+		CodedOrFreeText freeText2 = new CodedOrFreeText();
+		freeText2.setNonCoded("Glaucoma non-coded");
+		voidedCondition.setCondition(freeText2);
 		encounter.addCondition(voidedCondition);
 	}
 
