@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -757,6 +758,42 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 
 		patients = dao.getPatients("Oloo", 0, 11);
 		assertEquals(0, patients.size());
+	}
+	
+	@Test
+	public void getPatients_shouldNotMatchVoidedPatientsWhenVoidedFalseIsPassed() {
+		List<Patient> patients = dao.getPatients("Oloo", 0, 11);
+		assertEquals(1, patients.size());
+		
+		Patient patient = patients.get(0);
+		
+		Set<PersonName> names = patient.getNames();
+		
+		for (PersonName name : names) {
+			name.setVoided(true);
+		}
+		dao.savePatient(patient);
+		updateSearchIndex();
+		patients = dao.getPatients("Oloo", false, 0, 11);
+		assertEquals(0, patients.size());
+	}
+	
+	@Test
+	public void getPatients_shouldMatchVoidedPersonWhenVoidedTrueIsPassed() {
+		List<Patient> patients = dao.getPatients("Oloo", 0, 11);
+		assertEquals(1, patients.size());
+		
+		Patient patient = patients.get(0);
+		
+		Set<PersonName> names = patient.getNames();
+		
+		for (PersonName name : names) {
+			name.setVoided(true);
+		}
+		dao.savePatient(patient);
+		updateSearchIndex();
+		patients = dao.getPatients("Oloo", true, 0, 11);
+		assertEquals(1, patients.size());
 	}
 	
 	/**
@@ -2331,9 +2368,9 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	@Disabled("Designated for manual runs")
 	public void getPatients_shouldFindPatientsEfficiently() throws IOException, URISyntaxException {
 		URL givenNamesIn = getClass().getResource("/org/openmrs/api/db/givenNames.csv");
-		List<String> givenNames = FileUtils.readLines(new File(givenNamesIn.toURI()));
+		List<String> givenNames = FileUtils.readLines(new File(givenNamesIn.toURI()), StandardCharsets.UTF_8);
 		URL familyNamesIn = getClass().getResource("/org/openmrs/api/db/familyNames.csv");
-		List<String> familyNames = FileUtils.readLines(new File(familyNamesIn.toURI()));
+		List<String> familyNames = FileUtils.readLines(new File(familyNamesIn.toURI()), StandardCharsets.UTF_8);
 		List<String> attributes = Arrays.asList("London", "Berlin", "Warsaw", "Paris", "Zurich", "Singapore");
 
 		PatientIdentifierType idType = patientService.getPatientIdentifierTypeByName("Old Identification Number");
@@ -2472,4 +2509,5 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		time = System.currentTimeMillis() - time;
 		System.out.println("Anywhere search for 'uric' attribute limited to 15 results returned in " + time + " ms");
 	}
+	
 }
