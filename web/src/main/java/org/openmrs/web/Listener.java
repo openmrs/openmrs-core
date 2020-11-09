@@ -299,7 +299,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		String contextPath = servletContext.getContextPath();
 		
 		// trim off initial slash if it exists
-		if (contextPath.contains("/")) {
+		if (contextPath.startsWith("/")) {
 			contextPath = contextPath.substring(1);
 		}
 		
