@@ -607,9 +607,9 @@ public class ConceptTest extends BaseContextSensitiveTest {
 
 		List<Concept> setMembersRetiredExcluded = c.getSetMembers(false);
 
-		Assert.assertEquals(4, setMembersRetiredIncluded.size());
+		assertEquals(4, setMembersRetiredIncluded.size());
 
-		Assert.assertEquals(2, setMembersRetiredExcluded.size());
+		assertEquals(2, setMembersRetiredExcluded.size());
 	}
 
 
