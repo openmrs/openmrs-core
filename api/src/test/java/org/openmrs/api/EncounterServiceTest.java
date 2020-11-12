@@ -803,7 +803,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Date date = new Date(System.currentTimeMillis() - 5000); // make sure we
 		// have a date that isn't "right now"
 		encounter.setDateCreated(date);
-		encounter.setPatient(new Patient(2));
+		
 		User creator = new User(1);
 		encounter.setCreator(creator);
 		
