@@ -9,6 +9,18 @@
  */
 package org.openmrs.api.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Allergen;
 import org.openmrs.Allergies;
@@ -46,6 +58,7 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.PatientDAO;
+import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.parameter.EncounterSearchCriteria;
 import org.openmrs.parameter.EncounterSearchCriteriaBuilder;
 import org.openmrs.patient.IdentifierValidator;
@@ -60,18 +73,6 @@ import org.openmrs.validator.PatientIdentifierValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Default implementation of the patient service. This class should not be used on its own. The
@@ -219,21 +220,17 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Override
 	@Transactional(readOnly = true)
 	public Patient getPatientOrPromotePerson(Integer patientOrPersonId) {
-		Patient patient = null;
-		try {
-			patient = Context.getPatientService().getPatient(patientOrPersonId);
+		Person person = Context.getPersonService().getPerson(patientOrPersonId);
+		if (person == null) {
+			return null;
 		}
-		catch (ClassCastException ex) {
-			// If the id refers to Person not Patient, it sometimes will cause class cast exception
-			// We will attempt to retrieve the Person and promote to Patient
+		person = HibernateUtil.getRealObjectFromProxy(person);
+		if (person instanceof Patient) {
+			return (Patient)person;
 		}
-		if (patient == null) {
-			Person toPromote = Context.getPersonService().getPerson(patientOrPersonId);
-			if (toPromote != null) {
-				patient = new Patient(toPromote);
-			}
+		else {
+			return new Patient(person);
 		}
-		return patient;
 	}
 
 	/**
