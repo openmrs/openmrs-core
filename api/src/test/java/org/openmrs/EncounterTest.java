@@ -1400,8 +1400,8 @@ public class EncounterTest extends BaseContextMockTest {
 		// The condition should be voided
 		encounter.removeCondition(activeCondition);
 
-		Set<Condition> a = encounter.getConditions();
-		Set<Condition> b = encounter.getConditions(true);
+		Set<Condition> allConditions = encounter.getConditions();
+		Set<Condition> voidedConditions = encounter.getConditions(true);
 		assertEquals(0, encounter.getConditions().size());
 		assertEquals(2, encounter.getConditions(true).size());
 	}
