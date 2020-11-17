@@ -555,6 +555,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 		Optional.ofNullable(conditions).orElse(new LinkedHashSet<>()).stream().filter(c -> !c.getVoided() && c.equals(condition)).forEach(c -> {
 			c.setVoided(true);
 			c.setDateVoided(new Date());
+			c.setVoidReason("Voided by the API");
 			c.setVoidedBy(Context.getAuthenticatedUser());
 		});
 	}
