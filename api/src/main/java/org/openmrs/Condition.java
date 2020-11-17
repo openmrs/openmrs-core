@@ -352,49 +352,5 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 	public void setEncounter(Encounter encounter) {
 		this.encounter = encounter;
 	}
-	
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
-		if (!super.equals(o)) {
-			return false;
-		}
-		
-		Condition conditionToBeChecked = (Condition) o;
-		
-		if (!patient.equals(conditionToBeChecked.patient)) {
-			return false;
-		}
-		if (clinicalStatus != conditionToBeChecked.clinicalStatus) {
-			return false;
-		}
-		if (verificationStatus != conditionToBeChecked.verificationStatus) {
-			return false;
-		}
-		if (this.condition.getCoded() != null && !this.condition.getCoded().equals(conditionToBeChecked.getCondition().getCoded())) {
-			return false;
-		}
-		if (this.condition.getNonCoded() != null
-		        ? !this.condition.getNonCoded().equals(conditionToBeChecked.getCondition().getNonCoded())
-		        : conditionToBeChecked.getCondition().getNonCoded() != null) {
-			return false;
-		}
-		if (!Objects.equals(onsetDate, conditionToBeChecked.onsetDate)) {
-			return false;
-		}
-		if (!Objects.equals(additionalDetail, conditionToBeChecked.additionalDetail)) {
-			return false;
-		}
-		if (!Objects.equals(endDate, conditionToBeChecked.endDate)) {
-			return false;
-		}
-		return Objects.equals(endReason, conditionToBeChecked.endReason);
-	}
-		
+			
 }

@@ -510,6 +510,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * @return Returns the all Conditions.
 	 * <strong>Should</strong> not return null with null conditions set
 	 * <strong>Should</strong> get conditions
+	 * @since 2.5.0
 	 */
 	public Set<Condition> getConditions(boolean includeVoided) {
 
@@ -551,7 +552,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 */
 	public void removeCondition(Condition condition) {
 		
-		Optional.ofNullable(conditions).orElse(new LinkedHashSet<>()).stream().filter(c -> !c.getVoided() && c.getUuid().equals(condition.getUuid())).forEach(c -> {
+		Optional.ofNullable(conditions).orElse(new LinkedHashSet<>()).stream().filter(c -> !c.getVoided() && c.equals(condition)).forEach(c -> {
 			c.setVoided(true);
 			c.setDateVoided(new Date());
 			c.setVoidedBy(Context.getAuthenticatedUser());
