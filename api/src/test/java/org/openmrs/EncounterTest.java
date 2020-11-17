@@ -52,6 +52,7 @@ public class EncounterTest extends BaseContextMockTest {
 		encounter = new Encounter();
 
 		activeCondition = new Condition();
+		activeCondition.setUuid("11111111-1111-1111-1111-111111111111");
 		activeCondition.setClinicalStatus(ConditionClinicalStatus.ACTIVE);
 		CodedOrFreeText freeText1 = new CodedOrFreeText();
 		freeText1.setNonCoded("Asthma non-coded");
@@ -59,6 +60,7 @@ public class EncounterTest extends BaseContextMockTest {
 		encounter.addCondition(activeCondition);
 
 		voidedCondition = new Condition();
+		voidedCondition.setUuid("22222222-2222-2222-2222-222222222222");
 		voidedCondition.setVoided(true);
 		voidedCondition.setClinicalStatus(ConditionClinicalStatus.HISTORY_OF);
 		CodedOrFreeText freeText2 = new CodedOrFreeText();
@@ -1402,7 +1404,11 @@ public class EncounterTest extends BaseContextMockTest {
 
 		Set<Condition> allConditions = encounter.getConditions();
 		Set<Condition> voidedConditions = encounter.getConditions(true);
-		assertEquals(0, encounter.getConditions().size());
-		assertEquals(2, encounter.getConditions(true).size());
+		assertEquals(0, allConditions.size());
+		assertEquals(2, voidedConditions.size());
+		assertTrue(voidedConditions.contains(activeCondition));
+		assertTrue(voidedConditions.contains(voidedCondition));
+		assertTrue(activeCondition.getVoided());
+		assertEquals("11111111-1111-1111-1111-111111111111", activeCondition.getUuid());
 	}
 }
