@@ -16,7 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openmrs.liquibase.ChangeLogDetective;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
-import org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback;
+import org.openmrs.liquibase.ChangeSetExecutorCallback;
 import org.openmrs.util.DatabaseUpdaterLiquibaseProvider;
 import org.openmrs.util.InputRequiredException;
 import org.openmrs.liquibase.ChangeLogVersionFinder;
