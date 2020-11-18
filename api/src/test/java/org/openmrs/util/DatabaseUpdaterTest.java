@@ -18,6 +18,7 @@ import static org.mockito.Mockito.verify;
 
 import liquibase.exception.LockException;
 import org.junit.jupiter.api.Test;
+import org.openmrs.liquibase.ChangeSetExecutorCallback;
 import org.openmrs.liquibase.LiquibaseProvider;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.slf4j.Logger;
@@ -50,7 +51,7 @@ public class DatabaseUpdaterTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void shouldRejectNullAsChangelog() throws DatabaseUpdateException, InputRequiredException {
-		assertThrows(IllegalArgumentException.class, () -> DatabaseUpdater.executeChangelog(null, (DatabaseUpdater.ChangeSetExecutorCallback) null));
+		assertThrows(IllegalArgumentException.class, () -> DatabaseUpdater.executeChangelog(null, (ChangeSetExecutorCallback) null));
 	}
 	
 	@Test
