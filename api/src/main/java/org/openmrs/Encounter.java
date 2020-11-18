@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -450,18 +451,27 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	}
 	
 	/**
-	 * Basic property getter for conditions
+	 * Basic property getter for the encounter's non-voided conditions.
 	 * 
-	 * @return conditions - set of conditions
+	 * @return all non-voided conditions
 	 * @since 2.4.0, 2.3.1
 	 */
 	public Set<Condition> getConditions() {
-		if (conditions == null) {
-			conditions = new LinkedHashSet<>();
-		}
-		return conditions;
+		return getConditions(false);
 	}
 
+	/**
+	 * Returns all conditions where 'Condition.encounterId = Encounter.encounterId'.
+	 *
+	 * @param includeVoided - Specifies whether or not to include voided conditions.
+	 * @return The set of conditions, or an empty set if there are no conditions to return.
+	 * @since 2.5.0
+	 */
+	public Set<Condition> getConditions(boolean includeVoided) {
+		return Optional.ofNullable(conditions).orElse(new LinkedHashSet<>())
+			.stream().filter(c -> includeVoided || !c.getVoided()).collect(Collectors.toSet());
+	}
+		
 	/**
 	 * Basic property setter for conditions
 	 *  
@@ -473,24 +483,34 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	}
 
 	/**
-	 * Add the given Condition to the set of conditions for this Encounter
+	 * Add the given condition to the set of conditions for this encounter.
 	 *
 	 * @param condition - the condition to add
 	 */
 	public void addCondition(Condition condition) {
-		condition.setEncounter(this);
-		getConditions().add(condition);
+		if (conditions == null) {
+			conditions = new LinkedHashSet<>();
+		}
+
+		if (condition != null) {
+			condition.setEncounter(this);
+			conditions.add(condition);
+		}
 	}
-	
+
 	/**
-	 * Remove the given condition from the set of conditions for this Encounter
+	 * Remove the given condition from the set of conditions for this encounter.
+	 * In practise the condition is not removed but rather voided.
 	 *
 	 * @param condition - the condition to remove
 	 */
 	public void removeCondition(Condition condition) {
-		if (conditions != null) {
-			conditions.remove(condition);
-		}
+		Optional.ofNullable(conditions).orElse(new LinkedHashSet<>()).stream().filter(c -> !c.getVoided() && c.equals(condition)).forEach(c -> {
+			c.setVoided(true);
+			c.setDateVoided(new Date());
+			c.setVoidReason("Voided by the API");
+			c.setVoidedBy(Context.getAuthenticatedUser());
+		});
 	}
 	
 	/**
