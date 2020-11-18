@@ -491,32 +491,25 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	}
 	
 	/**
-	 * Basic property getter for conditions
+	 * Basic property getter for the encounter's non-voided conditions.
 	 * 
 	 * @return all non-voided conditions
-	 * <strong>Should</strong> not get voided conditions
 	 * @since 2.4.0, 2.3.1
 	 */
 	public Set<Condition> getConditions() {
-		
 		return getConditions(false);
 	}
 
 	/**
-	 * Returns all conditions where conditions.encounterId = Encounter.encounterId In practice, this method should
-	 * not be used very often...
+	 * Returns all conditions where 'Condition.encounterId = Encounter.encounterId'.
 	 *
-	 * @param includeVoided specifies whether or not to include voided Conditions
-	 * @return Returns the all Conditions.
-	 * <strong>Should</strong> not return null with null conditions set
-	 * <strong>Should</strong> get conditions
+	 * @param includeVoided - Specifies whether or not to include voided conditions
+	 * @return Returns the set of conditions, or an empty set if there are no conditions to return
 	 * @since 2.5.0
 	 */
 	public Set<Condition> getConditions(boolean includeVoided) {
-
 		return Optional.ofNullable(conditions).orElse(new LinkedHashSet<>())
-			.stream().filter(o -> includeVoided || !o.getVoided()).collect(Collectors.toSet());
-
+			.stream().filter(c -> includeVoided || !c.getVoided()).collect(Collectors.toSet());
 	}
 		
 	/**
@@ -530,7 +523,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	}
 
 	/**
-	 * Add the given Condition to the set of conditions for this Encounter
+	 * Add the given condition to the set of conditions for this encounter.
 	 *
 	 * @param condition - the condition to add
 	 */
@@ -546,12 +539,12 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	}
 
 	/**
-	 * Remove the given condition from the set of conditions for this Encounter
+	 * Remove the given condition from the set of conditions for this encounter.
+	 * In practise the condition is not removed but rather voided.
 	 *
 	 * @param condition - the condition to remove
 	 */
 	public void removeCondition(Condition condition) {
-		
 		Optional.ofNullable(conditions).orElse(new LinkedHashSet<>()).stream().filter(c -> !c.getVoided() && c.equals(condition)).forEach(c -> {
 			c.setVoided(true);
 			c.setDateVoided(new Date());
