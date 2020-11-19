@@ -25,27 +25,50 @@ import java.util.Set;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.openmrs.api.DiagnosisService;
 import org.openmrs.api.EncounterService;
-import org.openmrs.api.ProviderService;
-import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.BaseContextMockTest;
 
 /**
  * This class tests the all of the {@link Encounter} non-trivial object methods.
- * 
+ *
  * @see Encounter
  */
-public class EncounterTest extends BaseContextSensitiveTest {
-	
+public class EncounterTest extends BaseContextMockTest {
+
 	@Mock
-	EncounterService encounterService;
-	
-	@Mock
-	ProviderService providerService;
-	
+	private EncounterService encounterService;
+
+	private Encounter encounter;
+
+	private Condition activeCondition;
+
+	private Condition voidedCondition;
+
+	@Before
+	public void before() {
+		encounter = new Encounter();
+
+		activeCondition = new Condition();
+		activeCondition.setUuid("11111111-1111-1111-1111-111111111111");
+		activeCondition.setClinicalStatus(ConditionClinicalStatus.ACTIVE);
+		CodedOrFreeText freeText1 = new CodedOrFreeText();
+		freeText1.setNonCoded("Asthma non-coded");
+		activeCondition.setCondition(freeText1);
+		encounter.addCondition(activeCondition);
+
+		voidedCondition = new Condition();
+		voidedCondition.setUuid("22222222-2222-2222-2222-222222222222");
+		voidedCondition.setVoided(true);
+		voidedCondition.setClinicalStatus(ConditionClinicalStatus.HISTORY_OF);
+		CodedOrFreeText freeText2 = new CodedOrFreeText();
+		freeText2.setNonCoded("Glaucoma non-coded");
+		voidedCondition.setCondition(freeText2);
+		encounter.addCondition(voidedCondition);
+	}
+
 	/**
 	 * @see Encounter#toString()
 	 */
@@ -1348,4 +1371,44 @@ public class EncounterTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(encounter.hasDiagnosis(diagnosis));
 	}
 
+	/**
+	 * @see Encounter#getConditions()
+	 */
+	@Test
+	public void getConditions_shouldReturnAllConditionsWhenFlagIsTrue() {
+
+		assertEquals(2, encounter.getConditions(true).size());
+		assertTrue(encounter.getConditions(true).contains(activeCondition));
+		assertTrue(encounter.getConditions(true).contains(voidedCondition));
+	}
+
+	/**
+	 * @see Encounter#getConditions()
+	 */
+	@Test
+	public void getConditions_shouldReturnNonVoidedConditionsByDefault() {
+
+		assertEquals(1, encounter.getConditions().size());
+		assertTrue(encounter.getConditions().contains(activeCondition));
+		assertFalse(encounter.getConditions().contains(voidedCondition));
+	}
+
+	/**
+	 * @see Encounter#removeCondition(Condition)
+	 */
+	@Test
+	public void removeCondition_shouldRemoveConditions() {
+
+		// The condition should be voided
+		encounter.removeCondition(activeCondition);
+
+		Set<Condition> allConditions = encounter.getConditions();
+		Set<Condition> voidedConditions = encounter.getConditions(true);
+		assertEquals(0, allConditions.size());
+		assertEquals(2, voidedConditions.size());
+		assertTrue(voidedConditions.contains(activeCondition));
+		assertTrue(voidedConditions.contains(voidedCondition));
+		assertTrue(activeCondition.getVoided());
+		assertEquals("11111111-1111-1111-1111-111111111111", activeCondition.getUuid());
+	}
 }

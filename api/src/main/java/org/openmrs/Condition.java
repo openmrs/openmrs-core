@@ -10,7 +10,6 @@
 package org.openmrs;
 
 import java.util.Date;
-import java.util.Objects;
 
 import javax.persistence.AssociationOverride;
 import javax.persistence.AssociationOverrides;
@@ -352,47 +351,4 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 		this.encounter = encounter;
 	}
 	
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
-		if (!super.equals(o)) {
-			return false;
-		}
-		
-		Condition condition = (Condition) o;
-		
-		if (!patient.equals(condition.patient)) {
-			return false;
-		}
-		if (clinicalStatus != condition.clinicalStatus) {
-			return false;
-		}
-		if (verificationStatus != condition.verificationStatus) {
-			return false;
-		}
-		if (this.condition.getCoded() != null && !this.condition.getCoded().equals(condition.getCondition().getCoded())) {
-			return false;
-		}
-		if (this.condition.getNonCoded() != null
-		        ? !this.condition.getNonCoded().equals(condition.getCondition().getNonCoded())
-		        : condition.getCondition().getNonCoded() != null) {
-			return false;
-		}
-		if (!Objects.equals(onsetDate, condition.onsetDate)) {
-			return false;
-		}
-		if (!Objects.equals(additionalDetail, condition.additionalDetail)) {
-			return false;
-		}
-		if (!Objects.equals(endDate, condition.endDate)) {
-			return false;
-		}
-		return Objects.equals(endReason, condition.endReason);
-	}
 }
