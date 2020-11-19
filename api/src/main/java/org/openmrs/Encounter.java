@@ -465,7 +465,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 *
 	 * @param includeVoided - Specifies whether or not to include voided conditions.
 	 * @return The set of conditions, or an empty set if there are no conditions to return.
-	 * @since 2.5.0
+	 * @since 2.3.3, 2.4.0, 2.5.0
 	 */
 	public Set<Condition> getConditions(boolean includeVoided) {
 		return Optional.ofNullable(conditions).orElse(new LinkedHashSet<>())
