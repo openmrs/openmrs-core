@@ -25,18 +25,18 @@ import java.util.Set;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.openmrs.api.EncounterService;
-import org.openmrs.api.ProviderService;
-import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.test.BaseContextSensitiveTest;
 
 /**
  * This class tests the all of the {@link Encounter} non-trivial object methods.
  * 
  * @see Encounter
  */
-public class EncounterTest extends BaseContextMockTest {
+public class EncounterTest extends BaseContextSensitiveTest {
 
 	@Mock
 	private EncounterService encounterService;
@@ -47,7 +47,7 @@ public class EncounterTest extends BaseContextMockTest {
 
 	private Condition voidedCondition;
 
-	@BeforeEach
+	@Before
 	public void before() {
 		encounter = new Encounter();
 
