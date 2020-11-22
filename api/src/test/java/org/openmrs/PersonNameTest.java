@@ -374,7 +374,7 @@ public class PersonNameTest {
  		final String sanitizedGivenName = "&lt;script&gt;alert(1);&lt;/script&gt;";
  		PersonName pn = new PersonName(givenName, "Adam", "Pens");
  		pn.sanitizeName();
- 		Assert.assertEquals(pn.getGivenName(), sanitizedGivenName);
+ 		assertEquals(pn.getGivenName(), sanitizedGivenName);
  	}
 	
 }
