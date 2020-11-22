@@ -22,6 +22,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.openmrs.Allergen;
 import org.openmrs.Allergies;
 import org.openmrs.Allergy;
@@ -133,6 +134,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		setPreferredPatientName(patient);
 		setPreferredPatientAddress(patient);
 
+		patient.sanitizeName();
+		
 		return dao.savePatient(patient);
 	}
 

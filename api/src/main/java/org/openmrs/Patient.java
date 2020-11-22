@@ -9,6 +9,21 @@
  */
 package org.openmrs;
 
+import org.hibernate.annotations.SortNatural;
+import org.hibernate.search.annotations.ContainedIn;
+import org.hibernate.search.annotations.Field;
+import org.apache.commons.lang.StringEscapeUtils;
+
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -93,6 +108,12 @@ public class Patient extends Person {
 		}
 		this.identifiers = newIdentifiers;
 	}
+
+	public void sanitizeName() {
+ 		for (PersonName name: getNames()) {
+ 			name.sanitizeName();
+ 		}
+ 	}
 	
 	// Property accessors
 	

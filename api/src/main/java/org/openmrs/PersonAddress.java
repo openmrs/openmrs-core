@@ -10,7 +10,6 @@
 package org.openmrs;
 
 import static org.apache.commons.lang3.StringUtils.defaultString;
-import  org.apache.commons.lang.StringEscapeUtils;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -159,10 +158,6 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 		}
 	}
 	
-	public String sanitizeInput(String in) {
-		return StringEscapeUtils.escapeHtml(in);
-	}
-	
 	/**
 	 * @return Returns the address1.
 	 */
@@ -176,7 +171,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	 */
 	@Override
 	public void setAddress1(String address1) {
-		this.address1 = sanitizeInput(address1);
+		this.address1 = address1;
 	}
 	
 	/**
@@ -192,7 +187,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	 */
 	@Override
 	public void setAddress2(String address2) {
-		this.address2 = sanitizeInput(address2);
+		this.address2 = address2;
 	}
 	
 	/**
@@ -208,7 +203,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	 */
 	@Override
 	public void setCityVillage(String cityVillage) {
-		this.cityVillage = sanitizeInput(cityVillage);
+		this.cityVillage = cityVillage;
 	}
 	
 	/**
@@ -224,7 +219,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	 */
 	@Override
 	public void setCountry(String country) {
-		this.country = sanitizeInput(country);
+		this.country = country;
 	}
 	
 	/**
@@ -262,7 +257,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	 */
 	@Override
 	public void setLatitude(String latitude) {
-		this.latitude = sanitizeInput(latitude);
+		this.latitude = latitude;
 	}
 	
 	/**
@@ -278,7 +273,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	 */
 	@Override
 	public void setLongitude(String longitude) {
-		this.longitude = sanitizeInput(longitude);
+		this.longitude = longitude;
 	}
 	
 	/**
@@ -322,7 +317,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	 */
 	@Override
 	public void setPostalCode(String postalCode) {
-		this.postalCode = sanitizeInput(postalCode);
+		this.postalCode = postalCode;
 	}
 	
 	/**
@@ -338,7 +333,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	 */
 	@Override
 	public void setStateProvince(String stateProvince) {
-		this.stateProvince = sanitizeInput(stateProvince);
+		this.stateProvince = stateProvince;
 	}
 	
 	/**
@@ -354,7 +349,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	 */
 	@Override
 	public void setCountyDistrict(String countyDistrict) {
-		this.countyDistrict = sanitizeInput(countyDistrict);
+		this.countyDistrict = countyDistrict;
 	}
 	
 	/**
@@ -421,7 +416,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	 */
 	@Override
 	public void setAddress3(String address3) {
-		this.address3 = sanitizeInput(address3);
+		this.address3 = address3;
 	}
 	
 	/**
@@ -439,7 +434,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	 */
 	@Override
 	public void setAddress4(String address4) {
-		this.address4 = sanitizeInput(address4);
+		this.address4 = address4;
 	}
 	
 	/**
@@ -457,7 +452,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	 */
 	@Override
 	public void setAddress6(String address6) {
-		this.address6 = sanitizeInput(address6);
+		this.address6 = address6;
 	}
 	
 	/**
@@ -475,7 +470,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	 */
 	@Override
 	public void setAddress5(String address5) {
-		this.address5 = sanitizeInput(address5);
+		this.address5 = address5;
 	}
 	
 	/**
@@ -571,7 +566,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	 */
 	@Override
 	public void setAddress7(String address7) {
-		this.address7 = sanitizeInput(address7);
+		this.address7 = address7;
 	}
 
 	/**
@@ -587,7 +582,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	 */
 	@Override
 	public void setAddress8(String address8) {
-		this.address8 = sanitizeInput(address8);
+		this.address8 = address8;
 	}
 
 	/**
@@ -603,7 +598,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	 */
 	@Override
 	public void setAddress9(String address9) {
-		this.address9 = sanitizeInput(address9);
+		this.address9 = address9;
 	}
 
 	/**
@@ -619,7 +614,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	 */
 	@Override
 	public void setAddress10(String address10) {
-		this.address10 = sanitizeInput(address10);
+		this.address10 = address10;
 	}
 
 	/**
@@ -635,7 +630,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	 */
 	@Override
 	public void setAddress11(String address11) {
-		this.address11 = sanitizeInput(address11);
+		this.address11 = address11;
 	}
 
 	/**
@@ -651,7 +646,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	 */
 	@Override
 	public void setAddress12(String address12) {
-		this.address12 = sanitizeInput(address12);
+		this.address12 = address12;
 	}
 
 	/**
@@ -667,7 +662,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	 */
 	@Override
 	public void setAddress13(String address13) {
-		this.address13 = sanitizeInput(address13);
+		this.address13 = address13;
 	}
 
 	/**
@@ -683,7 +678,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	 */
 	@Override
 	public void setAddress14(String address14) {
-		this.address14 = sanitizeInput(address14);
+		this.address14 = address14;
 	}
 
 	/**
@@ -699,6 +694,6 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	 */
 	@Override
 	public void setAddress15(String address15) {
-		this.address15 = sanitizeInput(address15);
+		this.address15 = address15;
 	}
 }
