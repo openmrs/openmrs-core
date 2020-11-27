@@ -32,7 +32,7 @@ public class DatabaseUpdaterDatabaseIT extends H2DatabaseIT {
 	
 	private static final int CHANGE_SET_COUNT_FOR_GREATER_THAN_2_1_X = 872;
 
-	private static final int CHANGE_SET_COUNT_FOR_2_1_X = 870;
+	private static final int CHANGE_SET_COUNT_FOR_2_1_X = 871;
 
 	@BeforeEach
 	public void setup() {

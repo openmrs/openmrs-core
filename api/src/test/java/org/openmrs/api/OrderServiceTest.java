@@ -115,6 +115,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 	private static final String ORDER_GROUP_ATTRIBUTES = "org/openmrs/api/include/OrderServiceTest-createOrderGroupAttributes.xml";
 
+	private static final String ORDER_CONTEXT = "org/openmrs/api/include/OrderServiceTest-createOrderContext.xml";
+	
 	@Autowired
 	private ConceptService conceptService;
 
@@ -142,6 +144,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@BeforeEach
 	public void setUp(){
 		executeDataSet(ORDER_GROUP_ATTRIBUTES);
+		executeDataSet(ORDER_CONTEXT);
 	}
 
 	@Entity
@@ -3917,5 +3920,28 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		orderGroupAttribute.getValueReference();
 		assertEquals("Test 1", orderGroupAttribute.getValueReference());
 		assertEquals(1, orderGroupAttribute.getId());
+	}
+
+	
+
+	/**
+	 * @see OrderService#saveOrderGroup(org.openmrs.OrderGroup, OrderContext)
+	 */
+	@Test
+	public void saveOrderGroup_shouldReturnOrderGroupWithSpecificContext(){
+		Encounter encounter = encounterService.getEncounter(3);
+		OrderSet orderSet = Context.getOrderSetService().getOrderSet(2000);
+		OrderGroup orderGroup = new OrderGroup();
+		orderGroup.setOrderSet(orderSet);
+		orderGroup.setPatient(encounter.getPatient());
+		orderGroup.setEncounter(encounter);
+
+		OrderContext orderContext = new OrderContext();
+		orderContext.setCareSetting(orderService.getCareSetting(1));
+		orderContext.setOrderType(orderService.getOrderType(1));
+		orderService.saveOrderGroup(orderGroup, orderContext);
+		assertEquals(10, orderService.getOrderGroup(1).getOrderType());
+		assertEquals(13 ,orderService.getOrderGroup(2).getCareSetting());
+
 	}
 }

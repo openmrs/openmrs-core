@@ -43,6 +43,10 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	private OrderGroup previousOrderGroup;
 	
 	private Set<OrderGroup> nestedOrderGroups;
+	
+	private OrderType orderType;
+	
+	private CareSetting careSetting;
 
 	/**
 	 * Gets the orderGroupId
@@ -302,4 +306,45 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	public void setNestedOrderGroups(Set<OrderGroup> nestedOrderGroups) {
 		this.nestedOrderGroups = nestedOrderGroups;
 	}
+
+	/**
+	 * Gets the care setting
+	 *
+	 * @return the the care setting
+	 * @since 2.4.0
+	 */
+	public CareSetting getCareSetting() {
+		return careSetting;
+	}
+
+	/**
+	 * Sets the careSetting
+	 *
+	 * @param careSetting the care setting  to set
+	 * @since 2.4.0
+	 */
+	public void setCareSetting(CareSetting careSetting) {
+		this.careSetting = careSetting;
+	}
+
+
+	/**
+	 * Get the {@link org.openmrs.OrderType}
+	 *
+	 * @return the {@link org.openmrs.OrderType}
+	 */
+	public OrderType getOrderType() {
+		return orderType;
+	}
+
+	/**
+	 * Set the {@link org.openmrs.OrderType}
+	 *
+	 * @param orderType the {@link org.openmrs.OrderType}
+	 * @since 2.4.0   
+	 */
+	public void setOrderType(OrderType orderType) {
+		this.orderType = orderType;
+	}
+
 }
