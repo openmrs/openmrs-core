@@ -318,7 +318,7 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	}
 
 	/**
-	 * Sets the careSetting
+	 * Sets the care setting
 	 *
 	 * @param careSetting the care setting  to set
 	 * @since 2.4.0

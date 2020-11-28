@@ -3941,7 +3941,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		orderContext.setOrderType(orderService.getOrderType(1));
 		orderService.saveOrderGroup(orderGroup, orderContext);
 		assertEquals(10, orderService.getOrderGroup(1).getOrderType());
-		assertEquals(13 ,orderService.getOrderGroup(2).getCareSetting());
+		assertEquals(13 , orderService.getOrderGroup(2).getCareSetting());
 
 	}
 }
