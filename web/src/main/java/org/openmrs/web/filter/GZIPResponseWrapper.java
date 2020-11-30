@@ -17,6 +17,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,17 +48,12 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 	}
 	
 	public void finishResponse() {
-		try {
-			if (writer != null) {
-				writer.close();
-			} else {
-				if (stream != null) {
-					stream.close();
-				}
+		if (writer != null) {
+			IOUtils.closeQuietly(writer);
+		} else {
+			if (stream != null) {
+				IOUtils.closeQuietly(stream);
 			}
-		}
-		catch (IOException e) {
-			log.error("Error during closing writer or stream", e);
 		}
 	}
 	
