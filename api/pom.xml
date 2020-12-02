@@ -288,6 +288,21 @@
 		   <groupId>org.apache.lucene</groupId>
 		   <artifactId>lucene-analyzers-phonetic</artifactId>
 	   </dependency>
+	   <dependency>
+		   <groupId>org.hibernate</groupId>
+		   <artifactId>hibernate-entitymanager</artifactId>
+		   <version>${hibernateVersion}</version>
+	   </dependency>
+	   <dependency>
+		   <groupId>org.springframework.data</groupId>
+		   <artifactId>spring-data-jpa</artifactId>
+		   <version>2.4.1</version>
+	   </dependency>
+	   <dependency>
+		   <groupId>javax.inject</groupId>
+		   <artifactId>javax.inject</artifactId>
+		   <version>1</version>
+	   </dependency>
    </dependencies>
    <build>
      <resources>
