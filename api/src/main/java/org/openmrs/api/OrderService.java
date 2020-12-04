@@ -627,6 +627,17 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_ORDER_TYPES)
 	public OrderType getOrderTypeByUuid(String uuid);
+
+	/**
+	 * Get OrderType by class  name
+	 *
+	 * @param className the class name used to get the order type
+	 * @since 2.4.0
+	 * @return order type object associated with given class name
+	 * <strong>Should</strong> find order type object given valid class name
+	 * <strong>Should</strong> return null if no order type object found with given class name
+	 */
+	public OrderType getOrderTypeByClassName(String className);
 	
 	/**
 	 * Get all order types, if includeRetired is set to true then retired ones will be included

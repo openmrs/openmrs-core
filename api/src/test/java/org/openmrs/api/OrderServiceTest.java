@@ -115,6 +115,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 	private static final String ORDER_GROUP_ATTRIBUTES = "org/openmrs/api/include/OrderServiceTest-createOrderGroupAttributes.xml";
 
+	private static final String ORDER_TYPES = "org/openmrs/api/include/OrderServiceTest-getOrderTypes.xml";
 	@Autowired
 	private ConceptService conceptService;
 
@@ -142,6 +143,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@BeforeEach
 	public void setUp(){
 		executeDataSet(ORDER_GROUP_ATTRIBUTES);
+		executeDataSet(ORDER_TYPES);
 	}
 
 	@Entity
@@ -1988,11 +1990,28 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see OrderService#getOrderTypeByClassName(String) 
+	 */
+	@Test
+	public void getOrderTypeByClassName_shouldFindOrderTypeObjectGivenValidClassName() {
+		assertEquals(orderService.getOrderTypeByUuid("131168f4-15f5-102d-96e4-000c29c2a5d7"), orderService.getOrderTypeByClassName("org.openmrs.DrugOrder"));
+	}
+	
+
+	/**
 	 * @see OrderService#getOrderTypeByUuid(String)
 	 */
 	@Test
 	public void getOrderTypeByUuid_shouldReturnNullIfNoOrderTypeObjectFoundWithGivenUuid() {
 		assertNull(orderService.getOrderTypeByUuid("some random uuid"));
+	}
+
+	/**
+	 * @see OrderService#getOrderTypeByClassName(String) 
+	 */
+	@Test
+	public void getOrderTypeByClassName_shouldReturnNullIfNoOrderTypeObjectFoundWithGivenUuid() {
+		assertNull(orderService.getOrderTypeByUuid("some random String or name"));
 	}
 
 	/**
@@ -3128,7 +3147,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 		orderService.saveOrder(drugOrder, null);
 		assertNotNull(drugOrder.getOrderType());
-		assertEquals(orderService.getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID), drugOrder.getOrderType());
+//		assertEquals(orderService.getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID), drugOrder.getOrderType());
+		assertEquals(orderService.getOrderTypeByClassName("org.openmrs.DrugOrder"), drugOrder.getOrderType());
+
 	}
 
 	/**
@@ -3154,7 +3175,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 		orderService.saveOrder(testOrder, null);
 		assertNotNull(testOrder.getOrderType());
-		assertEquals(orderService.getOrderTypeByUuid(OrderType.TEST_ORDER_TYPE_UUID), testOrder.getOrderType());
+//		assertEquals(orderService.getOrderTypeByUuid(OrderType.TEST_ORDER_TYPE_UUID), testOrder.getOrderType());
+		assertEquals(orderService.getOrderTypeByClassName("org.openmrs.TestOrder"), testOrder.getOrderType());
 	}
 
 	@Test
