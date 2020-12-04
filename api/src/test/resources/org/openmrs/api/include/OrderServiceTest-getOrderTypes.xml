@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+	<order_type order_type_id="400" name="Drug orders" java_class_name="org.openmrs.DrugOrder" description="Malaria drug order" creator="1" date_created="2020-11-22 15:23:04.0"
+	            retired="0" uuid="1e5d08e2-362b-11eb-adc1-0242ac120002"/>
+	<order_type order_type_id="500" name="Lab Order Types" java_class_name="org.openmrs.TestOrder" description="Blood lab order" creator="1" date_created="2020-11-23 15:49:04.0"
+	            retired="0" uuid="1e5d0b3a-362b-11eb-adc1-0242ac120002"/>
+</dataset>
