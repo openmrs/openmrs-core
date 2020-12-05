@@ -2019,7 +2019,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getOrderTypes_shouldGetAllOrderTypesIfIncludeRetiredIsSetToTrue() {
-		assertEquals(14, orderService.getOrderTypes(true).size());
+		assertEquals(16, orderService.getOrderTypes(true).size());
 	}
 
 	/**
@@ -2027,7 +2027,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getOrderTypes_shouldGetAllNonRetiredOrderTypesIfIncludeRetiredIsSetToFalse() {
-		assertEquals(11, orderService.getOrderTypes(false).size());
+		assertEquals(13, orderService.getOrderTypes(false).size());
 	}
 
 	/**
