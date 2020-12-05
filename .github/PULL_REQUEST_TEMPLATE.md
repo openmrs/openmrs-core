@@ -13,7 +13,7 @@
 see https://issues.openmrs.org/browse/TRUNK-
 
 ## Checklist: I completed these to help reviewers :)
-<!--- Put an `x` in the box if you did the task -->
+<!--- Put an "x" in the box if you did the task -->
 <!--- If you forgot a task please follow the instructions below -->
 - [ ] My IDE is configured to follow the [**code style**](https://wiki.openmrs.org/display/docs/Java+Conventions) of this project.
 
