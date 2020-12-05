@@ -46,9 +46,9 @@ If you want to build the master branch you will need a Java JDK of minimum versi
 
 #### Maven
 
-Install the build tool [Maven](https://maven.apache.org/).
+Install the build tool [Maven](https://maven.apache.org/) ,for contributting in our repo.
 
-You need to ensure that Maven uses the Java JDK needed for the branch you want to build.
+You also need to ensure that Maven uses the Java JDK needed for the branch you want to build.
 
 To do so execute
 
@@ -90,7 +90,7 @@ mvn jetty:run
 
 If all goes well (check the console output) you can access the OpenMRS application at `localhost:8080/openmrs`.
 
-Refer to [Getting Started as a Developer - Maven](https://wiki.openmrs.org/display/docs/Maven) for some more information
+Refer to [Getting Started as a Developer - Maven](https://wiki.openmrs.org/display/docs/Maven) for some more information related to it.
 on useful Maven commands and build options.
 
 ## Navigating the repository
@@ -148,14 +148,14 @@ If you want to contribute please refer to these resources
 ### Wiki
 
 If you are looking for detailed guides on how to install, configure, contribute and
-extend OpenMRS visit
+extend OpenMRS visit this Link
 
 http://wiki.openmrs.org
 
 ### Website
 
 If you are looking for more information regarding OpenMRS as an organization
-check
+check out this link
 
 http://openmrs.org
 
@@ -203,7 +203,7 @@ by you and me on transifex website itself. At any time we can pull new translati
 back into this repository. Other languages like for ex. Spanish will then be in
 the `messages_es.properties` file.
 
-If you would like to know how to help with translations see
+If you would like to know how to help with translations see this link
 
 http://openmrs.org/join-the-community/translate/
 
