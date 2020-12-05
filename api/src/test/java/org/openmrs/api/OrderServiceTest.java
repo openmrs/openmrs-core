@@ -3147,7 +3147,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 		orderService.saveOrder(drugOrder, null);
 		assertNotNull(drugOrder.getOrderType());
-//		assertEquals(orderService.getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID), drugOrder.getOrderType());
 		assertEquals(orderService.getOrderTypeByClassName("org.openmrs.DrugOrder"), drugOrder.getOrderType());
 
 	}
@@ -3175,7 +3174,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 		orderService.saveOrder(testOrder, null);
 		assertNotNull(testOrder.getOrderType());
-//		assertEquals(orderService.getOrderTypeByUuid(OrderType.TEST_ORDER_TYPE_UUID), testOrder.getOrderType());
 		assertEquals(orderService.getOrderTypeByClassName("org.openmrs.TestOrder"), testOrder.getOrderType());
 	}
 

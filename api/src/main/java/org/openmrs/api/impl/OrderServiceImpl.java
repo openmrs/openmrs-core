@@ -241,11 +241,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			orderType = getOrderTypeByConcept(order.getConcept());
 		}
 		if (orderType == null && order instanceof DrugOrder) {
-//			orderType = Context.getOrderService().getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID);
 			orderType = Context.getOrderService().getOrderTypeByClassName("org.openmrs.DrugOrder");
 		}
 		if (orderType == null && order instanceof TestOrder) {
-//			orderType = Context.getOrderService().getOrderTypeByUuid(OrderType.TEST_ORDER_TYPE_UUID);
 			orderType = Context.getOrderService().getOrderTypeByClassName("org.openmrs.TestOrder");
 
 		}
@@ -277,7 +275,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	private void failOnOrderTypeMismatch(Order order) {
 		if (!order.getOrderType().getJavaClass().isAssignableFrom(order.getClass())) {
 			throw new OrderEntryException("Order.type.class.does.not.match", new Object[] {
-					order.getOrderType().getJavaClass(), order.getClass().getName() });
+					order.getOrderType().getJavaClass(), order.getClass().getName()});
 		}
 	}
 
@@ -286,8 +284,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		        && !OpenmrsUtil.nullSafeEquals(firstOrder.getPreviousOrder(), secondOrder)
 		        && OrderUtil.checkScheduleOverlap(firstOrder, secondOrder)
 		        && firstOrder.getOrderType().equals(
-//		            Context.getOrderService().getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID));
-		            Context.getOrderService().getOrderTypeByClassName(OrderType.class.getName()));
+		            Context.getOrderService().getOrderTypeByClassName("org.openmrs.DrugOrder"));
 	}
 
 	private boolean isDrugOrder(Order order) {
