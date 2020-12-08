@@ -24,6 +24,7 @@ import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.HSQLDialect;
+import org.hibernate.dialect.PostgreSQL82Dialect;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.proxy.HibernateProxy;
 import org.openmrs.Location;
@@ -45,6 +46,8 @@ public class HibernateUtil {
 	
 	private static Boolean isHSQLDialect = null;
 	
+	private static Boolean isPostgreSQLDialect = null;
+	
 	/**
 	 * Check and cache whether the currect dialect is HSQL or not. This is needed because some
 	 * queries are different if in the hsql world as opposed to the mysql/postgres world
@@ -63,6 +66,24 @@ public class HibernateUtil {
 	}
 	
 	/**
+	 * Check and cache whether the currect dialect is PostgreSQL or not. This is needed because some
+	 * behaviors of PostgreSQL and MySQL are different and need to be handled separately.
+	 *
+	 * @param sessionFactory
+	 * @return true/false whether we're in postgresql right now or not
+	 */
+	public static boolean isPostgreSQLDialect(SessionFactory sessionFactory) {
+		
+		if (isPostgreSQLDialect == null) {
+			// check and cache the dialect
+			isPostgreSQLDialect = PostgreSQL82Dialect.class.getName()
+			        .equals(getDialect(sessionFactory).getClass().getName());
+		}
+		
+		return isPostgreSQLDialect;
+	}
+	
+	/**
 	 * Fetch the current Dialect of the given SessionFactory
 	 *
 	 * @param sessionFactory SessionFactory to pull the dialect from
@@ -78,9 +99,7 @@ public class HibernateUtil {
 		SessionFactoryImplementor implementor = (SessionFactoryImplementor) sessionFactory;
 		dialect = implementor.getDialect();
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Getting dialect for session: " + dialect);
-		}
+		log.debug("Getting dialect for session: {}", dialect);
 		
 		return dialect;
 	}

@@ -27,6 +27,10 @@ public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 	
 	private String identifier;
 	
+	private Concept role;
+	
+	private Concept speciality;
+	
 	public Provider() {
 	}
 	
@@ -92,17 +96,55 @@ public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 		return identifier;
 	}
 	
+	/**
+	 * Sets the role concept
+	 * 
+	 * @since 2.2
+	 * @param role the role to set
+	 */
+	public void setRole(Concept role) {
+		this.role = role;
+	}
+	
+	/**
+	 * Gets the role concept
+	 * 
+	 * @since 2.2
+	 * @return the role
+	 */
+	public Concept getRole() {
+		return role;
+	}
+	
+	/**
+	 * Sets the speciality concept
+	 * 
+	 * @since 2.2
+	 * @param speciality the speciality to set
+	 */
+	public void setSpeciality(Concept speciality) {
+		this.speciality = speciality;
+	}
+	
+	/**
+	 * Gets the speciality concept
+	 * 
+	 * @since 2.2
+	 * @return the speciality
+	 */
+	public Concept getSpeciality() {
+		return speciality;
+	}
+	
 	@Override
 	public String toString() {
-		String provider = String.valueOf(providerId)
-				+ " providerName:"
-				+ ((person != null) ? person.getNames() : "");
+		String provider = String.valueOf(providerId) + " providerName:" + ((person != null) ? person.getNames() : "");
 		return "[Provider: providerId:" + provider + " ]";
 	}
 	
 	/**
 	 * @see org.openmrs.BaseOpenmrsMetadata#getName()
-	 * @should return person full name if person is not null or null otherwise
+	 * <strong>Should</strong> return person full name if person is not null or null otherwise
 	 */
 	
 	@Override

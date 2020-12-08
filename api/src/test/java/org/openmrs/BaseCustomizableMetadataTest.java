@@ -9,15 +9,18 @@
  */
 package org.openmrs;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 public class BaseCustomizableMetadataTest extends BaseContextSensitiveTest {
 	
@@ -29,7 +32,7 @@ public class BaseCustomizableMetadataTest extends BaseContextSensitiveTest {
 	
 	private ProviderService service;
 	
-	@Before
+	@BeforeEach
 	public void before() {
 		service = Context.getProviderService();
 		executeDataSet(PROVIDERS_INITIAL_XML);
@@ -52,15 +55,15 @@ public class BaseCustomizableMetadataTest extends BaseContextSensitiveTest {
 		provider.setAttribute(buildProviderAttribute(place, "bangalore"));
 		provider.setAttribute(buildProviderAttribute(place, "chennai"));
 		
-		Assert.assertEquals(1, provider.getAttributes().size());
+		assertEquals(1, provider.getAttributes().size());
 		
 		service.saveProvider(provider);
-		Assert.assertNotNull(provider.getId());
+		assertNotNull(provider.getId());
 		
 		provider.setAttribute(buildProviderAttribute(place, "seattle"));
-		Assert.assertEquals(2, provider.getAttributes().size());
+		assertEquals(2, provider.getAttributes().size());
 		ProviderAttribute lastAttribute = (ProviderAttribute) provider.getAttributes().toArray()[0];
-		Assert.assertTrue(lastAttribute.getVoided());
+		assertTrue(lastAttribute.getVoided());
 	}
 	
 	/**
@@ -78,14 +81,14 @@ public class BaseCustomizableMetadataTest extends BaseContextSensitiveTest {
 		
 		service.saveProvider(provider);
 		Context.flushSession();
-		Assert.assertNotNull(provider.getId());
-		Assert.assertEquals(1, provider.getAttributes().size());
+		assertNotNull(provider.getId());
+		assertEquals(1, provider.getAttributes().size());
 		
 		provider.setAttribute(buildProviderAttribute(cv, "Worked even more places..."));
 		service.saveProvider(provider);
-		Assert.assertEquals(2, provider.getAttributes().size());
+		assertEquals(2, provider.getAttributes().size());
 		ProviderAttribute lastAttribute = (ProviderAttribute) provider.getAttributes().toArray()[0];
-		Assert.assertTrue(lastAttribute.getVoided());
+		assertTrue(lastAttribute.getVoided());
 	}
 	
 	private ProviderAttribute buildProviderAttribute(ProviderAttributeType providerAttributeType, Object value)

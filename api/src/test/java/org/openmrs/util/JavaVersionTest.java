@@ -9,41 +9,12 @@
  */
 package org.openmrs.util;
 
-import static org.powermock.api.mockito.PowerMockito.when;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.openmrs.api.APIException;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.springframework.core.JdkVersion;
-
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(JdkVersion.class)
 public class JavaVersionTest {
 	
-	@Before
-	public void setup() {
-		PowerMockito.mockStatic(JdkVersion.class);
-	}
-	
-	/**
-	 * @see org.openmrs.util.OpenmrsUtil#validateJavaVersion()
-	 */
-	@Test(expected = APIException.class)
-	public void validateJavaVersion_shouldFailIfTheCurrentJVMVersionIsEarlierThanJava6() {
-		when(JdkVersion.getJavaVersion()).thenReturn("1.5.0_20");
-		OpenmrsUtil.validateJavaVersion();
-	}
-	
-	/**
-	 * @see org.openmrs.util.OpenmrsUtil#validateJavaVersion()
-	 */
 	@Test
 	public void validateJavaVersion_shouldPassIfTheCurrentJVMVersionIsLaterThanJava5() {
-		when(JdkVersion.getJavaVersion()).thenReturn("1.8.0_25");
 		OpenmrsUtil.validateJavaVersion();
 	}
 }

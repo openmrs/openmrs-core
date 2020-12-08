@@ -11,9 +11,7 @@ package org.openmrs.validator;
 
 import org.openmrs.Condition;
 import org.openmrs.annotation.Handler;
-import org.openmrs.api.APIException;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
@@ -34,8 +32,8 @@ public class ConditionValidator implements Validator {
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 *      
-	 * @should fail validation if condition object is null
-	 * @should fail validation if condition object is not an instance of the Condition class
+	 * <strong>Should</strong> fail validation if condition object is null
+	 * <strong>Should</strong> fail validation if condition object is not an instance of the Condition class
 	 */
 	@Override
 	public void validate(Object object, Errors errors) {

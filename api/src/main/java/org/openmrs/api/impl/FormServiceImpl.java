@@ -118,11 +118,19 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 		
 		Context.clearSession();
 		
+		Form originalForm = Context.getFormService().getForm(originalFormId);
+		//On upgrading from hibernate 4.3.10.Final to 4.3.11.Final, 
+		//calling getFormResourcesForForm results into a flush which finds the form as dirty,
+		//resulting into the failure of this test
+		//FormServiceTest.duplicateForm_shouldClearChangedDetailsAndUpdateCreationDetails:401 expected null, but was:<admin>
+		//That is why we call getFormResourcesForForm before dao.duplicateForm(form) below.
+		Collection<FormResource> formResources = Context.getFormService().getFormResourcesForForm(originalForm);
+		
 		RequiredDataAdvice.recursivelyHandle(SaveHandler.class, form, null);
 		Form newForm = dao.duplicateForm(form);
 		
 		// duplicate form resources from the old form to the new one
-		duplicateFormResources(Context.getFormService().getForm(originalFormId), newForm);
+		duplicateFormResources(originalForm, newForm, formResources);
 		
 		return newForm;
 	}
@@ -330,7 +338,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	
 	/**
 	 * @see org.openmrs.api.FormService#getForm(java.lang.String)
-	 * @should return the form with the highest version, if more than one form with the given name
+	 * <strong>Should</strong> return the form with the highest version, if more than one form with the given name
 	 *         exists
 	 */
 	@Override
@@ -760,10 +768,11 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * 
 	 * @param source the form to copy resources from
 	 * @param destination the form to copy resources to
+	 * @param formResources the form resources from the source form
 	 */
-	private void duplicateFormResources(Form source, Form destination) {
+	private void duplicateFormResources(Form source, Form destination, Collection<FormResource> formResources) {
 		FormService service = Context.getFormService();
-		for (FormResource resource : service.getFormResourcesForForm(source)) {
+		for (FormResource resource : formResources) {
 			FormResource newResource = new FormResource(resource);
 			newResource.setForm(destination);
 			service.saveFormResource(newResource);

@@ -1,0 +1,3625 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<databaseChangeLog
+	logicalFilePath="liquibase-core-data.xml"
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext 
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog 
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+	<changeSet author="wolf (generated)" id="1582473679024-17">
+		<insert tableName="person">
+			<column name="person_id" valueNumeric="1"/>
+			<column name="gender" value="M"/>
+			<column name="birthdate"/>
+			<column name="birthdate_estimated" valueBoolean="false"/>
+			<column name="dead" valueBoolean="false"/>
+			<column name="death_date"/>
+			<column name="cause_of_death"/>
+			<column name="creator"/>
+			<column name="date_created" valueDate="2005-01-01T00:00:00"/>
+			<column name="changed_by"/>
+			<column name="date_changed"/>
+			<column name="voided" valueBoolean="false"/>
+			<column name="voided_by"/>
+			<column name="date_voided"/>
+			<column name="void_reason"/>
+			<column name="uuid" value="5f87c042-6814-11e8-923f-e9a88dcb533f"/>
+			<column name="deathdate_estimated" valueBoolean="false"/>
+			<column name="birthtime"/>
+			<column name="cause_of_death_non_coded"/>
+		</insert>
+	</changeSet>
+	<changeSet author="wolf (generated)" id="1582473679024-27">
+		<insert tableName="users">
+			<column name="user_id" valueNumeric="1"/>
+			<column name="system_id" value="admin"/>
+			<column name="username" value=""/>
+			<column name="password" value="4a1750c8607dfa237de36c6305715c223415189"/>
+			<column name="salt" value="c788c6ad82a157b712392ca695dfcf2eed193d7f"/>
+			<column name="secret_question"/>
+			<column name="secret_answer"/>
+			<column name="creator" valueNumeric="1"/>
+			<column name="date_created" valueDate="2005-01-01T00:00:00"/>
+			<column name="changed_by" valueNumeric="1"/>
+			<column name="date_changed" valueDate="2018-06-04T18:31:16"/>
+			<column name="person_id" valueNumeric="1"/>
+			<column name="retired" valueBoolean="false"/>
+			<column name="retired_by"/>
+			<column name="date_retired"/>
+			<column name="retire_reason"/>
+			<column name="uuid" value="82f18b44-6814-11e8-923f-e9a88dcb533f"/>
+			<column name="activation_key"/>
+			<column name="email"/>
+		</insert>
+		<insert tableName="users">
+			<column name="user_id" valueNumeric="2"/>
+			<column name="system_id" value="daemon"/>
+			<column name="username" value="daemon"/>
+			<column name="password"/>
+			<column name="salt"/>
+			<column name="secret_question"/>
+			<column name="secret_answer"/>
+			<column name="creator" valueNumeric="1"/>
+			<column name="date_created" valueDate="2010-04-26T13:25:00"/>
+			<column name="changed_by"/>
+			<column name="date_changed"/>
+			<column name="person_id" valueNumeric="1"/>
+			<column name="retired" valueBoolean="false"/>
+			<column name="retired_by"/>
+			<column name="date_retired"/>
+			<column name="retire_reason"/>
+			<column name="uuid" value="A4F30A1B-5EB9-11DF-A648-37A07F9C90FB"/>
+			<column name="activation_key"/>
+			<column name="email"/>
+		</insert>
+	</changeSet>
+    <changeSet author="wolf (generated)" id="1582473679024-1">
+        <insert tableName="care_setting">
+            <column name="care_setting_id" valueNumeric="1"/>
+            <column name="name" value="Outpatient"/>
+            <column name="description" value="Out-patient care setting"/>
+            <column name="care_setting_type" value="OUTPATIENT"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2013-12-27T00:00:00"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="uuid" value="6f0c9a92-6f24-11e3-af88-005056821db0"/>
+        </insert>
+        <insert tableName="care_setting">
+            <column name="care_setting_id" valueNumeric="2"/>
+            <column name="name" value="Inpatient"/>
+            <column name="description" value="In-patient care setting"/>
+            <column name="care_setting_type" value="INPATIENT"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2013-12-27T00:00:00"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="uuid" value="c365e560-c3ec-11e3-9c1a-0800200c9a66"/>
+        </insert>
+    </changeSet>
+	<changeSet author="wolf (generated)" id="1582473679024-3">
+		<insert tableName="concept_class">
+			<column name="concept_class_id" valueNumeric="1"/>
+			<column name="name" value="Test"/>
+			<column name="description" value="Acq. during patient encounter (vitals, labs, etc.)"/>
+			<column name="creator" valueNumeric="1"/>
+			<column name="date_created" valueDate="2004-02-02T00:00:00"/>
+			<column name="retired" valueBoolean="false"/>
+			<column name="retired_by"/>
+			<column name="date_retired"/>
+			<column name="retire_reason"/>
+			<column name="uuid" value="8d4907b2-c2cc-11de-8d13-0010c6dffd0f"/>
+			<column name="date_changed"/>
+			<column name="changed_by"/>
+		</insert>
+		<insert tableName="concept_class">
+			<column name="concept_class_id" valueNumeric="2"/>
+			<column name="name" value="Procedure"/>
+			<column name="description" value="Describes a clinical procedure"/>
+			<column name="creator" valueNumeric="1"/>
+			<column name="date_created" valueDate="2004-03-02T00:00:00"/>
+			<column name="retired" valueBoolean="false"/>
+			<column name="retired_by"/>
+			<column name="date_retired"/>
+			<column name="retire_reason"/>
+			<column name="uuid" value="8d490bf4-c2cc-11de-8d13-0010c6dffd0f"/>
+			<column name="date_changed"/>
+			<column name="changed_by"/>
+		</insert>
+		<insert tableName="concept_class">
+			<column name="concept_class_id" valueNumeric="3"/>
+			<column name="name" value="Drug"/>
+			<column name="description" value="Drug"/>
+			<column name="creator" valueNumeric="1"/>
+			<column name="date_created" valueDate="2004-02-02T00:00:00"/>
+			<column name="retired" valueBoolean="false"/>
+			<column name="retired_by"/>
+			<column name="date_retired"/>
+			<column name="retire_reason"/>
+			<column name="uuid" value="8d490dfc-c2cc-11de-8d13-0010c6dffd0f"/>
+			<column name="date_changed"/>
+			<column name="changed_by"/>
+		</insert>
+		<insert tableName="concept_class">
+			<column name="concept_class_id" valueNumeric="4"/>
+			<column name="name" value="Diagnosis"/>
+			<column name="description" value="Conclusion drawn through findings"/>
+			<column name="creator" valueNumeric="1"/>
+			<column name="date_created" valueDate="2004-02-02T00:00:00"/>
+			<column name="retired" valueBoolean="false"/>
+			<column name="retired_by"/>
+			<column name="date_retired"/>
+			<column name="retire_reason"/>
+			<column name="uuid" value="8d4918b0-c2cc-11de-8d13-0010c6dffd0f"/>
+			<column name="date_changed"/>
+			<column name="changed_by"/>
+		</insert>
+		<insert tableName="concept_class">
+			<column name="concept_class_id" valueNumeric="5"/>
+			<column name="name" value="Finding"/>
+			<column name="description" value="Practitioner observation/finding"/>
+			<column name="creator" valueNumeric="1"/>
+			<column name="date_created" valueDate="2004-03-02T00:00:00"/>
+			<column name="retired" valueBoolean="false"/>
+			<column name="retired_by"/>
+			<column name="date_retired"/>
+			<column name="retire_reason"/>
+			<column name="uuid" value="8d491a9a-c2cc-11de-8d13-0010c6dffd0f"/>
+			<column name="date_changed"/>
+			<column name="changed_by"/>
+		</insert>
+		<insert tableName="concept_class">
+			<column name="concept_class_id" valueNumeric="6"/>
+			<column name="name" value="Anatomy"/>
+			<column name="description" value="Anatomic sites / descriptors"/>
+			<column name="creator" valueNumeric="1"/>
+			<column name="date_created" valueDate="2004-03-02T00:00:00"/>
+			<column name="retired" valueBoolean="false"/>
+			<column name="retired_by"/>
+			<column name="date_retired"/>
+			<column name="retire_reason"/>
+			<column name="uuid" value="8d491c7a-c2cc-11de-8d13-0010c6dffd0f"/>
+			<column name="date_changed"/>
+			<column name="changed_by"/>
+		</insert>
+		<insert tableName="concept_class">
+			<column name="concept_class_id" valueNumeric="7"/>
+			<column name="name" value="Question"/>
+			<column name="description" value="Question (eg, patient history, SF36 items)"/>
+			<column name="creator" valueNumeric="1"/>
+			<column name="date_created" valueDate="2004-03-02T00:00:00"/>
+			<column name="retired" valueBoolean="false"/>
+			<column name="retired_by"/>
+			<column name="date_retired"/>
+			<column name="retire_reason"/>
+			<column name="uuid" value="8d491e50-c2cc-11de-8d13-0010c6dffd0f"/>
+			<column name="date_changed"/>
+			<column name="changed_by"/>
+		</insert>
+		<insert tableName="concept_class">
+			<column name="concept_class_id" valueNumeric="8"/>
+			<column name="name" value="LabSet"/>
+			<column name="description" value="Term to describe laboratory sets"/>
+			<column name="creator" valueNumeric="1"/>
+			<column name="date_created" valueDate="2004-03-02T00:00:00"/>
+			<column name="retired" valueBoolean="false"/>
+			<column name="retired_by"/>
+			<column name="date_retired"/>
+			<column name="retire_reason"/>
+			<column name="uuid" value="8d492026-c2cc-11de-8d13-0010c6dffd0f"/>
+			<column name="date_changed"/>
+			<column name="changed_by"/>
+		</insert>
+		<insert tableName="concept_class">
+			<column name="concept_class_id" valueNumeric="9"/>
+			<column name="name" value="MedSet"/>
+			<column name="description" value="Term to describe medication sets"/>
+			<column name="creator" valueNumeric="1"/>
+			<column name="date_created" valueDate="2004-02-02T00:00:00"/>
+			<column name="retired" valueBoolean="false"/>
+			<column name="retired_by"/>
+			<column name="date_retired"/>
+			<column name="retire_reason"/>
+			<column name="uuid" value="8d4923b4-c2cc-11de-8d13-0010c6dffd0f"/>
+			<column name="date_changed"/>
+			<column name="changed_by"/>
+		</insert>
+		<insert tableName="concept_class">
+			<column name="concept_class_id" valueNumeric="10"/>
+			<column name="name" value="ConvSet"/>
+			<column name="description" value="Term to describe convenience sets"/>
+			<column name="creator" valueNumeric="1"/>
+			<column name="date_created" valueDate="2004-03-02T00:00:00"/>
+			<column name="retired" valueBoolean="false"/>
+			<column name="retired_by"/>
+			<column name="date_retired"/>
+			<column name="retire_reason"/>
+			<column name="uuid" value="8d492594-c2cc-11de-8d13-0010c6dffd0f"/>
+			<column name="date_changed"/>
+			<column name="changed_by"/>
+		</insert>
+		<insert tableName="concept_class">
+			<column name="concept_class_id" valueNumeric="11"/>
+			<column name="name" value="Misc"/>
+			<column name="description" value="Terms which don't fit other categories"/>
+			<column name="creator" valueNumeric="1"/>
+			<column name="date_created" valueDate="2004-03-02T00:00:00"/>
+			<column name="retired" valueBoolean="false"/>
+			<column name="retired_by"/>
+			<column name="date_retired"/>
+			<column name="retire_reason"/>
+			<column name="uuid" value="8d492774-c2cc-11de-8d13-0010c6dffd0f"/>
+			<column name="date_changed"/>
+			<column name="changed_by"/>
+		</insert>
+		<insert tableName="concept_class">
+			<column name="concept_class_id" valueNumeric="12"/>
+			<column name="name" value="Symptom"/>
+			<column name="description" value="Patient-reported observation"/>
+			<column name="creator" valueNumeric="1"/>
+			<column name="date_created" valueDate="2004-10-04T00:00:00"/>
+			<column name="retired" valueBoolean="false"/>
+			<column name="retired_by"/>
+			<column name="date_retired"/>
+			<column name="retire_reason"/>
+			<column name="uuid" value="8d492954-c2cc-11de-8d13-0010c6dffd0f"/>
+			<column name="date_changed"/>
+			<column name="changed_by"/>
+		</insert>
+		<insert tableName="concept_class">
+			<column name="concept_class_id" valueNumeric="13"/>
+			<column name="name" value="Symptom/Finding"/>
+			<column name="description" value="Observation that can be reported from patient or found on exam"/>
+			<column name="creator" valueNumeric="1"/>
+			<column name="date_created" valueDate="2004-10-04T00:00:00"/>
+			<column name="retired" valueBoolean="false"/>
+			<column name="retired_by"/>
+			<column name="date_retired"/>
+			<column name="retire_reason"/>
+			<column name="uuid" value="8d492b2a-c2cc-11de-8d13-0010c6dffd0f"/>
+			<column name="date_changed"/>
+			<column name="changed_by"/>
+		</insert>
+		<insert tableName="concept_class">
+			<column name="concept_class_id" valueNumeric="14"/>
+			<column name="name" value="Specimen"/>
+			<column name="description" value="Body or fluid specimen"/>
+			<column name="creator" valueNumeric="1"/>
+			<column name="date_created" valueDate="2004-12-02T00:00:00"/>
+			<column name="retired" valueBoolean="false"/>
+			<column name="retired_by"/>
+			<column name="date_retired"/>
+			<column name="retire_reason"/>
+			<column name="uuid" value="8d492d0a-c2cc-11de-8d13-0010c6dffd0f"/>
+			<column name="date_changed"/>
+			<column name="changed_by"/>
+		</insert>
+		<insert tableName="concept_class">
+			<column name="concept_class_id" valueNumeric="15"/>
+			<column name="name" value="Misc Order"/>
+			<column name="description" value="Orderable items which aren't tests or drugs"/>
+			<column name="creator" valueNumeric="1"/>
+			<column name="date_created" valueDate="2005-02-17T00:00:00"/>
+			<column name="retired" valueBoolean="false"/>
+			<column name="retired_by"/>
+			<column name="date_retired"/>
+			<column name="retire_reason"/>
+			<column name="uuid" value="8d492ee0-c2cc-11de-8d13-0010c6dffd0f"/>
+			<column name="date_changed"/>
+			<column name="changed_by"/>
+		</insert>
+		<insert tableName="concept_class">
+			<column name="concept_class_id" valueNumeric="16"/>
+			<column name="name" value="Frequency"/>
+			<column name="description" value="A class for order frequencies"/>
+			<column name="creator" valueNumeric="1"/>
+			<column name="date_created" valueDate="2014-03-06T00:00:00"/>
+			<column name="retired" valueBoolean="false"/>
+			<column name="retired_by"/>
+			<column name="date_retired"/>
+			<column name="retire_reason"/>
+			<column name="uuid" value="8e071bfe-520c-44c0-a89b-538e9129b42a"/>
+			<column name="date_changed"/>
+			<column name="changed_by"/>
+		</insert>
+	</changeSet>
+	<changeSet author="wolf (generated)" id="1582473679024-4">
+		<insert tableName="concept_datatype">
+			<column name="concept_datatype_id" valueNumeric="1"/>
+			<column name="name" value="Numeric"/>
+			<column name="hl7_abbreviation" value="NM"/>
+			<column name="description" value="Numeric value, including integer or float (e.g., creatinine, weight)"/>
+			<column name="creator" valueNumeric="1"/>
+			<column name="date_created" valueDate="2004-02-02T00:00:00"/>
+			<column name="retired" valueBoolean="false"/>
+			<column name="retired_by"/>
+			<column name="date_retired"/>
+			<column name="retire_reason"/>
+			<column name="uuid" value="8d4a4488-c2cc-11de-8d13-0010c6dffd0f"/>
+		</insert>
+		<insert tableName="concept_datatype">
+			<column name="concept_datatype_id" valueNumeric="2"/>
+			<column name="name" value="Coded"/>
+			<column name="hl7_abbreviation" value="CWE"/>
+			<column name="description" value="Value determined by term dictionary lookup (i.e., term identifier)"/>
+			<column name="creator" valueNumeric="1"/>
+			<column name="date_created" valueDate="2004-02-02T00:00:00"/>
+			<column name="retired" valueBoolean="false"/>
+			<column name="retired_by"/>
+			<column name="date_retired"/>
+			<column name="retire_reason"/>
+			<column name="uuid" value="8d4a48b6-c2cc-11de-8d13-0010c6dffd0f"/>
+		</insert>
+		<insert tableName="concept_datatype">
+			<column name="concept_datatype_id" valueNumeric="3"/>
+			<column name="name" value="Text"/>
+			<column name="hl7_abbreviation" value="ST"/>
+			<column name="description" value="Free text"/>
+			<column name="creator" valueNumeric="1"/>
+			<column name="date_created" valueDate="2004-02-02T00:00:00"/>
+			<column name="retired" valueBoolean="false"/>
+			<column name="retired_by"/>
+			<column name="date_retired"/>
+			<column name="retire_reason"/>
+			<column name="uuid" value="8d4a4ab4-c2cc-11de-8d13-0010c6dffd0f"/>
+		</insert>
+		<insert tableName="concept_datatype">
+			<column name="concept_datatype_id" valueNumeric="4"/>
+			<column name="name" value="N/A"/>
+			<column name="hl7_abbreviation" value="ZZ"/>
+			<column name="description" value="Not associated with a datatype (e.g., term answers, sets)"/>
+			<column name="creator" valueNumeric="1"/>
+			<column name="date_created" valueDate="2004-02-02T00:00:00"/>
+			<column name="retired" valueBoolean="false"/>
+			<column name="retired_by"/>
+			<column name="date_retired"/>
+			<column name="retire_reason"/>
+			<column name="uuid" value="8d4a4c94-c2cc-11de-8d13-0010c6dffd0f"/>
+		</insert>
+		<insert tableName="concept_datatype">
+			<column name="concept_datatype_id" valueNumeric="5"/>
+			<column name="name" value="Document"/>
+			<column name="hl7_abbreviation" value="RP"/>
+			<column name="description" value="Pointer to a binary or text-based document (e.g., clinical document, RTF, XML, EKG, image, etc.) stored in complex_obs table"/>
+			<column name="creator" valueNumeric="1"/>
+			<column name="date_created" valueDate="2004-04-15T00:00:00"/>
+			<column name="retired" valueBoolean="false"/>
+			<column name="retired_by"/>
+			<column name="date_retired"/>
+			<column name="retire_reason"/>
+			<column name="uuid" value="8d4a4e74-c2cc-11de-8d13-0010c6dffd0f"/>
+		</insert>
+		<insert tableName="concept_datatype">
+			<column name="concept_datatype_id" valueNumeric="6"/>
+			<column name="name" value="Date"/>
+			<column name="hl7_abbreviation" value="DT"/>
+			<column name="description" value="Absolute date"/>
+			<column name="creator" valueNumeric="1"/>
+			<column name="date_created" valueDate="2004-07-22T00:00:00"/>
+			<column name="retired" valueBoolean="false"/>
+			<column name="retired_by"/>
+			<column name="date_retired"/>
+			<column name="retire_reason"/>
+			<column name="uuid" value="8d4a505e-c2cc-11de-8d13-0010c6dffd0f"/>
+		</insert>
+		<insert tableName="concept_datatype">
+			<column name="concept_datatype_id" valueNumeric="7"/>
+			<column name="name" value="Time"/>
+			<column name="hl7_abbreviation" value="TM"/>
+			<column name="description" value="Absolute time of day"/>
+			<column name="creator" valueNumeric="1"/>
+			<column name="date_created" valueDate="2004-07-22T00:00:00"/>
+			<column name="retired" valueBoolean="false"/>
+			<column name="retired_by"/>
+			<column name="date_retired"/>
+			<column name="retire_reason"/>
+			<column name="uuid" value="8d4a591e-c2cc-11de-8d13-0010c6dffd0f"/>
+		</insert>
+		<insert tableName="concept_datatype">
+			<column name="concept_datatype_id" valueNumeric="8"/>
+			<column name="name" value="Datetime"/>
+			<column name="hl7_abbreviation" value="TS"/>
+			<column name="description" value="Absolute date and time"/>
+			<column name="creator" valueNumeric="1"/>
+			<column name="date_created" valueDate="2004-07-22T00:00:00"/>
+			<column name="retired" valueBoolean="false"/>
+			<column name="retired_by"/>
+			<column name="date_retired"/>
+			<column name="retire_reason"/>
+			<column name="uuid" value="8d4a5af4-c2cc-11de-8d13-0010c6dffd0f"/>
+		</insert>
+		<insert tableName="concept_datatype">
+			<column name="concept_datatype_id" valueNumeric="10"/>
+			<column name="name" value="Boolean"/>
+			<column name="hl7_abbreviation" value="BIT"/>
+			<column name="description" value="Boolean value (yes/no, true/false)"/>
+			<column name="creator" valueNumeric="1"/>
+			<column name="date_created" valueDate="2004-08-26T00:00:00"/>
+			<column name="retired" valueBoolean="false"/>
+			<column name="retired_by"/>
+			<column name="date_retired"/>
+			<column name="retire_reason"/>
+			<column name="uuid" value="8d4a5cca-c2cc-11de-8d13-0010c6dffd0f"/>
+		</insert>
+		<insert tableName="concept_datatype">
+			<column name="concept_datatype_id" valueNumeric="11"/>
+			<column name="name" value="Rule"/>
+			<column name="hl7_abbreviation" value="ZZ"/>
+			<column name="description" value="Value derived from other data"/>
+			<column name="creator" valueNumeric="1"/>
+			<column name="date_created" valueDate="2006-09-11T00:00:00"/>
+			<column name="retired" valueBoolean="false"/>
+			<column name="retired_by"/>
+			<column name="date_retired"/>
+			<column name="retire_reason"/>
+			<column name="uuid" value="8d4a5e96-c2cc-11de-8d13-0010c6dffd0f"/>
+		</insert>
+		<insert tableName="concept_datatype">
+			<column name="concept_datatype_id" valueNumeric="12"/>
+			<column name="name" value="Structured Numeric"/>
+			<column name="hl7_abbreviation" value="SN"/>
+			<column name="description" value="Complex numeric values possible (ie, &lt;5, 1-10, etc.)"/>
+			<column name="creator" valueNumeric="1"/>
+			<column name="date_created" valueDate="2005-08-06T00:00:00"/>
+			<column name="retired" valueBoolean="false"/>
+			<column name="retired_by"/>
+			<column name="date_retired"/>
+			<column name="retire_reason"/>
+			<column name="uuid" value="8d4a606c-c2cc-11de-8d13-0010c6dffd0f"/>
+		</insert>
+		<insert tableName="concept_datatype">
+			<column name="concept_datatype_id" valueNumeric="13"/>
+			<column name="name" value="Complex"/>
+			<column name="hl7_abbreviation" value="ED"/>
+			<column name="description" value="Complex value.  Analogous to HL7 Embedded Datatype"/>
+			<column name="creator" valueNumeric="1"/>
+			<column name="date_created" valueDate="2008-05-28T12:25:34"/>
+			<column name="retired" valueBoolean="false"/>
+			<column name="retired_by"/>
+			<column name="date_retired"/>
+			<column name="retire_reason"/>
+			<column name="uuid" value="8d4a6242-c2cc-11de-8d13-0010c6dffd0f"/>
+		</insert>
+	</changeSet>	
+    <changeSet author="wolf (generated)" id="1582473679024-2">
+        <insert tableName="concept">
+            <column name="concept_id" valueNumeric="1"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="short_name" value=""/>
+            <column name="description" value=""/>
+            <column name="form_text"/>
+            <column name="datatype_id" valueNumeric="4"/>
+            <column name="class_id" valueNumeric="11"/>
+            <column name="is_set" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T18:29:58"/>
+            <column name="version"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="cf82933b-3f3f-45e7-a5ab-5d31aaee3da3"/>
+        </insert>
+        <insert tableName="concept">
+            <column name="concept_id" valueNumeric="2"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="short_name" value=""/>
+            <column name="description" value=""/>
+            <column name="form_text"/>
+            <column name="datatype_id" valueNumeric="4"/>
+            <column name="class_id" valueNumeric="11"/>
+            <column name="is_set" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T18:29:58"/>
+            <column name="version"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="488b58ff-64f5-4f8a-8979-fa79940b1594"/>
+        </insert>
+    </changeSet>
+    <changeSet author="wolf (generated)" id="1582473679024-5">
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="1"/>
+            <column name="name" value="SAME-AS"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="false"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="35543629-7d8c-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="2"/>
+            <column name="name" value="NARROWER-THAN"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="false"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="43ac5109-7d8c-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="3"/>
+            <column name="name" value="BROADER-THAN"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="false"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="4b9d9421-7d8c-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="4"/>
+            <column name="name" value="Associated finding"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="false"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="55e02065-7d8c-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="5"/>
+            <column name="name" value="Associated morphology"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="false"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="605f4a61-7d8c-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="6"/>
+            <column name="name" value="Associated procedure"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="false"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="6eb1bfce-7d8c-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="7"/>
+            <column name="name" value="Associated with"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="false"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="781bdc8f-7d8c-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="8"/>
+            <column name="name" value="Causative agent"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="false"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="808f9e19-7d8c-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="9"/>
+            <column name="name" value="Finding site"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="false"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="889c3013-7d8c-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="10"/>
+            <column name="name" value="Has specimen"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="false"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="929600b9-7d8c-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="11"/>
+            <column name="name" value="Laterality"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="false"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="999c6fc0-7d8c-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="12"/>
+            <column name="name" value="Severity"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="false"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="a0e52281-7d8c-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="13"/>
+            <column name="name" value="Access"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="f9e90b29-7d8c-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="14"/>
+            <column name="name" value="After"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="01b60e29-7d8d-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="15"/>
+            <column name="name" value="Clinical course"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="5f7c3702-7d8d-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="16"/>
+            <column name="name" value="Component"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="67debecc-7d8d-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="17"/>
+            <column name="name" value="Direct device"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="718c00da-7d8d-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="18"/>
+            <column name="name" value="Direct morphology"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="7b9509cb-7d8d-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="19"/>
+            <column name="name" value="Direct substance"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="82bb495d-7d8d-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="20"/>
+            <column name="name" value="Due to"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="8b77f7d3-7d8d-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="21"/>
+            <column name="name" value="Episodicity"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="94a81179-7d8d-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="22"/>
+            <column name="name" value="Finding context"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="9d23c22e-7d8d-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="23"/>
+            <column name="name" value="Finding informer"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="a4524368-7d8d-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="24"/>
+            <column name="name" value="Finding method"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="af089254-7d8d-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="25"/>
+            <column name="name" value="Has active ingredient"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="b65aa605-7d8d-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="26"/>
+            <column name="name" value="Has definitional manifestation"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="c2b7b2fa-7d8d-11e1-909d-c80aa9edcf4"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="27"/>
+            <column name="name" value="Has dose form"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="cc3878e6-7d8d-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="28"/>
+            <column name="name" value="Has focus"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="d67c5840-7d8d-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="29"/>
+            <column name="name" value="Has intent"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="de2fb2c5-7d8d-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="30"/>
+            <column name="name" value="Has interpretation"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="e758838b-7d8d-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="31"/>
+            <column name="name" value="Indirect device"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="ee63c142-7d8d-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="32"/>
+            <column name="name" value="Indirect morphology"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="f4f36681-7d8d-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="33"/>
+            <column name="name" value="Interprets"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="fc7f5fed-7d8d-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="34"/>
+            <column name="name" value="Measurement method"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="06b11d79-7d8e-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="35"/>
+            <column name="name" value="Method"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="0efb4753-7d8e-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="36"/>
+            <column name="name" value="Occurrence"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="16e7b617-7d8e-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="37"/>
+            <column name="name" value="Part of"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="1e82007b-7d8e-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="38"/>
+            <column name="name" value="Pathological process"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="2969915e-7d8e-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="39"/>
+            <column name="name" value="Priority"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="32d57796-7d8e-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="40"/>
+            <column name="name" value="Procedure context"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="3f11904c-7d8e-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="41"/>
+            <column name="name" value="Procedure device"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="468c4aa3-7d8e-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="42"/>
+            <column name="name" value="Procedure morphology"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="5383e889-7d8e-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="43"/>
+            <column name="name" value="Procedure site"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="5ad2655d-7d8e-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="44"/>
+            <column name="name" value="Procedure site - Direct"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="66085196-7d8e-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="45"/>
+            <column name="name" value="Procedure site - Indirect"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="7080e843-7d8e-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="46"/>
+            <column name="name" value="Property"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="76bfb796-7d8e-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="47"/>
+            <column name="name" value="Recipient category"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="7e7d00e4-7d8e-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="48"/>
+            <column name="name" value="Revision status"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="851e14c1-7d8e-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="49"/>
+            <column name="name" value="Route of administration"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="8ee5b13d-7d8e-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="50"/>
+            <column name="name" value="Scale type"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="986acf48-7d8e-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="51"/>
+            <column name="name" value="Specimen procedure"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="a6937642-7d8e-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="52"/>
+            <column name="name" value="Specimen source identity"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="b1d6941e-7d8e-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="53"/>
+            <column name="name" value="Specimen source morphology"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="b7c793c1-7d8e-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="54"/>
+            <column name="name" value="Specimen source topography"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="be9f9eb8-7d8e-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="55"/>
+            <column name="name" value="Specimen substance"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="c8f2bacb-7d8e-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="56"/>
+            <column name="name" value="Subject of information"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="d0664c4f-7d8e-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="57"/>
+            <column name="name" value="Subject relationship context"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="dace9d13-7d8e-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="58"/>
+            <column name="name" value="Surgical approach"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="e3cd666d-7d8e-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="59"/>
+            <column name="name" value="Temporal context"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="ed96447d-7d8e-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="60"/>
+            <column name="name" value="Time aspect"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="f415bcce-7d8e-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="61"/>
+            <column name="name" value="Using access device"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="fa9538a9-7d8e-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="62"/>
+            <column name="name" value="Using device"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="06588655-7d8f-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="63"/>
+            <column name="name" value="Using energy"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="0c2ae0bc-7d8f-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="64"/>
+            <column name="name" value="Using substance"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="13d2c607-7d8f-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="65"/>
+            <column name="name" value="IS A"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="1ce7a784-7d8f-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="66"/>
+            <column name="name" value="MAY BE A"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="267812a3-7d8f-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="67"/>
+            <column name="name" value="MOVED FROM"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="2de3168e-7d8f-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="68"/>
+            <column name="name" value="MOVED TO"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="32f0fd99-7d8f-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="69"/>
+            <column name="name" value="REPLACED BY"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="3b3b9a7d-7d8f-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+        <insert tableName="concept_map_type">
+            <column name="concept_map_type_id" valueNumeric="70"/>
+            <column name="name" value="WAS A"/>
+            <column name="description"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="is_hidden" valueBoolean="true"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="41a034da-7d8f-11e1-909d-c80aa9edcf4e"/>
+        </insert>
+    </changeSet>
+    <changeSet author="wolf (generated)" id="1582473679024-6">
+        <insert tableName="concept_name">
+            <column name="concept_name_id" valueNumeric="1"/>
+            <column name="concept_id" valueNumeric="1"/>
+            <column name="name" value="Verdadeiro"/>
+            <column name="locale" value="pt"/>
+            <column name="locale_preferred" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T18:29:58"/>
+            <column name="concept_name_type"/>
+            <column name="voided" valueBoolean="false"/>
+            <column name="voided_by"/>
+            <column name="date_voided"/>
+            <column name="void_reason"/>
+            <column name="uuid" value="7561f550-ccee-43b6-bcf4-269992d6c284"/>
+            <column name="date_changed"/>
+            <column name="changed_by"/>
+        </insert>
+        <insert tableName="concept_name">
+            <column name="concept_name_id" valueNumeric="2"/>
+            <column name="concept_id" valueNumeric="1"/>
+            <column name="name" value="Sim"/>
+            <column name="locale" value="pt"/>
+            <column name="locale_preferred" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T18:29:58"/>
+            <column name="concept_name_type"/>
+            <column name="voided" valueBoolean="false"/>
+            <column name="voided_by"/>
+            <column name="date_voided"/>
+            <column name="void_reason"/>
+            <column name="uuid" value="89522273-55b5-4c4a-8e0b-cc7a66f3f3aa"/>
+            <column name="date_changed"/>
+            <column name="changed_by"/>
+        </insert>
+        <insert tableName="concept_name">
+            <column name="concept_name_id" valueNumeric="3"/>
+            <column name="concept_id" valueNumeric="1"/>
+            <column name="name" value="True"/>
+            <column name="locale" value="en"/>
+            <column name="locale_preferred" valueBoolean="true"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T18:29:58"/>
+            <column name="concept_name_type" value="FULLY_SPECIFIED"/>
+            <column name="voided" valueBoolean="false"/>
+            <column name="voided_by"/>
+            <column name="date_voided"/>
+            <column name="void_reason"/>
+            <column name="uuid" value="111eb000-3113-4d74-9d9b-98ae5d566a98"/>
+            <column name="date_changed"/>
+            <column name="changed_by"/>
+        </insert>
+        <insert tableName="concept_name">
+            <column name="concept_name_id" valueNumeric="4"/>
+            <column name="concept_id" valueNumeric="1"/>
+            <column name="name" value="Yes"/>
+            <column name="locale" value="en"/>
+            <column name="locale_preferred" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T18:29:58"/>
+            <column name="concept_name_type"/>
+            <column name="voided" valueBoolean="false"/>
+            <column name="voided_by"/>
+            <column name="date_voided"/>
+            <column name="void_reason"/>
+            <column name="uuid" value="a31778d2-53ab-4c4b-a333-a0149d1c25c6"/>
+            <column name="date_changed"/>
+            <column name="changed_by"/>
+        </insert>
+        <insert tableName="concept_name">
+            <column name="concept_name_id" valueNumeric="5"/>
+            <column name="concept_id" valueNumeric="1"/>
+            <column name="name" value="Vero"/>
+            <column name="locale" value="it"/>
+            <column name="locale_preferred" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T18:29:58"/>
+            <column name="concept_name_type"/>
+            <column name="voided" valueBoolean="false"/>
+            <column name="voided_by"/>
+            <column name="date_voided"/>
+            <column name="void_reason"/>
+            <column name="uuid" value="a069d777-3999-4bb4-8217-d4fae1f337bc"/>
+            <column name="date_changed"/>
+            <column name="changed_by"/>
+        </insert>
+        <insert tableName="concept_name">
+            <column name="concept_name_id" valueNumeric="6"/>
+            <column name="concept_id" valueNumeric="1"/>
+            <column name="name" value="Sì"/>
+            <column name="locale" value="it"/>
+            <column name="locale_preferred" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T18:29:58"/>
+            <column name="concept_name_type"/>
+            <column name="voided" valueBoolean="false"/>
+            <column name="voided_by"/>
+            <column name="date_voided"/>
+            <column name="void_reason"/>
+            <column name="uuid" value="f16c811c-d970-4f02-be47-0c7afea9eddc"/>
+            <column name="date_changed"/>
+            <column name="changed_by"/>
+        </insert>
+        <insert tableName="concept_name">
+            <column name="concept_name_id" valueNumeric="7"/>
+            <column name="concept_id" valueNumeric="1"/>
+            <column name="name" value="Vrai"/>
+            <column name="locale" value="fr"/>
+            <column name="locale_preferred" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T18:29:58"/>
+            <column name="concept_name_type"/>
+            <column name="voided" valueBoolean="false"/>
+            <column name="voided_by"/>
+            <column name="date_voided"/>
+            <column name="void_reason"/>
+            <column name="uuid" value="bb75175c-5d1b-492a-8c38-98506e2e6b2d"/>
+            <column name="date_changed"/>
+            <column name="changed_by"/>
+        </insert>
+        <insert tableName="concept_name">
+            <column name="concept_name_id" valueNumeric="8"/>
+            <column name="concept_id" valueNumeric="1"/>
+            <column name="name" value="Oui"/>
+            <column name="locale" value="fr"/>
+            <column name="locale_preferred" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T18:29:58"/>
+            <column name="concept_name_type"/>
+            <column name="voided" valueBoolean="false"/>
+            <column name="voided_by"/>
+            <column name="date_voided"/>
+            <column name="void_reason"/>
+            <column name="uuid" value="c4c4b0f6-c80c-410b-9f48-72b683072184"/>
+            <column name="date_changed"/>
+            <column name="changed_by"/>
+        </insert>
+        <insert tableName="concept_name">
+            <column name="concept_name_id" valueNumeric="9"/>
+            <column name="concept_id" valueNumeric="1"/>
+            <column name="name" value="Verdadero"/>
+            <column name="locale" value="es"/>
+            <column name="locale_preferred" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T18:29:58"/>
+            <column name="concept_name_type"/>
+            <column name="voided" valueBoolean="false"/>
+            <column name="voided_by"/>
+            <column name="date_voided"/>
+            <column name="void_reason"/>
+            <column name="uuid" value="bf9ace2a-ff96-44fc-b529-172f5c3ac0b0"/>
+            <column name="date_changed"/>
+            <column name="changed_by"/>
+        </insert>
+        <insert tableName="concept_name">
+            <column name="concept_name_id" valueNumeric="10"/>
+            <column name="concept_id" valueNumeric="1"/>
+            <column name="name" value="Sí"/>
+            <column name="locale" value="es"/>
+            <column name="locale_preferred" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T18:29:58"/>
+            <column name="concept_name_type"/>
+            <column name="voided" valueBoolean="false"/>
+            <column name="voided_by"/>
+            <column name="date_voided"/>
+            <column name="void_reason"/>
+            <column name="uuid" value="b58d53a3-c6dd-469a-8db1-0a80dfe4c542"/>
+            <column name="date_changed"/>
+            <column name="changed_by"/>
+        </insert>
+        <insert tableName="concept_name">
+            <column name="concept_name_id" valueNumeric="11"/>
+            <column name="concept_id" valueNumeric="2"/>
+            <column name="name" value="Falso"/>
+            <column name="locale" value="pt"/>
+            <column name="locale_preferred" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T18:29:58"/>
+            <column name="concept_name_type"/>
+            <column name="voided" valueBoolean="false"/>
+            <column name="voided_by"/>
+            <column name="date_voided"/>
+            <column name="void_reason"/>
+            <column name="uuid" value="2553457e-849d-4a5c-9824-2f0a9ba79461"/>
+            <column name="date_changed"/>
+            <column name="changed_by"/>
+        </insert>
+        <insert tableName="concept_name">
+            <column name="concept_name_id" valueNumeric="12"/>
+            <column name="concept_id" valueNumeric="2"/>
+            <column name="name" value="Não"/>
+            <column name="locale" value="pt"/>
+            <column name="locale_preferred" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T18:29:58"/>
+            <column name="concept_name_type"/>
+            <column name="voided" valueBoolean="false"/>
+            <column name="voided_by"/>
+            <column name="date_voided"/>
+            <column name="void_reason"/>
+            <column name="uuid" value="38a0828c-c54e-4bdb-8217-defb0fdfc4b6"/>
+            <column name="date_changed"/>
+            <column name="changed_by"/>
+        </insert>
+        <insert tableName="concept_name">
+            <column name="concept_name_id" valueNumeric="13"/>
+            <column name="concept_id" valueNumeric="2"/>
+            <column name="name" value="False"/>
+            <column name="locale" value="en"/>
+            <column name="locale_preferred" valueBoolean="true"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T18:29:58"/>
+            <column name="concept_name_type" value="FULLY_SPECIFIED"/>
+            <column name="voided" valueBoolean="false"/>
+            <column name="voided_by"/>
+            <column name="date_voided"/>
+            <column name="void_reason"/>
+            <column name="uuid" value="ac6d888e-dc00-4402-9a2a-576438161f96"/>
+            <column name="date_changed"/>
+            <column name="changed_by"/>
+        </insert>
+        <insert tableName="concept_name">
+            <column name="concept_name_id" valueNumeric="14"/>
+            <column name="concept_id" valueNumeric="2"/>
+            <column name="name" value="No"/>
+            <column name="locale" value="en"/>
+            <column name="locale_preferred" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T18:29:58"/>
+            <column name="concept_name_type"/>
+            <column name="voided" valueBoolean="false"/>
+            <column name="voided_by"/>
+            <column name="date_voided"/>
+            <column name="void_reason"/>
+            <column name="uuid" value="17a5cdd3-a0a9-406a-b39f-5cd7e8d634c4"/>
+            <column name="date_changed"/>
+            <column name="changed_by"/>
+        </insert>
+        <insert tableName="concept_name">
+            <column name="concept_name_id" valueNumeric="15"/>
+            <column name="concept_id" valueNumeric="2"/>
+            <column name="name" value="Falso"/>
+            <column name="locale" value="it"/>
+            <column name="locale_preferred" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T18:29:58"/>
+            <column name="concept_name_type"/>
+            <column name="voided" valueBoolean="false"/>
+            <column name="voided_by"/>
+            <column name="date_voided"/>
+            <column name="void_reason"/>
+            <column name="uuid" value="026e4e70-28c5-458d-8bbf-be7abaf09519"/>
+            <column name="date_changed"/>
+            <column name="changed_by"/>
+        </insert>
+        <insert tableName="concept_name">
+            <column name="concept_name_id" valueNumeric="16"/>
+            <column name="concept_id" valueNumeric="2"/>
+            <column name="name" value="No"/>
+            <column name="locale" value="it"/>
+            <column name="locale_preferred" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T18:29:58"/>
+            <column name="concept_name_type"/>
+            <column name="voided" valueBoolean="false"/>
+            <column name="voided_by"/>
+            <column name="date_voided"/>
+            <column name="void_reason"/>
+            <column name="uuid" value="23851ffa-da5d-4086-8107-e0318b4d26eb"/>
+            <column name="date_changed"/>
+            <column name="changed_by"/>
+        </insert>
+        <insert tableName="concept_name">
+            <column name="concept_name_id" valueNumeric="17"/>
+            <column name="concept_id" valueNumeric="2"/>
+            <column name="name" value="Faux"/>
+            <column name="locale" value="fr"/>
+            <column name="locale_preferred" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T18:29:58"/>
+            <column name="concept_name_type"/>
+            <column name="voided" valueBoolean="false"/>
+            <column name="voided_by"/>
+            <column name="date_voided"/>
+            <column name="void_reason"/>
+            <column name="uuid" value="5709a1b5-b3de-472f-bf7a-eb57c5cb7144"/>
+            <column name="date_changed"/>
+            <column name="changed_by"/>
+        </insert>
+        <insert tableName="concept_name">
+            <column name="concept_name_id" valueNumeric="18"/>
+            <column name="concept_id" valueNumeric="2"/>
+            <column name="name" value="Non"/>
+            <column name="locale" value="fr"/>
+            <column name="locale_preferred" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T18:29:58"/>
+            <column name="concept_name_type"/>
+            <column name="voided" valueBoolean="false"/>
+            <column name="voided_by"/>
+            <column name="date_voided"/>
+            <column name="void_reason"/>
+            <column name="uuid" value="3990b17b-22a0-4b66-9d06-1645030e6b60"/>
+            <column name="date_changed"/>
+            <column name="changed_by"/>
+        </insert>
+        <insert tableName="concept_name">
+            <column name="concept_name_id" valueNumeric="19"/>
+            <column name="concept_id" valueNumeric="2"/>
+            <column name="name" value="Falso"/>
+            <column name="locale" value="es"/>
+            <column name="locale_preferred" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T18:29:58"/>
+            <column name="concept_name_type"/>
+            <column name="voided" valueBoolean="false"/>
+            <column name="voided_by"/>
+            <column name="date_voided"/>
+            <column name="void_reason"/>
+            <column name="uuid" value="ae3cf994-72e1-471d-9af0-96dace0b6787"/>
+            <column name="date_changed"/>
+            <column name="changed_by"/>
+        </insert>
+        <insert tableName="concept_name">
+            <column name="concept_name_id" valueNumeric="20"/>
+            <column name="concept_id" valueNumeric="2"/>
+            <column name="name" value="No"/>
+            <column name="locale" value="es"/>
+            <column name="locale_preferred" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T18:29:58"/>
+            <column name="concept_name_type"/>
+            <column name="voided" valueBoolean="false"/>
+            <column name="voided_by"/>
+            <column name="date_voided"/>
+            <column name="void_reason"/>
+            <column name="uuid" value="72071f05-d7e2-4687-ac2e-c7d9809d888a"/>
+            <column name="date_changed"/>
+            <column name="changed_by"/>
+        </insert>
+    </changeSet>
+    <changeSet author="wolf (generated)" id="1582473679024-7">
+        <insert tableName="concept_stop_word">
+            <column name="concept_stop_word_id" valueNumeric="1"/>
+            <column name="word" value="A"/>
+            <column name="locale" value="en"/>
+            <column name="uuid" value="f5f45540-e2a7-11df-87ae-18a905e044dc"/>
+        </insert>
+        <insert tableName="concept_stop_word">
+            <column name="concept_stop_word_id" valueNumeric="2"/>
+            <column name="word" value="AND"/>
+            <column name="locale" value="en"/>
+            <column name="uuid" value="f5f469ae-e2a7-11df-87ae-18a905e044dc"/>
+        </insert>
+        <insert tableName="concept_stop_word">
+            <column name="concept_stop_word_id" valueNumeric="3"/>
+            <column name="word" value="AT"/>
+            <column name="locale" value="en"/>
+            <column name="uuid" value="f5f47070-e2a7-11df-87ae-18a905e044dc"/>
+        </insert>
+        <insert tableName="concept_stop_word">
+            <column name="concept_stop_word_id" valueNumeric="4"/>
+            <column name="word" value="BUT"/>
+            <column name="locale" value="en"/>
+            <column name="uuid" value="f5f476c4-e2a7-11df-87ae-18a905e044dc"/>
+        </insert>
+        <insert tableName="concept_stop_word">
+            <column name="concept_stop_word_id" valueNumeric="5"/>
+            <column name="word" value="BY"/>
+            <column name="locale" value="en"/>
+            <column name="uuid" value="f5f47d04-e2a7-11df-87ae-18a905e044dc"/>
+        </insert>
+        <insert tableName="concept_stop_word">
+            <column name="concept_stop_word_id" valueNumeric="6"/>
+            <column name="word" value="FOR"/>
+            <column name="locale" value="en"/>
+            <column name="uuid" value="f5f4834e-e2a7-11df-87ae-18a905e044dc"/>
+        </insert>
+        <insert tableName="concept_stop_word">
+            <column name="concept_stop_word_id" valueNumeric="7"/>
+            <column name="word" value="HAS"/>
+            <column name="locale" value="en"/>
+            <column name="uuid" value="f5f48a24-e2a7-11df-87ae-18a905e044dc"/>
+        </insert>
+        <insert tableName="concept_stop_word">
+            <column name="concept_stop_word_id" valueNumeric="8"/>
+            <column name="word" value="OF"/>
+            <column name="locale" value="en"/>
+            <column name="uuid" value="f5f49064-e2a7-11df-87ae-18a905e044dc"/>
+        </insert>
+        <insert tableName="concept_stop_word">
+            <column name="concept_stop_word_id" valueNumeric="9"/>
+            <column name="word" value="THE"/>
+            <column name="locale" value="en"/>
+            <column name="uuid" value="f5f496ae-e2a7-11df-87ae-18a905e044dc"/>
+        </insert>
+        <insert tableName="concept_stop_word">
+            <column name="concept_stop_word_id" valueNumeric="10"/>
+            <column name="word" value="TO"/>
+            <column name="locale" value="en"/>
+            <column name="uuid" value="f5f49cda-e2a7-11df-87ae-18a905e044dc"/>
+        </insert>
+    </changeSet>
+    <changeSet author="wolf (generated)" id="1582473679024-8">
+        <insert tableName="encounter_role">
+            <column name="encounter_role_id" valueNumeric="1"/>
+            <column name="name" value="Unknown"/>
+            <column name="description" value="Unknown encounter role for legacy providers with no encounter role set"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2011-08-18T14:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="a0b03050-c99b-11e0-9572-0800200c9a66"/>
+        </insert>
+    </changeSet>
+    <changeSet author="wolf (generated)" id="1582473679024-9">
+        <insert tableName="field_type">
+            <column name="field_type_id" valueNumeric="1"/>
+            <column name="name" value="Concept"/>
+            <column name="description" value=""/>
+            <column name="is_set" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2005-02-22T00:00:00"/>
+            <column name="uuid" value="8d5e7d7c-c2cc-11de-8d13-0010c6dffd0f"/>
+        </insert>
+        <insert tableName="field_type">
+            <column name="field_type_id" valueNumeric="2"/>
+            <column name="name" value="Database element"/>
+            <column name="description" value=""/>
+            <column name="is_set" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2005-02-22T00:00:00"/>
+            <column name="uuid" value="8d5e8196-c2cc-11de-8d13-0010c6dffd0f"/>
+        </insert>
+        <insert tableName="field_type">
+            <column name="field_type_id" valueNumeric="3"/>
+            <column name="name" value="Set of Concepts"/>
+            <column name="description" value=""/>
+            <column name="is_set" valueBoolean="true"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2005-02-22T00:00:00"/>
+            <column name="uuid" value="8d5e836c-c2cc-11de-8d13-0010c6dffd0f"/>
+        </insert>
+        <insert tableName="field_type">
+            <column name="field_type_id" valueNumeric="4"/>
+            <column name="name" value="Miscellaneous Set"/>
+            <column name="description" value=""/>
+            <column name="is_set" valueBoolean="true"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2005-02-22T00:00:00"/>
+            <column name="uuid" value="8d5e852e-c2cc-11de-8d13-0010c6dffd0f"/>
+        </insert>
+        <insert tableName="field_type">
+            <column name="field_type_id" valueNumeric="5"/>
+            <column name="name" value="Section"/>
+            <column name="description" value=""/>
+            <column name="is_set" valueBoolean="true"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2005-02-22T00:00:00"/>
+            <column name="uuid" value="8d5e86fa-c2cc-11de-8d13-0010c6dffd0f"/>
+        </insert>
+    </changeSet>
+    <changeSet author="wolf (generated)" id="1582473679024-11">
+        <insert tableName="hl7_source">
+            <column name="hl7_source_id" valueNumeric="1"/>
+            <column name="name" value="LOCAL"/>
+            <column name="description" value=""/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2006-09-01T00:00:00"/>
+            <column name="uuid" value="8d6b8bb6-c2cc-11de-8d13-0010c6dffd0f"/>
+        </insert>
+    </changeSet>
+    <changeSet author="wolf (generated)" id="1582473679024-14">
+        <insert tableName="location">
+            <column name="location_id" valueNumeric="1"/>
+            <column name="name" value="Unknown Location"/>
+            <column name="description"/>
+            <column name="address1" value=""/>
+            <column name="address2" value=""/>
+            <column name="city_village" value=""/>
+            <column name="state_province" value=""/>
+            <column name="postal_code" value=""/>
+            <column name="country" value=""/>
+            <column name="latitude"/>
+            <column name="longitude"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2005-09-22T00:00:00"/>
+            <column name="county_district"/>
+            <column name="address3"/>
+            <column name="address4"/>
+            <column name="address5"/>
+            <column name="address6"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="parent_location"/>
+            <column name="uuid" value="8d6c993e-c2cc-11de-8d13-0010c6dffd0f"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="address7"/>
+            <column name="address8"/>
+            <column name="address9"/>
+            <column name="address10"/>
+            <column name="address11"/>
+            <column name="address12"/>
+            <column name="address13"/>
+            <column name="address14"/>
+            <column name="address15"/>
+        </insert>
+    </changeSet>
+    <changeSet author="wolf (generated)" id="1582473679024-15">
+        <insert tableName="order_type">
+            <column name="order_type_id" valueNumeric="2"/>
+            <column name="name" value="Drug Order"/>
+            <column name="description" value="An order for a medication to be given to the patient"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2010-05-12T00:00:00"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="131168f4-15f5-102d-96e4-000c29c2a5d7"/>
+            <column name="java_class_name" value="org.openmrs.DrugOrder"/>
+            <column name="parent"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+        </insert>
+        <insert tableName="order_type">
+            <column name="order_type_id" valueNumeric="3"/>
+            <column name="name" value="Test Order"/>
+            <column name="description" value="Order type for test orders"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2014-03-09T00:00:00"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="52a447d3-a64a-11e3-9aeb-50e549534c5e"/>
+            <column name="java_class_name" value="org.openmrs.TestOrder"/>
+            <column name="parent"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+        </insert>
+    </changeSet>
+    <changeSet author="wolf (generated)" id="1582473679024-16">
+        <insert tableName="patient_identifier_type">
+            <column name="patient_identifier_type_id" valueNumeric="1"/>
+            <column name="name" value="OpenMRS Identification Number"/>
+            <column name="description" value="Unique number used in OpenMRS"/>
+            <column name="format" value=""/>
+            <column name="check_digit" valueBoolean="true"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2005-09-22T00:00:00"/>
+            <column name="required" valueBoolean="false"/>
+            <column name="format_description"/>
+            <column name="validator" value="org.openmrs.patient.impl.LuhnIdentifierValidator"/>
+            <column name="location_behavior"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="8d793bee-c2cc-11de-8d13-0010c6dffd0f"/>
+            <column name="uniqueness_behavior"/>
+            <column name="date_changed"/>
+            <column name="changed_by"/>
+        </insert>
+        <insert tableName="patient_identifier_type">
+            <column name="patient_identifier_type_id" valueNumeric="2"/>
+            <column name="name" value="Old Identification Number"/>
+            <column name="description" value="Number given out prior to the OpenMRS system (No check digit)"/>
+            <column name="format" value=""/>
+            <column name="check_digit" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2005-09-22T00:00:00"/>
+            <column name="required" valueBoolean="false"/>
+            <column name="format_description"/>
+            <column name="validator"/>
+            <column name="location_behavior"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="8d79403a-c2cc-11de-8d13-0010c6dffd0f"/>
+            <column name="uniqueness_behavior"/>
+            <column name="date_changed"/>
+            <column name="changed_by"/>
+        </insert>
+    </changeSet>
+    <changeSet author="wolf (generated)" id="1582473679024-18">
+        <insert tableName="person_attribute_type">
+            <column name="person_attribute_type_id" valueNumeric="1"/>
+            <column name="name" value="Race"/>
+            <column name="description" value="Group of persons related by common descent or heredity"/>
+            <column name="format" value="java.lang.String"/>
+            <column name="foreign_key" valueNumeric="0"/>
+            <column name="searchable" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2007-05-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="edit_privilege"/>
+            <column name="sort_weight" valueNumeric="6.0"/>
+            <column name="uuid" value="8d871386-c2cc-11de-8d13-0010c6dffd0f"/>
+        </insert>
+        <insert tableName="person_attribute_type">
+            <column name="person_attribute_type_id" valueNumeric="2"/>
+            <column name="name" value="Birthplace"/>
+            <column name="description" value="Location of persons birth"/>
+            <column name="format" value="java.lang.String"/>
+            <column name="foreign_key" valueNumeric="0"/>
+            <column name="searchable" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2007-05-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="edit_privilege"/>
+            <column name="sort_weight" valueNumeric="0.0"/>
+            <column name="uuid" value="8d8718c2-c2cc-11de-8d13-0010c6dffd0f"/>
+        </insert>
+        <insert tableName="person_attribute_type">
+            <column name="person_attribute_type_id" valueNumeric="3"/>
+            <column name="name" value="Citizenship"/>
+            <column name="description" value="Country of which this person is a member"/>
+            <column name="format" value="java.lang.String"/>
+            <column name="foreign_key" valueNumeric="0"/>
+            <column name="searchable" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2007-05-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="edit_privilege"/>
+            <column name="sort_weight" valueNumeric="1.0"/>
+            <column name="uuid" value="8d871afc-c2cc-11de-8d13-0010c6dffd0f"/>
+        </insert>
+        <insert tableName="person_attribute_type">
+            <column name="person_attribute_type_id" valueNumeric="4"/>
+            <column name="name" value="Mother's Name"/>
+            <column name="description" value="First or last name of this person's mother"/>
+            <column name="format" value="java.lang.String"/>
+            <column name="foreign_key" valueNumeric="0"/>
+            <column name="searchable" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2007-05-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="edit_privilege"/>
+            <column name="sort_weight" valueNumeric="5.0"/>
+            <column name="uuid" value="8d871d18-c2cc-11de-8d13-0010c6dffd0f"/>
+        </insert>
+        <insert tableName="person_attribute_type">
+            <column name="person_attribute_type_id" valueNumeric="5"/>
+            <column name="name" value="Civil Status"/>
+            <column name="description" value="Marriage status of this person"/>
+            <column name="format" value="org.openmrs.Concept"/>
+            <column name="foreign_key" valueNumeric="1054"/>
+            <column name="searchable" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2007-05-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="edit_privilege"/>
+            <column name="sort_weight" valueNumeric="2.0"/>
+            <column name="uuid" value="8d871f2a-c2cc-11de-8d13-0010c6dffd0f"/>
+        </insert>
+        <insert tableName="person_attribute_type">
+            <column name="person_attribute_type_id" valueNumeric="6"/>
+            <column name="name" value="Health District"/>
+            <column name="description" value="District/region in which this patient' home health center resides"/>
+            <column name="format" value="java.lang.String"/>
+            <column name="foreign_key" valueNumeric="0"/>
+            <column name="searchable" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2007-05-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="edit_privilege"/>
+            <column name="sort_weight" valueNumeric="4.0"/>
+            <column name="uuid" value="8d872150-c2cc-11de-8d13-0010c6dffd0f"/>
+        </insert>
+        <insert tableName="person_attribute_type">
+            <column name="person_attribute_type_id" valueNumeric="7"/>
+            <column name="name" value="Health Center"/>
+            <column name="description" value="Specific Location of this person's home health center."/>
+            <column name="format" value="org.openmrs.Location"/>
+            <column name="foreign_key" valueNumeric="0"/>
+            <column name="searchable" valueBoolean="false"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2007-05-04T00:00:00"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="edit_privilege"/>
+            <column name="sort_weight" valueNumeric="3.0"/>
+            <column name="uuid" value="8d87236c-c2cc-11de-8d13-0010c6dffd0f"/>
+        </insert>
+    </changeSet>
+    <changeSet author="wolf (generated)" id="1582473679024-19">
+        <insert tableName="person_name">
+            <column name="person_name_id" valueNumeric="1"/>
+            <column name="preferred" valueBoolean="true"/>
+            <column name="person_id" valueNumeric="1"/>
+            <column name="prefix"/>
+            <column name="given_name" value="Super"/>
+            <column name="middle_name" value=""/>
+            <column name="family_name_prefix"/>
+            <column name="family_name" value="User"/>
+            <column name="family_name2"/>
+            <column name="family_name_suffix"/>
+            <column name="degree"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2005-01-01T00:00:00"/>
+            <column name="voided" valueBoolean="false"/>
+            <column name="voided_by"/>
+            <column name="date_voided"/>
+            <column name="void_reason"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="uuid" value="5f897a68-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+    </changeSet>
+    <changeSet author="wolf (generated)" id="1582473679024-20">
+        <insert tableName="privilege">
+            <column name="privilege" value="Add Allergies"/>
+            <column name="description" value="Add allergies"/>
+            <column name="uuid" value="8d04fc61-45de-4d16-a2f7-39ccbda88739"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Add Cohorts"/>
+            <column name="description" value="Able to add a cohort to the system"/>
+            <column name="uuid" value="5f8a2896-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Add Concept Proposals"/>
+            <column name="description" value="Able to add concept proposals to the system"/>
+            <column name="uuid" value="5f8a2a1c-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Add Encounters"/>
+            <column name="description" value="Able to add patient encounters"/>
+            <column name="uuid" value="5f8a2a8a-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Add HL7 Inbound Archive"/>
+            <column name="description" value="Able to add an HL7 archive item"/>
+            <column name="uuid" value="3192b2c9-3844-42f7-8e8e-f8964768ca26"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Add HL7 Inbound Exception"/>
+            <column name="description" value="Able to add an HL7 error item"/>
+            <column name="uuid" value="e41c644c-1866-4572-a78d-6bfe36dd6a4b"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Add HL7 Inbound Queue"/>
+            <column name="description" value="Able to add an HL7 Queue item"/>
+            <column name="uuid" value="b20ee658-9faa-4c6a-bc95-b5a9a4bfa4c2"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Add HL7 Source"/>
+            <column name="description" value="Able to add an HL7 Source"/>
+            <column name="uuid" value="b8a2625f-3130-4b15-a3ba-907600d1bb03"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Add Observations"/>
+            <column name="description" value="Able to add patient observations"/>
+            <column name="uuid" value="5f8a2ada-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Add Orders"/>
+            <column name="description" value="Able to add orders"/>
+            <column name="uuid" value="5f8a2b7a-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Add Patient Identifiers"/>
+            <column name="description" value="Able to add patient identifiers"/>
+            <column name="uuid" value="5f8a2bc0-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Add Patient Programs"/>
+            <column name="description" value="Able to add patients to programs"/>
+            <column name="uuid" value="5f8a2c10-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Add Patients"/>
+            <column name="description" value="Able to add patients"/>
+            <column name="uuid" value="5f8a2c56-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Add People"/>
+            <column name="description" value="Able to add person objects"/>
+            <column name="uuid" value="5f8a2c92-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Add Problems"/>
+            <column name="description" value="Add problems"/>
+            <column name="uuid" value="2f6d256a-1f73-4776-ad5b-f94c80f7beea"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Add Relationships"/>
+            <column name="description" value="Able to add relationships"/>
+            <column name="uuid" value="5f8a2cce-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Add Report Objects"/>
+            <column name="description" value="Able to add report objects"/>
+            <column name="uuid" value="5f8a2cf6-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Add Reports"/>
+            <column name="description" value="Able to add reports"/>
+            <column name="uuid" value="5f8a2d32-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Add Users"/>
+            <column name="description" value="Able to add users to OpenMRS"/>
+            <column name="uuid" value="5f8a2d5a-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Add Visits"/>
+            <column name="description" value="Able to add visits"/>
+            <column name="uuid" value="65d14b28-3989-11e6-899a-a4d646d86a8a"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Assign System Developer Role"/>
+            <column name="description" value="Able to assign System Developer role"/>
+            <column name="uuid" value="09cbaabc-ae63-44ed-9d4d-34ec6610e0a5"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Configure Visits"/>
+            <column name="description" value="Able to choose encounter visit handler and enable/disable encounter visits"/>
+            <column name="uuid" value="d7899df6-68d7-49f1-bc3a-a1a64be157d6"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Delete Cohorts"/>
+            <column name="description" value="Able to add a cohort to the system"/>
+            <column name="uuid" value="5f8a2d8c-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Delete Concept Proposals"/>
+            <column name="description" value="Able to delete concept proposals from the system"/>
+            <column name="uuid" value="5f8a2dbe-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Delete Conditions"/>
+            <column name="description" value="Able to delete conditions"/>
+            <column name="uuid" value="ef725ffa-2d14-41d8-b655-2d2430963b21"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Delete Diagnoses"/>
+            <column name="description" value="Able to delete diagnoses"/>
+            <column name="uuid" value="a7882352-41b4-4da7-b422-84470ede7052"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Delete Encounters"/>
+            <column name="description" value="Able to delete patient encounters"/>
+            <column name="uuid" value="5f8a2de6-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Delete HL7 Inbound Archive"/>
+            <column name="description" value="Able to delete/retire an HL7 archive item"/>
+            <column name="uuid" value="7cd1f479-4e6a-422d-8b4d-7a7e5758d253"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Delete HL7 Inbound Exception"/>
+            <column name="description" value="Able to delete an HL7 archive item"/>
+            <column name="uuid" value="25109fd5-edd1-4d11-84fe-a50b4001b50b"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Delete HL7 Inbound Queue"/>
+            <column name="description" value="Able to delete an HL7 Queue item"/>
+            <column name="uuid" value="0e39bf44-a08b-4d61-9d20-08d2cc0ab51e"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Delete Notes"/>
+            <column name="description" value="Able to delete patient notes"/>
+            <column name="uuid" value="ff39bade-4ea2-463b-8a66-ff4b26f85f25"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Delete Observations"/>
+            <column name="description" value="Able to delete patient observations"/>
+            <column name="uuid" value="5f8a2e18-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Delete Orders"/>
+            <column name="description" value="Able to delete orders"/>
+            <column name="uuid" value="5f8a2e40-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Delete Patient Identifiers"/>
+            <column name="description" value="Able to delete patient identifiers"/>
+            <column name="uuid" value="5f8a2e72-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Delete Patient Programs"/>
+            <column name="description" value="Able to delete patients from programs"/>
+            <column name="uuid" value="5f8a2ea4-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Delete Patients"/>
+            <column name="description" value="Able to delete patients"/>
+            <column name="uuid" value="5f8a2ecc-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Delete People"/>
+            <column name="description" value="Able to delete objects"/>
+            <column name="uuid" value="5f8a2efe-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Delete Relationships"/>
+            <column name="description" value="Able to delete relationships"/>
+            <column name="uuid" value="5f8a2f26-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Delete Report Objects"/>
+            <column name="description" value="Able to delete report objects"/>
+            <column name="uuid" value="5f8a2f58-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Delete Reports"/>
+            <column name="description" value="Able to delete reports"/>
+            <column name="uuid" value="5f8a2f8a-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Delete Users"/>
+            <column name="description" value="Able to delete users in OpenMRS"/>
+            <column name="uuid" value="5f8a2fb2-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Delete Visits"/>
+            <column name="description" value="Able to delete visits"/>
+            <column name="uuid" value="02d02051-931b-4325-88d9-bf1a6cc85f5d"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit Allergies"/>
+            <column name="description" value="Able to edit allergies"/>
+            <column name="uuid" value="507e9f66-ee25-4113-a55a-4b050022f55a"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit Cohorts"/>
+            <column name="description" value="Able to add a cohort to the system"/>
+            <column name="uuid" value="5f8a2fe4-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit Concept Proposals"/>
+            <column name="description" value="Able to edit concept proposals in the system"/>
+            <column name="uuid" value="5f8a300c-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit Conditions"/>
+            <column name="description" value="Able to edit conditions"/>
+            <column name="uuid" value="910ec2ec-a87b-4528-ad5c-02c500068bf0"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit Diagnoses"/>
+            <column name="description" value="Able to edit diagnoses"/>
+            <column name="uuid" value="107f5169-77a2-48d3-9f69-9f2ca9b419ca"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit Encounters"/>
+            <column name="description" value="Able to edit patient encounters"/>
+            <column name="uuid" value="5f8a303e-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit Notes"/>
+            <column name="description" value="Able to edit patient notes"/>
+            <column name="uuid" value="888fe070-549c-429a-9784-edbaf42e3229"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit Observations"/>
+            <column name="description" value="Able to edit patient observations"/>
+            <column name="uuid" value="5f8a3066-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit Orders"/>
+            <column name="description" value="Able to edit orders"/>
+            <column name="uuid" value="5f8a308e-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit Patient Identifiers"/>
+            <column name="description" value="Able to edit patient identifiers"/>
+            <column name="uuid" value="5f8a30c0-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit Patient Programs"/>
+            <column name="description" value="Able to edit patients in programs"/>
+            <column name="uuid" value="5f8a30e8-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit Patients"/>
+            <column name="description" value="Able to edit patients"/>
+            <column name="uuid" value="5f8a311a-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit People"/>
+            <column name="description" value="Able to edit person objects"/>
+            <column name="uuid" value="5f8a3142-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit Problems"/>
+            <column name="description" value="Able to edit problems"/>
+            <column name="uuid" value="5131daf7-2c4d-4c2b-8f6e-bf7cf8290444"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit Relationships"/>
+            <column name="description" value="Able to edit relationships"/>
+            <column name="uuid" value="5f8a3174-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit Report Objects"/>
+            <column name="description" value="Able to edit report objects"/>
+            <column name="uuid" value="5f8a319c-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit Reports"/>
+            <column name="description" value="Able to edit reports"/>
+            <column name="uuid" value="5f8a31ce-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit User Passwords"/>
+            <column name="description" value="Able to change the passwords of users in OpenMRS"/>
+            <column name="uuid" value="5f8a31f6-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit Users"/>
+            <column name="description" value="Able to edit users in OpenMRS"/>
+            <column name="uuid" value="5f8a3228-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Edit Visits"/>
+            <column name="description" value="Able to edit visits"/>
+            <column name="uuid" value="14f4da3c-d1e1-4571-b379-0b533496f5b7"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Form Entry"/>
+            <column name="description" value="Allows user to access Form Entry pages/functions"/>
+            <column name="uuid" value="5f8a3250-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Allergies"/>
+            <column name="description" value="Able to get allergies"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a220"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Care Settings"/>
+            <column name="description" value="Able to get Care Settings"/>
+            <column name="uuid" value="1ab26030-a207-4a22-be52-b40be3e401dd"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Concept Attribute Types"/>
+            <column name="description" value="Able to get concept attribute types"/>
+            <column name="uuid" value="498317ea-e55f-4488-9e87-0db1349c3d11"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Concept Classes"/>
+            <column name="description" value="Able to get concept classes"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a238"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Concept Datatypes"/>
+            <column name="description" value="Able to get concept datatypes"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a237"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Concept Map Types"/>
+            <column name="description" value="Able to get concept map types"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a230"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Concept Proposals"/>
+            <column name="description" value="Able to get concept proposals to the system"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a250"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Concept Reference Terms"/>
+            <column name="description" value="Able to get concept reference terms"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a229"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Concept Sources"/>
+            <column name="description" value="Able to get concept sources"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a231"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Concepts"/>
+            <column name="description" value="Able to get concept entries"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a251"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Conditions"/>
+            <column name="description" value="Able to get conditions"/>
+            <column name="uuid" value="6b470c18-04e8-42c5-bc34-0ac871a0beb6"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Database Changes"/>
+            <column name="description" value="Able to get database changes from the admin screen"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a222"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Diagnoses"/>
+            <column name="description" value="Able to get diagnoses"/>
+            <column name="uuid" value="77b0b402-c928-4811-b084-f0ef7087a49c"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Encounter Roles"/>
+            <column name="description" value="Able to get encounter roles"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a210"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Encounter Types"/>
+            <column name="description" value="Able to get encounter types"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a247"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Encounters"/>
+            <column name="description" value="Able to get patient encounters"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a248"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Field Types"/>
+            <column name="description" value="Able to get field types"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a234"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Forms"/>
+            <column name="description" value="Able to get forms"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a240"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Global Properties"/>
+            <column name="description" value="Able to get global properties on the administration screen"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a226"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get HL7 Inbound Archive"/>
+            <column name="description" value="Able to get an HL7 archive item"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a217"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get HL7 Inbound Exception"/>
+            <column name="description" value="Able to get an HL7 error item"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a216"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get HL7 Inbound Queue"/>
+            <column name="description" value="Able to get an HL7 Queue item"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a218"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get HL7 Source"/>
+            <column name="description" value="Able to get an HL7 Source"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a219"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Identifier Types"/>
+            <column name="description" value="Able to get patient identifier types"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a239"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Location Attribute Types"/>
+            <column name="description" value="Able to get location attribute types"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a212"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Locations"/>
+            <column name="description" value="Able to get locations"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a246"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Notes"/>
+            <column name="description" value="Able to get patient notes"/>
+            <column name="uuid" value="dcd11774-e77c-48d5-8f34-685741dec359"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Observations"/>
+            <column name="description" value="Able to get patient observations"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a245"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Order Frequencies"/>
+            <column name="description" value="Able to get Order Frequencies"/>
+            <column name="uuid" value="c78007dd-c641-400b-9aac-04420aecc5b6"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Order Sets"/>
+            <column name="description" value="Able to get order sets"/>
+            <column name="uuid" value="e52af909-2baf-4ab6-9862-8a6848448ec0"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Order Types"/>
+            <column name="description" value="Able to get order types"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a233"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Orders"/>
+            <column name="description" value="Able to get orders"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a241"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Patient Cohorts"/>
+            <column name="description" value="Able to get patient cohorts"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a242"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Patient Identifiers"/>
+            <column name="description" value="Able to get patient identifiers"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a243"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Patient Programs"/>
+            <column name="description" value="Able to get which programs that patients are in"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a227"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Patients"/>
+            <column name="description" value="Able to get patients"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a244"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get People"/>
+            <column name="description" value="Able to get person objects"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a224"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Person Attribute Types"/>
+            <column name="description" value="Able to get person attribute types"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a225"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Privileges"/>
+            <column name="description" value="Able to get user privileges"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a236"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Problems"/>
+            <column name="description" value="Able to get problems"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a221"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Programs"/>
+            <column name="description" value="Able to get patient programs"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a228"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Providers"/>
+            <column name="description" value="Able to get Providers"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a211"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Relationship Types"/>
+            <column name="description" value="Able to get relationship types"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a232"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Relationships"/>
+            <column name="description" value="Able to get relationships"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a223"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Roles"/>
+            <column name="description" value="Able to get user roles"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a235"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Users"/>
+            <column name="description" value="Able to get users in OpenMRS"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a249"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Visit Attribute Types"/>
+            <column name="description" value="Able to get visit attribute types"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a213"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Visit Types"/>
+            <column name="description" value="Able to get visit types"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a215"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Visits"/>
+            <column name="description" value="Able to get visits"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a214"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Address Templates"/>
+            <column name="description" value="Able to add/edit/delete address templates"/>
+            <column name="uuid" value="fb21b9ee-fd8a-47b6-8656-bd3a68a44925"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Alerts"/>
+            <column name="description" value="Able to add/edit/delete user alerts"/>
+            <column name="uuid" value="5f8a3282-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Concept Attribute Types"/>
+            <column name="description" value="Able to add/edit/retire concept attribute types"/>
+            <column name="uuid" value="7550fbcb-cb61-4a9f-94d5-eb376afc727f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Concept Classes"/>
+            <column name="description" value="Able to add/edit/retire concept classes"/>
+            <column name="uuid" value="5f8a32aa-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Concept Datatypes"/>
+            <column name="description" value="Able to add/edit/retire concept datatypes"/>
+            <column name="uuid" value="5f8a32dc-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Concept Map Types"/>
+            <column name="description" value="Able to add/edit/retire concept map types"/>
+            <column name="uuid" value="385096c5-6492-41f3-8304-c0144e8fb2e6"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Concept Name tags"/>
+            <column name="description" value="Able to add/edit/delete concept name tags"/>
+            <column name="uuid" value="401cc09a-84c6-4d9e-bf93-4659837edbde"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Concept Reference Terms"/>
+            <column name="description" value="Able to add/edit/retire reference terms"/>
+            <column name="uuid" value="80e45896-d4cd-48a1-b35e-30709bab36b6"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Concept Sources"/>
+            <column name="description" value="Able to add/edit/delete concept sources"/>
+            <column name="uuid" value="5f8a3304-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Concept Stop Words"/>
+            <column name="description" value="Able to view/add/remove the concept stop words"/>
+            <column name="uuid" value="47b5b16e-0ff5-4a4a-ae26-947af73c88ca"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Concepts"/>
+            <column name="description" value="Able to add/edit/delete concept entries"/>
+            <column name="uuid" value="5f8a3336-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Encounter Roles"/>
+            <column name="description" value="Able to add/edit/retire encounter roles"/>
+            <column name="uuid" value="0fbaddea-b053-4841-a1f1-2ca93fd71d9a"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Encounter Types"/>
+            <column name="description" value="Able to add/edit/delete encounter types"/>
+            <column name="uuid" value="5f8a3368-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Field Types"/>
+            <column name="description" value="Able to add/edit/retire field types"/>
+            <column name="uuid" value="5f8a3390-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage FormEntry XSN"/>
+            <column name="description" value="Allows user to upload and edit the xsns stored on the server"/>
+            <column name="uuid" value="5f8a33b8-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Forms"/>
+            <column name="description" value="Able to add/edit/delete forms"/>
+            <column name="uuid" value="5f8a33ea-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Global Properties"/>
+            <column name="description" value="Able to add/edit global properties"/>
+            <column name="uuid" value="5f8a341c-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage HL7 Messages"/>
+            <column name="description" value="Able to add/edit/delete HL7 messages"/>
+            <column name="uuid" value="e43b8830-7c95-42e6-8259-538fec951c66"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Identifier Types"/>
+            <column name="description" value="Able to add/edit/delete patient identifier types"/>
+            <column name="uuid" value="5f8a3444-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Implementation Id"/>
+            <column name="description" value="Able to view/add/edit the implementation id for the system"/>
+            <column name="uuid" value="20e102e1-74b4-4198-905e-9b598c8474f1"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Location Attribute Types"/>
+            <column name="description" value="Able to add/edit/retire location attribute types"/>
+            <column name="uuid" value="5c266720-20c2-4fa2-89d3-56886176d63a"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Location Tags"/>
+            <column name="description" value="Able to add/edit/delete location tags"/>
+            <column name="uuid" value="d6d83d7f-9241-42e6-9689-393920a4f733"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Locations"/>
+            <column name="description" value="Able to add/edit/delete locations"/>
+            <column name="uuid" value="5f8a3476-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Modules"/>
+            <column name="description" value="Able to add/remove modules to the system"/>
+            <column name="uuid" value="5f8a349e-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Order Frequencies"/>
+            <column name="description" value="Able to add/edit/retire Order Frequencies"/>
+            <column name="uuid" value="e3a5205d-ab12-40ca-9160-9ba02198e389"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Order Sets"/>
+            <column name="description" value="Able to manage order sets"/>
+            <column name="uuid" value="059955e6-014f-4e50-b198-24e179784025"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Order Types"/>
+            <column name="description" value="Able to add/edit/retire order types"/>
+            <column name="uuid" value="5f8a34c6-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Person Attribute Types"/>
+            <column name="description" value="Able to add/edit/delete person attribute types"/>
+            <column name="uuid" value="5f8a34f8-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Privileges"/>
+            <column name="description" value="Able to add/edit/delete privileges"/>
+            <column name="uuid" value="5f8a3520-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Programs"/>
+            <column name="description" value="Able to add/view/delete patient programs"/>
+            <column name="uuid" value="5f8a3552-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Providers"/>
+            <column name="description" value="Able to edit Provider"/>
+            <column name="uuid" value="b0b6fe18-9940-42b4-80fc-b05e6ee546f5"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Relationship Types"/>
+            <column name="description" value="Able to add/edit/retire relationship types"/>
+            <column name="uuid" value="5f8a357a-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Relationships"/>
+            <column name="description" value="Able to add/edit/delete relationships"/>
+            <column name="uuid" value="5f8a35ac-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Roles"/>
+            <column name="description" value="Able to add/edit/delete user roles"/>
+            <column name="uuid" value="5f8a35d4-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Scheduler"/>
+            <column name="description" value="Able to add/edit/remove scheduled tasks"/>
+            <column name="uuid" value="5f8a3606-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Search Index"/>
+            <column name="description" value="Able to manage the search index"/>
+            <column name="uuid" value="657bfbbb-a008-43f3-85ac-3163d201b389"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Visit Attribute Types"/>
+            <column name="description" value="Able to add/edit/retire visit attribute types"/>
+            <column name="uuid" value="d0e19ed6-a299-4435-ab8f-2ea76e22fcc4"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Manage Visit Types"/>
+            <column name="description" value="Able to add/edit/delete visit types"/>
+            <column name="uuid" value="f9196849-164f-4522-80d8-488d36faeec2"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Patient Dashboard - View Demographics Section"/>
+            <column name="description" value="Able to view the 'Demographics' tab on the patient dashboard"/>
+            <column name="uuid" value="5f8a362e-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Patient Dashboard - View Encounters Section"/>
+            <column name="description" value="Able to view the 'Encounters' tab on the patient dashboard"/>
+            <column name="uuid" value="5f8a3660-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Patient Dashboard - View Forms Section"/>
+            <column name="description" value="Allows user to view the Forms tab on the patient dashboard"/>
+            <column name="uuid" value="5f8a3692-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Patient Dashboard - View Graphs Section"/>
+            <column name="description" value="Able to view the 'Graphs' tab on the patient dashboard"/>
+            <column name="uuid" value="5f8a36ce-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Patient Dashboard - View Overview Section"/>
+            <column name="description" value="Able to view the 'Overview' tab on the patient dashboard"/>
+            <column name="uuid" value="5f8a3700-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Patient Dashboard - View Patient Summary"/>
+            <column name="description" value="Able to view the 'Summary' tab on the patient dashboard"/>
+            <column name="uuid" value="5f8a3732-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Patient Dashboard - View Regimen Section"/>
+            <column name="description" value="Able to view the 'Regimen' tab on the patient dashboard"/>
+            <column name="uuid" value="5f8a375a-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Patient Overview - View Allergies"/>
+            <column name="description" value="Able to view the Allergies portlet on the patient overview tab"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a261"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Patient Overview - View Patient Actions"/>
+            <column name="description" value="Able to view the Patient Actions portlet on the patient overview tab"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a264"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Patient Overview - View Problem List"/>
+            <column name="description" value="Able to view the Problem List portlet on the patient overview tab"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a260"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Patient Overview - View Programs"/>
+            <column name="description" value="Able to view the Programs portlet on the patient overview tab"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a263"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Patient Overview - View Relationships"/>
+            <column name="description" value="Able to view the Relationships portlet on the patient overview tab"/>
+            <column name="uuid" value="d05118c6-2490-4d78-a41a-390e3596a262"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Purge Field Types"/>
+            <column name="description" value="Able to purge field types"/>
+            <column name="uuid" value="5f8a3796-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Remove Allergies"/>
+            <column name="description" value="Remove allergies"/>
+            <column name="uuid" value="dbdea8f5-9fca-4527-9ef6-5fa03eebf2bd"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Remove Problems"/>
+            <column name="description" value="Remove problems"/>
+            <column name="uuid" value="28ea7e84-e21a-4031-9f9f-2d3eda9d1200"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Task: Modify Allergies"/>
+            <column name="description" value="Able to add, edit, delete allergies"/>
+            <column name="uuid" value="eeb9108e-6905-4712-a13c-b9435db4abcb"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Update HL7 Inbound Archive"/>
+            <column name="description" value="Able to update an HL7 archive item"/>
+            <column name="uuid" value="5dd8306f-eeb4-430e-b5da-a6e02bcafb79"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Update HL7 Inbound Exception"/>
+            <column name="description" value="Able to update an HL7 archive item"/>
+            <column name="uuid" value="e2614f6d-a730-4292-9c10-baf6d912500f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Update HL7 Inbound Queue"/>
+            <column name="description" value="Able to update an HL7 Queue item"/>
+            <column name="uuid" value="f82b7723-110e-47d3-a35b-4552ea1bff9e"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Update HL7 Source"/>
+            <column name="description" value="Able to update an HL7 Source"/>
+            <column name="uuid" value="6e0abfb7-e95c-4efd-82a0-00a02b0e8335"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="Upload XSN"/>
+            <column name="description" value="Allows user to upload/overwrite the XSNs defined for forms"/>
+            <column name="uuid" value="5f8a37c8-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Administration Functions"/>
+            <column name="description" value="Able to view the 'Administration' link in the navigation bar"/>
+            <column name="uuid" value="5f8a37fa-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Allergies"/>
+            <column name="description" value="Able to view allergies in OpenMRS"/>
+            <column name="uuid" value="5f8a382c-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Concept Classes"/>
+            <column name="description" value="Able to view concept classes"/>
+            <column name="uuid" value="5f8a3958-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Concept Datatypes"/>
+            <column name="description" value="Able to view concept datatypes"/>
+            <column name="uuid" value="5f8a398a-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Concept Proposals"/>
+            <column name="description" value="Able to view concept proposals to the system"/>
+            <column name="uuid" value="5f8a39bc-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Concept Sources"/>
+            <column name="description" value="Able to view concept sources"/>
+            <column name="uuid" value="5f8a39ee-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Concepts"/>
+            <column name="description" value="Able to view concept entries"/>
+            <column name="uuid" value="5f8a3a16-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Data Entry Statistics"/>
+            <column name="description" value="Able to view data entry statistics from the admin screen"/>
+            <column name="uuid" value="5f8a3a48-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Encounter Types"/>
+            <column name="description" value="Able to view encounter types"/>
+            <column name="uuid" value="5f8a3a7a-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Encounters"/>
+            <column name="description" value="Able to view patient encounters"/>
+            <column name="uuid" value="5f8a3aa2-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Field Types"/>
+            <column name="description" value="Able to view field types"/>
+            <column name="uuid" value="5f8a3ad4-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Forms"/>
+            <column name="description" value="Able to view forms"/>
+            <column name="uuid" value="5f8a3afc-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Global Properties"/>
+            <column name="description" value="Able to view global properties on the administration screen"/>
+            <column name="uuid" value="5f8a3b2e-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Identifier Types"/>
+            <column name="description" value="Able to view patient identifier types"/>
+            <column name="uuid" value="5f8a3b60-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Locations"/>
+            <column name="description" value="Able to view locations"/>
+            <column name="uuid" value="5f8a3b88-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Navigation Menu"/>
+            <column name="description" value="Ability to see the navigation menu"/>
+            <column name="uuid" value="5f8a3bba-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Observations"/>
+            <column name="description" value="Able to view patient observations"/>
+            <column name="uuid" value="5f8a3be2-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Order Types"/>
+            <column name="description" value="Able to view order types"/>
+            <column name="uuid" value="5f8a3c14-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Orders"/>
+            <column name="description" value="Able to view orders"/>
+            <column name="uuid" value="5f8a3c46-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Patient Cohorts"/>
+            <column name="description" value="Able to view patient cohorts"/>
+            <column name="uuid" value="5f8a3c6e-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Patient Identifiers"/>
+            <column name="description" value="Able to view patient identifiers"/>
+            <column name="uuid" value="5f8a3ca0-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Patient Programs"/>
+            <column name="description" value="Able to see which programs that patients are in"/>
+            <column name="uuid" value="5f8a3cd2-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Patients"/>
+            <column name="description" value="Able to view patients"/>
+            <column name="uuid" value="5f8a3cfa-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View People"/>
+            <column name="description" value="Able to view person objects"/>
+            <column name="uuid" value="5f8a3d2c-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Person Attribute Types"/>
+            <column name="description" value="Able to view person attribute types"/>
+            <column name="uuid" value="5f8a3d5e-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Privileges"/>
+            <column name="description" value="Able to view user privileges"/>
+            <column name="uuid" value="5f8a3d86-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Problems"/>
+            <column name="description" value="Able to view problems in OpenMRS"/>
+            <column name="uuid" value="5f8a3db8-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Programs"/>
+            <column name="description" value="Able to view patient programs"/>
+            <column name="uuid" value="5f8a3de0-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Relationship Types"/>
+            <column name="description" value="Able to view relationship types"/>
+            <column name="uuid" value="5f8a3e12-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Relationships"/>
+            <column name="description" value="Able to view relationships"/>
+            <column name="uuid" value="5f8a3e44-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Report Objects"/>
+            <column name="description" value="Able to view report objects"/>
+            <column name="uuid" value="5f8a3e6c-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Reports"/>
+            <column name="description" value="Able to view reports"/>
+            <column name="uuid" value="5f8a3e9e-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Roles"/>
+            <column name="description" value="Able to view user roles"/>
+            <column name="uuid" value="5f8a3ec6-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Unpublished Forms"/>
+            <column name="description" value="Able to view and fill out unpublished forms"/>
+            <column name="uuid" value="5f8a3ef8-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="privilege" value="View Users"/>
+            <column name="description" value="Able to view users in OpenMRS"/>
+            <column name="uuid" value="5f8a3f2a-6814-11e8-923f-e9a88dcb533f"/>
+        </insert>
+    </changeSet>
+    <changeSet author="wolf (generated)" id="1582473679024-21">
+        <insert tableName="relationship_type">
+            <column name="relationship_type_id" valueNumeric="1"/>
+            <column name="a_is_to_b" value="Doctor"/>
+            <column name="b_is_to_a" value="Patient"/>
+            <column name="preferred" valueBoolean="false"/>
+            <column name="weight" valueNumeric="0"/>
+            <column name="description" value="Relationship from a primary care provider to the patient"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2007-05-04T00:00:00"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="8d919b58-c2cc-11de-8d13-0010c6dffd0f"/>
+            <column name="date_changed"/>
+            <column name="changed_by"/>
+        </insert>
+        <insert tableName="relationship_type">
+            <column name="relationship_type_id" valueNumeric="2"/>
+            <column name="a_is_to_b" value="Sibling"/>
+            <column name="b_is_to_a" value="Sibling"/>
+            <column name="preferred" valueBoolean="false"/>
+            <column name="weight" valueNumeric="0"/>
+            <column name="description" value="Relationship between brother/sister, brother/brother, and sister/sister"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2007-05-04T00:00:00"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="8d91a01c-c2cc-11de-8d13-0010c6dffd0f"/>
+            <column name="date_changed"/>
+            <column name="changed_by"/>
+        </insert>
+        <insert tableName="relationship_type">
+            <column name="relationship_type_id" valueNumeric="3"/>
+            <column name="a_is_to_b" value="Parent"/>
+            <column name="b_is_to_a" value="Child"/>
+            <column name="preferred" valueBoolean="false"/>
+            <column name="weight" valueNumeric="0"/>
+            <column name="description" value="Relationship from a mother/father to the child"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2007-05-04T00:00:00"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="8d91a210-c2cc-11de-8d13-0010c6dffd0f"/>
+            <column name="date_changed"/>
+            <column name="changed_by"/>
+        </insert>
+        <insert tableName="relationship_type">
+            <column name="relationship_type_id" valueNumeric="4"/>
+            <column name="a_is_to_b" value="Aunt/Uncle"/>
+            <column name="b_is_to_a" value="Niece/Nephew"/>
+            <column name="preferred" valueBoolean="false"/>
+            <column name="weight" valueNumeric="0"/>
+            <column name="description" value="Relationship from a parent's sibling to a child of that parent"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2007-05-04T00:00:00"/>
+            <column name="retired" valueBoolean="false"/>
+            <column name="retired_by"/>
+            <column name="date_retired"/>
+            <column name="retire_reason"/>
+            <column name="uuid" value="8d91a3dc-c2cc-11de-8d13-0010c6dffd0f"/>
+            <column name="date_changed"/>
+            <column name="changed_by"/>
+        </insert>
+    </changeSet>
+    <changeSet author="wolf (generated)" id="1582473679024-22">
+        <insert tableName="role">
+            <column name="role" value="Anonymous"/>
+            <column name="description" value="Privileges for non-authenticated users."/>
+            <column name="uuid" value="774b2af3-6437-4e5a-a310-547554c7c65c"/>
+        </insert>
+        <insert tableName="role">
+            <column name="role" value="Authenticated"/>
+            <column name="description" value="Privileges gained once authentication has been established."/>
+            <column name="uuid" value="f7fd42ef-880e-40c5-972d-e4ae7c990de2"/>
+        </insert>
+        <insert tableName="role">
+            <column name="role" value="Provider"/>
+            <column name="description" value="All users with the 'Provider' role will appear as options in the default Infopath "/>
+            <column name="uuid" value="8d94f280-c2cc-11de-8d13-0010c6dffd0f"/>
+        </insert>
+        <insert tableName="role">
+            <column name="role" value="System Developer"/>
+            <column name="description" value="Developers of the OpenMRS .. have additional access to change fundamental structure of the database model."/>
+            <column name="uuid" value="8d94f852-c2cc-11de-8d13-0010c6dffd0f"/>
+        </insert>
+    </changeSet>
+    <changeSet author="wolf (generated)" id="1582473679024-23">
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="Get Concept Classes"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="Get Concept Datatypes"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="Get Encounter Types"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="Get Field Types"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="Get Global Properties"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="Get Identifier Types"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="Get Locations"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="Get Order Types"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="Get Person Attribute Types"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="Get Privileges"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="Get Relationship Types"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="Get Relationships"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="Get Roles"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="Patient Overview - View Relationships"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="View Concept Classes"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="View Concept Datatypes"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="View Encounter Types"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="View Field Types"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="View Global Properties"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="View Identifier Types"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="View Locations"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="View Order Types"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="View Person Attribute Types"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="View Privileges"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="View Relationship Types"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="View Relationships"/>
+        </insert>
+        <insert tableName="role_privilege">
+            <column name="role" value="Authenticated"/>
+            <column name="privilege" value="View Roles"/>
+        </insert>
+    </changeSet>
+    <changeSet author="wolf (generated)" id="1582473679024-24">
+        <insert tableName="scheduler_task_config">
+            <column name="task_config_id" valueNumeric="2"/>
+            <column name="name" value="Auto Close Visits Task"/>
+            <column name="description" value="Stops all active visits that match the visit type(s) specified by the value of the global property 'visits.autoCloseVisitType'"/>
+            <column name="schedulable_class" value="org.openmrs.scheduler.tasks.AutoCloseVisitsTask"/>
+            <column name="start_time" valueDate="2011-11-28T23:59:59"/>
+            <column name="start_time_pattern" value="MM/dd/yyyy HH:mm:ss"/>
+            <column name="repeat_interval" valueNumeric="86400"/>
+            <column name="start_on_startup" valueBoolean="false"/>
+            <column name="started" valueBoolean="false"/>
+            <column name="created_by" valueNumeric="1"/>
+            <column name="date_created" valueDate="2018-06-04T18:30:16"/>
+            <column name="changed_by"/>
+            <column name="date_changed"/>
+            <column name="last_execution_time"/>
+            <column name="uuid" value="8c17b376-1a2b-11e1-a51a-00248140a5eb"/>
+        </insert>
+    </changeSet>
+    <changeSet author="wolf (generated)" id="1582473679024-25">
+        <insert tableName="user_property">
+            <column name="user_id" valueNumeric="1"/>
+            <column name="property" value="lockoutTimestamp"/>
+            <column name="property_value" value=""/>
+        </insert>
+        <insert tableName="user_property">
+            <column name="user_id" valueNumeric="1"/>
+            <column name="property" value="loginAttempts"/>
+            <column name="property_value" value="2"/>
+        </insert>
+    </changeSet>
+    <changeSet author="wolf (generated)" id="1582473679024-26">
+        <insert tableName="user_role">
+            <column name="user_id" valueNumeric="1"/>
+            <column name="role" value="Provider"/>
+        </insert>
+        <insert tableName="user_role">
+            <column name="user_id" valueNumeric="1"/>
+            <column name="role" value="System Developer"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

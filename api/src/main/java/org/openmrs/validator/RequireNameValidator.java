@@ -39,8 +39,8 @@ public class RequireNameValidator implements Validator {
 	/**
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should fail validation if name is null or empty or whitespace
-	 * @should pass validation if name has proper value
+	 * <strong>Should</strong> fail validation if name is null or empty or whitespace
+	 * <strong>Should</strong> pass validation if name has proper value
 	 */
 	@Override
 	public void validate(Object o, Errors errors) {

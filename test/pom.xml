@@ -13,7 +13,7 @@
    <parent>
       <groupId>org.openmrs</groupId>
       <artifactId>openmrs</artifactId>
-      <version>2.2.0-SNAPSHOT</version>
+      <version>2.5.0-SNAPSHOT</version>
    </parent>
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.openmrs.test</groupId>
@@ -30,10 +30,22 @@
          <groupId>com.h2database</groupId>
          <artifactId>h2</artifactId>
       </dependency>
-      <dependency>
+	   <dependency>
          <groupId>junit</groupId>
          <artifactId>junit</artifactId>
       </dependency>
+	   <dependency>
+		   <groupId>org.junit.jupiter</groupId>
+		   <artifactId>junit-jupiter-api</artifactId>
+	   </dependency>
+	   <dependency>
+		   <groupId>org.junit.jupiter</groupId>
+		   <artifactId>junit-jupiter-engine</artifactId>
+	   </dependency>
+	   <dependency>
+		   <groupId>org.junit.vintage</groupId>
+		   <artifactId>junit-vintage-engine</artifactId>
+	   </dependency>
       <dependency>
          <groupId>org.dbunit</groupId>
          <artifactId>dbunit</artifactId>
@@ -42,13 +54,17 @@
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
 		</dependency>
+	   <dependency>
+		   <groupId>org.mockito</groupId>
+		   <artifactId>mockito-junit-jupiter</artifactId>
+	   </dependency>
 		<dependency>
 			<groupId>org.powermock</groupId>
 			<artifactId>powermock-module-junit4</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.powermock</groupId>
-			<artifactId>powermock-api-mockito</artifactId>
+			<artifactId>powermock-api-mockito2</artifactId>
 		</dependency>
 		<dependency>
 		    <groupId>org.hamcrest</groupId>
@@ -59,4 +75,17 @@
 		    <artifactId>hamcrest-library</artifactId>
 		</dependency>
    </dependencies>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.mycila</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<configuration>
+					<header>${project.parent.basedir}/license-header.txt</header>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	
 </project>

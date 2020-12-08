@@ -40,11 +40,11 @@ public class FieldTypeValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should fail validation if name is null or empty or whitespace
-	 * @should pass validation if all required fields have proper values
-	 * @should fail validation if field type name already exist in none retired filed types
-	 * @should pass validation if field lengths are correct
-	 * @should fail validation if field lengths are not correct
+	 * <strong>Should</strong> fail validation if name is null or empty or whitespace
+	 * <strong>Should</strong> pass validation if all required fields have proper values
+	 * <strong>Should</strong> fail validation if field type name already exist in none retired filed types
+	 * <strong>Should</strong> pass validation if field lengths are correct
+	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {

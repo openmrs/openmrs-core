@@ -31,6 +31,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	 * Logger for this class and subclasses
 	 */
 	private static final Logger log = LoggerFactory.getLogger(AuthorizationAdvice.class);
+        private static final String USER_IS_NOT_AUTHORIZED_TO_ACCESS = "User {} is not authorized to access {}";
 	
 	/**
 	 * Allows us to check whether a user is authorized to access a particular method.
@@ -39,20 +40,18 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	 * @param args
 	 * @param target
 	 * @throws Throwable
-	 * @should notify listeners about checked privileges
+	 * <strong>Should</strong> notify listeners about checked privileges
 	 */
 	@Override
 	public void before(Method method, Object[] args, Object target) throws Throwable {
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Calling authorization advice before " + method.getName());
-		}
+		log.debug("Calling authorization advice before {}", method.getName());
 		
 		if (log.isDebugEnabled()) {
 			User user = Context.getAuthenticatedUser();
-			log.debug("User " + user);
+			log.debug("User {}", user);
 			if (user != null) {
-				log.debug("has roles " + user.getAllRoles());
+				log.debug("has roles {}", user.getAllRoles());
 			}
 		}
 		
@@ -71,9 +70,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 					return;
 				}
 				
-				if (log.isDebugEnabled()) {
-					log.debug("User has privilege " + privilege + "? " + Context.hasPrivilege(privilege));
-				}
+				log.debug("User has privilege {}? {}", privilege, Context.hasPrivilege(privilege));
 				
 				if (Context.hasPrivilege(privilege)) {
 					if (!requireAll) {
@@ -110,9 +107,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	 * @param attrs Collection of String privilege names that the user must have
 	 */
 	private void throwUnauthorized(User user, Method method, Collection<String> attrs) {
-		if (log.isDebugEnabled()) {
-			log.debug("User " + user + " is not authorized to access " + method.getName());
-		}
+		log.debug(USER_IS_NOT_AUTHORIZED_TO_ACCESS, user, method.getName());
 		throw new APIAuthenticationException(Context.getMessageSourceService().getMessage("error.privilegesRequired",
 		    new Object[] { StringUtils.join(attrs, ",") }, null));
 	}
@@ -125,9 +120,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	 * @param attrs privilege names that the user must have
 	 */
 	private void throwUnauthorized(User user, Method method, String attr) {
-		if (log.isDebugEnabled()) {
-			log.debug("User " + user + " is not authorized to access " + method.getName());
-		}
+		log.debug(USER_IS_NOT_AUTHORIZED_TO_ACCESS, user, method.getName());
 		throw new APIAuthenticationException(Context.getMessageSourceService().getMessage("error.privilegesRequired",
 		    new Object[] { attr }, null));
 	}
@@ -139,9 +132,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	 * @param method acting method
 	 */
 	private void throwUnauthorized(User user, Method method) {
-		if (log.isDebugEnabled()) {
-			log.debug("User " + user + " is not authorized to access " + method.getName());
-		}
+		log.debug(USER_IS_NOT_AUTHORIZED_TO_ACCESS, user, method.getName());
 		throw new APIAuthenticationException(Context.getMessageSourceService().getMessage("error.aunthenticationRequired"));
 	}
 }

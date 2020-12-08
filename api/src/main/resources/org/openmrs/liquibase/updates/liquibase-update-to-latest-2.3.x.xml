@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<!--
+    This file contains all changesets that have been introduced on top of either liquibase-snapshots/2.2.x/liquibase-*.xml 
+    or liquibase-updates/2.2.x/liquibase-update-to-latest.xml.
+-->
+<databaseChangeLog 
+	logicalFilePath="liquibase-update-to-latest.xml" 
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext 
+    	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog 
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+	<!--
+		See http://www.liquibase.org/manual/home#available_database_refactorings
+		for a list of supported elements and attributes
+	-->
+
+	<changeSet id="TRUNK-5334-rename-allergy-comment-to-comments" author="madhavkauntia">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="allergy" columnName="comment"/>
+		</preConditions>
+		<comment>Renaming allerygy.comment to allergy.comments</comment>
+    	<renameColumn tableName="allergy" oldColumnName="comment" newColumnName="comments" columnDataType="varchar(1024)"/>
+    </changeSet>
+
+    <changeSet id="TRUNK-5413" author="odorajonathan">
+      <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="order_set" columnName="category"/></not>
+      </preConditions>
+      <comment>
+          Add a category field to the order_set table
+      </comment>
+      <addColumn tableName="order_set">
+            <column name="category" type="int"/>
+      </addColumn>
+      <addForeignKeyConstraint constraintName="category_order_set_fk" referencedTableName="concept" 
+      baseColumnNames="category" baseTableName="order_set" referencedColumnNames="concept_id"/>
+    </changeSet>
+ <changeSet id="20190625-Trunk-5411" author="gitacliff">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="drug" columnName="dose_limit_units"/>				
+			</not>
+		</preConditions>
+		<comment>Adding "dose_limit_units" column to drug table</comment>
+        <addColumn tableName="drug">
+            <column name="dose_limit_units" type="int">
+            	<constraints nullable="true"/>
+            </column>
+        </addColumn>
+        <addForeignKeyConstraint baseTableName="drug"
+								 baseColumnNames="dose_limit_units"
+								 constraintName="drug_dose_limit_units_fk"
+								 referencedTableName="concept"
+								 referencedColumnNames="concept_id" />
+    </changeSet>
+     <changeSet id="TRUNK-5663-20191002" author="gitacliff">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="conditions" columnName="date_changed"/>
+			</not>
+		</preConditions>
+		<comment>Adding "date_changed" column to conditions table</comment>
+		<addColumn tableName="conditions">
+			<column name="date_changed" type="DATETIME"/>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="TRUNK-5672-201910211105" author="Mritunjay">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">
+				SELECT COUNT(*) FROM users where username = 'admin'
+			</sqlCheck>
+		</preConditions>
+		<comment>Populate username for admin user</comment>
+		<update tableName="users">
+			<column name="username" value="admin"/>
+			<where>system_id='admin'</where>
+		</update>
+	</changeSet>
+    
+    <changeSet id="TRUNK-5728-2020-04-15" author="samuel34">
+    	<preConditions onFail="MARK_RAN">
+    		<not>
+    			<columnExists tableName="conditions" columnName="encounter_id"/>
+    		</not>
+    	</preConditions>
+    	<comment>Adding 'encounter_id' column to 'conditions' table</comment>
+    	<addColumn tableName="conditions">
+    		<column name="encounter_id" type="int">
+    			<constraints nullable="true" />
+    		</column>
+    	</addColumn>
+    	<addForeignKeyConstraint constraintName="conditions_encounter_id_fk"
+								 baseTableName="conditions" baseColumnNames="encounter_id"
+								 referencedTableName="encounter" referencedColumnNames="encounter_id" />
+    </changeSet>
+
+	<changeSet id="2020-08-29-2200-TRUNK-5821" author="miirochristopher">
+		<preConditions onFail="MARK_RAN" onFailMessage="Table orders does not exist or the index orders_order_number already exists.">
+			<tableExists tableName="orders"/>
+			<and>
+				<not>
+					<indexExists indexName="orders_order_number" />
+				</not>
+			</and>
+		</preConditions>
+		<comment>Adding index to order_number column in Orders table</comment>
+		<createIndex  indexName="orders_order_number" tableName="orders">
+			<column   name="order_number"/>
+		</createIndex>
+	</changeSet>
+
+	<changeSet id="2020-08-30-100-TRUNK-5821" author="miirochristopher">
+		<preConditions onFail="MARK_RAN" onFailMessage="Table orders does not exist or the index orders_accession_number already exists.">
+			<tableExists tableName="orders"/>
+			<and>
+				<not>
+					<indexExists indexName="orders_accession_number" />
+				</not>
+			</and>
+		</preConditions>
+		<comment>Adding index to accession_number column in Orders table</comment>
+		<createIndex  indexName="orders_accession_number"  tableName="orders">
+			<column   name="accession_number"/>
+		</createIndex>
+	</changeSet>
+	
+</databaseChangeLog>

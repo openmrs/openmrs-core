@@ -132,7 +132,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			
 			Date newDate = encounter.getEncounterDatetime();
 			Location newLocation = encounter.getLocation();
-			for (Obs obs : encounter.getAllObs(true)) {
+			for (Obs obs : encounter.getAllFlattenedObs(true)) {
 				// if the date was changed
 				if (OpenmrsUtil.compare(originalDate, newDate) != 0
 				        && OpenmrsUtil.compare(obs.getObsDatetime(), originalDate) == 0) {
@@ -196,6 +196,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 
 		removeGivenObsAndTheirGroupMembersFromEncounter(obsToRemove, encounter);
 		addGivenObsAndTheirGroupMembersToEncounter(obsToAdd, encounter);
+		
+		// save the conditions
+		encounter.getConditions().forEach(Context.getConditionService()::saveCondition);
 		return encounter;
 	}
 	

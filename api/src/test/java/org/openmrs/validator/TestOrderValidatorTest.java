@@ -9,14 +9,16 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isIn;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Date;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
@@ -26,7 +28,7 @@ import org.openmrs.TestOrder;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -59,8 +61,8 @@ public class TestOrderValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(order, "order");
 		new TestOrderValidator().validate(order, errors);
-		Assert.assertTrue(errors.hasFieldErrors("specimenSource"));
-		Assert.assertEquals("TestOrder.error.specimenSourceNotAmongAllowedConcepts", errors.getFieldError("specimenSource")
+		assertTrue(errors.hasFieldErrors("specimenSource"));
+		assertEquals("TestOrder.error.specimenSourceNotAmongAllowedConcepts", errors.getFieldError("specimenSource")
 		        .getCode());
 	}
 	
@@ -88,6 +90,6 @@ public class TestOrderValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(order, "order");
 		new TestOrderValidator().validate(order, errors);
-		Assert.assertFalse(errors.hasFieldErrors());
+		assertFalse(errors.hasFieldErrors());
 	}
 }

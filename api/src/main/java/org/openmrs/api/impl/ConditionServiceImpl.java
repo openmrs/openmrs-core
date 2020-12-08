@@ -10,6 +10,7 @@
 package org.openmrs.api.impl;
 
 import org.openmrs.Condition;
+import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConditionService;
@@ -116,6 +117,15 @@ public class ConditionServiceImpl extends BaseOpenmrsService implements Conditio
 	}
 
 	/**
+     * @see ConditionService#getAllConditions(Patient)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<Condition> getAllConditions(Patient patient) {
+		return conditionDAO.getAllConditions(patient);
+	}
+
+	/**
 	 * Voids a condition
 	 *
 	 * @param condition  - the condition to be voided
@@ -151,6 +161,14 @@ public class ConditionServiceImpl extends BaseOpenmrsService implements Conditio
 	@Override
 	public void purgeCondition(Condition condition) {
 		conditionDAO.deleteCondition(condition);
+	}
+
+	/**
+	 * @see ConditionService#getConditionsByEncounter(Encounter)
+	 */
+	@Override
+	public List<Condition> getConditionsByEncounter(Encounter encounter) throws APIException {
+		return conditionDAO.getConditionsByEncounter(encounter);
 	}
 }
 

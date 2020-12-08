@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+    
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+    
+-->
+<!--
+    This file contains all changesets that have been introduced on top of either liquibase-snapshots/2.3.x/liquibase-*.xml 
+    or liquibase-updates/2.3.x/liquibase-update-to-latest.xml.
+-->
+<databaseChangeLog 
+	logicalFilePath="liquibase-update-to-latest.xml" 
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext 
+    	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog 
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+	<!--
+		See http://www.liquibase.org/manual/home#available_database_refactorings
+		for a list of supported elements and attributes
+	-->
+	<changeSet id="20190815-Trunk-5412" author="gitacliff">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="order_group" columnName="order_group_reason"/>				
+			</not>
+		</preConditions>
+		<comment>Adding "order_group_reason" column to order_group table</comment>
+       <addColumn tableName="order_group">
+            <column name="order_group_reason" type="int">
+            	<constraints nullable="true"/>
+            </column>
+        </addColumn>
+        <addForeignKeyConstraint baseTableName="order_group"
+								 baseColumnNames="order_group_reason"
+								 constraintName="order_group_order_group_reason_fk"
+								 referencedTableName="concept"
+								 referencedColumnNames="concept_id" />
+    </changeSet>
+	
+     <changeSet id="20190815-Trunk-5650" author="gitacliff">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="order_group" columnName="parent_order_group"/>				
+			</not>
+		</preConditions>
+		<comment>Adding "parent_order_group" column to order_group table</comment>
+        <addColumn tableName="order_group">
+            <column name="parent_order_group" type="int">
+            	<constraints nullable="true"/>
+            </column>
+        </addColumn><addForeignKeyConstraint baseTableName="order_group"
+								 baseColumnNames="parent_order_group"
+								 constraintName="order_group_parent_order_group_fk"
+								 referencedTableName="order_group"
+								 referencedColumnNames="order_group_id" />
+    </changeSet>
+    
+    <changeSet id="TRUNK-5728-2020-05-20" author="samuel34">
+    	<preConditions onFail="MARK_RAN">
+    		<not>
+    			<columnExists tableName="conditions" columnName="encounter_id"/>
+    		</not>
+    	</preConditions>
+    	<comment>Adding 'encounter_id' column to 'conditions' table</comment>
+    	<addColumn tableName="conditions">
+    		<column name="encounter_id" type="int">
+    			<constraints nullable="true" />
+    		</column>
+    	</addColumn>
+    	<addForeignKeyConstraint constraintName="conditions_encounter_id_fk"
+								 baseTableName="conditions" baseColumnNames="encounter_id"
+								 referencedTableName="encounter" referencedColumnNames="encounter_id" />
+    </changeSet>
+	
+    <changeSet id="20200604-soundex_extension" author="aman" dbms="postgresql">
+        <comment> Soundex extension for PostgreSQL</comment>
+        <sql> CREATE EXTENSION IF NOT EXISTS fuzzystrmatch SCHEMA public;</sql>
+    </changeSet>
+    
+    <changeSet id="20200715-uuid_ossp_extension" author="aman" dbms="postgresql">
+        <comment> Extension to use UUID functions with PostgreSQL and creating an alias similar to MySQL</comment>
+        <sql>
+        	CREATE EXTENSION IF NOT EXISTS "uuid-ossp" SCHEMA public;
+        	CREATE FUNCTION UUID() RETURNS UUID LANGUAGE SQL AS $$ SELECT uuid_generate_v1() $$;
+        </sql>
+    </changeSet>
+    
+	<changeSet id="20190815-Trunk-5651" author="gitacliff">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="order_group" columnName="previous_order_group"/>				
+			</not>
+		</preConditions>
+		<comment>Adding "previous_order_group" column to order_group table</comment>
+        <addColumn tableName="order_group">
+            <column name="previous_order_group" type="int">
+            	<constraints nullable="true"/>
+            </column>
+        </addColumn>
+        <addForeignKeyConstraint baseTableName="order_group"
+								 baseColumnNames="previous_order_group"
+								 constraintName="order_group_previous_order_group_fk"
+								 referencedTableName="order_group"
+								 referencedColumnNames="order_group_id" />
+    </changeSet>
+	
+	<changeSet id="20200622-cascade_delete_concept_comlex" author="aman" dbms="postgresql">
+		<preConditions onFail="MARK_RAN">
+    	    <foreignKeyConstraintExists foreignKeyName="concept_attributes"/>
+		</preConditions>
+		<comment>Updating foreign key concept_attributes to add delete CASCADES</comment>
+   		<dropForeignKeyConstraint baseTableName="concept_complex" constraintName="concept_attributes"/>
+   		<addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="concept_complex" constraintName="concept_attributes" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="concept_id" referencedTableName="concept"/>
+	</changeSet>
+	
+	<changeSet id="20200622-cascade_delete_concept_numeric" author="aman" dbms="postgresql">
+		<preConditions onFail="MARK_RAN">
+   	    	<foreignKeyConstraintExists foreignKeyName="numeric_attributes"/>
+		</preConditions>
+		<comment>Updating foreign key numeric_attributes to add delete CASCADES</comment>
+		<dropForeignKeyConstraint baseTableName="concept_numeric" constraintName="numeric_attributes"/>
+		<addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="concept_numeric" constraintName="numeric_attributes" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="concept_id" referencedTableName="concept"/>   	
+	</changeSet>
+	<changeSet id="20200622-cascade_delete_patient" author="aman" dbms="postgresql">
+		<preConditions onFail="MARK_RAN">
+   		   <foreignKeyConstraintExists foreignKeyName="person_id_for_patient"/>
+		</preConditions>
+		<comment>Updating foreign key person_id_for_patient to add delete CASCADES</comment>
+   		<dropForeignKeyConstraint baseTableName="patient" constraintName="person_id_for_patient"/>
+		<addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="patient" constraintName="person_id_for_patient" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="person_id" referencedTableName="person"/>
+	</changeSet>
+	<changeSet id="20200622-cascade_delete_test_order" author="aman" dbms="postgresql">
+		<preConditions onFail="MARK_RAN">
+	        <foreignKeyConstraintExists foreignKeyName="test_order_order_id_fk"/>
+		</preConditions>
+		<comment>Updating foreign key test_order_order_id_fk to add delete CASCADES</comment>
+    	<dropForeignKeyConstraint baseTableName="test_order" constraintName="test_order_order_id_fk"/>
+		<addForeignKeyConstraint baseColumnNames="order_id" baseTableName="test_order" constraintName="test_order_order_id_fk" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="order_id" referencedTableName="orders"/>
+	</changeSet>
+	<changeSet id="20200714-Trunk-5862" author="loliveira">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="conditions" columnName="form_namespace_and_path"/>
+			</not>
+		</preConditions>
+		<comment>Adding "form_namespace_and_path" column to conditions table</comment>
+		<addColumn tableName="conditions">
+			<column name="form_namespace_and_path" type="varchar(255)">
+				<constraints nullable="true"/>
+			</column>
+		</addColumn>
+	</changeSet>
+	
+    <changeSet id="TRUNK-5835-2020-07-09-1600" author="gitacliff">
+    	<comment>Creating order_set_attribute_type table</comment>
+        <createTable tableName="order_set_attribute_type">
+            <column name="order_set_attribute_type_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="name" type="varchar(255)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+			<column name="description" type="varchar(1024)" />
+			<column name="datatype" type="varchar(255)" />
+            <column name="datatype_config" type="text" />
+            <column name="preferred_handler" type="varchar(255)" />
+            <column name="handler_config" type="text" />
+			<column name="min_occurs" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="max_occurs" type="int"></column>
+			<column name="creator" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="date_created" type="datetime">
+				<constraints nullable="false" />
+			</column>
+			<column name="changed_by" type="int" />
+			<column name="date_changed" type="datetime" />
+			<column name="retired" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+			<column name="retired_by" type="int" />
+			<column name="date_retired" type="datetime" />
+			<column name="retire_reason" type="varchar(255)" defaultValue="null" />
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false" unique="true" />
+			</column>
+
+        </createTable>
+        <addForeignKeyConstraint constraintName="order_set_attribute_type_creator_fk" baseTableName="order_set_attribute_type" baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id"/>
+        <addForeignKeyConstraint constraintName="order_set_attribute_type_changed_by_fk" baseTableName="order_set_attribute_type" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id"/>
+        <addForeignKeyConstraint constraintName="order_set_attribute_type_retired_by_fk" baseTableName="order_set_attribute_type" baseColumnNames="retired_by" referencedTableName="users" referencedColumnNames="user_id"/>
+    </changeSet> 
+    
+    <changeSet id="TRUNK-5835-2020-07-09-1700" author="gitacliff">
+        <comment>Creating order_set_attribute table</comment>
+        <createTable tableName="order_set_attribute">
+            <column name="order_set_attribute_id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="order_set_id" type="int"><constraints nullable="false" /></column>
+            <column name="attribute_type_id" type="int"><constraints nullable="false" /></column>
+            <column name="value_reference" type="text"><constraints nullable="false" /></column>
+            <column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
+            <column name="creator" type="int"><constraints nullable="false"/></column>
+            <column name="date_created" type="datetime"><constraints nullable="false"/></column>
+            <column name="changed_by" type="int"/>
+            <column name="date_changed" type="datetime" />
+            <column name="voided" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="voided_by" type="int" />
+            <column name="date_voided" type="datetime" />
+            <column name="void_reason" type="varchar(255)" defaultValue="null"/>
+        </createTable>
+        <addForeignKeyConstraint constraintName="order_set_attribute_order_set_fk" baseTableName="order_set_attribute" baseColumnNames="order_set_id" referencedTableName="order_set" referencedColumnNames="order_set_id" />
+        <addForeignKeyConstraint constraintName="order_set_attribute_attribute_type_id_fk" baseTableName="order_set_attribute" baseColumnNames="attribute_type_id" referencedTableName="order_set_attribute_type" referencedColumnNames="order_set_attribute_type_id" />
+        <addForeignKeyConstraint constraintName="order_set_attribute_creator_fk" baseTableName="order_set_attribute" baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id" />
+        <addForeignKeyConstraint constraintName="order_set_attribute_changed_by_fk" baseTableName="order_set_attribute" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id" />
+        <addForeignKeyConstraint constraintName="order_set_attribute_voided_by_fk" baseTableName="order_set_attribute" baseColumnNames="voided_by" referencedTableName="users" referencedColumnNames="user_id" />
+    </changeSet>
+	
+	<changeSet id="TRUNK-5410" author="tendomart">
+		<comment>Creating order_group_attribute_type table</comment>
+		<createTable tableName="order_group_attribute_type">
+			<column name="order_group_attribute_type_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="name" type="varchar(255)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+			<column name="description" type="varchar(1024)" />
+			<column name="datatype" type="varchar(255)" />
+			<column name="datatype_config" type="text" />
+			<column name="preferred_handler" type="varchar(255)" />
+			<column name="handler_config" type="text" />
+			<column name="min_occurs" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="max_occurs" type="int"></column>
+			<column name="creator" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="date_created" type="datetime">
+				<constraints nullable="false" />
+			</column>
+			<column name="changed_by" type="int" />
+			<column name="date_changed" type="datetime" />
+			<column name="retired" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+			<column name="retired_by" type="int" />
+			<column name="date_retired" type="datetime" />
+			<column name="retire_reason" type="varchar(255)" defaultValue="null" />
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false" unique="true" />
+			</column>
+		</createTable>
+		<addForeignKeyConstraint constraintName="order_group_attribute_type_creator_fk" baseTableName="order_group_attribute_type" baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id"/>
+		<addForeignKeyConstraint constraintName="order_group_attribute_type_changed_by_fk" baseTableName="order_group_attribute_type" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id"/>
+		<addForeignKeyConstraint constraintName="order_group_attribute_type_retired_by_fk" baseTableName="order_group_attribute_type" baseColumnNames="retired_by" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	
+	<changeSet id="20200723-TRUNK-5410" author="tendomart">
+		<comment>Creating order_group_attribute table</comment>
+		<createTable tableName="order_group_attribute">
+			<column name="order_group_attribute_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="order_group_id" type="int"><constraints nullable="false" /></column>
+			<column name="attribute_type_id" type="int"><constraints nullable="false" /></column>
+			<column name="value_reference" type="text"><constraints nullable="false" /></column>
+			<column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
+			<column name="creator" type="int"><constraints nullable="false"/></column>
+			<column name="date_created" type="datetime"><constraints nullable="false"/></column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="datetime" />
+			<column name="voided" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+			<column name="voided_by" type="int" />
+			<column name="date_voided" type="datetime" />
+			<column name="void_reason" type="varchar(255)" defaultValue="null"/>
+		</createTable>
+		<addForeignKeyConstraint constraintName="order_group_attribute_order_group_fk" baseTableName="order_group_attribute" baseColumnNames="order_group_id" referencedTableName="order_group" referencedColumnNames="order_group_id" />
+		<addForeignKeyConstraint constraintName="order_group_attribute_attribute_type_id_fk" baseTableName="order_group_attribute" baseColumnNames="attribute_type_id" referencedTableName="order_group_attribute_type" referencedColumnNames="order_group_attribute_type_id" />
+		<addForeignKeyConstraint constraintName="order_group_attribute_creator_fk" baseTableName="order_group_attribute" baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="order_group_attribute_changed_by_fk" baseTableName="order_group_attribute" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="order_group_attribute_voided_by_fk" baseTableName="order_group_attribute" baseColumnNames="voided_by" referencedTableName="users" referencedColumnNames="user_id" />
+	</changeSet>
+	<changeSet id="2020-08-31-2200-TRUNK-5821" author="miirochristopher">
+		<preConditions onFail="MARK_RAN" onFailMessage="Table orders does not exist or the index orders_order_number already exists.">
+			<tableExists tableName="orders"/>
+			<and>
+				<not>
+					<indexExists indexName="orders_order_number" />
+				</not>
+			</and>
+		</preConditions>
+		<comment>Adding index to order_number column in Orders table</comment>
+		<createIndex  indexName="orders_order_number" tableName="orders">
+			<column   name="order_number"/>
+		</createIndex>
+	</changeSet>
+	<changeSet id="2020-08-32-100-TRUNK-5821" author="miirochristopher">
+		<preConditions onFail="MARK_RAN" onFailMessage="Table orders does not exist or the index orders_accession_number already exists.">
+			<tableExists tableName="orders"/>
+			<and>
+				<not>
+					<indexExists indexName="orders_accession_number" />
+				</not>
+			</and>
+		</preConditions>
+		<comment>Adding index to accession_number column in Orders table</comment>
+		<createIndex  indexName="orders_accession_number"  tableName="orders">
+			<column   name="accession_number"/>
+		</createIndex>
+	</changeSet>
+	
+</databaseChangeLog> 

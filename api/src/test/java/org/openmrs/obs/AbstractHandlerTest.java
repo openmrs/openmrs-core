@@ -9,11 +9,8 @@
  */
 package org.openmrs.obs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.mockito.Matchers.any;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -24,45 +21,42 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.text.ParseException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
-import org.openmrs.api.context.Context;
 import org.openmrs.obs.handler.AbstractHandler;
-import org.openmrs.util.OpenmrsUtil;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.OpenmrsConstants;
+import org.springframework.beans.factory.annotation.Autowired;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ AbstractHandler.class, OpenmrsUtil.class, Context.class })
-
-public class AbstractHandlerTest {
+public class AbstractHandlerTest extends BaseContextSensitiveTest {
 	
 	private final String FILENAME = "mytxtfile.txt";
 	
-	private final AbstractHandler handler = new AbstractHandler();
+	private  AbstractHandler handler;
 	
-	@Mock
-	private AdministrationService administrationService;
+	@Autowired
+	private AdministrationService adminService;
+
+	@TempDir
+	public Path complexObsTestFolder;
 	
-	@Rule
-	public TemporaryFolder complexObsTestFolder = new TemporaryFolder();
-	
-	@Before
+	@BeforeEach
 	public void initializeContext() throws APIException, IOException {
-		mockStatic(Context.class);
-		when(Context.getAdministrationService()).thenReturn(administrationService);
-		when(administrationService.getGlobalProperty(any())).thenReturn(complexObsTestFolder.newFolder().getAbsolutePath());
+		handler = new  AbstractHandler();
+		adminService.saveGlobalProperty(new GlobalProperty(
+			OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR,
+			complexObsTestFolder.toAbsolutePath().toString()
+		));
 	}
 	
 	@Test

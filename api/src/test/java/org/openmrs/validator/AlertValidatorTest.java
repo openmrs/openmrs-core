@@ -9,11 +9,13 @@
  */
 package org.openmrs.validator;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.notification.Alert;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -29,7 +31,7 @@ public class AlertValidatorTest extends BaseContextSensitiveTest {
 	
 	private Errors errors;
 	
-	@Before
+	@BeforeEach
 	public void setUp() {
 		validator = new AlertValidator();
 		
@@ -37,7 +39,7 @@ public class AlertValidatorTest extends BaseContextSensitiveTest {
 		
 		errors = new BindException(alert, "alert");
 	}
-	
+
 	@Test
 	public void shouldFailValidationIfAlertTextIsNull() {
 		
@@ -73,7 +75,7 @@ public class AlertValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validate(alert, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	@Test
@@ -88,6 +90,6 @@ public class AlertValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	private void assertThatFieldTextHasError() {
-		Assert.assertTrue(errors.hasFieldErrors("text"));
+		assertTrue(errors.hasFieldErrors("text"));
 	}
 }

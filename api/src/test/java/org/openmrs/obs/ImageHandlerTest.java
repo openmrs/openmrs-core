@@ -9,48 +9,46 @@
  */
 package org.openmrs.obs;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 
-import javax.imageio.ImageIO;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
+import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
 import org.openmrs.api.AdministrationService;
-import org.openmrs.api.context.Context;
-import org.openmrs.obs.handler.AbstractHandler;
 import org.openmrs.obs.handler.ImageHandler;
-import org.openmrs.util.OpenmrsUtil;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.OpenmrsConstants;
+import org.springframework.beans.factory.annotation.Autowired;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ AbstractHandler.class, OpenmrsUtil.class, Context.class })
+public class ImageHandlerTest extends BaseContextSensitiveTest {
+	
+	@Autowired
+	private AdministrationService adminService;
 
-public class ImageHandlerTest {
+	@TempDir
+	public Path complexObsTestFolder;
+
+	ImageHandler handler;
+
+	@BeforeEach
+	public void setUp() {
+		handler = new ImageHandler();
+	}
 	
-	@Mock
-	private AdministrationService administrationService;
-	
-    @Rule
-    public TemporaryFolder complexObsTestFolder = new TemporaryFolder();
-    
     @Test
     public void shouldReturnSupportedViews() {
-        ImageHandler handler = new ImageHandler();
         String[] actualViews = handler.getSupportedViews();
         String[] expectedViews = { ComplexObsHandler.RAW_VIEW };
 
@@ -59,22 +57,20 @@ public class ImageHandlerTest {
 
     @Test
     public void shouldSupportRawView() {
-        ImageHandler handler = new ImageHandler();
-
+        
         assertTrue(handler.supportsView(ComplexObsHandler.RAW_VIEW));
     }
 
     @Test
     public void shouldNotSupportOtherViews() {
-        ImageHandler handler = new ImageHandler();
-
+        
         assertFalse(handler.supportsView(ComplexObsHandler.HTML_VIEW));
         assertFalse(handler.supportsView(ComplexObsHandler.PREVIEW_VIEW));
         assertFalse(handler.supportsView(ComplexObsHandler.TEXT_VIEW));
         assertFalse(handler.supportsView(ComplexObsHandler.TITLE_VIEW));
         assertFalse(handler.supportsView(ComplexObsHandler.URI_VIEW));
         assertFalse(handler.supportsView(""));
-        assertFalse(handler.supportsView((String) null));
+        assertFalse(handler.supportsView(null));
     }
 	
 	@Test
@@ -94,15 +90,13 @@ public class ImageHandlerTest {
 		
 		Obs obs2 = new Obs();
 		obs2.setComplexData(complexData);
-		
-		// Mocked methods
-		mockStatic(Context.class);
-		when(Context.getAdministrationService()).thenReturn(administrationService);
-		when(administrationService.getGlobalProperty(any())).thenReturn(complexObsTestFolder.newFolder().getAbsolutePath());
-		
-		ImageHandler handler = new ImageHandler();
-		
-		// Execute save
+
+		adminService.saveGlobalProperty(new GlobalProperty(
+			OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR,
+			complexObsTestFolder.toAbsolutePath().toString()
+		));
+
+
 		handler.saveObs(obs1);
 		handler.saveObs(obs2);
 		
@@ -114,4 +108,22 @@ public class ImageHandlerTest {
 		assertEquals(complexObs2.getComplexData().getMimeType(), mimetype);
 	}
 	
+	@Test
+	public void saveObs_shouldHandleByteArrays() throws IOException {
+		File sourceFile = new File(
+		       "src" + File.separator + "test" + File.separator + "resources" + File.separator + "ComplexObsTestImage.png");
+			
+		byte[] bytes = FileUtils.readFileToByteArray(sourceFile);
+		ComplexData complexData = new ComplexData("TestingComplexObsSaving.png", bytes);
+			
+		Obs obs = new Obs();
+		obs.setComplexData(complexData);
+			
+		adminService.saveGlobalProperty(new GlobalProperty(
+			OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR,
+			complexObsTestFolder.toAbsolutePath().toString()
+		));		
+
+		handler.saveObs(obs);
+	}
 }

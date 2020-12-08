@@ -15,7 +15,6 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.CustomValueDescriptor;
-import org.openmrs.customdatatype.InvalidCustomValueException;
 import org.openmrs.customdatatype.SingleCustomValue;
 
 /**
@@ -23,6 +22,8 @@ import org.openmrs.customdatatype.SingleCustomValue;
  * something similar to environment variables used in operating systems.
  */
 public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDescriptor, SingleCustomValue<GlobalProperty> {
+	
+	private static final long serialVersionUID = 1L;
 	
 	private String property = "";
 	
@@ -265,7 +266,7 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	 * @since 1.9
 	 */
 	@Override
-	public void setValueReferenceInternal(String valueToPersist) throws InvalidCustomValueException {
+	public void setValueReferenceInternal(String valueToPersist) {
 		setPropertyValue(valueToPersist);
 	}
 	
@@ -275,7 +276,7 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	 * @since 1.9
 	 */
 	@Override
-	public Object getValue() throws InvalidCustomValueException {
+	public Object getValue() {
 		if (typedValue == null) {
 			typedValue = CustomDatatypeUtil.getDatatypeOrDefault(this).fromReferenceString(getValueReference());
 		}
@@ -288,7 +289,7 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	 * @since 1.9
 	 */
 	@Override
-	public <T> void setValue(T typedValue) throws InvalidCustomValueException {
+	public <T> void setValue(T typedValue){
 		this.typedValue = typedValue;
 		dirty = true;
 	}

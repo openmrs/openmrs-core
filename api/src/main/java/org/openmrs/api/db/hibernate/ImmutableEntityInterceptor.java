@@ -68,10 +68,10 @@ public abstract class ImmutableEntityInterceptor extends EmptyInterceptor {
 	/**
 	 * @see org.hibernate.EmptyInterceptor#onFlushDirty(Object, java.io.Serializable, Object[],
 	 *      Object[], String[], org.hibernate.type.Type[])
-	 * @should fail if an entity has a changed property
-	 * @should pass if an entity has changes for an allowed mutable property
-	 * @should pass if the edited object is voided or retired and ignore is set to true
-	 * @should fail if the edited object is voided or retired and ignore is set to false
+	 * <strong>Should</strong> fail if an entity has a changed property
+	 * <strong>Should</strong> pass if an entity has changes for an allowed mutable property
+	 * <strong>Should</strong> pass if the edited object is voided or retired and ignore is set to true
+	 * <strong>Should</strong> fail if the edited object is voided or retired and ignore is set to false
 	 */
 	@Override
 	public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState,
@@ -105,9 +105,7 @@ public abstract class ImmutableEntityInterceptor extends EmptyInterceptor {
 				}
 			}
 			if (CollectionUtils.isNotEmpty(changedProperties)) {
-				if (log.isDebugEnabled()) {
-					log.debug("The following fields cannot be changed for " + getSupportedType() + ":" + changedProperties);
-				}
+				log.debug("The following fields cannot be changed for {} : {}", getSupportedType(), changedProperties);
 				
 				throw new UnchangeableObjectException("editing.fields.not.allowed", new Object[] { changedProperties,
 				        getSupportedType().getSimpleName() });

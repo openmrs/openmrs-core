@@ -165,4 +165,14 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 		}
 		return schedule;
 	}
+
+	/**
+	 * 
+	 * @see org.openmrs.scheduler.db.SchedulerDAO#getTaskByUuid(java.lang.String)
+	 */
+	@Override
+	public TaskDefinition getTaskByUuid(String uuid) throws DAOException {
+		return (TaskDefinition) sessionFactory.getCurrentSession()
+				.createQuery("from TaskDefinition o where o.uuid = :uuid").setString("uuid", uuid).uniqueResult();
+	}
 }

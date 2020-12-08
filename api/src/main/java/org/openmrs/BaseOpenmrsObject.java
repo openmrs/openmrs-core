@@ -17,56 +17,12 @@ import javax.persistence.MappedSuperclass;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.apache.lucene.analysis.core.KeywordTokenizerFactory;
-import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
-import org.apache.lucene.analysis.core.WhitespaceTokenizerFactory;
-import org.apache.lucene.analysis.ngram.EdgeNGramFilterFactory;
-import org.apache.lucene.analysis.ngram.NGramFilterFactory;
-import org.apache.lucene.analysis.standard.ClassicFilterFactory;
 import org.hibernate.Hibernate;
-import org.hibernate.search.annotations.AnalyzerDef;
-import org.hibernate.search.annotations.AnalyzerDefs;
-import org.hibernate.search.annotations.Parameter;
-import org.hibernate.search.annotations.TokenFilterDef;
-import org.hibernate.search.annotations.TokenizerDef;
-import org.openmrs.api.db.hibernate.search.LuceneAnalyzers;
 
 /**
  * This is the base implementation of the {@link OpenmrsObject} interface.<br>
  * It implements the uuid variable that all objects are expected to have.
  */
-@AnalyzerDefs({
-		@AnalyzerDef(name = LuceneAnalyzers.PHRASE_ANALYZER,
-				tokenizer = @TokenizerDef(factory = KeywordTokenizerFactory.class),
-				filters = {
-						@TokenFilterDef(factory = ClassicFilterFactory.class),
-						@TokenFilterDef(factory = LowerCaseFilterFactory.class)
-				}),
-		@AnalyzerDef(name = LuceneAnalyzers.EXACT_ANALYZER,
-				tokenizer = @TokenizerDef(factory = WhitespaceTokenizerFactory.class),
-				filters = {
-						@TokenFilterDef(factory = ClassicFilterFactory.class),
-						@TokenFilterDef(factory = LowerCaseFilterFactory.class)
-				}),
-		@AnalyzerDef(name = LuceneAnalyzers.START_ANALYZER,
-				tokenizer = @TokenizerDef(factory = WhitespaceTokenizerFactory.class),
-				filters = {
-						@TokenFilterDef(factory = ClassicFilterFactory.class),
-						@TokenFilterDef(factory = LowerCaseFilterFactory.class),
-						@TokenFilterDef(factory = EdgeNGramFilterFactory.class, params = {
-								@Parameter(name = "minGramSize", value = "2"),
-								@Parameter(name = "maxGramSize", value = "20") })
-				}),
-		@AnalyzerDef(name = LuceneAnalyzers.ANYWHERE_ANALYZER,
-				tokenizer = @TokenizerDef(factory = WhitespaceTokenizerFactory.class),
-				filters = {
-						@TokenFilterDef(factory = ClassicFilterFactory.class),
-						@TokenFilterDef(factory = LowerCaseFilterFactory.class),
-						@TokenFilterDef(factory = NGramFilterFactory.class, params = {
-								@Parameter(name = "minGramSize", value = "2"),
-								@Parameter(name = "maxGramSize", value = "20") })
-				})
-})
 @MappedSuperclass
 public abstract class BaseOpenmrsObject implements Serializable, OpenmrsObject {
 	
@@ -96,7 +52,7 @@ public abstract class BaseOpenmrsObject implements Serializable, OpenmrsObject {
 	 * {@link Object#hashCode()}.
 	 *
 	 * @see java.lang.Object#hashCode()
-	 * @should not fail if uuid is null
+	 * <strong>Should</strong> not fail if uuid is null
 	 */
 	@Override
 	public int hashCode() {
@@ -113,12 +69,12 @@ public abstract class BaseOpenmrsObject implements Serializable, OpenmrsObject {
 	 * <code>true</code>).
 	 *
 	 * @see java.lang.Object#equals(java.lang.Object)
-	 * @should return false if given obj is not instance of BaseOpenmrsObject
-	 * @should return false if given obj is null
-	 * @should return false if given obj has null uuid
-	 * @should return false if uuid is null
-	 * @should return true if objects are the same
-	 * @should return true if uuids are equal
+	 * <strong>Should</strong> return false if given obj is not instance of BaseOpenmrsObject
+	 * <strong>Should</strong> return false if given obj is null
+	 * <strong>Should</strong> return false if given obj has null uuid
+	 * <strong>Should</strong> return false if uuid is null
+	 * <strong>Should</strong> return true if objects are the same
+	 * <strong>Should</strong> return true if uuids are equal
 	 */
 	@Override
 	public boolean equals(Object obj) {
@@ -150,8 +106,8 @@ public abstract class BaseOpenmrsObject implements Serializable, OpenmrsObject {
 	 * If the <code>uuid</code> field is <code>null</code>, it returns: <blockquote>
 	 * ClassName{hashCode=...} </blockquote>
 	 *
-	 * @should include hashCode if uuid is null
-	 * @should include uuid if not null
+	 * <strong>Should</strong> include hashCode if uuid is null
+	 * <strong>Should</strong> include uuid if not null
 	 */
 	@Override
 	public String toString() {

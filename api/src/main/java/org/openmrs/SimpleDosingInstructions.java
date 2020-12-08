@@ -118,7 +118,7 @@ public class SimpleDosingInstructions implements DosingInstructions {
 	 * @see DosingInstructions#validate(DrugOrder, org.springframework.validation.Errors)
 	 * @param order
 	 * @param errors
-	 * @should reject a duration unit with a mapping of an invalid type
+	 * <strong>Should</strong> reject a duration unit with a mapping of an invalid type
 	 */
 	@Override
 	public void validate(DrugOrder order, Errors errors) {

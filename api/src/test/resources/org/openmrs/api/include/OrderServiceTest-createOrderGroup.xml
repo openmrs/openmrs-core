@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+    
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+    
+-->
+<dataset>
+	<order_group order_group_id="1" order_set_id="2000" patient_id="7" encounter_id="3"   creator="1" date_created="2012-02-19 12:24:10.0" voided="false" uuid="1c96f25c-4949-4f72-9931-d808fbcdb613" />
+	<order_group order_group_id="2" order_set_id="2000" patient_id="8" encounter_id="4"   creator="1" date_created="2012-02-19 12:24:10.0" voided="false" uuid="1c96f25c-4949-4f72-9931-d808fbcdb714" />
+	<order_group order_group_id="3" order_set_id="2000" patient_id="7" encounter_id="3"   creator="1" date_created="2012-02-19 12:24:10.0" voided="false" uuid="1c96f25c-4949-4f72-9931-d808fbcdb425" />
+	<order_group order_group_id="4" order_set_id="2000" patient_id="2" encounter_id="6"   creator="1" date_created="2012-01-01 00:00:00.0" voided="false" uuid="1c96f25c-4949-4f72-9931-d808fbcdb142" />
+	<order_group_attribute_type order_group_attribute_type_id="1" name="Stool" min_occurs="5" creator="1" date_created="2020-07-29 14:33:10.0" retired="1" uuid="9cf1b9de-d18e-11ea-87d0-0242ac130003"/>
+	<order_group_attribute_type order_group_attribute_type_id="2" name="Virology" min_occurs="5" creator="1" date_created="2020-07-29 14:33:10.0" retired="1" uuid="9cf1bbe6-d18e-11ea-87d0-0242ac130003"/>
+	<order_group_attribute_type order_group_attribute_type_id="3" name="Bacteriology" min_occurs="5" creator="1" date_created="2020-07-29 14:33:10.0" retired="1" uuid="9cf1bce0-d18e-11ea-87d0-0242ac130003"/>
+	<order_group_attribute_type order_group_attribute_type_id="4" name="ECG" min_occurs="5" creator="1" date_created="2020-07-29 14:33:10.0" retired="1" uuid="9cf1bdb2-d18e-11ea-87d0-0242ac130003"/>
+	<order_group_attribute order_group_attribute_id="1" order_group_id="1" attribute_type_id="1" value_reference="Test 1" uuid="86bdcc12-d18d-11ea-87d0-0242ac130003" creator="1" date_created="2020-07-29 14:33:10.0" voided="false"/>
+</dataset> 

@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<!--
+    This file contains all changesets that have been introduced on top of either liquibase-snapshots/2.1.x/liquibase-*.xml 
+    or liquibase-updates/2.1.x/liquibase-update-to-latest.xml. 
+-->
+<databaseChangeLog 
+	logicalFilePath="liquibase-update-to-latest.xml" 
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext 
+    	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog 
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+	<!--
+		See http://www.liquibase.org/manual/home#available_database_refactorings
+		for a list of supported elements and attributes
+	-->
+
+	<changeSet id="TRUNK-4755" author="Rahul,Swathi">
+            <preConditions onFail="MARK_RAN">
+                <not>
+                    <tableExists tableName="program_attribute_type" />
+                </not>
+            </preConditions>
+            <comment>Creating program_attribute_type table</comment>
+            <createTable tableName="program_attribute_type">
+                <column name="program_attribute_type_id" type="int" autoIncrement="true">
+                    <constraints primaryKey="true" nullable="false" />
+                </column>
+                <column name="name" type="varchar(255)">
+                    <constraints nullable="false"  unique="true"/>
+                </column>
+                <column name="description" type="varchar(1024)" />
+                <column name="datatype" type="varchar(255)" />
+                <column name="datatype_config" type="text" />
+                <column name="preferred_handler" type="varchar(255)" />
+                <column name="handler_config" type="text" />
+                <column name="min_occurs" type="int">
+                    <constraints nullable="false" />
+                </column>
+                <column name="max_occurs" type="int"></column>
+                <column name="creator" type="int">
+                    <constraints nullable="false" />
+                </column>
+                <column name="date_created" type="datetime">
+                    <constraints nullable="false" />
+                </column>
+                <column name="changed_by" type="int" />
+                <column name="date_changed" type="datetime" />
+                <column name="retired" type="boolean" defaultValueBoolean="false">
+                    <constraints nullable="false" />
+                </column>
+                <column name="retired_by" type="int(11)" />
+                <column name="date_retired" type="datetime" />
+                <column name="retire_reason" type="varchar(255)" defaultValue="null" />
+                <column name="uuid" type="char(38)">
+                    <constraints nullable="false" unique="true" />
+                </column>
+            </createTable>
+            <addForeignKeyConstraint constraintName="program_attribute_type_creator_fk"
+                                     baseTableName="program_attribute_type" baseColumnNames="creator"
+                                     referencedTableName="users" referencedColumnNames="user_id" />
+            <addForeignKeyConstraint constraintName="program_attribute_type_changed_by_fk"
+                                     baseTableName="program_attribute_type" baseColumnNames="changed_by"
+                                     referencedTableName="users" referencedColumnNames="user_id" />
+            <addForeignKeyConstraint constraintName="program_attribute_type_retired_by_fk"
+                                     baseTableName="program_attribute_type" baseColumnNames="retired_by"
+                                     referencedTableName="users" referencedColumnNames="user_id" />
+        </changeSet>
+        <changeSet id="20151218-1729" author="Rahul,Swathi">
+            <preConditions onFail="MARK_RAN">
+                <not>
+                    <tableExists tableName="patient_program_attribute" />
+                </not>
+            </preConditions>
+             <comment>Creating patient_program_attribute table</comment>
+            <createTable tableName="patient_program_attribute">
+                <column name="patient_program_attribute_id" type="int" autoIncrement="true">
+                    <constraints primaryKey="true" nullable="false" />
+                </column>
+                <column name="patient_program_id" type="int"><constraints nullable="false" /></column>
+                <column name="attribute_type_id" type="int"><constraints nullable="false" /></column>
+                <column name="value_reference" type="text"><constraints nullable="false" /></column>
+                <column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
+                <column name="creator" type="int"><constraints nullable="false"/></column>
+                <column name="date_created" type="datetime"><constraints nullable="false"/></column>
+                <column name="changed_by" type="int"/>
+                <column name="date_changed" type="datetime" />
+                <column name="voided" type="boolean" defaultValueBoolean="false">
+                    <constraints nullable="false" />
+                </column>
+                <column name="voided_by" type="int" />
+                <column name="date_voided" type="datetime" />
+                <column name="void_reason" type="varchar(255)" defaultValue="null"/>
+            </createTable>
+            <addForeignKeyConstraint constraintName="patient_program_attribute_programid_fk"
+                                     baseTableName="patient_program_attribute" baseColumnNames="patient_program_id"
+                                     referencedTableName="patient_program" referencedColumnNames="patient_program_id" />
+            <addForeignKeyConstraint constraintName="patient_program_attribute_attributetype_fk"
+                                     baseTableName="patient_program_attribute" baseColumnNames="attribute_type_id"
+                                     referencedTableName="program_attribute_type" referencedColumnNames="program_attribute_type_id" />
+            <addForeignKeyConstraint constraintName="patient_program_attribute_creator_fk"
+                                     baseTableName="patient_program_attribute" baseColumnNames="creator"
+                                     referencedTableName="users" referencedColumnNames="user_id" />
+            <addForeignKeyConstraint constraintName="patient_program_attribute_changed_by_fk"
+                                     baseTableName="patient_program_attribute" baseColumnNames="changed_by"
+                                     referencedTableName="users" referencedColumnNames="user_id" />
+            <addForeignKeyConstraint constraintName="patient_program_attribute_voided_by_fk"
+                                     baseTableName="patient_program_attribute" baseColumnNames="voided_by"
+            referencedTableName="users" referencedColumnNames="user_id" />
+    </changeSet>
+	<changeSet author="Kelechi+iheanyi" id="20180508-1000">
+		<preConditions onFail="MARK_RAN">
+			<tableExists tableName="conditions"/>
+		</preConditions>
+		<comment>
+			Rename conditions table to emrapi_conditions
+		</comment>
+		<renameTable newTableName="emrapi_conditions" oldTableName="conditions" />
+	</changeSet>
+	<changeSet id="20180508-1001" author="Kelechi+iheanyi">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="conditions"/></not>
+		</preConditions>
+		<comment>
+			Add conditions table
+		</comment>
+		<createTable tableName="conditions">
+			<column name="condition_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="additional_detail" type="varchar(255)">
+				<constraints nullable="true"/>
+			</column>
+			<column name="previous_version" type="int"></column>
+			<column name="condition_coded" type="int" />
+			<column name="condition_non_coded" type="varchar(255)" />
+			<column name="condition_coded_name" type="int" />
+			<column name="clinical_status" type="varchar(50)" >
+				<constraints nullable="false" />
+			</column>
+			<column name="verification_status" type="varchar(50)" >
+				<constraints nullable="true"/>
+			</column>
+			<column name="onset_date" type="datetime" />
+			<column name="date_created" type="datetime">
+				<constraints nullable="false" />
+			</column>
+			<column name="voided" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+			<column name="date_voided" type="datetime" />
+			<column name="void_reason" type="varchar(255)" />
+			<column name="uuid" type="varchar(38)">
+				<constraints unique="true" />
+			</column>
+			<column name="creator" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="voided_by" type="int" />
+			<column name="changed_by" type="int" />
+			<column name="patient_id" type="int"><constraints nullable="false" /></column>
+			<column name="end_date" type="datetime" />
+		</createTable>
+		<addForeignKeyConstraint constraintName="condition_previous_version_fk"
+								 baseTableName="conditions" baseColumnNames="previous_version"
+								 referencedTableName="conditions" referencedColumnNames="condition_id" />
+		<addForeignKeyConstraint constraintName="condition_condition_coded_fk"
+								 baseTableName="conditions" baseColumnNames="condition_coded"
+								 referencedTableName="concept" referencedColumnNames="concept_id " />
+		<addForeignKeyConstraint constraintName="condition_condition_coded_name_fk"
+								 baseTableName="conditions" baseColumnNames="condition_coded_name"
+								 referencedTableName="concept_name" referencedColumnNames="concept_name_id " />
+		<addForeignKeyConstraint constraintName="condition_creator_fk"
+								 baseTableName="conditions" baseColumnNames="creator"
+								 referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="condition_changed_by_fk"
+								 baseTableName="conditions" baseColumnNames="changed_by"
+								 referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="condition_voided_by_fk"
+								 baseTableName="conditions" baseColumnNames="voided_by"
+								 referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="condition_patient_fk"
+								 baseTableName="conditions" baseColumnNames="patient_id"
+								 referencedTableName="patient" referencedColumnNames="patient_id" />
+	</changeSet>
+	<changeSet id="20180508-1002" author="Kelechi+iheanyi">
+		<preConditions onFail="MARK_RAN">
+			<tableExists tableName="emrapi_conditions" />
+			<tableExists tableName="conditions" />
+		</preConditions>
+		<comment>
+			Migrate data from the emrapi_conditions table to the new conditions table
+		</comment>
+		<sql>
+			INSERT into `conditions` (condition_id, previous_version, patient_id, clinical_status, condition_non_coded, condition_coded, onset_date, additional_detail, end_date, creator, date_created, voided, voided_by, date_voided, void_reason, uuid)
+			SELECT condition_id, previous_condition_id, patient_id, status, condition_non_coded, concept_id, onset_date, additional_detail, end_date, creator, date_created, voided, voided_by, date_voided, void_reason, uuid FROM `emrapi_conditions`;
+		</sql>
+	</changeSet>
+	<changeSet id="20181402-TRUNK-5339" author="esirkings">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="encounter_diagnosis" />
+			</not>
+		</preConditions>
+
+		<comment>Creating encounter_diagnosis table</comment>
+		<createTable tableName="encounter_diagnosis">
+			<column name="diagnosis_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="diagnosis_coded" type="int" />
+			<column name="diagnosis_non_coded" type="varchar(255)" />
+			<column name="diagnosis_coded_name" type="int" />
+			<column name="encounter_id" type="int"><constraints nullable="false" /></column>
+			<column name="patient_id" type="int"><constraints nullable="false" /></column>
+			<column name="condition_id" type="int"><constraints nullable="true" /></column>
+			<column name="certainty" type="varchar(255)"><constraints nullable="false" /></column>
+			<column name="rank" type="int"><constraints nullable="false" /></column>
+			<column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
+			<column name="creator" type="int"><constraints nullable="false"/></column>
+			<column name="date_created" type="datetime"><constraints nullable="false"/></column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="datetime" />
+			<column name="voided" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+			<column name="voided_by" type="int" />
+			<column name="date_voided" type="datetime" />
+			<column name="void_reason" type="varchar(255)"/>
+		</createTable>
+		
+		<addForeignKeyConstraint constraintName="encounter_diagnosis_encounter_id_fk"
+								 baseTableName="encounter_diagnosis" baseColumnNames="encounter_id"
+								 referencedTableName="encounter" referencedColumnNames="encounter_id" />
+		<addForeignKeyConstraint constraintName="encounter_diagnosis_patient_id_fk"
+								 baseTableName="encounter_diagnosis" baseColumnNames="patient_id"
+								 referencedTableName="patient" referencedColumnNames="patient_id" />
+		<addForeignKeyConstraint constraintName="encounter_diagnosis_condition_id_fk"
+								 baseTableName="encounter_diagnosis" baseColumnNames="condition_id"
+								 referencedTableName="conditions" referencedColumnNames="condition_id" />
+		<addForeignKeyConstraint constraintName="encounter_diagnosis_creator_fk"
+								 baseTableName="encounter_diagnosis" baseColumnNames="creator"
+								 referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="encounter_diagnosis_voided_by_fk"
+								 baseTableName="encounter_diagnosis" baseColumnNames="voided_by"
+								 referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="encounter_diagnosis_changed_by_fk"
+								 baseTableName="encounter_diagnosis" baseColumnNames="changed_by"
+								 referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="encounter_diagnosis_coded_fk"
+								 baseTableName="encounter_diagnosis" baseColumnNames="diagnosis_coded"
+								 referencedTableName="concept" referencedColumnNames="concept_id " />
+		<addForeignKeyConstraint constraintName="encounter_diagnosis_coded_name_fk"
+								 baseTableName="encounter_diagnosis" baseColumnNames="diagnosis_coded_name"
+								 referencedTableName="concept_name" referencedColumnNames="concept_name_id " />
+		<addForeignKeyConstraint constraintName="encounter_diagnosis_patient_fk"
+								 baseTableName="encounter_diagnosis" baseColumnNames="patient_id"
+								 referencedTableName="patient" referencedColumnNames="patient_id" />
+	</changeSet>
+	<changeSet id="20180405131015-TRUNK-5333" author="alicerowan">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="concept_numeric" columnName="precise"/>
+		</preConditions>
+		<comment>Rename concept_numeric.precise to concept_numeric.allow_decimal</comment>
+		<renameColumn oldColumnName="precise" newColumnName="allow_decimal" tableName="concept_numeric"  columnDataType="BOOLEAN"/>
+	</changeSet>
+	<changeSet id="TRUNK-4791-20180215" author="patrick">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="provider" columnName="role_id"/>
+			</not>
+		</preConditions>
+		<comment>Adding role_id column to provider table</comment>
+		<addColumn tableName="provider">
+			<column name="role_id" type="int" />
+		</addColumn>
+		<addForeignKeyConstraint baseTableName="provider"
+								 baseColumnNames="role_id"
+								 constraintName="provider_role_id_fk"
+								 referencedTableName="concept"
+								 referencedColumnNames="concept_id" />
+	</changeSet>
+	<changeSet id="TRUNK-4791-20180216" author="patrick">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="provider" columnName="speciality_id"/>
+			</not>
+		</preConditions>
+		<comment>Adding speciality_id column to provider table</comment>
+		<addColumn tableName="provider">
+			<column name="speciality_id" type="int" />
+		</addColumn>
+		<addForeignKeyConstraint baseTableName="provider"
+								 baseColumnNames="speciality_id"
+								 constraintName="provider_speciality_id_fk"
+								 referencedTableName="concept"
+								 referencedColumnNames="concept_id" />
+	</changeSet>
+
+	<changeSet id="TRUNK-4505-20180804" author="fruether">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="person" columnName="cause_of_death_non_coded"/>
+			</not>
+		</preConditions>
+		<comment>Adding cause_of_death_non_coded to the table person</comment>
+		<addColumn tableName="person">
+			<column name="cause_of_death_non_coded" type="varchar(255)" />
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="TRUNK-5400-20180731-1" author="fruether">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="orders" columnName="fulfiller_comment"/>
+			</not>
+		</preConditions>
+		<comment>Adding fulfill_status and  fulfiller_comment column to provider table</comment>
+		<addColumn tableName="orders">
+			<column name="fulfiller_comment" type="varchar(1024)" />
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="TRUNK-5400-201807311-2" author="fruether">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="orders" columnName="fulfiller_status"/>
+			</not>
+		</preConditions>
+		<comment>Adding fulfill_status and  fulfiller_comment column to provider table</comment>
+		<addColumn tableName="orders">
+			<column name="fulfiller_status" type="varchar(50)" >
+			</column>
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="20180706-passwordreset" author="harisu+fanyui">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="users" columnName="activation_key"/>
+			</not>
+		</preConditions>
+		<comment>Adding column users.activation_key</comment>
+        <addColumn tableName="users">
+            <column name="activation_key" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet id="20180808-passwordreset" author="harisu+fanyui">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="users" columnName="email"/>				
+			</not>
+		</preConditions>
+		<comment>Adding column users.email</comment>
+        <addColumn tableName="users">
+            <column name="email" type="varchar(255)">
+            	<constraints unique="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

@@ -11,12 +11,12 @@ package org.openmrs.api.db.hibernate;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.openmrs.Condition;
+import org.openmrs.Encounter;
 import org.openmrs.Patient;
+import org.openmrs.api.APIException;
 import org.openmrs.api.db.ConditionDAO;
 import org.openmrs.api.db.DAOException;
 
@@ -26,8 +26,6 @@ import org.openmrs.api.db.DAOException;
  * @see ConditionDAO
  */
 public class HibernateConditionDAO implements ConditionDAO {
-	
-	private static final Log log = LogFactory.getLog(HibernateConditionDAO.class);
 	
 	/**
 	 * Hibernate session factory
@@ -107,6 +105,14 @@ public class HibernateConditionDAO implements ConditionDAO {
 		query.setInteger("patientId", patient.getId());
 		return query.list();
 	}
+
+	/**
+	 * @see ConditionService#getAllConditions(Patient)
+	 */
+	@Override
+	public List<Condition> getAllConditions(Patient patient) {
+		return this.getConditionHistory(patient);
+	}
 	
 	/**
 	 * Removes a condition from the database
@@ -116,5 +122,17 @@ public class HibernateConditionDAO implements ConditionDAO {
 	@Override
 	public void deleteCondition(Condition condition) throws DAOException {
 		sessionFactory.getCurrentSession().delete(condition);
+	}
+
+	/**
+	 * @see ConditionService#getConditionsByEncounter(Encounter)
+	 */
+	@Override
+	public List<Condition> getConditionsByEncounter(Encounter encounter) throws APIException {
+		Query query = sessionFactory.getCurrentSession().createQuery(
+				"from Condition c where c.encounter.encounterId = :encounterId and c.voided = false order "
+						+ "by c.onsetDate desc");
+		query.setInteger("encounterId", encounter.getId());
+		return query.list();
 	}
 }

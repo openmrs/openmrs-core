@@ -14,7 +14,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openmrs</groupId>
 	<artifactId>openmrs</artifactId>
-	<version>2.2.0-SNAPSHOT</version>
+	<version>2.5.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>OpenMRS</name>
 	<description>Master project for the modules of OpenMRS</description>
@@ -41,7 +41,8 @@
 		<connection>scm:git:git@github.com:openmrs/openmrs-core</connection>
 		<developerConnection>scm:git:git@github.com:openmrs/openmrs-core</developerConnection>
 		<url>https://github.com/openmrs/openmrs-core</url>
-	</scm>
+	  <tag>HEAD</tag>
+  </scm>
 
 	<ciManagement>
 		<system>Bamboo</system>
@@ -54,6 +55,7 @@
 		<module>api</module>
 		<module>web</module>
 		<module>webapp</module>
+		<module>liquibase</module>
 	</modules>
 
 	<dependencyManagement>
@@ -95,13 +97,18 @@
 			<dependency>
 				<groupId>javax.servlet</groupId>
 				<artifactId>javax.servlet-api</artifactId>
-				<version>3.0.1</version>
+				<version>4.0.1</version>
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>javax.servlet</groupId>
 				<artifactId>jsp-api</artifactId>
 				<version>2.0</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.servlet.jsp.jstl</groupId>
+				<artifactId>javax.servlet.jsp.jstl-api</artifactId>
+				<version>1.2.2</version>
 			</dependency>
 			<dependency>
 				<groupId>taglibs</groupId>
@@ -126,7 +133,7 @@
 			<dependency>
 				<groupId>org.apache.velocity</groupId>
 				<artifactId>velocity</artifactId>
-				<version>1.6.2</version>
+				<version>1.7</version>
 				<exclusions>
 					<exclusion>
 						<groupId>oro</groupId>
@@ -145,21 +152,27 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
-
 			<dependency>
 				<groupId>commons-collections</groupId>
 				<artifactId>commons-collections</artifactId>
 				<version>3.2.2</version>
 			</dependency>
 			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-collections4</artifactId>
+				<version>4.4</version>
+				<scope>test</scope>
+				<type>test-jar</type>
+			</dependency>
+			<dependency>
 				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>
-				<version>2.5</version>
+				<version>2.8.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>
-				<version>3.6</version>
+				<version>3.11</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
@@ -225,7 +238,7 @@
 			<dependency>
 				<groupId>org.javassist</groupId>
 				<artifactId>javassist</artifactId>
-				<version>3.22.0-GA</version>
+				<version>3.27.0-GA</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
@@ -253,123 +266,134 @@
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-validator</artifactId>
-				<version>4.2.0.Final</version>
+				<version>5.4.3.Final</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-search-orm</artifactId>
-				<version>5.1.2.Final</version>
+				<version>${hibernateSearchVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.lucene</groupId>
 				<artifactId>lucene-queryparser</artifactId>
-				<version>4.10.4</version>
+				<version>${luceneVersion}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.lucene</groupId>
+				<artifactId>lucene-analyzers-phonetic</artifactId>
+				<version>${luceneVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.lucene</groupId>
 				<artifactId>lucene-queries</artifactId>
-				<version>4.10.4</version>
+				<version>${luceneVersion}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.lucene</groupId>
+				<artifactId>lucene-backward-codecs</artifactId>
+				<version>${luceneVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.liquibase</groupId>
 				<artifactId>liquibase-core</artifactId>
-				<version>2.0.5</version>
-			</dependency>
-			<dependency>
-				<groupId>org.openmrs.liquibase.ext</groupId>
-				<artifactId>modify-column</artifactId>
-				<version>2.0.2</version>
-			</dependency>
-			<dependency>
-				<groupId>org.openmrs.liquibase.ext</groupId>
-				<artifactId>identity-insert</artifactId>
-				<version>1.2.1</version>
+				<version>3.10.3</version>
+				<exclusions>
+					<exclusion>
+						<groupId>ch.qos.logback</groupId>
+						<artifactId>logback-classic</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.openmrs.liquibase.ext</groupId>
 				<artifactId>type-converter</artifactId>
 				<version>1.0.1</version>
 			</dependency>
-
 			<dependency>
-				<groupId>log4j</groupId>
-				<artifactId>log4j</artifactId>
-				<version>1.2.15</version>
-				<exclusions>
-					<exclusion>
-						<groupId>javax.jms</groupId>
-						<artifactId>jms</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>com.sun.jdmk</groupId>
-						<artifactId>jmxtools</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>com.sun.jmx</groupId>
-						<artifactId>jmxri</artifactId>
-					</exclusion>
-				</exclusions>
+				<groupId>org.reflections</groupId>
+				<artifactId>reflections</artifactId>
+				<version>0.9.12</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-core</artifactId>
+				<version>${log4jVersion}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-slf4j-impl</artifactId>
+				<version>${log4jVersion}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-1.2-api</artifactId>
+				<version>${log4jVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
-				<version>1.6.0</version>
+				<version>${slf4jVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>jcl-over-slf4j</artifactId>
-				<version>1.6.0</version>
+				<version>${slf4jVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-log4j12</artifactId>
-				<version>1.6.0</version>
-				<scope>runtime</scope>
+				<artifactId>log4j-over-slf4j</artifactId>
+				<version>${slf4jVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>ca.uhn.hapi</groupId>
 				<artifactId>hapi-base</artifactId>
-				<version>2.0</version>
+				<version>2.1</version>
 			</dependency>
 			<dependency>
 				<groupId>ca.uhn.hapi</groupId>
 				<artifactId>hapi-structures-v23</artifactId>
-				<version>2.0</version>
+				<version>2.1</version>
 			</dependency>
 			<dependency>
 				<groupId>ca.uhn.hapi</groupId>
 				<artifactId>hapi-structures-v24</artifactId>
-				<version>2.0</version>
+				<version>2.1</version>
 			</dependency>
 			<dependency>
 				<groupId>ca.uhn.hapi</groupId>
 				<artifactId>hapi-structures-v25</artifactId>
-				<version>2.0</version>
+				<version>2.1</version>
 			</dependency>
 			<dependency>
 				<groupId>ca.uhn.hapi</groupId>
 				<artifactId>hapi-structures-v26</artifactId>
-				<version>2.0</version>
+				<version>2.1</version>
 			</dependency>
 			<dependency>
-				<groupId>dom4j</groupId>
+				<groupId>org.dom4j</groupId>
 				<artifactId>dom4j</artifactId>
-				<version>1.6.1</version>
+				<version>2.1.3</version>
+			</dependency>
+			<dependency>
+				<groupId>jaxen</groupId>
+				<artifactId>jaxen</artifactId>
+				<version>1.2.0</version>
 			</dependency>
 			<dependency>
 				<groupId>xerces</groupId>
 				<artifactId>xercesImpl</artifactId>
-				<version>2.8.0</version>
+				<version>2.12.0</version>
 			</dependency>
 			<dependency>
 				<groupId>com.thoughtworks.xstream</groupId>
 				<artifactId>xstream</artifactId>
-				<version>1.4.3</version>
+				<version>1.4.12</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.mail</groupId>
-				<artifactId>mail</artifactId>
-				<version>1.4.1</version>
+				<artifactId>javax.mail-api</artifactId>
+				<version>1.6.2</version>
 				<exclusions>
 					<exclusion>  <!-- declare the exclusion here -->
 						<groupId>javax.activation</groupId>
@@ -380,7 +404,7 @@
 			<dependency>
 				<groupId>commons-beanutils</groupId>
 				<artifactId>commons-beanutils</artifactId>
-				<version>1.9.3</version>
+				<version>1.9.4</version>
 				<exclusions>
 					<exclusion>
 						<groupId>commons-logging</groupId>
@@ -391,12 +415,12 @@
 			<dependency>
 				<groupId>commons-fileupload</groupId>
 				<artifactId>commons-fileupload</artifactId>
-				<version>1.3.3</version>
+				<version>1.4</version>
 			</dependency>
 			<dependency>
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
-				<version>5.1.45</version>
+				<version>8.0.22</version>
 				<scope>runtime</scope>
 			</dependency>
 			<dependency>
@@ -405,9 +429,9 @@
 				<version>5.0.11</version>
 			</dependency>
 			<dependency>
-				<groupId>postgresql</groupId>
+				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>9.0-801.jdbc4</version>
+				<version>42.2.18</version>
 				<scope>runtime</scope>
 			</dependency>
 			<dependency>
@@ -423,22 +447,22 @@
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-core</artifactId>
-				<version>2.9.0</version>
+				<version>${jacksonVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-annotations</artifactId>
-				<version>2.9.0</version>
+				<version>${jacksonVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-databind</artifactId>
-				<version>2.9.0</version>
+				<version>${jacksonVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.azeckoski</groupId>
 				<artifactId>reflectutils</artifactId>
-				<version>0.9.14</version>
+				<version>0.9.20</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
@@ -454,63 +478,123 @@
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
-				<version>4.12</version>
+				<version>4.13.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter-api</artifactId>
+				<version>${junitVersion}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter-engine</artifactId>
+				<version>${junitVersion}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter-params</artifactId>
+				<version>${junitVersion}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.junit.vintage</groupId>
+				<artifactId>junit-vintage-engine</artifactId>
+				<version>${junitVersion}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-junit-jupiter</artifactId>
+				<version>${mockitoVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
-				<version>1.10.19</version>
+				<version>${mockitoVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.powermock</groupId>
 				<artifactId>powermock-module-junit4</artifactId>
-				<version>1.6.6</version>
+				<version>2.0.9</version>
 			</dependency>
 			<dependency>
 				<groupId>org.powermock</groupId>
-				<artifactId>powermock-api-mockito</artifactId>
-				<version>1.6.6</version>
-				<exclusions>
-					<exclusion>
-						<artifactId>mockito-all</artifactId>
-						<groupId>org.mockito</groupId>
-					</exclusion>
-				</exclusions>
+				<artifactId>powermock-api-mockito2</artifactId>
+				<version>2.0.9</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hamcrest</groupId>
 				<artifactId>hamcrest-core</artifactId>
-				<version>1.3</version>
+				<version>2.2</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hamcrest</groupId>
 				<artifactId>hamcrest-library</artifactId>
-				<version>1.3</version>
+				<version>2.2</version>
 			</dependency>
 			<dependency>
 				<groupId>com.h2database</groupId>
 				<artifactId>h2</artifactId>
-				<version>1.4.196</version>
+				<version>1.4.200</version>
 			</dependency>
 			<dependency>
 				<groupId>org.dbunit</groupId>
 				<artifactId>dbunit</artifactId>
-				<version>2.5.4</version>
+				<version>2.7.0</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.validation</groupId>
 				<artifactId>validation-api</artifactId>
-				<version>1.0.0.GA</version>
+				<version>2.0.1.Final</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.sonar-plugins.java</groupId>
 				<artifactId>sonar-jacoco-listeners</artifactId>
-				<version>3.1</version>
+				<version>3.2</version>
 			</dependency>
 			<dependency>
 				<groupId>net.sf.ehcache</groupId>
 				<artifactId>ehcache</artifactId>
-				<version>2.10.0</version>
+				<version>2.10.6</version>
+			</dependency>
+			<dependency>
+			    <groupId>commons-validator</groupId>
+			    <artifactId>commons-validator</artifactId>
+			    <version>1.7</version>
+			</dependency>
+			<dependency>
+				<groupId>org.aspectj</groupId>
+				<artifactId>aspectjrt</artifactId>
+				<version>${aspectjVersion}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.aspectj</groupId>
+				<artifactId>aspectjweaver</artifactId>
+				<version>${aspectjVersion}</version>
+			</dependency>
+			<dependency>
+			  <groupId>joda-time</groupId>
+			  <artifactId>joda-time</artifactId>
+			  <version>2.10.8</version>
+			</dependency>
+			<dependency>
+			    <groupId>javax.annotation</groupId>
+			    <artifactId>javax.annotation-api</artifactId>
+			    <version>1.3.2</version>
+			</dependency>
+			<dependency>
+			    <groupId>com.sun.activation</groupId>
+			    <artifactId>javax.activation</artifactId>
+			    <version>1.2.0</version>
+			</dependency>
+			<dependency>
+			    <groupId>jakarta.xml.bind</groupId>
+			    <artifactId>jakarta.xml.bind-api</artifactId>
+			    <version>3.0.0</version>
+			</dependency>
+			<dependency>
+				<groupId>com.sun.xml.bind</groupId>
+				<artifactId>jaxb-impl</artifactId>
+			    <version>3.0.0</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -521,17 +605,17 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.18.1</version>
+					<version>2.22.2</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>2.4</version>
+					<version>3.2.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>2.1</version>
+					<version>3.8.1</version>
 					<configuration>
 						<target>${javaCompilerVersion}</target>
 						<source>${javaCompilerVersion}</source>
@@ -541,7 +625,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
-					<version>2.3.2</version>
+					<version>3.2.0</version>
 					<configuration>
 						<archive>
 							<manifestEntries>
@@ -562,12 +646,12 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-war-plugin</artifactId>
-					<version>2.4</version>
+					<version>3.3.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>buildnumber-maven-plugin</artifactId>
-					<version>1.1</version>
+					<version>1.4</version>
 					<configuration>
 						<buildNumberPropertyName>revisionNumber</buildNumberPropertyName>
 						<getRevisionOnlyOnce>true</getRevisionOnlyOnce>
@@ -578,12 +662,12 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-eclipse-plugin</artifactId>
-					<version>2.8</version>
+					<version>2.10</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>build-helper-maven-plugin</artifactId>
-					<version>1.5</version>
+					<version>3.2.0</version>
 				</plugin>
 				<plugin>
 					<groupId>com.googlecode.maven-java-formatter-plugin</groupId>
@@ -607,9 +691,17 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-checkstyle-plugin</artifactId>
-					<version>2.17</version>
+					<version>3.1.1</version>
 					<configuration>
 						<configLocation>checkstyle.xml</configLocation>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>findbugs-maven-plugin</artifactId>
+					<version>3.0.5</version>
+					<configuration>
+						<includeFilterFile>findbugs-include.xml</includeFilterFile>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -627,7 +719,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-source-plugin</artifactId>
-					<version>2.1.2</version>
+					<version>3.2.1</version>
 					<executions>
 						<execution>
 							<id>attach-sources</id>
@@ -640,14 +732,8 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>2.10.3</version>
+					<version>3.2.0</version>
 					<configuration>
-						<taglet>org.openmrs.tools.doclet.ShouldTaglet</taglet>
-						<tagletArtifact>
-							<groupId>org.openmrs.tools</groupId>
-							<artifactId>openmrs-tools</artifactId>
-							<version>${project.version}</version>
-						</tagletArtifact>
 						<!-- For some reason some packages from org.springframework are being
 						included and causing errors. -->
 						<excludePackageNames>org.springframework.*</excludePackageNames>
@@ -686,7 +772,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore/>
+										<ignore />
 									</action>
 								</pluginExecution>
 								<pluginExecution>
@@ -705,7 +791,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore/>
+										<ignore />
 									</action>
 								</pluginExecution>
 								<pluginExecution>
@@ -726,7 +812,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore/>
+										<ignore />
 									</action>
 								</pluginExecution>
 							</pluginExecutions>
@@ -736,12 +822,12 @@
 				<plugin>
 					<groupId>org.sonarsource.scanner.maven</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
-					<version>3.4.0.905</version>
+					<version>3.7.0.1746</version>
 				</plugin>
 				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>0.8.0</version>
+					<version>0.8.6</version>
 					<configuration>
 						<includes>
 							<include>org/openmrs/**</include>
@@ -759,61 +845,61 @@
 				<plugin>
 					<groupId>org.eluder.coveralls</groupId>
 					<artifactId>coveralls-maven-plugin</artifactId>
-					<version>4.2.0</version>
+					<version>4.3.0</version>
+				</plugin>
+				<plugin>
+					<groupId>com.mycila</groupId>
+					<artifactId>license-maven-plugin</artifactId>
+					<version>3.0</version>
+					<configuration>
+						<header>/org/openmrs/license/license-header.txt</header>
+						<includes>
+							<include>**/*.java</include>
+							<include>**/*.txt</include>
+							<include>**/*.xml</include>
+						</includes>
+						<excludes>
+							<exclude>**/list-repos-using-refapp-import.txt</exclude>
+							<exclude>**/license-header.txt</exclude>
+							<exclude>.git/**</exclude>
+							<exclude>**/NaturalStrings.java</exclude>
+							<exclude>src/main/resources/**/templates.xml</exclude>
+							<exclude>src/main/java/org/springframework/**</exclude>
+							<exclude>src/main/webapp/WEB-INF/view/scripts/dojo/**</exclude>
+							<exclude>src/main/webapp/WEB-INF/view/scripts/jquery/**</exclude>
+							<exclude>src/main/webapp/WEB-INF/view/scripts/jquery-ui/**</exclude>
+							<exclude>src/main/webapp/WEB-INF/view/module/**</exclude>
+							<!-- From gitignore -->
+							<exclude>.idea/**</exclude>
+							<exclude>target/**</exclude>
+							<exclude>bin/**</exclude>
+							<exclude>tmp/**</exclude>
+							<exclude>.settings/**</exclude>
+							<exclude>.externalToolBuilders/</exclude>
+							<exclude>nbproject/private/</exclude>
+							<exclude>build/</exclude>
+							<exclude>bin/</exclude>
+							<exclude>nbbuild/</exclude>
+							<exclude>dist/</exclude>
+							<exclude>nbdist/</exclude>
+							<exclude>nbactions.xml</exclude>
+							<exclude>nb-configuration.xml</exclude>
+							<exclude>**/dwr-modules.xml</exclude>
+							<exclude>build-number.txt</exclude>
+						</excludes>
+					</configuration>
+					<executions>
+						<execution>
+							<goals>
+								<goal>check</goal>
+							</goals>
+						</execution>
+					</executions>
 				</plugin>
 			</plugins>
 		</pluginManagement>
 
 		<plugins>
-			<plugin>
-				<groupId>com.mycila</groupId>
-				<artifactId>license-maven-plugin</artifactId>
-				<version>3.0</version>
-				<configuration>
-					<header>license-header.txt</header>
-					<includes>
-						<include>**/*.java</include>
-						<include>**/*.txt</include>
-						<include>**/*.xml</include>
-					</includes>
-					<excludes>
-						<exclude>**/list-repos-using-refapp-import.txt</exclude>
-						<exclude>**/license-header.txt</exclude>
-						<exclude>.git/**</exclude>
-						<exclude>**/NaturalStrings.java</exclude>
-						<exclude>src/main/resources/**/templates.xml</exclude>
-						<exclude>src/main/java/org/springframework/**</exclude>
-						<exclude>src/main/webapp/WEB-INF/view/scripts/dojo/**</exclude>
-						<exclude>src/main/webapp/WEB-INF/view/scripts/jquery/**</exclude>
-						<exclude>src/main/webapp/WEB-INF/view/scripts/jquery-ui/**</exclude>
-						<exclude>src/main/webapp/WEB-INF/view/module/**</exclude>
-						<!-- From gitignore -->
-						<exclude>.idea/**</exclude>
-						<exclude>target/**</exclude>
-						<exclude>bin/**</exclude>
-						<exclude>tmp/**</exclude>
-						<exclude>.settings/**</exclude>
-						<exclude>.externalToolBuilders/</exclude>
-						<exclude>nbproject/private/</exclude>
-						<exclude>build/</exclude>
-						<exclude>bin/</exclude>
-						<exclude>nbbuild/</exclude>
-						<exclude>dist/</exclude>
-						<exclude>nbdist/</exclude>
-						<exclude>nbactions.xml</exclude>
-						<exclude>nb-configuration.xml</exclude>
-						<exclude>**/dwr-modules.xml</exclude>
-						<exclude>build-number.txt</exclude>
-					</excludes>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>check</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>buildnumber-maven-plugin</artifactId>
@@ -841,7 +927,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.2-beta-5</version>
+				<version>3.3.0</version>
 				<configuration>
 					<descriptorRefs>
 						<descriptorRef>project</descriptorRef>
@@ -853,11 +939,22 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<failIfNoTests>false</failIfNoTests>
+					<useSystemClassLoader>false</useSystemClassLoader>
+					<systemProperties>
+						<log4j2.disable.jmx>true</log4j2.disable.jmx>
+					</systemProperties>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>com.mycila</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<configuration>
+					<header>${project.basedir}/license-header.txt</header>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
@@ -899,6 +996,27 @@
 								<configuration>
 									<includes>
 										<include>**/*IT.java</include>
+									</includes>
+									<excludes>
+										<exclude>**/*DatabaseIT.java</exclude>
+									</excludes>
+								</configuration>
+							</execution>
+							<execution>
+								<!-- 
+									Runs database integration tests that do not require the Spring context. The tests
+									are identified by the naming convention '*DatabaseIT.java'. They are run separately 
+									from integration tests that are based on BaseContextSensitiveTest as the 'IT2' tests 
+									drop the database at the end of each test which breaks BaseContextSensitiveTest. 
+								 -->
+								<id>integration-test-2</id>
+								<phase>test</phase>
+								<goals>
+									<goal>test</goal>
+								</goals>
+								<configuration>
+									<includes>
+										<include>**/*DatabaseIT.java</include>
 									</includes>
 								</configuration>
 							</execution>
@@ -961,7 +1079,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.10.3</version>
+				<version>3.2.0</version>
 				<configuration>
 					<docfilessubdirs>true</docfilessubdirs>
 					<bottom>&lt;em&gt;&lt;small&gt; Generated ${TIMESTAMP} NOTE - these libraries are in active development and subject to change&lt;/small&gt;&lt;/em&gt;</bottom>
@@ -972,7 +1090,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jxr-plugin</artifactId>
-				<version>2.3</version>
+				<version>3.0.0</version>
 			</plugin>
 		</plugins>
 	</reporting>
@@ -981,7 +1099,7 @@
 		<repository>
 			<id>openmrs-repo</id>
 			<name>OpenMRS Nexus Repository</name>
-			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/public</url>
+			<url>https://mavenrepo.openmrs.org/nexus/content/repositories/public</url>
 		</repository>
 	</repositories>
 
@@ -989,7 +1107,7 @@
 		<pluginRepository>
 			<id>openmrs-repo</id>
 			<name>OpenMRS Nexus Repository</name>
-			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/public</url>
+			<url>https://mavenrepo.openmrs.org/nexus/content/repositories/public</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
@@ -1000,12 +1118,12 @@
 		<repository>
 			<id>openmrs-repo-releases</id>
 			<name>OpenMRS Nexus Releases</name>
-			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/releases</url>
+			<url>https://mavenrepo.openmrs.org/nexus/content/repositories/releases</url>
 		</repository>
 		<snapshotRepository>
 			<id>openmrs-repo-snapshots</id>
 			<name>OpenMRS Nexus Snapshots</name>
-			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/snapshots</url>
+			<url>https://mavenrepo.openmrs.org/nexus/content/repositories/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 
@@ -1020,9 +1138,24 @@
 		<openmrs.version.shortnumericonly>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}</openmrs.version.shortnumericonly>
 		<openmrs.version>${project.version}</openmrs.version>
 
-		<springVersion>4.1.4.RELEASE</springVersion>
-		<hibernateVersion>4.3.9.Final</hibernateVersion>
-		<customArgLineForTesting/>
+		<!-- Tracking important versions and version dependencies -->
+		<!-- Note that the versions of these dependencies can be limited by support for other libraries.
+			 For instance, our version of Lucene is tied to the version of Hibernate Search. Similarly, our
+			 version of Hibernate Search must be compatible with the version of Hibernate and Hibernate must
+			 be compatible with our version of Spring. -->
+		<springVersion>5.3.1</springVersion>
+		<hibernateVersion>5.4.25.Final</hibernateVersion>
+		<hibernateSearchVersion>5.11.7.Final</hibernateSearchVersion>
+		<luceneVersion>5.5.5</luceneVersion>
+		<aspectjVersion>1.9.6</aspectjVersion>
+		<jacksonVersion>2.12.0</jacksonVersion>
+		<junitVersion>5.7.0</junitVersion>
+		<mockitoVersion>3.6.28</mockitoVersion>
+
+		<slf4jVersion> 1.7.30</slf4jVersion>
+		<log4jVersion>2.14.0</log4jVersion>
+
+		<customArgLineForTesting />
 
 		<sonar.host.url>https://sonar.openmrs.org</sonar.host.url>
 		<sonar.issuesReport.html.enable>true</sonar.issuesReport.html.enable>
@@ -1030,6 +1163,6 @@
 		<sonar.issuesReport.console.enable>true</sonar.issuesReport.console.enable>
 		<sonar.analysis.mode>publish</sonar.analysis.mode>
 
-		<argLine>-Duser.language=en -Duser.region=US -Xmx2g ${customArgLineForTesting}</argLine>
+		<argLine>-Duser.language=en -Duser.region=US -Xmx2g ${customArgLineForTesting} -Djava.locale.providers=COMPAT</argLine>
 	</properties>
 </project>

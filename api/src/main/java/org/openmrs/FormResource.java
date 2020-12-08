@@ -14,7 +14,6 @@ import java.util.Date;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.CustomValueDescriptor;
-import org.openmrs.customdatatype.InvalidCustomValueException;
 import org.openmrs.customdatatype.NotYetPersistedException;
 import org.openmrs.customdatatype.SingleCustomValue;
 
@@ -231,7 +230,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	 * @see org.openmrs.customdatatype.SingleCustomValue#getValue()
 	 */
 	@Override
-	public Object getValue() throws InvalidCustomValueException {
+	public Object getValue(){
 		if (typedValue == null) {
 			typedValue = CustomDatatypeUtil.getDatatype(this).fromReferenceString(getValueReference());
 		}
@@ -242,7 +241,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	 * @see org.openmrs.customdatatype.SingleCustomValue#setValue(java.lang.Object)
 	 */
 	@Override
-	public <T> void setValue(T typedValue) throws InvalidCustomValueException {
+	public <T> void setValue(T typedValue)  {
 		this.typedValue = typedValue;
 		dirty = true;
 	}
@@ -251,7 +250,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	 * @see org.openmrs.customdatatype.SingleCustomValue#setValueReferenceInternal(java.lang.String)
 	 */
 	@Override
-	public void setValueReferenceInternal(String valueToPersist) throws InvalidCustomValueException {
+	public void setValueReferenceInternal(String valueToPersist)  {
 		this.valueReference = valueToPersist;
 	}
 	

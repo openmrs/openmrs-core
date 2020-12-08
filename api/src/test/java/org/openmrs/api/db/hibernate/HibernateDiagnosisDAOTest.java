@@ -9,30 +9,27 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertNotNull;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.Before;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.CodedOrFreeText;
-import org.openmrs.Condition;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
+import org.openmrs.Condition;
 import org.openmrs.ConditionVerificationStatus;
 import org.openmrs.Diagnosis;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.db.DiagnosisDAO;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class HibernateDiagnosisDAOTest extends BaseContextSensitiveTest {
@@ -42,7 +39,7 @@ public class HibernateDiagnosisDAOTest extends BaseContextSensitiveTest {
 	@Autowired
 	DiagnosisDAO diagnosisDAO;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		executeDataSet(DIAGNOSIS_XML);
 

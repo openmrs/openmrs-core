@@ -9,8 +9,12 @@
  */
 package org.openmrs.validator;
 
+import org.openmrs.Encounter;
 import org.openmrs.annotation.Handler;
+import org.openmrs.api.APIException;
 import org.openmrs.notification.Alert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -22,6 +26,8 @@ import org.springframework.validation.Validator;
  */
 @Handler(supports = { Alert.class }, order = 50)
 public class AlertValidator implements Validator {
+
+	private static final Logger logger = LoggerFactory.getLogger(AlertValidator.class);
 
 	/**
 	 * Determines if the command object being submitted is a valid type
@@ -35,19 +41,22 @@ public class AlertValidator implements Validator {
 	
 	/**
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
-	 * @should fail validation if Alert Text is null or empty or whitespace
-	 * @should pass validation if all required values are set
-	 * @should pass validation if field lengths are correct
-	 * @should fail validation if field lengths are not correct
+	 * <strong>Should</strong> fail validation if Alert Text is null or empty or whitespace
+	 * <strong>Should</strong> pass validation if all required values are set
+	 * <strong>Should</strong> pass validation if field lengths are correct
+	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
-	public void validate(Object obj, Errors errors) {
+	public void validate(Object obj, Errors errors) throws APIException {
+		logger.debug("{}.validate...", this.getClass().getName());
+
+		if (obj == null || !(obj instanceof Alert)) {
+			throw new IllegalArgumentException("error.general and must be of type " + Alert.class);
+	}
 		Alert alert = (Alert) obj;
-		if (alert == null) {
-			errors.rejectValue("alert", "error.general");
-		} else {
+
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "text", "Alert.text.required");
 			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "text");
-		}
+
 	}
 }

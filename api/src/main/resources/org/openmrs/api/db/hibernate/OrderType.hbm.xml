@@ -23,8 +23,6 @@
             </generator>
         </id>
 
-        
-
         <property name="name" type="java.lang.String" not-null="true" length="255" unique="true" />
 
         <property name="description" type="java.lang.String" length="1024"/>

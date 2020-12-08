@@ -55,9 +55,9 @@ public class UpdateFileParser {
 	 * Parse the contents of the update.rdf file.
 	 *
 	 * @throws ModuleException
-	 * @should set properties from xml file
-	 * @should set properties using the newest update
-	 * @should not set properties using updates ahead of current openmrs version
+	 * <strong>Should</strong> set properties from xml file
+	 * <strong>Should</strong> set properties using the newest update
+	 * <strong>Should</strong> not set properties using updates ahead of current openmrs version
 	 */
 	public void parse() throws ModuleException {
 		StringReader stringReader = null;
@@ -99,10 +99,11 @@ public class UpdateFileParser {
 				this.moduleId = rootNode.getAttribute("moduleId");
 				
 				NodeList nodes = rootNode.getElementsByTagName("update");
-				this.currentVersion = ""; // default to the lowest version possible
+				// default to the lowest version possible
+				this.currentVersion = "";
 				
 				// loop over all 'update' tags
-				for (Integer i = 0; i < nodes.getLength(); i++) {
+				for (int i = 0; i < nodes.getLength(); i++) {
 					Element currentNode = (Element) nodes.item(i);
 					String currentVersion = getElement(currentNode, configVersion, "currentVersion");
 					// if the currently saved version is less than the current tag

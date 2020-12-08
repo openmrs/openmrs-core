@@ -9,12 +9,17 @@
  */
 package org.openmrs;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,12 +27,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
  * Behavior-driven tests of the Concept class.
@@ -68,7 +72,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("some name", new Locale("fr")));
 		
-		Assert.assertEquals(0, concept.getCompatibleNames(new Locale("en")).size());
+		assertEquals(0, concept.getCompatibleNames(new Locale("en")).size());
 	}
 	
 	/**
@@ -84,12 +88,12 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		
 		ConceptName initialPreferred = createConceptName(3, "Aspirin", primaryLocale, null, true);
 		testConcept.addName(initialPreferred);
-		Assert.assertEquals(true, initialPreferred.getLocalePreferred());
+		assertTrue(initialPreferred.getLocalePreferred());
 		ConceptName newPreferredName = createConceptName(4, "Doctor", primaryLocale, null, false);
 		testConcept.setPreferredName(newPreferredName);
 		
-		assertEquals(false, initialPreferred.getLocalePreferred());
-		assertEquals(true, newPreferredName.getLocalePreferred());
+		assertFalse(initialPreferred.getLocalePreferred());
+		assertTrue(newPreferredName.getLocalePreferred());
 	}
 	
 	/**
@@ -100,7 +104,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Concept mockConcept = new Concept();
 		mockConcept.addDescription(new ConceptDescription("en desc", new Locale("en")));
 		
-		Assert.assertNull(mockConcept.getDescription(new Locale("en", "US"), true));
+		assertNull(mockConcept.getDescription(new Locale("en", "US"), true));
 	}
 	
 	/**
@@ -116,8 +120,8 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		mockConcept2.addDescription(new ConceptDescription("en_US desc", new Locale("en", "US")));
 		mockConcept2.addDescription(new ConceptDescription("en desc", new Locale("en")));
 		
-		Assert.assertEquals("en_US desc", mockConcept.getDescription(new Locale("en", "US"), false).getDescription());
-		Assert.assertEquals("en_US desc", mockConcept2.getDescription(new Locale("en", "US"), false).getDescription());
+		assertEquals("en_US desc", mockConcept.getDescription(new Locale("en", "US"), false).getDescription());
+		assertEquals("en_US desc", mockConcept2.getDescription(new Locale("en", "US"), false).getDescription());
 	}
 	
 	/**
@@ -128,7 +132,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Concept mockConcept = new Concept();
 		mockConcept.addDescription(new ConceptDescription("en desc", new Locale("en")));
 		
-		Assert.assertEquals("en desc", mockConcept.getDescription(new Locale("en", "US"), false).getDescription());
+		assertEquals("en desc", mockConcept.getDescription(new Locale("en", "US"), false).getDescription());
 	}
 	
 	/**
@@ -139,7 +143,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Concept mockConcept = new Concept();
 		mockConcept.addDescription(new ConceptDescription("en_US desc", new Locale("en", "US")));
 		
-		Assert.assertEquals("en_US desc", mockConcept.getDescription(new Locale("en", "US"), false).getDescription());
+		assertEquals("en_US desc", mockConcept.getDescription(new Locale("en", "US"), false).getDescription());
 	}
 	
 	/**
@@ -148,8 +152,8 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	@Test
 	public void getName_shouldNotFailIfNoNamesAreDefined() {
 		Concept concept = new Concept();
-		Assert.assertNull(concept.getName(new Locale("en"), false));
-		Assert.assertNull(concept.getName(new Locale("en"), true));
+		assertNull(concept.getName(new Locale("en"), false));
+		assertNull(concept.getName(new Locale("en"), true));
 	}
 	
 	/**
@@ -166,8 +170,8 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		fullySpecifiedName.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
 		fullySpecifiedName.setLocalePreferred(false);
 		concept.addName(fullySpecifiedName);
-		Assert.assertNotNull(concept.getName(localeToSearch, true));
-		Assert.assertEquals("some name", concept.getName(localeToSearch, true).getName());
+		assertNotNull(concept.getName(localeToSearch, true));
+		assertEquals("some name", concept.getName(localeToSearch, true).getName());
 	}
 	
 	/**
@@ -180,7 +184,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("some name", nonMatchingNameLocale));
-		Assert.assertNull(concept.getName(localeToSearch, true));
+		assertNull(concept.getName(localeToSearch, true));
 	}
 	
 	/**
@@ -192,7 +196,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("Test Concept", localeToSearch));
-		Assert.assertEquals("Test Concept", (concept.getName(localeToSearch, false).toString()));
+		assertEquals("Test Concept", (concept.getName(localeToSearch, false).toString()));
 	}
 	
 	/**
@@ -207,10 +211,10 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		conceptName.setVoided(true);
 		concept.addName(conceptName);
 		Collection<ConceptName> cns = concept.getNames(false);
-		Assert.assertNotNull(cns);
-		Assert.assertEquals(cns.size(), 0);
+		assertNotNull(cns);
+		assertEquals(cns.size(), 0);
 		cns = concept.getNames(true);
-		Assert.assertEquals(cns.size(), 1);
+		assertEquals(cns.size(), 1);
 	}
 	
 	/**
@@ -225,8 +229,8 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		conceptName.setVoided(true);
 		concept.addName(conceptName);
 		Collection<ConceptName> cns = concept.getNames();
-		Assert.assertNotNull(cns);
-		Assert.assertEquals(cns.size(), 0);
+		assertNotNull(cns);
+		assertEquals(cns.size(), 0);
 	}
 	
 	/**
@@ -242,7 +246,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		concept.addName(conceptName);
 		
 		Collection<ConceptName> cns = concept.getNames(localeToSearch);
-		Assert.assertEquals(cns.size(), 0);
+		assertEquals(cns.size(), 0);
 	}
 	
 	/**
@@ -254,7 +258,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Concept concept = new Concept();
 		
 		Collection<ConceptName> cns = concept.getNames(localeToSearch);
-		Assert.assertEquals(cns.size(), 0);
+		assertEquals(cns.size(), 0);
 	}
 	
 	/**
@@ -265,7 +269,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Locale localeToSearch = new Locale("en");
 		Concept concept = new Concept();
 		ConceptName conceptName = concept.getName(localeToSearch);
-		Assert.assertNull(conceptName);
+		assertNull(conceptName);
 	}
 	
 	/**
@@ -275,9 +279,9 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	public void getAnswers_shouldNotReturnNullIfAnswersListIsNull() {
 		Concept c = new Concept();
 		c.setAnswers(null);
-		Assert.assertNotNull(c.getAnswers());
+		assertNotNull(c.getAnswers());
 		c.setAnswers(null);
-		Assert.assertNotNull(c.getAnswers(true));
+		assertNotNull(c.getAnswers(true));
 	}
 	
 	/**
@@ -287,7 +291,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	public void getAnswers_shouldInitAnswersObject() {
 		Concept c = new Concept();
 		c.setAnswers(null); //make sure the list is null
-		Assert.assertEquals(c.getAnswers(), c.getAnswers());
+		assertEquals(c.getAnswers(), c.getAnswers());
 	}
 	
 	/**
@@ -308,7 +312,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	public void getAnswers_shouldReturnRetiredByDefault() {
 		ConceptAnswer ca = new ConceptAnswer(new Concept(123));
 		Concept c = new Concept();
-		Assert.assertEquals(0, c.getAnswers().size());
+		assertEquals(0, c.getAnswers().size());
 		
 		ca.getAnswerConcept().setRetired(false);//set test condition explicitly
 		c.addAnswer(ca);
@@ -316,7 +320,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		ConceptAnswer ca2 = new ConceptAnswer(new Concept(456));
 		ca2.getAnswerConcept().setRetired(true);
 		c.addAnswer(ca2);
-		Assert.assertEquals(2, c.getAnswers().size());
+		assertEquals(2, c.getAnswers().size());
 	}
 	
 	/**
@@ -326,7 +330,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	public void getAnswers_shouldNotReturnRetiredIfFalse() {
 		ConceptAnswer ca = new ConceptAnswer(new Concept(123));
 		Concept c = new Concept();
-		Assert.assertEquals(0, c.getAnswers(false).size());
+		assertEquals(0, c.getAnswers(false).size());
 		
 		ca.getAnswerConcept().setRetired(false);//set test condition explicitly
 		c.addAnswer(ca);
@@ -334,7 +338,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		ConceptAnswer ca2 = new ConceptAnswer(new Concept(456));
 		ca2.getAnswerConcept().setRetired(true);
 		c.addAnswer(ca2);
-		Assert.assertEquals(1, c.getAnswers(false).size());
+		assertEquals(1, c.getAnswers(false).size());
 	}
 	
 	/**
@@ -344,7 +348,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	public void getAnswers_shouldReturnRetiredIfTrue() {
 		ConceptAnswer ca = new ConceptAnswer(new Concept(123));
 		Concept c = new Concept();
-		Assert.assertEquals(0, c.getAnswers(true).size());
+		assertEquals(0, c.getAnswers(true).size());
 		
 		ca.getAnswerConcept().setRetired(false);//set test condition explicitly
 		c.addAnswer(ca);
@@ -352,7 +356,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		ConceptAnswer ca2 = new ConceptAnswer(new Concept(456));
 		ca2.getAnswerConcept().setRetired(true);
 		c.addAnswer(ca2);
-		Assert.assertEquals(2, c.getAnswers(true).size());
+		assertEquals(2, c.getAnswers(true).size());
 	}
 	
 	/**
@@ -364,11 +368,11 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Concept c = new Concept();
 		c.setAnswers(null);//make sure null list
 		c.addAnswer(ca);
-		Assert.assertEquals(1d, ca.getSortWeight(), 0);
+		assertEquals(1d, ca.getSortWeight(), 0);
 		
 		ConceptAnswer ca2 = new ConceptAnswer(456);
 		c.addAnswer(ca2);
-		Assert.assertEquals(2d, ca2.getSortWeight(), 0);
+		assertEquals(2d, ca2.getSortWeight(), 0);
 	}
 	
 	/**
@@ -379,9 +383,9 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Locale primaryLocale = Locale.US;
 		Concept testConcept = createConcept(1, primaryLocale);
 		ConceptName newPreferredName = createConceptName(3, "Aspirin", primaryLocale, null, false);
-		assertEquals(false, testConcept.getNames(primaryLocale).contains(newPreferredName));
+		assertFalse(testConcept.getNames(primaryLocale).contains(newPreferredName));
 		testConcept.setPreferredName(newPreferredName);
-		assertEquals(true, testConcept.getNames(primaryLocale).contains(newPreferredName));
+		assertTrue(testConcept.getNames(primaryLocale).contains(newPreferredName));
 	}
 	
 	/**
@@ -394,8 +398,8 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		ConceptName fullySpecifiedName_FR = createConceptName(3, "Docteur", new Locale("fr"),
 		    ConceptNameType.FULLY_SPECIFIED, true);
 		testConcept.addName(fullySpecifiedName_FR);
-		Assert.assertEquals(primaryLocale, testConcept.getFullySpecifiedName(primaryLocale).getLocale());
-		Assert.assertEquals(ConceptNameType.FULLY_SPECIFIED,
+		assertEquals(primaryLocale, testConcept.getFullySpecifiedName(primaryLocale).getLocale());
+		assertEquals(ConceptNameType.FULLY_SPECIFIED,
 		    testConcept.getFullySpecifiedName(primaryLocale).getConceptNameType());
 	}
 	
@@ -407,11 +411,11 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Concept concept = new Concept();
 		Concept setMember = new Concept(1);
 		
-		Assert.assertEquals(0, concept.getConceptSets().size());
+		assertEquals(0, concept.getConceptSets().size());
 		
 		concept.addSetMember(setMember);
 		
-		Assert.assertEquals(1, concept.getConceptSets().size());
+		assertEquals(1, concept.getConceptSets().size());
 		
 	}
 	
@@ -426,7 +430,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		
 		ConceptSet conceptSet = (ConceptSet) concept.getConceptSets().toArray()[0];
 		
-		Assert.assertEquals(setMember, conceptSet.getConcept());
+		assertEquals(setMember, conceptSet.getConcept());
 	}
 	
 	/**
@@ -440,7 +444,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		
 		ConceptSet conceptSet = (ConceptSet) concept.getConceptSets().toArray()[0];
 		
-		Assert.assertEquals(concept, conceptSet.getConceptSet());
+		assertEquals(concept, conceptSet.getConceptSet());
 	}
 	
 	/**
@@ -454,7 +458,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Concept setMember2 = new Concept(2);
 		concept.addSetMember(setMember2);
 		
-		Assert.assertEquals(setMember2, concept.getSetMembers().get(1));
+		assertEquals(setMember2, concept.getSetMembers().get(1));
 	}
 	
 	/**
@@ -468,7 +472,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Concept setMember2 = new Concept(2);
 		concept.addSetMember(setMember2);
 		
-		Assert.assertEquals(setMember2, concept.getSetMembers().get(1));
+		assertEquals(setMember2, concept.getSetMembers().get(1));
 	}
 	
 	/**
@@ -491,11 +495,11 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		c.setConceptSets(sets);
 		
 		List<Concept> setMembers = c.getSetMembers();
-		Assert.assertEquals(4, setMembers.size());
-		Assert.assertEquals(set3.getConcept(), setMembers.get(0));
-		Assert.assertEquals(set2.getConcept(), setMembers.get(1));
-		Assert.assertEquals(set1.getConcept(), setMembers.get(2));
-		Assert.assertEquals(set0.getConcept(), setMembers.get(3));
+		assertEquals(4, setMembers.size());
+		assertEquals(set3.getConcept(), setMembers.get(0));
+		assertEquals(set2.getConcept(), setMembers.get(1));
+		assertEquals(set1.getConcept(), setMembers.get(2));
+		assertEquals(set0.getConcept(), setMembers.get(3));
 	}
 	
 	/**
@@ -530,12 +534,12 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		c.setConceptSets(sets);
 		
 		List<Concept> setMembers = c.getSetMembers();
-		Assert.assertEquals(set4.getConcept(), setMembers.get(0));
-		Assert.assertEquals(set2.getConcept(), setMembers.get(1));
-		Assert.assertEquals(set1.getConcept(), setMembers.get(2));
-		Assert.assertEquals(set5.getConcept(), setMembers.get(3));
-		Assert.assertEquals(set3.getConcept(), setMembers.get(4));
-		Assert.assertEquals(set0.getConcept(), setMembers.get(5));
+		assertEquals(set4.getConcept(), setMembers.get(0));
+		assertEquals(set2.getConcept(), setMembers.get(1));
+		assertEquals(set1.getConcept(), setMembers.get(2));
+		assertEquals(set5.getConcept(), setMembers.get(3));
+		assertEquals(set3.getConcept(), setMembers.get(4));
+		assertEquals(set0.getConcept(), setMembers.get(5));
 	}
 	
 	/**
@@ -553,24 +557,66 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		
 		List<Concept> setMembers = c.getSetMembers();
 		
-		Assert.assertEquals(2, setMembers.size());
-		Assert.assertEquals(setMember1, setMembers.get(0));
-		Assert.assertEquals(setMember2, setMembers.get(1));
+		assertEquals(2, setMembers.size());
+		assertEquals(setMember1, setMembers.get(0));
+		assertEquals(setMember2, setMembers.get(1));
 	}
 	
 	/**
 	 * @see Concept#getSetMembers()
 	 */
-	@Test(expected = UnsupportedOperationException.class)
+	@Test
 	public void getSetMembers_shouldReturnUnmodifiableListOfConceptMemberList() {
 		Concept c = new Concept();
 		c.addSetMember(new Concept(12345));
 		List<Concept> setMembers = c.getSetMembers();
 		
-		Assert.assertEquals(1, setMembers.size());
-		setMembers.add(new Concept());
+		assertEquals(1, setMembers.size());
+		assertThrows(UnsupportedOperationException.class, () -> setMembers.add(new Concept()));
 	}
-	
+
+	/**
+	 * @see Concept#getSetMembers(boolean includeRetired)
+	 */
+	@Test
+	public void getSetMembers_shouldReturnAllConceptSetMembersOfCurrentConceptIfIncludeRetiredIsTrueElseExcludeRetired() {
+		Concept c = new Concept();
+
+		Concept retiredConcept = new Concept(3);
+		retiredConcept.setRetired(true);
+
+		Concept retiredConcept2 = new Concept(0);
+		retiredConcept2.setRetired(true);
+
+		ConceptSet set0 = new ConceptSet(retiredConcept, 3.0);
+
+		ConceptSet set1 = new ConceptSet(new Concept(1), 2.0);
+
+		ConceptSet set2 = new ConceptSet();
+		set2.setConcept(new Concept(3));
+
+		ConceptSet set3 = new ConceptSet();
+		set3.setConcept(retiredConcept2);
+
+		List<ConceptSet> sets = new ArrayList<>();
+
+		sets.add(set0);
+		sets.add(set1);
+		sets.add(set2);
+		sets.add(set3);
+
+		c.setConceptSets(sets);
+
+		List<Concept> setMembersRetiredIncluded = c.getSetMembers(true);
+
+		List<Concept> setMembersRetiredExcluded = c.getSetMembers(false);
+
+		assertEquals(4, setMembersRetiredIncluded.size());
+
+		assertEquals(2, setMembersRetiredExcluded.size());
+	}
+
+
 	/**
 	 * @see Concept#addSetMember(Concept)
 	 */
@@ -585,8 +631,8 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		
 		ConceptSet firstConceptSet = (ConceptSet) concept.getConceptSets().toArray()[0];
 		ConceptSet secondConceptSet = (ConceptSet) concept.getConceptSets().toArray()[1];
-		Assert.assertEquals(firstSetMember, firstConceptSet.getConcept());
-		Assert.assertEquals(setMember, secondConceptSet.getConcept());
+		assertEquals(firstSetMember, firstConceptSet.getConcept());
+		assertEquals(setMember, secondConceptSet.getConcept());
 	}
 	
 	/**
@@ -599,7 +645,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		concept.addSetMember(setMember, 0);
 		
 		ConceptSet conceptSet = (ConceptSet) concept.getConceptSets().toArray()[0];
-		Assert.assertEquals(setMember, conceptSet.getConcept());
+		assertEquals(setMember, conceptSet.getConcept());
 	}
 	
 	/**
@@ -616,7 +662,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		
 		ConceptSet firstConceptSet = (ConceptSet) concept.getConceptSets().toArray()[0];
 		ConceptSet secondConceptSet = (ConceptSet) concept.getConceptSets().toArray()[1];
-		Assert.assertTrue(firstConceptSet.getSortWeight() < secondConceptSet.getSortWeight());
+		assertTrue(firstConceptSet.getSortWeight() < secondConceptSet.getSortWeight());
 	}
 	
 	/**
@@ -632,7 +678,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		concept.addSetMember(setMember, -1);
 		
 		ConceptSet secondConceptSet = (ConceptSet) concept.getConceptSets().toArray()[1];
-		Assert.assertEquals(setMember, secondConceptSet.getConcept());
+		assertEquals(setMember, secondConceptSet.getConcept());
 	}
 	
 	/**
@@ -654,7 +700,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		concept.addSetMember(newThirdSetMember, 2);
 		
 		ConceptSet thirdConceptSet = (ConceptSet) concept.getConceptSets().toArray()[2];
-		Assert.assertEquals(newThirdSetMember, thirdConceptSet.getConcept());
+		assertEquals(newThirdSetMember, thirdConceptSet.getConcept());
 	}
 	
 	/**
@@ -672,7 +718,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		concept.addName(new ConceptName("name6", new Locale("en", "US")));
 		concept.addName(new ConceptName("name7", new Locale("en", "UG")));
 		Set<Locale> localesForNames = concept.getAllConceptNameLocales();
-		Assert.assertEquals(5, localesForNames.size());
+		assertEquals(5, localesForNames.size());
 	}
 	
 	/**
@@ -688,7 +734,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		//preferred name in en
 		ConceptName preferredNameEN = createConceptName(4, "Doctor", new Locale("en"), null, false);
 		testConcept.addName(preferredNameEN);
-		Assert.assertEquals(fullySpecName, testConcept.getPreferredName(Locale.US).getName());
+		assertEquals(fullySpecName, testConcept.getPreferredName(Locale.US).getName());
 	}
 	
 	/**
@@ -703,8 +749,8 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		//preferred name in en
 		ConceptName preferredNameEN = createConceptName(4, "Doctor", new Locale("en"), null, true);
 		testConcept.addName(preferredNameEN);
-		Assert.assertEquals(preferredNameEN_US, testConcept.getPreferredName(Locale.US));
-		Assert.assertEquals(preferredNameEN, testConcept.getPreferredName(new Locale("en")));
+		assertEquals(preferredNameEN_US, testConcept.getPreferredName(Locale.US));
+		assertEquals(preferredNameEN, testConcept.getPreferredName(new Locale("en")));
 	}
 	
 	/**
@@ -717,7 +763,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		concept.addName(new ConceptName("shortName12", Context.getLocale()));
 		concept.addName(new ConceptName("shortName1", Locale.US));
 		concept.addName(new ConceptName("shortName", Locale.FRANCE));
-		Assert.assertEquals("shortName", concept.getShortestName(Context.getLocale(), false).getName());
+		assertEquals("shortName", concept.getShortestName(Context.getLocale(), false).getName());
 	}
 	
 	/**
@@ -730,7 +776,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		concept.addName(new ConceptName("shortName12", Context.getLocale()));
 		concept.addName(new ConceptName("shortName1", Locale.US));
 		concept.addName(new ConceptName("shortName", Locale.FRANCE));
-		Assert.assertEquals("shortName12", concept.getShortestName(Context.getLocale(), true).getName());
+		assertEquals("shortName12", concept.getShortestName(Context.getLocale(), true).getName());
 	}
 	
 	/**
@@ -741,7 +787,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Concept concept = createConcept(1, Context.getLocale());
 		int expectedNumberOfNames = concept.getNames().size() + 1;
 		concept.setFullySpecifiedName(new ConceptName("some name", Context.getLocale()));
-		Assert.assertEquals(expectedNumberOfNames, concept.getNames().size());
+		assertEquals(expectedNumberOfNames, concept.getNames().size());
 	}
 	
 	/**
@@ -752,10 +798,10 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Concept concept = createConcept(1, Context.getLocale());
 		ConceptName oldFullySpecifiedName = concept.getFullySpecifiedName(Context.getLocale());
 		//sanity check
-		Assert.assertEquals(ConceptNameType.FULLY_SPECIFIED, oldFullySpecifiedName.getConceptNameType());
+		assertEquals(ConceptNameType.FULLY_SPECIFIED, oldFullySpecifiedName.getConceptNameType());
 		
 		concept.setFullySpecifiedName(new ConceptName("some name", Context.getLocale()));
-		Assert.assertEquals(null, oldFullySpecifiedName.getConceptNameType());
+		assertEquals(null, oldFullySpecifiedName.getConceptNameType());
 	}
 	
 	/**
@@ -766,7 +812,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Concept concept = new Concept();
 		ConceptName cn = new ConceptName("some name", Context.getLocale());
 		concept.setFullySpecifiedName(cn);
-		Assert.assertEquals(ConceptNameType.FULLY_SPECIFIED, cn.getConceptNameType());
+		assertEquals(ConceptNameType.FULLY_SPECIFIED, cn.getConceptNameType());
 	}
 	
 	/**
@@ -777,7 +823,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Concept concept = createConcept(1, Context.getLocale());
 		int expectedNumberOfNames = concept.getNames().size() + 1;
 		concept.setShortName(new ConceptName("some name", Context.getLocale()));
-		Assert.assertEquals(expectedNumberOfNames, concept.getNames().size());
+		assertEquals(expectedNumberOfNames, concept.getNames().size());
 	}
 	
 	/**
@@ -788,10 +834,10 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Concept concept = createConcept(1, Context.getLocale());
 		ConceptName oldShortName = concept.getShortNameInLocale(Context.getLocale());
 		//sanity check
-		Assert.assertEquals(ConceptNameType.SHORT, oldShortName.getConceptNameType());
+		assertEquals(ConceptNameType.SHORT, oldShortName.getConceptNameType());
 		
 		concept.setShortName(new ConceptName("some name", Context.getLocale()));
-		Assert.assertEquals(null, oldShortName.getConceptNameType());
+		assertEquals(null, oldShortName.getConceptNameType());
 	}
 	
 	/**
@@ -804,7 +850,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		ConceptName FullySpecName = new ConceptName("fully spec name", Context.getLocale());
 		concept.addName(FullySpecName);
 		concept.setShortName(cn);
-		Assert.assertEquals(ConceptNameType.SHORT, cn.getConceptNameType());
+		assertEquals(ConceptNameType.SHORT, cn.getConceptNameType());
 	}
 	
 	@Test
@@ -827,7 +873,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		concept.addName(new ConceptName("shortName123", Context.getLocale()));
 		concept.setShortName(new ConceptName("shortName12", Context.getLocale()));
 		concept.setShortName(new ConceptName("shortName1", Locale.US));
-		Assert.assertEquals("shortName1", concept.getShortestName(Locale.US, null).getName());
+		assertEquals("shortName1", concept.getShortestName(Locale.US, null).getName());
 	}
 	
 	/**
@@ -839,20 +885,20 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		concept.addName(new ConceptName("shortName123", Context.getLocale()));
 		concept.addName(new ConceptName("shortName12", Context.getLocale()));
 		concept.addName(new ConceptName("shortName1", Locale.US));
-		Assert.assertNull(concept.getShortestName(new Locale("fr"), true));
+		assertNull(concept.getShortestName(new Locale("fr"), true));
 	}
 	
 	/**
 	 * @see Concept#setPreferredName(ConceptName)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void setPreferredName_shouldFailIfThePreferredNameToSetToIsAnIndexTerm() {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("some name", Context.getLocale()));
 		ConceptName preferredName = new ConceptName("some pref name", Context.getLocale());
 		preferredName.setLocalePreferred(true);
 		preferredName.setConceptNameType(ConceptNameType.INDEX_TERM);
-		concept.setPreferredName(preferredName);
+		assertThrows(APIException.class, () -> concept.setPreferredName(preferredName));
 	}
 	
 	/**
@@ -862,7 +908,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	public void addName_shouldMarkTheFirstNameAddedAsFullySpecified() {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("some name", Context.getLocale()));
-		Assert.assertEquals("some name", concept.getFullySpecifiedName(Context.getLocale()).getName());
+		assertEquals("some name", concept.getFullySpecifiedName(Context.getLocale()).getName());
 	}
 	
 	/**
@@ -873,12 +919,12 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Concept concept = new Concept();
 		ConceptName oldFullySpecName = new ConceptName("some name", Context.getLocale());
 		concept.addName(oldFullySpecName);
-		Assert.assertEquals(true, oldFullySpecName.isFullySpecifiedName());
+		assertTrue(oldFullySpecName.isFullySpecifiedName());
 		ConceptName newFullySpecName = new ConceptName("new name", Context.getLocale());
 		newFullySpecName.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
 		concept.addName(newFullySpecName);
-		Assert.assertEquals(false, oldFullySpecName.isFullySpecifiedName());
-		Assert.assertEquals("new name", concept.getFullySpecifiedName(Context.getLocale()).getName());
+		assertFalse(oldFullySpecName.isFullySpecifiedName());
+		assertEquals("new name", concept.getFullySpecifiedName(Context.getLocale()).getName());
 	}
 	
 	/**
@@ -893,8 +939,8 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		ConceptName newPreferredName = new ConceptName("new name", Context.getLocale());
 		newPreferredName.setLocalePreferred(true);
 		concept.addName(newPreferredName);
-		Assert.assertEquals(false, oldPreferredName.isPreferred());
-		Assert.assertEquals("new name", concept.getPreferredName(Context.getLocale()).getName());
+		assertFalse(oldPreferredName.isPreferred());
+		assertEquals("new name", concept.getPreferredName(Context.getLocale()).getName());
 	}
 	
 	/**
@@ -909,8 +955,8 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		ConceptName newShortName = new ConceptName("new name", Context.getLocale());
 		newShortName.setConceptNameType(ConceptNameType.SHORT);
 		concept.addName(newShortName);
-		Assert.assertEquals(false, oldShortName.isShort());
-		Assert.assertEquals("new name", concept.getShortNameInLocale(Context.getLocale()).getName());
+		assertFalse(oldShortName.isShort());
+		assertEquals("new name", concept.getShortNameInLocale(Context.getLocale()).getName());
 	}
 	
 	@Test
@@ -946,7 +992,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		shortName2.setConceptNameType(ConceptNameType.SHORT);
 		concept.addName(shortName2);
 		
-		Assert.assertEquals("Gato", concept.getShortNameInLocale(new Locale("es", "ES")).getName());
+		assertEquals("Gato", concept.getShortNameInLocale(new Locale("es", "ES")).getName());
 	}
 	
 	@Test
@@ -954,7 +1000,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Concept testConcept = createConcept(1, Locale.US);
 		ConceptName preferredName = createConceptName(4, "Doctor", new Locale("en"), null, true);
 		testConcept.addName(preferredName);
-		Assert.assertEquals(preferredName.getName(), testConcept.getPreferredName(Locale.US).getName());
+		assertEquals(preferredName.getName(), testConcept.getPreferredName(Locale.US).getName());
 	}
 	
 	/**
@@ -1011,7 +1057,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Locale localeToSearch = new Locale("en", "UK");
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("Test Concept", locale));
-		Assert.assertEquals((concept.getName(locale, false).toString()),
+		assertEquals((concept.getName(locale, false).toString()),
 		    (concept.getName(localeToSearch, false).toString()));
 	}
 	
@@ -1024,7 +1070,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Locale localeToSearch = new Locale("fr");
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("Test Concept", locale));
-		Assert.assertNotNull((concept.getName(localeToSearch, false)));
+		assertNotNull((concept.getName(localeToSearch, false)));
 	}
 	
 	/**
@@ -1034,8 +1080,8 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	public void getDescriptions_shouldNotReturnNullIfDescriptionsListIsNull() {
 		Concept c = new Concept();
 		c.setDescriptions(null);
-		Assert.assertTrue(c.getDescriptions().isEmpty());
-		Assert.assertNotNull(c.getDescriptions());
+		assertThat(c.getDescriptions(), is(empty()));
+		assertNotNull(c.getDescriptions());
 	}
 	
 	/**
@@ -1046,7 +1092,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("Test Concept", new Locale("en")));
 		Locale localeToSearch = new Locale("en", "UK");
-		Assert.assertFalse(concept.hasName(null, localeToSearch));
+		assertFalse(concept.hasName(null, localeToSearch));
 	}
 	
 	/**
@@ -1056,7 +1102,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	public void hasName_shouldReturnTrueIfLocaleIsNullButNameExists() {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("Test Concept", new Locale("en")));
-		Assert.assertTrue(concept.hasName("Test Concept", null));
+		assertTrue(concept.hasName("Test Concept", null));
 	}
 	
 	/**
@@ -1066,7 +1112,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	public void hasName_shouldReturnFalseIfLocaleIsNullButNameDoesNotExist() {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("Test Concept", new Locale("en")));
-		Assert.assertFalse(concept.hasName("Unknown concept", null));
+		assertFalse(concept.hasName("Unknown concept", null));
 	}
 	
 	/**
@@ -1082,11 +1128,11 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		c.addDescription(c1);
 		c.addDescription(c2);
 		Collection<ConceptDescription> descriptions = c.getDescriptions();
-		Assert.assertEquals(2, descriptions.size());
+		assertEquals(2, descriptions.size());
 		c.removeDescription(c1);
 		descriptions = c.getDescriptions();
-		Assert.assertTrue(descriptions.contains(c2));
-		Assert.assertEquals(1, descriptions.size());
+		assertTrue(descriptions.contains(c2));
+		assertEquals(1, descriptions.size());
 	}
 	
 	/**
@@ -1102,11 +1148,11 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		c.addConceptMapping(c1);
 		c.addConceptMapping(c2);
 		Collection<ConceptMap> mappings = c.getConceptMappings();
-		Assert.assertEquals(2, mappings.size());
+		assertEquals(2, mappings.size());
 		c.removeConceptMapping(c1);
 		mappings = c.getConceptMappings();
-		Assert.assertTrue(mappings.contains(c2));
-		Assert.assertEquals(1, mappings.size());
+		assertTrue(mappings.contains(c2));
+		assertEquals(1, mappings.size());
 	}
 	
 	/**
@@ -1115,9 +1161,9 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	@Test
 	public void toString_shouldReturnConceptIdIfPresentOrNull() {
 		Concept c = new Concept();
-		Assert.assertEquals("Concept #null", c.toString());
+		assertEquals("Concept #null", c.toString());
 		c.setId(2);
-		Assert.assertEquals("Concept #2", c.toString());
+		assertEquals("Concept #2", c.toString());
 	}
 	
 	@Test
@@ -1142,7 +1188,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Context.updateSearchIndexForType(ConceptName.class);
 		
 		List<Concept> resultConcepts = newConcept.findPossibleValues("findPossibleValueTest");
-		Assert.assertEquals(expectedConcepts, resultConcepts);
+		assertEquals(expectedConcepts, resultConcepts);
 	}
 	
 	/**

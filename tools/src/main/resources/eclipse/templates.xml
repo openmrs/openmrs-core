@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><templates><template autoinsert="true" context="java-members" deleted="false" description="OpenMRS Style JUnit 4 Test Before" enabled="true" name="beforeTest">@${testType:newType(org.junit.Before)}
 public void setUp() {
 	${cursor}
+}</template><template autoinsert="true" context="java-members" deleted="false" description="OpenMRS Style JUnit 5 Test BeforeEach" enabled="true" name="beforeTest5">@${testType:newType(org.junit.jupiter.api.BeforeEach)}
+public void setUp() {
+	${cursor}
 }</template><template autoinsert="true" context="java-statements" deleted="false" description="log a DEBUG message using slf4jlogger declared in this class" enabled="true" id="org.springframework.ide.eclipse.boot.templates.slf4j.logdebug" name="logd">${log:field(org.slf4j.Logger)}.debug("${message}");
 </template><template autoinsert="true" context="java-statements" deleted="false" description="log an ERROR message using slf4jlogger declared in this class" enabled="true" id="org.springframework.ide.eclipse.boot.templates.slf4j.logerror" name="loge">${log:field(org.slf4j.Logger)}.error("${message}");
 </template><template autoinsert="true" context="java-members" deleted="false" description="static Logger field using slf4j" enabled="true" id="org.springframework.ide.eclipse.boot.templates.slf4j.logger" name="logger">
@@ -15,9 +18,13 @@ private static final Logger log = LoggerFactory.getLogger(${enclosing_type}.clas
 </template><template autoinsert="true" context="java-members" deleted="false" description="OpenMRS Style JUnit 4 Test" enabled="true" name="test">@${testType:newType(org.junit.Test)}
 public void ${shouldSentence}() {
 	${cursor}
-}</template><template autoinsert="true" context="java-members" deleted="false" description="OpenMRS Style JUnit 4 Test of exception" enabled="true" name="testException">@${testType:newType(org.junit.Test)}
+}</template><template autoinsert="true" context="java-members" deleted="false" description="OpenMRS Style JUnit 5 Test" enabled="true" name="test5">@${testType:newType(org.junit.jupiter.api.Test)}
+public void ${shouldSentence}() {
+	${cursor}
+}</template><template autoinsert="true" context="java-members" deleted="false" description="OpenMRS Style JUnit 4 Test of an exception" enabled="true" name="testException">@${testType:newType(org.junit.Test)}
 public void ${shouldFailGiven}() {
-	${expectedException:var(org.junit.rules.ExpectedException)}.expect(${exception});
-	${expectedException:var(org.junit.rules.ExpectedException)}.expectMessage("${message}");
-	${methodThrowingException}
+	${staticImport:importStatic('org.junit.Assert.assertThrows')}assertThrows(${exception:link(IllegalArgumentException.class)}, () -&gt; ${});
+}</template><template autoinsert="true" context="java-members" deleted="false" description="OpenMRS Style JUnit 5 Test of an exception" enabled="true" name="testException5">@${testType:newType(org.junit.jupiter.api.Test)}
+public void ${shouldFailGiven}() {
+	${staticImport:importStatic('org.junit.jupiter.api.Assertions.assertThrows')}assertThrows(${exception:link(IllegalArgumentException.class)}, () -&gt; ${});
 }</template></templates>

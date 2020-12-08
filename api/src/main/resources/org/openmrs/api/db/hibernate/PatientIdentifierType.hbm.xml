@@ -68,14 +68,14 @@
 	<property name="locationBehavior" column="location_behavior" length="50">
 		<type name="org.hibernate.type.EnumType">
 			<param name="enumClass">org.openmrs.PatientIdentifierType$LocationBehavior</param>
-			<param name="type">12</param>
+			<param name="useNamed">true</param>
 		</type>
 	</property>
     
     <property name="uniquenessBehavior" column="uniqueness_behavior" length="50">
     	<type name="org.hibernate.type.EnumType">
     		<param name="enumClass">org.openmrs.PatientIdentifierType$UniquenessBehavior</param>
-    		<param name="type">12</param>
+    		<param name="useNamed">true</param>
     	</type>
     </property>
 	

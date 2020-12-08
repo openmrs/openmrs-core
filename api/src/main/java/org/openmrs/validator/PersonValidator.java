@@ -48,15 +48,16 @@ public class PersonValidator implements Validator {
 	/**
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should fail validation if birthdate makes patient older that 120 years old
-	 * @should fail validation if birthdate is a future date
-	 * @should fail validation if deathdate is a future date
-	 * @should fail validation if birthdate is after death date
-	 * @should fail validation if voidReason is blank when patient is voided
-	 * @should fail validation if causeOfDeath is blank when patient is dead
-	 * @should pass validation if gender is blank for Persons
-	 * @should pass validation if field lengths are correct
-	 * @should fail validation if field lengths are not correct
+	 * <strong>Should</strong> fail validation if birthdate makes patient older that 120 years old
+	 * <strong>Should</strong> fail validation if birthdate is a future date
+	 * <strong>Should</strong> fail validation if deathdate is a future date
+	 * <strong>Should</strong> fail validation if birthdate is after death date
+	 * <strong>Should</strong> fail validation if voidReason is blank when patient is voided
+	 * <strong>Should</strong> fail validation if causeOfDeath and causeOfDeathNonCoded is blank when patient is dead
+	 * <strong>Should</strong> fail validation if causeOfDeath and causeOfDeathNonCoded is both set
+	 * <strong>Should</strong> pass validation if gender is blank for Persons
+	 * <strong>Should</strong> pass validation if field lengths are correct
+	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
@@ -68,23 +69,59 @@ public class PersonValidator implements Validator {
 		
 		Person person = (Person) target;
 		
-		int index = 0;
-		boolean atLeastOneNonVoidPersonNameLeft = false;
-		for (PersonName personName : person.getNames()) {
-			errors.pushNestedPath("names[" + index + "]");
-			personNameValidator.validate(personName, errors);
-			if (!personName.getVoided()) {
-				atLeastOneNonVoidPersonNameLeft = true;
-			}
-			errors.popNestedPath();
-			index++;
-		}
-		if (!person.getVoided() && !atLeastOneNonVoidPersonNameLeft) {
+		validatePersonNames(person, errors);
+		
+		if (!person.getVoided() && !validatePersonHasAtLeastOneNonVoidedName(person)) {
 			errors.rejectValue("names", "Person.shouldHaveAtleastOneNonVoidedName");
 		}
 		
-		// validate the personAddress
-		index = 0;
+		validatePersonAddresses(person, errors);
+		
+		validateBirthDate(errors, person.getBirthdate());
+		validateDeathDate(errors, person.getDeathDate(), person.getBirthdate());
+		if (person.getVoided()) {
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
+		}
+		
+		validateDeathCause(person, errors);
+		
+		ValidateUtil.validateFieldLengths(errors, Person.class, "gender", "personVoidReason");
+	}
+	
+	/**
+	 * Checks if a person contains any non voided PersonName attribute
+	 *
+	 * @param person The person that is analysed for voided names
+	 * @return true if at leas one personName is not voided
+	 */
+	private boolean validatePersonHasAtLeastOneNonVoidedName(Person person) {
+			return person.getNames().stream().anyMatch(personName -> !personName.getVoided());
+	}
+	
+	/**
+	 * Checks if the names of a person fulfill the expected criteria  
+	 *
+	 * @param person The person whose names should be validated
+	 * @param errors Stores information about errors encountered during validation.
+	 */
+	private void validatePersonNames(Person person, Errors errors) {
+		int index = 0;
+		for (PersonName personName : person.getNames()) {
+			errors.pushNestedPath("names[" + index + "]");
+			personNameValidator.validate(personName, errors);
+			errors.popNestedPath();
+			index++;
+		}
+	}
+	
+	/**
+	 * Checks if the addresses of a person fulfill the expected criteria  
+	 *
+	 * @param person The person whose addresses should be validated
+	 * @param errors Stores information about errors encountered during validation.
+	 */
+	private void validatePersonAddresses(Person person, Errors errors) {
+		int index = 0;
 		for (PersonAddress address : person.getAddresses()) {
 			try {
 				errors.pushNestedPath("addresses[" + index + "]");
@@ -95,18 +132,23 @@ public class PersonValidator implements Validator {
 				index++;
 			}
 		}
-		
-		validateBirthDate(errors, person.getBirthdate());
-		validateDeathDate(errors, person.getDeathDate(), person.getBirthdate());
-		
-		if (person.getVoided()) {
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
-		}
+	}
+	
+	/**
+	 * Checks if the death cause and death cause non coded fulfill the business logic
+	 *
+	 * @param person The person whose death attributes should be validated.
+	 * @param errors Stores information about errors encountered during validation.
+	 */
+	private void validateDeathCause(Person person, Errors errors){
 		if (person.getDead()) {
-			ValidationUtils.rejectIfEmpty(errors, "causeOfDeath", "Person.dead.causeOfDeathNull");
+			if(person.getCauseOfDeath() != null && person.getCauseOfDeathNonCoded() != null) {
+				errors.rejectValue("causeOfDeath", "Person.dead.shouldHaveOnlyOneCauseOfDeathOrCauseOfDeathNonCodedSet");
+			}
+			else if(person.getCauseOfDeath() == null && person.getCauseOfDeathNonCoded() == null) {
+				errors.rejectValue("causeOfDeath", "Person.dead.causeOfDeathAndCauseOfDeathNonCodedNull");
+			}
 		}
-		
-		ValidateUtil.validateFieldLengths(errors, Person.class, "gender", "personVoidReason");
 	}
 	
 	/**

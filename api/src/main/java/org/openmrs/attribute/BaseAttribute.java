@@ -9,6 +9,10 @@
  */
 package org.openmrs.attribute;
 
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
+
+import org.hibernate.search.annotations.Field;
 import org.openmrs.BaseChangeableOpenmrsData;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.Customizable;
@@ -24,6 +28,7 @@ import org.openmrs.util.OpenmrsUtil;
  * @since 1.9
  */
 @SuppressWarnings("rawtypes")
+@MappedSuperclass
 public abstract class BaseAttribute<AT extends AttributeType, OwningType extends Customizable<?>> extends BaseChangeableOpenmrsData implements Attribute<AT, OwningType>, Comparable<Attribute> {
 	
 	private OwningType owner;
@@ -31,6 +36,8 @@ public abstract class BaseAttribute<AT extends AttributeType, OwningType extends
 	private AT attributeType;
 	
 	// value pulled from the database
+	@Field
+	@Column(name = "value_reference", nullable = false, length = 65535)
 	private String valueReference;
 	
 	// temporarily holds a typed value, either when getValue() is called the first time (causing valueReference to be converted) or when setValue has been called, but this attribute has not yet been committed to persistent storage

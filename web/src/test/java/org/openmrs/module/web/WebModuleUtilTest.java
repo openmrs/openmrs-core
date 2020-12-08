@@ -9,32 +9,29 @@
  */
 package org.openmrs.module.web;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.HashMap;
-import java.util.Properties;
-import java.util.Scanner;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.HashMap;
+import java.util.Properties;
+import java.util.Scanner;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleException;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.web.DispatcherServlet;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -42,8 +39,6 @@ import org.w3c.dom.Element;
 /**
  *
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(WebModuleUtil.class)
 public class WebModuleUtilTest {
 	
 	private static final String REAL_PATH = "/usr/local/apache-tomcat-7.0.27/webapps/openmrs";
@@ -204,11 +199,11 @@ public class WebModuleUtilTest {
 	/**
 	 * @see WebModuleUtil#getModuleWebFolder(String)
 	 */
-	@Test(expected = ModuleException.class)
+	@Test
 	public void getModuleWebFolder_shouldReturnNullIfTheDispatcherServletIsNotYetSet() {
 		//We need to do this in case it is run after getModuleWebFolder_shouldReturnTheCorrectModuleFolder 
 		WebModuleUtil.setDispatcherServlet(null);
-		WebModuleUtil.getModuleWebFolder("");
+		assertThrows(ModuleException.class, () -> WebModuleUtil.getModuleWebFolder(""));
 	}
 	
 	/**

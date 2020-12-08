@@ -9,11 +9,13 @@
  */
 package org.openmrs.validator;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 import org.openmrs.Program;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -38,17 +40,17 @@ public class ProgramValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(prog, "prog");
 		programValidator.validate(prog, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 		
 		prog.setName("");
 		errors = new BindException(prog, "prog");
 		programValidator.validate(prog, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 		
 		prog.setName(" ");
 		errors = new BindException(prog, "prog");
 		programValidator.validate(prog, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 	}
 	
 	/**
@@ -62,7 +64,7 @@ public class ProgramValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(prog, "prog");
 		programValidator.validate(prog, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 	}
 	
 	/**
@@ -77,17 +79,17 @@ public class ProgramValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(prog, "prog");
 		programValidator.validate(prog, errors);
-		Assert.assertFalse(errors.hasFieldErrors("description"));
+		assertFalse(errors.hasFieldErrors("description"));
 		
 		prog.setDescription("");
 		errors = new BindException(prog, "prog");
 		programValidator.validate(prog, errors);
-		Assert.assertFalse(errors.hasFieldErrors("description"));
+		assertFalse(errors.hasFieldErrors("description"));
 		
 		prog.setDescription(" ");
 		errors = new BindException(prog, "prog");
 		programValidator.validate(prog, errors);
-		Assert.assertFalse(errors.hasFieldErrors("description"));
+		assertFalse(errors.hasFieldErrors("description"));
 	}
 	
 	/**
@@ -101,7 +103,7 @@ public class ProgramValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(prog, "prog");
 		programValidator.validate(prog, errors);
-		Assert.assertTrue(errors.hasFieldErrors("concept"));
+		assertTrue(errors.hasFieldErrors("concept"));
 	}
 	
 	/**
@@ -117,7 +119,7 @@ public class ProgramValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(prog, "prog");
 		programValidator.validate(prog, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -131,12 +133,12 @@ public class ProgramValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(program, "program");
 		programValidator.validate(program, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 		
 		Context.getProgramWorkflowService().saveProgram(program);
 		program = Context.getProgramWorkflowService().getProgram(3);
 		
-		Assert.assertTrue(program.getDescription().equals("Edited description"));
+		assertTrue(program.getDescription().equals("Edited description"));
 	}
 	
 	/**
@@ -151,7 +153,7 @@ public class ProgramValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(prog, "prog");
 		programValidator.validate(prog, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
@@ -167,6 +169,6 @@ public class ProgramValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(prog, "prog");
 		programValidator.validate(prog, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		assertTrue(errors.hasFieldErrors("name"));
 	}
 }

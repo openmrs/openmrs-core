@@ -51,6 +51,7 @@ import org.openmrs.util.MemoryLeakUtil;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.web.filter.initialization.DatabaseDetective;
 import org.openmrs.web.filter.initialization.InitializationFilter;
 import org.openmrs.web.filter.update.UpdateFilter;
 import org.slf4j.LoggerFactory;
@@ -214,6 +215,11 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			return true;
 		}
 		
+		DatabaseDetective databaseDetective = new DatabaseDetective();
+		if (databaseDetective.isDatabaseEmpty(OpenmrsUtil.getRuntimeProperties(WebConstants.WEBAPP_NAME))) {
+			return true;
+		}
+		
 		return DatabaseUpdater.updatesRequired() && !DatabaseUpdater.allowAutoUpdate();
 	}
 	
@@ -292,37 +298,14 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	}
 	
 	/**
-	 * Hacky way to get the current contextPath. This will usually be "openmrs". This method will be
-	 * obsolete when servlet api ~2.6 comes out...at which point a call like
-	 * servletContext.getContextRoot() would be sufficient
-	 *
 	 * @return current contextPath of this webapp without initial slash
 	 */
 	private String getContextPath(ServletContext servletContext) {
 		// Get the context path without the request.
-		String contextPath = "";
-		try {
-			contextPath = servletContext.getContextPath();
-		}
-		catch (NoSuchMethodError ex) {
-			// ServletContext.getContextPath() was added in version 2.5 of the Servlet API. Tomcat 5.5
-			// has version 2.4 of the servlet API, so we fall back to the hacky code we were previously
-			// using
-			try {
-				String path = servletContext.getResource("/").getPath();
-				contextPath = path.substring(0, path.lastIndexOf("/"));
-				contextPath = contextPath.substring(contextPath.lastIndexOf("/"));
-			}
-			catch (Exception e) {
-				log.error("Failed to get construct context path", e);
-			}
-		}
-		catch (Exception e) {
-			log.error("Failed to get context path", e);
-		}
+		String contextPath = servletContext.getContextPath();
 		
 		// trim off initial slash if it exists
-		if (contextPath.contains("/")) {
+		if (contextPath.startsWith("/")) {
 			contextPath = contextPath.substring(1);
 		}
 		
@@ -342,11 +325,11 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
-			db.setEntityResolver((publicId, systemId) -> {
-				// When asked to resolve external entities (such as a DTD) we return an InputSource
-				// with no data at the end, causing the parser to ignore the DTD.
-				return new InputSource(new StringReader(""));
-			});
+
+			// When asked to resolve external entities (such as a DTD) we return an InputSource
+			// with no data at the end, causing the parser to ignore the DTD.
+			db.setEntityResolver((publicId, systemId) -> new InputSource(new StringReader("")));
+
 			Document doc = db.parse(dwrFile);
 			Element elem = doc.getDocumentElement();
 			elem.setTextContent("");
@@ -554,7 +537,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				String filename = WebConstants.WEBAPP_NAME + "-test-runtime.properties";
 				File file = new File(OpenmrsUtil.getApplicationDataDirectory(), filename);
 				System.out.println(filename + " delete=" + file.delete());
-				//new com.mysql.management.MysqldResource(new File("../openmrs/target/database")).shutdown();
+			
 			}
 			// remove the user context that we set earlier
 			Context.closeSession();

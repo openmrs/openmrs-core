@@ -9,12 +9,16 @@
  */
 package org.openmrs.api.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -22,10 +26,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
@@ -43,7 +45,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
  * Unit tests for methods that are specific to the {@link ConceptServiceImpl}. General tests that
@@ -53,8 +55,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	protected ConceptService conceptService = null;
 	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	
 	/**
 	 * Run this before each unit test in this class. The "@Before" method in
@@ -62,7 +62,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	@Before
+	@BeforeEach
 	public void runBeforeAllTests() {
 		conceptService = Context.getConceptService();
 	}
@@ -133,9 +133,9 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		catch (org.openmrs.api.APIException e) {
 			//ignore it
 		}
-		assertNotNull("there's a preferred name", c.getPreferredName(loc));
-		assertTrue("name was explicitly marked preferred", c.getPreferredName(loc).isPreferred());
-		assertEquals("name matches", c.getPreferredName(loc).getName(), indexTerm.getName());
+		assertNotNull(c.getPreferredName(loc), "there's a preferred name");
+		assertTrue(c.getPreferredName(loc).isPreferred(), "name was explicitly marked preferred");
+		assertEquals(c.getPreferredName(loc).getName(), indexTerm.getName(), "name matches");
 	}
 	
 	/**
@@ -163,9 +163,9 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		catch (org.openmrs.api.APIException e) {
 			//ignore it
 		}
-		assertNull("there's a preferred name", c.getPreferredName(loc));
-		assertFalse("name was explicitly marked preferred", shortName.isPreferred());
-		assertFalse("name was explicitly marked preferred", indexTerm.isPreferred());
+		assertNull(c.getPreferredName(loc), "there's a preferred name");
+		assertFalse(shortName.isPreferred(), "name was explicitly marked preferred");
+		assertFalse(indexTerm.isPreferred(), "name was explicitly marked preferred");
 	}
 	
 	/**
@@ -194,15 +194,14 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		c.addDescription(new ConceptDescription("some description", null));
 		c.setDatatype(new ConceptDatatype(1));
 		c.setConceptClass(new ConceptClass(1));
-		assertFalse("check test assumption - the API didn't automatically set preferred vlag",
-		    c.getFullySpecifiedName(loc).isPreferred());
+		assertFalse(c.getFullySpecifiedName(loc).isPreferred(), "check test assumption - the API didn't automatically set preferred vlag");
 			
-		assertNotNull("Concept is legit, save succeeds", Context.getConceptService().saveConcept(c));
+		assertNotNull(Context.getConceptService().saveConcept(c), "Concept is legit, save succeeds");
 		
 		Context.getConceptService().saveConcept(c);
-		assertNotNull("there's a preferred name", c.getPreferredName(loc));
-		assertTrue("name was explicitly marked preferred", c.getPreferredName(loc).isPreferred());
-		assertEquals("name matches", c.getPreferredName(loc).getName(), fullySpecifiedName.getName());
+		assertNotNull(c.getPreferredName(loc), "there's a preferred name");
+		assertTrue(c.getPreferredName(loc).isPreferred(), "name was explicitly marked preferred");
+		assertEquals(c.getPreferredName(loc).getName(), fullySpecifiedName.getName(), "name matches");
 	}
 	
 	/**
@@ -235,15 +234,13 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		c.setDatatype(new ConceptDatatype(1));
 		c.setConceptClass(new ConceptClass(1));
 		
-		assertNull("check test assumption - the API hasn't promoted a name to a fully specified name",
-		    c.getFullySpecifiedName(loc));
+		assertNull(c.getFullySpecifiedName(loc), "check test assumption - the API hasn't promoted a name to a fully specified name");
 			
 		Context.getConceptService().saveConcept(c);
-		assertNotNull("there's a preferred name", c.getPreferredName(loc));
-		assertTrue("name was explicitly marked preferred", c.getPreferredName(loc).isPreferred());
-		assertEquals("name matches", c.getPreferredName(loc).getName(), synonym.getName());
-		assertEquals("fully specified name unchanged", c.getPreferredName(otherLocale).getName(),
-		    fullySpecifiedName.getName());
+		assertNotNull(c.getPreferredName(loc), "there's a preferred name");
+		assertTrue(c.getPreferredName(loc).isPreferred(), "name was explicitly marked preferred");
+		assertEquals(c.getPreferredName(loc).getName(), synonym.getName(), "name matches");
+		assertEquals(c.getPreferredName(otherLocale).getName(), fullySpecifiedName.getName(), "fully specified name unchanged");
 			
 	}
 	
@@ -289,6 +286,64 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see ConceptServiceImpl#saveDrug(Drug) 
+	 */
+	@Test
+	public void saveDrug_shouldPutGeneratedIdOntoReturnedDrug() {
+		Drug drug = new Drug();
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("Concept", new Locale("en", "US")));
+		concept.addDescription(new ConceptDescription("Description", new Locale("en", "US")));
+		concept.setConceptClass(new ConceptClass(1));
+		concept.setDatatype(new ConceptDatatype(1));
+		Concept savedConcept = conceptService.saveConcept(concept);
+		drug.setConcept(savedConcept);
+		assertNull(drug.getDrugId());
+		Drug savedDrug = conceptService.saveDrug(drug);
+		assertNotNull(savedDrug.getDrugId());
+	}
+
+	/**
+	 * @see ConceptServiceImpl#saveDrug(Drug)
+	 */
+	@Test
+	public void saveDrug_shouldCreateNewDrugInDatabase() {
+		Drug drug = new Drug();
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("Concept", new Locale("en", "US")));
+		concept.addDescription(new ConceptDescription("Description", new Locale("en", "US")));
+		concept.setConceptClass(new ConceptClass(1));
+		concept.setDatatype(new ConceptDatatype(1));
+		Concept savedConcept = conceptService.saveConcept(concept);
+		drug.setConcept(savedConcept);
+		drug.setName("Drug");
+		assertNull(conceptService.getDrug("Drug"));
+		Drug savedDrug = conceptService.saveDrug(drug);
+		assertNotNull(conceptService.getDrug(savedDrug.getDrugId()));
+	}
+
+	/**
+	 * @see ConceptServiceImpl#saveDrug(Drug)
+	 */
+	@Test
+	public void saveDrug_shouldUpdateDrugAlreadyExistingInDatabase() {
+		Drug drug = new Drug();
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("Concept", new Locale("en", "US")));
+		concept.addDescription(new ConceptDescription("Description", new Locale("en", "US")));
+		concept.setConceptClass(new ConceptClass(1));
+		concept.setDatatype(new ConceptDatatype(1));
+		Concept savedConcept = conceptService.saveConcept(concept);
+		drug.setConcept(savedConcept);
+		drug.setCombination(false);
+		Drug savedDrug = conceptService.saveDrug(drug);
+		assertFalse(savedDrug.getCombination());
+		savedDrug.setCombination(true);
+		conceptService.saveDrug(savedDrug);
+		assertTrue(conceptService.getDrug(savedDrug.getDrugId()).getCombination());
+	}
+	
+	/**
 	 * @see ConceptServiceImpl#purgeConcept(Concept)
 	 */
 	@Test
@@ -304,8 +359,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	@Test
 	public void retireConcept_shouldFailIfNoReasonIsGiven() {
 		Concept concept = conceptService.getConcept(3);
-		expectedException.expect(IllegalArgumentException.class);
-		conceptService.retireConcept(concept, "");
+		assertThrows(IllegalArgumentException.class, () -> conceptService.retireConcept(concept, ""));
 	}
 	
 	/**
@@ -395,7 +449,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see ConcepTServiceImpl#retireDrug(Drug, String)
+	 * @see ConceptServiceImpl#retireDrug(Drug, String)
 	 */
 	@Test
 	public void retireDrug_shouldRetireTheGivenDrug() {
@@ -406,7 +460,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see ConcepTServiceImpl#unretireDrug(Drug)
+	 * @see ConceptServiceImpl#unretireDrug(Drug)
 	 */
 	@Test
 	public void unretireDrug_shouldMarkDrugAsNotRetired() {
@@ -417,7 +471,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see ConcepTServiceImpl#unretireDrug(Drug)
+	 * @see ConceptServiceImpl#unretireDrug(Drug)
 	 */
 	@Test
 	public void unretireDrug_shouldNotChangeAttributesOfDrugThatIsAlreadyNotRetired() {
@@ -562,13 +616,12 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see ConceptServiceImpl#getDrugByIngredients(Concept)
+	 * @see ConceptServiceImpl#getDrugsByIngredient(Concept)
 	 */
 	@Test
 	public void getDrugsByIngredient_shouldRaiseExceptionIfNoConceptIsGiven() {
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("ingredient is required");
-		conceptService.getDrugsByIngredient(null);
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> conceptService.getDrugsByIngredient(null));
+		assertThat(exception.getMessage(), is("ingredient is required"));
 	}
 	
 	/**
@@ -740,9 +793,8 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	public void purgeConceptReferenceTerm_shouldFailIfGivenConceptReferenceTermIsInUse() {
 		ConceptReferenceTerm refTerm = conceptService.getConceptReferenceTerm(1);
 		assertNotNull(refTerm);
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage("Reference term is in use");
-		conceptService.purgeConceptReferenceTerm(refTerm);
+		APIException exception = assertThrows(APIException.class, () -> conceptService.purgeConceptReferenceTerm(refTerm));
+		assertThat(exception.getMessage(), is("Reference term is in use"));
 	}
 	
 	/**
@@ -777,8 +829,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	public void mapConceptProposalToConcept_shouldThrowAPIExceptionWhenMappingToNullConcept() {
 		ConceptProposal cp = conceptService.getConceptProposal(2);
 		Locale locale = new Locale("en", "GB");
-		expectedException.expect(APIException.class);
-		conceptService.mapConceptProposalToConcept(cp, null, locale);
+		assertThrows(APIException.class, () -> conceptService.mapConceptProposalToConcept(cp, null, locale));
 	}
 	
 	/**
@@ -790,5 +841,60 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		int conceptId = 792;
 		assertEquals(new Integer(1),
 		    conceptService.getCountOfDrugs(phrase, conceptService.getConcept(conceptId), true, true, true));
+	}
+
+	/**
+	 * @see ConceptServiceImpl#saveConceptProposal(ConceptProposal) 
+	 */
+	@Test
+	public void saveConceptProposal_shouldReturnSavedConceptProposalObject() {
+		final String ORIGINAL_TEXT = "OriginalText";
+		ConceptProposal conceptProposal = new ConceptProposal();
+		conceptProposal.setOriginalText(ORIGINAL_TEXT);
+		List<ConceptProposal> existingConceptProposals = conceptService.getConceptProposals(ORIGINAL_TEXT);
+		assertThat(existingConceptProposals, is(empty()));
+		ConceptProposal savedConceptProposal = conceptService.saveConceptProposal(conceptProposal);
+		assertEquals(ORIGINAL_TEXT, savedConceptProposal.getOriginalText());
+		assertEquals(conceptProposal, savedConceptProposal);
+	}
+
+	/**
+	 * @see ConceptServiceImpl#saveConceptProposal(ConceptProposal)
+	 */
+	@Test
+	public void saveConceptProposal_shouldReturnUpdatedConceptProposalObject() {
+		ConceptProposal conceptProposal = new ConceptProposal();
+		conceptProposal.setOriginalText("OriginalText");
+		ConceptProposal savedConceptProposal = conceptService.saveConceptProposal(conceptProposal);
+		final String ANOTHER_ORIGINAL_TEXT = "AnotherOriginalText";
+		savedConceptProposal.setOriginalText(ANOTHER_ORIGINAL_TEXT);
+		ConceptProposal updatedConceptProposal = conceptService.saveConceptProposal(savedConceptProposal);
+		assertEquals(ANOTHER_ORIGINAL_TEXT, updatedConceptProposal.getOriginalText());
+	}
+
+	/**
+	 * @see ConceptServiceImpl#saveConceptProposal(ConceptProposal)
+	 */
+	@Test
+	public void saveConceptProposal_shouldFailGivenNull() {
+		assertThrows(IllegalArgumentException.class, () -> conceptService.saveConceptProposal(null));
+	}
+
+	/**
+	 * @see ConceptServiceImpl#getConceptNameTagByName(String)
+	 */
+	@Test
+	public void getConceptNameTagByName_shouldReturnNullIfNoConceptNameTagIsFound() {
+		assertNull(conceptService.getConceptNameTagByName("random-tag"));
+	}
+
+	/**
+	 * @see ConceptServiceImpl#getConceptNameTagByName(String)
+	 */
+	@Test
+	public void getConceptNameTagByName_shouldReturnTheMatchingConceptNameTagObjectIfFound() {
+		ConceptNameTag conceptNameTag = conceptService.getConceptNameTag(1);
+		assertNotNull(conceptNameTag);
+		assertEquals(conceptNameTag, conceptService.getConceptNameTagByName(conceptNameTag.getTag()));
 	}
 }

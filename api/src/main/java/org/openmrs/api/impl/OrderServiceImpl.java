@@ -9,8 +9,51 @@
  */
 package org.openmrs.api.impl;
 
-import static org.openmrs.Order.Action.DISCONTINUE;
-import static org.openmrs.Order.Action.REVISE;
+import org.apache.commons.lang3.time.DateUtils;
+import org.hibernate.proxy.HibernateProxy;
+import org.openmrs.CareSetting;
+import org.openmrs.Concept;
+import org.openmrs.ConceptClass;
+import org.openmrs.Encounter;
+import org.openmrs.DrugOrder;
+import org.openmrs.Order;
+import org.openmrs.OrderFrequency;
+import org.openmrs.OrderGroup;
+import org.openmrs.OrderType;
+import org.openmrs.GlobalProperty;
+import org.openmrs.Patient;
+import org.openmrs.Provider;
+import org.openmrs.Order.FulfillerStatus;
+import org.openmrs.OrderGroupAttribute;
+import org.openmrs.OrderGroupAttributeType;
+import org.openmrs.TestOrder;
+import org.openmrs.api.APIException;
+import org.openmrs.api.AmbiguousOrderException;
+import org.openmrs.api.CannotDeleteObjectInUseException;
+import org.openmrs.api.CannotStopDiscontinuationOrderException;
+import org.openmrs.api.CannotStopInactiveOrderException;
+import org.openmrs.api.CannotUnvoidOrderException;
+import org.openmrs.api.CannotUpdateObjectInUseException;
+import org.openmrs.api.EditedOrderDoesNotMatchPreviousException;
+import org.openmrs.api.GlobalPropertyListener;
+import org.openmrs.api.MissingRequiredPropertyException;
+import org.openmrs.api.OrderContext;
+import org.openmrs.api.OrderEntryException;
+import org.openmrs.api.OrderNumberGenerator;
+import org.openmrs.api.OrderService;
+import org.openmrs.api.UnchangeableObjectException;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.db.OrderDAO;
+import org.openmrs.customdatatype.CustomDatatypeUtil;
+import org.openmrs.order.OrderUtil;
+import org.openmrs.parameter.OrderSearchCriteria;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -20,47 +63,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
-import org.apache.commons.lang3.time.DateUtils;
-import org.hibernate.proxy.HibernateProxy;
-import org.openmrs.CareSetting;
-import org.openmrs.Concept;
-import org.openmrs.ConceptClass;
-import org.openmrs.DrugOrder;
-import org.openmrs.Encounter;
-import org.openmrs.GlobalProperty;
-import org.openmrs.Order;
-import org.openmrs.OrderFrequency;
-import org.openmrs.OrderGroup;
-import org.openmrs.OrderType;
-import org.openmrs.Patient;
-import org.openmrs.Provider;
-import org.openmrs.TestOrder;
-import org.openmrs.api.APIException;
-import org.openmrs.api.AmbiguousOrderException;
-import org.openmrs.api.CannotDeleteObjectInUseException;
-import org.openmrs.api.CannotUpdateObjectInUseException;
-import org.openmrs.api.GlobalPropertyListener;
-import org.openmrs.api.MissingRequiredPropertyException;
-import org.openmrs.api.OrderContext;
-import org.openmrs.api.OrderNumberGenerator;
-import org.openmrs.api.OrderService;
-import org.openmrs.api.UnchangeableObjectException;
-import org.openmrs.api.context.Context;
-import org.openmrs.api.db.OrderDAO;
-import org.openmrs.api.CannotStopDiscontinuationOrderException;
-import org.openmrs.api.CannotStopInactiveOrderException;
-import org.openmrs.api.CannotUnvoidOrderException;
-import org.openmrs.api.EditedOrderDoesNotMatchPreviousException;
-import org.openmrs.api.OrderEntryException;
-import org.openmrs.order.OrderUtil;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
+import static org.openmrs.Order.Action.DISCONTINUE;
+import static org.openmrs.Order.Action.REVISE;
 
 /**
  * Default implementation of the Order-related services class. This method should not be invoked by
@@ -106,12 +112,24 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Override
 	public OrderGroup saveOrderGroup(OrderGroup orderGroup) throws APIException {
 		if (orderGroup.getId() == null) {
+			// an OrderGroup requires an encounter, which has a patient, so it
+			// is odd that OrderGroup has a patient field. There is no obvious
+			// reason why they should ever be different.
+			orderGroup.setPatient(orderGroup.getEncounter().getPatient());
+			CustomDatatypeUtil.saveAttributesIfNecessary(orderGroup);
 			dao.saveOrderGroup(orderGroup);
 		}
 		List<Order> orders = orderGroup.getOrders();
 		for (Order order : orders) {
 			if (order.getId() == null) {
-				saveOrder(order, null);
+				order.setEncounter(orderGroup.getEncounter());
+				Context.getOrderService().saveOrder(order, null);
+			}
+		}
+		Set<OrderGroup> nestedGroups = orderGroup.getNestedOrderGroups();
+		if (nestedGroups != null) {
+			for (OrderGroup nestedGroup : nestedGroups) {
+				Context.getOrderService().saveOrderGroup(nestedGroup);
 			}
 		}
 		return orderGroup;
@@ -483,6 +501,30 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		return saveOrderInternal(order, null);
 	}
 	
+	@Override
+	public Order updateOrderFulfillerStatus(Order order, Order.FulfillerStatus orderFulfillerStatus, String fullFillerComment) {
+		return updateOrderFulfillerStatus(order, orderFulfillerStatus, fullFillerComment, null);
+	}
+
+	@Override
+	public Order updateOrderFulfillerStatus(Order order, FulfillerStatus orderFulfillerStatus, String fullFillerComment,
+											String accessionNumber) {
+
+		if (orderFulfillerStatus != null) {
+			order.setFulfillerStatus(orderFulfillerStatus);
+		}
+
+		if (fullFillerComment != null) {
+			order.setFulfillerComment(fullFillerComment);
+		}
+	
+		if (accessionNumber != null) {
+			order.setAccessionNumber(accessionNumber);
+		}
+		
+		return saveOrderInternal(order, null);
+	}
+	
 	/**
 	 * @see org.openmrs.api.OrderService#getOrder(java.lang.Integer)
 	 */
@@ -522,6 +564,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			throw new IllegalArgumentException("Patient is required");
 		}
 		return dao.getOrders(patient, null, null, true, true);
+	}
+	
+	@Override
+	public List<Order> getOrders(OrderSearchCriteria orderSearchCriteria) {
+		return dao.getOrders(orderSearchCriteria);
 	}
 	
 	/**
@@ -1035,5 +1082,91 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			return concept.getSetMembers();
 		}
 		return Collections.emptyList();
+	}
+	@Override
+	public List<OrderGroup> getOrderGroupsByPatient(Patient patient) throws APIException {
+		return dao.getOrderGroupsByPatient(patient);
+	}
+
+	@Override
+	public List<OrderGroup> getOrderGroupsByEncounter(Encounter encounter) throws APIException {
+		return dao.getOrderGroupsByEncounter(encounter);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeTypes()
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<OrderGroupAttributeType> getAllOrderGroupAttributeTypes() throws APIException {
+		return dao.getAllOrderGroupAttributeTypes();
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeTypeById()
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public OrderGroupAttributeType getOrderGroupAttributeType(Integer id) throws APIException {
+		return dao.getOrderGroupAttributeType(id);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeTypeByUuid()
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public OrderGroupAttributeType getOrderGroupAttributeTypeByUuid(String uuid)throws APIException {
+		return dao.getOrderGroupAttributeTypeByUuid(uuid);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#saveOrderGroupAttributeType()
+	 */
+	@Override
+	public OrderGroupAttributeType saveOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws APIException{
+		return dao.saveOrderGroupAttributeType(orderGroupAttributeType);
+	}
+
+	/**
+	 * @see org.openmrs.api.OrderService#retireOrderGroupAttributeType()
+	 */
+	@Override
+	public OrderGroupAttributeType retireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType, String reason)throws APIException {
+		return Context.getOrderService().saveOrderGroupAttributeType(orderGroupAttributeType);
+	}
+
+	/**
+	 * @see org.openmrs.api.OrderService#unretireOrderGroupAttributeType()
+	 */
+	@Override
+	public OrderGroupAttributeType unretireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType)throws APIException {
+		return Context.getOrderService().saveOrderGroupAttributeType(orderGroupAttributeType);
+	}
+
+	/**
+	 * @see org.openmrs.api.OrderService#purgeOrderGroupAttributeType()
+	 */
+	@Override
+	public void purgeOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws APIException{
+		dao.deleteOrderGroupAttributeType(orderGroupAttributeType);
+	}
+
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeTypeByName()
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public OrderGroupAttributeType getOrderGroupAttributeTypeByName(String orderGroupAttributeTypeName)throws APIException {
+		return dao.getOrderGroupAttributeTypeByName(orderGroupAttributeTypeName);
+	}
+
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeByUuid()
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public OrderGroupAttribute getOrderGroupAttributeByUuid(String uuid)throws APIException {
+		return dao.getOrderGroupAttributeByUuid(uuid);
 	}
 }

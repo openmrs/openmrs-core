@@ -27,6 +27,7 @@ import java.util.UUID;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.hibernate.Hibernate;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptAttribute;
@@ -99,12 +100,12 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 
 	/**
 	 * @see org.openmrs.api.ConceptService#saveConcept(org.openmrs.Concept)
-	 * @should return the concept with new conceptID if creating new concept
-	 * @should return the concept with same conceptID if updating existing concept
-	 * @should leave preferred name preferred if set
-	 * @should set default preferred name to fully specified first
-	 * @should not set default preferred name to short or index terms
-         * @should force set flag if set members exist
+	 * <strong>Should</strong> return the concept with new conceptID if creating new concept
+	 * <strong>Should</strong> return the concept with same conceptID if updating existing concept
+	 * <strong>Should</strong> leave preferred name preferred if set
+	 * <strong>Should</strong> set default preferred name to fully specified first
+	 * <strong>Should</strong> not set default preferred name to short or index terms
+     * <strong>Should</strong> force set flag if set members exist
 	 */
 	@Override
 	public Concept saveConcept(Concept concept) throws APIException {
@@ -554,11 +555,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public List<Concept> getConceptsByClass(ConceptClass cc) {
-		List<ConceptClass> classes = new ArrayList<>();
-		classes.add(cc);
-		
-		return getConcepts(null, null, false, classes, null);
+	public List<Concept> getConceptsByClass(ConceptClass cc) {		
+		return dao.getConceptsByClass(cc);
 	}
 	
 	/**
@@ -1198,9 +1196,12 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	public Concept getUnknownConcept() {
 		if (unknownConcept == null) {
 			try {
-				ConceptServiceImpl.setStaticUnknownConcept(Context.getConceptService().getConcept(
-				    Integer.parseInt(Context.getAdministrationService().getGlobalProperty(
-				        OpenmrsConstants.GLOBAL_PROPERTY_UNKNOWN_CONCEPT))));
+				Concept unknownConcept = Context.getConceptService().getConcept(
+					Integer.parseInt(Context.getAdministrationService().getGlobalProperty(
+						OpenmrsConstants.GLOBAL_PROPERTY_UNKNOWN_CONCEPT)));
+				initializeLazyPropertiesForConcept(unknownConcept);
+				
+				ConceptServiceImpl.setStaticUnknownConcept(unknownConcept);
 			}
 			catch (NumberFormatException e) {
 				log.warn("Concept id for unknown concept should be a number");
@@ -1228,15 +1229,30 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			trueConcept = Context.getConceptService().getConcept(
 			    Integer.parseInt(Context.getAdministrationService().getGlobalProperty(
 			        OpenmrsConstants.GLOBAL_PROPERTY_TRUE_CONCEPT)));
+			initializeLazyPropertiesForConcept(trueConcept);
+			
 			falseConcept = Context.getConceptService().getConcept(
 			    Integer.parseInt(Context.getAdministrationService().getGlobalProperty(
 			        OpenmrsConstants.GLOBAL_PROPERTY_FALSE_CONCEPT)));
+			initializeLazyPropertiesForConcept(falseConcept);
 		}
 		catch (NumberFormatException e) {
 			log.warn("Concept ids for boolean concepts should be numbers");
 		}
 	}
-	
+
+	private void initializeLazyPropertiesForConcept(Concept concept) {
+		Hibernate.initialize(concept.getRetiredBy());
+		Hibernate.initialize(concept.getCreator());
+		Hibernate.initialize(concept.getChangedBy());
+		Hibernate.initialize(concept.getNames());
+		Hibernate.initialize(concept.getAnswers());
+		Hibernate.initialize(concept.getConceptSets());
+		Hibernate.initialize(concept.getDescriptions());
+		Hibernate.initialize(concept.getConceptMappings());
+		Hibernate.initialize(concept.getAttributes());
+	}
+
 	/**
 	 * @see org.openmrs.api.ConceptService#getConceptSourceByName(java.lang.String)
 	 */

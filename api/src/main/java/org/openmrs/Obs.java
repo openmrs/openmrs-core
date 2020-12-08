@@ -61,38 +61,20 @@ import org.slf4j.LoggerFactory;
  * 
  * @see Encounter
  */
-public class Obs extends BaseChangeableOpenmrsData {
+public class Obs extends BaseFormRecordableOpenmrsData {
 	
 	/**
 	 * @since 2.1.0
 	 */
 	public enum Interpretation {
-		NORMAL,
-		ABNORMAL,
-		CRITICALLY_ABNORMAL,
-		NEGATIVE,
-		POSITIVE,
-		CRITICALLY_LOW,
-		LOW,
-		HIGH,
-		CRITICALLY_HIGH,
-		VERY_SUSCEPTIBLE,
-		SUSCEPTIBLE,
-		INTERMEDIATE,
-		RESISTANT,
-		SIGNIFICANT_CHANGE_DOWN,
-		SIGNIFICANT_CHANGE_UP,
-		OFF_SCALE_LOW,
-		OFF_SCALE_HIGH
+		NORMAL, ABNORMAL, CRITICALLY_ABNORMAL, NEGATIVE, POSITIVE, CRITICALLY_LOW, LOW, HIGH, CRITICALLY_HIGH, VERY_SUSCEPTIBLE, SUSCEPTIBLE, INTERMEDIATE, RESISTANT, SIGNIFICANT_CHANGE_DOWN, SIGNIFICANT_CHANGE_UP, OFF_SCALE_LOW, OFF_SCALE_HIGH
 	}
 	
 	/**
 	 * @since 2.1.0
 	 */
 	public enum Status {
-		PRELIMINARY,
-		FINAL,
-		AMENDED
+		PRELIMINARY, FINAL, AMENDED
 	}
 	
 	private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm";
@@ -104,10 +86,6 @@ public class Obs extends BaseChangeableOpenmrsData {
 	public static final long serialVersionUID = 112342333L;
 	
 	private static final Logger log = LoggerFactory.getLogger(Obs.class);
-	
-	private static final String FORM_NAMESPACE_PATH_SEPARATOR = "^";
-	
-	private static final int FORM_NAMESPACE_PATH_MAX_LENGTH = 255;
 	
 	protected Integer obsId;
 	
@@ -166,8 +144,6 @@ public class Obs extends BaseChangeableOpenmrsData {
 	protected Encounter encounter;
 	
 	private Obs previousVersion;
-	
-	private String formNamespaceAndPath;
 	
 	private Boolean dirty = Boolean.FALSE;
 	
@@ -233,10 +209,11 @@ public class Obs extends BaseChangeableOpenmrsData {
 		newObs.setVoidReason(obsToCopy.getVoidReason());
 		newObs.setStatus(obsToCopy.getStatus());
 		newObs.setInterpretation(obsToCopy.getInterpretation());
+		newObs.setOrder(obsToCopy.getOrder());
 		
 		newObs.setValueComplex(obsToCopy.getValueComplex());
 		newObs.setComplexData(obsToCopy.getComplexData());
-		newObs.setFormField(obsToCopy.getFormFieldNamespace(),obsToCopy.getFormFieldPath());
+		newObs.setFormField(obsToCopy.getFormFieldNamespace(), obsToCopy.getFormFieldPath());
 		
 		// Copy list of all members, including voided, and put them in respective groups
 		if (obsToCopy.hasGroupMembers(true)) {
@@ -397,7 +374,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * {@link #hasGroupMembers(boolean)} with value true.
 	 * 
 	 * @return true if this is the parent group of other obs
-	 * @should not include voided obs
+	 * <strong>Should</strong> not include voided obs
 	 */
 	public boolean hasGroupMembers() {
 		return hasGroupMembers(false);
@@ -410,7 +387,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * 
 	 * @param includeVoided determines if Voided members should be considered as group members.
 	 * @return true if this is the parent group of other Obs
-	 * @should return true if this obs has group members based on parameter
+	 * <strong>Should</strong> return true if this obs has group members based on parameter
 	 */
 	public boolean hasGroupMembers(boolean includeVoided) {
 		// ! symbol used because if it's not empty, we want true
@@ -430,7 +407,8 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * @see #hasGroupMembers()
 	 */
 	public Set<Obs> getGroupMembers() {
-		return getGroupMembers(false); //same as just returning groupMembers
+		//same as just returning groupMembers
+		return getGroupMembers(false);
 	}
 	
 	/**
@@ -440,7 +418,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * 
 	 * @param includeVoided
 	 * @return the set of group members in this obs group
-	 * @should Get all group members if passed true, and non-voided if passed false
+	 * <strong>Should</strong> Get all group members if passed true, and non-voided if passed false
 	 */
 	public Set<Obs> getGroupMembers(boolean includeVoided) {
 		if (includeVoided) {
@@ -465,13 +443,14 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * @param groupMembers the groupedObs to set
 	 * @see #addGroupMember(Obs)
 	 * @see #hasGroupMembers()
-	 * @should mark the obs as dirty when the set is changed from null to a non empty one
-	 * @should not mark the obs as dirty when the set is changed from null to an empty one
-	 * @should mark the obs as dirty when the set is replaced with another with different members
-	 * @should not mark the obs as dirty when the set is replaced with another with same members
+	 * <strong>Should</strong> mark the obs as dirty when the set is changed from null to a non empty one
+	 * <strong>Should</strong> not mark the obs as dirty when the set is changed from null to an empty one
+	 * <strong>Should</strong> mark the obs as dirty when the set is replaced with another with different members
+	 * <strong>Should</strong> not mark the obs as dirty when the set is replaced with another with same members
 	 */
 	public void setGroupMembers(Set<Obs> groupMembers) {
-		this.groupMembers = groupMembers; //Copy over the entire list
+		//Copy over the entire list
+		this.groupMembers = groupMembers;
 		
 	}
 	
@@ -482,8 +461,8 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * @param member Obs to add to this group
 	 * @see #setGroupMembers(Set)
 	 * @see #getGroupMembers()
-	 * @should return true when a new obs is added as a member
-	 * @should return false when a duplicate obs is added as a member
+	 * <strong>Should</strong> return true when a new obs is added as a member
+	 * <strong>Should</strong> return false when a duplicate obs is added as a member
 	 */
 	public void addGroupMember(Obs member) {
 		if (member == null) {
@@ -511,8 +490,8 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * @param member Obs to remove from this group
 	 * @see #setGroupMembers(Set)
 	 * @see #getGroupMembers()
-	 * @should return true when an obs is removed
-	 * @should return false when a non existent obs is removed
+	 * <strong>Should</strong> return true when an obs is removed
+	 * <strong>Should</strong> return false when a non existent obs is removed
 	 */
 	public void removeGroupMember(Obs member) {
 		if (member == null || getGroupMembers() == null) {
@@ -642,8 +621,8 @@ public class Obs extends BaseChangeableOpenmrsData {
 	public void setValueBoolean(Boolean valueBoolean) {
 		if (getConcept() != null && getConcept().getDatatype() != null && getConcept().getDatatype().isBoolean()) {
 			if (valueBoolean != null) {
-				setValueCoded(valueBoolean ? Context.getConceptService().getTrueConcept() : Context
-				        .getConceptService().getFalseConcept());
+				setValueCoded(valueBoolean ? Context.getConceptService().getTrueConcept() : Context.getConceptService()
+				        .getFalseConcept());
 			} else {
 				setValueCoded(null);
 			}
@@ -654,9 +633,9 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * Coerces a value to a Boolean representation
 	 * 
 	 * @return Boolean representation of the obs value
-	 * @should return true for value_numeric concepts if value is 1
-	 * @should return false for value_numeric concepts if value is 0
-	 * @should return null for value_numeric concepts if value is neither 1 nor 0
+	 * <strong>Should</strong> return true for value_numeric concepts if value is 1
+	 * <strong>Should</strong> return false for value_numeric concepts if value is 0
+	 * <strong>Should</strong> return null for value_numeric concepts if value is neither 1 nor 0
 	 */
 	public Boolean getValueAsBoolean() {
 		
@@ -681,8 +660,8 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * Returns the boolean value if the concept of this obs is of boolean datatype
 	 * 
 	 * @return true or false if value is set otherwise null
-	 * @should return true if value coded answer concept is true concept
-	 * @should return false if value coded answer concept is false concept
+	 * <strong>Should</strong> return true if value coded answer concept is true concept
+	 * <strong>Should</strong> return false if value coded answer concept is false concept
 	 */
 	public Boolean getValueBoolean() {
 		if (getConcept() != null && valueCoded != null && getConcept().getDatatype().isBoolean()) {
@@ -856,9 +835,9 @@ public class Obs extends BaseChangeableOpenmrsData {
 	/**
 	 * @return Returns true if this Obs is complex.
 	 * @since 1.5
-	 * @should return true if the concept is complex
+	 * <strong>Should</strong> return true if the concept is complex
 	 */
-	public boolean isComplex() {		
+	public boolean isComplex() {
 		if (getConcept() != null) {
 			return getConcept().isComplex();
 		}
@@ -870,7 +849,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * Get the value for the ComplexData. This method is used by the ComplexObsHandler. The
 	 * valueComplex has two parts separated by a bar '|' character: part A) the title; and part B)
 	 * the URI. The title is the readable description of the valueComplex that is returned by
-	 * {@link Obs#getValueAsString()}. The URI is the location where the ComplexData is stored.
+	 * {@link Obs#getValueAsString(java.util.Locale)}. The URI is the location where the ComplexData is stored.
 	 * 
 	 * @return readable title and URI for the location of the ComplexData binary object.
 	 * @since 1.5
@@ -883,7 +862,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * Set the value for the ComplexData. This method is used by the ComplexObsHandler. The
 	 * valueComplex has two parts separated by a bar '|' character: part A) the title; and part B)
 	 * the URI. The title is the readable description of the valueComplex that is returned by
-	 * Obs.getValueAsString(). The URI is the location where the ComplexData is stored.
+	 * {@link Obs#getValueAsString(java.util.Locale)}. The URI is the location where the ComplexData is stored.
 	 * 
 	 * @param valueComplex readable title and URI for the location of the ComplexData binary object.
 	 * @since 1.5
@@ -953,21 +932,22 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * missing.
 	 *
 	 * @param locale locale for locale-specific depictions of value
-	 * @should return first part of valueComplex for complex obs
-	 * @should return first part of valueComplex for non null valueComplexes
-	 * @should return non precise values for NumericConcepts
-	 * @should return date in correct format
-	 * @should not return long decimal numbers as scientific notation
-	 * @should use commas or decimal places depending on locale
-	 * @should not use thousand separator
-	 * @should return regular number for size of zero to or greater than ten digits
-	 * @should return regular number if decimal places are as high as six
+	 * <strong>Should</strong> return first part of valueComplex for complex obs
+	 * <strong>Should</strong> return first part of valueComplex for non null valueComplexes
+	 * <strong>Should</strong> return non precise values for NumericConcepts
+	 * <strong>Should</strong> return date in correct format
+	 * <strong>Should</strong> not return long decimal numbers as scientific notation
+	 * <strong>Should</strong> use commas or decimal places depending on locale
+	 * <strong>Should</strong> not use thousand separator
+	 * <strong>Should</strong> return regular number for size of zero to or greater than ten digits
+	 * <strong>Should</strong> return regular number if decimal places are as high as six
 	 */
 	public String getValueAsString(Locale locale) {
 		// formatting for the return of numbers of type double
 		NumberFormat nf = NumberFormat.getNumberInstance(locale);
 		DecimalFormat df = (DecimalFormat) nf;
-		df.applyPattern("#0.0#####"); // formatting style up to 6 digits
+		// formatting style up to 6 digits
+		df.applyPattern("#0.0#####");
 		//branch on hl7 abbreviations
 		if (getConcept() != null) {
 			String abbrev = getConcept().getDatatype().getHl7Abbreviation();
@@ -1078,9 +1058,9 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * Sets the value for the obs from a string depending on the datatype of the question concept
 	 *
 	 * @param s the string to coerce to a boolean
-	 * @should set value as boolean if the datatype of the question concept is boolean
-	 * @should fail if the value of the string is null
-	 * @should fail if the value of the string is empty
+	 * <strong>Should</strong> set value as boolean if the datatype of the question concept is boolean
+	 * <strong>Should</strong> fail if the value of the string is null
+	 * <strong>Should</strong> fail if the value of the string is empty
 	 */
 	public void setValueAsString(String s) throws ParseException {
 		if (log.isDebugEnabled()) {
@@ -1191,91 +1171,13 @@ public class Obs extends BaseChangeableOpenmrsData {
 	}
 	
 	/**
-	 * Gets the namespace for the form field that was used to capture the obs details in the form
-	 * 
-	 * @return the namespace
-	 * @since 1.11
-	 * @should return the namespace for a form field that has no path
-	 * @should return the correct namespace for a form field with a path
-	 * @should return null if the namespace is not specified
+	 * @see org.openmrs.FormRecordable#setFormField(String,String)
 	 */
-	public String getFormFieldNamespace() {
-		if (StringUtils.isNotBlank(formNamespaceAndPath)) {
-			//Only the path was specified
-			if (formNamespaceAndPath.startsWith(FORM_NAMESPACE_PATH_SEPARATOR)) {
-				return null;
-			}
-			return formNamespaceAndPath.substring(0, formNamespaceAndPath.indexOf(FORM_NAMESPACE_PATH_SEPARATOR));
-		}
-		
-		return formNamespaceAndPath;
-	}
-	
-	/**
-	 * Gets the path for the form field that was used to capture the obs details in the form
-	 * 
-	 * @return the the form field path
-	 * @since 1.11
-	 * @should return the path for a form field that has no namespace
-	 * @should return the correct path for a form field with a namespace
-	 * @should return null if the path is not specified
-	 */
-	public String getFormFieldPath() {
-		if (StringUtils.isNotBlank(formNamespaceAndPath)) {
-			//Only the namespace was specified
-			if (formNamespaceAndPath.endsWith(FORM_NAMESPACE_PATH_SEPARATOR)) {
-				return null;
-			}
-			return formNamespaceAndPath.substring(formNamespaceAndPath.indexOf(FORM_NAMESPACE_PATH_SEPARATOR) + 1);
-		}
-		
-		return formNamespaceAndPath;
-	}
-	
-	/**
-	 * Sets the namespace and path of the form field that was used to capture the obs details in the
-	 * form.<br>
-	 * <b>Note:</b> Namespace and formFieldPath together must not exceed 254 characters in length,
-	 * form applications can subtract the length of their namespace from 254 to determine the
-	 * maximum length they can use for a form field path.
-	 * 
-	 * @param namespace the namespace of the form field
-	 * @param formFieldPath the path of the form field
-	 * @since 1.11
-	 * @should set the underlying formNamespaceAndPath in the correct pattern
-	 * @should reject a namepace containing the separator
-	 * @should reject a path containing the separator
-	 * @should reject a namepace and path combination longer than the max length
-	 * @should not mark the obs as dirty when the value has not been changed
-	 * @should mark the obs as dirty when the value has been changed
-	 * @should mark the obs as dirty when the value is changed from a null to a non null value
-	 * @should mark the obs as dirty when the value is changed from a non null to a null value
-	 */
+	@Override
 	public void setFormField(String namespace, String formFieldPath) {
-		if (namespace == null && formFieldPath == null) {
-			markAsDirty(formNamespaceAndPath, null);
-			formNamespaceAndPath = null;
-			return;
-		}
-		
-		String nsAndPathTemp = "";
-		if (StringUtils.isNotBlank(namespace) && StringUtils.isNotBlank(formFieldPath)) {
-			nsAndPathTemp = namespace + FORM_NAMESPACE_PATH_SEPARATOR + formFieldPath;
-		} else if (StringUtils.isNotBlank(namespace)) {
-			nsAndPathTemp = namespace + FORM_NAMESPACE_PATH_SEPARATOR;
-		} else if (StringUtils.isNotBlank(formFieldPath)) {
-			nsAndPathTemp = FORM_NAMESPACE_PATH_SEPARATOR + formFieldPath;
-		}
-		
-		if (nsAndPathTemp.length() > FORM_NAMESPACE_PATH_MAX_LENGTH) {
-			throw new APIException("Obs.namespaceAndPathTooLong", (Object[]) null);
-		}
-		if (StringUtils.countMatches(nsAndPathTemp, FORM_NAMESPACE_PATH_SEPARATOR) > 1) {
-			throw new APIException("Obs.namespaceAndPathNotContainSeparator", (Object[]) null);
-		}
-		
-		markAsDirty(this.formNamespaceAndPath, nsAndPathTemp);
-		formNamespaceAndPath = nsAndPathTemp;
+		String oldValue = formNamespaceAndPath;
+		super.setFormField(namespace, formFieldPath);
+		markAsDirty(oldValue, formNamespaceAndPath);
 	}
 	
 	/**
@@ -1285,17 +1187,17 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 *
 	 * @return true if not changed otherwise false
 	 * @since 2.0
-	 * @should return false when no change has been made
-	 * @should return true when any immutable field has been changed
-	 * @should return false when only mutable fields are changed
-	 * @should return true when an immutable field is changed from a null to a non null value
-	 * @should return true when an immutable field is changed from a non null to a null value
+	 * <strong>Should</strong> return false when no change has been made
+	 * <strong>Should</strong> return true when any immutable field has been changed
+	 * <strong>Should</strong> return false when only mutable fields are changed
+	 * <strong>Should</strong> return true when an immutable field is changed from a null to a non null value
+	 * <strong>Should</strong> return true when an immutable field is changed from a non null to a null value
 	 */
 	public boolean isDirty() {
 		return dirty;
 	}
 	
-	private void markAsDirty(Object oldValue, Object newValue) {
+	protected void markAsDirty(Object oldValue, Object newValue) {
 		//Should we ignore the case for Strings?
 		if (!isDirty() && obsId != null && !OpenmrsUtil.nullSafeEquals(oldValue, newValue)) {
 			dirty = true;
@@ -1303,8 +1205,9 @@ public class Obs extends BaseChangeableOpenmrsData {
 	}
 	
 	/**
-	 * Similar to FHIR's Observation.interpretation. Supports a subset of FHIR's Observation Interpretation Codes.
-	 * See https://www.hl7.org/fhir/valueset-observation-interpretation.html
+	 * Similar to FHIR's Observation.interpretation. Supports a subset of FHIR's Observation
+	 * Interpretation Codes. See https://www.hl7.org/fhir/valueset-observation-interpretation.html
+	 * 
 	 * @since 2.1.0
 	 */
 	public Interpretation getInterpretation() {
@@ -1321,9 +1224,10 @@ public class Obs extends BaseChangeableOpenmrsData {
 	
 	/**
 	 * Similar to FHIR's Observation.status. Supports a subset of FHIR's ObservationStatus values.
-	 * At present OpenMRS does not support FHIR's REGISTERED and CANCELLED statuses, because we don't support obs with
-	 * null values.
-	 * See: https://www.hl7.org/fhir/valueset-observation-status.html
+	 * At present OpenMRS does not support FHIR's REGISTERED and CANCELLED statuses, because we
+	 * don't support obs with null values. See:
+	 * https://www.hl7.org/fhir/valueset-observation-status.html
+	 * 
 	 * @since 2.1.0
 	 */
 	public Status getStatus() {

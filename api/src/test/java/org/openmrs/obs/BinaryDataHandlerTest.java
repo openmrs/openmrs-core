@@ -9,44 +9,42 @@
  */
 package org.openmrs.obs;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
 import org.openmrs.api.AdministrationService;
-import org.openmrs.api.context.Context;
-import org.openmrs.obs.handler.AbstractHandler;
 import org.openmrs.obs.handler.BinaryDataHandler;
-import org.openmrs.util.OpenmrsUtil;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.OpenmrsConstants;
+import org.springframework.beans.factory.annotation.Autowired;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ AbstractHandler.class, OpenmrsUtil.class, Context.class })
-
-public class BinaryDataHandlerTest {
+public class BinaryDataHandlerTest extends BaseContextSensitiveTest {
 	
-	@Mock
-	private AdministrationService administrationService;
-	
-    @Rule
-    public TemporaryFolder complexObsTestFolder = new TemporaryFolder();
+	@Autowired
+	private AdministrationService adminService;
 
-    @Test
+	@TempDir
+	public Path complexObsTestFolder;
+
+	BinaryDataHandler handler;
+
+	@BeforeEach
+	public void setUp() {
+		handler = new BinaryDataHandler();
+	}
+
+	@Test
     public void shouldReturnSupportedViews() {
-        BinaryDataHandler handler = new BinaryDataHandler();
         String[] actualViews = handler.getSupportedViews();
         String[] expectedViews = { ComplexObsHandler.RAW_VIEW };
 
@@ -55,22 +53,20 @@ public class BinaryDataHandlerTest {
 
     @Test
     public void shouldSupportRawView() {
-        BinaryDataHandler handler = new BinaryDataHandler();
-
+        
         assertTrue(handler.supportsView(ComplexObsHandler.RAW_VIEW));
     }
 
     @Test
     public void shouldNotSupportOtherViews() {
-        BinaryDataHandler handler = new BinaryDataHandler();
-
+        
         assertFalse(handler.supportsView(ComplexObsHandler.HTML_VIEW));
         assertFalse(handler.supportsView(ComplexObsHandler.PREVIEW_VIEW));
         assertFalse(handler.supportsView(ComplexObsHandler.TEXT_VIEW));
         assertFalse(handler.supportsView(ComplexObsHandler.TITLE_VIEW));
         assertFalse(handler.supportsView(ComplexObsHandler.URI_VIEW));
         assertFalse(handler.supportsView(""));
-        assertFalse(handler.supportsView((String) null));
+        assertFalse(handler.supportsView(null));
     }
     
 	@Test
@@ -87,14 +83,12 @@ public class BinaryDataHandlerTest {
 		
 		Obs obs2 = new Obs();
 		obs2.setComplexData(complexData);
-		
-		// Mocked methods
-		mockStatic(Context.class);
-		when(Context.getAdministrationService()).thenReturn(administrationService);
-		when(administrationService.getGlobalProperty(any())).thenReturn(complexObsTestFolder.newFolder().getAbsolutePath());
-		
-		BinaryDataHandler handler = new BinaryDataHandler();
-		
+
+		adminService.saveGlobalProperty(new GlobalProperty(
+			OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR,
+			complexObsTestFolder.toAbsolutePath().toString()
+		));
+
 		// Execute save
 		handler.saveObs(obs1);
 		handler.saveObs(obs2);

@@ -52,7 +52,7 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 	 * conceptIds^drugIds separated by spaces.
 	 * 
 	 * @param text list of conceptIds (not conceptAnswerIds)
-	 * @should set the sort weights with the least possible changes
+	 * <strong>Should</strong> set the sort weights with the least possible changes
 	 */
 	@Override
 	public void setAsText(String text) throws IllegalArgumentException {
@@ -220,7 +220,7 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 	 */
 	private Integer getDrugId(String conceptId) {
 		if (conceptId.contains("^")) {
-			return Integer.valueOf(conceptId.substring(conceptId.indexOf("^") + 1, conceptId.length()));
+			return Integer.valueOf(conceptId.substring(conceptId.indexOf("^") + 1));
 		}
 		
 		return null;

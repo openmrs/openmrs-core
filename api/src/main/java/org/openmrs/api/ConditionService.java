@@ -10,6 +10,7 @@
 package org.openmrs.api;
 
 import org.openmrs.Condition;
+import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.util.PrivilegeConstants;
@@ -62,6 +63,27 @@ public interface ConditionService extends OpenmrsService {
 	@Authorized({ PrivilegeConstants.GET_CONDITIONS })
 	List<Condition> getActiveConditions(Patient patient) throws APIException;
 
+    /**
+	 * Gets all conditions i.e both active and inactive conditions, associated with a patient
+	 *
+	 * @param patient - the patient to retrieve conditions for
+	 * @throws APIException   
+	 * @return a list of the patient's conditions
+	 * @since 2.2.1
+	 */
+	@Authorized({ PrivilegeConstants.GET_CONDITIONS })
+	List<Condition> getAllConditions(Patient patient) throws APIException;
+
+	/**
+	 * Gets all conditions(not voided) of an encounter.
+	 * 
+	 * @param encounter - the encounter to retrieve conditions for
+	 * @return a list of encounter's conditions
+	 * @throws APIException
+	 * @since 2.4.0, 2.3.1
+	 */
+	List<Condition> getConditionsByEncounter(Encounter encounter) throws APIException;
+	
 	/**
 	 * Gets a condition by id
 	 *
@@ -77,7 +99,7 @@ public interface ConditionService extends OpenmrsService {
 	 *
 	 * @param condition Condition to unvoid
 	 * @throws APIException
-	 * @should unset voided bit on given condition
+	 * <strong>Should</strong> unset voided bit on given condition
 	 */
 	@Authorized(PrivilegeConstants.EDIT_CONDITIONS)
 	Condition unvoidCondition(Condition condition) throws APIException;
@@ -90,8 +112,9 @@ public interface ConditionService extends OpenmrsService {
 	 *
 	 * @param condition
 	 * @throws APIException
-	 * @should delete the given condition from the database
+	 * <strong>Should</strong> delete the given condition from the database
 	 */
 	@Authorized(PrivilegeConstants.DELETE_CONDITIONS)
 	void purgeCondition(Condition condition) throws APIException;
+	
 }

@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.annotation.Handler;
@@ -38,9 +39,6 @@ public class UserValidator implements Validator {
 	/** Logger for this class and subclasses */
 	private static final Logger log = LoggerFactory.getLogger(UserValidator.class);
 	
-	private static final Pattern EMAIL_PATTERN = Pattern
-	        .compile("^.+@.+\\..+$");
-	
 	@Autowired
 	private PersonValidator personValidator;
 
@@ -59,15 +57,15 @@ public class UserValidator implements Validator {
 	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should fail validation if retired and retireReason is null
-	 * @should fail validation if retired and retireReason is empty
-	 * @should fail validation if retired and retireReason is whitespace
-	 * @should pass validation if all required fields have proper values
-	 * @should fail validation if email as username enabled and email invalid
-	 * @should fail validation if email as username disabled and email provided
-	 * @should not throw NPE when user is null
-	 * @should pass validation if field lengths are correct
-	 * @should fail validation if field lengths are not correct
+	 * <strong>Should</strong> fail validation if retired and retireReason is null
+	 * <strong>Should</strong> fail validation if retired and retireReason is empty
+	 * <strong>Should</strong> fail validation if retired and retireReason is whitespace
+	 * <strong>Should</strong> pass validation if all required fields have proper values
+	 * <strong>Should</strong> fail validation if email as username enabled and email invalid
+	 * <strong>Should</strong> fail validation if email as username disabled and email provided
+	 * <strong>Should</strong> not throw NPE when user is null
+	 * <strong>Should</strong> pass validation if field lengths are correct
+	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
@@ -126,6 +124,11 @@ public class UserValidator implements Validator {
 					errors.rejectValue("username", "error.username.pattern");
 				}
 			}
+			
+			if (!StringUtils.isBlank(user.getEmail()) && !isEmailValid(user.getEmail())) {
+				errors.rejectValue("email", "error.email.invalid");
+			}
+			
 			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "username", "systemId", "retireReason");
 		}
 	}
@@ -140,16 +143,16 @@ public class UserValidator implements Validator {
 	 *
 	 * @param username the username string to check
 	 * @return true if the username is ok
-	 * @should validate username with only alpha numerics
-	 * @should validate username with alpha dash and underscore
-	 * @should validate username with alpha dash underscore and dot
-	 * @should validate username with exactly max size name
-	 * @should not validate username with less than minimumLength
-	 * @should not validate username with invalid character
-	 * @should not validate username with more than maximum size
-	 * @should validate when username is null
-	 * @should validate when username is the empty string
-	 * @should not validate when username is whitespace only
+	 * <strong>Should</strong> validate username with only alpha numerics
+	 * <strong>Should</strong> validate username with alpha dash and underscore
+	 * <strong>Should</strong> validate username with alpha dash underscore and dot
+	 * <strong>Should</strong> validate username with exactly max size name
+	 * <strong>Should</strong> not validate username with less than minimumLength
+	 * <strong>Should</strong> not validate username with invalid character
+	 * <strong>Should</strong> not validate username with more than maximum size
+	 * <strong>Should</strong> validate when username is null
+	 * <strong>Should</strong> validate when username is the empty string
+	 * <strong>Should</strong> not validate when username is whitespace only
 	 */
 	public boolean isUserNameValid(String username) {
 		//Initialize reg ex for userName pattern
@@ -182,15 +185,18 @@ public class UserValidator implements Validator {
 	 * @param username
 	 * @return true if valid
 	 *
-	 * @should return false if email invalid
-	 * @should return true if email valid
+	 * <strong>Should</strong> return false if email invalid
+	 * <strong>Should</strong> return true if email valid
 	 */
 	public boolean isUserNameAsEmailValid(String username) {
-		if (StringUtils.isBlank(username)) {
-			return false;
-		}
-		
-		Matcher matcher = EMAIL_PATTERN.matcher(username);
-		return matcher.matches();
+		return EmailValidator.getInstance().isValid(username);
+	}
+	
+	/**
+	 * @return true if email is valid or false otherwise
+	 * @param email
+	 */
+	private boolean isEmailValid(String email) {
+		return EmailValidator.getInstance().isValid(email);
 	}
 }

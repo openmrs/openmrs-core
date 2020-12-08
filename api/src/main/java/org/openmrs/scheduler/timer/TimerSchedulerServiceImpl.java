@@ -197,7 +197,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	 * Schedule the given task according to the given schedule.
 	 *
 	 * @param taskDefinition the task to be scheduled
-	 * @should should handle zero repeat interval
+	 * <strong>Should</strong> should handle zero repeat interval
 	 */
 	@Override
 	public Task scheduleTask(TaskDefinition taskDefinition) throws SchedulerException {
@@ -376,9 +376,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	@Override
 	@Transactional(readOnly = true)
 	public TaskDefinition getTask(Integer id) {
-		if (log.isDebugEnabled()) {
-			log.debug("get task " + id);
-		}
+		log.debug("get task {}", id);
 		return getSchedulerDAO().getTask(id);
 	}
 	
@@ -390,9 +388,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	@Override
 	@Transactional(readOnly = true)
 	public TaskDefinition getTaskByName(String name) {
-		if (log.isDebugEnabled()) {
-			log.debug("get task " + name);
-		}
+		log.debug("get task {}", name);
 		TaskDefinition foundTask = null;
 		try {
 			foundTask = getSchedulerDAO().getTaskByName(name);
@@ -541,6 +537,16 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 				log.error("Failed to re-schedule task, because:", e);
 			}
 		}
+	}
+
+	/**
+	 * @see org.openmrs.scheduler.SchedulerService#getTaskByUuid(java.lang.String)
+	 *
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public TaskDefinition getTaskByUuid(String uuid) {
+		return getSchedulerDAO().getTaskByUuid(uuid);
 	}
 	
 }

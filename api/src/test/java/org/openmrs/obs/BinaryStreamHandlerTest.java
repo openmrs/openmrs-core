@@ -9,45 +9,45 @@
  */
 package org.openmrs.obs;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.condition.OS.WINDOWS;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Path;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.io.TempDir;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
 import org.openmrs.api.AdministrationService;
-import org.openmrs.api.context.Context;
-import org.openmrs.obs.handler.AbstractHandler;
 import org.openmrs.obs.handler.BinaryStreamHandler;
-import org.openmrs.util.OpenmrsUtil;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.OpenmrsConstants;
+import org.springframework.beans.factory.annotation.Autowired;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ AbstractHandler.class, OpenmrsUtil.class, Context.class })
+public class BinaryStreamHandlerTest  extends BaseContextSensitiveTest {
+	
+	@Autowired
+	private AdministrationService adminService;
 
-public class BinaryStreamHandlerTest {
-	
-	@Mock
-	private AdministrationService administrationService;
-	
-    @Rule
-    public TemporaryFolder complexObsTestFolder = new TemporaryFolder();
-    
+	@TempDir
+	public Path complexObsTestFolder;
+
+	BinaryStreamHandler handler;
+
+	@BeforeEach
+	public void setUp() {
+		handler = new BinaryStreamHandler();
+	}
     @Test
     public void shouldReturnSupportedViews() {
-        BinaryStreamHandler handler = new BinaryStreamHandler();
         String[] actualViews = handler.getSupportedViews();
         String[] expectedViews = { ComplexObsHandler.RAW_VIEW };
 
@@ -56,58 +56,56 @@ public class BinaryStreamHandlerTest {
 
     @Test
     public void shouldSupportRawView() {
-        BinaryStreamHandler handler = new BinaryStreamHandler();
-
+       
         assertTrue(handler.supportsView(ComplexObsHandler.RAW_VIEW));
     }
 
     @Test
     public void shouldNotSupportOtherViews() {
-        BinaryStreamHandler handler = new BinaryStreamHandler();
-
+       
         assertFalse(handler.supportsView(ComplexObsHandler.HTML_VIEW));
         assertFalse(handler.supportsView(ComplexObsHandler.PREVIEW_VIEW));
         assertFalse(handler.supportsView(ComplexObsHandler.TEXT_VIEW));
         assertFalse(handler.supportsView(ComplexObsHandler.TITLE_VIEW));
         assertFalse(handler.supportsView(ComplexObsHandler.URI_VIEW));
         assertFalse(handler.supportsView(""));
-        assertFalse(handler.supportsView((String) null));
+        assertFalse(handler.supportsView(null));
     }
     	
 	@Test
+	@DisabledOnOs(WINDOWS)
 	public void saveObs_shouldRetrieveCorrectMimetype() throws IOException {
+		
+		adminService.saveGlobalProperty(new GlobalProperty(
+			OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR,
+			complexObsTestFolder.toAbsolutePath().toString()
+		));
+		
 		String mimetype = "application/octet-stream";
 		String filename = "TestingComplexObsSaving";
 		byte[] content = "Teststring".getBytes();
 		
-		ByteArrayInputStream byteIn = new ByteArrayInputStream(content);
-		
-		ComplexData complexData = new ComplexData(filename, byteIn);
-		
-		// Construct 2 Obs to also cover the case where the filename exists already
-		Obs obs1 = new Obs();
-		obs1.setComplexData(complexData);
-		
-		Obs obs2 = new Obs();
-		obs2.setComplexData(complexData);
-		
-		// Mocked methods
-		mockStatic(Context.class);
-		when(Context.getAdministrationService()).thenReturn(administrationService);
-		when(administrationService.getGlobalProperty(any())).thenReturn(complexObsTestFolder.newFolder().getAbsolutePath());
-		
-		BinaryStreamHandler handler = new BinaryStreamHandler();
-		
-		// Execute save
-		handler.saveObs(obs1);
-		handler.saveObs(obs2);
-		
-		// Get observation
-		Obs complexObs1 = handler.getObs(obs1, "RAW_VIEW");
-		Obs complexObs2 = handler.getObs(obs2, "RAW_VIEW");
-		
-		assertEquals(complexObs1.getComplexData().getMimeType(), mimetype);
-		assertEquals(complexObs2.getComplexData().getMimeType(), mimetype);
+		Obs complexObs1 = null;
+		Obs complexObs2 = null;
+		try (ByteArrayInputStream byteIn = new ByteArrayInputStream(content)) {
+			ComplexData complexData = new ComplexData(filename, byteIn);
+			// Construct 2 Obs to also cover the case where the filename exists already
+			Obs obs1 = new Obs();
+			obs1.setComplexData(complexData);
+			Obs obs2 = new Obs();
+			obs2.setComplexData(complexData);
+			
+			handler.saveObs(obs1);
+			handler.saveObs(obs2);
+			
+			complexObs1 = handler.getObs(obs1, "RAW_VIEW");
+			complexObs2 = handler.getObs(obs2, "RAW_VIEW");
+			
+			assertEquals(complexObs1.getComplexData().getMimeType(), mimetype);
+			assertEquals(complexObs2.getComplexData().getMimeType(), mimetype);
+		} finally {
+			((InputStream) complexObs1.getComplexData().getData()).close();
+			((InputStream) complexObs1.getComplexData().getData()).close();
+		}
 	}
-	
 }

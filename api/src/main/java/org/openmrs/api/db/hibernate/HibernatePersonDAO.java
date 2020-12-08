@@ -11,6 +11,7 @@ package org.openmrs.api.db.hibernate;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -73,10 +74,135 @@ public class HibernatePersonDAO implements PersonDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.PersonService#getSimilarPeople(java.lang.String, java.lang.Integer,
-	 *      java.lang.String, java.lang.String)
-	 * @see org.openmrs.api.db.PersonDAO#getSimilarPeople(String name, Integer birthyear, String
-	 *      gender)
+	 * This method executes a Lucene search on persons based on the soundex filter with one search name given
+	 * 
+	 * @param name a person should match using soundex representation
+	 * @param birthyear the birthyear the searched person should have 
+	 * @param includeVoided true if voided person should be included 
+	 * @param gender of the person to search for 
+	 * @return the set of Persons that match the search criteria 
+	 */
+	private Set<Person> executeSoundexOnePersonNameQuery(String name, Integer birthyear, boolean includeVoided , String gender) {
+		PersonLuceneQuery personLuceneQuery = new PersonLuceneQuery(sessionFactory);
+		String query = LuceneQuery.escapeQuery(name);
+		int maxResults = HibernatePersonDAO.getMaximumSearchResults();
+		LinkedHashSet<Person> people = new LinkedHashSet<>();
+		
+		LuceneQuery<PersonName> luceneQuery = personLuceneQuery.getSoundexPersonNameQuery(query, birthyear, false, gender);
+		ListPart<Object[]> names = luceneQuery.listPartProjection(0, maxResults, "person.personId");
+		names.getList().forEach(x -> people.add(getPerson((Integer) x[0])));
+		
+		return people; 
+	}
+	
+	/**
+	 * This method executes a Lucene search on persons based on the soundex filter with two search names given
+	 * 
+	 * @param name1 firstName to be searched
+	 * @param name2 last name to be searched 
+	 * @param birthyear the birthyear the searched person should have 
+	 * @param includeVoided true if voided person should be included 
+	 * @param gender of the person to search for 
+	 * @return the set of Persons that match the search criteria
+	 */
+	private Set<Person> executeSoundexTwoPersonNameQuery(String name1, String name2,  Integer birthyear, boolean includeVoided , String gender) {
+		PersonLuceneQuery personLuceneQuery = new PersonLuceneQuery(sessionFactory);
+		int maxResults = HibernatePersonDAO.getMaximumSearchResults();
+		
+		// Execute a search on all names of a person with the given criteria
+		LuceneQuery<PersonName> luceneQuery = personLuceneQuery.getSoundexPersonNameSearchOnAllNames(name1, name2, 0, false, gender);
+		LinkedHashSet<Person> people = new LinkedHashSet<>();
+		ListPart<Object[]> names = luceneQuery.listPartProjection(0, maxResults, "person.personId");
+		names.getList().forEach(x -> people.add(getPerson((Integer) x[0])));
+		
+		Set<Person> firstNamesMatch = new HashSet<>();
+		Set<Person> secondNamesMatch = new HashSet<>();
+		Set<Person> secondNamesMatchFirstName = new HashSet<>();
+		Set<Person> firstNamesMatchSecondName = new HashSet<>();
+		
+		
+		// Executed Filter Logic: 
+		// People whose first name matches n1 and second part of the name (givenName, familyName, familyName2) matches at least once n2
+		firstNamesMatch = execSoundexLuceneQueryByNames(true, name1, birthyear, includeVoided, gender);
+		secondNamesMatch = execSoundexLuceneQueryByNames(false, name2, birthyear, includeVoided, gender);
+		
+		firstNamesMatch.retainAll(secondNamesMatch);
+		people.addAll(firstNamesMatch);
+		
+		// Executed Filter Logic: 
+		// People who have second part of the name(givenName, familyName, familyName2) matching n2 and n1 (at least once)
+		secondNamesMatchFirstName = execSoundexLuceneQueryByNames(false, name1, birthyear, includeVoided, gender);
+		secondNamesMatch.retainAll(secondNamesMatchFirstName);
+		people.addAll(secondNamesMatch);
+		secondNamesMatch.clear();
+		
+		// Executed Filter Logic:
+		// People who have given_name matching n2, second name matching n1, and another part of second name matching “”
+		firstNamesMatchSecondName = execSoundexLuceneQueryByNames(true, name2, birthyear, includeVoided, gender);
+		secondNamesMatch = execSoundexLuceneQueryByNames(false, "", birthyear, includeVoided, gender);
+		
+		firstNamesMatchSecondName.retainAll(secondNamesMatchFirstName);
+		firstNamesMatchSecondName.retainAll(secondNamesMatch);
+		people.addAll(firstNamesMatchSecondName);
+		
+		return people;
+	}
+	
+	
+	/**
+	 * This method executes a Lucene search on persons based on the soundex filter with three name elements given
+	 *
+	 * @param name1 basically represents the first name to be searched for in a person name
+	 * @param name2 basically represents the middle name to be searched for in a person name	 
+	 * @param name3 basically represents the family name to be searched for in a person name
+	 * @param birthyear the birthyear the searched person should have 
+	 * @param includeVoided true if voided person should be included 
+	 * @param gender of the person to search for 
+	 * @return the set of Persons that match the search criteria 
+	 */
+	private Set<Person> executeSoundexThreePersonNamesQuery(String name1, String name2, String name3, Integer birthyear, boolean includeVoided , String gender) {
+		PersonLuceneQuery personLuceneQuery = new PersonLuceneQuery(sessionFactory);
+		int maxResults = HibernatePersonDAO.getMaximumSearchResults();
+		LinkedHashSet<Person> people = new LinkedHashSet<>();
+		
+		LuceneQuery<PersonName> luceneQuery = personLuceneQuery.getSoundexPersonNameSearchOnThreeNames(name1, name2, name3, birthyear, false, gender);;
+		ListPart<Object[]> names = luceneQuery.listPartProjection(0, maxResults, "person.personId");
+		names.getList().forEach(x -> people.add(getPerson((Integer) x[0])));
+		
+		return people;
+	}	
+	
+	/**
+	 * This method executes a search on either firstName or lastName attributes of person
+	 * 
+	 * @param firstName true if search should be executed on firstname only
+	 * @param name to be searched in soundex representation
+	 * @param birthyear to be matched
+	 * @param includeVoided true if voided persons should be matched
+	 * @param gender of the person to search for 
+	 * @return the persons that match the search criteria as defined
+	 */
+	private Set<Person> execSoundexLuceneQueryByNames(boolean firstName, String name, Integer birthyear, boolean includeVoided , String gender) {
+		PersonLuceneQuery personLuceneQuery = new PersonLuceneQuery(sessionFactory);
+		int maxResults = HibernatePersonDAO.getMaximumSearchResults();
+		Set<Person> results = new HashSet<>();
+		LuceneQuery<PersonName> luceneQuery;
+		
+		if(firstName){
+			luceneQuery = personLuceneQuery.getSoundexPersonFirstNameQuery(name, birthyear, includeVoided, gender);
+		}
+		else {
+			luceneQuery = personLuceneQuery.getSoundexPersonSecondNameQuery(name, birthyear, includeVoided, gender);
+		}
+		ListPart<Object[]> names = luceneQuery.listPartProjection(0, maxResults, "person.personId");
+		names.getList().forEach(x -> results.add(getPerson((Integer) x[0])));
+		
+		return results;
+	}
+	
+	/**
+	 * @see org.openmrs.api.PersonService#getSimilarPeople(String name, Integer birthyear, String gender)
+	 * @see org.openmrs.api.db.PersonDAO#getSimilarPeople(String name, Integer birthyear, String gender)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
@@ -89,48 +215,12 @@ public class HibernatePersonDAO implements PersonDAO {
 		name = name.replace(", ", " ");
 		String[] names = name.split(" ");
 		
-		StringBuilder q = new StringBuilder(
-		        "select p from Person p left join p.names as pname where p.personVoided = false and pname.voided = false and ");
-		
 		if (names.length == 1) {
-			q.append("(").append(" soundex(pname.givenName) = soundex(:n1)").append(
-			    " or soundex(pname.middleName) = soundex(:n1)").append(" or soundex(pname.familyName) = soundex(:n1) ")
-			        .append(" or soundex(pname.familyName2) = soundex(:n1) ").append(")");
+			return  executeSoundexOnePersonNameQuery(name, birthyear, false, gender);
 		} else if (names.length == 2) {
-			q.append("(").append(" case").append("  when pname.givenName is null then 1").append(
-			    "  when pname.givenName = '' then 1").append("  when soundex(pname.givenName) = soundex(:n1) then 4")
-			        .append("  when soundex(pname.givenName) = soundex(:n2) then 3").append("  else 0 ").append(" end")
-			        .append(" + ").append(" case").append("  when pname.middleName is null then 1").append(
-			            "  when pname.middleName = '' then 1").append(
-			            "  when soundex(pname.middleName) = soundex(:n1) then 3").append(
-			            "  when soundex(pname.middleName) = soundex(:n2) then 4").append("  else 0 ").append(" end").append(
-			            " + ").append(" case").append("  when pname.familyName is null then 1").append(
-			            "  when pname.familyName = '' then 1").append(
-			            "  when soundex(pname.familyName) = soundex(:n1) then 3").append(
-			            "  when soundex(pname.familyName) = soundex(:n2) then 4").append("  else 0 ").append(" end").append(
-			            " +").append(" case").append("  when pname.familyName2 is null then 1").append(
-			            "  when pname.familyName2 = '' then 1").append(
-			            "  when soundex(pname.familyName2) = soundex(:n1) then 3").append(
-			            "  when soundex(pname.familyName2) = soundex(:n2) then 4").append("  else 0 ").append(" end")
-			        .append(") > 6");
+			return executeSoundexTwoPersonNameQuery(names[0], names[1], birthyear, false, gender);
 		} else if (names.length == 3) {
-			q.append("(").append(" case").append("  when pname.givenName is null then 0").append(
-			    "  when soundex(pname.givenName) = soundex(:n1) then 3").append(
-			    "  when soundex(pname.givenName) = soundex(:n2) then 2").append(
-			    "  when soundex(pname.givenName) = soundex(:n3) then 1").append("  else 0 ").append(" end").append(" + ")
-			        .append(" case").append("  when pname.middleName is null then 0").append(
-			            "  when soundex(pname.middleName) = soundex(:n1) then 2").append(
-			            "  when soundex(pname.middleName) = soundex(:n2) then 3").append(
-			            "  when soundex(pname.middleName) = soundex(:n3) then 1").append("  else 0").append(" end").append(
-			            " + ").append(" case").append("  when pname.familyName is null then 0").append(
-			            "  when soundex(pname.familyName) = soundex(:n1) then 1").append(
-			            "  when soundex(pname.familyName) = soundex(:n2) then 2").append(
-			            "  when soundex(pname.familyName) = soundex(:n3) then 3").append("  else 0").append(" end").append(
-			            " +").append(" case").append("  when pname.familyName2 is null then 0").append(
-			            "  when soundex(pname.familyName2) = soundex(:n1) then 1").append(
-			            "  when soundex(pname.familyName2) = soundex(:n2) then 2").append(
-			            "  when soundex(pname.familyName2) = soundex(:n3) then 3").append("  else 0").append(" end").append(
-			            ") >= 5");
+			return executeSoundexThreePersonNamesQuery(names[0], names[1], names[2], birthyear, false, gender);
 		} else {
 			
 			// This is simply an alternative method of name matching which scales better
@@ -138,97 +228,101 @@ public class HibernatePersonDAO implements PersonDAO {
 			// six or so tokens.  This can be easily updated to attain more desirable
 			// results; it is just a working alternative to throwing an exception.
 			
+			StringBuilder q = new StringBuilder(
+				"select p from Person p left join p.names as pname where p.personVoided = false and pname.voided = false and ");
+			
 			q.append("(").append(" case").append("  when pname.givenName is null then 0");
 			for (int i = 0; i < names.length; i++) {
 				q.append("  when soundex(pname.givenName) = soundex(:n").append(i + 1).append(") then 1");
 			}
 			q.append("  else 0").append(" end").append(")").append("+").append("(").append(" case").append(
-			    "  when pname.middleName is null then 0");
+				"  when pname.middleName is null then 0");
 			for (int i = 0; i < names.length; i++) {
 				q.append("  when soundex(pname.middleName) = soundex(:n").append(i + 1).append(") then 1");
 			}
 			q.append("  else 0").append(" end").append(")").append("+").append("(").append(" case").append(
-			    "  when pname.familyName is null then 0");
+				"  when pname.familyName is null then 0");
 			for (int i = 0; i < names.length; i++) {
 				q.append("  when soundex(pname.familyName) = soundex(:n").append(i + 1).append(") then 1");
 			}
 			q.append("  else 0").append(" end").append(")").append("+").append("(").append(" case").append(
-			    "  when pname.familyName2 is null then 0");
+				"  when pname.familyName2 is null then 0");
 			for (int i = 0; i < names.length; i++) {
 				q.append("  when soundex(pname.familyName2) = soundex(:n").append(i + 1).append(") then 1");
 			}
 			// if most of the names have at least a hit somewhere
-			q.append("  else 0").append(" end").append(") >= ").append((int) (names.length * .75)); 
+			q.append("  else 0").append(" end").append(") >= ").append((int) (names.length * .75));
+			
+			String birthdayMatch = " (year(p.birthdate) between " + (birthyear - 1) + " and " + (birthyear + 1)
+				+ " or p.birthdate is null) ";
+			
+			String genderMatch = " (p.gender = :gender or p.gender = '') ";
+			
+			if (birthyear != 0 && gender != null) {
+				q.append(" and (").append(birthdayMatch).append("and ").append(genderMatch).append(") ");
+			} else if (birthyear != 0) {
+				q.append(" and ").append(birthdayMatch);
+			} else if (gender != null) {
+				q.append(" and ").append(genderMatch);
+			}
+			
+			q.append(" order by pname.givenName asc,").append(" pname.middleName asc,").append(" pname.familyName asc,")
+				.append(
+					" pname.familyName2 asc");
+			
+			String qStr = q.toString();
+			Query query = sessionFactory.getCurrentSession().createQuery(qStr);
+			
+			for (int nameIndex = 0; nameIndex < names.length; nameIndex++) {
+				query.setString("n" + (nameIndex + 1), names[nameIndex]);
+			}
+			
+			if (qStr.contains(":gender")) {
+				query.setString("gender", gender);
+			}
+			
+			return new LinkedHashSet<Person>(query.list());
 		}
-		
-		String birthdayMatch = " (year(p.birthdate) between " + (birthyear - 1) + " and " + (birthyear + 1)
-		        + " or p.birthdate is null) ";
-		
-		String genderMatch = " (p.gender = :gender or p.gender = '') ";
-		
-		if (birthyear != 0 && gender != null) {
-			q.append(" and (").append(birthdayMatch).append("and ").append(genderMatch).append(") ");
-		} else if (birthyear != 0) {
-			q.append(" and ").append(birthdayMatch);
-		} else if (gender != null) {
-			q.append(" and ").append(genderMatch);
-		}
-		
-		q.append(" order by pname.givenName asc,").append(" pname.middleName asc,").append(" pname.familyName asc,").append(
-		    " pname.familyName2 asc");
-		
-		String qStr = q.toString();
-		Query query = sessionFactory.getCurrentSession().createQuery(qStr);
-		
-		for (int nameIndex = 0; nameIndex < names.length; nameIndex++) {
-			query.setString("n" + (nameIndex + 1), names[nameIndex]);
-		}
-		
-		if (qStr.contains(":gender")) {
-			query.setString("gender", gender);
-		}
-
-		return new LinkedHashSet<Person>(query.list());
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.PersonDAO#getPeople(java.lang.String, java.lang.Boolean)
-	 * @should get no one by null
-	 * @should get every one by empty string
-	 * @should get no one by non-existing attribute
-	 * @should get no one by non-searchable attribute
-	 * @should get no one by voided attribute
-	 * @should get one person by attribute
-	 * @should get one person by random case attribute
-	 * @should get one person by searching for a mix of attribute and voided attribute
-	 * @should get multiple people by single attribute
-	 * @should get multiple people by multiple attributes
-	 * @should get no one by non-existing name
-	 * @should get one person by name
-	 * @should get one person by random case name
-	 * @should get multiple people by single name
-	 * @should get multiple people by multiple names
-	 * @should get no one by non-existing name and non-existing attribute
-	 * @should get no one by non-existing name and non-searchable attribute
-	 * @should get no one by non-existing name and voided attribute
-	 * @should get one person by name and attribute
-	 * @should get one person by name and voided attribute
-	 * @should get multiple people by name and attribute
-	 * @should get one person by given name
-	 * @should get multiple people by given name
-	 * @should get one person by middle name
-	 * @should get multiple people by middle name
-	 * @should get one person by family name
-	 * @should get multiple people by family name
-	 * @should get one person by family name2
-	 * @should get multiple people by family name2
-	 * @should get one person by multiple name parts
-	 * @should get multiple people by multiple name parts
-	 * @should get no one by voided name
-	 * @should not get voided person
-	 * @should not get dead person
-	 * @should get single dead person
-	 * @should get multiple dead people
+	 * <strong>Should</strong> get no one by null
+	 * <strong>Should</strong> get every one by empty string
+	 * <strong>Should</strong> get no one by non-existing attribute
+	 * <strong>Should</strong> get no one by non-searchable attribute
+	 * <strong>Should</strong> get no one by voided attribute
+	 * <strong>Should</strong> get one person by attribute
+	 * <strong>Should</strong> get one person by random case attribute
+	 * <strong>Should</strong> get one person by searching for a mix of attribute and voided attribute
+	 * <strong>Should</strong> get multiple people by single attribute
+	 * <strong>Should</strong> get multiple people by multiple attributes
+	 * <strong>Should</strong> get no one by non-existing name
+	 * <strong>Should</strong> get one person by name
+	 * <strong>Should</strong> get one person by random case name
+	 * <strong>Should</strong> get multiple people by single name
+	 * <strong>Should</strong> get multiple people by multiple names
+	 * <strong>Should</strong> get no one by non-existing name and non-existing attribute
+	 * <strong>Should</strong> get no one by non-existing name and non-searchable attribute
+	 * <strong>Should</strong> get no one by non-existing name and voided attribute
+	 * <strong>Should</strong> get one person by name and attribute
+	 * <strong>Should</strong> get one person by name and voided attribute
+	 * <strong>Should</strong> get multiple people by name and attribute
+	 * <strong>Should</strong> get one person by given name
+	 * <strong>Should</strong> get multiple people by given name
+	 * <strong>Should</strong> get one person by middle name
+	 * <strong>Should</strong> get multiple people by middle name
+	 * <strong>Should</strong> get one person by family name
+	 * <strong>Should</strong> get multiple people by family name
+	 * <strong>Should</strong> get one person by family name2
+	 * <strong>Should</strong> get multiple people by family name2
+	 * <strong>Should</strong> get one person by multiple name parts
+	 * <strong>Should</strong> get multiple people by multiple name parts
+	 * <strong>Should</strong> get no one by voided name
+	 * <strong>Should</strong> not get voided person
+	 * <strong>Should</strong> not get dead person
+	 * <strong>Should</strong> get single dead person
+	 * <strong>Should</strong> get multiple dead people
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
@@ -263,7 +357,6 @@ public class HibernatePersonDAO implements PersonDAO {
 		if (dead != null) {
 			nameQuery.include("person.dead", dead);
 		}
-
 		List<Person> people = new ArrayList<>();
 
 		ListPart<Object[]> names = nameQuery.listPartProjection(0, maxResults, "person.personId");
@@ -311,7 +404,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.PersonService#deletePersonAttributeType(org.openmrs.PersonAttributeType)
+	 * @see org.openmrs.api.PersonService#purgePersonAttributeType(org.openmrs.PersonAttributeType)
 	 * @see org.openmrs.api.db.PersonDAO#deletePersonAttributeType(org.openmrs.PersonAttributeType)
 	 */
 	@Override
@@ -531,7 +624,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.PersonService#deleteRelationshipType(org.openmrs.RelationshipType)
+	 * @see org.openmrs.api.PersonService#purgeRelationshipType(org.openmrs.RelationshipType)
 	 * @see org.openmrs.api.db.PersonDAO#deleteRelationshipType(org.openmrs.RelationshipType)
 	 */
 	@Override

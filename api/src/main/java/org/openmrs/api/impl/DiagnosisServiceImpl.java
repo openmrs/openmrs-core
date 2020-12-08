@@ -17,8 +17,6 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.DiagnosisService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DiagnosisDAO;
-import org.openmrs.parameter.EncounterSearchCriteria;
-import org.openmrs.parameter.EncounterSearchCriteriaBuilder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Iterator;
@@ -106,7 +104,7 @@ public class DiagnosisServiceImpl extends BaseOpenmrsService implements Diagnosi
 	@Transactional(readOnly = true)
 	public List<Diagnosis> getUniqueDiagnoses(Patient patient, Date fromDate) {
 		List<Diagnosis> diagnoses = getDiagnoses(patient, fromDate);
-		Set<CodedOrFreeText> answers = new HashSet<CodedOrFreeText>();
+		Set<CodedOrFreeText> answers = new HashSet<>();
 		Iterator<Diagnosis> iterator = diagnoses.iterator();
 		while(iterator.hasNext()) {
 			Diagnosis diagnosis = iterator.next();
@@ -136,7 +134,7 @@ public class DiagnosisServiceImpl extends BaseOpenmrsService implements Diagnosi
 	 * @param diagnosis diagnosis to unvoid
 	 * @return the unvoided diagnosis
 	 * @throws APIException
-	 * @should unset voided bit on given diagnosis
+	 * <strong>Should</strong> unset voided bit on given diagnosis
 	 */
 	@Override
 	public Diagnosis unvoidDiagnosis(Diagnosis diagnosis) {
@@ -151,7 +149,7 @@ public class DiagnosisServiceImpl extends BaseOpenmrsService implements Diagnosi
 	 *
 	 * @param diagnosis diagnosis to remove from the database
 	 * @throws APIException
-	 * @should delete the given diagnosis from th e database
+	 * <strong>Should</strong> delete the given diagnosis from th e database
 	 * @see #purgeDiagnosis(Diagnosis)
 	 */
 	@Override

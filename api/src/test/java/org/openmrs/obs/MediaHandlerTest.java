@@ -9,109 +9,106 @@
  */
 package org.openmrs.obs;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.condition.OS.WINDOWS;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Path;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.io.TempDir;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
 import org.openmrs.api.AdministrationService;
-import org.openmrs.api.context.Context;
-import org.openmrs.obs.handler.AbstractHandler;
 import org.openmrs.obs.handler.MediaHandler;
-import org.openmrs.util.OpenmrsUtil;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.OpenmrsConstants;
+import org.springframework.beans.factory.annotation.Autowired;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ AbstractHandler.class, OpenmrsUtil.class, Context.class })
-
-public class MediaHandlerTest {
-		
-	@Mock
-	private AdministrationService administrationService;
+public class MediaHandlerTest extends BaseContextSensitiveTest {
 	
-    @Rule
-    public TemporaryFolder complexObsTestFolder = new TemporaryFolder();
-
-    @Test
+	@Autowired
+	private AdministrationService adminService;
+	
+	@TempDir
+	public Path complexObsTestFolder;
+	
+	MediaHandler handler;
+	
+	@BeforeEach
+	public void setUp() {
+		handler = new MediaHandler();
+	}
+	
+	@Test
     public void shouldReturnSupportedViews() {
-        MediaHandler handler = new MediaHandler();
-        String[] actualViews = handler.getSupportedViews();
-        String[] expectedViews = { ComplexObsHandler.RAW_VIEW };
-
-        assertArrayEquals(actualViews, expectedViews);
+		String[] actualViews = handler.getSupportedViews();
+		
+		assertArrayEquals(actualViews, new String[]{ ComplexObsHandler.RAW_VIEW });
     }
 
     @Test
     public void shouldSupportRawView() {
-        MediaHandler handler = new MediaHandler();
-
-        assertTrue(handler.supportsView(ComplexObsHandler.RAW_VIEW));
+		
+		assertTrue(handler.supportsView(ComplexObsHandler.RAW_VIEW));
     }
 
     @Test
     public void shouldNotSupportOtherViews() {
-        MediaHandler handler = new MediaHandler();
-
         assertFalse(handler.supportsView(ComplexObsHandler.HTML_VIEW));
         assertFalse(handler.supportsView(ComplexObsHandler.PREVIEW_VIEW));
         assertFalse(handler.supportsView(ComplexObsHandler.TEXT_VIEW));
         assertFalse(handler.supportsView(ComplexObsHandler.TITLE_VIEW));
         assertFalse(handler.supportsView(ComplexObsHandler.URI_VIEW));
         assertFalse(handler.supportsView(""));
-        assertFalse(handler.supportsView((String) null));
+        assertFalse(handler.supportsView(null));
     }
      
 	@Test
+	@DisabledOnOs(WINDOWS)
 	public void saveObs_shouldRetrieveCorrectMimetype() throws IOException {
-		String mimetype = "audio/mpeg";
-		String filename = "TestingComplexObsSaving.mp3";
+		
+		adminService.saveGlobalProperty(new GlobalProperty(
+			OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR,
+			complexObsTestFolder.toAbsolutePath().toString()
+		));
+		
 		File sourceFile = new File(
-	        "src" + File.separator + "test" + File.separator + "resources" + File.separator + "ComplexObsTestAudio.mp3");
-		
-		FileInputStream in1 = new FileInputStream(sourceFile);
-		FileInputStream in2 = new FileInputStream(sourceFile);
-		
-		ComplexData complexData1 = new ComplexData(filename, in1);
-		ComplexData complexData2 = new ComplexData(filename, in2);
-		
-		// Construct 2 Obs to also cover the case where the filename exists already
-		Obs obs1 = new Obs();
-		obs1.setComplexData(complexData1);
-		
-		Obs obs2 = new Obs();
-		obs2.setComplexData(complexData2);
-		
-		// Mocked methods
-		mockStatic(Context.class);
-		when(Context.getAdministrationService()).thenReturn(administrationService);
-		when(administrationService.getGlobalProperty(any())).thenReturn(complexObsTestFolder.newFolder().getAbsolutePath());
-		
-		MediaHandler handler = new MediaHandler();
-		
-		// Execute save
-		handler.saveObs(obs1);
-		handler.saveObs(obs2);
-		
-		// Get observation
-		Obs complexObs1 = handler.getObs(obs1, "RAW_VIEW");
-		Obs complexObs2 = handler.getObs(obs2, "RAW_VIEW");
-		
-		assertEquals(complexObs1.getComplexData().getMimeType(), mimetype);
-		assertEquals(complexObs2.getComplexData().getMimeType(), mimetype);
+			"src" + File.separator + "test" + File.separator + "resources" + File.separator + "ComplexObsTestAudio.mp3");
+
+		Obs complexObs1 = null;
+		Obs complexObs2 = null;
+		try (FileInputStream in1 = new FileInputStream(sourceFile);
+			 FileInputStream in2 = new FileInputStream(sourceFile)
+		) {
+			ComplexData complexData1 = new ComplexData("TestingComplexObsSaving.mp3", in1);
+			ComplexData complexData2 = new ComplexData("TestingComplexObsSaving.mp3", in2);
+			
+			// Construct 2 Obs to also cover the case where the filename exists already
+			Obs obs1 = new Obs();
+			obs1.setComplexData(complexData1);
+			Obs obs2 = new Obs();
+			obs2.setComplexData(complexData2);
+			
+			handler.saveObs(obs1);
+			handler.saveObs(obs2);
+			
+			complexObs1 = handler.getObs(obs1, "RAW_VIEW");
+			complexObs2 = handler.getObs(obs2, "RAW_VIEW");
+			
+			assertEquals( "audio/mpeg", complexObs1.getComplexData().getMimeType());
+			assertEquals("audio/mpeg", complexObs2.getComplexData().getMimeType());
+		} finally {
+			((InputStream) complexObs1.getComplexData().getData()).close();
+			((InputStream) complexObs1.getComplexData().getData()).close();
+		}
 	}
-	
 }

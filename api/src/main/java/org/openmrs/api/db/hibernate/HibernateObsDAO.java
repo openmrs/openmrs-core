@@ -272,15 +272,15 @@ public class HibernateObsDAO implements ObsDAO {
 	public Obs.Status getSavedStatus(Obs obs) {
 		// avoid premature flushes when this internal method is called from inside a service method
 		Session session = sessionFactory.getCurrentSession();
-		FlushMode flushMode = session.getFlushMode();
-		session.setFlushMode(FlushMode.MANUAL);
+		FlushMode flushMode = session.getHibernateFlushMode();
+		session.setHibernateFlushMode(FlushMode.MANUAL);
 		try {
 			SQLQuery sql = session.createSQLQuery("select status from obs where obs_id = :obsId");
 			sql.setInteger("obsId", obs.getObsId());
 			return Obs.Status.valueOf((String) sql.uniqueResult());
 		}
 		finally {
-			session.setFlushMode(flushMode);
+			session.setHibernateFlushMode(flushMode);
 		}
 	}
 	

@@ -9,19 +9,19 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.sql.Time;
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -70,6 +70,13 @@ public class DropMillisecondsHibernateInterceptorTest extends BaseContextSensiti
 	public void shouldNotChangeWhenInstanceOfTime() throws Exception {
 		Time[] time = { Time.valueOf("17:00:00") };
 		boolean anyChanges = dropMillisecondsHibernateInterceptor.onSave(null, null, time, null, null);
-		assertEquals(false, anyChanges);
+		assertFalse(anyChanges);
+	}
+	
+	@Test
+	public void shouldNotThrowUnsupportedOperationExceptionWhenInstanceOfSqlDate() throws Exception {
+		Date[] sqlDate = {new java.sql.Date(567L)};
+		boolean anyChanges = dropMillisecondsHibernateInterceptor.onSave(null, null, sqlDate, null, null);
+		assertFalse(anyChanges);
 	}
 }

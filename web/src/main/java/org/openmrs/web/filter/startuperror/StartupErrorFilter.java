@@ -41,7 +41,7 @@ import org.openmrs.web.filter.StartupFilter;
  * authenticate and review the updates before continuing.
  */
 public class StartupErrorFilter extends StartupFilter {
-
+	
 	/**
 	 * The velocity macro page to redirect to if an error occurs or on initial startup
 	 */
@@ -54,10 +54,10 @@ public class StartupErrorFilter extends StartupFilter {
 	 * @param httpResponse
 	 */
 	@Override
-	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
-	        ServletException {
+	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
+	        throws IOException, ServletException {
 		
-		if (getModel().errorAtStartup instanceof OpenmrsCoreModuleException) {
+		if (getUpdateFilterModel().errorAtStartup instanceof OpenmrsCoreModuleException) {
 			renderTemplate("coremoduleerror.vm", new HashMap<>(), httpResponse);
 		} else {
 			renderTemplate(DEFAULT_PAGE, new HashMap<>(), httpResponse);
@@ -69,10 +69,10 @@ public class StartupErrorFilter extends StartupFilter {
 	 *      javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
-	protected void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
-	        ServletException {
+	protected void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
+	        throws IOException, ServletException {
 		// if they are uploading modules
-		if (getModel().errorAtStartup instanceof OpenmrsCoreModuleException) {
+		if (getUpdateFilterModel().errorAtStartup instanceof OpenmrsCoreModuleException) {
 			RequestContext requestContext = new ServletRequestContext(httpRequest);
 			if (!ServletFileUpload.isMultipartContent(requestContext)) {
 				throw new ServletException("The request is not a valid multipart/form-data upload request");
@@ -104,10 +104,10 @@ public class StartupErrorFilter extends StartupFilter {
 	}
 	
 	/**
-	 * @see org.openmrs.web.filter.StartupFilter#getModel()
+	 * @see org.openmrs.web.filter.StartupFilter#getUpdateFilterModel()
 	 */
 	@Override
-	protected StartupErrorFilterModel getModel() {
+	protected StartupErrorFilterModel getUpdateFilterModel() {
 		// this object was initialized in the #init(FilterConfig) method
 		return new StartupErrorFilterModel(Listener.getErrorAtStartup());
 	}

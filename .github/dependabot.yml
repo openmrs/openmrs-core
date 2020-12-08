@@ -1,0 +1,61 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    pull-request-branch-name:
+      separator: "-"
+    reviewers:
+      - "openmrs/dev-4"
+      - "openmrs/dev-5"
+    commit-message:
+      prefix: "github-actions"
+      include: "scope"
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 10
+    pull-request-branch-name:
+      separator: "-"
+    reviewers:
+      - "openmrs/dev-4"
+      - "openmrs/dev-5"
+    commit-message:
+      prefix: "maven"
+      include: "scope"
+    ignore:
+      - dependency-name: "org.apache.lucene:lucene-queryparser"
+        versions:
+          - ">= 6.0"
+      - dependency-name: "org.apache.lucene:lucene-queries"
+        versions:
+          - ">= 6.0"
+      - dependency-name: "org.apache.lucene:lucene-backward-codecs"
+        versions:
+          - ">= 6.0"
+      - dependency-name: "org.apache.lucene:lucene-analyzers-phonetic"
+        versions:
+          - ">= 6.0"
+      - dependency-name: "org.hibernate:hibernate-search-orm" # needs to stay compatible with lucene as detailed at http://hibernate.org/search/releases/
+        versions:
+          - ">= 6.0"
+      - dependency-name: "org.hibernate:hibernate-core" # needs to stay compatible with hibernate-search as detailed at http://hibernate.org/search/releases/
+        versions:
+          - ">= 6.0"
+      - dependency-name: "org.hibernate:hibernate-c3p0" # needs to stay compatible with hibernate-search as detailed at http://hibernate.org/search/releases/
+        versions:
+          - ">= 6.0"
+      - dependency-name: "org.hibernate:hibernate-ehcache" # needs to stay compatible with hibernate-search as detailed at http://hibernate.org/search/releases/
+        versions:
+          - ">= 6.0"
+      - dependency-name: "org.hibernate:hibernate-validator" # update caused error in reference application see https://github.com/openmrs/openmrs-core/pull/3508
+        versions:
+          - ">= 6.0"
+      - dependency-name: "org.liquibase:liquibase-core"
+        versions:
+          - ">= 4.0"
+      - dependency-name: "org.liquibase:liquibase-maven-plugin"
+        versions:
+          - ">= 4.0"

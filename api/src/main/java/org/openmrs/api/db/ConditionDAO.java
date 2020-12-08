@@ -12,7 +12,9 @@ package org.openmrs.api.db;
 import java.util.List;
 
 import org.openmrs.Condition;
+import org.openmrs.Encounter;
 import org.openmrs.Patient;
+import org.openmrs.api.APIException;
 
 /**
  * This interface defines database methods for condition objects.
@@ -52,6 +54,16 @@ public interface ConditionDAO {
 	 * @return all active conditions associated with the specified patient.
 	 */
 	List<Condition> getActiveConditions(Patient patient);
+
+	/**
+	 * @see ConditionService#getAllConditions(Patient)
+	 */
+	List<Condition> getAllConditions(Patient patient);
+
+	/**
+	 * @see ConditionService#getConditionsByEncounter(Encounter)
+	 */
+	List<Condition> getConditionsByEncounter(Encounter encounter) throws APIException;
 
 	/**
 	 * Gets a condition by id

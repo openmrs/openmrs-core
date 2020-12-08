@@ -12,6 +12,7 @@ package org.openmrs.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ArrayList;
@@ -31,6 +32,8 @@ import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.scheduler.SchedulerConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static java.util.Arrays.asList;
 
 /**
  * Constants used in OpenMRS. Contents built from build properties (version, version_short, and
@@ -162,7 +165,8 @@ public final class OpenmrsConstants {
 	 * The name of the runtime property that a user can set that will specify where openmrs's
 	 * application directory is
 	 * 
-	 * @see #APPLICATION_DATA_DIRECTORY
+	 * @see OpenmrsUtil#getApplicationDataDirectory()
+	 * @see OpenmrsUtil#startup(java.util.Properties)
 	 */
 	public static final String APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY = "application_data_directory";
 	
@@ -196,15 +200,23 @@ public final class OpenmrsConstants {
 	/**
 	 * A gender character to gender name map<br>
 	 * TODO issues with localization. How should this be handled?
+	 * @deprecated As of 2.2, replaced by {@link #GENDERS}
 	 * 
 	 * @return Map&lt;String, String&gt; of gender character to gender name
 	 */
+	@Deprecated
+	@SuppressWarnings("squid:S00100")
 	public static final Map<String, String> GENDER() {
 		Map<String, String> genders = new LinkedHashMap<>();
 		genders.put("M", "Male");
 		genders.put("F", "Female");
 		return genders;
 	}
+	
+	/**
+	 * A list of 1-letter strings representing genders
+	 */
+	public static final List<String> GENDERS = Collections.unmodifiableList(asList("M", "F"));
 		
 	/**
 	 * These roles are given to a user automatically and cannot be assigned
@@ -328,6 +340,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_START = "START";
 	
+	public static final String GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_SOUNDEX = "SOUNDEX";
+	
 	public static final String GLOBAL_PROPERTY_PROVIDER_SEARCH_MATCH_MODE = "providerSearch.matchMode";
 	
 	public static final String GLOBAL_PROPERTY_DEFAULT_SERIALIZER = "serialization.defaultSerializer";
@@ -404,6 +418,11 @@ public final class OpenmrsConstants {
 	 * length requirement Allowable values are any integer
 	 */
 	public static final String GP_PASSWORD_MINIMUM_LENGTH = "security.passwordMinimumLength";
+	
+	/**
+	 * Global property that stores the duration for which the password reset token is valid
+	 */
+	public static final String GP_PASSWORD_RESET_VALIDTIME = "security.validTime";
 	
 	/**
 	 * Global property name that allows specification of a regular expression that passwords must
@@ -599,6 +618,11 @@ public final class OpenmrsConstants {
 	public static final String GP_DRUG_ORDER_DRUG_OTHER = "drugOrder.drugOther";
 
 	/**
+	 * Global property that stores the base url for the application.
+	 */
+	public static final String GP_HOST_URL = "host.url";
+	
+	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
 	 * database if they do not exist yet.
 	 * 
@@ -683,6 +707,9 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GP_MAIL_SMTP_STARTTLS_ENABLE, "false",
 		        "Set to true to enable TLS encryption, else set to false"));
 		
+		props.add(new GlobalProperty(GP_HOST_URL, "",
+		        "The URL to redirect to after requesting for a password reset. Always provide a place holder in this url with name {activationKey}, it will get substituted by the actual activation key."));
+		
 		props.add(new GlobalProperty("concept.weight", "5089", "Concept id of the concept defining the WEIGHT concept"));
 		props.add(new GlobalProperty("concept.height", "5090", "Concept id of the concept defining the HEIGHT concept"));
 
@@ -707,7 +734,7 @@ public final class OpenmrsConstants {
 		        ModuleConstants.REPOSITORY_FOLDER_PROPERTY_DEFAULT, "Name of the folder in which to store the modules"));
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_ADDRESS_TEMPLATE, DEFAULT_ADDRESS_TEMPLATE,
 		        "XML description of address formats"));
-		props.add(new GlobalProperty("layout.name.format", "short",
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT, PERSON_NAME_FORMAT_SHORT,
 		        "Format in which to display the person names.  Valid values are short, long"));
 		
 		// TODO should be changed to text defaults and constants should be removed
@@ -794,7 +821,7 @@ public final class OpenmrsConstants {
 		        .add(new GlobalProperty(
 		                GLOBAL_PROPERTY_LOG_LEVEL,
 		                "org.openmrs.api:" + LOG_LEVEL_INFO,
-		                "Logging levels for log4j.xml. Valid format is class:level,class:level. If class not specified, 'org.openmrs.api' presumed. Valid levels are trace, debug, info, warn, error or fatal"));
+		                "Logging levels for log4j2.xml. Valid format is class:level,class:level. If class not specified, 'org.openmrs.api' presumed. Valid levels are trace, debug, info, warn, error or fatal"));
 		
 		props.add(new GlobalProperty(GP_LOG_LOCATION, "",
 		        "A directory where the OpenMRS log file appender is stored. The log file name is 'openmrs.log'."));
@@ -853,6 +880,9 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GP_PASSWORD_MINIMUM_LENGTH, "8",
 		        "Configure the minimum length required of all passwords"));
+		
+		props.add(new GlobalProperty(GP_PASSWORD_RESET_VALIDTIME, "600000",
+		        " Specifies the duration of time in seconds for which a password reset token is valid, the default value is 10 minutes and the allowed values range from 1 minute to 12hrs"));
 		
 		props.add(new GlobalProperty(GP_PASSWORD_REQUIRES_DIGIT, "true",
 		        "Configure whether passwords must contain at least one digit", BooleanDatatype.class, null));
@@ -1111,11 +1141,11 @@ public final class OpenmrsConstants {
 		return states;
 	}
 	
-	public static Locale SPANISH_LANGUAGE = new Locale("es");
+	public static final Locale SPANISH_LANGUAGE = new Locale("es");
 	
-	public static Locale PORTUGUESE_LANGUAGE = new Locale("pt");
+	public static final Locale PORTUGUESE_LANGUAGE = new Locale("pt");
 	
-	public static Locale ITALIAN_LANGUAGE = new Locale("it");
+	public static final Locale ITALIAN_LANGUAGE = new Locale("it");
 	
 	/*
 	 * User property names
@@ -1177,7 +1207,7 @@ public final class OpenmrsConstants {
 	/**
 	 * URL to the concept source id verification server
 	 */
-	public static final String IMPLEMENTATION_ID_REMOTE_CONNECTION_URL = "http://resources.openmrs.org/tools/implementationid";
+	public static final String IMPLEMENTATION_ID_REMOTE_CONNECTION_URL = "https://implementation.openmrs.org";
 	
 	/**
 	 * Shortcut booleans used to make some OS specific checks more generic; note the *nix flavored

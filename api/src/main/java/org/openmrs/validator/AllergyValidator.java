@@ -15,7 +15,7 @@ import org.openmrs.Allergies;
 import org.openmrs.Allergy;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.PatientService;
-import org.openmrs.api.context.Context;
+import org.openmrs.messagesource.MessageSourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -25,6 +25,9 @@ import org.springframework.validation.Validator;
 @Component("allergyValidator")
 @Handler(supports = { Allergy.class }, order = 50)
 public class AllergyValidator implements Validator {
+	
+	@Autowired
+	private MessageSourceService messageSourceService;
 	
 	@Autowired
 	private PatientService patientService;
@@ -38,15 +41,15 @@ public class AllergyValidator implements Validator {
 	 * @see Validator#validate(Object, org.springframework.validation.Errors)
 	 * @param target
 	 * @param errors
-	 * @should fail for a null value
-	 * @should fail if patient is null
-	 * @should fail id allergenType is null
-	 * @should fail if allergen is null
-	 * @should fail if codedAllergen is null
-	 * @should fail if nonCodedAllergen is null and allergen is set to other non coded
-	 * @should reject a duplicate allergen
-	 * @should reject a duplicate non coded allergen
-	 * @should pass for a valid allergy
+	 * <strong>Should</strong> fail for a null value
+	 * <strong>Should</strong> fail if patient is null
+	 * <strong>Should</strong> fail id allergenType is null
+	 * <strong>Should</strong> fail if allergen is null
+	 * <strong>Should</strong> fail if codedAllergen is null
+	 * <strong>Should</strong> fail if nonCodedAllergen is null and allergen is set to other non coded
+	 * <strong>Should</strong> reject a duplicate allergen
+	 * <strong>Should</strong> reject a duplicate non coded allergen
+	 * <strong>Should</strong> pass for a valid allergy
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
@@ -77,7 +80,7 @@ public class AllergyValidator implements Validator {
 				Allergies existingAllergies = patientService.getAllergies(allergy.getPatient());
 				if (existingAllergies.containsAllergen(allergy)) {
 					String key = "ui.i18n.Concept.name." + allergen.getCodedAllergen().getUuid();
-					String name = Context.getMessageSourceService().getMessage(key);
+					String name = messageSourceService.getMessage(key);
 					if (key.equals(name)) {
 						name = allergen.toString();
 					}

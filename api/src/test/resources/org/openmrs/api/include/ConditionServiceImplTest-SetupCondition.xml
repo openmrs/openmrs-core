@@ -11,8 +11,12 @@
 
 -->
 <dataset>
+
+	<encounter encounter_id="2039" encounter_type="2" patient_id="2" location_id="1" form_id="1" encounter_datetime="2020-04-20 14:09:05.0" 
+				creator="1" date_created="2020-04-20 14:09:05.0" voided="false" uuid="0519d652-393b-4118-9c83-a3715b82d4av"/>
+
 	<conditions condition_id="1" patient_id="2" clinical_status="INACTIVE" creator="1" date_created="2015-01-12 00:00:00" 
-			   voided="false" onset_date="2017-01-12 00:00:00" verification_status="PROVISIONAL" 
+			   voided="false" onset_date="2017-01-12 00:00:00" end_date="2017-01-15 00:00:00" verification_status="PROVISIONAL" 
 			   uuid="2cc6880e-2c46-15e4-9038-a6c5e4d22fb7"/>
 	<conditions condition_id="2" patient_id="2" clinical_status="ACTIVE" creator="1" date_created="2015-01-12 00:00:00" 
 			   voided="false" onset_date="2017-01-12 00:00:50" verification_status="CONFIRMED" 
@@ -24,4 +28,10 @@
 	<conditions condition_id="6" patient_id="8" clinical_status="ACTIVE" creator="1" date_created="2015-04-12 00:00:00" 
 			   voided="false" onset_date="2017-02-12 00:40:00" verification_status="CONFIRMED" 
 			   uuid="2cd6780e-2a46-11e4-9038-a6c5e4d26fc2"/>
+	<conditions condition_id="7" patient_id="8" clinical_status="ACTIVE" creator="1" date_created="2015-04-12 00:00:00" 
+			   voided="false" onset_date="2018-02-12 00:40:00" verification_status="CONFIRMED" encounter_id="2039"
+			   uuid="054a376e-0bf6-4388-aa31-9dac63f8e315"/>
+	<conditions condition_id="8" patient_id="8" clinical_status="INACTIVE" creator="1" date_created="2015-04-12 00:00:00" 
+			   voided="false" onset_date="2018-03-12 00:40:00" end_date="2019-02-11 00:40:00" verification_status="CONFIRMED" encounter_id="2039"
+			   uuid="9757313d-92ef-4f51-a002-72a0493c5078"/>
 </dataset>

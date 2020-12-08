@@ -78,10 +78,12 @@ import org.springframework.util.StringUtils;
  */
 public class RequiredDataAdvice implements MethodBeforeAdvice {
 	
+	private static final String UNABLE_GETTER_METHOD = "unable.getter.method";
+	
 	/**
 	 * @see org.springframework.aop.MethodBeforeAdvice#before(java.lang.reflect.Method,
 	 *      java.lang.Object[], java.lang.Object)
-	 * @should not fail on update method with no arguments
+	 * <strong>Should</strong> not fail on update method with no arguments
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
@@ -142,7 +144,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 				Collection<OpenmrsObject> openmrsObjects = (Collection<OpenmrsObject>) mainArgument;
 				
 				for (OpenmrsObject object : openmrsObjects) {
-					ValidateUtil.validate(mainArgument);
+					ValidateUtil.validate(object);
 					
 					recursivelyHandle(SaveHandler.class, object, other);
 				}
@@ -299,9 +301,9 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	 * @param openmrsObject the object to get the collection off of
 	 * @param field the name of the field that is the collection
 	 * @return the actual collection of objects that is on the given <code>openmrsObject</code>
-	 * @should get value of given child collection on given field
-	 * @should should be able to get annotated private fields
-	 * @should throw APIException if getter method not found
+	 * <strong>Should</strong> get value of given child collection on given field
+	 * <strong>Should</strong> should be able to get annotated private fields
+	 * <strong>Should</strong> throw APIException if getter method not found
 	 */
 	@SuppressWarnings("unchecked")
 	protected static Collection<OpenmrsObject> getChildCollection(OpenmrsObject openmrsObject, Field field) {
@@ -332,16 +334,16 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 			if (field.isAnnotationPresent(AllowDirectAccess.class)) {
 				throw new APIException("unable.get.field", new Object[] { fieldName, openmrsObject.getClass() });
 			} else {
-				throw new APIException("unable.getter.method", new Object[] { "use", getterName, fieldName,
+				throw new APIException(UNABLE_GETTER_METHOD, new Object[] { "use", getterName, fieldName,
 				        openmrsObject.getClass() });
 			}
 		}
 		catch (InvocationTargetException e) {
-			throw new APIException("unable.getter.method", new Object[] { "run", getterName, fieldName,
+			throw new APIException(UNABLE_GETTER_METHOD, new Object[] { "run", getterName, fieldName,
 			        openmrsObject.getClass() });
 		}
 		catch (NoSuchMethodException e) {
-			throw new APIException("unable.getter.method", new Object[] { "find", getterName, fieldName,
+			throw new APIException(UNABLE_GETTER_METHOD, new Object[] { "find", getterName, fieldName,
 			        openmrsObject.getClass() });
 		}
 	}
@@ -352,9 +354,9 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	 *
 	 * @param arg the actual object being passed in
 	 * @return true if it is a Collection of some kind of OpenmrsObject
-	 * @should return true if class is openmrsObject list
-	 * @should return true if class is openmrsObject set
-	 * @should return false if collection is empty regardless of type held
+	 * <strong>Should</strong> return true if class is openmrsObject list
+	 * <strong>Should</strong> return true if class is openmrsObject set
+	 * <strong>Should</strong> return false if collection is empty regardless of type held
 	 */
 	protected static boolean isOpenmrsObjectCollection(Object arg) {
 		

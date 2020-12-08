@@ -12,6 +12,7 @@ package org.openmrs.api.db.hibernate;
 import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Future;
@@ -25,7 +26,6 @@ import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.search.FullTextSession;
-import org.hibernate.search.Search;
 import org.hibernate.stat.QueryStatistics;
 import org.hibernate.stat.Statistics;
 import org.hibernate.type.StandardBasicTypes;
@@ -33,14 +33,18 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
+import org.openmrs.api.context.Daemon;
 import org.openmrs.api.db.ContextDAO;
+import org.openmrs.api.db.FullTextSessionFactory;
+import org.openmrs.api.db.UserDAO;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.Security;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.orm.hibernate4.SessionFactoryUtils;
-import org.springframework.orm.hibernate4.SessionHolder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.hibernate5.SessionFactoryUtils;
+import org.springframework.orm.hibernate5.SessionHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -60,6 +64,11 @@ public class HibernateContextDAO implements ContextDAO {
 	 */
 	private SessionFactory sessionFactory;
 	
+	@Autowired
+	private FullTextSessionFactory fullTextSessionFactory;
+	
+	private UserDAO userDao;
+	
 	/**
 	 * Session factory to use for this DAO. This is usually injected by spring and its application
 	 * context.
@@ -70,50 +79,47 @@ public class HibernateContextDAO implements ContextDAO {
 		this.sessionFactory = sessionFactory;
 	}
 	
+	public void setUserDAO(UserDAO userDao) {
+		this.userDao = userDao;
+	}
+
 	/**
 	 * @see org.openmrs.api.db.ContextDAO#authenticate(java.lang.String, java.lang.String)
 	 */
 	@Override
 	@Transactional(noRollbackFor = ContextAuthenticationException.class)
 	public User authenticate(String login, String password) throws ContextAuthenticationException {
-		
 		String errorMsg = "Invalid username and/or password: " + login;
-		
+
 		Session session = sessionFactory.getCurrentSession();
-		
+
 		User candidateUser = null;
-		
-		if (login != null) {
-			//if username is blank or white space character(s)
-			if (StringUtils.isEmpty(login) || StringUtils.isWhitespace(login)) {
-				throw new ContextAuthenticationException(errorMsg);
-			}
-			
+
+		if (StringUtils.isNotBlank(login)) {
 			// loginWithoutDash is used to compare to the system id
 			String loginWithDash = login;
 			if (login.matches("\\d{2,}")) {
 				loginWithDash = login.substring(0, login.length() - 1) + "-" + login.charAt(login.length() - 1);
 			}
-			
+
 			try {
-				candidateUser = (User) session.createQuery(
-				    "from User u where (u.username = ? or u.systemId = ? or u.systemId = ?) and u.retired = '0'").setString(
-				    0, login).setString(1, login).setString(2, loginWithDash).uniqueResult();
+				candidateUser = session.createQuery(
+					"from User u where (u.username = ?1 or u.systemId = ?2 or u.systemId = ?3) and u.retired = false",
+					User.class)
+					.setParameter(1, login).setParameter(2, login).setParameter(3, loginWithDash).uniqueResult();
 			}
 			catch (HibernateException he) {
-				log.error("Got hibernate exception while logging in: '" + login + "'", he);
+				log.error("Got hibernate exception while logging in: '{}'", login, he);
 			}
 			catch (Exception e) {
-				log.error("Got regular exception while logging in: '" + login + "'", e);
+				log.error("Got regular exception while logging in: '{}'", login, e);
 			}
 		}
-		
+
 		// only continue if this is a valid username and a nonempty password
 		if (candidateUser != null && password != null) {
-			if (log.isDebugEnabled()) {
-				log.debug("Candidate user id: " + candidateUser.getUserId());
-			}
-			
+			log.debug("Candidate user id: {}", candidateUser.getUserId());
+
 			String lockoutTimeString = candidateUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, null);
 			Long lockoutTime = null;
 			if (lockoutTimeString != null && !"0".equals(lockoutTimeString)) {
@@ -122,11 +128,11 @@ public class HibernateContextDAO implements ContextDAO {
 					lockoutTime = Long.valueOf(lockoutTimeString);
 				}
 				catch (NumberFormatException e) {
-					log.debug("bad value stored in " + OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP + " user property: "
-					        + lockoutTimeString);
+					log.warn("bad value stored in {} user property: {}", OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP,
+						lockoutTimeString);
 				}
 			}
-			
+
 			// if they've been locked out, don't continue with the authentication
 			if (lockoutTime != null) {
 				// unlock them after 5 mins, otherwise reset the timestamp
@@ -137,73 +143,71 @@ public class HibernateContextDAO implements ContextDAO {
 					saveUserProperties(candidateUser);
 				} else {
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String.valueOf(System
-					        .currentTimeMillis()));
+						.currentTimeMillis()));
 					throw new ContextAuthenticationException(
-					        "Invalid number of connection attempts. Please try again later.");
+						"Invalid number of connection attempts. Please try again later.");
 				}
 			}
-			
-			String passwordOnRecord = (String) session.createSQLQuery("select password from users where user_id = ?")
-			        .addScalar("password", StandardBasicTypes.STRING).setInteger(0, candidateUser.getUserId())
-			        .uniqueResult();
-			
-			String saltOnRecord = (String) session.createSQLQuery("select salt from users where user_id = ?").addScalar(
-			    "salt", StandardBasicTypes.STRING).setInteger(0, candidateUser.getUserId()).uniqueResult();
-			
+
+			Object[] passwordAndSalt = (Object[]) session
+				.createNativeQuery("select password, salt from users where user_id = ?1")
+				.addScalar("password", StandardBasicTypes.STRING).addScalar("salt", StandardBasicTypes.STRING)
+				.setParameter(1, candidateUser.getUserId()).uniqueResult();
+
+			String passwordOnRecord = (String) passwordAndSalt[0];
+			String saltOnRecord = (String) passwordAndSalt[1];
+
 			// if the username and password match, hydrate the user and return it
 			if (passwordOnRecord != null && Security.hashMatches(passwordOnRecord, password + saltOnRecord)) {
 				// hydrate the user object
 				candidateUser.getAllRoles().size();
 				candidateUser.getUserProperties().size();
 				candidateUser.getPrivileges().size();
-				
+
 				// only clean up if the were some login failures, otherwise all should be clean
-				Integer attempts = getUsersLoginAttempts(candidateUser);
+				int attempts = getUsersLoginAttempts(candidateUser);
 				if (attempts > 0) {
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "0");
 					candidateUser.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP);
 					saveUserProperties(candidateUser);
 				}
-				
+
 				// skip out of the method early (instead of throwing the exception)
 				// to indicate that this is the valid user
 				return candidateUser;
 			} else {
 				// the user failed the username/password, increment their
 				// attempts here and set the "lockout" timestamp if necessary
-				Integer attempts = getUsersLoginAttempts(candidateUser);
-				
+				int attempts = getUsersLoginAttempts(candidateUser);
+
 				attempts++;
-				
-				Integer allowedFailedLoginCount = 7;
-				
+
+				int allowedFailedLoginCount = 7;
 				try {
-					allowedFailedLoginCount = Integer.valueOf(Context.getAdministrationService().getGlobalProperty(
-					    OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT).trim());
+					allowedFailedLoginCount = Integer.parseInt(Context.getAdministrationService().getGlobalProperty(
+						OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT).trim());
 				}
 				catch (Exception ex) {
-					log.error("Unable to convert the global property "
-					        + OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT
-					        + "to a valid integer. Using default value of 7");
+					log.error("Unable to convert the global property {} to a valid integer. Using default value of 7.",
+						OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT);
 				}
-				
+
 				if (attempts > allowedFailedLoginCount) {
 					// set the user as locked out at this exact time
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String.valueOf(System
-					        .currentTimeMillis()));
+						.currentTimeMillis()));
 				} else {
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, String.valueOf(attempts));
 				}
-				
+
 				saveUserProperties(candidateUser);
 			}
 		}
-		
+
 		// throw this exception only once in the same place with the same
 		// message regardless of username/pw combo entered
-		log.info("Failed login attempt (login=" + login + ") - " + errorMsg);
+		log.info("Failed login attempt (login={}) - {}", login, errorMsg);
 		throw new ContextAuthenticationException(errorMsg);
-		
 	}
 	
 	/**
@@ -214,16 +218,35 @@ public class HibernateContextDAO implements ContextDAO {
 	public User getUserByUuid(String uuid) {
 		
 		// don't flush here in case we're in the AuditableInterceptor.  Will cause a StackOverflowEx otherwise
-		FlushMode flushMode = sessionFactory.getCurrentSession().getFlushMode();
-		sessionFactory.getCurrentSession().setFlushMode(FlushMode.MANUAL);
+		FlushMode flushMode = sessionFactory.getCurrentSession().getHibernateFlushMode();
+		sessionFactory.getCurrentSession().setHibernateFlushMode(FlushMode.MANUAL);
 		
 		User u = (User) sessionFactory.getCurrentSession().createQuery("from User u where u.uuid = :uuid").setString("uuid",
 		    uuid).uniqueResult();
 		
 		// reset the flush mode to whatever it was before
-		sessionFactory.getCurrentSession().setFlushMode(flushMode);
+		sessionFactory.getCurrentSession().setHibernateFlushMode(flushMode);
 		
 		return u;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ContextDAO#getUserByUsername(String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public User getUserByUsername(String username) {
+		return userDao.getUserByUsername(username);
+	}
+	
+	/**
+	 * @throws Exception 
+	 * @see org.openmrs.api.db.ContextDAO#createUser(User, String)
+	 */
+	@Override
+	@Transactional
+	public User createUser(User user, String password, List<String> roleNames) throws Exception {
+		return Daemon.createUser(user, password, roleNames);
 	}
 	
 	/**
@@ -241,11 +264,11 @@ public class HibernateContextDAO implements ContextDAO {
 	 * @param user the user to check
 	 * @return the # of login attempts for this user defaulting to zero if none defined
 	 */
-	private Integer getUsersLoginAttempts(User user) {
+	private int getUsersLoginAttempts(User user) {
 		String attemptsString = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "0");
-		Integer attempts = 0;
+		int attempts = 0;
 		try {
-			attempts = Integer.valueOf(attemptsString);
+			attempts = Integer.parseInt(attemptsString);
 		}
 		catch (NumberFormatException e) {
 			// skip over errors and leave the attempts at zero
@@ -262,16 +285,12 @@ public class HibernateContextDAO implements ContextDAO {
 	public void openSession() {
 		log.debug("HibernateContext: Opening Hibernate Session");
 		if (TransactionSynchronizationManager.hasResource(sessionFactory)) {
-			if (log.isDebugEnabled()) {
-				log.debug("Participating in existing session (" + sessionFactory.hashCode() + ")");
-			}
+			log.debug("Participating in existing session ({})", sessionFactory.hashCode());
 			participate = true;
 		} else {
-			if (log.isDebugEnabled()) {
-				log.debug("Registering session with synchronization manager (" + sessionFactory.hashCode() + ")");
-			}
+			log.debug("Registering session with synchronization manager ({})", sessionFactory.hashCode());
 			Session session = sessionFactory.openSession();
-			session.setFlushMode(FlushMode.MANUAL);
+			session.setHibernateFlushMode(FlushMode.MANUAL);
 			TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(session));
 		}
 	}
@@ -396,7 +415,7 @@ public class HibernateContextDAO implements ContextDAO {
 	 * and merges it into the user-defined runtime properties
 	 * 
 	 * @see org.openmrs.api.db.ContextDAO#mergeDefaultRuntimeProperties(java.util.Properties)
-	 * @should merge default runtime properties
+	 * <strong>Should</strong> merge default runtime properties
 	 */
 	@Override
 	public void mergeDefaultRuntimeProperties(Properties runtimeProperties) {
@@ -434,17 +453,17 @@ public class HibernateContextDAO implements ContextDAO {
 	@Transactional
 	public void updateSearchIndexForType(Class<?> type) {
 		//From http://docs.jboss.org/hibernate/search/3.3/reference/en-US/html/manual-index-changes.html#search-batchindex-flushtoindexes
-		FullTextSession session = Search.getFullTextSession(sessionFactory.getCurrentSession());
+		FullTextSession session = fullTextSessionFactory.getFullTextSession();
 		session.purgeAll(type);
 		
 		//Prepare session for batch work
 		session.flush();
 		session.clear();
 		
-		FlushMode flushMode = session.getFlushMode();
+		FlushMode flushMode = session.getHibernateFlushMode();
 		CacheMode cacheMode = session.getCacheMode();
 		try {
-			session.setFlushMode(FlushMode.MANUAL);
+			session.setHibernateFlushMode(FlushMode.MANUAL);
 			session.setCacheMode(CacheMode.IGNORE);
 			
 			//Scrollable results will avoid loading too many objects in memory
@@ -465,7 +484,7 @@ public class HibernateContextDAO implements ContextDAO {
 			session.clear();
 		}
 		finally {
-			session.setFlushMode(flushMode);
+			session.setHibernateFlushMode(flushMode);
 			session.setCacheMode(cacheMode);
 		}
 	}
@@ -476,7 +495,7 @@ public class HibernateContextDAO implements ContextDAO {
 	@Override
 	@Transactional
 	public void updateSearchIndexForObject(Object object) {
-		FullTextSession session = Search.getFullTextSession(sessionFactory.getCurrentSession());
+		FullTextSession session = fullTextSessionFactory.getFullTextSession();
 		session.index(object);
 		session.flushToIndexes();
 	}
@@ -500,9 +519,9 @@ public class HibernateContextDAO implements ContextDAO {
 	public void updateSearchIndex() {
 		try {
 			log.info("Updating the search index... It may take a few minutes.");
-			Search.getFullTextSession(sessionFactory.getCurrentSession()).createIndexer().startAndWait();
+			fullTextSessionFactory.getFullTextSession().createIndexer().startAndWait();
 			GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(
-					OpenmrsConstants.GP_SEARCH_INDEX_VERSION);
+			    OpenmrsConstants.GP_SEARCH_INDEX_VERSION);
 			if (gp == null) {
 				gp = new GlobalProperty(OpenmrsConstants.GP_SEARCH_INDEX_VERSION);
 			}
@@ -522,11 +541,10 @@ public class HibernateContextDAO implements ContextDAO {
 	public Future<?> updateSearchIndexAsync() {
 		try {
 			log.info("Started asynchronously updating the search index...");
-			return Search.getFullTextSession(sessionFactory.getCurrentSession()).createIndexer().start();
+			return fullTextSessionFactory.getFullTextSession().createIndexer().start();
 		}
 		catch (Exception e) {
 			throw new RuntimeException("Failed to start asynchronous search index update", e);
 		}
 	}
-
 }

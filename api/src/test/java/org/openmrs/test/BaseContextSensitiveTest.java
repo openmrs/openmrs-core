@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -81,16 +82,19 @@ import org.openmrs.annotation.OpenmrsProfileExcludeFilter;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.ContextMockHelper;
+import org.openmrs.api.context.Credentials;
+import org.openmrs.api.context.UsernamePasswordCredentials;
 import org.openmrs.module.ModuleConstants;
+import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
-import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 import org.xml.sax.InputSource;
@@ -107,7 +111,7 @@ import org.xml.sax.InputSource;
 @TestExecutionListeners( { TransactionalTestExecutionListener.class, SkipBaseSetupAnnotationExecutionListener.class,
         StartModuleExecutionListener.class })
 @Transactional
-@TransactionConfiguration(defaultRollback = true)
+@Rollback
 public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringContextTests {
 	
 	private static final Logger log = LoggerFactory.getLogger(BaseContextSensitiveTest.class);
@@ -366,6 +370,17 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	}
 	
 	/**
+	 * This method provides the credentials to authenticate the user that is authenticated through the base setup.
+	 * This method can be overridden when setting up test application contexts that are *not* using the default authentication scheme.
+	 * 
+	 * @return The credentials to use for base setup authentication.
+	 * @since 2.3.0
+	 */
+	protected Credentials getCredentials() {
+		return new UsernamePasswordCredentials("admin", "test");
+	}
+	
+	/**
 	 * Authenticate to the Context. A popup box will appear asking the current user to enter
 	 * credentials unless there is a junit.username and junit.password defined in the runtime
 	 * properties
@@ -378,7 +393,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		}
 		
 		try {
-			Context.authenticate("admin", "test");
+			Context.authenticate(getCredentials());
 			authenticatedUser = Context.getAuthenticatedUser();
 			return;
 		}
@@ -570,6 +585,11 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			throw new RuntimeException(
 			        "You shouldn't be initializing a NON in-memory database. Consider unoverriding useInMemoryDatabase");
 
+		//Because creator property in the superclass is mapped with optional set to false, the autoddl tool marks the 
+		//column as not nullable but for person it is actually nullable, we need to first drop the constraint from 
+		//person.creator column, historically this was to allow inserting the very first row. Ideally, this should not 
+		//be necessary outside of tests because tables are created using liquibase and not autoddl
+		dropNotNullConstraint("person", "creator");
 		setAutoIncrementOnTablesWithNativeIfNotAssignedIdentityGenerator();
 		executeDataSet(INITIAL_XML_DATASET_PACKAGE_PATH);
 	}
@@ -584,6 +604,21 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			getConnection().prepareStatement("ALTER TABLE " + table + " ALTER COLUMN " + table + "_id INT AUTO_INCREMENT")
 					.execute();
 		}
+	}
+
+	/**
+	 * Drops the not null constraint from the the specified column in the specified table
+	 *
+	 * @param columnName the column from which to remove the constraint
+	 * @param tableName the table that contains the column
+	 * @throws SQLException
+	 */
+	protected void dropNotNullConstraint(String tableName, String columnName) throws SQLException {
+		if (!useInMemoryDatabase()) {
+			throw new RuntimeException("Altering column nullability is not supported for a non in-memory database");
+		}
+		final String sql = "ALTER TABLE " + tableName + " ALTER COLUMN " + columnName + " SET NULL";
+		DatabaseUtil.executeSQL(getConnection(), sql, false);
 	}
 
 	/**
@@ -655,7 +690,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 							throw new FileNotFoundException("Unable to find '" + datasetFilename + "' in the classpath");
 					}
 					
-					reader = new InputStreamReader(fileInInputStreamFormat);
+					reader = new InputStreamReader(fileInInputStreamFormat, StandardCharsets.UTF_8);
 					ReplacementDataSet replacementDataSet = new ReplacementDataSet(
 					        new FlatXmlDataSet(reader, false, true, false));
 					replacementDataSet.addReplacementObject("[NULL]", null);

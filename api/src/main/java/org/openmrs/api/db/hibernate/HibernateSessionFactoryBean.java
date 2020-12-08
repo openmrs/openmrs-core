@@ -24,6 +24,10 @@ import java.util.Set;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Interceptor;
+import org.hibernate.boot.Metadata;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
+import org.hibernate.integrator.spi.Integrator;
+import org.hibernate.service.spi.SessionFactoryServiceRegistry;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
@@ -32,9 +36,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 
-public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
+public class HibernateSessionFactoryBean extends LocalSessionFactoryBean implements Integrator {
 	
 	private static final Logger log = LoggerFactory.getLogger(HibernateSessionFactoryBean.class);
 	
@@ -52,6 +56,8 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 	// This will be sorted on keys before being used
 	@Autowired(required = false)
 	public Map<String, Interceptor> interceptors = new HashMap<>();
+	
+	private Metadata metadata;
 	
 	/**
 	 * Collect the mapping resources for future use because the mappingResources object is defined
@@ -179,6 +185,8 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 		
 		setPackagesToScan(getModulePackagesWithMappedClasses().toArray(new String[0]));
 		
+		setHibernateIntegrators(this);
+		
 		super.afterPropertiesSet();
 	}
 	
@@ -195,5 +203,22 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 			// see net.sf.ehcache.CacheManager#removeShutdownHook()
 		}
 	}
-	
+
+	@Override
+	public void integrate(Metadata metadata, SessionFactoryImplementor sessionFactory,
+			SessionFactoryServiceRegistry serviceRegistry) {
+		this.metadata = metadata;
+	}
+
+	@Override
+	public void disintegrate(SessionFactoryImplementor sessionFactory, SessionFactoryServiceRegistry serviceRegistry) {
+		
+	}
+
+	/**
+	 * @since 2.4
+	 */
+	public Metadata getMetadata() {
+		return metadata;
+	}
 }

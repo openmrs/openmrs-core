@@ -1,0 +1,580 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<!--
+    This file contains all changesets that have been introduced on top of either liquibase-snapshots/2.0.x/liquibase-*.xml 
+    or liquibase-updates/2.0.x/liquibase-update-to-latest.xml.
+-->
+<databaseChangeLog 
+	logicalFilePath="liquibase-update-to-latest.xml" 
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext 
+    	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+    	http://www.liquibase.org/xml/ns/dbchangelog 
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+	<!--
+		See http://www.liquibase.org/manual/home#available_database_refactorings
+		for a list of supported elements and attributes
+	-->
+
+	<changeSet id="TRUNK-4936-20160930-1000" author="teleivo" >
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="concept_reference_source" columnName="unique_id"/></not>
+		</preConditions>
+		<comment>Add unique_id column to concept_reference_source</comment>
+		<addColumn tableName="concept_reference_source">
+			<column name="unique_id" type="varchar(250)">
+			</column>
+		</addColumn>
+		<addUniqueConstraint tableName="concept_reference_source" columnNames="unique_id" constraintName="concept_reference_source_unique_id_unique"/>
+	</changeSet>
+	<changeSet author="vshankar" id="201609171146-1">
+		<preConditions onFail="MARK_RAN">
+			<foreignKeyConstraintExists foreignKeyName="member_patient"/>
+		</preConditions>
+		<comment>Dropping foreign key constraint member_patient</comment>
+		<dropForeignKeyConstraint constraintName="member_patient" baseTableName="cohort_member"/>
+	</changeSet>
+	<changeSet author="vshankar" id="201609171146-1.1">
+		<preConditions onFail="MARK_RAN">
+			<foreignKeyConstraintExists foreignKeyName="parent_cohort"/>
+		</preConditions>
+		<comment>Dropping foreign key constraint parent_cohort</comment>
+		<dropForeignKeyConstraint constraintName="parent_cohort" baseTableName="cohort_member"/>
+	</changeSet>
+	<changeSet author="vshankar" id="201609171146-1.2">
+		<preConditions onFail="MARK_RAN">
+			<primaryKeyExists tableName="cohort_member"/>
+		</preConditions>
+		<comment>Dropping primary key for cohort_member</comment>
+		<dropPrimaryKey tableName="cohort_member"/>
+	</changeSet>
+	<changeSet author="vshankar" id="201609171146-2">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="cohort_member" columnName="cohort_member_id"/>
+			</not>
+		</preConditions>
+		<comment>Adding column cohort_member.cohort_member_id</comment>
+		<addColumn tableName="cohort_member">
+			<column name="cohort_member_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+		</addColumn>
+	</changeSet>
+	<changeSet author="vshankar" id="201609171146-2.1" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+			<and>
+				<columnExists tableName="cohort_member" columnName="cohort_member_id"/>
+				<not>
+					<sqlCheck expectedResult="0">
+						SELECT COUNT(*) from cohort_member
+					</sqlCheck>
+				</not>
+			</and>
+		</preConditions>
+		<comment>Updating cohort member ids</comment>
+		<customChange class="org.openmrs.util.databasechange.UpdateCohortMemberIdsChangeset"/>
+	</changeSet>
+	<changeSet author="vshankar" id="201609171146-2.2" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="cohort_member" columnName="cohort_member_id"/>
+		</preConditions>
+		<comment>Adding primary key to cohort_member.cohort_member_id</comment>
+		<addPrimaryKey tableName="cohort_member" columnNames="cohort_member_id"/>
+	</changeSet>
+	<changeSet author="vshankar" id="201609171146-2.3" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="cohort_member" columnName="cohort_member_id"/>
+		</preConditions>
+		<comment>Adding auto increment property to cohort_member.cohort_member_id</comment>
+		<addAutoIncrement tableName="cohort_member" columnName="cohort_member_id" columnDataType="int"/>
+	</changeSet>
+	<changeSet author="vshankar" id="201609171146-3">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="cohort_member" columnName="start_date"/>
+			</not>
+		</preConditions>
+		<comment>Adding column cohort_member.start_date</comment>
+		<addColumn tableName="cohort_member">
+			<column name="start_date" type="datetime">
+				<constraints nullable="false"/>
+			</column>
+		</addColumn>
+	</changeSet>
+	<changeSet author="vshankar" id="201610242135-3">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<sqlCheck expectedResult="0">
+					SELECT COUNT(*) from cohort_member
+				</sqlCheck>
+			</not>
+		</preConditions>
+		<comment>Updating cohort_start_date with value cohort.date_created</comment>
+		<update tableName="cohort_member">
+			<column name="start_date" type="DATETIME"
+					valueComputed="(select date_created from cohort where cohort_member.cohort_id = cohort.cohort_id)"/>
+		</update>
+	</changeSet>
+	<changeSet author="vshankar" id="201609171146-4">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="cohort_member" columnName="end_date"/>
+			</not>
+		</preConditions>
+		<comment>Adding column cohort_member.end_date</comment>
+		<addColumn tableName="cohort_member">
+			<column name="end_date" type="datetime"/>
+		</addColumn>
+	</changeSet>
+	<changeSet author="vshankar" id="201609171146-5">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="cohort_member" columnName="creator"/>
+			</not>
+		</preConditions>
+		<comment>Adding column cohort_member.creator</comment>
+		<addColumn tableName="cohort_member">
+			<column name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+		</addColumn>
+	</changeSet>
+	<changeSet author="vshankar" id="201609171146-5.1">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<sqlCheck expectedResult="0">
+					SELECT COUNT(*) from cohort_member
+				</sqlCheck>
+			</not>
+		</preConditions>
+		<comment>Updating cohort_member.creator value</comment>
+		<update tableName="cohort_member">
+			<column name="creator" valueNumeric="1" type="int"/>
+		</update>
+	</changeSet>
+	<changeSet author="vshankar" id="201609171146-5.2">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="cohort_member" columnName="creator"/>
+		</preConditions>
+		<comment>Adding foreign key constraint to cohort_member.creator</comment>
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="cohort_member" constraintName="cohort_member_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet id="201610042145-1" author="vshankar">
+		<preConditions>
+			<not>
+				<columnExists tableName="cohort_member" columnName="date_created"/>
+			</not>
+		</preConditions>
+		<comment>Adding column cohort_member.date_created</comment>
+		<addColumn tableName="cohort_member">
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+		</addColumn>
+	</changeSet>
+	<changeSet id="201610042145-1.1" author="vshankar">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<sqlCheck expectedResult="0">
+					SELECT COUNT(*) from cohort_member
+				</sqlCheck>
+			</not>
+		</preConditions>
+		<comment>Updating cohort_member.date_created with value cohort.date_created</comment>
+		<update tableName="cohort_member">
+			<column name="date_created" type="DATETIME"
+					valueComputed="(select date_created from cohort where cohort_member.cohort_id = cohort.cohort_id)"/>
+		</update>
+	</changeSet>
+	<changeSet author="vshankar" id="201610131530-1">
+		<preConditions>
+			<not>
+				<columnExists tableName="cohort_member" columnName="voided"/>
+			</not>
+		</preConditions>
+		<comment>Adding column cohort_member.voided</comment>
+		<addColumn tableName="cohort_member">
+			<column name="voided" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+		</addColumn>
+	</changeSet>
+	<changeSet author="vshankar" id="201610131530-1.1">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="cohort_member" columnName="voided"/>
+		</preConditions>
+		<comment>Adding defaultValue for cohort_member.voided</comment>
+		<addDefaultValue tableName="cohort_member" columnName="voided" defaultValueBoolean="false"/>
+	</changeSet>
+	<changeSet author="vshankar" id="201610131530-2">
+		<preConditions>
+			<not>
+				<columnExists tableName="cohort_member" columnName="voided_by"/>
+			</not>
+		</preConditions>
+		<comment>Adding column cohort_member.voided_by</comment>
+		<addColumn tableName="cohort_member">
+			<column name="voided_by" type="int"/>
+		</addColumn>
+	</changeSet>
+	<changeSet author="vshankar" id="201610131530-3">
+		<preConditions>
+			<not>
+				<columnExists tableName="cohort_member" columnName="date_voided"/>
+			</not>
+		</preConditions>
+		<comment>Adding column cohort_member.date_voided</comment>
+		<addColumn tableName="cohort_member">
+			<column name="date_voided" type="DATETIME"/>
+		</addColumn>
+	</changeSet>
+	<changeSet author="vshankar" id="201610131530-4">
+		<preConditions>
+			<not>
+				<columnExists tableName="cohort_member" columnName="void_reason"/>
+			</not>
+		</preConditions>
+		<comment>Adding column cohort_member.void_reason</comment>
+		<addColumn tableName="cohort_member">
+			<column name="void_reason" type="varchar(255)"/>
+		</addColumn>
+	</changeSet>
+	<changeSet id="201610042145-2" author="vshankar">
+		<preConditions>
+			<not>
+				<columnExists tableName="cohort_member" columnName="uuid"/>
+			</not>
+		</preConditions>
+		<comment>Adding column cohort_member.uuid</comment>
+		<addColumn tableName="cohort_member">
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false"/>
+			</column>
+		</addColumn>
+	</changeSet>
+	<changeSet id="201610042145-2.1" author="vshankar">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql"/><dbms type="oracle" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in cohort_member table via built in uuid function.</comment>
+		<update tableName="cohort_member" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid = '' OR uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+	</changeSet>
+	<changeSet id="201610042145-2.2" author="vshankar">
+		<preConditions>
+			<columnExists tableName="cohort_member" columnName="uuid"/>
+		</preConditions>
+		<comment>Adding unique constraint to cohort_member.uuid</comment>
+		<addUniqueConstraint tableName="cohort_member" columnNames="uuid"/>
+	</changeSet>
+	<changeSet id="201610242135-1" author="vshankar">
+		<preConditions onError="MARK_RAN">
+			<not>
+				<foreignKeyConstraintExists foreignKeyName="parent_cohort" foreignKeyTableName="cohort_member"/>
+			</not>
+		</preConditions>
+		<comment>Adding foreign key constraint to cohort_member.cohort_id</comment>
+		<addForeignKeyConstraint baseColumnNames="cohort_id" baseTableName="cohort_member" constraintName="parent_cohort" deferrable="false" referencedColumnNames="cohort_id" referencedTableName="cohort"/>
+	</changeSet>
+	<changeSet id="201610242135-2" author="vshankar">
+		<preConditions onError="MARK_RAN">
+			<not>
+				<foreignKeyConstraintExists foreignKeyName="member_patient" foreignKeyTableName="cohort_member"/>
+			</not>
+		</preConditions>
+		<comment>Adding foreign key constraint to cohort_member.patient_id</comment>
+		<addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="cohort_member" constraintName="member_patient" deferrable="false" initiallyDeferred="false" referencedColumnNames="patient_id" referencedTableName="patient"/>
+	</changeSet>
+	<changeSet author="vshankar" id="201611121945-1">
+		<preConditions>
+			<columnExists tableName="cohort_member" columnName="cohort_id"/>
+		</preConditions>
+		<comment>Dropping defaultValue for cohort_member.cohort_id</comment>
+		<dropDefaultValue tableName="cohort_member" columnName="cohort_id"/>
+	</changeSet>
+	<changeSet author="vshankar" id="201611121945-2">
+		<preConditions>
+			<columnExists tableName="cohort_member" columnName="patient_id"/>
+		</preConditions>
+		<comment>Dropping defaultValue for cohort_member.patient_id</comment>
+		<dropDefaultValue tableName="cohort_member" columnName="patient_id"/>
+	</changeSet>
+
+
+	<changeSet id="TRUNK-4730-20161114-1000" author="manuelagrindei">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="concept_class" columnName="date_changed"/>
+			</not>
+		</preConditions>
+		<comment>Adding "date_changed" column to concept_class table</comment>
+		<addColumn tableName="concept_class">
+			<column name="date_changed" type="DATETIME"/>
+		</addColumn>
+	</changeSet>
+
+
+	<changeSet id="TRUNK-4730-20161114-1001" author="manuelagrindei">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="concept_class" columnName="changed_by"/>
+			</not>
+		</preConditions>
+		<comment>Adding "changed_by" column to concept_class table</comment>
+		<addColumn tableName="concept_class">
+			<column name="changed_by" type="int"/>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="concept_class_changed_by"
+								 baseTableName="concept_class" baseColumnNames="changed_by"
+								 referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+
+	<changeSet id="TRUNK-4730-20161114-1002" author="manuelagrindei">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="concept_reference_source" columnName="date_changed"/>
+			</not>
+		</preConditions>
+		<comment>Adding "date_changed" column to concept_reference_source table</comment>
+		<addColumn tableName="concept_reference_source">
+			<column name="date_changed" type="DATETIME"/>
+		</addColumn>
+	</changeSet>
+
+
+	<changeSet id="TRUNK-4730-20161114-1003" author="manuelagrindei">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="concept_reference_source" columnName="changed_by"/>
+			</not>
+		</preConditions>
+		<comment>Adding "changed_by" column to concept_reference_source table</comment>
+		<addColumn tableName="concept_reference_source">
+			<column name="changed_by" type="int"/>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="concept_reference_source_changed_by"
+								 baseTableName="concept_reference_source" baseColumnNames="changed_by"
+								 referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+
+
+	<changeSet id="TRUNK-4730-20161114-1004" author="manuelagrindei">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="concept_name" columnName="date_changed"/>
+			</not>
+		</preConditions>
+		<comment>Adding "date_changed" column to concept_name table</comment>
+		<addColumn tableName="concept_name">
+			<column name="date_changed" type="DATETIME"/>
+		</addColumn>
+	</changeSet>
+
+
+	<changeSet id="TRUNK-4730-20161114-1005" author="manuelagrindei">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="concept_name" columnName="changed_by"/>
+			</not>
+		</preConditions>
+		<comment>Adding "changed_by" column to concept_name table</comment>
+		<addColumn tableName="concept_name">
+			<column name="changed_by" type="int"/>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="concept_name_changed_by"
+								 baseTableName="concept_name" baseColumnNames="changed_by"
+								 referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+
+	<changeSet id="TRUNK-4730-20161114-1006" author="manuelagrindei">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="concept_name_tag" columnName="date_changed"/>
+			</not>
+		</preConditions>
+		<comment>Adding "date_changed" column to concept_name_tag table</comment>
+		<addColumn tableName="concept_name_tag">
+			<column name="date_changed" type="DATETIME"/>
+		</addColumn>
+	</changeSet>
+
+
+	<changeSet id="TRUNK-4730-20161114-1007" author="manuelagrindei">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="concept_name_tag" columnName="changed_by"/>
+			</not>
+		</preConditions>
+		<comment>Adding "changed_by" column to concept_name_tag table</comment>
+		<addColumn tableName="concept_name_tag">
+			<column name="changed_by" type="int"/>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="concept_name_tag_changed_by"
+								 baseTableName="concept_name_tag" baseColumnNames="changed_by"
+								 referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+
+	<changeSet id="TRUNK-4730-20161114-1008" author="manuelagrindei">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="form_resource" columnName="date_changed"/>
+			</not>
+		</preConditions>
+		<comment>Adding "date_changed" column to form_resource table</comment>
+		<addColumn tableName="form_resource">
+			<column name="date_changed" type="DATETIME"/>
+		</addColumn>
+	</changeSet>
+
+
+	<changeSet id="TRUNK-4730-20161114-1009" author="manuelagrindei">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="form_resource" columnName="changed_by"/>
+			</not>
+		</preConditions>
+		<comment>Adding "changed_by" column to form_resource table</comment>
+		<addColumn tableName="form_resource">
+			<column name="changed_by" type="int"/>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="form_resource_changed_by"
+								 baseTableName="form_resource" baseColumnNames="changed_by"
+								 referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+
+	<changeSet id="TRUNK-4730-20161114-1010" author="manuelagrindei">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="global_property" columnName="date_changed"/>
+			</not>
+		</preConditions>
+		<comment>Adding "date_changed" column to global_property table</comment>
+		<addColumn tableName="global_property">
+			<column name="date_changed" type="DATETIME"/>
+		</addColumn>
+	</changeSet>
+
+
+	<changeSet id="TRUNK-4730-20161114-1011" author="manuelagrindei">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="global_property" columnName="changed_by"/>
+			</not>
+		</preConditions>
+		<comment>Adding "changed_by" column to global_property table</comment>
+		<addColumn tableName="global_property">
+			<column name="changed_by" type="int"/>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="global_property_changed_by"
+								 baseTableName="global_property" baseColumnNames="changed_by"
+								 referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+
+	<changeSet id="TRUNK-4730-20161114-1012" author="manuelagrindei">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="patient_identifier_type" columnName="date_changed"/>
+			</not>
+		</preConditions>
+		<comment>Adding "date_changed" column to patient_identifier_type table</comment>
+		<addColumn tableName="patient_identifier_type">
+			<column name="date_changed" type="DATETIME"/>
+		</addColumn>
+	</changeSet>
+
+
+	<changeSet id="TRUNK-4730-20161114-1013" author="manuelagrindei">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="patient_identifier_type" columnName="changed_by"/>
+			</not>
+		</preConditions>
+		<comment>Adding "changed_by" column to patient_identifier_type table</comment>
+		<addColumn tableName="patient_identifier_type">
+			<column name="changed_by" type="int"/>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="patient_identifier_type_changed_by"
+								 baseTableName="patient_identifier_type" baseColumnNames="changed_by"
+								 referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+
+
+	<changeSet id="TRUNK-4730-20161114-1014" author="manuelagrindei">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="relationship_type" columnName="date_changed"/>
+			</not>
+		</preConditions>
+		<comment>Adding "date_changed" column to relationship_type table</comment>
+		<addColumn tableName="relationship_type">
+			<column name="date_changed" type="DATETIME"/>
+		</addColumn>
+	</changeSet>
+
+
+	<changeSet id="TRUNK-4730-20161114-1015" author="manuelagrindei">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="relationship_type" columnName="changed_by"/>
+			</not>
+		</preConditions>
+		<comment>Adding "changed_by" column to relationship_type table</comment>
+		<addColumn tableName="relationship_type">
+			<column name="changed_by" type="int"/>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="relationship_type_changed_by"
+								 baseTableName="relationship_type" baseColumnNames="changed_by"
+								 referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	
+	<changeSet id="TRUNK-4976-20170403-1" author="darius">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="obs" columnName="status"/>
+			</not>
+		</preConditions>
+		<comment>Adding "status" column to obs table</comment>
+		<addColumn tableName="obs">
+			<column name="status" type="varchar(16)" defaultValue="FINAL">
+				<constraints nullable="false"/>
+			</column>
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="TRUNK-4976-20170403-2" author="darius">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="obs" columnName="interpretation"/>
+			</not>
+		</preConditions>
+		<comment>Adding "interpretation" column to obs table</comment>
+		<addColumn tableName="obs">
+			<column name="interpretation" type="varchar(32)"/>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="TRUNK-5140-20170404-1000" author="Shruthi,Salauddin" >
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="obs" columnName="value_complex"/>
+		</preConditions>
+		<comment>Modify column length to 1000 from 255</comment>
+		<modifyDataType tableName="obs" columnName="value_complex" newDataType="varchar(1000)"/>
+	</changeSet>
+
+</databaseChangeLog>

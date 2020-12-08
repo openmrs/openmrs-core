@@ -9,10 +9,16 @@
  */
 package org.openmrs.api.context;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OpenmrsService;
+import org.openmrs.api.db.ContextDAO;
 import org.openmrs.module.DaemonToken;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleException;
@@ -40,6 +46,12 @@ public class Daemon {
 	protected static final ThreadLocal<Boolean> isDaemonThread = new ThreadLocal<>();
 	
 	protected static final ThreadLocal<User> daemonThreadUser = new ThreadLocal<>();
+	
+	/**
+	 * Protected constructor to override the default constructor to prevent it from being instantiated.
+	 */
+	protected Daemon() {
+	}
 	
 	/**
 	 * @see #startModule(Module, boolean, AbstractRefreshableApplicationContext)
@@ -102,6 +114,73 @@ public class Daemon {
 
 		return (Module) startModuleThread.returnedObject;
 	}
+
+	/**
+	 * This method should not be called directly, only {@link ContextDAO#createUser(User, String, List)} can
+	 * legally invoke {@link #createUser(User, String, List)}.
+	 * 
+	 * @param user A new user to be created.
+	 * @param password The password to set for the new user.
+	 * @param roleNames A list of role names to fetch the roles to add to the user.
+	 * @return The newly created user
+	 * 
+	 * <strong>Should</strong> only allow the creation of new users, not the edition of existing ones
+	 * 
+	 * @since 2.3.0
+	 */
+	public static User createUser(User user, String password, List<String> roleNames) throws Exception {
+
+		// quick check to make sure we're only being called by ourselves
+		Class<?> callerClass = new OpenmrsSecurityManager().getCallerClass(0);
+		if (!ContextDAO.class.isAssignableFrom(callerClass)) {
+			throw new APIException("Context.DAO.only", new Object[] { callerClass.getName() });
+		}
+
+		// create a new thread and execute that task in it
+		DaemonThread createUserThread = new DaemonThread() {
+
+			@Override
+			public void run() {
+				isDaemonThread.set(true);
+				try {
+					Context.openSession();
+
+					if ( (user.getId() != null && Context.getUserService().getUser(user.getId()) != null) || Context.getUserService().getUserByUuid(user.getUuid()) != null || Context.getUserService().getUserByUsername(user.getUsername()) != null || (user.getEmail() != null && Context.getUserService().getUserByUsernameOrEmail(user.getEmail()) != null) ) {
+						throw new APIException("User.creating.already.exists", new Object[] { user.getDisplayString() });
+					}
+
+					if (!CollectionUtils.isEmpty(roleNames)) {
+						List<Role> roles = roleNames.stream().map(roleName -> Context.getUserService().getRole(roleName)).collect(Collectors.toList()); 
+						roles.forEach(role -> user.addRole(role));
+					}
+
+					returnedObject = Context.getUserService().createUser(user, password);
+				}
+				catch (Exception e) {
+					exceptionThrown = e;
+				}
+				finally {
+					Context.closeSession();
+				}
+			}
+		};
+
+		createUserThread.start();
+
+		// wait for the 'create user' thread to finish
+		try {
+			createUserThread.join();
+		}
+		catch (InterruptedException e) {
+			// ignore
+		}
+
+		if (createUserThread.exceptionThrown != null) {
+			throw createUserThread.exceptionThrown;
+		}
+
+		return (User) createUserThread.returnedObject;
+	}	
 	
 	/**
 	 * Executes the given task in a new thread that is authenticated as the daemon user. <br>
@@ -109,8 +188,8 @@ public class Daemon {
 	 * This can only be called from {@link TimerSchedulerTask} during actual task execution
 	 *
 	 * @param task the task to run
-	 * @should not be called from other methods other than TimerSchedulerTask
-	 * @should not throw error if called from a TimerSchedulerTask class
+	 * <strong>Should</strong> not be called from other methods other than TimerSchedulerTask
+	 * <strong>Should</strong> not throw error if called from a TimerSchedulerTask class
 	 */
 	public static void executeScheduledTask(final Task task) throws Exception {
 		
@@ -164,8 +243,8 @@ public class Daemon {
 	 *
 	 * @param runnable what to run in a new thread
 	 * @return the newly spawned {@link Thread}
-	 * @should throw error if called from a non daemon thread
-	 * @should not throw error if called from a daemon thread
+	 * <strong>Should</strong> throw error if called from a non daemon thread
+	 * <strong>Should</strong> not throw error if called from a daemon thread
 	 */
 	@SuppressWarnings("squid:S1217")
 	public static Thread runInNewDaemonThread(final Runnable runnable) {
@@ -346,8 +425,8 @@ public class Daemon {
 	 *
 	 * @param user user whom we are checking if daemon
 	 * @return true if user is Daemon
-	 * @should return true for a daemon user
-	 * @should return false if the user is not a daemon
+	 * <strong>Should</strong> return true for a daemon user
+	 * <strong>Should</strong> return false if the user is not a daemon
 	 */
 	public static boolean isDaemonUser(User user) {
 		return DAEMON_USER_UUID.equals(user.getUuid());
@@ -368,5 +447,9 @@ public class Daemon {
 		} else {
 			return null;
 		}
+	}
+
+	public static String getDaemonUserUuid() {
+		return DAEMON_USER_UUID;
 	}
 }

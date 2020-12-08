@@ -55,7 +55,8 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	
 	@Field(analyze = Analyze.NO)
 	@FieldBridge(impl = LocaleFieldBridge.class)
-	private Locale locale; // ABK: upgraded from a plain string to a full locale object
+	// ABK: upgraded from a plain string to a full locale object
+	private Locale locale; 
 	
 	private User creator;
 	

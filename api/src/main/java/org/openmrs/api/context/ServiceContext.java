@@ -23,7 +23,9 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.CohortService;
 import org.openmrs.api.ConceptService;
+import org.openmrs.api.ConditionService;
 import org.openmrs.api.DatatypeService;
+import org.openmrs.api.DiagnosisService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.LocationService;
@@ -38,8 +40,6 @@ import org.openmrs.api.ProviderService;
 import org.openmrs.api.SerializationService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
-import org.openmrs.api.ConditionService;
-import org.openmrs.api.DiagnosisService;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.logic.LogicService;
 import org.openmrs.messagesource.MessageSourceService;
@@ -143,10 +143,8 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	public static void destroyInstance() {
 		if (ServiceContextHolder.instance != null && ServiceContextHolder.instance.services != null) {
-			if (log.isDebugEnabled()) {
-				for (Map.Entry<Class, Object> entry : ServiceContextHolder.instance.services.entrySet()) {
-					log.debug("Service - " + entry.getKey().getName() + ":" + entry.getValue());
-				}
+			for (Map.Entry<Class, Object> entry : ServiceContextHolder.instance.services.entrySet()) {
+				log.debug("Service - {} : {}", entry.getKey().getName(), entry.getValue());
 			}
 			
 			// Remove advice and advisors that this service added
@@ -178,11 +176,7 @@ public class ServiceContext implements ApplicationContextAware {
 				ServiceContextHolder.instance.moduleOpenmrsServices = null;
 			}
 		}
-		
-		if (log.isDebugEnabled()) {
-			log.debug("Destroying ServiceContext instance: " + ServiceContextHolder.instance);
-		}
-		
+		log.debug("Destroying ServiceContext instance: {}", ServiceContextHolder.instance);
 		ServiceContextHolder.instance = null;
 	}
 	
@@ -664,15 +658,11 @@ public class ServiceContext implements ApplicationContextAware {
 		synchronized (refreshingContextLock) {
 			try {
 				while (refreshingContext) {
-					if (log.isDebugEnabled()) {
-						log.debug("Waiting to get service: " + cls + " while the context is being refreshed");
-					}
+					log.debug("Waiting to get service: {} while the context is being refreshed", cls);
 					
 					refreshingContextLock.wait();
 					
-					if (log.isDebugEnabled()) {
-						log.debug("Finished waiting to get service " + cls + " while the context was being refreshed");
-					}
+					log.debug("Finished waiting to get service {} while the context was being refreshed", cls);
 				}
 				
 			}
@@ -765,22 +755,20 @@ public class ServiceContext implements ApplicationContextAware {
 				
 				if (cls != null && log.isDebugEnabled()) {
 					try {
-						log.debug("cls classloader: " + cls.getClass().getClassLoader() + " uid: "
-						        + cls.getClass().getClassLoader().hashCode());
+						log.debug("cls classloader: {} uid: {}", cls.getClass().getClassLoader(),
+						    cls.getClass().getClassLoader().hashCode());
 					}
 					catch (Exception e) { /*pass*/}
 				}
 			} else if (useSystemClassLoader) {
 				try {
 					cls = Class.forName(classString);
-					if (log.isDebugEnabled()) {
-						log.debug("cls2 classloader: " + cls.getClass().getClassLoader() + " uid: "
-						        + cls.getClass().getClassLoader().hashCode());
-						//pay attention that here, cls = Class.forName(classString), the system class loader and
-						//cls2 is the openmrs class loader, like above.
-						log.debug("cls==cls2: "
-						        + String.valueOf(cls == OpenmrsClassLoader.getInstance().loadClass(classString)));
-					}
+					log.debug("cls2 classloader: {} uid: {}", cls.getClass().getClassLoader(),
+					    cls.getClass().getClassLoader().hashCode());
+					//pay attention that here, cls = Class.forName(classString), the system class loader and
+					//cls2 is the openmrs class loader, like above.
+					log.debug("cls==cls2: {}",
+					    String.valueOf(cls == OpenmrsClassLoader.getInstance().loadClass(classString)));
 				}
 				catch (Exception e) { /*pass*/}
 			}
@@ -871,9 +859,9 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @param type the type of Bean to retrieve from the Spring {@link ApplicationContext}
 	 * @return a List of all registered Beans that are valid instances of the passed type
 	 * @since 1.5
-	 * @should return a list of all registered beans of the passed type
-	 * @should return beans registered in a module
-	 * @should return an empty list if no beans have been registered of the passed type
+	 * <strong>Should</strong> return a list of all registered beans of the passed type
+	 * <strong>Should</strong> return beans registered in a module
+	 * <strong>Should</strong> return an empty list if no beans have been registered of the passed type
 	 */
 	
 	public <T> List<T> getRegisteredComponents(Class<T> type) {

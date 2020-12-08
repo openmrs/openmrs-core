@@ -10,18 +10,21 @@
 package org.openmrs.api.context;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Location;
+import org.openmrs.PrivilegeListener;
 import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.UserSessionListener;
+import org.openmrs.UserSessionListener.Event;
+import org.openmrs.UserSessionListener.Status;
 import org.openmrs.api.APIAuthenticationException;
-import org.openmrs.api.db.ContextDAO;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.RoleConstants;
@@ -77,33 +80,53 @@ public class UserContext implements Serializable {
 	private Integer locationId;
 	
 	/**
-	 * Default public constructor
+	 * The authentication scheme for this user
 	 */
-	public UserContext() {
+	private AuthenticationScheme authenticationScheme;
+	
+	/**
+	 * Creates a user context based on the provided auth. scheme.
+	 * 
+	 * @param authenticationScheme The auth. scheme that applies for this user context.
+	 * 
+	 * @since 2.3.0
+	 */
+	public UserContext(AuthenticationScheme authenticationScheme) {
+		this.authenticationScheme = authenticationScheme; 
 	}
 	
 	/**
-	 * Authenticate the user to this UserContext.
-	 *
-	 * @see org.openmrs.api.context.Context#authenticate(String, String)
-	 * @param username String login name
-	 * @param password String login password
-	 * @param contextDAO ContextDAO implementation to use for authentication
-	 * @return User that has been authenticated
+	 * Authenticate user with the provided credentials. The authentication scheme must be Spring wired, see {@link Context#getAuthenticationScheme()}.
+	 * 
+	 * @param credentials The credentials to use to authenticate
+	 * @return The authenticated client information
 	 * @throws ContextAuthenticationException
+	 * 
+	 * @since 2.3.0
 	 */
-	public User authenticate(String username, String password, ContextDAO contextDAO) throws ContextAuthenticationException {
-		if (log.isDebugEnabled()) {
-			log.debug("Authenticating with username: " + username);
+	public Authenticated authenticate(Credentials credentials)
+			throws ContextAuthenticationException {
+
+		log.debug("Authenticating client '" + credentials.getClientName() + "' with sheme: " + credentials.getAuthenticationScheme());
+
+		Authenticated authenticated = null;
+		try {
+			authenticated = authenticationScheme.authenticate(credentials);
+			this.user = authenticated.getUser();
+			notifyUserSessionListener(this.user, Event.LOGIN, Status.SUCCESS);
+		}
+		catch(ContextAuthenticationException e) {
+			User loggingInUser = new User();
+			loggingInUser.setUsername(credentials.getClientName());
+			notifyUserSessionListener(loggingInUser, Event.LOGIN, Status.FAIL);
+			throw e;
 		}
 		
-		this.user = contextDAO.authenticate(username, password);
 		setUserLocation();
-		if (log.isDebugEnabled()) {
-			log.debug("Authenticated as: " + this.user);
-		}
 		
-		return this.user;
+		log.debug("Authenticated as: " + this.user);
+		
+		return authenticated;
 	}
 	
 	/**
@@ -114,9 +137,7 @@ public class UserContext implements Serializable {
 	 * @since 1.5
 	 */
 	public void refreshAuthenticatedUser() {
-		if (log.isDebugEnabled()) {
-			log.debug("Refreshing authenticated user");
-		}
+		log.debug("Refreshing authenticated user");
 		
 		if (user != null) {
 			user = Context.getUserService().getUser(user.getUserId());
@@ -138,9 +159,7 @@ public class UserContext implements Serializable {
 			throw new APIAuthenticationException("You must be a superuser to assume another user's identity");
 		}
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Turning the authenticated user into user with systemId: " + systemId);
-		}
+		log.debug("Turning the authenticated user into user with systemId: {}", systemId);
 		
 		User userToBecome = Context.getUserService().getUserByUsername(systemId);
 		
@@ -163,9 +182,7 @@ public class UserContext implements Serializable {
 		//update the user's location
 		setUserLocation();
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Becoming user: " + user);
-		}
+		log.debug("Becoming user: {}", user);
 		
 		return userToBecome;
 	}
@@ -191,6 +208,7 @@ public class UserContext implements Serializable {
 	 */
 	public void logout() {
 		log.debug("setting user to null on logout");
+		notifyUserSessionListener(user, Event.LOGOUT, Status.SUCCESS);
 		user = null;
 	}
 	
@@ -211,9 +229,7 @@ public class UserContext implements Serializable {
 	 * @param privilege to give to users
 	 */
 	public void addProxyPrivilege(String privilege) {
-		if (log.isDebugEnabled()) {
-			log.debug("Adding proxy privilege: " + privilege);
-		}
+		log.debug("Adding proxy privilege: {}", privilege);
 		
 		proxies.add(privilege);
 	}
@@ -224,13 +240,8 @@ public class UserContext implements Serializable {
 	 * @param privilege Privilege to remove in string form
 	 */
 	public void removeProxyPrivilege(String privilege) {
-		if (log.isDebugEnabled()) {
-			log.debug("Removing proxy privilege: " + privilege);
-		}
-		
-		if (proxies.contains(privilege)) {
-			proxies.remove(privilege);
-		}
+		log.debug("Removing proxy privilege: {}", privilege);
+		proxies.remove(privilege);
 	}
 	
 	/**
@@ -268,10 +279,10 @@ public class UserContext implements Serializable {
 	 *
 	 * @param user
 	 * @return all expanded roles for a user
-	 * @should not fail with null user
-	 * @should add anonymous role to all users
-	 * @should add authenticated role to all authenticated users
-	 * @should return same roles as user getAllRoles method
+	 * <strong>Should</strong> not fail with null user
+	 * <strong>Should</strong> add anonymous role to all users
+	 * <strong>Should</strong> add authenticated role to all authenticated users
+	 * <strong>Should</strong> return same roles as user getAllRoles method
 	 */
 	public Set<Role> getAllRoles(User user) throws Exception {
 		Set<Role> roles = new HashSet<>();
@@ -293,14 +304,14 @@ public class UserContext implements Serializable {
 	 *
 	 * @param privilege
 	 * @return true if authenticated user has given privilege
-	 * @should authorize if authenticated user has specified privilege
-	 * @should authorize if authenticated role has specified privilege
-	 * @should authorize if proxied user has specified privilege
-	 * @should authorize if anonymous user has specified privilege
-	 * @should not authorize if authenticated user does not have specified privilege
-	 * @should not authorize if authenticated role does not have specified privilege
-	 * @should not authorize if proxied user does not have specified privilege
-	 * @should not authorize if anonymous user does not have specified privilege
+	 * <strong>Should</strong> authorize if authenticated user has specified privilege
+	 * <strong>Should</strong> authorize if authenticated role has specified privilege
+	 * <strong>Should</strong> authorize if proxied user has specified privilege
+	 * <strong>Should</strong> authorize if anonymous user has specified privilege
+	 * <strong>Should</strong> not authorize if authenticated user does not have specified privilege
+	 * <strong>Should</strong> not authorize if authenticated role does not have specified privilege
+	 * <strong>Should</strong> not authorize if proxied user does not have specified privilege
+	 * <strong>Should</strong> not authorize if anonymous user does not have specified privilege
 	 */
 	public boolean hasPrivilege(String privilege) {
 		
@@ -309,30 +320,28 @@ public class UserContext implements Serializable {
 		        && (getAuthenticatedUser().hasPrivilege(privilege) || getAuthenticatedRole().hasPrivilege(privilege))) {
 			
 			// check user's privileges
-			Context.getUserService().notifyPrivilegeListeners(getAuthenticatedUser(), privilege, true);
+			notifyPrivilegeListeners(getAuthenticatedUser(), privilege, true);
 			return true;
 			
 		}
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Checking '" + privilege + "' against proxies: " + proxies);
-		}
+		log.debug("Checking '{}' against proxies: {}", privilege, proxies);
 		
 		// check proxied privileges
 		for (String s : proxies) {
 			if (s.equals(privilege)) {
-				Context.getUserService().notifyPrivilegeListeners(getAuthenticatedUser(), privilege, true);
+				notifyPrivilegeListeners(getAuthenticatedUser(), privilege, true);
 				return true;
 			}
 		}
 		
 		if (getAnonymousRole().hasPrivilege(privilege)) {
-			Context.getUserService().notifyPrivilegeListeners(getAuthenticatedUser(), privilege, true);
+			notifyPrivilegeListeners(getAuthenticatedUser(), privilege, true);
 			return true;
 		}
 		
 		// default return value
-		Context.getUserService().notifyPrivilegeListeners(getAuthenticatedUser(), privilege, false);
+		notifyPrivilegeListeners(getAuthenticatedUser(), privilege, false);
 		return false;
 	}
 	
@@ -340,7 +349,7 @@ public class UserContext implements Serializable {
 	 * Convenience method to get the Role in the system designed to be given to all users
 	 *
 	 * @return Role
-	 * @should fail if database doesn't contain anonymous role
+	 * <strong>Should</strong> fail if database doesn't contain anonymous role
 	 */
 	private Role getAnonymousRole() {
 		if (anonymousRole != null) {
@@ -360,7 +369,7 @@ public class UserContext implements Serializable {
 	 * authenticated in some manner
 	 *
 	 * @return Role
-	 * @should fail if database doesn't contain authenticated role
+	 * <strong>Should</strong> fail if database doesn't contain authenticated role
 	 */
 	private Role getAuthenticatedRole() {
 		if (authenticatedRole != null) {
@@ -443,4 +452,33 @@ public class UserContext implements Serializable {
 			}
 		}
 	}
+	
+	/**
+	 * Notifies privilege listener beans about any privilege check.
+     * <p>
+     * It is called by {@link UserContext#hasPrivilege(java.lang.String)}.
+     * 
+     * @see PrivilegeListener
+     * @param user the authenticated user or <code>null</code> if not authenticated
+     * @param privilege the checked privilege
+     * @param hasPrivilege <code>true</code> if the authenticated user has the required privilege or
+	 *            if it is a proxy privilege
+     * @since 1.8.4, 1.9.1, 1.10
+     */
+	private void notifyPrivilegeListeners(User user, String privilege, boolean hasPrivilege) {
+	    for (PrivilegeListener privilegeListener : Context.getRegisteredComponents(PrivilegeListener.class)) {
+		    try {
+			    privilegeListener.privilegeChecked(user, privilege, hasPrivilege);
+		    }
+		    catch (Exception e) {
+			    log.error("Privilege listener has failed", e);
+		    }
+	    }
+    }
+	
+    private void notifyUserSessionListener(User user, Event event, Status status) {
+	    for(UserSessionListener userSessionListener : Context.getRegisteredComponents(UserSessionListener.class)) {
+		    userSessionListener.loggedInOrOut(user, event, status);
+	    }
+    }
 }

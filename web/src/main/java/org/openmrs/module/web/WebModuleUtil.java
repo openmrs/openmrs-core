@@ -17,13 +17,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
@@ -85,16 +85,16 @@ public class WebModuleUtil {
 	private static StaticDispatcherServlet staticDispatcherServlet = null;
 	
 	// caches all of the modules' mapped servlets
-	private static Map<String, HttpServlet> moduleServlets = Collections.synchronizedMap(new HashMap<String, HttpServlet>());
+	private static Map<String, HttpServlet> moduleServlets = Collections.synchronizedMap(new HashMap<>());
 	
 	// caches all of the module loaded filters and filter-mappings
 	private static Map<Module, Collection<Filter>> moduleFilters = Collections
-	        .synchronizedMap(new HashMap<Module, Collection<Filter>>());
+	        .synchronizedMap(new HashMap<>());
 	
-	private static Map<String, Filter> moduleFiltersByName = Collections.synchronizedMap(new HashMap<String, Filter>());
+	private static Map<String, Filter> moduleFiltersByName = Collections.synchronizedMap(new HashMap<>());
 	
 	private static List<ModuleFilterMapping> moduleFilterMappings = Collections
-	        .synchronizedList(new Vector<ModuleFilterMapping>());
+	        .synchronizedList(new Vector<>());
 	
 	/**
 	 * Performs the webapp specific startup needs for modules Normal startup is done in
@@ -114,9 +114,7 @@ public class WebModuleUtil {
 	 */
 	public static boolean startModule(Module mod, ServletContext servletContext, boolean delayContextRefresh) {
 		
-		if (log.isDebugEnabled()) {
-			log.debug("trying to start module " + mod);
-		}
+		log.debug("trying to start module {}", mod);
 		
 		// only try and start this module if the api started it without a
 		// problem.
@@ -170,9 +168,7 @@ public class WebModuleUtil {
 						// if a module id has a . in it, we should treat that as a /, i.e. files in the module
 						// ui.springmvc should go in folder names like .../ui/springmvc/...
 						absPath.append(mod.getModuleIdAsPath()).append("/").append(filepath);
-						if (log.isDebugEnabled()) {
-							log.debug("Moving file from: " + name + " to " + absPath);
-						}
+						log.debug("Moving file from: {} to {}", name, absPath);
 						
 						// get the output file
 						File outFile = new File(absPath.toString().replace("/", File.separator));
@@ -304,9 +300,7 @@ public class WebModuleUtil {
 			// refresh the spring web context to get the just-created xml
 			// files into it (if we copied an xml file)
 			if (moduleNeedsContextRefresh && !delayContextRefresh) {
-				if (log.isDebugEnabled()) {
-					log.debug("Refreshing context for module" + mod);
-				}
+				log.debug("Refreshing context for module {}", mod);
 				
 				try {
 					refreshWAC(servletContext, false, mod);
@@ -388,10 +382,10 @@ public class WebModuleUtil {
 	 * @param modulePackageName the package name of module
 	 * @param taskClass the class of given task
 	 * @return true if task and module are in the same package
-	 * @should return false for different package names
-	 * @should return false if module has longer package name
-	 * @should properly match subpackages
-	 * @should return false for empty package names
+	 * <strong>Should</strong> return false for different package names
+	 * <strong>Should</strong> return false if module has longer package name
+	 * <strong>Should</strong> properly match subpackages
+	 * <strong>Should</strong> return false for empty package names
 	 */
 	public static boolean isModulePackageNameInTaskClass(String modulePackageName, String taskClass) {
 		return modulePackageName.length() <= taskClass.length()
@@ -657,12 +651,10 @@ public class WebModuleUtil {
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
-			db.setEntityResolver((publicId, systemId) -> {
-				// When asked to resolve external entities (such as a DTD) we return an InputSource
-				// with no data at the end, causing the parser to ignore the DTD.
-				return new InputSource(new StringReader(""));
-			});
-			
+
+			// When asked to resolve external entities (such as a DTD) we return an InputSource
+			// with no data at the end, causing the parser to ignore the DTD.
+			db.setEntityResolver((publicId, systemId) -> new InputSource(new StringReader("")));
 			dwrmodulexml = db.parse(inputStream);
 		}
 		catch (Exception e) {
@@ -832,9 +824,7 @@ public class WebModuleUtil {
 	        Module startedModule) {
 		XmlWebApplicationContext wac = (XmlWebApplicationContext) WebApplicationContextUtils
 		        .getWebApplicationContext(servletContext);
-		if (log.isDebugEnabled()) {
-			log.debug("Refreshing web application Context of class: " + wac.getClass().getName());
-		}
+		log.debug("Refreshing web application Context of class: {}", wac.getClass().getName());
 		
 		if (dispatcherServlet != null) {
 			dispatcherServlet.stopAndCloseApplicationContext();
@@ -901,9 +891,9 @@ public class WebModuleUtil {
 	 *
 	 * @param moduleId module id (e.g., "basicmodule")
 	 * @return a path to a folder that stores web files or null if not in a web environment
-	 * @should return the correct module folder
-	 * @should return null if the dispatcher servlet is not yet set
-	 * @should return the correct module folder if real path has a trailing slash
+	 * <strong>Should</strong> return the correct module folder
+	 * <strong>Should</strong> return null if the dispatcher servlet is not yet set
+	 * <strong>Should</strong> return the correct module folder if real path has a trailing slash
 	 */
 	public static String getModuleWebFolder(String moduleId) {
 		if (dispatcherServlet == null) {

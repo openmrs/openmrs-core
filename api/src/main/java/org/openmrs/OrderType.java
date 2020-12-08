@@ -151,7 +151,7 @@ public class OrderType extends BaseChangeableOpenmrsMetadata {
 	 * @return The Java class as {@link java.lang.Class}
 	 * @throws APIException
 	 */
-	public Class getJavaClass() throws APIException {
+	public Class getJavaClass() {
 		try {
 			return Context.loadClass(javaClassName);
 		}
@@ -165,8 +165,8 @@ public class OrderType extends BaseChangeableOpenmrsMetadata {
 	 * Convenience method that adds the specified concept class
 	 * 
 	 * @param conceptClass the ConceptClass to add
-	 * @should add the specified concept class
-	 * @should not add a duplicate concept class
+	 * <strong>Should</strong> add the specified concept class
+	 * <strong>Should</strong> not add a duplicate concept class
 	 */
 	public void addConceptClass(ConceptClass conceptClass) {
 		getConceptClasses().add(conceptClass);

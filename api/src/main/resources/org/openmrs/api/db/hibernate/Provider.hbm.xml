@@ -20,7 +20,9 @@
 
 		<id name="providerId" type="java.lang.Integer" column="provider_id"
 			unsaved-value="0">
-			<generator class="native" />
+			<generator class="native">
+				<param name="sequence">provider_provider_id_seq</param>
+			</generator>
 		</id>
 
 		<discriminator column="provider_id" insert="false" />
@@ -33,6 +35,10 @@
 		<property name="identifier" type="java.lang.String" length="255" />
 
 		<many-to-one name="creator" class="User" not-null="true" column="creator" />
+
+		<many-to-one name="role" class="Concept" column="role_id" />
+
+		<many-to-one name="speciality" class="Concept" column="speciality_id" />
 
 		<property name="dateCreated" type="java.util.Date" column="date_created"
 			not-null="true" length="19" />

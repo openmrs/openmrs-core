@@ -15,26 +15,54 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Represent allergy
  */
+@Entity
+@Table(name = "allergy")
 public class Allergy extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 1;
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "allergy_id")
 	private Integer allergyId;
 	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "patient_id")
 	private Patient patient;
 	
+	@Embedded
 	private Allergen allergen;
 	
+	@ManyToOne
+	@JoinColumn(name = "severity_concept_id")
 	private Concept severity;
 	
-	private String comment;
+	@Column(name = "comments", length = 1024)
+	private String comments;
 	
+
+	@OneToMany(mappedBy = "allergy", cascade = CascadeType.ALL, orphanRemoval = true)
+	@LazyCollection(LazyCollectionOption.FALSE)
 	private List<AllergyReaction> reactions = new ArrayList<>();
 	
 	/**
@@ -44,17 +72,17 @@ public class Allergy extends BaseChangeableOpenmrsData {
 	}
 	
 	/**
-	 * @param patient the patient to set
+	 * @param patient the patient to set.
 	 * @param allergen the allergen to set
 	 * @param severity the severity to set
-	 * @param comment the comment to set
+	 * @param comments the comment to set
 	 * @param reactions the reactions to set
 	 */
-	public Allergy(Patient patient, Allergen allergen, Concept severity, String comment, List<AllergyReaction> reactions) {
+	public Allergy(Patient patient, Allergen allergen, Concept severity, String comments, List<AllergyReaction> reactions) {
 		this.patient = patient;
 		this.allergen = allergen;
 		this.severity = severity;
-		this.comment = comment;
+		this.comments = comments;
 		
 		//we do not allow to be in a state where reactions is null
 		if (reactions != null) {
@@ -115,14 +143,14 @@ public class Allergy extends BaseChangeableOpenmrsData {
 	
 	/**
 	 * set the allergyType of the Allergy
-	 * @param allergyType the allergyType to set
+	 * @param allergenType the allergyType to set
 	 */
 	public void setAllergenType(AllergenType allergenType) {
 		this.allergen.setAllergenType(allergenType);
 	}
 	
 	/**
-	 * set the allergyType of the Allergy. Here the allergy type will be chosen from the enum values in the {@link AllergyType}, according to the given String type. 
+	 * set the allergyType of the Allergy. Here the allergy type will be chosen from the enum values in the {@link AllergenType}, according to the given String type. 
 	 * @param type the allergyType to set   
 	 */
 	public void setAllergenType(String type) {
@@ -158,16 +186,36 @@ public class Allergy extends BaseChangeableOpenmrsData {
 	
 	/**
 	 * @return Returns the comment
+	 * @deprecated as of 2.3.0, replaced by {@link #getComments()}
 	 */
+	@Deprecated
 	public String getComment() {
-		return comment;
+		return getComments();
 	}
 	
 	/**
 	 * @param comment the comment to set
+	 * @deprecated as of 2.3.0, replaced by {@link #setComments(String)}
 	 */
+	@Deprecated
 	public void setComment(String comment) {
-		this.comment = comment;
+		setComments(comment);
+	}
+	
+	/**
+	 * @return Returns the comments
+	 * @since 2.3.0
+	 */
+	public String getComments() {
+		return comments;
+	}
+	
+	/**
+	 * @param comments the comments to set
+	 * @since 2.3.0
+	 */
+	public void setComments(String comments) {
+		this.comments = comments;
 	}
 	/**
 	 * @return Returns the reactions
@@ -317,7 +365,7 @@ public class Allergy extends BaseChangeableOpenmrsData {
 	 * @throws InvocationTargetException
 	 * @throws IllegalAccessException
 	 */
-	public void copy(Allergy allergy) throws InvocationTargetException, IllegalAccessException {
+	public void copy(Allergy allergy) {
 		setAllergyId(null);
 		setUuid(UUID.randomUUID().toString());
 		setPatient(allergy.getPatient());

@@ -10,63 +10,61 @@
 package org.openmrs.web.filter.startuperror;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.web.Listener;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.test.util.ReflectionTestUtils;
 
 /**
  * Tests {@link StartupErrorFilter}.
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(Listener.class)
 public class StartupErrorFilterTest {
+
+	private StartupErrorFilter filter;
 	
-	@Before
+	@BeforeEach
 	public void setUp() {
-		mockStatic(Listener.class);
+		filter = new StartupErrorFilter();
+	}
+	
+	@AfterEach
+	public void reverterrorAtStartup() { 
+		Throwable errorAtStartup = null;
+		ReflectionTestUtils.setField(Listener.class, "errorAtStartup", errorAtStartup);
 	}
 	
 	@Test
 	public void getModel_shouldReturnAStartupErrorFilterModelContainingTheStartupError() {
 		
-		Throwable t = mock(Throwable.class);
-		when(Listener.getErrorAtStartup()).thenReturn(t);
+		Exception e = new Exception();
+		ReflectionTestUtils.setField(Listener.class, "errorAtStartup", e);
 		
-		StartupErrorFilter filter = new StartupErrorFilter();
 		
-		StartupErrorFilterModel model = filter.getModel();
+		StartupErrorFilterModel model = filter.getUpdateFilterModel();
 		
-		assertThat(model.errorAtStartup, is(t));
+		assertThat(model.errorAtStartup, is(e));
 	}
 	
 	@Test
 	public void skipFilter_shouldReturnTrueIfNoErrorHasOccuredOnStartup() {
 		
-		when(Listener.errorOccurredAtStartup()).thenReturn(false);
 		
-		StartupErrorFilter filter = new StartupErrorFilter();
 		
-		assertTrue("should be true on start without error", filter.skipFilter(new MockHttpServletRequest()));
+		assertTrue(filter.skipFilter(new MockHttpServletRequest()), "should be true on start without error");
 	}
 	
 	@Test
 	public void skipFilter_shouldReturnFalseIfAnErrorHasOccuredOnStartup() {
+		Exception e = new Exception();
+		ReflectionTestUtils.setField(Listener.class, "errorAtStartup", e);
 		
-		when(Listener.errorOccurredAtStartup()).thenReturn(true);
 		
-		StartupErrorFilter filter = new StartupErrorFilter();
-		
-		assertFalse("should be false on start with error", filter.skipFilter(new MockHttpServletRequest()));
+		assertFalse(filter.skipFilter(new MockHttpServletRequest()), "should be false on start with error");
 	}
 }

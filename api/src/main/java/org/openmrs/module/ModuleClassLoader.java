@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ModuleClassLoader extends URLClassLoader {
 	
-	static Logger log = LoggerFactory.getLogger(ModuleClassLoader.class);
+	private static final Logger log = LoggerFactory.getLogger(ModuleClassLoader.class);
 	
 	private final Module module;
 	
@@ -89,9 +89,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			throw new IllegalArgumentException("Parent must not be ModuleClassLoader");
 		}
 		
-		if (log.isDebugEnabled()){
-			log.debug("URLs length: " + urls.size());
-		}
+		log.debug("URLs length: {}", urls.size());
 		this.module = module;
 		requiredModules = collectRequiredModuleImports(module);
 		awareOfModules = collectAwareOfModuleImports(module);
@@ -276,9 +274,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		
 		// add each defined jar in the /lib folder, add as a url in the classpath of the classloader
 		try {
-			if (log.isDebugEnabled()) {
-				log.debug("Expanding /lib folder in module");
-			}
+			log.debug("Expanding /lib folder in module");
 			
 			ModuleUtil.expandJar(module.getFile(), tmpModuleDir, "lib", true);
 			File libdir = new File(tmpModuleDir, "lib");
@@ -293,7 +289,7 @@ public class ModuleClassLoader extends URLClassLoader {
 				}
 				
 				// recursively get files
-				Collection<File> files = (Collection<File>) FileUtils.listFiles(libdir, new String[] { "jar" }, true);
+				Collection<File> files = FileUtils.listFiles(libdir, new String[] { "jar" }, true);
 				for (File file : files) {
 					
 					//if in dev mode, do not put the module source jar files in the class path
@@ -319,14 +315,10 @@ public class ModuleClassLoader extends URLClassLoader {
 					    startedRelatedModules);
 					
 					if (include) {
-						if (log.isDebugEnabled()) {
-							log.debug("Including file in classpath: " + fileUrl);
-						}
+						log.debug("Including file in classpath: {}", fileUrl);
 						result.add(fileUrl);
 					} else {
-						if (log.isDebugEnabled()) {
-							log.debug("Excluding file from classpath: " + fileUrl);
-						}
+						log.debug("Excluding file from classpath: {}", fileUrl);
 					}
 				}
 			}
@@ -352,33 +344,37 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * @param module
 	 * @param fileUrl
 	 * @return true if it should be included
-	 * @should return true if file matches and openmrs version matches
-	 * @should return false if file matches but openmrs version does not
-	 * @should return true if file does not match and openmrs version does not match
-	 * @should return true if file matches and module version matches
-	 * @should return false if file matches and module version does not match
-	 * @should return false if file matches and openmrs version matches but module version does not 
+	 * <strong>Should</strong> return true if file matches and openmrs version matches
+	 * <strong>Should</strong> return false if file matches but openmrs version does not
+	 * <strong>Should</strong> return true if file does not match and openmrs version does not match
+	 * <strong>Should</strong> return true if file matches and module version matches
+	 * <strong>Should</strong> return false if file matches and module version does not match
+	 * <strong>Should</strong> return false if file matches and openmrs version matches but module version does not 
 	 * 		   match
-	 * @should return false if file matches and module not found
-	 * @should return true if file does not match and module version does not match
+	 * <strong>Should</strong> return false if file matches and module not found
+	 * <strong>Should</strong> return true if file does not match and module version does not match
 	 */
 	static boolean shouldResourceBeIncluded(Module module, URL fileUrl, String openmrsVersion,
 	        Map<String, String> startedRelatedModules) {
-		boolean include = true; //all resources are included by default
+		//all resources are included by default
+		boolean include = true;
 		
 		for (ModuleConditionalResource conditionalResource : module.getConditionalResources()) {
 			if (fileUrl.getPath().matches(".*" + conditionalResource.getPath() + "$")) {
-				include = false; //if a resource matches a path of contidionalResource then it must meet all conditions
-				
-				if (StringUtils.isNotBlank(conditionalResource.getOpenmrsPlatformVersion())) { //openmrsPlatformVersion is optional
+				//if a resource matches a path of contidionalResource then it must meet all conditions
+				include = false;
+
+				//openmrsPlatformVersion is optional
+				if (StringUtils.isNotBlank(conditionalResource.getOpenmrsPlatformVersion())) {
 					include = ModuleUtil.matchRequiredVersions(openmrsVersion, conditionalResource.getOpenmrsPlatformVersion());
 					
 					if (!include) {
 						return false;
 					}
 				}
-				
-				if (conditionalResource.getModules() != null) { //modules are optional
+
+				//modules are optional
+				if (conditionalResource.getModules() != null) {
 					for (ModuleConditionalResource.ModuleAndVersion conditionalModuleResource : conditionalResource
 					        .getModules()) {
 						if ("!".equals(conditionalModuleResource.getVersion())) {
@@ -451,7 +447,8 @@ public class ModuleClassLoader extends URLClassLoader {
 	 */
 	protected static Module[] collectRequiredModuleImports(Module module) {
 		// collect imported modules (exclude duplicates)
-		Map<String, Module> publicImportsMap = new WeakHashMap<>(); //<module ID, Module>
+		//<module ID, Module>
+		Map<String, Module> publicImportsMap = new WeakHashMap<>();
 		
 		for (String moduleId : ModuleConstants.CORE_MODULES.keySet()) {
 			Module coreModule = ModuleFactory.getModuleById(moduleId);
@@ -483,7 +480,8 @@ public class ModuleClassLoader extends URLClassLoader {
 	 */
 	protected static Module[] collectAwareOfModuleImports(Module module) {
 		// collect imported modules (exclude duplicates)
-		Map<String, Module> publicImportsMap = new WeakHashMap<>(); //<module ID, Module>
+		//<module ID, Module>
+		Map<String, Module> publicImportsMap = new WeakHashMap<>();
 		
 		for (String awareOfPackage : module.getAwareOfModules()) {
 			Module awareOfModule = ModuleFactory.getModuleByPackage(awareOfPackage);
@@ -523,9 +521,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * @see org.openmrs.module.ModuleFactory#stopModule(Module, boolean)
 	 */
 	public void dispose() {
-		if (log.isDebugEnabled())
-			log.debug("Disposing of ModuleClassLoader: " + this);
-
+		log.debug("Disposing of ModuleClassLoader: {}", this);
 		for (File file : libraryCache.values()) {
 			file.delete();
 		}
@@ -708,7 +704,8 @@ public class ModuleClassLoader extends URLClassLoader {
 		URL lib = getClassBaseUrl(cls);
 
 		if (lib == null) {
-			return; // cls is a system class
+			// cls is a system class
+			return;
 		}
 
 		ClassLoader loader = cls.getClassLoader();
@@ -815,10 +812,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			// save a link to the cached file
 			libraryCache.put(libUri, result);
 			
-			if (log.isDebugEnabled()) {
-				log.debug("library " + libname + " successfully cached from URL " + libUrl + " and saved to local file "
-				        + result);
-			}
+			log.debug("library {} successfully cached from URL {} and saved to local file {}", libname, libUrl, result);
 			
 		}
 		catch (IOException ioe) {
@@ -884,7 +878,8 @@ public class ModuleClassLoader extends URLClassLoader {
 		}
 		
 		URL result = super.findResource(name);
-		if (result != null) { // found resource in this module class path
+		// found resource in this module class path
+		if (result != null) {
 			if (isResourceVisible(name, result, requestor)) {
 				return result;
 			}
@@ -900,9 +895,9 @@ public class ModuleClassLoader extends URLClassLoader {
 		
 		if (requiredModules != null) {
 			for (Module publicImport : requiredModules) {
-				if (seenModules.contains(publicImport.getModuleId()))
+				if (seenModules.contains(publicImport.getModuleId())) {
 					continue;
-				
+				}
 				ModuleClassLoader mcl = ModuleFactory.getModuleClassLoader(publicImport);
 				
 				if (mcl != null) {
@@ -910,7 +905,8 @@ public class ModuleClassLoader extends URLClassLoader {
 				}
 				
 				if (result != null) {
-					return result; // found resource in required module
+					// found resource in required module
+					return result;
 				}
 			}
 		}
@@ -928,7 +924,8 @@ public class ModuleClassLoader extends URLClassLoader {
 			}
 
 			if (result != null) {
-				return result; // found resource in aware of module
+				// found resource in aware of module
+				return result;
 			}
 		}
 		

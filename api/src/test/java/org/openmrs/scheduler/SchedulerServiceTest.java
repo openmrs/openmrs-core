@@ -9,33 +9,34 @@
  */
 package org.openmrs.scheduler;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.tasks.AbstractTask;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsClassLoader;
 
 /**
  * TODO test all methods in SchedulerService
  */
-@Ignore("https://issues.openmrs.org/browse/TRUNK-4212")
+@Disabled("https://issues.openmrs.org/browse/TRUNK-4212")
 public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	
 	// so that we can guarantee tests running accurately instead of tests interfering with the next
@@ -53,13 +54,13 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	
 	private static final Logger log = LogManager.getLogger(SchedulerServiceTest.class);
 	
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		// Temporary logger level changes to debug TRUNK-4212
-		LogManager.getLogger("org.hibernate.SQL").setLevel(Level.DEBUG);
-		LogManager.getLogger("org.hibernate.type").setLevel(Level.TRACE);
-		LogManager.getLogger("org.openmrs.api").setLevel(Level.DEBUG);
-		LogManager.getLogger("org.openmrs.scheduler").setLevel(Level.DEBUG);
+		((org.apache.logging.log4j.core.Logger) LogManager.getLogger("org.hibernate.SQL")).setLevel(Level.DEBUG);
+		((org.apache.logging.log4j.core.Logger) LogManager.getLogger("org.hibernate.type")).setLevel(Level.TRACE);
+		((org.apache.logging.log4j.core.Logger) LogManager.getLogger("org.openmrs.api")).setLevel(Level.DEBUG);
+		((org.apache.logging.log4j.core.Logger) LogManager.getLogger("org.openmrs.scheduler")).setLevel(Level.DEBUG);
 		log.debug("SchedulerServiceTest setup() start");
 		Context.flushSession();
 		
@@ -73,13 +74,13 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		log.debug("SchedulerServiceTest setup() complete");
 	}
 	
-	@After
+	@AfterEach
 	public void cleanUp() throws Exception {
 		// Temporary logger level changes to debug TRUNK-4212
-		LogManager.getLogger("org.hibernate.SQL").setLevel(Level.WARN);
-		LogManager.getLogger("org.hibernate.type").setLevel(Level.WARN);
-		LogManager.getLogger("org.openmrs.api").setLevel(Level.WARN);
-		LogManager.getLogger("org.openmrs.scheduler").setLevel(Level.WARN);
+		((org.apache.logging.log4j.core.Logger) LogManager.getLogger("org.hibernate.SQL")).setLevel(Level.WARN);
+		((org.apache.logging.log4j.core.Logger) LogManager.getLogger("org.hibernate.type")).setLevel(Level.WARN);
+		((org.apache.logging.log4j.core.Logger) LogManager.getLogger("org.openmrs.api")).setLevel(Level.WARN);
+		((org.apache.logging.log4j.core.Logger) LogManager.getLogger("org.openmrs.scheduler")).setLevel(Level.WARN);
 	}
 	
 	@Test
@@ -88,20 +89,16 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		Class<?> c = OpenmrsClassLoader.getInstance().loadClass(className);
 		Object o = c.newInstance();
 		if (o instanceof Task)
-			assertTrue("Class " + className + " is a valid Task", true);
+			assertTrue(true, "Class " + className + " is a valid Task");
 		else
 			fail("Class " + className + " is not a valid Task");
 	}
 	
-	@Test(expected = ClassNotFoundException.class)
-	public void shouldNotResolveInvalidClass() throws Exception {
-		String className = "org.openmrs.scheduler.tasks.InvalidTask";
-		Class<?> c = OpenmrsClassLoader.getInstance().loadClass(className);
-		Object o = c.newInstance();
-		if (o instanceof Task)
-			fail("Class " + className + " is not supposed to be a valid Task");
-		else
-			assertTrue("Class " + className + " is not a valid Task", true);
+	@Test
+	public void shouldNotResolveInvalidClass() {
+		
+		assertThrows(ClassNotFoundException.class,
+			() -> OpenmrsClassLoader.getInstance().loadClass("org.openmrs.scheduler.tasks.InvalidTask"));
 	}
 	
 	private TaskDefinition makeRepeatingTaskThatStartsImmediately(String taskClassName) {
@@ -152,11 +149,10 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 			schedulerService.scheduleTask(t2);
 			
 			// wait for the tasks to call countDown()
-			assertTrue("methods ran consecutively or not at all", latch
-			        .await(CONCURRENT_TASK_WAIT_MS, TimeUnit.MILLISECONDS));
+			assertTrue(latch.await(CONCURRENT_TASK_WAIT_MS, TimeUnit.MILLISECONDS), "methods ran consecutively or not at all");
 			// the main await() didn't fail so both tasks ran and called countDown(), 
 			// but if the first await() failed and the latch still reached 0 then the tasks must have been running consecutively 
-			assertTrue("methods ran consecutively", !awaitFailed.get());
+			assertTrue(!awaitFailed.get(), "methods ran consecutively");
 		}
 		schedulerService.shutdownTask(t1);
 		schedulerService.shutdownTask(t2);
@@ -262,9 +258,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 			consecutiveInitResult.set(false);
 			schedulerService.saveTaskDefinition(t5);
 			schedulerService.scheduleTask(t5);
-			assertTrue("Init and execute methods should run consecutively", latch.await(CONCURRENT_TASK_WAIT_MS,
-			    TimeUnit.MILLISECONDS)
-			        && consecutiveInitResult.get());
+			assertTrue(latch.await(CONCURRENT_TASK_WAIT_MS, TimeUnit.MILLISECONDS) && consecutiveInitResult.get(), "Init and execute methods should run consecutively");
 		}
 		schedulerService.shutdownTask(t5);
 	}
@@ -292,11 +286,11 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 			for (TaskDefinition task : tasks) {
 				log.debug("Task dump 2:" + task);
 			}
-			Assert.assertEquals(size + 1, tasks.size());
+			assertEquals(size + 1, tasks.size());
 		}
 		
 		def = service.getTaskByName(TASK_NAME);
-		Assert.assertEquals(Context.getAuthenticatedUser().getUserId(), def.getCreator().getUserId());
+		assertEquals(Context.getAuthenticatedUser().getUserId(), def.getCreator().getUserId());
 		log.debug("saveTask_shouldSaveTaskToTheDatabase end");
 	}
 	
@@ -391,7 +385,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 			service.scheduleTask(td);
 			
 			// wait for the task to execute
-			assertTrue("task didn't execute", latch.await(CONCURRENT_TASK_WAIT_MS, TimeUnit.MILLISECONDS));
+			assertTrue(latch.await(CONCURRENT_TASK_WAIT_MS, TimeUnit.MILLISECONDS), "task didn't execute");
 		}
 		
 		log.debug("shouldSaveLastExecutionTime task done");
@@ -406,11 +400,26 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 			}
 			Thread.sleep(200);
 		}
-		assertNotNull(
-		    "actualExecutionTime is null, so either the SessionTask.execute method hasn't finished or didn't get run",
-		    actualExecutionTime);
-		assertNotNull("lastExecutionTime is null, so the SchedulerService didn't save it", td.getLastExecutionTime());
-		assertEquals("Last execution time in seconds is wrong", actualExecutionTime / 1000, td.getLastExecutionTime()
-		        .getTime() / 1000, 1);
+		assertNotNull(actualExecutionTime, "actualExecutionTime is null, so either the SessionTask.execute method hasn't finished or didn't get run");
+		assertNotNull(td.getLastExecutionTime(), "lastExecutionTime is null, so the SchedulerService didn't save it");
+		assertEquals(1, td.getLastExecutionTime().getTime() / 1000, actualExecutionTime / 1000, "Last execution time in seconds is wrong");
+	}
+
+	/**
+	 * @see org.openmrs.scheduler.SchedulerService#getTaskByUuid(java.lang.String)
+	 */
+	@Test
+	public void getTaskByUuid_shouldGetTaskByUuid() throws Exception {
+		TaskDefinition td = Context.getSchedulerService().getTaskByUuid("1365a6da-6493-4e9b-b950-5af1b392aaa3");
+		assertNotNull(td);
+	}
+
+	/**
+	 * @see org.openmrs.scheduler.SchedulerService#getTaskByUuid(java.lang.String)
+	 */
+	@Test
+	public void getTaskByUuid_shouldReturnNullWhenUuidDoesNotExist() throws Exception {
+		TaskDefinition td = Context.getSchedulerService().getTaskByUuid("kncsjvcjvbevismcvbsnksndcsjbvjhvbn");
+		assertNull(td);
 	}
 }

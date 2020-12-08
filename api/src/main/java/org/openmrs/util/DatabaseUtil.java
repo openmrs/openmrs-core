@@ -49,7 +49,7 @@ public class DatabaseUtil {
 	 *
 	 * @param connectionUrl the connection url for the database, such as
 	 * "jdbc:mysql://localhost:3306/..."
-	 * @param connectionDriver the database driver class name, such as "com.mysql.jdbc.Driver"
+	 * @param connectionDriver the database driver class name, such as "com.mysql.cj.jdbc.Driver"
 	 * @throws ClassNotFoundException
 	 */
 	public static String loadDatabaseDriver(String connectionUrl, String connectionDriver) throws ClassNotFoundException {
@@ -58,8 +58,8 @@ public class DatabaseUtil {
 			log.debug("set user defined Database driver class: " + connectionDriver);
 		} else {
 			if (connectionUrl.contains("mysql")) {
-				Class.forName("com.mysql.jdbc.Driver");
-				connectionDriver = "com.mysql.jdbc.Driver";
+				Class.forName("com.mysql.cj.jdbc.Driver");
+				connectionDriver = "com.mysql.cj.jdbc.Driver";
 			} else if (connectionUrl.contains("hsqldb")) {
 				Class.forName("org.hsqldb.jdbcDriver");
 				connectionDriver = "org.hsqldb.jdbcDriver";
@@ -92,7 +92,6 @@ public class DatabaseUtil {
 		final String query = sql;
 		final boolean sessionDataManipulation = dataManipulation;
 		
-		//todo replace with lambdas after moving on to Java 8
 		session.doWork(conn -> populateResultsFromSQLQuery(conn, query, sessionDataManipulation, result));
 		
 		return result;

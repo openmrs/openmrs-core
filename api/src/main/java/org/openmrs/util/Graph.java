@@ -81,7 +81,7 @@ public class Graph<T> {
 	
 	/**
 	 * Obtains all nodes without incoming edges 
-	 * @return
+	 * @return set of nodes
 	 */
 	private Set<T> getNodesWithNoIncomingEdges() {
 		Set<T> nodesWithIncomingEdges = new HashSet<>();
@@ -98,7 +98,7 @@ public class Graph<T> {
 	/**
 	 * Determines if a node has incoming edges 
 	 * @param node
-	 * @return
+	 * @return true if the node has an incoming edge, otherwise false
 	 */
 	private boolean hasIncomingEdges(T node) {
 		for (Edge edge : edges) {
@@ -112,7 +112,7 @@ public class Graph<T> {
 	/**
 	 * Obtains the edges starting with a given node 
 	 * @param aNode
-	 * @return
+	 * @return set of edges
 	 */
 	private Set<Edge> getEdgesStartingWith(T aNode) {
 		Set<Edge> edgesPointing = new HashSet<>();
