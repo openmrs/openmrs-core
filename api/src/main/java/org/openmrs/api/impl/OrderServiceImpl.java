@@ -241,10 +241,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			orderType = getOrderTypeByConcept(order.getConcept());
 		}
 		if (orderType == null && order instanceof DrugOrder) {
-			orderType = Context.getOrderService().getOrderTypeByClassName("org.openmrs.DrugOrder");
+			orderType = Context.getOrderService().getOrderTypeByClassName(DrugOrder.class.getTypeName());
 		}
 		if (orderType == null && order instanceof TestOrder) {
-			orderType = Context.getOrderService().getOrderTypeByClassName("org.openmrs.TestOrder");
+			orderType = Context.getOrderService().getOrderTypeByClassName(TestOrder.class.getTypeName());
 
 		}
 		if (orderType == null) {
@@ -284,7 +284,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		        && !OpenmrsUtil.nullSafeEquals(firstOrder.getPreviousOrder(), secondOrder)
 		        && OrderUtil.checkScheduleOverlap(firstOrder, secondOrder)
 		        && firstOrder.getOrderType().equals(
-		            Context.getOrderService().getOrderTypeByClassName("org.openmrs.DrugOrder"));
+		            Context.getOrderService().getOrderTypeByClassName(DrugOrder.class.getTypeName()));
+		
 	}
 
 	private boolean isDrugOrder(Order order) {
