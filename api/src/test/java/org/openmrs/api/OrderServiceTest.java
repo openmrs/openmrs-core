@@ -50,7 +50,6 @@ import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -114,8 +113,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	protected static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
 
 	private static final String ORDER_GROUP_ATTRIBUTES = "org/openmrs/api/include/OrderServiceTest-createOrderGroupAttributes.xml";
-
-	private static final String ORDER_TYPES = "org/openmrs/api/include/OrderServiceTest-getOrderTypes.xml";
+		
 	@Autowired
 	private ConceptService conceptService;
 
@@ -143,7 +141,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@BeforeEach
 	public void setUp(){
 		executeDataSet(ORDER_GROUP_ATTRIBUTES);
-		executeDataSet(ORDER_TYPES);
 	}
 
 	@Entity
@@ -1993,8 +1990,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see OrderService#getOrderTypeByClassName(String) 
 	 */
 	@Test
-	public void getOrderTypeByClassName_shouldFindOrderTypeObjectGivenValidClassName() {
+	public void getOrderTypeByClassName_shouldFindOrderTypeObjectGivenExistingClassName() {
 		assertEquals(orderService.getOrderTypeByUuid("131168f4-15f5-102d-96e4-000c29c2a5d7"), orderService.getOrderTypeByClassName(DrugOrder.class.getTypeName()));
+		assertEquals(orderService.getOrderTypeByUuid("52a447d3-a64a-11e3-9aeb-50e549534c5e"), orderService.getOrderTypeByClassName(TestOrder.class.getTypeName()));
 	}
 	
 
@@ -2019,7 +2017,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getOrderTypes_shouldGetAllOrderTypesIfIncludeRetiredIsSetToTrue() {
-		assertEquals(16, orderService.getOrderTypes(true).size());
+		assertEquals(14, orderService.getOrderTypes(true).size());
 	}
 
 	/**
@@ -2027,7 +2025,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getOrderTypes_shouldGetAllNonRetiredOrderTypesIfIncludeRetiredIsSetToFalse() {
-		assertEquals(13, orderService.getOrderTypes(false).size());
+		assertEquals(11, orderService.getOrderTypes(false).size());
 	}
 
 	/**
