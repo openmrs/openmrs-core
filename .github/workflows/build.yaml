@@ -1,0 +1,49 @@
+# standard build with Maven and push coverage data
+name: Build with Maven
+
+# trigger build on branches that *should* support both Java 8 and Java 11
+on:
+  push:
+    branches:
+      - master
+      - 2.4.x
+      - 2.5.x
+  pull_request:
+    branches:
+      - master
+      - 2.4.x
+      - 2.5.x
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        platform:
+          # Trusty
+          - ubuntu-16.04
+        java-version:
+          - 8
+          - 11
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java-version }}
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Build with Maven
+        run:
+          - mvn clean install --batch-mode --file pom.xml
+          - mvn test -Pskip-default-test -Pintegration-test --batch-mode --file pom.xml
+      # only send coverage data for Java 8
+      - name: Update coverage data
+        if: ${{ matrix.java-version == '8' }}
+        run:
+          - mvn jacoco:report coveralls:report --batch-mode --file pom.xml
