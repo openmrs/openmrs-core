@@ -632,7 +632,7 @@ public interface OrderService extends OpenmrsService {
 	 * Get OrderType by class  name
 	 *
 	 * @param className the class name used to get the order type
-	 * @since 2.4.0
+	 * @since 2.5.0
 	 * @return order type object associated with given class name
 	 * <strong>Should</strong> find order type object given valid class name
 	 * <strong>Should</strong> return null if no order type object found with given class name
