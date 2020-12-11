@@ -100,7 +100,7 @@ public class ConditionServiceImpl extends BaseOpenmrsService implements Conditio
 	 * @return the saved condition
 	 */
 	@Override
-	public Condition saveCondition(Condition condition) {
+	public Condition saveCondition(Condition condition) throws APIException {
 		Condition existingCondition = Context.getConditionService().getConditionByUuid(condition.getUuid());
 		// If there is no existing condition, then we are creating a condition
 		if (existingCondition == null) {
@@ -183,4 +183,3 @@ public class ConditionServiceImpl extends BaseOpenmrsService implements Conditio
 		conditionDAO.deleteCondition(condition);
 	}
 }
-
