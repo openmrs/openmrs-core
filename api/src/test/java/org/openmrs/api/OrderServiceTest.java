@@ -272,7 +272,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void getNewOrderNumber_shouldAlwaysReturnUniqueOrderNumbersWhenCalledMultipleTimesWithoutSavingOrders()
 		throws InterruptedException {
 
-		int N = 50;
+		int N = 49;
 		final Set<String> uniqueOrderNumbers = new HashSet<>(50);
 		List<Thread> threads = new ArrayList<>();
 		for (int i = 0; i < N; i++) {
