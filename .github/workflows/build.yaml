@@ -39,11 +39,25 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Build with Maven
-        run:
-          - mvn clean install --batch-mode --file pom.xml
-          - mvn test -Pskip-default-test -Pintegration-test --batch-mode --file pom.xml
-      # only send coverage data for Java 8
-      - name: Update coverage data
+        run: |
+          mvn clean install --batch-mode --file pom.xml
+          mvn test -Pskip-default-test -Pintegration-test --batch-mode --file pom.xml
+      # this is necessary to populate the environment variables for Coveralls properly
+      - name: Set branch name and PR number
+        id: refs
         if: ${{ matrix.java-version == '8' }}
-        run:
-          - mvn jacoco:report coveralls:report --batch-mode --file pom.xml
+        env:
+          BRANCH_NAME_OR_REF: ${{ github.head_ref || github.ref }}
+        run: |
+          echo "::set-output name=branch_name::${BRANCH_NAME_OR_REF#refs/heads/}"
+          echo "::set-output name=pr_number::$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")"
+      - name: Update coverage data
+        # only send coverage data for Java 8
+        if: ${{ matrix.java-version == '8' }}
+        env:
+          CI_NAME: Github
+          CI_BUILD_NUMBER: ${{ github.run_id }}
+          CI_BUILD_URL: https://github.com/${{ github.repository }}/commit/${{ github.event.after }}/checks
+          CI_BRANCH: ${{ steps.refs.outputs.branch_name }}
+          CI_PULL_REQUEST: ${{ steps.refs.outputs.pr_number }}
+        run: mvn jacoco:report coveralls:report --batch-mode --file pom.xml --no-transfer-progress -DrepoToken=${{ secrets.COVERALLS_TOKEN }}

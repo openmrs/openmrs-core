@@ -40,6 +40,6 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Build with Maven
-        run:
-          - mvn clean install --batch-mode --file pom.xml
-          - mvn test -Pskip-default-test -Pintegration-test --batch-mode --file pom.xml
+        run: |
+          mvn clean install --batch-mode --file pom.xml
+          mvn test -Pskip-default-test -Pintegration-test --batch-mode --file pom.xml
