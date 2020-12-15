@@ -46,6 +46,7 @@ jobs:
       - name: Set branch name and PR number
         id: refs
         if: ${{ matrix.java-version == '8' }}
+        continue-on-error: true
         env:
           BRANCH_NAME_OR_REF: ${{ github.head_ref || github.ref }}
         run: |
@@ -53,7 +54,8 @@ jobs:
           echo "::set-output name=pr_number::$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")"
       - name: Update coverage data
         # only send coverage data for Java 8
-        if: ${{ matrix.java-version == '8' }}
+        if: ${{ matrix.java-version == '8' && steps.refs.outcome == 'success' }}
+        continue-on-error: true
         env:
           CI_NAME: Github
           CI_BUILD_NUMBER: ${{ github.run_id }}
