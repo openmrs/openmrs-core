@@ -7,14 +7,13 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.test;
+package org.openmrs.test.jupiter;
 
-import java.awt.Font;
-import java.awt.Frame;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.Window;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.springframework.test.context.TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS;
+
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -34,14 +33,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-import javax.swing.UIManager;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -65,13 +56,12 @@ import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.H2Dialect;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assume;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmrs.ConceptName;
 import org.openmrs.Drug;
 import org.openmrs.PatientIdentifier;
@@ -85,16 +75,21 @@ import org.openmrs.api.context.ContextMockHelper;
 import org.openmrs.api.context.Credentials;
 import org.openmrs.api.context.UsernamePasswordCredentials;
 import org.openmrs.module.ModuleConstants;
+import org.openmrs.test.SkipBaseSetup;
+import org.openmrs.test.SkipBaseSetupAnnotationExecutionListener;
+import org.openmrs.test.TestUtil;
+import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
-import org.springframework.test.context.transaction.TransactionConfiguration;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import org.xml.sax.InputSource;
 
@@ -103,15 +98,24 @@ import org.xml.sax.InputSource;
  * use Services and/or the database should extend this class. NOTE: Tests that do not need access to
  * spring enabled services do not need this class and extending this will only slow those test cases
  * down. (because spring is started before test cases are run). Normal test cases do not need to
- * extend anything
+ * extend anything.
+ * 
+ * Use this class for Junit 5 tests.
+ * 
+ * @since 2.4.0
  */
 @ContextConfiguration(locations = { "classpath:applicationContext-service.xml", "classpath*:openmrs-servlet.xml",
         "classpath*:moduleApplicationContext.xml", "classpath*:TestingApplicationContext.xml" })
-@TestExecutionListeners( { TransactionalTestExecutionListener.class, SkipBaseSetupAnnotationExecutionListener.class,
-        StartModuleExecutionListener.class })
+@TestExecutionListeners(
+	listeners = { SkipBaseSetupAnnotationExecutionListener.class,
+		StartModuleExecutionListener.class },
+        mergeMode = MERGE_WITH_DEFAULTS
+)
 @Transactional
-@TransactionConfiguration(defaultRollback = true)
-public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringContextTests {
+@Rollback
+@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
+public abstract class BaseContextSensitiveTest {
 	
 	private static final Logger log = LoggerFactory.getLogger(BaseContextSensitiveTest.class);
 	
@@ -162,6 +166,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 */
 	private User authenticatedUser;
 	
+	@Autowired
+	protected ApplicationContext applicationContext;
 	/**
 	 * Allows mocking services returned by Context. See {@link ContextMockHelper}
 	 * 
@@ -197,19 +203,9 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	}
 	
 	/**
-	 * Initializes fields annotated with {@link Mock}.
-	 * 
 	 * @since 1.11, 1.10, 1.9.9
 	 */
-	@Before
-	public void initMocks() {
-		MockitoAnnotations.initMocks(this);
-	}
-	
-	/**
-	 * @since 1.11, 1.10, 1.9.9
-	 */
-	@After
+	@AfterEach
 	public void revertContextMocks() {
 		contextMockHelper.revertMocks();
 	}
@@ -220,12 +216,10 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * 
 	 * @throws Exception
 	 */
-	@Before
+	@BeforeEach
 	public void checkNotModule() throws Exception {
-		if (this.getClass().getPackage().toString().contains("org.openmrs.module.")
-		        && !(this instanceof BaseModuleContextSensitiveTest)) {
-			throw new RuntimeException(
-			        "Module unit test classes should extend BaseModuleContextSensitiveTest, not just BaseContextSensitiveTest");
+		if (this.getClass().getPackage().toString().contains("org.openmrs.module.") && !(this instanceof BaseContextSensitiveTest)) {
+			throw new RuntimeException("Module unit test classes should extend BaseModuleContextSensitiveTest, not just BaseContextSensitiveTest");
 		}
 	}
 	
@@ -247,7 +241,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		}
 		String errorMessage = "Ignored. Expected profile: {openmrsPlatformVersion=" + openmrsPlatformVersion + ", modules=["
 		        + StringUtils.join((String[]) profile.get("modules"), ", ") + "]}";
-		Assume.assumeTrue(errorMessage, filter.matchOpenmrsProfileAttributes(profile));
+		assumeTrue(filter.matchOpenmrsProfileAttributes(profile), errorMessage);
 	}
 	
 	/**
@@ -584,6 +578,11 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			throw new RuntimeException(
 			        "You shouldn't be initializing a NON in-memory database. Consider unoverriding useInMemoryDatabase");
 
+		//Because creator property in the superclass is mapped with optional set to false, the autoddl tool marks the 
+		//column as not nullable but for person it is actually nullable, we need to first drop the constraint from 
+		//person.creator column, historically this was to allow inserting the very first row. Ideally, this should not 
+		//be necessary outside of tests because tables are created using liquibase and not autoddl
+		dropNotNullConstraint("person", "creator");
 		setAutoIncrementOnTablesWithNativeIfNotAssignedIdentityGenerator();
 		executeDataSet(INITIAL_XML_DATASET_PACKAGE_PATH);
 	}
@@ -601,8 +600,6 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	}
 
 	/**
-<<<<<<< HEAD
-=======
 	 * Drops the not null constraint from the the specified column in the specified table
 	 *
 	 * @param columnName the column from which to remove the constraint
@@ -616,8 +613,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		final String sql = "ALTER TABLE " + tableName + " ALTER COLUMN " + columnName + " SET NULL";
 		DatabaseUtil.executeSQL(getConnection(), sql, false);
 	}
+
 	/**
->>>>>>> 743de0d4d... TRUNK-5980: BaseContextSensitiveTest to allow further protected overrides. (#3664)
 	 * Note that with the H2 DB this operation always commits an open transaction.
 	 * 
 	 * @param connection
@@ -876,7 +873,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	/**
 	 * Method to clear the hibernate cache
 	 */
-	@Before
+	@BeforeEach
 	public void clearHibernateCache() {
 		SessionFactory sf = (SessionFactory) applicationContext.getBean("sessionFactory");
 		sf.getCache().evictCollectionRegions();
@@ -900,7 +897,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * @see #initializeInMemoryDatabase()
 	 * @see #authenticate()
 	 */
-	@Before
+	@BeforeEach
 	public void baseSetupWithStandardDataAndAuthentication() throws SQLException {
 		// Open a session if needed
 		if (!Context.isSessionOpen()) {
@@ -956,7 +953,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		}
 	}
 	
-	@After
+	@AfterEach
 	public void clearSessionAfterEachTest() {
 		// clear the session to make sure nothing is cached, etc
 		Context.clearSession();
@@ -974,7 +971,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * 
 	 * @throws Exception
 	 */
-	@AfterClass
+	@AfterAll
 	public static void closeSessionAfterEachClass() throws Exception {
 		//Some tests add data via executeDataset()
 		//We need to delete it in order not to interfere with others
