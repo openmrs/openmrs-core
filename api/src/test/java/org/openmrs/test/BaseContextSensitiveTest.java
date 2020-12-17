@@ -616,7 +616,6 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		DatabaseUtil.executeSQL(getConnection(), sql, false);
 	}
 	/**
-
 	 * Note that with the H2 DB this operation always commits an open transaction.
 	 * 
 	 * @param connection
