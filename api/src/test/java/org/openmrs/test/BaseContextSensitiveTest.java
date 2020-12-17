@@ -85,6 +85,7 @@ import org.openmrs.api.context.ContextMockHelper;
 import org.openmrs.api.context.Credentials;
 import org.openmrs.api.context.UsernamePasswordCredentials;
 import org.openmrs.module.ModuleConstants;
+import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -601,8 +602,6 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	}
 
 	/**
-<<<<<<< HEAD
-=======
 	 * Drops the not null constraint from the the specified column in the specified table
 	 *
 	 * @param columnName the column from which to remove the constraint
@@ -617,7 +616,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		DatabaseUtil.executeSQL(getConnection(), sql, false);
 	}
 	/**
->>>>>>> 743de0d4d... TRUNK-5980: BaseContextSensitiveTest to allow further protected overrides. (#3664)
+
 	 * Note that with the H2 DB this operation always commits an open transaction.
 	 * 
 	 * @param connection
