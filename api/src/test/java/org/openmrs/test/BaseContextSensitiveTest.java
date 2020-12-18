@@ -85,7 +85,6 @@ import org.openmrs.api.context.ContextMockHelper;
 import org.openmrs.api.context.Credentials;
 import org.openmrs.api.context.UsernamePasswordCredentials;
 import org.openmrs.module.ModuleConstants;
-import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -600,21 +599,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 					.execute();
 		}
 	}
-
-	/**
-	 * Drops the not null constraint from the the specified column in the specified table
-	 *
-	 * @param columnName the column from which to remove the constraint
-	 * @param tableName the table that contains the column
-	 * @throws SQLException
-	 */
-	protected void dropNotNullConstraint(String tableName, String columnName) throws SQLException {
-		if (!useInMemoryDatabase()) {
-			throw new RuntimeException("Altering column nullability is not supported for a non in-memory database");
-		}
-		final String sql = "ALTER TABLE " + tableName + " ALTER COLUMN " + columnName + " SET NULL";
-		DatabaseUtil.executeSQL(getConnection(), sql, false);
-	}
+	
 	/**
 	 * Note that with the H2 DB this operation always commits an open transaction.
 	 * 
