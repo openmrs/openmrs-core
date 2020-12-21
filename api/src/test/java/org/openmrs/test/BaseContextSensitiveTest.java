@@ -599,14 +599,14 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 					.execute();
 		}
 	}
-
+	
 	/**
 	 * Note that with the H2 DB this operation always commits an open transaction.
 	 * 
 	 * @param connection
 	 * @throws SQLException
 	 */
-	private void turnOnDBConstraints(Connection connection) throws SQLException {
+	protected void turnOnDBConstraints(Connection connection) throws SQLException {
 		String constraintsOnSql;
 		if (useInMemoryDatabase()) {
 			constraintsOnSql = "SET REFERENTIAL_INTEGRITY TRUE";
@@ -618,7 +618,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		ps.close();
 	}
 	
-	private void turnOffDBConstraints(Connection connection) throws SQLException {
+	protected void turnOffDBConstraints(Connection connection) throws SQLException {
 		String constraintsOffSql;
 		if (useInMemoryDatabase()) {
 			constraintsOffSql = "SET REFERENTIAL_INTEGRITY FALSE";
@@ -803,7 +803,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		}
 	}
 	
-	private IDatabaseConnection setupDatabaseConnection(Connection connection) throws DatabaseUnitException {
+	protected IDatabaseConnection setupDatabaseConnection(Connection connection) throws DatabaseUnitException {
 		IDatabaseConnection dbUnitConn = new DatabaseConnection(connection);
 		
 		if (useInMemoryDatabase()) {
