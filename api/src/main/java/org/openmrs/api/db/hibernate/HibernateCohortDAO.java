@@ -68,11 +68,12 @@ public class HibernateCohortDAO implements CohortDAO {
 		criteria.createAlias("memberships", "m");
 		if (asOfDate != null) {
 			criteria.add(Restrictions.le("m.startDate", asOfDate));
-			criteria.add(orEndDate);
 		}
+		criteria.add(orEndDate);
+
 		criteria.add(Restrictions.eq("m.patientId", patientId));
 		criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
-		
+
 		if (!includeVoided) {
 			criteria.add(Restrictions.eq(VOIDED, includeVoided));
 		}
