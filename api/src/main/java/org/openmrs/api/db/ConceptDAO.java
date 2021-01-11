@@ -322,8 +322,8 @@ public interface ConceptDAO {
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#getConceptsByMapping(java.lang.String, java.lang.String)
-	 * This method has been deprecated in favor of getConceptIdsByMapping, which
-	 * is used by the ConceptService to leverage caching of results
+	 * 
+	 * @deprecated As of 2.5.0, this method has been deprecated in favor of {@link #getConceptIdsByMapping(String, String, boolean)}
 	 */
 	@Deprecated
 	public List<Concept> getConceptsByMapping(String code, String sourceName, boolean includeRetired);
