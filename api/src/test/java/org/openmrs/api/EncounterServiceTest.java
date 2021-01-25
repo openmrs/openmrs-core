@@ -421,7 +421,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		enc.setLocation(Context.getLocationService().getLocation(1));
 		enc.setEncounterType(Context.getEncounterService().getEncounterType(1));
 		enc.setEncounterDatetime(new Date());
-		enc.setPatient(Context.getPatientService().getPatient(3));
+		enc.setPatient(Context.getPatientService().getPatient(2));
 		enc.addProvider(Context.getEncounterService().getEncounterRole(1), Context.getProviderService().getProvider(1));
 		return enc;
 	}
@@ -803,8 +803,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		encounter.setCreator(creator);
 		
 		ConceptService cs = Context.getConceptService();
+		PatientService ps = Context.getPatientService();
 		// create and add an obs to this encounter
-		Obs obs = new Obs(new Patient(2), cs.getConcept(1), new Date(), new Location(1));
+		Obs obs = new Obs(ps.getPatient(2), cs.getConcept(1), new Date(), new Location(1));
 		obs.setDateCreated(date);
 		obs.setCreator(creator);
 		obs.setValueNumeric(50d);
