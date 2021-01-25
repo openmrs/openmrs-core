@@ -174,4 +174,19 @@ public class DiagnosisServiceImpl extends BaseOpenmrsService implements Diagnosi
 	public void setDiagnosisDAO(DiagnosisDAO diagnosisDAO) {
 		this.diagnosisDAO = diagnosisDAO;
 	}
+	
+
+    /**
+     * Finds the diagnoses for a given encounter
+     * 
+     * @param encounter the encounter whose diagnoses we are to get
+     * 
+     * @return the list of diagnoses in the given encounter 
+    */
+
+	@Override
+	public List<Diagnosis> getDiagnoses(Encounter encounter) {
+		
+		return diagnosisDAO.getDiagnoses(encounter);
+	}
 }
