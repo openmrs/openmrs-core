@@ -32,7 +32,7 @@ public class AttributableDate extends Date implements Attributable<AttributableD
 	
 	private static final long serialVersionUID = 4280303636131451746L;
 	
-	private static final String dateFormat = "yyyy-MM-dd";
+	private static final String DATE_FORMAT = "yyyy-MM-dd";
 	
 	/**
 	 * Default empty constructor
@@ -68,7 +68,7 @@ public class AttributableDate extends Date implements Attributable<AttributableD
 	 */
 	@Override
 	public String getDisplayString() {
-		return new SimpleDateFormat(dateFormat).format(this);
+		return new SimpleDateFormat(DATE_FORMAT).format(this);
 	}
 	
 	/**
@@ -97,7 +97,7 @@ public class AttributableDate extends Date implements Attributable<AttributableD
 		}
 		catch (ParseException e) {
 			try {
-				return new AttributableDate(((Date) new SimpleDateFormat(dateFormat).parseObject(s)).getTime());
+				return new AttributableDate(((Date) new SimpleDateFormat(DATE_FORMAT).parseObject(s)).getTime());
 			}
 			catch (ParseException e2) {
 				// if we can't parse it as the normalized string or as the current
@@ -112,7 +112,7 @@ public class AttributableDate extends Date implements Attributable<AttributableD
 	 */
 	@Override
 	public String serialize() {
-		return new SimpleDateFormat(dateFormat).format(this);
+		return new SimpleDateFormat(DATE_FORMAT).format(this);
 	}
 	
 }

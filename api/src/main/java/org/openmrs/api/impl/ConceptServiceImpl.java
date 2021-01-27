@@ -88,7 +88,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	
 	private static Concept unknownConcept;
 
-	private static final String errorMessage = "Error generated";
+	private static final String ERROR_MESSAGE = "Error generated";
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#setConceptDAO(org.openmrs.api.db.ConceptDAO)
@@ -142,7 +142,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 							BeanUtils.copyProperties(conceptName, clone);
 						}
 						catch (IllegalAccessException | InvocationTargetException e) {
-							log.error(errorMessage, e);
+							log.error(ERROR_MESSAGE, e);
 						}
 					}
 				}
@@ -1387,7 +1387,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		}
 		catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException | InstantiationException e) {
 			
-			log.warn(errorMessage, e);
+			log.warn(ERROR_MESSAGE, e);
 		}
 		return copy;
 	}
