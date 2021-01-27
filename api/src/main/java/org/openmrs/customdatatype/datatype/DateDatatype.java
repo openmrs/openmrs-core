@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DateDatatype extends SerializingCustomDatatype<Date> {
 
-	static final String dateFormat = "yyyy-MM-dd";
+	static final String DATE_FORMAT = "yyyy-MM-dd";
 	
 	/**
 	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#doGetTextSummary(java.lang.Object)
@@ -46,7 +46,7 @@ public class DateDatatype extends SerializingCustomDatatype<Date> {
 			return null;
 		}
 		try {
-			return new SimpleDateFormat(dateFormat).parse(serializedValue);
+			return new SimpleDateFormat(DATE_FORMAT).parse(serializedValue);
 		}
 		catch (Exception ex) {
 			throw new InvalidCustomValueException("Invalid date: " + serializedValue);
@@ -59,7 +59,7 @@ public class DateDatatype extends SerializingCustomDatatype<Date> {
 	 */
 	@Override
 	public String serialize(Date typedValue) {
-		return new SimpleDateFormat(dateFormat).format(typedValue);
+		return new SimpleDateFormat(DATE_FORMAT).format(typedValue);
 	}
 	
 }

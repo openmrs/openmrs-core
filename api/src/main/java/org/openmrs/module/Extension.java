@@ -41,7 +41,7 @@ public abstract class Extension {
 	 *
 	 * @see #toExtensionId(String, MEDIA_TYPE)
 	 */
-	public static final String extensionIdSeparator = "|";
+	public static final String EXTENSION_IDSEPARATOR = "|";
 	
 	/**
 	 * All media types allowed by the module extension system. If an extension specifies 'html' as
@@ -182,7 +182,7 @@ public abstract class Extension {
 	 */
 	public static final String toExtensionId(String pointId, MEDIA_TYPE mediaType) {
 		if (mediaType != null) {
-			return pointId + Extension.extensionIdSeparator + mediaType;
+			return pointId + Extension.EXTENSION_IDSEPARATOR + mediaType;
 		} else {
 			return pointId;
 		}
