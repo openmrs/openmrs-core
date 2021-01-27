@@ -1255,7 +1255,7 @@ public class ModuleFactory {
 		
 		// if this pointId doesn't contain the separator character, search
 		// for this point prepended with each MEDIA TYPE
-		if (!pointId.contains(Extension.EXTENSION_IDSEPARATOR)) {
+		if (!pointId.contains(Extension.EXTENSION_ID_SEPARATOR)) {
 			for (MEDIA_TYPE mediaType : Extension.MEDIA_TYPE.values()) {
 				
 				// get all extensions for this type and point id

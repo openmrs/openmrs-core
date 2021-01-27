@@ -449,8 +449,8 @@ public class ModuleFileParser {
 
 			if (point.isEmpty() || extClass.isEmpty()) {
 				log.warn("'point' and 'class' are required for extensions. Given '{}' and '{}'", point, extClass);
-			} else if (point.contains(Extension.EXTENSION_IDSEPARATOR)) {
-				log.warn("Point id contains illegal character: '{}'", Extension.EXTENSION_IDSEPARATOR);
+			} else if (point.contains(Extension.EXTENSION_ID_SEPARATOR)) {
+				log.warn("Point id contains illegal character: '{}'", Extension.EXTENSION_ID_SEPARATOR);
 			} else {
 				result.put(point, extClass);
 			}
