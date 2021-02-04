@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
