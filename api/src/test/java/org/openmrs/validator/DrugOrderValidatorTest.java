@@ -170,6 +170,27 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		new DrugOrderValidator().validate(inPatientOrder, InpatientOrderErrors);
 		assertFalse(InpatientOrderErrors.hasFieldErrors("numRefills"));
 	}
+
+	/**
+	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldNotFailValidationIfQuantityAndNumRefillsAreNullIfConfiguredToNotRequire() {
+		AdministrationService as = Context.getAdministrationService();
+		as.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_OUTPATIENT_QUANTITY, "false");
+		
+		DrugOrder OutpatientOrder = new DrugOrder();
+		OutpatientOrder.setCareSetting(Context.getOrderService().getCareSetting(1));
+		OutpatientOrder.setQuantity(null);
+		OutpatientOrder.setQuantityUnits(null);
+		OutpatientOrder.setNumRefills(null);
+		Errors OutpatientOrderErrors = new BindException(OutpatientOrder, "order");
+		new DrugOrderValidator().validate(OutpatientOrder, OutpatientOrderErrors);
+		Assert.assertTrue(OutpatientOrder.getCareSetting().getCareSettingType() == CareSetting.CareSettingType.OUTPATIENT);
+		Assert.assertFalse(OutpatientOrderErrors.hasFieldErrors("quantity"));
+		Assert.assertFalse(OutpatientOrderErrors.hasFieldErrors("quantityUnits"));
+		Assert.assertFalse(OutpatientOrderErrors.hasFieldErrors("numRefills"));
+	}
 	
 	/**
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
