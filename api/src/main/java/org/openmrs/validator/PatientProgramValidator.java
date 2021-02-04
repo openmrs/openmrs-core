@@ -73,8 +73,9 @@ public class PatientProgramValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
-		log.debug("{}", this.getClass().getName(), ".validate...");
-		
+		if (log.isDebugEnabled()) {
+			log.debug("{}", this.getClass().getName(), ".validate...");
+		}
 		if (obj == null) {
 			throw new IllegalArgumentException("The parameter obj should not be null");
 		}
