@@ -59,8 +59,9 @@ public class PersonAddressValidator implements Validator {
 	@Override
 	public void validate(Object object, Errors errors) {
 		//TODO Validate other aspects of the personAddress object
-		log.debug("{}", this.getClass().getName(), ".validate...");
-		
+		if (log.isDebugEnabled()) {
+			log.debug("{}", this.getClass().getName(), ".validate...");
+		}
 		if (object == null) {
 			throw new IllegalArgumentException("The personAddress object should not be null");
 		}

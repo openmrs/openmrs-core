@@ -49,7 +49,9 @@ public class PersonNameValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object object, Errors errors) {
-		log.debug("{}", this.getClass().getName(), ".validate...");
+		if (log.isDebugEnabled()) {
+			log.debug("{}", this.getClass().getName(), ".validate...");
+		}
 		PersonName personName = (PersonName) object;
 		try {
 			// Validate that the person name object is not null
