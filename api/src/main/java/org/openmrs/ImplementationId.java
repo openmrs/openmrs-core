@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 /**
  * Every installation of OpenMRS should get a unique implementation id. If multiple sites use the
  * same dictionary/form setup, than those sites should share the same implementation id. The
@@ -27,6 +29,10 @@ public class ImplementationId implements java.io.Serializable {
 	private String implementationId;
 	
 	private String passphrase;
+	
+	public String san(String s) {
+		return StringEscapeUtils.escapeHtml(s);
+	}
 	
 	/**
 	 * @see java.lang.Object#equals(java.lang.Object)
@@ -102,7 +108,7 @@ public class ImplementationId implements java.io.Serializable {
 	 * @param implementationId the implementationId to set
 	 */
 	public void setImplementationId(String implementationId) {
-		this.implementationId = implementationId;
+		this.implementationId = san(implementationId);
 	}
 	
 	/**
@@ -126,7 +132,7 @@ public class ImplementationId implements java.io.Serializable {
 	 * @param passphrase the passphrase to set
 	 */
 	public void setPassphrase(String passphrase) {
-		this.passphrase = passphrase;
+		this.passphrase = san(passphrase);
 	}
 	
 	/**
@@ -144,7 +150,7 @@ public class ImplementationId implements java.io.Serializable {
 	 * @param name The concept source name to set.
 	 */
 	public void setName(String name) {
-		this.name = name;
+		this.name = san(name);
 	}
 	
 	@Override
