@@ -30,7 +30,7 @@ public class ImplementationId implements java.io.Serializable {
 	
 	private String passphrase;
 	
-	public String san(String s) {
+	public String sanitizeInput(String s) {
 		return StringEscapeUtils.escapeHtml(s);
 	}
 	
@@ -108,7 +108,7 @@ public class ImplementationId implements java.io.Serializable {
 	 * @param implementationId the implementationId to set
 	 */
 	public void setImplementationId(String implementationId) {
-		this.implementationId = san(implementationId);
+		this.implementationId = sanitizeInput(implementationId);
 	}
 	
 	/**
@@ -132,7 +132,7 @@ public class ImplementationId implements java.io.Serializable {
 	 * @param passphrase the passphrase to set
 	 */
 	public void setPassphrase(String passphrase) {
-		this.passphrase = san(passphrase);
+		this.passphrase = sanitizeInput(passphrase);
 	}
 	
 	/**
@@ -150,7 +150,7 @@ public class ImplementationId implements java.io.Serializable {
 	 * @param name The concept source name to set.
 	 */
 	public void setName(String name) {
-		this.name = san(name);
+		this.name = sanitizeInput(name);
 	}
 	
 	@Override
