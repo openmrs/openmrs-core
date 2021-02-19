@@ -647,9 +647,6 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty("dashboard.overview.showConcepts", "",
 		        "Comma delimited list of concepts ids to show on the patient dashboard overview tab"));
 		
-		props.add(new GlobalProperty(GP_DASHBOARD_CONCEPTS, "5497",
-		        "Comma delimited list of concepts ids to show on the patient header overview"));
-		
 		props
 		        .add(new GlobalProperty("dashboard.encounters.showEmptyFields", "true",
 		                "true/false whether or not to show empty fields on the 'View Encounter' window",
@@ -712,12 +709,6 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GP_HOST_URL, "",
 		        "The URL to redirect to after requesting for a password reset. Always provide a place holder in this url with name {activationKey}, it will get substituted by the actual activation key."));
 		
-		props.add(new GlobalProperty("concept.weight", "5089", "Concept id of the concept defining the WEIGHT concept"));
-		props.add(new GlobalProperty("concept.height", "5090", "Concept id of the concept defining the HEIGHT concept"));
-
-		props.add(new GlobalProperty("concept.none", "1107", "Concept id of the concept defining the NONE concept"));
-		props.add(new GlobalProperty("concept.otherNonCoded", "5622",
-		        "Concept id of the concept defining the OTHER NON-CODED concept"));
 		
 		props.add(new GlobalProperty("mail.transport_protocol", "smtp",
 		        "Transport protocol for the messaging engine. Valid values: smtp"));
@@ -807,18 +798,7 @@ public final class OpenmrsConstants {
 		                "Set to 'true' to turn on OpenMRS's gzip filter, and have the webapp compress data before sending it to any client that supports it. Generally use this if you are running Tomcat standalone. If you are running Tomcat behind Apache, then you'd want to use Apache to do gzip compression.",
 		                BooleanDatatype.class, null));
 		
-		props
-		        .add(new GlobalProperty(
-		                GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS,
-		                "1238",
-		                "The concept id of the MEDICAL_RECORD_OBSERVATIONS concept.  This concept_id is presumed to be the generic grouping (obr) concept in hl7 messages.  An obs_group row is not created for this concept."));
-		
-		props
-		        .add(new GlobalProperty(
-		                GLOBAL_PROPERTY_PROBLEM_LIST,
-		                "1284",
-		                "The concept id of the PROBLEM LIST concept.  This concept_id is presumed to be the generic grouping (obr) concept in hl7 messages.  An obs_group row is not created for this concept."));
-		
+	
 		props
 		        .add(new GlobalProperty(
 		                GLOBAL_PROPERTY_LOG_LEVEL,
