@@ -9,9 +9,6 @@
  */
 package org.openmrs.module;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -30,6 +27,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.GlobalProperty;

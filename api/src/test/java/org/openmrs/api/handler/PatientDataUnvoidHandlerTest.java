@@ -33,8 +33,8 @@ import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.parameter.EncounterSearchCriteria;
 import org.openmrs.parameter.EncounterSearchCriteriaBuilder;
-import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.test.TestUtil;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
  * Contains the tests for the {@link PatientDataUnvoidHandler}

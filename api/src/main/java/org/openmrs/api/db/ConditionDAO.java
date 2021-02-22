@@ -15,6 +15,7 @@ import org.openmrs.Condition;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.api.APIException;
+import org.openmrs.api.ConditionService;
 
 /**
  * This interface defines database methods for condition objects.

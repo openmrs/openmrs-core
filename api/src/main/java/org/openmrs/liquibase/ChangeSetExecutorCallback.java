@@ -9,8 +9,9 @@
  */
 package org.openmrs.liquibase;
 
-import liquibase.changelog.ChangeSet;
 import org.openmrs.util.DatabaseUpdater;
+
+import liquibase.changelog.ChangeSet;
 
 /**
  * Interface used for callbacks when updating the database. Implement this interface and pass it to

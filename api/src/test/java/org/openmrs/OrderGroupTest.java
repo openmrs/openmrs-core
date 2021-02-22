@@ -12,9 +12,8 @@ package org.openmrs;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import java.util.List;
 
-import org.openmrs.OrderGroup;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 

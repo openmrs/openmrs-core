@@ -9,8 +9,9 @@
  */
 package org.openmrs.util;
 
-import liquibase.Liquibase;
 import org.openmrs.liquibase.LiquibaseProvider;
+
+import liquibase.Liquibase;
 
 /**
  * Provides a wrapper for org.openmrs.util.DatabaseUpdater#getLiquibase(String) that can be injected

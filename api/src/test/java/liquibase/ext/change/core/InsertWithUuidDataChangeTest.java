@@ -14,12 +14,13 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.UUID;
 
+import org.junit.jupiter.api.Test;
+
 import liquibase.change.ColumnConfig;
 import liquibase.database.core.MySQLDatabase;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
 import liquibase.structure.core.Column;
-import org.junit.jupiter.api.Test;
 
 public class InsertWithUuidDataChangeTest {
 	@Test

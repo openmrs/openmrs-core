@@ -12,7 +12,6 @@ package org.openmrs.module;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.HashMap;

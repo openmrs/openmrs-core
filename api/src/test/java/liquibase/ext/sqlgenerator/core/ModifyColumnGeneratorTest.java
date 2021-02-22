@@ -18,6 +18,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Set;
 
+import org.junit.jupiter.api.Test;
+import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
+
 import liquibase.change.ColumnConfig;
 import liquibase.change.ConstraintsConfig;
 import liquibase.database.AbstractJdbcDatabase;
@@ -38,9 +42,6 @@ import liquibase.database.core.UnsupportedDatabase;
 import liquibase.exception.ValidationErrors;
 import liquibase.sql.Sql;
 import liquibase.structure.core.Column;
-import org.junit.jupiter.api.Test;
-import org.reflections.Reflections;
-import org.reflections.scanners.SubTypesScanner;
 
 public class ModifyColumnGeneratorTest {
 	@Test

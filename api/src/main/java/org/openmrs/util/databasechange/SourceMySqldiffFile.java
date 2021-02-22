@@ -9,22 +9,6 @@
  */
 package org.openmrs.util.databasechange;
 
-import liquibase.change.custom.CustomTaskChange;
-import liquibase.database.Database;
-import liquibase.database.DatabaseConnection;
-import liquibase.exception.CustomChangeException;
-import liquibase.exception.DatabaseException;
-import liquibase.exception.SetupException;
-import liquibase.exception.ValidationErrors;
-import liquibase.resource.ResourceAccessor;
-import org.openmrs.api.context.Context;
-import org.openmrs.util.ClassLoaderFileOpener;
-import org.openmrs.util.OpenmrsClassLoader;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -40,6 +24,23 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+
+import org.openmrs.api.context.Context;
+import org.openmrs.util.ClassLoaderFileOpener;
+import org.openmrs.util.OpenmrsClassLoader;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import liquibase.change.custom.CustomTaskChange;
+import liquibase.database.Database;
+import liquibase.database.DatabaseConnection;
+import liquibase.exception.CustomChangeException;
+import liquibase.exception.DatabaseException;
+import liquibase.exception.SetupException;
+import liquibase.exception.ValidationErrors;
+import liquibase.resource.ResourceAccessor;
 
 /**
  * Executes (aka "source"s) the given file on the current database. <br>

@@ -20,8 +20,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import liquibase.changelog.ChangeSet;
 import org.junit.jupiter.api.Test;
+
+import liquibase.changelog.ChangeSet;
 
 public class ChangeLogDetectiveTest {
 	

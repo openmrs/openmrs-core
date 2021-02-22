@@ -10,6 +10,7 @@
 package org.openmrs.util.databasechange;
 
 import java.sql.Types;
+
 import org.hibernate.dialect.H2Dialect;
 
 /**

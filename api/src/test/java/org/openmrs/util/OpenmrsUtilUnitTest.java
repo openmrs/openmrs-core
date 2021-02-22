@@ -10,25 +10,23 @@
 package org.openmrs.util;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.equalTo;
-
+import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.List;
 import java.util.Arrays;
-import java.util.Map;
-import java.util.LinkedList;
-import java.util.Collections;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

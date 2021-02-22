@@ -16,13 +16,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import liquibase.exception.LockException;
 import org.junit.jupiter.api.Test;
 import org.openmrs.liquibase.ChangeSetExecutorCallback;
 import org.openmrs.liquibase.LiquibaseProvider;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import liquibase.exception.LockException;
 
 /**
  * Tests methods on the {@link DatabaseUpdater} class. This class expects /metadata/model to be on

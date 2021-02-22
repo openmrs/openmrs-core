@@ -10,6 +10,7 @@
 package org.openmrs.web.filter.update;
 
 import java.util.List;
+
 import org.openmrs.liquibase.LiquibaseProvider;
 import org.openmrs.util.DatabaseUpdater.OpenMRSChangeSet;
 import org.openmrs.util.DatabaseUpdaterLiquibaseProvider;

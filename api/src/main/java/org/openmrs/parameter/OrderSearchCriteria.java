@@ -9,14 +9,14 @@
  */
 package org.openmrs.parameter;
 
+import java.util.Collection;
+import java.util.Date;
+
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
-
-import java.util.Collection;
-import java.util.Date;
 
 /**
  * The search parameter object for orders. A convenience interface for building

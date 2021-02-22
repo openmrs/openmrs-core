@@ -9,11 +9,11 @@
  */
 package org.openmrs;
 
-import org.apache.commons.lang3.StringUtils;
-import org.openmrs.api.APIException;
-
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+
+import org.apache.commons.lang3.StringUtils;
+import org.openmrs.api.APIException;
 
 /**
  * Base implementation of FormRecordable that bridges between a saved BaseChangeableOpenmrsData entity and the path in a form where it was recorded.

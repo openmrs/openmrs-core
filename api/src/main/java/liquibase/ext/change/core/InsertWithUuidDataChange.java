@@ -9,6 +9,8 @@
  */
 package liquibase.ext.change.core;
 
+import static java.util.UUID.randomUUID;
+
 import liquibase.change.ChangeMetaData;
 import liquibase.change.ColumnConfig;
 import liquibase.change.DatabaseChange;
@@ -16,8 +18,6 @@ import liquibase.change.core.InsertDataChange;
 import liquibase.database.Database;
 import liquibase.statement.SqlStatement;
 import liquibase.structure.core.Column;
-
-import static java.util.UUID.randomUUID;
 
 @DatabaseChange(name = "insertWithUuid", description = "Inserts data into an existing table and generates and inserts an uuid", priority = ChangeMetaData.PRIORITY_DEFAULT, appliesTo = "table")
 public class InsertWithUuidDataChange extends InsertDataChange {

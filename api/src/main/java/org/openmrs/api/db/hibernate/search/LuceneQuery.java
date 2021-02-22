@@ -28,11 +28,11 @@ import org.hibernate.Session;
 import org.hibernate.search.FullTextQuery;
 import org.hibernate.search.FullTextSession;
 import org.hibernate.search.query.dsl.QueryBuilder;
-import org.openmrs.api.db.FullTextSessionFactory;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.FullTextSessionFactory;
 import org.openmrs.collection.ListPart;
 
 /**

@@ -9,9 +9,9 @@
  */
 package org.openmrs.notification.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 
 import org.openmrs.Role;

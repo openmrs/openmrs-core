@@ -17,6 +17,7 @@ import org.openmrs.Condition;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.api.APIException;
+import org.openmrs.api.ConditionService;
 import org.openmrs.api.db.ConditionDAO;
 import org.openmrs.api.db.DAOException;
 

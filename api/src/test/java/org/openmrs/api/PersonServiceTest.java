@@ -52,8 +52,8 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.person.PersonMergeLog;
 import org.openmrs.person.PersonMergeLogData;
-import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.test.TestUtil;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
 
 /**

@@ -23,8 +23,8 @@ import org.openmrs.Program;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.HibernateSerializedObjectDAO;
-import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.test.StartModule;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
  * This class tests the {@link SerializedObjectDAO} linked to from the Context. Currently that file

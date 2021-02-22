@@ -14,7 +14,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-
 import org.junit.jupiter.api.Test;
 import org.openmrs.util.OpenmrsConstants;
 

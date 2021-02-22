@@ -9,12 +9,13 @@
  */
 package liquibase.ext.datatype.core;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import liquibase.database.Database;
 import liquibase.database.core.PostgresDatabase;
 import liquibase.datatype.DatabaseDataType;
 import liquibase.datatype.core.BlobType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * PostgreSQL provides two types to handle binary large data which are oid and bytea. Liquibase maps

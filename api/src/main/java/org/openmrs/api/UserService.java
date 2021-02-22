@@ -18,9 +18,9 @@ import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Logging;
+import org.openmrs.notification.MessageException;
 import org.openmrs.util.PersonByNameComparator;
 import org.openmrs.util.PrivilegeConstants;
-import org.openmrs.notification.MessageException;
 
 /**
  * Contains methods pertaining to Users in the system Use:<br>

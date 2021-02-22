@@ -22,10 +22,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.thoughtworks.xstream.XStreamException;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.openmrs.OpenmrsObject;
+
+import com.thoughtworks.xstream.XStreamException;
 
 public class SimpleXStreamSerializerTest {
 	

@@ -26,16 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
-import ca.uhn.hl7v2.HL7Exception;
-import ca.uhn.hl7v2.app.Application;
-import ca.uhn.hl7v2.model.Message;
-import ca.uhn.hl7v2.model.v25.datatype.CX;
-import ca.uhn.hl7v2.model.v25.datatype.PL;
-import ca.uhn.hl7v2.model.v25.datatype.XCN;
-import ca.uhn.hl7v2.model.v25.message.ORU_R01;
-import ca.uhn.hl7v2.model.v25.segment.NK1;
-import ca.uhn.hl7v2.model.v25.segment.ORC;
-import ca.uhn.hl7v2.model.v25.segment.PV1;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
@@ -52,6 +42,17 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import ca.uhn.hl7v2.HL7Exception;
+import ca.uhn.hl7v2.app.Application;
+import ca.uhn.hl7v2.model.Message;
+import ca.uhn.hl7v2.model.v25.datatype.CX;
+import ca.uhn.hl7v2.model.v25.datatype.PL;
+import ca.uhn.hl7v2.model.v25.datatype.XCN;
+import ca.uhn.hl7v2.model.v25.message.ORU_R01;
+import ca.uhn.hl7v2.model.v25.segment.NK1;
+import ca.uhn.hl7v2.model.v25.segment.ORC;
+import ca.uhn.hl7v2.model.v25.segment.PV1;
 
 /**
  * Tests methods in the {@link HL7Service}

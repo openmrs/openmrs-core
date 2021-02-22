@@ -15,6 +15,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import org.h2.jdbc.JdbcSQLNonTransientException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.openmrs.liquibase.LiquibaseProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import liquibase.Contexts;
 import liquibase.Liquibase;
 import liquibase.database.Database;
@@ -22,12 +29,6 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
-import org.h2.jdbc.JdbcSQLNonTransientException;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.openmrs.liquibase.LiquibaseProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class H2DatabaseIT implements LiquibaseProvider {
 	

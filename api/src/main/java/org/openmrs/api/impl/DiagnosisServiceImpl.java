@@ -9,6 +9,12 @@
  */
 package org.openmrs.api.impl;
 
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
 import org.openmrs.CodedOrFreeText;
 import org.openmrs.Diagnosis;
 import org.openmrs.Encounter;
@@ -18,12 +24,6 @@ import org.openmrs.api.DiagnosisService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DiagnosisDAO;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Iterator;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.HashSet;
 
 @Transactional
 public class DiagnosisServiceImpl extends BaseOpenmrsService implements DiagnosisService {

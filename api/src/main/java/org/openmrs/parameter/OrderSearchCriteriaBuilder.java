@@ -9,10 +9,14 @@
  */
 package org.openmrs.parameter;
 
-import org.openmrs.*;
-
 import java.util.Collection;
 import java.util.Date;
+
+import org.openmrs.CareSetting;
+import org.openmrs.Concept;
+import org.openmrs.Order;
+import org.openmrs.OrderType;
+import org.openmrs.Patient;
 
 /**
  * A convenience builder for {@link OrderSearchCriteria}. Create a builder, set

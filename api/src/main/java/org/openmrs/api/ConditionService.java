@@ -9,13 +9,13 @@
  */
 package org.openmrs.api;
 
+import java.util.List;
+
 import org.openmrs.Condition;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.util.PrivilegeConstants;
-
-import java.util.List;
 
 /**
  * This interface defines methods for condition objects.

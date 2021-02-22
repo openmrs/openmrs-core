@@ -9,8 +9,6 @@
  */
 package org.openmrs;
 
-import java.util.Date;
-
 /**
  * A concept source is defined as any institution that keeps a concept dictionary. Examples are
  * ICD9, ICD10, SNOMED, or any other OpenMRS implementation

@@ -16,8 +16,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-import ca.uhn.hl7v2.HL7Exception;
 import org.junit.jupiter.api.Test;
+
+import ca.uhn.hl7v2.HL7Exception;
 
 /**
  * Tests methods on the {@link HL7Util} class

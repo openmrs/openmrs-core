@@ -12,11 +12,11 @@ package org.openmrs.hl7.handler;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -24,16 +24,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import ca.uhn.hl7v2.HL7Exception;
-import ca.uhn.hl7v2.app.ApplicationException;
-import ca.uhn.hl7v2.app.MessageTypeRouter;
-import ca.uhn.hl7v2.model.Message;
-import ca.uhn.hl7v2.model.v25.message.ORU_R01;
-import ca.uhn.hl7v2.model.v25.segment.NK1;
-import ca.uhn.hl7v2.model.v25.segment.OBR;
-import ca.uhn.hl7v2.model.v25.segment.OBX;
-import ca.uhn.hl7v2.model.v26.segment.MSH;
-import ca.uhn.hl7v2.parser.GenericParser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
@@ -60,6 +50,17 @@ import org.openmrs.hl7.HL7Constants;
 import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
+
+import ca.uhn.hl7v2.HL7Exception;
+import ca.uhn.hl7v2.app.ApplicationException;
+import ca.uhn.hl7v2.app.MessageTypeRouter;
+import ca.uhn.hl7v2.model.Message;
+import ca.uhn.hl7v2.model.v25.message.ORU_R01;
+import ca.uhn.hl7v2.model.v25.segment.NK1;
+import ca.uhn.hl7v2.model.v25.segment.OBR;
+import ca.uhn.hl7v2.model.v25.segment.OBX;
+import ca.uhn.hl7v2.model.v26.segment.MSH;
+import ca.uhn.hl7v2.parser.GenericParser;
 
 /**
  * TODO finish testing all methods ORUR01Handler

@@ -9,6 +9,9 @@
  */
 package org.openmrs.api.impl;
 
+import java.util.Date;
+import java.util.List;
+
 import org.openmrs.Condition;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
@@ -17,9 +20,6 @@ import org.openmrs.api.ConditionService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConditionDAO;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Date;
-import java.util.List;
 
 /**
  * This class implements the {@link ConditionService} interface

@@ -17,6 +17,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Set;
 
+import org.junit.jupiter.api.Test;
+import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
+
 import liquibase.database.AbstractJdbcDatabase;
 import liquibase.database.Database;
 import liquibase.database.core.AbstractDb2Database;
@@ -25,9 +29,6 @@ import liquibase.database.core.MySQLDatabase;
 import liquibase.database.core.UnsupportedDatabase;
 import liquibase.datatype.DatabaseDataType;
 import liquibase.datatype.core.BooleanType;
-import org.junit.jupiter.api.Test;
-import org.reflections.Reflections;
-import org.reflections.scanners.SubTypesScanner;
 
 public class MySQLBooleanTypeTest {
 	

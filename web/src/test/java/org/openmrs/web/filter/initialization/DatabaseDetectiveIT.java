@@ -9,13 +9,14 @@
  */
 package org.openmrs.web.filter.initialization;
 
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import java.util.Properties;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.util.H2DatabaseIT;
-
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class DatabaseDetectiveIT extends H2DatabaseIT {
 	

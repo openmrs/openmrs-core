@@ -14,8 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.VisitType;
 import org.openmrs.api.VisitService;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;

@@ -9,13 +9,13 @@
  */
 package org.openmrs;
 
+import static org.apache.commons.lang3.time.DateUtils.addDays;
 import static org.apache.commons.lang3.time.DateUtils.addHours;
 import static org.apache.commons.lang3.time.DateUtils.addMinutes;
 import static org.apache.commons.lang3.time.DateUtils.addMonths;
+import static org.apache.commons.lang3.time.DateUtils.addSeconds;
 import static org.apache.commons.lang3.time.DateUtils.addWeeks;
 import static org.apache.commons.lang3.time.DateUtils.addYears;
-import static org.apache.commons.lang3.time.DateUtils.addDays;
-import static org.apache.commons.lang3.time.DateUtils.addSeconds;
 
 import java.util.Date;
 

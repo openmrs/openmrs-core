@@ -12,9 +12,10 @@ package org.openmrs.web.filter.update;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import javax.servlet.ServletException;
 import java.sql.Connection;
 import java.sql.SQLException;
+
+import javax.servlet.ServletException;
 
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Context;

@@ -14,8 +14,9 @@ import static org.hamcrest.Matchers.is;
 
 import java.util.List;
 
-import net.sf.ehcache.config.CacheConfiguration;
 import org.junit.jupiter.api.Test;
+
+import net.sf.ehcache.config.CacheConfiguration;
 
 public class CachePropertiesUtilTest {
 

@@ -12,8 +12,8 @@ package org.openmrs.annotation;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
-import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.test.StartModule;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
 @StartModule({"org/openmrs/module/include/test1-1.0-SNAPSHOT.omod"})

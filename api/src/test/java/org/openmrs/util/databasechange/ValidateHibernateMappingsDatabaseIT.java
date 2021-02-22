@@ -9,10 +9,11 @@
  */
 package org.openmrs.util.databasechange;
 
-import javax.persistence.Entity;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.persistence.Entity;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;

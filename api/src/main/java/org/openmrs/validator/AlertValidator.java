@@ -9,7 +9,6 @@
  */
 package org.openmrs.validator;
 
-import org.openmrs.Encounter;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
 import org.openmrs.notification.Alert;

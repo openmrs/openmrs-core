@@ -9,12 +9,13 @@
  */
 package liquibase.ext.datatype.core;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import liquibase.database.Database;
 import liquibase.database.core.MySQLDatabase;
 import liquibase.datatype.DatabaseDataType;
 import liquibase.datatype.core.BooleanType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * MySQL (and MariaDB) represent boolean variables as TINYINT(1). Liquibase changed the representation of boolean

@@ -9,23 +9,36 @@
  */
 package org.openmrs.api.impl;
 
+import static org.openmrs.Order.Action.DISCONTINUE;
+import static org.openmrs.Order.Action.REVISE;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.proxy.HibernateProxy;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
-import org.openmrs.Encounter;
 import org.openmrs.DrugOrder;
+import org.openmrs.Encounter;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Order;
+import org.openmrs.Order.FulfillerStatus;
 import org.openmrs.OrderFrequency;
 import org.openmrs.OrderGroup;
-import org.openmrs.OrderType;
-import org.openmrs.GlobalProperty;
-import org.openmrs.Patient;
-import org.openmrs.Provider;
-import org.openmrs.Order.FulfillerStatus;
 import org.openmrs.OrderGroupAttribute;
 import org.openmrs.OrderGroupAttributeType;
+import org.openmrs.OrderType;
+import org.openmrs.Patient;
+import org.openmrs.Provider;
 import org.openmrs.TestOrder;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AmbiguousOrderException;
@@ -54,19 +67,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
-import static org.openmrs.Order.Action.DISCONTINUE;
-import static org.openmrs.Order.Action.REVISE;
 
 /**
  * Default implementation of the Order-related services class. This method should not be invoked by

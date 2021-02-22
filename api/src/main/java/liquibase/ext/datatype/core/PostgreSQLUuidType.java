@@ -9,12 +9,13 @@
  */
 package liquibase.ext.datatype.core;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import liquibase.database.Database;
 import liquibase.database.core.PostgresDatabase;
 import liquibase.datatype.DatabaseDataType;
 import liquibase.datatype.core.CharType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * PostgreSQL returns white spaces for UUIDs since their actual length is 36 and we have set it

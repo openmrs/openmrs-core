@@ -9,8 +9,6 @@
  */
 package org.openmrs;
 
-import java.util.Date;
-
 /**
  * Base superclass for all mutable OpenmrsMetadata.
  * 

@@ -9,7 +9,6 @@
  */
 package org.openmrs.api.db;
 
-import org.openmrs.ProgramAttributeType;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -23,6 +22,7 @@ import org.openmrs.PatientProgram;
 import org.openmrs.PatientProgramAttribute;
 import org.openmrs.PatientState;
 import org.openmrs.Program;
+import org.openmrs.ProgramAttributeType;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 

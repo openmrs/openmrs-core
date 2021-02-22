@@ -9,10 +9,6 @@
  */
 package org.openmrs;
 
-import org.openmrs.customdatatype.CustomValueDescriptor;
-import org.openmrs.customdatatype.Customizable;
-import org.openmrs.util.OpenmrsUtil;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -23,6 +19,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.openmrs.customdatatype.CustomValueDescriptor;
+import org.openmrs.customdatatype.Customizable;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  * PatientProgram

@@ -10,15 +10,14 @@
 
 package org.openmrs.api;
 
-import org.openmrs.Encounter;
-import org.openmrs.Patient;
-import org.openmrs.Diagnosis;
-import org.openmrs.annotation.Authorized;
-import org.openmrs.util.PrivilegeConstants;
-
-
 import java.util.Date;
 import java.util.List;
+
+import org.openmrs.Diagnosis;
+import org.openmrs.Encounter;
+import org.openmrs.Patient;
+import org.openmrs.annotation.Authorized;
+import org.openmrs.util.PrivilegeConstants;
 
 /**
  * <pre>

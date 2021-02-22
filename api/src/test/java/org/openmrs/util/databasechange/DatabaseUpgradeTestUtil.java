@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import liquibase.datatype.DataTypeFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -42,9 +41,10 @@ import liquibase.Liquibase;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
+import liquibase.datatype.DataTypeFactory;
 import liquibase.exception.LiquibaseException;
-import liquibase.resource.ClassLoaderResourceAccessor;
 import liquibase.ext.datatype.core.MySQLBooleanType;
+import liquibase.resource.ClassLoaderResourceAccessor;
 
 /**
  * Allows to test database upgrade. It accepts initialDatabasePath which should point to the h2
