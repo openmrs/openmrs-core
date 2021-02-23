@@ -34,6 +34,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
@@ -59,53 +60,29 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	public static final long serialVersionUID = 2L;
 	
 	// Fields
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "encounter_id")
 	private Integer encounterId;
-	
-	@Column(name = "encounter_datetime", nullable = false, length = 19)
+
 	private Date encounterDatetime;
-	
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "patient_id")
+
 	private Patient patient;
-	
-	@ManyToOne
-	@JoinColumn(name = "location_id")
+
 	private Location location;
-	
-	@ManyToOne
-	@JoinColumn(name = "form_id")
+
 	private Form form;
-	
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "encounter_type")
+
 	private EncounterType encounterType;
-	
-	@OneToMany(mappedBy = "encounter")
+
 	private Set<Order> orders;
-	
-	@OneToMany(mappedBy = "encounter")
+
 	private Set<Diagnosis> diagnoses;
-	
-	@OneToMany(mappedBy = "encounter")
+
 	private Set<Condition> conditions;
-	
-	@OneToMany(mappedBy = "encounter")
-	@Access(AccessType.FIELD)
-	@OrderBy("concept_id")
-	@BatchSize(size = 25)
+
 	@AllowDirectAccess
 	private Set<Obs> obs;
-	
-	@ManyToOne
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	@JoinColumn(name = "visit_id")
+
 	private Visit visit;
-	
-	@OneToMany(mappedBy = "encounter", cascade = CascadeType.ALL)
-	@OrderBy("provider_id")
+
 	@DisableHandlers(handlerTypes = { VoidHandler.class })
 	private Set<EncounterProvider> encounterProviders = new LinkedHashSet<>();
 	
@@ -124,24 +101,12 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	}
 	
 	// Property accessors
-	
-	/**
-	 * @return Returns the encounterDatetime.
-	 */
-	public Date getEncounterDatetime() {
-		return encounterDatetime;
-	}
-	
-	/**
-	 * @param encounterDatetime The encounterDatetime to set.
-	 */
-	public void setEncounterDatetime(Date encounterDatetime) {
-		this.encounterDatetime = encounterDatetime;
-	}
-	
 	/**
 	 * @return Returns the encounterId.
 	 */
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "encounter_id")
 	public Integer getEncounterId() {
 		return encounterId;
 	}
@@ -156,6 +121,8 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	/**
 	 * @return Returns the encounterType.
 	 */
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "encounter_type")
 	public EncounterType getEncounterType() {
 		return encounterType;
 	}
@@ -166,10 +133,28 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	public void setEncounterType(EncounterType encounterType) {
 		this.encounterType = encounterType;
 	}
-	
+
+	/**
+	 * @return Returns the encounterDatetime.
+	 */
+	@Column(name = "encounter_datetime", nullable = false)
+	public Date getEncounterDatetime() {
+		return encounterDatetime;
+	}
+
+	/**
+	 * @param encounterDatetime The encounterDatetime to set.
+	 */
+	public void setEncounterDatetime(Date encounterDatetime) {
+		this.encounterDatetime = encounterDatetime;
+	}
+
+
 	/**
 	 * @return Returns the location.
 	 */
+	@ManyToOne
+	@JoinColumn(name = "location_id")
 	public Location getLocation() {
 		return location;
 	}
@@ -194,6 +179,10 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * <strong>Should</strong> get obs with three levels of hierarchy
 	 * <strong>Should</strong> not get voided obs with three layers of hierarchy
 	 */
+	@OneToMany(mappedBy = "encounter")
+	@Access(AccessType.FIELD)
+	@OrderBy("concept_id asc")
+	@BatchSize(size = 25)
 	public Set<Obs> getObs() {
 		Set<Obs> ret = new LinkedHashSet<>();
 		
@@ -267,6 +256,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * <strong>Should</strong> get both parent and child with child directly on encounter
 	 * <strong>Should</strong> get both child and parent obs after removing child from parent grouping
 	 */
+	@Transient
 	public Set<Obs> getAllObs(boolean includeVoided) {
 		if (includeVoided && obs != null) {
 			return obs;
@@ -286,6 +276,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * @return all non-voided obs
 	 * <strong>Should</strong> not get voided obs
 	 */
+	@Transient
 	public Set<Obs> getAllObs() {
 		return getAllObs(false);
 	}
@@ -295,6 +286,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * @param includeVoided indicates whether or not to include voided obs
 	 * @return a Set of all encounter' Obs
 	 */
+	@Transient
 	public Set<Obs> getAllFlattenedObs(boolean includeVoided) {
 
 		Set<Obs> ret = new LinkedHashSet<>();
@@ -321,6 +313,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * <strong>Should</strong> only return the grouped top level obs
 	 * <strong>Should</strong> get both child and parent obs after removing child from parent grouping
 	 */
+	@Transient
 	public Set<Obs> getObsAtTopLevel(boolean includeVoided) {
 		
 		return getAllObs(includeVoided).stream().filter(o -> o.getObsGroup() == null)
@@ -411,6 +404,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	/**
 	 * @return Returns the orders
 	 */
+	@OneToMany(mappedBy = "encounter")
 	public Set<Order> getOrders() {
 		if (orders == null) {
 			orders = new LinkedHashSet<>();
@@ -459,6 +453,8 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	/**
 	 * @return Returns the patient.
 	 */
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "patient_id")
 	public Patient getPatient() {
 		return patient;
 	}
@@ -476,6 +472,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * @return diagnoses - the set of diagnoses.
 	 * @since 2.2
 	 */
+	@OneToMany(mappedBy = "encounter")
 	public Set<Diagnosis> getDiagnoses() {
 		return diagnoses;
 	}
@@ -496,6 +493,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * @return all non-voided conditions
 	 * @since 2.4.0, 2.3.1
 	 */
+	@OneToMany(mappedBy = "encounter")
 	public Set<Condition> getConditions() {
 		return getConditions(false);
 	}
@@ -507,6 +505,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * @return The set of conditions, or an empty set if there are no conditions to return.
 	 * @since 2.3.3, 2.4.0, 2.5.0
 	 */
+	@Transient
 	public Set<Condition> getConditions(boolean includeVoided) {
 		return Optional.ofNullable(conditions).orElse(new LinkedHashSet<>())
 			.stream().filter(c -> includeVoided || !c.getVoided()).collect(Collectors.toSet());
@@ -563,6 +562,8 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * @see #getProvidersByRoles()
 	 * @since 1.9.1
 	 */
+	@OneToMany(mappedBy = "encounter", cascade = CascadeType.ALL)
+	@OrderBy("provider_id")
 	public Set<EncounterProvider> getEncounterProviders() {
 		return encounterProviders;
 	}
@@ -590,6 +591,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * @return list of non-voided encounter providers for this encounter
 	 * @see #getEncounterProviders()
 	 */
+	@Transient
 	public Set<EncounterProvider> getActiveEncounterProviders() {
 		Set<EncounterProvider> activeProviders = new LinkedHashSet<>();
 		Set<EncounterProvider> providers = getEncounterProviders();
@@ -602,6 +604,8 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	/**
 	 * @return Returns the form.
 	 */
+	@ManyToOne
+	@JoinColumn(name = "form_id")
 	public Form getForm() {
 		return form;
 	}
@@ -636,8 +640,8 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
 	@Override
+	@Transient
 	public Integer getId() {
-		
 		return getEncounterId();
 	}
 	
@@ -648,7 +652,6 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	@Override
 	public void setId(Integer id) {
 		setEncounterId(id);
-		
 	}
 	
 	/**
@@ -657,6 +660,9 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * @return the visit.
 	 * @since 1.9
 	 */
+	@ManyToOne
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	@JoinColumn(name = "visit_id")
 	public Visit getVisit() {
 		return visit;
 	}
@@ -679,6 +685,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * <strong>Should</strong> return empty map if no unvoided providers
 	 * <strong>Should</strong> return all roles and unvoided providers
 	 */
+	@Transient
 	public Map<EncounterRole, Set<Provider>> getProvidersByRoles() {
 		return getProvidersByRoles(false);
 	}
@@ -692,6 +699,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * <strong>Should</strong> return empty map if no providers
 	 * <strong>Should</strong> return all roles and providers
 	 */
+	@Transient
 	public Map<EncounterRole, Set<Provider>> getProvidersByRoles(boolean includeVoided) {
 		
 		return encounterProviders
@@ -713,6 +721,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * <strong>Should</strong> return empty set for no role
 	 * <strong>Should</strong> return empty set for null role
 	 */
+	@Transient
 	public Set<Provider> getProvidersByRole(EncounterRole role) {
 		return getProvidersByRole(role, false);
 	}
@@ -728,6 +737,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * <strong>Should</strong> return empty set for no role
 	 * <strong>Should</strong> return empty set for null role
 	 */
+	@Transient
 	public Set<Provider> getProvidersByRole(EncounterRole role, boolean includeVoided) {
 		
 		return encounterProviders.stream()
@@ -864,6 +874,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * @since 1.12
 	 * @return list of orderGroups
 	 */
+	@Transient
 	public List<OrderGroup> getOrderGroups() {
 		Map<String, OrderGroup> orderGroups = new HashMap<>();
 		for (Order order : orders) {
@@ -881,6 +892,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * @since 1.12
 	 * @return list of orders not having orderGroups
 	 */
+	@Transient
 	public List<Order> getOrdersWithoutOrderGroups() {
 		return orders.stream().filter(o -> o.getOrderGroup() == null).collect(Collectors.toList());
 	}

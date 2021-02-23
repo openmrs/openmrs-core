@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import javax.persistence.MappedSuperclass;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -24,6 +26,7 @@ import org.openmrs.customdatatype.Customizable;
  * @param <A> the type of attribute held
  * @since 1.9
  */
+@MappedSuperclass
 public abstract class BaseCustomizableMetadata<A extends Attribute> extends BaseChangeableOpenmrsMetadata implements Customizable<A> {
 	
 	private Set<A> attributes = new LinkedHashSet<>();

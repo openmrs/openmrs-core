@@ -17,7 +17,7 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  * @since 2.1.0
  */
-public class CohortMembership extends BaseChangeableOpenmrsData implements Comparable<CohortMembership> {
+public class CohortMembership extends BaseOpenmrsData implements Comparable<CohortMembership> {
 	
 	public static final long serialVersionUID = 0L;
 

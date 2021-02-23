@@ -29,6 +29,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.BatchSize;
 import org.openmrs.customdatatype.Customizable;
@@ -42,44 +43,23 @@ import org.openmrs.customdatatype.Customizable;
 @Entity
 @Table(name = "visit")
 public class Visit extends BaseCustomizableData<VisitAttribute> implements Auditable, Customizable<VisitAttribute> {
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "visit_id")
+
 	private Integer visitId;
-	
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "patient_id")
+
 	private Patient patient;
-	
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "visit_type_id")
+
 	private VisitType visitType;
-	
-	@ManyToOne
-	@JoinColumn(name = "indication_concept_id")
+
 	private Concept indication;
-	
-	@ManyToOne
-	@JoinColumn(name = "location_id")
+
 	private Location location;
-	
-	@Column(name = "date_started", nullable = false, length = 19)
+
 	private Date startDatetime;
-	
-	@Column(name = "date_stopped", length = 19)
+
 	private Date stopDatetime;
-	
-	@OneToMany(mappedBy = "visit")
-	@OrderBy("encounter_datetime desc, encounter_id desc")
+
 	private Set<Encounter> encounters;
-	
-	@Access(AccessType.PROPERTY)
-	@OneToMany(mappedBy = "visit", cascade = CascadeType.ALL, orphanRemoval = true)
-	@OrderBy("voided asc")
-	@BatchSize(size = 100)
-	private Set<VisitAttribute> attributes = new LinkedHashSet<>();
-	
+
 	/**
 	 * Default Constructor
 	 */
@@ -113,6 +93,9 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	/**
 	 * @return the visitId
 	 */
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "visit_id")
 	public Integer getVisitId() {
 		return visitId;
 	}
@@ -127,6 +110,8 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	/**
 	 * @return the patient
 	 */
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "patient_id")
 	public Patient getPatient() {
 		return patient;
 	}
@@ -141,6 +126,8 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	/**
 	 * @return the visitType
 	 */
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "visit_type_id")
 	public VisitType getVisitType() {
 		return visitType;
 	}
@@ -155,6 +142,8 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	/**
 	 * @return the indication
 	 */
+	@ManyToOne
+	@JoinColumn(name = "indication_concept_id")
 	public Concept getIndication() {
 		return indication;
 	}
@@ -169,6 +158,8 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	/**
 	 * @return the location
 	 */
+	@ManyToOne
+	@JoinColumn(name = "location_id")
 	public Location getLocation() {
 		return location;
 	}
@@ -183,6 +174,7 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	/**
 	 * @return the startDatetime
 	 */
+	@Column(name = "date_started", nullable = false, length = 19)
 	public Date getStartDatetime() {
 		return startDatetime;
 	}
@@ -197,6 +189,7 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	/**
 	 * @return the stopDatetime
 	 */
+	@Column(name = "date_stopped", length = 19)
 	public Date getStopDatetime() {
 		return stopDatetime;
 	}
@@ -212,6 +205,7 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
 	@Override
+	@Transient
 	public Integer getId() {
 		return visitId;
 	}
@@ -235,6 +229,8 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	/**
 	 * @return the encounters
 	 */
+	@OneToMany(mappedBy = "visit")
+	@OrderBy("encounterDatetime desc, encounterId desc")
 	public Set<Encounter> getEncounters() {
 		if (encounters == null) {
 			encounters = new HashSet<>();
@@ -255,6 +251,7 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	 * @return the non voided encounter list
 	 * @since 1.11.0, 1.12.0
 	 */
+	@Transient
 	public List<Encounter> getNonVoidedEncounters() {
 		return getEncounters().stream().filter(e -> !e.getVoided()).collect(Collectors.toList());
 	}
@@ -270,5 +267,18 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 			encounter.setVisit(this);
 			getEncounters().add(encounter);
 		}
+	}
+
+	@Override
+	@OneToMany(mappedBy = "visit", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OrderBy("voided asc")
+	@BatchSize(size = 100)
+	public Set<VisitAttribute> getAttributes() {
+		return super.getAttributes();
+	}
+
+	@Override
+	public void setAttributes(Set<VisitAttribute> attributes) {
+		super.setAttributes(attributes);
 	}
 }

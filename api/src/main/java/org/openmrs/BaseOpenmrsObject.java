@@ -26,13 +26,13 @@ import org.hibernate.Hibernate;
 @MappedSuperclass
 public abstract class BaseOpenmrsObject implements Serializable, OpenmrsObject {
 	
-	@Column(name = "uuid", unique = true, nullable = false, length = 38, updatable = false)
 	private String uuid = UUID.randomUUID().toString();
 	
 	/**
 	 * @see org.openmrs.OpenmrsObject#getUuid()
 	 */
 	@Override
+	@Column(name = "uuid", unique = true, nullable = false, length = 38, updatable = false)
 	public String getUuid() {
 		return uuid;
 	}
