@@ -15,6 +15,7 @@ import javax.persistence.Column;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.search.annotations.Field;
@@ -31,33 +32,17 @@ import org.hibernate.search.annotations.Field;
 public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements OpenmrsData {
 	
 	//***** Properties *****
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "creator", updatable = false)
 	protected User creator;
-	
-	@Column(name = "date_created", nullable = false, updatable = false)
-	private Date dateCreated;
-	
-	@ManyToOne
-	@JoinColumn(name = "changed_by")
-	private User changedBy;
-	
-	@Column(name = "date_changed")
-	private Date dateChanged;
-	
-	@Column(name = "voided", nullable = false)
-	@Field
-	private Boolean voided = Boolean.FALSE;
-	
-	@Column(name = "date_voided")
-	private Date dateVoided;
-	
-	@ManyToOne
-	@JoinColumn(name = "voided_by")
-	private User voidedBy;
-	
-	@Column(name = "void_reason", length = 255)
-	private String voidReason;
+
+	protected Date dateCreated;
+
+	protected Boolean voided = Boolean.FALSE;
+
+	protected Date dateVoided;
+
+	protected User voidedBy;
+
+	protected String voidReason;
 	
 	//***** Constructors *****
 	
@@ -73,6 +58,8 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	 * @see org.openmrs.OpenmrsData#getCreator()
 	 */
 	@Override
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "creator", updatable = false)
 	public User getCreator() {
 		return creator;
 	}
@@ -89,6 +76,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	 * @see org.openmrs.OpenmrsData#getDateCreated()
 	 */
 	@Override
+	@Column(name = "date_created", nullable = false, updatable = false)
 	public Date getDateCreated() {
 		return dateCreated;
 	}
@@ -102,52 +90,13 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	}
 	
 	/**
-	 * @deprecated as of version 2.2
-	 * @see org.openmrs.OpenmrsData#getChangedBy()
-	 */
-	@Override
-	@Deprecated
-	public User getChangedBy() {
-		return changedBy;
-	}
-	
-	/**
-	 * @deprecated as of version 2.2
-	 * @see org.openmrs.OpenmrsData#setChangedBy(User)
-	 */
-	@Override
-	@Deprecated
-	public void setChangedBy(User changedBy) {
-		this.changedBy = changedBy;
-	}
-	
-	/**
-	 * @deprecated as of version 2.2
-	 * @see org.openmrs.OpenmrsData#getDateChanged()
-	 */
-	@Override
-	@Deprecated
-	public Date getDateChanged() {
-		return dateChanged;
-	}
-	
-	/**
-	 * @deprecated as of version 2.2
-	 * @see org.openmrs.OpenmrsData#setDateChanged(Date)
-	 */
-	@Override
-	@Deprecated
-	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
-	}
-	
-	/**
 	 * @deprecated as of 2.0, use {@link #getVoided()}
 	 * @see org.openmrs.Voidable#isVoided()
 	 */
 	@Override
 	@Deprecated
 	@JsonIgnore
+	@Transient
 	public Boolean isVoided() {
 		return getVoided();
 	}
@@ -156,6 +105,8 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	 * @see org.openmrs.Voidable#getVoided()
 	 */
 	@Override
+	@Column(name = "voided", nullable = false)
+	@Field
 	public Boolean getVoided() {
 		return voided;
 	}
@@ -172,6 +123,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	 * @see org.openmrs.Voidable#getDateVoided()
 	 */
 	@Override
+	@Column(name = "date_voided")
 	public Date getDateVoided() {
 		return dateVoided;
 	}
@@ -188,6 +140,8 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	 * @see org.openmrs.Voidable#getVoidedBy()
 	 */
 	@Override
+	@ManyToOne
+	@JoinColumn(name = "voided_by")
 	public User getVoidedBy() {
 		return voidedBy;
 	}
@@ -204,6 +158,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	 * @see org.openmrs.Voidable#getVoidReason()
 	 */
 	@Override
+	@Column(name = "void_reason")
 	public String getVoidReason() {
 		return voidReason;
 	}

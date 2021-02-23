@@ -9,6 +9,9 @@
  */
 package org.openmrs;
 
+import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -25,9 +28,9 @@ import org.openmrs.customdatatype.Customizable;
  * @since 1.9
  */
 public abstract class BaseCustomizableData<A extends Attribute> extends BaseChangeableOpenmrsData implements Customizable<A> {
-	
+
 	private Set<A> attributes = new LinkedHashSet<>();
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.Customizable#getAttributes()
 	 */
@@ -47,6 +50,7 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseChan
 	 * @see org.openmrs.customdatatype.Customizable#getActiveAttributes()
 	 */
 	@Override
+	@Transient
 	public Collection<A> getActiveAttributes() {
 		List<A> ret = new ArrayList<>();
 		if (getAttributes() != null) {
@@ -63,6 +67,7 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseChan
 	 * @see org.openmrs.customdatatype.Customizable#getActiveAttributes(org.openmrs.customdatatype.CustomValueDescriptor)
 	 */
 	@Override
+	@Transient
 	public List<A> getActiveAttributes(CustomValueDescriptor ofType) {
 		List<A> ret = new ArrayList<>();
 		if (getAttributes() != null) {

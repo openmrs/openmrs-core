@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import javax.persistence.MappedSuperclass;
+
 import java.util.Date;
 
 /**
@@ -16,6 +18,7 @@ import java.util.Date;
  * 
  * @since 1.9
  */
+@MappedSuperclass
 public abstract class BaseConceptMap extends BaseOpenmrsObject implements Auditable {
 	
 	private ConceptMapType conceptMapType;

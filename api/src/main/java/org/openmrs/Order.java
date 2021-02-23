@@ -190,8 +190,6 @@ public class Order extends BaseOpenmrsData {
 		target.action = getAction();
 		target.orderNumber = getOrderNumber();
 		target.setCareSetting(getCareSetting());
-		target.setChangedBy(getChangedBy());
-		target.setDateChanged(getDateChanged());
 		target.setScheduledDate(getScheduledDate());
 		target.setOrderGroup(getOrderGroup());
 		target.setSortWeight(getSortWeight());
