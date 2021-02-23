@@ -63,21 +63,6 @@ public class HibernateConditionDAO implements ConditionDAO {
 		return sessionFactory.getCurrentSession().createQuery("from Condition c where c.uuid = :uuid", Condition.class)
 				.setParameter("uuid", uuid).uniqueResult();
 	}
-	
-	/**
-	 * Gets all conditions related to the specified patient.
-	 *
-	 * @param patient the patient whose condition history is being queried.
-	 * @return all active and non active conditions related to the specified patient.
-	 */
-	@Override
-	public List<Condition> getConditionHistory(Patient patient) {
-		Query<Condition> query = sessionFactory.getCurrentSession().createQuery(
-				"from Condition con where con.patient.patientId = :patientId " +
-						"order by con.dateCreated desc", Condition.class);
-		query.setParameter("patientId", patient.getId());
-		return query.list();
-	}
 
 	/**
 	 * @see org.openmrs.api.ConditionService#getConditionsByEncounter(Encounter)
@@ -111,7 +96,11 @@ public class HibernateConditionDAO implements ConditionDAO {
 	 */
 	@Override
 	public List<Condition> getAllConditions(Patient patient) {
-		return this.getConditionHistory(patient);
+		Query<Condition> query = sessionFactory.getCurrentSession().createQuery(
+				"from Condition con where con.patient.patientId = :patientId " +
+						"order by con.dateCreated desc", Condition.class);
+		query.setParameter("patientId", patient.getId());
+		return query.list();
 	}
 	
 	/**

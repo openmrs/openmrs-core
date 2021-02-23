@@ -38,14 +38,6 @@ public interface ConditionDAO {
 	 * @return the condition associated with the UUID.
 	 */
 	Condition getConditionByUuid(String uuid);
-
-	/**
-	 * Gets all conditions related to the specified patient.
-	 *
-	 * @param patient the patient whose condition history is being queried.
-	 * @return all active and non active conditions related to the specified patient.
-	 */
-	List<Condition> getConditionHistory(Patient patient);
 	
 	/**
 	 * Gets all active conditions related to the specified patient.
