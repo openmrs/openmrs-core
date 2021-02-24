@@ -714,10 +714,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 			hl7InQueue.setMessageState(HL7Constants.HL7_STATUS_PROCESSING);
 		}
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Processing HL7 inbound queue (id=" + hl7InQueue.getHL7InQueueId() + ",key="
-			        + hl7InQueue.getHL7SourceKey() + ")");
-		}
+		log.debug("Processing HL7 inbound queue (id={},key={})", hl7InQueue.getHL7InQueueId(), hl7InQueue.getHL7SourceKey());
 		
 		// Parse the HL7 into an HL7Message or abort with failure
 		String hl7Message = hl7InQueue.getHL7Data();
@@ -1088,9 +1085,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 			hl7InArchives = getHL7InArchivesToMigrate();
 		}
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Transfer of HL7 archives has completed or has been stopped");
-		}
+		log.debug("Transfer of HL7 archives has completed or has been stopped");
 	}
 	
 	/**
