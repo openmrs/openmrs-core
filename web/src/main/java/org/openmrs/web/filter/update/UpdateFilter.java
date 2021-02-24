@@ -506,10 +506,7 @@ public class UpdateFilter extends StartupFilter {
 				} else if (updateFilterModel.changes == null) {
 					setUpdatesRequired(false);
 				} else {
-					if (log.isDebugEnabled()) {
-						log.debug("Setting updates required to " + (!updateFilterModel.changes.isEmpty())
-						        + " because of the size of unrun changes");
-					}
+					log.debug("Setting updates required to {} because of the size of unrun changes", (!updateFilterModel.changes.isEmpty()));
 					setUpdatesRequired(!updateFilterModel.changes.isEmpty());
 				}
 			}
