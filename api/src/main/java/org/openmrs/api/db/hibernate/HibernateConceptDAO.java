@@ -256,7 +256,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public ConceptAnswer getConceptAnswer(Integer conceptAnswerId) throws DAOException {
-		return sessionFactory.getCurrentSession().get(ConceptAnswer.class, conceptAnswerId);
+		return (ConceptAnswer) sessionFactory.getCurrentSession().get(ConceptAnswer.class, conceptAnswerId);
 	}
 	
 	/**
