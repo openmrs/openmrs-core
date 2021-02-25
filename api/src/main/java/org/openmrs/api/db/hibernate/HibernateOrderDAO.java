@@ -9,6 +9,16 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
+import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.EntityType;
+
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
@@ -21,9 +31,9 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.SimpleExpression;
 import org.hibernate.transform.DistinctRootEntityResultTransformer;
+import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
-import org.openmrs.CareSetting;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Order;
@@ -33,24 +43,15 @@ import org.openmrs.OrderGroupAttribute;
 import org.openmrs.OrderGroupAttributeType;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
+import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.parameter.OrderSearchCriteria;
-import org.openmrs.User;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.EntityType;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
 
 
 /**
@@ -110,11 +111,9 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public Order getOrder(Integer orderId) throws DAOException {
-		if (log.isDebugEnabled()) {
-			log.debug("getting order #" + orderId);
-		}
+		log.debug("getting order #{}", orderId);
 		
-		return (Order) sessionFactory.getCurrentSession().get(Order.class, orderId);
+		return sessionFactory.getCurrentSession().get(Order.class, orderId);
 	}
 	
 	/**
@@ -343,7 +342,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public OrderGroup getOrderGroupById(Integer orderGroupId) throws DAOException {
-		return (OrderGroup) sessionFactory.getCurrentSession().get(OrderGroup.class, orderGroupId);
+		return sessionFactory.getCurrentSession().get(OrderGroup.class, orderGroupId);
 	}
 	
 	/**
@@ -372,7 +371,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public Long getNextOrderNumberSeedSequenceValue() {
-		GlobalProperty globalProperty = (GlobalProperty) sessionFactory.getCurrentSession().get(GlobalProperty.class,
+		GlobalProperty globalProperty = sessionFactory.getCurrentSession().get(GlobalProperty.class,
 		    OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED, LockOptions.UPGRADE);
 		
 		if (globalProperty == null) {
@@ -464,7 +463,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public CareSetting getCareSetting(Integer careSettingId) {
-		return (CareSetting) sessionFactory.getCurrentSession().get(CareSetting.class, careSettingId);
+		return sessionFactory.getCurrentSession().get(CareSetting.class, careSettingId);
 	}
 	
 	/**
@@ -512,7 +511,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public OrderFrequency getOrderFrequency(Integer orderFrequencyId) {
-		return (OrderFrequency) sessionFactory.getCurrentSession().get(OrderFrequency.class, orderFrequencyId);
+		return sessionFactory.getCurrentSession().get(OrderFrequency.class, orderFrequencyId);
 	}
 	
 	/**

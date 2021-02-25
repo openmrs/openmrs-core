@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.persistence.Transient;
+
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.ContainedIn;
@@ -649,9 +650,7 @@ public class Person extends BaseChangeableOpenmrsData {
 			return attributeMap;
 		}
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Current Person Attributes: \n" + printAttributes());
-		}
+		log.debug("Current Person Attributes: \n{}", printAttributes());
 		
 		attributeMap = new HashMap<>();
 		for (PersonAttribute attribute : getActiveAttributes()) {

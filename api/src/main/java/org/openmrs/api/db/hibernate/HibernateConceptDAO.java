@@ -240,7 +240,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public Concept getConcept(Integer conceptId) throws DAOException {
-		return (Concept) sessionFactory.getCurrentSession().get(Concept.class, conceptId);
+		return sessionFactory.getCurrentSession().get(Concept.class, conceptId);
 	}
 	
 	/**
@@ -248,7 +248,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public ConceptName getConceptName(Integer conceptNameId) throws DAOException {
-		return (ConceptName) sessionFactory.getCurrentSession().get(ConceptName.class, conceptNameId);
+		return sessionFactory.getCurrentSession().get(ConceptName.class, conceptNameId);
 	}
 	
 	/**
@@ -256,7 +256,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public ConceptAnswer getConceptAnswer(Integer conceptAnswerId) throws DAOException {
-		return (ConceptAnswer) sessionFactory.getCurrentSession().get(ConceptAnswer.class, conceptAnswerId);
+		return sessionFactory.getCurrentSession().get(ConceptAnswer.class, conceptAnswerId);
 	}
 	
 	/**
@@ -313,7 +313,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		
 		hql += asc ? " asc" : " desc";
 		Query query = sessionFactory.getCurrentSession().createQuery(hql);
-		return (List<Concept>) query.list();
+		return query.list();
 	}
 	
 	/**
@@ -330,7 +330,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public Drug getDrug(Integer drugId) throws DAOException {
-		return (Drug) sessionFactory.getCurrentSession().get(Drug.class, drugId);
+		return sessionFactory.getCurrentSession().get(Drug.class, drugId);
 	}
 	
 	/**
@@ -353,7 +353,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 			}
 			searchCriteria.add(eq);
 		}
-		return (List<Drug>) searchCriteria.list();
+		return searchCriteria.list();
 	}
 	
 	/**
@@ -368,7 +368,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		Criterion lhs = Restrictions.eq("ingredients.ingredient", ingredient);
 		searchDrugCriteria.add(Restrictions.or(lhs, rhs));
 		
-		return (List<Drug>) searchDrugCriteria.list();
+		return searchDrugCriteria.list();
 	}
 	
 	/**
@@ -390,7 +390,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public ConceptClass getConceptClass(Integer i) throws DAOException {
-		return (ConceptClass) sessionFactory.getCurrentSession().get(ConceptClass.class, i);
+		return sessionFactory.getCurrentSession().get(ConceptClass.class, i);
 	}
 	
 	/**
@@ -452,7 +452,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public ConceptDatatype getConceptDatatype(Integer i) {
-		return (ConceptDatatype) sessionFactory.getCurrentSession().get(ConceptDatatype.class, i);
+		return sessionFactory.getCurrentSession().get(ConceptDatatype.class, i);
 	}
 	
 	/**
@@ -764,7 +764,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public ConceptProposal getConceptProposal(Integer conceptProposalId) throws DAOException {
-		return (ConceptProposal) sessionFactory.getCurrentSession().get(ConceptProposal.class, conceptProposalId);
+		return sessionFactory.getCurrentSession().get(ConceptProposal.class, conceptProposalId);
 	}
 	
 	/**
@@ -832,11 +832,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 				parents.addAll(getParents(c));
 			}
 			parents.add(current);
-			if (log.isDebugEnabled()) {
-				log.debug("parents found: ");
+			log.debug("parents found: ");
 				for (Concept c : parents) {
-					log.debug("id: " + c.getConceptId());
-				}
+				log.debug("id: {}", c.getConceptId());
 			}
 		}
 		return parents;
@@ -863,7 +861,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public ConceptNameTag getConceptNameTag(Integer i) {
-		return (ConceptNameTag) sessionFactory.getCurrentSession().get(ConceptNameTag.class, i);
+		return sessionFactory.getCurrentSession().get(ConceptNameTag.class, i);
 	}
 	
 	/**
@@ -895,7 +893,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public ConceptSource getConceptSource(Integer conceptSourceId) {
-		return (ConceptSource) sessionFactory.getCurrentSession().get(ConceptSource.class, conceptSourceId);
+		return sessionFactory.getCurrentSession().get(ConceptSource.class, conceptSourceId);
 	}
 	
 	/**
@@ -1061,7 +1059,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		// we only want distinct concepts
 		criteria.setResultTransformer(DistinctRootEntityResultTransformer.INSTANCE);
 		
-		return (List<Concept>) criteria.list();
+		return criteria.list();
 	}
 	
 	/**
@@ -1189,7 +1187,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptMap.class);
 		criteria.createAlias("conceptReferenceTerm", "term");
 		criteria.add(Restrictions.eq("term.conceptSource", conceptSource));
-		return (List<ConceptMap>) criteria.list();
+		return criteria.list();
 	}
 	
 	/**
@@ -1262,7 +1260,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		criteria.setProjection(Projections.property("value"));
 		criteria.add(Restrictions.eq("locale", locale));
 		
-		return (List<String>) criteria.list();
+		return criteria.list();
 	}
 	
 	/**
@@ -1506,7 +1504,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public ConceptMapType getConceptMapType(Integer conceptMapTypeId) throws DAOException {
-		return (ConceptMapType) sessionFactory.getCurrentSession().get(ConceptMapType.class, conceptMapTypeId);
+		return sessionFactory.getCurrentSession().get(ConceptMapType.class, conceptMapTypeId);
 	}
 	
 	/**
@@ -1563,7 +1561,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public ConceptReferenceTerm getConceptReferenceTerm(Integer conceptReferenceTermId) throws DAOException {
-		return (ConceptReferenceTerm) sessionFactory.getCurrentSession().get(ConceptReferenceTerm.class,
+		return sessionFactory.getCurrentSession().get(ConceptReferenceTerm.class,
 		    conceptReferenceTermId);
 	}
 	
@@ -1584,7 +1582,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	public List<ConceptReferenceTerm> getConceptReferenceTermsBySource(ConceptSource conceptSource) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptReferenceTerm.class);
 		criteria.add(Restrictions.eq("conceptSource", conceptSource));
-		return (List<ConceptReferenceTerm>) criteria.list();
+		return criteria.list();
 	}
 	
 	/**
@@ -1921,7 +1919,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 			criteria.add(Restrictions.in("map.conceptMapType", withAnyOfTheseTypes));
 		}
 		//check whether retired on not retired drugs
-		return (List<Drug>) criteria.list();
+		return criteria.list();
 	}
 	
 	/**
@@ -1979,7 +1977,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public ConceptAttributeType getConceptAttributeType(Integer id) {
-		return (ConceptAttributeType) sessionFactory.getCurrentSession().get(ConceptAttributeType.class, id);
+		return sessionFactory.getCurrentSession().get(ConceptAttributeType.class, id);
 	}
 
 	/**
