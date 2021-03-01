@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+  <person person_id="5508" gender="F" dead="false" creator="1" date_created="2008-08-15 15:46:47.0" voided="false" uuid="edc3d446-e53b-11de-8404-001e378eb67e"/>
+  <users user_id="5508" person_id="5508" system_id="508-x" username="Mukembo" password="07082424c46568fa5442a3ddd9521ff8bf0715a6c4d411b2f79a37a2d45b5c14c97e2f3754f7367390bd68ec7aa22c5f1891dc413b3861063d5973fb4cd4bcda" salt="d485cc2ce9e8f15e4b15411363ee03471c72b2579dbf7d3684ed485ec94d8f480e281db0abc77d09bcd7fe96e6cc9a80423f69a8a594d5825cf02aedc4da787e" secret_question="" secret_answer="" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" retired="false" retire_reason="" uuid="2eadf946-e53c-11de-8404-001e378eb67e"/> 
+</dataset>
