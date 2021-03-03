@@ -10,7 +10,8 @@
 
 package org.openmrs;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 
@@ -19,10 +20,10 @@ import static org.hamcrest.Matchers.is;
 
 public class AllergyTest {
 
-	@Test(expected = NullPointerException.class)
+    @Test
 	public void hasSameValues_otherAllergyIsNull_shouldThrowNullPointerException() {
 		Allergy allergy = new Allergy();
-		allergy.hasSameValues(null);
+		assertThrows(NullPointerException.class, () -> allergy.hasSameValues(null));
 	}
 
 	@Test
@@ -243,7 +244,7 @@ public class AllergyTest {
 
 	private Allergy allergyWithComment(String comment) {
 		Allergy allergy = allergy();
-		allergy.setComment(comment);
+		allergy.setComments(comment);
 		return allergy;
 	}
 
