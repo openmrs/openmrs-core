@@ -243,19 +243,19 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			orderType = getOrderTypeByConcept(order.getConcept());
 			orderTypes.add(orderType);
 		}
-		if (( orderTypes.size() == 0 || orderTypes.size() > 1) && order instanceof DrugOrder) {
+		if (( orderTypes.size() == 0) || (orderTypes.size() > 1) && order instanceof DrugOrder) {
 				throw new AmbiguousOrderException("Order.cannot.have.more.than.one");
 		}
 		else{
 			orderTypes = Context.getOrderService().getOrderTypesByClassName(DrugOrder.class.getTypeName());
 		}
-		if ((orderTypes.size() == 0 || orderTypes.size() > 1) && order instanceof TestOrder) {
+		if ((orderTypes.size() == 0) || (orderTypes.size() > 1) && order instanceof TestOrder) {
 			throw new AmbiguousOrderException("Order.cannot.have.more.than.one");
 		}
 		else{
 			orderTypes = Context.getOrderService().getOrderTypesByClassName(TestOrder.class.getTypeName());
 		}
-		if (orderType == null && (orderTypes.size() == 0 || orderTypes.size() > 1)) {
+		if ((orderType == null) && (orderTypes.size() == 0 || orderTypes.size() > 1)) {
 			throw new OrderEntryException("Order.type.cannot.determine");
 		}
 		Order previousOrder = order.getPreviousOrder();
