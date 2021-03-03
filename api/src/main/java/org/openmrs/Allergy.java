@@ -330,7 +330,7 @@ public class Allergy extends BaseChangeableOpenmrsData {
 	}
 
 	private boolean hasSameComment(Allergy allergy) {
-		return OpenmrsUtil.nullSafeEquals(getComments(), allergy.getComment());
+		return OpenmrsUtil.nullSafeEquals(getComments(), allergy.getComments());
 	}
 	
 	
