@@ -111,6 +111,7 @@ import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.core.JdkVersion;
+import org.springframework.web.util.HtmlUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
 
@@ -172,6 +173,24 @@ public class OpenmrsUtil {
 		return returnList;
 	}
 	
+
+	 /**
+     * Verify if a string contains any HTML characters by comparing its
+     * HTML-escaped version with the original.
+     * @param String input  the input String
+     * @return boolean  True if the String contains HTML characters
+     */
+    public static boolean isHtml(String input) {
+        boolean isHtml = false;
+        if (input != null) {
+            if (!input.equals(HtmlUtils.htmlEscape(input))) {
+                isHtml = true;
+            }
+        }
+        return isHtml;
+    }
+
+
 	public static boolean isStringInArray(String str, String[] arr) {
 		boolean retVal = false;
 		
