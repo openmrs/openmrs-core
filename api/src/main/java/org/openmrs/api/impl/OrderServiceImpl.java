@@ -291,9 +291,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		return firstOrder.hasSameOrderableAs(secondOrder)
 		        && !OpenmrsUtil.nullSafeEquals(firstOrder.getPreviousOrder(), secondOrder)
 		        && OrderUtil.checkScheduleOverlap(firstOrder, secondOrder)
-		        && firstOrder.getOrderType().equals(
-		            Context.getOrderService().getOrderTypesByClassName(DrugOrder.class.getTypeName()));
-		
+			    && firstOrder instanceof DrugOrder;
 	}
 
 	private boolean isDrugOrder(Order order) {
