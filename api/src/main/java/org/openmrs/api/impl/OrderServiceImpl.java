@@ -234,20 +234,28 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			return;
 		}
 		OrderType orderType = null;
+		List<OrderType> orderTypes = new ArrayList<>();
 		if (orderContext != null) {
 			orderType = orderContext.getOrderType();
+			orderTypes.add(orderType);
 		}
 		if (orderType == null) {
 			orderType = getOrderTypeByConcept(order.getConcept());
+			orderTypes.add(orderType);
 		}
-		if (orderType == null && order instanceof DrugOrder) {
-			orderType = Context.getOrderService().getOrderTypeByClassName(DrugOrder.class.getTypeName());
+		if (( orderTypes.size() == 0 || orderTypes.size() > 1) && order instanceof DrugOrder) {
+				throw new AmbiguousOrderException("Order.cannot.have.more.than.one");
 		}
-		if (orderType == null && order instanceof TestOrder) {
-			orderType = Context.getOrderService().getOrderTypeByClassName(TestOrder.class.getTypeName());
-
+		else{
+			orderTypes = Context.getOrderService().getOrderTypesByClassName(DrugOrder.class.getTypeName());
 		}
-		if (orderType == null) {
+		if ((orderTypes.size() == 0 || orderTypes.size() > 1) && order instanceof TestOrder) {
+			throw new AmbiguousOrderException("Order.cannot.have.more.than.one");
+		}
+		else{
+			orderTypes = Context.getOrderService().getOrderTypesByClassName(TestOrder.class.getTypeName());
+		}
+		if (orderType == null && (orderTypes.size() == 0 || orderTypes.size() > 1)) {
 			throw new OrderEntryException("Order.type.cannot.determine");
 		}
 		Order previousOrder = order.getPreviousOrder();
@@ -284,7 +292,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		        && !OpenmrsUtil.nullSafeEquals(firstOrder.getPreviousOrder(), secondOrder)
 		        && OrderUtil.checkScheduleOverlap(firstOrder, secondOrder)
 		        && firstOrder.getOrderType().equals(
-		            Context.getOrderService().getOrderTypeByClassName(DrugOrder.class.getTypeName()));
+		            Context.getOrderService().getOrderTypesByClassName(DrugOrder.class.getTypeName()));
 		
 	}
 
@@ -935,8 +943,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 
 	@Override
 	@Transactional(readOnly = true)
-	public OrderType getOrderTypeByClassName(String className) {
-		return dao.getOrderTypeByClassName(className);
+	public List<OrderType> getOrderTypesByClassName(String className) {
+		return dao.getOrderTypesByClassName(className);
 	}
 
 	/**
