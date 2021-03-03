@@ -2008,15 +2008,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void getOrderTypeByUuid_shouldReturnNullIfNoOrderTypeObjectFoundWithGivenUuid() {
 		assertNull(orderService.getOrderTypeByUuid("some random uuid"));
 	}
-
-	/**
-	 * @see OrderService#getOrderTypesByClassName(String) 
-	 */
-//	@Test
-//	public void getOrderTypeByClassName_shouldReturnNullIfNoOrderTypeObjectFoundWithGivenClassName() {
-//		assertNull(orderService.getOrderTypesByClassName("Some random string or name"));
-//	}
-
+	
 	/**
 	 * @see OrderService#getOrderTypes(boolean)
 	 */
