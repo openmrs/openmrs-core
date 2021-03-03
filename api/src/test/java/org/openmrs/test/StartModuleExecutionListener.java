@@ -44,7 +44,13 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
  * @see SerializedObjectDAOTest
  * @see ModuleInteroperabilityTest
  * @see BaseContextSensitiveTest
+ * @deprecated as of 2.4
+ * <p>openmrs-core migrated its tests from JUnit 4 to JUnit 5.
+ * JUnit 4 helpers are still supported so module developers can gradually migrate tests from JUnit 4 to JUnit 5.
+ * To migrate your tests follow <a href="https://wiki.openmrs.org/display/docs/How+to+migrate+to+JUnit+5">How to migrate to JUnit 5</a>.
+ * The JUnit 5 version of the class is {@link org.openmrs.test.jupiter.StartModuleExecutionListener}.<p>
  */
+@Deprecated
 public class StartModuleExecutionListener extends AbstractTestExecutionListener {
 	
 	private static final Logger log = LoggerFactory.getLogger(StartModuleExecutionListener.class);

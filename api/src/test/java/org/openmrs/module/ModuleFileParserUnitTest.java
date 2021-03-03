@@ -551,7 +551,7 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 	public void parse_shouldIgnoreExtensionWithExtensionIdSeparatorInPoint() throws IOException {
 
 		Document config = buildOnValidConfigXml()
-			.withExtension("org.openmrs.admin.list" + Extension.extensionIdSeparator, AccessibleExtension.class.getName())
+			.withExtension("org.openmrs.admin.list" + Extension.EXTENSION_ID_SEPARATOR, AccessibleExtension.class.getName())
 			.build();
 
 		Module module = parser.parse(writeConfigXmlToFile(config));

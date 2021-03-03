@@ -8,6 +8,7 @@ jdk:
  - openjdk12
  - openjdk13
  - openjdk14
+ - openjdk15
 script: mvn clean install --batch-mode && mvn test -Pskip-default-test -Pintegration-test
 matrix:
     - jdk: openjdk8
