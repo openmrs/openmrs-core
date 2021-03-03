@@ -649,9 +649,19 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 
 	@Override
-	public OrderType getOrderTypeByClassName(String javaClassName) {
+	public List<OrderType> getOrderTypesByClassName(String javaClassName) {
 		return sessionFactory.getCurrentSession().createQuery("from OrderType o where o.javaClassName = :javaClassName", OrderType.class)
-			.setMaxResults(1).setString("javaClassName", javaClassName).uniqueResult();
+			.setString("javaClassName", javaClassName).list();
+
+//		return sessionFactory.getCurrentSession().createQuery("from OrderType o where o.javaClassName = :javaClassName", OrderType.class)
+//			.setParameter("javaClassName", OrderType.class.getTypeName())
+//			.setString("javaClassName", OrderType.class.getTypeName())
+//			.uniqueResult();
+
+//		return (OrderType) sessionFactory.getCurrentSession().createQuery("from OrderType o where o.javaClassName = :javaClassName", OrderType.class)
+//			.setString("javaClassName", javaClassName)
+//			.setCacheable(true).list();
+
 	}
 
 	/**

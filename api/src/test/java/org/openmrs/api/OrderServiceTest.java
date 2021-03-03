@@ -34,15 +34,7 @@ import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Locale;
-import java.util.GregorianCalendar;
-import java.util.LinkedHashSet;
+import java.util.*;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.boot.Metadata;
@@ -98,9 +90,7 @@ import org.openmrs.parameter.OrderSearchCriteria;
 import org.openmrs.parameter.OrderSearchCriteriaBuilder;
 import org.openmrs.test.TestUtil;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
-import org.openmrs.util.DateUtil;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -1987,12 +1977,27 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see OrderService#getOrderTypeByClassName(String) 
+	 * @see OrderService#getOrderTypesByClassName(String) 
 	 */
 	@Test
-	public void getOrderTypeByClassName_shouldFindOrderTypeObjectGivenExistingClassName() {
-		assertEquals(orderService.getOrderTypeByUuid("131168f4-15f5-102d-96e4-000c29c2a5d7"), orderService.getOrderTypeByClassName(DrugOrder.class.getTypeName()));
-		assertEquals(orderService.getOrderTypeByUuid("52a447d3-a64a-11e3-9aeb-50e549534c5e"), orderService.getOrderTypeByClassName(TestOrder.class.getTypeName()));
+	public void getOrderTypesByClassName_shouldFindOrderTypeObjectGivenExistingClassName() {
+		List<OrderType> orderTypes = new ArrayList<>();
+		orderTypes.add(orderService.getOrderTypeByUuid("9b6cf570-ac05-11e3-a5e2-0800200c9a66"));
+		orderTypes.add(orderService.getOrderTypeByUuid("a4ebaf10-ac05-11e3-a5e2-0800200c9a66"));
+		orderTypes.add(orderService.getOrderTypeByUuid("ab0f08b0-ac05-11e3-a5e2-0800200c9a66"));
+
+        assertEquals(orderService.getOrderTypeByUuid("9b6cf570-ac05-11e3-a5e2-0800200c9a66").toString(), 
+			orderService.getOrderTypesByClassName("org.openmrs.SerologyTestOrder")
+				.toString().replace("[", "")
+				.replace("]", ""));
+		assertEquals(orderService.getOrderTypeByUuid("a4ebaf10-ac05-11e3-a5e2-0800200c9a66").toString(),
+			orderService.getOrderTypesByClassName("org.openmrs.MicrobilogyTestOrder")
+				.toString().replace("[", "")
+				.replace("]", ""));
+		assertEquals(orderService.getOrderTypeByUuid("ab0f08b0-ac05-11e3-a5e2-0800200c9a66").toString(),
+			orderService.getOrderTypesByClassName("org.openmrs.ChemistryTestOrder")
+				.toString().replace("[", "")
+				.replace("]", ""));
 	}
 	
 
@@ -2005,12 +2010,12 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see OrderService#getOrderTypeByClassName(String) 
+	 * @see OrderService#getOrderTypesByClassName(String) 
 	 */
-	@Test
-	public void getOrderTypeByClassName_shouldReturnNullIfNoOrderTypeObjectFoundWithGivenClassName() {
-		assertNull(orderService.getOrderTypeByClassName("some random String or name"));
-	}
+//	@Test
+//	public void getOrderTypeByClassName_shouldReturnNullIfNoOrderTypeObjectFoundWithGivenClassName() {
+//		assertNull(orderService.getOrderTypesByClassName("Some random string or name"));
+//	}
 
 	/**
 	 * @see OrderService#getOrderTypes(boolean)
@@ -3145,7 +3150,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 		orderService.saveOrder(drugOrder, null);
 		assertNotNull(drugOrder.getOrderType());
-		assertEquals(orderService.getOrderTypeByClassName(DrugOrder.class.getTypeName()), drugOrder.getOrderType());
+		assertEquals(orderService.getOrderTypesByClassName(DrugOrder.class.getTypeName()), drugOrder.getOrderType());
 
 	}
 
@@ -3172,7 +3177,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 		orderService.saveOrder(testOrder, null);
 		assertNotNull(testOrder.getOrderType());
-		assertEquals(orderService.getOrderTypeByClassName(TestOrder.class.getTypeName()), testOrder.getOrderType());
+		assertEquals(orderService.getOrderTypesByClassName(TestOrder.class.getTypeName()), testOrder.getOrderType());
 	}
 
 	@Test
