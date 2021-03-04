@@ -9,6 +9,11 @@
  */
 package org.openmrs.notification.db.hibernate;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 import org.junit.jupiter.api.Assertions;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -26,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 	
 	private static final String DATA_XML = "org/openmrs/api/db/hibernate/include/HibernateAlertDAOTestDataSet.xml";
+	private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	@Autowired
 	private HibernateAlertDAO hibernateAlertDAO;
@@ -47,12 +53,26 @@ public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAlert_shouldGetAlertById() {
 		Alert savedAlert = hibernateAlertDAO.getAlert(2);
+		Date currentDate = new Date();
+		dateFormat.format(currentDate);
+		Calendar c = Calendar.getInstance();
+		c.setTime(currentDate);
+		c.add(Calendar.YEAR,1);
+		Date currentDatePlusOneYear = c.getTime();
+		savedAlert.setDateToExpire(currentDatePlusOneYear);
 		Assertions.assertEquals((int) savedAlert.getAlertId(), 2);
 	}
 	
 	@Test
 	public void deleteAlert_shouldReturnNullAfterDeleting() {
 		Alert savedAlert = hibernateAlertDAO.getAlert(2);
+		Date currentDate = new Date();
+		dateFormat.format(currentDate);
+		Calendar c = Calendar.getInstance();
+		c.setTime(currentDate);
+		c.add(Calendar.YEAR,1);
+		Date currentDatePlusOneYear = c.getTime();
+		savedAlert.setDateToExpire(currentDatePlusOneYear);
 		Assertions.assertNotNull(savedAlert);
 		hibernateAlertDAO.deleteAlert(savedAlert);
 		Assertions.assertNull(hibernateAlertDAO.getAlert(2));
@@ -60,6 +80,14 @@ public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void getAllAlerts_shouldReturnOnlyNonExpiredAllerts() {
+		Alert alert = hibernateAlertDAO.getAlert(2);
+		Date currentDate = new Date();
+		dateFormat.format(currentDate);
+		Calendar c = Calendar.getInstance();
+		c.setTime(currentDate);
+		c.add(Calendar.YEAR,1);
+		Date currentDatePlusOneYear = c.getTime();
+		alert.setDateToExpire(currentDatePlusOneYear);
 		Assertions.assertEquals(hibernateAlertDAO.getAllAlerts(false).size(), 1);
 	}
 	
