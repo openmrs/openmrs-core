@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.Logger;
@@ -50,7 +51,16 @@ public class SchedulerUtil {
 		// TODO: do this for all services
 		try {
 			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_SCHEDULER);
-			Context.getSchedulerService().onStartup();
+			SchedulerService schedulerService;
+			try {
+				schedulerService = Context.getSchedulerService();
+			}
+			catch (APIException e) {
+				log.warn("Could not notify the scheduler service about startup", e);
+				return;
+			}
+			
+			schedulerService.onStartup();
 		}
 		finally {
 			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_SCHEDULER);
