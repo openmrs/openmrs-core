@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import liquibase.pro.packaged.T;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.ConceptSource;
 import org.openmrs.GlobalProperty;
@@ -485,9 +486,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			throw new APIException(ms);
 		}
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Response: " + response);
-		}
+		log.debug("Response: {}", response);
 		
 		if (response.startsWith("Success")) {
 			response = response.replace("Success", "");
