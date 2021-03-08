@@ -651,7 +651,6 @@ public class Person extends BaseChangeableOpenmrsData {
 		
 		log.debug("Current Person Attributes: \n{}", printAttributes());
 		
-		
 		attributeMap = new HashMap<>();
 		for (PersonAttribute attribute : getActiveAttributes()) {
 			attributeMap.put(attribute.getAttributeType().getName(), attribute);

@@ -832,10 +832,12 @@ public class HibernateConceptDAO implements ConceptDAO {
 				parents.addAll(getParents(c));
 			}
 			parents.add(current);
-			log.debug("parents found: ");
+			if (log.isDebugEnabled()) {
+				log.debug("parents found: ");
 				for (Concept c : parents) {
 					log.debug("id: {}", c.getConceptId());
 				}
+			}	
 		}
 		return parents;
 	}
