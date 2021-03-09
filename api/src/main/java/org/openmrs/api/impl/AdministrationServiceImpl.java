@@ -485,9 +485,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			throw new APIException(ms);
 		}
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Response: " + response);
-		}
+		log.debug("Response: {}", response);
 		
 		if (response.startsWith("Success")) {
 			response = response.replace("Success", "");

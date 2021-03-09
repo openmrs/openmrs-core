@@ -835,9 +835,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 			if (log.isDebugEnabled()) {
 				log.debug("parents found: ");
 				for (Concept c : parents) {
-					log.debug("id: " + c.getConceptId());
+					log.debug("id: {}", c.getConceptId());
 				}
-			}
+			}	
 		}
 		return parents;
 	}
