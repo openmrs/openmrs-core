@@ -1063,9 +1063,7 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	 * <strong>Should</strong> fail if the value of the string is empty
 	 */
 	public void setValueAsString(String s) throws ParseException {
-		if (log.isDebugEnabled()) {
-			log.debug("getConcept() == " + getConcept());
-		}
+		log.debug("getConcept() == {}", getConcept());
 		
 		if (getConcept() != null && !StringUtils.isBlank(s)) {
 			String abbrev = getConcept().getDatatype().getHl7Abbreviation();
