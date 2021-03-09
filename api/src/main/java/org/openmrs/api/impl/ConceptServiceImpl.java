@@ -1301,9 +1301,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			if (!(dao.getSavedConceptDatatype(concept).isBoolean() && concept.getDatatype().isCoded())) {
 				throw new ConceptInUseException();
 			}
-			if (log.isDebugEnabled()) {
-				log.debug("Converting datatype of concept with id " + concept.getConceptId() + " from Boolean to Coded");
-			}
+			log.debug("Converting datatype of concept with id {} from Boolean to coded", concept.getConceptId());
 		}
 	}
 	
