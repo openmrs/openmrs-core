@@ -649,9 +649,7 @@ public class Person extends BaseChangeableOpenmrsData {
 			return attributeMap;
 		}
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Current Person Attributes: \n" + printAttributes());
-		}
+		log.debug("Current Person Attributes: \n{}", printAttributes());
 		
 		attributeMap = new HashMap<>();
 		for (PersonAttribute attribute : getActiveAttributes()) {

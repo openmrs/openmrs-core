@@ -632,7 +632,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			if (!pp.getVoided()) {
 				PatientProgram enroll = pp.copy();
 				enroll.setPatient(preferred);
-				log.debug("Copying patientProgram " + pp.getPatientProgramId() + " to " + preferred.getPatientId());
+				log.debug("Copying patientProgram {} to {}", pp.getPatientProgramId(), preferred.getPatientId());
 				PatientProgram persisted = programService.savePatientProgram(enroll);
 				mergedData.addCreatedProgram(persisted.getUuid());
 			}
@@ -646,9 +646,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		VisitService visitService = Context.getVisitService();
 		
 		for (Visit visit : visitService.getVisitsByPatient(notPreferred, true, true)) {
-			if (log.isDebugEnabled()) {
-				log.debug("Merging visit " + visit.getVisitId() + " to " + preferred.getPatientId());
-			}
+			log.debug("Merging visit {} to {}", visit.getVisitId(), preferred.getPatientId());
 			visit.setPatient(preferred);
 			Visit persisted = visitService.saveVisit(visit);
 			mergedData.addMovedVisit(persisted.getUuid());
