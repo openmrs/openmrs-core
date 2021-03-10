@@ -135,7 +135,7 @@ public class ModuleUtil {
 			if (modules == null || modules.isEmpty()) {
 				log.debug("No modules loaded");
 			} else {
-				log.debug("Found and loaded " + modules.size() + " module(s)");
+				log.debug("Found and loaded {} module(s)", modules.size());
 			}
 		}
 		

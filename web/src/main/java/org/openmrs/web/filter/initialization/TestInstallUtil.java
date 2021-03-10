@@ -234,9 +234,7 @@ public class TestInstallUtil {
 			return true;
 		}
 		catch (IOException e) {
-			if (log.isDebugEnabled()) {
-				log.debug("Error generated:", e);
-			}
+			log.debug("Error generated:", e);
 		}
 		
 		return false;
