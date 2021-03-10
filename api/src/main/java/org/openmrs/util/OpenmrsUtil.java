@@ -64,6 +64,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import liquibase.pro.packaged.T;
+import liquibase.pro.packaged.V;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
@@ -979,11 +981,9 @@ public class OpenmrsUtil {
 				deleteDirectory(f);
 			}
 			boolean success = f.delete();
-			
 			if (log.isDebugEnabled()) {
 				log.debug("   deleting " + f.getName() + " : " + (success ? "ok" : "failed"));
 			}
-			
 			if (!success) {
 				f.deleteOnExit();
 			}
