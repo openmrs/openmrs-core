@@ -979,9 +979,11 @@ public class OpenmrsUtil {
 				deleteDirectory(f);
 			}
 			boolean success = f.delete();
+			
 			if (log.isDebugEnabled()) {
 				log.debug("   deleting " + f.getName() + " : " + (success ? "ok" : "failed"));
 			}
+			
 			if (!success) {
 				f.deleteOnExit();
 			}

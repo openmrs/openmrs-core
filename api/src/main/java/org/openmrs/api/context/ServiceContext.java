@@ -1037,5 +1037,4 @@ public class ServiceContext implements ApplicationContextAware {
 	public void setDatatypeService(DatatypeService datatypeService) {
 		setService(DatatypeService.class, datatypeService);
 	}
-	
 }
