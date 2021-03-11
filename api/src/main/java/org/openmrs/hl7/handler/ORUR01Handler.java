@@ -299,7 +299,7 @@ public class ORUR01Handler implements Application {
 			HL7Exception errorInHL7Queue = null;
 			for (int j = 0; j < numObs; j++) {
 				if (log.isDebugEnabled()) {
-					log.debug("Processing OBS (" + j + " of " + numObs + ")");
+					log.debug("Processing OBS ({} of {})", j, numObs);
 				}
 				
 				OBX obx = orderObs.getOBSERVATION(j).getOBX();
@@ -361,7 +361,7 @@ public class ORUR01Handler implements Application {
 		
 		if (log.isDebugEnabled()) {
 			log.debug("Finished creating observations");
-			log.debug("Current thread: " + Thread.currentThread());
+			log.debug("Current thread: {}", Thread.currentThread());
 			log.debug("Creating the encounter object");
 		}
 		Context.getEncounterService().saveEncounter(encounter);
