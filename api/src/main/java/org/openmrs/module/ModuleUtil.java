@@ -62,11 +62,17 @@ public class ModuleUtil {
 	
 	private static final Logger log = LoggerFactory.getLogger(ModuleUtil.class);
 	
+	// adapted from semver.org
+		private static final Pattern VERSION_PATTERN = Pattern.compile(
+			"^(?<major>0|[1-9]\\d*)\\.(?<minor>0|[1-9]\\d*)\\.(?<patch>0|[1-9]\\d*)(?:-(?<snapshot>SNAPSHOT))?$"
+		);
+	
 	/**
 	 * Start up the module system with the given properties.
 	 *
 	 * @param props Properties (OpenMRS runtime properties)
 	 */
+	
 	public static void startup(Properties props) throws ModuleMustStartException, OpenmrsCoreModuleException {
 		
 		String moduleListString = props.getProperty(ModuleConstants.RUNTIMEPROPERTY_MODULE_LIST_TO_LOAD);
@@ -418,41 +424,47 @@ public class ModuleUtil {
 				return 0;
 			}
 			
-			List<String> versions = new ArrayList<>();
-			List<String> values = new ArrayList<>();
-			String separator = "-";
-			
-			// strip off any qualifier e.g. "-SNAPSHOT"
-			int qualifierIndex = version.indexOf(separator);
-			if (qualifierIndex != -1) {
-				version = version.substring(0, qualifierIndex);
+			Matcher versionMatcher = VERSION_PATTERN.matcher(version);
+			Matcher valueMatcher = VERSION_PATTERN.matcher(value);
+
+			if (!versionMatcher.matches() || !valueMatcher.matches()) {
+				// this seems wrong
+				return 0;
 			}
+
+			final String[] versions = {
+				versionMatcher.group("major"),
+				versionMatcher.group("minor"),
+				versionMatcher.group("patch")
+			};
+			final String[] values = {
+				valueMatcher.group("major"),
+				valueMatcher.group("minor"),
+				valueMatcher.group("patch")
+			};
 			
-			qualifierIndex = value.indexOf(separator);
-			if (qualifierIndex != -1) {
-				value = value.substring(0, qualifierIndex);
-			}
-			
-			Collections.addAll(versions, version.split("\\."));
-			Collections.addAll(values, value.split("\\."));
-			
-			// match the sizes of the lists
-			while (versions.size() < values.size()) {
-				versions.add("0");
-			}
-			while (values.size() < versions.size()) {
-				values.add("0");
-			}
-			
-			for (int x = 0; x < versions.size(); x++) {
-				String verNum = versions.get(x).trim();
-				String valNum = values.get(x).trim();
+			for (int x = 0; x < versions.length; x++) {
+				String verNum = versions[x].trim();
+				String valNum = values[x].trim();
 				Long ver = NumberUtils.toLong(verNum, 0);
 				Long val = NumberUtils.toLong(valNum, 0);
 				
 				int ret = ver.compareTo(val);
 				if (ret != 0) {
 					return ret;
+					
+				}
+				String versionSnapshot = versionMatcher.group("snapshot");
+				String valueSnapshot = valueMatcher.group("snapshot");
+
+				if (!"".equals(versionSnapshot)) {
+					if ("".equals(valueSnapshot)) {
+						return -1;
+					}
+				} else {
+					if (!"".equals(valueSnapshot)) {
+						return 1;
+					}
 				}
 			}
 		}
@@ -471,8 +483,9 @@ public class ModuleUtil {
 	 * @return true if version contains qualifier
 	 */
 	public static boolean isVersionWithQualifier(String version) {
-		Matcher matcher = Pattern.compile("(\\d+)\\.(\\d+)(\\.(\\d+))?(\\-([A-Za-z]+))").matcher(version);
-		return matcher.matches();
+		Matcher matcher = VERSION_PATTERN.matcher(version);
+		return matcher.matches() && !"".equals(matcher.group("snapshot"));
+		
 	}
 	
 	/**
