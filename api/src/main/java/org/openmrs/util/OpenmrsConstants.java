@@ -85,7 +85,12 @@ public final class OpenmrsConstants {
 	 * @see #OPENMRS_VERSION
 	 */
 	private static String getBuildVersion() {
-		return getOpenmrsProperty("openmrs.version.long");
+		String longVersion = getOpenmrsProperty("openmrs.version.long");
+		if (longVersion != null && !longVersion.isEmpty() && !longVersion.contains("${")) {
+			return longVersion;
+		}
+
+		return null;
 	}
 	
 	/**
@@ -96,7 +101,12 @@ public final class OpenmrsConstants {
 	 * @see #OPENMRS_VERSION
 	 */
 	private static String getBuildVersionShort() {
-		return getOpenmrsProperty("openmrs.version.short");
+		String shortVersion = getOpenmrsProperty("openmrs.version.short");
+		if (shortVersion != null && !shortVersion.isEmpty() && !shortVersion.contains("${")) {
+			return shortVersion;
+		}
+
+		return null;
 	}
 	
 	private static String getVersion() {
