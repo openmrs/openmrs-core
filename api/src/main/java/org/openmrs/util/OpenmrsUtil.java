@@ -194,26 +194,9 @@ public class OpenmrsUtil {
     public static boolean isHtmlTag(String input) {
         boolean isHtml = false;
         if (input != null) {
-            if (isHtml(input)) {
-                isHtml = true;
-            }
+            isHtml=htmlPattern.matcher(input).find();
         }
         return isHtml;
-    }
-
-
-    /**
-     * Will return true if s contains HTML markup tags or entities.
-     *
-     * @param s String to test
-     * @return true if string contains HTML
-     */
-    public static boolean isHtml(String s) {
-        boolean ret=false;
-        if (s != null) {
-            ret=htmlPattern.matcher(s).find();
-        }
-        return ret;
     }
 
 	public static boolean isStringInArray(String str, String[] arr) {
