@@ -181,16 +181,14 @@ public class OpenmrsUtil {
 	}
 	
 	public static boolean isStringInArray(String str, String[] arr) {
-		boolean retVal = false;
-		
 		if (str != null && arr != null) {
 			for (String anArr : arr) {
 				if (str.equals(anArr)) {
-					retVal = true;
+					return true;
 				}
 			}
 		}
-		return retVal;
+		return false;
 	}
 	
 	public static Boolean isInNormalNumericRange(Float value, ConceptNumeric concept) {
