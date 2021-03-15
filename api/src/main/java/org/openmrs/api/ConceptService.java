@@ -1930,7 +1930,7 @@ public interface ConceptService extends OpenmrsService {
 	 * above
 	 * 
 	 * @param conceptRef the concept string identifier
-	 * @since 2.4.0
+	 * @since 2.5.0
 	 * @return the concept if exist, else null
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
