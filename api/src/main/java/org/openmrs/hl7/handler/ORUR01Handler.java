@@ -221,9 +221,7 @@ public class ORUR01Handler implements Application {
 		List<ConceptProposal> conceptProposals = new ArrayList<>();
 		
 		// create observations
-		if (log.isDebugEnabled()) {
-			log.debug("Creating observations for message " + messageControlId + "...");
-		}
+		log.debug("Creating observations for message {}...", messageControlId);
 		// we ignore all MEDICAL_RECORD_OBSERVATIONS that are OBRs.  We do not
 		// create obs_groups for them
 		List<Integer> ignoredConceptIds = new ArrayList<>();
@@ -244,9 +242,7 @@ public class ORUR01Handler implements Application {
 		ORU_R01_PATIENT_RESULT patientResult = oru.getPATIENT_RESULT();
 		int numObr = patientResult.getORDER_OBSERVATIONReps();
 		for (int i = 0; i < numObr; i++) {
-			if (log.isDebugEnabled()) {
-				log.debug("Processing OBR (" + i + " of " + numObr + ")");
-			}
+			log.debug("Processing OBR ({} of {})", i, numObr);
 			ORU_R01_ORDER_OBSERVATION orderObs = patientResult.getORDER_OBSERVATION(i);
 			
 			// the parent obr
@@ -303,7 +299,7 @@ public class ORUR01Handler implements Application {
 			HL7Exception errorInHL7Queue = null;
 			for (int j = 0; j < numObs; j++) {
 				if (log.isDebugEnabled()) {
-					log.debug("Processing OBS (" + j + " of " + numObs + ")");
+					log.debug("Processing OBS ({} of {})", j, numObs);
 				}
 				
 				OBX obx = orderObs.getOBSERVATION(j).getOBX();
@@ -365,7 +361,7 @@ public class ORUR01Handler implements Application {
 		
 		if (log.isDebugEnabled()) {
 			log.debug("Finished creating observations");
-			log.debug("Current thread: " + Thread.currentThread());
+			log.debug("Current thread: {}", Thread.currentThread());
 			log.debug("Creating the encounter object");
 		}
 		Context.getEncounterService().saveEncounter(encounter);

@@ -47,6 +47,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleException;
@@ -359,8 +360,13 @@ public class WebModuleUtil {
 	 * @param mod
 	 */
 	private static void stopTasks(Module mod) {
-		
-		SchedulerService schedulerService = Context.getSchedulerService();
+		SchedulerService schedulerService;
+		try {
+			schedulerService = Context.getSchedulerService();
+		} catch (NullPointerException | APIException e) {
+			// if we got here, the scheduler has already been shut down, so there's no work to do
+			return;
+		}
 		
 		String modulePackageName = mod.getPackageName();
 		for (TaskDefinition task : schedulerService.getRegisteredTasks()) {

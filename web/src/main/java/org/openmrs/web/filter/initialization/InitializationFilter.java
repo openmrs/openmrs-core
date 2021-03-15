@@ -770,9 +770,7 @@ public class InitializationFilter extends StartupFilter {
 								    wizardModel.remoteUsername, wizardModel.remotePassword);
 							}
 							catch (APIAuthenticationException e) {
-								if (log.isDebugEnabled()) {
-									log.debug("Error generated: ", e);
-								}
+								log.debug("Error generated: ", e);
 								page = TESTING_REMOTE_DETAILS_SETUP;
 								errors.put(ErrorMessageConstants.UPDATE_ERROR_UNABLE_AUTHENTICATE, null);
 								renderTemplate(page, referenceMap, httpResponse);

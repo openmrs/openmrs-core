@@ -356,7 +356,7 @@
 			<dependency>
 				<groupId>com.thoughtworks.xstream</groupId>
 				<artifactId>xstream</artifactId>
-				<version>1.4.15</version>
+				<version>1.4.16</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.mail</groupId>
@@ -1110,13 +1110,13 @@
 		<hibernateSearchVersion>5.11.8.Final</hibernateSearchVersion>
 		<luceneVersion>5.5.5</luceneVersion>
 		<aspectjVersion>1.9.6</aspectjVersion>
-		<jacksonVersion>2.12.1</jacksonVersion>
+		<jacksonVersion>2.12.2</jacksonVersion>
 		<junitVersion>5.7.1</junitVersion>
 		<mockitoVersion>3.8.0</mockitoVersion>
 		<hamcrestVersion>2.2</hamcrestVersion>
 
 		<slf4jVersion> 1.7.30</slf4jVersion>
-		<log4jVersion>2.14.0</log4jVersion>
+		<log4jVersion>2.14.1</log4jVersion>
 
 		<customArgLineForTesting />
 
