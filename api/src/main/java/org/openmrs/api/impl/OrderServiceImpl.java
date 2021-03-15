@@ -144,7 +144,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 
 	private Order saveOrder(Order order, OrderContext orderContext, boolean isRetrospective) {
-
+        
 		failOnExistingOrder(order);
 		ensureDateActivatedIsSet(order);
 		ensureConceptIsSet(order);
@@ -228,34 +228,36 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			((DrugOrder) order).setAutoExpireDateBasedOnDuration();
 		}
 	}
-
+	
 	private void ensureOrderTypeIsSet(Order order, OrderContext orderContext) {
 		if (order.getOrderType() != null) {
 			return;
 		}
+		List<OrderType>orderTypes = new ArrayList<>();
 		OrderType orderType = null;
-		List<OrderType> orderTypes = new ArrayList<>();
 		if (orderContext != null) {
 			orderType = orderContext.getOrderType();
-			orderTypes.add(orderType);
 		}
 		if (orderType == null) {
 			orderType = getOrderTypeByConcept(order.getConcept());
-			orderTypes.add(orderType);
 		}
-		if (( orderTypes.size() == 0) || (orderTypes.size() > 1) && order instanceof DrugOrder) {
-				throw new AmbiguousOrderException("Order.cannot.have.more.than.one");
+		if((orderTypes.size() == 1)) {
+            orderTypes.add(orderContext.getOrderType());
 		}
-		else{
-			orderTypes = Context.getOrderService().getOrderTypesByClassName(DrugOrder.class.getTypeName());
-		}
-		if ((orderTypes.size() == 0) || (orderTypes.size() > 1) && order instanceof TestOrder) {
+		if((orderTypes.size() > 1 || orderTypes == null) && order instanceof DrugOrder){
 			throw new AmbiguousOrderException("Order.cannot.have.more.than.one");
 		}
-		else{
-			orderTypes = Context.getOrderService().getOrderTypesByClassName(TestOrder.class.getTypeName());
+		if (orderType == null && order instanceof DrugOrder) {
+			orderType = Context.getOrderService().getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID);
 		}
-		if ((orderType == null) && (orderTypes.size() == 0 || orderTypes.size() > 1)) {
+
+		if((orderTypes.size() > 1 || orderTypes == null) && order instanceof TestOrder){
+			throw new AmbiguousOrderException("Order.cannot.have.more.than.one");
+		}
+		if (orderType == null && order instanceof TestOrder) {
+			orderType = Context.getOrderService().getOrderTypeByUuid(OrderType.TEST_ORDER_TYPE_UUID);
+		}
+		if (orderType == null) {
 			throw new OrderEntryException("Order.type.cannot.determine");
 		}
 		Order previousOrder = order.getPreviousOrder();
@@ -264,7 +266,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 		order.setOrderType(orderType);
 	}
-
 	private void ensureCareSettingIsSet(Order order, OrderContext orderContext) {
 		if (order.getCareSetting() != null) {
 			return;

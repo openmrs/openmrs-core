@@ -103,6 +103,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	protected static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
 
 	private static final String ORDER_GROUP_ATTRIBUTES = "org/openmrs/api/include/OrderServiceTest-createOrderGroupAttributes.xml";
+	
 		
 	@Autowired
 	private ConceptService conceptService;
@@ -3142,7 +3143,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 		orderService.saveOrder(drugOrder, null);
 		assertNotNull(drugOrder.getOrderType());
-		assertEquals(orderService.getOrderTypesByClassName(DrugOrder.class.getTypeName()), drugOrder.getOrderType());
+		List<OrderType> orderTypes = orderService.getOrderTypesByClassName(DrugOrder.class.getTypeName());
+		assertEquals(orderTypes.get(0), drugOrder.getOrderType());
 
 	}
 
@@ -3169,7 +3171,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 		orderService.saveOrder(testOrder, null);
 		assertNotNull(testOrder.getOrderType());
-		assertEquals(orderService.getOrderTypesByClassName(TestOrder.class.getTypeName()), testOrder.getOrderType());
+		List<OrderType> orderTypes = orderService.getOrderTypesByClassName(TestOrder.class.getTypeName());
+		assertEquals(orderTypes.get(0), testOrder.getOrderType());
 	}
 
 	@Test
@@ -3932,5 +3935,31 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		orderGroupAttribute.getValueReference();
 		assertEquals("Test 1", orderGroupAttribute.getValueReference());
 		assertEquals(1, orderGroupAttribute.getId());
+	}
+	
+	@Test
+	public void getOrderTypesByClassName_shouldReturnOrderTypesByProvidedClassName(){
+		List<OrderType>orderTypes = new ArrayList<>();
+		assertTrue(orderTypes.isEmpty());
+		
+		OrderType orderType1 = new OrderType();
+		orderType1.setOrderTypeId(1);
+		orderType1.setName("Drug order");
+		orderType1.setJavaClassName("org.openmrs.DrugOrder");
+		orderType1.setDescription("Categorises medication orders for the patient");
+		orderType1.setRetired(false);
+		
+		OrderType orderType2 = new OrderType();
+		orderType2.setOrderTypeId(1);
+		orderType2.setName("Drug order");
+		orderType2.setJavaClassName("org.openmrs.DrugOrder");
+		orderType2.setDescription("Categorises test orders for the patient");
+		orderType2.setRetired(false);
+		
+		orderTypes.add(orderType1);
+		orderTypes.add(orderType2);
+		assertTrue(!orderTypes.isEmpty());
+		assertEquals(orderTypes.get(1).toString(), orderService.getOrderTypesByClassName("org.openmrs.DrugOrder")
+			.toString().replace("[", "").replace("]", ""));
 	}
 }
