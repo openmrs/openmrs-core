@@ -197,7 +197,7 @@ public class CoreDataTunerTest {
 		List<String> secondWithOutFirst = new ArrayList<>(second);
 		secondWithOutFirst.removeAll(first);
 		
-		List<String> result = new ArrayList();
+		List<String> result = new ArrayList<>();
 		result.addAll(first);
 		result.addAll(secondWithOutFirst);
 		return result;

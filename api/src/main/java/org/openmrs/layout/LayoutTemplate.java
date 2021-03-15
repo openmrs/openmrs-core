@@ -363,7 +363,7 @@ public abstract class LayoutTemplate {
 	public List<String> nonUniqueStringsGoLast(List<String> strListArg) {
 		List<String> dup = new ArrayList<>();
 		// copy the list so we don't get concurrentmodification exceptions
-		List<String> strList = new ArrayList(strListArg);
+		List<String> strList = new ArrayList<>(strListArg);
 		for (String s : strList) {
 			for (String sInner : strList) {
 				if (sInner.contains(s) && s.length() < sInner.length() && !dup.contains(s)) {
