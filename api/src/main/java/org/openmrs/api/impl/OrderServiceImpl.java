@@ -943,6 +943,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Override
 	@Transactional(readOnly = true)
 	public List<OrderType> getOrderTypesByClassName(String className) {
+		if(dao.getOrderTypesByClassName(className).isEmpty()){
+			return null;
+		}
 		return dao.getOrderTypesByClassName(className);
 	}
 

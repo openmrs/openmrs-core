@@ -646,6 +646,9 @@ public class HibernateOrderDAO implements OrderDAO {
 		        .setString("uuid", uuid).uniqueResult();
 	}
 
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#getOrderTypesByClassName(String) 
+	 */
 	@Override
 	public List<OrderType> getOrderTypesByClassName(String javaClassName) {
 		return sessionFactory.getCurrentSession().createQuery("from OrderType o where o.javaClassName = :javaClassName", OrderType.class)

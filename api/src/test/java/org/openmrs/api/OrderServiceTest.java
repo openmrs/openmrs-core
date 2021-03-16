@@ -104,7 +104,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 	private static final String ORDER_GROUP_ATTRIBUTES = "org/openmrs/api/include/OrderServiceTest-createOrderGroupAttributes.xml";
 	
-		
 	@Autowired
 	private ConceptService conceptService;
 
@@ -3941,25 +3940,21 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void getOrderTypesByClassName_shouldReturnOrderTypesByProvidedClassName(){
 		List<OrderType>orderTypes = new ArrayList<>();
 		assertTrue(orderTypes.isEmpty());
-		
-		OrderType orderType1 = new OrderType();
-		orderType1.setOrderTypeId(1);
-		orderType1.setName("Drug order");
-		orderType1.setJavaClassName("org.openmrs.DrugOrder");
-		orderType1.setDescription("Categorises medication orders for the patient");
-		orderType1.setRetired(false);
-		
-		OrderType orderType2 = new OrderType();
-		orderType2.setOrderTypeId(1);
-		orderType2.setName("Drug order");
-		orderType2.setJavaClassName("org.openmrs.DrugOrder");
-		orderType2.setDescription("Categorises test orders for the patient");
-		orderType2.setRetired(false);
-		
-		orderTypes.add(orderType1);
-		orderTypes.add(orderType2);
+		OrderType orderType = new OrderType();
+		orderType.setOrderTypeId(1);
+		orderType.setName("Drug order");
+		orderType.setJavaClassName("org.openmrs.DrugOrder");
+		orderType.setDescription("Categorises medication orders for the patient");
+		orderType.setRetired(false);
+		orderTypes.add(orderType);
 		assertTrue(!orderTypes.isEmpty());
-		assertEquals(orderTypes.get(1).toString(), orderService.getOrderTypesByClassName("org.openmrs.DrugOrder")
+		assertEquals(orderTypes.get(0).toString(), orderService.getOrderTypesByClassName("org.openmrs.DrugOrder")
 			.toString().replace("[", "").replace("]", ""));
+		assertEquals(2, orderService.getOrderTypesByClassName("org.openmrs.TestOrder").size());
+	}
+
+	@Test
+	public void getOrderTypesByClassName_shouldReturnNullIfNoOrderTypeIsFoundWithTheGivenClassName(){
+		assertNull(orderService.getOrderTypesByClassName("org.openmrs.XrayOrder"));
 	}
 }
