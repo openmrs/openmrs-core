@@ -59,12 +59,19 @@ public class ConceptClass extends BaseChangeableOpenmrsMetadata {
 	private Integer conceptClassId;
 	
 	// Constructors
-	
-	/** default constructor */
+
+	/**
+	 * Default constructor for <tt>ConceptClass</tt>
+	 */
 	public ConceptClass() {
 	}
-	
-	/** constructor with id */
+
+	/**
+	 * Constructor for <tt>ConceptClass</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param conceptClassId the id of the <tt>ConceptClass</tt>
+	 */
 	public ConceptClass(Integer conceptClassId) {
 		this.conceptClassId = conceptClassId;
 	}

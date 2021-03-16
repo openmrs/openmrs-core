@@ -19,7 +19,26 @@ import org.openmrs.attribute.BaseAttributeType;
 public class VisitAttributeType extends BaseAttributeType<Visit> implements AttributeType<Visit> {
 	
 	private Integer visitAttributeTypeId;
-	
+
+	/**
+	 * Default constructor for <tt>VisitAttributeType</tt>
+	 *
+	 * @since 2.4.1
+	 */
+	public VisitAttributeType(){
+	}
+
+	/**
+	 * Constructor for <tt>VisitAttributeType</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param visitAttributeTypeId the id of the <tt>VisitAttributeType</tt>
+	 * @since 2.4.1
+	 */
+	public VisitAttributeType(final Integer visitAttributeTypeId) {
+		this.visitAttributeTypeId = visitAttributeTypeId;
+	}
+
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */

@@ -56,10 +56,26 @@ public class Duration {
 	
 	private static final int SECONDS_PER_DAY = SECONDS_PER_HOUR * HOURS_PER_DAY;
 	
-	private final Integer duration;
+	private Integer duration;
 	
-	private final String code;
-	
+	private String code;
+
+	/**
+	 * Default constructor for <tt>Duration</tt>
+	 *
+	 * @since 2.4.1
+	 */
+	public Duration() {
+	}
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>Duration</tt>
+	 *
+	 * @param duration the duration to set.
+	 * @param code the code to set
+	 * @since 2.4.1
+	 */
 	public Duration(Integer duration, String code) {
 		this.duration = duration;
 		this.code = code;

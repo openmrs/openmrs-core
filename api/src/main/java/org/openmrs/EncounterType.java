@@ -25,15 +25,18 @@ public class EncounterType extends BaseChangeableOpenmrsMetadata {
 	private Privilege editPrivilege;
 	
 	// Constructors
-	
-	/** default constructor */
+
+	/**
+	 * Default constructor for <tt>EncounterType</tt>
+	 */
 	public EncounterType() {
 	}
-	
+
 	/**
-	 * Constructor with id
-	 * 
-	 * <strong>Should</strong> set encounter type id with given parameter
+	 * Constructor for <tt>EncounterType</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param encounterTypeId the id of the <tt>EncounterType</tt>
 	 */
 	public EncounterType(Integer encounterTypeId) {
 		this.encounterTypeId = encounterTypeId;
@@ -50,7 +53,22 @@ public class EncounterType extends BaseChangeableOpenmrsMetadata {
 		setName(name);
 		setDescription(description);
 	}
-	
+
+	/**
+	 * This constructor sets all required properties for an
+	 * <tt>EncounterType</tt>
+	 *
+	 * @param encounterTypeId the encounterTypeId to set.
+	 * @param viewPrivilege the viewPrivilege to set
+	 * @param editPrivilege the editPrivilege to set
+	 * @since 2.4.1
+	 */
+	public EncounterType(Integer encounterTypeId, Privilege viewPrivilege, Privilege editPrivilege) {
+		this.encounterTypeId = encounterTypeId;
+		this.viewPrivilege = viewPrivilege;
+		this.editPrivilege = editPrivilege;
+	}
+
 	// Property accessors
 	
 	/**

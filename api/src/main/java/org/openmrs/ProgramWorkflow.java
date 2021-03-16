@@ -41,16 +41,38 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	// ******************
 	// Constructors
 	// ******************
-	
-	/** Default Constructor */
+
+	/**
+	 * Default constructor for <tt>ProgramWorkflow</tt>
+	 */
 	public ProgramWorkflow() {
 	}
-	
-	/** Constructor with id */
+
+	/**
+	 * Constructor for <tt>ProgramWorkflow</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param programWorkflowId the id of the <tt>ProgramWorkflow</tt>
+	 */
 	public ProgramWorkflow(Integer programWorkflowId) {
 		setProgramWorkflowId(programWorkflowId);
 	}
-	
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>ProgramWorkflow</tt>
+	 *
+	 * @param program the program to set
+	 * @param concept the concept to set
+	 * @param states the states to set
+	 * @since 2.4.1
+	 */
+	public ProgramWorkflow(Program program, Concept concept, Set<ProgramWorkflowState> states) {
+		this.program = program;
+		this.concept = concept;
+		this.states = states;
+	}
+
 	// ******************
 	// Instance methods
 	// ******************

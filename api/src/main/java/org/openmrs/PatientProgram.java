@@ -56,12 +56,19 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	// ******************
 	// Constructors
 	// ******************
-	
-	/** Default Constructor */
+
+	/**
+	 * Default constructor for <tt>PatientProgram</tt>
+	 */
 	public PatientProgram() {
 	}
-	
-	/** Constructor with id */
+
+	/**
+	 * Constructor for <tt>PatientProgram</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param patientProgramId the id of the <tt>PatientProgram</tt>
+	 */
 	public PatientProgram(Integer patientProgramId) {
 		setPatientProgramId(patientProgramId);
 	}

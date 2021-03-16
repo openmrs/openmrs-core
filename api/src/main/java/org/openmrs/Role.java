@@ -42,12 +42,19 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 	private Set<Role> childRoles;
 	
 	// Constructors
-	
-	/** default constructor */
+
+	/**
+	 * Default constructor for <tt>Role</tt>
+	 */
 	public Role() {
 	}
-	
-	/** constructor with id */
+
+	/**
+	 * Constructor for <tt>Role</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param role the id of the <tt>Role</tt>
+	 */
 	public Role(String role) {
 		this.role = role;
 	}
@@ -57,7 +64,24 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 		this.role = role;
 		setDescription(description);
 	}
-	
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>Role</tt>
+	 *
+	 * @param role the role to set.
+	 * @param privileges the privileges to set
+	 * @param inheritedRoles the inheritedRoles to set
+	 * @param childRoles the childRoles to set
+	 * @since 2.4.1
+	 */
+	public Role(String role, Set<Privilege> privileges, Set<Role> inheritedRoles, Set<Role> childRoles) {
+		this.role = role;
+		this.privileges = privileges;
+		this.inheritedRoles = inheritedRoles;
+		this.childRoles = childRoles;
+	}
+
 	/**
 	 * @return Returns the privileges.
 	 */

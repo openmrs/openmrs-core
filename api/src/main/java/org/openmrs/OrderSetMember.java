@@ -28,7 +28,46 @@ public class OrderSetMember extends BaseChangeableOpenmrsMetadata {
 	private String orderTemplateType;
 	
 	private Concept concept;
-	
+
+	/**
+	 * Default constructor for <tt>OrderSetMember</tt>
+	 *
+	 * @since 2.4.1
+	 */
+	public OrderSetMember(){
+	}
+
+	/**
+	 * Constructor for <tt>OrderSetMember</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param orderSetMemberId the id of the <tt>OrderSetMember</tt>
+	 * @since 2.4.1
+	 */
+	public OrderSetMember(final Integer orderSetMemberId) {
+		this.orderSetMemberId = orderSetMemberId;
+	}
+
+	/**
+	 * This constructor sets all required properties for an
+	 * <tt>OrderSetMember</tt>
+	 *
+	 * @param orderType the orderType to set
+	 * @param orderSet the orderSet to set
+	 * @param orderTemplate the orderTemplate to set
+	 * @param orderTemplateType the orderTemplateType to set
+	 * @param concept the concept to set
+	 * @since 2.4.1
+	 */
+	public OrderSetMember(OrderType orderType, OrderSet orderSet, String orderTemplate,
+						  String orderTemplateType, Concept concept) {
+		this.orderType = orderType;
+		this.orderSet = orderSet;
+		this.orderTemplate = orderTemplate;
+		this.orderTemplateType = orderTemplateType;
+		this.concept = concept;
+	}
+
 	/**
 	 * Gets the orderSetMemberId
 	 *

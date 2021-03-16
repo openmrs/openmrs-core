@@ -29,9 +29,13 @@ public class ConceptSearchResult {
 	private String word;
 	
 	private Double transientWeight = 0.0;
-	
-	/** default constructor */
-	public ConceptSearchResult() {
+
+	/**
+	 * Default constructor for <tt>ConceptSearchResult</tt>
+	 *
+	 * @since 2.4.1
+	 */
+	public ConceptSearchResult(){
 	}
 	
 	/**
@@ -48,7 +52,8 @@ public class ConceptSearchResult {
 	}
 	
 	/**
-	 * Convenience constructor that takes in a weight too
+	 * This constructor sets all required properties for a
+	 * <tt>ConceptSearchResult</tt>
 	 *
 	 * @param word the single word that will be matched to search terms
 	 * @param concept the concept that is being matched to

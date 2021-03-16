@@ -34,6 +34,27 @@ public class Allergies implements List<Allergy> {
 	private List<Allergy> allergies = new ArrayList<>();
 
 	/**
+	 * Default constructor for <tt>Allergies</tt>
+	 *
+	 * @since 2.4.1
+	 */
+	public Allergies(){
+	}
+
+	/**
+	 * This constructor sets all required properties for an
+	 * <tt>Allergies</tt>
+	 *
+	 * @param allergyStatus the allergyStatus to set.
+	 * @param allergies the allergies to set
+	 * @since 2.4.1
+	 */
+	public Allergies(String allergyStatus, List<Allergy> allergies) {
+		this.allergyStatus = allergyStatus;
+		this.allergies = allergies;
+	}
+
+	/**
      * @return the allergyStatus
      */
     public String getAllergyStatus() {

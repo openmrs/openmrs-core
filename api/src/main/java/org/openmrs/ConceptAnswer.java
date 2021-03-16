@@ -46,27 +46,62 @@ public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.
 	private Date dateCreated;
 	
 	private Double sortWeight;
-	
-	// Constructors
-	
-	/** default constructor */
+
+	/**
+	 * Default constructor for <tt>ConceptAnswer</tt>
+	 */
 	public ConceptAnswer() {
 	}
-	
-	/** constructor with id */
+
+	/**
+	 * Constructor for <tt>ConceptAnswer</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param conceptAnswerId the id of the <tt>ConceptAnswer</tt>
+	 */
 	public ConceptAnswer(Integer conceptAnswerId) {
 		this.conceptAnswerId = conceptAnswerId;
 	}
-	
+
+	/**
+	 * Constructor for <tt>ConceptAnswer</tt> that takes the
+	 * answer concept. 
+	 *
+	 * @param answerConcept the answerConcept to set.
+	 */
 	public ConceptAnswer(Concept answerConcept) {
 		this.answerConcept = answerConcept;
 	}
-	
+
+	/**
+	 * Constructor for <tt>ConceptAnswer</tt> that takes the
+	 * answer concept and answer drug. 
+	 *
+	 * @param answerConcept the answerConcept to set.
+	 * @param d the d to set
+	 */
 	public ConceptAnswer(Concept answerConcept, Drug d) {
 		this.answerConcept = answerConcept;
 		this.answerDrug = d;
 	}
-	
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>ConceptAnswer</tt>
+	 *
+	 * @param concept the concept to set
+	 * @param answerConcept the answerConcept to set
+	 * @param answerDrug the answerDrug to set
+	 * @param sortWeight the sortWeight to set
+	 * @since 2.4.1
+	 */
+	public ConceptAnswer(Concept concept, Concept answerConcept, Drug answerDrug, Double sortWeight) {
+		this.concept = concept;
+		this.answerConcept = answerConcept;
+		this.answerDrug = answerDrug;
+		this.sortWeight = sortWeight;
+	}
+
 	/**
 	 * @return Returns the answerConcept.
 	 */

@@ -97,12 +97,19 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 	private static String format = OpenmrsConstants.PERSON_NAME_FORMAT_SHORT;
 	
 	// Constructors
-	
-	/** default constructor */
+
+	/**
+	 * Default constructor for <tt>PersonName</tt>
+	 */
 	public PersonName() {
 	}
-	
-	/** constructor with id */
+
+	/**
+	 * Constructor for <tt>PersonName</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param personNameId the id of the <tt>PersonName</tt>
+	 */
 	public PersonName(Integer personNameId) {
 		this.personNameId = personNameId;
 	}

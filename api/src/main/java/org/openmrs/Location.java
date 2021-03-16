@@ -87,16 +87,53 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	private Set<LocationTag> tags;
 	
 	// Constructors
-	
-	/** default constructor */
+
+	/**
+	 * Default constructor for <tt>Location</tt>
+	 *
+	 * @since 2.4.1
+	 */
 	public Location() {
 	}
-	
-	/** constructor with id */
+
+	/**
+	 * Constructor for <tt>Location</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param locationId the id of the <tt>Location</tt>
+	 * @since 2.4.1
+	 */
 	public Location(Integer locationId) {
 		this.locationId = locationId;
 	}
-	
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>Location</tt>
+	 *
+	 * @param address1 the address1 to set
+	 * @param address2 the address2 to set
+	 * @param cityVillage the cityVillage to set
+	 * @param stateProvince the stateProvince to set
+	 * @param country the country to set
+	 * @param postalCode the postalCode to set
+	 * @param latitude the latitude to set
+	 * @param longitude the longitude to set
+	 * @param countyDistrict the countyDistrict to set
+	 * @since 2.4.1
+	 */
+	public Location(String address1, String address2, String cityVillage, String stateProvince,
+					String country, String postalCode, String latitude, String longitude, String countyDistrict) {
+		this.address1 = address1;
+		this.address2 = address2;
+		this.cityVillage = cityVillage;
+		this.stateProvince = stateProvince;
+		this.country = country;
+		this.postalCode = postalCode;
+		this.latitude = latitude;
+		this.longitude = longitude;
+		this.countyDistrict = countyDistrict;
+	}
 	// Property accessors
 	
 	/**

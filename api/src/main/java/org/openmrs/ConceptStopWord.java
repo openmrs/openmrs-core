@@ -33,11 +33,24 @@ public class ConceptStopWord extends BaseOpenmrsObject {
 	private Locale locale;
 	
 	// Constructors
-	
+
 	/**
-	 * default constructor
+	 * Default constructor for <tt>Allergy</tt>
+	 *
+	 * @since 2.4.1
 	 */
-	public ConceptStopWord() {
+	public ConceptStopWord(){
+	}
+
+	/**
+	 * Constructor for <tt>ConceptStopWord</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param conceptStopWordId the id of the <tt>ConceptStopWord</tt>
+	 * @since 2.4.1
+	 */
+	public ConceptStopWord(final Integer conceptStopWordId) {
+		this.conceptStopWordId = conceptStopWordId;
 	}
 	
 	/**
@@ -61,7 +74,22 @@ public class ConceptStopWord extends BaseOpenmrsObject {
 		setValue(value);
 		setLocale(locale);
 	}
-	
+
+	/**
+	 * This constructor sets all required properties for an
+	 * <tt>ConceptStopWord</tt>
+	 *
+	 * @param conceptStopWordId the conceptStopWordId to set.
+	 * @param value the value to set
+	 * @param locale the locale to set
+	 * @since 2.4.1
+	 */
+	public ConceptStopWord(Integer conceptStopWordId, String value, Locale locale) {
+		this.conceptStopWordId = conceptStopWordId;
+		this.value = value;
+		this.locale = locale;
+	}
+
 	public String getValue() {
 		return value;
 	}

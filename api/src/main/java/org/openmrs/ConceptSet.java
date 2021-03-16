@@ -36,16 +36,59 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	private Date dateCreated;
 	
 	// Constructors
-	
-	/** default constructor */
-	public ConceptSet() {
+
+	/**
+	 * Default constructor for <tt>ConceptSet</tt>
+	 */
+	public ConceptSet(){
 	}
-	
+
+	/**
+	 * Constructor for <tt>ConceptSet</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param conceptSetId the id of the <tt>ConceptSet</tt>
+	 */
+	public ConceptSet(final Integer conceptSetId) {
+		this.conceptSetId = conceptSetId;
+	}
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>ConceptSet</tt>
+	 *
+	 * @param concept the concept to set.
+	 * @param weight the weight to set
+	 */
 	public ConceptSet(Concept concept, Double weight) {
 		setConcept(concept);
 		setSortWeight(weight);
 	}
 	
+	/**
+	 * This constructor sets all required properties for an
+	 * <tt>ConceptSet</tt>
+	 *
+	 * @param conceptSetId the conceptSetId to set.
+	 * @param concept the concept to set
+	 * @param conceptSet the conceptSet to set
+	 * @param sortWeight the sortWeight to set
+	 * @param creator the creator to set
+	 * @param dateCreated the dateCreated to set
+	 * @since 2.4.1
+	 */
+	public ConceptSet(Integer conceptSetId, Concept concept, Concept conceptSet, Double sortWeight, User creator, Date dateCreated) {
+		this.conceptSetId = conceptSetId;
+		this.concept = concept;
+		this.conceptSet = conceptSet;
+		this.sortWeight = sortWeight;
+		this.creator = creator;
+		this.dateCreated = dateCreated;
+		
+		setConcept(concept);
+		setSortWeight(sortWeight);
+	}
+
 	// Property accessors
 	
 	/**

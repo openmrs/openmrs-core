@@ -20,7 +20,26 @@ import org.openmrs.attribute.BaseAttributeType;
 public class ProviderAttributeType extends BaseAttributeType<Provider> implements AttributeType<Provider> {
 	
 	private Integer providerAttributeTypeId;
-	
+
+	/**
+	 * Default constructor for <tt>ProviderAttributeType</tt>
+	 *
+	 * @since 2.4.1
+	 */
+	public ProviderAttributeType(){
+	}
+
+	/**
+	 * Constructor for <tt>ProviderAttributeType</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param providerAttributeTypeId the id of the <tt>ProviderAttributeType</tt>
+	 * @since 2.4.1
+	 */
+	public ProviderAttributeType(final Integer providerAttributeTypeId) {
+		this.providerAttributeTypeId = providerAttributeTypeId;
+	}
+
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */

@@ -53,12 +53,22 @@ public class ConceptProposal extends BaseOpenmrsObject {
 	private Date dateChanged;
 	
 	// Constructors
-	
-	/** default constructor */
+
+	/**
+	 * Default constructor for <tt>ConceptProposal</tt>
+	 *
+	 * @since 2.4.1
+	 */
 	public ConceptProposal() {
 	}
-	
-	/** constructor with id */
+
+	/**
+	 * Constructor for <tt>ConceptProposal</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param conceptProposalId the id of the <tt>Allergy</tt>
+	 * @since 2.4.1
+	 */
 	public ConceptProposal(Integer conceptProposalId) {
 		this.conceptProposalId = conceptProposalId;
 	}

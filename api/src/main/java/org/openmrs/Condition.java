@@ -86,8 +86,22 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 	@ManyToOne(optional = true)
 	@JoinColumn(name = "encounter_id")
 	private Encounter encounter;
-	
-	public Condition() {
+
+	/**
+	 * Default constructor for <tt>Condition</tt>
+	 */
+	public Condition(){
+	}
+
+	/**
+	 * Constructor for <tt>Condition</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param conditionId the id of the <tt>Condition</tt>
+	 * @since 2.4.1
+	 */
+	public Condition(final Integer conditionId) {
+		this.conditionId = conditionId;
 	}
 	
 	/**
@@ -114,7 +128,7 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 		this.endDate = endDate != null ? new Date(endDate.getTime()) : null;
 		this.patient = patient;
 	}
-	
+
 	public static Condition newInstance(Condition condition) {
 		return copy(condition, new Condition());
 	}

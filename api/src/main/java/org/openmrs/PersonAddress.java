@@ -84,12 +84,19 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	private Date endDate;
 	
 	// Constructors
-	
-	/** default constructor */
+
+	/**
+	 * Default constructor for <tt>PersonAddress</tt>
+	 */
 	public PersonAddress() {
 	}
-	
-	/** constructor with id */
+
+	/**
+	 * Constructor for <tt>PersonAddress</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param personAddressId the id of the <tt>PersonAddress</tt>
+	 */
 	public PersonAddress(Integer personAddressId) {
 		this.personAddressId = personAddressId;
 	}
@@ -104,7 +111,24 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 				", cd:" + getCountyDistrict() + ", nc:" + getAddress3() + ", pc:" +
 				getPostalCode() + ", lat:" + getLatitude() + ", long:" + getLongitude();
 	}
-	
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>PersonAddress</tt>
+	 *
+	 * @param person the person to set
+	 * @param preferred the preferred to set
+	 * @param address1 the address1 to set
+	 * @param address2 the address2 to set
+	 * @since 2.4.1
+	 */
+	public PersonAddress(Person person, Boolean preferred, String address1, String address2) {
+		this.person = person;
+		this.preferred = preferred;
+		this.address1 = address1;
+		this.address2 = address2;
+	}
+
 	/**
 	 * Compares this PersonAddress object to the given otherAddress. This method differs from
 	 * {@link #equals(Object)} in that this method compares the inner fields of each address for

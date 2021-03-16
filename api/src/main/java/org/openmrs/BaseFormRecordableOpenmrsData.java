@@ -14,6 +14,7 @@ import org.openmrs.api.APIException;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+import java.util.List;
 
 /**
  * Base implementation of FormRecordable that bridges between a saved BaseChangeableOpenmrsData entity and the path in a form where it was recorded.
@@ -29,6 +30,26 @@ public abstract class BaseFormRecordableOpenmrsData extends BaseChangeableOpenmr
 
 	@Column(name = "form_namespace_and_path")
 	protected String formNamespaceAndPath;
+
+	/**
+	 * Default constructor for <tt>BaseFormRecordableOpenmrsData</tt>
+	 *
+	 * @since 2.4.1
+	 */
+	public BaseFormRecordableOpenmrsData() {
+		//
+	}
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>BaseFormRecordableOpenmrsData</tt>
+	 *
+	 * @param formNamespaceAndPath the formNamespaceAndPath to set.
+	 * @since 2.4.1
+	 */
+	public BaseFormRecordableOpenmrsData(final String formNamespaceAndPath) {
+		this.formNamespaceAndPath = formNamespaceAndPath;
+	}
 
 	/**
 	 * @see org.openmrs.FormRecordable#getFormFieldNamespace()

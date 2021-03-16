@@ -32,12 +32,22 @@ public class ConceptMap extends BaseConceptMap {
 	private ConceptReferenceTerm conceptReferenceTerm;
 	
 	// Constructors
-	
-	/** default constructor */
+
+	/**
+	 * Default constructor for <tt>ConceptMap</tt>
+	 *
+	 * @since 2.4.1
+	 */
 	public ConceptMap() {
 	}
-	
-	/** constructor with concept map id */
+
+	/**
+	 * Constructor for <tt>ConceptMap</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param conceptMapId the id of the <tt>ConceptMap</tt>
+	 * @since 2.4.1
+	 */
 	public ConceptMap(Integer conceptMapId) {
 		this.conceptMapId = conceptMapId;
 	}
@@ -52,7 +62,22 @@ public class ConceptMap extends BaseConceptMap {
 		this.conceptReferenceTerm = conceptReferenceTerm;
 		setConceptMapType(conceptMapType);
 	}
-	
+
+	/**
+	 * This constructor sets all required properties for an
+	 * <tt>ConceptMap</tt>
+	 *
+	 * @param conceptMapId the conceptMapId to set.
+	 * @param concept the concept to set
+	 * @param conceptReferenceTerm the conceptReferenceTerm to set
+	 * @since 2.4.1
+	 */
+	public ConceptMap(Integer conceptMapId, Concept concept, ConceptReferenceTerm conceptReferenceTerm) {
+		this.conceptMapId = conceptMapId;
+		this.concept = concept;
+		this.conceptReferenceTerm = conceptReferenceTerm;
+	}
+
 	/**
 	 * @see org.openmrs.BaseOpenmrsObject#toString()
 	 */

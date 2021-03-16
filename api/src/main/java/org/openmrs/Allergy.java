@@ -66,12 +66,26 @@ public class Allergy extends BaseChangeableOpenmrsData {
 	private List<AllergyReaction> reactions = new ArrayList<>();
 	
 	/**
-	 * Default constructor
+	 * Default constructor for <tt>Allergy</tt>
 	 */
 	public Allergy(){
 	}
+
+	/**
+	 * Constructor for <tt>Allergy</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param allergyId the id of the <tt>Allergy</tt>
+	 * @since 2.4.1
+	 */
+	public Allergy(final Integer allergyId) {
+		this.allergyId = allergyId;
+	}
 	
 	/**
+	 * This constructor sets all required properties for an
+	 * <tt>Allergy</tt>
+	 *
 	 * @param patient the patient to set.
 	 * @param allergen the allergen to set
 	 * @param severity the severity to set

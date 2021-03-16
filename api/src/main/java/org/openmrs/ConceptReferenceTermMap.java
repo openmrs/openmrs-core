@@ -27,12 +27,22 @@ public class ConceptReferenceTermMap extends BaseConceptMap {
 	private ConceptReferenceTerm termB;
 	
 	// Constructors
-	
-	/** default constructor */
-	public ConceptReferenceTermMap() {
+
+	/**
+	 * Default constructor for <tt>ConceptReferenceTermMap</tt>
+	 *
+	 * @since 2.4.1
+	 */
+	public ConceptReferenceTermMap(){
 	}
-	
-	/** constructor with concept reference term map id */
+
+	/**
+	 * Constructor for <tt>ConceptReferenceTermMap</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param conceptReferenceTermMapId the id of the <tt>ConceptReferenceTermMap</tt>
+	 * @since 2.4.1
+	 */
 	public ConceptReferenceTermMap(Integer conceptReferenceTermMapId) {
 		this.conceptReferenceTermMapId = conceptReferenceTermMapId;
 	}
@@ -47,7 +57,7 @@ public class ConceptReferenceTermMap extends BaseConceptMap {
 		this.termB = termB;
 		setConceptMapType(conceptMapType);
 	}
-	
+
 	/**
 	 * @return the conceptReferenceTermMapId
 	 */

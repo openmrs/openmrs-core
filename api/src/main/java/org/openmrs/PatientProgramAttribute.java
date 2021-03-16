@@ -16,7 +16,26 @@ import org.openmrs.attribute.BaseAttribute;
 public class PatientProgramAttribute extends BaseAttribute<ProgramAttributeType, PatientProgram> implements Attribute<ProgramAttributeType, PatientProgram> {
     private Integer patientProgramAttributeId;
 
-    @Override
+	/**
+	 * Default constructor for <tt>PatientProgramAttribute</tt>
+	 *
+	 * @since 2.4.1
+	 */
+	public PatientProgramAttribute(){
+	}
+
+	/**
+	 * Constructor for <tt>PatientProgramAttribute</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param patientProgramAttributeId the id of the <tt>PatientProgramAttribute</tt>
+	 * @since 2.4.1
+	 */
+	public PatientProgramAttribute(final Integer patientProgramAttributeId) {
+		this.patientProgramAttributeId = patientProgramAttributeId;
+	}
+
+	@Override
     public Integer getId() {
         return getPatientProgramAttributeId();
     }

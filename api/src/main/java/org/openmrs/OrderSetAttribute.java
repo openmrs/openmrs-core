@@ -24,6 +24,24 @@ public class OrderSetAttribute extends BaseAttribute<OrderSetAttributeType, Orde
 		
 	private Integer orderSetAttributeId;
 
+	/**
+	 * Default constructor for <tt>OrderSetAttribute</tt>
+	 *
+	 * @since 2.4.1
+	 */
+	public OrderSetAttribute(){
+	}
+
+	/**
+	 * Constructor for <tt>OrderSetAttribute</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param orderSetAttributeId the id of the <tt>OrderSetAttribute</tt>
+	 * @since 2.4.1
+	 */
+	public OrderSetAttribute(final Integer orderSetAttributeId) {
+		this.orderSetAttributeId = orderSetAttributeId;
+	}
 
 	/**
 	 * @return the orderSetAttributeId

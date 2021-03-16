@@ -69,16 +69,33 @@ public class ConceptDatatype extends BaseChangeableOpenmrsMetadata {
 	private String hl7Abbreviation;
 	
 	// Constructors
-	
-	/** default constructor */
+
+	/**
+	 * Default constructor for <tt>Allergy</tt>
+	 */
 	public ConceptDatatype() {
 	}
-	
-	/** constructor with id */
+
+	/**
+	 * Constructor for <tt>ConceptDatatype</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param conceptDatatypeId the id of the <tt>ConceptDatatype</tt>
+	 */
 	public ConceptDatatype(Integer conceptDatatypeId) {
 		this.conceptDatatypeId = conceptDatatypeId;
 	}
-	
+
+	/**
+	 * Constructor for <tt>ConceptDatatype</tt> that takes the
+	 * hl7Abbreviation. 
+	 *
+	 * @param hl7Abbreviation the id of the <tt>ConceptDatatype</tt>
+	 */
+	public ConceptDatatype(String hl7Abbreviation) {
+		this.hl7Abbreviation = hl7Abbreviation;
+	}
+
 	// Property accessors
 	
 	public Integer getConceptDatatypeId() {

@@ -20,6 +20,25 @@ import org.openmrs.attribute.BaseAttribute;
 public class LocationAttribute extends BaseAttribute<LocationAttributeType, Location> implements Attribute<LocationAttributeType, Location> {
 	
 	private Integer locationAttributeId;
+
+	/**
+	 * Default constructor for <tt>LocationAttribute</tt>
+	 *
+	 * @since 2.4.1
+	 */
+	public LocationAttribute(){
+	}
+
+	/**
+	 * Constructor for <tt>LocationAttribute</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param locationAttributeId the id of the <tt>LocationAttribute</tt>
+	 * @since 2.4.1
+	 */
+	public LocationAttribute(final Integer locationAttributeId) {
+		this.locationAttributeId = locationAttributeId;
+	}
 	
 	// BaseAttribute<Location> has an "owner" property of type Location, which we re-expose as "location"
 	

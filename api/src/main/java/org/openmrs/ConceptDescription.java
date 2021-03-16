@@ -37,15 +37,21 @@ public class ConceptDescription extends BaseOpenmrsObject implements Auditable, 
 	private Date dateChanged;
 	
 	// Constructors
-	
-	/** default constructor */
+
+	/**
+	 * Default constructor for <tt>ConceptDescription</tt>
+	 *
+	 * @since 2.4.1
+	 */
 	public ConceptDescription() {
 	}
-	
+
 	/**
-	 * Constructor that takes in the primary key for this object
-	 * 
-	 * @param conceptDescriptionId the id for this description
+	 * Constructor for <tt>ConceptDescription</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param conceptDescriptionId the id of the <tt>ConceptDescription</tt>
+	 * @since 2.4.1
 	 */
 	public ConceptDescription(Integer conceptDescriptionId) {
 		this.conceptDescriptionId = conceptDescriptionId;
@@ -61,7 +67,7 @@ public class ConceptDescription extends BaseOpenmrsObject implements Auditable, 
 		setLocale(locale);
 		setDescription(description);
 	}
-	
+
 	/**
 	 * @return Returns the conceptDescriptionId.
 	 */

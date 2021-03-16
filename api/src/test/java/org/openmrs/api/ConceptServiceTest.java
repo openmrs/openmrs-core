@@ -2525,6 +2525,20 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(concept.getChangedBy());
 	}
 	
+	@Test
+	public void conceptAnswerClasses_shouldConstructValidObjects() {
+		Concept concept = conceptService.getConcept(3);
+		assertNull(concept.getDateChanged());
+		assertNull(concept.getChangedBy());
+
+		Concept concept1= conceptService.getConcept(5);
+		Concept answerConcept1= conceptService.getConcept(7);
+		Drug answerDrug = conceptService.getDrug(2);
+		ConceptAnswer conceptAnswer = new ConceptAnswer(concept1, answerConcept1, answerDrug, 2.0);
+		concept.addAnswer(conceptAnswer);
+		conceptService.saveConcept(concept);
+	}
+	
 	/**
 	 * @see ConceptService#saveConcept(Concept)
 	 */

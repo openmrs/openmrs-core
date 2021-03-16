@@ -68,11 +68,46 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 
 	@Field
 	private Boolean preferred = false;
-	
-	/** default constructor */
+
+	/**
+	 * Default constructor for <tt>PatientIdentifier</tt>
+	 *
+	 * @since 2.4.1
+	 */
 	public PatientIdentifier() {
 	}
-	
+
+	/**
+	 * Constructor for <tt>PatientIdentifier</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param patientIdentifierId the id of the <tt>PatientIdentifier</tt>
+	 * @since 2.4.1
+	 */
+	public PatientIdentifier(final Integer patientIdentifierId) {
+		this.patientIdentifierId = patientIdentifierId;
+	}
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>PatientIdentifier</tt>
+	 *
+	 * @param patient the patient to set
+	 * @param identifier the identifier to set
+	 * @param identifierType the identifierType to set
+	 * @param location the location to set
+	 * @param preferred the preferred to set
+	 * @since 2.4.1
+	 */
+	public PatientIdentifier(Patient patient, String identifier, PatientIdentifierType identifierType, Location location,
+							 Boolean preferred) {
+		this.patient = patient;
+		this.identifier = identifier;
+		this.identifierType = identifierType;
+		this.location = location;
+		this.preferred = preferred;
+	}
+
 	/**
 	 * Convenience constructor for creating a basic identifier
 	 *

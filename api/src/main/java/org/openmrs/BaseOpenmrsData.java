@@ -60,11 +60,27 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	private String voidReason;
 	
 	//***** Constructors *****
-	
+
 	/**
-	 * Default Constructor
+	 * Default constructor for <tt>BaseFormRecordableOpenmrsData</tt>
 	 */
 	public BaseOpenmrsData() {
+		//
+	}
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>BaseOpenmrsData</tt>
+	 *
+	 * @param creator the creator to set.
+	 * @param dateCreated the dateCreated to set
+	 * @param voided the voided to set
+	 * @since 2.4.1
+	 */
+	public BaseOpenmrsData(final User creator, final Date dateCreated, final Boolean voided) {
+		this.creator = creator;
+		this.dateCreated = dateCreated;
+		this.voided = voided;
 	}
 	
 	//***** Property Access *****

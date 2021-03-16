@@ -9,10 +9,18 @@
  */
 package org.openmrs;
 
+/**
+ * Represents Allergy Constants
+ */
 public class AllergyConstants {
 	
+	public static final String PRIVILEGE_MODIFY_ALLERGIES = "Task: Modify Allergies";
+	
+	/**
+	 * Default constructor for <tt>Allergy</tt>
+	 *
+	 * @since 2.4.1
+	 */
 	private AllergyConstants() {
 	}
-	
-	public static final String PRIVILEGE_MODIFY_ALLERGIES = "Task: Modify Allergies";
 }

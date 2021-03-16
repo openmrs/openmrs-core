@@ -40,7 +40,44 @@ public class SimpleDosingInstructions implements DosingInstructions {
 	private String asNeededCondition;
 	
 	private String administrationInstructions;
-	
+
+	/**
+	 * Default constructor for <tt>SimpleDosingInstructions</tt>
+	 *
+	 * @since 2.4.1
+	 */
+	public SimpleDosingInstructions(){
+	}
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>SimpleDosingInstructions</tt>
+	 *
+	 * @param dose the dose to set.
+	 * @param doseUnits the doseUnits to set
+	 * @param route the route to set
+	 * @param frequency the frequency to set
+	 * @param duration the duration to set
+	 * @param durationUnits the durationUnits to set
+	 * @param asNeeded the asNeeded to set
+	 * @param asNeededCondition the asNeededCondition to set
+	 * @param administrationInstructions the administrationInstructions to set
+	 * @since 2.4.1
+	 */
+	public SimpleDosingInstructions(Double dose, Concept doseUnits, Concept route, OrderFrequency frequency,
+									Integer duration, Concept durationUnits, Boolean asNeeded, String asNeededCondition,
+									String administrationInstructions) {
+		this.dose = dose;
+		this.doseUnits = doseUnits;
+		this.route = route;
+		this.frequency = frequency;
+		this.duration = duration;
+		this.durationUnits = durationUnits;
+		this.asNeeded = asNeeded;
+		this.asNeededCondition = asNeededCondition;
+		this.administrationInstructions = administrationInstructions;
+	}
+
 	/**
 	 * @see DosingInstructions#getDosingInstructionsAsString(java.util.Locale)
 	 */

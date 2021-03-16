@@ -35,11 +35,34 @@ public class FieldAnswer extends BaseOpenmrsObject {
 	private boolean dirty;
 	
 	// Constructors
-	
-	/** default constructor */
+
+	/**
+	 * Default constructor for <tt>FieldAnswer</tt>
+	 *
+	 * @since 2.4.1
+	 */
 	public FieldAnswer() {
 	}
-	
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>FieldAnswer</tt>
+	 *
+	 * @param dateCreated the dateCreated to set.
+	 * @param concept the concept to set
+	 * @param creator the creator to set
+	 * @param field the field to set
+	 * @param dirty the dirty to set
+	 * @since 2.4.1
+	 */
+	public FieldAnswer(Date dateCreated, Concept concept, User creator, Field field, boolean dirty) {
+		this.dateCreated = dateCreated;
+		this.concept = concept;
+		this.creator = creator;
+		this.field = field;
+		this.dirty = dirty;
+	}
+
 	/**
 	 * @return boolean whether or not this fieldAnswer has been modified
 	 *

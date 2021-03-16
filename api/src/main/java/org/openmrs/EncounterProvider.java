@@ -25,6 +25,41 @@ public class EncounterProvider extends BaseChangeableOpenmrsData {
 	private Provider provider;
 	
 	private EncounterRole encounterRole;
+
+	/**
+	 * Default constructor for <tt>EncounterProvider</tt>
+	 *
+	 * @since 2.4.1
+	 */
+	public EncounterProvider(){
+	}
+
+	/**
+	 * Constructor for <tt>EncounterProvider</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param encounterProviderId the id of the <tt>EncounterProvider</tt>
+	 * @since 2.4.1
+	 */
+	public EncounterProvider(final Integer encounterProviderId) {
+		this.encounterProviderId = encounterProviderId;
+	}
+
+	/**
+	 * This constructor sets all required properties for an
+	 * <tt>EncounterProvider</tt>
+	 *
+	 * @param encounter the encounter to set
+	 * @param provider the provider to set
+	 * @param encounterRole the encounterRole to set
+	 * @since 2.4.1
+	 */
+	public EncounterProvider(Encounter encounter, Provider provider, EncounterRole encounterRole) {
+		this.encounter = encounter;
+		this.provider = provider;
+		this.encounterRole = encounterRole;
+	}
+	
 	
 	public void setEncounterProviderId(Integer encounterProviderId) {
 		this.encounterProviderId = encounterProviderId;

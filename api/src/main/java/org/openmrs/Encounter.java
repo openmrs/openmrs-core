@@ -110,19 +110,41 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	private Set<EncounterProvider> encounterProviders = new LinkedHashSet<>();
 	
 	// Constructors
-	
-	/** default constructor */
-	public Encounter() {
-	}
-	
+
 	/**
-	 * @param encounterId
-	 * <strong>Should</strong> set encounter id
+	 * Default constructor for <tt>Encounter</tt>
+	 *
+	 * @since 2.4.1
+	 */
+	public Encounter(){
+	}
+
+	/**
+	 * Constructor for <tt>Encounter</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param encounterId the id of the <tt>Encounter</tt>
+	 * @since 2.4.1
 	 */
 	public Encounter(Integer encounterId) {
 		this.encounterId = encounterId;
 	}
-	
+
+	/**
+	 * This constructor sets all required properties for an
+	 * <tt>Encounter</tt>
+	 *
+	 * @param encounterDatetime the encounterDatetime to set
+	 * @param patient the patient to set
+	 * @param encounterType the encounterType to set
+	 * @since 2.4.1
+	 */
+	public Encounter(Date encounterDatetime, Patient patient, EncounterType encounterType) {
+		this.encounterDatetime = encounterDatetime;
+		this.patient = patient;
+		this.encounterType = encounterType;
+	}
+
 	// Property accessors
 	
 	/**

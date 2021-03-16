@@ -51,16 +51,52 @@ public class FormField extends BaseChangeableOpenmrsMetadata implements java.io.
 	protected Float sortWeight;
 	
 	// Constructors
-	
-	/** default constructor */
+
+	/**
+	 * Default constructor for <tt>FormField</tt>
+	 */
 	public FormField() {
 	}
-	
-	/** constructor with id */
+
+	/**
+	 * Constructor for <tt>FormField</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param formFieldId the id of the <tt>FormField</tt>
+	 */
 	public FormField(Integer formFieldId) {
 		this.formFieldId = formFieldId;
 	}
-	
+
+	/**
+	 * This constructor sets all required properties for an
+	 * <tt>FormField</tt>
+	 *
+	 * @param parent the parent to set
+	 * @param form the form to set
+	 * @param field the field to set
+	 * @param fieldNumber the fieldNumber to set
+	 * @param fieldPart the fieldPart to set.
+	 * @param pageNumber the pageNumber to set
+	 * @param minOccurs the minOccurs to set
+	 * @param maxOccurs the maxOccurs to set
+	 * @param required the required to set
+	 * @param sortWeight the sortWeight to set
+	 * @since 2.4.1
+	 */
+	public FormField(FormField parent, Form form, Field field, Integer fieldNumber, String fieldPart,
+					 Integer pageNumber, Integer minOccurs, Integer maxOccurs, Boolean required, Float sortWeight) {
+		this.parent = parent;
+		this.form = form;
+		this.field = field;
+		this.fieldNumber = fieldNumber;
+		this.fieldPart = fieldPart;
+		this.pageNumber = pageNumber;
+		this.minOccurs = minOccurs;
+		this.maxOccurs = maxOccurs;
+		this.required = required;
+		this.sortWeight = sortWeight;
+	}
 	// Property accessors
 	
 	/**

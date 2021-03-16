@@ -16,7 +16,26 @@ import org.openmrs.attribute.BaseAttributeType;
 public class ProgramAttributeType extends BaseAttributeType<PatientProgram> implements AttributeType<PatientProgram> {
     private Integer programAttributeTypeId;
 
-    @Override
+	/**
+	 * Default constructor for <tt>ProgramAttributeType</tt>
+	 *
+	 * @since 2.4.1
+	 */
+	public ProgramAttributeType(){
+	}
+
+	/**
+	 * Constructor for <tt>ProgramAttributeType</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param programAttributeTypeId the id of the <tt>ProgramAttributeType</tt>
+	 * @since 2.4.1
+	 */
+	public ProgramAttributeType(final Integer programAttributeTypeId) {
+		this.programAttributeTypeId = programAttributeTypeId;
+	}
+
+	@Override
     public Integer getId() {
         return getProgramAttributeTypeId();
     }

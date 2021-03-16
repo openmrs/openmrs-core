@@ -44,16 +44,30 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	private Date dateChanged;
 	
 	// Constructors
-	
+
 	/**
-	 * Default constructor.
+	 * Default constructor for <tt>ConceptNameTag</tt>
+	 *
+	 * @since 2.4.1
 	 */
 	public ConceptNameTag() {
 	}
-	
+
 	/**
-	 * Public constructor. Use factory methods to obtain copies of the desired tags.
-	 * 
+	 * Constructor for <tt>ConceptNameTag</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param conceptNameTagId the id of the <tt>ConceptNameTag</tt>
+	 * @since 2.4.1
+	 */
+	public ConceptNameTag(Integer conceptNameTagId) {
+		this.conceptNameTagId = conceptNameTagId;
+	}
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>ConceptNameTag</tt>
+	 *
 	 * @param tag
 	 * @param description
 	 */

@@ -112,11 +112,16 @@ public class Person extends BaseChangeableOpenmrsData {
 	
 	@Transient
 	private Map<String, PersonAttribute> allAttributeMap = null;
-	
+
 	/**
-	 * default empty constructor
+	 * Default constructor for <tt>Person</tt>
 	 */
 	public Person() {
+	}
+
+	public Person(PersonName name, String gender) {
+		addName(name);
+		this.gender = gender;
 	}
 	
 	/**

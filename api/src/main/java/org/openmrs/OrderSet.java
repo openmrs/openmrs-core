@@ -43,6 +43,40 @@ public class OrderSet extends BaseCustomizableMetadata<OrderSetAttribute> {
 	private Concept category;
 
 	/**
+	 * Default constructor for <tt>OrderSet</tt>
+	 *
+	 * @since 2.4.1
+	 */
+	public OrderSet(){
+	}
+
+	/**
+	 * Constructor for <tt>OrderSet</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param orderSetId the id of the <tt>OrderSet</tt>
+	 * @since 2.4.1
+	 */
+	public OrderSet(final Integer orderSetId) {
+		this.orderSetId = orderSetId;
+	}
+
+	/**
+	 * This constructor sets all required properties for an
+	 * <tt>OrderSet</tt>
+	 *
+	 * @param operator the operator to set
+	 * @param orderSetMembers the orderSetMembers to set
+	 * @param category the category to set
+	 * @since 2.4.1
+	 */
+	public OrderSet(Operator operator, List<OrderSetMember> orderSetMembers, Concept category) {
+		this.operator = operator;
+		this.orderSetMembers = orderSetMembers;
+		this.category = category;
+	}
+
+	/**
 	 * Gets the orderSetId
 	 *
 	 * @return the orderSetId

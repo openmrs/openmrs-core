@@ -33,22 +33,37 @@ public class Relationship extends BaseChangeableOpenmrsData {
 	private Date endDate;
 	
 	// Constructors
-	
-	/** default constructor */
-	public Relationship() {
+
+	/**
+	 * Default constructor for <tt>Relationship</tt>
+	 */
+	public Relationship(){
 	}
-	
-	/** constructor with id */
-	public Relationship(Integer relationshipId) {
+
+	/**
+	 * Constructor for <tt>Relationship</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param relationshipId the id of the <tt>Relationship</tt>
+	 */
+	public Relationship(final Integer relationshipId) {
 		this.relationshipId = relationshipId;
 	}
-	
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>Relationship</tt>
+	 *
+	 * @param personA the personA to set
+	 * @param personB the personB to set
+	 * @param type the type to set
+	 */
 	public Relationship(Person personA, Person personB, RelationshipType type) {
 		this.personA = personA;
 		this.personB = personB;
 		this.relationshipType = type;
 	}
-	
+
 	/**
 	 * Does a shallow copy of this Relationship. Does NOT copy relationshipId
 	 * 

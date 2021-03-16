@@ -138,12 +138,19 @@ public class Order extends BaseOpenmrsData {
 	private String fulfillerComment;
 	
 	// Constructors
-	
-	/** default constructor */
+
+	/**
+	 * Default constructor for <tt>Order</tt>
+	 */
 	public Order() {
 	}
-	
-	/** constructor with id */
+
+	/**
+	 * Constructor for <tt>Order</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param orderId the id of the <tt>Order</tt>
+	 */
 	public Order(Integer orderId) {
 		this.orderId = orderId;
 	}
