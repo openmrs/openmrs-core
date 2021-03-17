@@ -51,6 +51,10 @@ public class FormValidator implements Validator {
 	public void validate(Object obj, Errors errors) {
 		
 		obj = HibernateUtil.getRealObjectFromProxy(obj);
+
+		if (!(obj instanceof Form)) {
+			throw new IllegalArgumentException("The parameter obj must be of type" + Form.class);
+		}
 		
 		Form form = (Form) obj;
 		if (form == null) {

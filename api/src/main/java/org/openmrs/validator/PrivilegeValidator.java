@@ -46,6 +46,11 @@ public class PrivilegeValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
+
+		if (!(obj instanceof Privilege)) {
+			throw new IllegalArgumentException("The parameter obj must be of type" + Privilege.class);
+		}
+		
 		Privilege privilege = (Privilege) obj;
 		if (privilege == null) {
 			errors.rejectValue("privilege", "error.general");

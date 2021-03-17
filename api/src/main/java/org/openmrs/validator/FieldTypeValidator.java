@@ -48,6 +48,11 @@ public class FieldTypeValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
+
+		if (!(obj instanceof FieldType)) {
+			throw new IllegalArgumentException("The parameter obj must be of type" + FieldType.class);
+		}
+		
 		FieldType fieldType = (FieldType) obj;
 		if (fieldType == null) {
 			errors.rejectValue("fieldType", "error.general");

@@ -46,6 +46,11 @@ public class VisitTypeValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
+
+		if (!(obj instanceof VisitType)) {
+			throw new IllegalArgumentException("The parameter obj must be of type" + VisitType.class);
+		}
+		
 		VisitType visitType = (VisitType) obj;
 		if (visitType == null) {
 			errors.rejectValue("visitType", "error.general");

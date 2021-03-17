@@ -50,6 +50,11 @@ public class PersonNameValidator implements Validator {
 	@Override
 	public void validate(Object object, Errors errors) {
 		log.debug("{}.validate...", this.getClass().getName());
+
+		if (!(object instanceof PersonName)) {
+			throw new IllegalArgumentException("The parameter object must be of type" + PersonName.class);
+		}
+		
 		PersonName personName = (PersonName) object;
 		try {
 			// Validate that the person name object is not null

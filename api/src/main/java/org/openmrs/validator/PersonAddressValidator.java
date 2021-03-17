@@ -60,9 +60,9 @@ public class PersonAddressValidator implements Validator {
 	public void validate(Object object, Errors errors) {
 		//TODO Validate other aspects of the personAddress object
 		log.debug("{}.validate...", this.getClass().getName());
-		
-		if (object == null) {
-			throw new IllegalArgumentException("The personAddress object should not be null");
+
+		if (object == null || !(object instanceof PersonAddress)) {
+			throw new IllegalArgumentException("The parameter object should not be null and must be of type" + PersonAddress.class);
 		}
 		
 		PersonAddress personAddress = (PersonAddress) object;

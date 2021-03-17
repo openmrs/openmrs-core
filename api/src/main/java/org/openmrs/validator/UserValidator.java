@@ -69,6 +69,11 @@ public class UserValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
+
+		if (!(obj instanceof User)) {
+			throw new IllegalArgumentException("The parameter obj must be of type" + User.class);
+		}
+		
 		User user = (User) obj;
 		if (user == null) {
 			errors.reject("error.general");

@@ -71,6 +71,12 @@ public class ObsValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
+
+		if (!(obj instanceof Obs)) {
+			throw new IllegalArgumentException("The parameter obj must be of type"
+				+ Obs.class);
+		}
+		
 		Obs obs = (Obs) obj;
 		if (obs == null) {
 			throw new APIException("Obs can't be null");

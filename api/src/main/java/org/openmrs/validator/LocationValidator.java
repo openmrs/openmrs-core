@@ -53,6 +53,12 @@ public class LocationValidator extends BaseCustomizableValidator implements Vali
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
+
+		if (!(obj instanceof Location)) {
+			throw new IllegalArgumentException("The parameter obj must be of type"
+				+ Location.class);
+		}
+		
 		Location location = (Location) obj;
 		if (location == null) {
 			errors.rejectValue("location", "error.general");

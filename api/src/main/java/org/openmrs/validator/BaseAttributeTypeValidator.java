@@ -41,6 +41,11 @@ public abstract class BaseAttributeTypeValidator<T extends AttributeType<?>> imp
 	@Override
 	public void validate(Object target, Errors errors) {
 		@SuppressWarnings("unchecked")
+		
+		if (!(target instanceof T)) {
+			throw new IllegalArgumentException("The parameter target must be of type" + T.class);
+		}
+		
 		T attributeType = (T) target;
 		
 		if (attributeType == null) {

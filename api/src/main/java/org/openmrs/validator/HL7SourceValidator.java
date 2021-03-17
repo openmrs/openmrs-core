@@ -46,6 +46,11 @@ public class HL7SourceValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
+
+		if (!(obj instanceof HL7Source)) {
+			throw new IllegalArgumentException("The parameter obj must be of type" + HL7Source.class);
+		}
+		
 		HL7Source hl7Source = (HL7Source) obj;
 		if (hl7Source == null) {
 			errors.rejectValue("hl7Source", "error.general");

@@ -40,6 +40,11 @@ public class ImplementationIdValidator implements Validator {
 
 	@Override
 	public void validate(Object obj, Errors errors) throws APIException {
+
+		if (!(obj instanceof ImplementationId)) {
+			throw new IllegalArgumentException("The parameter obj must be of type" + ImplementationId.class);
+		}
+		
 		ImplementationId implId = (ImplementationId) obj;
 		char[] illegalChars = { '^', '|' };
 		if (implId == null) {

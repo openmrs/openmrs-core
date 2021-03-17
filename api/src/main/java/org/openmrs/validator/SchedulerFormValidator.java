@@ -48,6 +48,11 @@ public class SchedulerFormValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
+
+		if (!(obj instanceof TaskDefinition)) {
+			throw new IllegalArgumentException("The parameter obj must be of type" + TaskDefinition.class);
+		}
+		
 		TaskDefinition taskDefinition = (TaskDefinition) obj;
 		
 		if (taskDefinition == null) {

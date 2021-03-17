@@ -42,6 +42,11 @@ public class DiagnosisValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object o, Errors errors) {
+
+		if (!(o instanceof Diagnosis)) {
+			throw new IllegalArgumentException("The parameter o must be of type" + Diagnosis.class);
+		}
+		
 		Diagnosis diagnosis = (Diagnosis)o;
 		
 		if(diagnosis == null){

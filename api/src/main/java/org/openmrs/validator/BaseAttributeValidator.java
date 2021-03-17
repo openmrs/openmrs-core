@@ -36,6 +36,11 @@ public class BaseAttributeValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
+
+		if (target == null || !(target instanceof Attribute<?, ?>)) {
+			throw new IllegalArgumentException("The parameter target should not be null and must be of type" + Attribute<?, ?>.class);
+		}
+		
 		Attribute<?, ?> attribute = (Attribute<?, ?>) target;
 		ValidationUtils.rejectIfEmpty(errors, "attributeType", "error.null");
 		ValidationUtils.rejectIfEmpty(errors, "owner", "error.null");

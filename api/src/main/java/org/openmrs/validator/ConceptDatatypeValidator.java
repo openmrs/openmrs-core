@@ -46,6 +46,11 @@ public class ConceptDatatypeValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
+
+		if (!(obj instanceof ConceptDatatype)) {
+			throw new IllegalArgumentException("The parameter obj must be of type" + ConceptDatatype.class);
+		}
+		
 		ConceptDatatype cd = (ConceptDatatype) obj;
 		if (cd == null) {
 			errors.rejectValue("conceptDatatype", "error.general");

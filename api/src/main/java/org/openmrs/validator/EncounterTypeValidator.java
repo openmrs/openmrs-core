@@ -50,6 +50,11 @@ public class EncounterTypeValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
+
+		if (!(obj instanceof EncounterType)) {
+			throw new IllegalArgumentException("The parameter obj must be of type" + EncounterType.class);
+		}
+		
 		EncounterType encounterType = (EncounterType) obj;
 		if (encounterType == null) {
 			errors.rejectValue("encounterType", "error.general");
