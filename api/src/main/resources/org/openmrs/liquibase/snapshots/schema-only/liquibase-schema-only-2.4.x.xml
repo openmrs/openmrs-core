@@ -4007,42 +4007,42 @@
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-292">
-        <createIndex indexName="name" tableName="care_setting" unique="true">
+        <createIndex indexName="care_setting_name" tableName="care_setting" unique="true">
             <column name="name"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-293">
-        <createIndex indexName="name" tableName="concept_map_type" unique="true">
+        <createIndex indexName="concept_map_type_name" tableName="concept_map_type" unique="true">
             <column name="name"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-294">
-        <createIndex indexName="name" tableName="encounter_role" unique="true">
+        <createIndex indexName="encounter_role_name" tableName="encounter_role" unique="true">
             <column name="name"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-295">
-        <createIndex indexName="name" tableName="encounter_type" unique="true">
+        <createIndex indexName="encounter_type_name" tableName="encounter_type" unique="true">
             <column name="name"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-296">
-        <createIndex indexName="name" tableName="location_attribute_type" unique="true">
+        <createIndex indexName="location_attribute_type_name" tableName="location_attribute_type" unique="true">
             <column name="name"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-297">
-        <createIndex indexName="name" tableName="order_group_attribute_type" unique="true">
+        <createIndex indexName="order_group_attribute_type_name" tableName="order_group_attribute_type" unique="true">
             <column name="name"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-298">
-        <createIndex indexName="name" tableName="order_type" unique="true">
+        <createIndex indexName="order_type_name" tableName="order_type" unique="true">
             <column name="name"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-299">
-        <createIndex indexName="name" tableName="program_attribute_type" unique="true">
+        <createIndex indexName="program_attribute_type_name" tableName="program_attribute_type" unique="true">
             <column name="name"/>
         </createIndex>
     </changeSet>
@@ -5144,437 +5144,437 @@
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-519">
-        <createIndex indexName="uuid" tableName="care_setting" unique="true">
+        <createIndex indexName="uuid_care_setting" tableName="care_setting" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-520">
-        <createIndex indexName="uuid" tableName="clob_datatype_storage" unique="true">
+        <createIndex indexName="uuid_clob_datatype_storage" tableName="clob_datatype_storage" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-521">
-        <createIndex indexName="uuid" tableName="cohort" unique="true">
+        <createIndex indexName="uuid_cohort" tableName="cohort" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-522">
-        <createIndex indexName="uuid" tableName="cohort_member" unique="true">
+        <createIndex indexName="uuid_cohort_member" tableName="cohort_member" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-523">
-        <createIndex indexName="uuid" tableName="concept" unique="true">
+        <createIndex indexName="uuid_concept" tableName="concept" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-524">
-        <createIndex indexName="uuid" tableName="concept_answer" unique="true">
+        <createIndex indexName="uuid_concept_answer" tableName="concept_answer" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-525">
-        <createIndex indexName="uuid" tableName="concept_attribute" unique="true">
+        <createIndex indexName="uuid_concept_attribute" tableName="concept_attribute" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-526">
-        <createIndex indexName="uuid" tableName="concept_attribute_type" unique="true">
+        <createIndex indexName="uuid_concept_attribute_type" tableName="concept_attribute_type" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-527">
-        <createIndex indexName="uuid" tableName="concept_class" unique="true">
+        <createIndex indexName="uuid_concept_class" tableName="concept_class" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-528">
-        <createIndex indexName="uuid" tableName="concept_datatype" unique="true">
+        <createIndex indexName="uuid_concept_datatype" tableName="concept_datatype" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-529">
-        <createIndex indexName="uuid" tableName="concept_description" unique="true">
+        <createIndex indexName="uuid_concept_description" tableName="concept_description" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-530">
-        <createIndex indexName="uuid" tableName="concept_map_type" unique="true">
+        <createIndex indexName="uuid_concept_map_type" tableName="concept_map_type" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-531">
-        <createIndex indexName="uuid" tableName="concept_name" unique="true">
+        <createIndex indexName="uuid_concept_name" tableName="concept_name" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-532">
-        <createIndex indexName="uuid" tableName="concept_name_tag" unique="true">
+        <createIndex indexName="uuid_concept_name_tag" tableName="concept_name_tag" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-533">
-        <createIndex indexName="uuid" tableName="concept_proposal" unique="true">
+        <createIndex indexName="uuid_concept_proposal" tableName="concept_proposal" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-534">
-        <createIndex indexName="uuid" tableName="concept_reference_map" unique="true">
+        <createIndex indexName="uuid_concept_reference_map" tableName="concept_reference_map" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-535">
-        <createIndex indexName="uuid" tableName="concept_reference_source" unique="true">
+        <createIndex indexName="uuid_concept_reference_source" tableName="concept_reference_source" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-536">
-        <createIndex indexName="uuid" tableName="concept_reference_term" unique="true">
+        <createIndex indexName="uuid_concept_reference_term" tableName="concept_reference_term" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-537">
-        <createIndex indexName="uuid" tableName="concept_reference_term_map" unique="true">
+        <createIndex indexName="uuid_concept_reference_term_map" tableName="concept_reference_term_map" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-538">
-        <createIndex indexName="uuid" tableName="concept_set" unique="true">
+        <createIndex indexName="uuid_concept_set" tableName="concept_set" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-539">
-        <createIndex indexName="uuid" tableName="concept_state_conversion" unique="true">
+        <createIndex indexName="uuid_concept_state_conversion" tableName="concept_state_conversion" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-540">
-        <createIndex indexName="uuid" tableName="conditions" unique="true">
+        <createIndex indexName="uuid_conditions" tableName="conditions" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-541">
-        <createIndex indexName="uuid" tableName="drug" unique="true">
+        <createIndex indexName="uuid_drug" tableName="drug" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-542">
-        <createIndex indexName="uuid" tableName="drug_ingredient" unique="true">
+        <createIndex indexName="uuid_drug_ingredient" tableName="drug_ingredient" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-543">
-        <createIndex indexName="uuid" tableName="drug_reference_map" unique="true">
+        <createIndex indexName="uuid_drug_reference_map" tableName="drug_reference_map" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-544">
-        <createIndex indexName="uuid" tableName="encounter" unique="true">
+        <createIndex indexName="uuid_encounter" tableName="encounter" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-545">
-        <createIndex indexName="uuid" tableName="encounter_diagnosis" unique="true">
+        <createIndex indexName="uuid_encounter_diagnosis" tableName="encounter_diagnosis" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-546">
-        <createIndex indexName="uuid" tableName="encounter_provider" unique="true">
+        <createIndex indexName="uuid_encounter_provider" tableName="encounter_provider" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-547">
-        <createIndex indexName="uuid" tableName="encounter_role" unique="true">
+        <createIndex indexName="uuid_encounter_role" tableName="encounter_role" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-548">
-        <createIndex indexName="uuid" tableName="encounter_type" unique="true">
+        <createIndex indexName="uuid_encounter_type" tableName="encounter_type" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-549">
-        <createIndex indexName="uuid" tableName="field" unique="true">
+        <createIndex indexName="uuid_field" tableName="field" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-550">
-        <createIndex indexName="uuid" tableName="field_answer" unique="true">
+        <createIndex indexName="uuid_field_answer" tableName="field_answer" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-551">
-        <createIndex indexName="uuid" tableName="field_type" unique="true">
+        <createIndex indexName="uuid_field_type" tableName="field_type" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-552">
-        <createIndex indexName="uuid" tableName="form" unique="true">
+        <createIndex indexName="uuid_form" tableName="form" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-553">
-        <createIndex indexName="uuid" tableName="form_field" unique="true">
+        <createIndex indexName="uuid_form_field" tableName="form_field" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-554">
-        <createIndex indexName="uuid" tableName="form_resource" unique="true">
+        <createIndex indexName="uuid_form_resource" tableName="form_resource" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-555">
-        <createIndex indexName="uuid" tableName="global_property" unique="true">
+        <createIndex indexName="uuid_global_property" tableName="global_property" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-556">
-        <createIndex indexName="uuid" tableName="hl7_in_archive" unique="true">
+        <createIndex indexName="uuid_hl7_in_archive" tableName="hl7_in_archive" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-557">
-        <createIndex indexName="uuid" tableName="hl7_in_error" unique="true">
+        <createIndex indexName="uuid_hl7_in_error" tableName="hl7_in_error" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-558">
-        <createIndex indexName="uuid" tableName="hl7_in_queue" unique="true">
+        <createIndex indexName="uuid_hl7_in_queue" tableName="hl7_in_queue" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-559">
-        <createIndex indexName="uuid" tableName="hl7_source" unique="true">
+        <createIndex indexName="uuid_hl7_source" tableName="hl7_source" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-560">
-        <createIndex indexName="uuid" tableName="location" unique="true">
+        <createIndex indexName="uuid_location" tableName="location" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-561">
-        <createIndex indexName="uuid" tableName="location_attribute" unique="true">
+        <createIndex indexName="uuid_location_attribute" tableName="location_attribute" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-562">
-        <createIndex indexName="uuid" tableName="location_attribute_type" unique="true">
+        <createIndex indexName="uuid_location_attribute_type" tableName="location_attribute_type" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-563">
-        <createIndex indexName="uuid" tableName="location_tag" unique="true">
+        <createIndex indexName="uuid_location_tag" tableName="location_tag" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-564">
-        <createIndex indexName="uuid" tableName="note" unique="true">
+        <createIndex indexName="uuid_note" tableName="note" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-565">
-        <createIndex indexName="uuid" tableName="notification_alert" unique="true">
+        <createIndex indexName="uuid_notification_alert" tableName="notification_alert" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-566">
-        <createIndex indexName="uuid" tableName="notification_template" unique="true">
+        <createIndex indexName="uuid_notification_template" tableName="notification_template" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-567">
-        <createIndex indexName="uuid" tableName="obs" unique="true">
+        <createIndex indexName="uuid_obs" tableName="obs" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-568">
-        <createIndex indexName="uuid" tableName="order_frequency" unique="true">
+        <createIndex indexName="uuid_order_frequency" tableName="order_frequency" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-569">
-        <createIndex indexName="uuid" tableName="order_group" unique="true">
+        <createIndex indexName="uuid_order_group" tableName="order_group" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-570">
-        <createIndex indexName="uuid" tableName="order_group_attribute" unique="true">
+        <createIndex indexName="uuid_order_group_attribute" tableName="order_group_attribute" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-571">
-        <createIndex indexName="uuid" tableName="order_group_attribute_type" unique="true">
+        <createIndex indexName="uuid_order_group_attribute_type" tableName="order_group_attribute_type" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-572">
-        <createIndex indexName="uuid" tableName="order_set" unique="true">
+        <createIndex indexName="uuid_order_set" tableName="order_set" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-573">
-        <createIndex indexName="uuid" tableName="order_set_attribute" unique="true">
+        <createIndex indexName="uuid_order_set_attribute" tableName="order_set_attribute" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-574">
-        <createIndex indexName="uuid" tableName="order_set_member" unique="true">
+        <createIndex indexName="uuid_order_set_member" tableName="order_set_member" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-575">
-        <createIndex indexName="uuid" tableName="order_type" unique="true">
+        <createIndex indexName="uuid_order_type" tableName="order_type" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-576">
-        <createIndex indexName="uuid" tableName="orders" unique="true">
+        <createIndex indexName="uuid_orders" tableName="orders" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-577">
-        <createIndex indexName="uuid" tableName="patient_identifier" unique="true">
+        <createIndex indexName="uuid_patient_identifier" tableName="patient_identifier" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-578">
-        <createIndex indexName="uuid" tableName="patient_identifier_type" unique="true">
+        <createIndex indexName="uuid_patient_identifier_type" tableName="patient_identifier_type" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-579">
-        <createIndex indexName="uuid" tableName="patient_program" unique="true">
+        <createIndex indexName="uuid_patient_program" tableName="patient_program" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-580">
-        <createIndex indexName="uuid" tableName="patient_program_attribute" unique="true">
+        <createIndex indexName="uuid_patient_program_attribute" tableName="patient_program_attribute" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-581">
-        <createIndex indexName="uuid" tableName="patient_state" unique="true">
+        <createIndex indexName="uuid_patient_state" tableName="patient_state" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-582">
-        <createIndex indexName="uuid" tableName="person_address" unique="true">
+        <createIndex indexName="uuid_person_address" tableName="person_address" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-583">
-        <createIndex indexName="uuid" tableName="person_attribute" unique="true">
+        <createIndex indexName="uuid_person_attribute" tableName="person_attribute" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-584">
-        <createIndex indexName="uuid" tableName="person_attribute_type" unique="true">
+        <createIndex indexName="uuid_person_attribute_type" tableName="person_attribute_type" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-585">
-        <createIndex indexName="uuid" tableName="person_merge_log" unique="true">
+        <createIndex indexName="uuid_person_merge_log" tableName="person_merge_log" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-586">
-        <createIndex indexName="uuid" tableName="person_name" unique="true">
+        <createIndex indexName="uuid_person_name" tableName="person_name" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-587">
-        <createIndex indexName="uuid" tableName="privilege" unique="true">
+        <createIndex indexName="uuid_privilege" tableName="privilege" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-588">
-        <createIndex indexName="uuid" tableName="program" unique="true">
+        <createIndex indexName="uuid_program" tableName="program" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-589">
-        <createIndex indexName="uuid" tableName="program_attribute_type" unique="true">
+        <createIndex indexName="uuid_program_attribute_type" tableName="program_attribute_type" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-590">
-        <createIndex indexName="uuid" tableName="program_workflow" unique="true">
+        <createIndex indexName="uuid_program_workflow" tableName="program_workflow" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-591">
-        <createIndex indexName="uuid" tableName="program_workflow_state" unique="true">
+        <createIndex indexName="uuid_program_workflow_state" tableName="program_workflow_state" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-592">
-        <createIndex indexName="uuid" tableName="provider" unique="true">
+        <createIndex indexName="uuid_provider" tableName="provider" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-593">
-        <createIndex indexName="uuid" tableName="provider_attribute" unique="true">
+        <createIndex indexName="uuid_provider_attribute" tableName="provider_attribute" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-594">
-        <createIndex indexName="uuid" tableName="provider_attribute_type" unique="true">
+        <createIndex indexName="uuid_provider_attribute_type" tableName="provider_attribute_type" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-595">
-        <createIndex indexName="uuid" tableName="relationship" unique="true">
+        <createIndex indexName="uuid_relationship" tableName="relationship" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-596">
-        <createIndex indexName="uuid" tableName="relationship_type" unique="true">
+        <createIndex indexName="uuid_relationship_type" tableName="relationship_type" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-597">
-        <createIndex indexName="uuid" tableName="report_object" unique="true">
+        <createIndex indexName="uuid_report_object" tableName="report_object" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-598">
-        <createIndex indexName="uuid" tableName="report_schema_xml" unique="true">
+        <createIndex indexName="uuid_report_schema_xml" tableName="report_schema_xml" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-599">
-        <createIndex indexName="uuid" tableName="role" unique="true">
+        <createIndex indexName="uuid_role" tableName="role" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-600">
-        <createIndex indexName="uuid" tableName="scheduler_task_config" unique="true">
+        <createIndex indexName="uuid_scheduler_task_config" tableName="scheduler_task_config" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-601">
-        <createIndex indexName="uuid" tableName="serialized_object" unique="true">
+        <createIndex indexName="uuid_serialized_object" tableName="serialized_object" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-602">
-        <createIndex indexName="uuid" tableName="visit" unique="true">
+        <createIndex indexName="uuid_visit" tableName="visit" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-603">
-        <createIndex indexName="uuid" tableName="visit_attribute" unique="true">
+        <createIndex indexName="uuid_visit_attribute" tableName="visit_attribute" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-604">
-        <createIndex indexName="uuid" tableName="visit_attribute_type" unique="true">
+        <createIndex indexName="uuid_visit_attribute_type" tableName="visit_attribute_type" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
     <changeSet author="rasztabigab (generated)" id="1616003709353-605">
-        <createIndex indexName="uuid" tableName="visit_type" unique="true">
+        <createIndex indexName="uuid_visit_type" tableName="visit_type" unique="true">
             <column name="uuid"/>
         </createIndex>
     </changeSet>
