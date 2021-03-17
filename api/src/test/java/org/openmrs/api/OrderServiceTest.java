@@ -34,7 +34,15 @@ import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.GregorianCalendar;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.boot.Metadata;
@@ -90,7 +98,9 @@ import org.openmrs.parameter.OrderSearchCriteria;
 import org.openmrs.parameter.OrderSearchCriteriaBuilder;
 import org.openmrs.test.TestUtil;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
-import org.openmrs.util.*;
+import org.openmrs.util.DateUtil;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
