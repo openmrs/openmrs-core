@@ -67,7 +67,7 @@ public class OrderValidator implements Validator {
 	@Override
 	public void validate(Object obj, Errors errors) {
 
-		if (!(obj instanceof Order)) {
+		if (obj != null && !(obj instanceof Order)) {
 			throw new IllegalArgumentException("The parameter obj must be of type" + Order.class);
 		}
 		

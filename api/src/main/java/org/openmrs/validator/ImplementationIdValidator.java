@@ -42,7 +42,7 @@ public class ImplementationIdValidator implements Validator {
 	public void validate(Object obj, Errors errors) throws APIException {
 
 		if (!(obj instanceof ImplementationId)) {
-			throw new IllegalArgumentException("The parameter obj must be of type" + ImplementationId.class);
+			throw new APIException("The parameter obj must be of type" + ImplementationId.class);
 		}
 		
 		ImplementationId implId = (ImplementationId) obj;

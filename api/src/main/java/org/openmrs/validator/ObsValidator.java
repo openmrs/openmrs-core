@@ -73,7 +73,7 @@ public class ObsValidator implements Validator {
 	public void validate(Object obj, Errors errors) {
 
 		if (!(obj instanceof Obs)) {
-			throw new IllegalArgumentException("The parameter obj must be of type"
+			throw new APIException("The parameter obj must be of type"
 				+ Obs.class);
 		}
 		

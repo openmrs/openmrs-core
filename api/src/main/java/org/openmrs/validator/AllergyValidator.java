@@ -53,10 +53,9 @@ public class AllergyValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
-
-		if (target == null || !(target instanceof Allergy )) {
-			throw new IllegalArgumentException("The parameter target should not be null and must be of type"
-				+ Allergy.class);
+		
+		if (target != null && !(target instanceof Allergy )) {
+			throw new IllegalArgumentException("The parameter target must be of type" + Allergy.class);
 		}
 		
 		ValidationUtils.rejectIfEmpty(errors, "patient", "allergyapi.patient.required");

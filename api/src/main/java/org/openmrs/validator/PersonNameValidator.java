@@ -51,7 +51,7 @@ public class PersonNameValidator implements Validator {
 	public void validate(Object object, Errors errors) {
 		log.debug("{}.validate...", this.getClass().getName());
 
-		if (!(object instanceof PersonName)) {
+		if (object != null && !(object instanceof PersonName)) {
 			throw new IllegalArgumentException("The parameter object must be of type" + PersonName.class);
 		}
 		

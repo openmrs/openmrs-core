@@ -54,7 +54,7 @@ public class OrderFrequencyValidator implements Validator {
 	@Override
 	public void validate(Object obj, Errors errors) {
 
-		if (!(obj instanceof OrderFrequency)) {
+		if (obj != null && !(obj instanceof OrderFrequency)) {
 			throw new IllegalArgumentException("The parameter obj must be of type"
 				+ OrderFrequency.class);
 		}
