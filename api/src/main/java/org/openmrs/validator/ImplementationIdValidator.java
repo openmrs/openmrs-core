@@ -41,21 +41,17 @@ public class ImplementationIdValidator implements Validator {
 	@Override
 	public void validate(Object obj, Errors errors) throws APIException {
 
-		if (!(obj instanceof ImplementationId)) {
-			throw new APIException("The parameter obj must be of type" + ImplementationId.class);
+		if (obj == null || !(obj instanceof ImplementationId)) {
+			throw new APIException("The parameter obj should not be null and must be of type" + ImplementationId.class);
 		}
 		
 		ImplementationId implId = (ImplementationId) obj;
 		char[] illegalChars = { '^', '|' };
-		if (implId == null) {
-			throw new APIException("ImplementationId.null", (Object[]) null);
-		} else {
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "ImplementationId.name.empty");
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "implementationId", "ImplementationId.implementationId.empty");
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "passphrase", "ImplementationId.passphrase.empty");
-			if (implId.getImplementationId() != null && StringUtils.containsAny(implId.getImplementationId(), illegalChars)) {
-				errors.rejectValue("implementationId", "ImplementationId.implementationId.invalidCharacter");
-			}
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "ImplementationId.name.empty");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "implementationId", "ImplementationId.implementationId.empty");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "passphrase", "ImplementationId.passphrase.empty");
+		if (implId.getImplementationId() != null && StringUtils.containsAny(implId.getImplementationId(), illegalChars)) {
+			errors.rejectValue("implementationId", "ImplementationId.implementationId.invalidCharacter");
 		}
 	}
 }
