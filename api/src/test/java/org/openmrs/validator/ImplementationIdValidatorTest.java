@@ -38,7 +38,7 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 			fail();
 		}
 		catch (APIException e) {
-			assertEquals(e.getMessage(), Context.getMessageSourceService().getMessage("The parameter obj should not be null and must be of typeclass org.openmrs.ImplementationId>"));
+			assertEquals(e.getMessage(), Context.getMessageSourceService().getMessage("The parameter obj should not be null and must be of typeclass org.openmrs.ImplementationId"));
 		}
 	}
 	
