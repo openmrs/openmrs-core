@@ -481,7 +481,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldFailForANullObject() {
 		APIException exception = assertThrows(APIException.class, () -> obsValidator.validate(null, null));
-		assertThat(exception.getMessage(), is(CoreMatchers.equalTo("Obs can't be null"))); 
+		assertThat(exception.getMessage(), is(CoreMatchers.equalTo("The parameter obj must be of typeclass org.openmrs.Obs"))); 
 	}
 	
 	/**

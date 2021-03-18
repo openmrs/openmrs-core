@@ -73,14 +73,11 @@ public class ObsValidator implements Validator {
 	public void validate(Object obj, Errors errors) {
 
 		if (!(obj instanceof Obs)) {
-			throw new APIException("The parameter obj must be of type"
-				+ Obs.class);
+			throw new APIException("The parameter obj should not be null and must be of type" + Obs.class);
 		}
 		
 		Obs obs = (Obs) obj;
-		if (obs == null) {
-			throw new APIException("Obs can't be null");
-		} else if (obs.getVoided()) {
+		if (obs.getVoided()) {
 			return;
 		}
 		List<Obs> ancestors = new ArrayList<>();
