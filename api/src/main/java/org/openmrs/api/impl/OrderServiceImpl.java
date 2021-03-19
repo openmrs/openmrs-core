@@ -241,7 +241,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (orderType == null) {
 			orderType = getOrderTypeByConcept(order.getConcept());
 		}
-		if((orderTypes.size() == 1)) {
+		if(orderTypes.size() == 1) {
             orderTypes.add(orderContext.getOrderType());
 		}
 		if((orderTypes.size() > 1 || orderTypes == null) && order instanceof DrugOrder){
