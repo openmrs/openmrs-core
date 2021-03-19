@@ -25,7 +25,7 @@ public class ValidationException extends APIException {
 	 * @since 1.11
 	 */
 	
-	private Errors errors;
+	private final Errors errors;
 	
 	/**
 	 * Default empty constructor. If at all possible, don't use this one, but use the

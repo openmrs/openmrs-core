@@ -15,7 +15,7 @@ public class PatientIdentifierException extends APIException {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private PatientIdentifier patientIdentifier;
+	private final PatientIdentifier patientIdentifier;
 	
 	public PatientIdentifierException() {
 	}

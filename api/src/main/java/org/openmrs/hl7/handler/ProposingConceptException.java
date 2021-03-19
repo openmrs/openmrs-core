@@ -19,9 +19,9 @@ public class ProposingConceptException extends APIException {
 	
 	public static final long serialVersionUID = 120002000200L;
 	
-	private Concept concept;
+	private final Concept concept;
 	
-	private String valueName;
+	private final String valueName;
 	
 	/**
 	 * Default constructor that takes in the required parameters

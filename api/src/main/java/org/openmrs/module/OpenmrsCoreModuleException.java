@@ -27,7 +27,7 @@ public class OpenmrsCoreModuleException extends ModuleMustStartException {
 	
 	public static final long serialVersionUID = 1L;
 	
-	private Map<String, String> modules;
+	private final Map<String, String> modules;
 	
 	/**
 	 * This constructor is used when a user tries to stop a core module.

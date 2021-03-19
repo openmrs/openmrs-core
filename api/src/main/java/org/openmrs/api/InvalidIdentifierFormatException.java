@@ -15,7 +15,7 @@ public class InvalidIdentifierFormatException extends PatientIdentifierException
 	
 	private static final long serialVersionUID = 1L;
 	
-	private String format;
+	private final String format;
 	
 	public InvalidIdentifierFormatException() {
 	}

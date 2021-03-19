@@ -13,7 +13,7 @@ public class CycleException extends Exception {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private Object extraData;
+	private final Object extraData;
 	
 	public CycleException() {
 	}
