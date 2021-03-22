@@ -60,7 +60,15 @@ public class Program extends BaseChangeableOpenmrsMetadata {
 	public Program(String name) {
 		setName(name);
 	}
-	
+
+	/** Constructor with all required fields for Program */
+	public Program(int programId, Concept concept, Concept outcomesConcept, Set<ProgramWorkflow> allWorkflows) {
+		this.programId = programId;
+		this.concept = concept;
+		this.outcomesConcept = outcomesConcept;
+		this.allWorkflows = allWorkflows;
+	}
+
 	// ******************
 	// Instance methods
 	// ******************

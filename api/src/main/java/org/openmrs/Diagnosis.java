@@ -70,7 +70,14 @@ public class Diagnosis extends BaseChangeableOpenmrsData {
 	
 	public Diagnosis() {
 	}
+
+	/** constructor with id for Diagnosis */
+	public Diagnosis(Integer diagnosisId) {
+		this.diagnosisId = diagnosisId;
+	}
 	
+	
+
 	/**
 	 * @param encounter the encounter for this diagnosis
 	 * @param diagnosis the diagnosis to set
@@ -86,6 +93,14 @@ public class Diagnosis extends BaseChangeableOpenmrsData {
 		this.patient = patient;
 	}
 	
+	/** constructor with all required fields for Diagnosis */
+	public Diagnosis(Integer diagnosisId, Encounter encounter, Integer rank, Patient patient) {
+		this.diagnosisId = diagnosisId;
+		this.encounter = encounter;
+		this.rank = rank;
+		this.patient = patient;
+	}
+
 	/**
 	 * Gets the diagnosis identifier.
 	 * 

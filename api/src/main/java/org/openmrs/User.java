@@ -93,6 +93,15 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 		this.person = person;
 	}
 	
+	/** constructor with all required fields for User */
+	public User(int userId, Person person, String systemId,Map<String, String> userProperties, User creator){
+		this.userId = userId;
+		this.person = person;
+		this.systemId = systemId;
+		this.userProperties = userProperties;
+		setCreator(creator);
+	}
+	
 	/**
 	 * Return true if this user has all privileges
 	 * 

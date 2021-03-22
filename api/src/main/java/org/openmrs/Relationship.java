@@ -49,6 +49,15 @@ public class Relationship extends BaseChangeableOpenmrsData {
 		this.relationshipType = type;
 	}
 	
+	/** constructor with all required fields for Relationship */
+	public Relationship(Integer relationshipId, Person personA, RelationshipType relationshipType, Person personB, User creator) {
+		this.relationshipId = relationshipId;
+		this.personA = personA;
+		this.relationshipType = relationshipType;
+		this.personB = personB;
+		setCreator(creator);
+	}
+
 	/**
 	 * Does a shallow copy of this Relationship. Does NOT copy relationshipId
 	 * 

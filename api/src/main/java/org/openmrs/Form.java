@@ -51,7 +51,15 @@ public class Form extends BaseChangeableOpenmrsMetadata {
 	public Form(Integer formId) {
 		this.formId = formId;
 	}
-	
+
+	/** constructor fith required field for Form */
+	public Form(int formId, String name, User creator, String version) {
+		this.formId = formId;
+		setName(name);
+		setCreator(creator);
+		this.version = version;
+	}
+
 	// Property accessors
 	
 	/**

@@ -148,6 +148,24 @@ public class Order extends BaseOpenmrsData {
 		this.orderId = orderId;
 	}
 	
+	/** constructor with all required fields for Order */
+	public Order(Patient patient, OrderType orderType, Concept concept, Date dateActivated, Encounter encounter, 
+				 Provider orderer, Urgency urgency, String orderNumber, CareSetting careSetting, Action action, 
+				 User creator, int orderId) {
+		this.patient = patient;
+		this.orderType = orderType;
+		this.concept = concept;
+		this.dateActivated = dateActivated;
+		this.encounter = encounter;
+		this.orderer = orderer;
+		this.urgency = urgency;
+		this.orderNumber = orderNumber;
+		this.careSetting = careSetting;
+		this.action = action;
+		setCreator(creator);
+		this.orderId = orderId;
+	}
+
 	/**
 	 * Performs a shallow copy of this Order. Does NOT copy orderId.
 	 * 

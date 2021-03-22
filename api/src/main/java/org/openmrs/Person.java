@@ -119,6 +119,13 @@ public class Person extends BaseChangeableOpenmrsData {
 	public Person() {
 	}
 	
+	/** constructor with all required fields for Person */
+	public Person(int personId, Date personDateCreated, Boolean personVoided) {
+		this.personId = personId;
+		this.personDateCreated = personDateCreated;
+		this.personVoided = personVoided;
+	}
+	
 	/**
 	 * This constructor is used to build a new Person object copy from another person object
 	 * (usually a patient or a user subobject). All attributes are copied over to the new object.
@@ -131,6 +138,8 @@ public class Person extends BaseChangeableOpenmrsData {
 		if (person == null) {
 			return;
 		}
+		
+		
 		
 		personId = person.getPersonId();
 		setUuid(person.getUuid());
