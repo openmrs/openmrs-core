@@ -18,29 +18,35 @@ public class InvalidIdentifierFormatException extends PatientIdentifierException
 	private final String format;
 	
 	public InvalidIdentifierFormatException() {
+		format = null;
+	}
+
+	public InvalidIdentifierFormatException(String message, String format) {
+		super(message);
+		this.format = format;
 	}
 	
 	public InvalidIdentifierFormatException(String message) {
 		super(message);
+		format = null;
 	}
 	
 	public InvalidIdentifierFormatException(String message, PatientIdentifier identifier) {
 		super(message, identifier);
+		format = null;
 	}
 	
 	public InvalidIdentifierFormatException(String message, Throwable cause) {
 		super(message, cause);
+		format = null;
 	}
 	
 	public InvalidIdentifierFormatException(Throwable cause) {
 		super(cause);
+		format = null;
 	}
 	
 	public String getFormat() {
 		return format;
-	}
-	
-	public void setFormat(String format) {
-		this.format = format;
 	}
 }

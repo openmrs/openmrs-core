@@ -16,6 +16,7 @@ public class CycleException extends Exception {
 	private final Object extraData;
 	
 	public CycleException() {
+		extraData = null;
 	}
 	
 	public CycleException(String message, Object extraData) {

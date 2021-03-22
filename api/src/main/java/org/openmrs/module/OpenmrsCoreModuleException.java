@@ -36,6 +36,7 @@ public class OpenmrsCoreModuleException extends ModuleMustStartException {
 	 */
 	public OpenmrsCoreModuleException(String moduleId) {
 		super("The " + moduleId + " module is set as 'core' by OpenMRS and so cannot be stopped or unloaded.");
+		modules = null;
 	}
 	
 	/**
@@ -43,8 +44,6 @@ public class OpenmrsCoreModuleException extends ModuleMustStartException {
 	 */
 	public OpenmrsCoreModuleException(Map<String, String> modules) {
 		super(createMessage(modules));
-		
-		// set the moduleIds property for use by the StartupErrorFilter
 		this.modules = modules;
 	}
 	

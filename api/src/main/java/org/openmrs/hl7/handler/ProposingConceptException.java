@@ -42,24 +42,9 @@ public class ProposingConceptException extends APIException {
 	}
 	
 	/**
-	 * @param concept the concept to set
-	 */
-	public void setConcept(Concept concept) {
-		this.concept = concept;
-	}
-	
-	/**
 	 * @return the valueName
 	 */
 	public String getValueName() {
 		return valueName;
 	}
-	
-	/**
-	 * @param valueName the valueName to set
-	 */
-	public void setValueName(String valueName) {
-		this.valueName = valueName;
-	}
-	
 }

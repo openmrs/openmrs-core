@@ -31,6 +31,7 @@ public class ValidationException extends APIException {
 	 * Default empty constructor. If at all possible, don't use this one, but use the
 	 */
 	public ValidationException() {
+		errors = null;
 	}
 	
 	/**
@@ -41,6 +42,7 @@ public class ValidationException extends APIException {
 	 */
 	public ValidationException(String message) {
 		super(message);
+		errors = null;
 	}
 	
 	/**
@@ -52,6 +54,7 @@ public class ValidationException extends APIException {
 	 */
 	public ValidationException(String message, Throwable cause) {
 		super(message, cause);
+		errors = null;
 	}
 	
 	/**
@@ -61,6 +64,7 @@ public class ValidationException extends APIException {
 	 */
 	public ValidationException(Throwable cause) {
 		super(cause);
+		errors = null;
 	}
 	
 	/**
@@ -90,12 +94,5 @@ public class ValidationException extends APIException {
 	 */
 	public Errors getErrors() {
 		return errors;
-	}
-	
-	/**
-	 * @since 1.11
-	 */
-	public void setErrors(Errors errors) {
-		this.errors = errors;
 	}
 }
