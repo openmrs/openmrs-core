@@ -23,6 +23,6 @@
 		http://www.liquibase.org/xml/ns/dbchangelog 
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
-	<include file="org/openmrs/liquibase/snapshots/core-data/liquibase-core-data-2.3.x.xml"/>
+	<include file="org/openmrs/liquibase/snapshots/core-data/liquibase-core-data-2.4.x.xml"/>
 	
 </databaseChangeLog>
