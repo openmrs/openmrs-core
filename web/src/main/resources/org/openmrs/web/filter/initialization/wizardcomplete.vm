@@ -1,4 +1,4 @@
-#parse($headerTemplate)
+#parse($HEADER_TEMPLATE)
 	<form method="post">
 		<input type="hidden" name="page" value="wizardcomplete.vm" /> 
 		<div class="content">
@@ -105,4 +105,4 @@
 	</form>
 	
     <div id="progressbar"></div>
-#parse($footerTemplate)
+#parse($FOOTER_TEMPLATE)

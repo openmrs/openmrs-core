@@ -1,4 +1,4 @@
-#parse($headerTemplate)
+#parse($HEADER_TEMPLATE)
 
 <form method="post" autocomplete="off">
 			
@@ -29,4 +29,4 @@
 	document.forms[0].elements[0].focus();
 </script>
 
-#parse($footerTemplate)
+#parse($FOOTER_TEMPLATE)
