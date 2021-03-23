@@ -9,10 +9,12 @@
  */
 package org.openmrs.liquibase;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.openmrs.util.H2DatabaseIT;
+import org.powermock.reflect.Whitebox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +57,9 @@ public class ChangeLogDetectiveDatabaseIT extends H2DatabaseIT {
 	
 	@Test
 	public void shouldGetUnrunLiquibaseUpdateFileNames() throws Exception {
+		// TODO Delete this line once there is at least one changeset in the liquibase-update-to-latest-2.5.x.xml file.
+		Whitebox.setInternalState(ChangeLogVersions.class, "UPDATE_VERSIONS", Arrays.asList("1.9.x", "2.0.x", "2.1.x", "2.2.x", "2.3.x", "2.4.x"));
+		
 		ChangeLogDetective changeLogDetective = new ChangeLogDetective();
 		ChangeLogVersionFinder changeLogVersionFinder = new ChangeLogVersionFinder();
 		Map<String, List<String>> snapshotCombinations = changeLogVersionFinder.getSnapshotCombinations();
