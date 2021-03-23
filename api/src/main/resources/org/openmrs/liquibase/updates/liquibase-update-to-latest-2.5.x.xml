@@ -19,6 +19,4 @@
 		http://www.liquibase.org/xml/ns/dbchangelog 
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 	
-	<!-- This changelog is empty on purpose. It is used by the org.openmrs.util.DatabaseUpdater class. -->
-	
 </databaseChangeLog>
