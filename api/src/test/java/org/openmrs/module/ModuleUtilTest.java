@@ -404,8 +404,8 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 		String requiredOpenmrsVersion = "1.2.5+ - 1.4.2";
 		assertFalse(ModuleUtil.matchRequiredVersions("1.2.4.99", requiredOpenmrsVersion));
 		assertFalse(ModuleUtil.matchRequiredVersions("1.1.7", requiredOpenmrsVersion));
-		assertFalse(ModuleUtil.matchRequiredVersions("1.4.2", requiredOpenmrsVersion));
 		assertFalse(ModuleUtil.matchRequiredVersions("1.2.4", requiredOpenmrsVersion));
+		assertTrue(ModuleUtil.matchRequiredVersions("1.4.2", requiredOpenmrsVersion));
 		assertTrue(ModuleUtil.matchRequiredVersions("1.2.7", requiredOpenmrsVersion));
 		assertTrue(ModuleUtil.matchRequiredVersions("1.2.5", requiredOpenmrsVersion));
 		assertTrue(ModuleUtil.matchRequiredVersions("1.2.99", requiredOpenmrsVersion));
