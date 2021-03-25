@@ -249,6 +249,8 @@ public class ModuleUtil {
 	 * <li>1.2.*</li>
 	 * <li>1.2.2 - 1.2.3</li>
 	 * <li>1.2.* - 1.3.*</li>
+	 * <li>1.2.3+</li>
+	 * <li>1.2.2+ - 1.3.3+</li>
 	 * </ul>
 	 * <p>
 	 * Again the possible require version number formats with their interpretation:
@@ -257,6 +259,8 @@ public class ModuleUtil {
 	 * <li>1.2.* means any version of the 1.2.x branch. That is 1.2.0, 1.2.1, 1.2.2,... but not 1.3.0, 1.4.0</li>
 	 * <li>1.2.2 - 1.2.3 means 1.2.2 and 1.2.3 (inclusive)</li>
 	 * <li>1.2.* - 1.3.* means any version of the 1.2.x and 1.3.x branch</li>
+	 * <li>1.2.3+ means any version of the 1.2.x branch greater than or equal to 1.2.3. That is 1.2.3, 1.2.4, 1.2.5,... but not 1.3.0, 1.4.0</li>
+	 * <li>1.2.2+ - 1.3.3+ means any version of the 1.2.x branch greater than or equal to 1.2.2 and 1.3.x branch greater than or equal to 1.3.3</li>
 	 * </ul>
 	 * </p>
 	 *
@@ -266,6 +270,9 @@ public class ModuleUtil {
 	 * <strong>Should</strong> allow ranged required version
 	 * <strong>Should</strong> allow ranged required version with wild card
 	 * <strong>Should</strong> allow ranged required version with wild card on one end
+	 * <strong>Should</strong> allow ranged required version with plus
+	 * <strong>Should</strong> allow ranged required version with plus on one end
+	 * <strong>Should</strong> allow required version with plus
 	 * <strong>Should</strong> allow single entry for required version
 	 * <strong>Should</strong> allow required version with wild card
 	 * <strong>Should</strong> allow non numeric character required version
@@ -294,7 +301,7 @@ public class ModuleUtil {
 			for (String range : ranges) {
 				// need to externalize this string
 				String separator = "-";
-				if (range.indexOf("*") > 0 || range.indexOf(separator) > 0 && (!isVersionWithQualifier(range))) {
+				if (range.indexOf("+") > 0 || range.indexOf("*") > 0 || range.indexOf(separator) > 0 && (!isVersionWithQualifier(range))) {
 					// if it contains "*" or "-" then we must separate those two
 					// assume it's always going to be two part
 					// assign the upper and lower bound
@@ -327,6 +334,16 @@ public class ModuleUtil {
 					// if the upper contains "*" then change it to maxRevisionNumber
 					if (upperBound.indexOf("*") > 0) {
 						upperBound = upperBound.replaceAll("\\*", Integer.toString(Integer.MAX_VALUE));
+					}
+
+					// if the lower contains "+" then change it to current lowerBound without plus
+					if (lowerBound.indexOf("+") > 0) {
+						lowerBound = lowerBound.replaceAll("\\+", "");
+					}
+
+					// if the upper contains "+" then change it to maxRevisionNumber
+					if (upperBound.indexOf("+") > 0) {
+						upperBound = upperBound.substring(0, upperBound.lastIndexOf(".") + 1) + Integer.MAX_VALUE;
 					}
 					
 					int lowerReturn = compareVersion(version, lowerBound);
@@ -366,6 +383,8 @@ public class ModuleUtil {
 	 * <li>1.2.*</li>
 	 * <li>1.2.2 - 1.2.3</li>
 	 * <li>1.2.* - 1.3.*</li>
+	 * <li>1.2.3+</li>
+	 * <li>1.2.2+ - 1.3.3+</li>
 	 * </ul>
 	 * <p>
 	 * Again the possible require version number formats with their interpretation:
@@ -374,6 +393,8 @@ public class ModuleUtil {
 	 * <li>1.2.* means any version of the 1.2.x branch. That is 1.2.0, 1.2.1, 1.2.2,... but not 1.3.0, 1.4.0</li>
 	 * <li>1.2.2 - 1.2.3 means 1.2.2 and 1.2.3 (inclusive)</li>
 	 * <li>1.2.* - 1.3.* means any version of the 1.2.x and 1.3.x branch</li>
+	 * <li>1.2.3+ means any version of the 1.2.x branch greater than or equal to 1.2.3. That is 1.2.3, 1.2.4, 1.2.5,... but not 1.3.0, 1.4.0</li>
+	 * <li>1.2.2+ - 1.3.3+ means any version of the 1.2.x branch greater than or equal to 1.2.2 and 1.3.x branch greater than or equal to 1.3.3</li>
 	 * </ul>
 	 * </p>
 	 *

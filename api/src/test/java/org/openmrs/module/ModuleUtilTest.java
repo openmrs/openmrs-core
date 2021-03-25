@@ -382,6 +382,70 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)
+	 */
+	@Test
+	public void matchRequiredVersions_shouldAllowRequiredVersionWithPlus() {
+		String requiredOpenmrsVersion = "1.3.7+";
+		assertFalse(ModuleUtil.matchRequiredVersions("1.3.6", requiredOpenmrsVersion));
+		assertFalse(ModuleUtil.matchRequiredVersions("1.3.6.99", requiredOpenmrsVersion));
+		assertFalse(ModuleUtil.matchRequiredVersions("1.4.0", requiredOpenmrsVersion));
+		assertTrue(ModuleUtil.matchRequiredVersions("1.3.7.99", requiredOpenmrsVersion));
+		assertTrue(ModuleUtil.matchRequiredVersions("1.3.99", requiredOpenmrsVersion));
+		assertTrue(ModuleUtil.matchRequiredVersions("1.3.7", requiredOpenmrsVersion));
+		assertTrue(ModuleUtil.matchRequiredVersions("1.3.8", requiredOpenmrsVersion));
+	}
+
+	/**
+	 * @see org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)
+	 */
+	@Test
+	public void matchRequiredVersions_shouldAllowRangedRequiredVersionWithPlusOnLowerBound() {
+		String requiredOpenmrsVersion = "1.2.5+ - 1.4.2";
+		assertFalse(ModuleUtil.matchRequiredVersions("1.2.4.99", requiredOpenmrsVersion));
+		assertFalse(ModuleUtil.matchRequiredVersions("1.1.7", requiredOpenmrsVersion));
+		assertFalse(ModuleUtil.matchRequiredVersions("1.4.2", requiredOpenmrsVersion));
+		assertFalse(ModuleUtil.matchRequiredVersions("1.2.4", requiredOpenmrsVersion));
+		assertTrue(ModuleUtil.matchRequiredVersions("1.2.7", requiredOpenmrsVersion));
+		assertTrue(ModuleUtil.matchRequiredVersions("1.2.5", requiredOpenmrsVersion));
+		assertTrue(ModuleUtil.matchRequiredVersions("1.2.99", requiredOpenmrsVersion));
+
+	}
+
+	/**
+	 * @see org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)
+	 */
+	@Test
+	public void matchRequiredVersions_shouldAllowRangedRequiredVersionWithPlusOnHigherBound() {
+		String requiredOpenmrsVersion = "1.3.4 - 1.5.1+";
+		assertFalse(ModuleUtil.matchRequiredVersions("1.3.3", requiredOpenmrsVersion));
+		assertFalse(ModuleUtil.matchRequiredVersions("1.6.0", requiredOpenmrsVersion));
+		assertTrue(ModuleUtil.matchRequiredVersions("1.5.2", requiredOpenmrsVersion));
+		assertTrue(ModuleUtil.matchRequiredVersions("1.3.5", requiredOpenmrsVersion));
+		assertTrue(ModuleUtil.matchRequiredVersions("1.4.1", requiredOpenmrsVersion));
+		assertTrue(ModuleUtil.matchRequiredVersions("1.4.5", requiredOpenmrsVersion));
+		assertTrue(ModuleUtil.matchRequiredVersions("1.5.99", requiredOpenmrsVersion));
+		assertTrue(ModuleUtil.matchRequiredVersions("1.3.4", requiredOpenmrsVersion));
+	}
+
+	/**
+	 * @see org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)
+	 */
+	@Test
+	public void matchRequiredVersions_shouldAllowRangedRequiredVersionWithPlusOnBothEnds()
+	{
+		String requiredOpenmrsVersion = "1.4.4+ - 1.5.3+";
+		assertFalse(ModuleUtil.matchRequiredVersions("1.4.3", requiredOpenmrsVersion));
+		assertFalse(ModuleUtil.matchRequiredVersions("1.6.0", requiredOpenmrsVersion));
+		assertFalse(ModuleUtil.matchRequiredVersions("1.4.3.99", requiredOpenmrsVersion));
+		assertTrue(ModuleUtil.matchRequiredVersions("1.4.4", requiredOpenmrsVersion));
+		assertTrue(ModuleUtil.matchRequiredVersions("1.5.3", requiredOpenmrsVersion));
+		assertTrue(ModuleUtil.matchRequiredVersions("1.5.99", requiredOpenmrsVersion));
+		assertTrue(ModuleUtil.matchRequiredVersions("1.5.2", requiredOpenmrsVersion));
+		assertTrue(ModuleUtil.matchRequiredVersions("1.5.2.99", requiredOpenmrsVersion));
+	}
+
+	/**
 	 * @see org.openmrs.module.ModuleUtil#getPathForResource(org.openmrs.module.Module,String)
 	 */
 	@Test
