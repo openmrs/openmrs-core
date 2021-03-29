@@ -243,17 +243,16 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (orderType == null) {
 			orderType = getOrderTypeByConcept(order.getConcept());
 		}
-		if(orderTypes.size() > 1 && order instanceof DrugOrder){
-			throw new AmbiguousOrderException("Order.cannot.have.more.than.one");
+		if((orderTypes.size() > 1) && order instanceof DrugOrder){
+				throw new AmbiguousOrderException("Order.cannot.have.more.than.one");
 		}
 		if (orderType == null && order instanceof DrugOrder) {
 			orderType = Context.getOrderService().getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID);
 		}
 		if(orderTypes.size() > 1 && order instanceof TestOrder){
-			throw new AmbiguousOrderException("Order.cannot.have.more.than.one");
-		}
-		if(orderTypes.size() > 1 && order instanceof TestOrder){
-			throw new AmbiguousOrderException("Order.cannot.have.more.than.one");
+			if(orderTypes.size() == 0) {
+				throw new AmbiguousOrderException("Order.cannot.have.more.than.one");
+			}
 		}
 		if (orderType == null && order instanceof TestOrder) {
 			orderType = Context.getOrderService().getOrderTypeByUuid(OrderType.TEST_ORDER_TYPE_UUID);
