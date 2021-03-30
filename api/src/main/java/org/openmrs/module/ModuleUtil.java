@@ -61,11 +61,55 @@ public class ModuleUtil {
 	}
 	
 	private static final Logger log = LoggerFactory.getLogger(ModuleUtil.class);
-	
-	// adapted from semver.org
-		private static final Pattern VERSION_PATTERN = Pattern.compile(
-			"^(?<major>0|[1-9]\\d*)\\.(?<minor>0|[1-9]\\d*)\\.(?<patch>0|[1-9]\\d*)(?:-(?<snapshot>SNAPSHOT))?$"
-		);
+
+	/**
+	 * This is the value used as the maximum version
+	 */
+	private static final String MAX_VERSION = String.valueOf(Integer.MAX_VALUE);
+
+	/**
+	 * This is the value used as the minimum version
+	 */
+	private static final String MIN_VERSION = "0";
+
+	/**
+	 * This pattern is adapted from SemVer.org's recommended pattern
+	 * 
+	 * However it has a few differences:
+	 *  1. Only a major version is required; minor, patch, and prerelease are all optional
+	 *  2. Build data is not supported
+	 *  3. The prerelease format is restricted and may not include a dash or period 
+	 */
+	private static final Pattern VERSION_PATTERN = Pattern.compile(
+		"^(?<major>0|[1-9]\\d*)" 
+			+ "(?:\\.(?<minor>0|[1-9]\\d*))?" 
+			+ "(?:\\.(?<patch>0|[1-9]\\d*))?" 
+			+ "(?:-(?<prerelease>[0-9a-zA-Z]*))?$"
+	);
+
+	/**
+	 * This is the same pattern as {@link #VERSION_PATTERN}, but it only provides a single group and permits the major,
+	 * minor, or patch version to be replaced with a <tt>*</tt> as a wildcard.
+	 * 
+	 * This is used to extract a reasonable facsimile of a SemVer from an OpenMRS version string
+	 */
+	private static final Pattern VERSION_PATTERN_WITH_WILDCARDS = Pattern.compile(
+		"^((?:(?:0|[1-9]\\d*)|\\*)"
+			+ "(?:\\.(?:(?:0|[1-9]\\d*)|\\*))?"
+			+ "(?:\\.(?:(?:0|[1-9]\\d*)|\\*))?"
+			+ "(?:-(?<prerelease>[0-9a-zA-Z]*))?)$"
+	);
+
+	/**
+	 * This pattern is match wildcards in version strings.
+	 */
+	private static final Pattern WILDCARD = Pattern.compile("(?<=^|\\.)\\*(?!\\.)");
+
+	/**
+	 * This is used to remove square brackets from version strings if they exist. Note that no attempt is made to match
+	 * brackets. They are simple removed.
+	 */
+	private static final Pattern SQUARE_BRACKETS = Pattern.compile("[\\[\\]]");
 	
 	/**
 	 * Start up the module system with the given properties.
@@ -298,6 +342,8 @@ public class ModuleUtil {
 		if (StringUtils.isNotEmpty(versionRange)) {
 			String[] ranges = versionRange.split(",");
 			for (String range : ranges) {
+				range = SQUARE_BRACKETS.matcher(range).replaceAll("");
+
 				// need to externalize this string
 				String separator = "-";
 				if (range.indexOf("*") > 0 || range.indexOf(separator) > 0 && (!isVersionWithQualifier(range))) {
@@ -311,9 +357,9 @@ public class ModuleUtil {
 					
 					int indexOfSeparator = range.indexOf(separator);
 					while (indexOfSeparator > 0) {
-						lowerBound = range.substring(0, indexOfSeparator);
-						upperBound = range.substring(indexOfSeparator + 1);
-						if (upperBound.matches("^\\s?\\d+.*")) {
+						lowerBound = range.substring(0, indexOfSeparator).trim();
+						upperBound = range.substring(indexOfSeparator + 1).trim();
+						if (VERSION_PATTERN_WITH_WILDCARDS.matcher(upperBound).matches()) {
 							break;
 						}
 						indexOfSeparator = range.indexOf(separator, indexOfSeparator + 1);
@@ -322,22 +368,31 @@ public class ModuleUtil {
 					// only preserve part of the string that match the following format:
 					// - xx.yy.*
 					// - xx.yy.zz*
-					lowerBound = StringUtils.remove(lowerBound, lowerBound.replaceAll("^\\s?\\d+[\\.\\d+\\*?|\\.\\*]+", ""));
-					upperBound = StringUtils.remove(upperBound, upperBound.replaceAll("^\\s?\\d+[\\.\\d+\\*?|\\.\\*]+", ""));
+					Matcher m = VERSION_PATTERN_WITH_WILDCARDS.matcher(lowerBound);
+					if (m.find()) {
+						lowerBound = m.group(1);
+					} else {
+						lowerBound = MIN_VERSION;
+					}
+					
+					m = VERSION_PATTERN_WITH_WILDCARDS.matcher(upperBound);
+					if (m.find()) {
+						upperBound = m.group(1);
+					} else {
+						upperBound = MAX_VERSION;
+					}
 					
 					// if the lower contains "*" then change it to zero
-					if (lowerBound.indexOf("*") > 0) {
-						lowerBound = lowerBound.replaceAll("\\*", "0");
-					}
+					lowerBound = WILDCARD.matcher(lowerBound).replaceAll(MIN_VERSION);
 					
 					// if the upper contains "*" then change it to maxRevisionNumber
-					if (upperBound.indexOf("*") > 0) {
-						upperBound = upperBound.replaceAll("\\*", Integer.toString(Integer.MAX_VALUE));
-					}
+					upperBound = WILDCARD.matcher(upperBound).replaceAll(MAX_VERSION);
 					
-					int lowerReturn = compareVersion(version, lowerBound);
+					Matcher versionMatcher = WILDCARD.matcher(version);
 					
-					int upperReturn = compareVersion(version, upperBound);
+					// do the actual version comparisons
+					int lowerReturn = compareVersion(versionMatcher.replaceAll(MAX_VERSION), lowerBound);
+					int upperReturn = compareVersion(versionMatcher.replaceAll(MIN_VERSION), upperBound);
 					
 					if (lowerReturn < 0 || upperReturn > 0) {
 						log.debug("Version " + version + " is not between " + lowerBound + " and " + upperBound);
@@ -424,12 +479,20 @@ public class ModuleUtil {
 				return 0;
 			}
 			
+			version = version.trim();
+			value = value.trim();
+			
 			Matcher versionMatcher = VERSION_PATTERN.matcher(version);
 			Matcher valueMatcher = VERSION_PATTERN.matcher(value);
 
-			if (!versionMatcher.matches() || !valueMatcher.matches()) {
-				// this seems wrong
+			if (!versionMatcher.matches()) {
+				if (valueMatcher.matches()) {
+					return -1;
+				}
+
 				return 0;
+			} else if (!valueMatcher.matches()) {
+				return 1;
 			}
 
 			final String[] versions = {
@@ -437,6 +500,7 @@ public class ModuleUtil {
 				versionMatcher.group("minor"),
 				versionMatcher.group("patch")
 			};
+			
 			final String[] values = {
 				valueMatcher.group("major"),
 				valueMatcher.group("minor"),
@@ -444,27 +508,30 @@ public class ModuleUtil {
 			};
 			
 			for (int x = 0; x < versions.length; x++) {
-				String verNum = versions[x].trim();
-				String valNum = values[x].trim();
-				Long ver = NumberUtils.toLong(verNum, 0);
-				Long val = NumberUtils.toLong(valNum, 0);
+				long ver = NumberUtils.toLong(versions[x], 0);
+				long val = NumberUtils.toLong(values[x], 0);
 				
-				int ret = ver.compareTo(val);
-				if (ret != 0) {
-					return ret;
-					
+				if (ver == val) {
+					continue;
 				}
-				String versionSnapshot = versionMatcher.group("snapshot");
-				String valueSnapshot = valueMatcher.group("snapshot");
+				
+				return ver > val ? 1 : -1;
+			}
 
-				if (!"".equals(versionSnapshot)) {
-					if ("".equals(valueSnapshot)) {
-						return -1;
-					}
+			// at this point, the versions are identical, so we check the prerelease string
+			String versionPrerelease = versionMatcher.group("prerelease");
+			String valuePrerelease = valueMatcher.group("prerelease");
+			
+			if (StringUtils.isNotBlank(versionPrerelease)) {
+				if (StringUtils.isBlank(valuePrerelease)) {
+					return -1;
 				} else {
-					if (!"".equals(valueSnapshot)) {
-						return 1;
-					}
+					// we assume that all pre-release versions are equivalent
+					return 0;
+				}
+			} else {
+				if (StringUtils.isNotBlank(valuePrerelease)) {
+					return 1;
 				}
 			}
 		}
@@ -484,8 +551,7 @@ public class ModuleUtil {
 	 */
 	public static boolean isVersionWithQualifier(String version) {
 		Matcher matcher = VERSION_PATTERN.matcher(version);
-		return matcher.matches() && !"".equals(matcher.group("snapshot"));
-		
+		return matcher.matches() && StringUtils.isNotBlank(matcher.group("prerelease"));
 	}
 	
 	/**

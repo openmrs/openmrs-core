@@ -545,26 +545,20 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	private JarFile loadModuleJarFile(String moduleId, String version) throws IOException {
-		InputStream moduleStream = null;
-		File tempFile = null;
-		OutputStream tempFileStream = null;
-		JarFile jarFile = null;
-		try {
-			moduleStream = getClass().getClassLoader().getResourceAsStream(
-			    "org/openmrs/module/include/" + moduleId + "-" + version + ".omod");
+		File tempFile = File.createTempFile("moduleTest", "omod");
+		JarFile jarFile;
+
+		try (InputStream moduleStream = getClass().getClassLoader().getResourceAsStream(
+			"org/openmrs/module/include/" + moduleId + "-" + version + ".omod");
+		     OutputStream tempFileStream = new FileOutputStream(tempFile)) {
 			assertNotNull(moduleStream);
-			tempFile = File.createTempFile("moduleTest", "omod");
-			tempFileStream = new FileOutputStream(tempFile);
 			IOUtils.copy(moduleStream, tempFileStream);
 			jarFile = new JarFile(tempFile);
 		}
 		finally {
-			IOUtils.closeQuietly(moduleStream);
-			IOUtils.closeQuietly(tempFileStream);
-			if (tempFile != null) {
-				tempFile.delete();
-			}
+			tempFile.delete();
 		}
+
 		return jarFile;
 	}
 	
