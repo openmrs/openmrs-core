@@ -82,16 +82,22 @@ OpenMRS 4.8.x
 
 ### Further Liquibase files
 The folder `openmrs-core/api/src/main/resources` contains further Liquibase files: 
+
 * `liquibase-schema-only.xml` references the latest snapshot file for creating the OpenMRS schema and continues to
 be used by other OpenMRS projects, e.g. openmrs-standalone.   
+
 * `liquibase-core-data.xml` references the latest snapshot file for OpenMRS data and continues to
 be used by other OpenMRS projects, e.g. openmrs-standalone.   
+
 * `liquibase-update-to-latest.xml` references the latest update file for the OpenMRS database and continues to
 be used by other OpenMRS projects, e.g. openmrs-standalone.   
+
 * `liquibase-update-to-latest-from-1.9.x.xml` is used by integration tests and includes references to 
 multiple `org/openmrs/liquibase/updates/liquibase-update-to-latest-a.b.x.xml` files.
-  
+
 * `liquibase-empty-changelog.xml` is used as a default Liquibase file by the org.openmrs.util.DatabaseUpdater class.
+
+* `liquibase-update-to-latest-template.xml` is a template for creating new update files.
 
 ## When to generate Liquibase shapshots
 Liquibase snapshots need to be created...
@@ -262,7 +268,7 @@ For example, when creating snapshots for version 2.2.x of OpenMRS, the resulting
 In the folder `org/openmrs/liquibase/updates`, create an **empty** Liquibase change log file 
 called `liquibase-update-to-latest-<major.minor+1>.x.xml`. 
 
-You can use `resources/liquibase-empty-changelog.xml` as a template for creating the new file.
+Use `resources/liquibase-update-to-latest-template.xml` as a template for creating the new file.
 
 For example, when adding snapshots from OpenMRS 2.2.x, the resulting file is:
 
