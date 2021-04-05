@@ -12,6 +12,7 @@ package org.openmrs.util;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -44,25 +45,10 @@ public class HttpClient {
 		OutputStreamWriter wr = null;
 		BufferedReader rd = null;
 		String response = "";
-		StringBuilder data = new StringBuilder();
-		
+
 		try {
-			// Construct data
-			for (Map.Entry<String, String> entry : parameters.entrySet()) {
-				
-				// skip over invalid post variables
-				if (entry.getKey() == null || entry.getValue() == null) {
-					continue;
-				}
-				data.append("&"); // only append this if its _not_ the first
-				// datum
-				
-				// finally, setup the actual post string
-				data.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
-				data.append("=");
-				data.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
-			}
-			
+			StringBuilder data = constructData(parameters);
+
 			// Send the data
 			HttpURLConnection connection = url.openConnection();
 			connection.setDoOutput(true);
@@ -137,5 +123,26 @@ public class HttpClient {
 		}
 		
 		return response;
+	}
+
+	private StringBuilder constructData(Map<String, String> parameters) throws UnsupportedEncodingException {
+		StringBuilder data = new StringBuilder();
+		for (Map.Entry<String, String> entry : parameters.entrySet()) {
+			if (isInvalidPostVariable(entry)) {
+				continue;
+			}
+			data.append("&"); // only append this if its _not_ the first
+			// datum
+			
+			// finally, setup the actual post string
+			data.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
+			data.append("=");
+			data.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+		}
+		return data;
+	}
+
+	private boolean isInvalidPostVariable(Map.Entry<String, String> entry) {
+		return entry.getKey() == null || entry.getValue() == null;
 	}
 }
