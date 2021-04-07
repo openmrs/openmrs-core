@@ -312,6 +312,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
         @Override
 	public void deletePatient(Patient patient) throws DAOException {
+		log.info("deleted patient " + patient.getId());
 		HibernatePersonDAO.deletePersonAndAttributes(sessionFactory, patient);
 	}
 	
