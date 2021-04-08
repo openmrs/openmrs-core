@@ -16,16 +16,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Properties;
+import java.util.Scanner;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.HashMap;
-import java.util.Properties;
-import java.util.Scanner;
 
 import org.junit.jupiter.api.Test;
 import org.openmrs.module.Module;
@@ -44,7 +46,7 @@ public class WebModuleUtilTest {
 	private static final String REAL_PATH = "/usr/local/apache-tomcat-7.0.27/webapps/openmrs";
 	
 	/**
-	 * @see WebModuleUtil#isModulePackageNameInTaskClass(String, String) 
+	 * @see WebModuleUtil#isModulePackageNameInTaskClass(String, String)
 	 * @throws Exception
 	 */
 	@Test
@@ -56,7 +58,7 @@ public class WebModuleUtilTest {
 	}
 	
 	/**
-	 * @see WebModuleUtil#isModulePackageNameInTaskClass(String, String) 
+	 * @see WebModuleUtil#isModulePackageNameInTaskClass(String, String)
 	 * @throws Exception
 	 */
 	@Test
@@ -68,7 +70,7 @@ public class WebModuleUtilTest {
 	}
 	
 	/**
-	 * @see WebModuleUtil#isModulePackageNameInTaskClass(String, String) 
+	 * @see WebModuleUtil#isModulePackageNameInTaskClass(String, String)
 	 * @throws Exception
 	 */
 	@Test
@@ -213,7 +215,8 @@ public class WebModuleUtilTest {
 	public void getModuleWebFolder_shouldReturnTheCorrectModuleFolder() {
 		setupMocks(false);
 		String moduleId = "basicmodule";
-		String expectedPath = (REAL_PATH + "/WEB-INF/view/module/" + moduleId).replace("/", File.separator);
+		String expectedPath = Paths.get(REAL_PATH, "WEB-INF", "view", "module", moduleId).toString();
+		
 		String actualPath = WebModuleUtil.getModuleWebFolder(moduleId);
 		
 		assertEquals(expectedPath, actualPath);
@@ -226,7 +229,7 @@ public class WebModuleUtilTest {
 	public void getModuleWebFolder_shouldReturnTheCorrectModuleFolderIfRealPathHasATrailingSlash() {
 		setupMocks(true);
 		String moduleId = "basicmodule";
-		String expectedPath = (REAL_PATH + "/WEB-INF/view/module/" + moduleId).replace("/", File.separator);
+		String expectedPath = Paths.get(REAL_PATH, "WEB-INF", "view", "module", moduleId).toString();
 		String actualPath = WebModuleUtil.getModuleWebFolder(moduleId);
 		
 		assertEquals(expectedPath, actualPath);
