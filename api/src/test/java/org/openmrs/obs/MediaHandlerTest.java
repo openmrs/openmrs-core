@@ -20,6 +20,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,13 +52,13 @@ public class MediaHandlerTest extends BaseContextSensitiveTest {
 	@Test
     public void shouldReturnSupportedViews() {
 		String[] actualViews = handler.getSupportedViews();
-		
+
 		assertArrayEquals(actualViews, new String[]{ ComplexObsHandler.RAW_VIEW });
     }
 
     @Test
     public void shouldSupportRawView() {
-		
+
 		assertTrue(handler.supportsView(ComplexObsHandler.RAW_VIEW));
     }
 
@@ -71,24 +72,21 @@ public class MediaHandlerTest extends BaseContextSensitiveTest {
         assertFalse(handler.supportsView(""));
         assertFalse(handler.supportsView(null));
     }
-     
+    
 	@Test
 	@DisabledOnOs(WINDOWS)
 	public void saveObs_shouldRetrieveCorrectMimetype() throws IOException {
 		
-		adminService.saveGlobalProperty(new GlobalProperty(
-			OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR,
-			complexObsTestFolder.toAbsolutePath().toString()
-		));
+		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR,
+		        complexObsTestFolder.toAbsolutePath().toString()));
 		
-		File sourceFile = new File(
-			"src" + File.separator + "test" + File.separator + "resources" + File.separator + "ComplexObsTestAudio.mp3");
-
+		File sourceFile = Paths.get("src", "test", "resources", "ComplexObsTestAudio.mp3").toFile();
+		
 		Obs complexObs1 = null;
 		Obs complexObs2 = null;
 		try (FileInputStream in1 = new FileInputStream(sourceFile);
-			 FileInputStream in2 = new FileInputStream(sourceFile)
-		) {
+				 FileInputStream in2 = new FileInputStream(sourceFile)
+			) {
 			ComplexData complexData1 = new ComplexData("TestingComplexObsSaving.mp3", in1);
 			ComplexData complexData2 = new ComplexData("TestingComplexObsSaving.mp3", in2);
 			
@@ -104,7 +102,7 @@ public class MediaHandlerTest extends BaseContextSensitiveTest {
 			complexObs1 = handler.getObs(obs1, "RAW_VIEW");
 			complexObs2 = handler.getObs(obs2, "RAW_VIEW");
 			
-			assertEquals( "audio/mpeg", complexObs1.getComplexData().getMimeType());
+			assertEquals("audio/mpeg", complexObs1.getComplexData().getMimeType());
 			assertEquals("audio/mpeg", complexObs2.getComplexData().getMimeType());
 		} finally {
 			((InputStream) complexObs1.getComplexData().getData()).close();

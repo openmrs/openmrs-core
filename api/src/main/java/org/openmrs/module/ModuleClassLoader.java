@@ -22,6 +22,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLStreamHandlerFactory;
+import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
@@ -69,7 +70,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	private Set<String> providedPackages = new LinkedHashSet<>();
 	
 	private boolean disposed = false;
-
+	
 	
 	/**
 	 * @param module Module
@@ -115,7 +116,7 @@ public class ModuleClassLoader extends URLClassLoader {
 				if (!file.isDirectory()) {
 					continue;
 				}
-				File dir = new File(devDir, file.getName() + File.separator + "target" + File.separator + "classes" + File.separator);
+				File dir = Paths.get(devDir.getAbsolutePath(), file.getName(), "target", "classes").toFile();
 				if (dir.exists()) {
 					Collection<File> files = FileUtils.listFiles(dir, new String[] { "class" }, true);
 					addClassFilePackages(files, dir.getAbsolutePath().length() + 1);
@@ -136,6 +137,7 @@ public class ModuleClassLoader extends URLClassLoader {
 				String packageName = name.substring(0, indexOfLastSlash);
 				packageName = packageName.replace(File.separator, ".");
 				providedPackages.add(packageName);
+				
 			}
 		}
 	}
@@ -211,7 +213,7 @@ public class ModuleClassLoader extends URLClassLoader {
 						if (!file.isDirectory()) {
 							continue;
 						}
-						File dir = new File(devDir, file.getName() + File.separator + "target" + File.separator + "classes" + File.separator);
+						File dir = Paths.get(devDir.getAbsolutePath(), file.getName(), "target", "classes").toFile();
 						if (dir.exists()) {
 							result.add(dir.toURI().toURL());
 							devFolderNames.add(file.getName());
@@ -337,22 +339,22 @@ public class ModuleClassLoader extends URLClassLoader {
 	
 	/**
 	 * Determines whether or not the given resource should be available on the classpath based on
-	 * OpenMRS version and/or modules' version. It uses the conditionalResources section specified in 
-	 * config.xml. Resources that are not mentioned as conditional resources are included by 
+	 * OpenMRS version and/or modules' version. It uses the conditionalResources section specified
+	 * in config.xml. Resources that are not mentioned as conditional resources are included by
 	 * default. All conditions for a conditional resource to be included must match.
 	 *
 	 * @param module
 	 * @param fileUrl
-	 * @return true if it should be included
-	 * <strong>Should</strong> return true if file matches and openmrs version matches
-	 * <strong>Should</strong> return false if file matches but openmrs version does not
-	 * <strong>Should</strong> return true if file does not match and openmrs version does not match
-	 * <strong>Should</strong> return true if file matches and module version matches
-	 * <strong>Should</strong> return false if file matches and module version does not match
-	 * <strong>Should</strong> return false if file matches and openmrs version matches but module version does not 
-	 * 		   match
-	 * <strong>Should</strong> return false if file matches and module not found
-	 * <strong>Should</strong> return true if file does not match and module version does not match
+	 * @return true if it should be included <strong>Should</strong> return true if file matches and
+	 *         openmrs version matches <strong>Should</strong> return false if file matches but
+	 *         openmrs version does not <strong>Should</strong> return true if file does not match
+	 *         and openmrs version does not match <strong>Should</strong> return true if file
+	 *         matches and module version matches <strong>Should</strong> return false if file
+	 *         matches and module version does not match <strong>Should</strong> return false if
+	 *         file matches and openmrs version matches but module version does not match
+	 *         <strong>Should</strong> return false if file matches and module not found
+	 *         <strong>Should</strong> return true if file does not match and module version does
+	 *         not match
 	 */
 	static boolean shouldResourceBeIncluded(Module module, URL fileUrl, String openmrsVersion,
 	        Map<String, String> startedRelatedModules) {
@@ -363,16 +365,17 @@ public class ModuleClassLoader extends URLClassLoader {
 			if (fileUrl.getPath().matches(".*" + conditionalResource.getPath() + "$")) {
 				//if a resource matches a path of contidionalResource then it must meet all conditions
 				include = false;
-
+				
 				//openmrsPlatformVersion is optional
 				if (StringUtils.isNotBlank(conditionalResource.getOpenmrsPlatformVersion())) {
-					include = ModuleUtil.matchRequiredVersions(openmrsVersion, conditionalResource.getOpenmrsPlatformVersion());
+					include = ModuleUtil.matchRequiredVersions(openmrsVersion,
+					    conditionalResource.getOpenmrsPlatformVersion());
 					
 					if (!include) {
 						return false;
 					}
 				}
-
+				
 				//modules are optional
 				if (conditionalResource.getModules() != null) {
 					for (ModuleConditionalResource.ModuleAndVersion conditionalModuleResource : conditionalResource
@@ -382,12 +385,11 @@ public class ModuleClassLoader extends URLClassLoader {
 							if (!include) {
 								return false;
 							}
-						}
-						else {
+						} else {
 							String moduleVersion = startedRelatedModules.get(conditionalModuleResource.getModuleId());
 							if (moduleVersion != null) {
-								include = ModuleUtil
-								        .matchRequiredVersions(moduleVersion, conditionalModuleResource.getVersion());
+								include = ModuleUtil.matchRequiredVersions(moduleVersion,
+								    conditionalModuleResource.getVersion());
 								
 								if (!include) {
 									return false;
@@ -695,21 +697,22 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * @param requestor ModuleClassLoader to check against
 	 * @throws ClassNotFoundException
 	 */
-	protected void checkClassVisibility(final Class<?> cls, final ModuleClassLoader requestor) throws ClassNotFoundException {
+	protected void checkClassVisibility(final Class<?> cls, final ModuleClassLoader requestor)
+	        throws ClassNotFoundException {
 		
 		if (this == requestor) {
 			return;
 		}
-
+		
 		URL lib = getClassBaseUrl(cls);
-
+		
 		if (lib == null) {
 			// cls is a system class
 			return;
 		}
-
+		
 		ClassLoader loader = cls.getClassLoader();
-
+		
 		if (!(loader instanceof ModuleClassLoader)) {
 			return;
 		}
@@ -735,9 +738,8 @@ public class ModuleClassLoader extends URLClassLoader {
 		String result = null;
 		
 		if (log.isTraceEnabled()) {
-			log
-			        .trace("findLibrary(String): name=" + name + ", libname=" + libname + ", result=" + result + ", this="
-			                + this);
+			log.trace(
+			    "findLibrary(String): name=" + name + ", libname=" + libname + ", result=" + result + ", this=" + this);
 		}
 		
 		return result;
@@ -916,13 +918,13 @@ public class ModuleClassLoader extends URLClassLoader {
 			if (seenModules.contains(publicImport.getModuleId())) {
 				continue;
 			}
-
+			
 			ModuleClassLoader mcl = ModuleFactory.getModuleClassLoader(publicImport);
-
+			
 			if (mcl != null) {
 				result = mcl.findResource(name, requestor, seenModules);
 			}
-
+			
 			if (result != null) {
 				// found resource in aware of module
 				return result;
@@ -954,7 +956,7 @@ public class ModuleClassLoader extends URLClassLoader {
 				result.add(url);
 			}
 		}
-	
+		
 		if (seenModules == null) {
 			seenModules = new HashSet<>();
 		}
@@ -1031,11 +1033,11 @@ public class ModuleClassLoader extends URLClassLoader {
 	/**
 	 * Contains all class packages provided by the module, including those contained in jars.
 	 * <p>
-	 * It is used by {@link OpenmrsClassLoader#loadClass(String, boolean)} and in particular 
-	 * {@link ModuleFactory#getModuleClassLoadersForPackage(String)} to quickly find
-	 * possible loaders for the given class. Although it takes some time to extract all provided
-	 * packages from a module, it pays off when loading classes. It is much faster to query a map of
-	 * packages than iterating over all class loaders to find which one to use.
+	 * It is used by {@link OpenmrsClassLoader#loadClass(String, boolean)} and in particular
+	 * {@link ModuleFactory#getModuleClassLoadersForPackage(String)} to quickly find possible
+	 * loaders for the given class. Although it takes some time to extract all provided packages
+	 * from a module, it pays off when loading classes. It is much faster to query a map of packages
+	 * than iterating over all class loaders to find which one to use.
 	 * 
 	 * @return the provided packages
 	 */

@@ -22,6 +22,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.Enumeration;
@@ -46,7 +47,6 @@ import org.slf4j.LoggerFactory;
  * installation
  */
 public class TestInstallUtil {
-
 	private TestInstallUtil() {
 	}
 	
@@ -71,8 +71,7 @@ public class TestInstallUtil {
 		
 		//For stand-alone, use explicit path to the mysql executable.
 		String runDirectory = System.getProperties().getProperty("user.dir");
-		File file = new File(runDirectory + File.separatorChar + "database" + File.separatorChar + "bin"
-		        + File.separatorChar + "mysql");
+		File file = Paths.get(runDirectory, "database", "bin", "mysql").toFile();
 		
 		if (file.exists()) {
 			command[0] = file.getAbsolutePath();
@@ -115,7 +114,7 @@ public class TestInstallUtil {
 			}
 			
 			log
-			        .error("The process terminated abnormally while adding test data. Please look under the Configuration section at: https://wiki.openmrs.org/display/docs/Release+Testing+Helper+Module");
+	        .error("The process terminated abnormally while adding test data. Please look under the Configuration section at: https://wiki.openmrs.org/display/docs/Release+Testing+Helper+Module");
 			
 		}
 		catch (IOException e) {
@@ -187,7 +186,7 @@ public class TestInstallUtil {
 					FileUtils.cleanDirectory(moduleRepository);
 					
 					OpenmrsUtil.copyFile(zipFile.getInputStream(entry), new BufferedOutputStream(new FileOutputStream(
-					        new File(moduleRepository, fileName))));
+				        new File(moduleRepository, fileName))));
 				} else {
 					log.debug("Ignoring file that is not a .omod '{}'", fileName);
 				}
@@ -267,9 +266,8 @@ public class TestInstallUtil {
 		
 		return connection.getInputStream();
 	}
-
-	private static HttpURLConnection createConnection(String url)
-	        throws IOException, MalformedURLException {
+	private static HttpURLConnection createConnection(String url) 
+			throws IOException, MalformedURLException {
 		final HttpURLConnection result = (HttpURLConnection) new URL(url).openConnection();
 		result.setRequestMethod("POST");
 		result.setConnectTimeout(15000);
@@ -277,7 +275,6 @@ public class TestInstallUtil {
 		result.setDoOutput(true);
 		return result;
 	}
-
 	private static String encodeCredentials(String openmrsUsername, String openmrsPassword) {
 		final StringBuilder result = new StringBuilder();
 		result.append("username=");

@@ -18,6 +18,7 @@ import static org.openmrs.module.ModuleFactory.getStartedModules;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.nio.file.Paths;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +44,8 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
  * out, just put these tests in ModuleActivatorTest NOTE: The way we start, stop, unload, etc,
  * modules is copied from ModuleListController
  */
-@ContextConfiguration(locations = { "classpath*:webModuleApplicationContext.xml" }, inheritLocations = true, loader = TestContextLoader.class)
+@ContextConfiguration(locations = {
+        "classpath*:webModuleApplicationContext.xml" }, inheritLocations = true, loader = TestContextLoader.class)
 @SkipBaseSetup
 public class WebModuleActivatorTest extends BaseModuleActivatorTest {
 	
@@ -52,7 +54,7 @@ public class WebModuleActivatorTest extends BaseModuleActivatorTest {
 		//org.openmrs.module.ModuleException: Unable to load module messages from file: 
 		// /Projects/openmrs/core/web/target/test-classes/WEB-INF/module_messages_fr.properties
 		
-		File folder = new File("target" + File.separatorChar + "test-classes" + File.separatorChar + "WEB-INF");
+		File folder = Paths.get("target", "test-classes", "WEB-INF").toFile();
 		if (!folder.exists()) {
 			folder.mkdirs();
 		}
@@ -289,7 +291,8 @@ public class WebModuleActivatorTest extends BaseModuleActivatorTest {
 	
 	@AfterEach
 	public void removeCurrentTransactionContext() throws Exception {
-		Class<?> clazz = OpenmrsClassLoader.getInstance().loadClass("org.springframework.test.context.transaction.TransactionContextHolder");
+		Class<?> clazz = OpenmrsClassLoader.getInstance()
+		        .loadClass("org.springframework.test.context.transaction.TransactionContextHolder");
 		Method method = clazz.getDeclaredMethod("removeCurrentTransactionContext");
 		ReflectionUtils.makeAccessible(method);
 		ReflectionUtils.invokeMethod(method, null);
