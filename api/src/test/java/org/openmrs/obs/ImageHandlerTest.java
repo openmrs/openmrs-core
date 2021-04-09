@@ -14,13 +14,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
-import org.apache.commons.io.FileUtils;
+import javax.imageio.ImageIO;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -36,49 +38,45 @@ public class ImageHandlerTest extends BaseContextSensitiveTest {
 	
 	@Autowired
 	private AdministrationService adminService;
-
 	@TempDir
 	public Path complexObsTestFolder;
-
 	ImageHandler handler;
-
 	@BeforeEach
 	public void setUp() {
 		handler = new ImageHandler();
 	}
 	
-    @Test
-    public void shouldReturnSupportedViews() {
-        String[] actualViews = handler.getSupportedViews();
-        String[] expectedViews = { ComplexObsHandler.RAW_VIEW };
-
-        assertArrayEquals(actualViews, expectedViews);
-    }
-
-    @Test
-    public void shouldSupportRawView() {
-        
-        assertTrue(handler.supportsView(ComplexObsHandler.RAW_VIEW));
-    }
-
-    @Test
-    public void shouldNotSupportOtherViews() {
-        
-        assertFalse(handler.supportsView(ComplexObsHandler.HTML_VIEW));
-        assertFalse(handler.supportsView(ComplexObsHandler.PREVIEW_VIEW));
-        assertFalse(handler.supportsView(ComplexObsHandler.TEXT_VIEW));
-        assertFalse(handler.supportsView(ComplexObsHandler.TITLE_VIEW));
-        assertFalse(handler.supportsView(ComplexObsHandler.URI_VIEW));
-        assertFalse(handler.supportsView(""));
-        assertFalse(handler.supportsView(null));
-    }
+	@Test
+	public void shouldReturnSupportedViews() {
+		String[] actualViews = handler.getSupportedViews();
+		String[] expectedViews = { ComplexObsHandler.RAW_VIEW };
+		
+		assertArrayEquals(actualViews, expectedViews);
+	}
+	
+	@Test
+	public void shouldSupportRawView() {
+		
+		assertTrue(handler.supportsView(ComplexObsHandler.RAW_VIEW));
+	}
+	
+	@Test
+	public void shouldNotSupportOtherViews() {
+		
+		assertFalse(handler.supportsView(ComplexObsHandler.HTML_VIEW));
+		assertFalse(handler.supportsView(ComplexObsHandler.PREVIEW_VIEW));
+		assertFalse(handler.supportsView(ComplexObsHandler.TEXT_VIEW));
+		assertFalse(handler.supportsView(ComplexObsHandler.TITLE_VIEW));
+		assertFalse(handler.supportsView(ComplexObsHandler.URI_VIEW));
+		assertFalse(handler.supportsView(""));
+		assertFalse(handler.supportsView(null));
+	}
 	
 	@Test
 	public void saveObs_shouldRetrieveCorrectMimetype() throws IOException {
 		String mimetype = "image/png";
 		String filename = "TestingComplexObsSaving.png";
-		File sourceFile = new File(
-	        "src" + File.separator + "test" + File.separator + "resources" + File.separator + "ComplexObsTestImage.png");
+		File sourceFile = Paths.get("src", "test", "resources", "ComplexObsTestImage.png").toFile();
 		
 		BufferedImage img = ImageIO.read(sourceFile);
 		
@@ -90,13 +88,10 @@ public class ImageHandlerTest extends BaseContextSensitiveTest {
 		
 		Obs obs2 = new Obs();
 		obs2.setComplexData(complexData);
-
-		adminService.saveGlobalProperty(new GlobalProperty(
-			OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR,
-			complexObsTestFolder.toAbsolutePath().toString()
-		));
-
-
+		
+		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR,
+		        complexObsTestFolder.toAbsolutePath().toString()));
+		
 		handler.saveObs(obs1);
 		handler.saveObs(obs2);
 		
@@ -110,20 +105,14 @@ public class ImageHandlerTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void saveObs_shouldHandleByteArrays() throws IOException {
-		File sourceFile = new File(
-		       "src" + File.separator + "test" + File.separator + "resources" + File.separator + "ComplexObsTestImage.png");
-			
-		byte[] bytes = FileUtils.readFileToByteArray(sourceFile);
+		Path sourceFile = Paths.get("src", "test", "resources", "ComplexObsTestImage.png");
+		
+		byte[] bytes = Files.readAllBytes(sourceFile);
 		ComplexData complexData = new ComplexData("TestingComplexObsSaving.png", bytes);
-			
 		Obs obs = new Obs();
 		obs.setComplexData(complexData);
-			
-		adminService.saveGlobalProperty(new GlobalProperty(
-			OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR,
-			complexObsTestFolder.toAbsolutePath().toString()
-		));		
-
+		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR,
+		        complexObsTestFolder.toAbsolutePath().toString()));
 		handler.saveObs(obs);
 	}
 }
