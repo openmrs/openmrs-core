@@ -9,21 +9,21 @@
  */
 package org.openmrs.liquibase;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalToCompressingWhiteSpace;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class AbstractSnapshotTunerTest {
 	
@@ -33,8 +33,7 @@ public class AbstractSnapshotTunerTest {
 	
 	private static final String HTTP_OPENMRS_ORG_LICENSE = "http://openmrs.org/license";
 	
-	private static String PATH_TO_TEST_RESOURCES = "src" + File.separator + "test" + File.separator + "resources"
-	        + File.separator;
+	private static String PATH_TO_TEST_RESOURCES = Paths.get("src", "test", "resources").toString();
 	
 	/*
 	 * An instance of org.openmrs.liquibase.SchemaOnlyTuner is used to test behaviour implemented in the 
@@ -76,7 +75,7 @@ public class AbstractSnapshotTunerTest {
 		
 		//  when
 		String actual = schemaOnlyTuner
-		        .addLicenseHeaderToFileContent(PATH_TO_TEST_RESOURCES + File.separator + FILE_WITHOUT_LICENSE_HEADER_MD);
+		        .addLicenseHeaderToFileContent(Paths.get(PATH_TO_TEST_RESOURCES, FILE_WITHOUT_LICENSE_HEADER_MD).toString());
 		
 		// then
 		assertTrue(actual.contains(HTTP_OPENMRS_ORG_LICENSE));
