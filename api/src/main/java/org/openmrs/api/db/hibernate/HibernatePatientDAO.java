@@ -226,9 +226,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		if (length != null && length < maximumSearchResults) {
 			criteria.setMaxResults(length);
 		} else {
-			if (log.isDebugEnabled()) {
-				log.debug("Limiting the size of the number of matching patients to " + maximumSearchResults);
-			}
+			log.debug("Limiting the size of the number of matching patients to {}", maximumSearchResults);
 			criteria.setMaxResults(maximumSearchResults);
 		}
 	}

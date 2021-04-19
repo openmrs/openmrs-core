@@ -192,8 +192,7 @@ public abstract class BaseContextSensitiveTest {
 		
 		Properties props = getRuntimeProperties();
 		
-		if (log.isDebugEnabled())
-			log.debug("props: " + props);
+		log.debug("props: {}", props);
 		
 		Context.setRuntimeProperties(props);
 		
@@ -620,7 +619,7 @@ public abstract class BaseContextSensitiveTest {
 	 * @param connection
 	 * @throws SQLException
 	 */
-	private void turnOnDBConstraints(Connection connection) throws SQLException {
+	protected void turnOnDBConstraints(Connection connection) throws SQLException {
 		String constraintsOnSql;
 		if (useInMemoryDatabase()) {
 			constraintsOnSql = "SET REFERENTIAL_INTEGRITY TRUE";
@@ -632,7 +631,7 @@ public abstract class BaseContextSensitiveTest {
 		ps.close();
 	}
 	
-	private void turnOffDBConstraints(Connection connection) throws SQLException {
+	protected void turnOffDBConstraints(Connection connection) throws SQLException {
 		String constraintsOffSql;
 		if (useInMemoryDatabase()) {
 			constraintsOffSql = "SET REFERENTIAL_INTEGRITY FALSE";
@@ -817,7 +816,7 @@ public abstract class BaseContextSensitiveTest {
 		}
 	}
 	
-	private IDatabaseConnection setupDatabaseConnection(Connection connection) throws DatabaseUnitException {
+	protected IDatabaseConnection setupDatabaseConnection(Connection connection) throws DatabaseUnitException {
 		IDatabaseConnection dbUnitConn = new DatabaseConnection(connection);
 		
 		if (useInMemoryDatabase()) {

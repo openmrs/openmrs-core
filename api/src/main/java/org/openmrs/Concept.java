@@ -448,9 +448,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	public ConceptName getName() {
 		if (getNames().isEmpty()) {
-			if (log.isDebugEnabled()) {
-				log.debug("there are no names defined for: " + conceptId);
-			}
+			log.debug("there are no names defined for: {}", conceptId);
 			return null;
 		}
 		
@@ -591,15 +589,11 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		
 		// fail early if this concept has no names defined
 		if (getNames().isEmpty()) {
-			if (log.isDebugEnabled()) {
-				log.debug("there are no names defined for: " + conceptId);
-			}
+			log.debug("there are no names defined for: {}", conceptId);
 			return null;
 		}
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Getting conceptName for locale: " + locale);
-		}
+		log.debug("Getting conceptName for locale: {}", locale);
 		
 		ConceptName exactName = getNameInLocale(locale);
 		

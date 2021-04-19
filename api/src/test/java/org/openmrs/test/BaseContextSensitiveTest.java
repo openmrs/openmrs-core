@@ -105,6 +105,11 @@ import org.xml.sax.InputSource;
  * spring enabled services do not need this class and extending this will only slow those test cases
  * down. (because spring is started before test cases are run). Normal test cases do not need to
  * extend anything
+ * @deprecated as of 2.4
+ * <p>openmrs-core migrated its tests from JUnit 4 to JUnit 5.
+ * JUnit 4 helpers are still supported so module developers can gradually migrate tests from JUnit 4 to JUnit 5. 
+ * To migrate your tests follow <a href="https://wiki.openmrs.org/display/docs/How+to+migrate+to+JUnit+5">How to migrate to JUnit 5</a>.
+ * The JUnit 5 version of the class is {@link org.openmrs.test.jupiter.BaseContextSensitiveTest}.<p>
  */
 @ContextConfiguration(locations = { "classpath:applicationContext-service.xml", "classpath*:openmrs-servlet.xml",
         "classpath*:moduleApplicationContext.xml", "classpath*:TestingApplicationContext.xml" })
@@ -112,6 +117,7 @@ import org.xml.sax.InputSource;
         StartModuleExecutionListener.class })
 @Transactional
 @Rollback
+@Deprecated
 public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringContextTests {
 	
 	private static final Logger log = LoggerFactory.getLogger(BaseContextSensitiveTest.class);
@@ -187,8 +193,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		
 		Properties props = getRuntimeProperties();
 		
-		if (log.isDebugEnabled())
-			log.debug("props: " + props);
+		log.debug("props: {}", props);
 		
 		Context.setRuntimeProperties(props);
 		
@@ -620,14 +625,13 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		final String sql = "ALTER TABLE " + tableName + " ALTER COLUMN " + columnName + " SET NULL";
 		DatabaseUtil.executeSQL(getConnection(), sql, false);
 	}
-
 	/**
 	 * Note that with the H2 DB this operation always commits an open transaction.
 	 * 
 	 * @param connection
 	 * @throws SQLException
 	 */
-	private void turnOnDBConstraints(Connection connection) throws SQLException {
+	protected void turnOnDBConstraints(Connection connection) throws SQLException {
 		String constraintsOnSql;
 		if (useInMemoryDatabase()) {
 			constraintsOnSql = "SET REFERENTIAL_INTEGRITY TRUE";
@@ -639,7 +643,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		ps.close();
 	}
 	
-	private void turnOffDBConstraints(Connection connection) throws SQLException {
+	protected void turnOffDBConstraints(Connection connection) throws SQLException {
 		String constraintsOffSql;
 		if (useInMemoryDatabase()) {
 			constraintsOffSql = "SET REFERENTIAL_INTEGRITY FALSE";
@@ -824,7 +828,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		}
 	}
 	
-	private IDatabaseConnection setupDatabaseConnection(Connection connection) throws DatabaseUnitException {
+	protected IDatabaseConnection setupDatabaseConnection(Connection connection) throws DatabaseUnitException {
 		IDatabaseConnection dbUnitConn = new DatabaseConnection(connection);
 		
 		if (useInMemoryDatabase()) {

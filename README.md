@@ -141,7 +141,7 @@ If you haven't found what you were looking for refer to the [Module - wiki](http
 
 If you want to contribute please refer to these resources
 
-* [Getting Started as a Developer](https://wiki.openmrs.org/display/docs/Getting+Started+as+a+Developer)
+* [Getting Started as a Developer](https://wiki.openmrs.org/display/docs/Get+Started+as+a+Developer)
 * [How To Configure Your IDE](https://wiki.openmrs.org/display/docs/How-To+Setup+And+Use+Your+IDE)
 * [How To Make a Pull Request](https://wiki.openmrs.org/display/docs/Pull+Request+Tips)
 
@@ -172,7 +172,7 @@ Read the following sections to find out where you could help.
 
 Check out our [contributing guidelines](CONTRIBUTING.md), read through the [Developer guides](#developer-guides).
 
-After you've read up :eyeglasses: [grab an introductory issue](https://wiki.openmrs.org/display/docs/Getting+Started+as+a+Developer) that is `Ready For Work`.
+After you've read up :eyeglasses: [grab an introductory issue](https://wiki.openmrs.org/display/docs/Contribute+as+a+Developer#ContributeasaDeveloper-Workonanissue) that is `Ready For Work`.
 
 ### Code Reviews
 

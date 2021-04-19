@@ -913,8 +913,8 @@ public class ModuleFactory {
 		if (gp != null && StringUtils.hasLength(gp.getPropertyValue())) {
 			String currentDbVersion = gp.getPropertyValue();
 			if (log.isDebugEnabled()) {
-				log.debug("version:column " + version + ":" + currentDbVersion);
-				log.debug("compare: " + ModuleUtil.compareVersion(version, currentDbVersion));
+				log.debug("version:column {}:{}", version, currentDbVersion);
+				log.debug("compare: {}", ModuleUtil.compareVersion(version, currentDbVersion));
 			}
 			if (ModuleUtil.compareVersion(version, currentDbVersion) > 0) {
 				executeSQL = true;
@@ -1255,7 +1255,7 @@ public class ModuleFactory {
 		
 		// if this pointId doesn't contain the separator character, search
 		// for this point prepended with each MEDIA TYPE
-		if (!pointId.contains(Extension.extensionIdSeparator)) {
+		if (!pointId.contains(Extension.EXTENSION_ID_SEPARATOR)) {
 			for (MEDIA_TYPE mediaType : Extension.MEDIA_TYPE.values()) {
 				
 				// get all extensions for this type and point id
