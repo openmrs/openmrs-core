@@ -9,13 +9,20 @@
  */
 package org.openmrs.liquibase;
 
-import java.io.File;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalToCompressingWhiteSpace;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -26,24 +33,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalToCompressingWhiteSpace;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 public class CoreDataTunerTest {
 	
-	private static final String LIQUIBASE_CORE_DATA_SNAPSHOT_XML = "org" + File.separator + "openmrs" + File.separator
-	        + "liquibase" + File.separator + "snapshots" + File.separator + "core-data" + File.separator
-	        + "liquibase-core-data-SNAPSHOT.xml";
+	private static final String LIQUIBASE_CORE_DATA_SNAPSHOT_XML = Paths
+	        .get("org", "openmrs", "liquibase", "snapshots", "core-data", "liquibase-core-data-SNAPSHOT.xml").toString();
 	
-	private static final String LIQUIBASE_CORE_DATA_UPDATED_SNAPSHOT_XML = "org" + File.separator + "openmrs"
-	        + File.separator + "liquibase" + File.separator + "snapshots" + File.separator + "core-data" + File.separator
-	        + "liquibase-core-data-UPDATED-SNAPSHOT.xml";
+	private static final String LIQUIBASE_CORE_DATA_UPDATED_SNAPSHOT_XML = Paths
+	        .get("org", "openmrs", "liquibase", "snapshots", "core-data", "liquibase-core-data-UPDATED-SNAPSHOT.xml")
+	        .toString();
 	
-	private static String PATH_TO_TEST_RESOURCES = "src" + File.separator + "test" + File.separator + "resources"
-	        + File.separator;
+	private static String PATH_TO_TEST_RESOURCES = Paths.get("src", "test", "resources").toString();
 	
 	public static final int TWENTY_FIVE = 25;
 	
