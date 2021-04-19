@@ -34,15 +34,15 @@ import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Locale;
 import java.util.GregorianCalendar;
-import java.util.LinkedHashSet;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.boot.Metadata;
@@ -50,7 +50,6 @@ import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -114,7 +113,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	protected static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
 
 	private static final String ORDER_GROUP_ATTRIBUTES = "org/openmrs/api/include/OrderServiceTest-createOrderGroupAttributes.xml";
-
+	
 	@Autowired
 	private ConceptService conceptService;
 
@@ -273,7 +272,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void getNewOrderNumber_shouldAlwaysReturnUniqueOrderNumbersWhenCalledMultipleTimesWithoutSavingOrders()
 		throws InterruptedException {
 
-		int N = 50;
+		int N = 49;
 		final Set<String> uniqueOrderNumbers = new HashSet<>(50);
 		List<Thread> threads = new ArrayList<>();
 		for (int i = 0; i < N; i++) {
@@ -1988,13 +1987,38 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see OrderService#getOrderTypesByClassName(String) 
+	 */
+	@Test
+	public void getOrderTypesByClassName_shouldFindOrderTypeObjectGivenExistingClassName() {
+		List<OrderType> orderTypes = new ArrayList<>();
+		orderTypes.add(orderService.getOrderTypeByUuid("9b6cf570-ac05-11e3-a5e2-0800200c9a66"));
+		orderTypes.add(orderService.getOrderTypeByUuid("a4ebaf10-ac05-11e3-a5e2-0800200c9a66"));
+		orderTypes.add(orderService.getOrderTypeByUuid("ab0f08b0-ac05-11e3-a5e2-0800200c9a66"));
+
+        assertEquals(orderService.getOrderTypeByUuid("9b6cf570-ac05-11e3-a5e2-0800200c9a66").toString(), 
+			orderService.getOrderTypesByClassName("org.openmrs.SerologyTestOrder")
+				.toString().replace("[", "")
+				.replace("]", ""));
+		assertEquals(orderService.getOrderTypeByUuid("a4ebaf10-ac05-11e3-a5e2-0800200c9a66").toString(),
+			orderService.getOrderTypesByClassName("org.openmrs.MicrobilogyTestOrder")
+				.toString().replace("[", "")
+				.replace("]", ""));
+		assertEquals(orderService.getOrderTypeByUuid("ab0f08b0-ac05-11e3-a5e2-0800200c9a66").toString(),
+			orderService.getOrderTypesByClassName("org.openmrs.ChemistryTestOrder")
+				.toString().replace("[", "")
+				.replace("]", ""));
+	}
+	
+
+	/**
 	 * @see OrderService#getOrderTypeByUuid(String)
 	 */
 	@Test
 	public void getOrderTypeByUuid_shouldReturnNullIfNoOrderTypeObjectFoundWithGivenUuid() {
 		assertNull(orderService.getOrderTypeByUuid("some random uuid"));
 	}
-
+	
 	/**
 	 * @see OrderService#getOrderTypes(boolean)
 	 */
@@ -3128,7 +3152,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 		orderService.saveOrder(drugOrder, null);
 		assertNotNull(drugOrder.getOrderType());
-		assertEquals(orderService.getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID), drugOrder.getOrderType());
+		List<OrderType> orderTypes = orderService.getOrderTypesByClassName(DrugOrder.class.getTypeName());
+		assertEquals(orderTypes.get(0), drugOrder.getOrderType());
+
 	}
 
 	/**
@@ -3154,7 +3180,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 		orderService.saveOrder(testOrder, null);
 		assertNotNull(testOrder.getOrderType());
-		assertEquals(orderService.getOrderTypeByUuid(OrderType.TEST_ORDER_TYPE_UUID), testOrder.getOrderType());
+		List<OrderType> orderTypes = orderService.getOrderTypesByClassName(TestOrder.class.getTypeName());
+		assertEquals(orderTypes.get(0), testOrder.getOrderType());
 	}
 
 	@Test
@@ -3917,5 +3944,27 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		orderGroupAttribute.getValueReference();
 		assertEquals("Test 1", orderGroupAttribute.getValueReference());
 		assertEquals(1, orderGroupAttribute.getId());
+	}
+	
+	@Test
+	public void getOrderTypesByClassName_shouldReturnOrderTypesByProvidedClassName(){
+		List<OrderType>orderTypes = new ArrayList<>();
+		assertTrue(orderTypes.isEmpty());
+		OrderType orderType = new OrderType();
+		orderType.setOrderTypeId(1);
+		orderType.setName("Drug order");
+		orderType.setJavaClassName("org.openmrs.DrugOrder");
+		orderType.setDescription("Categorises medication orders for the patient");
+		orderType.setRetired(false);
+		orderTypes.add(orderType);
+		assertTrue(!orderTypes.isEmpty());
+		assertEquals(orderTypes.get(0).toString(), orderService.getOrderTypesByClassName("org.openmrs.DrugOrder")
+			.toString().replace("[", "").replace("]", ""));
+		assertEquals(2, orderService.getOrderTypesByClassName("org.openmrs.TestOrder").size());
+	}
+
+	@Test
+	public void getOrderTypesByClassName_shouldReturnNullIfNoOrderTypeIsFoundWithTheGivenClassName(){
+		assertNull(orderService.getOrderTypesByClassName("org.openmrs.XrayOrder"));
 	}
 }

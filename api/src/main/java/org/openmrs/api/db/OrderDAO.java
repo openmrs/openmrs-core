@@ -189,7 +189,12 @@ public interface OrderDAO {
 	 * @see org.openmrs.api.OrderService#getOrderTypeByUuid
 	 */
 	public OrderType getOrderTypeByUuid(String uuid);
-	
+
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderTypesByClassName(String) 
+	 */
+	public List<OrderType> getOrderTypesByClassName(String javaClassName);
+
 	/**
 	 * @see org.openmrs.api.OrderService#getOrderTypes
 	 */

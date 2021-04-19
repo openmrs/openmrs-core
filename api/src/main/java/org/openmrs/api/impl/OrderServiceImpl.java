@@ -9,6 +9,7 @@
  */
 package org.openmrs.api.impl;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.proxy.HibernateProxy;
 import org.openmrs.CareSetting;
@@ -144,7 +145,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 
 	private Order saveOrder(Order order, OrderContext orderContext, boolean isRetrospective) {
-
+        
 		failOnExistingOrder(order);
 		ensureDateActivatedIsSet(order);
 		ensureConceptIsSet(order);
@@ -228,20 +229,28 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			((DrugOrder) order).setAutoExpireDateBasedOnDuration();
 		}
 	}
-
+	
 	private void ensureOrderTypeIsSet(Order order, OrderContext orderContext) {
 		if (order.getOrderType() != null) {
 			return;
 		}
 		OrderType orderType = null;
+		List<OrderType> orderTypes = new ArrayList<>();
 		if (orderContext != null) {
 			orderType = orderContext.getOrderType();
+			orderTypes.add(orderType);
 		}
 		if (orderType == null) {
 			orderType = getOrderTypeByConcept(order.getConcept());
 		}
+		if((orderTypes.size() > 1) && order instanceof DrugOrder){
+				throw new AmbiguousOrderException("Order.cannot.have.more.than.one");
+		}
 		if (orderType == null && order instanceof DrugOrder) {
 			orderType = Context.getOrderService().getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID);
+		}
+		if(orderTypes.size() > 1 && order instanceof TestOrder){
+				throw new AmbiguousOrderException("Order.cannot.have.more.than.one");
 		}
 		if (orderType == null && order instanceof TestOrder) {
 			orderType = Context.getOrderService().getOrderTypeByUuid(OrderType.TEST_ORDER_TYPE_UUID);
@@ -255,7 +264,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 		order.setOrderType(orderType);
 	}
-
 	private void ensureCareSettingIsSet(Order order, OrderContext orderContext) {
 		if (order.getCareSetting() != null) {
 			return;
@@ -274,7 +282,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	private void failOnOrderTypeMismatch(Order order) {
 		if (!order.getOrderType().getJavaClass().isAssignableFrom(order.getClass())) {
 			throw new OrderEntryException("Order.type.class.does.not.match", new Object[] {
-					order.getOrderType().getJavaClass(), order.getClass().getName() });
+					order.getOrderType().getJavaClass(), order.getClass().getName()});
 		}
 	}
 
@@ -282,8 +290,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		return firstOrder.hasSameOrderableAs(secondOrder)
 		        && !OpenmrsUtil.nullSafeEquals(firstOrder.getPreviousOrder(), secondOrder)
 		        && OrderUtil.checkScheduleOverlap(firstOrder, secondOrder)
-		        && firstOrder.getOrderType().equals(
-		            Context.getOrderService().getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID));
+			    && firstOrder instanceof DrugOrder;
 	}
 
 	private boolean isDrugOrder(Order order) {
@@ -930,7 +937,16 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	public OrderType getOrderTypeByUuid(String uuid) {
 		return dao.getOrderTypeByUuid(uuid);
 	}
-	
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<OrderType> getOrderTypesByClassName(String className) {
+		if(dao.getOrderTypesByClassName(className).isEmpty()){
+			return null;
+		}
+		return dao.getOrderTypesByClassName(className);
+	}
+
 	/**
 	 * @see org.openmrs.api.OrderService#getOrderTypes(boolean)
 	 */
