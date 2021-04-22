@@ -43,7 +43,7 @@ public class LoggingAdvice implements MethodInterceptor {
 	private final Logger log = LoggerFactory.getLogger(OpenmrsConstants.LOG_CLASS_DEFAULT);
 	
 	/**
-	 * This method prints out tracce statements for getters and debug statements for everything else
+	 * This method prints out trace statements for getters and debug statements for everything else
 	 * ("setters"). If debugging is turned on, execution time for each method is printed as well.
 	 * This method is called for every method in the Class/Service that it is wrapped around. This
 	 * method should be fairly quick and light.
