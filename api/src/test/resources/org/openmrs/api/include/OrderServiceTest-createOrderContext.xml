@@ -11,10 +11,7 @@
     
 -->
 <dataset>
-<!--	<order_group order_group_id="1" patient_id="5" encounter_id="23" creator="1"   care_setting="1"  date_created="2013-05-10 12:24:10.0" voided="false" uuid="c55c0fd2-3093-11eb-adc1-0242ac120002" />-->
-<!--	<order_group order_group_id="2" patient_id="6" encounter_id="24" creator="1"   care_setting="13"  date_created="2013-05-11 11:24:10.0" voided="false" uuid="c55c1202-3093-11eb-adc1-0242ac120002" />-->
-<!--	<order_group order_group_id="1"  patient_id="7" encounter_id="3"   creator="1" date_created="2012-02-19 12:24:10.0" voided="false" uuid="1c96f25c-4949-4f72-9931-d808fbcdb613" />-->
-<!--	<order_group order_group_id="5"  patient_id="39" encounter_id="7"   creator="1" date_created="2012-01-01 00:00:00.0" voided="false" uuid="c55c1202-3093-11eb-adc1-0242ac120002" />-->
-	<order_group order_group_id="1"  patient_id="7" encounter_id="3"   creator="1" date_created="2012-02-19 12:24:10.0" voided="false" uuid="1c96f25c-4949-4f72-9931-d808fbcdb613" />
-
+    <order_group order_group_id="1"  patient_id="7" encounter_id="3"   creator="1" date_created="2012-02-19 12:24:10.0" voided="false" uuid="1c96f25c-4949-4f72-9931-d808fbcdb613" />
+	<order_group order_group_id="9" order_set_id="3300" order_type_id="10" patient_id="15" encounter_id="23"   care_setting="1" creator="1" date_created="2013-05-10 12:24:10.0" voided="false" uuid="c55c0fd2-3093-11eb-adc1-0242ac120002" />
+	<order_group order_group_id="10" order_set_id="2200"  order_type_id="11" patient_id="16" encounter_id="24" care_setting="13"  creator="1" date_created="2013-05-11 11:24:10.0" voided="false" uuid="c55c1202-3093-11eb-adc1-0242ac120002" />
 </dataset>

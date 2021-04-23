@@ -3933,7 +3933,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		orderGroup.setOrderSet(orderSet);
 		orderGroup.setPatient(encounter.getPatient());
 		orderGroup.setEncounter(encounter);
-//		orderGroup.
 
 		OrderContext orderContext = new OrderContext();
 		orderContext.setCareSetting(orderService.getCareSetting(1));
