@@ -18,12 +18,14 @@
 	    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
 		http://www.liquibase.org/xml/ns/dbchangelog 
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
-
-	<!--
-		The empty change set is needed for integration tests. It can be removed if this file contains other change sets.
-	-->
-	<changeSet id="42ddb873-f064-4418-a6c0-6c09426c4832" author="wschlegel">
-		<comment>Empty change set for integration tests.</comment>
+	
+	
+	<changeSet author="rasztabigab" id="TRUNK-6001">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="cohort_member" columnName="start_date"/>
+		</preConditions>
+		<comment>Delete non-null constraint from column cohort_member.start_date</comment>
+		<dropNotNullConstraint columnDataType="datetime" columnName="start_date" tableName="cohort_member"/>
 	</changeSet>
 	
 </databaseChangeLog>
