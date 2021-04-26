@@ -337,7 +337,7 @@
 				</not>
 			</and>
 		</preConditions>
-		<comment>Creating order_group_attribute_type table</comment>
+		<comment>Adding care_setting and order_type_id columns to order_group table</comment>
 		<addColumn tableName="order_group">
 			<column name="care_setting" type="int(11)">
 				<constraints nullable="true"/>
