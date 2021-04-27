@@ -111,36 +111,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public OrderGroup saveOrderGroup(OrderGroup orderGroup) throws APIException {
-		if (orderGroup.getId() == null) {
-			// an OrderGroup requires an encounter, which has a patient, so it
-			// is odd that OrderGroup has a patient field. There is no obvious
-			// reason why they should ever be different.
-			orderGroup.setPatient(orderGroup.getEncounter().getPatient());
-			CustomDatatypeUtil.saveAttributesIfNecessary(orderGroup);
-			dao.saveOrderGroup(orderGroup);
-		}
-		List<Order> orders = orderGroup.getOrders();
-		for (Order order : orders) {
-			if (order.getId() == null) {
-				order.setEncounter(orderGroup.getEncounter());
-				Context.getOrderService().saveOrder(order, null);
-			}
-		}
-		Set<OrderGroup> nestedGroups = orderGroup.getNestedOrderGroups();
-		if (nestedGroups != null) {
-			for (OrderGroup nestedGroup : nestedGroups) {
-				Context.getOrderService().saveOrderGroup(nestedGroup);
-			}
-		}
-		if (orderGroup.getId() == null) {
-			// an OrderGroup requires an encounter, which has a patient, so it
-			// is odd that OrderGroup has a patient field. There is no obvious
-			// reason why they should ever be different.
-			orderGroup.setPatient(orderGroup.getEncounter().getPatient());
-			CustomDatatypeUtil.saveAttributesIfNecessary(orderGroup);
-			dao.saveOrderGroup(orderGroup);
-		}
-		return orderGroup;
+		return saveOrderGroup(orderGroup, null);
 	}
 
 	/**
@@ -148,9 +119,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public synchronized OrderGroup saveOrderGroup(OrderGroup orderGroup, OrderContext orderContext) throws APIException {
-		if(orderContext == null){
-			throw new APIException("No Order Context Provided");
-		}
 		if (orderGroup.getId() == null) {
 			// an OrderGroup requires an encounter, which has a patient, so it
 			// is odd that OrderGroup has a patient field. There is no obvious

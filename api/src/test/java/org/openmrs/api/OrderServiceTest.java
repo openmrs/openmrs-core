@@ -112,8 +112,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	protected static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
 
 	private static final String ORDER_GROUP_ATTRIBUTES = "org/openmrs/api/include/OrderServiceTest-createOrderGroupAttributes.xml";
-
-	private static final String ORDER_CONTEXT = "org/openmrs/api/include/OrderServiceTest-createOrderContext.xml";
 	
 	@Autowired
 	private ConceptService conceptService;
@@ -142,7 +140,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@BeforeEach
 	public void setUp(){
 		executeDataSet(ORDER_GROUP_ATTRIBUTES);
-		executeDataSet(ORDER_CONTEXT);
 	}
 
 	@Entity
@@ -3929,26 +3926,17 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void saveOrderGroup_shouldReturnOrderGroupWithSpecificContext(){
 		Encounter encounter = encounterService.getEncounter(3);
 		OrderSet orderSet = Context.getOrderSetService().getOrderSet(2000);
-		
-		DrugOrder drugOrder = new DrugOrderBuilder().withPatient(7)
-			.withEncounter(encounter.getEncounterId())
-			.withOrderType(10).withDrug(2)
-			.withDateActivated(new Date())
-			.build();
 			
 		OrderGroup orderGroup = new OrderGroup();
 		orderGroup.setOrderSet(orderSet);
 		orderGroup.setPatient(encounter.getPatient());
 		orderGroup.setEncounter(encounter);
-		orderGroup.addOrder(drugOrder);
 
 		OrderContext orderContext = new OrderContext();
 		orderContext.setCareSetting(orderService.getCareSetting(1));
 		orderContext.setOrderType(orderService.getOrderType(1));
-//		orderService.saveOrderGroup(orderGroup, orderContext);
+		orderService.saveOrderGroup(orderGroup, orderContext);
 		
-		
-		assertNotNull(orderService.getOrderGroup(3));
-		assertEquals(orderGroup.getOrderType(), orderService.getOrderGroup(1).getOrderType());
+		assertNotNull(orderService.saveOrderGroup(orderGroup, orderContext));
 	}
 }

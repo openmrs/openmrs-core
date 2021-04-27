@@ -328,24 +328,4 @@
 		</createIndex>
 	</changeSet>
 	
-	<changeSet id="2020-11-26-TRUNK-5963" author="tendomart">
-		<preConditions onFail="MARK_RAN" onFailMessage="Table order_group does not exist ">
-			<and>
-				<not>
-					<columnExists tableName="order_group" columnName="care_setting"/>
-					<columnExists tableName="order_group" columnName="order_type_id"/>
-				</not>
-			</and>
-		</preConditions>
-		<comment>Adding care_setting and order_type_id columns to order_group table</comment>
-		<addColumn tableName="order_group">
-			<column name="care_setting" type="int(11)">
-				<constraints nullable="true"/>
-			</column>
-			<column name="order_type_id" type="int(11)">
-				<constraints nullable="true"/>
-			</column>
-		</addColumn>
-	</changeSet>
-	
 </databaseChangeLog> 
