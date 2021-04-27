@@ -14,7 +14,7 @@ import java.util.Date;
 import static org.apache.commons.lang3.time.DateUtils.addSeconds;
 
 /**
- * @since 2.3.3
+ * @since 2.3.4
  */
 public abstract class BaseDosingInstructions implements DosingInstructions {
 
