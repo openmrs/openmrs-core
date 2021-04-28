@@ -417,9 +417,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		
 		OrderService orderService = Context.getOrderService();
 		for (Order o : encounter.getOrders()) {
-			if (!o.getVoided()) {
-				orderService.voidOrder(o, reason);
-			}
+			// There is intentionally no voided check around this method call.  See TRUNK-5996.
+			orderService.voidOrder(o, reason);
 		}
 		
 		encounter.setVoided(true);
