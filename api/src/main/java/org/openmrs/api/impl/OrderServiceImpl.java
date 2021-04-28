@@ -49,6 +49,8 @@ import org.openmrs.order.OrderUtil;
 import org.openmrs.parameter.OrderSearchCriteria;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.validator.DrugOrderValidator;
+import org.openmrs.validator.ValidateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
@@ -335,6 +337,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 				}
 			}
 		}
+		ValidateUtil.validate(order);
 		
 		return dao.saveOrder(order);
 	}
