@@ -9,6 +9,7 @@
  */
 package org.openmrs.api;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -17,10 +18,12 @@ import org.openmrs.CodedOrFreeText;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.Condition;
+import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
+import org.openmrs.FreeTextDosingInstructions;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.Obs;
@@ -37,6 +40,7 @@ import org.openmrs.TestOrder;
 import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.VisitType;
+import org.openmrs.api.builder.DrugOrderBuilder;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.handler.EncounterVisitHandler;
@@ -57,7 +61,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -65,12 +68,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -914,6 +920,47 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Order order = Context.getOrderService().getOrder(1);
 		assertTrue(order.getVoided());
 		assertEquals("Just Testing", order.getVoidReason());
+	}
+
+	/**
+	 * @see OrderService#voidOrder(org.openmrs.Order, String)
+	 */
+	@Test
+	public void voidEncounter_shouldUnsetDateStoppedOfAPreviousOrderIfTheVoidedEncounterHasDiscontinueOrders() {
+
+		EncounterService encounterService = Context.getEncounterService();
+
+		Encounter e1 = encounterService.getEncounter(3);
+		Encounter e2 = encounterService.getEncounter(4);
+		
+		// First create an Order in Encounter #3
+		DrugOrder o1 = new DrugOrderBuilder().withPatient(e1.getPatient().getPatientId())
+			.withEncounter(e1.getEncounterId()).withCareSetting(2).withOrderer(1).withUrgency(Order.Urgency.ROUTINE)
+			.withDateActivated(e1.getEncounterDatetime())
+			.withOrderType(1).withDrug(2)
+			.withDosingType(FreeTextDosingInstructions.class).withDosingInstructions("As Directed")
+			.build();
+		e1.addOrder(o1);
+		encounterService.saveEncounter(e1);
+		assertThat(o1.isActive(e2.getEncounterDatetime()), is(true));
+
+		// Next, revise/discontinue that Order in Encounter #4
+		
+		DrugOrder o2 = o1.cloneForRevision();
+		o2.setOrderer(Context.getProviderService().getProvider(1));
+		o2.setDateActivated(e2.getEncounterDatetime());
+		o2.setDosingInstructions("As re-directed");
+		e2.addOrder(o2);
+		encounterService.saveEncounter(e2);
+		assertThat(o1.isActive(e2.getEncounterDatetime()), is(false));
+		assertThat(o1.getDateStopped(), is(DateUtils.addSeconds(e2.getEncounterDatetime(), -1)));
+		assertThat(o2.isActive(e2.getEncounterDatetime()), is(true));
+		
+		// Now, void Encounter #4 and confirm that the initial order is active again with no dateStopped populated
+		encounterService.voidEncounter(e2, "Made a mistake");
+		assertThat(o1.isActive(e2.getEncounterDatetime()), is(true));
+		assertThat(o1.getDateStopped(), is(nullValue()));
+		assertThat(o2.getVoided(), is(true));
 	}
 	
 	/**
