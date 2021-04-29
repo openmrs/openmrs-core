@@ -78,8 +78,8 @@
 		
 		<many-to-one name="orderGroupReason" class="org.openmrs.Concept"
 		    not-null="false" column="order_group_reason" />
-		
-		 <!-- one-to-many association to all nested orderGroups in this grouping -->
+
+	    <!-- one-to-many association to all nested orderGroups in this grouping -->
         <set name="nestedOrderGroups" inverse="true" cascade="delete" order-by="order_group_id"
             access="field" batch-size="25">
             <key column="order_group_id" />

@@ -9,11 +9,11 @@
  */
 package org.openmrs;
 
+import org.openmrs.api.APIException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import org.openmrs.api.APIException;
 
 /**
  * Contains a group of {@link org.openmrs.Order}s that are ordered together within a single encounter,often driven by an {@link org.openmrs.OrderSet}. 
