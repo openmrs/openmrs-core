@@ -9,17 +9,16 @@
  */
 package org.openmrs;
 
-import java.util.Date;
-import java.util.Locale;
-
 import org.openmrs.api.APIException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 
+import java.util.Locale;
+
 /**
  * @since 1.10
  */
-public class FreeTextDosingInstructions implements DosingInstructions {
+public class FreeTextDosingInstructions extends BaseDosingInstructions {
 	
 	private String instructions;
 	
@@ -58,12 +57,6 @@ public class FreeTextDosingInstructions implements DosingInstructions {
 	public void validate(DrugOrder order, Errors errors) {
 		ValidationUtils.rejectIfEmpty(errors, "dosingInstructions",
 		    "DrugOrder.error.dosingInstructionsIsNullForDosingTypeFreeText");
-		
-	}
-	
-	@Override
-	public Date getAutoExpireDate(DrugOrder order) {
-		return null;
 	}
 	
 	public String getInstructions() {
