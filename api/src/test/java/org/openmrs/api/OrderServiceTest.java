@@ -66,7 +66,10 @@ import org.openmrs.Drug;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptReferenceTerm;
+import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
@@ -3917,5 +3920,52 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		orderGroupAttribute.getValueReference();
 		assertEquals("Test 1", orderGroupAttribute.getValueReference());
 		assertEquals(1, orderGroupAttribute.getId());
+	}
+
+	@Test
+	public void saveOrder_shouldAllowARetrospectiveOrderToCloseAnOrderThatExpiredInThePast() throws Exception {
+		
+		// Ensure that duration units are configured correctly to a snomed duration code
+		ConceptReferenceTerm days = new ConceptReferenceTerm();
+		days.setConceptSource(conceptService.getConceptSourceByName("SNOMED CT"));
+		days.setCode("258703001");
+		days.setName("Day(s)");
+		conceptService.saveConceptReferenceTerm(days);
+		
+		Concept daysConcept = conceptService.getConcept(28);
+		daysConcept.addConceptMapping(new ConceptMap(days, conceptService.getConceptMapType(2)));
+		conceptService.saveConcept(daysConcept);
+		
+		// First create a retrospective Order on 8/1/2008 with a duration of 60 days.
+		// This will set the auto-expire date to 9/29/2008
+
+		Encounter e1 = encounterService.getEncounter(3);
+		DrugOrder o1 = new DrugOrderBuilder().withPatient(e1.getPatient().getPatientId())
+			.withEncounter(e1.getEncounterId()).withCareSetting(2).withOrderer(1).withUrgency(Order.Urgency.ROUTINE)
+			.withDateActivated(e1.getEncounterDatetime())
+			.withOrderType(1).withDrug(2)
+			.withDosingType(SimpleDosingInstructions.class)
+			.build();
+		o1.setDose(2d);
+		o1.setDoseUnits(conceptService.getConcept(51)); // tab(s)
+		o1.setRoute(conceptService.getConcept(22)); // unknown
+		o1.setFrequency(orderService.getOrderFrequency(1));
+		o1.setDuration(60);
+		o1.setDurationUnits(daysConcept); // days
+		e1.addOrder(o1);
+		encounterService.saveEncounter(e1);
+		assertThat(new SimpleDateFormat("yyyy-MM-dd").format(o1.getAutoExpireDate()), is("2008-09-29"));
+		assertThat(o1.getDateStopped(), is(nullValue()));
+
+		// Next, create a new Order on 8/15/2008 that revises the above order
+		// Encounter 4 is on 8/15/2008 for patient 7
+		Encounter e2 = encounterService.getEncounter(4);
+		DrugOrder o2 = o1.cloneForRevision();
+		o2.setOrderer(providerService.getProvider(1));
+		o2.setDateActivated(e2.getEncounterDatetime());
+		o2.setDose(3d);
+		e2.addOrder(o2);
+		encounterService.saveEncounter(e2);
+		assertThat(new SimpleDateFormat("yyyy-MM-dd").format(o1.getDateStopped()), is("2008-08-14"));
 	}
 }
