@@ -40,11 +40,33 @@ public class ProposingConceptException extends APIException {
 	public Concept getConcept() {
 		return concept;
 	}
-	
+
+	/**
+	 * @deprecated
+	 * This method is no longer acceptable form version 2.5.0 because concept is now final.
+	 * <p> Use {@link #ProposingConceptException(Concept, String)} instead.
+	 *
+	 * @param concept the concept to set
+	 */
+	@Deprecated
+	public void setConcept(Concept concept) {
+	}
+
 	/**
 	 * @return the valueName
 	 */
 	public String getValueName() {
 		return valueName;
+	}
+
+	/**
+	 * @deprecated
+	 * This method is no longer acceptable form version 2.5.0 because valueName is now final.
+	 * <p> Use {@link #ProposingConceptException(Concept, String)} instead.
+	 *
+	 * @param valueName the valueName to set
+	 */
+	@Deprecated
+	public void setValueName(String valueName) {
 	}
 }

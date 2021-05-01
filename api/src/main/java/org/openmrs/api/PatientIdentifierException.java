@@ -44,4 +44,14 @@ public class PatientIdentifierException extends APIException {
 	public PatientIdentifier getPatientIdentifier() {
 		return patientIdentifier;
 	}
+	/**
+	 * @deprecated
+	 * This method is no longer acceptable form version 2.5.0 because patientIdentifier is now final.
+	 * <p> Use {@link #PatientIdentifierException(String, PatientIdentifier)} instead.
+	 *
+	 * @param patientIdentifier the patientIdentifier to set
+	 */
+	@Deprecated
+	public void setPatientIdentifier(PatientIdentifier patientIdentifier) {
+	}
 }

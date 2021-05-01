@@ -95,4 +95,16 @@ public class ValidationException extends APIException {
 	public Errors getErrors() {
 		return errors;
 	}
+	
+	/**
+	 * @deprecated
+	 * This method is no longer acceptable form version 2.5.0 because patientIdentifier is now final.
+	 * <p> Use {@link #ValidationException(Errors)} instead.
+	 *
+	 * @param errors the errors to set
+	 * @since 1.11   
+	 */
+	@Deprecated
+	public void setErrors(Errors errors) {
+	}
 }

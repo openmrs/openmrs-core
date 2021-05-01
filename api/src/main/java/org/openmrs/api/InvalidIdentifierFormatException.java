@@ -49,4 +49,14 @@ public class InvalidIdentifierFormatException extends PatientIdentifierException
 	public String getFormat() {
 		return format;
 	}
+	/**
+	 * @deprecated
+	 * This method is no longer acceptable form version 2.5.0 because format is now final.
+	 * <p> Use {@link #InvalidIdentifierFormatException(String, String)} instead.
+	 *
+	 * @param format the format to set
+	 */
+	@Deprecated
+	public void setFormat(String format) {
+	}
 }
