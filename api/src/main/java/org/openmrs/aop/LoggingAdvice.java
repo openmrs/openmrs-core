@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 public class LoggingAdvice implements MethodInterceptor {
 	
 	/**
-	 * List of all method name prefixes that result in INFO-level log messages
+	 * List of all method name prefixes that result in DEBUG-level log messages
 	 */
 	private static final String[] SETTER_METHOD_PREFIXES = { "save", "create", "update", "void", "unvoid", "retire",
 	        "unretire", "delete", "purge" };
@@ -43,7 +43,7 @@ public class LoggingAdvice implements MethodInterceptor {
 	private final Logger log = LoggerFactory.getLogger(OpenmrsConstants.LOG_CLASS_DEFAULT);
 	
 	/**
-	 * This method prints out debug statements for getters and info statements for everything else
+	 * This method prints out trace statements for getters and debug statements for everything else
 	 * ("setters"). If debugging is turned on, execution time for each method is printed as well.
 	 * This method is called for every method in the Class/Service that it is wrapped around. This
 	 * method should be fairly quick and light.
@@ -58,8 +58,8 @@ public class LoggingAdvice implements MethodInterceptor {
 		
 		// decide what type of logging we're doing with the current method and the loglevel
 		boolean isSetterTypeOfMethod = OpenmrsUtil.stringStartsWith(name, SETTER_METHOD_PREFIXES);
-		boolean logGetter = !isSetterTypeOfMethod && log.isDebugEnabled();
-		boolean logSetter = isSetterTypeOfMethod && log.isInfoEnabled();
+		boolean logGetter = !isSetterTypeOfMethod && log.isTraceEnabled();
+		boolean logSetter = isSetterTypeOfMethod && log.isDebugEnabled();
 		
 		// used for the execution time calculations
 		long startTime = System.currentTimeMillis();
@@ -110,11 +110,11 @@ public class LoggingAdvice implements MethodInterceptor {
 				
 			}
 			
-			// print the string as either debug or info
+			// print the string as either trace or debug
 			if (logGetter) {
-				log.debug(output.toString());
+				log.trace(output.toString());
 			} else if (logSetter) {
-				log.info(output.toString());
+				log.debug(output.toString());
 			}
 		}
 		
@@ -150,11 +150,11 @@ public class LoggingAdvice implements MethodInterceptor {
 					output.append(". execution time: ").append(System.currentTimeMillis() - startTime).append(" ms");
 				}
 				
-				// print the string as either debug or info
+				// print the string as either trace or debug
 				if (logGetter) {
-					log.debug(output.toString());
+					log.trace(output.toString());
 				} else if (logSetter) {
-					log.info(output.toString());
+					log.debug(output.toString());
 				}
 			}
 		}

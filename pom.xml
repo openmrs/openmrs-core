@@ -399,7 +399,7 @@
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>42.2.19</version>
+				<version>42.2.20</version>
 				<scope>runtime</scope>
 			</dependency>
 			<dependency>
@@ -516,7 +516,7 @@
 			<dependency>
 				<groupId>net.sf.ehcache</groupId>
 				<artifactId>ehcache</artifactId>
-				<version>2.10.6</version>
+				<version>2.10.9.2</version>
 			</dependency>
 			<dependency>
 			    <groupId>commons-validator</groupId>
@@ -551,12 +551,12 @@
 			<dependency>
 			    <groupId>jakarta.xml.bind</groupId>
 			    <artifactId>jakarta.xml.bind-api</artifactId>
-			    <version>3.0.0</version>
+			    <version>3.0.1</version>
 			</dependency>
 			<dependency>
 				<groupId>com.sun.xml.bind</groupId>
 				<artifactId>jaxb-impl</artifactId>
-			    <version>3.0.0</version>
+			    <version>3.0.1</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -784,7 +784,7 @@
 				<plugin>
 					<groupId>org.sonarsource.scanner.maven</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
-					<version>3.8.0.2131</version>
+					<version>3.9.0.2155</version>
 				</plugin>
 				<plugin>
 					<groupId>org.jacoco</groupId>
@@ -1052,7 +1052,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jxr-plugin</artifactId>
-				<version>3.0.0</version>
+				<version>3.1.1</version>
 			</plugin>
 		</plugins>
 	</reporting>
@@ -1110,9 +1110,9 @@
 		<hibernateSearchVersion>5.11.8.Final</hibernateSearchVersion>
 		<luceneVersion>5.5.5</luceneVersion>
 		<aspectjVersion>1.9.6</aspectjVersion>
-		<jacksonVersion>2.12.2</jacksonVersion>
+		<jacksonVersion>2.12.3</jacksonVersion>
 		<junitVersion>5.7.1</junitVersion>
-		<mockitoVersion>3.8.0</mockitoVersion>
+		<mockitoVersion>3.9.0</mockitoVersion>
 		<hamcrestVersion>2.2</hamcrestVersion>
 
 		<slf4jVersion> 1.7.30</slf4jVersion>
