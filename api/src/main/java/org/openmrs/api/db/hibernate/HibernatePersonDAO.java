@@ -11,7 +11,6 @@ package org.openmrs.api.db.hibernate;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -50,7 +49,6 @@ import org.slf4j.LoggerFactory;
  *   PersonService ps = Context.getPersonService();
  *   ps.getPeople("name", false);
  * </code>
- * 
  * @see org.openmrs.api.db.PersonDAO
  * @see org.openmrs.api.PersonService
  * @see org.openmrs.api.context.Context
@@ -92,59 +90,6 @@ public class HibernatePersonDAO implements PersonDAO {
 		ListPart<Object[]> names = luceneQuery.listPartProjection(0, maxResults, "person.personId");
 		names.getList().forEach(x -> people.add(getPerson((Integer) x[0])));
 		
-		return people; 
-	}
-	
-	/**
-	 * This method executes a Lucene search on persons based on the soundex filter with two search names given
-	 * 
-	 * @param name1 firstName to be searched
-	 * @param name2 last name to be searched 
-	 * @param birthyear the birthyear the searched person should have 
-	 * @param includeVoided true if voided person should be included 
-	 * @param gender of the person to search for 
-	 * @return the set of Persons that match the search criteria
-	 */
-	private Set<Person> executeSoundexTwoPersonNameQuery(String name1, String name2,  Integer birthyear, boolean includeVoided , String gender) {
-		PersonLuceneQuery personLuceneQuery = new PersonLuceneQuery(sessionFactory);
-		int maxResults = HibernatePersonDAO.getMaximumSearchResults();
-		
-		// Execute a search on all names of a person with the given criteria
-		LuceneQuery<PersonName> luceneQuery = personLuceneQuery.getSoundexPersonNameSearchOnAllNames(name1, name2, 0, false, gender);
-		LinkedHashSet<Person> people = new LinkedHashSet<>();
-		ListPart<Object[]> names = luceneQuery.listPartProjection(0, maxResults, "person.personId");
-		names.getList().forEach(x -> people.add(getPerson((Integer) x[0])));
-		
-		Set<Person> firstNamesMatch = new HashSet<>();
-		Set<Person> secondNamesMatch = new HashSet<>();
-		Set<Person> secondNamesMatchFirstName = new HashSet<>();
-		Set<Person> firstNamesMatchSecondName = new HashSet<>();
-		
-		
-		// Executed Filter Logic: 
-		// People whose first name matches n1 and second part of the name (givenName, familyName, familyName2) matches at least once n2
-		firstNamesMatch = execSoundexLuceneQueryByNames(true, name1, birthyear, includeVoided, gender);
-		secondNamesMatch = execSoundexLuceneQueryByNames(false, name2, birthyear, includeVoided, gender);
-		
-		firstNamesMatch.retainAll(secondNamesMatch);
-		people.addAll(firstNamesMatch);
-		
-		// Executed Filter Logic: 
-		// People who have second part of the name(givenName, familyName, familyName2) matching n2 and n1 (at least once)
-		secondNamesMatchFirstName = execSoundexLuceneQueryByNames(false, name1, birthyear, includeVoided, gender);
-		secondNamesMatch.retainAll(secondNamesMatchFirstName);
-		people.addAll(secondNamesMatch);
-		secondNamesMatch.clear();
-		
-		// Executed Filter Logic:
-		// People who have given_name matching n2, second name matching n1, and another part of second name matching “”
-		firstNamesMatchSecondName = execSoundexLuceneQueryByNames(true, name2, birthyear, includeVoided, gender);
-		secondNamesMatch = execSoundexLuceneQueryByNames(false, "", birthyear, includeVoided, gender);
-		
-		firstNamesMatchSecondName.retainAll(secondNamesMatchFirstName);
-		firstNamesMatchSecondName.retainAll(secondNamesMatch);
-		people.addAll(firstNamesMatchSecondName);
-		
 		return people;
 	}
 	
@@ -170,34 +115,28 @@ public class HibernatePersonDAO implements PersonDAO {
 		names.getList().forEach(x -> people.add(getPerson((Integer) x[0])));
 		
 		return people;
-	}	
+	}
 	
 	/**
-	 * This method executes a search on either firstName or lastName attributes of person
-	 * 
-	 * @param firstName true if search should be executed on firstname only
-	 * @param name to be searched in soundex representation
-	 * @param birthyear to be matched
-	 * @param includeVoided true if voided persons should be matched
+	 * This method executes a Lucene search on persons based on the soundex filter with two search names given
+	 *
+	 * @param searchName1 the first entered name by the user to be searched for
+	 * @param searchName2 the second entered name by the user to be searched  for
+	 * @param birthyear the birthyear the searched person should have 
+	 * @param includeVoided true if voided person should be included 
 	 * @param gender of the person to search for 
-	 * @return the persons that match the search criteria as defined
+	 * @return the set of Persons that match the search criteria
 	 */
-	private Set<Person> execSoundexLuceneQueryByNames(boolean firstName, String name, Integer birthyear, boolean includeVoided , String gender) {
+	private Set<Person> executeSoundexTwoPersonNamesQuery(String searchName1, String searchName2, Integer birthyear, boolean includeVoided , String gender) {
 		PersonLuceneQuery personLuceneQuery = new PersonLuceneQuery(sessionFactory);
 		int maxResults = HibernatePersonDAO.getMaximumSearchResults();
-		Set<Person> results = new HashSet<>();
-		LuceneQuery<PersonName> luceneQuery;
+		LinkedHashSet<Person> people = new LinkedHashSet<>();
 		
-		if(firstName){
-			luceneQuery = personLuceneQuery.getSoundexPersonFirstNameQuery(name, birthyear, includeVoided, gender);
-		}
-		else {
-			luceneQuery = personLuceneQuery.getSoundexPersonSecondNameQuery(name, birthyear, includeVoided, gender);
-		}
+		LuceneQuery<PersonName> luceneQuery = personLuceneQuery.getSoundexPersonNameSearchOnTwoNames(searchName1, searchName2, birthyear, false, gender);;
 		ListPart<Object[]> names = luceneQuery.listPartProjection(0, maxResults, "person.personId");
-		names.getList().forEach(x -> results.add(getPerson((Integer) x[0])));
+		names.getList().forEach(x -> people.add(getPerson((Integer) x[0])));
 		
-		return results;
+		return people;
 	}
 	
 	/**
@@ -218,7 +157,7 @@ public class HibernatePersonDAO implements PersonDAO {
 		if (names.length == 1) {
 			return  executeSoundexOnePersonNameQuery(name, birthyear, false, gender);
 		} else if (names.length == 2) {
-			return executeSoundexTwoPersonNameQuery(names[0], names[1], birthyear, false, gender);
+			return executeSoundexTwoPersonNamesQuery(names[0], names[1], birthyear, false, gender);
 		} else if (names.length == 3) {
 			return executeSoundexThreePersonNamesQuery(names[0], names[1], names[2], birthyear, false, gender);
 		} else {
