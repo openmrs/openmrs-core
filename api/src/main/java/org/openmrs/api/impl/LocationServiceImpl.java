@@ -132,7 +132,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 		return location;
 	}
 
-	private Location getDefaultLocation(Location location, String locationGP) {
+	private Location getDefaultLocation(Location location, String locationGP, String defaultLocation) {
 		//Try to look up 'Unknown Location' in case the global property is something else
 		Location result = getDefaultLocationFromSting(location, locationGP, "Unknown Location");
 
@@ -140,13 +140,10 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 		if (result == null) {
 			result = getDefaultLocationFromSting(location, locationGP, "Unknown");
 		}
-
-		return result;
-	}
-
-	private Location getDefaultLocationFromSting(Location location, String locationGP, String defaultLocation) {
+		
 		Location result = null;
-		if (location == null && (!StringUtils.hasText(locationGP) || !defaultLocation.equalsIgnoreCase(locationGP))) {
+		
+		else if (location == null && (!StringUtils.hasText(locationGP) || !defaultLocation.equalsIgnoreCase(locationGP))) {
 			result = Context.getLocationService().getLocation(defaultLocation);
 		}
 
