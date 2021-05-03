@@ -28,6 +28,12 @@ jobs:
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v2
+      - name: Trigger QAFramework
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{secrets.ACTIONS_TOKEN}}
+          repository: openmrs/openmrs-contrib-qaframework
+          event-type: qa-initialSetup
       - name: Setup JDK
         uses: actions/setup-java@v2
         with:
