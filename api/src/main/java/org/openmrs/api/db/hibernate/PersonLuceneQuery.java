@@ -32,9 +32,14 @@ public class PersonLuceneQuery {
 
 	private SessionFactory sessionFactory;
 	static final String THREE_NAME_QUERY = "((givenNameSoundex:n1^6 OR givenNameSoundex:n2^2 OR givenNameSoundex:n3) OR " +
-			"(middleNameSoundex:n1^2 OR middleNameSoundex:n2^6 OR middleNameSoundex:n3^1) OR " +
-			"(familyNameSoundex:n1^1 OR familyNameSoundex:n2^2 OR familyNameSoundex:n3^6) OR " +
-			"(familyName2Soundex:n1^1 OR familyName2Soundex:n2^2 OR familyName2Soundex:n3^6))";
+		"(middleNameSoundex:n1^2 OR middleNameSoundex:n2^6 OR middleNameSoundex:n3^1) OR " +
+		"(familyNameSoundex:n1^1 OR familyNameSoundex:n2^2 OR familyNameSoundex:n3^6) OR " +
+		"(familyName2Soundex:n1^1 OR familyName2Soundex:n2^2 OR familyName2Soundex:n3^6))";
+	
+	static final String TWO_NAME_QUERY = "(( givenNameSoundex:n1^8 OR givenNameSoundex:n2^4) OR "
+		+ "(middleNameSoundex:n1^4 OR middleNameSoundex:n2^8) OR "
+		+ "(familyNameSoundex:n1^4 OR familyNameSoundex:n2^8) OR "
+		+ "(familyNameSoundex:n1^4 OR familyNameSoundex:n2^8))";
 	
 	
 	public PersonLuceneQuery(SessionFactory sessionFactory) {
@@ -74,44 +79,11 @@ public class PersonLuceneQuery {
 	}
 	
 	/**
-	 * This method prepares and executes a query in Lucene syntax to search for a Person based on a soundex representations of the first and last name
-	 * 
-	 * @param name1 the first name element to be looked for
-	 * @param name2 the second part of the name that should be searched
-	 * @param birthyear the birthyear of the person to search for
-	 * @param includeVoided is true if voided person should be searched
-	 * @param gender the gender of the person to search  
-	 * @return a LuceneQuery for a PersonName that uses the Soundex filter to look for a PersonName
-	 */
-	public LuceneQuery<PersonName> getSoundexPersonNameSearchOnAllNames(String name1, String name2,  Integer birthyear, boolean includeVoided, String gender) {
-		// People who have a matching name n1 in at least 3 name elements namely middleName, familyName, familyName2
-		// OR givenNamen matches n1 and one other name element.
-		String n1ThreeMatches = "(givenNameSoundex:" + name1 + " AND (middleNameSoundex:" + name1 + " OR familyName2Soundex:" + name1 + " OR  familyNameSoundex:" + name1 + ")) " 
-			+ "OR (middleNameSoundex:"+ name1 + " AND  familyName2Soundex:"+ name1 + " AND  familyNameSoundex:"+name1+")";
-		
-		// People who have a matching name n2 in at least 2 names elements namely givenNamen, middleName, familyName, familyName2
-		String n2TwoMatches = " OR (givenNameSoundex:query AND (middleNameSoundex:query OR familyNameSoundex:query OR familyName2Soundex:query))\n"
-			+ "               OR (middleNameSoundex:query AND (familyName2Soundex:query OR familyNameSoundex:query))  \n"
-			+ "               OR (familyNameSoundex:query AND familyName2Soundex:query)";
-		n2TwoMatches =  n2TwoMatches.replace("query", name2);
-		
-		//  People, who have only givenName set and it is matching n1
-		String n1OnlyFirstMatch = "OR (givenNameSoundex:query AND -middleNameSoundex:[* TO *] AND -familyNameSoundex:[* TO *] AND -familyName2Soundex:[* TO *])";
-		n1OnlyFirstMatch = n1OnlyFirstMatch.replace("query", name1);
-		
-		// People who have one name element, that is not not givenName, matching n2 and the other names elements are empty
-		String n2MatchesOneNonFirstName = " OR (middleNameSoundex:query AND  -familyNameSoundex:[* TO *] AND -familyName2Soundex:[* TO *] AND -givenNameSoundex:[* TO *])" 
-			+ " OR (familyNameSoundex:query AND  -middleNameSoundex:[* TO *] AND -familyName2Soundex:[* TO *] AND -givenNameSoundex:[* TO *])    " 
-			+ " OR  (familyName2Soundex:query AND  -middleNameSoundex:[* TO *] AND -familyNameSoundex:[* TO *] AND -givenNameSoundex:[* TO *])";
-		n2MatchesOneNonFirstName = n2MatchesOneNonFirstName.replace("query", name2);
-		
-		return getSoundexPersonNameQuery(n1ThreeMatches + n2TwoMatches + n1OnlyFirstMatch + n2MatchesOneNonFirstName, birthyear, includeVoided, gender);
-	}
-	
-	/**
 	 * This method creates a Lucene search query for a Person based on a soundex search on the first name
-	 * 
-	 * @param firstName the name to be searched in attribute firstName
+	 *
+	 * @param n1 the first part of the name to be searched for
+	 * @param n2 the second part of the name to be searched
+	 * @param n3 the third part of the name to be searched
 	 * @param birthyear the birthyear the searched person should have 
 	 * @param includeVoided is true if voided person should be matched
 	 * @param gender the gender of the person to search  
@@ -124,54 +96,35 @@ public class PersonLuceneQuery {
 			.replace("n3", LuceneQuery.escapeQuery(n3));
 		
 		return getSoundexPersonNameQuery(threeNameQuery, birthyear, includeVoided, gender);
-	}		
-		
-	/**
-		 * This method creates a Lucene search query for a Person based on a soundex search on the first name
-		 * 
-		 * @param firstName the name to be searched in attribute firstName
-		 * @param birthyear the birthyear the searched person should have 
-		 * @param includeVoided is true if voided person should be matched
-		 * @param gender the gender of the person to search  
-		 * @return the LuceneQuery that returns Persons with a soundex representation of the firstName and other defined search criteria
-	 */
-	public LuceneQuery<PersonName> getSoundexPersonFirstNameQuery(String firstName, Integer birthyear, boolean includeVoided, String gender) {
-		List<String> fields = new ArrayList<>();
-		fields.addAll(Arrays.asList("givenNameSoundex"));
-		
-		return buildSoundexLuceneQuery(firstName, fields, birthyear, includeVoided, gender);
 	}
 	
 	/**
-	 * The method creates a Lucene search query for a Person based on a soundex search on the familyNames and middleName
-	 * 
-	 * @param secondName the name to be searched in attributes representing the second name part
-	 * @param birthyear the birthyear the searched person should have
+	 * This method creates a Lucene search query for a Person based on a soundex search 
+	 *
+	 * @param searchName1 the first part of the name to be searched for
+	 * @param searchName2 the second part of the name to be searched
+	 * @param birthyear the birthyear the searched person should have 
 	 * @param includeVoided is true if voided person should be matched
-	 * @param gender the gender of the person to search
-	 * @return the LuceneQuery that returns Persons with a soundex representation of the secondName and other defined search criteria
+	 * @param gender the gender of the person to search  
+	 * @return the LuceneQuery that returns Persons with a soundex representation of the defined names and the other defined search criteria
 	 */
-	public LuceneQuery<PersonName> getSoundexPersonSecondNameQuery(String secondName, Integer birthyear, boolean includeVoided, String gender) {
-		List<String> fields = new ArrayList<>();
-		fields.addAll(Arrays.asList("familyNameSoundex", "familyName2Soundex", "middleNameSoundex"));
+	public LuceneQuery<PersonName> getSoundexPersonNameSearchOnTwoNames(String searchName1, String searchName2,  Integer birthyear, boolean includeVoided, String gender) {
 		
-		// If an empty search request is given it will translated into a Lucene syntax
-		String query = secondName;
-		if(secondName.equals("")) {
-			 query = "*:* AND -(middleNameSoundex:[* TO *] AND  familyNameSoundex:[* TO *] AND familyName2Soundex:[* TO *])" ;
-		}
-		return buildSoundexLuceneQuery(query, fields, birthyear, includeVoided, gender);
+		String threeNameQuery =  TWO_NAME_QUERY.replace("n1", LuceneQuery.escapeQuery(searchName1))
+			.replace("n2", LuceneQuery.escapeQuery(searchName2));
+		
+		return getSoundexPersonNameQuery(threeNameQuery, birthyear, includeVoided, gender);
 	}
 	
 	/**
 	 * The method creates a Lucene search query for a Person based on a soundex search on the givenName, familyNames and middleName
 	 *  
- 	 * @param query the query that should be executed on the names
+	 * @param query the query that should be executed on the names
 	 * @param birthyear the birthyear the searched person should have
 	 * @param includeVoided is true if voided person should be matched
 	 * @param gender the gender of the person to search
 	 * @return the LuceneQuery that returns Persons with a soundex representation of the givenName, familyNames and middleName
-	 */	
+	 */
 	public LuceneQuery<PersonName> getSoundexPersonNameQuery(String query, Integer birthyear, boolean includeVoided, String gender) {
 		List<String> fields = new ArrayList<>();
 		fields.addAll(Arrays.asList("familyNameSoundex", "familyName2Soundex", "middleNameSoundex", "givenNameSoundex"));
