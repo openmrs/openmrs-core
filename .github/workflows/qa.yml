@@ -1,4 +1,4 @@
-name: QaFrameowrk Trigger
+name: QaFramework Trigger
 on:
   push:
     branches: [master]
