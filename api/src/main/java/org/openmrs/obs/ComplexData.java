@@ -25,7 +25,7 @@ public class ComplexData implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 345734100L;
 	
-	private Object data;
+	private InputStream data;
 	
 	private String title;
 	
@@ -39,7 +39,7 @@ public class ComplexData implements java.io.Serializable {
 	 * @param title Name or brief description of ComplexData.
 	 * @param data The complex data for an Obs
 	 */
-	public ComplexData(String title, Object data) {
+	public ComplexData(String title, InputStream data) {
 		setTitle(title);
 		setData(data);
 	}
@@ -67,7 +67,7 @@ public class ComplexData implements java.io.Serializable {
 	 * 
 	 * @param data
 	 */
-	private void setData(Object data) {
+	private void setData(InputStream data) {
 		this.data = data;
 	}
 	
@@ -77,7 +77,7 @@ public class ComplexData implements java.io.Serializable {
 	 * 
 	 * @return the data as an <code>Object</code>
 	 */
-	public Object getData() {
+	public InputStream getData() {
 		return this.data;
 	}
 	
