@@ -22,6 +22,7 @@
                     <td class="yes">admin/${ADMIN_DEFAULT_PASSWORD}</td>
                 </tr>
                 <tr>
+                	<input type="hidden" name="database_connection" value="${databaseConnection}"/>
                     <td class="question">$l10n.get("install.simple.addDemoData") - ${databaseName}?</td>
                 </tr>
                 <tr>

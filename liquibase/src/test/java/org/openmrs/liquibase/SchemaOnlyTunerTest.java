@@ -9,12 +9,20 @@
  */
 package org.openmrs.liquibase;
 
-import java.io.File;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalToCompressingWhiteSpace;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -25,25 +33,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mockito;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalToCompressingWhiteSpace;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-
 public class SchemaOnlyTunerTest {
 	
-	private static final String LIQUIBASE_SCHEMA_ONLY_SNAPSHOT_XML = "org" + File.separator + "openmrs" + File.separator
-	        + "liquibase" + File.separator + "snapshots" + File.separator + "schema-only" + File.separator
-	        + "liquibase-schema-only-SNAPSHOT.xml";
+	private static final String LIQUIBASE_SCHEMA_ONLY_SNAPSHOT_XML = Paths
+	        .get("org", "openmrs", "liquibase", "snapshots", "schema-only", "liquibase-schema-only-SNAPSHOT.xml").toString();
 	
-	private static final String LIQUIBASE_SCHEMA_ONLY_UPDATED_SNAPSHOT_XML = "org" + File.separator + "openmrs"
-	        + File.separator + "liquibase" + File.separator + "snapshots" + File.separator + "schema-only" + File.separator
-	        + "liquibase-schema-only-UPDATED-SNAPSHOT.xml";
+	private static final String LIQUIBASE_SCHEMA_ONLY_UPDATED_SNAPSHOT_XML = Paths
+	        .get("org", "openmrs", "liquibase", "snapshots", "schema-only", "liquibase-schema-only-UPDATED-SNAPSHOT.xml")
+	        .toString();
 	
-	private static String PATH_TO_TEST_RESOURCES = "src" + File.separator + "test" + File.separator + "resources"
-	        + File.separator;
+	private static String PATH_TO_TEST_RESOURCES = Paths.get("src", "test", "resources").toString();
 	
 	private Document document;
 	

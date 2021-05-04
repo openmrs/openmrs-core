@@ -10,13 +10,9 @@
 package org.openmrs.web.filter.update;
 
 import java.util.List;
-
 import org.openmrs.liquibase.LiquibaseProvider;
 import org.openmrs.util.DatabaseUpdater.OpenMRSChangeSet;
 import org.openmrs.util.DatabaseUpdaterLiquibaseProvider;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.RoleConstants;
-import org.openmrs.web.WebConstants;
 import org.openmrs.web.filter.StartupFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,19 +26,7 @@ public class UpdateFilterModel {
 	
 	private static final Logger log = LoggerFactory.getLogger(UpdateFilterModel.class);
 	
-	// automatically given to the .vm files and used there
-	public static final String HEADER_TEMPLATE = "org/openmrs/web/filter/update/header.vm";
-
-	// automatically given to the .vm files and used there
-	public static final String FOOTER_TEMPLATE = "org/openmrs/web/filter/update/footer.vm";
-		
 	public List<OpenMRSChangeSet> changes = null;
-	
-	public String superuserrole = RoleConstants.SUPERUSER;
-
-	public String setupPageUrl = WebConstants.SETUP_PAGE_URL;
-	
-	public static final String OPENMRS_VERSION = OpenmrsConstants.OPENMRS_VERSION_SHORT;
 	
 	public Boolean updateRequired = false;
 	

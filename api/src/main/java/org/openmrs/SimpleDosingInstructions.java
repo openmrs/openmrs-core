@@ -9,19 +9,16 @@
  */
 package org.openmrs;
 
-import static org.apache.commons.lang3.time.DateUtils.addSeconds;
-
-import java.util.Date;
-import java.util.Locale;
-
 import org.openmrs.api.APIException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 
+import java.util.Locale;
+
 /**
  * @since 1.10
  */
-public class SimpleDosingInstructions implements DosingInstructions {
+public class SimpleDosingInstructions extends BaseDosingInstructions {
 	
 	private Double dose;
 	
@@ -132,25 +129,6 @@ public class SimpleDosingInstructions implements DosingInstructions {
 		}
 	}
 	
-	/**
-	 * @see DosingInstructions#getAutoExpireDate(DrugOrder)
-	 */
-	@Override
-	public Date getAutoExpireDate(DrugOrder drugOrder) {
-		if (drugOrder.getDuration() == null || drugOrder.getDurationUnits() == null) {
-			return null;
-		}
-		if (drugOrder.getNumRefills() != null && drugOrder.getNumRefills() > 0) {
-			return null;
-		}
-		String durationCode = Duration.getCode(drugOrder.getDurationUnits());
-		if (durationCode == null) {
-			return null;
-		}
-		Duration duration = new Duration(drugOrder.getDuration(), durationCode);
-		return aMomentBefore(duration.addToDate(drugOrder.getEffectiveStartDate(), drugOrder.getFrequency()));
-	}
-	
 	public Double getDose() {
 		return dose;
 	}
@@ -222,9 +200,4 @@ public class SimpleDosingInstructions implements DosingInstructions {
 	public void setAdministrationInstructions(String administrationInstructions) {
 		this.administrationInstructions = administrationInstructions;
 	}
-	
-	private Date aMomentBefore(Date date) {
-		return addSeconds(date, -1);
-	}
-	
 }
