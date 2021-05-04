@@ -11,6 +11,8 @@ package org.openmrs.obs;
 
 import java.io.InputStream;
 
+import javax.activation.DataSource;
+
 /**
  * ComplexObs is a transient Object that extends Obs but is not itself persisted in the database. It
  * has a data Object and a title. Alternatively, it can have a byte array in the Object. <br>
@@ -25,7 +27,7 @@ public class ComplexData implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 345734100L;
 	
-	private InputStream data;
+	private DataSource data;
 	
 	private String title;
 	
@@ -39,7 +41,7 @@ public class ComplexData implements java.io.Serializable {
 	 * @param title Name or brief description of ComplexData.
 	 * @param data The complex data for an Obs
 	 */
-	public ComplexData(String title, InputStream data) {
+	public ComplexData(String title, DataSource data) {
 		setTitle(title);
 		setData(data);
 	}
@@ -67,7 +69,7 @@ public class ComplexData implements java.io.Serializable {
 	 * 
 	 * @param data
 	 */
-	private void setData(InputStream data) {
+	private void setData(DataSource data) {
 		this.data = data;
 	}
 	
@@ -77,7 +79,7 @@ public class ComplexData implements java.io.Serializable {
 	 * 
 	 * @return the data as an <code>Object</code>
 	 */
-	public InputStream getData() {
+	public DataSource getData() {
 		return this.data;
 	}
 	
