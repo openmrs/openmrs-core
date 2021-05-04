@@ -65,11 +65,19 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 			@Field(name = "valueAnywhere", analyzer = @Analyzer(definition = LuceneAnalyzers.ANYWHERE_ANALYZER))
 	})
 	private String value;
-	
-	/** default constructor */
+
+	/**
+	 * Default constructor for <tt>PersonAttribute</tt>
+	 */
 	public PersonAttribute() {
 	}
-	
+
+	/**
+	 * Constructor for <tt>PersonAttribute</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param personAttributeId the id of the <tt>PersonAttribute</tt>
+	 */
 	public PersonAttribute(Integer personAttributeId) {
 		this.personAttributeId = personAttributeId;
 	}
@@ -84,7 +92,22 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 		this.attributeType = type;
 		this.value = value;
 	}
-	
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>PersonAttribute</tt>
+	 *
+	 * @param person the person to set
+	 * @param attributeType the attributeType to set
+	 * @param value the value to set
+	 * @since 2.4.1
+	 */
+	public PersonAttribute(Person person, PersonAttributeType attributeType, String value) {
+		this.person = person;
+		this.attributeType = attributeType;
+		this.value = value;
+	}
+
 	/**
 	 * Shallow copy of this PersonAttribute. Does NOT copy personAttributeId
 	 * 

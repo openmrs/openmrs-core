@@ -129,7 +129,9 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 
 	private Set<ConceptAttribute> attributes = new LinkedHashSet<>();
 
-	/** default constructor */
+	/**
+	 * Default constructor for <tt>Concept</tt>
+	 */
 	public Concept() {
 		names = new HashSet<>();
 		answers = new HashSet<>();
@@ -151,7 +153,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		this();
 		this.conceptId = conceptId;
 	}
-	
+
 	/**
 	 * @return Returns all answers (including retired answers).
 	 * <strong>Should</strong> return retired and non-retired answers

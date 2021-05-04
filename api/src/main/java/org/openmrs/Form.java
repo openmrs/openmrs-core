@@ -38,20 +38,45 @@ public class Form extends BaseChangeableOpenmrsMetadata {
 	private Set<FormField> formFields;
 	
 	// Constructors
-	
-	/** default constructor */
+
+	/**
+	 * Default constructor for <tt>Form</tt>
+	 *
+	 * @since 2.4.1
+	 */
 	public Form() {
 	}
-	
+
 	/**
-	 * Constructor with id
+	 * Constructor for <tt>Form</tt> that takes the
+	 * primary key. 
 	 *
-	 * <strong>Should</strong> set formId with given parameter
+	 * @param formId the id of the <tt>Form</tt>
+	 * @since 2.4.1
 	 */
 	public Form(Integer formId) {
 		this.formId = formId;
 	}
-	
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>Form</tt>
+	 *
+	 * @param version the version to set
+	 * @param build the build to set
+	 * @param published the published to set
+	 * @param encounterType the encounterType to set
+	 * @param formFields the formFields to set
+	 * @since 2.4.1
+	 */
+	public Form(String version, Integer build, Boolean published, EncounterType encounterType,
+				Set<FormField> formFields) {
+		this.version = version;
+		this.build = build;
+		this.published = published;
+		this.encounterType = encounterType;
+		this.formFields = formFields;
+	}
 	// Property accessors
 	
 	/**

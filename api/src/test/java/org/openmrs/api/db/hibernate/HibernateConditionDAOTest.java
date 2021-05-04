@@ -82,7 +82,43 @@ public class HibernateConditionDAOTest extends BaseContextSensitiveTest {
 		assertEquals(previousVersion, savedCondition.getPreviousVersion());
 		assertEquals(patient, savedCondition.getPatient());
 	}
-	
+
+	@Test
+	public void shouldSaveCondition_withPrimaryKeyConstructor() {
+		CodedOrFreeText codedOrFreeText = new CodedOrFreeText(new Concept(4),
+			new ConceptName(5089), "non coded");
+		ConditionClinicalStatus clinicalStatus = ConditionClinicalStatus.ACTIVE;
+		ConditionVerificationStatus verificationStatus = ConditionVerificationStatus.CONFIRMED;
+		Patient patient = new Patient(2);
+		Date onsetDate = new Date();
+		Date endDate = new Date();
+		Condition previousVersion = dao.getConditionByUuid("2cc6880e-2c46-15e4-9038-a6c5e4d22fb7");
+		String additionalDetail = "additionalDetail";
+		int conditionId = 20;
+		Condition condition = new Condition(conditionId);
+		condition.setCondition(codedOrFreeText);
+		condition.setClinicalStatus(clinicalStatus);
+		condition.setVerificationStatus(verificationStatus);
+		condition.setPreviousVersion(previousVersion);
+		condition.setAdditionalDetail(additionalDetail);
+		condition.setOnsetDate(onsetDate);
+		condition.setEndDate(endDate);
+		condition.setPatient(patient);
+
+		dao.saveCondition(condition);
+
+		Condition savedCondition = dao.getCondition(conditionId);
+
+		assertEquals(additionalDetail, savedCondition.getAdditionalDetail());
+		assertEquals(conditionId, (int) savedCondition.getConditionId());
+		assertEquals(onsetDate, savedCondition.getOnsetDate());
+		assertEquals(endDate, savedCondition.getEndDate());
+		assertEquals(clinicalStatus, savedCondition.getClinicalStatus());
+		assertEquals(verificationStatus, savedCondition.getVerificationStatus());
+		assertEquals(previousVersion, savedCondition.getPreviousVersion());
+		assertEquals(patient, savedCondition.getPatient());
+	}
+
 	@Test
 	public void shouldGetConditionByUuid() {
 		String uuid = "2cc6880e-2c46-15e4-9038-a6c5e4d22fb7";

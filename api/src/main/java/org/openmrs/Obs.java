@@ -150,8 +150,12 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	private Interpretation interpretation;
 	
 	private Status status = Status.FINAL;
-	
-	/** default constructor */
+
+	/**
+	 * Default constructor for <tt>Obs</tt>
+	 *
+	 * @since 2.4.1
+	 */
 	public Obs() {
 	}
 	
@@ -173,8 +177,14 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 		this.obsDatetime = obsDatetime;
 		this.location = location;
 	}
-	
-	/** constructor with id */
+
+	/**
+	 * Constructor for <tt>Obs</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param obsId the id of the <tt>Obs</tt>
+	 * @since 2.4.1
+	 */
 	public Obs(Integer obsId) {
 		this.obsId = obsId;
 	}

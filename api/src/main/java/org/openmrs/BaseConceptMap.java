@@ -27,7 +27,27 @@ public abstract class BaseConceptMap extends BaseOpenmrsObject implements Audita
 	private Date dateCreated;
 	
 	private Date dateChanged;
-	
+
+	/**
+	 * Default constructor for <tt>BaseConceptMap</tt>
+	 *
+	 * @since 2.4.1
+	 */
+	public BaseConceptMap() {
+		//
+	}
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>BaseConceptMap</tt>
+	 *
+	 * @param conceptMapType the conceptMapType for this BaseCustomizableMetadata
+	 * @since 2.4.1
+	 */
+	public BaseConceptMap(ConceptMapType conceptMapType) {
+		this.conceptMapType = conceptMapType;
+	}
+
 	/**
 	 * @return the conceptMapType
 	 */

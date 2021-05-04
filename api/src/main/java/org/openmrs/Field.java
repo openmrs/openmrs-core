@@ -42,16 +42,49 @@ public class Field extends BaseChangeableOpenmrsMetadata {
 	private Set<FieldAnswer> answers;
 	
 	// Constructors
-	
-	/** default constructor */
+
+	/**
+	 * Default constructor for <tt>Field</tt>
+	 *
+	 * @since 2.4.1
+	 */
 	public Field() {
 	}
-	
-	/** constructor with id */
+
+	/**
+	 * Constructor for <tt>Field</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param fieldId the id of the <tt>Field</tt>
+	 * @since 2.4.1
+	 */
 	public Field(Integer fieldId) {
 		this.fieldId = fieldId;
 	}
-	
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>Field</tt>
+	 *
+	 * @param fieldType the fieldType to set
+	 * @param concept the concept to set
+	 * @param tableName the tableName to set
+	 * @param attributeName the attributeName to set
+	 * @param defaultValue the defaultValue to set
+	 * @param selectMultiple the selectMultiple to set
+	 * @param answers the answers to set
+	 * @since 2.4.1
+	 */
+	public Field(FieldType fieldType, Concept concept, String tableName, String attributeName,
+				 String defaultValue, Boolean selectMultiple, Set<FieldAnswer> answers) {
+		this.fieldType = fieldType;
+		this.concept = concept;
+		this.tableName = tableName;
+		this.attributeName = attributeName;
+		this.defaultValue = defaultValue;
+		this.selectMultiple = selectMultiple;
+		this.answers = answers;
+	}
 	// Property accessors
 	
 	/**

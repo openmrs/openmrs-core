@@ -79,24 +79,29 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	@OrderBy("voided asc")
 	@BatchSize(size = 100)
 	private Set<VisitAttribute> attributes = new LinkedHashSet<>();
-	
+
 	/**
-	 * Default Constructor
+	 * Default constructor for <tt>Visit</tt>
+	 *
+	 * @since 2.4.1
 	 */
 	public Visit() {
 	}
-	
+
 	/**
-	 * Constructor that takes in a visitId
-	 * 
-	 * @param visitId
+	 * Constructor for <tt>Visit</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param visitId the id of the <tt>Visit</tt>
+	 * @since 2.4.1
 	 */
 	public Visit(Integer visitId) {
 		this.visitId = visitId;
 	}
 	
 	/**
-	 * Convenience constructor that takes in the required fields i.e {@link Patient},
+	 * Convenience constructor for a <tt>Visit</tt> 
+	 * that takes in the required fields i.e {@link Patient},
 	 * {@link VisitType} and dateStarted
 	 * 
 	 * @see VisitType
@@ -109,7 +114,7 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 		this.visitType = visitType;
 		this.startDatetime = startDatetime;
 	}
-	
+
 	/**
 	 * @return the visitId
 	 */

@@ -21,7 +21,26 @@ import java.util.Locale;
 public class FreeTextDosingInstructions extends BaseDosingInstructions {
 	
 	private String instructions;
-	
+
+	/**
+	 * Default constructor for <tt>FreeTextDosingInstructions</tt>
+	 *
+	 * @since 2.4.1
+	 */
+	public FreeTextDosingInstructions(){
+	}
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>FreeTextDosingInstructions</tt>
+	 *
+	 * @param instructions the instructions to set.
+	 * @since 2.4.1
+	 */
+	public FreeTextDosingInstructions(String instructions) {
+		this.instructions = instructions;
+	}
+
 	/**
 	 * @see DosingInstructions#getDosingInstructions(DrugOrder)
 	 */

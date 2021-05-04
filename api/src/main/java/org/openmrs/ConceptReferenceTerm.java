@@ -39,12 +39,22 @@ public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 	private String version;
 	
 	private Set<ConceptReferenceTermMap> conceptReferenceTermMaps;
-	
-	/** default constructor */
+
+	/**
+	 * Default constructor for <tt>ConceptReferenceTerm</tt>
+	 *
+	 * @since 2.4.1
+	 */
 	public ConceptReferenceTerm() {
 	}
-	
-	/** constructor with conceptReferenceTermId */
+
+	/**
+	 * Constructor for <tt>ConceptReferenceTerm</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param conceptReferenceTermId the id of the <tt>ConceptReferenceTerm</tt>
+	 * @since 2.4.1
+	 */
 	public ConceptReferenceTerm(Integer conceptReferenceTermId) {
 		this.conceptReferenceTermId = conceptReferenceTermId;
 	}
@@ -62,7 +72,25 @@ public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 		this.code = code;
 		setName(name);
 	}
-	
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>ConceptReferenceTerm</tt>
+	 *
+	 * @param conceptSource the conceptSource to set
+	 * @param code the code to set
+	 * @param version the version to set
+	 * @param conceptReferenceTermMaps the conceptReferenceTermMaps to set
+	 * @since 2.4.1
+	 */
+	public ConceptReferenceTerm(ConceptSource conceptSource, String code, String version,
+								Set<ConceptReferenceTermMap> conceptReferenceTermMaps) {
+		this.conceptSource = conceptSource;
+		this.code = code;
+		this.version = version;
+		this.conceptReferenceTermMaps = conceptReferenceTermMaps;
+	}
+
 	/**
 	 * @return the conceptReferenceTermId
 	 */

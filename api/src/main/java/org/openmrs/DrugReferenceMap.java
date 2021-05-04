@@ -44,9 +44,24 @@ public class DrugReferenceMap extends BaseOpenmrsObject implements Auditable, Se
 	private User changedBy;
 	
 	private Date dateChanged;
-	
-	/** default constructor */
-	public DrugReferenceMap() {
+
+	/**
+	 * Default constructor for <tt>DrugReferenceMap</tt>
+	 *
+	 * @since 2.4.1
+	 */
+	public DrugReferenceMap(){
+	}
+
+	/**
+	 * Constructor for <tt>DrugReferenceMap</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param drugReferenceMapId the id of the <tt>DrugReferenceMap</tt>
+	 * @since 2.4.1
+	 */
+	public DrugReferenceMap(final Integer drugReferenceMapId) {
+		this.drugReferenceMapId = drugReferenceMapId;
 	}
 	
 	/**
@@ -57,7 +72,31 @@ public class DrugReferenceMap extends BaseOpenmrsObject implements Auditable, Se
 		this.conceptReferenceTerm = term;
 		this.conceptMapType = conceptMapType;
 	}
-	
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>DrugReferenceMap</tt>
+	 *
+	 * @param drug the drug to set
+	 * @param conceptReferenceTerm the conceptReferenceTerm to set
+	 * @param conceptMapType the conceptMapType to set
+	 * @param creator the creator to set
+	 * @param dateCreated the dateCreated to set
+	 * @param changedBy the changedBy to set
+	 * @param dateChanged the dateChanged to set
+	 * @since 2.4.1
+	 */
+	public DrugReferenceMap(Drug drug, ConceptReferenceTerm conceptReferenceTerm,
+							ConceptMapType conceptMapType, User creator, Date dateCreated, User changedBy, Date dateChanged) {
+		this.drug = drug;
+		this.conceptReferenceTerm = conceptReferenceTerm;
+		this.conceptMapType = conceptMapType;
+		this.creator = creator;
+		this.dateCreated = dateCreated;
+		this.changedBy = changedBy;
+		this.dateChanged = dateChanged;
+	}
+
 	/**
 	 * @return Returns the drugReferenceMapId.
 	 */

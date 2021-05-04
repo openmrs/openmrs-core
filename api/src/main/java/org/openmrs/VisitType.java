@@ -20,20 +20,23 @@ public class VisitType extends BaseChangeableOpenmrsMetadata{
 	private static final long serialVersionUID = 1L;
 	
 	private Integer visitTypeId;
-	
-	/** default constructor */
-	public VisitType() {
-	}
-	
+
 	/**
-	 * Constructor with id
-	 * 
-	 * <strong>Should</strong> set visit type id with given parameter
+	 * Default constructor for <tt>VisitType</tt>
 	 */
-	public VisitType(Integer visitTypeId) {
+	public VisitType(){
+	}
+
+	/**
+	 * Constructor for <tt>VisitType</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param visitTypeId the id of the <tt>VisitType</tt>
+	 */
+	public VisitType(final Integer visitTypeId) {
 		this.visitTypeId = visitTypeId;
 	}
-	
+
 	/**
 	 * Required values constructor. This is the minimum number of values that must be non-null in
 	 * order to have a successful save to the database

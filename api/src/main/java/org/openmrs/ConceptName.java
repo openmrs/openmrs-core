@@ -84,8 +84,12 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	private Date dateChanged;
 	
 	// Constructors
-	
-	/** default constructor */
+
+	/**
+	 * Default constructor for <tt>ConceptName</tt>
+	 *
+	 * @since 2.4.1
+	 */
 	public ConceptName() {
 	}
 	
@@ -97,12 +101,20 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	public ConceptName(Integer conceptNameId) {
 		this.conceptNameId = conceptNameId;
 	}
-	
+
+	/**
+	 * This constructor sets all required properties for an
+	 * <tt>ConceptName</tt>
+	 *
+	 * @param name the name to set.
+	 * @param locale the locale to set
+	 * @since 2.4.1
+	 */
 	public ConceptName(String name, Locale locale) {
 		setName(name);
 		setLocale(locale);
 	}
-	
+
 	/**
 	 * @return Returns the conceptId.
 	 */

@@ -23,14 +23,18 @@ public class EncounterRole extends BaseChangeableOpenmrsMetadata {
 	private Integer encounterRoleId;
 	
 	// Constructors
-	
-	/** default constructor */
+
+	/**
+	 * Default constructor for <tt>EncounterRole</tt>
+	 */
 	public EncounterRole() {
 	}
-	
+
 	/**
-	 * @param encounterRoleId
-	 * <strong>Should</strong> set encounter role id
+	 * Constructor for <tt>EncounterRole</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param encounterRoleId the id of the <tt>EncounterRole</tt>
 	 */
 	public EncounterRole(Integer encounterRoleId) {
 		this.encounterRoleId = encounterRoleId;

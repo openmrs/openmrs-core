@@ -27,7 +27,41 @@ public class OrderFrequency extends BaseChangeableOpenmrsMetadata {
 	private String uuid;
 	
 	private Concept concept;
-	
+
+	/**
+	 * Default constructor for <tt>OrderFrequency</tt>
+	 *
+	 * @since 2.4.1
+	 */
+	public OrderFrequency(){
+	}
+
+	/**
+	 * Constructor for <tt>OrderFrequency</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param orderFrequencyId the id of the <tt>OrderFrequency</tt>
+	 * @since 2.4.1
+	 */
+	public OrderFrequency(final Integer orderFrequencyId) {
+		this.orderFrequencyId = orderFrequencyId;
+	}
+
+	/**
+	 * This constructor sets all required properties for an
+	 * <tt>OrderFrequency</tt>
+	 *
+	 * @param frequencyPerDay the frequencyPerDay to set
+	 * @param uuid the uuid to set
+	 * @param concept the concept to set
+	 * @since 2.4.1
+	 */
+	public OrderFrequency(Double frequencyPerDay, String uuid, Concept concept) {
+		this.frequencyPerDay = frequencyPerDay;
+		this.uuid = uuid;
+		this.concept = concept;
+	}
+
 	/**
 	 * Get the orderFrequencyId
 	 */

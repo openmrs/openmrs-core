@@ -30,17 +30,33 @@ public class CohortMembership extends BaseChangeableOpenmrsData implements Compa
 	private Date startDate;
 	
 	private Date endDate;
-	
-	// Constructor
+
+	/**
+	 * Default constructor for <tt>CohortMembership</tt>
+	 */
 	public CohortMembership() {
 	}
-	
-	public CohortMembership(Integer patientId, Date startDate) {
+
+	/**
+	 * This constructor sets all required properties for an
+	 * <tt>CohortMembership</tt>
+	 *
+	 * @param patientId the patientId to set.
+	 * @param startDate the startDate to set.
+	 */
+	public CohortMembership(final Integer patientId, final Date startDate) {
 		this.patientId = patientId;
 		this.startDate = startDate;
 	}
-	
-	public CohortMembership(Integer patientId) {
+
+	/**
+	 * Constructor for <tt>CohortMembership</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param patientId the id of the <tt>CohortMembership</tt>
+	 * @since 2.4.1
+	 */
+	public CohortMembership(final Integer patientId) {
 		this(patientId, new Date());
 	}
 	

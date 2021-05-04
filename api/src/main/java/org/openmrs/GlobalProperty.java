@@ -47,9 +47,11 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	private User changedBy;
 	
 	private Date dateChanged;
-	
+
 	/**
-	 * Default empty constructor
+	 * Default constructor for <tt>GlobalProperty</tt>
+	 *
+	 * @since 2.4.1
 	 */
 	public GlobalProperty() {
 	}
@@ -103,7 +105,40 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 		this.datatypeClassname = datatypeClass.getName();
 		this.datatypeConfig = datatypeConfig;
 	}
-	
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>GlobalProperty</tt>
+	 *
+	 * @param property the property to set.
+	 * @param propertyValue the propertyValue to set
+	 * @param typedValue the typedValue to set
+	 * @param dirty the dirty to set
+	 * @param description the description to set
+	 * @param datatypeClassname the datatypeClassname to set.
+	 * @param datatypeConfig the datatypeConfig to set
+	 * @param preferredHandlerClassname the preferredHandlerClassname to set
+	 * @param handlerConfig the handlerConfig to set
+	 * @param changedBy the changedBy to set
+	 * @param dateChanged the dateChanged to set
+	 * @since 2.4.1
+	 */
+	public GlobalProperty(String property, String propertyValue, Object typedValue, boolean dirty, String description, 
+						  String datatypeClassname, String datatypeConfig, String preferredHandlerClassname,
+						  String handlerConfig, User changedBy, Date dateChanged) {
+		this.property = property;
+		this.propertyValue = propertyValue;
+		this.typedValue = typedValue;
+		this.dirty = dirty;
+		this.description = description;
+		this.datatypeClassname = datatypeClassname;
+		this.datatypeConfig = datatypeConfig;
+		this.preferredHandlerClassname = preferredHandlerClassname;
+		this.handlerConfig = handlerConfig;
+		this.changedBy = changedBy;
+		this.dateChanged = dateChanged;
+	}
+
 	/**
 	 * @return Returns the property.
 	 */

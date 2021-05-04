@@ -30,14 +30,40 @@ public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 	private Concept role;
 	
 	private Concept speciality;
-	
+
+	/**
+	 * Default constructor for <tt>Provider</tt>
+	 */
 	public Provider() {
 	}
-	
+
+	/**
+	 * Constructor for <tt>Provider</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param providerId the id of the <tt>Provider</tt>
+	 */
 	public Provider(Integer providerId) {
 		this.providerId = providerId;
 	}
-	
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>Provider</tt>
+	 *
+	 * @param person the person to set
+	 * @param identifier the identifier to set
+	 * @param role the role to set
+	 * @param speciality the speciality to set
+	 * @since 2.4.1
+	 */
+	public Provider(Person person, String identifier, Concept role, Concept speciality) {
+		this.person = person;
+		this.identifier = identifier;
+		this.role = role;
+		this.speciality = speciality;
+	}
+
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */

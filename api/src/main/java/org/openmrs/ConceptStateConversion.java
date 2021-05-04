@@ -31,14 +31,36 @@ public class ConceptStateConversion extends BaseOpenmrsObject {
 	// ******************
 	// Constructors
 	// ******************
-	
-	/** Default Constructor */
+
+	/**
+	 * Default constructor for <tt>ConceptStateConversion</tt>
+	 */
 	public ConceptStateConversion() {
 	}
-	
-	/** Constructor with id */
+
+	/**
+	 * Constructor for <tt>ConceptStateConversion</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param conceptStateConversionId the id of the <tt>ConceptStateConversion</tt>
+	 */
 	public ConceptStateConversion(Integer conceptStateConversionId) {
 		setConceptStateConversionId(conceptStateConversionId);
+	}
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>ConceptStateConversion</tt>
+	 *
+	 * @param concept the concept to set
+	 * @param programWorkflow the programWorkflow to set
+	 * @param programWorkflowState the programWorkflowState to set
+	 * @since 2.4.1
+	 */
+	public ConceptStateConversion(Concept concept, ProgramWorkflow programWorkflow, ProgramWorkflowState programWorkflowState) {
+		this.concept = concept;
+		this.programWorkflow = programWorkflow;
+		this.programWorkflowState = programWorkflowState;
 	}
 	
 	// ******************

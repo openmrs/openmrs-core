@@ -23,16 +23,30 @@ public class Privilege extends BaseChangeableOpenmrsMetadata {
 	private String privilege;
 	
 	// Constructors
-	
-	/** default constructor */
+
+	/**
+	 * Default constructor for <tt>Privilege</tt>
+	 */
 	public Privilege() {
 	}
-	
-	/** constructor with id */
+
+	/**
+	 * Constructor for <tt>Privilege</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param privilege the id of the <tt>Privilege</tt>
+	 */
 	public Privilege(String privilege) {
 		this.privilege = privilege;
 	}
-	
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>Privilege</tt>
+	 *
+	 * @param privilege the privilege to set.
+	 * @param description the description to set
+	 */
 	public Privilege(String privilege, String description) {
 		this.privilege = privilege;
 		setDescription(description);

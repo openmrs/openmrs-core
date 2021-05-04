@@ -154,6 +154,18 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 		assertFalse(errors.hasErrors());
 	}
 	
+	@Test
+	public void requiredValuesConstructor_shouldCreateValidUser() {
+		User user = new User(new Person(new PersonName("Users", "Need", "People"), "F"),
+			"test", true, "getting old...");
+		user.getPerson().setGender("F");
+
+		Errors errors = new BindException(user, "user");
+		validator.validate(user, errors);
+
+		assertFalse(errors.hasErrors());
+	}
+	
 	/**
 	 * @see UserValidator#isUserNameValid(String)
 	 */

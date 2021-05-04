@@ -45,6 +45,52 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	private Set<OrderGroup> nestedOrderGroups;
 
 	/**
+	 * Default constructor for <tt>OrderGroup</tt>
+	 *
+	 * @since 2.4.1
+	 */
+	public OrderGroup(){
+	}
+
+	/**
+	 * Constructor for <tt>OrderGroup</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param orderGroupId the id of the <tt>OrderGroup</tt>
+	 * @since 2.4.1
+	 */
+	public OrderGroup(final Integer orderGroupId) {
+		this.orderGroupId = orderGroupId;
+	}
+
+	/**
+	 * This constructor sets all required properties for an
+	 * <tt>OrderGroup</tt>
+	 *
+	 * @param patient the patient to set
+	 * @param encounter the encounter to set
+	 * @param orders the orders to set
+	 * @param orderSet the orderSet to set.
+	 * @param parentOrderGroup the parentOrderGroup to set
+	 * @param orderGroupReason the orderGroupReason to set
+	 * @param previousOrderGroup the previousOrderGroup to set
+	 * @param nestedOrderGroups the nestedOrderGroups to set
+	 * @since 2.4.1
+	 */
+	public OrderGroup(Patient patient, Encounter encounter, List<Order> orders, OrderSet orderSet,
+					  OrderGroup parentOrderGroup, Concept orderGroupReason, OrderGroup previousOrderGroup,
+					  Set<OrderGroup> nestedOrderGroups) {
+		this.patient = patient;
+		this.encounter = encounter;
+		this.orders = orders;
+		this.orderSet = orderSet;
+		this.parentOrderGroup = parentOrderGroup;
+		this.orderGroupReason = orderGroupReason;
+		this.previousOrderGroup = previousOrderGroup;
+		this.nestedOrderGroups = nestedOrderGroups;
+	}
+
+	/**
 	 * Gets the orderGroupId
 	 *
 	 * @return the orderGroupId

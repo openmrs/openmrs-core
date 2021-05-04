@@ -27,11 +27,31 @@ public class DrugIngredient extends BaseOpenmrsObject implements java.io.Seriali
 	private Concept units;
 	
 	// Constructors
-	
-	/** default constructor */
+
+	/**
+	 * Default constructor for <tt>Allergy</tt>
+	 *
+	 * @since 2.4.1
+	 */
 	public DrugIngredient() {
 	}
-	
+
+	/**
+	 * This constructor sets all required properties for an
+	 * <tt>DrugIngredient</tt>
+	 *
+	 * @param drug the drug to set.
+	 * @param ingredient the ingredient to set
+	 * @param strength the strength to set
+	 * @param units the units to set
+	 * @since 2.4.1
+	 */
+	public DrugIngredient(Drug drug, Concept ingredient, Double strength, Concept units) {
+		this.drug = drug;
+		this.ingredient = ingredient;
+		this.strength = strength;
+		this.units = units;
+	}
 	// Property accessors
 	
 	/**

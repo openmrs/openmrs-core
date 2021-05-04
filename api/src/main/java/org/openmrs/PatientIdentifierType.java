@@ -73,16 +73,47 @@ public class PatientIdentifierType extends BaseChangeableOpenmrsMetadata {
 	private LocationBehavior locationBehavior;
 	
 	private UniquenessBehavior uniquenessBehavior;
-	
-	/** default constructor */
+
+	/**
+	 * Default constructor for <tt>PatientIdentifierType</tt>
+	 *
+	 * @since 2.4.1
+	 */
 	public PatientIdentifierType() {
 	}
-	
-	/** constructor with id */
+
+	/**
+	 * Constructor for <tt>PatientIdentifierType</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param patientIdentifierTypeId the id of the <tt>PatientIdentifierType</tt>
+	 * @since 2.4.1
+	 */
 	public PatientIdentifierType(Integer patientIdentifierTypeId) {
 		this.patientIdentifierTypeId = patientIdentifierTypeId;
 	}
-	
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>PatientIdentifierType</tt>
+	 *
+	 * @param format the format to set
+	 * @param required the required to set
+	 * @param formatDescription the formatDescription to set
+	 * @param validator the validator to set
+	 * @param locationBehavior the locationBehavior to set
+	 * @param uniquenessBehavior the uniquenessBehavior to set
+	 * @since 2.4.1
+	 */
+	public PatientIdentifierType(String format, Boolean required, String formatDescription, String validator,
+								 LocationBehavior locationBehavior, UniquenessBehavior uniquenessBehavior) {
+		this.format = format;
+		this.required = required;
+		this.formatDescription = formatDescription;
+		this.validator = validator;
+		this.locationBehavior = locationBehavior;
+		this.uniquenessBehavior = uniquenessBehavior;
+	}
 	// Property accessors
 	
 	/**

@@ -15,7 +15,26 @@ import org.openmrs.attribute.BaseAttributeType;
 public class ConceptAttributeType extends BaseAttributeType<Concept> implements AttributeType<Concept> {
 	
 	private Integer conceptAttributeTypeId;
-	
+
+	/**
+	 * Default constructor for <tt>ConceptAttributeType</tt>
+	 *
+	 * @since 2.4.1
+	 */
+	public ConceptAttributeType(){
+	}
+
+	/**
+	 * Constructor for <tt>ConceptAttributeType</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param conceptAttributeTypeId the id of the <tt>ConceptAttributeType</tt>
+	 * @since 2.4.1
+	 */
+	public ConceptAttributeType(final Integer conceptAttributeTypeId) {
+		this.conceptAttributeTypeId = conceptAttributeTypeId;
+	}
+
 	public Integer getConceptAttributeTypeId() {
 		return conceptAttributeTypeId;
 	}

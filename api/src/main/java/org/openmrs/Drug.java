@@ -54,17 +54,51 @@ public class Drug extends BaseChangeableOpenmrsMetadata {
 	private Collection<DrugIngredient> ingredients;
 	
 	// Constructors
-	
-	/** default constructor */
+
+	/**
+	 * Default constructor for <tt>Drug</tt>
+	 */
 	public Drug() {
 		ingredients = new LinkedHashSet<>();
 	}
-	
-	/** constructor with id */
+
+	/**
+	 * Constructor for <tt>Drug</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param drugId the id of the <tt>Drug</tt>
+	 */
 	public Drug(Integer drugId) {
 		this.drugId = drugId;
 	}
-	
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>Drug</tt>
+	 *
+	 * @param combination the combination to set
+	 * @param dosageForm the dosageForm to set
+	 * @param maximumDailyDose the maximumDailyDose to set
+	 * @param strength the strength to set
+	 * @param doseLimitUnits the doseLimitUnits to set
+	 * @param concept the concept to set
+	 * @param drugReferenceMaps the drugReferenceMaps to set
+	 * @param ingredients the ingredients to set
+	 * @since 2.4.1
+	 */
+	public Drug(Boolean combination, Concept dosageForm, Double maximumDailyDose, Double minimumDailyDose,
+				String strength, Concept doseLimitUnits, Concept concept, Set<DrugReferenceMap> drugReferenceMaps,
+				Collection<DrugIngredient> ingredients) {
+		this.combination = combination;
+		this.dosageForm = dosageForm;
+		this.maximumDailyDose = maximumDailyDose;
+		this.minimumDailyDose = minimumDailyDose;
+		this.strength = strength;
+		this.doseLimitUnits = doseLimitUnits;
+		this.concept = concept;
+		this.drugReferenceMaps = drugReferenceMaps;
+		this.ingredients = ingredients;
+	}
 	// Property accessors
 	
 	/**

@@ -26,16 +26,26 @@ public class ConceptMapType extends BaseChangeableOpenmrsMetadata {
 	private Boolean isHidden = Boolean.FALSE;
 	
 	public static final String SAME_AS_MAP_TYPE_UUID = "35543629-7d8c-11e1-909d-c80aa9edcf4e";
-	
-	/** default constructor */
+
+	/**
+	 * Default constructor for <tt>ConceptMapType</tt>
+	 *
+	 * @since 2.4.1
+	 */
 	public ConceptMapType() {
 	}
-	
-	/** constructor with id */
+
+	/**
+	 * Constructor for <tt>ConceptMapType</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param conceptMapTypeId the id of the <tt>ConceptMapType</tt>
+	 * @since 2.4.1
+	 */
 	public ConceptMapType(Integer conceptMapTypeId) {
 		this.conceptMapTypeId = conceptMapTypeId;
 	}
-	
+
 	/**
 	 * @return the conceptMapTypeId
 	 */

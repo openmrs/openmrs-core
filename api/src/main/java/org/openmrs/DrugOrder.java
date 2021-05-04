@@ -61,13 +61,69 @@ public class DrugOrder extends Order {
 
 	// Constructors
 
-	/** default constructor */
-	public DrugOrder() {
+	/**
+	 * Default constructor for <tt>DrugOrder</tt>
+	 *
+	 * @since 2.4.1
+	 */
+	public DrugOrder(){
 	}
 
-	/** constructor with id */
+	/**
+	 * Constructor for <tt>DrugOrder</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param orderId the id of the <tt>DrugOrder</tt>
+	 * @since 2.4.1
+	 */
 	public DrugOrder(Integer orderId) {
 		this.setOrderId(orderId);
+	}
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>DrugOrder</tt>
+	 *
+	 * @param dose the dose to set.
+	 * @param doseUnits the doseUnits to set
+	 * @param frequency the frequency to set
+	 * @param asNeeded the asNeeded to set
+	 * @param quantity the quantity to set
+	 * @param quantityUnits the quantityUnits to set.
+	 * @param drug the drug to set
+	 * @param asNeededCondition the asNeededCondition to set
+	 * @param dosingType the dosingType to set
+	 * @param numRefills the numRefills to set
+	 * @param dosingInstructions the dosingInstructions to set.
+	 * @param duration the duration to set
+	 * @param durationUnits the durationUnits to set
+	 * @param route the route to set
+	 * @param brandName the brandName to set
+	 * @param dispenseAsWritten the dispenseAsWritten to set.
+	 * @param drugNonCoded the drugNonCoded to set
+	 * @since 2.4.1
+	 */
+	public DrugOrder(Double dose, Concept doseUnits, OrderFrequency frequency, Boolean asNeeded, Double quantity,
+					 Concept quantityUnits, Drug drug, String asNeededCondition, Class<? extends DosingInstructions> dosingType,
+					 Integer numRefills, String dosingInstructions, Integer duration, Concept durationUnits, Concept route,
+					 String brandName, Boolean dispenseAsWritten, String drugNonCoded) {
+		this.dose = dose;
+		this.doseUnits = doseUnits;
+		this.frequency = frequency;
+		this.asNeeded = asNeeded;
+		this.quantity = quantity;
+		this.quantityUnits = quantityUnits;
+		this.drug = drug;
+		this.asNeededCondition = asNeededCondition;
+		this.dosingType = dosingType;
+		this.numRefills = numRefills;
+		this.dosingInstructions = dosingInstructions;
+		this.duration = duration;
+		this.durationUnits = durationUnits;
+		this.route = route;
+		this.brandName = brandName;
+		this.dispenseAsWritten = dispenseAsWritten;
+		this.drugNonCoded = drugNonCoded;
 	}
 
 	/**

@@ -23,12 +23,22 @@ public class FieldType extends BaseChangeableOpenmrsMetadata {
 	private Boolean isSet = false;
 	
 	// Constructors
-	
-	/** default constructor */
+
+	/**
+	 * Default constructor for <tt>FieldType</tt>
+	 *
+	 * @since 2.4.1
+	 */
 	public FieldType() {
 	}
-	
-	/** constructor with id */
+
+	/**
+	 * Constructor for <tt>FieldType</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param fieldTypeId the id of the <tt>FieldType</tt>
+	 * @since 2.4.1
+	 */
 	public FieldType(Integer fieldTypeId) {
 		this.fieldTypeId = fieldTypeId;
 	}

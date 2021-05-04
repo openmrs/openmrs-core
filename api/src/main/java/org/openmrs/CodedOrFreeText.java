@@ -33,12 +33,16 @@ public class CodedOrFreeText {
 	ConceptName specificName;
 	
 	String nonCoded;
-	
+
+	/**
+	 * Default constructor for <tt>CodedOrFreeText</tt>
+	 */
 	public CodedOrFreeText() {
 	}
 	
 	/**
-	 * Convenience constructor with concept, concept name and manually written concept name to save
+	 * This constructor sets all required properties for a
+	 * <tt>CodedOrFreeText</tt>
 	 *
 	 * @param coded the coded concept to set
 	 * @param specificName the specific name of the coded concept to set

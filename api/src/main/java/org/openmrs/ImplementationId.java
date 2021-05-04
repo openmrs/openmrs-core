@@ -27,7 +27,43 @@ public class ImplementationId implements java.io.Serializable {
 	private String implementationId;
 	
 	private String passphrase;
-	
+
+	/**
+	 * Default constructor for <tt>ImplementationId</tt>
+	 *
+	 * @since 2.4.1
+	 */
+	public ImplementationId(){
+	}
+
+	/**
+	 * Constructor for <tt>Allergy</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param implementationId the id of the <tt>ImplementationId</tt>
+	 * @since 2.4.1
+	 */
+	public ImplementationId(final String implementationId) {
+		this.implementationId = implementationId;
+	}
+
+	/**
+	 * This constructor sets all required properties for an
+	 * <tt>ImplementationId</tt>
+	 *
+	 * @param name the name to set.
+	 * @param description the description to set
+	 * @param implementationId the implementationId to set
+	 * @param passphrase the passphrase to set
+	 * @since 2.4.1
+	 */
+	public ImplementationId(String name, String description, String implementationId, String passphrase) {
+		this.name = name;
+		this.description = description;
+		this.implementationId = implementationId;
+		this.passphrase = passphrase;
+	}
+
 	/**
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */

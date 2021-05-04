@@ -20,18 +20,28 @@ public class LocationTag extends BaseChangeableOpenmrsMetadata {
 	public static final long serialVersionUID = 7654L;
 	
 	private Integer locationTagId;
-	
+
 	// Constructors
-	
-	/** default constructor */
-	public LocationTag() {
+
+	/**
+	 * Default constructor for <tt>LocationTag</tt>
+	 *
+	 * @since 2.4.1
+	 */
+	public LocationTag(){
 	}
-	
-	/** constructor with id */
-	public LocationTag(Integer locationTagId) {
+
+	/**
+	 * Constructor for <tt>LocationTag</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param locationTagId the id of the <tt>LocationTag</tt>
+	 * @since 2.4.1
+	 */
+	public LocationTag(final Integer locationTagId) {
 		this.locationTagId = locationTagId;
 	}
-	
+
 	/**
 	 * Required values constructor. This is the minimum number of values that must be non-null in
 	 * order to have a successful save to the database

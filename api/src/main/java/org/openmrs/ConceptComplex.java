@@ -23,15 +23,15 @@ public class ConceptComplex extends Concept {
 	public static final long serialVersionUID = 473231233L;
 	
 	private String handler;
-	
+
 	/**
-	 * Default Constructor
+	 * Default constructor for <tt>ConceptClass</tt>
 	 */
 	public ConceptComplex() {
 	}
-	
+
 	/**
-	 * @param conceptId
+	 * Default constructor for <tt>ConceptClass</tt>
 	 */
 	public ConceptComplex(Integer conceptId) {
 		super(conceptId);

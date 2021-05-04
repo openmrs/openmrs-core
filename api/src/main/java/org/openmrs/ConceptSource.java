@@ -28,16 +28,36 @@ public class ConceptSource extends BaseChangeableOpenmrsMetadata {
 	private String uniqueId;
 	
 	// Constructors
-	
-	/** default constructor */
+
+	/**
+	 * Default constructor for <tt>ConceptSource</tt>
+	 */
 	public ConceptSource() {
 	}
-	
-	/** constructor with id */
+
+	/**
+	 * Constructor for <tt>ConceptSource</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param conceptSourceId the id of the <tt>ConceptSource</tt>
+	 */
 	public ConceptSource(Integer conceptSourceId) {
 		this.conceptSourceId = conceptSourceId;
 	}
 	
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>ConceptSource</tt>
+	 *
+	 * @param hl7Code the hl7Code to set
+	 * @param uniqueId the uniqueId to set
+	 * @since 2.4.1
+	 */
+	public ConceptSource(String hl7Code, String uniqueId) {
+		this.hl7Code = hl7Code;
+		this.uniqueId = uniqueId;
+	}
+
 	/**
 	 * @return Returns the conceptSourceId.
 	 */

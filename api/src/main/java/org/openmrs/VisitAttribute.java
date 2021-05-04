@@ -20,7 +20,26 @@ import org.openmrs.attribute.BaseAttribute;
 public class VisitAttribute extends BaseAttribute<VisitAttributeType, Visit> implements Attribute<VisitAttributeType, Visit> {
 	
 	private Integer visitAttributeId;
-	
+
+	/**
+	 * Default constructor for <tt>VisitAttribute</tt>
+	 *
+	 * @since 2.4.1
+	 */
+	public VisitAttribute(){
+	}
+
+	/**
+	 * Constructor for <tt>VisitAttribute</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param visitAttributeId the id of the <tt>VisitAttribute</tt>
+	 * @since 2.4.1
+	 */
+	public VisitAttribute(final Integer visitAttributeId) {
+		this.visitAttributeId = visitAttributeId;
+	}
+
 	// BaseAttribute<Visit> has an "owner" property of type Visit, which we re-expose as "visit"
 	
 	/**

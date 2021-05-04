@@ -27,7 +27,27 @@ import org.openmrs.customdatatype.Customizable;
 public abstract class BaseCustomizableMetadata<A extends Attribute> extends BaseChangeableOpenmrsMetadata implements Customizable<A> {
 	
 	private Set<A> attributes = new LinkedHashSet<>();
-	
+
+	/**
+	 * Default constructor for <tt>BaseCustomizableMetadata</tt>
+	 *
+	 * @since 2.4.1
+	 */
+	public BaseCustomizableMetadata() {
+		//
+	}
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>BaseCustomizableMetadata</tt>
+	 *
+	 * @param attributes the attributes for this BaseCustomizableMetadata
+	 * @since 2.4.1
+	 */
+	public BaseCustomizableMetadata(Set<A> attributes) {
+		this.attributes = attributes;
+	}
+
 	/**
 	 * @see org.openmrs.customdatatype.Customizable#getAttributes()
 	 */

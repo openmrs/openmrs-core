@@ -50,8 +50,12 @@ public class ConceptNumeric extends Concept {
 	private Integer displayPrecision;
 	
 	// Constructors
-	
-	/** default constructor */
+
+	/**
+	 * Default constructor for <tt>ConceptNumeric</tt>
+	 *
+	 * @since 2.4.1
+	 */
 	public ConceptNumeric() {
 	}
 	

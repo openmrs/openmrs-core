@@ -70,11 +70,30 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	//***** Constructors *****
 	
 	/**
-	 * Default Constructor
+	 * Default Constructor for <tt>BaseOpenmrsMetadata</tt>
+	 *
+	 * @since 2.4.1
 	 */
 	public BaseOpenmrsMetadata() {
 	}
-	
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>BaseOpenmrsData</tt>
+	 *
+	 * @param name the name to set.
+	 * @param creator the creator to set
+	 * @param dateCreated the dateCreated to set
+	 * @param retired the retired to set
+	 * @since 2.4.1
+	 */
+	public BaseOpenmrsMetadata(final String name, final User creator, final Date dateCreated, final Boolean retired) {
+		this.name = name;
+		this.creator = creator;
+		this.dateCreated = dateCreated;
+		this.retired = retired;
+	}
+
 	//***** Property Access *****
 	
 	/**

@@ -42,12 +42,19 @@ public class Program extends BaseChangeableOpenmrsMetadata {
 	// ******************
 	// Constructors
 	// ******************
-	
-	/** Default Constructor */
+
+	/**
+	 * Default constructor for <tt>Program</tt>
+	 */
 	public Program() {
 	}
-	
-	/** Constructor with id */
+
+	/**
+	 * Constructor for <tt>Program</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param programId the id of the <tt>Program</tt>
+	 */
 	public Program(Integer programId) {
 		setProgramId(programId);
 	}
@@ -59,6 +66,21 @@ public class Program extends BaseChangeableOpenmrsMetadata {
 	 */
 	public Program(String name) {
 		setName(name);
+	}
+
+	/**
+	 * This constructor sets all required properties for an
+	 * <tt>Program</tt>
+	 *
+	 * @param concept the concept to set
+	 * @param outcomesConcept the outcomesConcept to set
+	 * @param allWorkflows the allWorkflows to set
+	 * @since 2.4.1
+	 */
+	public Program(Concept concept, Concept outcomesConcept, Set<ProgramWorkflow> allWorkflows) {
+		this.concept = concept;
+		this.outcomesConcept = outcomesConcept;
+		this.allWorkflows = allWorkflows;
 	}
 	
 	// ******************

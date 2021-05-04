@@ -28,7 +28,27 @@ public abstract class BaseOpenmrsObject implements Serializable, OpenmrsObject {
 	
 	@Column(name = "uuid", unique = true, nullable = false, length = 38, updatable = false)
 	private String uuid = UUID.randomUUID().toString();
-	
+
+	/**
+	 * Default constructor for <tt>BaseOpenmrsObject</tt>
+	 *
+	 * @since 2.4.1
+	 */
+	public BaseOpenmrsObject() {
+		//
+	}
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>BaseOpenmrsObject</tt>
+	 *
+	 * @param uuid the uuid to set.
+	 * @since 2.4.1
+	 */
+	public BaseOpenmrsObject(final String uuid) {
+		this.uuid = uuid;
+	}
+
 	/**
 	 * @see org.openmrs.OpenmrsObject#getUuid()
 	 */

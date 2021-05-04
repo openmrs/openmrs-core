@@ -22,6 +22,25 @@ public class OrderSetAttributeType extends BaseAttributeType<OrderSet> implement
 	private Integer orderSetAttributeTypeId;
 
 	/**
+	 * Default constructor for <tt>OrderSetAttributeType</tt>
+	 *
+	 * @since 2.4.1
+	 */
+	public OrderSetAttributeType(){
+	}
+
+	/**
+	 * Constructor for <tt>OrderSetAttributeType</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param orderSetAttributeTypeId the id of the <tt>OrderSetAttributeType</tt>
+	 * @since 2.4.1
+	 */
+	public OrderSetAttributeType(final Integer orderSetAttributeTypeId) {
+		this.orderSetAttributeTypeId = orderSetAttributeTypeId;
+	}
+
+	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
 	@Override

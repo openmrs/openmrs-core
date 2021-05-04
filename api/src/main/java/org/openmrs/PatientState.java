@@ -37,12 +37,19 @@ public class PatientState extends BaseChangeableOpenmrsData implements java.io.S
 	// ******************
 	// Constructors
 	// ******************
-	
-	/** Default Constructor */
+
+	/**
+	 * Default constructor for <tt>PatientState</tt>
+	 */
 	public PatientState() {
 	}
-	
-	/** Constructor with id */
+
+	/**
+	 * Constructor for <tt>PatientState</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param patientStateId the id of the <tt>PatientState</tt>
+	 */
 	public PatientState(Integer patientStateId) {
 		setPatientStateId(patientStateId);
 	}

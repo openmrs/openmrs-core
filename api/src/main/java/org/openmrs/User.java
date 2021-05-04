@@ -78,21 +78,49 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 	private String retireReason;
 	
 	// Constructors
-	
-	/** default constructor */
+
+	/**
+	 * Default constructor for <tt>User</tt>
+	 */
 	public User() {
 	}
-	
-	/** constructor with id */
+
+	/**
+	 * Constructor for <tt>User</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param userId the id of the <tt>User</tt>
+	 */
 	public User(Integer userId) {
 		this.userId = userId;
 	}
-	
-	/** constructor with person object */
+
+	/**
+	 * Constructor for <tt>User</tt> with Person object
+	 *
+	 * @param person the person to set.
+	 */
 	public User(Person person) {
 		this.person = person;
 	}
-	
+
+	/**
+	 * This constructor sets all required properties for an
+	 * <tt>User</tt>
+	 *
+	 * @param person the person to set
+	 * @param username the username to set
+	 * @param retired the retired to set
+	 * @param retireReason the retireReason to set
+	 * @since 2.4.1
+	 */
+	public User(Person person, String username,  boolean retired, String retireReason) {
+		this.person = person;
+		this.username = username;
+		this.retired = retired;
+		this.retireReason = retireReason;
+	}
+
 	/**
 	 * Return true if this user has all privileges
 	 * 

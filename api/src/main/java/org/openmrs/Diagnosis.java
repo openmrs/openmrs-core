@@ -67,15 +67,34 @@ public class Diagnosis extends BaseChangeableOpenmrsData {
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "patient_id")
 	private Patient patient;
-	
-	public Diagnosis() {
+
+	/**
+	 * Default constructor for <tt>Diagnosis</tt>
+	 */
+	public Diagnosis(){
+	}
+
+	/**
+	 * Constructor for <tt>Diagnosis</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param diagnosisId the id of the <tt>Diagnosis</tt>
+	 * @since 2.4.1
+	 */
+	public Diagnosis(final Integer diagnosisId) {
+		this.diagnosisId = diagnosisId;
 	}
 	
 	/**
+	 * This constructor sets all required properties for a
+	 * <tt>Diagnosis</tt>
+	 *
 	 * @param encounter the encounter for this diagnosis
 	 * @param diagnosis the diagnosis to set
 	 * @param certainty the certainty for the diagnosis
 	 * @param rank the rank of the diagnosis
+	 * @param patient the patient to set
+	 * @since 2.4.1
 	 */
 	public Diagnosis(Encounter encounter, CodedOrFreeText diagnosis, ConditionVerificationStatus certainty, Integer rank,
 	    Patient patient) {
@@ -85,7 +104,7 @@ public class Diagnosis extends BaseChangeableOpenmrsData {
 		this.rank = rank;
 		this.patient = patient;
 	}
-	
+
 	/**
 	 * Gets the diagnosis identifier.
 	 * 

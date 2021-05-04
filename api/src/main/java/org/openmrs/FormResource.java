@@ -56,11 +56,25 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	private User changedBy;
 	
 	private Date dateChanged;
-	
+
+	/**
+	 * Default constructor for <tt>FormResource</tt>
+	 */
 	public FormResource() {
 		// generic constructor
 	}
-	
+
+	/**
+	 * Constructor for <tt>FormResource</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param formResourceId the id of the <tt>FormResource</tt>
+	 * @since 2.4.1
+	 */
+	public FormResource(final Integer formResourceId) {
+		this.formResourceId = formResourceId;
+	}
+
 	/**
 	 * Create a copy of a provided FormResource, ignoring the uuid and id of the original
 	 *
@@ -75,7 +89,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 		this.preferredHandlerClassname = old.getPreferredHandlerClassname();
 		this.handlerConfig = old.getHandlerConfig();
 	}
-	
+
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */

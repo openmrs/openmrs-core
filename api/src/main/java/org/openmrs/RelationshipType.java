@@ -11,6 +11,8 @@ package org.openmrs;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 
+import java.util.Date;
+
 /**
  * Defines a type of relationship between two people in the database. <br>
  * <br>
@@ -49,14 +51,38 @@ public class RelationshipType extends BaseChangeableOpenmrsMetadata{
 	private Boolean preferred = false;
 	
 	// Constructors
-	
-	/** default constructor */
-	public RelationshipType() {
+
+	/**
+	 * Default constructor for <tt>RelationshipType</tt>
+	 */
+	public RelationshipType(){
 	}
-	
-	/** constructor with id */
-	public RelationshipType(Integer relationshipTypeId) {
+
+	/**
+	 * Constructor for <tt>RelationshipType</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param relationshipTypeId the id of the <tt>RelationshipType</tt>
+	 */
+	public RelationshipType(final Integer relationshipTypeId) {
 		this.relationshipTypeId = relationshipTypeId;
+	}
+
+	/**
+	 * This constructor sets all required properties for an
+	 * <tt>RelationshipType</tt>
+	 *
+	 * @param aIsToB the aIsToB to set
+	 * @param bIsToA the bIsToA to set
+	 * @param weight the weight to set
+	 * @param preferred the preferred to set
+	 * @since 2.4.1
+	 */
+	public RelationshipType(String aIsToB, String bIsToA, Integer weight, Boolean preferred) {
+		this.aIsToB = aIsToB;
+		this.bIsToA = bIsToA;
+		this.weight = weight;
+		this.preferred = preferred;
 	}
 	
 	// Property accessors

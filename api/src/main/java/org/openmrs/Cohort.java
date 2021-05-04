@@ -32,7 +32,10 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	private String description;
 	
 	private Collection<CohortMembership> memberships;
-	
+
+	/**
+	 * Default constructor for <tt>Cohort</tt>
+	 */
 	public Cohort() {
 		memberships = new TreeSet<>();
 	}

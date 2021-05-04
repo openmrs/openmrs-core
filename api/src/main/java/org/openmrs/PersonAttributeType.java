@@ -35,14 +35,42 @@ public class PersonAttributeType extends BaseChangeableOpenmrsMetadata implement
 	private Boolean searchable = false;
 	
 	private Privilege editPrivilege;
-	
-	/** default constructor */
+
+	/**
+	 * Default constructor for <tt>PersonAttributeType</tt>
+	 */
 	public PersonAttributeType() {
 	}
-	
-	/** constructor with id */
+
+	/**
+	 * Constructor for <tt>PersonAttributeType</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param myPersonAttributeTypeId the id of the <tt>PersonAttributeType</tt>
+	 */
 	public PersonAttributeType(Integer myPersonAttributeTypeId) {
 		this.personAttributeTypeId = myPersonAttributeTypeId;
+	}
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>PersonAttributeType</tt>
+	 *
+	 * @param format the format to set
+	 * @param foreignKey the foreignKey to set
+	 * @param sortWeight the sortWeight to set
+	 * @param searchable the searchable to set
+	 * @param editPrivilege the editPrivilege to set
+	 * @since 2.4.1
+	 */
+	public PersonAttributeType(String format, Integer foreignKey, Double sortWeight, Boolean searchable,
+							   Privilege editPrivilege) {
+		this.personAttributeTypeId = personAttributeTypeId;
+		this.format = format;
+		this.foreignKey = foreignKey;
+		this.sortWeight = sortWeight;
+		this.searchable = searchable;
+		this.editPrivilege = editPrivilege;
 	}
 	
 	// Property accessors

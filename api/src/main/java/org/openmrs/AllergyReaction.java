@@ -29,13 +29,16 @@ public class AllergyReaction extends BaseOpenmrsObject implements java.io.Serial
 	private String reactionNonCoded;
 	
 	/**
-	 * Default constructor
+	 * Default constructor for <tt>AllergyReaction</tt>
 	 */
 	public AllergyReaction(){
 		
 	}
 	
 	/**
+	 * This constructor sets all required properties for an
+	 * <tt>AllergyReaction</tt>
+	 * 
 	 * @param allergy the allergy to set
 	 * @param reaction the reaction to set
 	 * @param reactionNonCoded the reactionNonCoded to set

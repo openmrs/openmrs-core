@@ -38,15 +38,18 @@ public class OrderType extends BaseChangeableOpenmrsMetadata {
 	
 	@Independent
 	private Collection<ConceptClass> conceptClasses;
-	
+
 	/**
-	 * default constructor
+	 * Default constructor for <tt>OrderType</tt>
+	 *
+	 * @since 2.4.1
 	 */
 	public OrderType() {
 	}
-	
+
 	/**
-	 * Constructor with ID
+	 * Constructor for <tt>OrderType</tt> that takes the
+	 * primary key. 
 	 * 
 	 * @param orderTypeId the ID of the {@link org.openmrs.OrderType}
 	 */
@@ -67,7 +70,22 @@ public class OrderType extends BaseChangeableOpenmrsMetadata {
 		setDescription(description);
 		setJavaClassName(javaClassName);
 	}
-	
+
+	/**
+	 * This constructor sets all required properties for an
+	 * <tt>OrderType</tt>
+	 *
+	 * @param javaClassName the javaClassName to set
+	 * @param parent the parent to set
+	 * @param conceptClasses the conceptClasses to set
+	 * @since 2.4.1
+	 */
+	public OrderType(String javaClassName, OrderType parent, Collection<ConceptClass> conceptClasses) {
+		this.javaClassName = javaClassName;
+		this.parent = parent;
+		this.conceptClasses = conceptClasses;
+	}
+
 	/**
 	 * @return Returns the orderTypeId.
 	 */

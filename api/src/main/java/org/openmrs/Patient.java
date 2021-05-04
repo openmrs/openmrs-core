@@ -37,12 +37,28 @@ public class Patient extends Person {
 
 	
 	// Constructors
-	
-	/** default constructor */
-	public Patient() {
-		setPatient(true);
+
+	/**
+	 * Default constructor for <tt>Patient</tt>
+	 *
+	 * @since 2.4.1
+	 */
+	public Patient(){
 	}
-	
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>Patient</tt>
+	 *
+	 * @param allergyStatus the allergyStatus to set
+	 * @param identifiers the identifiers to set
+	 * @since 2.4.1
+	 */
+	public Patient(String allergyStatus, Set<PatientIdentifier> identifiers) {
+		this.allergyStatus = allergyStatus;
+		this.identifiers = identifiers;
+	}
+
 	/**
 	 * This constructor creates a new Patient object from the given {@link Person} object. All
 	 * attributes are copied over to the new object. NOTE! All child collection objects are copied
@@ -64,7 +80,8 @@ public class Patient extends Person {
 	}
 	
 	/**
-	 * Constructor with default patient id
+	 * Constructor for <tt>Patient</tt> that takes the
+	 * primary key. 
 	 * 
 	 * @param patientId
 	 */

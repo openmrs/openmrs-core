@@ -34,11 +34,25 @@ public class CareSetting extends BaseChangeableOpenmrsMetadata {
 	private Integer careSettingId;
 	
 	private CareSettingType careSettingType;
-	
+
+	/**
+	 * Default constructor for <tt>CareSetting</tt>
+	 *
+	 * @since 2.4.1
+	 */
 	public CareSetting() {
 	}
-	
-	public CareSetting(String name, String description, CareSettingType careSettingType) {
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>CareSetting</tt>
+	 *
+	 * @param name the name to set.
+	 * @param description the description to set.
+	 * @param careSettingType the careSettingType to set.
+	 * @since 2.4.1
+	 */
+	public CareSetting(final String name, final String description, final CareSettingType careSettingType) {
 		setName(name);
 		setDescription(description);
 		setCareSettingType(careSettingType);

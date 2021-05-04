@@ -20,7 +20,26 @@ import org.openmrs.attribute.BaseAttribute;
 public class OrderGroupAttribute extends BaseAttribute<OrderGroupAttributeType, OrderGroup> implements Attribute<OrderGroupAttributeType, OrderGroup> {
 
 	private Integer orderGroupAttributeId;
-	
+
+	/**
+	 * Default constructor for <tt>OrderGroupAttribute</tt>
+	 *
+	 * @since 2.4.1
+	 */
+	public OrderGroupAttribute(){
+	}
+
+	/**
+	 * Constructor for <tt>OrderGroupAttribute</tt> that takes the
+	 * primary key. 
+	 *
+	 * @param orderGroupAttributeId the id of the <tt>OrderGroupAttribute</tt>
+	 * @since 2.4.1
+	 */
+	public OrderGroupAttribute(final Integer orderGroupAttributeId) {
+		this.orderGroupAttributeId = orderGroupAttributeId;
+	}
+
 	/**
 	 * @return the order group attribute Id
 	 */

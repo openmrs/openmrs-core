@@ -34,13 +34,33 @@ public class TestOrder extends Order {
 	private OrderFrequency frequency;
 	
 	private Integer numberOfRepeats;
-	
+
 	/**
-	 * Default Constructor
+	 * Default constructor for <tt>TestOrder</tt>
 	 */
 	public TestOrder() {
 	}
-	
+
+	/**
+	 * This constructor sets all required properties for a
+	 * <tt>TestOrder</tt>
+	 *
+	 * @param specimenSource the specimenSource to set.
+	 * @param laterality the laterality to set
+	 * @param clinicalHistory the severity to set
+	 * @param frequency the frequency to set
+	 * @param numberOfRepeats the numberOfRepeats to set
+	 * @since 2.4.1
+	 */
+	public TestOrder(Concept specimenSource, Laterality laterality, String clinicalHistory, OrderFrequency frequency,
+					 Integer numberOfRepeats) {
+		this.specimenSource = specimenSource;
+		this.laterality = laterality;
+		this.clinicalHistory = clinicalHistory;
+		this.frequency = frequency;
+		this.numberOfRepeats = numberOfRepeats;
+	}
+
 	/**
 	 * @see org.openmrs.Order#copy()
 	 * <strong>Should</strong> copy all test order fields
