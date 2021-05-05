@@ -207,7 +207,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 		List<Location> locations = new ArrayList<>();
 		
 		for (Location l : dao.getAllLocations(false)) {
-			if (l.getTags().contains(tag)) {
+			if (l.getTags() != null && l.getTags().contains(tag)) {
 				locations.add(l);
 			}
 		}
