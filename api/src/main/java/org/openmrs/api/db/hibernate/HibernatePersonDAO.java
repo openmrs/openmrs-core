@@ -140,6 +140,28 @@ public class HibernatePersonDAO implements PersonDAO {
 	}
 	
 	/**
+	 * This method executes a Lucence search based on the soundex filter with more than three search names given 
+	 * 
+	 * @param searchNames the names seperated by space that should be searched for 
+	 * @param birthyear the birthyear the searched person should have 
+	 * @param includeVoided true if voided person should be included 
+	 * @param gender of the person to search for 
+	 * @return the set of Persons that match the search criteria
+	 */
+	private Set<Person> executeSoundexNPersonNamesQuery(String[] searchNames, Integer birthyear, boolean includeVoided , String gender) {
+		PersonLuceneQuery personLuceneQuery = new PersonLuceneQuery(sessionFactory);
+		int maxResults = HibernatePersonDAO.getMaximumSearchResults();
+		LinkedHashSet<Person> people = new LinkedHashSet<>();
+		
+		LuceneQuery<PersonName> luceneQuery = personLuceneQuery.getSoundexPersonNameSearchOnNNames(searchNames, birthyear, includeVoided, gender);
+		ListPart<Object[]> names = luceneQuery.listPartProjection(0, maxResults, "person.personId");
+		names.getList().forEach(x -> people.add(getPerson((Integer) x[0])));
+		
+		return people;
+		
+	}
+	
+	/**
 	 * @see org.openmrs.api.PersonService#getSimilarPeople(String name, Integer birthyear, String gender)
 	 * @see org.openmrs.api.db.PersonDAO#getSimilarPeople(String name, Integer birthyear, String gender)
 	 */
@@ -160,68 +182,11 @@ public class HibernatePersonDAO implements PersonDAO {
 			return executeSoundexTwoPersonNamesQuery(names[0], names[1], birthyear, false, gender);
 		} else if (names.length == 3) {
 			return executeSoundexThreePersonNamesQuery(names[0], names[1], names[2], birthyear, false, gender);
-		} else {
-			
-			// This is simply an alternative method of name matching which scales better
-			// for large names, although it is hard to imagine getting names with more than
-			// six or so tokens.  This can be easily updated to attain more desirable
-			// results; it is just a working alternative to throwing an exception.
-			
-			StringBuilder q = new StringBuilder(
-				"select p from Person p left join p.names as pname where p.personVoided = false and pname.voided = false and ");
-			
-			q.append("(").append(" case").append("  when pname.givenName is null then 0");
-			for (int i = 0; i < names.length; i++) {
-				q.append("  when soundex(pname.givenName) = soundex(:n").append(i + 1).append(") then 1");
-			}
-			q.append("  else 0").append(" end").append(")").append("+").append("(").append(" case").append(
-				"  when pname.middleName is null then 0");
-			for (int i = 0; i < names.length; i++) {
-				q.append("  when soundex(pname.middleName) = soundex(:n").append(i + 1).append(") then 1");
-			}
-			q.append("  else 0").append(" end").append(")").append("+").append("(").append(" case").append(
-				"  when pname.familyName is null then 0");
-			for (int i = 0; i < names.length; i++) {
-				q.append("  when soundex(pname.familyName) = soundex(:n").append(i + 1).append(") then 1");
-			}
-			q.append("  else 0").append(" end").append(")").append("+").append("(").append(" case").append(
-				"  when pname.familyName2 is null then 0");
-			for (int i = 0; i < names.length; i++) {
-				q.append("  when soundex(pname.familyName2) = soundex(:n").append(i + 1).append(") then 1");
-			}
-			// if most of the names have at least a hit somewhere
-			q.append("  else 0").append(" end").append(") >= ").append((int) (names.length * .75));
-			
-			String birthdayMatch = " (year(p.birthdate) between " + (birthyear - 1) + " and " + (birthyear + 1)
-				+ " or p.birthdate is null) ";
-			
-			String genderMatch = " (p.gender = :gender or p.gender = '') ";
-			
-			if (birthyear != 0 && gender != null) {
-				q.append(" and (").append(birthdayMatch).append("and ").append(genderMatch).append(") ");
-			} else if (birthyear != 0) {
-				q.append(" and ").append(birthdayMatch);
-			} else if (gender != null) {
-				q.append(" and ").append(genderMatch);
-			}
-			
-			q.append(" order by pname.givenName asc,").append(" pname.middleName asc,").append(" pname.familyName asc,")
-				.append(
-					" pname.familyName2 asc");
-			
-			String qStr = q.toString();
-			Query query = sessionFactory.getCurrentSession().createQuery(qStr);
-			
-			for (int nameIndex = 0; nameIndex < names.length; nameIndex++) {
-				query.setString("n" + (nameIndex + 1), names[nameIndex]);
-			}
-			
-			if (qStr.contains(":gender")) {
-				query.setString("gender", gender);
-			}
-			
-			return new LinkedHashSet<Person>(query.list());
 		}
+		else if (names.length > 3) {
+			return executeSoundexNPersonNamesQuery(names, birthyear, false, gender);
+		}
+		return new LinkedHashSet<>();
 	}
 	
 	/**

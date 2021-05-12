@@ -117,6 +117,28 @@ public class PersonLuceneQuery {
 	}
 	
 	/**
+	 * This method creates a Lucene search query for a Person based on a soundex search on n>3 names
+	 *
+	 * @param searchNames an array of names that should be searched for
+	 * @param birthyear the birthyear the searched person should have 
+	 * @param includeVoided is true if voided person should be matched
+	 * @param gender the gender of the person to search  
+	 * @return the LuceneQuery that returns Persons with a soundex representation of the defined names and the other defined search criteria
+	 */
+	public LuceneQuery<PersonName> getSoundexPersonNameSearchOnNNames(String[] searchNames, Integer birthyear, boolean includeVoided, String gender) {
+		List<String> fields = new ArrayList<>();
+		fields.addAll(Arrays.asList("familyNameSoundex", "familyName2Soundex", "middleNameSoundex", "givenNameSoundex"));
+		List<String> queryPart = new ArrayList<>();
+		for(String name : searchNames) {
+			for(String field : fields) {
+				queryPart.add(field + ":'" + name + "'");
+			}
+		}
+		String query = "(" + String.join(" OR ", queryPart)  +" )";
+		return buildSoundexLuceneQuery(query, fields, birthyear, includeVoided, gender);
+	}
+	
+	/**
 	 * The method creates a Lucene search query for a Person based on a soundex search on the givenName, familyNames and middleName
 	 *  
 	 * @param query the query that should be executed on the names
