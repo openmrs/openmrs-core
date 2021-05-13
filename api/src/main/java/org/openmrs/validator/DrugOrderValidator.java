@@ -103,7 +103,6 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 				DosingInstructions dosingInstructions = order.getDosingInstructionsInstance();
 				dosingInstructions.validate(order, errors);
 			}
-			validateFieldsForOutpatientCareSettingType(order, errors);
 			validatePairedFields(order, errors);
 			validateUnitsAreAmongAllowedConcepts(errors, order);
             validateForRequireDrug(errors, order);
@@ -137,17 +136,7 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 		}
 	}
 	
-	private void validateFieldsForOutpatientCareSettingType(DrugOrder order, Errors errors) {
-		if (order.getAction() != Order.Action.DISCONTINUE && order.getCareSetting() != null
-		        && order.getCareSetting().getCareSettingType().equals(CareSetting.CareSettingType.OUTPATIENT)) {
-			boolean requireQuantity = Context.getAdministrationService().getGlobalPropertyValue(
-				OpenmrsConstants.GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_OUTPATIENT_QUANTITY, true);
-			if (requireQuantity) {
-				ValidationUtils.rejectIfEmpty(errors, "quantity", "DrugOrder.error.quantityIsNullForOutPatient");
-				ValidationUtils.rejectIfEmpty(errors, "numRefills", "DrugOrder.error.numRefillsIsNullForOutPatient");
-			}
-		}
-	}
+
 	
 	private void validatePairedFields(DrugOrder order, Errors errors) {
 		if (order.getDose() != null) {
