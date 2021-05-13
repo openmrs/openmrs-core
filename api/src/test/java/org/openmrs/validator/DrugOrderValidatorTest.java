@@ -142,7 +142,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		OutpatientOrder.setQuantity(null);
 		Errors OutpatientOrderErrors = new BindException(OutpatientOrder, "order");
 		new DrugOrderValidator().validate(OutpatientOrder, OutpatientOrderErrors);
-		assertTrue(OutpatientOrderErrors.hasFieldErrors("quantity"));
+		assertFalse(OutpatientOrderErrors.hasFieldErrors("quantity"));
 		
 		DrugOrder inPatientOrder = new DrugOrder();
 		inPatientOrder.setCareSetting(Context.getOrderService().getCareSetting(2));
@@ -162,7 +162,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		OutpatientOrder.setNumRefills(null);
 		Errors OutpatientOrderErrors = new BindException(OutpatientOrder, "order");
 		new DrugOrderValidator().validate(OutpatientOrder, OutpatientOrderErrors);
-		assertTrue(OutpatientOrderErrors.hasFieldErrors("numRefills"));
+		assertFalse(OutpatientOrderErrors.hasFieldErrors("numRefills"));
 		
 		DrugOrder inPatientOrder = new DrugOrder();
 		inPatientOrder.setCareSetting(Context.getOrderService().getCareSetting(2));
