@@ -148,7 +148,6 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 			}
 		}
 	}
-	
 	private void validatePairedFields(DrugOrder order, Errors errors) {
 		if (order.getDose() != null) {
 			ValidationUtils.rejectIfEmpty(errors, "doseUnits", "DrugOrder.error.doseUnitsRequiredWithDose");

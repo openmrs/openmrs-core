@@ -402,7 +402,7 @@
 	<bean id="orderService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="target" ref="orderServiceTarget"/>
-		<property name="preInterceptors" ref="serviceInterceptors"/>
+		<property name="preInterceptors" ref="orderServiceInterceptors"/>
 		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
 	</bean>
 	<bean id="conditionService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
@@ -528,6 +528,14 @@
 		<ref bean="loggingInterceptor"/>
 		<ref bean="cacheInterceptor"/>
 	</util:list>
+	
+	<util:list id="orderServiceInterceptors">
+		<ref bean="authorizationInterceptor"/>
+		<ref bean="loggingInterceptor"/>
+		<ref bean="cacheInterceptor"/>
+	</util:list>
+	
+	
 
 
 	<!--  **************************  SESSION FACTORY  *************************  -->
