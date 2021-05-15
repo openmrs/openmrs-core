@@ -144,7 +144,6 @@ public class OpenmrsUtil {
 	 * @return [List toAdd, List toDelete] with respect to origList
 	 */
 	public static <E> Collection<Collection<E>> compareLists(Collection<E> origList, Collection<E> newList) {
-		// TODO finish function
 		
 		Collection<Collection<E>> returnList = new ArrayList<>();
 		
