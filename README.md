@@ -10,7 +10,7 @@ webapp: [![webapp](https://snyk.io/test/github/openmrs/openmrs-core/badge.svg?ta
 
 OpenMRS is a patient-based medical record system focusing on giving providers a free customizable electronic medical record system (EMR).
 
-The mission of OpenMRS is to improve health care delivery in resource-constrained environments by coordinating a global community that creates a robust, scalable, user-driven, open source medical record system platform.
+The mission of OpenMRS is to improve health care delivery in resource-constrained environments by coordinating a global community that creates a robust, scalable, user-driven, open-source medical record system platform.
 
 #### Table of Contents
 
@@ -81,7 +81,7 @@ This will generate the OpenMRS application in `webapp/target/openmrs.war` which 
 
 ### Deploy
 
-For development purposes you can simply deploy the `openmrs.war` into the application server jetty via
+For development purposes, you can simply deploy the `openmrs.war` into the application server jetty via
 
 ```bash
 cd openmrs-core/webapp
@@ -100,11 +100,11 @@ The project tree is set up as follows:
 <table>
  <tr>
   <td>api/</td>
-  <td>Java and resource files for building the java api jar file.</td>
+  <td>Java and resource files for building the java API jar file.</td>
  </tr>
  <tr>
   <td>tools/</td>
-  <td>Meta code used during compiling and testing. Does not go into any released binary (like doclets).</td>
+  <td>Meta code used during compiling and testing. Do not go into any released binary (like doclets).</td>
  </tr>
  <tr>
   <td>web/</td>
@@ -112,7 +112,7 @@ The project tree is set up as follows:
  </tr>
  <tr>
   <td>webapp/</td>
-  <td>files used in building the war file (contains JSP files on older versions).</td>
+  <td>Files used in building the war file (contains JSP files on older versions).</td>
  </tr>
  <tr>
   <td>pom.xml</td>
@@ -131,9 +131,9 @@ https://wiki.openmrs.org/display/docs/OpenMRS+SDK
 
 OpenMRS has a modular architecture that allows developers to extend the OpenMRS core functionality by creating modules that can easily be added or removed to meet the needs of a specific implementation.
 
-Before creating your own module go to the [OpenMRS Module Repository](https://addons.openmrs.org/) and see if there is already a module for your specific use case. If so deploy and try it and if a functionality is missing join the developers of the module to add a feature.
+Before creating your own module go to the [OpenMRS Module Repository](https://addons.openmrs.org/) and see if there is already a module for your specific use case. If so deploy and try it and if functionality is missing join the developers of the module to add a feature.
 
-If you haven't found what you were looking for refer to the [Module - wiki](https://wiki.openmrs.org/display/docs/Modules) to learn how you can create a new module.
+If you haven't found what you were looking for, refer to the [Module - wiki](https://wiki.openmrs.org/display/docs/Modules) to learn how you can create a new module.
 
 ## Documentation
 
@@ -176,7 +176,7 @@ After you've read up :eyeglasses: [grab an introductory issue](https://wiki.open
 
 ### Code Reviews
 
-You might not have the time to develop yourself but enough experience with
+You might not have the time to develop yourself but with enough experience with
 OpenMRS and/or reviewing code, your help on code reviews will be much
 appreciated!
 
