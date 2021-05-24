@@ -1126,6 +1126,6 @@
 		<sonar.issuesReport.console.enable>true</sonar.issuesReport.console.enable>
 		<sonar.analysis.mode>publish</sonar.analysis.mode>
 
-		<argLine>-Duser.language=en -Duser.region=US -Xmx2g ${customArgLineForTesting} -Djava.locale.providers=COMPAT</argLine>
+		<argLine>-Duser.language=en -Duser.region=US -Xmx1g ${customArgLineForTesting} -Djava.locale.providers=COMPAT</argLine>
 	</properties>
 </project>
