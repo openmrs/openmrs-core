@@ -1106,7 +1106,7 @@
 			 version of Hibernate Search must be compatible with the version of Hibernate and Hibernate must
 			 be compatible with our version of Spring. -->
 		<springVersion>5.2.14.RELEASE</springVersion>
-		<hibernateVersion>5.4.31.Final</hibernateVersion>
+		<hibernateVersion>5.4.32.Final</hibernateVersion>
 		<hibernateSearchVersion>5.11.9.Final</hibernateSearchVersion>
 		<luceneVersion>5.5.5</luceneVersion>
 		<aspectjVersion>1.9.6</aspectjVersion>
