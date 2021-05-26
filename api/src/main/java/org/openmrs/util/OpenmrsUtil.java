@@ -143,9 +143,7 @@ public class OpenmrsUtil {
 	 * @param newList
 	 * @return [List toAdd, List toDelete] with respect to origList
 	 */
-	public static <E> Collection<Collection<E>> compareLists(Collection<E> origList, Collection<E> newList) {
-		// TODO finish function
-		
+	public static <E> Collection<Collection<E>> compareLists(Collection<E> origList, Collection<E> newList) {	
 		Collection<Collection<E>> returnList = new ArrayList<>();
 		
 		Collection<E> toAdd = new LinkedList<>();
