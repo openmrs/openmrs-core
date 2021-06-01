@@ -27,8 +27,7 @@ import org.springframework.validation.Errors;
 public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 	
 	@Test
-	public void validate_shouldFailValidationIfAutoExpireDateIsNotSetAndDurationUnitsIsNotMappedToSNOMEDCTDuration()
-	        {
+	public void validate_shouldFailValidationIfAutoExpireDateIsNotSetAndDurationUnitsIsNotMappedToSNOMEDCTDuration() {
 		DrugOrder drugOrder = createValidDrugOrder();
 		drugOrder.setDuration(30);
 		Concept unMappedDurationUnits = new Concept();
@@ -94,16 +93,15 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void getAutoExpireDate_shouldNotInferAutoExpireDateWhenDrugOrderHasOneOrMoreRefill() throws ParseException {
+	public void getAutoExpireDate_shouldInferAutoExpireDateIfDurationIsSet() throws ParseException {
 		DrugOrder drugOrder = new DrugOrder();
-		drugOrder.setDateActivated(createDateTime("2014-07-01 10:00:00"));
+		drugOrder.setDosingType(FreeTextDosingInstructions.class);
+		drugOrder.setDateActivated(createDateTime("2014-07-01 00:00:00"));
 		drugOrder.setDuration(30);
-		drugOrder.setDurationUnits(createUnits(Duration.SNOMED_CT_SECONDS_CODE));
+		drugOrder.setDurationUnits(createUnits(Duration.SNOMED_CT_DAYS_CODE));
 		drugOrder.setNumRefills(1);
-		
-		Date autoExpireDate = new SimpleDosingInstructions().getAutoExpireDate(drugOrder);
-		
-		assertEquals(null, autoExpireDate);
+		drugOrder.setAutoExpireDateBasedOnDuration();
+		assertEquals(createDateTime("2014-07-30 23:59:59"), drugOrder.getAutoExpireDate());
 	}
 	
 	@Test

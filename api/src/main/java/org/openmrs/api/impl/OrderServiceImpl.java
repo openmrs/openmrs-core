@@ -153,6 +153,13 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		ensureCareSettingIsSet(order,orderContext);
 		failOnOrderTypeMismatch(order);
 		
+		// If isRetrospective is false, but the dateActivated is prior to the current date, set isRetrospective to true
+		if (!isRetrospective) {
+			Date dateActivated = order.getDateActivated();
+			Date currentDate = new Date();
+			isRetrospective = !dateActivated.after(currentDate) && !DateUtils.isSameDay(dateActivated, currentDate);
+		}
+		
 		Order previousOrder = order.getPreviousOrder();
 		if (REVISE == order.getAction()) {
 			if (previousOrder == null) {
@@ -834,11 +841,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public OrderFrequency saveOrderFrequency(OrderFrequency orderFrequency) throws APIException {
-		if (orderFrequency.getOrderFrequencyId() != null
-				&& dao.isOrderFrequencyInUse(orderFrequency)) {		
-			throw new CannotUpdateObjectInUseException("Order.frequency.cannot.edit");
-		}
-		
 		return dao.saveOrderFrequency(orderFrequency);
 	}
 	

@@ -24,7 +24,13 @@ import org.openmrs.module.ModuleUtilTest;
  * 
  * @see ModuleUtilTest
  * @since 1.11, 1.10, 1.9.9
+ * @deprecated as of 2.4
+ * <p>openmrs-core migrated its tests from JUnit 4 to JUnit 5.
+ * JUnit 4 helpers are still supported so module developers can gradually migrate tests from JUnit 4 to JUnit 5.
+ * To migrate your tests follow <a href="https://wiki.openmrs.org/display/docs/How+to+migrate+to+JUnit+5">How to migrate to JUnit 5</a>.
+ * The JUnit 5 version of the class is {@link org.openmrs.test.jupiter.BaseContextMockTest}.<p>
  */
+@Deprecated
 public abstract class BaseContextMockTest {
 	
 	@Mock

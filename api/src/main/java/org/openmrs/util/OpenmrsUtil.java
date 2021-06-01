@@ -494,6 +494,13 @@ public class OpenmrsUtil {
 		applyLogLevels();
 	}
 	
+	/**
+	 * Gets the in-memory log appender. This method needed to be added as it is much more difficult to
+	 * get a specific appender in the Log4J2 architecture. This method is called in places where we need
+	 * to display logging message.
+	 *
+	 * @since 2.4.0
+	 */
 	public static MemoryAppender getMemoryAppender() {
 		MemoryAppender memoryAppender = ((LoggerContext) LogManager.getContext()).getConfiguration().getAppender("MEMORY_APPENDER");
 		if (memoryAppender != null) {
