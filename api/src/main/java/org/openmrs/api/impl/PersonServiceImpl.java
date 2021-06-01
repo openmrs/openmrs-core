@@ -9,13 +9,6 @@
  */
 package org.openmrs.api.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Person;
@@ -42,6 +35,13 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Default implementation of the PersonService
@@ -182,9 +182,12 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		
 		PersonAttributeType attributeType = dao.savePersonAttributeType(type);
 		
-		if (updateExisting) {
-			//we need to update index in case searchable property has changed
-			Context.updateSearchIndexForType(PersonAttribute.class);
+		if (updateExisting ) {
+			Boolean oldSearchable = dao.getSavedPersonAttributeTypeSearchable(type);
+			if (oldSearchable == null || !oldSearchable.equals(type.getSearchable())) {
+				//we need to update index searchable property has changed
+				Context.updateSearchIndexForType(PersonAttribute.class);
+			}
 		}
 		
 		return attributeType;
