@@ -1519,19 +1519,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see OrderService#saveOrderFrequency(OrderFrequency)
-	 */
-	@Test
-	public void saveOrderFrequency_shouldNotAllowEditingAnExistingOrderFrequencyThatIsInUse() {
-		OrderFrequency orderFrequency = orderService.getOrderFrequency(1);
-		assertNotNull(orderFrequency);
-
-		orderFrequency.setFrequencyPerDay(4d);
-		CannotUpdateObjectInUseException exception = assertThrows(CannotUpdateObjectInUseException.class, () -> orderService.saveOrderFrequency(orderFrequency));
-		assertThat(exception.getMessage(), is("Order.frequency.cannot.edit"));
-	}
-
-	/**
 	 * @see OrderService#purgeOrderFrequency(OrderFrequency)
 	 */
 	@Test
