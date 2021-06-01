@@ -9,16 +9,16 @@
  */
 package org.openmrs.api.db;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class PersonDAOTest extends BaseContextSensitiveTest {
 	
@@ -69,6 +69,15 @@ public class PersonDAOTest extends BaseContextSensitiveTest {
 	public void getPersonName_shouldNotGetPersonNameGivenInvalidId() {
 		PersonName personName = dao.getPersonName(-1);
 		assertNull(personName);
+	}
+	
+	@Test
+	public void getSavedPersonAttributeTypeSearchable_shouldFetchSearchablePropertyForAPersonAttributeTypeBypassingCache(){
+		PersonAttributeType pat = dao.getPersonAttributeType(1);
+		pat.setSearchable(true);
+		// should still be false in the DB
+		Boolean searchable = dao.getSavedPersonAttributeTypeSearchable(pat);
+		assertFalse(searchable);
 	}
 	
 }
