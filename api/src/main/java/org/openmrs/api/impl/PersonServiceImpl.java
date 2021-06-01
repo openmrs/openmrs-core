@@ -184,7 +184,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		
 		if (updateExisting ) {
 			Boolean oldSearchable = dao.getSavedPersonAttributeTypeSearchable(type);
-			if (oldSearchable != type.getSearchable()) {
+			if (oldSearchable == null || !oldSearchable.equals(type.getSearchable())) {
 				//we need to update index searchable property has changed
 				Context.updateSearchIndexForType(PersonAttribute.class);
 			}
