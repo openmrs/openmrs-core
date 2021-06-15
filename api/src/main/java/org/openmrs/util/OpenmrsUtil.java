@@ -128,6 +128,18 @@ public class OpenmrsUtil {
 	
 	private static Map<Locale, SimpleDateFormat> timeFormatCache = new HashMap<>();
 	
+	public final static String tagStart = "\\<\\w+((\\s+\\w+(\\s*\\=\\s*(?:\".*?\"|'.*?'|[^'\"\\>\\s]+))?)+\\s*|\\s*)\\>";
+
+    public final static String tagEnd = "\\</\\w+\\>";
+
+    public final static String tagSelfClosing = "\\<\\w+((\\s+\\w+(\\s*\\=\\s*(?:\".*?\"|'.*?'|[^'\"\\>\\s]+))?)+\\s*|\\s*)/\\>";
+
+    public final static String htmlEntity = "&[a-zA-Z][a-zA-Z0-9]+;";
+
+    public final static Pattern htmlPattern = Pattern.compile("(" + tagStart + ".*" + tagEnd + ")|(" + tagSelfClosing
+            + ")|(" + htmlEntity + ")", Pattern.DOTALL);
+
+
 	/**
 	 * Compares origList to newList returning map of differences
 	 * 
@@ -172,6 +184,21 @@ public class OpenmrsUtil {
 		return returnList;
 	}
 	
+
+	 /**
+     * Verify if a string contains any HTML Tags by comparing its
+     * HTML-escaped version with the original.
+     * @param String input  the input String
+     * @return boolean  True if the String contains HTML characters
+     */
+    public static boolean isHtmlTag(String input) {
+        boolean isHtml = false;
+        if (input != null) {
+            isHtml=htmlPattern.matcher(input).find();
+        }
+        return isHtml;
+    }
+
 	public static boolean isStringInArray(String str, String[] arr) {
 		boolean retVal = false;
 		
