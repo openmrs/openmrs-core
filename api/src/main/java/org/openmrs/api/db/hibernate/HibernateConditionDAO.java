@@ -11,7 +11,7 @@ package org.openmrs.api.db.hibernate;
 
 import java.util.List;
 
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.hibernate.SessionFactory;
 import org.openmrs.Condition;
 import org.openmrs.Encounter;
@@ -42,18 +42,6 @@ public class HibernateConditionDAO implements ConditionDAO {
 	}
 	
 	/**
-	 * Saves the condition.
-	 *
-	 * @param condition the condition to save.
-	 * @return the saved condition.
-	 */
-	@Override
-	public Condition saveCondition(Condition condition) {
-		sessionFactory.getCurrentSession().saveOrUpdate(condition);
-		return condition;
-	}
-	
-	/**
 	 * Gets the condition with the specified id.
 	 *
 	 * @param conditionId the id to search for in the database.
@@ -61,7 +49,7 @@ public class HibernateConditionDAO implements ConditionDAO {
 	 */
 	@Override
 	public Condition getCondition(Integer conditionId) {
-		return (Condition) sessionFactory.getCurrentSession().get(Condition.class, conditionId);
+		return sessionFactory.getCurrentSession().get(Condition.class, conditionId);
 	}
 	
 	/**
@@ -72,22 +60,19 @@ public class HibernateConditionDAO implements ConditionDAO {
 	 */
 	@Override
 	public Condition getConditionByUuid(String uuid) {
-		return (Condition) sessionFactory.getCurrentSession().createQuery("from Condition c where c.uuid = :uuid")
-				.setString("uuid", uuid).uniqueResult();
+		return sessionFactory.getCurrentSession().createQuery("from Condition c where c.uuid = :uuid", Condition.class)
+				.setParameter("uuid", uuid).uniqueResult();
 	}
-	
+
 	/**
-	 * Gets all conditions related to the specified patient.
-	 *
-	 * @param patient the patient whose condition history is being queried.
-	 * @return all active and non active conditions related to the specified patient.
+	 * @see org.openmrs.api.ConditionService#getConditionsByEncounter(Encounter)
 	 */
 	@Override
-	public List<Condition> getConditionHistory(Patient patient) {
-		Query query = sessionFactory.getCurrentSession().createQuery(
-				"from Condition con where con.patient.patientId = :patientId and con.voided = false " +
-						"order by con.onsetDate desc");
-		query.setInteger("patientId", patient.getId());
+	public List<Condition> getConditionsByEncounter(Encounter encounter) throws APIException {
+		Query<Condition> query = sessionFactory.getCurrentSession().createQuery(
+			"from Condition c where c.encounter.encounterId = :encounterId and c.voided = false order "
+				+ "by c.dateCreated desc", Condition.class);
+		query.setParameter("encounterId", encounter.getId());
 		return query.list();
 	}
 	
@@ -99,19 +84,23 @@ public class HibernateConditionDAO implements ConditionDAO {
 	 */
 	@Override
 	public List<Condition> getActiveConditions(Patient patient) {
-		Query query = sessionFactory.getCurrentSession().createQuery(
-				"from Condition c where c.patient.patientId = :patientId and c.voided = false and c.endDate is null order "
-						+ "by c.onsetDate desc");
-		query.setInteger("patientId", patient.getId());
+		Query<Condition> query = sessionFactory.getCurrentSession().createQuery(
+				"from Condition c where c.patient.patientId = :patientId and c.clinicalStatus = 'ACTIVE' and c.voided = false order "
+						+ "by c.dateCreated desc", Condition.class);
+		query.setParameter("patientId", patient.getId());
 		return query.list();
 	}
 
 	/**
-	 * @see ConditionService#getAllConditions(Patient)
+	 * @see org.openmrs.api.ConditionService#getAllConditions(Patient)
 	 */
 	@Override
 	public List<Condition> getAllConditions(Patient patient) {
-		return this.getConditionHistory(patient);
+		Query<Condition> query = sessionFactory.getCurrentSession().createQuery(
+				"from Condition con where con.patient.patientId = :patientId " +
+						"order by con.dateCreated desc", Condition.class);
+		query.setParameter("patientId", patient.getId());
+		return query.list();
 	}
 	
 	/**
@@ -125,14 +114,14 @@ public class HibernateConditionDAO implements ConditionDAO {
 	}
 
 	/**
-	 * @see ConditionService#getConditionsByEncounter(Encounter)
+	 * Saves the condition.
+	 *
+	 * @param condition the condition to save.
+	 * @return the saved condition.
 	 */
 	@Override
-	public List<Condition> getConditionsByEncounter(Encounter encounter) throws APIException {
-		Query query = sessionFactory.getCurrentSession().createQuery(
-				"from Condition c where c.encounter.encounterId = :encounterId and c.voided = false order "
-						+ "by c.onsetDate desc");
-		query.setInteger("encounterId", encounter.getId());
-		return query.list();
+	public Condition saveCondition(Condition condition) {
+		sessionFactory.getCurrentSession().saveOrUpdate(condition);
+		return condition;
 	}
 }

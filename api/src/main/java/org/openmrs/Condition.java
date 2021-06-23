@@ -9,9 +9,6 @@
  */
 package org.openmrs;
 
-import java.util.Date;
-import java.util.Objects;
-
 import javax.persistence.AssociationOverride;
 import javax.persistence.AssociationOverrides;
 import javax.persistence.AttributeOverride;
@@ -28,6 +25,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import java.util.Date;
 
 /**
  * The condition class records detailed information about a condition, problem, diagnosis, or other
@@ -352,5 +351,5 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 	public void setEncounter(Encounter encounter) {
 		this.encounter = encounter;
 	}
-			
+
 }
