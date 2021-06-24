@@ -24,7 +24,7 @@ public class CurrentUsers implements UserSessionListener {
 
 	@Override
 	public void loggedInOrOut(User user, Event event, Status status) {
-		if(!(status == Status.SUCCESS)) {
+		if (!(status == Status.SUCCESS)) {
 			return;
 		}
 		
