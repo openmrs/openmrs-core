@@ -36,6 +36,7 @@ public class CurrentUsers implements UserSessionListener {
 			}
 		}
 	}
+
 	public static  Set<String> getCurrentUsernames(){
 		return Collections.unmodifiableSet(new LinkedHashSet(currentlyLoggedInUsers));
 	}
