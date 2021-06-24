@@ -27,13 +27,12 @@ public class CurrentUsers implements UserSessionListener {
 		if(!(status == Status.SUCCESS)) {
 			return;
 		}
+		
 		if (event != null && user != null) {
-		    if(event == Event.LOGIN) {
-		    	
-			currentlyLoggedInUsers.add(user.getUsername());
-		    } else if(event == Event.LOGOUT) {
-		    	
-			 currentlyLoggedInUsers.remove(user.getUsername());
+			if (event == Event.LOGIN) {	
+				currentlyLoggedInUsers.add(user.getUsername());
+			} else if (event == Event.LOGOUT) {
+				currentlyLoggedInUsers.remove(user.getUsername());
 			}
 		}
 	}
