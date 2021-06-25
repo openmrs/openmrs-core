@@ -633,7 +633,15 @@ public class HibernatePersonDAO implements PersonDAO {
 		sql.setInteger("personAttributeTypeId", personAttributeType.getId());
 		return (String) sql.uniqueResult();
 	}
-	
+
+	@Override
+	public Boolean getSavedPersonAttributeTypeSearchable(PersonAttributeType personAttributeType) {
+		SQLQuery sql = sessionFactory.getCurrentSession().createSQLQuery(
+			"select searchable from person_attribute_type where person_attribute_type_id = :personAttributeTypeId");
+		sql.setInteger("personAttributeTypeId", personAttributeType.getId());
+		return (Boolean) sql.uniqueResult();
+	}
+
 	/**
 	 * @see org.openmrs.api.db.PersonDAO#getPersonByUuid(java.lang.String)
 	 */
