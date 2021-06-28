@@ -478,8 +478,8 @@ public class HibernatePatientDAO implements PatientDAO {
 				innerFields.add("person1." + attribute);
 			} else if (personNameFieldNames.contains(attribute)) {
 				if (!outerSelect.toString().contains("person_name")) {
-					outerSelect.append("inner join person_name t3 on t2.person_id = t3.person_id ");
-					innerSelect.append("inner join person_name pn1 on person1.person_id = pn1.person_id ");
+					outerSelect.append("inner join person_name t3 on t1.patient_id = t3.person_id ");
+					innerSelect.append("inner join person_name pn1 on p1.patient_id = pn1.person_id ");
 				}
 
 				//Since we are firing a native query get the actual table column name from the field name of the entity
