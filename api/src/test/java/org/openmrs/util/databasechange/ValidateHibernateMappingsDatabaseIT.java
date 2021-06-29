@@ -46,9 +46,6 @@ public class ValidateHibernateMappingsDatabaseIT extends H2DatabaseIT {
 		// test all possible combinations of liquibase snapshot and update files
 		//
 		for (List<String> snapshotAndUpdateFileNames : changeLogCombinations.values()) {
-			
-			this.initializeDatabase();
-			
 			log.info(
 			    "liquibase files used for creating and updating the OpenMRS database are: " + snapshotAndUpdateFileNames);
 			
