@@ -1383,6 +1383,24 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 * @see UserService#changePassword(User,String,String)
 	 */
 	@Test
+	public void changePassword_shouldThrowAPIExceptionIfNewPasswordIsTheSameAsOld() {
+		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
+		//user 6001 has password userServiceTest
+		User user6001 = userService.getUser(6001);
+		String oldPassword = "userServiceTest";
+		String newPassword = "userServiceTest";
+		//log in user without change user passwords privileges
+		//user6001 has not got required priviliges
+		Context.authenticate(user6001.getUsername(), "userServiceTest");
+		
+		APIAuthenticationException exception = assertThrows(APIAuthenticationException.class, () -> userService.changePassword(user6001, oldPassword, newPassword));
+		assertThat(exception.getMessage(), is(messages.getMessage("error.privilegesRequired", new Object[] {PrivilegeConstants.EDIT_USER_PASSWORDS}, null)));
+	}
+
+	/**
+	 * @see UserService#changePassword(User,String,String)
+	 */
+	@Test
 	public void changePassword_shouldThrowExceptionIfOldPasswordIsNullAndChangingUserHaveNotPrivileges() {
 		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
 		//user 6001 has password userServiceTest
