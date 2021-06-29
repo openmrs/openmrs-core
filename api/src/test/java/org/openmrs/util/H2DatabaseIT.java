@@ -41,11 +41,6 @@ public class H2DatabaseIT implements LiquibaseProvider {
 	
 	protected static final String PASSWORD = "another_password";
 	
-	@BeforeEach
-	public void setup() throws SQLException, ClassNotFoundException {
-		this.initializeDatabase();
-	}
-	
 	@AfterEach
 	public void tearDown() throws SQLException {
 		this.dropAllDatabaseObjects();
@@ -59,11 +54,6 @@ public class H2DatabaseIT implements LiquibaseProvider {
 		liquibaseConnection.setDatabaseChangeLogLockTableName("LIQUIBASECHANGELOGLOCK");
 		
 		return new Liquibase(filename, new ClassLoaderResourceAccessor(getClass().getClassLoader()), liquibaseConnection);
-	}
-	
-	protected void initializeDatabase() throws SQLException, ClassNotFoundException {
-		String driver = "org.h2.Driver";
-		Class.forName(driver);
 	}
 	
 	protected void updateDatabase(String filename) throws Exception {

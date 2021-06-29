@@ -38,48 +38,6 @@ public class DatabaseUtil {
 	private static final Logger log = LoggerFactory.getLogger(DatabaseUtil.class);
 
 	public static final String ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME = "order_entry_upgrade_settings.txt";
-
-	/**
-	 * Executes the passed SQL query, enforcing select only if that parameter is set Load the jdbc
-	 * driver class for the database which is specified by the connectionUrl and connectionDriver
-	 * parameters <br>
-	 * <br>
-	 * This is only needed when loading up a jdbc connection manually for the first time. This is
-	 * not needed by most users and development practices with the openmrs API.
-	 *
-	 * @param connectionUrl the connection url for the database, such as
-	 * "jdbc:mysql://localhost:3306/..."
-	 * @param connectionDriver the database driver class name, such as "com.mysql.cj.jdbc.Driver"
-	 * @throws ClassNotFoundException
-	 */
-	public static String loadDatabaseDriver(String connectionUrl, String connectionDriver) throws ClassNotFoundException {
-		if (StringUtils.hasText(connectionDriver)) {
-			Class.forName(connectionDriver);
-			log.debug("set user defined Database driver class: " + connectionDriver);
-		} else {
-			if (connectionUrl.contains("mysql")) {
-				Class.forName("com.mysql.cj.jdbc.Driver");
-				connectionDriver = "com.mysql.cj.jdbc.Driver";
-			} else if (connectionUrl.contains("hsqldb")) {
-				Class.forName("org.hsqldb.jdbcDriver");
-				connectionDriver = "org.hsqldb.jdbcDriver";
-			} else if (connectionUrl.contains("postgresql")) {
-				Class.forName("org.postgresql.Driver");
-				connectionDriver = "org.postgresql.Driver";
-			} else if (connectionUrl.contains("oracle")) {
-				Class.forName("oracle.jdbc.driver.OracleDriver");
-				connectionDriver = "oracle.jdbc.driver.OracleDriver";
-			} else if (connectionUrl.contains("jtds")) {
-				Class.forName("net.sourceforge.jtds.jdbc.Driver");
-				connectionDriver = "net.sourceforge.jtds.jdbc.Driver";
-			} else if (connectionUrl.contains("sqlserver")) {
-				Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver");
-				connectionDriver = "com.microsoft.jdbc.sqlserver.SQLServerDriver";
-			}
-		}
-		log.info("Set database driver class as " + connectionDriver);
-		return connectionDriver;
-	}
 	
 	/**
 	 * Executes the passed SQL query, enforcing select only if that parameter is set for given Session
