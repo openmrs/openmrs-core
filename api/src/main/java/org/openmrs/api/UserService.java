@@ -56,6 +56,7 @@ public interface UserService extends OpenmrsService {
 	 * @throws APIException for not existing user and if old password is weak
 	 * @since 1.12
 	 * <strong>Should</strong> throw APIException if old password is not correct
+	 * <strong>Should</strong> throw APIException if new password is the same as old passoword
 	 * <strong>Should</strong> throw APIException if given user does not exist
 	 * <strong>Should</strong> change password for given user if oldPassword is correctly passed
 	 * <strong>Should</strong> change password for given user if oldPassword is null and changing user have privileges
