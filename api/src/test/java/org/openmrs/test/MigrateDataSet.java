@@ -104,6 +104,7 @@ public class MigrateDataSet {
 			
 			// the straight-up database connection
 			String url = "jdbc:mysql://localhost/" + tempDatabaseName;
+			Class.forName("com.mysql.cj.jdbc.Driver");
 			Connection con = DriverManager.getConnection(url, credentials[0], credentials[1]);
 			
 			// database connection for dbunit
