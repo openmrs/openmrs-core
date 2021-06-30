@@ -18,7 +18,6 @@ import java.io.PrintWriter;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
-import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -176,6 +175,9 @@ public class InitializationFilter extends StartupFilter {
 	 * This thread should only be accesses through the synchronized method.
 	 */
 	private static boolean isInstallationStarted = false;
+	
+	// the actual driver loaded by the DatabaseUpdater class
+	private String loadedDriverString;
 	
 	/**
 	 * Variable set at the end of the wizard when spring is being restarted
@@ -486,13 +488,10 @@ public class InitializationFilter extends StartupFilter {
 			createSimpleSetup(httpRequest.getParameter("database_root_password"), httpRequest.getParameter("add_demo_data"));
 			
 			try {
-				if (DriverManager.getDriver(wizardModel.databaseConnection) == null) {
-					errors.put(ErrorMessageConstants.ERROR_DB_DRIVER_CLASS_REQ, null);
-					renderTemplate(page, referenceMap, httpResponse);
-					return;
-				}
+				loadedDriverString = DatabaseUtil.loadDatabaseDriver(wizardModel.databaseConnection,
+				    wizardModel.databaseDriver);
 			}
-			catch (SQLException e) {
+			catch (ClassNotFoundException e) {
 				errors.put(ErrorMessageConstants.ERROR_DB_DRIVER_CLASS_REQ, null);
 				renderTemplate(page, referenceMap, httpResponse);
 				return;
@@ -519,16 +518,9 @@ public class InitializationFilter extends StartupFilter {
 			
 			wizardModel.databaseDriver = httpRequest.getParameter("database_driver");
 			checkForEmptyValue(wizardModel.databaseConnection, errors, ErrorMessageConstants.ERROR_DB_DRIVER_REQ);
-
-			Driver driver = null;
-			try {
-				driver = DriverManager.getDriver(wizardModel.databaseConnection);
-			} catch (SQLException e) {
-				log.error("Exception while loading driver", e);
-			}
-
-			if (driver == null) {
-				page = TESTING_REMOTE_DETAILS_SETUP;
+			
+			loadedDriverString = loadDriver(wizardModel.databaseConnection, wizardModel.databaseDriver);
+			if (!StringUtils.hasText(loadedDriverString)) {
 				errors.put(ErrorMessageConstants.ERROR_DB_DRIVER_CLASS_REQ, null);
 				renderTemplate(page, referenceMap, httpResponse);
 				return;
@@ -788,15 +780,8 @@ public class InitializationFilter extends StartupFilter {
 							if (skipDatabaseSetupPage()) {
 								Properties props = OpenmrsUtil.getRuntimeProperties(WebConstants.WEBAPP_NAME);
 								wizardModel.databaseConnection = props.getProperty("connection.url");
-
-								Driver driver = null;
-								try {
-									driver = DriverManager.getDriver(wizardModel.databaseConnection);
-								} catch (SQLException e) {
-									log.error("Exception while loading driver", e);
-								}
-								
-								if (driver == null) {
+								loadedDriverString = loadDriver(wizardModel.databaseConnection, wizardModel.databaseDriver);
+								if (!StringUtils.hasText(loadedDriverString)) {
 									page = TESTING_REMOTE_DETAILS_SETUP;
 									errors.put(ErrorMessageConstants.ERROR_DB_DRIVER_CLASS_REQ, null);
 									renderTemplate(page, referenceMap, httpResponse);
@@ -908,12 +893,9 @@ public class InitializationFilter extends StartupFilter {
 		
 		checkLocaleAttributes(httpRequest);
 		try {
-			if (DriverManager.getDriver(wizardModel.databaseConnection) == null) {
-				errors.put(ErrorMessageConstants.ERROR_DB_DRIVER_CLASS_REQ, null);
-				return;
-			}
+			loadedDriverString = DatabaseUtil.loadDatabaseDriver(wizardModel.databaseConnection, wizardModel.databaseDriver);
 		}
-		catch (SQLException e) {
+		catch (ClassNotFoundException e) {
 			errors.put(ErrorMessageConstants.ERROR_DB_DRIVER_CLASS_REQ, null);
 			return;
 		}
@@ -991,6 +973,7 @@ public class InitializationFilter extends StartupFilter {
 		try {
 			// verify connection
 			//Set Database Driver using driver String
+			Class.forName(loadedDriverString).newInstance();
 			Connection tempConnection = DriverManager.getConnection(databaseConnectionFinalUrl, connectionUsername,
 			    connectionPassword);
 			tempConnection.close();
@@ -1160,7 +1143,13 @@ public class InitializationFilter extends StartupFilter {
 		try {
 			String replacedSql = sql;
 			
-			if (isCurrentDatabase(DATABASE_POSTGRESQL) || isCurrentDatabase(DATABASE_H2)) {
+			// TODO how to get the driver for the other dbs...
+			if (isCurrentDatabase(DATABASE_MYSQL)) {
+				Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
+			} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
+				Class.forName("org.postgresql.Driver").newInstance();
+				replacedSql = replacedSql.replaceAll("`", "\"");
+			} else {
 				replacedSql = replacedSql.replaceAll("`", "\"");
 			}
 			
@@ -1190,6 +1179,9 @@ public class InitializationFilter extends StartupFilter {
 				log.warn("error executing sql: " + sql, sqlex);
 				errors.put("Error executing sql: " + sql + " - " + sqlex.getMessage(), null);
 			}
+		}
+		catch (InstantiationException | ClassNotFoundException | IllegalAccessException e) {
+			log.error("Error generated", e);
 		}
 		finally {
 			try {
@@ -1877,6 +1869,28 @@ public class InitializationFilter extends StartupFilter {
 			
 			thread = new Thread(r);
 		}
+	}
+	
+	/**
+	 * Convenience method that loads the database driver
+	 *
+	 * @param connection the database connection string
+	 * @param databaseDriver the database driver class name to load
+	 * @return the loaded driver string
+	 */
+	public static String loadDriver(String connection, String databaseDriver) {
+		String loadedDriverString = null;
+		try {
+			loadedDriverString = DatabaseUtil.loadDatabaseDriver(connection, databaseDriver);
+			log.info("using database driver :" + loadedDriverString);
+		}
+		catch (ClassNotFoundException e) {
+			log.error("The given database driver class was not found. "
+			        + "Please ensure that the database driver jar file is on the class path "
+			        + "(like in the webapp's lib folder)");
+		}
+		
+		return loadedDriverString;
 	}
 	
 	/**

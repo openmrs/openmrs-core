@@ -447,6 +447,7 @@ public class DatabaseUpdater {
 		Properties props = Context.getRuntimeProperties();
 		mergeDefaultRuntimeProperties(props);
 		
+		String driver = props.getProperty("hibernate.connection.driver_class");
 		String username = props.getProperty("hibernate.connection.username");
 		String password = props.getProperty("hibernate.connection.password");
 		String url = props.getProperty("hibernate.connection.url");
@@ -456,6 +457,7 @@ public class DatabaseUpdater {
 			url = url + "&sessionVariables=default_storage_engine=InnoDB";
 		}
 		
+		Class.forName(driver);
 		return DriverManager.getConnection(url, username, password);
 	}
 	
