@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.Date;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -84,8 +85,9 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		hibernatePatientDao.savePatient(new Patient(person2));
 
 		// when
-		List<Patient> duplicatePatients = hibernatePatientDao
-			.getDuplicatePatientsByAttributes(Arrays.asList("givenName", "middleName", "familyName"));
+		List<String> attributes = Arrays.asList("givenName", "middleName", "familyName");
+		Collections.shuffle(attributes); // random order of attributes to make sure this test isn't flaky
+		List<Patient> duplicatePatients = hibernatePatientDao.getDuplicatePatientsByAttributes(attributes);
 
 		// then
 		assertThat(duplicatePatients.size(), equalTo(0));
@@ -105,9 +107,10 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		hibernatePatientDao.savePatient(new Patient(person2));
 
 		// when
-		List<Patient> duplicatePatients = hibernatePatientDao
-			.getDuplicatePatientsByAttributes(Arrays.asList("givenName", "middleName", "familyName"));
-		
+		List<String> attributes = Arrays.asList("givenName", "middleName", "familyName");
+		Collections.shuffle(attributes); // random order of attributes to make sure this test isn't flaky
+		List<Patient> duplicatePatients = hibernatePatientDao.getDuplicatePatientsByAttributes(attributes);
+
 		// then
 		assertThat(duplicatePatients.size(), equalTo(2));
 	}
@@ -126,8 +129,7 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		hibernatePatientDao.savePatient(new Patient(person2));
 
 		// when
-		List<Patient> duplicatePatients = hibernatePatientDao
-			.getDuplicatePatientsByAttributes(singletonList("familyName"));
+		List<Patient> duplicatePatients = hibernatePatientDao.getDuplicatePatientsByAttributes(singletonList("familyName"));
 
 		// then
 		assertThat(duplicatePatients.size(), equalTo(2));
@@ -151,8 +153,9 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		hibernatePatientDao.savePatient(new Patient(person2));
 
 		// when
-		List<Patient> duplicatePatients = hibernatePatientDao
-			.getDuplicatePatientsByAttributes(Arrays.asList("gender", "birthdate", "givenName", "middleName", "familyName"));
+		List<String> attributes = Arrays.asList("gender", "birthdate", "givenName", "middleName", "familyName");
+		Collections.shuffle(attributes); // random order of attributes to make sure this test isn't flaky
+		List<Patient> duplicatePatients = hibernatePatientDao.getDuplicatePatientsByAttributes(attributes);
 
 		// then
 		assertThat(duplicatePatients.size(), equalTo(2));
@@ -176,10 +179,111 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		hibernatePatientDao.savePatient(new Patient(person2));
 
 		// when
-		List<Patient> duplicatePatients = hibernatePatientDao
-			.getDuplicatePatientsByAttributes(Arrays.asList("gender", "birthdate", "givenName", "middleName", "familyName"));
+		List<String> attributes = Arrays.asList("gender", "birthdate", "givenName", "middleName", "familyName");
+		Collections.shuffle(attributes); // random order of attributes to make sure this test isn't flaky
+		List<Patient> duplicatePatients = hibernatePatientDao.getDuplicatePatientsByAttributes(attributes);
 
 		// then
 		assertThat(duplicatePatients.size(), equalTo(0));
+	}
+
+	@Test
+	public void getDuplicatePatientsByAttributes_shouldReturnPatientsWithDuplicatedAllFieldsIncludingIdentifier() {
+		// given
+		Person person1 = new Person();
+		person1.addName(new PersonName("Ioan", "Theo", "Fletcher"));
+		person1.setGender("M");
+		person1.setBirthdate(Date.valueOf("2021-06-26"));
+		person1 = hibernatePersonDAO.savePerson(person1);
+		Patient patient1 = new Patient(person1);
+		patient1.addIdentifier(new PatientIdentifier("101X", null, null));
+		hibernatePatientDao.savePatient(patient1);
+
+		Person person2 = new Person();
+		person2.addName(new PersonName("Ioan", "Theo", "Fletcher"));
+		person2.setGender("M");
+		person2.setBirthdate(Date.valueOf("2021-06-26"));
+		person2 = hibernatePersonDAO.savePerson(person2);
+		Patient patient2 = new Patient(person2);
+		patient2.addIdentifier(new PatientIdentifier("101X", null, null));
+		hibernatePatientDao.savePatient(patient2);
+
+		// when
+		List<String> attributes = Arrays.asList("gender", "identifier", "birthdate", "givenName", "middleName", "familyName");
+		Collections.shuffle(attributes); // random order of attributes to make sure this test isn't flaky
+		List<Patient> duplicatePatients = hibernatePatientDao.getDuplicatePatientsByAttributes(attributes);
+
+		// then
+		assertThat(duplicatePatients.size(), equalTo(2));
+	}
+
+	@Test
+	public void getDuplicatePatientsByAttributes_shouldNotReturnVoidedPatientsWithDuplicatedAllFields() {
+		// given
+		Person person1 = new Person();
+		person1.addName(new PersonName("Ioan", "Theo", "Fletcher"));
+		person1.setGender("M");
+		person1.setBirthdate(Date.valueOf("2021-06-26"));
+		person1 = hibernatePersonDAO.savePerson(person1);
+		Patient patient1 = new Patient(person1);
+		patient1.addIdentifier(new PatientIdentifier("101X", null, null));
+		patient1.setVoided(true);
+		hibernatePatientDao.savePatient(patient1);
+
+		Person person2 = new Person();
+		person2.addName(new PersonName("Ioan", "Theo", "Fletcher"));
+		person2.setGender("M");
+		person2.setBirthdate(Date.valueOf("2021-06-26"));
+		person2 = hibernatePersonDAO.savePerson(person2);
+		Patient patient2 = new Patient(person2);
+		patient2.addIdentifier(new PatientIdentifier("101X", null, null));
+		patient2.setVoided(true);
+		hibernatePatientDao.savePatient(patient2);
+
+		// update voided patients, doesn't update them without this line
+		hibernatePatientDao.getAllPatients(true);
+
+		// when
+		List<String> attributes = Arrays.asList("gender", "identifier", "birthdate", "givenName", "middleName", "familyName");
+		Collections.shuffle(attributes); // random order of attributes to make sure this test isn't flaky
+		List<Patient> duplicatePatients = hibernatePatientDao.getDuplicatePatientsByAttributes(attributes);
+
+		// then
+		assertThat(duplicatePatients.size(), equalTo(0));
+	}
+
+	@Test
+	public void getDuplicatePatientsByAttributes_shouldReturnVoidedPatientsWithDuplicatedAllFieldsWithIncludeVoided() {
+		// given
+		Person person1 = new Person();
+		person1.addName(new PersonName("Ioan", "Theo", "Fletcher"));
+		person1.setGender("M");
+		person1.setBirthdate(Date.valueOf("2021-06-26"));
+		person1 = hibernatePersonDAO.savePerson(person1);
+		Patient patient1 = new Patient(person1);
+		patient1.addIdentifier(new PatientIdentifier("101X", null, null));
+		patient1.setVoided(true);
+		hibernatePatientDao.savePatient(patient1);
+
+		Person person2 = new Person();
+		person2.addName(new PersonName("Ioan", "Theo", "Fletcher"));
+		person2.setGender("M");
+		person2.setBirthdate(Date.valueOf("2021-06-26"));
+		person2 = hibernatePersonDAO.savePerson(person2);
+		Patient patient2 = new Patient(person2);
+		patient2.addIdentifier(new PatientIdentifier("101X", null, null));
+		patient2.setVoided(true);
+		hibernatePatientDao.savePatient(patient2);
+
+		// update voided patients, doesn't update them without this line
+		hibernatePatientDao.getAllPatients(true);
+
+		// when
+		List<String> attributes = Arrays.asList("gender", "identifier", "birthdate", "givenName", "middleName", "familyName", "includeVoided");
+		Collections.shuffle(attributes); // random order of attributes to make sure this test isn't flaky
+		List<Patient> duplicatePatients = hibernatePatientDao.getDuplicatePatientsByAttributes(attributes);
+
+		// then
+		assertThat(duplicatePatients.size(), equalTo(2));
 	}
 }
