@@ -28,6 +28,14 @@ import java.util.List;
  *  @since 2.2
  */
 public interface DiagnosisService extends OpenmrsService {
+	
+	/**
+	 * Finds the diagnoses for a given encounter
+	 * 
+	 * @param encounter the encounter whose diagnoses we are to get
+	 * @return the list of diagnoses in the given encounter
+	 */
+	List<Diagnosis> getDiagnoses(Encounter encounter);
 
 	/**
 	 * Saves a diagnosis
