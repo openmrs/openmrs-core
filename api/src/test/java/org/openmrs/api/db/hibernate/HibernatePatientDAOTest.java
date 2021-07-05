@@ -29,6 +29,7 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
@@ -240,8 +241,8 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		patient2.setVoided(true);
 		hibernatePatientDao.savePatient(patient2);
 
-		// update voided patients, doesn't update them without this line
-		hibernatePatientDao.getAllPatients(true);
+		// flush DB session to persist voiding patients
+		Context.flushSession();
 
 		// when
 		List<String> attributes = Arrays.asList("gender", "identifier", "birthdate", "givenName", "middleName", "familyName");
@@ -275,8 +276,8 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		patient2.setVoided(true);
 		hibernatePatientDao.savePatient(patient2);
 
-		// update voided patients, doesn't update them without this line
-		hibernatePatientDao.getAllPatients(true);
+		// flush DB session to persist voiding patients
+		Context.flushSession();
 
 		// when
 		List<String> attributes = Arrays.asList("gender", "identifier", "birthdate", "givenName", "middleName", "familyName", "includeVoided");
