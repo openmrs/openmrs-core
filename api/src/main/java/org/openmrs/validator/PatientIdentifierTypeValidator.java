@@ -52,6 +52,12 @@ public class PatientIdentifierTypeValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
+
+		if (!(obj instanceof PatientIdentifierType)) {
+			throw new IllegalArgumentException("The parameter obj must be of type"
+				+ PatientIdentifierType.class);
+		}
+		
 		PatientIdentifierType identifierType = (PatientIdentifierType) obj;
 		if (identifierType == null) {
 			errors.rejectValue("identifierType", "error.general");

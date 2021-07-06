@@ -50,6 +50,11 @@ public class ConceptClassValidator implements Validator {
 	
 	@Override
 	public void validate(Object obj, Errors errors) {
+		
+		if (!(obj instanceof ConceptClass)) {
+			throw new IllegalArgumentException("The parameter obj must be of type" + ConceptClass.class);
+		}
+		
 		ConceptClass cc = (ConceptClass) obj;
 		if (cc == null) {
 			errors.rejectValue("conceptClass", "error.general");

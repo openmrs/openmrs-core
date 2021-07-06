@@ -72,6 +72,11 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
+
+		if (!(target instanceof Visit)) {
+			throw new IllegalArgumentException("The parameter target must be of type" + Visit.class);
+		}
+		
 		Visit visit = (Visit) target;
 		ValidationUtils.rejectIfEmpty(errors, "patient", "Visit.error.patient.required");
 		ValidationUtils.rejectIfEmpty(errors, "visitType", "Visit.error.visitType.required");

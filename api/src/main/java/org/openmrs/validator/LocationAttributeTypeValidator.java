@@ -45,6 +45,11 @@ public class LocationAttributeTypeValidator extends BaseAttributeTypeValidator<L
 	@Override
 	public void validate(Object obj, Errors errors) {
 		super.validate(obj, errors);
+
+		if (obj == null || !(obj instanceof LocationAttributeType)) {
+			throw new IllegalArgumentException("The parameter obj should not be null and must be of type" + LocationAttributeType.class);
+		}
+		
 		LocationAttributeType locationObj = (LocationAttributeType) obj;
 		LocationService ls = Context.getLocationService();
 		if (locationObj.getName() != null && !locationObj.getName().isEmpty()) {

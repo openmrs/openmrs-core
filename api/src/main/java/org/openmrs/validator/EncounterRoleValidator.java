@@ -37,6 +37,11 @@ public class EncounterRoleValidator extends RequireNameValidator {
 	@Override
 	public void validate(Object obj, Errors errors) {
 		super.validate(obj, errors);
+
+		if (obj == null || !(obj instanceof EncounterRole)) {
+			throw new IllegalArgumentException("The parameter obj should not be null and must be of type" + EncounterRole.class);
+		}
+		
 		EncounterRole encounterRole = (EncounterRole) obj;
 		if (!errors.hasErrors()) {
 			EncounterRole duplicate = Context.getEncounterService().getEncounterRoleByName(encounterRole.getName().trim());

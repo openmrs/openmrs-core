@@ -48,6 +48,11 @@ public class TestOrderValidator extends OrderValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
+
+		if (!(obj instanceof TestOrder)) {
+			throw new IllegalArgumentException("The parameter obj must be of type" + TestOrder.class);
+		}
+		
 		super.validate(obj, errors);
 		TestOrder order = (TestOrder) obj;
 		if (order == null) {

@@ -69,6 +69,9 @@ public class PatientValidator extends PersonValidator {
 		if (obj == null) {
 			return;
 		}
+		if (!(obj instanceof Patient)) {
+			throw new IllegalArgumentException("The parameter obj must be of type" + Patient.class);
+		}
 		
 		super.validate(obj, errors);
 		

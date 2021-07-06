@@ -46,6 +46,11 @@ public class PersonAttributeTypeValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
+
+		if (obj == null || !(obj instanceof PersonAttributeType)) {
+			throw new IllegalArgumentException("The parameter obj should not be null and must be of type" + PersonAttributeType.class);
+		}
+		
 		PersonAttributeType patObj = (PersonAttributeType) obj;
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "PersonAttributeType.error.nameEmpty");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "format", "PersonAttributeType.error.formatEmpty");

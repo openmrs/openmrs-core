@@ -49,6 +49,11 @@ public class StateConversionValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
+
+		if (!(obj instanceof ConceptStateConversion)) {
+			throw new IllegalArgumentException("The parameter obj must be of type" + ConceptStateConversion.class);
+		}
+		
 		ConceptStateConversion c = (ConceptStateConversion) obj;
 		if (c == null) {
 			log.debug("Rejecting because c is null");

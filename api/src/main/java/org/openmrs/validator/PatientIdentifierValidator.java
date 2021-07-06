@@ -54,6 +54,12 @@ public class PatientIdentifierValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
+
+		if (obj == null || !(obj instanceof PatientIdentifier)) {
+			throw new IllegalArgumentException("The parameter obj should not be null and must be of type"
+				+ PatientIdentifier.class);
+		}
+		
 		PatientIdentifier pi = (PatientIdentifier) obj;
 		try {
 			validateIdentifier(pi);

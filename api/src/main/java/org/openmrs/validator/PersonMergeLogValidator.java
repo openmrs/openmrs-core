@@ -47,6 +47,10 @@ public class PersonMergeLogValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
+
+		if (!(obj instanceof PersonMergeLog)) {
+			throw new IllegalArgumentException("The parameter obj must be of type" + PersonMergeLog.class);
+		}
 		
 		PersonMergeLog personMergeLog = (PersonMergeLog) obj;
 		

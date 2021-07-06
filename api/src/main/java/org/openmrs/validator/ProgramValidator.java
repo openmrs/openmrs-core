@@ -50,6 +50,11 @@ public class ProgramValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
+
+		if (!(obj instanceof Program)) {
+			throw new IllegalArgumentException("The parameter obj must be of type" + Program.class);
+		}
+		
 		Program p = (Program) obj;
 		if (p == null) {
 			errors.rejectValue("program", "error.general");

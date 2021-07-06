@@ -66,6 +66,10 @@ public class PersonValidator implements Validator {
 		if (target == null) {
 			return;
 		}
+
+		if (!(target instanceof Person)) {
+			throw new IllegalArgumentException("The parameter target must be of type" + Person.class);
+		}
 		
 		Person person = (Person) target;
 		

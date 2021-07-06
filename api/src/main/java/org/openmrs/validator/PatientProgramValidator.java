@@ -74,10 +74,12 @@ public class PatientProgramValidator implements Validator {
 	@Override
 	public void validate(Object obj, Errors errors) {
 		log.debug("{}.validate...", this.getClass().getName());
-		
-		if (obj == null) {
-			throw new IllegalArgumentException("The parameter obj should not be null");
+
+		if (obj == null || !(obj instanceof PatientProgram)) {
+			throw new IllegalArgumentException("The parameter obj should not be null and must be of type"
+				+ PatientProgram.class);
 		}
+		
 		MessageSourceService mss = Context.getMessageSourceService();
 		PatientProgram patientProgram = (PatientProgram) obj;
 		ValidationUtils.rejectIfEmpty(errors, "patient", "error.required",

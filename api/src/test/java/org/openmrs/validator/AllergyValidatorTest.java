@@ -63,7 +63,7 @@ public class AllergyValidatorTest extends BaseContextMockTest {
 	public void validate_shouldFailForANullValue() { 
 		
 		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> validator.validate(null, errors));
-		assertThat(exception.getMessage(), is("Allergy should not be null"));
+		assertThat(exception.getMessage(), is("The parameter target should not be null and must be of typeclass org.openmrs.Allergy"));
 	}
 	
 	@Test

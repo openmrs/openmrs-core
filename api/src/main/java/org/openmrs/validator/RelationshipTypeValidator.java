@@ -47,6 +47,11 @@ public class RelationshipTypeValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
+
+		if (!(obj instanceof RelationshipType)) {
+			throw new IllegalArgumentException("The parameter obj must be of type" + RelationshipType.class);
+		}
+		
 		RelationshipType relationshipType = (RelationshipType) obj;
 		if (relationshipType == null) {
 			errors.rejectValue("relationshipType", "error.general");

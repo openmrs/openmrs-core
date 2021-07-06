@@ -48,6 +48,11 @@ public class RoleValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
+
+		if (!(obj instanceof Role)) {
+			throw new IllegalArgumentException("The parameter obj must be of type" + Role.class);
+		}
+		
 		Role role = (Role) obj;
 		if (role == null) {
 			errors.rejectValue("role", "error.general");

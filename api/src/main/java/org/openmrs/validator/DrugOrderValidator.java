@@ -80,6 +80,10 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 	@Override
 	public void validate(Object obj, Errors errors) {
 		super.validate(obj, errors);
+
+		if (!(obj instanceof DrugOrder)) {
+			throw new IllegalArgumentException("The parameter obj must be of type" + DrugOrder.class);
+		}
 		
 		DrugOrder order = (DrugOrder) obj;
 		if (order == null) {

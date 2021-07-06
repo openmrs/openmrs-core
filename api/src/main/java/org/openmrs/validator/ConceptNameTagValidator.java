@@ -50,6 +50,11 @@ public class ConceptNameTagValidator implements Validator {
 	
 	@Override
 	public void validate(Object obj, Errors errors) {
+
+		if (!(obj instanceof ConceptNameTag)) {
+			throw new IllegalArgumentException("The parameter obj must be of type" + ConceptNameTag.class);
+		}
+		
 		ConceptNameTag cnt = (ConceptNameTag) obj;
 		if (cnt == null) {
 			throw new IllegalArgumentException("The parameter obj should not be null");
