@@ -58,6 +58,7 @@ import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientIdentifierType.UniquenessBehavior;
+import org.openmrs.PatientMergeAction;
 import org.openmrs.PatientProgram;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
@@ -3280,5 +3281,65 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertEquals(1, encounterService.getEncounter(57).getObsAtTopLevel(false).size());
 		assertEquals(2, encounterService.getEncounter(57).getObsAtTopLevel(true).size());
 	}
+	@Test
+	public void addPatientMergeAction_shouldAddMergeActions() throws Exception {
+
+		PatientServiceImpl patientserviceimpl = new PatientServiceImpl();
+
+		PatientMergeAction action1 = new DummyPatientMergeAction();
+		PatientMergeAction action2 = new DummyPatientMergeAction();
+		
+
+
+		patientserviceimpl.addPatientMergeAction(action1);
+		patientserviceimpl.addPatientMergeAction(action2);
+
+		assertThat(patientserviceimpl.getPatientMergeActions().size(), is(2));
+		assertTrue(patientserviceimpl.getPatientMergeActions().contains(action1));
+		assertTrue(patientserviceimpl.getPatientMergeActions().contains(action2));
+	}
+
+	@Test
+	public void removePatientMergeAction_shouldRemoveMergeActions() throws Exception {
+
+		PatientServiceImpl patientserviceimpl = new PatientServiceImpl();
+
+		PatientMergeAction action1 = new DummyPatientMergeAction();
+		PatientMergeAction action2 = new DummyPatientMergeAction();
+
+		patientserviceimpl.addPatientMergeAction(action1);
+		patientserviceimpl.addPatientMergeAction(action2);
+
+		patientserviceimpl.removePatientMergeAction(action1);
+
+		assertThat(patientserviceimpl.getPatientMergeActions().size(), is(1));
+		assertFalse(patientserviceimpl.getPatientMergeActions().contains(action1));
+		assertTrue(patientserviceimpl.getPatientMergeActions().contains(action2));
+
+	}
+
+	@Test
+	public void test_shouldremoveMergeActionSNotFailIfActionsNotInitialized() throws Exception {
+
+		PatientServiceImpl patientserviceimpl = new PatientServiceImpl();
+
+		PatientMergeAction action = new DummyPatientMergeAction();
+		patientserviceimpl.removePatientMergeAction(action);
+
+		assertThat(patientserviceimpl.getPatientMergeActions().size(), is(0));
+	}
+
+	private class DummyPatientMergeAction implements PatientMergeAction {
+
+		@Override
+		public void beforeMergingPatients(Patient preferred, Patient notPreferred) {
+		}
+
+		@Override
+		public void afterMergingPatients(Patient preferred, Patient notPreferred) {
+		}
+
+	}
+
 
 }

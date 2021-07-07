@@ -51,6 +51,7 @@ import org.openmrs.api.MissingRequiredIdentifierException;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.PatientIdentifierTypeLockedException;
+import org.openmrs.PatientMergeAction;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
@@ -89,6 +90,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	private static final Logger log = LoggerFactory.getLogger(PatientServiceImpl.class);
 	
 	private PatientDAO dao;
+
+	private  List<PatientMergeAction> patientMergeActions;
 	
 	/**
 	 * PatientIdentifierValidators registered through spring's applicationContext-service.xml
@@ -571,6 +574,13 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			log.debug("Merge operation cancelled: Cannot merge user" + preferred.getPatientId() + " to self");
 			throw new APIException("Patient.merge.cancelled", new Object[] { preferred.getPatientId() });
 		}
+		
+		 if (patientMergeActions != null) {
+	            for (PatientMergeAction patientMergeAction : patientMergeActions) {
+	                patientMergeAction.beforeMergingPatients(preferred, notPreferred);
+	            }
+	        }
+		
 		requireNoActiveOrderOfSameType(preferred,notPreferred);
 		PersonMergeLogData mergedData = new PersonMergeLogData();
 		mergeVisits(preferred, notPreferred, mergedData);
@@ -608,6 +618,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		personMergeLog.setLoser(notPreferred);
 		personMergeLog.setPersonMergeLogData(mergedData);
 		Context.getPersonService().savePersonMergeLog(personMergeLog);
+		
+		if (patientMergeActions != null) {
+            for (PatientMergeAction patientMergeAction : patientMergeActions) {
+                patientMergeAction.afterMergingPatients(preferred, notPreferred);
+            }
+        }
 	}
 	
 	private void requireNoActiveOrderOfSameType(Patient patient1, Patient patient2) {
@@ -1631,4 +1647,27 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			throw new PatientIdentifierTypeLockedException();
 		}
 	}
+
+	@Override
+	public void addPatientMergeAction(PatientMergeAction patientMergeAction) {
+		 if (this.patientMergeActions == null) {
+	            this.patientMergeActions = new ArrayList<PatientMergeAction>();
+	        }
+	        this.patientMergeActions.add(patientMergeAction);
+		
+	}
+
+	@Override
+	public void removePatientMergeAction(PatientMergeAction patientMergeAction) {
+		 if (this.patientMergeActions == null) {
+	            this.patientMergeActions = new ArrayList<PatientMergeAction>();
+	        }
+	        this.patientMergeActions.remove(patientMergeAction);
+		
+	}
+	// for testing
+    public List<PatientMergeAction> getPatientMergeActions() {
+        return patientMergeActions;
+    }
+
 }
