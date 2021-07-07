@@ -81,6 +81,8 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 
 	private Location parentLocation;
 	
+	private Boolean supportsVisits;
+	
 	private Set<Location> childLocations;
 	
 	@Independent
@@ -773,5 +775,21 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	@Override
 	public void setAddress15(String address15) {
 		this.address15 = address15;
+	}
+	
+	/**
+	 * @return supportsVisits
+	 * @since 2.5.0
+	 */
+	public Boolean getSupportsVisits() {
+		return supportsVisits;
+	}
+	
+	/**
+	 * @param supportsVisits 
+	 * @since 2.5.0
+	 */
+	public void setSupportsVisits(Boolean supportsVisits) {
+		this.supportsVisits = supportsVisits;
 	}
 }

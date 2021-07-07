@@ -9,13 +9,15 @@
  */
 package org.openmrs.util;
 
+import static java.util.Arrays.asList;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
@@ -32,8 +34,6 @@ import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.scheduler.SchedulerConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static java.util.Arrays.asList;
 
 /**
  * Constants used in OpenMRS. Contents built from build properties (version, version_short, and
@@ -1294,6 +1294,12 @@ public final class OpenmrsConstants {
 	
 	/** Value for the long person name format */
 	public static final String PERSON_NAME_FORMAT_LONG = "long";
+	
+	/** Value for facility visit type */
+	public static final String GP_AT_FACILITY_VISIT_TYPE = "Faculty VisitType";
+	
+	/** Value for the location supports visists tag */
+	public static final String LOCATION_TAG_SUPPORTS_VISITS = "Visit Location";
 	
 	private OpenmrsConstants() {
 	}

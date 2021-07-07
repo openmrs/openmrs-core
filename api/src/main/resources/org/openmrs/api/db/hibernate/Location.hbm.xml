@@ -92,6 +92,9 @@
 			
 		<property name="dateChanged" type="java.util.Date" 
 		    column="date_changed" length="19" />
+		    
+		<property name="supportsVisits" type="java.lang.Boolean" 
+		column="supports_visits" length="1"/>
 
 		<!-- Associations -->
 		
