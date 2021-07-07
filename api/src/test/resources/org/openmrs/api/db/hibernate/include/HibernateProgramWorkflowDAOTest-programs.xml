@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+	<!---     Non-retired program type  -->
+	<program program_id="21" concept_id="1" creator="1" date_created="2013-11-06 00:00:00.0" changed_by="1" name="test-program-1" retired="false" uuid="71ACD71F-989B-4B4A-B00E-0503B756199F" />
+	<program_attribute_type program_attribute_type_id="1" name="some-program" creator="1" date_created="2013-11-06 00:00:00.0" min_occurs="1" retired="false" uuid="31ACD71F-989B-4B4A-B00E-0503B756199F" />
+	<program_attribute_type program_attribute_type_id="2" name="some-program-2" creator="1" date_created="2013-11-06 00:00:00.0" min_occurs="1" retired="false" uuid="01ACD71F-989B-4B4A-B00E-0503B756199F" datatype="ConceptDataType" />
+
+	<!---     Retired program type  -->
+	<program program_id="22" concept_id="1" creator="1" date_created="2013-11-06 00:00:00.0" changed_by="1" name="test-program-2" retired="true" uuid="71ACD71F-989B-4B4A-B00E-0503B756190F" />
+
+	<!---  Program with same name but retired  -->
+	<program program_id="23" concept_id="1" creator="1" date_created="2013-11-06 00:00:00.0" changed_by="1" name="test-program-1" retired="true" uuid="71ACD71F-989B-4B4A-B00E-0503B756191F" />
+	
+	<patient_program patient_program_id="1" patient_id="2001" program_id="21" creator="1" date_created="2013-11-06 00:00:00.0" voided="false" uuid="61ACD71F-989B-4B4A-B00E-0503B756199F" />
+	<patient_program patient_program_id="2" patient_id="2001" program_id="21" creator="1" date_created="2019-11-06 00:00:00.0" voided="false" uuid="61ACD71F-989B-4B4A-B00E-0503B757199F" date_enrolled="2019-11-06 00:00:00.0" date_completed="2020-03-06 00:00:00.0" />
+	<patient_program patient_program_id="3" patient_id="2001" program_id="21" creator="1" date_created="2019-11-06 00:00:00.0" voided="true" uuid="61ACD71F-989B-4B4A-B00E-0503B857199F" />
+
+	<patient_program_attribute patient_program_attribute_id="1" patient_program_id="1" attribute_type_id="1" value_reference="some-value" uuid="11ACD71F-989B-4B4A-B00E-0513B857199F" creator="1" date_created="2019-11-06 00:00:00.0" voided="false" />
+	<patient_program_attribute patient_program_attribute_id="2" patient_program_id="1" attribute_type_id="2" value_reference="1" uuid="12ACD71F-989B-4B4A-B00E-0513B857199F" creator="1" date_created="2019-11-06 00:00:00.0" voided="false" />
+	
+	<patient_state patient_state_id="1" patient_program_id="1" state="1" creator="1" date_created="2019-11-06 00:00:00.0" voided="false" uuid="61ACD71F-989B-4B4A-B00E-0513B857199F" />
+</dataset>

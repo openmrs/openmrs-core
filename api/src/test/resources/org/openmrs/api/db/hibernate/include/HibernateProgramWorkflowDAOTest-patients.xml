@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+	<person person_id="2001" gender="M" birthdate="1998-09-30 12:34:56.7" birthdate_estimated="0" dead="false" creator="1" date_created="2014-01-09 00:00:00.0" voided="false" uuid="7443D9DD-CA51-4BD9-9E68-7C43628B82DF"/>
+	<person_name person_name_id="2001" preferred="true" person_id="2001" prefix="Mr." given_name="Meriadoc" middle_name="" family_name="Brandybuck" family_name2="" creator="1" date_created="2014-01-09 00:00:00.0" voided="true" void_reason="" uuid="61ACD71F-989B-4B4A-B00E-0503B756099F" />
+	<patient patient_id="2001" creator="1" date_created="2014-01-09 00:00:00.0" changed_by="1" voided="false" void_reason=""/>
+</dataset>
