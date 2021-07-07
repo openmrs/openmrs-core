@@ -11,6 +11,7 @@ package org.openmrs.api.impl;
 
 import static org.apache.commons.lang3.StringUtils.contains;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,9 +25,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.hibernate.Hibernate;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
@@ -70,6 +73,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import ca.uhn.hl7v2.util.StringUtil;
+
 /**
  * Default Implementation of ConceptService service layer classes
  * 
@@ -79,6 +84,9 @@ import org.springframework.util.StringUtils;
 public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptService {
 	
 	private static final Logger log = LoggerFactory.getLogger(ConceptServiceImpl.class);
+	
+	private static final Pattern UUID_FORMAT = Pattern
+	        .compile("([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})");
 	
 	private ConceptDAO dao;
 	
@@ -1980,6 +1988,82 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		return dao.getConceptAttributeCount(conceptAttributeType) > 0;
 	}
 
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptByReference(String conceptRef
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public Concept getConceptByReference(String conceptRef) {
+		if (StringUtil.isBlank(conceptRef)) {
+			return null;
+		}
+		Concept cpt = null;
+		//check if input is a valid Uuid
+		if (UUID_FORMAT.matcher(conceptRef).matches()) {
+			cpt = dao.getConceptByUuid(conceptRef);
+			if (cpt != null) {
+				return cpt;
+			}
+		}
+		//handle mapping
+		int idx = conceptRef.indexOf(":");
+		if (idx >= 0 && idx < conceptRef.length() - 1) {
+			String conceptSource = conceptRef.substring(0, idx);
+			String conceptCode = conceptRef.substring(idx + 1);
+			conceptCode = conceptRef.substring(idx + 1);
+			conceptSource = conceptRef.substring(0, idx);
+			cpt = getConceptByMapping(conceptCode, conceptSource);
+			if (cpt != null) {
+				return cpt;
+			}
+		}
+		//handle id
+		int conceptId = NumberUtils.toInt(conceptRef, -1);
+		if (conceptId >= 0) {
+			cpt = dao.getConcept(conceptId);
+			if (cpt != null) {
+				return cpt;
+			}
+		} else {
+			//handle name
+			cpt = dao.getConceptByName(conceptRef);
+			if (cpt != null) {
+				return cpt;
+			}
+		}
+		if (conceptRef.contains(".")) {
+			try {
+				return getConceptByReference(evaluateStaticConstant(conceptRef));
+			}
+			catch (IllegalArgumentException e) {
+				log.error("Error while evaluating '{}' as a constant", conceptRef, e);
+			}
+		}
+		return cpt;
+	}
+	
+	/**
+	 * Evaluates the specified Java constant using reflection
+	 * 
+	 * @param fqn the fully qualified name of the constant
+	 * @return the constant value
+	 */
+	private static String evaluateStaticConstant(String fqn) {
+		int lastPeriod = fqn.lastIndexOf(".");
+		String clazzName = fqn.substring(0, lastPeriod);
+		String constantName = fqn.substring(lastPeriod + 1);
+		
+		try {
+			Class<?> clazz = Context.loadClass(clazzName);
+			Field constantField = clazz.getField(constantName);
+			Object val = constantField.get(null);
+			return val != null ? String.valueOf(val) : null;
+		}
+		catch (Exception ex) {
+			throw new IllegalArgumentException("Unable to evaluate " + fqn, ex);
+		}
+	}
+	
 	private List<ConceptClass> getConceptClassesOfOrderTypes() {
 		List<ConceptClass> mappedClasses = new ArrayList<>();
 		AdministrationService administrationService = Context.getAdministrationService();

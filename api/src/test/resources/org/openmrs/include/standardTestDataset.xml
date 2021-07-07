@@ -82,6 +82,8 @@
   <concept concept_id="5089" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="" changed_by="1" date_changed="2005-02-25 11:43:43.0" uuid="c607c80f-1ea9-4da3-bb88-6276ce8868dd"/>
   <concept concept_id="5497" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="0.1" changed_by="1" date_changed="2006-06-09 14:57:33.0" uuid="a09ab2c5-878e-4905-b25d-5784167d0216"/>
   <concept concept_id="60" retired="false" datatype_id="4" class_id="3" is_set="false" creator="1" date_created="2007-01-16 15:51:57.0" version="" uuid="35d3346a-6769-4d52-823f-b4b234bac3e3"/>
+  <concept concept_id="64" retired="false" datatype_id="4" class_id="3" is_set="false" creator="1" date_created="2007-01-16 15:51:57.0" version="" uuid="1000AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"/>
+  <concept concept_id="67" retired="false" datatype_id="4" class_id="3" is_set="false" creator="1" date_created="2007-01-16 15:51:57.0" version="" uuid="1000"/> 
   <concept_answer concept_answer_id="1" concept_id="21" answer_concept="7" creator="1" date_created="2008-08-18 12:34:26.0" uuid="b1230431-2fe5-49fc-b535-ae42bc849747"/>
   <concept_answer concept_answer_id="2" concept_id="21" answer_concept="8" creator="1" date_created="2008-08-18 12:34:26.0" uuid="f67e537b-d9f9-45c4-846b-79ed1ba88778"/>
   <concept_answer concept_answer_id="3" concept_id="21" answer_concept="22" creator="1" date_created="2008-08-18 12:34:58.0" uuid="11e15f3b-3237-40e9-9c24-cb7916a4868b"/>
