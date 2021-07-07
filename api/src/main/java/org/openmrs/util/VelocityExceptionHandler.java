@@ -10,6 +10,8 @@
 package org.openmrs.util;
 
 import org.apache.velocity.app.event.MethodExceptionEventHandler;
+import org.apache.velocity.context.Context;
+import org.apache.velocity.util.introspection.Info;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,18 +31,16 @@ public class VelocityExceptionHandler implements MethodExceptionEventHandler {
 	 * @see org.apache.velocity.app.event.MethodExceptionEventHandler#methodException(java.lang.Class,
 	 *      java.lang.String, java.lang.Exception)
 	 */
+	
 	@Override
-	public Object methodException(Class claz, String method, Exception e) throws Exception {
-		
+	public Object methodException(Context context, Class claz, String method, Exception e, Info info) {
 		log.debug("Claz: " + claz.getName() + " method: " + method, e);
 		
 		// if formatting a date (and probably getting an "IllegalArgumentException")
 		if ("format".equals(method)) {
 			return null;
 		}
-		
-		// keep the default behavior
-		throw e;
+		return info;
 	}
 	
 }
