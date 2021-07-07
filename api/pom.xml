@@ -288,6 +288,12 @@
 		   <groupId>org.apache.lucene</groupId>
 		   <artifactId>lucene-analyzers-phonetic</artifactId>
 	   </dependency>
+       <dependency>
+           <groupId>org.junit.jupiter</groupId>
+           <artifactId>junit-jupiter</artifactId>
+           <version>RELEASE</version>
+           <scope>test</scope>
+       </dependency>
    </dependencies>
    <build>
      <resources>
