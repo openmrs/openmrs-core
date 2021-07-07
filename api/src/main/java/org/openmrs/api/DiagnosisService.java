@@ -28,7 +28,6 @@ import java.util.List;
  *  @since 2.2
  */
 public interface DiagnosisService extends OpenmrsService {
-
 	/**
 	 * Saves a diagnosis
 	 *

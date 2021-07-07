@@ -42,6 +42,22 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	@Autowired
 	private ObsValidator obsValidator;
 	
+	/**
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldFailIfPersonAndEncounterObjectsDoNotMatch() {
+		
+		executeDataSet("org/openmrs/validator/include/ObsValidatorTest.xml");
+		Obs obs = Context.getObsService().getObs(7);
+        
+		Errors errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+		
+        assertFalse(errors.hasErrors());
+		
+	}
+	
 	
 	/**
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
