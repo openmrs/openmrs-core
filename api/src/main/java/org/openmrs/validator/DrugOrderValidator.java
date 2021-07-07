@@ -87,6 +87,16 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 		} else {
 			// for the following elements Order.hbm.xml says: not-null="true"
 			ValidationUtils.rejectIfEmpty(errors, "asNeeded", "error.null");
+			if (order.getDrug() == null) {
+			    if (order.getDrugNonCoded() != null) {
+			        order.setConcept(Context.getOrderService().getNonCodedDrugConcept());
+			    } else {
+			        ValidationUtils.rejectIfEmpty(errors, "concept", "error.null");
+			    }
+			    
+			} else if (order.getDrug().getConcept() == null) {
+			    ValidationUtils.rejectIfEmpty(errors, "concept", "error.null");
+			}
 			if (order.getAction() != Order.Action.DISCONTINUE) {
 				ValidationUtils.rejectIfEmpty(errors, "dosingType", "error.null");
 			}
