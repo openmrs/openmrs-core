@@ -15,32 +15,48 @@ public class InvalidIdentifierFormatException extends PatientIdentifierException
 	
 	private static final long serialVersionUID = 1L;
 	
-	private String format;
+	private final String format;
 	
 	public InvalidIdentifierFormatException() {
+		format = null;
+	}
+
+	public InvalidIdentifierFormatException(String message, String format) {
+		super(message);
+		this.format = format;
 	}
 	
 	public InvalidIdentifierFormatException(String message) {
 		super(message);
+		format = null;
 	}
 	
 	public InvalidIdentifierFormatException(String message, PatientIdentifier identifier) {
 		super(message, identifier);
+		format = null;
 	}
 	
 	public InvalidIdentifierFormatException(String message, Throwable cause) {
 		super(message, cause);
+		format = null;
 	}
 	
 	public InvalidIdentifierFormatException(Throwable cause) {
 		super(cause);
+		format = null;
 	}
 	
 	public String getFormat() {
 		return format;
 	}
-	
+	/**
+	 * @deprecated
+	 * This method is no longer acceptable form version 2.5.0 because format is now final.
+	 * <p> Use {@link #InvalidIdentifierFormatException(String, String)} instead.
+	 *
+	 * @param format the format to set
+	 */
+	@Deprecated
 	public void setFormat(String format) {
-		this.format = format;
 	}
 }

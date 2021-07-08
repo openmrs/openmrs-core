@@ -24,7 +24,7 @@ public class MandatoryModuleException extends ModuleMustStartException {
 	
 	public static final long serialVersionUID = 236472655L;
 	
-	private String moduleId;
+	private final String moduleId;
 	
 	/**
 	 * This constructor is used when a user tries to stop a mandatory module.
