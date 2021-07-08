@@ -48,7 +48,7 @@ public class UpgradeUtil {
 		try (FileInputStream fis = new FileInputStream(filePath)) {
 
 			props.load(fis);
-			for (Map.Entry prop : props.entrySet()) {
+			for (Map.Entry<Object, Object> prop : props.entrySet()) {
 				if (prop.getKey().equals(units)) {
 					conceptId = prop.getValue().toString();
 					return Integer.valueOf(conceptId);
