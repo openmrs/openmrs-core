@@ -50,8 +50,8 @@ public class InsertWithUuidDataChangeDatabaseIT extends H2DatabaseIT {
 		}
 	}
 	
-	protected Map getNamesWithUuids() throws SQLException {
-		Map<String, String> result = new HashMap();
+	protected Map<String, String> getNamesWithUuids() throws SQLException {
+		Map<String, String> result = new HashMap<>();
 		Connection connection = getConnection();
 		Statement statement = null;
 		try {
