@@ -23,6 +23,7 @@ import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.openmrs.api.db.hibernate.search.LuceneAnalyzers;
+import org.openmrs.api.impl.PersonPatientSharable;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * @see org.openmrs.PatientIdentifierType
  */
 @Indexed
-public class PatientIdentifier extends BaseChangeableOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PatientIdentifier> {
+public class PatientIdentifier extends BaseChangeableOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PatientIdentifier>, PersonPatientSharable<PatientIdentifier> {
 	
 	public static final long serialVersionUID = 1123121L;
 	
