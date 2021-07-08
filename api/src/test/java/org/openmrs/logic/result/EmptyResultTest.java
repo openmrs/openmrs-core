@@ -30,4 +30,11 @@ public class EmptyResultTest {
 	public void isNull_shouldReturnTrue() {
 		assertTrue(new EmptyResult().isNull());
 	}
+	@Test
+	public void isNotEmpty_shouldReturnFalse() {Assert.assertFalse(new EmptyResult().exists());
+	}
+
+	@Test
+	public void emptyResultEqualsAnotherEmptyResult_shouldEqual() {Assert.assertEquals(new EmptyResult().isEmpty(), new EmptyResult().isEmpty());
+	}
 }
