@@ -530,7 +530,11 @@ public final class Module {
 
 	private boolean isNoNeedToExpand() {
 		if (extensionNames == null || extensionNames.isEmpty()) {
-			return true;
+			for(Extension ext : extensions) {
+				if (!extensionNames.get(ext.getPointId()).equals(ext.getClass().getName())) {
+					return true;
+				}
+			}
 		}
 		
 		for (Extension ext : extensions) {
