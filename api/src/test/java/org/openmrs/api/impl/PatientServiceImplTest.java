@@ -46,6 +46,7 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.DuplicateIdentifierException;
 import org.openmrs.api.InsufficientIdentifiersException;
+import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.MissingRequiredIdentifierException;
 import org.openmrs.api.ObsService;
@@ -314,4 +315,10 @@ public class PatientServiceImplTest extends BaseContextMockTest {
 		patientIdentifier.setVoidReason("Testing whether voided identifiers are ignored");
 		return patientIdentifier;
 	}
+	
+	@Test(expected = PatientIdentifierException.class)
+	public void getIdentifierValidator_shouldThrowPatientIdentifierExceptionWhenClassNotFound() throws Exception {
+		patientService.getIdentifierValidator("Validator");
+	}
+	
 }
