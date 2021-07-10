@@ -102,6 +102,7 @@
              <artifactId>jetty-maven-plugin</artifactId>
              <version>9.4.35.v20201120</version>
              <configuration>
+               <webAppSourceDirectory>${project.build.directory}/openmrs</webAppSourceDirectory>
                <webApp>
                	  <descriptor>${project.build.directory}/jetty/WEB-INF/web.xml</descriptor>
                   <contextPath>/${webapp.name}</contextPath>
