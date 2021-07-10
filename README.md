@@ -79,6 +79,29 @@ mvn clean package
 
 This will generate the OpenMRS application in `webapp/target/openmrs.war` which you will have to deploy into an application server like for example [tomcat](https://tomcat.apache.org/) or [jetty](http://www.eclipse.org/jetty/).
 
+#### [Optional] Dependency Checker
+After you have taken care of the [Prerequisites](#prerequisites)
+
+Execute the following
+
+```bash
+cd openmrs-core
+mvn dependency-check:check
+```
+
+This will display the list of dependencies with known vulnerabilities
+
+#### [Optional] Satic code analysis
+After you have taken care of the [Prerequisites](#prerequisites)
+
+Execute the following
+
+```bash
+cd openmrs-core
+mvn spotbugs:check
+```
+This will display the list of security issues found in the code.
+
 ### Deploy
 
 For development purposes you can simply deploy the `openmrs.war` into the application server jetty via
