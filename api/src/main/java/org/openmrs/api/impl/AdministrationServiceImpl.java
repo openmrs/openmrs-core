@@ -44,6 +44,7 @@ import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleUtil;
+import org.openmrs.serialization.SimpleXStreamSerializer;
 import org.openmrs.util.HttpClient;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
@@ -373,7 +374,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		}
 		
 		try {
-			return Context.getSerializationService().getDefaultSerializer().deserialize(property, ImplementationId.class);
+			return Context.getSerializationService().getSerializer(SimpleXStreamSerializer.class).deserialize(property, ImplementationId.class);
 		}
 		catch (Exception e) {
 			log.debug("Error while getting implementation id", e);
@@ -428,7 +429,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			}
 			
 			// serialize and save the ImplementationId to the global properties table
-			String value = Context.getSerializationService().getDefaultSerializer().serialize(implementationId);
+			String value = Context.getSerializationService().getSerializer(SimpleXStreamSerializer.class).serialize(implementationId);
 			Context.getAdministrationService().saveGlobalProperty(
 			    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_IMPLEMENTATION_ID, value));
 		}
