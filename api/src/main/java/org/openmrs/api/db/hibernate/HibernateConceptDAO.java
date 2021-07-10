@@ -497,23 +497,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ConceptDAO#saveConceptDatatype(org.openmrs.ConceptDatatype)
-	 */
-	@Override
-	public ConceptDatatype saveConceptDatatype(ConceptDatatype cd) throws DAOException {
-		sessionFactory.getCurrentSession().saveOrUpdate(cd);
-		return cd;
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.ConceptDAO#purgeConceptDatatype(org.openmrs.ConceptDatatype)
-	 */
-	@Override
-	public void purgeConceptDatatype(ConceptDatatype cd) throws DAOException {
-		sessionFactory.getCurrentSession().delete(cd);
-	}
-	
-	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptNumeric(java.lang.Integer)
 	 */
 	@Override

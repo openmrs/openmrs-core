@@ -563,15 +563,20 @@
 		</property>
 		<!--  default properties must be set in the hibernate.default.properties -->
 	</bean>
-
+    <bean name="/SpringDataJpaConfiguration" class="org.openmrs.api.db.springdata.SpringDataJpaConfiguration"></bean>
+	
 	<bean id="dbSessionFactory" class="org.openmrs.api.db.hibernate.DbSessionFactory">
 		<constructor-arg name="sessionFactory" ref="sessionFactory"/>
 	</bean>
 
 	<!--  **************************  TRANSACTION MANAGER CONFIGURATION  *************************  -->
 
-	<bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
-		<property name="sessionFactory" ref="sessionFactory"/>
+<!--	<bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">-->
+<!--		<property name="sessionFactory" ref="sessionFactory"/>-->
+<!--	</bean>-->
+
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory"/>
 	</bean>
 
 
@@ -648,6 +653,7 @@
 
 	<!--  ************************ END VALIDATOR CONFIGURATION  ************************  -->
 
+	<context:annotation-config/>
 	<context:component-scan base-package="org.openmrs">
 		<context:include-filter type="annotation" expression="org.openmrs.annotation.Handler"/>
 		<context:include-filter type="custom" expression="org.openmrs.annotation.OpenmrsProfileIncludeFilter"/>
