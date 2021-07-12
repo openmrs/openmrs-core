@@ -117,7 +117,6 @@ import org.slf4j.MarkerFactory;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.NoSuchMessageException;
-import org.springframework.core.JdkVersion;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
 
@@ -1167,12 +1166,14 @@ public class OpenmrsUtil {
 	/**
 	 * Checks whether the current JVM version is at least Java 8.
 	 * 
-	 * @throws ApplicationContextException if the current JVM version is earlier than Java 8
+	 * @throws APIException if the current JVM version is earlier than Java 8
 	 */
 	public static void validateJavaVersion() {
 		// check whether the current JVM version is at least Java 8
-		if (JdkVersion.getJavaVersion().matches("1.(0|1|2|3|4|5|6|7).(.*)")) {
-			throw new APIException("OpenMRS requires Java 8 and above, but is running under " + JdkVersion.getJavaVersion());
+		if (System.getProperty("java.version").matches("1\\.[0-7]\\.(.*)")) {
+			throw new APIException(
+				"OpenMRS " + OpenmrsConstants.OPENMRS_VERSION_SHORT + " requires Java 8 and above, but is running under " + 
+					System.getProperty("java.version"));
 		}
 	}
 	
