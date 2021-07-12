@@ -19,23 +19,23 @@
 	<packaging>pom</packaging>
 	<name>OpenMRS</name>
 	<description>Master project for the modules of OpenMRS</description>
-	<url>http://openmrs.org</url>
+	<url>https://openmrs.org</url>
 
 	<issueManagement>
 		<system>JIRA</system>
-		<url>http://tickets.openmrs.org/</url>
+		<url>https://tickets.openmrs.org/</url>
 	</issueManagement>
 
 	<licenses>
 		<license>
 			<name>Mozilla Public License 2.0 with Healthcare Disclaimer</name>
-			<url>http://openmrs.org/license</url>
+			<url>https://openmrs.org/license</url>
 		</license>
 	</licenses>
 
 	<organization>
 		<name>OpenMRS Inc.</name>
-		<url>http://openmrs.org</url>
+		<url>https://openmrs.org</url>
 	</organization>
 
 	<scm>
@@ -1046,8 +1046,8 @@
 				<configuration>
 					<docfilessubdirs>true</docfilessubdirs>
 					<bottom>&lt;em&gt;&lt;small&gt; Generated ${TIMESTAMP} NOTE - these libraries are in active development and subject to change&lt;/small&gt;&lt;/em&gt;</bottom>
-					<header>&lt;a href="http://www.openmrs.org" target=_top&gt;&lt;img src="resources/openmrs-logo-small.gif" border=0/&gt;&lt;/a&gt;</header>
-					<footer>&lt;a href="http://www.openmrs.org" target=_top&gt;${project.name}&lt;/a&gt;</footer>
+					<header>&lt;a href="https://www.openmrs.org" target=_top&gt;&lt;img src="resources/openmrs-logo-small.gif" border=0/&gt;&lt;/a&gt;</header>
+					<footer>&lt;a href="https://www.openmrs.org" target=_top&gt;${project.name}&lt;/a&gt;</footer>
 				</configuration>
 			</plugin>
 			<plugin>
