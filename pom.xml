@@ -203,6 +203,27 @@
 				<version>${springVersion}</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>				
+			<dependency>
+			    <groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-core</artifactId>
+		    	<version>${spring-security.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-config</artifactId>
+			    <version>${spring-security.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+			    <artifactId>spring-security-web</artifactId>
+		    	<version>${spring-security.version}</version>
+			</dependency>				
+			<dependency>
+			    <groupId>org.springframework.security</groupId>
+			    <artifactId>spring-security-test</artifactId>
+				<version>${spring-security.version}</version>
+			    <scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.javassist</groupId>
@@ -1107,6 +1128,7 @@
 			 version of Hibernate Search must be compatible with the version of Hibernate and Hibernate must
 			 be compatible with our version of Spring. -->
 		<springVersion>5.2.14.RELEASE</springVersion>
+		<spring-security.version>5.3.10.RELEASE</spring-security.version>
 		<hibernateVersion>5.4.32.Final</hibernateVersion>
 		<hibernateSearchVersion>5.11.9.Final</hibernateSearchVersion>
 		<luceneVersion>5.5.5</luceneVersion>

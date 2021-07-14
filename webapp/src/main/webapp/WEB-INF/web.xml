@@ -121,7 +121,14 @@
 		<url-pattern>/*</url-pattern> 
 	</filter-mapping>
 	<!--  End third filter -->
-	
+	<filter>
+		<filter-name>OpenmrsCsrfTokenResponseHeaderBindingFilter</filter-name>
+    	<filter-class>org.openmrs.web.filter.OpenmrsCsrfTokenResponseHeaderBindingFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>OpenmrsCsrfTokenResponseHeaderBindingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
 	<!--  Should be the second filter so that all requests are first wrapped by a 
 	      hibernate filter (to help with lazy loading) -->
 	<filter>
