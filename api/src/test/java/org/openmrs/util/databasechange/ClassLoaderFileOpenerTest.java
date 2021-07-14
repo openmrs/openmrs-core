@@ -11,12 +11,11 @@ package org.openmrs.util.databasechange;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import liquibase.resource.InputStreamList;
 import org.junit.jupiter.api.Test;
@@ -27,15 +26,14 @@ public class ClassLoaderFileOpenerTest {
 	@Test
 	public void shouldGetSingleResourceAsStream() throws IOException {
 		ClassLoader classLoader = mock(ClassLoader.class);
-		
-		InputStream inputStream = mock(InputStream.class);
-		when(classLoader.getResourceAsStream(any())).thenReturn(inputStream);
-		
+
+		when(classLoader.getResource(any()))
+			.thenReturn(getClass().getClassLoader().getResource("TestingApplicationContext.xml"));
+
 		ClassLoaderFileOpener classLoaderFileOpener = new ClassLoaderFileOpener(classLoader);
 		InputStreamList inputStreamSet = classLoaderFileOpener.openStreams(null, "some path");
 		
 		assertEquals(1, inputStreamSet.size());
-		assertEquals(inputStream, inputStreamSet.iterator().next());
 	}
 	
 	@Test
