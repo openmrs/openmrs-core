@@ -17,8 +17,8 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Set;
 
+import liquibase.resource.InputStreamList;
 import org.junit.jupiter.api.Test;
 import org.openmrs.util.ClassLoaderFileOpener;
 
@@ -32,7 +32,7 @@ public class ClassLoaderFileOpenerTest {
 		when(classLoader.getResourceAsStream(any())).thenReturn(inputStream);
 		
 		ClassLoaderFileOpener classLoaderFileOpener = new ClassLoaderFileOpener(classLoader);
-		Set<InputStream> inputStreamSet = classLoaderFileOpener.getResourcesAsStream("some path");
+		InputStreamList inputStreamSet = classLoaderFileOpener.openStreams(null, "some path");
 		
 		assertEquals(1, inputStreamSet.size());
 		assertEquals(inputStream, inputStreamSet.iterator().next());
@@ -43,7 +43,7 @@ public class ClassLoaderFileOpenerTest {
 		ClassLoader classLoader = mock(ClassLoader.class);
 		
 		ClassLoaderFileOpener classLoaderFileOpener = new ClassLoaderFileOpener(classLoader);
-		Set<InputStream> inputStreamSet = classLoaderFileOpener.getResourcesAsStream("");
+		InputStreamList inputStreamSet = classLoaderFileOpener.openStreams(null, "");
 		
 		assertEquals(0, inputStreamSet.size());
 	}
