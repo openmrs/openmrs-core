@@ -10,22 +10,24 @@
 package org.openmrs.util;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashSet;
-import java.util.Set;
-import liquibase.resource.ResourceAccessor;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.SortedSet;
+
+import liquibase.resource.AbstractResourceAccessor;
+import liquibase.resource.InputStreamList;
 
 /**
  * Implementation of liquibase FileOpener interface so that the {@link OpenmrsClassLoader} will be
  * used to find files (or any other classloader that is passed into the constructor). This allows
  * liquibase xml files in modules to be found.
  */
-public class ClassLoaderFileOpener implements ResourceAccessor {
+public class ClassLoaderFileOpener extends AbstractResourceAccessor {
 	
 	/**
 	 * The classloader to read from
 	 */
-	private ClassLoader cl;
+	private final ClassLoader cl;
 	
 	/**
 	 * @param cl the {@link ClassLoader} to use for finding files.
@@ -35,24 +37,33 @@ public class ClassLoaderFileOpener implements ResourceAccessor {
 	}
 	
 	@Override
-	public Set<InputStream> getResourcesAsStream(String path) throws IOException {
-		Set<InputStream> result = new HashSet<>();
+	public InputStreamList openStreams(String context, String path) throws IOException {
+		InputStreamList result = new InputStreamList();
 		
 		if (path.isEmpty()) {
 			return result;
 		}
 		
-		result.add(cl.getResourceAsStream(path));
+		URL url = cl.getResource(path);
+		if (url != null) {
+			try {
+				result.add(url.toURI(), url.openStream());
+			}
+			catch (URISyntaxException e) {
+				throw new IOException(e);
+			}
+		}
+		
 		return result;
 	}
 	
 	@Override
-	public Set<String> list(String s, String s1, boolean b, boolean b1, boolean b2) throws IOException {
+	public SortedSet<String> list(String s, String s1, boolean b, boolean b1, boolean b2) throws IOException {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	@Override
-	public ClassLoader toClassLoader() {
-		return cl;
+	public SortedSet<String> describeLocations() {
+		return null;
 	}
 }

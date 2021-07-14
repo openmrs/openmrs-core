@@ -226,7 +226,7 @@ public class DatabaseUpgradeTestUtil {
 			        liqubaseConnection);
 			
 			DataTypeFactory dataTypeFactory = DataTypeFactory.getInstance();
-			dataTypeFactory.register(MySQLBooleanType.class);
+			dataTypeFactory.register(new MySQLBooleanType());
 			
 			liquibase.update("");
 			

@@ -1,0 +1,3 @@
+liquibase.ext.datatype.core.MySQLBooleanType
+liquibase.ext.datatype.core.PostgreSQLBlobType
+liquibase.ext.datatype.core.PostgreSQLUuidType
