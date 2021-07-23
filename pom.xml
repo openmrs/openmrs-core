@@ -1116,7 +1116,7 @@
 		<mockitoVersion>3.11.2</mockitoVersion>
 		<hamcrestVersion>2.2</hamcrestVersion>
 
-		<slf4jVersion>1.7.31</slf4jVersion>
+		<slf4jVersion>1.7.32</slf4jVersion>
 		<log4jVersion>2.14.1</log4jVersion>
 
 		<customArgLineForTesting />
