@@ -35,10 +35,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -260,7 +260,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patientIdentifier.setLocation(new Location(1));
 		patientIdentifier.setPreferred(true);
 		
-		Set<PatientIdentifier> patientIdentifiers = new LinkedHashSet<>();
+		Set<PatientIdentifier> patientIdentifiers = new TreeSet<>();
 		patientIdentifiers.add(patientIdentifier);
 		
 		patient.setIdentifiers(patientIdentifiers);
