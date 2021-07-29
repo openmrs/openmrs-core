@@ -951,7 +951,7 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 		df.applyPattern("#0.0#####");
 		//branch on hl7 abbreviations
 		if (getConcept() != null) {
-			//TODO move the hibernate to a better place, but without it, the concept types are getting messing, and a concept numeric is never from an instance of conceptNumeric.
+			//TODO move the hibernate to a better place, but without it, the concept numeric is never from an instance of conceptNumeric.
 			Concept concept = HibernateUtil.getRealObjectFromProxy(getConcept());
 			String abbrev = concept.getDatatype().getHl7Abbreviation();
 			if ("BIT".equals(abbrev)) {
