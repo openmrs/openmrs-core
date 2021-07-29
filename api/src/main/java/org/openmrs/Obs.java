@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openmrs.annotation.AllowDirectAccess;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.Format;
@@ -950,7 +951,9 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 		df.applyPattern("#0.0#####");
 		//branch on hl7 abbreviations
 		if (getConcept() != null) {
-			String abbrev = getConcept().getDatatype().getHl7Abbreviation();
+			//TODO move the hibernate to a better place, but without it, the concept types are getting messing, and a concept numeric is never from an instance of conceptNumeric.
+			Concept concept = HibernateUtil.getRealObjectFromProxy(getConcept());
+			String abbrev = concept.getDatatype().getHl7Abbreviation();
 			if ("BIT".equals(abbrev)) {
 				return getValueAsBoolean() == null ? "" : getValueAsBoolean().toString();
 			} else if ("CWE".equals(abbrev)) {
@@ -977,8 +980,8 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 				if (getValueNumeric() == null) {
 					return "";
 				} else {
-					if (getConcept() instanceof ConceptNumeric) {
-						ConceptNumeric cn = (ConceptNumeric) getConcept();
+					if (concept instanceof ConceptNumeric) {
+						ConceptNumeric cn = (ConceptNumeric) concept;
 						if (!cn.getAllowDecimal()) {
 							double d = getValueNumeric();
 							int i = (int) d;
