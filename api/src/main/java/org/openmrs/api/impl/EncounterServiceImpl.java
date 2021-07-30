@@ -9,14 +9,6 @@
  */
 package org.openmrs.api.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Cohort;
@@ -51,6 +43,14 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * Default implementation of the {@link EncounterService}
  * <p>
@@ -72,7 +72,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	public void setEncounterDAO(EncounterDAO dao) {
 		this.dao = dao;
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncountersByPatient(java.lang.String, boolean)
 	 */
