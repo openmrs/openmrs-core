@@ -11,6 +11,7 @@ package org.openmrs.api.db.springdata;
 
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
+import org.openmrs.api.EncounterService;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.springdata.repository.JpaEncounterDao;
 import org.openmrs.parameter.EncounterSearchCriteria;
@@ -28,6 +29,7 @@ import java.util.Optional;
  * @See org.openmrs.api.db.springdata.JpaEncounterDao
  */
 public class SpringDataEncounterDAO implements JpaEncounterDao {
+		
 	@Override
 	public List<Encounter> findAll() throws DAOException {
 		return null;
@@ -48,40 +50,10 @@ public class SpringDataEncounterDAO implements JpaEncounterDao {
 		return null;
 	}
 
-	@Override
-	public long count() {
-		return 0;
-	}
-
-	@Override
-	public void deleteById(Integer integer) {
-
-	}
-
-	/**
-	 * Purge an encounter from database.
-	 *
-	 * @param encounter encounter object to be purged
-	 */
-	@Override
-	public void delete(Encounter encounter) {
-
-	}
-
-	@Override
-	public void deleteAll(Iterable<? extends Encounter> iterable) {
-
-	}
-
-	@Override
-	public void deleteAll() {
-
-	}
-
 	/**
 	 * Saves an encounter
 	 *
-	 * @param encounter to be saved
+	 * @param s to be saved
 	 * @throws DAOException
 	 */
 	@Override
@@ -106,7 +78,6 @@ public class SpringDataEncounterDAO implements JpaEncounterDao {
 
 	@Override
 	public void flush() {
-
 	}
 
 	@Override
@@ -116,12 +87,10 @@ public class SpringDataEncounterDAO implements JpaEncounterDao {
 
 	@Override
 	public void deleteInBatch(Iterable<Encounter> iterable) {
-
 	}
 
 	@Override
 	public void deleteAllInBatch() {
-
 	}
 
 	@Override
@@ -160,20 +129,67 @@ public class SpringDataEncounterDAO implements JpaEncounterDao {
 	}
 
 	@Override
+	public long count() {
+		return 0;
+	}
+
+	@Override
+	public void deleteById(Integer integer) {
+	}
+
+	/**
+	 * Purge an encounter from database.
+	 *
+	 * @param encounter encounter object to be purged
+	 */
+	@Override
+	public void delete(Encounter encounter) {
+	}
+
+	@Override
+	public void deleteAll(Iterable<? extends Encounter> iterable) {
+	}
+
+	@Override
+	public void deleteAll() {
+	}
+
+	/**
+	 * Get encounter by internal identifier
+	 *
+	 * @param encounterId encounter id
+	 * @return encounter with given internal identifier
+	 * @throws DAOException
+	 */
+	@Override
 	public Encounter getEncounter(Integer encounterId) throws DAOException {
 		return null;
 	}
 
+	/**
+	 * @param patientId
+	 * @return all encounters for the given patient identifier
+	 * @throws DAOException
+	 */
 	@Override
 	public List<Encounter> getEncountersByPatientId(Integer patientId) throws DAOException {
 		return null;
 	}
 
+	/**
+	 * @param encounterSearchCriteria
+	 * @see EncounterService#getEncounters(EncounterSearchCriteria)
+	 */
 	@Override
 	public List<Encounter> getEncounters(EncounterSearchCriteria encounterSearchCriteria) {
 		return null;
 	}
 
+	/**
+	 * Save an Encounter Type
+	 *
+	 * @param encounterType
+	 */
 	@Override
 	public EncounterType saveEncounterType(EncounterType encounterType) {
 		return null;

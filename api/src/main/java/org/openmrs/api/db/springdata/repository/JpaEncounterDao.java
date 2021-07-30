@@ -14,16 +14,14 @@ import org.openmrs.EncounterType;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.parameter.EncounterSearchCriteria;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 /**
  * Encounter-related database functions
  */
-@Repository
-public interface JpaEncounterDao extends JpaRepository<Encounter, Integer>, CrudRepository<Encounter, Integer> {
+public interface JpaEncounterDao extends JpaRepository<Encounter, Integer> {
+	
 	/**
 	 * Get encounter by internal identifier
 	 *
@@ -51,6 +49,4 @@ public interface JpaEncounterDao extends JpaRepository<Encounter, Integer>, Crud
 	 * @param encounterType
 	 */
 	public EncounterType saveEncounterType(EncounterType encounterType);
-
-
 }
