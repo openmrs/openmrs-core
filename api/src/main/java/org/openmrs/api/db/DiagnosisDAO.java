@@ -15,6 +15,7 @@ import java.util.List;
 import org.openmrs.Diagnosis;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
+import org.openmrs.Visit;
 
 /**
  * This interface defines database methods for diagnosis objects.
@@ -56,22 +57,39 @@ public interface DiagnosisDAO {
 	 * @throws DAOException exception thrown if error occurs while deleting the diagnosis
 	 */
 	void deleteDiagnosis(Diagnosis diagnosis) throws DAOException;
-	
+
 	/**
 	 * Gets all diagnoses for a given encounter
 	 *
-	 * @param encounter the specific encounter to get the diagnoses for.
-	 * @return list of diagnoses for an encounter
+	 * @deprecated since 2.5.0, use {@link #getDiagnosesForEncounter}
+	 *
+	 * @param encounter the encounter for which to fetch diagnoses
+	 * @return the list of (primary, confirmed) diagnoses for the given encounter
 	 */
+	@Deprecated
 	List<Diagnosis> getDiagnoses(Encounter encounter);
+	
+	/**
+	 * Gets diagnoses for an Encounter. When specified, this method only returns
+	 * primary or confirmed diagnoses.
+	 *
+	 * @param encounter the encounter for which to fetch diagnoses
+	 * @param primaryOnly whether to return only primary diagnoses
+	 * @param confirmedOnly whether to return only confirmed diagnoses
+	 * @return the list of (primary, confirmed) diagnoses for the given encounter
+	 */
+	List<Diagnosis> getDiagnosesForEncounter(Encounter encounter, boolean primaryOnly, boolean confirmedOnly);
 
 	/**
-	 * Gets primary diagnoses for a given encounter
+	 * Gets diagnoses for a Visit. When specified, this method only returns
+	 * primary or confirmed diagnoses.
 	 *
-	 * @param encounter the specific encounter to get the primary diagnoses for.
-	 * @return list of primary diagnoses for an encounter
+	 * @param visit the visit for which to fetch diagnoses
+	 * @param primaryOnly whether to return only primary diagnoses
+	 * @param confirmedOnly whether to return only confirmed diagnoses
+	 * @return the list of (primary, confirmed) diagnoses for the given visit
 	 */
-	List<Diagnosis> getPrimaryDiagnoses(Encounter encounter);
+	List<Diagnosis> getDiagnosesForVisit(Visit visit, boolean primaryOnly, boolean confirmedOnly);
 
 	/**
 	 * Gets all active diagnoses related to the specified patient.

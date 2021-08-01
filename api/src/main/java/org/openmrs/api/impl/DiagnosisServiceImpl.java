@@ -13,13 +13,13 @@ import org.openmrs.CodedOrFreeText;
 import org.openmrs.Diagnosis;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
+import org.openmrs.Visit;
 import org.openmrs.api.APIException;
 import org.openmrs.api.DiagnosisService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DiagnosisDAO;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Iterator;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -79,18 +79,48 @@ public class DiagnosisServiceImpl extends BaseOpenmrsService implements Diagnosi
 	}
 
 	/**
+	 * Gets diagnoses for an Encounter. When specified, this method only returns
+	 * primary or confirmed diagnoses.
+	 *
+	 * @param encounter the encounter for which to fetch diagnoses
+	 * @param primaryOnly whether to return only primary diagnoses
+	 * @param confirmedOnly whether to return only confirmed diagnoses
+	 * @return the list of (primary, confirmed) diagnoses for the given encounter
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<Diagnosis> getDiagnosesForEncounter(Encounter encounter, boolean primaryOnly, boolean confirmedOnly) {
+		return diagnosisDAO.getDiagnosesForEncounter(encounter, primaryOnly, confirmedOnly);
+	}
+	
+	/**
+	 * Gets diagnoses for a Visit. When specified, this method only returns
+	 * primary or confirmed diagnoses.
+	 *
+	 * @param visit the visit for which to fetch diagnoses
+	 * @param primaryOnly whether to return only primary diagnoses
+	 * @param confirmedOnly whether to return only confirmed diagnoses
+	 * @return the list of (primary, confirmed) diagnoses for the given encounter
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<Diagnosis> getDiagnosesForVisit(Visit visit, boolean primaryOnly, boolean confirmedOnly) {
+		return diagnosisDAO.getDiagnosesForVisit(visit, primaryOnly, confirmedOnly);
+	}
+
+	/**
 	 * Finds the primary diagnoses for a given encounter
 	 * The diagnosis order is identified using the integer rank value. The diagnosis rank is thus:
 	 * 1 - PRIMARY (Primary diagnosis)
 	 * 2 - SECONDARY (Secondary diagnosis)
-	 *
+	 * 
 	 * @param encounter the encounter whose diagnoses we are to get
 	 * @return the list of diagnoses in the given encounter whose rank is 1 (Primary diagnosis)
 	 */
 	@Override
 	@Transactional(readOnly = true)
 	public List<Diagnosis> getPrimaryDiagnoses(Encounter encounter) {
-		return diagnosisDAO.getPrimaryDiagnoses(encounter);
+		return diagnosisDAO.getDiagnosesForEncounter(encounter, true, false);
 	}
 
 	/**

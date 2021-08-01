@@ -11,9 +11,14 @@
 
 -->
 <dataset>
-	<encounter encounter_id="6" encounter_type="1" patient_id="2" location_id="2" form_id="1" 
-			   encounter_datetime="2008-08-19 00:00:00.0" creator="1" date_created="2008-08-19 12:34:40.0" 
-			   voided="false" uuid="y403fafb-e5e4-42d0-9d11-4f52e89d123r"/>
+	<visit visit_id="7" patient_id="2" visit_type_id="1" date_started="2008-01-01 02:00:00.0" creator="1" date_created="2008-01-01 00:00:00.0" voided="0" uuid="a2c3868a-6b90-11e0-93c3-18a905e044dc" />
+	<visit visit_id="8" patient_id="2" visit_type_id="1" date_started="2008-01-01 02:00:00.0" creator="1" date_created="2008-01-01 00:00:00.0" voided="0" uuid="f2c3848a-6b90-11e0-93c3-18a905e044dc" />
+	<encounter encounter_id="5" encounter_type="1" patient_id="2" location_id="2" form_id="1"
+			   encounter_datetime="2008-08-19 00:00:00.0" creator="1" date_created="2008-08-19 12:34:40.0"
+			   voided="false" uuid="f403fafb-b5e4-42d0-9d11-4f52e89d123r" visit_id="7"/>
+	<encounter encounter_id="6" encounter_type="1" patient_id="2" location_id="2" form_id="1"
+			   encounter_datetime="2008-08-19 00:00:00.0" creator="1" date_created="2008-08-19 12:34:40.0"
+			   voided="false" uuid="y403fafb-e5e4-42d0-9d11-4f52e89d123r" visit_id="8"/>
 	<conditions condition_id="1" patient_id="2" clinical_status="INACTIVE" creator="1" date_created="2015-01-12 00:00:00" 
 			   voided="false" onset_date="2017-01-12 00:00:00" end_date="2017-01-15 00:00:00" verification_status="PROVISIONAL" 
 			   uuid="2cc6880e-2c46-15e4-9038-a6c5e4d22fb7"/>

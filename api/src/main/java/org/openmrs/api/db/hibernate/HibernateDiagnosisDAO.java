@@ -14,11 +14,15 @@ import java.util.List;
 
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.openmrs.ConditionVerificationStatus;
 import org.openmrs.Diagnosis;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
+import org.openmrs.Visit;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.DiagnosisDAO;
+
+import javax.persistence.TypedQuery;
 
 
 /**
@@ -26,10 +30,9 @@ import org.openmrs.api.db.DiagnosisDAO;
  *
  * @see DiagnosisDAO
  * @see org.openmrs.api.DiagnosisService
- *
  */
 public class HibernateDiagnosisDAO implements DiagnosisDAO {
-	
+
 	/**
 	 * Hibernate session factory
 	 */
@@ -71,15 +74,15 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 	@Override
 	public List<Diagnosis> getActiveDiagnoses(Patient patient, Date fromDate) {
 		String fromDateCriteria = "";
-		if(fromDate != null){
+		if (fromDate != null) {
 			fromDateCriteria = " and d.dateCreated >= :fromDate ";
 		}
 		Query query = sessionFactory.getCurrentSession().createQuery(
-			"from Diagnosis d where d.patient.patientId = :patientId and d.voided = false " 
-				+ fromDateCriteria  
+			"from Diagnosis d where d.patient.patientId = :patientId and d.voided = false "
+				+ fromDateCriteria
 				+ " order by d.dateCreated desc");
 		query.setInteger("patientId", patient.getId());
-		if(fromDate != null){
+		if (fromDate != null) {
 			query.setDate("fromDate", fromDate);
 		}
 		return query.list();
@@ -92,31 +95,78 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 	 * @return list of diagnoses for an encounter
 	 */
 	@Override
-	public List<Diagnosis> getDiagnoses(Encounter encounter){
+	public List<Diagnosis> getDiagnoses(Encounter encounter) {
 		Query query = sessionFactory.getCurrentSession().createQuery(
 			"from Diagnosis d where d.encounter.encounterId = :encounterId order by dateCreated desc");
 		query.setInteger("encounterId", encounter.getId());
-		return query.list();	
-	}
-
-	/**
-	 * Gets primary diagnoses for a given encounter
-	 *
-	 * @param encounter the specific encounter to get the primary diagnoses for.
-	 * @return list of primary diagnoses for an encounter
-	 */
-	@Override
-	public List<Diagnosis> getPrimaryDiagnoses(Encounter encounter) {
-		Query query = sessionFactory.getCurrentSession().createQuery(
-			"from Diagnosis d where d.encounter.encounterId = :encounterId and d.rank = :rankId order by dateCreated desc");
-		query.setInteger("encounterId", encounter.getId());
-		query.setInteger("rankId", PRIMARY_RANK);
 		return query.list();
 	}
 
 	/**
+	 * Gets diagnoses for an Encounter. When specified, this method only returns
+	 * primary or confirmed diagnoses.
+	 *
+	 * @param encounter     the encounter for which to fetch diagnoses
+	 * @param primaryOnly   whether to return only primary diagnoses
+	 * @param confirmedOnly whether to return only confirmed diagnoses
+	 * @return the list of (primary, confirmed) diagnoses for the given encounter
+	 */
+	@Override
+	public List<Diagnosis> getDiagnosesForEncounter(Encounter encounter, boolean primaryOnly, boolean confirmedOnly) {
+		String queryString = "from Diagnosis d where d.encounter.id = :encounterId";
+		if (primaryOnly) {
+			queryString += " and d.rank = :rankId";
+		}
+		if (confirmedOnly) {
+			queryString += " and d.certainty = :certainty";
+		}
+		queryString += " order by d.dateCreated desc";
+
+		TypedQuery<Diagnosis> query = sessionFactory.getCurrentSession().createQuery(queryString, Diagnosis.class).setParameter("encounterId", encounter.getId());
+		if (primaryOnly) {
+			query.setParameter("rankId", PRIMARY_RANK);
+		}
+		if (confirmedOnly) {
+			query.setParameter("certainty", ConditionVerificationStatus.CONFIRMED);
+		}
+
+		return query.getResultList();
+	}
+
+	/**
+	 * Gets diagnoses for an Encounter. When specified, this method only returns
+	 * primary or confirmed diagnoses.
+	 *
+	 * @param visit     the visit for which to fetch diagnoses
+	 * @param primaryOnly   whether to return only primary diagnoses
+	 * @param confirmedOnly whether to return only confirmed diagnoses
+	 * @return the list of (primary, confirmed) diagnoses for the given visit
+	 */
+	@Override
+	public List<Diagnosis> getDiagnosesForVisit(Visit visit, boolean primaryOnly, boolean confirmedOnly) {
+		String queryString = "from Diagnosis d where d.encounter.visit.id = :visitId";
+		if (primaryOnly) {
+			queryString += " and d.rank = :rankId";
+		}
+		if (confirmedOnly) {
+			queryString += " and d.certainty = :certainty";
+		}
+		queryString += " order by d.dateCreated desc";
+
+		TypedQuery<Diagnosis> query = sessionFactory.getCurrentSession().createQuery(queryString, Diagnosis.class).setParameter("visitId", visit.getId());
+		if (primaryOnly) {
+			query.setParameter("rankId", PRIMARY_RANK);
+		}
+		if (confirmedOnly) {
+			query.setParameter("certainty", ConditionVerificationStatus.CONFIRMED);
+		}
+
+		return query.getResultList();
+	}
+
+	/**
 	 * Gets a diagnosis from database using the diagnosis id
-	 * 
+	 *
 	 * @param diagnosisId the id of the diagnosis to look for
 	 * @return the diagnosis with the given diagnosis id
 	 */
@@ -124,7 +174,7 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 	public Diagnosis getDiagnosisById(Integer diagnosisId) {
 		return (Diagnosis) sessionFactory.getCurrentSession().get(Diagnosis.class, diagnosisId);
 	}
-	
+
 	/**
 	 * Gets the diagnosis attached to the specified UUID.
 	 *
@@ -132,17 +182,18 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 	 * @return the diagnosis associated with the UUID.
 	 */
 	@Override
-	public Diagnosis getDiagnosisByUuid(String uuid){
+	public Diagnosis getDiagnosisByUuid(String uuid) {
 		return (Diagnosis) sessionFactory.getCurrentSession().createQuery("from Diagnosis d where d.uuid = :uuid")
 			.setString("uuid", uuid).uniqueResult();
 	}
 
 	/**
-	 * Completely remove a diagnosis from the database. 
+	 * Completely remove a diagnosis from the database.
+	 *
 	 * @param diagnosis diagnosis to remove from the database
 	 */
 	@Override
-	public void deleteDiagnosis(Diagnosis diagnosis) throws DAOException{
+	public void deleteDiagnosis(Diagnosis diagnosis) throws DAOException {
 		sessionFactory.getCurrentSession().delete(diagnosis);
 	}
 }

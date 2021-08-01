@@ -26,11 +26,13 @@ import org.openmrs.Condition;
 import org.openmrs.ConditionVerificationStatus;
 import org.openmrs.Diagnosis;
 import org.openmrs.Encounter;
+import org.openmrs.Visit;
 import org.openmrs.Patient;
 import org.openmrs.api.ConditionService;
 import org.openmrs.api.DiagnosisService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
@@ -41,34 +43,38 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 
 	protected static final String DIAGNOSIS_XML = "org/openmrs/api/include/DiagnosisServiceImplTest-SetupDiagnosis.xml";
-	
+
 	private DiagnosisService diagnosisService;
+	private VisitService visitService;
 	private PatientService patientService;
 	private EncounterService encounterService;
 	private ConditionService conditionService;
 
 	@BeforeEach
-	public void setUp (){
-		if(diagnosisService == null){
+	public void setUp() {
+		if (diagnosisService == null) {
 			diagnosisService = Context.getDiagnosisService();
 		}
-		if(patientService == null){
+		if (patientService == null) {
 			patientService = Context.getPatientService();
 		}
-		if(conditionService == null){
+		if (conditionService == null) {
 			conditionService = Context.getConditionService();
 		}
-		if(encounterService == null){
+		if (encounterService == null) {
 			encounterService = Context.getEncounterService();
+		}
+		if (visitService == null) {
+			visitService = Context.getVisitService();
 		}
 		executeDataSet(DIAGNOSIS_XML);
 	}
 
 	/**
-	 * @see DiagnosisService#save(Diagnosis) 
+	 * @see DiagnosisService#save(Diagnosis)
 	 */
 	@Test
-	public void saveDiagnosis_shouldSaveNewDiagnosis(){
+	public void saveDiagnosis_shouldSaveNewDiagnosis() {
 		String uuid = "a303bbfb-w5w4-25d1-9f11-4f33f99d456r";
 		Condition condition = conditionService.getConditionByUuid("2cc6880e-2c46-15e4-9038-a6c5e4d22fb7");
 		Encounter encounter = encounterService.getEncounterByUuid("y403fafb-e5e4-42d0-9d11-4f52e89d123r");
@@ -81,9 +87,9 @@ public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 		diagnosis.setPatient(patient);
 		diagnosis.setRank(2);
 		diagnosisService.save(diagnosis);
-		
+
 		Diagnosis savedDiagnosis = diagnosisService.getDiagnosisByUuid(uuid);
-		
+
 		assertEquals(uuid, savedDiagnosis.getUuid());
 		assertEquals(condition, savedDiagnosis.getCondition());
 		assertEquals(encounter, savedDiagnosis.getEncounter());
@@ -97,7 +103,7 @@ public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getDiagnosisByUuid_shouldFindDiagnosisGivenValidUuid() {
-		String uuid="68802cce-6880-17e4-6880-a68804d22fb7";
+		String uuid = "68802cce-6880-17e4-6880-a68804d22fb7";
 		Diagnosis diagnosis = diagnosisService.getDiagnosisByUuid(uuid);
 		assertEquals(uuid, diagnosis.getUuid());
 	}
@@ -115,10 +121,10 @@ public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see DiagnosisService#getPrimaryDiagnoses(Encounter) 
+	 * @see DiagnosisService#getPrimaryDiagnoses(Encounter)
 	 */
 	@Test
-	public void getPrimaryDiagnoses_shouldGetPrimaryDiagnoses(){
+	public void getPrimaryDiagnoses_shouldGetPrimaryDiagnoses() {
 		Encounter encounter = encounterService.getEncounterByUuid("y403fafb-e5e4-42d0-9d11-4f52e89d123r");
 		List<Diagnosis> diagnoses = diagnosisService.getPrimaryDiagnoses(encounter);
 		assertEquals(1, diagnoses.size());
@@ -128,10 +134,10 @@ public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see DiagnosisService#getDiagnoses(Patient, Date) 
+	 * @see DiagnosisService#getDiagnoses(Patient, Date)
 	 */
 	@Test
-	public void getDiagnoses_shouldGetDiagnosesOfPatientWithDate(){
+	public void getDiagnoses_shouldGetDiagnosesOfPatientWithDate() {
 		Calendar calendar = new GregorianCalendar(2015, 12, 1, 0, 0, 0);
 		Patient patient = patientService.getPatient(2);
 		List<Diagnosis> diagnoses = diagnosisService.getDiagnoses(patient, calendar.getTime());
@@ -144,7 +150,7 @@ public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 	 * @see DiagnosisService#getDiagnoses(Patient, Date)
 	 */
 	@Test
-	public void getDiagnoses_shouldGetDiagnosesOfPatientWithDifferentDate(){
+	public void getDiagnoses_shouldGetDiagnosesOfPatientWithDifferentDate() {
 		Calendar calendar = new GregorianCalendar(2016, 12, 1, 0, 0, 0);
 		Patient patient = patientService.getPatient(2);
 		List<Diagnosis> diagnoses = diagnosisService.getDiagnoses(patient, calendar.getTime());
@@ -156,7 +162,7 @@ public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 	 * @see DiagnosisService#getDiagnoses(Patient, Date)
 	 */
 	@Test
-	public void getDiagnoses_shouldGetDiagnosesOfPatientWithoutDate(){
+	public void getDiagnoses_shouldGetDiagnosesOfPatientWithoutDate() {
 		Patient patient = patientService.getPatient(2);
 		List<Diagnosis> diagnoses = diagnosisService.getDiagnoses(patient, null);
 		assertEquals(3, diagnoses.size());
@@ -166,13 +172,13 @@ public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see DiagnosisService#getUniqueDiagnoses(Patient, Date) 
+	 * @see DiagnosisService#getUniqueDiagnoses(Patient, Date)
 	 */
 	@Test
-	public void getUniqueDiagnoses_shouldGetUniqueDiagnosesOfPatient(){
+	public void getUniqueDiagnoses_shouldGetUniqueDiagnosesOfPatient() {
 		Patient patient = patientService.getPatient(2);
 		List<Diagnosis> diagnoses = diagnosisService.getUniqueDiagnoses(patient, new Date(0));
-		
+
 		assertEquals("68802cce-6880-17e4-6880-a68804d22fb7", diagnoses.get(0).getUuid());
 		assertEquals(ConditionVerificationStatus.CONFIRMED, diagnoses.get(0).getCertainty());
 		assertEquals(new Integer(1), diagnoses.get(0).getDiagnosisId());
@@ -181,10 +187,95 @@ public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see DiagnosisService#getDiagnosesForEncounter(Encounter, boolean, boolean)
+	 */
+	@Test
+	public void getDiagnosesForEncounter_shouldGetDiagnosesForEncounter() {
+		Encounter encounter = encounterService.getEncounter(5);
+		List<Diagnosis> diagnoses = diagnosisService.getDiagnosesForEncounter(encounter, false, false);
+
+		assertEquals(2, diagnoses.size());
+		assertEquals("88042cce-8804-17e4-8804-a68804d22fb7", diagnoses.get(0).getUuid());
+		assertEquals(ConditionVerificationStatus.CONFIRMED, diagnoses.get(0).getCertainty());
+		assertEquals("77009cce-8804-17e4-8804-a68804d22fb7", diagnoses.get(1).getUuid());
+		assertEquals(ConditionVerificationStatus.PROVISIONAL, diagnoses.get(1).getCertainty());
+	}
+
+	/**
+	 * @see DiagnosisService#getDiagnosesForEncounter(Encounter, boolean, boolean)
+	 */
+	@Test
+	public void getDiagnosesForEncounter_shouldGetPrimaryDiagnosesForEncounter() {
+		Encounter encounter = encounterService.getEncounter(6);
+		List<Diagnosis> diagnoses = diagnosisService.getDiagnosesForEncounter(encounter, true, false);
+
+		assertEquals(1, diagnoses.size());
+		assertEquals("68802cce-6880-17e4-6880-a68804d22fb7", diagnoses.get(0).getUuid());
+		assertEquals(ConditionVerificationStatus.CONFIRMED, diagnoses.get(0).getCertainty());
+		assertEquals(1, diagnoses.get(0).getRank());
+	}
+
+	/**
+	 * @see DiagnosisService#getDiagnosesForEncounter(Encounter, boolean, boolean)
+	 */
+	@Test
+	public void getDiagnosesForEncounter_shouldGetConfirmedDiagnosesForEncounter() {
+		Encounter encounter = encounterService.getEncounter(5);
+		List<Diagnosis> diagnoses = diagnosisService.getDiagnosesForEncounter(encounter, false, true);
+
+		assertEquals(1, diagnoses.size());
+		assertEquals("88042cce-8804-17e4-8804-a68804d22fb7", diagnoses.get(0).getUuid());
+		assertEquals(ConditionVerificationStatus.CONFIRMED, diagnoses.get(0).getCertainty());
+	}
+
+	/**
+	 * @see DiagnosisService#getDiagnosesForVisit(Visit, boolean, boolean)
+	 */
+	@Test
+	public void getDiagnosesForVisit_shouldGetDiagnosesForEncounter() {
+		Visit visit = visitService.getVisit(7);
+		List<Diagnosis> diagnoses = diagnosisService.getDiagnosesForVisit(visit, false, false);
+
+		assertEquals(2, diagnoses.size());
+		assertEquals("88042cce-8804-17e4-8804-a68804d22fb7", diagnoses.get(0).getUuid());
+		assertEquals(ConditionVerificationStatus.CONFIRMED, diagnoses.get(0).getCertainty());
+		assertEquals("77009cce-8804-17e4-8804-a68804d22fb7", diagnoses.get(1).getUuid());
+		assertEquals(ConditionVerificationStatus.PROVISIONAL, diagnoses.get(1).getCertainty());
+
+	}
+
+	/**
+	 * @see DiagnosisService#getDiagnosesForVisit(Visit, boolean, boolean)
+	 */
+	@Test
+	public void getDiagnosesForVisit_shouldGetPrimaryDiagnosesForEncounter() {
+		Visit visit = visitService.getVisit(8);
+		List<Diagnosis> diagnoses = diagnosisService.getDiagnosesForVisit(visit, true, false);
+
+		assertEquals(1, diagnoses.size());
+		assertEquals("68802cce-6880-17e4-6880-a68804d22fb7", diagnoses.get(0).getUuid());
+		assertEquals(ConditionVerificationStatus.CONFIRMED, diagnoses.get(0).getCertainty());
+		assertEquals(1, diagnoses.get(0).getRank());
+	}
+
+	/**
+	 * @see DiagnosisService#getDiagnosesForVisit(Visit, boolean, boolean)
+	 */
+	@Test
+	public void getDiagnosesForVisit_shouldGetConfirmedDiagnosesForEncounter() {
+		Visit visit = visitService.getVisit(7);
+		List<Diagnosis> diagnoses = diagnosisService.getDiagnosesForVisit(visit, false, true);
+
+		assertEquals(1, diagnoses.size());
+		assertEquals("88042cce-8804-17e4-8804-a68804d22fb7", diagnoses.get(0).getUuid());
+		assertEquals(ConditionVerificationStatus.CONFIRMED, diagnoses.get(0).getCertainty());
+	}
+
+	/**
 	 * @see DiagnosisService#voidDiagnosis(Diagnosis, String)
 	 */
 	@Test
-	public void voidDiagnosis_shouldVoidDiagnosisSuccessfully(){
+	public void voidDiagnosis_shouldVoidDiagnosisSuccessfully() {
 		String voidReason = "void reason";
 		String uuid = "688804ce-6880-8804-6880-a68804d88047";
 		Diagnosis nonVoidedDiagnosis = diagnosisService.getDiagnosisByUuid(uuid);
@@ -204,17 +295,17 @@ public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 	 * @see DiagnosisService#unvoidDiagnosis(Diagnosis)
 	 */
 	@Test
-	public void unvoidDiagnosis_shouldUnvoidDiagnosisSuccessfully(){
+	public void unvoidDiagnosis_shouldUnvoidDiagnosisSuccessfully() {
 		String uuid = "77009cce-8804-17e4-8804-a68804d22fb7";
 		Diagnosis voidedDiagnosis = diagnosisService.getDiagnosisByUuid(uuid);
 		assertTrue(voidedDiagnosis.getVoided());
 		assertNotNull(voidedDiagnosis.getVoidReason());
 		assertNotNull(voidedDiagnosis.getDateVoided());
 		assertNotNull(voidedDiagnosis.getVoidedBy());
-		
+
 		diagnosisService.unvoidDiagnosis(voidedDiagnosis);
-		
-		Diagnosis unVoidedDiagnosis= diagnosisService.getDiagnosisByUuid(uuid);
+
+		Diagnosis unVoidedDiagnosis = diagnosisService.getDiagnosisByUuid(uuid);
 		assertEquals(ConditionVerificationStatus.PROVISIONAL, unVoidedDiagnosis.getCertainty());
 		assertEquals(uuid, unVoidedDiagnosis.getUuid());
 		assertFalse(unVoidedDiagnosis.getVoided());
@@ -224,7 +315,7 @@ public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see DiagnosisService#purgeDiagnosis(Diagnosis) 
+	 * @see DiagnosisService#purgeDiagnosis(Diagnosis)
 	 */
 	@Test
 	public void purgeDiagnosis_shouldPurgeDiagnosis() {
@@ -235,5 +326,5 @@ public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 		Diagnosis purgedDiagnosis = diagnosisService.getDiagnosisByUuid(uuid);
 		assertNull(purgedDiagnosis);
 	}
-	
+
 }
