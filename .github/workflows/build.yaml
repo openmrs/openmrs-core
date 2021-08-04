@@ -20,8 +20,7 @@ jobs:
     strategy:
       matrix:
         platform:
-          # Trusty
-          - ubuntu-16.04
+          - ubuntu-latest
         java-version:
           - 8
           - 11
