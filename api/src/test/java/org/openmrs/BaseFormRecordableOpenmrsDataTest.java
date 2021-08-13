@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import liquibase.util.StringUtils;
+import liquibase.util.StringUtil;
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.APIException;
 
@@ -114,9 +114,9 @@ public class BaseFormRecordableOpenmrsDataTest {
 	 */
 	@Test
 	public void setFormField_shouldRejectANamepaceAndPathCombinationLongerThanTheMaxLength() throws Exception {
-
-		final String ns = StringUtils.repeat("x", 255);
+		final String ns = StringUtil.repeat("x", 255);
 		final String path = "";
+		
 		Obs impl = new Obs();
 		assertThrows(APIException.class, () -> impl.setFormField(ns, path));
 	}

@@ -52,10 +52,8 @@ public class InsertWithUuidDataChangeDatabaseIT extends H2DatabaseIT {
 	
 	protected Map<String, String> getNamesWithUuids() throws SQLException {
 		Map<String, String> result = new HashMap<>();
-		Connection connection = getConnection();
-		Statement statement = null;
-		try {
-			statement = connection.createStatement();
+		try (Connection connection = getConnection();
+			Statement statement = connection.createStatement()) {
 			String query = "select * from name_with_uuid";
 			statement.execute(query);
 			
@@ -65,9 +63,6 @@ public class InsertWithUuidDataChangeDatabaseIT extends H2DatabaseIT {
 			}
 			
 			return result;
-		}
-		finally {
-			connection.close();
 		}
 	}
 }
