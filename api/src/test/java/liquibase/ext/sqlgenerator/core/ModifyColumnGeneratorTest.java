@@ -208,7 +208,7 @@ public class ModifyColumnGeneratorTest {
 		ValidationErrors errors = generator.validate(statement, new MySQLDatabase(), null);
 		
 		String actual = errors.toString();
-		String expected = "tableName is required; columns is empty";
+		String expected = "tableName is required; No columns defined";
 		
 		assertEquals(expected, actual);
 	}

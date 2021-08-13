@@ -19,7 +19,7 @@ import liquibase.change.DatabaseChange;
 import liquibase.change.DatabaseChangeProperty;
 import liquibase.database.Database;
 import liquibase.statement.SqlStatement;
-import liquibase.util.StringUtils;
+import liquibase.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +57,7 @@ public class ModifyColumnChange extends AbstractChange implements ChangeWithColu
 	}
 	
 	public void setSchemaName(String schemaName) {
-		this.schemaName = StringUtils.trimToNull(schemaName);
+		this.schemaName = StringUtil.trimToNull(schemaName);
 	}
 	
 	@DatabaseChangeProperty(mustEqualExisting = "column.relation", description = "Name of the table to modify the column in")
@@ -102,6 +102,6 @@ public class ModifyColumnChange extends AbstractChange implements ChangeWithColu
 			names.add(col.getName() + "(" + col.getType() + ")");
 		}
 		
-		return "Columns " + StringUtils.join(names, ",") + " of " + getTableName() + " modified";
+		return "Columns " + StringUtil.join(names, ",") + " of " + getTableName() + " modified";
 	}
 }
