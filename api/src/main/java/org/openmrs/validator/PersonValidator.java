@@ -48,7 +48,7 @@ public class PersonValidator implements Validator {
 	/**
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * <strong>Should</strong> fail validation if birthdate makes patient older that 140 years old
+	 * <strong>Should</strong> fail validation if birthdate makes patient older than 140 years old
 	 * <strong>Should</strong> fail validation if birthdate is a future date
 	 * <strong>Should</strong> fail validation if deathdate is a future date
 	 * <strong>Should</strong> fail validation if birthdate is after death date
