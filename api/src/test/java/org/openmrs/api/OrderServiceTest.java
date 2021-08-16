@@ -3916,9 +3916,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertEquals("Test 1", orderGroupAttribute.getValueReference());
 		assertEquals(1, orderGroupAttribute.getId());
 	}
-
 	
-
 	/**
 	 * @see OrderService#saveOrderGroup(org.openmrs.OrderGroup, OrderContext)
 	 */
