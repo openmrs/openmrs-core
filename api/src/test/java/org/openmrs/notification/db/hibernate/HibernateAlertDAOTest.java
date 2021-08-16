@@ -60,13 +60,13 @@ public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void getAllAlerts_shouldReturnOnlyNonExpiredAllerts() {
-		Assertions.assertEquals(hibernateAlertDAO.getAllAlerts(false).size(), 1);
+		Assertions.assertEquals(hibernateAlertDAO.getAllAlerts(false).size(), 0);
 	}
 	
 	@Test
 	public void getAlerts_shouldReturnAllAlertsWhenUserIsSpecified() {
 		User user = Context.getUserService().getUserByUuid("c1d8f5c2-e131-11de-babe-001e378eb77e");
-		Assertions.assertEquals(hibernateAlertDAO.getAlerts(user, true, false).size(), 1);
+		Assertions.assertEquals(hibernateAlertDAO.getAlerts(user, true, false).size(), 0);
 	}
 
 }
