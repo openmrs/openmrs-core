@@ -48,7 +48,7 @@ public class PersonValidator implements Validator {
 	/**
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * <strong>Should</strong> fail validation if birthdate makes patient older that 120 years old
+	 * <strong>Should</strong> fail validation if birthdate makes patient older than 140 years old
 	 * <strong>Should</strong> fail validation if birthdate is a future date
 	 * <strong>Should</strong> fail validation if deathdate is a future date
 	 * <strong>Should</strong> fail validation if birthdate is after death date
@@ -152,7 +152,7 @@ public class PersonValidator implements Validator {
 	}
 	
 	/**
-	 * Checks if the birth date specified is in the future or older than 120 years old..
+	 * Checks if the birth date specified is in the future or older than 140 years old..
 	 *
 	 * @param birthDate The birthdate to validate.
 	 * @param errors Stores information about errors encountered during validation.
@@ -162,7 +162,7 @@ public class PersonValidator implements Validator {
 			return;
 		}
 		rejectIfFutureDate(errors, birthDate, "birthdate");
-		rejectDateIfBefore120YearsAgo(errors, birthDate, "birthdate");
+		rejectDateIfBefore140YearsAgo(errors, birthDate, "birthdate");
 	}
 	
 	/**
@@ -196,16 +196,16 @@ public class PersonValidator implements Validator {
 	}
 	
 	/**
-	 * Rejects a date if it is before 120 years ago.
+	 * Rejects a date if it is before 140 years ago.
 	 * 
 	 * @param errors the error object
 	 * @param date the date to check
 	 * @param dateField the name of the field
 	 */
-	private void rejectDateIfBefore120YearsAgo(Errors errors, Date date, String dateField) {
+	private void rejectDateIfBefore140YearsAgo(Errors errors, Date date, String dateField) {
 		Calendar c = Calendar.getInstance();
 		c.setTime(new Date());
-		c.add(Calendar.YEAR, -120);
+		c.add(Calendar.YEAR, -140);
 		if (OpenmrsUtil.compare(date, c.getTime()) < 0) {
 			errors.rejectValue(dateField, "error.date.nonsensical");
 		}
