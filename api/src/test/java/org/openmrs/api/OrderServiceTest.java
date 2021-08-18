@@ -117,7 +117,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	protected static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
 
 	private static final String ORDER_GROUP_ATTRIBUTES = "org/openmrs/api/include/OrderServiceTest-createOrderGroupAttributes.xml";
-
+	
 	@Autowired
 	private ConceptService conceptService;
 
@@ -135,7 +135,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 	@Autowired
 	private AdministrationService adminService;
-
+	
 	@Autowired
 	private OrderSetService orderSetService;
 
@@ -1070,7 +1070,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see OrderService#getCareSettingByUuid(String)
 	 */
-	@Test
+	@Test                                                   
 	public void getCareSettingByUuid_shouldReturnTheCareSettingWithTheSpecifiedUuid() {
 		CareSetting cs = orderService.getCareSettingByUuid("6f0c9a92-6f24-11e3-af88-005056821db0");
 		assertEquals(1, cs.getId().intValue());
@@ -3908,21 +3908,21 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertEquals("Test 1", orderGroupAttribute.getValueReference());
 		assertEquals(1, orderGroupAttribute.getId());
 	}
-
+	
 	@Test
 	public void saveOrder_shouldAllowARetrospectiveOrderToCloseAnOrderThatExpiredInThePast() throws Exception {
-		
+
 		// Ensure that duration units are configured correctly to a snomed duration code
 		ConceptReferenceTerm days = new ConceptReferenceTerm();
 		days.setConceptSource(conceptService.getConceptSourceByName("SNOMED CT"));
 		days.setCode("258703001");
 		days.setName("Day(s)");
 		conceptService.saveConceptReferenceTerm(days);
-		
+
 		Concept daysConcept = conceptService.getConcept(28);
 		daysConcept.addConceptMapping(new ConceptMap(days, conceptService.getConceptMapType(2)));
 		conceptService.saveConcept(daysConcept);
-		
+
 		// First create a retrospective Order on 8/1/2008 with a duration of 60 days.
 		// This will set the auto-expire date to 9/29/2008
 
@@ -3954,5 +3954,40 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		e2.addOrder(o2);
 		encounterService.saveEncounter(e2);
 		assertThat(new SimpleDateFormat("yyyy-MM-dd").format(o1.getDateStopped()), is("2008-08-14"));
+	}
+	
+	/**
+	 * @see OrderService#saveOrderGroup(org.openmrs.OrderGroup, OrderContext)
+	 */
+	@Test
+	public void saveOrderGroup_shouldReturnOrderGroupWithSpecificContext(){
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-createOrderGroupAttributes.xml");
+		Encounter encounter = encounterService.getEncounter(6);
+		OrderSet orderSet = Context.getOrderSetService().getOrderSet(2000);
+		OrderGroup orderGroup = new OrderGroup();
+		orderGroup.setOrderSet(orderSet);
+		orderGroup.setPatient(encounter.getPatient());
+		orderGroup.setEncounter(encounter);
+
+		OrderType orderType = new OrderType();
+		orderGroup.setId(1);
+		orderType.setOrderTypeId(17);
+		orderType.setName("Plain Order");
+		orderType.setJavaClassName("org.openmrs.Order");
+		
+		CareSetting careSetting = new CareSetting();
+		careSetting.setCareSettingId(1);
+		careSetting.setId(1);
+		
+		OrderContext orderContext = new OrderContext();
+		orderContext.setCareSetting(orderService.getCareSetting(1));
+		orderContext.setCareSetting(careSetting);
+		orderContext.setOrderType(orderService.getOrderType(16));
+		orderService.saveOrderGroup(orderGroup, orderContext);
+		assertEquals(orderType.getJavaClassName(), orderService.getOrderGroup(5)
+				.getOrderType().getJavaClassName());
+		assertEquals(careSetting.getCareSettingId(), orderService.getOrderGroup(5)
+			.getCareSetting()
+			.getId());
 	}
 }
