@@ -449,11 +449,28 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getSimilarPeople_shouldAcceptGreaterThanThreeNames() throws Exception {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-names.xml");
+		updateSearchIndex();
+		
 		Set<Person> matches = Context.getPersonService().getSimilarPeople("Darius Graham Jazayeri Junior", 1979, "M");
-		assertEquals(3, matches.size());
+		assertEquals(14, matches.size());
+		
 		assertTrue(containsId(matches, 1006));
 		assertTrue(containsId(matches, 1007));
 		assertTrue(containsId(matches, 1009));
+		assertTrue(containsId(matches, 1005));
+		assertTrue(containsId(matches, 1004));
+		assertTrue(containsId(matches, 1003));
+		assertTrue(containsId(matches, 1013));
+		assertTrue(containsId(matches, 1011));
+		assertTrue(containsId(matches, 1012));
+		assertTrue(containsId(matches, 1002));
+		assertTrue(containsId(matches, 1001));
+		assertTrue(containsId(matches, 1000));
+		assertTrue(containsId(matches, 1008));
+		assertTrue(containsId(matches, 1010));
+		
+		
+		
 	}
 	
 	/**
@@ -489,19 +506,22 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		updateSearchIndex();
 		
 		Set<Person> matches = Context.getPersonService().getSimilarPeople("Darius Graham", 1979, "M");
-		assertEquals(11, matches.size());
+		assertEquals(14, matches.size());
+
 		assertTrue(containsId(matches, 1000));
 		assertTrue(containsId(matches, 1003));
-		assertTrue(containsId(matches, 1004)); 
-		assertTrue(containsId(matches, 1005)); 
+		assertTrue(containsId(matches, 1004));
+		assertTrue(containsId(matches, 1005));
 		assertTrue(containsId(matches, 1006));
 		assertTrue(containsId(matches, 1007));
-		
 		assertTrue(containsId(matches, 1009));
 		assertTrue(containsId(matches, 1010));
 		assertTrue(containsId(matches, 1011));
 		assertTrue(containsId(matches, 1012));
 		assertTrue(containsId(matches, 1013));
+		assertTrue(containsId(matches, 1002));
+		assertTrue(containsId(matches, 1008));
+		assertTrue(containsId(matches, 1001));
 	}
 	
 	/**
@@ -513,11 +533,20 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		updateSearchIndex();
 		
 		Set<Person> matches = Context.getPersonService().getSimilarPeople("Darius G", 1979, "M");
-		assertEquals(3, matches.size());
+		assertEquals(11, matches.size());
 		//Matching because of given_name and others empty
 		assertTrue(containsId(matches, 1000));
 		assertTrue(containsId(matches, 1009));
 		assertTrue(containsId(matches, 1012));
+
+		assertTrue(containsId(matches, 1002));
+		assertTrue(containsId(matches, 1005));
+		assertTrue(containsId(matches, 1007));
+		assertTrue(containsId(matches, 1008));
+		assertTrue(containsId(matches, 1006));
+		assertTrue(containsId(matches, 1004));
+		assertTrue(containsId(matches, 1001));
+		assertTrue(containsId(matches, 1003));
 	}
 	
 	
@@ -530,10 +559,16 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		updateSearchIndex();
 		
 		Set<Person> matches = Context.getPersonService().getSimilarPeople("D Graham", 1979, "M");
-		assertEquals(3, matches.size());
+		assertEquals(8, matches.size());
 		assertTrue(containsId(matches, 1010));
 		assertTrue(containsId(matches, 1011));
 		assertTrue(containsId(matches, 1013));
+		
+		assertTrue(containsId(matches, 1006));
+		assertTrue(containsId(matches, 1003));
+		assertTrue(containsId(matches, 1007));
+		assertTrue(containsId(matches, 1004));
+		assertTrue(containsId(matches, 1005));
 	}
 	
 	
@@ -546,11 +581,18 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		updateSearchIndex();
 		
 		Set<Person> matches = Context.getPersonService().getSimilarPeople("D Graham", 1979, "M");
-		assertEquals(3, matches.size());
+		assertEquals(8, matches.size());
 
 		assertTrue(containsId(matches, 1010));
 		assertTrue(containsId(matches, 1011));
 		assertTrue(containsId(matches, 1013));
+		
+		assertTrue(containsId(matches, 1006));
+		assertTrue(containsId(matches, 1003));
+		assertTrue(containsId(matches, 1007));
+		assertTrue(containsId(matches, 1004));
+		assertTrue(containsId(matches, 1005));
+		
 	}
 
 	/**
@@ -2434,7 +2476,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		PersonService personService = Context.getPersonService();
 		personService.savePersonAddress(pAddress);
 		
-	    assertNotNull(personService.getPersonAddressByUuid("y403fafk-e5k4-42d0-9d11-4f52e89d123r"));	
+	    assertNotNull(personService.getPersonAddressByUuid("y403fafk-e5k4-42d0-9d11-4f52e89d123r"));
 	}
 	
 }

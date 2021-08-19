@@ -10,6 +10,7 @@
 package org.openmrs.api.db.hibernate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -435,7 +436,6 @@ public class HibernatePatientDAO implements PatientDAO {
 	private String getDuplicatePatientsSQLString(List<String> attributes) {
 		StringBuilder outerSelect = new StringBuilder("select distinct t1.patient_id from patient t1 ");
 		final String t5 = " = t5.";
-		
 		Set<String> patientFieldNames = OpenmrsUtil.getDeclaredFields(Patient.class);
 		Set<String> personFieldNames = OpenmrsUtil.getDeclaredFields(Person.class);
 		Set<String> personNameFieldNames = OpenmrsUtil.getDeclaredFields(PersonName.class);
@@ -461,7 +461,9 @@ public class HibernatePatientDAO implements PatientDAO {
 				whereConditions.add(" t1." + attribute + t5 + attribute);
 				innerFields.add("p1." + attribute);
 			} else if (personFieldNames.contains(attribute)) {
-				if (!outerSelect.toString().contains("person")) {
+				// check if outerSelect contains 'person' word, surrounded by spaces.
+				// otherwise it will wrongly match for example: 'person_name' etc.
+				if (!Arrays.asList(outerSelect.toString().split("\\s+")).contains("person")) {
 					outerSelect.append("inner join person t2 on t1.patient_id = t2.person_id ");
 					innerSelect.append("inner join person person1 on p1.patient_id = person1.person_id ");
 				}
@@ -478,8 +480,8 @@ public class HibernatePatientDAO implements PatientDAO {
 				innerFields.add("person1." + attribute);
 			} else if (personNameFieldNames.contains(attribute)) {
 				if (!outerSelect.toString().contains("person_name")) {
-					outerSelect.append("inner join person_name t3 on t2.person_id = t3.person_id ");
-					innerSelect.append("inner join person_name pn1 on person1.person_id = pn1.person_id ");
+					outerSelect.append("inner join person_name t3 on t1.patient_id = t3.person_id ");
+					innerSelect.append("inner join person_name pn1 on p1.patient_id = pn1.person_id ");
 				}
 
 				//Since we are firing a native query get the actual table column name from the field name of the entity

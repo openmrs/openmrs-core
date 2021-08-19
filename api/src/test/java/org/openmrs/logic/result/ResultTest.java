@@ -40,12 +40,12 @@ public class ResultTest {
 	
 	@Test
 	public void Result_shouldNotFailWithNullList() {
-		new Result((List) null);
+		new Result((List<Result>) null);
 	}
 	
 	@Test
 	public void Result_shouldNotFailWithEmptyList() {
-		new Result(new ArrayList());
+		new Result(new ArrayList<Result>());
 	}
 	
 	@Test

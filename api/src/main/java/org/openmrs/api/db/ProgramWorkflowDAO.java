@@ -280,7 +280,7 @@ public interface ProgramWorkflowDAO {
 	 * @return - A List of ProgramWorkflowStates
 	 */
 	public List<ProgramWorkflowState> getProgramWorkflowStatesByConcept(Concept concept);
-        public List getAllProgramAttributeTypes();
+        public List<ProgramAttributeType> getAllProgramAttributeTypes();
 
         public ProgramAttributeType getProgramAttributeType(Integer var1);
 

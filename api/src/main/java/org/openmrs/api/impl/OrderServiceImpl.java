@@ -14,18 +14,18 @@ import org.hibernate.proxy.HibernateProxy;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
-import org.openmrs.Encounter;
 import org.openmrs.DrugOrder;
+import org.openmrs.Encounter;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Order;
+import org.openmrs.Order.FulfillerStatus;
 import org.openmrs.OrderFrequency;
 import org.openmrs.OrderGroup;
-import org.openmrs.OrderType;
-import org.openmrs.GlobalProperty;
-import org.openmrs.Patient;
-import org.openmrs.Provider;
-import org.openmrs.Order.FulfillerStatus;
 import org.openmrs.OrderGroupAttribute;
 import org.openmrs.OrderGroupAttributeType;
+import org.openmrs.OrderType;
+import org.openmrs.Patient;
+import org.openmrs.Provider;
 import org.openmrs.TestOrder;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AmbiguousOrderException;
@@ -33,7 +33,6 @@ import org.openmrs.api.CannotDeleteObjectInUseException;
 import org.openmrs.api.CannotStopDiscontinuationOrderException;
 import org.openmrs.api.CannotStopInactiveOrderException;
 import org.openmrs.api.CannotUnvoidOrderException;
-import org.openmrs.api.CannotUpdateObjectInUseException;
 import org.openmrs.api.EditedOrderDoesNotMatchPreviousException;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.MissingRequiredPropertyException;
@@ -150,7 +149,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 		return orderGroup;
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order, org.openmrs.api.OrderContext)
 	 */
@@ -168,6 +167,13 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		ensureOrderTypeIsSet(order,orderContext);
 		ensureCareSettingIsSet(order,orderContext);
 		failOnOrderTypeMismatch(order);
+		
+		// If isRetrospective is false, but the dateActivated is prior to the current date, set isRetrospective to true
+		if (!isRetrospective) {
+			Date dateActivated = order.getDateActivated();
+			Date currentDate = new Date();
+			isRetrospective = !dateActivated.after(currentDate) && !DateUtils.isSameDay(dateActivated, currentDate);
+		}
 		
 		Order previousOrder = order.getPreviousOrder();
 		if (REVISE == order.getAction()) {
@@ -850,11 +856,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public OrderFrequency saveOrderFrequency(OrderFrequency orderFrequency) throws APIException {
-		if (orderFrequency.getOrderFrequencyId() != null
-				&& dao.isOrderFrequencyInUse(orderFrequency)) {		
-			throw new CannotUpdateObjectInUseException("Order.frequency.cannot.edit");
-		}
-		
 		return dao.saveOrderFrequency(orderFrequency);
 	}
 	

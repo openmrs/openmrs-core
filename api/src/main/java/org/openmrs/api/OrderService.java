@@ -837,7 +837,7 @@ public interface OrderService extends OpenmrsService {
 	 * 
 	 * @param orderGroup the order group to be saved
 	 * @param orderContext the order context object to be saved with the order group
-	 * @return the order group that was saved with the specified order context 
+	 * @return the order group that was saved with the specified order context
 	 * @since 2.5.0
 	 * @should throw an exception if no order context is provided
 	 * @throws APIException

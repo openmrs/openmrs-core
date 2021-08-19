@@ -104,7 +104,7 @@ public class DuplicateLocationAttributeTypeNameChangeSet implements CustomTaskCh
 
 			for (Object o : duplicates.entrySet()) {
 				Map.Entry pairs = (Map.Entry) o;
-				HashSet values = (HashSet) pairs.getValue();
+				HashSet<Integer> values = (HashSet<Integer>) pairs.getValue();
 				List<Integer> duplicateNames = new ArrayList<Integer>(values);
 				int duplicateNameId = 1;
 				for (int i = 1; i < duplicateNames.size(); i++) {

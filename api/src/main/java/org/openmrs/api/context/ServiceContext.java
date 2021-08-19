@@ -901,7 +901,7 @@ public class ServiceContext implements ApplicationContextAware {
 	@SuppressWarnings("unchecked")
 	private <T> Map<String, T> getRegisteredComponents(ApplicationContext context, Class<T> type) {
 		Map<String, T> components = new HashMap<>();
-		Map registeredComponents = context.getBeansOfType(type);
+		Map<String, T> registeredComponents = context.getBeansOfType(type);
 		if (log.isTraceEnabled()) {
 			log.trace("getRegisteredComponents(" + context + ", " + type + ") = " + registeredComponents);
 		}

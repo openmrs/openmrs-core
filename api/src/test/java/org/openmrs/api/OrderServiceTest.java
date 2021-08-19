@@ -25,23 +25,25 @@ import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptMap;
+import org.openmrs.ConceptReferenceTerm;
+import org.openmrs.Encounter;
+import org.openmrs.GlobalProperty;
+import org.openmrs.Order;
+import org.openmrs.OrderType;
 import org.openmrs.Condition;
 import org.openmrs.Diagnosis;
 import org.openmrs.DosingInstructions;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
-import org.openmrs.Encounter;
 import org.openmrs.FreeTextDosingInstructions;
-import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
-import org.openmrs.Order;
 import org.openmrs.Order.Action;
 import org.openmrs.OrderFrequency;
 import org.openmrs.OrderGroup;
 import org.openmrs.OrderGroupAttribute;
 import org.openmrs.OrderGroupAttributeType;
 import org.openmrs.OrderSet;
-import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.Provider;
 import org.openmrs.SimpleDosingInstructions;
@@ -130,7 +132,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 	@Autowired
 	private AdministrationService adminService;
-
+	
 	@Autowired
 	private OrderSetService orderSetService;
 
@@ -1065,10 +1067,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see OrderService#getCareSettingByUuid(String)
 	 */
-	@Test
+	@Test                                                   
 	public void getCareSettingByUuid_shouldReturnTheCareSettingWithTheSpecifiedUuid() {
-		CareSetting cs = orderService.getCareSettingByUuid("6f0c9a92-6f24-11e3-af88-005056821db0");
-		assertEquals(1, cs.getId().intValue());
+		CareSetting cs = orderService.getCareSettingByUuid("c365e560-c3ec-11e3-9c1a-0800200c9a66");
+		assertEquals(2, cs.getId().intValue());
 	}
 
 	/**
@@ -1511,19 +1513,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 		orderFrequency.setFrequencyPerDay(4d);
 		orderService.saveOrderFrequency(orderFrequency);
-	}
-
-	/**
-	 * @see OrderService#saveOrderFrequency(OrderFrequency)
-	 */
-	@Test
-	public void saveOrderFrequency_shouldNotAllowEditingAnExistingOrderFrequencyThatIsInUse() {
-		OrderFrequency orderFrequency = orderService.getOrderFrequency(1);
-		assertNotNull(orderFrequency);
-
-		orderFrequency.setFrequencyPerDay(4d);
-		CannotUpdateObjectInUseException exception = assertThrows(CannotUpdateObjectInUseException.class, () -> orderService.saveOrderFrequency(orderFrequency));
-		assertThat(exception.getMessage(), is("Order.frequency.cannot.edit"));
 	}
 
 	/**
@@ -3917,24 +3906,85 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertEquals(1, orderGroupAttribute.getId());
 	}
 	
+	@Test
+	public void saveOrder_shouldAllowARetrospectiveOrderToCloseAnOrderThatExpiredInThePast() throws Exception {
+
+		// Ensure that duration units are configured correctly to a snomed duration code
+		ConceptReferenceTerm days = new ConceptReferenceTerm();
+		days.setConceptSource(conceptService.getConceptSourceByName("SNOMED CT"));
+		days.setCode("258703001");
+		days.setName("Day(s)");
+		conceptService.saveConceptReferenceTerm(days);
+
+		Concept daysConcept = conceptService.getConcept(28);
+		daysConcept.addConceptMapping(new ConceptMap(days, conceptService.getConceptMapType(2)));
+		conceptService.saveConcept(daysConcept);
+
+		// First create a retrospective Order on 8/1/2008 with a duration of 60 days.
+		// This will set the auto-expire date to 9/29/2008
+
+		Encounter e1 = encounterService.getEncounter(3);
+		DrugOrder o1 = new DrugOrderBuilder().withPatient(e1.getPatient().getPatientId())
+			.withEncounter(e1.getEncounterId()).withCareSetting(2).withOrderer(1).withUrgency(Order.Urgency.ROUTINE)
+			.withDateActivated(e1.getEncounterDatetime())
+			.withOrderType(1).withDrug(2)
+			.withDosingType(SimpleDosingInstructions.class)
+			.build();
+		o1.setDose(2d);
+		o1.setDoseUnits(conceptService.getConcept(51)); // tab(s)
+		o1.setRoute(conceptService.getConcept(22)); // unknown
+		o1.setFrequency(orderService.getOrderFrequency(1));
+		o1.setDuration(60);
+		o1.setDurationUnits(daysConcept); // days
+		e1.addOrder(o1);
+		encounterService.saveEncounter(e1);
+		assertThat(new SimpleDateFormat("yyyy-MM-dd").format(o1.getAutoExpireDate()), is("2008-09-29"));
+		assertThat(o1.getDateStopped(), is(nullValue()));
+
+		// Next, create a new Order on 8/15/2008 that revises the above order
+		// Encounter 4 is on 8/15/2008 for patient 7
+		Encounter e2 = encounterService.getEncounter(4);
+		DrugOrder o2 = o1.cloneForRevision();
+		o2.setOrderer(providerService.getProvider(1));
+		o2.setDateActivated(e2.getEncounterDatetime());
+		o2.setDose(3d);
+		e2.addOrder(o2);
+		encounterService.saveEncounter(e2);
+		assertThat(new SimpleDateFormat("yyyy-MM-dd").format(o1.getDateStopped()), is("2008-08-14"));
+	}
+	
 	/**
 	 * @see OrderService#saveOrderGroup(org.openmrs.OrderGroup, OrderContext)
 	 */
 	@Test
 	public void saveOrderGroup_shouldReturnOrderGroupWithSpecificContext(){
-		Encounter encounter = encounterService.getEncounter(3);
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-createOrderGroupAttributes.xml");
+		Encounter encounter = encounterService.getEncounter(6);
 		OrderSet orderSet = Context.getOrderSetService().getOrderSet(2000);
-			
 		OrderGroup orderGroup = new OrderGroup();
 		orderGroup.setOrderSet(orderSet);
 		orderGroup.setPatient(encounter.getPatient());
 		orderGroup.setEncounter(encounter);
-
+		
+		OrderType orderType = new OrderType();
+		orderGroup.setId(1);
+		orderType.setOrderTypeId(17);
+		orderType.setName("Plain Order");
+		orderType.setJavaClassName("org.openmrs.Order");
+		
+		CareSetting careSetting = new CareSetting();
+		careSetting.setCareSettingId(1);
+		careSetting.setId(1);
+		
 		OrderContext orderContext = new OrderContext();
 		orderContext.setCareSetting(orderService.getCareSetting(1));
-		orderContext.setOrderType(orderService.getOrderType(1));
+		orderContext.setCareSetting(careSetting);
+		orderContext.setOrderType(orderService.getOrderType(16));
 		orderService.saveOrderGroup(orderGroup, orderContext);
-		
-		assertNotNull(orderService.saveOrderGroup(orderGroup, orderContext));
+		assertEquals(orderType.getJavaClassName(), orderService.getOrderGroup(5)
+				.getOrderType().getJavaClassName());
+		assertEquals(careSetting.getCareSettingId(), orderService.getOrderGroup(5)
+			.getCareSetting()
+			.getId());
 	}
 }

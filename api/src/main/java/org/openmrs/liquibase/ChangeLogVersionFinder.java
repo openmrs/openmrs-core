@@ -88,9 +88,7 @@ public class ChangeLogVersionFinder {
 		SortedMap<String, List<String>> changeLogCombinations = new TreeMap<>();
 		
 		for (String snapshotVersion : getSnapshotVersions()) {
-			List<String> changeLogFilenames = new ArrayList<>();
-			
-			changeLogFilenames.addAll(getSnapshotFilenames(snapshotVersion));
+			List<String> changeLogFilenames = new ArrayList<>(getSnapshotFilenames(snapshotVersion));
 			
 			changeLogCombinations.put(snapshotVersion, changeLogFilenames);
 		}
