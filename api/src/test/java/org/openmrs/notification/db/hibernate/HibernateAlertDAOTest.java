@@ -9,8 +9,12 @@
  */
 package org.openmrs.notification.db.hibernate;
 
-import org.junit.jupiter.api.Assertions;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.User;
@@ -30,14 +34,26 @@ public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 	@Autowired
 	private HibernateAlertDAO hibernateAlertDAO;
 	
+	private volatile boolean didUpdateExpirationDate = false;
+	
 	@BeforeEach
 	public void setUp() {
 		executeDataSet(DATA_XML);
+		
+		if (!didUpdateExpirationDate) {
+			Alert activeAlert = hibernateAlertDAO.getAlert(2);
+			activeAlert.setDateToExpire(
+				Date.from(
+					LocalDate.now().plus(5, ChronoUnit.DAYS).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));
+
+			hibernateAlertDAO.saveAlert(activeAlert);
+			didUpdateExpirationDate = true;
+		}
 	}
 
 	@Test
 	public void saveAlert_shouldSaveAlertToDb() {
-		Alert alert=new Alert();
+		Alert alert = new Alert();
 		alert.setText("Coding time");
 		alert.setId(5);
 	    hibernateAlertDAO.saveAlert(alert);
