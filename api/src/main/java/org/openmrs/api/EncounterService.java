@@ -71,6 +71,7 @@ public interface EncounterService extends OpenmrsService {
 	 * <strong>Should</strong> cascade save encounter conditions
 	 * <strong>Should</strong> void and create new obs when saving encounter
 	 * <strong>Should</strong> fail if user is not supposed to edit encounters of type of given encounter
+	 * <strong>Should</strong> cascade save encounter allergies
 	 */
 	@Authorized( { PrivilegeConstants.ADD_ENCOUNTERS, PrivilegeConstants.EDIT_ENCOUNTERS })
 	public Encounter saveEncounter(Encounter encounter) throws APIException;
