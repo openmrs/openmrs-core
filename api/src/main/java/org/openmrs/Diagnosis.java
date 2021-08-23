@@ -34,7 +34,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "encounter_diagnosis")
-public class Diagnosis extends BaseChangeableOpenmrsData {
+public class Diagnosis extends BaseFormRecordableOpenmrsData {
 	
 	private static final long serialVersionUID = 1L;
 	

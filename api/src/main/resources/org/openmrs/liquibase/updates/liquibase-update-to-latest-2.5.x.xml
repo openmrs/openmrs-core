@@ -28,4 +28,18 @@
 		<dropNotNullConstraint columnDataType="datetime" columnName="start_date" tableName="cohort_member"/>
 	</changeSet>
 	
+	<changeSet id="10000000-TRUNK-6015" author="dkayiwa">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="encounter_diagnosis" columnName="form_namespace_and_path"/>
+			</not>
+		</preConditions>
+		<comment>Adding "form_namespace_and_path" column to encounter_diagnosis table</comment>
+		<addColumn tableName="encounter_diagnosis">
+			<column name="form_namespace_and_path" type="varchar(255)">
+				<constraints nullable="true"/>
+			</column>
+		</addColumn>
+	</changeSet>
+	
 </databaseChangeLog>

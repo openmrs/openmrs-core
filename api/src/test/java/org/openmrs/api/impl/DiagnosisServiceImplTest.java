@@ -80,6 +80,11 @@ public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 		diagnosis.setCertainty(ConditionVerificationStatus.CONFIRMED);
 		diagnosis.setPatient(patient);
 		diagnosis.setRank(2);
+		
+		final String NAMESPACE = "namespace";
+		final String FORMFIELD_PATH = "formFieldPath";
+		diagnosis.setFormField(NAMESPACE, FORMFIELD_PATH);
+		
 		diagnosisService.save(diagnosis);
 		
 		Diagnosis savedDiagnosis = diagnosisService.getDiagnosisByUuid(uuid);
@@ -90,6 +95,7 @@ public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 		assertEquals(patient, savedDiagnosis.getPatient());
 		assertEquals(ConditionVerificationStatus.CONFIRMED, savedDiagnosis.getCertainty());
 		assertEquals(new Integer(2), savedDiagnosis.getRank());
+		assertEquals(NAMESPACE + "^" + FORMFIELD_PATH, savedDiagnosis.getFormNamespaceAndPath());
 	}
 
 	/**
