@@ -72,5 +72,19 @@
 								 baseTableName="allergy" baseColumnNames="encounter_id"
 								 referencedTableName="encounter" referencedColumnNames="encounter_id" />
     </changeSet>
+    
+    <changeSet id="10000000-TRUNK-6017" author="dkayiwa">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="orders" columnName="form_namespace_and_path"/>
+			</not>
+		</preConditions>
+		<comment>Adding "form_namespace_and_path" column to the orders table</comment>
+		<addColumn tableName="orders">
+			<column name="form_namespace_and_path" type="varchar(255)">
+				<constraints nullable="true"/>
+			</column>
+		</addColumn>
+	</changeSet>
 	
 </databaseChangeLog>

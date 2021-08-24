@@ -23,6 +23,8 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass
 public abstract class BaseFormRecordableOpenmrsData extends BaseChangeableOpenmrsData implements FormRecordable {
 
+	private static final long serialVersionUID = 1L;
+
 	protected static final String FORM_NAMESPACE_PATH_SEPARATOR = "^";
 
 	protected static final int FORM_NAMESPACE_PATH_MAX_LENGTH = 255;
@@ -35,6 +37,35 @@ public abstract class BaseFormRecordableOpenmrsData extends BaseChangeableOpenmr
 	 */
 	@Override
 	public String getFormFieldNamespace() {
+		return BaseFormRecordableOpenmrsData.getFormFieldNamespace(formNamespaceAndPath);
+	}
+
+	/**
+	 * @see org.openmrs.FormRecordable#getFormFieldPath()
+	 */
+	@Override
+	public String getFormFieldPath() {
+		return BaseFormRecordableOpenmrsData.getFormFieldPath(formNamespaceAndPath);
+	}
+
+	/**
+	 * @see org.openmrs.FormRecordable#setFormField(String,String)
+	 */
+	@Override
+	public void setFormField(String namespace, String formFieldPath) {
+		formNamespaceAndPath = BaseFormRecordableOpenmrsData.getFormNamespaceAndPath(namespace, formFieldPath);
+	}
+
+	/**
+	 * @return Returns the formNamespaceAndPath.
+	 */
+	public String getFormNamespaceAndPath() {
+		return formNamespaceAndPath;
+	}
+	
+	//The only reason i have added these three static methods below, is to be reused
+	//by domain objects like Order, which cannot use this as their base class.
+	public static String getFormFieldNamespace(String formNamespaceAndPath) {
 		if (StringUtils.isNotBlank(formNamespaceAndPath)) {
 			//Only the path was specified
 			if (formNamespaceAndPath.startsWith(FORM_NAMESPACE_PATH_SEPARATOR)) {
@@ -45,12 +76,8 @@ public abstract class BaseFormRecordableOpenmrsData extends BaseChangeableOpenmr
 
 		return formNamespaceAndPath;
 	}
-
-	/**
-	 * @see org.openmrs.FormRecordable#getFormFieldPath()
-	 */
-	@Override
-	public String getFormFieldPath() {
+	
+	public static String getFormFieldPath(String formNamespaceAndPath) {
 		if (StringUtils.isNotBlank(formNamespaceAndPath)) {
 			//Only the namespace was specified
 			if (formNamespaceAndPath.endsWith(FORM_NAMESPACE_PATH_SEPARATOR)) {
@@ -61,15 +88,10 @@ public abstract class BaseFormRecordableOpenmrsData extends BaseChangeableOpenmr
 
 		return formNamespaceAndPath;
 	}
-
-	/**
-	 * @see org.openmrs.FormRecordable#setFormField(String,String)
-	 */
-	@Override
-	public void setFormField(String namespace, String formFieldPath) {
+	
+	public static String getFormNamespaceAndPath(String namespace, String formFieldPath) {
 		if (namespace == null && formFieldPath == null) {
-			formNamespaceAndPath = null;
-			return;
+			return null;
 		}
 
 		String nsAndPathTemp = "";
@@ -88,13 +110,6 @@ public abstract class BaseFormRecordableOpenmrsData extends BaseChangeableOpenmr
 			throw new APIException("BaseFormRecordableOpenmrsData.namespaceAndPathNotContainSeparator", (Object[]) null);
 		}
 
-		formNamespaceAndPath = nsAndPathTemp;
-	}
-
-	/**
-	 * @return Returns the formNamespaceAndPath.
-	 */
-	public String getFormNamespaceAndPath() {
-		return formNamespaceAndPath;
+		return nsAndPathTemp;
 	}
 }
