@@ -30,7 +30,7 @@ import org.openmrs.util.OpenmrsUtil;
  * 
  * @version 1.0
  */
-public class Order extends BaseOpenmrsData {
+public class Order extends BaseOpenmrsData implements FormRecordable {
 	
 	
 	public static final long serialVersionUID = 4334343L;
@@ -100,6 +100,8 @@ public class Order extends BaseOpenmrsData {
 	private CareSetting careSetting;
 	
 	private Date scheduledDate;
+	
+	private String formNamespaceAndPath;
 	
 	/**
 	 * Allows the orders if ordered as an orderGroup, to maintain a sequence of how members are
@@ -197,6 +199,7 @@ public class Order extends BaseOpenmrsData {
 		target.setSortWeight(getSortWeight());
 		target.setFulfillerComment(getFulfillerComment());
 		target.setFulfillerStatus(getFulfillerStatus());
+		target.setFormNamespaceAndPath(getFormNamespaceAndPath());
 		return target;
 	}
 	
@@ -769,6 +772,7 @@ public class Order extends BaseOpenmrsData {
 		target.setSortWeight(getSortWeight());
 		target.setFulfillerStatus(getFulfillerStatus());
 		target.setFulfillerComment(getFulfillerComment());
+		target.setFormNamespaceAndPath(getFormNamespaceAndPath());
 		
 		return target;
 	}
@@ -909,5 +913,38 @@ public class Order extends BaseOpenmrsData {
 	 */
 	public void setFulfillerComment(String fulfillerComment) {
 		this.fulfillerComment = fulfillerComment;		
+	}
+	
+	/**
+	 * @return Returns the formNamespaceAndPath.
+	 * @since 2.5.0
+	 */
+	public String getFormNamespaceAndPath() {
+		return formNamespaceAndPath;
+	}
+
+	/**
+	 * Sets the form namespace and path
+	 * 
+	 * @param formNamespaceAndPath the form namespace and path to set
+	 * @since 2.5.0
+	 */
+	public void setFormNamespaceAndPath(String formNamespaceAndPath) {
+		this.formNamespaceAndPath = formNamespaceAndPath;
+	}
+
+	@Override
+	public String getFormFieldNamespace() {
+		return BaseFormRecordableOpenmrsData.getFormFieldNamespace(formNamespaceAndPath);
+	}
+
+	@Override
+	public String getFormFieldPath() {
+		return BaseFormRecordableOpenmrsData.getFormFieldPath(formNamespaceAndPath);
+	}
+
+	@Override
+	public void setFormField(String namespace, String formFieldPath) {
+		formNamespaceAndPath = BaseFormRecordableOpenmrsData.getFormNamespaceAndPath(namespace, formFieldPath);
 	}
 }
