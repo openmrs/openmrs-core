@@ -51,6 +51,8 @@
                   column="date_created" not-null="true" length="19" />
         <property name="voided" type="java.lang.Boolean"
                   column="voided" length="1" not-null="true"/>
+	    <property name="orderContextId" type="java.lang.Integer"
+	              column="order_context_id" length="1" not-null="false"/>
         
 		<!-- bi-directional many-to-one association to User -->
         <many-to-one name="voidedBy" class="User">
@@ -79,6 +81,10 @@
 		<many-to-one name="orderGroupReason" class="org.openmrs.Concept"
 		    not-null="false" column="order_group_reason" />
 
+	    <many-to-one name="careSetting" column="care_setting" class="org.openmrs.CareSetting" not-null="false" />
+
+	    <many-to-one name="orderType" column="order_type_id" class="org.openmrs.OrderType" not-null="false" />
+	    
 	    <!-- one-to-many association to all nested orderGroups in this grouping -->
         <set name="nestedOrderGroups" inverse="true" cascade="delete" order-by="order_group_id"
             access="field" batch-size="25">

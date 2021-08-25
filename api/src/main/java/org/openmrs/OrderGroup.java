@@ -45,9 +45,11 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	private Set<OrderGroup> nestedOrderGroups;
 	
 	private OrderType orderType;
-	
-	private CareSetting careSetting;
 
+	private CareSetting careSetting;
+	
+	private Integer orderContextId;
+	
 	/**
 	 * Gets the orderGroupId
 	 *
@@ -327,7 +329,6 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 		this.careSetting = careSetting;
 	}
 
-
 	/**
 	 * Get the {@link org.openmrs.OrderType}
 	 *
@@ -347,4 +348,24 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 		this.orderType = orderType;
 	}
 
+	/**
+	 * Get the {@link org.openmrs.api.OrderContext}
+	 *
+	 * @return the Id for the order context
+	 */
+	public Integer getOrderContextId(){
+		return orderContextId;
+	}
+
+	/**
+	 * Set the {@link org.openmrs.api.OrderContext}
+	 *
+	 * @param orderContextId the Id for the order context
+	 * @since 2.4.0
+	 * @return
+	 */
+	public int setOrderContextId(Integer orderContextId){
+		this.orderContextId = orderContextId;
+		return orderContextId;
+	}
 }

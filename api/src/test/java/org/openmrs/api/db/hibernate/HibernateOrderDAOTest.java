@@ -9,27 +9,30 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.openmrs.CareSetting;
+import org.openmrs.Encounter;
+import org.openmrs.Order;
+import org.openmrs.OrderGroup;
+import org.openmrs.OrderGroupAttributeType;
+import org.openmrs.OrderType;
+import org.openmrs.Patient;
+import org.openmrs.api.APIException;
+import org.openmrs.api.OrderContext;
+import org.openmrs.api.builder.OrderBuilder;
+import org.openmrs.api.context.Context;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.openmrs.Encounter;
-import org.openmrs.Order;
-import org.openmrs.OrderGroup;
-import org.openmrs.OrderGroupAttributeType;
-import org.openmrs.Patient;
-import org.openmrs.api.APIException;
-import org.openmrs.api.builder.OrderBuilder;
-import org.openmrs.api.context.Context;
-import org.openmrs.test.jupiter.BaseContextSensitiveTest;
-import org.springframework.beans.factory.annotation.Autowired;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Tests the saving of orders as part of the OrderGroup
@@ -71,6 +74,46 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 		OrderGroup savedOrderGroup = dao.saveOrderGroup(newOrderGroup);
 		assertNotNull(savedOrderGroup.getOrderGroupId(), "OrderGroup gets saved");
 		
+		for (Order savedOrder : savedOrderGroup.getOrders()) {
+			assertNull(savedOrder.getOrderId(), "Order is not saved as a part of Order Group");
+		}
+	}
+
+	/**
+	 * @see {@link HibernateOrderDAO#saveOrderGroup(OrderGroup, OrderContext)}
+	 * @throws Exception
+	 */
+	@Test
+	public void saveOrderGroup_shouldSaveOrderGroupWithOrderContext() {
+		OrderGroup newOrderGroup = new OrderGroup();
+		OrderContext orderContext = new OrderContext();
+		OrderType orderType = new OrderType();
+		newOrderGroup.setId(1);
+		orderType.setOrderTypeId(17);
+		orderType.setName("Plain Order");
+		orderType.setJavaClassName("org.openmrs.Order");
+
+		CareSetting careSetting = new CareSetting();
+		careSetting.setCareSettingId(1);
+		careSetting.setId(1);
+
+		orderContext.setCareSetting(careSetting);
+		orderContext.setOrderType(orderType);
+		final Order order = new OrderBuilder().withAction(Order.Action.NEW).withPatient(7).withConcept(1000)
+			.withCareSetting(1).withOrderer(1).withEncounter(3).withDateActivated(new Date()).withOrderType(17)
+			.withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date()).build();
+		
+		newOrderGroup.setOrders(new ArrayList<Order>() {
+
+			{
+				add(order);
+			}
+		});
+        
+		OrderGroup savedOrderGroup = dao.saveOrderGroup(newOrderGroup, newOrderGroup.setOrderContextId(1));
+		assertNotNull(savedOrderGroup.getOrderGroupId(), "OrderGroup gets saved with order context Id");
+		System.out.println(savedOrderGroup.getOrderContextId());
+
 		for (Order savedOrder : savedOrderGroup.getOrders()) {
 			assertNull(savedOrder.getOrderId(), "Order is not saved as a part of Order Group");
 		}
