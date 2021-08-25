@@ -296,4 +296,22 @@ public class PatientStateTest {
 		
 		assertTrue(result <= -1 || result >= 1);
 	}
+
+	/**
+	 * Checks that the set formNamespaceAndPath is correctly retrieved
+	 */
+	@Test
+	public void shouldReturnTheFormNamespaceAndPath() {
+		final String NAMESPACE = "namespace";
+		final String FORMFIELD_PATH = "formFieldPath";
+		
+		PatientState patientState = new PatientState();
+		patientState.setStartDate(null);
+		patientState.setEndDate(rightRange);
+		patientState.setVoided(false);
+		patientState.setFormField(NAMESPACE, FORMFIELD_PATH);
+
+		assertEquals(NAMESPACE + "^" + FORMFIELD_PATH, patientState.getFormNamespaceAndPath());
+
+	}
 }

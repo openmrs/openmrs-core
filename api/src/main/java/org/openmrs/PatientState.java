@@ -16,7 +16,7 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  * PatientState
  */
-public class PatientState extends BaseChangeableOpenmrsData implements java.io.Serializable, Comparable<PatientState> {
+public class PatientState extends BaseFormRecordableOpenmrsData implements java.io.Serializable, Comparable<PatientState> {
 	
 	public static final long serialVersionUID = 0L;
 	
