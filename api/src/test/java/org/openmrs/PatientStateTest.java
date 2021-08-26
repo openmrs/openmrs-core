@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Date;
 
+import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -295,23 +296,5 @@ public class PatientStateTest {
 		int result = (patientState.compareTo(patientState2));
 		
 		assertTrue(result <= -1 || result >= 1);
-	}
-
-	/**
-	 * Checks that the set formNamespaceAndPath is correctly retrieved
-	 */
-	@Test
-	public void shouldReturnTheFormNamespaceAndPath() {
-		final String NAMESPACE = "namespace";
-		final String FORMFIELD_PATH = "formFieldPath";
-		
-		PatientState patientState = new PatientState();
-		patientState.setStartDate(null);
-		patientState.setEndDate(rightRange);
-		patientState.setVoided(false);
-		patientState.setFormField(NAMESPACE, FORMFIELD_PATH);
-
-		assertEquals(NAMESPACE + "^" + FORMFIELD_PATH, patientState.getFormNamespaceAndPath());
-
 	}
 }

@@ -877,6 +877,21 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 			assertEquals(state.getVoidReason(), "test");
 		}
 	}
+
+	@Test
+	public void savePatientProgram_shouldTestFormNamespaceAndPath() {
+		final String NAMESPACE = "namespace";
+		final String FORMFIELD_PATH = "formFieldPath";
+		
+		PatientProgram patientProgram = pws.getPatientProgram(1);
+		for (PatientState state : patientProgram.getStates()) {
+			state.setFormField(NAMESPACE, FORMFIELD_PATH);
+		}
+		PatientProgram updatePatientProgram = pws.savePatientProgram(patientProgram);
+		for (PatientState state : updatePatientProgram.getStates()) {
+			assertEquals(NAMESPACE + "^" + FORMFIELD_PATH, state.getFormNamespaceAndPath());
+		}
+	}
 	
 	@Test
 	public void getPrograms_shouldTestGetProgramsIfCohortIsEmpty() {
