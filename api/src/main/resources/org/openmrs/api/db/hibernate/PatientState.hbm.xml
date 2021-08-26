@@ -47,7 +47,9 @@
 		<many-to-one name="state" class="ProgramWorkflowState" column="state" not-null="true" />
 		
 		<many-to-one name="patientProgram" class="PatientProgram" column="patient_program_id" not-null="true" />
-		
+
+		<many-to-one name="encounter" column="encounter_id" class="org.openmrs.Encounter" />
+
 		<many-to-one name="creator" class="User" column="creator" not-null="true" />
 		
 		<many-to-one name="changedBy" class="User" column="changed_by" />

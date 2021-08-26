@@ -34,6 +34,8 @@ public class PatientState extends BaseFormRecordableOpenmrsData implements java.
 	
 	private Date endDate;
 	
+	private Encounter encounter;
+	
 	// ******************
 	// Constructors
 	// ******************
@@ -68,6 +70,7 @@ public class PatientState extends BaseFormRecordableOpenmrsData implements java.
 		target.setState(this.getState());
 		target.setStartDate(this.getStartDate());
 		target.setEndDate(this.getEndDate());
+		target.setEncounter(this.getEncounter());
 		target.setCreator(this.getCreator());
 		target.setDateCreated(this.getDateCreated());
 		target.setChangedBy(this.getChangedBy());
@@ -119,7 +122,7 @@ public class PatientState extends BaseFormRecordableOpenmrsData implements java.
 	@Override
 	public String toString() {
 		return "id=" + getPatientStateId() + ", patientProgram=" + getPatientProgram() + ", state=" + getState()
-		        + ", startDate=" + getStartDate() + ", endDate=" + getEndDate() + ", dateCreated=" + getDateCreated()
+		        + ", startDate=" + getStartDate() + ", endDate=" + getEndDate() + ", encounter=" + getEncounter() + ", dateCreated=" + getDateCreated()
 		        + ", dateChanged=" + getDateChanged();
 	}
 	
@@ -166,7 +169,23 @@ public class PatientState extends BaseFormRecordableOpenmrsData implements java.
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
-	
+
+	/**
+	 * @since 2.5
+	 * @return encounter - the associated encounter
+	 */
+	public Encounter getEncounter() {
+		return encounter;
+	}
+
+	/**
+	 * @since 2.5
+	 * @param encounter - the encounter to set
+	 */
+	public void setEncounter(Encounter encounter) {
+		this.encounter = encounter;
+	}
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()

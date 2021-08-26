@@ -33,6 +33,7 @@ import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptStateConversion;
+import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
@@ -879,7 +880,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void savePatientProgram_shouldTestFormNamespaceAndPath() {
+	public void savePatientProgram_shouldTestPatientStateFormNamespaceAndPath() {
 		final String NAMESPACE = "namespace";
 		final String FORMFIELD_PATH = "formFieldPath";
 		
@@ -892,7 +893,26 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 			assertEquals(NAMESPACE + "^" + FORMFIELD_PATH, state.getFormNamespaceAndPath());
 		}
 	}
-	
+
+	@Test
+	public void saveEncounter_shouldTestPatientStateEncounter() {
+		PatientProgram patientProgram = pws.getPatientProgram(1);
+		
+		Encounter enc = new Encounter();
+		enc.setEncounterType(Context.getEncounterService().getEncounterType(1));
+		enc.setEncounterDatetime(patientProgram.getDateEnrolled());
+		enc.setPatient(patientProgram.getPatient());
+		
+		Encounter savedEncounter = Context.getEncounterService().saveEncounter(enc);
+
+		for (PatientState state : patientProgram.getStates()) {
+			state.setEncounter(savedEncounter);
+		}
+		PatientProgram updatePatientProgram = pws.savePatientProgram(patientProgram);
+		for (PatientState state : updatePatientProgram.getStates()) {
+			assertEquals(savedEncounter.getEncounterId(), state.getEncounter().getEncounterId());
+		}
+	}
 	@Test
 	public void getPrograms_shouldTestGetProgramsIfCohortIsEmpty() {
 		Cohort cohort = new Cohort();
