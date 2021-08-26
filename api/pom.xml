@@ -21,28 +21,8 @@
    <name>openmrs-api</name>
    <description>The api that is re-used across web and modules</description>
    <dependencies>
-	   <dependency>
-         <groupId>org.openmrs.test</groupId>
-         <artifactId>openmrs-test</artifactId>
-         <type>pom</type>
-         <scope>test</scope>
-		   <exclusions>
-			   <exclusion>
-				   <groupId>org.powermock</groupId>
-				   <artifactId>powermock-module-junit4</artifactId>
-			   </exclusion>
-			   <exclusion>
-				   <groupId>org.powermock</groupId>
-				   <artifactId>powermock-api-mockito2</artifactId>
-			   </exclusion>
-		   </exclusions>
-	   </dependency>
-	   <dependency>
-		   <groupId>org.powermock</groupId>
-		   <artifactId>powermock-reflect</artifactId>
-		   <version>2.0.9</version>
-		   <scope>test</scope>
-	   </dependency>
+	   
+	   
       <dependency>
          <groupId>commons-collections</groupId>
          <artifactId>commons-collections</artifactId>
@@ -68,10 +48,7 @@
          <groupId>commons-io</groupId>
          <artifactId>commons-io</artifactId>
       </dependency>
-      <dependency>
-         <groupId>org.azeckoski</groupId>
-         <artifactId>reflectutils</artifactId>
-      </dependency>
+      
       <dependency>
          <groupId>org.apache.velocity</groupId>
          <artifactId>velocity</artifactId>
@@ -100,10 +77,7 @@
          <groupId>org.springframework</groupId>
          <artifactId>spring-tx</artifactId>
       </dependency>
-      <dependency>
-         <groupId>org.springframework</groupId>
-         <artifactId>spring-jdbc</artifactId>
-      </dependency>
+      
       <dependency>
          <groupId>org.springframework</groupId>
          <artifactId>spring-context-support</artifactId>
@@ -118,38 +92,20 @@
          	</exclusion>
          </exclusions>
       </dependency>
-      <dependency>
-         <groupId>ca.uhn.hapi</groupId>
-         <artifactId>hapi-structures-v23</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>ca.uhn.hapi</groupId>
-         <artifactId>hapi-structures-v24</artifactId>
-      </dependency>
+      
+      
       <dependency>
          <groupId>ca.uhn.hapi</groupId>
          <artifactId>hapi-structures-v25</artifactId>
       </dependency>
-      <dependency>
-         <groupId>ca.uhn.hapi</groupId>
-         <artifactId>hapi-structures-v26</artifactId>
-      </dependency>
-       <dependency>
-         <groupId>org.javassist</groupId>
-         <artifactId>javassist</artifactId>
-      </dependency>
+      
+       
       <dependency>
          <groupId>org.hibernate</groupId>
          <artifactId>hibernate-core</artifactId>
       </dependency>
-      <dependency>
-         <groupId>org.hibernate</groupId>
-         <artifactId>hibernate-c3p0</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>org.hibernate</groupId>
-         <artifactId>hibernate-ehcache</artifactId>
-      </dependency>
+      
+      
       <dependency>
          <groupId>org.hibernate</groupId>
          <artifactId>hibernate-search-orm</artifactId>
@@ -162,37 +118,24 @@
          <groupId>org.apache.lucene</groupId>
          <artifactId>lucene-queries</artifactId>
       </dependency>
-	   <dependency>
-		   <groupId>org.apache.lucene</groupId>
-		   <artifactId>lucene-backward-codecs</artifactId>
-	   </dependency>
+	   
 	   <dependency>
 		  <groupId>org.apache.logging.log4j</groupId>
 		  <artifactId>log4j-core</artifactId>
 	   </dependency>
-	   <dependency>
-		   <groupId>org.apache.logging.log4j</groupId>
-		   <artifactId>log4j-slf4j-impl</artifactId>
-	   </dependency>
+	   
 	   <dependency>
 		   <groupId>org.apache.logging.log4j</groupId>
 		   <artifactId>log4j-1.2-api</artifactId>
 	   </dependency>
 	   <!-- TODO This is necessary to support Hibernate 4.x with log4j2
 	    	this dependency should be removed when upgrading Hibernate -->
-	   <dependency>
-		   <groupId>org.jboss.logging</groupId>
-		   <artifactId>jboss-logging</artifactId>
-		   <version>3.4.2.Final</version>
-	   </dependency>
+	   
 	   <dependency>
 		   <groupId>org.slf4j</groupId>
 		   <artifactId>slf4j-api</artifactId>
 	   </dependency>
-	   <dependency>
-		   <groupId>org.slf4j</groupId>
-		   <artifactId>log4j-over-slf4j</artifactId>
-	   </dependency>
+	   
 	   <dependency>
          <groupId>com.thoughtworks.xstream</groupId>
          <artifactId>xstream</artifactId>
@@ -209,81 +152,33 @@
 		   <groupId>org.reflections</groupId>
 		   <artifactId>reflections</artifactId>
 	   </dependency>
-       <dependency>
-           <groupId>xerces</groupId>
-           <artifactId>xercesImpl</artifactId>
-       </dependency>
-       <dependency>
-           <groupId>javax.validation</groupId>
-           <artifactId>validation-api</artifactId>
-       </dependency>
-       <dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-validator</artifactId>
-	   </dependency>
-	   <dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<scope>test</scope>
-		</dependency>
+       
+       
+       
+	   
        <dependency>
            <groupId>org.codehaus.jackson</groupId>
            <artifactId>jackson-core-asl</artifactId>
        </dependency>
-       <dependency>
-           <groupId>org.codehaus.jackson</groupId>
-           <artifactId>jackson-mapper-asl</artifactId>
-       </dependency>
-      <dependency>
-         <groupId>com.fasterxml.jackson.core</groupId>
-         <artifactId>jackson-core</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>com.fasterxml.jackson.core</groupId>
-         <artifactId>jackson-annotations</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>com.fasterxml.jackson.core</groupId>
-         <artifactId>jackson-databind</artifactId>
-      </dependency>
-       <dependency>
-		   <groupId>org.codehaus.groovy</groupId>
-		   <artifactId>groovy-all</artifactId>
-		   <version>2.4.21</version>
-		   <type>jar</type>
-	   </dependency>
+       
+      
+      
+      
+       
        <dependency>
 		   <groupId>net.sf.ehcache</groupId>
 		   <artifactId>ehcache</artifactId>
        </dependency>
-	   <dependency>
-		   <groupId>org.aspectj</groupId>
-		   <artifactId>aspectjrt</artifactId>
-	   </dependency>
-	   <dependency>
-		   <groupId>org.aspectj</groupId>
-		   <artifactId>aspectjweaver</artifactId>
-	   </dependency>
-	   <dependency>
-		  <groupId>joda-time</groupId>
-		  <artifactId>joda-time</artifactId>
-		</dependency>
+	   
+	   
+	   
 		<dependency>
 		    <groupId>javax.annotation</groupId>
 		    <artifactId>javax.annotation-api</artifactId>
 		</dependency>
-		<dependency>
-		    <groupId>com.sun.activation</groupId>
-		    <artifactId>javax.activation</artifactId>
-		</dependency>
-		<dependency>
-		    <groupId>jakarta.xml.bind</groupId>
-		    <artifactId>jakarta.xml.bind-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.xml.bind</groupId>
-			<artifactId>jaxb-impl</artifactId>
-	    </dependency>
+		
+		
+		
 	   <dependency>
 		   <groupId>org.apache.lucene</groupId>
 		   <artifactId>lucene-analyzers-phonetic</artifactId>

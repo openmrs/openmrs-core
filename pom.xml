@@ -569,6 +569,11 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>2.22.2</version>
+						<configuration>
+							<parallel>classes</parallel>
+							<useUnlimitedThreads>true</useUnlimitedThreads>
+						</configuration>
+
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -906,6 +911,9 @@
 					<systemProperties>
 						<log4j2.disable.jmx>true</log4j2.disable.jmx>
 					</systemProperties>
+							<parallel>classes</parallel>
+							<useUnlimitedThreads>true</useUnlimitedThreads>
+
 				</configuration>
 			</plugin>
 			<plugin>
@@ -938,6 +946,11 @@
 								</configuration>
 							</execution>
 						</executions>
+						<configuration>
+							<parallel>classes</parallel>
+							<useUnlimitedThreads>true</useUnlimitedThreads>
+						</configuration>
+
 					</plugin>
 				</plugins>
 			</build>
@@ -984,6 +997,11 @@
 								</configuration>
 							</execution>
 						</executions>
+						<configuration>
+							<parallel>classes</parallel>
+							<useUnlimitedThreads>true</useUnlimitedThreads>
+						</configuration>
+
 					</plugin>
 				</plugins>
 			</build>
@@ -1003,6 +1021,9 @@
 								</property>
 							</properties>
 							<testFailureIgnore>false</testFailureIgnore>
+							<parallel>classes</parallel>
+							<useUnlimitedThreads>true</useUnlimitedThreads>
+
 						</configuration>
 					</plugin>
 					<plugin>

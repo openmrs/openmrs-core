@@ -9,14 +9,14 @@ jdk:
  - openjdk13
  - openjdk14
  - openjdk15
-script: mvn clean install --batch-mode && mvn test -Pskip-default-test -Pintegration-test
+script: mvn -T 1C clean install --batch-mode && mvn -T 1C test -Pskip-default-test -Pintegration-test
 matrix:
     - jdk: openjdk8
 branches:
   only:
     - master
 after_success:
-  - mvn jacoco:report coveralls:report
+  - mvn -T 1C jacoco:report coveralls:report
 notifications:
   email: false
   irc:
