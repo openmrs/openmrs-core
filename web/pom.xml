@@ -26,7 +26,23 @@
          <groupId>org.openmrs.api</groupId>
          <artifactId>openmrs-api</artifactId>
       </dependency>
-      
+      <dependency>
+         <groupId>org.openmrs.test</groupId>
+         <artifactId>openmrs-test</artifactId>
+         <type>pom</type>
+         <scope>test</scope>
+		  <exclusions>
+			  <exclusion>
+				  <groupId>org.powermock</groupId>
+				  <artifactId>powermock-module-junit4</artifactId>
+			  </exclusion>
+			  <exclusion>
+				  <groupId>org.powermock</groupId>
+				  <artifactId>powermock-api-mockito2</artifactId>
+			  </exclusion>
+		  </exclusions>
+      </dependency>
+      <!-- Test-jar for sharing api test resources in web tests -->
       <dependency>
          <groupId>org.openmrs.api</groupId>
          <artifactId>openmrs-api</artifactId>
@@ -37,8 +53,14 @@
          <groupId>javax.servlet</groupId>
          <artifactId>javax.servlet-api</artifactId>
       </dependency>
-      
-      
+      <dependency>
+         <groupId>javax.servlet</groupId>
+         <artifactId>jsp-api</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>javax.servlet.jsp.jstl</groupId>
+         <artifactId>javax.servlet.jsp.jstl-api</artifactId>
+      </dependency>
       <dependency>
          <groupId>commons-io</groupId>
          <artifactId>commons-io</artifactId>
@@ -55,18 +77,42 @@
          <groupId>org.springframework</groupId>
          <artifactId>spring-webmvc</artifactId>
       </dependency>
-      
-      
-      
-       
-       
-       
-       
+      <dependency>
+         <groupId>org.springframework</groupId>
+         <artifactId>spring-oxm</artifactId>
+       </dependency>
+      <dependency>
+         <groupId>mysql</groupId>
+         <artifactId>mysql-connector-java</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.postgresql</groupId>
+         <artifactId>postgresql</artifactId>
+      </dependency>
+       <dependency>
+           <groupId>taglibs</groupId>
+           <artifactId>request</artifactId>
+       </dependency>
+       <dependency>
+           <groupId>taglibs</groupId>
+           <artifactId>response</artifactId>
+       </dependency>
+       <dependency>
+           <groupId>taglibs</groupId>
+           <artifactId>standard</artifactId>
+       </dependency>
+       <dependency>
+           <groupId>taglibs</groupId>
+           <artifactId>page</artifactId>
+       </dependency>
       <dependency>
          <groupId>org.liquibase</groupId>
          <artifactId>liquibase-core</artifactId>
       </dependency>
-      
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>jcl-over-slf4j</artifactId>
+      </dependency>
       <dependency>
 		 <groupId>org.apache.velocity</groupId>
 		 <artifactId>velocity-tools</artifactId>
