@@ -62,7 +62,15 @@ public abstract class BaseFormRecordableOpenmrsData extends BaseChangeableOpenmr
 	public String getFormNamespaceAndPath() {
 		return formNamespaceAndPath;
 	}
-	
+
+	/**
+	 * Setter method
+	 * @param formNamespaceAndPath
+	 */
+	public void setFormNamespaceAndPath(String formNamespaceAndPath) {
+		this.formNamespaceAndPath = formNamespaceAndPath;
+	}
+
 	//The only reason i have added these three static methods below, is to be reused
 	//by domain objects like Order, which cannot use this as their base class.
 	public static String getFormFieldNamespace(String formNamespaceAndPath) {

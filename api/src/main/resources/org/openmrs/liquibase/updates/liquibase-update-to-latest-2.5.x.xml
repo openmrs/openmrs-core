@@ -86,5 +86,35 @@
 			</column>
 		</addColumn>
 	</changeSet>
-	
+
+	<changeSet id="10000000-TRUNK-6018" author="aojwang">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="patient_state" columnName="form_namespace_and_path"/>
+			</not>
+		</preConditions>
+		<comment>Adding "form_namespace_and_path" column to the patient_state table</comment>
+		<addColumn tableName="patient_state">
+			<column name="form_namespace_and_path" type="varchar(255)">
+				<constraints nullable="true"/>
+			</column>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="10000001-TRUNK-6018" author="aojwang">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="patient_state" columnName="encounter_id"/>
+			</not>
+		</preConditions>
+		<comment>Adding 'encounter_id' column to the patient_state table</comment>
+		<addColumn tableName="patient_state">
+			<column name="encounter_id" type="int">
+				<constraints nullable="true" />
+			</column>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="patient_state_encounter_id_fk"
+								 baseTableName="patient_state" baseColumnNames="encounter_id"
+								 referencedTableName="encounter" referencedColumnNames="encounter_id" />
+	</changeSet>
 </databaseChangeLog>
