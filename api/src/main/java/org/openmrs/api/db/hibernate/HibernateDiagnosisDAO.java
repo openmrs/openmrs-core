@@ -30,9 +30,10 @@ import javax.persistence.TypedQuery;
  *
  * @see DiagnosisDAO
  * @see org.openmrs.api.DiagnosisService
+ *
  */
 public class HibernateDiagnosisDAO implements DiagnosisDAO {
-
+	
 	/**
 	 * Hibernate session factory
 	 */
@@ -74,15 +75,15 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 	@Override
 	public List<Diagnosis> getActiveDiagnoses(Patient patient, Date fromDate) {
 		String fromDateCriteria = "";
-		if (fromDate != null) {
+		if(fromDate != null){
 			fromDateCriteria = " and d.dateCreated >= :fromDate ";
 		}
 		Query query = sessionFactory.getCurrentSession().createQuery(
-			"from Diagnosis d where d.patient.patientId = :patientId and d.voided = false "
-				+ fromDateCriteria
+			"from Diagnosis d where d.patient.patientId = :patientId and d.voided = false " 
+				+ fromDateCriteria  
 				+ " order by d.dateCreated desc");
 		query.setInteger("patientId", patient.getId());
-		if (fromDate != null) {
+		if(fromDate != null){
 			query.setDate("fromDate", fromDate);
 		}
 		return query.list();
@@ -95,11 +96,11 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 	 * @return list of diagnoses for an encounter
 	 */
 	@Override
-	public List<Diagnosis> getDiagnoses(Encounter encounter) {
+	public List<Diagnosis> getDiagnoses(Encounter encounter){
 		Query query = sessionFactory.getCurrentSession().createQuery(
 			"from Diagnosis d where d.encounter.encounterId = :encounterId order by dateCreated desc");
 		query.setInteger("encounterId", encounter.getId());
-		return query.list();
+		return query.list();	
 	}
 
 	/**
@@ -112,7 +113,7 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 	 * @return the list of (primary, confirmed) diagnoses for the given encounter
 	 */
 	@Override
-	public List<Diagnosis> getDiagnosesForEncounter(Encounter encounter, boolean primaryOnly, boolean confirmedOnly) {
+	public List<Diagnosis> getDiagnosesByEncounter(Encounter encounter, boolean primaryOnly, boolean confirmedOnly) {
 		String queryString = "from Diagnosis d where d.encounter.id = :encounterId";
 		if (primaryOnly) {
 			queryString += " and d.rank = :rankId";
@@ -143,7 +144,7 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 	 * @return the list of (primary, confirmed) diagnoses for the given visit
 	 */
 	@Override
-	public List<Diagnosis> getDiagnosesForVisit(Visit visit, boolean primaryOnly, boolean confirmedOnly) {
+	public List<Diagnosis> getDiagnosesByVisit(Visit visit, boolean primaryOnly, boolean confirmedOnly) {
 		String queryString = "from Diagnosis d where d.encounter.visit.id = :visitId";
 		if (primaryOnly) {
 			queryString += " and d.rank = :rankId";
@@ -166,7 +167,7 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 
 	/**
 	 * Gets a diagnosis from database using the diagnosis id
-	 *
+	 * 
 	 * @param diagnosisId the id of the diagnosis to look for
 	 * @return the diagnosis with the given diagnosis id
 	 */
@@ -174,7 +175,7 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 	public Diagnosis getDiagnosisById(Integer diagnosisId) {
 		return (Diagnosis) sessionFactory.getCurrentSession().get(Diagnosis.class, diagnosisId);
 	}
-
+	
 	/**
 	 * Gets the diagnosis attached to the specified UUID.
 	 *
@@ -182,18 +183,17 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 	 * @return the diagnosis associated with the UUID.
 	 */
 	@Override
-	public Diagnosis getDiagnosisByUuid(String uuid) {
+	public Diagnosis getDiagnosisByUuid(String uuid){
 		return (Diagnosis) sessionFactory.getCurrentSession().createQuery("from Diagnosis d where d.uuid = :uuid")
 			.setString("uuid", uuid).uniqueResult();
 	}
 
 	/**
-	 * Completely remove a diagnosis from the database.
-	 *
+	 * Completely remove a diagnosis from the database. 
 	 * @param diagnosis diagnosis to remove from the database
 	 */
 	@Override
-	public void deleteDiagnosis(Diagnosis diagnosis) throws DAOException {
+	public void deleteDiagnosis(Diagnosis diagnosis) throws DAOException{
 		sessionFactory.getCurrentSession().delete(diagnosis);
 	}
 }

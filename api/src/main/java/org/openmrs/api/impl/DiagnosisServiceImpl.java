@@ -79,33 +79,21 @@ public class DiagnosisServiceImpl extends BaseOpenmrsService implements Diagnosi
 	}
 
 	/**
-	 * Gets diagnoses for an Encounter. When specified, this method only returns
-	 * primary or confirmed diagnoses.
-	 *
-	 * @param encounter the encounter for which to fetch diagnoses
-	 * @param primaryOnly whether to return only primary diagnoses
-	 * @param confirmedOnly whether to return only confirmed diagnoses
-	 * @return the list of (primary, confirmed) diagnoses for the given encounter
+	 * @see org.openmrs.api.DiagnosisService#getDiagnosesByEncounter(Encounter, boolean, boolean)
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public List<Diagnosis> getDiagnosesForEncounter(Encounter encounter, boolean primaryOnly, boolean confirmedOnly) {
-		return diagnosisDAO.getDiagnosesForEncounter(encounter, primaryOnly, confirmedOnly);
+	public List<Diagnosis> getDiagnosesByEncounter(Encounter encounter, boolean primaryOnly, boolean confirmedOnly) {
+		return diagnosisDAO.getDiagnosesByEncounter(encounter, primaryOnly, confirmedOnly);
 	}
-	
+
 	/**
-	 * Gets diagnoses for a Visit. When specified, this method only returns
-	 * primary or confirmed diagnoses.
-	 *
-	 * @param visit the visit for which to fetch diagnoses
-	 * @param primaryOnly whether to return only primary diagnoses
-	 * @param confirmedOnly whether to return only confirmed diagnoses
-	 * @return the list of (primary, confirmed) diagnoses for the given encounter
+	 * @see org.openmrs.api.DiagnosisService#getDiagnosesByVisit(Visit, boolean, boolean) 
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public List<Diagnosis> getDiagnosesForVisit(Visit visit, boolean primaryOnly, boolean confirmedOnly) {
-		return diagnosisDAO.getDiagnosesForVisit(visit, primaryOnly, confirmedOnly);
+	public List<Diagnosis> getDiagnosesByVisit(Visit visit, boolean primaryOnly, boolean confirmedOnly) {
+		return diagnosisDAO.getDiagnosesByVisit(visit, primaryOnly, confirmedOnly);
 	}
 
 	/**
@@ -113,14 +101,14 @@ public class DiagnosisServiceImpl extends BaseOpenmrsService implements Diagnosi
 	 * The diagnosis order is identified using the integer rank value. The diagnosis rank is thus:
 	 * 1 - PRIMARY (Primary diagnosis)
 	 * 2 - SECONDARY (Secondary diagnosis)
-	 * 
+	 *
 	 * @param encounter the encounter whose diagnoses we are to get
 	 * @return the list of diagnoses in the given encounter whose rank is 1 (Primary diagnosis)
 	 */
 	@Override
 	@Transactional(readOnly = true)
 	public List<Diagnosis> getPrimaryDiagnoses(Encounter encounter) {
-		return diagnosisDAO.getDiagnosesForEncounter(encounter, true, false);
+		return diagnosisDAO.getDiagnosesByEncounter(encounter, true, false);
 	}
 
 	/**

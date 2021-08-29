@@ -76,9 +76,11 @@ public interface DiagnosisService extends OpenmrsService {
 	 * @param primaryOnly whether to return only primary diagnoses
 	 * @param confirmedOnly whether to return only confirmed diagnoses
 	 * @return the list of (primary, confirmed) diagnoses for the given encounter
+	 * 
+	 * @since 2.5.0
 	 */
 	@Authorized({ PrivilegeConstants.GET_DIAGNOSES })
-	List<Diagnosis> getDiagnosesForEncounter(Encounter encounter, boolean primaryOnly, boolean confirmedOnly);
+	List<Diagnosis> getDiagnosesByEncounter(Encounter encounter, boolean primaryOnly, boolean confirmedOnly);
 	
 	/**
 	 * Gets diagnoses for a Visit. When specified, this method only returns
@@ -87,16 +89,18 @@ public interface DiagnosisService extends OpenmrsService {
 	 * @param visit the visit for which to fetch diagnoses
 	 * @param primaryOnly whether to return only primary diagnoses
 	 * @param confirmedOnly whether to return only confirmed diagnoses
-	 * @return the list of (primary, confirmed) diagnoses for the given encounter
+	 * @return the list of (primary, confirmed) diagnoses for the given visit
+	 * 
+	 * @since 2.5.0
 	 */
 	@Authorized({ PrivilegeConstants.GET_DIAGNOSES })
-	List<Diagnosis> getDiagnosesForVisit(Visit visit, boolean primaryOnly, boolean confirmedOnly);
+	List<Diagnosis> getDiagnosesByVisit(Visit visit, boolean primaryOnly, boolean confirmedOnly);
 
 
 	/**
 	 * Finds the primary diagnoses for a given encounter
 	 *
-	 * @deprecated since 2.5.0, use {@link #getDiagnosesForEncounter}
+	 * @deprecated since 2.5.0, use {@link #getDiagnosesByEncounter}
 	 * 
 	 * @param encounter the encounter whose diagnoses we are to get
 	 * @return the list of diagnoses in the given encounter

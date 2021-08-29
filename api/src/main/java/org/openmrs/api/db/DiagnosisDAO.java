@@ -61,7 +61,7 @@ public interface DiagnosisDAO {
 	/**
 	 * Gets all diagnoses for a given encounter
 	 *
-	 * @deprecated since 2.5.0, use {@link #getDiagnosesForEncounter}
+	 * @deprecated since 2.5.0, use {@link #getDiagnosesByEncounter}
 	 *
 	 * @param encounter the encounter for which to fetch diagnoses
 	 * @return the list of (primary, confirmed) diagnoses for the given encounter
@@ -70,26 +70,14 @@ public interface DiagnosisDAO {
 	List<Diagnosis> getDiagnoses(Encounter encounter);
 	
 	/**
-	 * Gets diagnoses for an Encounter. When specified, this method only returns
-	 * primary or confirmed diagnoses.
-	 *
-	 * @param encounter the encounter for which to fetch diagnoses
-	 * @param primaryOnly whether to return only primary diagnoses
-	 * @param confirmedOnly whether to return only confirmed diagnoses
-	 * @return the list of (primary, confirmed) diagnoses for the given encounter
+	 * @see org.openmrs.api.DiagnosisService#getDiagnosesByEncounter(Encounter, boolean, boolean)
 	 */
-	List<Diagnosis> getDiagnosesForEncounter(Encounter encounter, boolean primaryOnly, boolean confirmedOnly);
+	List<Diagnosis> getDiagnosesByEncounter(Encounter encounter, boolean primaryOnly, boolean confirmedOnly);
 
 	/**
-	 * Gets diagnoses for a Visit. When specified, this method only returns
-	 * primary or confirmed diagnoses.
-	 *
-	 * @param visit the visit for which to fetch diagnoses
-	 * @param primaryOnly whether to return only primary diagnoses
-	 * @param confirmedOnly whether to return only confirmed diagnoses
-	 * @return the list of (primary, confirmed) diagnoses for the given visit
+	 * @see org.openmrs.api.DiagnosisService#getDiagnosesByVisit(Visit, boolean, boolean)
 	 */
-	List<Diagnosis> getDiagnosesForVisit(Visit visit, boolean primaryOnly, boolean confirmedOnly);
+	List<Diagnosis> getDiagnosesByVisit(Visit visit, boolean primaryOnly, boolean confirmedOnly);
 
 	/**
 	 * Gets all active diagnoses related to the specified patient.
