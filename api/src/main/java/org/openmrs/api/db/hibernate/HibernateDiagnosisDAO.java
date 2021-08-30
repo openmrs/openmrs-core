@@ -14,11 +14,15 @@ import java.util.List;
 
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.openmrs.ConditionVerificationStatus;
 import org.openmrs.Diagnosis;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
+import org.openmrs.Visit;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.DiagnosisDAO;
+
+import javax.persistence.TypedQuery;
 
 
 /**
@@ -86,32 +90,53 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 	}
 
 	/**
-	 * Gets all diagnoses for a given encounter
-	 *
-	 * @param encounter the specific encounter to get the diagnoses for.
-	 * @return list of diagnoses for an encounter
+	 * @see org.openmrs.api.db.DiagnosisDAO#getDiagnosesByEncounter(Encounter, boolean, boolean)
 	 */
 	@Override
-	public List<Diagnosis> getDiagnoses(Encounter encounter){
-		Query query = sessionFactory.getCurrentSession().createQuery(
-			"from Diagnosis d where d.encounter.encounterId = :encounterId order by dateCreated desc");
-		query.setInteger("encounterId", encounter.getId());
-		return query.list();	
+	public List<Diagnosis> getDiagnosesByEncounter(Encounter encounter, boolean primaryOnly, boolean confirmedOnly) {
+		String queryString = "from Diagnosis d where d.encounter.encounterId = :encounterId";
+		if (primaryOnly) {
+			queryString += " and d.rank = :rankId";
+		}
+		if (confirmedOnly) {
+			queryString += " and d.certainty = :certainty";
+		}
+		queryString += " order by d.dateCreated desc";
+
+		TypedQuery<Diagnosis> query = sessionFactory.getCurrentSession().createQuery(queryString, Diagnosis.class).setParameter("encounterId", encounter.getId());
+		if (primaryOnly) {
+			query.setParameter("rankId", PRIMARY_RANK);
+		}
+		if (confirmedOnly) {
+			query.setParameter("certainty", ConditionVerificationStatus.CONFIRMED);
+		}
+
+		return query.getResultList();
 	}
 
 	/**
-	 * Gets primary diagnoses for a given encounter
-	 *
-	 * @param encounter the specific encounter to get the primary diagnoses for.
-	 * @return list of primary diagnoses for an encounter
+	 * @see org.openmrs.api.db.DiagnosisDAO#getDiagnosesByVisit(Visit, boolean, boolean)
 	 */
 	@Override
-	public List<Diagnosis> getPrimaryDiagnoses(Encounter encounter) {
-		Query query = sessionFactory.getCurrentSession().createQuery(
-			"from Diagnosis d where d.encounter.encounterId = :encounterId and d.rank = :rankId order by dateCreated desc");
-		query.setInteger("encounterId", encounter.getId());
-		query.setInteger("rankId", PRIMARY_RANK);
-		return query.list();
+	public List<Diagnosis> getDiagnosesByVisit(Visit visit, boolean primaryOnly, boolean confirmedOnly) {
+		String queryString = "from Diagnosis d where d.encounter.visit.visitId = :visitId";
+		if (primaryOnly) {
+			queryString += " and d.rank = :rankId";
+		}
+		if (confirmedOnly) {
+			queryString += " and d.certainty = :certainty";
+		}
+		queryString += " order by d.dateCreated desc";
+
+		TypedQuery<Diagnosis> query = sessionFactory.getCurrentSession().createQuery(queryString, Diagnosis.class).setParameter("visitId", visit.getId());
+		if (primaryOnly) {
+			query.setParameter("rankId", PRIMARY_RANK);
+		}
+		if (confirmedOnly) {
+			query.setParameter("certainty", ConditionVerificationStatus.CONFIRMED);
+		}
+
+		return query.getResultList();
 	}
 
 	/**

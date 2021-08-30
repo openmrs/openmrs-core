@@ -15,6 +15,7 @@ import java.util.List;
 import org.openmrs.Diagnosis;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
+import org.openmrs.Visit;
 
 /**
  * This interface defines database methods for diagnosis objects.
@@ -58,20 +59,14 @@ public interface DiagnosisDAO {
 	void deleteDiagnosis(Diagnosis diagnosis) throws DAOException;
 	
 	/**
-	 * Gets all diagnoses for a given encounter
-	 *
-	 * @param encounter the specific encounter to get the diagnoses for.
-	 * @return list of diagnoses for an encounter
+	 * @see org.openmrs.api.DiagnosisService#getDiagnosesByEncounter(Encounter, boolean, boolean)
 	 */
-	List<Diagnosis> getDiagnoses(Encounter encounter);
+	List<Diagnosis> getDiagnosesByEncounter(Encounter encounter, boolean primaryOnly, boolean confirmedOnly);
 
 	/**
-	 * Gets primary diagnoses for a given encounter
-	 *
-	 * @param encounter the specific encounter to get the primary diagnoses for.
-	 * @return list of primary diagnoses for an encounter
+	 * @see org.openmrs.api.DiagnosisService#getDiagnosesByVisit(Visit, boolean, boolean)
 	 */
-	List<Diagnosis> getPrimaryDiagnoses(Encounter encounter);
+	List<Diagnosis> getDiagnosesByVisit(Visit visit, boolean primaryOnly, boolean confirmedOnly);
 
 	/**
 	 * Gets all active diagnoses related to the specified patient.

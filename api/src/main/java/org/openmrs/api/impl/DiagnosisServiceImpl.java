@@ -13,13 +13,13 @@ import org.openmrs.CodedOrFreeText;
 import org.openmrs.Diagnosis;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
+import org.openmrs.Visit;
 import org.openmrs.api.APIException;
 import org.openmrs.api.DiagnosisService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DiagnosisDAO;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Iterator;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -79,6 +79,24 @@ public class DiagnosisServiceImpl extends BaseOpenmrsService implements Diagnosi
 	}
 
 	/**
+	 * @see org.openmrs.api.DiagnosisService#getDiagnosesByEncounter(Encounter, boolean, boolean)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<Diagnosis> getDiagnosesByEncounter(Encounter encounter, boolean primaryOnly, boolean confirmedOnly) {
+		return diagnosisDAO.getDiagnosesByEncounter(encounter, primaryOnly, confirmedOnly);
+	}
+
+	/**
+	 * @see org.openmrs.api.DiagnosisService#getDiagnosesByVisit(Visit, boolean, boolean) 
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<Diagnosis> getDiagnosesByVisit(Visit visit, boolean primaryOnly, boolean confirmedOnly) {
+		return diagnosisDAO.getDiagnosesByVisit(visit, primaryOnly, confirmedOnly);
+	}
+
+	/**
 	 * Finds the primary diagnoses for a given encounter
 	 * The diagnosis order is identified using the integer rank value. The diagnosis rank is thus:
 	 * 1 - PRIMARY (Primary diagnosis)
@@ -90,7 +108,7 @@ public class DiagnosisServiceImpl extends BaseOpenmrsService implements Diagnosi
 	@Override
 	@Transactional(readOnly = true)
 	public List<Diagnosis> getPrimaryDiagnoses(Encounter encounter) {
-		return diagnosisDAO.getPrimaryDiagnoses(encounter);
+		return diagnosisDAO.getDiagnosesByEncounter(encounter, true, false);
 	}
 
 	/**
