@@ -65,7 +65,7 @@ public class AllergyValidator implements Validator {
 
 		if (allergy.getReactionNonCoded() != null) {
 			if (!allergy.getReactionNonCoded().matches("[a-zA-Z]+$")) {
-				errors.rejectValue("reactionNonCoded", "Other Reaction must not contain a number or symbol");
+				errors.rejectValue("reactionNonCoded", "allergyapi.error.validateInputString");
 			}
 
 		}
