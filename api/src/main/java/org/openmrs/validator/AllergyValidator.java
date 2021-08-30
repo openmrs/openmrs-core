@@ -45,12 +45,12 @@ public class AllergyValidator implements Validator {
 	 *               <strong>Should</strong> fail id allergenType is null
 	 *               <strong>Should</strong> fail if allergen is null
 	 *               <strong>Should</strong> fail if codedAllergen is null
-	 *               <strong>Should</strong> reject numeric values and symbols on
-	 *               reactionNonCoded <strong>Should</strong> fail if
-	 *               nonCodedAllergen is null and allergen is set to other non coded
+	 *               <strong>Should</strong> fail if nonCodedAllergen is null and allergen is set to other non coded
 	 *               <strong>Should</strong> reject a duplicate allergen
 	 *               <strong>Should</strong> reject a duplicate non coded allergen
 	 *               <strong>Should</strong> pass for a valid allergy
+	 *               <strong>Should</strong> reject numeric values and symbols on reactionNonCoded 
+
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
