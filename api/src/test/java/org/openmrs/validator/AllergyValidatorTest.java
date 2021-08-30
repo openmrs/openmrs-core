@@ -180,6 +180,9 @@ public class AllergyValidatorTest extends BaseContextMockTest {
 		assertFalse(errors.hasErrors());
 	}
     @Test
+    public void valid_shouldRejectNumericReactionValue() throws Exception { 
+    
+    }
 	public void valid_shouldRejectNumericReactionValue() throws Exception {
 		Allergy allergy = new Allergy();
 		AllergyReaction reaction = new AllergyReaction();
