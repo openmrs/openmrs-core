@@ -12,10 +12,14 @@
 -->
 
 <dataset>
+	<visit visit_id="7" patient_id="2" visit_type_id="1" date_started="2012-01-01 02:00:00.0" creator="1" date_created="2012-01-01 00:00:00.0" voided="0" uuid="a2c3868a-6b90-11e0-93c3-18a905e044dc" />
+	<visit visit_id="8" patient_id="2" visit_type_id="1" date_started="2012-01-01 02:00:00.0" creator="1" date_created="2012-01-01 00:00:00.0" voided="0" uuid="a2c3848a-6b90-11e0-93c3-18a905e044dc" />
+	<encounter encounter_id="3" encounter_type="1" form_id="1" encounter_datetime="2012-01-01 02:00:00.0" patient_id="2" location_id="1" visit_id="7" creator="1" date_created="2012-01-01 02:00:00.0" voided="0" uuid="7fffd6b9-0970-4967-88c7-0b7b50f12bc6"/>
+	<encounter encounter_id="4" encounter_type="1" form_id="1" encounter_datetime="2012-01-01 02:00:00.0" patient_id="2" location_id="1" visit_id="8" creator="1" date_created="2012-01-01 02:00:00.0" voided="0" uuid="4fffd6b9-0970-4967-88c7-0b7b50112bc6"/>
 	<encounter_diagnosis diagnosis_id="1" creator="1" encounter_id="3" patient_id="2"
 						 date_created="2015-01-12 00:00:00.0" voided="false" uuid="4e663d66-6b78-11e0-93c3-18a905e044dc" rank="1" certainty="PROVISIONAL" />
 	<encounter_diagnosis diagnosis_id="2" creator="1" encounter_id="3" patient_id="2"
-						 date_created="2013-01-12 03:00:00" voided="false" uuid="2cc6880e-2c46-15e4-9038-a6c5e4d22fb7" rank="1" certainty="PROVISIONAL" />
+						 date_created="2013-01-11 03:00:00" voided="false" uuid="2cc6880e-2c46-15e4-9038-a6c5e4d22fb7" rank="1" certainty="PROVISIONAL" />
 	<encounter_diagnosis diagnosis_id="3" creator="1" encounter_id="4 " patient_id="2"
 						 date_created="2015-03-12 00:00:00" voided="true" uuid="2fc6880e-2c46-15e4-d038-a6c5e4d22fb7" rank="4" certainty="PROVISIONAL" />
 	<encounter_diagnosis diagnosis_id="4" creator="1" encounter_id="4" patient_id="6"

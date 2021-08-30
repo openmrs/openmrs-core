@@ -26,11 +26,13 @@ import org.openmrs.Condition;
 import org.openmrs.ConditionVerificationStatus;
 import org.openmrs.Diagnosis;
 import org.openmrs.Encounter;
+import org.openmrs.Visit;
 import org.openmrs.Patient;
 import org.openmrs.api.ConditionService;
 import org.openmrs.api.DiagnosisService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
@@ -39,10 +41,9 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
  * would span implementations should go on the {@link org.openmrs.api.DiagnosisService}.
  */
 public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
-
 	protected static final String DIAGNOSIS_XML = "org/openmrs/api/include/DiagnosisServiceImplTest-SetupDiagnosis.xml";
-	
 	private DiagnosisService diagnosisService;
+	private VisitService visitService;
 	private PatientService patientService;
 	private EncounterService encounterService;
 	private ConditionService conditionService;
@@ -60,6 +61,9 @@ public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 		}
 		if(encounterService == null){
 			encounterService = Context.getEncounterService();
+		}
+		if (visitService == null) {
+			visitService = Context.getVisitService();
 		}
 		executeDataSet(DIAGNOSIS_XML);
 	}
@@ -184,6 +188,91 @@ public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 		assertEquals(new Integer(1), diagnoses.get(0).getDiagnosisId());
 		assertEquals(new Integer(2), diagnoses.get(0).getPatient().getPatientId());
 		assertEquals(1, diagnoses.size());
+	}
+
+	/**
+	 * @see DiagnosisService#getDiagnosesByEncounter(Encounter, boolean, boolean)
+	 */
+	@Test
+	public void getDiagnosesByEncounter_shouldGetDiagnosesForEncounter() {
+		Encounter encounter = encounterService.getEncounter(5);
+		List<Diagnosis> diagnoses = diagnosisService.getDiagnosesByEncounter(encounter, false, false);
+
+		assertEquals(2, diagnoses.size());
+		assertEquals("88042cce-8804-17e4-8804-a68804d22fb7", diagnoses.get(0).getUuid());
+		assertEquals(ConditionVerificationStatus.CONFIRMED, diagnoses.get(0).getCertainty());
+		assertEquals("77009cce-8804-17e4-8804-a68804d22fb7", diagnoses.get(1).getUuid());
+		assertEquals(ConditionVerificationStatus.PROVISIONAL, diagnoses.get(1).getCertainty());
+	}
+
+	/**
+	 * @see DiagnosisService#getDiagnosesByEncounter(Encounter, boolean, boolean)
+	 */
+	@Test
+	public void getDiagnosesByEncounter_shouldGetPrimaryDiagnosesForEncounter() {
+		Encounter encounter = encounterService.getEncounter(6);
+		List<Diagnosis> diagnoses = diagnosisService.getDiagnosesByEncounter(encounter, true, false);
+
+		assertEquals(1, diagnoses.size());
+		assertEquals("68802cce-6880-17e4-6880-a68804d22fb7", diagnoses.get(0).getUuid());
+		assertEquals(ConditionVerificationStatus.CONFIRMED, diagnoses.get(0).getCertainty());
+		assertEquals(1, diagnoses.get(0).getRank());
+	}
+
+	/**
+	 * @see DiagnosisService#getDiagnosesByEncounter(Encounter, boolean, boolean)
+	 */
+	@Test
+	public void getDiagnosesByEncounter_shouldGetConfirmedDiagnosesForEncounter() {
+		Encounter encounter = encounterService.getEncounter(5);
+		List<Diagnosis> diagnoses = diagnosisService.getDiagnosesByEncounter(encounter, false, true);
+
+		assertEquals(1, diagnoses.size());
+		assertEquals("88042cce-8804-17e4-8804-a68804d22fb7", diagnoses.get(0).getUuid());
+		assertEquals(ConditionVerificationStatus.CONFIRMED, diagnoses.get(0).getCertainty());
+	}
+
+	/**
+	 * @see DiagnosisService#getDiagnosesByVisit(Visit, boolean, boolean)
+	 */
+	@Test
+	public void getDiagnosesByVisit_shouldGetDiagnosesForEncounter() {
+		Visit visit = visitService.getVisit(7);
+		List<Diagnosis> diagnoses = diagnosisService.getDiagnosesByVisit(visit, false, false);
+
+		assertEquals(2, diagnoses.size());
+		assertEquals("88042cce-8804-17e4-8804-a68804d22fb7", diagnoses.get(0).getUuid());
+		assertEquals(ConditionVerificationStatus.CONFIRMED, diagnoses.get(0).getCertainty());
+		assertEquals("77009cce-8804-17e4-8804-a68804d22fb7", diagnoses.get(1).getUuid());
+		assertEquals(ConditionVerificationStatus.PROVISIONAL, diagnoses.get(1).getCertainty());
+
+	}
+
+	/**
+	 * @see DiagnosisService#getDiagnosesByVisit(Visit, boolean, boolean)
+	 */
+	@Test
+	public void getDiagnosesByVisit_shouldGetPrimaryDiagnosesForEncounter() {
+		Visit visit = visitService.getVisit(8);
+		List<Diagnosis> diagnoses = diagnosisService.getDiagnosesByVisit(visit, true, false);
+
+		assertEquals(1, diagnoses.size());
+		assertEquals("68802cce-6880-17e4-6880-a68804d22fb7", diagnoses.get(0).getUuid());
+		assertEquals(ConditionVerificationStatus.CONFIRMED, diagnoses.get(0).getCertainty());
+		assertEquals(1, diagnoses.get(0).getRank());
+	}
+
+	/**
+	 * @see DiagnosisService#getDiagnosesByVisit(Visit, boolean, boolean)
+	 */
+	@Test
+	public void getDiagnosesByVisit_shouldGetConfirmedDiagnosesForEncounter() {
+		Visit visit = visitService.getVisit(7);
+		List<Diagnosis> diagnoses = diagnosisService.getDiagnosesByVisit(visit, false, true);
+
+		assertEquals(1, diagnoses.size());
+		assertEquals("88042cce-8804-17e4-8804-a68804d22fb7", diagnoses.get(0).getUuid());
+		assertEquals(ConditionVerificationStatus.CONFIRMED, diagnoses.get(0).getCertainty());
 	}
 
 	/**
