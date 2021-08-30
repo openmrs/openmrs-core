@@ -69,13 +69,12 @@ public interface DiagnosisService extends OpenmrsService {
 	List<Diagnosis> getDiagnoses(Patient patient, Date fromDate);
 
 	/**
-	 * Gets diagnoses for an Encounter. When specified, this method only returns
-	 * primary or confirmed diagnoses.
+	 * Gets diagnoses for an Encounter.
 	 *
 	 * @param encounter the encounter for which to fetch diagnoses
 	 * @param primaryOnly whether to return only primary diagnoses
 	 * @param confirmedOnly whether to return only confirmed diagnoses
-	 * @return the list of (primary, confirmed) diagnoses for the given encounter
+	 * @return the list of diagnoses for the given encounter
 	 * 
 	 * @since 2.5.0
 	 */
@@ -83,13 +82,12 @@ public interface DiagnosisService extends OpenmrsService {
 	List<Diagnosis> getDiagnosesByEncounter(Encounter encounter, boolean primaryOnly, boolean confirmedOnly);
 	
 	/**
-	 * Gets diagnoses for a Visit. When specified, this method only returns
-	 * primary or confirmed diagnoses.
+	 * Gets diagnoses for a Visit.
 	 *
 	 * @param visit the visit for which to fetch diagnoses
 	 * @param primaryOnly whether to return only primary diagnoses
 	 * @param confirmedOnly whether to return only confirmed diagnoses
-	 * @return the list of (primary, confirmed) diagnoses for the given visit
+	 * @return the list of diagnoses for the given visit
 	 * 
 	 * @since 2.5.0
 	 */

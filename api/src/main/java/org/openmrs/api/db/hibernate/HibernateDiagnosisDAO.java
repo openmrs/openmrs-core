@@ -104,13 +104,7 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 	}
 
 	/**
-	 * Gets diagnoses for an Encounter. When specified, this method only returns
-	 * primary or confirmed diagnoses.
-	 *
-	 * @param encounter     the encounter for which to fetch diagnoses
-	 * @param primaryOnly   whether to return only primary diagnoses
-	 * @param confirmedOnly whether to return only confirmed diagnoses
-	 * @return the list of (primary, confirmed) diagnoses for the given encounter
+	 * @see org.openmrs.api.db.DiagnosisDAO#getDiagnosesByEncounter(Encounter, boolean, boolean)
 	 */
 	@Override
 	public List<Diagnosis> getDiagnosesByEncounter(Encounter encounter, boolean primaryOnly, boolean confirmedOnly) {
@@ -135,13 +129,7 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 	}
 
 	/**
-	 * Gets diagnoses for an Encounter. When specified, this method only returns
-	 * primary or confirmed diagnoses.
-	 *
-	 * @param visit     the visit for which to fetch diagnoses
-	 * @param primaryOnly   whether to return only primary diagnoses
-	 * @param confirmedOnly whether to return only confirmed diagnoses
-	 * @return the list of (primary, confirmed) diagnoses for the given visit
+	 * @see org.openmrs.api.db.DiagnosisDAO#getDiagnosesByVisit(Visit, boolean, boolean)
 	 */
 	@Override
 	public List<Diagnosis> getDiagnosesByVisit(Visit visit, boolean primaryOnly, boolean confirmedOnly) {
