@@ -90,20 +90,6 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 	}
 
 	/**
-	 * Gets all diagnoses for a given encounter
-	 *
-	 * @param encounter the specific encounter to get the diagnoses for.
-	 * @return list of diagnoses for an encounter
-	 */
-	@Override
-	public List<Diagnosis> getDiagnoses(Encounter encounter){
-		Query query = sessionFactory.getCurrentSession().createQuery(
-			"from Diagnosis d where d.encounter.encounterId = :encounterId order by dateCreated desc");
-		query.setInteger("encounterId", encounter.getId());
-		return query.list();	
-	}
-
-	/**
 	 * @see org.openmrs.api.db.DiagnosisDAO#getDiagnosesByEncounter(Encounter, boolean, boolean)
 	 */
 	@Override

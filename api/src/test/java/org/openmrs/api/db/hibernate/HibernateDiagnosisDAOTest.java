@@ -109,12 +109,6 @@ public class HibernateDiagnosisDAOTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void shouldGetDiagnoses() {
-		assertEquals(2, diagnosisDAO.getDiagnoses(new Encounter(3)).size());
-		assertEquals(0, diagnosisDAO.getDiagnoses(new Encounter(9)).size());
-	}
-
-	@Test
 	public void shouldGetDiagnosesByEncounter() {
 		assertEquals(2, diagnosisDAO.getDiagnosesByEncounter(new Encounter(3), false, false).size());
 		assertEquals(0, diagnosisDAO.getDiagnosesByEncounter(new Encounter(9), false, false).size());

@@ -57,17 +57,6 @@ public interface DiagnosisDAO {
 	 * @throws DAOException exception thrown if error occurs while deleting the diagnosis
 	 */
 	void deleteDiagnosis(Diagnosis diagnosis) throws DAOException;
-
-	/**
-	 * Gets all diagnoses for a given encounter
-	 *
-	 * @deprecated since 2.5.0, use {@link #getDiagnosesByEncounter}
-	 *
-	 * @param encounter the encounter for which to fetch diagnoses
-	 * @return the list of (primary, confirmed) diagnoses for the given encounter
-	 */
-	@Deprecated
-	List<Diagnosis> getDiagnoses(Encounter encounter);
 	
 	/**
 	 * @see org.openmrs.api.DiagnosisService#getDiagnosesByEncounter(Encounter, boolean, boolean)
