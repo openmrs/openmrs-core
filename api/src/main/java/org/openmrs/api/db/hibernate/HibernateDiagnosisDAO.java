@@ -94,7 +94,7 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 	 */
 	@Override
 	public List<Diagnosis> getDiagnosesByEncounter(Encounter encounter, boolean primaryOnly, boolean confirmedOnly) {
-		String queryString = "from Diagnosis d where d.encounter.id = :encounterId";
+		String queryString = "from Diagnosis d where d.encounter.encounterId = :encounterId";
 		if (primaryOnly) {
 			queryString += " and d.rank = :rankId";
 		}
@@ -119,7 +119,7 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 	 */
 	@Override
 	public List<Diagnosis> getDiagnosesByVisit(Visit visit, boolean primaryOnly, boolean confirmedOnly) {
-		String queryString = "from Diagnosis d where d.encounter.visit.id = :visitId";
+		String queryString = "from Diagnosis d where d.encounter.visit.visitId = :visitId";
 		if (primaryOnly) {
 			queryString += " and d.rank = :rankId";
 		}
