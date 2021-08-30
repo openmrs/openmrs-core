@@ -61,6 +61,13 @@ public class AllergyValidator implements Validator {
 		ValidationUtils.rejectIfEmpty(errors, "patient", "allergyapi.patient.required");
 		
 		Allergy allergy = (Allergy) target;
+
+		if(allergy.getReactionNonCoded() != null) {
+			if(!allergy.getReactionNonCoded().matches("[a-zA-Z]+$")) {
+				errors.rejectValue("reactionNonCoded", "Other Reaction must not contain a number or symbol");
+			}
+			}
+		
 		
 		if (allergy.getAllergen() == null) {
 			errors.rejectValue("allergen", "allergyapi.allergen.required");

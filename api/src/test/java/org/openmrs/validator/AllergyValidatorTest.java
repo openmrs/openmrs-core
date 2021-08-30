@@ -26,6 +26,7 @@ import org.openmrs.Allergen;
 import org.openmrs.AllergenType;
 import org.openmrs.Allergies;
 import org.openmrs.Allergy;
+import org.openmrs.AllergyReaction;
 import org.openmrs.Concept;
 import org.openmrs.Patient;
 import org.openmrs.api.PatientService;
@@ -177,5 +178,20 @@ public class AllergyValidatorTest extends BaseContextMockTest {
 		validator.validate(allergy, errors);
 		
 		assertFalse(errors.hasErrors());
+	}
+    @Test
+	public void valid_shouldRejectNumericReactionValue() throws Exception {
+		Allergy allergy = new Allergy();
+		AllergyReaction reaction = new AllergyReaction();
+	    reaction.setReactionNonCoded("malaria");
+	    allergy.addReaction(reaction);
+	    
+		Errors errors = new BindException(allergy,"allergy");
+		
+		validator.validate(allergy, errors);
+		assertTrue(errors.hasErrors());
+		
+	
+		
 	}
 }
