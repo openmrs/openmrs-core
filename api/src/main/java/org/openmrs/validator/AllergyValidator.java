@@ -3,7 +3,6 @@
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
  * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
- *
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
@@ -54,22 +53,16 @@ public class AllergyValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
-
 		if (target == null) {
 			throw new IllegalArgumentException("Allergy should not be null");
 		}
-
 		ValidationUtils.rejectIfEmpty(errors, "patient", "allergyapi.patient.required");
-
 		Allergy allergy = (Allergy) target;
-
 		if (allergy.getReactionNonCoded() != null) {
 			if (!allergy.getReactionNonCoded().matches("[a-zA-Z]+$")) {
 				errors.rejectValue("reactionNonCoded", "allergyapi.error.validateInputString");
 			}
-
 		}
-
 		if (allergy.getAllergen() == null) {
 			errors.rejectValue("allergen", "allergyapi.allergen.required");
 		} else {
@@ -77,13 +70,11 @@ public class AllergyValidator implements Validator {
 			if (allergen.getAllergenType() == null) {
 				errors.rejectValue("allergen", "allergyapi.allergenType.required");
 			}
-
 			if (allergen.getCodedAllergen() == null && StringUtils.isBlank(allergen.getNonCodedAllergen())) {
 				errors.rejectValue("allergen", "allergyapi.allergen.codedOrNonCodedAllergen.required");
 			} else if (!allergen.isCoded() && StringUtils.isBlank(allergen.getNonCodedAllergen())) {
 				errors.rejectValue("allergen", "allergyapi.allergen.nonCodedAllergen.required");
 			}
-
 			if (allergy.getAllergyId() == null && allergy.getPatient() != null) {
 				Allergies existingAllergies = patientService.getAllergies(allergy.getPatient());
 				if (existingAllergies.containsAllergen(allergy)) {
