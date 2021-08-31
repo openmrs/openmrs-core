@@ -63,8 +63,7 @@ public class AllergyValidatorTest extends BaseContextMockTest {
 	@Test
 	public void validate_shouldFailForANullValue() {
 
-		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-				() -> validator.validate(null, errors));
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,() -> validator.validate(null, errors));
 		assertThat(exception.getMessage(), is("Allergy should not be null"));
 	}
 
@@ -106,13 +105,11 @@ public class AllergyValidatorTest extends BaseContextMockTest {
 		validator.validate(allergy, errors);
 
 		assertTrue(errors.hasFieldErrors("allergen"));
-		assertThat(errors.getFieldError("allergen").getCode(),
-				is("allergyapi.allergen.codedOrNonCodedAllergen.required"));
+		assertThat(errors.getFieldError("allergen").getCode(),is("allergyapi.allergen.codedOrNonCodedAllergen.required"));
 	}
 
 	@Test
-	public void validate_shouldFailIfNonCodedAllergenIsNullAndAllergenIsSetToOtherNonCoded(@Mock Concept concept,
-			@Mock Allergen allergen) {
+	public void validate_shouldFailIfNonCodedAllergenIsNullAndAllergenIsSetToOtherNonCoded(@Mock Concept concept,@Mock Allergen allergen) {
 
 		when(allergen.getAllergenType()).thenReturn(AllergenType.DRUG);
 		when(allergen.getCodedAllergen()).thenReturn(concept);
