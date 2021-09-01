@@ -136,16 +136,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		Set<OrderGroup> nestedGroups = orderGroup.getNestedOrderGroups();
 		if (nestedGroups != null) {
 			for (OrderGroup nestedGroup : nestedGroups) {
-				Context.getOrderService().saveOrderGroup(nestedGroup);
+				Context.getOrderService().saveOrderGroup(nestedGroup, orderContext);
 			}
-		}
-		if (orderGroup.getId() == null) {
-			// an OrderGroup requires an encounter, which has a patient, so it
-			// is odd that OrderGroup has a patient field. There is no obvious
-			// reason why they should ever be different.
-			orderGroup.setPatient(orderGroup.getEncounter().getPatient());
-			CustomDatatypeUtil.saveAttributesIfNecessary(orderGroup);
-			dao.saveOrderGroup(orderGroup);
 		}
 		return orderGroup;
 	}

@@ -3957,14 +3957,43 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see OrderService#saveOrderGroup(org.openmrs.OrderGroup, OrderContext)
 	 */
 	@Test
-	public void saveOrderGroup_shouldReturnOrderGroupWithSpecificContext(){
-//		executeDataSet("org/openmrs/api/include/OrderServiceTest-createOrderGroupAttributes.xml");
-		Encounter encounter = encounterService.getEncounter(6);
+	public void saveOrderGroup_shouldSaveOrderGroupWithSpecificContext(){
+		executeDataSet(ORDER_SET);
+		Encounter encounter = encounterService.getEncounter(3);
 		OrderSet orderSet = Context.getOrderSetService().getOrderSet(2000);
 		OrderGroup orderGroup = new OrderGroup();
 		orderGroup.setOrderSet(orderSet);
 		orderGroup.setPatient(encounter.getPatient());
 		orderGroup.setEncounter(encounter);
+
+		Order firstOrderWithOrderGroup = new OrderBuilder().withAction(Order.Action.NEW).withPatient(7).withConcept(1000)
+			.withCareSetting(1).withOrderer(1).withEncounter(3).withDateActivated(new Date()).withOrderType(17)
+			.withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date()).withOrderGroup(orderGroup)
+			.build();
+
+		Order secondOrderWithOrderGroup = new OrderBuilder().withAction(Order.Action.NEW).withPatient(7).withConcept(1001)
+			.withCareSetting(1).withOrderer(1).withEncounter(3).withDateActivated(new Date()).withOrderType(17)
+			.withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date()).withOrderGroup(orderGroup)
+			.build();
+
+		Set<Order> orders = new LinkedHashSet<>();
+		orders.add(firstOrderWithOrderGroup);
+		orders.add(secondOrderWithOrderGroup);
+
+		encounter.setOrders(orders);
+
+		for (OrderGroup og : encounter.getOrderGroups()) {
+			if (og.getId() == null) {
+				Context.getOrderService().saveOrderGroup(og);
+			}
+		}
+
+		Context.flushSession();
+
+		OrderGroup savedOrderGroup = Context.getOrderService().getOrderGroupByUuid(orderGroup.getUuid());
+		assertEquals(firstOrderWithOrderGroup.getUuid(), savedOrderGroup.getOrders().get(0).getUuid());
+
+		assertEquals(secondOrderWithOrderGroup.getUuid(), savedOrderGroup.getOrders().get(1).getUuid());
 		
 		OrderType orderType = new OrderType();
 		orderGroup.setId(1);
@@ -3979,6 +4008,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		OrderContext orderContext = new OrderContext();
 		orderContext.setCareSetting(careSetting);
 		orderContext.setOrderType(orderType);
-		orderService.saveOrderGroup(orderGroup, orderContext);
+		OrderGroup result = orderService.saveOrderGroup(orderGroup, orderContext);
 	}
 }

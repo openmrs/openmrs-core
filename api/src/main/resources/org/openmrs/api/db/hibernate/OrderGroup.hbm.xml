@@ -51,8 +51,6 @@
                   column="date_created" not-null="true" length="19" />
         <property name="voided" type="java.lang.Boolean"
                   column="voided" length="1" not-null="true"/>
-	    <property name="orderContextId" type="java.lang.Integer"
-	              column="order_context_id" length="1" not-null="false"/>
         
 		<!-- bi-directional many-to-one association to User -->
         <many-to-one name="voidedBy" class="User">

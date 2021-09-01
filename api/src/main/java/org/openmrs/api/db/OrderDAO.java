@@ -253,17 +253,6 @@ public interface OrderDAO {
 	public OrderGroup saveOrderGroup(OrderGroup orderGroup) throws DAOException;
 
 	/**
-	 * Saves an orderGroup with an orderContextId to the database
-	 *
-	 * @param orderGroup the order group to save to the database
-	 * @param orderContextId the order context Id to save with the order group
-	 * @return an orderGroup
-	 * @throws DAOException
-	 */
-	public OrderGroup saveOrderGroup(OrderGroup orderGroup, Integer orderContextId) throws DAOException;
-
-
-	/**
 	 * @see org.openmrs.api.OrderService#getOrderGroupByUuid(String)
 	 */
 	public OrderGroup getOrderGroupByUuid(String uuid) throws DAOException;

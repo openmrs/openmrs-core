@@ -326,21 +326,6 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 
 	/**
-	 * Saves an orderGroup with an orderContext to the database
-	 *
-	 * @param orderGroup   the order group to save to the database
-	 * @param orderContextId the order context Id to save with the order group
-	 * @return an orderGroup
-	 * @throws DAOException
-	 */
-	@Override
-	public OrderGroup saveOrderGroup(OrderGroup orderGroup, Integer orderContextId) throws DAOException {
-		orderGroup.setOrderContextId(orderContextId);
-		sessionFactory.getCurrentSession().saveOrUpdate(orderGroup);
-		return orderGroup;
-	}
-
-	/**
 	 * @see OrderDAO#getOrderGroupByUuid(String)
 	 * @see org.openmrs.api.OrderService#getOrderGroupByUuid(String)
 	 */

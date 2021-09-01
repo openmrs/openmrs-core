@@ -48,8 +48,6 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 
 	private CareSetting careSetting;
 	
-	private Integer orderContextId;
-	
 	/**
 	 * Gets the orderGroupId
 	 *
@@ -310,9 +308,9 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	}
 
 	/**
-	 * Gets the care setting
+	 * Gets the care setting for the order groups 
 	 *
-	 * @return the the care setting
+	 * @return the care setting
 	 * @since 2.4.0
 	 */
 	public CareSetting getCareSetting() {
@@ -322,7 +320,7 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	/**
 	 * Sets the careSetting
 	 *
-	 * @param careSetting the care setting  to set
+	 * @param careSetting the care setting to set
 	 * @since 2.4.0
 	 */
 	public void setCareSetting(CareSetting careSetting) {
@@ -346,26 +344,5 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	 */
 	public void setOrderType(OrderType orderType) {
 		this.orderType = orderType;
-	}
-
-	/**
-	 * Get the {@link org.openmrs.api.OrderContext}
-	 *
-	 * @return the Id for the order context
-	 */
-	public Integer getOrderContextId(){
-		return orderContextId;
-	}
-
-	/**
-	 * Set the {@link org.openmrs.api.OrderContext}
-	 *
-	 * @param orderContextId the Id for the order context
-	 * @since 2.4.0
-	 * @return
-	 */
-	public int setOrderContextId(Integer orderContextId){
-		this.orderContextId = orderContextId;
-		return orderContextId;
 	}
 }
