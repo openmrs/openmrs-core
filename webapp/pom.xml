@@ -236,7 +236,7 @@
               <version>1.9.7</version>
               <configuration>
                   <container>
-                      <containerId>tomcat8x</containerId>
+                      <containerId>tomcat9x</containerId>
                       <type>embedded</type>
                   </container>
                   <deployables>
