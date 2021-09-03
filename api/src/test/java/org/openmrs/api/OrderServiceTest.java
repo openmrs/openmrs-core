@@ -9,85 +9,47 @@
  */
 package org.openmrs.api;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasItems;
-import static org.openmrs.Order.Action.DISCONTINUE;
-import static org.openmrs.Order.FulfillerStatus.COMPLETED;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.openmrs.test.OpenmrsMatchers.hasId;
-import static org.openmrs.test.TestUtil.containsId;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import java.lang.reflect.Field;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Locale;
-import java.util.GregorianCalendar;
-import java.util.LinkedHashSet;
-
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-
-import org.openmrs.Order.Action;
-import org.openmrs.TestOrder;
-import org.openmrs.Patient;
-import org.openmrs.DosingInstructions;
-import org.openmrs.SimpleDosingInstructions;
-import org.openmrs.DrugOrder;
-import org.openmrs.FreeTextDosingInstructions;
-import org.openmrs.Drug;
-import org.openmrs.ConceptDescription;
+import org.openmrs.Allergy;
+import org.openmrs.CareSetting;
+import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
-import org.openmrs.ConceptMap;
+import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptMap;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
-import org.openmrs.Allergy;
 import org.openmrs.Condition;
 import org.openmrs.Diagnosis;
-import org.openmrs.Visit;
+import org.openmrs.DosingInstructions;
+import org.openmrs.Drug;
+import org.openmrs.DrugOrder;
+import org.openmrs.FreeTextDosingInstructions;
+import org.openmrs.Obs;
+import org.openmrs.Order.Action;
 import org.openmrs.OrderFrequency;
 import org.openmrs.OrderGroup;
-import org.openmrs.OrderSet;
 import org.openmrs.OrderGroupAttribute;
 import org.openmrs.OrderGroupAttributeType;
-import org.openmrs.Encounter;
+import org.openmrs.OrderSet;
+import org.openmrs.Patient;
 import org.openmrs.Provider;
-import org.openmrs.Concept;
-import org.openmrs.CareSetting;
+import org.openmrs.SimpleDosingInstructions;
+import org.openmrs.TestOrder;
+import org.openmrs.Visit;
 import org.openmrs.api.builder.DrugOrderBuilder;
-import org.openmrs.Obs;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.HibernateAdministrationDAO;
@@ -107,6 +69,41 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.openmrs.Order.Action.DISCONTINUE;
+import static org.openmrs.Order.FulfillerStatus.COMPLETED;
+import static org.openmrs.test.OpenmrsMatchers.hasId;
+import static org.openmrs.test.TestUtil.containsId;
+
 /**
  * TODO clean up and test all methods in OrderService
  */
@@ -117,7 +114,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	protected static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
 
 	private static final String ORDER_GROUP_ATTRIBUTES = "org/openmrs/api/include/OrderServiceTest-createOrderGroupAttributes.xml";
-
+	
 	@Autowired
 	private ConceptService conceptService;
 
@@ -135,7 +132,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 	@Autowired
 	private AdministrationService adminService;
-
+	
 	@Autowired
 	private OrderSetService orderSetService;
 
@@ -1070,10 +1067,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see OrderService#getCareSettingByUuid(String)
 	 */
-	@Test
+	@Test                                                   
 	public void getCareSettingByUuid_shouldReturnTheCareSettingWithTheSpecifiedUuid() {
-		CareSetting cs = orderService.getCareSettingByUuid("6f0c9a92-6f24-11e3-af88-005056821db0");
-		assertEquals(1, cs.getId().intValue());
+		CareSetting cs = orderService.getCareSettingByUuid("c365e560-c3ec-11e3-9c1a-0800200c9a66");
+		assertEquals(2, cs.getId().intValue());
 	}
 
 	/**
@@ -3908,21 +3905,21 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertEquals("Test 1", orderGroupAttribute.getValueReference());
 		assertEquals(1, orderGroupAttribute.getId());
 	}
-
+	
 	@Test
 	public void saveOrder_shouldAllowARetrospectiveOrderToCloseAnOrderThatExpiredInThePast() throws Exception {
-		
+
 		// Ensure that duration units are configured correctly to a snomed duration code
 		ConceptReferenceTerm days = new ConceptReferenceTerm();
 		days.setConceptSource(conceptService.getConceptSourceByName("SNOMED CT"));
 		days.setCode("258703001");
 		days.setName("Day(s)");
 		conceptService.saveConceptReferenceTerm(days);
-		
+
 		Concept daysConcept = conceptService.getConcept(28);
 		daysConcept.addConceptMapping(new ConceptMap(days, conceptService.getConceptMapType(2)));
 		conceptService.saveConcept(daysConcept);
-		
+
 		// First create a retrospective Order on 8/1/2008 with a duration of 60 days.
 		// This will set the auto-expire date to 9/29/2008
 
