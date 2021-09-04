@@ -9,26 +9,6 @@
  */
 package org.openmrs.api;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.openmrs.test.TestUtil.containsId;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,6 +35,26 @@ import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.openmrs.test.TestUtil.containsId;
 
 /**
  * TODO add more tests to cover the methods in <code>UserService</code>
@@ -172,7 +172,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Context.clearSession();
 		
 		List<User> allUsers = userService.getAllUsers();
-		assertEquals(10, allUsers.size());
+		assertEquals(11, allUsers.size());
 		
 		// there should still only be the one patient we created in the xml file
 		List<Patient> allPatientsSet = Context.getPatientService().getAllPatients();
@@ -677,7 +677,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void getAllUsers_shouldNotContainsAnyDuplicateUsers() {
 		executeDataSet(XML_FILENAME);
 		List<User> users = userService.getAllUsers();
-		assertEquals(11, users.size());
+		assertEquals(12, users.size());
 		// TODO Need to test with duplicate data in the dataset (not sure if that's possible)
 		
 	}
@@ -1649,5 +1649,21 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		} finally {
 			FieldUtils.getField(UserContext.class, "user", true).set(userContext, authenticatedUser);
 		}
+	}
+
+	@Test
+	public void saveUserProperty_shouldAddANewPropertyWithAVeryLargeStringWithoutRunningIntoError() {
+		executeDataSet(XML_FILENAME);
+		//  retrieve a user who has UserProperties
+		User user = userService.getUser(5512);
+
+		// Authenticate the test  user so that Context.getAuthenticatedUser() method returns above user
+		Context.authenticate(user.getUsername(), "testUser1234");
+		final String USER_PROPERTY_KEY = "emrapi.lastViewedPatientIds";
+		final String USER_PROPERTY_VALUE = "479, 93, 442, 434, 341, 295, 384, 2, 97, 363, 267, 458, 369, 221, 28, 359, 53, 196, 416, 31, 422, 15, 173, 412, 311, 122, 194, 343, 3, 133, 498, 362, 134, 26, 158, 181, 43, 309, 172, 98, 379, 382, 298, 136, 451, 334, 81, 99, 388, 378, 138, 42, 331, 326, 393, 65, 355, 68, 111, 147, 300, 413, 20, 57, 426, 84, 206, 294, 83, 404, 390, 389, 289, 272, 166, 88, 180, 283, 472, 276, 401, 425, 12, 127, 49, 459, 153, 261, 186, 102, 320, 63, 164, 346, 222, 160, 375, 465, 485, 301, 457, 497, 168, 470, 46, 243, 8, 137, 100, 108, 489, 336, 32, 312, 323, 239, 90, 25, 198, 350, 234, 432, 371, 468, 215, 228, 352, 140, 170, 128, 268, 481, 157, 257, 92, 86, 492, 176, 408, 135, 347, 10, 278, 344, 203, 4, 24, 69, 269, 333, 462, 260, 431, 74, 491, 325, 396, 197, 244, 455, 281, 423, 48, 313, 330, 175, 406, 188, 148, 424, 445, 297, 124, 339, 418, 377, 179, 79, 144, 29, 50, 328, 411, 163, 209, 421, 493, 251, 453, 232, 480, 219, 115, 376, 322, 116, 200, 235, 469, 262, 345, 358, 366, 123, 36, 154, 360, 114, 249, 460, 22, 62, 113, 254, 471, 201, 230, 177, 129, 280, 314, 467, 66, 383, 76, 77, 155, 351, 21, 449, 187, 192, 214, 446, 241, 183, 162, 307, 429, 73, 452, 30, 486, 490, 259, 161, 52, 231, 308, 420, 357, 174, 210, 47, 211, 263, 103, 44, 55, 305, 204, 318, 39, 405, 120, 247, 286, 398, 466, 54, 342, 126, 273, 477, 265, 430, 236, 217, 149, 252, 302, 178, 270, 340, 433, 417, 332, 101, 60, 216, 242, 195, 11, 303, 387, 415, 365, 110, 224, 319, 184, 324, 367, 226, 271, 33, 474, 38, 64, 282, 233, 264, 428, 372, 14, 258, 185, 438, 171, 72, 18, 478, 463, 152, 212, 87, 118, 27, 494, 145, 91, 293, 356, 327, 169, 109, 285, 125, 381, 354, 237, 386, 397, 16, 17, 450, 380, 207, 437, 487, 368, 394, 202, 58, 454, 291, 80, 104, 296, 85, 475, 218, 40, 167, 310, 364, 156, 410, 337, 248, 288, 146, 5, 444, 78, 225, 329, 82, 407, 253, 414, 35, 205, 165, 121, 151, 419, 89, 141, 106, 190, 321, 290, 409, 67, 159, 482, 59, 266, 403, 117, 182, 95, 199, 500, 71, 335, 142, 400, 255, 275, 6, 9, 315, 94, 370, 484, 107, 488, 399, 391, 75, 246, 213, 189, 306, 392, 483, 240, 7, 499, 287, 130, 112, 473, 56, 279, 385, 402, 19, 70, 274, 51, 395, 143, 448, 439, 299, 374, 150\n";
+
+		// save a new user with similar properties and compare 
+		User updatedUser = userService.saveUserProperty(USER_PROPERTY_KEY, USER_PROPERTY_VALUE);
+		assertEquals(updatedUser.getUserProperties(), user.getUserProperties());
 	}
 }
