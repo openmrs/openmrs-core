@@ -9,6 +9,26 @@
  */
 package org.openmrs.api;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.openmrs.test.TestUtil.containsId;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,26 +55,6 @@ import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.openmrs.test.TestUtil.containsId;
 
 /**
  * TODO add more tests to cover the methods in <code>UserService</code>
@@ -1655,8 +1655,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void saveUserProperty_shouldAddANewPropertyWithAVeryLargeStringWithoutRunningIntoError() {
 		final String USER_PROPERTY_KEY = "emrapi.lastViewedPatientIds";
 		final String USER_PROPERTY_VALUE = liquibase.util.StringUtil.repeat("1234",500);
-		// save a new user with similar properties and compare 
 		User updatedUser = userService.saveUserProperty(USER_PROPERTY_KEY, USER_PROPERTY_VALUE);
 		assertNotNull(updatedUser.getUserProperties());
+		assertEquals(2000, updatedUser.getUserProperties().get(USER_PROPERTY_KEY).length());
 	}
 }

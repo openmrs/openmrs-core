@@ -130,7 +130,7 @@
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="user_property" columnName="property_value"></columnExists>
 		</preConditions>
-		<comment>Changing user_property.value from VARCHAR(255) to LONGTEXT</comment>
+		<comment>Changing user_property.property_value from VARCHAR(255) to LONGTEXT</comment>
 		<modifyDataType tableName="user_property" columnName="property_value" newDataType="LONGTEXT" />
 	</changeSet>
 	
