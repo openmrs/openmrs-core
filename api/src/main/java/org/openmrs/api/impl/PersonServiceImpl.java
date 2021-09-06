@@ -33,6 +33,7 @@ import org.openmrs.validator.ValidateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
@@ -487,28 +488,20 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 *      java.lang.String)
 	 */
 	@Override
-	public Relationship voidRelationship(Relationship relationship, String voidReason) throws APIException {
-		if (relationship.getVoided()) {
-			return relationship;
+	public Relationship voidRelationship(@NonNull final Relationship relationship, String voidReason) throws APIException {
+		if (relationship ==null) {
+			return null;
 		}
-		
-		relationship.setVoided(true);
-		if (relationship.getVoidedBy() == null) {
-			relationship.setVoidedBy(Context.getAuthenticatedUser());
-		}
-		if (voidReason != null) {
-			relationship.setVoidReason(voidReason);
-		}
-		relationship.setDateVoided(new Date());
-		
+			
 		return Context.getPersonService().saveRelationship(relationship);
 	}
+
 	
 	/**
 	 * @see org.openmrs.api.PersonService#unvoidRelationship(org.openmrs.Relationship)
 	 */
 	@Override
-	public Relationship unvoidRelationship(Relationship relationship) throws APIException {
+	public Relationship unvoidRelationship(Relationship relationship) throws APIException {app://resources/notifications.html#
 		relationship.setVoided(false);
 		relationship.setVoidedBy(null);
 		relationship.setDateVoided(null);
