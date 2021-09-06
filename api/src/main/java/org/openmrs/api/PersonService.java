@@ -365,7 +365,8 @@ public interface PersonService extends OpenmrsService {
 	 * <strong>Should</strong> fetch relationships that were active during effectiveDate
 	 */
 	@Authorized( { PrivilegeConstants.GET_RELATIONSHIPS })
-	public List<Relationship> getRelationshipsByPerson(Person p, Date effectiveDate) throws APIException;
+	public List<Relationship> getRelationshipsByPerson(Person p, Date effec@Override
+	tiveDate) throws APIException;
 		
 	/**
 	 * Get relationships stored in the database that
@@ -841,4 +842,8 @@ public interface PersonService extends OpenmrsService {
 	 * @throws PersonAttributeTypeLockedException
 	 */
 	public void checkIfPersonAttributeTypesAreLocked() throws PersonAttributeTypeLockedException;
+
+	orized( { PrivilegeConstants.GET_RELATIONSHIPS })
+	public List<Relationship> getRelationshipsByPerson(Person p, Date ef
+	Relationship voidRelationship(Relationship relationship) throws APIException;
 }
