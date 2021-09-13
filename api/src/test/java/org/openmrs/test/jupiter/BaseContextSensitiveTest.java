@@ -845,8 +845,10 @@ public abstract class BaseContextSensitiveTest {
 			
 			IDatabaseConnection dbUnitConn = setupDatabaseConnection(connection);
 			
+			String databaseName = System.getProperty("databaseName");
+			
 			// find all the tables for this connection
-			ResultSet resultSet = connection.getMetaData().getTables(null, "PUBLIC", "%", null);
+			ResultSet resultSet = connection.getMetaData().getTables(databaseName, "PUBLIC", "%", null);
 			DefaultDataSet dataset = new DefaultDataSet();
 			while (resultSet.next()) {
 				String tableName = resultSet.getString(3);
