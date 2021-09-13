@@ -23,6 +23,7 @@
             care_setting="1" encounter_id="6"/>
     <drug_order order_id="584"  dose="3" dose_units="50" as_needed="false" frequency="1" drug_non_coded="non coded drug Crocine"
                 dosing_type="org.openmrs.SimpleDosingInstructions" route="22" quantity="1.0" quantity_units="51" num_refills="10"
+                drug_inventory_id="2"
                 dispense_as_written="0"/>
 </dataset>
 
