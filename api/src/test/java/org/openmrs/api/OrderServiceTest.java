@@ -3996,7 +3996,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertEquals(2, result.getOrders().size());
 		assertEquals(17, result.getOrders().get(0).getOrderType().getOrderTypeId());
 		assertEquals("Neonatal Clinic", result.getOrders().get(0).getCareSetting().getName());
-  }
+    }
      
 	/**
 	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
