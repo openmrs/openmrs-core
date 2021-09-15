@@ -489,19 +489,18 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 */
 	@Override
 	public Relationship voidRelationship(@NonNull final Relationship relationship, String voidReason) throws APIException {
-		if (relationship ==null) {
+		if (relationship == null) {
 			return null;
 		}
 			
 		return Context.getPersonService().saveRelationship(relationship);
 	}
 
-	
 	/**
 	 * @see org.openmrs.api.PersonService#unvoidRelationship(org.openmrs.Relationship)
 	 */
 	@Override
-	public Relationship unvoidRelationship(Relationship relationship) throws APIException {app://resources/notifications.html#
+	public Relationship unvoidRelationship(Relationship relationship) throws APIException  {
 		relationship.setVoided(false);
 		relationship.setVoidedBy(null);
 		relationship.setDateVoided(null);
