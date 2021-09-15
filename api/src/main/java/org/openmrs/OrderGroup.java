@@ -44,10 +44,6 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	
 	private Set<OrderGroup> nestedOrderGroups;
 	
-//	private OrderType orderType;
-//
-//	private CareSetting careSetting;
-	
 	/**
 	 * Gets the orderGroupId
 	 *
