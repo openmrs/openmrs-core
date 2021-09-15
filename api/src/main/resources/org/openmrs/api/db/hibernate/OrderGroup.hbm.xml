@@ -78,10 +78,6 @@
 		
 		<many-to-one name="orderGroupReason" class="org.openmrs.Concept"
 		    not-null="false" column="order_group_reason" />
-
-	    <many-to-one name="careSetting" column="care_setting" class="org.openmrs.CareSetting" not-null="false" />
-
-	    <many-to-one name="orderType" column="order_type_id" class="org.openmrs.OrderType" not-null="false" />
 	    
 	    <!-- one-to-many association to all nested orderGroups in this grouping -->
         <set name="nestedOrderGroups" inverse="true" cascade="delete" order-by="order_group_id"

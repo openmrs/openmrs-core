@@ -117,7 +117,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#saveOrderGroup(org.openmrs.OrderGroup, org.openmrs.api.OrderContext)
 	 */
 	@Override
-	public synchronized OrderGroup saveOrderGroup(OrderGroup orderGroup, OrderContext orderContext) throws APIException {
+	public OrderGroup saveOrderGroup(OrderGroup orderGroup, OrderContext orderContext) throws APIException {
 		if (orderGroup.getId() == null) {
 			// an OrderGroup requires an encounter, which has a patient, so it
 			// is odd that OrderGroup has a patient field. There is no obvious

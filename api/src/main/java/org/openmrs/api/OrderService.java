@@ -828,7 +828,9 @@ public interface OrderService extends OpenmrsService {
 	 * @param orderGroup the orderGroup to be saved
 	 * @since 1.12
 	 * @throws APIException
+	 * @deprecated use {@link #saveOrderGroup(OrderGroup, OrderContext)}
 	 */
+	@Deprecated
 	@Authorized({ PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
 	public OrderGroup saveOrderGroup(OrderGroup orderGroup) throws APIException;
 
@@ -843,6 +845,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should throw an exception if no order context is provided
 	 * @throws APIException
 	 */
+	@Authorized({ PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
 	public  OrderGroup saveOrderGroup(OrderGroup orderGroup, OrderContext orderContext) throws APIException;
 
 	/**

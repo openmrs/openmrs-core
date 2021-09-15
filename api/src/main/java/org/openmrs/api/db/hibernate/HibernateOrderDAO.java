@@ -92,7 +92,6 @@ public class HibernateOrderDAO implements OrderDAO {
 	@Override
 	public Order saveOrder(Order order) throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(order);
-		
 		return order;
 	}
 	
