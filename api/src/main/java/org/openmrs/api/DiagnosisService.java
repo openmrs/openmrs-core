@@ -13,6 +13,7 @@ package org.openmrs.api;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.Diagnosis;
+import org.openmrs.Visit;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.util.PrivilegeConstants;
 
@@ -68,11 +69,41 @@ public interface DiagnosisService extends OpenmrsService {
 	List<Diagnosis> getDiagnoses(Patient patient, Date fromDate);
 
 	/**
+	 * Gets diagnoses for an Encounter.
+	 *
+	 * @param encounter the encounter for which to fetch diagnoses
+	 * @param primaryOnly whether to return only primary diagnoses
+	 * @param confirmedOnly whether to return only confirmed diagnoses
+	 * @return the list of diagnoses for the given encounter
+	 * 
+	 * @since 2.5.0
+	 */
+	@Authorized({ PrivilegeConstants.GET_DIAGNOSES })
+	List<Diagnosis> getDiagnosesByEncounter(Encounter encounter, boolean primaryOnly, boolean confirmedOnly);
+	
+	/**
+	 * Gets diagnoses for a Visit.
+	 *
+	 * @param visit the visit for which to fetch diagnoses
+	 * @param primaryOnly whether to return only primary diagnoses
+	 * @param confirmedOnly whether to return only confirmed diagnoses
+	 * @return the list of diagnoses for the given visit
+	 * 
+	 * @since 2.5.0
+	 */
+	@Authorized({ PrivilegeConstants.GET_DIAGNOSES })
+	List<Diagnosis> getDiagnosesByVisit(Visit visit, boolean primaryOnly, boolean confirmedOnly);
+
+
+	/**
 	 * Finds the primary diagnoses for a given encounter
+	 *
+	 * @deprecated since 2.5.0, use {@link #getDiagnosesByEncounter}
 	 * 
 	 * @param encounter the encounter whose diagnoses we are to get
 	 * @return the list of diagnoses in the given encounter
 	 */
+	@Deprecated
 	List<Diagnosis> getPrimaryDiagnoses(Encounter encounter);
 
 	/**

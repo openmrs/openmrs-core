@@ -78,8 +78,10 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 */
 	@BeforeEach
 	public void runBeforeEachTest() throws Exception {
-		initializeInMemoryDatabase();
-		authenticate();
+		if (useInMemoryDatabase()) {
+			initializeInMemoryDatabase();
+			authenticate();
+		}
 		
 		Context.getAdministrationService().saveGlobalProperty(luhnGP);
 	}

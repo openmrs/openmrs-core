@@ -3996,5 +3996,26 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertEquals(2, result.getOrders().size());
 		assertEquals(17, result.getOrders().get(0).getOrderType().getOrderTypeId());
 		assertEquals("Neonatal Clinic", result.getOrders().get(0).getCareSetting().getName());
+  }
+  
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldSaveTheFormNamespaceAndPath() {
+		Order order = new TestOrder();
+		order.setPatient(patientService.getPatient(7));
+		order.setConcept(conceptService.getConcept(5497));
+		order.setOrderer(providerService.getProvider(1));
+		order.setCareSetting(orderService.getCareSetting(1));
+		order.setOrderType(orderService.getOrderType(2));
+		order.setEncounter(encounterService.getEncounter(3));
+		order.setDateActivated(new Date());
+		
+		final String NAMESPACE = "namespace";
+		final String FORMFIELD_PATH = "formFieldPath";
+		order.setFormField(NAMESPACE, FORMFIELD_PATH);
+		
+		order = orderService.saveOrder(order, null);
+		assertEquals(NAMESPACE + "^" + FORMFIELD_PATH, order.getFormNamespaceAndPath());
 	}
 }

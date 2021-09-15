@@ -199,6 +199,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		
 		// save the conditions
 		encounter.getConditions().forEach(Context.getConditionService()::saveCondition);
+		
+		encounter.getAllergies().forEach(Context.getPatientService()::saveAllergy);
+		
 		return encounter;
 	}
 	

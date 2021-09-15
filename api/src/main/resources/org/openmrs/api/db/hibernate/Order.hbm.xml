@@ -43,6 +43,7 @@
         <property name="scheduledDate" type="java.util.Date" column="scheduled_date" length="19" />
         <property name="sortWeight" type="java.lang.Double" column="sort_weight"/>
         <property name="fulfillerComment" type="java.lang.String" column="fulfiller_comment" length="1024"/>
+        <property name="formNamespaceAndPath" type="java.lang.String" column="form_namespace_and_path" length="255" />
 
 		<property name="urgency" column="urgency" length="50" not-null="true">
             <type name="org.hibernate.type.EnumType">
