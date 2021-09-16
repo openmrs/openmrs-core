@@ -28,11 +28,7 @@ import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Logging;
-import org.openmrs.api.APIException;
-import org.openmrs.api.AdministrationService;
-import org.openmrs.api.CannotDeleteRoleWithChildrenException;
-import org.openmrs.api.InvalidActivationKeyException;
-import org.openmrs.api.UserService;
+import org.openmrs.api.*;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LoginCredential;
@@ -607,10 +603,13 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	}
 	
 	@Override
-	public User saveUserProperty(String key, String value) {
+	public User saveUserProperty(String key, String value) throws APIException {
 		User user = Context.getAuthenticatedUser();
 		if (user == null) {
 			throw new APIException("no.authenticated.user.found", (Object[]) null);
+		}
+		if(StringUtils.length(key) > 255 || StringUtils.length(value) > Integer.MAX_VALUE){
+			throw new APIException("key.or.value.length.above.range", (Object[]) null);
 		}
 		user.setUserProperty(key, value);
 		return dao.saveUser(user, null);
