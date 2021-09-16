@@ -3857,7 +3857,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void retireOrderGroupAttributeType_shouldRetireOrderGroupAttributeType() throws ParseException {
 		OrderGroupAttributeType orderGroupAttributeType = orderService.getOrderGroupAttributeType(2);
 		assertFalse(orderGroupAttributeType.getRetired());
-		assertNotNull(orderGroupAttributeType.getRetiredBy());
+		assertNull(orderGroupAttributeType.getRetiredBy());
 		assertNull(orderGroupAttributeType.getRetireReason());
 		assertNull(orderGroupAttributeType.getDateRetired());
 		orderService.retireOrderGroupAttributeType(orderGroupAttributeType, "Test Retire");
