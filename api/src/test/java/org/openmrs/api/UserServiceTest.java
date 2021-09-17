@@ -1653,15 +1653,9 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void saveUserProperty_shouldAddANewPropertyWithAVeryLargeStringWithoutRunningIntoError() {
-		final String LONGER_USER_PROPERTY_KEY = liquibase.util.StringUtil.repeat("emrapi.patient,", 50);
-		final String LONGER_USER_PROPERTY_VALUE = liquibase.util.StringUtil.repeat("doctor",1000000);
-		APIException exception = assertThrows(APIException.class, () -> userService.saveUserProperty(LONGER_USER_PROPERTY_KEY, LONGER_USER_PROPERTY_VALUE));
-		assertThat(exception.getMessage(), is(messages.getMessage("key.or.value.length.above.range")));
-		
 		final String USER_PROPERTY_KEY = "emrapi.lastViewedPatientIds";
 		final String USER_PROPERTY_VALUE = liquibase.util.StringUtil.repeat("1234",500);
 		User updatedUser = userService.saveUserProperty(USER_PROPERTY_KEY, USER_PROPERTY_VALUE);
-		assertNotNull(updatedUser.getUserProperties());
 		assertEquals(2000, updatedUser.getUserProperties().get(USER_PROPERTY_KEY).length());
 	}
 }

@@ -530,12 +530,10 @@ public interface UserService extends OpenmrsService {
 	 * 
 	 * @param key the authenticated user's property
 	 * @param value value of the property
-	 * @throws APIException   
 	 * @since 1.10
-	 * <strong>Should</strong> throw APIException when key or value string lengths are out of range
 	 */
 	@Authorized
-	public User saveUserProperty(String key, String value) throws APIException;
+	public User saveUserProperty(String key, String value);
 	
 	/**
 	 * Replaces all user properties with the given map of properties for the current user

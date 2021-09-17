@@ -603,13 +603,10 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	}
 	
 	@Override
-	public User saveUserProperty(String key, String value) throws APIException {
+	public User saveUserProperty(String key, String value) {
 		User user = Context.getAuthenticatedUser();
 		if (user == null) {
 			throw new APIException("no.authenticated.user.found", (Object[]) null);
-		}
-		if(StringUtils.length(key) > 255 || StringUtils.length(value) > Integer.MAX_VALUE){
-			throw new APIException("key.or.value.length.above.range", (Object[]) null);
 		}
 		user.setUserProperty(key, value);
 		return dao.saveUser(user, null);
