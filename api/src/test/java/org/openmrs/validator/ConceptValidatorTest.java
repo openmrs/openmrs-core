@@ -395,6 +395,9 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldNotFailIfATermHasTwoNewMappingsOnIt() {
 		
 		concept.addName(new ConceptName("my name", Context.getLocale()));
+		concept.setConceptClass(new ConceptClass());
+		concept.setDatatype(new ConceptDatatype());
+
 		ConceptReferenceTerm newTerm = new ConceptReferenceTerm(conceptService.getConceptSource(1), "1234",
 		        "term one two three four");
 		ConceptMap map1 = new ConceptMap(newTerm, conceptService.getConceptMapType(1));
@@ -492,7 +495,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		Concept concept = conceptService.getConcept(30);
 		ConceptAnswer conceptAnswer = new ConceptAnswer(concept);
 		concept.addAnswer(conceptAnswer);
-
+		
 		Errors errors = new BindException(concept, "concept");
 		
 		validator.validate(concept, errors);
@@ -504,7 +507,9 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldNotFailIfAnyDescriptionIsNotEnteredWhileCreatingANewConcept() {
 		
 		concept.addName(new ConceptName("some name", Context.getLocale()));
-		
+		concept.setConceptClass(new ConceptClass());
+		concept.setDatatype(new ConceptDatatype());
+
 		validator.validate(concept, errors);
 		
 		assertThat(errors, not(hasFieldErrors("description")));
@@ -528,7 +533,9 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		
 		concept.addName(new ConceptName("some name",Context.getLocale()));
 		concept.addDescription(new ConceptDescription("   ",null));
-		
+		concept.setConceptClass(new ConceptClass());
+		concept.setDatatype(new ConceptDatatype());
+
 		validator.validate(concept, errors);
 		
 		assertThat(errors, not(hasFieldErrors("description")));
