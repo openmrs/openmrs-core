@@ -87,6 +87,12 @@ public class AllergyValidator implements Validator {
 					errors.rejectValue("allergen", "allergyapi.message.duplicateAllergen", new Object[] { name }, null);
 				}
 			}
+			
+			if(StringUtils.isNotBlank(allergen.getNonCodedAllergen())){
+				if (!allergen.getNonCodedAllergen().matches("[a-zA-Z]+$")){
+					errors.rejectValue("allergen", "error.allergyapi.allergen.nonCodedAllergen.validateInputString");
+				}
+			}
 		}
 	}
 }
