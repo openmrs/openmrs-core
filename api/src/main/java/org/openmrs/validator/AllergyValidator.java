@@ -50,6 +50,7 @@ public class AllergyValidator implements Validator {
 	 * <strong>Should</strong> reject a duplicate allergen
 	 * <strong>Should</strong> reject a duplicate non coded allergen
 	 * <strong>Should</strong> pass for a valid allergy
+	 * <strong>Should</strong> reject numeric values and symbols on reactionNonCoded
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
@@ -62,6 +63,11 @@ public class AllergyValidator implements Validator {
 		
 		Allergy allergy = (Allergy) target;
 		
+		if (allergy.getReactionNonCoded() != null) {
+			if (!allergy.getReactionNonCoded().matches("[a-zA-Z]+$")) {
+				errors.rejectValue("reactionNonCoded", "error.allergyapi.validateInputString");
+			}
+		}
 		if (allergy.getAllergen() == null) {
 			errors.rejectValue("allergen", "allergyapi.allergen.required");
 		} else {
