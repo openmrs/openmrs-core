@@ -10,6 +10,7 @@
 package org.openmrs.validator;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.openmrs.Allergen;
 import org.openmrs.Allergies;
 import org.openmrs.Allergy;
@@ -89,8 +90,8 @@ public class AllergyValidator implements Validator {
 			}
 			
 			if(StringUtils.isNotBlank(allergen.getNonCodedAllergen())){
-				if (!allergen.getNonCodedAllergen().matches("[a-zA-Z]+$")){
-					errors.rejectValue("allergen", "error.allergyapi.allergen.nonCodedAllergen.validateInputString");
+				if (NumberUtils.isParsable(allergen.getNonCodedAllergen())) {
+					errors.rejectValue("allergen", "error.allergyapi.allergen.nonCodedAllergen.cannotBeNumeric");
 				}
 			}
 		}
