@@ -117,4 +117,21 @@
 								 baseTableName="patient_state" baseColumnNames="encounter_id"
 								 referencedTableName="encounter" referencedColumnNames="encounter_id" />
 	</changeSet>
+
+	<changeSet id="2021-09-02-TRUNK-6020-a" author="tendomart">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="user_property" columnName="property"></columnExists>
+		</preConditions>
+		<comment>Increasing user_property.property from VARCHAR(100) to VARCHAR(255)</comment>
+		<modifyDataType tableName="user_property" columnName="property" newDataType="varchar(255)" />
+	</changeSet>
+
+	<changeSet id="2021-09-02-TRUNK-6020-b" author="tendomart">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="user_property" columnName="property_value"></columnExists>
+		</preConditions>
+		<comment>Changing user_property.property_value from VARCHAR(255) to LONGTEXT</comment>
+		<modifyDataType tableName="user_property" columnName="property_value" newDataType="LONGTEXT" />
+	</changeSet>
+	
 </databaseChangeLog>
