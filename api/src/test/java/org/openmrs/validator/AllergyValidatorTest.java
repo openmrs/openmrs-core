@@ -182,7 +182,7 @@ public class AllergyValidatorTest extends BaseContextMockTest {
 	@Test
 	public void validate_shouldRejectNumericAllergenValue() {
 		Allergy allergy = new Allergy();
-		Allergen allergen = new Allergen(AllergenType.DRUG, null , "1" );
+		Allergen allergen = new Allergen(AllergenType.DRUG, null , "45" );
 		allergy.setAllergen(allergen);
 		allergy.getAllergen();
 		Errors errors = new BindException(allergy,"allergy");
