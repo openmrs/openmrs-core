@@ -1656,7 +1656,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		final String USER_PROPERTY_KEY = liquibase.util.StringUtil.repeat("emrapi.lastViewedPatientIds,",10);
 		final String USER_PROPERTY_VALUE = liquibase.util.StringUtil.repeat("52345",9899);
 		User updatedUser = userService.saveUserProperty(USER_PROPERTY_KEY, USER_PROPERTY_VALUE);
-		assertEquals(280, updatedUser.getUserProperties().keySet().stream().findFirst().get().length());
+		assertEquals(280, updatedUser.getUserProperties().keySet().iterator().next().length());
 		assertEquals(49495, updatedUser.getUserProperties().get(USER_PROPERTY_KEY).length());
 	}
 }
