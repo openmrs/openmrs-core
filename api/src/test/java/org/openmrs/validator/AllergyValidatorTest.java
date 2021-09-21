@@ -181,10 +181,10 @@ public class AllergyValidatorTest extends BaseContextMockTest {
 	}
 
 	@Test
-	public void valid_shouldRejectNumericReactionValue() throws Exception {
+	public void valid_shouldRejectNumericReactionValue() {
 		Allergy allergy = new Allergy();
 		AllergyReaction reaction = new AllergyReaction();
-		String nonCoded = "sometext";
+		String nonCoded = "sometext45";
 		reaction.setReactionNonCoded(nonCoded);
 		allergy.addReaction(reaction);
 		Errors errors = new BindException(allergy, "allergy");
