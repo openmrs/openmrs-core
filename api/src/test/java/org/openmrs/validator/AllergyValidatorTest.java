@@ -180,16 +180,13 @@ public class AllergyValidatorTest extends BaseContextMockTest {
 	}
 	
 	@Test
-	public void valid_shouldRejectNumericAllergenValue() {
-		
+	public void validate_shouldRejectNumericAllergenValue() {
 		Allergy allergy = new Allergy();
-		Allergen allergen = new Allergen(AllergenType.DRUG, null , "sometxt" );
+		Allergen allergen = new Allergen(AllergenType.DRUG, null , "sometxt45" );
 		allergy.setAllergen(allergen);
 		allergy.getAllergen();
 		Errors errors = new BindException(allergy,"allergy");
-		
 		validator.validate(allergy, errors);
-		
 		assertTrue(errors.hasErrors());
 	}
 }
