@@ -187,7 +187,6 @@ public class AllergyValidatorTest extends BaseContextMockTest {
 		allergy.getAllergen();
 		Errors errors = new BindException(allergy,"allergy");
 		validator.validate(allergy, errors);
-		System.out.println(errors.toString());
 		assertTrue(errors.hasErrors());
 	}
 }
