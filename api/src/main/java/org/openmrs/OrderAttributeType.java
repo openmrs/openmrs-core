@@ -14,7 +14,7 @@ import org.openmrs.attribute.BaseAttributeType;
 /**
  * A user-defined extension to the {@link Order} class.
  * @see AttributeType
- * @since 2.5.0
+ * @since 2.5.0-SNAPSHOT
  */
 public class OrderAttributeType extends BaseAttributeType<Order> implements AttributeType<Order> {
 

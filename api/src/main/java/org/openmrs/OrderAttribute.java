@@ -15,7 +15,7 @@ import org.openmrs.attribute.BaseAttribute;
  * A value for a user-defined {@link OrderAttributeType} that is stored in an {@link Order}.
  *
  * @see Attribute
- * @since 2.5.0
+ * @since 2.5.0-SNAPSHOT
  */
 public class OrderAttribute extends BaseAttribute<OrderAttributeType, Order>
 		implements Attribute<OrderAttributeType, Order> {
