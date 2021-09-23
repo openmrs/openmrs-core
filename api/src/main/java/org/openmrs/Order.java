@@ -967,8 +967,7 @@ public class Order extends BaseOpenmrsData implements FormRecordable, Customizab
 	}
 
 	public List<OrderAttribute> getAllAttributes(Collection<OrderAttribute> orderAttributes, Predicate<OrderAttribute> orderAttributePredicate) {
-		return orderAttributes
-				.stream()
+		return orderAttributes.stream()
 				.filter(orderAttributePredicate)
 				.collect(Collectors.toList());
 	}
