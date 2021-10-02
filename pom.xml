@@ -1111,7 +1111,7 @@
 		<hibernateSearchVersion>5.11.9.Final</hibernateSearchVersion>
 		<luceneVersion>5.5.5</luceneVersion>
 		<aspectjVersion>1.9.7</aspectjVersion>
-		<jacksonVersion>2.12.5</jacksonVersion>
+		<jacksonVersion>2.13.0</jacksonVersion>
 		<junitVersion>5.8.1</junitVersion>
 		<mockitoVersion>3.12.4</mockitoVersion>
 		<hamcrestVersion>2.2</hamcrestVersion>
