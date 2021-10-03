@@ -135,6 +135,11 @@
 	</changeSet>
 
 	<changeSet id="2021-27-09-0200-TRUNK-6027" author="miirochristopher">
+		<preConditions onFail="MARK_RAN" onFailMessage="Table order_attribute_type already exists">
+			<not>
+				<tableExists tableName="order_attribute_type" />
+			</not>
+		</preConditions>
 		<comment>Creating order_attribute_type table</comment>
 		<createTable tableName="order_attribute_type">
 			<column name="order_attribute_type_id" type="int" autoIncrement="true">
@@ -165,7 +170,7 @@
 			</column>
 			<column name="retired_by" type="int" />
 			<column name="date_retired" type="datetime" />
-			<column name="retire_reason" type="varchar(255)" defaultValue="null" />
+			<column name="retire_reason" type="varchar(255)" />
 			<column name="uuid" type="char(38)">
 				<constraints nullable="false" unique="true" />
 			</column>
@@ -176,6 +181,11 @@
 	</changeSet>
 
 	<changeSet id="2021-27-09-0300-TRUNK-6027" author="miirochristopher">
+		<preConditions onFail="MARK_RAN" onFailMessage="Table order_attribute already exists">
+			<not>
+				<tableExists tableName="order_attribute" />
+			</not>
+		</preConditions>
 		<comment>Creating order_attribute table</comment>
 		<createTable tableName="order_attribute">
 			<column name="order_attribute_id" type="int" autoIncrement="true">
@@ -194,7 +204,7 @@
 			</column>
 			<column name="voided_by" type="int" />
 			<column name="date_voided" type="datetime" />
-			<column name="void_reason" type="varchar(255)" defaultValue="null"/>
+			<column name="void_reason" type="varchar(255)" />
 		</createTable>
 		<addForeignKeyConstraint constraintName="order_attribute_order_fk" baseTableName="order_attribute" baseColumnNames="order_id" referencedTableName="orders" referencedColumnNames="order_id" />
 		<addForeignKeyConstraint constraintName="order_attribute_attribute_type_id_fk" baseTableName="order_attribute" baseColumnNames="attribute_type_id" referencedTableName="order_attribute_type" referencedColumnNames="order_attribute_type_id" />
