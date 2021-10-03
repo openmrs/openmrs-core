@@ -23,6 +23,20 @@ public class OrderAttribute extends BaseAttribute<OrderAttributeType, Order>
 	private Integer orderAttributeId;
 
 	/**
+	 * @return the order
+	 */
+	public Order getOrder() {
+		return getOwner();
+	}
+
+	/**
+	 * @param order, the order to set
+	 */
+	public void setOrder(Order order) {
+		setOwner(order);
+	}
+
+	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
 	@Override

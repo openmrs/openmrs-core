@@ -56,6 +56,8 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.openmrs.Order.Action;
+import org.openmrs.OrderAttribute;
+import org.openmrs.OrderAttributeType;
 import org.openmrs.TestOrder;
 import org.openmrs.Patient;
 import org.openmrs.DosingInstructions;
@@ -118,6 +120,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 	private static final String ORDER_GROUP_ATTRIBUTES = "org/openmrs/api/include/OrderServiceTest-createOrderGroupAttributes.xml";
 
+	private static final String ORDER_ATTRIBUTES = "org/openmrs/api/include/OrderServiceTest-createOrderAttributes.xml";
+
 	@Autowired
 	private ConceptService conceptService;
 
@@ -144,6 +148,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	
 	@BeforeEach
 	public void setUp(){
+		executeDataSet(ORDER_ATTRIBUTES);
 		executeDataSet(ORDER_GROUP_ATTRIBUTES);
 	}
 
@@ -3976,5 +3981,100 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		order = orderService.saveOrder(order, null);
 		assertEquals(NAMESPACE + "^" + FORMFIELD_PATH, order.getFormNamespaceAndPath());
+	}
+
+	@Test
+	public void getAllOrderAttributeTypes_shouldReturnAllOrderAttributeTypes() {
+		assertEquals(4, orderService.getAllOrderAttributeTypes().size());
+	}
+
+	@Test
+	public void getOrderAttributeTypeById_shouldReturnNullIfNoOrderAttributeTypeHasTheProvidedId() {
+		assertNull(orderService.getOrderAttributeTypeById(15));
+	}
+
+	@Test
+	public void getOrderAttributeTypeById_shouldReturnOrderAttributeTypeUsingProvidedId() {
+		OrderAttributeType orderAttributeType = orderService.getOrderAttributeTypeById(2);
+		assertThat(orderAttributeType.getId(), is(2));
+	}
+
+	@Test
+	public void getOrderAttributeTypeByUuid_shouldReturnOrderAttributeTypeUsingProvidedUuid() {
+		OrderAttributeType orderAttributeType = orderService.getOrderAttributeTypeByUuid(
+				"9758d106-79b0-4f45-8d8c-ae8b3f25d72a");
+		assertEquals("Referral", orderAttributeType.getName());
+	}
+
+	@Test
+	public void saveOrderAttributeType_shouldSaveTheProvidedOrderAttributeType()
+			throws ParseException {
+		OrderAttributeType orderAttributeType = new OrderAttributeType();
+		orderAttributeType.setName("Medical Procedures");
+		orderAttributeType.setDatatypeClassname(FreeTextDatatype.class.getName());
+		orderService.saveOrderAttributeType(orderAttributeType);
+		assertNotNull(orderAttributeType.getId());
+	}
+
+	@Test
+	public void saveOrderAttributeType_shouldEditTheExistingOrderAttributeType() {
+		OrderAttributeType orderAttributeType = orderService.getOrderAttributeTypeById(4);
+		assertEquals("Drug", orderAttributeType.getName());
+		orderAttributeType.setName("Drug Dispense");
+		orderService.saveOrderAttributeType(orderAttributeType);
+		assertEquals("Drug Dispense", orderAttributeType.getName());
+	}
+
+	@Test
+	public void retireOrderAttributeType_shouldRetireTheProvidedOrderAttributeType() throws ParseException {
+		OrderAttributeType orderAttributeType = orderService.getOrderAttributeTypeById(2);
+		assertFalse(orderAttributeType.getRetired());
+		assertNull(orderAttributeType.getRetiredBy());
+		assertNull(orderAttributeType.getRetireReason());
+		assertNull(orderAttributeType.getDateRetired());
+		orderService.retireOrderAttributeType(orderAttributeType, "Test Retire");
+		orderAttributeType = orderService.getOrderAttributeTypeById(2);
+		assertTrue(orderAttributeType.getRetired());
+		assertNotNull(orderAttributeType.getRetiredBy());
+		assertEquals("Test Retire", orderAttributeType.getRetireReason());
+		assertNotNull(orderAttributeType.getDateRetired());
+	}
+
+	@Test
+	public void unretireOrderAttributeType_shouldUnretireTheProvidedOrderAttributeType() {
+		OrderAttributeType orderAttributeType = orderService.getOrderAttributeTypeById(4);
+		assertTrue(orderAttributeType.getRetired());
+		assertNotNull(orderAttributeType.getRetiredBy());
+		assertNotNull(orderAttributeType.getDateRetired());
+		assertNotNull(orderAttributeType.getRetireReason());
+		orderService.unretireOrderAttributeType(orderAttributeType);
+		assertFalse(orderAttributeType.getRetired());
+		assertNull(orderAttributeType.getRetiredBy());
+		assertNull(orderAttributeType.getDateRetired());
+		assertNull(orderAttributeType.getRetireReason());
+	}
+
+	@Test
+	public void getOrderAttributeTypeByName_shouldReturnOrderAttributeTypeUsingProvidedName() {
+		OrderAttributeType orderAttributeType = orderService.getOrderAttributeTypeByName("Referral");
+		assertEquals("9758d106-79b0-4f45-8d8c-ae8b3f25d72a", orderAttributeType.getUuid());
+	}
+
+	@Test
+	public void purgeOrderAttributeType_shouldPurgeTheProvidedOrderAttributeType() {
+		orderService.purgeOrderAttributeType(orderService.getOrderAttributeTypeById(3));
+		assertEquals(3, orderService.getAllOrderAttributeTypes().size());
+	}
+
+	@Test
+	public void getOrderAttributeByUuid_shouldReturnNullIfNonExistingUuidIsProvided() {
+		assertNull(orderService.getOrderAttributeByUuid("26bbdf73-4268-4e65-aa72-54cb928870d6"));
+	}
+
+	@Test
+	public void getOrderAttributeByUuid_shouldReturnOrderAttributeUsingProvidedUuid() {
+		OrderAttribute orderAttribute = orderService.getOrderAttributeByUuid("8c3c27e4-030f-410e-86de-a5743b0b3361");
+		assertEquals("Testing Reference", orderAttribute.getValueReference());
+		assertEquals(1, orderAttribute.getId());
 	}
 }
