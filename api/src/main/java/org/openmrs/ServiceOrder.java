@@ -48,8 +48,7 @@ public abstract class ServiceOrder extends Order {
 	 */
 	@Override
 	public Order copy() {
-		ServiceOrder order = (ServiceOrder) copyHelper(new Order());
-		return order;
+		return (ServiceOrder) copyHelper(new Order());
 	}
 
 	protected ServiceOrder copyHelper(ServiceOrder target) {
@@ -187,8 +186,7 @@ public abstract class ServiceOrder extends Order {
 	 */
 	@Override
 	public ServiceOrder cloneForRevision() {
-		ServiceOrder serviceOrder = cloneForRevisionHelper(new ServiceOrder());
-		return serviceOrder;;
+		return (ServiceOrder) cloneForRevisionHelper(new Order());
 	}
 
 	/**
