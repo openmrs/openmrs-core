@@ -11,8 +11,7 @@ package org.openmrs;
 
 /**
  * Provides properties for several order types like TestOrder , ReferralOrder
- * and others to accommodate referrals depending on the openmrs implementation
- * use case
+ * and others depending on the openmrs implementation use case as need arises
  * 
  * @since 2.5.0
  */
@@ -49,10 +48,20 @@ public abstract class ServiceOrder extends Order {
 	 */
 	@Override
 	public Order copy() {
-		return copyHelper(new Order());
+		ServiceOrder order = (ServiceOrder) copyHelper(new Order());
+		return order;
 	}
 
-	protected abstract Order copyHelper(Order target);
+	protected ServiceOrder copyHelper(ServiceOrder target) {
+		super.copyHelper(target);
+		target.specimenSource = getSpecimenSource();
+		target.laterality = getLaterality();
+		target.clinicalHistory = getClinicalHistory();
+		target.frequency = getFrequency();
+		target.numberOfRepeats = getNumberOfRepeats();
+		target.location = getLocation();
+		return target;
+	}
 
 	/**
 	 * @return the specimenSource
@@ -132,7 +141,9 @@ public abstract class ServiceOrder extends Order {
 	 *
 	 * @param numberOfRepeats to set
 	 */
-	public void setNumberOfRepeats(Integer numberOfRepeats) {this.numberOfRepeats = numberOfRepeats;}
+	public void setNumberOfRepeats(Integer numberOfRepeats) {
+		this.numberOfRepeats = numberOfRepeats;
+	}
 
 	/**
 	 * Gets a location of the particular order
@@ -143,7 +154,9 @@ public abstract class ServiceOrder extends Order {
 	 * Sets a location of the particular order
 	 * @param location to set
 	 */
-	public void setLocation(Location location) {this.location = location;}
+	public void setLocation(Location location) {
+		this.location = location;
+	}
 
 	/**
 	 * Creates a discontinuation order for this.
@@ -173,12 +186,21 @@ public abstract class ServiceOrder extends Order {
 	 * <strong>Should</strong> set the relevant fields for a DC order
 	 */
 	@Override
-	public Order cloneForRevision() {
-		return cloneForRevisionHelper(new Order());
+	public ServiceOrder cloneForRevision() {
+		ServiceOrder serviceOrder = cloneForRevisionHelper(new ServiceOrder());
+		return serviceOrder;
 	}
 
 	/**
 	 * @see Order#cloneForRevisionHelper(Order)
 	 */
-	protected abstract Order cloneForRevisionHelper(Order target);
+	protected ServiceOrder cloneForRevisionHelper(ServiceOrder target) {
+		super.cloneForRevisionHelper(target);
+		target.setSpecimenSource(getSpecimenSource());
+		target.setLaterality(getLaterality());
+		target.setClinicalHistory(getClinicalHistory());
+		target.setFrequency(getFrequency());
+		target.setNumberOfRepeats(getNumberOfRepeats());
+		return target;
+	}
 }
