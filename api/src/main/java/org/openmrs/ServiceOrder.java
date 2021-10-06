@@ -28,7 +28,7 @@ public abstract class ServiceOrder extends Order {
 
 	public Concept specimenSource;
 
-	private TestOrder.Laterality laterality;
+	private Laterality laterality;
 
 	private String clinicalHistory;
 
@@ -41,8 +41,7 @@ public abstract class ServiceOrder extends Order {
 	/**
 	 * Default Constructor
 	 */
-	public ServiceOrder() {
-	}
+	public ServiceOrder() {}
 
 	/**
 	 * @see org.openmrs.Order#copy()
@@ -53,8 +52,14 @@ public abstract class ServiceOrder extends Order {
 		return copyHelper(new Order());
 	}
 
-	protected Order copyHelper(Order target) {
+	protected Order copyHelper(ServiceOrder target) {
 		super.copyHelper(target);
+		target.specimenSource = getSpecimenSource();
+		target.laterality = getLaterality();
+		target.clinicalHistory = getClinicalHistory();
+		target.frequency = getFrequency();
+		target.numberOfRepeats = getNumberOfRepeats();
+		target.location = getLocation();
 		return target;
 	}
 
@@ -77,7 +82,7 @@ public abstract class ServiceOrder extends Order {
 	 *
 	 * @return the laterality.
 	 */
-	public TestOrder.Laterality getLaterality() {
+	public Laterality getLaterality() {
 		return laterality;
 	}
 
@@ -86,7 +91,7 @@ public abstract class ServiceOrder extends Order {
 	 *
 	 * @param laterality the laterality to set.
 	 */
-	public void setLaterality(TestOrder.Laterality laterality) {
+	public void setLaterality(ServiceOrder.Laterality laterality) {
 		this.laterality = laterality;
 	}
 
