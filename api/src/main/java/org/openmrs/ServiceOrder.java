@@ -157,7 +157,7 @@ public abstract class ServiceOrder extends Order {
 	public void setLocation(Location location) {
 		this.location = location;
 	}
-
+	
 	/**
 	 * Creates a discontinuation order for this.
 	 *
@@ -188,7 +188,7 @@ public abstract class ServiceOrder extends Order {
 	@Override
 	public ServiceOrder cloneForRevision() {
 		ServiceOrder serviceOrder = cloneForRevisionHelper(new ServiceOrder());
-		return serviceOrder;
+		return serviceOrder;;
 	}
 
 	/**
