@@ -4001,9 +4001,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void getOrderAttributeTypeByUuid_shouldReturnOrderAttributeTypeUsingProvidedUuid() {
-		OrderAttributeType orderAttributeType = orderService.getOrderAttributeTypeByUuid(
-				"9758d106-79b0-4f45-8d8c-ae8b3f25d72a");
-		assertEquals("Referral", orderAttributeType.getName());
+		assertEquals("Referral", orderService.getOrderAttributeTypeByUuid(
+				"9758d106-79b0-4f45-8d8c-ae8b3f25d72a").getName());
 	}
 
 	@Test
@@ -4022,7 +4021,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertEquals("Drug", orderAttributeType.getName());
 		orderAttributeType.setName("Drug Dispense");
 		orderService.saveOrderAttributeType(orderAttributeType);
-		assertEquals("Drug Dispense", orderAttributeType.getName());
+		assertThat(orderService.getOrderAttributeTypeById(4).getName(), is("Drug Dispense"));
 	}
 
 	@Test
@@ -4062,6 +4061,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void purgeOrderAttributeType_shouldPurgeTheProvidedOrderAttributeType() {
+		assertEquals(4, orderService.getAllOrderAttributeTypes().size());
 		orderService.purgeOrderAttributeType(orderService.getOrderAttributeTypeById(3));
 		assertEquals(3, orderService.getAllOrderAttributeTypes().size());
 	}
