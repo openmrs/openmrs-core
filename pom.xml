@@ -154,6 +154,12 @@
 				</exclusions>
 			</dependency>
 			<dependency>
+				<groupId>org.apache.tomcat</groupId>
+				<artifactId>tomcat-jasper</artifactId>
+				<version>${tomcatVersion}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
 				<groupId>commons-collections</groupId>
 				<artifactId>commons-collections</artifactId>
 				<version>3.2.2</version>
@@ -1110,6 +1116,8 @@
 		<hibernateVersion>5.5.7.Final</hibernateVersion>
 		<hibernateSearchVersion>5.11.9.Final</hibernateSearchVersion>
 		<luceneVersion>5.5.5</luceneVersion>
+		<!-- Should probably be the minimal version -->
+		<tomcatVersion>8.5.2</tomcatVersion>
 		<aspectjVersion>1.9.7</aspectjVersion>
 		<jacksonVersion>2.12.5</jacksonVersion>
 		<junitVersion>5.8.1</junitVersion>

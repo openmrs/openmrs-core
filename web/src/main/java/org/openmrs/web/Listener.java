@@ -9,6 +9,9 @@
  */
 package org.openmrs.web;
 
+import static org.openmrs.web.server.TomcatUtils.isTomcat;
+import static org.openmrs.web.server.TomcatUtils.loadModuleTlds;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -651,6 +654,10 @@ public final class Listener extends ContextLoader implements ServletContextListe
 					throw t2;
 				}
 			}
+		}
+		
+		if (isTomcat(servletContext)) {
+			loadModuleTlds(servletContext);
 		}
 		
 		// because we delayed the refresh, we need to load+start all servlets and filters now

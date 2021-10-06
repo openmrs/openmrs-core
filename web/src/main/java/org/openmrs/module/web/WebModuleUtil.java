@@ -9,6 +9,9 @@
  */
 package org.openmrs.module.web;
 
+import static org.openmrs.web.server.TomcatUtils.isTomcat;
+import static org.openmrs.web.server.TomcatUtils.loadModuleTlds;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -343,6 +346,15 @@ public class WebModuleUtil {
 				// find and cache the module's servlets
 				//(only if the module started successfully previously)
 				log.debug("Loading servlets and filters for module: " + mod);
+				if (isTomcat(servletContext)) {
+					try {
+						loadModuleTlds(servletContext);
+					}
+					catch (ServletException e) {
+						log.error("Exception caught while reloading TLDs for module [mod={}]", mod, e);
+						throw new ModuleException("Exception caught while reloading TLDs for module " + mod, e);
+					}
+				}
 				loadServlets(mod, servletContext);
 				loadFilters(mod, servletContext);
 			}
