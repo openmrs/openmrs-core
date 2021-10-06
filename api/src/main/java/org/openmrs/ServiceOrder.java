@@ -47,7 +47,7 @@ public abstract class ServiceOrder extends Order {
 	 * <strong>Should</strong> copy all sub-class order fields
 	 */
 	@Override
-	public Order copy() {
+	public ServiceOrder copy() {
 		return (ServiceOrder) copyHelper(new Order());
 	}
 
