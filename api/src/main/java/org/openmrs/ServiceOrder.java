@@ -52,16 +52,7 @@ public abstract class ServiceOrder extends Order {
 		return copyHelper(new Order());
 	}
 
-	protected Order copyHelper(ServiceOrder target) {
-		super.copyHelper(target);
-		target.specimenSource = getSpecimenSource();
-		target.laterality = getLaterality();
-		target.clinicalHistory = getClinicalHistory();
-		target.frequency = getFrequency();
-		target.numberOfRepeats = getNumberOfRepeats();
-		target.location = getLocation();
-		return target;
-	}
+	protected abstract Order copyHelper(Order target);
 
 	/**
 	 * @return the specimenSource
@@ -114,53 +105,43 @@ public abstract class ServiceOrder extends Order {
 	}
 
 	/**
-	 * Gets frequency of test order
-	 *
-	 * @since 1.10
+	 * Gets frequency of a particular order
 	 */
 	public OrderFrequency getFrequency() {
 		return frequency;
 	}
 
 	/**
-	 * Sets frequency of test order
+	 * Sets frequency of a particular order
 	 *
 	 * @param frequency
-	 * @since 1.10
 	 */
 	public void setFrequency(OrderFrequency frequency) {
 		this.frequency = frequency;
 	}
 
 	/**
-	 * Gets numberOfRepeats of test order
-	 *
-	 * @since 1.10
+	 * Gets numberOfRepeats of a particular order
 	 */
 	public Integer getNumberOfRepeats() {
 		return numberOfRepeats;
 	}
 
 	/**
-	 * Sets numberOfRepeats of test order
+	 * Sets numberOfRepeats of a particular order
 	 *
 	 * @param numberOfRepeats to set
-	 * @since 1.10
 	 */
 	public void setNumberOfRepeats(Integer numberOfRepeats) {this.numberOfRepeats = numberOfRepeats;}
 
 	/**
 	 * Gets a location of the particular order
-	 *
-	 * @since 2.5.0
 	 */
 	public Location getLocation() {return location;}
 
 	/**
 	 * Sets a location of the particular order
-	 *
 	 * @param location to set
-	 * @since 2.5.0
 	 */
 	public void setLocation(Location location) {this.location = location;}
 
@@ -169,12 +150,11 @@ public abstract class ServiceOrder extends Order {
 	 *
 	 * @see org.openmrs.Order#cloneForDiscontinuing()
 	 * @return the newly created order
-	 * @since 1.10
 	 * <strong>Should</strong> set all the relevant fields
 	 */
 	@Override
-	public TestOrder cloneForDiscontinuing() {
-		TestOrder newOrder = new TestOrder();
+	public Order cloneForDiscontinuing() {
+		Order newOrder = new Order();
 		newOrder.setCareSetting(getCareSetting());
 		newOrder.setConcept(getConcept());
 		newOrder.setAction(Order.Action.DISCONTINUE);
@@ -185,29 +165,20 @@ public abstract class ServiceOrder extends Order {
 	}
 
 	/**
-	 * Creates a TestOrder for revision from this order, sets the previousOrder, action field and
-	 * other test order fields.
+	 * Creates a particular order for revision from this order, sets the previousOrder, action field and
+	 * other particular order fields.
 	 *
 	 * @return the newly created order
-	 * @since 1.10
 	 * <strong>Should</strong> set all the relevant fields
 	 * <strong>Should</strong> set the relevant fields for a DC order
 	 */
 	@Override
-	public TestOrder cloneForRevision() {
-		return cloneForRevisionHelper(new TestOrder());
+	public Order cloneForRevision() {
+		return cloneForRevisionHelper(new Order());
 	}
 
 	/**
 	 * @see Order#cloneForRevisionHelper(Order)
 	 */
-	protected TestOrder cloneForRevisionHelper(TestOrder target) {
-		super.cloneForRevisionHelper(target);
-		target.setSpecimenSource(getSpecimenSource());
-		target.setLaterality(getLaterality());
-		target.setClinicalHistory(getClinicalHistory());
-		target.setFrequency(getFrequency());
-		target.setNumberOfRepeats(getNumberOfRepeats());
-		return target;
-	}
+	protected abstract Order cloneForRevisionHelper(Order target);
 }
