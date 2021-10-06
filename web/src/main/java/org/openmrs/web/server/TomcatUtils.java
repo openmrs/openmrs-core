@@ -22,7 +22,7 @@ public class TomcatUtils {
 	public static boolean isTomcat(ServletContext servletContext) {
 		return servletContext.getClassLoader().getClass().toString().startsWith("org.apache.catalina");
 	}
-
+	
 	public static void loadModuleTlds(ServletContext servletContext) throws ServletException {
 		TldScanner scanner = new TldScanner(servletContext, true, true, true);
 		try {
