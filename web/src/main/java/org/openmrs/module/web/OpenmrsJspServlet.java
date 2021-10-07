@@ -17,10 +17,12 @@ import org.apache.jasper.Options;
 import org.apache.jasper.compiler.TldCache;
 import org.apache.jasper.servlet.JspServlet;
 import org.apache.jasper.servlet.TldScanner;
+import org.openmrs.util.OpenmrsClassLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,6 +38,12 @@ public class OpenmrsJspServlet extends JspServlet {
 	private static final Logger log = LoggerFactory.getLogger(OpenmrsJspServlet.class);
 	
 	private transient boolean tldScanComplete = false;
+
+	@Override
+	public void init(ServletConfig config) throws ServletException {
+		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
+		super.init(config);
+	}
 	
 	@Override
 	public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
