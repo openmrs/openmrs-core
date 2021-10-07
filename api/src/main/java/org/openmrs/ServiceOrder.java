@@ -142,6 +142,7 @@ public abstract class ServiceOrder extends Order {
 
 	/**
 	 * Sets a location of the particular order
+	 *
 	 * @param location to set
 	 */
 	public void setLocation(Location location) {
