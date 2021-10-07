@@ -49,34 +49,44 @@ public class OpenmrsJspServlet extends JspServlet {
 			boolean namespaceAware = true;
 			boolean validate = getBooleanParameter(Constants.XML_VALIDATION_TLD_INIT_PARAM, false);
 			boolean blockExternalString = getBooleanParameter(Constants.XML_BLOCK_EXTERNAL_INIT_PARAM, true);
-			TldScanner scanner = new TldScanner(getServletContext(), namespaceAware, validate, blockExternalString);
 			try {
-				scanner.scan();
-			}
-			catch (IOException | SAXException e) {
-				throw new ServletException(e);
-			}
-			// add any listeners defined in TLDs
-			for (String listener : scanner.getListeners()) {
-				getServletContext().addListener(listener);
-			}
+				TldScanner scanner = new TldScanner(getServletContext(), namespaceAware, validate, blockExternalString);
+				try {
+					scanner.scan();
+				} catch (IOException | SAXException e) {
+					throw new ServletException(e);
+				}
+				// add any listeners defined in TLDs
+				for (String listener : scanner.getListeners()) {
+					getServletContext().addListener(listener);
+				}
 
-			TldCache tldCache = new TldCache(getServletContext(), scanner.getUriTldResourcePathMap(), scanner.getTldResourcePathTaglibXmlMap());
-			getServletContext().setAttribute(TldCache.SERVLET_CONTEXT_ATTRIBUTE_NAME, tldCache);
-			log.info("TldCache updated on ServletContext");
-			try {
-				Options options = (Options)FieldUtils.readField(this, "options", true);
-				if (options instanceof EmbeddedServletOptions) {
-					EmbeddedServletOptions embeddedServletOptions = (EmbeddedServletOptions) options;
-					embeddedServletOptions.setTldCache(tldCache);
-					log.info("TldCache updated on JspServlet");
+				TldCache tldCache = new TldCache(getServletContext(), scanner.getUriTldResourcePathMap(), scanner.getTldResourcePathTaglibXmlMap());
+				getServletContext().setAttribute(TldCache.SERVLET_CONTEXT_ATTRIBUTE_NAME, tldCache);
+				log.info("TldCache updated on ServletContext");
+				try {
+					Options options = (Options) FieldUtils.readField(this, "options", true);
+					if (options instanceof EmbeddedServletOptions) {
+						EmbeddedServletOptions embeddedServletOptions = (EmbeddedServletOptions) options;
+						embeddedServletOptions.setTldCache(tldCache);
+						log.info("TldCache updated on JspServlet");
+					}
+				} catch (IllegalAccessException e) {
+					throw new ServletException("Unable to set TldCache on JspServlet options", e);
 				}
 			}
-			catch (IllegalAccessException e) {
-				throw new ServletException("Unable to set TldCache on JspServlet options", e);
+			catch (NoClassDefFoundError e) {
+				/*
+				 	If we hit a NoClassDefFoundError, assume this means that we are operating in a Non-Tomcat
+				 	environment, or we are in a version of Tomcat 7 or before, which does not require this additional
+				 	TLD Scanning Steps.  Proceed with startup.
+				 */
+				log.debug("Got NoClassDefFound error, skipping additional TLD scanning step");
 			}
-			log.info("Scanning completed successfully");
-			tldScanComplete = true;
+			finally {
+				log.info("Scanning completed successfully");
+				tldScanComplete = true;
+			}
 		}
 	}
 
