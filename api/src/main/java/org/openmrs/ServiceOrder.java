@@ -40,7 +40,8 @@ public abstract class ServiceOrder extends Order {
 	/**
 	 * Default Constructor
 	 */
-	public ServiceOrder() {}
+	public ServiceOrder() {
+	}
 
 	protected ServiceOrder copyHelper(ServiceOrder target) {
 		super.copyHelper(target);
@@ -138,7 +139,9 @@ public abstract class ServiceOrder extends Order {
 	/**
 	 * Gets a location of the particular order
 	 */
-	public Location getLocation() {return location;}
+	public Location getLocation() {
+		return location;
+	}
 
 	/**
 	 * Sets a location of the particular order
