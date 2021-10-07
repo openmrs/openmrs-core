@@ -25,6 +25,8 @@ import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.search.LuceneAnalyzers;
+import org.openmrs.attribute.Attribute;
+import org.openmrs.attribute.BaseAttribute;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
@@ -42,8 +44,8 @@ import org.slf4j.LoggerFactory;
  * @see org.openmrs.Attributable
  */
 @Indexed
-public class PersonAttribute extends BaseChangeableOpenmrsData implements java.io.Serializable, Comparable<PersonAttribute> {
-	
+public class PersonAttribute extends BaseAttribute<PersonAttributeType, Person> {
+
 	public static final long serialVersionUID = 11231211232111L;
 	
 	private static final Logger log = LoggerFactory.getLogger(PersonAttribute.class);
@@ -126,14 +128,13 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 	 * @return boolean true/false whether or not they are the same attributes
 	 * <strong>Should</strong> return true if attributeType value and void status are the same
 	 */
-	@SuppressWarnings("unchecked")
 	public boolean equalsContent(PersonAttribute otherAttribute) {
 		boolean returnValue = true;
 		
 		// these are the methods to compare.
 		String[] methods = { "getAttributeType", "getValue", "getVoided" };
 		
-		Class attributeClass = this.getClass();
+		Class<?> attributeClass = this.getClass();
 		
 		// loop over all of the selected methods and compare this and other
 		for (String methodAttribute : methods) {
@@ -212,7 +213,7 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 	public String toString() {
 		Object o = getHydratedObject();
 		if (o instanceof Attributable) {
-			return ((Attributable) o).getDisplayString();
+			return ((Attributable<?>) o).getDisplayString();
 		} else if (o != null) {
 			return o.toString();
 		}
@@ -242,7 +243,6 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 	 * <strong>Should</strong> load class in format property
 	 * <strong>Should</strong> still load class in format property if not Attributable
 	 */
-	@SuppressWarnings("unchecked")
 	public Object getHydratedObject() {
 		
 		if (getValue() == null) {
@@ -250,11 +250,11 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 		}
 		
 		try {
-			Class c = OpenmrsClassLoader.getInstance().loadClass(getAttributeType().getFormat());
+			Class<?> c = OpenmrsClassLoader.getInstance().loadClass(getAttributeType().getFormat());
 			try {
 				Object o = c.newInstance();
 				if (o instanceof Attributable) {
-					Attributable attr = (Attributable) o;
+					Attributable<?> attr = (Attributable<?>) o;
 					return attr.hydrate(getValue());
 				}
 			}
@@ -302,9 +302,12 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 	 * Note: this comparator imposes orderings that are inconsistent with equals
 	 */
 	@Override
-	public int compareTo(PersonAttribute other) {
+	public int compareTo(Attribute other) {
+		if (!(other instanceof PersonAttribute)) {
+			return super.compareTo(other);
+		}
 		DefaultComparator paDComparator = new DefaultComparator();
-		return paDComparator.compare(this, other);
+		return paDComparator.compare(this, (PersonAttribute) other);
 	}
 	
 	/**

@@ -14,13 +14,14 @@ import java.util.Comparator;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.search.annotations.Field;
+import org.openmrs.attribute.BaseAttributeType;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
  * PersonAttributeType
  */
-public class PersonAttributeType extends BaseChangeableOpenmrsMetadata implements java.io.Serializable, Comparable<PersonAttributeType> {
-	
+public class PersonAttributeType extends BaseAttributeType<Person> implements Comparable<PersonAttributeType> {
+
 	public static final long serialVersionUID = 2112313431211L;
 	
 	private Integer personAttributeTypeId;

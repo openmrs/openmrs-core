@@ -42,7 +42,7 @@ import org.springframework.util.StringUtils;
  * 
  * @see org.openmrs.Patient
  */
-public class Person extends BaseChangeableOpenmrsData {
+public class Person extends BaseCustomizableData<PersonAttribute> {
 	
 	public static final long serialVersionUID = 2L;
 	
@@ -55,9 +55,6 @@ public class Person extends BaseChangeableOpenmrsData {
 	
 	@ContainedIn
 	private Set<PersonName> names = null;
-	
-	@ContainedIn
-	private Set<PersonAttribute> attributes = null;
 	
 	@Field
 	private String gender;
@@ -117,6 +114,8 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * default empty constructor
 	 */
 	public Person() {
+		// Hibernate expects a SortedSet
+		super.setAttributes(new TreeSet<>());
 	}
 	
 	/**
@@ -136,8 +135,8 @@ public class Person extends BaseChangeableOpenmrsData {
 		setUuid(person.getUuid());
 		addresses = person.getAddresses();
 		names = person.getNames();
-		attributes = person.getAttributes();
-		
+		setAttributes(person.getAttributes());
+
 		gender = person.getGender();
 		birthdate = person.getBirthdate();
 		birthtime = person.getBirthDateTime();
@@ -407,10 +406,11 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * <strong>Should</strong> not fail with null attributes
 	 */
 	public Set<PersonAttribute> getAttributes() {
-		if (attributes == null) {
-			attributes = new TreeSet<>();
+		if (super.getAttributes() == null) {
+			// Hibernate expects a SortedSet
+			super.setAttributes(new TreeSet<>());
 		}
-		return this.attributes;
+		return super.getAttributes();
 	}
 	
 	/**
@@ -435,7 +435,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @see org.openmrs.PersonAttribute
 	 */
 	public void setAttributes(Set<PersonAttribute> attributes) {
-		this.attributes = attributes;
+		super.setAttributes(attributes);
 		attributeMap = null;
 		allAttributeMap = null;
 	}
@@ -488,6 +488,7 @@ public class Person extends BaseChangeableOpenmrsData {
 		}
 		attributeMap = null;
 		allAttributeMap = null;
+		Set<PersonAttribute> attributes = getAttributes();
 		if (!OpenmrsUtil.collectionContains(attributes, newAttribute) && !newIsNull) {
 			attributes.add(newAttribute);
 		}
@@ -503,7 +504,8 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * <strong>Should</strong> remove attribute when exist
 	 */
 	public void removeAttribute(PersonAttribute attribute) {
-		if (attributes != null && attributes.remove(attribute)) {
+		Set<PersonAttribute> attributes = getAttributes();
+		if (attributes.remove(attribute)) {
 			attributeMap = null;
 			allAttributeMap = null;
 		}
@@ -872,7 +874,7 @@ public class Person extends BaseChangeableOpenmrsData {
 					return addr;
 				}
 			}
-			
+
 			if (getVoided()) {
 				return getAddresses().iterator().next();
 			}
@@ -1086,6 +1088,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	}
 	
 	/**
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
