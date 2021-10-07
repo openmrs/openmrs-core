@@ -42,15 +42,6 @@ public abstract class ServiceOrder extends Order {
 	 */
 	public ServiceOrder() {}
 
-	/**
-	 * @see org.openmrs.Order#copy()
-	 * <strong>Should</strong> copy all sub-class order fields
-	 */
-	@Override
-	public ServiceOrder copy() {
-		return (ServiceOrder) copyHelper(new Order());
-	}
-
 	protected ServiceOrder copyHelper(ServiceOrder target) {
 		super.copyHelper(target);
 		target.specimenSource = getSpecimenSource();
@@ -155,38 +146,6 @@ public abstract class ServiceOrder extends Order {
 	 */
 	public void setLocation(Location location) {
 		this.location = location;
-	}
-	
-	/**
-	 * Creates a discontinuation order for this.
-	 *
-	 * @see org.openmrs.Order#cloneForDiscontinuing()
-	 * @return the newly created order
-	 * <strong>Should</strong> set all the relevant fields
-	 */
-	@Override
-	public Order cloneForDiscontinuing() {
-		Order newOrder = new Order();
-		newOrder.setCareSetting(getCareSetting());
-		newOrder.setConcept(getConcept());
-		newOrder.setAction(Order.Action.DISCONTINUE);
-		newOrder.setPreviousOrder(this);
-		newOrder.setPatient(getPatient());
-		newOrder.setOrderType(getOrderType());
-		return newOrder;
-	}
-
-	/**
-	 * Creates a particular order for revision from this order, sets the previousOrder, action field and
-	 * other particular order fields.
-	 *
-	 * @return the newly created order
-	 * <strong>Should</strong> set all the relevant fields
-	 * <strong>Should</strong> set the relevant fields for a DC order
-	 */
-	@Override
-	public ServiceOrder cloneForRevision() {
-		return (ServiceOrder) cloneForRevisionHelper(new Order());
 	}
 
 	/**
