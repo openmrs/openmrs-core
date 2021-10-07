@@ -164,4 +164,21 @@ public abstract class ServiceOrder extends Order {
 		target.setNumberOfRepeats(getNumberOfRepeats());
 		return target;
 	}
+
+	/**
+	 * The purpose of this method is to allow subclasses of a ServiceOrder to delegate a portion of their
+	 * cloneForDiscontinuing() method back to the superclass, in case the base class implementation
+	 * changes.
+	 *
+	 * @param target a particular order that will have the state of <code>this</code> copied into it
+	 * @return Returns the Order that was passed in, with state copied into it
+	 */
+	protected ServiceOrder cloneForDiscontinuingHelper(ServiceOrder target) {
+		target.setSpecimenSource(getSpecimenSource());
+		target.setLaterality(getLaterality());
+		target.setClinicalHistory(getClinicalHistory());
+		target.setFrequency(getFrequency());
+		target.setNumberOfRepeats(getNumberOfRepeats());
+		return target;
+	}
 }
