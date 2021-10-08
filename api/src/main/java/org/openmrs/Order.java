@@ -140,8 +140,6 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	 */	
 	private String fulfillerComment;
 
-	private Set<OrderAttribute> attributes = new LinkedHashSet<>();
-	
 	// Constructors
 	
 	/** default constructor */
@@ -949,18 +947,5 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	@Override
 	public void setFormField(String namespace, String formFieldPath) {
 		formNamespaceAndPath = BaseFormRecordableOpenmrsData.getFormNamespaceAndPath(namespace, formFieldPath);
-	}
-
-	@Override
-	public Set<OrderAttribute> getAttributes() {
-		if (attributes == null) {
-			attributes = new LinkedHashSet<>();
-		}
-		return attributes;
-	}
-
-	@Override
-	public void setAttributes(Set<OrderAttribute> attributes) {
-		this.attributes = attributes;
 	}
 }
