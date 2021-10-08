@@ -214,6 +214,14 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 		dao.saveOrderAttributeType(orderAttributeType);
 		assertNotNull(orderAttributeType.getOrderAttributeTypeId(), "Saved OrderAttribute Type");
 		assertEquals(5, dao.getAllOrderAttributeTypes().size());
+		OrderAttributeType savedOrderAttributeType = dao.getOrderAttributeTypeByUuid("81b95c51-865b-48c6-aacf-cc8f21e69f5e");
+		assertEquals("External Referral", savedOrderAttributeType.getName());
+		assertEquals(5, savedOrderAttributeType.getMinOccurs());
+		assertEquals(5, savedOrderAttributeType.getMinOccurs());
+		assertEquals(order.getCreator(), savedOrderAttributeType.getCreator());
+		assertEquals(order.getDateCreated(), savedOrderAttributeType.getDateCreated());
+		assertEquals("81b95c51-865b-48c6-aacf-cc8f21e69f5e", savedOrderAttributeType.getUuid());
+		assertEquals(false, savedOrderAttributeType.getRetired());
 	}
 
 	/**

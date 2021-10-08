@@ -11,17 +11,12 @@ package org.openmrs;
 
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.hibernate.HibernateUtil;
-import org.openmrs.attribute.Attribute;
-import org.openmrs.customdatatype.CustomValueDescriptor;
-import org.openmrs.customdatatype.Customizable;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.util.OpenmrsUtil;
 
-import java.util.Collection;
 import java.util.Date;
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Encapsulates information about the clinical action of a provider requesting something for a
@@ -37,7 +32,7 @@ import java.util.stream.Collectors;
  * 
  * @version 1.0
  */
-public class Order extends BaseOpenmrsData implements FormRecordable, Customizable<OrderAttribute> {
+public class Order extends BaseCustomizableData<OrderAttribute> implements FormRecordable {
 
 	public static final long serialVersionUID = 4334343L;
 
@@ -144,6 +139,8 @@ public class Order extends BaseOpenmrsData implements FormRecordable, Customizab
 	 * Represents the comment that goes along with with fulfiller status
 	 */	
 	private String fulfillerComment;
+
+	private Set<OrderAttribute> attributes = new LinkedHashSet<>();
 	
 	// Constructors
 	
@@ -954,54 +951,16 @@ public class Order extends BaseOpenmrsData implements FormRecordable, Customizab
 		formNamespaceAndPath = BaseFormRecordableOpenmrsData.getFormNamespaceAndPath(namespace, formFieldPath);
 	}
 
-	private Predicate<OrderAttribute> getActiveAttributesOfCustomTypePredicate(CustomValueDescriptor ofType) {
-		return attribute -> attribute.getAttributeType().equals(ofType) && !attribute.getVoided();
-	}
-
-	private Predicate<OrderAttribute> getActiveAttributesPredicate(){
-		return attribute -> !attribute.getVoided();
-	}
-
-	private Collection<OrderAttribute> getCollectionOfAttributes(){
-		return this.getAttributes();
-	}
-
-	public List<OrderAttribute> getAllAttributes(Collection<OrderAttribute> orderAttributes, Predicate<OrderAttribute> orderAttributePredicate) {
-		return orderAttributes.stream()
-				.filter(orderAttributePredicate)
-				.collect(Collectors.toList());
-	}
-
-	/**
-	 * @return all attributes (including voided ones)
-	 */
 	@Override
-	public Collection<OrderAttribute> getAttributes() {
-		return getCollectionOfAttributes();
+	public Set<OrderAttribute> getAttributes() {
+		if (attributes == null) {
+			attributes = new LinkedHashSet<>();
+		}
+		return attributes;
 	}
 
-	/**
-	 * @see org.openmrs.customdatatype.Customizable#getActiveAttributes()
-	 */
 	@Override
-	public Collection<OrderAttribute> getActiveAttributes() {
-		return getAllAttributes(this.getAttributes(), getActiveAttributesPredicate());
-	}
-
-	/**
-	 * @see org.openmrs.customdatatype.Customizable#getActiveAttributes(org.openmrs.customdatatype.CustomValueDescriptor)
-	 */
-	@Override
-	public List<OrderAttribute> getActiveAttributes(CustomValueDescriptor ofType) {
-		return getAllAttributes(this.getAttributes(), getActiveAttributesOfCustomTypePredicate(ofType));
-	}
-
-	/**
-	 * @see org.openmrs.customdatatype.Customizable#addAttribute(Attribute)
-	 */
-	@Override
-	public void addAttribute(OrderAttribute attribute) {
-		 getAttributes().add(attribute);
-		 attribute.setOwner(this);
+	public void setAttributes(Set<OrderAttribute> attributes) {
+		this.attributes = attributes;
 	}
 }

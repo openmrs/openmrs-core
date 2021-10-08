@@ -4008,11 +4008,15 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void saveOrderAttributeType_shouldSaveTheProvidedOrderAttributeType()
 			throws ParseException {
+		assertEquals(4, orderService.getAllOrderAttributeTypes().size());
 		OrderAttributeType orderAttributeType = new OrderAttributeType();
 		orderAttributeType.setName("Medical Procedures");
 		orderAttributeType.setDatatypeClassname(FreeTextDatatype.class.getName());
 		orderService.saveOrderAttributeType(orderAttributeType);
 		assertNotNull(orderAttributeType.getId());
+		assertEquals(5, orderService.getAllOrderAttributeTypes().size());
+		OrderAttributeType savedOrderAttributeType = orderService.getOrderAttributeTypeById(orderAttributeType.getId());
+		assertEquals("Medical Procedures", savedOrderAttributeType.getName());
 	}
 
 	@Test
