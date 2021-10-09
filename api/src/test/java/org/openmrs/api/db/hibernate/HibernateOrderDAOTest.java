@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -186,7 +188,8 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getAllOrderAttributeTypes_shouldReturnAllOrderAttributeTypes() {
-		assertEquals(4, dao.getAllOrderAttributeTypes().size());
+		final int ORIGINAL_COUNT = dao.getAllOrderAttributeTypes().size();
+		assertThat(dao.getAllOrderAttributeTypes().size(), is(ORIGINAL_COUNT));
 	}
 
 	/**
@@ -201,7 +204,8 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void saveOrderAttributeType_shouldSaveTheProvidedOrderAttributeTypeToDatabase() {
 		final Order order = Context.getOrderService().getOrder(1);
-		assertEquals(4, dao.getAllOrderAttributeTypes().size());
+		final int ORIGINAL_COUNT = dao.getAllOrderAttributeTypes().size();
+		assertThat(dao.getAllOrderAttributeTypes().size(), is(ORIGINAL_COUNT));
 		OrderAttributeType orderAttributeType = new OrderAttributeType();
 		orderAttributeType.setName("External Referral");
 		orderAttributeType.setMinOccurs(5);
@@ -213,7 +217,7 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 		orderAttributeType.setUuid("81b95c51-865b-48c6-aacf-cc8f21e69f5e");
 		dao.saveOrderAttributeType(orderAttributeType);
 		assertNotNull(orderAttributeType.getOrderAttributeTypeId(), "Saved OrderAttribute Type");
-		assertEquals(5, dao.getAllOrderAttributeTypes().size());
+		assertEquals(ORIGINAL_COUNT + 1, dao.getAllOrderAttributeTypes().size());
 		OrderAttributeType savedOrderAttributeType = dao.getOrderAttributeTypeByUuid("81b95c51-865b-48c6-aacf-cc8f21e69f5e");
 		assertEquals("External Referral", savedOrderAttributeType.getName());
 		assertEquals(5, savedOrderAttributeType.getMinOccurs());

@@ -3985,7 +3985,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void getAllOrderAttributeTypes_shouldReturnAllOrderAttributeTypes() {
-		assertEquals(4, orderService.getAllOrderAttributeTypes().size());
+		final int ORIGINAL_COUNT = orderService.getAllOrderAttributeTypes().size();
+		assertThat(orderService.getAllOrderAttributeTypes().size(), is(ORIGINAL_COUNT));
 	}
 
 	@Test
@@ -4008,15 +4009,15 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void saveOrderAttributeType_shouldSaveTheProvidedOrderAttributeType()
 			throws ParseException {
-		assertEquals(4, orderService.getAllOrderAttributeTypes().size());
+		final int ORIGINAL_COUNT = orderService.getAllOrderAttributeTypes().size();
+		assertThat(orderService.getAllOrderAttributeTypes().size(), is(ORIGINAL_COUNT));
 		OrderAttributeType orderAttributeType = new OrderAttributeType();
 		orderAttributeType.setName("Medical Procedures");
 		orderAttributeType.setDatatypeClassname(FreeTextDatatype.class.getName());
 		orderService.saveOrderAttributeType(orderAttributeType);
 		assertNotNull(orderAttributeType.getId());
-		assertEquals(5, orderService.getAllOrderAttributeTypes().size());
-		OrderAttributeType savedOrderAttributeType = orderService.getOrderAttributeTypeById(orderAttributeType.getId());
-		assertEquals("Medical Procedures", savedOrderAttributeType.getName());
+		assertEquals(ORIGINAL_COUNT + 1, orderService.getAllOrderAttributeTypes().size());
+		assertThat(orderService.getOrderAttributeTypeById(orderAttributeType.getId()).getName(), is("Medical Procedures"));
 	}
 
 	@Test
@@ -4025,7 +4026,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertEquals("Drug", orderAttributeType.getName());
 		orderAttributeType.setName("Drug Dispense");
 		orderService.saveOrderAttributeType(orderAttributeType);
-		assertThat(orderService.getOrderAttributeTypeById(4).getName(), is("Drug Dispense"));
+		assertThat(orderService.getOrderAttributeTypeById(orderAttributeType.getId()).getName(), is("Drug Dispense"));
 	}
 
 	@Test
@@ -4036,7 +4037,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertNull(orderAttributeType.getRetireReason());
 		assertNull(orderAttributeType.getDateRetired());
 		orderService.retireOrderAttributeType(orderAttributeType, "Test Retire");
-		orderAttributeType = orderService.getOrderAttributeTypeById(2);
+		orderAttributeType = orderService.getOrderAttributeTypeById(orderAttributeType.getId());
 		assertTrue(orderAttributeType.getRetired());
 		assertNotNull(orderAttributeType.getRetiredBy());
 		assertEquals("Test Retire", orderAttributeType.getRetireReason());
@@ -4065,9 +4066,11 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void purgeOrderAttributeType_shouldPurgeTheProvidedOrderAttributeType() {
-		assertEquals(4, orderService.getAllOrderAttributeTypes().size());
+		final int ORIGINAL_COUNT = orderService.getAllOrderAttributeTypes().size();
+		assertThat(orderService.getAllOrderAttributeTypes().size(), is(ORIGINAL_COUNT));
 		orderService.purgeOrderAttributeType(orderService.getOrderAttributeTypeById(3));
-		assertEquals(3, orderService.getAllOrderAttributeTypes().size());
+		assertNull(orderService.getOrderAttributeTypeById(3));
+		assertEquals(ORIGINAL_COUNT - 1, orderService.getAllOrderAttributeTypes().size());
 	}
 
 	@Test
