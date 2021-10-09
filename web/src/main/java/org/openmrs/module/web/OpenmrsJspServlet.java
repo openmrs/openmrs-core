@@ -37,7 +37,7 @@ public class OpenmrsJspServlet extends JspServlet {
 	
 	private static final Logger log = LoggerFactory.getLogger(OpenmrsJspServlet.class);
 	
-	private transient boolean tldScanComplete = false;
+	public static final String OPENMRS_TLD_SCAN_NEEDED = "OPENMRS_TLD_SCAN_NEEDED";
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
@@ -47,13 +47,13 @@ public class OpenmrsJspServlet extends JspServlet {
 	
 	@Override
 	public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		scanTldsIfNeeded();
+		rescanTldsIfNeeded();
 		super.service(request, response);
 	}
 
-	protected void scanTldsIfNeeded() throws ServletException {
-		if (!tldScanComplete) {
-			log.info("TLD Scanning has not yet been done for OpenMRS modules.  Initiating now.");
+	protected synchronized void rescanTldsIfNeeded() throws ServletException {
+		if (getBooleanAttribute(OPENMRS_TLD_SCAN_NEEDED, true)) {
+			log.warn("Rescanning TLDs");
 			boolean namespaceAware = true;
 			boolean validate = getBooleanParameter(Constants.XML_VALIDATION_TLD_INIT_PARAM, false);
 			boolean blockExternalString = getBooleanParameter(Constants.XML_BLOCK_EXTERNAL_INIT_PARAM, true);
@@ -82,18 +82,16 @@ public class OpenmrsJspServlet extends JspServlet {
 				} catch (IllegalAccessException e) {
 					throw new ServletException("Unable to set TldCache on JspServlet options", e);
 				}
-			}
-			catch (NoClassDefFoundError e) {
+			} catch (NoClassDefFoundError e) {
 				/*
-				 	If we hit a NoClassDefFoundError, assume this means that we are operating in a Non-Tomcat
-				 	environment, or we are in a version of Tomcat 7 or before, which does not require this additional
-				 	TLD Scanning Steps.  Proceed with startup.
+					If we hit a NoClassDefFoundError, assume this means that we are operating in a Non-Tomcat
+					environment, or we are in a version of Tomcat 7 or before, which does not require this additional
+					TLD Scanning Steps.  Proceed with startup.
 				 */
 				log.debug("Got NoClassDefFound error, skipping additional TLD scanning step");
-			}
-			finally {
+			} finally {
 				log.info("Scanning completed successfully");
-				tldScanComplete = true;
+				getServletContext().setAttribute(OPENMRS_TLD_SCAN_NEEDED, false);
 			}
 		}
 	}
@@ -106,4 +104,11 @@ public class OpenmrsJspServlet extends JspServlet {
 		return defaultValue;
 	}
 
+	private boolean getBooleanAttribute(String attribute, boolean defaultValue) {
+		Boolean val = (Boolean)getServletContext().getAttribute(attribute);
+		if (val != null) {
+			return val;
+		}
+		return defaultValue;
+	}
 }
