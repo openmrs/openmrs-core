@@ -3987,8 +3987,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAllOrderAttributeTypes_shouldReturnAllOrderAttributeTypes() {
 		List<OrderAttributeType> orderAttributeTypeList = orderService.getAllOrderAttributeTypes();
-		final int SIZE = orderService.getAllOrderAttributeTypes().size();
-		assertThat(orderAttributeTypeList, hasSize(SIZE));
+		assertThat(orderAttributeTypeList, hasSize(orderService.getAllOrderAttributeTypes().size()));
 	}
 
 	@Test

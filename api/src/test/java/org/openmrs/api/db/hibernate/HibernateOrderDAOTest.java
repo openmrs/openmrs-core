@@ -190,8 +190,7 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAllOrderAttributeTypes_shouldReturnAllOrderAttributeTypes() {
 		List<OrderAttributeType> orderAttributeTypeList = dao.getAllOrderAttributeTypes();
-		final int SIZE = dao.getAllOrderAttributeTypes().size();
-		assertThat(orderAttributeTypeList, hasSize(SIZE));
+		assertThat(orderAttributeTypeList, hasSize(dao.getAllOrderAttributeTypes().size()));
 	}
 
 	/**
