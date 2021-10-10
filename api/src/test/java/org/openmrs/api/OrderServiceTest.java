@@ -11,6 +11,7 @@ package org.openmrs.api;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -3985,8 +3986,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void getAllOrderAttributeTypes_shouldReturnAllOrderAttributeTypes() {
-		final int ORIGINAL_COUNT = orderService.getAllOrderAttributeTypes().size();
-		assertThat(orderService.getAllOrderAttributeTypes().size(), is(ORIGINAL_COUNT));
+		List<OrderAttributeType> orderAttributeTypeList = orderService.getAllOrderAttributeTypes();
+		final int SIZE = orderService.getAllOrderAttributeTypes().size();
+		assertThat(orderAttributeTypeList, hasSize(SIZE));
 	}
 
 	@Test
@@ -4010,7 +4012,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void saveOrderAttributeType_shouldSaveTheProvidedOrderAttributeType()
 			throws ParseException {
 		final int ORIGINAL_COUNT = orderService.getAllOrderAttributeTypes().size();
-		assertThat(orderService.getAllOrderAttributeTypes().size(), is(ORIGINAL_COUNT));
 		OrderAttributeType orderAttributeType = new OrderAttributeType();
 		orderAttributeType.setName("Medical Procedures");
 		orderAttributeType.setDatatypeClassname(FreeTextDatatype.class.getName());
@@ -4067,7 +4068,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void purgeOrderAttributeType_shouldPurgeTheProvidedOrderAttributeType() {
 		final int ORIGINAL_COUNT = orderService.getAllOrderAttributeTypes().size();
-		assertThat(orderService.getAllOrderAttributeTypes().size(), is(ORIGINAL_COUNT));
 		orderService.purgeOrderAttributeType(orderService.getOrderAttributeTypeById(3));
 		assertNull(orderService.getOrderAttributeTypeById(3));
 		assertEquals(ORIGINAL_COUNT - 1, orderService.getAllOrderAttributeTypes().size());

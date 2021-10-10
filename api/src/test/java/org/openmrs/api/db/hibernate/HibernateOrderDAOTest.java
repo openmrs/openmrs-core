@@ -10,6 +10,7 @@
 package org.openmrs.api.db.hibernate;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -188,8 +189,9 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getAllOrderAttributeTypes_shouldReturnAllOrderAttributeTypes() {
-		final int ORIGINAL_COUNT = dao.getAllOrderAttributeTypes().size();
-		assertThat(dao.getAllOrderAttributeTypes().size(), is(ORIGINAL_COUNT));
+		List<OrderAttributeType> orderAttributeTypeList = dao.getAllOrderAttributeTypes();
+		final int SIZE = dao.getAllOrderAttributeTypes().size();
+		assertThat(orderAttributeTypeList, hasSize(SIZE));
 	}
 
 	/**
@@ -205,10 +207,9 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	public void saveOrderAttributeType_shouldSaveTheProvidedOrderAttributeTypeToDatabase() {
 		final Order order = Context.getOrderService().getOrder(1);
 		final int ORIGINAL_COUNT = dao.getAllOrderAttributeTypes().size();
-		assertThat(dao.getAllOrderAttributeTypes().size(), is(ORIGINAL_COUNT));
 		OrderAttributeType orderAttributeType = new OrderAttributeType();
 		orderAttributeType.setName("External Referral");
-		orderAttributeType.setMinOccurs(5);
+		orderAttributeType.setMinOccurs(1);
 		orderAttributeType.setMaxOccurs(5);
 		orderAttributeType.setDatatypeClassname(FreeTextDatatype.class.getName());
 		orderAttributeType.setCreator(order.getCreator());
@@ -220,8 +221,8 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 		assertEquals(ORIGINAL_COUNT + 1, dao.getAllOrderAttributeTypes().size());
 		OrderAttributeType savedOrderAttributeType = dao.getOrderAttributeTypeByUuid("81b95c51-865b-48c6-aacf-cc8f21e69f5e");
 		assertEquals("External Referral", savedOrderAttributeType.getName());
-		assertEquals(5, savedOrderAttributeType.getMinOccurs());
-		assertEquals(5, savedOrderAttributeType.getMinOccurs());
+		assertEquals(1, savedOrderAttributeType.getMinOccurs());
+		assertEquals(5, savedOrderAttributeType.getMaxOccurs());
 		assertEquals(order.getCreator(), savedOrderAttributeType.getCreator());
 		assertEquals(order.getDateCreated(), savedOrderAttributeType.getDateCreated());
 		assertEquals("81b95c51-865b-48c6-aacf-cc8f21e69f5e", savedOrderAttributeType.getUuid());
