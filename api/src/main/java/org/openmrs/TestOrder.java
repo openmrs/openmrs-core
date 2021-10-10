@@ -24,8 +24,7 @@ public class TestOrder extends ServiceOrder {
 	}
 
 	/**
-	 * @see org.openmrs.Order#copy()
-	 * <strong>Should</strong> copy all test order fields
+	 * @see ServiceOrder#copy()
 	 */
 	@Override
 	public Order copy() {
@@ -37,7 +36,7 @@ public class TestOrder extends ServiceOrder {
 	 */
 	@Override
 	public Concept getSpecimenSource() {
-		return super.getSpecimenSource();
+		return specimenSource;
 	}
 
 	/**
@@ -45,43 +44,35 @@ public class TestOrder extends ServiceOrder {
 	 */
 	@Override
 	public void setSpecimenSource(Concept specimenSource) {
-		super.setSpecimenSource(specimenSource);
+		specimenSource = specimenSource;
 	}
 	
 	/**
-	 * Gets the laterality.
-	 * 
-	 * @return the laterality.
+	 * @see ServiceOrder#getLaterality() 
 	 */
 	@Override
 	public Laterality getLaterality() {
-		return super.getLaterality();
+		return getLaterality();
 	}
 	
 	/**
-	 * Sets the laterality.
-	 * 
-	 * @param laterality the laterality to set.
+	 * @see org.openmrs.ServiceOrder#setLaterality(Laterality)
 	 */
 	@Override
 	public void setLaterality(Laterality laterality) {
 		super.setLaterality(laterality);
 	}
-	
+
 	/**
-	 * Gets the clinical history.
-	 * 
-	 * @return the clinical history.
+	 * @see ServiceOrder#getClinicalHistory() 
 	 */
 	@Override
 	public String getClinicalHistory() {
 		return getClinicalHistory();
 	}
-	
+
 	/**
-	 * Sets the clinical history.
-	 * 
-	 * @param clinicalHistory the clinical history to set.
+	 * @see org.openmrs.ServiceOrder#setClinicalHistory(String) 
 	 */
 	@Override
 	public void setClinicalHistory(String clinicalHistory) {
@@ -103,16 +94,15 @@ public class TestOrder extends ServiceOrder {
 	 */
 	@Override
 	public void setFrequency(OrderFrequency frequency) {
-		super.setFrequency(frequency);
+		setFrequency(frequency);
 	}
 	
 	/**
 	 * Gets numberOfRepeats of test order
-	 *
 	 */
 	@Override
 	public Integer getNumberOfRepeats() {
-		return super.getNumberOfRepeats();
+		return getNumberOfRepeats();
 	}
 	
 	/**
@@ -122,37 +112,31 @@ public class TestOrder extends ServiceOrder {
 	 */
 	@Override
 	public void setNumberOfRepeats(Integer numberOfRepeats) {
-		super.setNumberOfRepeats(numberOfRepeats);
+		setNumberOfRepeats(numberOfRepeats);
 	}
 	
 	/**
-	 * Creates a discontinuation order for this.
-	 * 
-	 * @see org.openmrs.Order#cloneForDiscontinuing()
-	 * @return the newly created order
-	 * <strong>Should</strong> set all the relevant fields
+	 * @see org.openmrs.ServiceOrder#cloneForDiscontinuing
 	 */
 	@Override
 	public Order cloneForDiscontinuing() {
-		return super.cloneForDiscontinuing();
-	}
-	
-	@Override
-	public Order cloneForRevision() {
-		return super.cloneForRevision();
+		return cloneForDiscontinuing();
 	}
 
 	/**
-	 * Creates a TestOrder for revision from this order, sets the previousOrder, action field and
-	 * other test order fields.
-	 * 
-	 * @return the newly created order
-	 * <strong>Should</strong> set all the relevant fields
-	 * <strong>Should</strong> set the relevant fields for a DC order
+	 * @see ServiceOrder#cloneForRevision() 
+	 */
+	@Override
+	public Order cloneForRevision() {
+		return cloneForRevision();
+	}
+
+	/**
+	 * @see org.openmrs.ServiceOrder#cloneForRevisionHelper(Order) 
 	 */
 	@Override
 	protected Order cloneForRevisionHelper(Order target) {
-		return super.cloneForRevisionHelper(target);
+		return cloneForRevisionHelper(target);
 	}
 	
 	/**
@@ -160,6 +144,6 @@ public class TestOrder extends ServiceOrder {
 	 */
 	@Override
 	protected ServiceOrder cloneForDiscontinuingHelper(ServiceOrder target) {
-		return super.cloneForDiscontinuingHelper(target);
+		return cloneForDiscontinuingHelper(target);
 	}
 }
