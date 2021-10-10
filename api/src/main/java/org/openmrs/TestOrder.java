@@ -13,65 +13,39 @@ package org.openmrs;
  * This is a type of order that adds tests specific attributes like: laterality, clinical history,
  * etc.
  * 
- * @since 1.9.2, 1.10
+ * @since 1.9.2, 1.10, 2.5.0
  */
-public class TestOrder extends Order {
-	
-	public enum Laterality {
-		LEFT,
-		RIGHT,
-		BILATERAL
-	}
-	
-	public static final long serialVersionUID = 1L;
-	
-	private Concept specimenSource;
-	
-	private Laterality laterality;
-	
-	private String clinicalHistory;
-	
-	private OrderFrequency frequency;
-	
-	private Integer numberOfRepeats;
+public class TestOrder extends ServiceOrder {
 	
 	/**
 	 * Default Constructor
 	 */
 	public TestOrder() {
 	}
-	
+
 	/**
 	 * @see org.openmrs.Order#copy()
 	 * <strong>Should</strong> copy all test order fields
 	 */
 	@Override
-	public TestOrder copy() {
+	public Order copy() {
 		return copyHelper(new TestOrder());
-	}
-	
-	protected TestOrder copyHelper(TestOrder target) {
-		super.copyHelper(target);
-		target.specimenSource = getSpecimenSource();
-		target.laterality = getLaterality();
-		target.clinicalHistory = getClinicalHistory();
-		target.frequency = getFrequency();
-		target.numberOfRepeats = getNumberOfRepeats();
-		return target;
 	}
 	
 	/**
 	 * @return the specimenSource
 	 */
+	@Override
 	public Concept getSpecimenSource() {
-		return specimenSource;
+		return super.getSpecimenSource();
 	}
-	
+
 	/**
 	 * @param specimenSource the specimenSource to set
 	 */
+	@Override
 	public void setSpecimenSource(Concept specimenSource) {
-		this.specimenSource = specimenSource;
+		super.setSpecimenSource(specimenSource);
 	}
 	
 	/**
@@ -79,8 +53,9 @@ public class TestOrder extends Order {
 	 * 
 	 * @return the laterality.
 	 */
+	@Override
 	public Laterality getLaterality() {
-		return laterality;
+		return super.getLaterality();
 	}
 	
 	/**
@@ -88,8 +63,9 @@ public class TestOrder extends Order {
 	 * 
 	 * @param laterality the laterality to set.
 	 */
+	@Override
 	public void setLaterality(Laterality laterality) {
-		this.laterality = laterality;
+		super.setLaterality(laterality);
 	}
 	
 	/**
@@ -97,8 +73,9 @@ public class TestOrder extends Order {
 	 * 
 	 * @return the clinical history.
 	 */
+	@Override
 	public String getClinicalHistory() {
-		return clinicalHistory;
+		return getClinicalHistory();
 	}
 	
 	/**
@@ -106,46 +83,46 @@ public class TestOrder extends Order {
 	 * 
 	 * @param clinicalHistory the clinical history to set.
 	 */
+	@Override
 	public void setClinicalHistory(String clinicalHistory) {
-		this.clinicalHistory = clinicalHistory;
+		super.setClinicalHistory(clinicalHistory);
 	}
 	
 	/**
 	 * Gets frequency of test order
-	 * 
-	 * @since 1.10
 	 */
+	@Override
 	public OrderFrequency getFrequency() {
-		return frequency;
+		return getFrequency();
 	}
 	
 	/**
 	 * Sets frequency of test order
 	 * 
 	 * @param frequency
-	 * @since 1.10
 	 */
+	@Override
 	public void setFrequency(OrderFrequency frequency) {
-		this.frequency = frequency;
+		super.setFrequency(frequency);
 	}
 	
 	/**
 	 * Gets numberOfRepeats of test order
-	 * 
-	 * @since 1.10
+	 *
 	 */
+	@Override
 	public Integer getNumberOfRepeats() {
-		return numberOfRepeats;
+		return super.getNumberOfRepeats();
 	}
 	
 	/**
 	 * Sets numberOfRepeats of test order
 	 * 
 	 * @param numberOfRepeats to set
-	 * @since 1.10
 	 */
+	@Override
 	public void setNumberOfRepeats(Integer numberOfRepeats) {
-		this.numberOfRepeats = numberOfRepeats;
+		super.setNumberOfRepeats(numberOfRepeats);
 	}
 	
 	/**
@@ -153,45 +130,36 @@ public class TestOrder extends Order {
 	 * 
 	 * @see org.openmrs.Order#cloneForDiscontinuing()
 	 * @return the newly created order
-	 * @since 1.10
 	 * <strong>Should</strong> set all the relevant fields
 	 */
 	@Override
-	public TestOrder cloneForDiscontinuing() {
-		TestOrder newOrder = new TestOrder();
-		newOrder.setCareSetting(getCareSetting());
-		newOrder.setConcept(getConcept());
-		newOrder.setAction(Action.DISCONTINUE);
-		newOrder.setPreviousOrder(this);
-		newOrder.setPatient(getPatient());
-		newOrder.setOrderType(getOrderType());
-		return newOrder;
+	public Order cloneForDiscontinuing() {
+		return super.cloneForDiscontinuing();
 	}
 	
+	@Override
+	public Order cloneForRevision() {
+		return super.cloneForRevision();
+	}
+
 	/**
 	 * Creates a TestOrder for revision from this order, sets the previousOrder, action field and
 	 * other test order fields.
 	 * 
 	 * @return the newly created order
-	 * @since 1.10
 	 * <strong>Should</strong> set all the relevant fields
 	 * <strong>Should</strong> set the relevant fields for a DC order
 	 */
 	@Override
-	public TestOrder cloneForRevision() {
-		return cloneForRevisionHelper(new TestOrder());
+	protected Order cloneForRevisionHelper(Order target) {
+		return super.cloneForRevisionHelper(target);
 	}
 	
 	/**
-	 * @see Order#cloneForRevisionHelper(Order)
+	 * @see ServiceOrder#cloneForDiscontinuingHelper(ServiceOrder)  
 	 */
-	protected TestOrder cloneForRevisionHelper(TestOrder target) {
-		super.cloneForRevisionHelper(target);
-		target.setSpecimenSource(getSpecimenSource());
-		target.setLaterality(getLaterality());
-		target.setClinicalHistory(getClinicalHistory());
-		target.setFrequency(getFrequency());
-		target.setNumberOfRepeats(getNumberOfRepeats());
-		return target;
+	@Override
+	protected ServiceOrder cloneForDiscontinuingHelper(ServiceOrder target) {
+		return super.cloneForDiscontinuingHelper(target);
 	}
 }
