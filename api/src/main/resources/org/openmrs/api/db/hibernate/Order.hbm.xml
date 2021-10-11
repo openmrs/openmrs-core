@@ -95,6 +95,11 @@
 		<!-- bi-directional many-to-one association to User -->
 		<many-to-one name="creator" class="org.openmrs.User" not-null="true" />
 
+		<set name="attributes" lazy="true" inverse="true" batch-size="100" cascade="all-delete-orphan" order-by="voided asc">
+			<key column="order_id" />
+			<one-to-many class="org.openmrs.OrderAttribute" />
+		</set>
+
 		<joined-subclass name="org.openmrs.DrugOrder" table="drug_order">
 
 			<key column="order_id" />
