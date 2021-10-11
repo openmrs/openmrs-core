@@ -184,13 +184,23 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see {@link HibernateOrderDAO#getOrderAttributeByUuid(String)}
+	 * @throws Exception
+	 */
+	@Test
+	public void getOrderAttributeByUuid_shouldReturnOrderAttributeUsingProvidedUuid() {
+		OrderAttribute orderAttribute = dao.getOrderAttributeByUuid("8c3c27e4-030f-410e-86de-a5743b0b3361");
+		assertEquals("Testing Reference", orderAttribute.getValueReference());
+		assertThat(orderAttribute.getId(), is(1));
+	}
+
+	/**
 	 * @see {@link HibernateOrderDAO#getAllOrderAttributeTypes()}
 	 * @throws Exception
 	 */
 	@Test
 	public void getAllOrderAttributeTypes_shouldReturnAllOrderAttributeTypes() {
-		List<OrderAttributeType> orderAttributeTypeList = dao.getAllOrderAttributeTypes();
-		assertThat(orderAttributeTypeList, hasSize(dao.getAllOrderAttributeTypes().size()));
+		assertThat(dao.getAllOrderAttributeTypes(), hasSize(4));
 	}
 
 	/**
@@ -255,11 +265,13 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void deleteOrderAttributeType_shouldDeleteTheGivenOrderAttributeTypeFromDatabase() {
+	public void deleteOrderAttributeType_shouldDeleteTheProvidedOrderAttributeTypeFromDatabase() {
 		final String UUID = "9a9e852b-868a-4c78-8e4d-805b52d4b33f";
+		final int ORIGINAL_COUNT = dao.getAllOrderAttributeTypes().size();
 		OrderAttributeType orderAttributeType = dao.getOrderAttributeTypeByUuid(UUID);
 		assertNotNull(orderAttributeType);
 		dao.deleteOrderAttributeType(orderAttributeType);
-		assertNull(dao.getOrderAttributeByUuid(UUID));
+		assertNull(dao.getOrderAttributeTypeByUuid(UUID));
+		assertEquals(ORIGINAL_COUNT - 1, dao.getAllOrderAttributeTypes().size());
 	}
 }

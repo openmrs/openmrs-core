@@ -3986,8 +3986,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void getAllOrderAttributeTypes_shouldReturnAllOrderAttributeTypes() {
-		List<OrderAttributeType> orderAttributeTypeList = orderService.getAllOrderAttributeTypes();
-		assertThat(orderAttributeTypeList, hasSize(orderService.getAllOrderAttributeTypes().size()));
+		assertThat(orderService.getAllOrderAttributeTypes(), hasSize(4));
 	}
 
 	@Test
@@ -3997,8 +3996,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void getOrderAttributeTypeById_shouldReturnOrderAttributeTypeUsingProvidedId() {
-		OrderAttributeType orderAttributeType = orderService.getOrderAttributeTypeById(2);
-		assertThat(orderAttributeType.getId(), is(2));
+		assertThat(orderService.getOrderAttributeTypeById(2).getId(), is(2));
 	}
 
 	@Test
@@ -4060,8 +4058,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void getOrderAttributeTypeByName_shouldReturnOrderAttributeTypeUsingProvidedName() {
-		OrderAttributeType orderAttributeType = orderService.getOrderAttributeTypeByName("Referral");
-		assertEquals("9758d106-79b0-4f45-8d8c-ae8b3f25d72a", orderAttributeType.getUuid());
+		assertEquals("9758d106-79b0-4f45-8d8c-ae8b3f25d72a",
+				orderService.getOrderAttributeTypeByName("Referral").getUuid());
 	}
 
 	@Test
