@@ -4004,20 +4004,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertEquals("Referral", orderService.getOrderAttributeTypeByUuid(
 				"9758d106-79b0-4f45-8d8c-ae8b3f25d72a").getName());
 	}
-
-	@Test
-	public void saveOrderAttributeType_shouldSaveTheProvidedOrderAttributeType()
-			throws ParseException {
-		final int ORIGINAL_COUNT = orderService.getAllOrderAttributeTypes().size();
-		OrderAttributeType orderAttributeType = new OrderAttributeType();
-		orderAttributeType.setName("Medical Procedures");
-		orderAttributeType.setDatatypeClassname(FreeTextDatatype.class.getName());
-		orderService.saveOrderAttributeType(orderAttributeType);
-		assertNotNull(orderAttributeType.getId());
-		assertEquals(ORIGINAL_COUNT + 1, orderService.getAllOrderAttributeTypes().size());
-		assertThat(orderService.getOrderAttributeTypeById(orderAttributeType.getId()).getName(), is("Medical Procedures"));
-	}
-
+	
 	@Test
 	public void saveOrderAttributeType_shouldEditTheExistingOrderAttributeType() {
 		OrderAttributeType orderAttributeType = orderService.getOrderAttributeTypeById(4);
@@ -4055,13 +4042,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertNull(orderAttributeType.getDateRetired());
 		assertNull(orderAttributeType.getRetireReason());
 	}
-
-	@Test
-	public void getOrderAttributeTypeByName_shouldReturnOrderAttributeTypeUsingProvidedName() {
-		assertEquals("9758d106-79b0-4f45-8d8c-ae8b3f25d72a",
-				orderService.getOrderAttributeTypeByName("Referral").getUuid());
-	}
-
+	
 	@Test
 	public void purgeOrderAttributeType_shouldPurgeTheProvidedOrderAttributeType() {
 		final int ORIGINAL_COUNT = orderService.getAllOrderAttributeTypes().size();

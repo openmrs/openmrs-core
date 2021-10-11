@@ -182,36 +182,7 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 		dao.deleteOrderGroupAttributeType(orderGroupAttributeType);
 		assertNull(dao.getOrderGroupAttributeByUuid(UUID));
 	}
-
-	/**
-	 * @see {@link HibernateOrderDAO#getOrderAttributeByUuid(String)}
-	 * @throws Exception
-	 */
-	@Test
-	public void getOrderAttributeByUuid_shouldReturnOrderAttributeUsingProvidedUuid() {
-		OrderAttribute orderAttribute = dao.getOrderAttributeByUuid("8c3c27e4-030f-410e-86de-a5743b0b3361");
-		assertEquals("Testing Reference", orderAttribute.getValueReference());
-		assertThat(orderAttribute.getId(), is(1));
-	}
-
-	/**
-	 * @see {@link HibernateOrderDAO#getAllOrderAttributeTypes()}
-	 * @throws Exception
-	 */
-	@Test
-	public void getAllOrderAttributeTypes_shouldReturnAllOrderAttributeTypes() {
-		assertThat(dao.getAllOrderAttributeTypes(), hasSize(4));
-	}
-
-	/**
-	 * @see {@link HibernateOrderDAO#getOrderAttributeTypeByUuid(String)}
-	 * @throws Exception
-	 */
-	@Test
-	public void getOrderAttributeTypeByUuid_shouldReturnOrderAttributeTypeUsingProvidedUuid() {
-		assertEquals("Referral", dao.getOrderAttributeTypeByUuid("9758d106-79b0-4f45-8d8c-ae8b3f25d72a").getName());
-	}
-
+	
 	@Test
 	public void saveOrderAttributeType_shouldSaveTheProvidedOrderAttributeTypeToDatabase() {
 		final Order order = Context.getOrderService().getOrder(1);
@@ -236,15 +207,6 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 		assertEquals(order.getDateCreated(), savedOrderAttributeType.getDateCreated());
 		assertEquals("81b95c51-865b-48c6-aacf-cc8f21e69f5e", savedOrderAttributeType.getUuid());
 		assertEquals(false, savedOrderAttributeType.getRetired());
-	}
-
-	/**
-	 * @see {@link HibernateOrderDAO#getOrderAttributeTypeById(Integer)}
-	 * @throws Exception
-	 */
-	@Test
-	public void getOrderAttributeTypeById_shouldReturnOrderAttributeTypeUsingProvidedId() {
-		assertEquals("Lab", dao.getOrderAttributeTypeById(2).getName());
 	}
 
 	/**

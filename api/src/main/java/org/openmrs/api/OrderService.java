@@ -954,6 +954,7 @@ public interface OrderService extends OpenmrsService {
 	 * Returns all order attribute types
 	 *
 	 * @return all {@link OrderAttributeType}s
+	 * @since 2.5.0
 	 * @should return all order attribute types including retired ones
 	 */
 	@Authorized(PrivilegeConstants.GET_ORDERS)
@@ -964,6 +965,7 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param id The Id of the order attribute type to fetch from the database
 	 * @return the {@link OrderAttributeType} with the given internal id
+	 * @since 2.5.0
 	 * @should return the order attribute type using the provided id
 	 * @should return null if no order attribute type exists with the given id
 	 */
@@ -975,6 +977,7 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param uuid The uuid of the order attribute type to fetch from the database
 	 * @return the {@link OrderAttributeType} with the given uuid
+	 * @since 2.5.0
 	 * @should return the order attribute type with the given uuid
 	 * @should return null if no order attribute type exists with the given uuid
 	 */
@@ -985,6 +988,7 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param orderAttributeType The order attribute type to save in the database
 	 * @return the order attribute type created or saved
+	 * @since 2.5.0
 	 * @should create a new order attribute type
 	 * @should edit an existing order attribute type
 	 */
@@ -997,6 +1001,7 @@ public interface OrderService extends OpenmrsService {
 	 * @param orderAttributeType The order attribute type to retire
 	 * @param reason The reason why the order attribute type is being retired
 	 * @return the order attribute type retired
+	 * @since 2.5.0
 	 * @should retire an order attribute type
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
@@ -1007,6 +1012,7 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param orderAttributeType The order attribute type to unretire
 	 * @return the order attribute type unretired
+	 * @since 2.5.0
 	 * @should unretire an order attribute type
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
@@ -1016,6 +1022,7 @@ public interface OrderService extends OpenmrsService {
 	 * Completely removes an order attribute type from the database
 	 *
 	 * @param orderAttributeType The order attribute type to purge
+	 * @since 2.5.0
 	 * @should completely remove an order attribute type
 	 */
 	@Authorized(PrivilegeConstants.PURGE_ORDERS)
@@ -1026,6 +1033,7 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param orderAttributeTypeName The name of the order attribute type to fetch
 	 * @return the {@link OrderAttributeType} with the specified name
+	 * @since 2.5.0
 	 * @should return the order attribute type with the specified name
 	 * @should return null if no order attribute type exists with the specified name
 	 */
