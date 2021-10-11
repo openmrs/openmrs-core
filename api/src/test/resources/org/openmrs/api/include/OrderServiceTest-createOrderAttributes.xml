@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+    
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+    
+-->
+
+<dataset>
+	<order_attribute_type order_attribute_type_id="1" name="Referral" min_occurs="5" creator="1" date_created="2021-09-28 16:45:15.0" retired="false" uuid="9758d106-79b0-4f45-8d8c-ae8b3f25d72a"/>
+	<order_attribute_type order_attribute_type_id="2" name="Lab" min_occurs="5" creator="1" date_created="2021-09-28 16:45:15.0" retired="false" uuid="9a373081-2789-4bba-b4b0-4544b5c01268"/>
+	<order_attribute_type order_attribute_type_id="3" name="Supplies" min_occurs="5" creator="1" date_created="2021-09-28 16:45:15.0" retired="false" uuid="9a9e852b-868a-4c78-8e4d-805b52d4b33f"/>
+	<order_attribute_type order_attribute_type_id="4" name="Drug" min_occurs="5" creator="1" date_created="2021-09-28 16:45:15.0" retired="1" retired_by="1" retire_reason="Validating Unretire" date_retired="2021-09-28 16:45:15.0" uuid="99e79ed6-392c-4e73-8737-f5e586916ee9"/>
+	<order_attribute order_attribute_id="1" order_id="1" attribute_type_id="1" value_reference="Testing Reference" uuid="8c3c27e4-030f-410e-86de-a5743b0b3361" creator="1" date_created="2021-09-28 16:45:15.0" voided="false"/>
+</dataset> 
