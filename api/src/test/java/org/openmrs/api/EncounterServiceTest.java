@@ -479,7 +479,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertNull(order.getDateStopped());
 		
 		Encounter encounter = es.getEncounter(6);
-		TestOrder reviseOrder = order.cloneForRevision();
+		TestOrder reviseOrder = (TestOrder) order.cloneForRevision();
 		reviseOrder.setOrderer(Context.getProviderService().getProvider(1));
 		
 		encounter.addOrder(reviseOrder);

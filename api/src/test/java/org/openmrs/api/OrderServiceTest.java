@@ -1682,7 +1682,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		orderService.saveOrder(secondOrder, null);
 
 		//Revise second order to have scheduled date overlapping with active order
-		TestOrder revision = secondOrder.cloneForRevision();
+		TestOrder revision = (TestOrder) secondOrder.cloneForRevision();
 		revision.setScheduledDate(DateUtils.addDays(activeOrder.getEffectiveStartDate(), 2));
 		revision.setEncounter(encounterService.getEncounter(6));
 		revision.setOrderer(providerService.getProvider(1));
@@ -1782,7 +1782,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		orderService.saveOrder(secondOrder, null);
 
 		//Revise Second Order to have scheduled date not overlapping with active order
-		TestOrder revision = secondOrder.cloneForRevision();
+		TestOrder revision = (TestOrder) secondOrder.cloneForRevision();
 		revision.setScheduledDate(DateUtils.addDays(activeOrder.getEffectiveStopDate(), 2));
 		revision.setEncounter(encounterService.getEncounter(6));
 		revision.setOrderer(providerService.getProvider(1));
