@@ -9,12 +9,14 @@
  */
 package org.openmrs;
 
-import java.util.Date;
-
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.util.OpenmrsUtil;
+
+import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Encapsulates information about the clinical action of a provider requesting something for a
@@ -30,11 +32,10 @@ import org.openmrs.util.OpenmrsUtil;
  * 
  * @version 1.0
  */
-public class Order extends BaseOpenmrsData implements FormRecordable {
-	
-	
+public class Order extends BaseCustomizableData<OrderAttribute> implements FormRecordable {
+
 	public static final long serialVersionUID = 4334343L;
-	
+
 	/**
 	 * @since 1.9.2, 1.10
 	 */
@@ -138,7 +139,7 @@ public class Order extends BaseOpenmrsData implements FormRecordable {
 	 * Represents the comment that goes along with with fulfiller status
 	 */	
 	private String fulfillerComment;
-	
+
 	// Constructors
 	
 	/** default constructor */

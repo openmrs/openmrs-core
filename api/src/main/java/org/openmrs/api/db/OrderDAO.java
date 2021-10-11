@@ -17,6 +17,8 @@ import org.openmrs.Order;
 import org.openmrs.Encounter;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
+import org.openmrs.OrderAttribute;
+import org.openmrs.OrderAttributeType;
 import org.openmrs.OrderGroup;
 import org.openmrs.OrderType;
 import org.openmrs.OrderGroupAttribute;
@@ -305,4 +307,39 @@ public interface OrderDAO {
 	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeTypeByName(String)
 	 */
 	public OrderGroupAttributeType getOrderGroupAttributeTypeByName(String name)throws DAOException;
+
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderAttributeByUuid(String)
+	 */
+	OrderAttribute getOrderAttributeByUuid(String uuid) throws DAOException;
+
+	/**
+	 * @see org.openmrs.api.OrderService#getAllOrderAttributeTypes()
+	 */
+	List<OrderAttributeType> getAllOrderAttributeTypes()throws DAOException;
+
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderAttributeTypeById(Integer)
+	 */
+	OrderAttributeType getOrderAttributeTypeById(Integer orderAttributeTypeId)throws DAOException;
+
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderAttributeTypeByUuid(String)
+	 */
+	OrderAttributeType getOrderAttributeTypeByUuid(String uuid)throws DAOException;
+
+	/**
+	 * @see org.openmrs.api.OrderService#saveOrderAttributeType(OrderAttributeType)
+	 */
+	OrderAttributeType saveOrderAttributeType(OrderAttributeType orderAttributeType)throws DAOException;
+
+	/**
+	 * @see org.openmrs.api.OrderService#purgeOrderAttributeType(OrderAttributeType)
+	 */
+	void deleteOrderAttributeType(OrderAttributeType orderAttributeType)throws DAOException;
+
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderAttributeTypeByName(String)
+	 */
+	OrderAttributeType getOrderAttributeTypeByName(String name)throws DAOException;
 }
