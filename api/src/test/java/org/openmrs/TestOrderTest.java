@@ -42,7 +42,7 @@ public class TestOrderTest {
 		OrderGroup orderGroup = new OrderGroup();
 		newTestOrder.setOrderGroup(orderGroup);
 		
-		TestOrder revisedTestOrder = newTestOrder.cloneForRevision();
+		TestOrder revisedTestOrder = (TestOrder) newTestOrder.cloneForRevision();
 		
 		OrderTest.assertThatAllFieldsAreCopied(revisedTestOrder, "cloneForRevision", "creator", "dateCreated", "action",
 		    "changedBy", "dateChanged", "voided", "dateVoided", "voidedBy", "voidReason", "encounter", "orderNumber",

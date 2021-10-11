@@ -52,7 +52,7 @@ public class TestOrder extends ServiceOrder {
 	 */
 	@Override
 	public Laterality getLaterality() {
-		return getLaterality();
+		return super.getLaterality();
 	}
 	
 	/**
@@ -68,7 +68,7 @@ public class TestOrder extends ServiceOrder {
 	 */
 	@Override
 	public String getClinicalHistory() {
-		return getClinicalHistory();
+		return super.getClinicalHistory();
 	}
 
 	/**
@@ -84,7 +84,7 @@ public class TestOrder extends ServiceOrder {
 	 */
 	@Override
 	public OrderFrequency getFrequency() {
-		return getFrequency();
+		return super.getFrequency();
 	}
 	
 	/**
@@ -94,7 +94,7 @@ public class TestOrder extends ServiceOrder {
 	 */
 	@Override
 	public void setFrequency(OrderFrequency frequency) {
-		setFrequency(frequency);
+		super.setFrequency(frequency);
 	}
 	
 	/**
@@ -102,7 +102,7 @@ public class TestOrder extends ServiceOrder {
 	 */
 	@Override
 	public Integer getNumberOfRepeats() {
-		return getNumberOfRepeats();
+		return super.getNumberOfRepeats();
 	}
 	
 	/**
@@ -112,7 +112,7 @@ public class TestOrder extends ServiceOrder {
 	 */
 	@Override
 	public void setNumberOfRepeats(Integer numberOfRepeats) {
-		setNumberOfRepeats(numberOfRepeats);
+		super.setNumberOfRepeats(numberOfRepeats);
 	}
 	
 	/**
@@ -120,7 +120,7 @@ public class TestOrder extends ServiceOrder {
 	 */
 	@Override
 	public Order cloneForDiscontinuing() {
-		return cloneForDiscontinuing();
+		return super.cloneForDiscontinuing();
 	}
 
 	/**
@@ -128,7 +128,7 @@ public class TestOrder extends ServiceOrder {
 	 */
 	@Override
 	public Order cloneForRevision() {
-		return cloneForRevision();
+		return super.cloneForRevision();
 	}
 
 	/**
@@ -136,7 +136,7 @@ public class TestOrder extends ServiceOrder {
 	 */
 	@Override
 	protected Order cloneForRevisionHelper(Order target) {
-		return cloneForRevisionHelper(target);
+		return super.cloneForRevisionHelper(target);
 	}
 	
 	/**
@@ -144,6 +144,6 @@ public class TestOrder extends ServiceOrder {
 	 */
 	@Override
 	protected ServiceOrder cloneForDiscontinuingHelper(ServiceOrder target) {
-		return cloneForDiscontinuingHelper(target);
+		return super.cloneForDiscontinuingHelper(target);
 	}
 }
