@@ -162,6 +162,7 @@ public abstract class ServiceOrder extends Order {
 		target.setClinicalHistory(getClinicalHistory());
 		target.setFrequency(getFrequency());
 		target.setNumberOfRepeats(getNumberOfRepeats());
+		target.setLocation(getLocation());
 		return target;
 	}
 
@@ -175,7 +176,6 @@ public abstract class ServiceOrder extends Order {
 	 */
 	protected ServiceOrder cloneForDiscontinuingHelper(ServiceOrder target) {
 		target.setCareSetting(getCareSetting());
-		target.setLocation(getLocation());
 		target.setConcept(getConcept());
 		target.setAction(Action.DISCONTINUE);
 		target.setPreviousOrder(getPreviousOrder());
