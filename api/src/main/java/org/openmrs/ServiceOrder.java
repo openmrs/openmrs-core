@@ -175,6 +175,7 @@ public abstract class ServiceOrder extends Order {
 	 */
 	protected ServiceOrder cloneForDiscontinuingHelper(ServiceOrder target) {
 		target.setCareSetting(getCareSetting());
+		target.setLocation(getLocation());
 		target.setConcept(getConcept());
 		target.setAction(Action.DISCONTINUE);
 		target.setPreviousOrder(getPreviousOrder());
