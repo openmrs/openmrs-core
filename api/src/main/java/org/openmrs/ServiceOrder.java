@@ -162,6 +162,7 @@ public abstract class ServiceOrder extends Order {
 		target.setClinicalHistory(getClinicalHistory());
 		target.setFrequency(getFrequency());
 		target.setNumberOfRepeats(getNumberOfRepeats());
+		target.setLocation(getLocation());
 		return target;
 	}
 
@@ -174,11 +175,12 @@ public abstract class ServiceOrder extends Order {
 	 * @return Returns the Order that was passed in, with state copied into it
 	 */
 	protected ServiceOrder cloneForDiscontinuingHelper(ServiceOrder target) {
-		target.setSpecimenSource(getSpecimenSource());
-		target.setLaterality(getLaterality());
-		target.setClinicalHistory(getClinicalHistory());
-		target.setFrequency(getFrequency());
-		target.setNumberOfRepeats(getNumberOfRepeats());
+		target.setCareSetting(getCareSetting());
+		target.setConcept(getConcept());
+		target.setAction(Action.DISCONTINUE);
+		target.setPreviousOrder(getPreviousOrder());
+		target.setPatient(getPatient());
+		target.setOrderType(getOrderType());
 		return target;
 	}
 }
