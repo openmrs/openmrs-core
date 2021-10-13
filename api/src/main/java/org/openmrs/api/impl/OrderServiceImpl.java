@@ -25,6 +25,7 @@ import org.openmrs.OrderType;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Patient;
 import org.openmrs.Provider;
+import org.openmrs.ReferralOrder;
 import org.openmrs.Order.FulfillerStatus;
 import org.openmrs.OrderGroupAttribute;
 import org.openmrs.OrderGroupAttributeType;
@@ -254,6 +255,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 		if (orderType == null && order instanceof TestOrder) {
 			orderType = Context.getOrderService().getOrderTypeByUuid(OrderType.TEST_ORDER_TYPE_UUID);
+		}
+		if (orderType == null && order instanceof ReferralOrder) {
+			orderType = Context.getOrderService().getOrderTypeByUuid(OrderType.REFERRAL_ORDER_TYPE_UUID);
 		}
 		if (orderType == null) {
 			throw new OrderEntryException("Order.type.cannot.determine");

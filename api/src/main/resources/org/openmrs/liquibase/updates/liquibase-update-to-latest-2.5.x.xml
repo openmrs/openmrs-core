@@ -212,5 +212,43 @@
 		<addForeignKeyConstraint constraintName="order_attribute_changed_by_fk" baseTableName="order_attribute" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id" />
 		<addForeignKeyConstraint constraintName="order_attribute_voided_by_fk" baseTableName="order_attribute" baseColumnNames="voided_by" referencedTableName="users" referencedColumnNames="user_id" />
 	</changeSet>
+	
+	<changeSet id="TRUNK-6036" author="dkayiwa">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="referral_order" />
+            </not>
+        </preConditions>
+        <comment>Create referral_order table</comment>
+        <createTable tableName="referral_order">
+            <column name="order_id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="specimen_source" type="int" />
+            <column name="laterality" type="varchar(20)" />
+            <column name="clinical_history" type="text" />
+            <column name="frequency" type="int"/>
+            <column name="number_of_repeats" type="int"/>
+            <column name="location" type="int"/>
+        </createTable>
+        <addForeignKeyConstraint constraintName="referral_order_order_id_fk"
+                                 baseTableName="referral_order" baseColumnNames="order_id"
+                                 referencedTableName="orders" referencedColumnNames="order_id" />
+        <addForeignKeyConstraint constraintName="referral_order_specimen_source_fk"
+                                 baseTableName="referral_order" baseColumnNames="specimen_source"
+                                 referencedTableName="concept" referencedColumnNames="concept_id" />
+        <addForeignKeyConstraint constraintName="referral_order_frequency_fk" 
+        						 baseTableName="referral_order" baseColumnNames="frequency" 
+        						 referencedTableName="order_frequency" referencedColumnNames="order_frequency_id"/>
+        <addForeignKeyConstraint constraintName="referral_order_location_fk" 
+        						 baseTableName="referral_order" baseColumnNames="location" 						 
+        						 referencedTableName="location" referencedColumnNames="location_id"/>
+        <createIndex indexName="referral_order_frequency_index" tableName="referral_order">
+            <column name="frequency"/>
+        </createIndex>
+        <createIndex indexName="referral_order_specimen_source_index" tableName="referral_order">
+            <column name="specimen_source"/>
+        </createIndex>
+    </changeSet>
 
 </databaseChangeLog>
