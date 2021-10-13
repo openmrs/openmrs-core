@@ -250,5 +250,22 @@
             <column name="specimen_source"/>
         </createIndex>
     </changeSet>
+    
+    <changeSet id="TRUNK-6035" author="dkayiwa">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="test_order" columnName="location"/>
+			</not>
+		</preConditions>
+		<comment>Adding location column to the test_order table</comment>
+		<addColumn tableName="test_order">
+			<column name="location" type="int">
+				<constraints nullable="true" />
+			</column>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="test_order_location_fk"
+								 baseTableName="test_order" baseColumnNames="location"
+								 referencedTableName="location" referencedColumnNames="location_id" />
+	</changeSet>
 
 </databaseChangeLog>

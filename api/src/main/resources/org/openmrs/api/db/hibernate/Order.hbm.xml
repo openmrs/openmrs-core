@@ -133,13 +133,14 @@
 
             <property name="laterality" column="laterality" length="20" not-null="false">
                 <type name="org.hibernate.type.EnumType">
-                    <param name="enumClass">org.openmrs.TestOrder$Laterality</param>
+                    <param name="enumClass">org.openmrs.ServiceOrder$Laterality</param>
                     <param name="useNamed">true</param>
                 </type>
             </property>
             <property name="clinicalHistory" type="java.lang.String" column="clinical_history" length="65535" />
             <property name="numberOfRepeats" type="int" column="number_of_repeats"/>
             <many-to-one name="frequency" class="org.openmrs.OrderFrequency" />
+            <many-to-one name="location" class="org.openmrs.Location" />
 
         </joined-subclass>
         
