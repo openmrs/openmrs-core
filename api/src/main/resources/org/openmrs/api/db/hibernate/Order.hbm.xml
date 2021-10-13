@@ -140,7 +140,7 @@
             <property name="clinicalHistory" type="java.lang.String" column="clinical_history" length="65535" />
             <property name="numberOfRepeats" type="int" column="number_of_repeats"/>
             <many-to-one name="frequency" class="org.openmrs.OrderFrequency" />
-            <many-to-one name="location" class="org.openmrs.Location" />
+            <many-to-one name="location" class="org.openmrs.Concept" />
 
         </joined-subclass>
         
@@ -159,7 +159,7 @@
             <property name="clinicalHistory" type="java.lang.String" column="clinical_history" length="65535" />
             <property name="numberOfRepeats" type="int" column="number_of_repeats"/>
             <many-to-one name="frequency" class="org.openmrs.OrderFrequency" />
-			<many-to-one name="location" class="org.openmrs.Location" />
+			<many-to-one name="location" class="org.openmrs.Concept" />
 			
         </joined-subclass>
         
