@@ -35,7 +35,7 @@ public abstract class ServiceOrder extends Order {
 
 	private Integer numberOfRepeats;
 	
-	private Location location;
+	private Concept location;
 
 	/**
 	 * Default Constructor
@@ -139,7 +139,7 @@ public abstract class ServiceOrder extends Order {
 	/**
 	 * Gets a location of the particular order
 	 */
-	public Location getLocation() {
+	public Concept getLocation() {
 		return location;
 	}
 
@@ -148,7 +148,7 @@ public abstract class ServiceOrder extends Order {
 	 *
 	 * @param location to set
 	 */
-	public void setLocation(Location location) {
+	public void setLocation(Concept location) {
 		this.location = location;
 	}
 

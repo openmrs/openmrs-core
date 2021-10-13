@@ -242,7 +242,7 @@
         						 referencedTableName="order_frequency" referencedColumnNames="order_frequency_id"/>
         <addForeignKeyConstraint constraintName="referral_order_location_fk" 
         						 baseTableName="referral_order" baseColumnNames="location" 						 
-        						 referencedTableName="location" referencedColumnNames="location_id"/>
+        						 referencedTableName="concept" referencedColumnNames="concept_id"/>
         <createIndex indexName="referral_order_frequency_index" tableName="referral_order">
             <column name="frequency"/>
         </createIndex>
@@ -265,7 +265,7 @@
 		</addColumn>
 		<addForeignKeyConstraint constraintName="test_order_location_fk"
 								 baseTableName="test_order" baseColumnNames="location"
-								 referencedTableName="location" referencedColumnNames="location_id" />
+								 referencedTableName="concept" referencedColumnNames="concept_id" />
 	</changeSet>
 
 </databaseChangeLog>
