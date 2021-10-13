@@ -62,7 +62,7 @@ public class TestOrderValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(order, "order");
 		new TestOrderValidator().validate(order, errors);
 		assertTrue(errors.hasFieldErrors("specimenSource"));
-		assertEquals("TestOrder.error.specimenSourceNotAmongAllowedConcepts", errors.getFieldError("specimenSource")
+		assertEquals("ServiceOrder.error.specimenSourceNotAmongAllowedConcepts", errors.getFieldError("specimenSource")
 		        .getCode());
 	}
 	
