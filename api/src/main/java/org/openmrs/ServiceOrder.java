@@ -178,7 +178,7 @@ public abstract class ServiceOrder extends Order {
 		target.setCareSetting(getCareSetting());
 		target.setConcept(getConcept());
 		target.setAction(Action.DISCONTINUE);
-		target.setPreviousOrder(getPreviousOrder());
+		target.setPreviousOrder(this);
 		target.setPatient(getPatient());
 		target.setOrderType(getOrderType());
 		return target;
