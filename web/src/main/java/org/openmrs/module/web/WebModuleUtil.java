@@ -343,6 +343,7 @@ public class WebModuleUtil {
 				// find and cache the module's servlets
 				//(only if the module started successfully previously)
 				log.debug("Loading servlets and filters for module: " + mod);
+				servletContext.setAttribute(OpenmrsJspServlet.OPENMRS_TLD_SCAN_NEEDED, true);
 				loadServlets(mod, servletContext);
 				loadFilters(mod, servletContext);
 			}
