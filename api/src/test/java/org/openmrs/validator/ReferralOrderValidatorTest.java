@@ -24,7 +24,7 @@ import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.Provider;
-import org.openmrs.TestOrder;
+import org.openmrs.ReferralOrder;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
@@ -35,10 +35,10 @@ import org.springframework.validation.Errors;
 /**
  *
  */
-public class TestOrderValidatorTest extends BaseContextSensitiveTest {
+public class ReferralOrderValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see TestOrderValidator#validate(Object, org.springframework.validation.Errors)
+	 * @see ServiceOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfTheSpecimenSourceIsInvalid() {
@@ -46,10 +46,10 @@ public class TestOrderValidatorTest extends BaseContextSensitiveTest {
 		Concept specimenSource = conceptService.getConcept(3);
 		OrderService orderService = Context.getOrderService();
 		assertThat(specimenSource, not(isIn(orderService.getDrugRoutes())));
-		TestOrder order = new TestOrder();
+		ReferralOrder order = new ReferralOrder();
 		Patient patient = new Patient(8);
 		order.setPatient(patient);
-		order.setOrderType(orderService.getOrderTypeByName("Test order"));
+		order.setOrderType(orderService.getOrderTypeByName("Referral order"));
 		order.setConcept(conceptService.getConcept(5497));
 		order.setOrderer(new Provider());
 		order.setCareSetting(new CareSetting());
@@ -60,14 +60,14 @@ public class TestOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setSpecimenSource(specimenSource);
 		
 		Errors errors = new BindException(order, "order");
-		new TestOrderValidator().validate(order, errors);
+		new ServiceOrderValidator().validate(order, errors);
 		assertTrue(errors.hasFieldErrors("specimenSource"));
 		assertEquals("ServiceOrder.error.specimenSourceNotAmongAllowedConcepts", errors.getFieldError("specimenSource")
 		        .getCode());
 	}
 	
 	/**
-	 * @see TestOrderValidator#validate(Object, org.springframework.validation.Errors)
+	 * @see ServiceOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldPassValidationIfTheSpecimenSourceIsValid() {
@@ -75,10 +75,10 @@ public class TestOrderValidatorTest extends BaseContextSensitiveTest {
 		Concept specimenSource = conceptService.getConcept(22);
 		OrderService orderService = Context.getOrderService();
 		assertThat(specimenSource, isIn(orderService.getDrugRoutes()));
-		TestOrder order = new TestOrder();
+		ReferralOrder order = new ReferralOrder();
 		Patient patient = new Patient(8);
 		order.setPatient(patient);
-		order.setOrderType(orderService.getOrderTypeByName("Test order"));
+		order.setOrderType(orderService.getOrderTypeByName("Referral order"));
 		order.setConcept(conceptService.getConcept(5497));
 		order.setOrderer(Context.getProviderService().getProvider(1));
 		order.setCareSetting(new CareSetting());
@@ -89,7 +89,7 @@ public class TestOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setSpecimenSource(specimenSource);
 		
 		Errors errors = new BindException(order, "order");
-		new TestOrderValidator().validate(order, errors);
+		new ServiceOrderValidator().validate(order, errors);
 		assertFalse(errors.hasFieldErrors());
 	}
 }
