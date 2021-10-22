@@ -10,6 +10,7 @@
 package org.openmrs.validator;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.openmrs.Allergen;
 import org.openmrs.Allergies;
 import org.openmrs.Allergy;
@@ -50,6 +51,7 @@ public class AllergyValidator implements Validator {
 	 * <strong>Should</strong> reject a duplicate allergen
 	 * <strong>Should</strong> reject a duplicate non coded allergen
 	 * <strong>Should</strong> pass for a valid allergy
+	 * <strong>Should</strong> reject numeric values and symbols on reactionNonCoded
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
@@ -62,6 +64,11 @@ public class AllergyValidator implements Validator {
 		
 		Allergy allergy = (Allergy) target;
 		
+		if (allergy.getReactionNonCoded() != null) {
+			if (NumberUtils.isParsable(allergy.getReactionNonCoded())) {
+				errors.rejectValue("reactionNonCoded", "error.allergyapi.allergy.ReactionNonCoded.cannotBeNumeric");
+			}
+		}
 		if (allergy.getAllergen() == null) {
 			errors.rejectValue("allergen", "allergyapi.allergen.required");
 		} else {
