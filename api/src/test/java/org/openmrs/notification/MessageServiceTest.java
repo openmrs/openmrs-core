@@ -28,6 +28,8 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 	
 	MessageService ms = null;
 	
+	MessageSender messageSender;
+	
 	/**
 	 * Run this before each unit test in this class. The "@Before" method in
 	 * {@link BaseContextSensitiveTest} is run right before this method.
@@ -117,20 +119,7 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void setMessageSender_shouldSetMessageSender() {
-		
-		MessageSender messageSender = new MessageSender() {
-			
-			@Override
-			public void send(Message message) throws MessageException {
-				// TODO Auto-generated method stub
-				
-			}
-		};
-		
 		ms.setMessageSender(messageSender);
-		
 		assertEquals(ms.getMessageSender(), messageSender, SET_MESSAGE_SENDER_ERROR);
-		
 	}
-	
 }
