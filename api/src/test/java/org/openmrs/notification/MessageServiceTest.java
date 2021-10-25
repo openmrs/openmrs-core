@@ -24,6 +24,8 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 	
 	private static final String NO_SMTP_SERVER_ERROR = "Could not connect to SMTP host:";
 	
+	private static final String SET_MESSAGE_SENDER_ERROR = "Could not set message sender:";
+	
 	MessageService ms = null;
 	
 	/**
@@ -111,6 +113,24 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 				fail();
 			}
 		}
+	}
+	
+	@Test
+	public void setMessageSender_shouldSetMessageSender() {
+		
+		MessageSender messageSender = new MessageSender() {
+			
+			@Override
+			public void send(Message message) throws MessageException {
+				// TODO Auto-generated method stub
+				
+			}
+		};
+		
+		ms.setMessageSender(messageSender);
+		
+		assertEquals(ms.getMessageSender(), messageSender, SET_MESSAGE_SENDER_ERROR);
+		
 	}
 	
 }

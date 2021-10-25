@@ -9,9 +9,9 @@
  */
 package org.openmrs.notification.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 
 import org.openmrs.Role;
@@ -49,6 +49,15 @@ public class MessageServiceImpl implements MessageService {
 	 * class requires a DAO Context in order to work properly. Please set the DAO context
 	 */
 	public MessageServiceImpl() {
+		
+		messageSender = new MessageSender() {
+			
+			@Override
+			public void send(Message message) throws MessageException {
+				// TODO Auto-generated method stub
+				
+			}
+		};
 	}
 	
 	/**
