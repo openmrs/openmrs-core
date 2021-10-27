@@ -66,7 +66,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=openmrs_openmrs-core --batch-mode --file pom.xml
+        run: mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=openmrs_openmrs-core --batch-mode --file pom.xml -P sonar-cloud
       - name: Update coverage data
         # only send coverage data for Java 8
         if: ${{ matrix.java-version == '8' && steps.refs.outcome == 'success' }}
