@@ -153,51 +153,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(ORDER_GROUP_ATTRIBUTES);
 	}
 
-	@Entity
-	public class SomeTestOrder extends TestOrder {
-		@Id
-		private Integer orderId;
-		private Patient patient;
-		private OrderType orderType;
-		private Concept concept;
-		private String instructions;
-		private Date dateActivated;
-		private Date autoExpireDate;
-		private Encounter encounter;
-		private Provider orderer;
-		private Date dateStopped;
-		private Concept orderReason;
-		private String accessionNumber;
-		private String orderReasonNonCoded;
-		private Urgency urgency = Urgency.ROUTINE;
-		private String orderNumber;
-		private String commentToFulfiller;
-		private CareSetting careSetting;
-		private Date scheduledDate;
-		private Double sortWeight;
-		private Order previousOrder;
-		private Action action = Action.NEW;
-		private OrderGroup orderGroup;
-		private FulfillerStatus fulfillerStatus;
-		private String fulfillerComment;
-		private Double dose;
-		private Concept doseUnits;
-		private OrderFrequency frequency;
-		private Boolean asNeeded = false;
-		private Double quantity;
-		private Concept quantityUnits;
-		private Drug drug;
-		private String asNeededCondition;
-		private Class<? extends DosingInstructions> dosingType = SimpleDosingInstructions.class;
-		private Integer numRefills;
-		private String dosingInstructions;
-		private Integer duration;
-		private Concept durationUnits;
-		private Concept route;
-		private String brandName;
-		private Boolean dispenseAsWritten = Boolean.FALSE;
-		private String drugNonCoded;
-	}
+	public class SomeTestOrder extends TestOrder {}
 	
 
 	/**
