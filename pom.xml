@@ -1034,6 +1034,13 @@
 				</dependency>
 			</dependencies>
 		</profile>
+		<profile>
+			<id>sonar-cloud</id>
+			<properties>
+				<sonar.organization>openmrs</sonar.organization>
+				<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+			</properties>
+		</profile>
 	</profiles>
 
 	<reporting>
@@ -1121,8 +1128,7 @@
 
 		<customArgLineForTesting />
 
-		<sonar.organization>openmrs</sonar.organization>
-		<sonar.host.url>https://sonarcloud.io</sonar.host.url>		
+		<sonar.host.url>https://sonar.openmrs.org</sonar.host.url>		
 		<sonar.issuesReport.html.enable>true</sonar.issuesReport.html.enable>
 		<sonar.issuesReport.lightModeOnly>true</sonar.issuesReport.lightModeOnly>
 		<sonar.issuesReport.console.enable>true</sonar.issuesReport.console.enable>
