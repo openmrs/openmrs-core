@@ -87,6 +87,9 @@ public class Diagnosis extends BaseCustomizableData<DiagnosisAttribute> implemen
 	@Column(name="form_namespace_and_path")
 	private String formNamespaceAndPath;
 
+	/**
+	 * Default no-arg Constructor; instantiates a new Diagnosis without passing any initial values.
+	 */
 	public Diagnosis() {
 	}
 	
@@ -96,16 +99,30 @@ public class Diagnosis extends BaseCustomizableData<DiagnosisAttribute> implemen
 	 * @param certainty the certainty for the diagnosis
 	 * @param rank the rank of the diagnosis
 	 */
-	public Diagnosis(Integer diagnosisId, Encounter encounter, CodedOrFreeText diagnosis, Condition condition,
-			ConditionVerificationStatus certainty, Integer rank, Patient patient, String formNamespaceAndPath) {
-		this.diagnosisId = diagnosisId;
+	public Diagnosis(Encounter encounter, CodedOrFreeText diagnosis, ConditionVerificationStatus certainty, Integer rank,
+			Patient patient) {
 		this.encounter = encounter;
 		this.diagnosis = diagnosis;
-		this.condition = condition;
 		this.certainty = certainty;
 		this.rank = rank;
 		this.patient = patient;
-		this.setFormNamespaceAndPath(getFormNamespaceAndPath());
+	}
+
+	/**
+	 * @param encounter the encounter for this diagnosis
+	 * @param diagnosis the diagnosis to set
+	 * @param certainty the certainty for the diagnosis
+	 * @param rank the rank of the diagnosis
+	 * @param patient the patient diagnosed
+	 * @param formNamespaceAndPath the form namespace and path
+	 */
+	public Diagnosis(Encounter encounter, CodedOrFreeText diagnosis, ConditionVerificationStatus certainty, Integer rank, Patient patient, String formNamespaceAndPath) {
+		this.encounter = encounter;
+		this.diagnosis = diagnosis;
+		this.certainty = certainty;
+		this.rank = rank;
+		this.patient = patient;
+		this.formNamespaceAndPath = formNamespaceAndPath;
 	}
 
 	/**
