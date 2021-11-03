@@ -268,4 +268,21 @@
 								 referencedTableName="concept" referencedColumnNames="concept_id" />
 	</changeSet>
 
+	<changeSet id="TRUNK-6045" author="pmanko">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="location" columnName="location_type_concept_id" />
+			</not>
+		</preConditions>
+		<comment>Adding type field to the Location table</comment>
+		<addColumn tableName="location">
+			<column name="location_type_concept_id" type="int">
+				<constraints nullable="true"/>
+			</column>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="location_type_fk"
+								 baseTableName="location" baseColumnNames="location_type_concept_id"
+								 referencedTableName="concept" referencedColumnNames="concept_id" />
+	</changeSet>
+
 </databaseChangeLog>
