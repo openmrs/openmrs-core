@@ -17,7 +17,6 @@ import org.openmrs.Patient;
 import org.openmrs.Diagnosis;
 import org.openmrs.Visit;
 import org.openmrs.annotation.Authorized;
-import org.openmrs.api.db.DAOException;
 import org.openmrs.util.PrivilegeConstants;
 
 

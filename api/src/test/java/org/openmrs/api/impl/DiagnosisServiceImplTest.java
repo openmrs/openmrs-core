@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.openmrs.Condition;
 import org.openmrs.ConditionVerificationStatus;
 import org.openmrs.Diagnosis;
+import org.openmrs.DiagnosisAttribute;
 import org.openmrs.DiagnosisAttributeType;
 import org.openmrs.Encounter;
 import org.openmrs.Visit;
@@ -384,6 +385,7 @@ public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 	@Test
 	public void purgeDiagnosisAttributeType_shouldCompletelyRemoveTheDiagnosisAttributeType() {
 		final int ORIGINAL_COUNT = diagnosisService.getAllDiagnosisAttributeTypes().size();
+		assertNotNull(diagnosisService.getDiagnosisAttributeTypeById(2));
 		diagnosisService.purgeDiagnosisAttributeType(diagnosisService.getDiagnosisAttributeTypeById(2));
 		assertNull(diagnosisService.getDiagnosisAttributeTypeById(2));
 		assertEquals(ORIGINAL_COUNT - 1, diagnosisService.getAllDiagnosisAttributeTypes().size());
@@ -470,8 +472,9 @@ public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getDiagnosisAttributeByUuid_shouldGetTheDiagnosisAttributeWithTheProvidedUuid() {
-		assertEquals("2011-04-25", diagnosisService.getDiagnosisAttributeByUuid("31f7c3cd-699b-4ed3-af10-563e024cae76")
-				.getValueReference());
+		DiagnosisAttribute diagnosisAttribute = diagnosisService.getDiagnosisAttributeByUuid("31f7c3cd-699b-4ed3-af10-563e024cae76");
+		assertEquals("Testing Reference", diagnosisAttribute.getValueReference());
+		assertEquals(1, diagnosisAttribute.getId());
 	}
 
 	/**
