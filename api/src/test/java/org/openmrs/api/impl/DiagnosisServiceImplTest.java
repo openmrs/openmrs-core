@@ -10,6 +10,7 @@
 package org.openmrs.api.impl;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,6 +24,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.hamcrest.collection.IsEmptyCollection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Condition;
@@ -483,5 +485,67 @@ public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 	@Test
 	public void getDiagnosisAttributeByUuid_shouldReturnNullIfNoDiagnosisAttributeHasTheProvidedUuid() {
 		assertNull(diagnosisService.getDiagnosisAttributeByUuid("001612a5-9f2a-4a05-9384-755679f75647"));
+	}
+
+	/**
+	 * @see org.openmrs.api.DiagnosisService#save(Diagnosis)
+	 */
+	@Test
+	public void saveDiagnosis_shouldSaveTheDiagnosisWithTheProvidedAttributes() {
+		final String NAMESPACE = "namespace", FORMFIELD_PATH = "formFieldPath";
+		final DiagnosisAttributeType diagnosisAttributeType = Context.getDiagnosisService()
+				.getDiagnosisAttributeTypeByUuid("949daf5b-a83e-4b65-b914-502a553243d3");
+		DiagnosisAttribute diagnosisAttribute = new DiagnosisAttribute();
+		diagnosisAttribute.setId(2);
+		diagnosisAttribute.setUuid("3cc9ad27-a4e1-4a08-acd5-fb6b847d71d0");
+		diagnosisAttribute.setAttributeType(diagnosisAttributeType);
+		diagnosisAttribute.setCreator(diagnosisAttributeType.getCreator());
+		diagnosisAttribute.setVoided(false);
+		diagnosisAttribute.setValueReferenceInternal("Diagnosis Attribute Reference");
+		String uuid = "3c6422d8-7bdd-4e20-bd1b-a590f084db08";
+		Condition condition = conditionService.getConditionByUuid("2cc6880e-2c46-15e4-9038-a6c5e4d22fb7");
+		Encounter encounter = encounterService.getEncounterByUuid("y403fafb-e5e4-42d0-9d11-4f52e89d123r");
+		Patient patient = patientService.getPatient(2);
+		Diagnosis diagnosis = new Diagnosis();
+		diagnosis.setUuid(uuid);
+		diagnosis.setEncounter(encounter);
+		diagnosis.setCondition(condition);
+		diagnosis.setCertainty(ConditionVerificationStatus.CONFIRMED);
+		diagnosis.setPatient(patient);
+		diagnosis.setRank(1);
+		diagnosis.setVoided(false);
+		diagnosis.setFormField(NAMESPACE, FORMFIELD_PATH);
+		diagnosis.setAttribute(diagnosisAttribute);
+		diagnosisService.save(diagnosis);
+		assertNotNull(diagnosis.getId(), "Successfully Saved Diagnosis");
+		Diagnosis savedDiagnosis = diagnosisService.getDiagnosisByUuid(uuid);
+		assertEquals(uuid, savedDiagnosis.getUuid());
+		assertEquals(condition, savedDiagnosis.getCondition());
+		assertEquals(encounter, savedDiagnosis.getEncounter());
+		assertEquals(patient, savedDiagnosis.getPatient());
+		assertEquals(ConditionVerificationStatus.CONFIRMED, savedDiagnosis.getCertainty());
+		assertEquals(1, savedDiagnosis.getRank());
+		assertEquals(false, savedDiagnosis.getVoided());
+		assertEquals(NAMESPACE + "^" + FORMFIELD_PATH, savedDiagnosis.getFormNamespaceAndPath());
+		assertThat(savedDiagnosis.getAttributes(), hasItem(diagnosisAttribute));
+		assertThat(diagnosisAttribute.getAttributeType().getName(), is("Differential Diagnosis"));
+	}
+
+	/**
+	 * @see org.openmrs.api.DiagnosisService#purgeDiagnosis(Diagnosis)
+	 */
+	@Test
+	public void purgeDiagnosis_shouldPurgeTheDiagnosisAndTheAssociatedAttributes() {
+		final String uuid = "68802cce-6880-17e4-6880-a68804d22fb7";
+		final DiagnosisAttribute diagnosisAttribute = Context.getDiagnosisService()
+				.getDiagnosisAttributeByUuid("31f7c3cd-699b-4ed3-af10-563e024cae76");
+		Diagnosis diagnosis = diagnosisService.getDiagnosis(1);
+		assertEquals(uuid, diagnosis.getUuid());
+		assertThat(diagnosis.getAttributes(), hasItem(diagnosisAttribute));
+		assertThat(diagnosisAttribute.getAttributeType().getName(), is("Differential Diagnosis"));
+		diagnosisService.purgeDiagnosis(diagnosis);
+		assertNull(diagnosisService.getDiagnosisByUuid(uuid));
+		assertThat(diagnosisService.getDiagnoses(diagnosis.getPatient(),
+				diagnosis.getDateCreated()), is(IsEmptyCollection.empty()));
 	}
 }
