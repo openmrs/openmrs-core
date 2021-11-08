@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openmrs.Concept;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.LocationAttribute;
@@ -64,6 +65,9 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void saveLocation_shouldCreateLocationSuccessfully() {
 		Location location = new Location();
+
+		ConceptService cs = Context.getConceptService();
+		Concept type = cs.getConcept(1);
 		
 		location.setName("testing");
 		location.setDescription("desc");
@@ -75,6 +79,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		location.setPostalCode("post");
 		location.setLatitude("lat");
 		location.setLongitude("lon");
+		location.setType(type);
 		
 		LocationService ls = Context.getLocationService();
 		ls.saveLocation(location);
@@ -94,6 +99,9 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void saveLocation_shouldUpdateLocationSuccessfully() {
 		LocationService ls = Context.getLocationService();
+
+		ConceptService cs = Context.getConceptService();
+		Concept type = cs.getConcept(1);
 		
 		// get the location from the database
 		Location location = ls.getLocation(1);
@@ -109,6 +117,8 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		location.setName(newName);
 		location.setDescription(newDesc);
 		
+		location.setType(type);
+		
 		// save to the db
 		ls.saveLocation(location);
 		
@@ -118,6 +128,9 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		assertFalse(origName.equals(newName), "The name should be different");
 		assertTrue(newestLoc.getName().equals(newName), "The name should be the same");
 		assertFalse(origDesc.equals(newDesc), "The name should be different");
+		assertTrue(newestLoc.getDescription().equals(newDesc), "The name should be the same");
+		assertNotNull(newestLoc.getType(), "The type should now be set");
+		assertTrue(newestLoc.getType().equals(type), "The type should be set correctly");
 		assertTrue(newestLoc.getDescription().equals(newDesc), "The name should be the same");
 	}
 	
@@ -235,7 +248,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getAllLocations_shouldReturnAllLocationsIncludingRetired() {
 		List<Location> locations = Context.getLocationService().getAllLocations();
 		
-		assertEquals(6, locations.size());
+		assertEquals(7, locations.size());
 	}
 	
 	/**
@@ -265,7 +278,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getAllLocations_shouldReturnAllLocationsWhenIncludeRetiredIsTrue() {
 		List<Location> locations = Context.getLocationService().getAllLocations(true);
 		
-		assertEquals(6, locations.size());
+		assertEquals(7, locations.size());
 	}
 	
 	/**
@@ -275,7 +288,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getAllLocations_shouldReturnOnlyUnretiredLocationsWhenIncludeRetiresIsFalse() {
 		List<Location> locations = Context.getLocationService().getAllLocations(false);
 		
-		assertEquals(5, locations.size());
+		assertEquals(6, locations.size());
 	}
 	
 	/**
@@ -396,7 +409,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getLocationsHavingAllTags_shouldReturnAllUnretiredLocationsGivenAnEmptyTagList() {
 		LocationService ls = Context.getLocationService();
-		assertEquals(5, ls.getLocationsHavingAllTags(Collections.EMPTY_LIST).size());
+		assertEquals(6, ls.getLocationsHavingAllTags(Collections.EMPTY_LIST).size());
 	}
 	
 	/**
