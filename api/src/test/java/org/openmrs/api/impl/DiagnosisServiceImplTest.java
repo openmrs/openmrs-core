@@ -10,15 +10,11 @@
 package org.openmrs.api.impl;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -29,6 +25,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -499,10 +497,10 @@ public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 	public void saveDiagnosis_shouldSaveTheDiagnosisWithTheProvidedAttributes() {
 		final String NAMESPACE = "namespace";
 		final String FORMFIELD_PATH = "formFieldPath";
-		final DiagnosisAttributeType diagnosisAttributeType = Context.getDiagnosisService()
+		final DiagnosisAttributeType DIAGNOSIS_ATTRIBUTE_TYPE = Context.getDiagnosisService()
 				.getDiagnosisAttributeTypeByUuid("949daf5b-a83e-4b65-b914-502a553243d3");
 		DiagnosisAttribute diagnosisAttribute = new DiagnosisAttribute();
-		diagnosisAttribute.setAttributeType(diagnosisAttributeType);
+		diagnosisAttribute.setAttributeType(DIAGNOSIS_ATTRIBUTE_TYPE);
 		diagnosisAttribute.setCreator(Context.getUserService().getUser(1));
 		diagnosisAttribute.setVoided(false);
 		diagnosisAttribute.setValueReferenceInternal("Diagnosis Attribute Reference");
@@ -523,6 +521,8 @@ public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 		diagnosisService.save(diagnosis);
 		assertNotNull(diagnosis.getId(), "Successfully Saved Diagnosis");
 		Diagnosis savedDiagnosis = diagnosisService.getDiagnosisByUuid(UUID);
+		Set<DiagnosisAttributeType> savedDiagnosisAttributeTypes = savedDiagnosis.getAttributes().stream()
+				.map(DiagnosisAttribute::getAttributeType).collect(Collectors.toSet());
 		assertEquals(condition, savedDiagnosis.getCondition());
 		assertEquals(encounter, savedDiagnosis.getEncounter());
 		assertEquals(patient, savedDiagnosis.getPatient());
@@ -531,11 +531,7 @@ public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 		assertEquals(false, savedDiagnosis.getVoided());
 		assertEquals(NAMESPACE + "^" + FORMFIELD_PATH, savedDiagnosis.getFormNamespaceAndPath());
 		assertThat(savedDiagnosis.getAttributes(), hasItem(diagnosisAttribute));
-		for (DiagnosisAttribute attribute : savedDiagnosis.getAttributes()) {
-			if (attribute.getAttributeType().equals(diagnosisAttributeType)) {
-				assertThat(attribute.getAttributeType().getName(), is("Differential Diagnosis"));
-			}
-		}
+		assertThat(savedDiagnosisAttributeTypes, contains(DIAGNOSIS_ATTRIBUTE_TYPE));
 	}
 
 	/**
@@ -543,30 +539,16 @@ public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveDiagnosis_shouldEditTheExistingDiagnosisRemovingTheAssociatedAttributesWhenRequired() {
-		final int RANK = 5;
-		final DiagnosisAttribute diagnosisAttribute = Context.getDiagnosisService()
+		final DiagnosisAttribute DIAGNOSIS_ATTRIBUTE = Context.getDiagnosisService()
 				.getDiagnosisAttributeByUuid("31f7c3cd-699b-4ed3-af10-563e024cae76");
-		final DiagnosisAttributeType diagnosisAttributeType = Context.getDiagnosisService()
+		final DiagnosisAttributeType DIAGNOSIS_ATTRIBUTE_TYPE = Context.getDiagnosisService()
 				.getDiagnosisAttributeTypeByUuid("949daf5b-a83e-4b65-b914-502a553243d3");
 		Diagnosis diagnosis = diagnosisService.getDiagnosis(1);
-		assertEquals(ConditionVerificationStatus.CONFIRMED, diagnosis.getCertainty());
-		assertEquals(1, diagnosis.getRank());
-		assertEquals(false, diagnosis.getVoided());
-		assertThat(diagnosis.getAttributes(),
-				both(hasItem(diagnosisAttribute)).and(contains(allOf(hasProperty("valueReference", is("Testing Reference"))))));
-		assertThat(diagnosis.getAttributes(),
-				both(hasItem(diagnosisAttribute)).and(contains(allOf(hasProperty("creator", is(Context.getUserService().getUser(1)))))));
-		assertThat(diagnosis.getAttributes(),
-				both(hasItem(diagnosisAttribute)).and(contains(allOf(hasProperty("voided", is(false))))));
-		diagnosis.setRank(RANK);
+		assertThat(diagnosis.getAttributes(), hasItem(DIAGNOSIS_ATTRIBUTE));
 		diagnosis.getAttributes()
-				 .removeIf(attribute -> attribute.getAttributeType().equals(diagnosisAttributeType));
+				 .removeIf(attribute -> attribute.getAttributeType().equals(DIAGNOSIS_ATTRIBUTE_TYPE));
 		diagnosisService.save(diagnosis);
 		Diagnosis editedDiagnosis = diagnosisService.getDiagnosis(1);
-		assertEquals(RANK, editedDiagnosis.getRank());
-		assertThat(editedDiagnosis.getAttributes(), not(hasItem(diagnosisAttribute)));
-		for (DiagnosisAttribute attribute : editedDiagnosis.getAttributes()) {
-			assertThat(attribute.getAttributeType().getName(), is(nullValue()));
-		}
+		assertThat(editedDiagnosis.getAttributes(), not(hasItem(DIAGNOSIS_ATTRIBUTE)));
 	}
 }
