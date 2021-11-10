@@ -13,6 +13,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.openmrs.Diagnosis;
+import org.openmrs.DiagnosisAttribute;
+import org.openmrs.DiagnosisAttributeType;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.Visit;
@@ -77,4 +79,34 @@ public interface DiagnosisDAO {
 	 * @return all active diagnoses associated with the specified patient.
 	 */
 	List<Diagnosis> getActiveDiagnoses(Patient patient, Date fromDate);
+
+	/**
+	 * @see org.openmrs.api.DiagnosisService#getAllDiagnosisAttributeTypes()
+	 */
+	List<DiagnosisAttributeType> getAllDiagnosisAttributeTypes() throws DAOException;
+
+	/**
+	 * @see org.openmrs.api.DiagnosisService#getDiagnosisAttributeTypeById(Integer)
+	 */
+	DiagnosisAttributeType getDiagnosisAttributeTypeById(Integer id) throws DAOException;
+
+	/**
+	 * @see org.openmrs.api.DiagnosisService#getDiagnosisAttributeTypeByUuid(String)
+	 */
+	DiagnosisAttributeType getDiagnosisAttributeTypeByUuid(String uuid) throws DAOException;
+
+	/**
+	 * @see org.openmrs.api.DiagnosisService#saveDiagnosisAttributeType(DiagnosisAttributeType)
+	 */
+	DiagnosisAttributeType saveDiagnosisAttributeType(DiagnosisAttributeType diagnosisAttributeType) throws DAOException;
+
+	/**
+	 * @see org.openmrs.api.DiagnosisService#deleteDiagnosisAttributeType(DiagnosisAttributeType)
+	 */
+	void deleteDiagnosisAttributeType(DiagnosisAttributeType diagnosisAttributeType) throws DAOException;
+
+	/**
+	 * @see org.openmrs.api.DiagnosisService#getDiagnosisAttributeByUuid(String)
+	 */
+	DiagnosisAttribute getDiagnosisAttributeByUuid(String uuid) throws DAOException;
 }

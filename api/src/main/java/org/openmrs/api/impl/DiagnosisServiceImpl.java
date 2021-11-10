@@ -11,11 +11,14 @@ package org.openmrs.api.impl;
 
 import org.openmrs.CodedOrFreeText;
 import org.openmrs.Diagnosis;
+import org.openmrs.DiagnosisAttribute;
+import org.openmrs.DiagnosisAttributeType;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.Visit;
 import org.openmrs.api.APIException;
 import org.openmrs.api.DiagnosisService;
+import org.openmrs.api.OpenmrsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DiagnosisDAO;
 import org.springframework.transaction.annotation.Transactional;
@@ -184,5 +187,73 @@ public class DiagnosisServiceImpl extends BaseOpenmrsService implements Diagnosi
 	 */
 	public void setDiagnosisDAO(DiagnosisDAO diagnosisDAO) {
 		this.diagnosisDAO = diagnosisDAO;
+	}
+
+	/**
+	 * @see org.openmrs.api.DiagnosisService#getAllDiagnosisAttributeTypes()
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<DiagnosisAttributeType> getAllDiagnosisAttributeTypes() throws APIException {
+		return diagnosisDAO.getAllDiagnosisAttributeTypes();
+	}
+
+	/**
+	 * @see org.openmrs.api.DiagnosisService#getDiagnosisAttributeTypeById(Integer)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public DiagnosisAttributeType getDiagnosisAttributeTypeById(Integer id) throws APIException {
+		return diagnosisDAO.getDiagnosisAttributeTypeById(id);
+	}
+
+	/**
+	 * @see org.openmrs.api.DiagnosisService#getDiagnosisAttributeTypeByUuid(String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public DiagnosisAttributeType getDiagnosisAttributeTypeByUuid(String uuid) throws APIException {
+		return diagnosisDAO.getDiagnosisAttributeTypeByUuid(uuid);
+	}
+
+	/**
+	 * @see org.openmrs.api.DiagnosisService#saveDiagnosisAttributeType(DiagnosisAttributeType) 
+	 */
+	@Override
+	public DiagnosisAttributeType saveDiagnosisAttributeType(DiagnosisAttributeType diagnosisAttributeType) throws APIException {
+		return diagnosisDAO.saveDiagnosisAttributeType(diagnosisAttributeType);
+	}
+
+	/**
+	 * @see org.openmrs.api.DiagnosisService#retireDiagnosisAttributeType(DiagnosisAttributeType, String) 
+	 */
+	@Override
+	public DiagnosisAttributeType retireDiagnosisAttributeType(DiagnosisAttributeType diagnosisAttributeType, String reason) throws APIException {
+		return Context.getDiagnosisService().saveDiagnosisAttributeType(diagnosisAttributeType);
+	}
+
+	/**
+	 * @see org.openmrs.api.DiagnosisService#unretireDiagnosisAttributeType(DiagnosisAttributeType) 
+	 */
+	@Override
+	public DiagnosisAttributeType unretireDiagnosisAttributeType(DiagnosisAttributeType diagnosisAttributeType) throws APIException {
+		return Context.getDiagnosisService().saveDiagnosisAttributeType(diagnosisAttributeType);
+	}
+
+	/**
+	 * @see org.openmrs.api.DiagnosisService#purgeDiagnosisAttributeType(DiagnosisAttributeType) 
+	 */
+	@Override
+	public void purgeDiagnosisAttributeType(DiagnosisAttributeType diagnosisAttributeType) throws APIException {
+		diagnosisDAO.deleteDiagnosisAttributeType(diagnosisAttributeType);
+	}
+
+	/**
+	 * @see org.openmrs.api.DiagnosisService#getDiagnosisAttributeByUuid(String) 
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public DiagnosisAttribute getDiagnosisAttributeByUuid(String uuid) throws APIException {
+		return diagnosisDAO.getDiagnosisAttributeByUuid(uuid);
 	}
 }

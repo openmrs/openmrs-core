@@ -14,13 +14,17 @@ import java.util.List;
 
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.openmrs.ConditionVerificationStatus;
 import org.openmrs.Diagnosis;
+import org.openmrs.DiagnosisAttribute;
+import org.openmrs.DiagnosisAttributeType;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.Visit;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.DiagnosisDAO;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.TypedQuery;
 
@@ -169,5 +173,63 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 	@Override
 	public void deleteDiagnosis(Diagnosis diagnosis) throws DAOException{
 		sessionFactory.getCurrentSession().delete(diagnosis);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.DiagnosisDAO#getAllDiagnosisAttributeTypes()
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	@Transactional(readOnly = true)
+	public List<DiagnosisAttributeType> getAllDiagnosisAttributeTypes() throws DAOException {
+		return sessionFactory.getCurrentSession().createCriteria(DiagnosisAttributeType.class).list();
+	}
+
+	/**
+	 * @see org.openmrs.api.db.DiagnosisDAO#getDiagnosisAttributeTypeById(Integer) 
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public DiagnosisAttributeType getDiagnosisAttributeTypeById(Integer id) throws DAOException {
+		return sessionFactory.getCurrentSession().get(DiagnosisAttributeType.class, id);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.DiagnosisDAO#getDiagnosisAttributeTypeByUuid(String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public DiagnosisAttributeType getDiagnosisAttributeTypeByUuid(String uuid) throws DAOException {
+		return (DiagnosisAttributeType) sessionFactory.getCurrentSession().createCriteria(DiagnosisAttributeType.class).add(
+				Restrictions.eq("uuid", uuid)).uniqueResult();
+	}
+
+	/**
+	 * @see org.openmrs.api.db.DiagnosisDAO#saveDiagnosisAttributeType(DiagnosisAttributeType)
+	 */
+	@Override
+	@Transactional
+	public DiagnosisAttributeType saveDiagnosisAttributeType(DiagnosisAttributeType diagnosisAttributeType) throws DAOException {
+		sessionFactory.getCurrentSession().saveOrUpdate(diagnosisAttributeType);
+		return diagnosisAttributeType;
+	}
+
+	/**
+	 * @see org.openmrs.api.db.DiagnosisDAO#deleteDiagnosisAttributeType(DiagnosisAttributeType)
+	 */
+	@Override
+	@Transactional
+	public void deleteDiagnosisAttributeType(DiagnosisAttributeType diagnosisAttributeType) throws DAOException {
+		sessionFactory.getCurrentSession().delete(diagnosisAttributeType);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.DiagnosisDAO#getDiagnosisAttributeByUuid(String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public DiagnosisAttribute getDiagnosisAttributeByUuid(String uuid) throws DAOException {
+		return (DiagnosisAttribute) sessionFactory.getCurrentSession().createCriteria(DiagnosisAttribute.class).add(Restrictions.eq("uuid", uuid))
+				.uniqueResult();
 	}
 }

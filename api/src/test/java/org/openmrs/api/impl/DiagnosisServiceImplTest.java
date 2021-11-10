@@ -9,6 +9,12 @@
  */
 package org.openmrs.api.impl;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -19,12 +25,16 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Condition;
 import org.openmrs.ConditionVerificationStatus;
 import org.openmrs.Diagnosis;
+import org.openmrs.DiagnosisAttribute;
+import org.openmrs.DiagnosisAttributeType;
 import org.openmrs.Encounter;
 import org.openmrs.Visit;
 import org.openmrs.Patient;
@@ -34,6 +44,7 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
+import org.openmrs.customdatatype.datatype.FreeTextDatatype;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
@@ -42,6 +53,7 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
  */
 public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 	protected static final String DIAGNOSIS_XML = "org/openmrs/api/include/DiagnosisServiceImplTest-SetupDiagnosis.xml";
+	protected static final String DIAGNOSIS_ATTRIBUTES_XML = "org/openmrs/api/include/DiagnosisServiceImplTest-DiagnosisAttributes.xml";
 	private DiagnosisService diagnosisService;
 	private VisitService visitService;
 	private PatientService patientService;
@@ -66,6 +78,7 @@ public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 			visitService = Context.getVisitService();
 		}
 		executeDataSet(DIAGNOSIS_XML);
+		executeDataSet(DIAGNOSIS_ATTRIBUTES_XML);
 	}
 
 	/**
@@ -330,5 +343,206 @@ public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 		Diagnosis purgedDiagnosis = diagnosisService.getDiagnosisByUuid(uuid);
 		assertNull(purgedDiagnosis);
 	}
-	
+
+	/**
+	 * @see org.openmrs.api.DiagnosisService#getAllDiagnosisAttributeTypes()
+	 */
+	@Test
+	public void getAllDiagnosisAttributeTypes_shouldReturnAllDiagnosisAttributeTypesIncludingRetiredOnes() {
+		assertThat(diagnosisService.getAllDiagnosisAttributeTypes(), hasSize(3));
+	}
+
+	/**
+	 * @see org.openmrs.api.DiagnosisService#getDiagnosisAttributeTypeById(Integer) 
+	 */
+	@Test
+	public void getDiagnosisAttributeTypeById_shouldReturnTheDiagnosisAttributeTypeUsingTheProvidedId() {
+		assertEquals("Differential Diagnosis", diagnosisService.getDiagnosisAttributeTypeById(1).getName());
+	}
+
+	/**
+	 * @see org.openmrs.api.DiagnosisService#getDiagnosisAttributeTypeById(Integer) 
+	 */
+	@Test
+	public void getDiagnosisAttributeType_shouldReturnNullIfNoDiagnosisAttributeTypeExistsWithTheProvidedId() {
+		assertNull(diagnosisService.getDiagnosisAttributeTypeById(2021));
+	}
+
+	/**
+	 * @see org.openmrs.api.DiagnosisService#getDiagnosisAttributeTypeByUuid(String)
+	 */
+	@Test
+	public void getDiagnosisAttributeTypeByUuid_shouldReturnTheDiagnosisAttributeTypeWithTheProvidedUuid() {
+		assertEquals("Pattern Recognition", diagnosisService.getDiagnosisAttributeTypeByUuid("96fc46dc-edd3-4f27-83b6-4a9f7b1f0a48").getName());
+	}
+
+	/**
+	 * @see org.openmrs.api.DiagnosisService#getDiagnosisAttributeTypeByUuid(String)
+	 */
+	@Test
+	public void getDiagnosisAttributeTypeByUuid_shouldReturnNullIfNoDiagnosisAttributeTypeExistsWithTheProvidedUuid() {
+		assertNull(diagnosisService.getDiagnosisAttributeTypeByUuid("077e8b7a-caa7-4882-bd99-8296829a661c"));
+	}
+
+	/**
+	 * @see org.openmrs.api.DiagnosisService#purgeDiagnosisAttributeType(DiagnosisAttributeType)
+	 */
+	@Test
+	public void purgeDiagnosisAttributeType_shouldCompletelyRemoveTheDiagnosisAttributeType() {
+		final int ORIGINAL_COUNT = diagnosisService.getAllDiagnosisAttributeTypes().size();
+		assertNotNull(diagnosisService.getDiagnosisAttributeTypeById(2));
+		diagnosisService.purgeDiagnosisAttributeType(diagnosisService.getDiagnosisAttributeTypeById(2));
+		assertNull(diagnosisService.getDiagnosisAttributeTypeById(2));
+		assertEquals(ORIGINAL_COUNT - 1, diagnosisService.getAllDiagnosisAttributeTypes().size());
+	}
+
+	/**
+	 * @see org.openmrs.api.DiagnosisService#retireDiagnosisAttributeType(DiagnosisAttributeType, String)
+	 */
+	@Test
+	public void retireDiagnosisAttributeType_shouldRetireADiagnosisAttributeType() {
+		DiagnosisAttributeType diagnosisAttributeType = diagnosisService.getDiagnosisAttributeTypeById(1);
+		assertFalse(diagnosisAttributeType.getRetired());
+		assertNull(diagnosisAttributeType.getRetiredBy());
+		assertNull(diagnosisAttributeType.getRetireReason());
+		assertNull(diagnosisAttributeType.getDateRetired());
+		diagnosisService.retireDiagnosisAttributeType(diagnosisAttributeType, "Test Retire");
+		diagnosisAttributeType = diagnosisService.getDiagnosisAttributeTypeById(1);
+		assertTrue(diagnosisAttributeType.getRetired());
+		assertNotNull(diagnosisAttributeType.getRetiredBy());
+		assertEquals("Test Retire", diagnosisAttributeType.getRetireReason());
+		assertNotNull(diagnosisAttributeType.getDateRetired());
+	}
+
+	/**
+	 * @see org.openmrs.api.DiagnosisService#unretireDiagnosisAttributeType(DiagnosisAttributeType)
+	 */
+	@Test
+	public void unretireDiagnosisAttributeType_shouldUnretireARetiredDiagnosisAttributeType() {
+		DiagnosisAttributeType diagnosisAttributeType = diagnosisService.getDiagnosisAttributeTypeById(2);
+		assertTrue(diagnosisAttributeType.getRetired());
+		assertNotNull(diagnosisAttributeType.getRetiredBy());
+		assertNotNull(diagnosisAttributeType.getDateRetired());
+		assertNotNull(diagnosisAttributeType.getRetireReason());
+		diagnosisService.unretireDiagnosisAttributeType(diagnosisAttributeType);
+		assertFalse(diagnosisAttributeType.getRetired());
+		assertNull(diagnosisAttributeType.getRetiredBy());
+		assertNull(diagnosisAttributeType.getDateRetired());
+		assertNull(diagnosisAttributeType.getRetireReason());
+	}
+
+	/**
+	 * @see org.openmrs.api.DiagnosisService#saveDiagnosisAttributeType(DiagnosisAttributeType)
+	 */
+	@Test
+	public void saveDiagnosisAttributeType_shouldSaveTheProvidedDiagnosisAttributeTypeToTheDatabase() {
+		final Diagnosis diagnosis = Context.getDiagnosisService().getDiagnosis(1);
+		final int ORIGINAL_COUNT = diagnosisService.getAllDiagnosisAttributeTypes().size();
+		DiagnosisAttributeType diagnosisAttributeType = new DiagnosisAttributeType();
+		diagnosisAttributeType.setName("Clinical Decision Support System");
+		diagnosisAttributeType.setMinOccurs(1);
+		diagnosisAttributeType.setMaxOccurs(5);
+		diagnosisAttributeType.setDatatypeClassname(FreeTextDatatype.class.getName());
+		diagnosisAttributeType.setCreator(diagnosis.getCreator());
+		diagnosisAttributeType.setDateCreated(diagnosis.getDateCreated());
+		diagnosisAttributeType.setRetired(false);
+		diagnosisAttributeType.setUuid("353af72e-bb6e-4ed9-a1bf-0d8106ac2c15");
+		diagnosisService.saveDiagnosisAttributeType(diagnosisAttributeType);
+		assertNotNull(diagnosisAttributeType.getDiagnosisAttributeTypeId(), "Newly Saved Diagnosis Attribute Type");
+		assertEquals(ORIGINAL_COUNT + 1, diagnosisService.getAllDiagnosisAttributeTypes().size());
+		DiagnosisAttributeType savedDiagnosisAttributeType = diagnosisService.getDiagnosisAttributeTypeByUuid("353af72e-bb6e-4ed9-a1bf-0d8106ac2c15");
+		assertEquals("Clinical Decision Support System", savedDiagnosisAttributeType.getName());
+		assertEquals(1, savedDiagnosisAttributeType.getMinOccurs());
+		assertEquals(5, savedDiagnosisAttributeType.getMaxOccurs());
+		assertEquals(diagnosis.getCreator(), savedDiagnosisAttributeType.getCreator());
+		assertEquals(diagnosis.getDateCreated(), savedDiagnosisAttributeType.getDateCreated());
+		assertEquals("353af72e-bb6e-4ed9-a1bf-0d8106ac2c15", savedDiagnosisAttributeType.getUuid());
+		assertEquals(false, savedDiagnosisAttributeType.getRetired());
+	}
+
+	/**
+	 * @see org.openmrs.api.DiagnosisService#saveDiagnosisAttributeType(DiagnosisAttributeType)
+	 */
+	@Test
+	public void saveDiagnosisAttributeType_shouldEditTheExistingDiagnosisAttributeType() {
+		DiagnosisAttributeType diagnosisAttributeType = diagnosisService.getDiagnosisAttributeTypeById(3);
+		assertEquals("Diagnostic Criteria", diagnosisAttributeType.getName());
+		diagnosisAttributeType.setName("Diagnosis Orientation");
+		diagnosisService.saveDiagnosisAttributeType(diagnosisAttributeType);
+		assertThat(diagnosisService.getDiagnosisAttributeTypeById(diagnosisAttributeType.getId()).getName(), is("Diagnosis Orientation"));
+	}
+
+	/**
+	 * @see org.openmrs.api.DiagnosisService#getDiagnosisAttributeByUuid(String)
+	 */
+	@Test
+	public void getDiagnosisAttributeByUuid_shouldGetTheDiagnosisAttributeWithTheProvidedUuid() {
+		DiagnosisAttribute diagnosisAttribute = diagnosisService.getDiagnosisAttributeByUuid("31f7c3cd-699b-4ed3-af10-563e024cae76");
+		assertEquals("Testing Reference", diagnosisAttribute.getValueReference());
+		assertEquals(1, diagnosisAttribute.getId());
+	}
+
+	/**
+	 * @see org.openmrs.api.DiagnosisService#getDiagnosisAttributeByUuid(String)
+	 */
+	@Test
+	public void getDiagnosisAttributeByUuid_shouldReturnNullIfNoDiagnosisAttributeHasTheProvidedUuid() {
+		assertNull(diagnosisService.getDiagnosisAttributeByUuid("001612a5-9f2a-4a05-9384-755679f75647"));
+	}
+
+	/**
+	 * @see org.openmrs.api.DiagnosisService#save(Diagnosis)
+	 */
+	@Test
+	public void saveDiagnosis_shouldSaveTheDiagnosisWithTheProvidedAttributes() {
+		final String NAMESPACE = "namespace";
+		final String FORMFIELD_PATH = "formFieldPath";
+		final DiagnosisAttributeType DIAGNOSIS_ATTRIBUTE_TYPE = Context.getDiagnosisService()
+				.getDiagnosisAttributeTypeByUuid("949daf5b-a83e-4b65-b914-502a553243d3");
+		DiagnosisAttribute diagnosisAttribute = new DiagnosisAttribute();
+		diagnosisAttribute.setAttributeType(DIAGNOSIS_ATTRIBUTE_TYPE);
+		diagnosisAttribute.setCreator(Context.getUserService().getUser(1));
+		diagnosisAttribute.setVoided(false);
+		diagnosisAttribute.setValueReferenceInternal("Diagnosis Attribute Reference");
+		final String UUID = "3c6422d8-7bdd-4e20-bd1b-a590f084db08";
+		Condition condition = conditionService.getConditionByUuid("2cc6880e-2c46-15e4-9038-a6c5e4d22fb7");
+		Encounter encounter = encounterService.getEncounterByUuid("y403fafb-e5e4-42d0-9d11-4f52e89d123r");
+		Patient patient = patientService.getPatient(2);
+		Diagnosis diagnosis = new Diagnosis();
+		diagnosis.setUuid(UUID);
+		diagnosis.setEncounter(encounter);
+		diagnosis.setCondition(condition);
+		diagnosis.setCertainty(ConditionVerificationStatus.CONFIRMED);
+		diagnosis.setPatient(patient);
+		diagnosis.setRank(1);
+		diagnosis.setVoided(false);
+		diagnosis.setFormField(NAMESPACE, FORMFIELD_PATH);
+		diagnosis.addAttribute(diagnosisAttribute);
+		diagnosisService.save(diagnosis);
+		assertNotNull(diagnosis.getId(), "Successfully Saved Diagnosis");
+		Diagnosis savedDiagnosis = diagnosisService.getDiagnosisByUuid(UUID);
+		assertEquals(condition, savedDiagnosis.getCondition());
+		assertEquals(encounter, savedDiagnosis.getEncounter());
+		assertEquals(patient, savedDiagnosis.getPatient());
+		assertEquals(ConditionVerificationStatus.CONFIRMED, savedDiagnosis.getCertainty());
+		assertEquals(1, savedDiagnosis.getRank());
+		assertEquals(false, savedDiagnosis.getVoided());
+		assertEquals(NAMESPACE + "^" + FORMFIELD_PATH, savedDiagnosis.getFormNamespaceAndPath());
+		assertThat(savedDiagnosis.getAttributes(), hasItem(diagnosisAttribute));
+	}
+
+	/**
+	 * @see org.openmrs.api.DiagnosisService#save(Diagnosis)
+	 */
+	@Test
+	public void saveDiagnosis_shouldEditTheExistingDiagnosisRemovingTheAssociatedAttributesWhenRequired() {
+		final DiagnosisAttribute DIAGNOSIS_ATTRIBUTE = Context.getDiagnosisService()
+				.getDiagnosisAttributeByUuid("31f7c3cd-699b-4ed3-af10-563e024cae76");
+		Diagnosis diagnosis = diagnosisService.getDiagnosis(1);
+		assertThat(diagnosis.getAttributes(), hasItem(DIAGNOSIS_ATTRIBUTE));
+		diagnosis.getAttributes().remove(DIAGNOSIS_ATTRIBUTE);
+		diagnosisService.save(diagnosis);
+		Diagnosis editedDiagnosis = diagnosisService.getDiagnosis(1);
+		assertThat(editedDiagnosis.getAttributes(), not(hasItem(DIAGNOSIS_ATTRIBUTE)));
+	}
 }
