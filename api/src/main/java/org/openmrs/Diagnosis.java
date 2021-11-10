@@ -115,6 +115,7 @@ public class Diagnosis extends BaseCustomizableData<DiagnosisAttribute> implemen
 	 * @param rank the rank of the diagnosis
 	 * @param patient the patient diagnosed
 	 * @param formNamespaceAndPath the form namespace and path
+	 * @since 2.5.0
 	 */
 	public Diagnosis(Encounter encounter, CodedOrFreeText diagnosis, ConditionVerificationStatus certainty, Integer rank, Patient patient, String formNamespaceAndPath) {
 		this.encounter = encounter;
