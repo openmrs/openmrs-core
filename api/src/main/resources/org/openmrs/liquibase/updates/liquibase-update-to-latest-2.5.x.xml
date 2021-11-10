@@ -285,4 +285,83 @@
 								 referencedTableName="concept" referencedColumnNames="concept_id" />
 	</changeSet>
 
+	<changeSet id="2021-24-10-1000-TRUNK-6038" author="miirochristopher">
+		<preConditions onFail="MARK_RAN" onFailMessage="Table diagnosis_attribute_type already exists">
+			<not>
+				<tableExists tableName="diagnosis_attribute_type" />
+			</not>
+		</preConditions>
+		<comment>Creating diagnosis_attribute_type table</comment>
+		<createTable tableName="diagnosis_attribute_type">
+			<column name="diagnosis_attribute_type_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="name" type="varchar(255)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+			<column name="description" type="varchar(1024)" />
+			<column name="datatype" type="varchar(255)" />
+			<column name="datatype_config" type="text" />
+			<column name="preferred_handler" type="varchar(255)" />
+			<column name="handler_config" type="text" />
+			<column name="min_occurs" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="max_occurs" type="int"/>
+			<column name="creator" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="date_created" type="datetime">
+				<constraints nullable="false" />
+			</column>
+			<column name="changed_by" type="int" />
+			<column name="date_changed" type="datetime" />
+			<column name="retired" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+			<column name="retired_by" type="int" />
+			<column name="date_retired" type="datetime" />
+			<column name="retire_reason" type="varchar(255)" />
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false" unique="true" />
+			</column>
+		</createTable>
+		<addForeignKeyConstraint constraintName="diagnosis_attribute_type_creator_fk" baseTableName="diagnosis_attribute_type" baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id"/>
+		<addForeignKeyConstraint constraintName="diagnosis_attribute_type_changed_by_fk" baseTableName="diagnosis_attribute_type" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id"/>
+		<addForeignKeyConstraint constraintName="diagnosis_attribute_type_retired_by_fk" baseTableName="diagnosis_attribute_type" baseColumnNames="retired_by" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+
+	<changeSet id="2021-24-10-1145-TRUNK-6038" author="miirochristopher">
+		<preConditions onFail="MARK_RAN" onFailMessage="Table diagnosis_attribute already exists">
+			<not>
+				<tableExists tableName="diagnosis_attribute" />
+			</not>
+		</preConditions>
+		<comment>Creating diagnosis_attribute table</comment>
+		<createTable tableName="diagnosis_attribute">
+			<column name="diagnosis_attribute_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="diagnosis_id" type="int"><constraints nullable="false" /></column>
+			<column name="attribute_type_id" type="int"><constraints nullable="false" /></column>
+			<column name="value_reference" type="text"><constraints nullable="false" /></column>
+			<column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
+			<column name="creator" type="int"><constraints nullable="false"/></column>
+			<column name="date_created" type="datetime"><constraints nullable="false"/></column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="datetime" />
+			<column name="voided" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+			<column name="voided_by" type="int" />
+			<column name="date_voided" type="datetime" />
+			<column name="void_reason" type="varchar(255)" />
+		</createTable>
+		<addForeignKeyConstraint constraintName="diagnosis_attribute_diagnosis_fk" baseTableName="diagnosis_attribute" baseColumnNames="diagnosis_id" referencedTableName="encounter_diagnosis" referencedColumnNames="diagnosis_id" />
+		<addForeignKeyConstraint constraintName="diagnosis_attribute_attribute_type_id_fk" baseTableName="diagnosis_attribute" baseColumnNames="attribute_type_id" referencedTableName="diagnosis_attribute_type" referencedColumnNames="diagnosis_attribute_type_id" />
+		<addForeignKeyConstraint constraintName="diagnosis_attribute_creator_fk" baseTableName="diagnosis_attribute" baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="diagnosis_attribute_changed_by_fk" baseTableName="diagnosis_attribute" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="diagnosis_attribute_voided_by_fk" baseTableName="diagnosis_attribute" baseColumnNames="voided_by" referencedTableName="users" referencedColumnNames="user_id" />
+	</changeSet>
+
 </databaseChangeLog>

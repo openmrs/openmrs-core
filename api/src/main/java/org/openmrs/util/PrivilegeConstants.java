@@ -569,6 +569,9 @@ public class PrivilegeConstants {
 	@AddOnStartup(description = "Able to delete diagnoses")
 	public static final String DELETE_DIAGNOSES = "Delete Diagnoses";
 
+	@AddOnStartup(description = "Able to get diagnoses attribute types")
+	public static final String GET_DIAGNOSES_ATTRIBUTE_TYPES = "Get Diagnoses Attribute Types";
+
 	@AddOnStartup(description = "Able to get order set attribute types")
 	public static final String GET_ORDER_SET_ATTRIBUTE_TYPES = "Get Order Set Attribute Types";
 
