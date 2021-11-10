@@ -521,8 +521,6 @@ public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 		diagnosisService.save(diagnosis);
 		assertNotNull(diagnosis.getId(), "Successfully Saved Diagnosis");
 		Diagnosis savedDiagnosis = diagnosisService.getDiagnosisByUuid(UUID);
-		Set<DiagnosisAttributeType> savedDiagnosisAttributeTypes = savedDiagnosis.getAttributes().stream()
-				.map(DiagnosisAttribute::getAttributeType).collect(Collectors.toSet());
 		assertEquals(condition, savedDiagnosis.getCondition());
 		assertEquals(encounter, savedDiagnosis.getEncounter());
 		assertEquals(patient, savedDiagnosis.getPatient());
@@ -531,7 +529,6 @@ public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 		assertEquals(false, savedDiagnosis.getVoided());
 		assertEquals(NAMESPACE + "^" + FORMFIELD_PATH, savedDiagnosis.getFormNamespaceAndPath());
 		assertThat(savedDiagnosis.getAttributes(), hasItem(diagnosisAttribute));
-		assertThat(savedDiagnosisAttributeTypes, contains(DIAGNOSIS_ATTRIBUTE_TYPE));
 	}
 
 	/**
@@ -541,12 +538,9 @@ public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 	public void saveDiagnosis_shouldEditTheExistingDiagnosisRemovingTheAssociatedAttributesWhenRequired() {
 		final DiagnosisAttribute DIAGNOSIS_ATTRIBUTE = Context.getDiagnosisService()
 				.getDiagnosisAttributeByUuid("31f7c3cd-699b-4ed3-af10-563e024cae76");
-		final DiagnosisAttributeType DIAGNOSIS_ATTRIBUTE_TYPE = Context.getDiagnosisService()
-				.getDiagnosisAttributeTypeByUuid("949daf5b-a83e-4b65-b914-502a553243d3");
 		Diagnosis diagnosis = diagnosisService.getDiagnosis(1);
 		assertThat(diagnosis.getAttributes(), hasItem(DIAGNOSIS_ATTRIBUTE));
-		diagnosis.getAttributes()
-				 .removeIf(attribute -> attribute.getAttributeType().equals(DIAGNOSIS_ATTRIBUTE_TYPE));
+		diagnosis.getAttributes().remove(DIAGNOSIS_ATTRIBUTE);
 		diagnosisService.save(diagnosis);
 		Diagnosis editedDiagnosis = diagnosisService.getDiagnosis(1);
 		assertThat(editedDiagnosis.getAttributes(), not(hasItem(DIAGNOSIS_ATTRIBUTE)));
