@@ -364,4 +364,16 @@
 		<addForeignKeyConstraint constraintName="diagnosis_attribute_voided_by_fk" baseTableName="diagnosis_attribute" baseColumnNames="voided_by" referencedTableName="users" referencedColumnNames="user_id" />
 	</changeSet>
 
+	<changeSet id="2020-09-16-1700-TRUNK-5736" author="miirochristopher">
+		<preConditions onFail="MARK_RAN" onFailMessage="Cannot delete or update user, foreign key constraint user_who_changed_user fails">
+			<foreignKeyConstraintExists foreignKeyName="user_who_changed_user"/>
+		</preConditions>
+		<comment>Updating foreign key user_who_changed_user to add delete CASCADE</comment>
+		<dropForeignKeyConstraint baseTableName="users" constraintName="user_who_changed_user"/>
+		<addForeignKeyConstraint  baseTableName="users" baseColumnNames="changed_by"
+		                          constraintName="user_who_changed_user"
+		                          referencedTableName="users" referencedColumnNames="user_id"
+		                          onDelete="CASCADE"/>
+	</changeSet>
+
 </databaseChangeLog>
