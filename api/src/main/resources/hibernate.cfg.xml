@@ -116,7 +116,6 @@
 		
 		<!-- Visit -->
 		<mapping resource="org/openmrs/api/db/hibernate/VisitType.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/VisitAttributeType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/VisitAttribute.hbm.xml" />
 		
 		<!-- Provider -->
