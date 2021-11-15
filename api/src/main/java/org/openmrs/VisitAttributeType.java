@@ -12,12 +12,24 @@ package org.openmrs;
 import org.openmrs.attribute.AttributeType;
 import org.openmrs.attribute.BaseAttributeType;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 /**
  * A user-defined extension to the {@link Visit} class.
  * @see AttributeType 
  */
+@Entity
+@Table(name = "visit_attribute_type")
 public class VisitAttributeType extends BaseAttributeType<Visit> implements AttributeType<Visit> {
-	
+
+	@Id
+	@Column(name = "visit_attribute_type_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer visitAttributeTypeId;
 	
 	/**
