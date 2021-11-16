@@ -199,6 +199,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		
 		// save the conditions
 		encounter.getConditions().forEach(Context.getConditionService()::saveCondition);
+		
+		encounter.getAllergies().forEach(Context.getPatientService()::saveAllergy);
+		
 		return encounter;
 	}
 	
@@ -415,9 +418,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		
 		OrderService orderService = Context.getOrderService();
 		for (Order o : encounter.getOrders()) {
-			if (!o.getVoided()) {
-				orderService.voidOrder(o, reason);
-			}
+			// There is intentionally no voided check around this method call.  See TRUNK-5996.
+			orderService.voidOrder(o, reason);
 		}
 		
 		encounter.setVoided(true);

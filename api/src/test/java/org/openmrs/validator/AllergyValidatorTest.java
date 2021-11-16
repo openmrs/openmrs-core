@@ -24,10 +24,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.openmrs.Allergen;
 import org.openmrs.AllergenType;
-import org.openmrs.Allergies;
 import org.openmrs.Allergy;
-import org.openmrs.Concept;
+import org.openmrs.Allergies;
 import org.openmrs.Patient;
+import org.openmrs.AllergyReaction;
+import org.openmrs.Concept;
 import org.openmrs.api.PatientService;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.test.jupiter.BaseContextMockTest;
@@ -177,5 +178,17 @@ public class AllergyValidatorTest extends BaseContextMockTest {
 		validator.validate(allergy, errors);
 		
 		assertFalse(errors.hasErrors());
+	}
+
+	@Test
+	public void validate_shouldRejectNumericReactionValue() {
+		Allergy allergy = new Allergy();
+		AllergyReaction reaction = new AllergyReaction();
+		String nonCoded = "45";
+		reaction.setReactionNonCoded(nonCoded);
+		allergy.addReaction(reaction);
+		Errors errors = new BindException(allergy, "allergy");
+		validator.validate(allergy, errors);
+		assertTrue(errors.hasErrors());
 	}
 }

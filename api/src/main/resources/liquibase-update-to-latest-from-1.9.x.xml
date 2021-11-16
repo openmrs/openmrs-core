@@ -28,5 +28,6 @@
 	<include file="org/openmrs/liquibase/updates/liquibase-update-to-latest-2.2.x.xml"/>
 	<include file="org/openmrs/liquibase/updates/liquibase-update-to-latest-2.3.x.xml"/>
 	<include file="org/openmrs/liquibase/updates/liquibase-update-to-latest-2.4.x.xml"/>
+	<include file="org/openmrs/liquibase/updates/liquibase-update-to-latest-2.5.x.xml"/>
 
 </databaseChangeLog>

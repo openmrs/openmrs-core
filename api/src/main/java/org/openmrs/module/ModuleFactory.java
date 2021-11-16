@@ -888,7 +888,7 @@ public class ModuleFactory {
 					Context.addAdvice(cls, (Advice) aopObject);
 				}
 			}
-			catch (ClassNotFoundException e) {
+			catch (ClassNotFoundException | NoClassDefFoundError e) {
 				log.warn("Could not load advice point: " + advice.getPoint(), e);
 			}
 		}
@@ -913,8 +913,8 @@ public class ModuleFactory {
 		if (gp != null && StringUtils.hasLength(gp.getPropertyValue())) {
 			String currentDbVersion = gp.getPropertyValue();
 			if (log.isDebugEnabled()) {
-				log.debug("version:column " + version + ":" + currentDbVersion);
-				log.debug("compare: " + ModuleUtil.compareVersion(version, currentDbVersion));
+				log.debug("version:column {}:{}", version, currentDbVersion);
+				log.debug("compare: {}", ModuleUtil.compareVersion(version, currentDbVersion));
 			}
 			if (ModuleUtil.compareVersion(version, currentDbVersion) > 0) {
 				executeSQL = true;

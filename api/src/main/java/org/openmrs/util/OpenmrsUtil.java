@@ -30,6 +30,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -116,7 +117,6 @@ import org.slf4j.MarkerFactory;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.NoSuchMessageException;
-import org.springframework.core.JdkVersion;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
 
@@ -124,7 +124,6 @@ import org.w3c.dom.DocumentType;
  * Utility methods used in openmrs
  */
 public class OpenmrsUtil {
-
 	private OpenmrsUtil() {
 	}
 	
@@ -143,9 +142,7 @@ public class OpenmrsUtil {
 	 * @param newList
 	 * @return [List toAdd, List toDelete] with respect to origList
 	 */
-	public static <E> Collection<Collection<E>> compareLists(Collection<E> origList, Collection<E> newList) {
-		// TODO finish function
-		
+	public static <E> Collection<Collection<E>> compareLists(Collection<E> origList, Collection<E> newList) {	
 		Collection<Collection<E>> returnList = new ArrayList<>();
 		
 		Collection<E> toAdd = new LinkedList<>();
@@ -181,16 +178,14 @@ public class OpenmrsUtil {
 	}
 	
 	public static boolean isStringInArray(String str, String[] arr) {
-		boolean retVal = false;
-		
 		if (str != null && arr != null) {
 			for (String anArr : arr) {
 				if (str.equals(anArr)) {
-					retVal = true;
+					return true;
 				}
 			}
 		}
-		return retVal;
+		return false;
 	}
 	
 	public static Boolean isInNormalNumericRange(Float value, ConceptNumeric concept) {
@@ -332,7 +327,6 @@ public class OpenmrsUtil {
 		if (!folder.isDirectory()) {
 			return false;
 		}
-
 		File[] files = folder.listFiles();
 		if (files == null) {
 			return false;
@@ -487,9 +481,7 @@ public class OpenmrsUtil {
 			val = OpenmrsConstants.DATABASE_NAME;
 		}
 		OpenmrsConstants.DATABASE_BUSINESS_NAME = val;
-
 		setupLogAppenders();
-
 		// set global log level
 		applyLogLevels();
 	}
@@ -520,11 +512,9 @@ public class OpenmrsUtil {
 	public static void applyLogLevels() {
 		AdministrationService adminService = Context.getAdministrationService();
 		String logLevel = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL, "");
-
 		// reload the configuration from disk
 		LoggerContext context = ((Logger) LogManager.getRootLogger()).getContext();
 		context.reconfigure();
-
 		String[] levels = logLevel.split(",");
 		for (String level : levels) {
 			String[] classAndLevel = level.split(":");
@@ -537,7 +527,6 @@ public class OpenmrsUtil {
 			}
 		}
 	}
-
 	/**
 	 * Setup root level log appenders.
 	 *
@@ -546,49 +535,43 @@ public class OpenmrsUtil {
 	public static void setupLogAppenders() {
 		Logger rootLogger = (Logger) LogManager.getRootLogger();
 		LoggerContext loggerContext = rootLogger.getContext();
-
 		// stop the LoggerContext to reconfigure the scanning interval
 		loggerContext.stop();
 		// previously set in web.xml
 		loggerContext.getConfiguration().getWatchManager().setIntervalSeconds(60000);
 		loggerContext.start();
-
 		RollingFileAppender fileAppender = null;
 		for (Map.Entry<String, Appender> appenderEntry : rootLogger.getAppenders().entrySet()) {
 			Appender appender = appenderEntry.getValue();
 			if (appender instanceof RollingFileAppender && OpenmrsConstants.LOG_OPENMRS_FILE_APPENDER
-				.equals(appender.getName())) {
+					.equals(appender.getName())) {
 				fileAppender = (RollingFileAppender) appender;
 				break;
 			}
 		}
-
 		if (fileAppender != null) {
 			rootLogger.removeAppender(fileAppender);
 		}
-
 		String logLayout = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_LOG_LAYOUT,
-			"%p - %C{1}.%M(%L) |%d{ISO8601}| %m%n");
+				"%p - %C{1}.%M(%L) |%d{ISO8601}| %m%n");
 		PatternLayout patternLayout = PatternLayout.newBuilder()
 			.withPattern(logLayout)
 			.build();
-
 		String logLocation = OpenmrsUtil.getOpenmrsLogLocation();
 		String logPattern = logLocation.replace(".log", ".%i.log");
 		fileAppender = RollingFileAppender.newBuilder()
-			.setLayout(patternLayout)
-			.withFileName(logLocation)
-			.withFilePattern(logPattern)
-			.setName(OpenmrsConstants.LOG_OPENMRS_FILE_APPENDER)
-			.withPolicy(CompositeTriggeringPolicy.createPolicy(
-				OnStartupTriggeringPolicy.createPolicy(1),
-				SizeBasedTriggeringPolicy.createPolicy("10MB")
-			))
-			.withStrategy(DefaultRolloverStrategy.newBuilder().withMax("1").build())
-			.build();
+				.setLayout(patternLayout)
+				.withFileName(logLocation)
+				.withFilePattern(logPattern)
+				.setName(OpenmrsConstants.LOG_OPENMRS_FILE_APPENDER)
+				.withPolicy(CompositeTriggeringPolicy.createPolicy(
+					OnStartupTriggeringPolicy.createPolicy(1),
+					SizeBasedTriggeringPolicy.createPolicy("10MB")
+				))
+				.withStrategy(DefaultRolloverStrategy.newBuilder().withMax("1").build())
+				.build();
 		fileAppender.start();
 		rootLogger.addAppender(fileAppender);
-
 		// update the logger configuration
 		loggerContext.updateLoggers();
 	}
@@ -635,10 +618,9 @@ public class OpenmrsUtil {
 					break;
 				default:
 					log.warn("Log level {} is invalid. " +
-						"Valid values are trace, debug, info, warn, error or fatal", logLevel);
+							"Valid values are trace, debug, info, warn, error or fatal", logLevel);
 					break;
 			}
-
 			context.updateLoggers();
 		}
 	}
@@ -973,7 +955,6 @@ public class OpenmrsUtil {
 		if (fileList == null) {
 			return false;
 		}
-
 		for (File f : fileList) {
 			if (f.isDirectory()) {
 				deleteDirectory(f);
@@ -1099,16 +1080,16 @@ public class OpenmrsUtil {
 		
 		if (filepath == null) {
 			if (OpenmrsConstants.UNIX_BASED_OPERATING_SYSTEM) {
-				filepath = System.getProperty("user.home") + File.separator + "." + openmrsDir;
+				filepath = Paths.get(System.getProperty("user.home"), "." + openmrsDir).toString();
 				if (!canWrite(new File(filepath))) {
 					log.warn("Unable to write to users home dir, fallback to: "
 					        + OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_UNIX);
-					filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_UNIX + File.separator + openmrsDir;
+					filepath = Paths.get(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_UNIX, openmrsDir).toString();
 				}
 			} else {
-				filepath = System.getProperty("user.home") + File.separator + "Application Data" + File.separator + "OpenMRS";
+				filepath = Paths.get(System.getProperty("user.home"), "Application Data", "OpenMRS").toString();
 				if (!new File(filepath).exists()) {
-					filepath = System.getenv("appdata") + File.separator + "OpenMRS";
+					filepath = Paths.get(System.getenv("appdata"), "OpenMRS").toString();
 				}
 				if (!canWrite(new File(filepath))) {
 					log.warn("Unable to write to users home dir, fallback to: "
@@ -1185,12 +1166,14 @@ public class OpenmrsUtil {
 	/**
 	 * Checks whether the current JVM version is at least Java 8.
 	 * 
-	 * @throws ApplicationContextException if the current JVM version is earlier than Java 8
+	 * @throws APIException if the current JVM version is earlier than Java 8
 	 */
 	public static void validateJavaVersion() {
 		// check whether the current JVM version is at least Java 8
-		if (JdkVersion.getJavaVersion().matches("1.(0|1|2|3|4|5|6|7).(.*)")) {
-			throw new APIException("OpenMRS requires Java 8 and above, but is running under " + JdkVersion.getJavaVersion());
+		if (System.getProperty("java.version").matches("1\\.[0-7]\\.(.*)")) {
+			throw new APIException(
+				"OpenMRS " + OpenmrsConstants.OPENMRS_VERSION_SHORT + " requires Java 8 and above, but is running under " + 
+					System.getProperty("java.version"));
 		}
 	}
 	
@@ -1274,7 +1257,7 @@ public class OpenmrsUtil {
 			token = token.trim();
 			if (token.length() != 0) {
 				ret.add(Integer.valueOf(token));
-			} 
+			}
 		}
 		return ret;
 	}

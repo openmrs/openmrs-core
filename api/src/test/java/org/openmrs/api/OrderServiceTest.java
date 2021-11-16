@@ -11,6 +11,7 @@ package org.openmrs.api;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -56,6 +57,8 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.openmrs.Order.Action;
+import org.openmrs.OrderAttribute;
+import org.openmrs.OrderAttributeType;
 import org.openmrs.TestOrder;
 import org.openmrs.Patient;
 import org.openmrs.DosingInstructions;
@@ -66,7 +69,10 @@ import org.openmrs.Drug;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptReferenceTerm;
+import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
@@ -83,6 +89,7 @@ import org.openmrs.Encounter;
 import org.openmrs.Provider;
 import org.openmrs.Concept;
 import org.openmrs.CareSetting;
+import org.openmrs.VisitAttributeType;
 import org.openmrs.api.builder.DrugOrderBuilder;
 import org.openmrs.Obs;
 import org.openmrs.api.builder.OrderBuilder;
@@ -115,6 +122,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 	private static final String ORDER_GROUP_ATTRIBUTES = "org/openmrs/api/include/OrderServiceTest-createOrderGroupAttributes.xml";
 
+	private static final String ORDER_ATTRIBUTES = "org/openmrs/api/include/OrderServiceTest-createOrderAttributes.xml";
+
 	@Autowired
 	private ConceptService conceptService;
 
@@ -141,54 +150,11 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	
 	@BeforeEach
 	public void setUp(){
+		executeDataSet(ORDER_ATTRIBUTES);
 		executeDataSet(ORDER_GROUP_ATTRIBUTES);
 	}
 
-	@Entity
-	public class SomeTestOrder extends TestOrder {
-		@Id
-		private Integer orderId;
-		private Patient patient;
-		private OrderType orderType;
-		private Concept concept;
-		private String instructions;
-		private Date dateActivated;
-		private Date autoExpireDate;
-		private Encounter encounter;
-		private Provider orderer;
-		private Date dateStopped;
-		private Concept orderReason;
-		private String accessionNumber;
-		private String orderReasonNonCoded;
-		private Urgency urgency = Urgency.ROUTINE;
-		private String orderNumber;
-		private String commentToFulfiller;
-		private CareSetting careSetting;
-		private Date scheduledDate;
-		private Double sortWeight;
-		private Order previousOrder;
-		private Action action = Action.NEW;
-		private OrderGroup orderGroup;
-		private FulfillerStatus fulfillerStatus;
-		private String fulfillerComment;
-		private Double dose;
-		private Concept doseUnits;
-		private OrderFrequency frequency;
-		private Boolean asNeeded = false;
-		private Double quantity;
-		private Concept quantityUnits;
-		private Drug drug;
-		private String asNeededCondition;
-		private Class<? extends DosingInstructions> dosingType = SimpleDosingInstructions.class;
-		private Integer numRefills;
-		private String dosingInstructions;
-		private Integer duration;
-		private Concept durationUnits;
-		private Concept route;
-		private String brandName;
-		private Boolean dispenseAsWritten = Boolean.FALSE;
-		private String drugNonCoded;
-	}
+	public class SomeTestOrder extends TestOrder {}
 	
 
 	/**
@@ -1516,19 +1482,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see OrderService#saveOrderFrequency(OrderFrequency)
-	 */
-	@Test
-	public void saveOrderFrequency_shouldNotAllowEditingAnExistingOrderFrequencyThatIsInUse() {
-		OrderFrequency orderFrequency = orderService.getOrderFrequency(1);
-		assertNotNull(orderFrequency);
-
-		orderFrequency.setFrequencyPerDay(4d);
-		CannotUpdateObjectInUseException exception = assertThrows(CannotUpdateObjectInUseException.class, () -> orderService.saveOrderFrequency(orderFrequency));
-		assertThat(exception.getMessage(), is("Order.frequency.cannot.edit"));
-	}
-
-	/**
 	 * @see OrderService#purgeOrderFrequency(OrderFrequency)
 	 */
 	@Test
@@ -2692,7 +2645,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Metadata metaData = new MetadataSources(standardRegistry).addAnnotatedClass(Allergy.class)
 			.addAnnotatedClass(Encounter.class).addAnnotatedClass(SomeTestOrder.class)
 			.addAnnotatedClass(Diagnosis.class).addAnnotatedClass(Condition.class)
-			.addAnnotatedClass(Visit.class).getMetadataBuilder().build();
+			.addAnnotatedClass(Visit.class).addAnnotatedClass(VisitAttributeType.class).getMetadataBuilder().build();
 
 		Field field = adminDAO.getClass().getDeclaredField("metadata");
 		field.setAccessible(true);
@@ -3867,7 +3820,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void retireOrderGroupAttributeType_shouldRetireOrderGroupAttributeType() throws ParseException {
 		OrderGroupAttributeType orderGroupAttributeType = orderService.getOrderGroupAttributeType(2);
 		assertFalse(orderGroupAttributeType.getRetired());
-		assertNotNull(orderGroupAttributeType.getRetiredBy());
+		assertNull(orderGroupAttributeType.getRetiredBy());
 		assertNull(orderGroupAttributeType.getRetireReason());
 		assertNull(orderGroupAttributeType.getDateRetired());
 		orderService.retireOrderGroupAttributeType(orderGroupAttributeType, "Test Retire");
@@ -3917,5 +3870,153 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		orderGroupAttribute.getValueReference();
 		assertEquals("Test 1", orderGroupAttribute.getValueReference());
 		assertEquals(1, orderGroupAttribute.getId());
+	}
+
+	@Test
+	public void saveOrder_shouldAllowARetrospectiveOrderToCloseAnOrderThatExpiredInThePast() throws Exception {
+		
+		// Ensure that duration units are configured correctly to a snomed duration code
+		ConceptReferenceTerm days = new ConceptReferenceTerm();
+		days.setConceptSource(conceptService.getConceptSourceByName("SNOMED CT"));
+		days.setCode("258703001");
+		days.setName("Day(s)");
+		conceptService.saveConceptReferenceTerm(days);
+		
+		Concept daysConcept = conceptService.getConcept(28);
+		daysConcept.addConceptMapping(new ConceptMap(days, conceptService.getConceptMapType(2)));
+		conceptService.saveConcept(daysConcept);
+		
+		// First create a retrospective Order on 8/1/2008 with a duration of 60 days.
+		// This will set the auto-expire date to 9/29/2008
+
+		Encounter e1 = encounterService.getEncounter(3);
+		DrugOrder o1 = new DrugOrderBuilder().withPatient(e1.getPatient().getPatientId())
+			.withEncounter(e1.getEncounterId()).withCareSetting(2).withOrderer(1).withUrgency(Order.Urgency.ROUTINE)
+			.withDateActivated(e1.getEncounterDatetime())
+			.withOrderType(1).withDrug(2)
+			.withDosingType(SimpleDosingInstructions.class)
+			.build();
+		o1.setDose(2d);
+		o1.setDoseUnits(conceptService.getConcept(51)); // tab(s)
+		o1.setRoute(conceptService.getConcept(22)); // unknown
+		o1.setFrequency(orderService.getOrderFrequency(1));
+		o1.setDuration(60);
+		o1.setDurationUnits(daysConcept); // days
+		e1.addOrder(o1);
+		encounterService.saveEncounter(e1);
+		assertThat(new SimpleDateFormat("yyyy-MM-dd").format(o1.getAutoExpireDate()), is("2008-09-29"));
+		assertThat(o1.getDateStopped(), is(nullValue()));
+
+		// Next, create a new Order on 8/15/2008 that revises the above order
+		// Encounter 4 is on 8/15/2008 for patient 7
+		Encounter e2 = encounterService.getEncounter(4);
+		DrugOrder o2 = o1.cloneForRevision();
+		o2.setOrderer(providerService.getProvider(1));
+		o2.setDateActivated(e2.getEncounterDatetime());
+		o2.setDose(3d);
+		e2.addOrder(o2);
+		encounterService.saveEncounter(e2);
+		assertThat(new SimpleDateFormat("yyyy-MM-dd").format(o1.getDateStopped()), is("2008-08-14"));
+	}
+	
+	/**
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldSaveTheFormNamespaceAndPath() {
+		Order order = new TestOrder();
+		order.setPatient(patientService.getPatient(7));
+		order.setConcept(conceptService.getConcept(5497));
+		order.setOrderer(providerService.getProvider(1));
+		order.setCareSetting(orderService.getCareSetting(1));
+		order.setOrderType(orderService.getOrderType(2));
+		order.setEncounter(encounterService.getEncounter(3));
+		order.setDateActivated(new Date());
+		
+		final String NAMESPACE = "namespace";
+		final String FORMFIELD_PATH = "formFieldPath";
+		order.setFormField(NAMESPACE, FORMFIELD_PATH);
+		
+		order = orderService.saveOrder(order, null);
+		assertEquals(NAMESPACE + "^" + FORMFIELD_PATH, order.getFormNamespaceAndPath());
+	}
+
+	@Test
+	public void getAllOrderAttributeTypes_shouldReturnAllOrderAttributeTypes() {
+		assertThat(orderService.getAllOrderAttributeTypes(), hasSize(4));
+	}
+
+	@Test
+	public void getOrderAttributeTypeById_shouldReturnNullIfNoOrderAttributeTypeHasTheProvidedId() {
+		assertNull(orderService.getOrderAttributeTypeById(15));
+	}
+
+	@Test
+	public void getOrderAttributeTypeById_shouldReturnOrderAttributeTypeUsingProvidedId() {
+		assertThat(orderService.getOrderAttributeTypeById(2).getId(), is(2));
+	}
+
+	@Test
+	public void getOrderAttributeTypeByUuid_shouldReturnOrderAttributeTypeUsingProvidedUuid() {
+		assertEquals("Referral", orderService.getOrderAttributeTypeByUuid(
+				"9758d106-79b0-4f45-8d8c-ae8b3f25d72a").getName());
+	}
+	
+	@Test
+	public void saveOrderAttributeType_shouldEditTheExistingOrderAttributeType() {
+		OrderAttributeType orderAttributeType = orderService.getOrderAttributeTypeById(4);
+		assertEquals("Drug", orderAttributeType.getName());
+		orderAttributeType.setName("Drug Dispense");
+		orderService.saveOrderAttributeType(orderAttributeType);
+		assertThat(orderService.getOrderAttributeTypeById(orderAttributeType.getId()).getName(), is("Drug Dispense"));
+	}
+
+	@Test
+	public void retireOrderAttributeType_shouldRetireTheProvidedOrderAttributeType() throws ParseException {
+		OrderAttributeType orderAttributeType = orderService.getOrderAttributeTypeById(2);
+		assertFalse(orderAttributeType.getRetired());
+		assertNull(orderAttributeType.getRetiredBy());
+		assertNull(orderAttributeType.getRetireReason());
+		assertNull(orderAttributeType.getDateRetired());
+		orderService.retireOrderAttributeType(orderAttributeType, "Test Retire");
+		orderAttributeType = orderService.getOrderAttributeTypeById(orderAttributeType.getId());
+		assertTrue(orderAttributeType.getRetired());
+		assertNotNull(orderAttributeType.getRetiredBy());
+		assertEquals("Test Retire", orderAttributeType.getRetireReason());
+		assertNotNull(orderAttributeType.getDateRetired());
+	}
+
+	@Test
+	public void unretireOrderAttributeType_shouldUnretireTheProvidedOrderAttributeType() {
+		OrderAttributeType orderAttributeType = orderService.getOrderAttributeTypeById(4);
+		assertTrue(orderAttributeType.getRetired());
+		assertNotNull(orderAttributeType.getRetiredBy());
+		assertNotNull(orderAttributeType.getDateRetired());
+		assertNotNull(orderAttributeType.getRetireReason());
+		orderService.unretireOrderAttributeType(orderAttributeType);
+		assertFalse(orderAttributeType.getRetired());
+		assertNull(orderAttributeType.getRetiredBy());
+		assertNull(orderAttributeType.getDateRetired());
+		assertNull(orderAttributeType.getRetireReason());
+	}
+	
+	@Test
+	public void purgeOrderAttributeType_shouldPurgeTheProvidedOrderAttributeType() {
+		final int ORIGINAL_COUNT = orderService.getAllOrderAttributeTypes().size();
+		orderService.purgeOrderAttributeType(orderService.getOrderAttributeTypeById(3));
+		assertNull(orderService.getOrderAttributeTypeById(3));
+		assertEquals(ORIGINAL_COUNT - 1, orderService.getAllOrderAttributeTypes().size());
+	}
+
+	@Test
+	public void getOrderAttributeByUuid_shouldReturnNullIfNonExistingUuidIsProvided() {
+		assertNull(orderService.getOrderAttributeByUuid("26bbdf73-4268-4e65-aa72-54cb928870d6"));
+	}
+
+	@Test
+	public void getOrderAttributeByUuid_shouldReturnOrderAttributeUsingProvidedUuid() {
+		OrderAttribute orderAttribute = orderService.getOrderAttributeByUuid("8c3c27e4-030f-410e-86de-a5743b0b3361");
+		assertEquals("Testing Reference", orderAttribute.getValueReference());
+		assertEquals(1, orderAttribute.getId());
 	}
 }

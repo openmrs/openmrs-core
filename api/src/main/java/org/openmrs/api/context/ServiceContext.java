@@ -901,7 +901,7 @@ public class ServiceContext implements ApplicationContextAware {
 	@SuppressWarnings("unchecked")
 	private <T> Map<String, T> getRegisteredComponents(ApplicationContext context, Class<T> type) {
 		Map<String, T> components = new HashMap<>();
-		Map registeredComponents = context.getBeansOfType(type);
+		Map<String, T> registeredComponents = context.getBeansOfType(type);
 		if (log.isTraceEnabled()) {
 			log.trace("getRegisteredComponents(" + context + ", " + type + ") = " + registeredComponents);
 		}
@@ -940,17 +940,11 @@ public class ServiceContext implements ApplicationContextAware {
 				synchronized (refreshingContextLock) {
 					//Need to wait for application context to finish refreshing otherwise we get into trouble.
 					while (refreshingContext) {
-						if (log.isDebugEnabled()) {
-							log.debug("Waiting to get service: " + classString + " while the context"
-							        + " is being refreshed");
-						}
+						log.debug("Waiting to get service: {} while the context is being refreshed", classString);
 
 						refreshingContextLock.wait();
 
-						if (log.isDebugEnabled()) {
-							log.debug("Finished waiting to get service " + classString
-							        + " while the context was being refreshed");
-						}
+						log.debug("Finished waiting to get service {} while the context was being refreshed", classString);
 					}
 				}
 
@@ -1043,5 +1037,4 @@ public class ServiceContext implements ApplicationContextAware {
 	public void setDatatypeService(DatatypeService datatypeService) {
 		setService(DatatypeService.class, datatypeService);
 	}
-	
 }

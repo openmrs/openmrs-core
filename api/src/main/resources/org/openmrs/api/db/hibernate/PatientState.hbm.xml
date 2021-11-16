@@ -31,7 +31,9 @@
 		<property name="startDate" type="java.util.Date" column="start_date" length="19" />
 
 		<property name="endDate" type="java.util.Date" column="end_date" length="19" />
-	
+
+		<property name="formNamespaceAndPath" type="java.lang.String" column="form_namespace_and_path" length="255" />
+
 		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
 		
 		<property name="dateChanged" type="java.util.Date" column="date_changed" length="19" />
@@ -45,6 +47,8 @@
 		<many-to-one name="state" class="ProgramWorkflowState" column="state" not-null="true" />
 		
 		<many-to-one name="patientProgram" class="PatientProgram" column="patient_program_id" not-null="true" />
+
+		<many-to-one name="encounter" column="encounter_id" class="org.openmrs.Encounter" />
 
 		<many-to-one name="creator" class="User" column="creator" not-null="true" />
 		

@@ -9,10 +9,6 @@
  */
 package org.openmrs.api.db;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
@@ -22,6 +18,10 @@ import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.person.PersonMergeLog;
 import org.openmrs.util.OpenmrsConstants;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Person-related database functions
@@ -199,6 +199,17 @@ public interface PersonDAO {
 	 * <strong>Should</strong> get saved personAttributeType name from database
 	 */
 	public String getSavedPersonAttributeTypeName(PersonAttributeType personAttributeType);
+
+	/**
+	 * Gets the value of the searchable property currently saved in the database for the given personAttributeType,
+	 * bypassing any caches. This is used when saving an personAttributeType, so that we can
+	 * determine if the searchable property has changed, which we use to determine whether we need to update the 
+	 * Lucene index
+	 * 
+	 * @param personAttributeType
+	 * @return the searchable property currently in the database for this personAttributeType
+	 */
+	public Boolean getSavedPersonAttributeTypeSearchable(PersonAttributeType personAttributeType);
 	
 	/**
 	 * @see org.openmrs.api.PersonService#getAllRelationshipTypes(boolean)

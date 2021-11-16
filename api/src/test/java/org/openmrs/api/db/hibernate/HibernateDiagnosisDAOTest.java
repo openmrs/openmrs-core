@@ -28,6 +28,7 @@ import org.openmrs.Diagnosis;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.User;
+import org.openmrs.Visit;
 import org.openmrs.api.db.DiagnosisDAO;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,15 +109,40 @@ public class HibernateDiagnosisDAOTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void shouldGetDiagnoses() {
-		assertEquals(2, diagnosisDAO.getDiagnoses(new Encounter(3)).size());
-		assertEquals(0, diagnosisDAO.getDiagnoses(new Encounter(9)).size());
+	public void shouldGetDiagnosesByEncounter() {
+		assertEquals(2, diagnosisDAO.getDiagnosesByEncounter(new Encounter(3), false, false).size());
+		assertEquals(0, diagnosisDAO.getDiagnosesByEncounter(new Encounter(9), false, false).size());
 	}
 
 	@Test
-	public void shouldGetPrimaryDiagnoses() {
-		assertEquals(2, diagnosisDAO.getPrimaryDiagnoses(new Encounter(3)).size());
-		assertEquals(0, diagnosisDAO.getPrimaryDiagnoses(new Encounter(4)).size());
+	public void shouldGetPrimaryDiagnosesByEncounter() {
+		assertEquals(2, diagnosisDAO.getDiagnosesByEncounter(new Encounter(3), true, false).size());
+		assertEquals(0, diagnosisDAO.getDiagnosesByEncounter(new Encounter(4), true, false).size());
+	}
+	
+	@Test
+	public void shouldGetConfirmedDiagnosesByEncounter() {
+		assertEquals(0, diagnosisDAO.getDiagnosesByEncounter(new Encounter(3), false, true).size());
+		assertEquals(1, diagnosisDAO.getDiagnosesByEncounter(new Encounter(4), false, true).size());
+	}
+	
+	@Test 
+	public void shouldGetDiagnosesByVisit() {
+		assertEquals(2, diagnosisDAO.getDiagnosesByVisit(new Visit(7), false, false).size());
+		assertEquals(2, diagnosisDAO.getDiagnosesByVisit(new Visit(8), false, false).size());
+		assertEquals(0, diagnosisDAO.getDiagnosesByVisit(new Visit(9), false, false).size());
+	}
+	
+	@Test
+	public void shouldGetPrimaryDiagnosesByVisit() {
+		assertEquals(2, diagnosisDAO.getDiagnosesByVisit(new Visit(7), true, false).size());
+		assertEquals(0, diagnosisDAO.getDiagnosesByVisit(new Visit(8), true, false).size());
+	}
+	
+	@Test
+	public void shouldGetConfirmedDiagnosesByVisit() {
+		assertEquals(0, diagnosisDAO.getDiagnosesByVisit(new Visit(7), false, true).size());
+		assertEquals(1, diagnosisDAO.getDiagnosesByVisit(new Visit(8), false, true).size());
 	}
 
 	@Test

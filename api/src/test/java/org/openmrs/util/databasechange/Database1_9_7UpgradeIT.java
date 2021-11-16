@@ -38,7 +38,6 @@ import org.openmrs.util.OpenmrsUtil;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -227,7 +226,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		
 		String errorMsgSubString1 = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201401101647-TRUNK-4187::wyclif";
 		IOException exception = assertThrows(IOException.class, () -> upgradeTestUtil.upgrade());
-		assertThat(exception.getMessage(), startsWith(errorMsgSubString1));
+		assertThat(exception.getMessage(), containsString(errorMsgSubString1));
 	}
 	
 	@Test
@@ -244,7 +243,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		String errorMsgSubString1 = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201401101647-TRUNK-4187::wyclif";
 		
 		IOException exception = assertThrows(IOException.class, () -> upgradeTestUtil.upgrade());
-		assertThat(exception.getMessage(), startsWith(errorMsgSubString1));
+		assertThat(exception.getMessage(), containsString(errorMsgSubString1));
 	}
 	
 	@Test
@@ -347,7 +346,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		
 		String errorMsgSubString = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201403262140-TRUNK-4265::wyclif";
 		IOException exception = assertThrows(IOException.class, () -> upgradeTestUtil.upgrade());
-		assertThat(exception.getMessage(), startsWith(errorMsgSubString));
+		assertThat(exception.getMessage(), containsString(errorMsgSubString));
 	}
 	
 	@Test
@@ -360,7 +359,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		
 		String errorMsgSubString = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201403262140-TRUNK-4265::wyclif";
 		IOException exception = assertThrows(IOException.class, () -> upgradeTestUtil.upgrade());
-		assertThat(exception.getMessage(), startsWith(errorMsgSubString));
+		assertThat(exception.getMessage(), containsString(errorMsgSubString));
 	}
 	
 	@Test
@@ -374,7 +373,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		
 		String errorMsgSubString = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201404091110::wyclif";
 		IOException exception = assertThrows(IOException.class, () -> upgradeTestUtil.upgrade());
-		assertThat(exception.getLocalizedMessage(), startsWith(errorMsgSubString));
+		assertThat(exception.getLocalizedMessage(), containsString(errorMsgSubString));
 	}
 	
 	@Test
@@ -431,7 +430,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		
 		String errorMsgSubString = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201406262016::wyclif";
 		IOException exception = assertThrows(IOException.class, () -> upgradeTestUtil.upgrade());
-		assertThat(exception.getMessage(), startsWith(errorMsgSubString));
+		assertThat(exception.getMessage(), containsString(errorMsgSubString));
 	}
 	
 	@Test
