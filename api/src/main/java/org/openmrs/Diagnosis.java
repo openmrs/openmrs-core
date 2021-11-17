@@ -71,7 +71,7 @@ public class Diagnosis extends BaseCustomizableData<DiagnosisAttribute> implemen
 	@Column(length = 50)
 	private ConditionVerificationStatus certainty;
 	
-	@Column(nullable = false)
+	@Column(name="dx_rank", nullable = false)
 	private Integer rank;
 	
 	@ManyToOne(optional = false)
