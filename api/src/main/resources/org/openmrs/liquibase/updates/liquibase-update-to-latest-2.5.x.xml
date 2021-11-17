@@ -376,4 +376,18 @@
 		                          onDelete="CASCADE"/>
 	</changeSet>
 
+	<changeSet id="2021-17-11-0222-TRUNK-6044" author="miirochristopher">
+		<preConditions onFail="MARK_RAN" onFailMessage="Table encounter_diagnosis or column rank does not exist.">
+			<tableExists tableName="encounter_diagnosis" />
+			<and>
+				<columnExists tableName="encounter_diagnosis" columnName="rank" />
+			</and>
+		</preConditions>
+		<comment>Renaming column rank to dx_rank because rank is a reserved word in MySQL 8.0.2 and later</comment>
+		<renameColumn columnDataType="int"
+		              newColumnName="dx_rank"
+		              oldColumnName="rank"
+		              tableName="encounter_diagnosis" />
+	</changeSet>
+
 </databaseChangeLog>
