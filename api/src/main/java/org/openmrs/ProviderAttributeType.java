@@ -12,15 +12,27 @@ package org.openmrs;
 import org.openmrs.attribute.AttributeType;
 import org.openmrs.attribute.BaseAttributeType;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 /**
  * A user-defined extension to the {@link Provider} class.
  * 
  * @since 1.9
  */
+@Entity
+@Table(name = "provider_attribute_type")
 public class ProviderAttributeType extends BaseAttributeType<Provider> implements AttributeType<Provider> {
-	
+
+	@Id
+	@Column(name = "provider_attribute_type_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer providerAttributeTypeId;
-	
+
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */

@@ -34,6 +34,8 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	// Fields
 	
 	private Integer locationId;
+
+	private Concept type;
 	
 	private String address1;
 	
@@ -266,6 +268,22 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	@Override
 	public void setCountyDistrict(String countyDistrict) {
 		this.countyDistrict = countyDistrict;
+	}
+
+	/**
+	 * @return Returns the code indicating the type of location this is
+	 * @since 2.5.0
+	 */
+	public Concept getType() {
+		return type;
+	}
+	
+	/**
+	 * @param type The Concept for the type of location this is
+	 * @since 2.5.0
+	 */
+	public void setType(Concept type) {
+		this.type = type;
 	}
 	
 	/**
