@@ -37,6 +37,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "provider")
+@AttributeOverride(name = "name", column = @Column(name = "name"))
 public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 
 	private static final Logger log = LoggerFactory.getLogger(Provider.class);
