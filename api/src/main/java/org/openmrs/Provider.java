@@ -9,28 +9,73 @@
  */
 package org.openmrs;
 
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Cascade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.AttributeOverride;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
+import java.util.Set;
 
 /**
  * Represents a person who may provide care to a patient during an encounter
  *
  * @since 1.9
  */
+@Entity
+@Table(name = "provider")
 public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(Provider.class);
-	
+
+	@Id
+	@Column(name = "provider_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer providerId;
-	
+
+	@ManyToOne
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	@JoinColumn(name = "person_id")
 	private Person person;
-	
+
+	@Column(name = "identifier", length = 255)
 	private String identifier;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "role_id")
 	private Concept role;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "speciality_id")
 	private Concept speciality;
-	
+
+	@Override
+	@Access(AccessType.PROPERTY)
+	@OneToMany(mappedBy = "provider", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OrderBy("voided asc")
+	@BatchSize(size = 100)
+	public Set<ProviderAttribute> getAttributes() {
+		return super.getAttributes();
+	}
+
+	@Override
+	public void setAttributes(Set<ProviderAttribute> attributes) {
+		super.setAttributes(attributes);
+	}
+
 	public Provider() {
 	}
 	
