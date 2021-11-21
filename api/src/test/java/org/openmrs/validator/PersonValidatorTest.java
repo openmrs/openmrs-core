@@ -83,11 +83,11 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 	 * @see PersonValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfBirthdateMakesPatientOlderThat120YearsOld() {
+	public void validate_shouldFailValidationIfBirthdateMakesPatientOlderThat140YearsOld() {
 		Patient pa = new Patient(1);
 		Calendar birth = Calendar.getInstance();
 		birth.setTime(new Date());
-		birth.add(Calendar.YEAR, -125);
+		birth.add(Calendar.YEAR, -145);
 		pa.setBirthdate(birth.getTime());
 		Errors errors = new BindException(pa, "patient");
 		validator.validate(pa, errors);

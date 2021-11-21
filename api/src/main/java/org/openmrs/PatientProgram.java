@@ -51,7 +51,7 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	
 	private Set<PatientState> states = new HashSet<>();
          
-        private Set<PatientProgramAttribute> attributes = new LinkedHashSet();
+	private Set<PatientProgramAttribute> attributes = new LinkedHashSet<>();
 	
 	// ******************
 	// Constructors
@@ -475,7 +475,7 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
         @Override
         public void addAttribute(PatientProgramAttribute attribute) {
             if (this.getAttributes() == null) {
-                this.setAttributes(new LinkedHashSet());
+                this.setAttributes(new LinkedHashSet<>());
             }
 
             this.getAttributes().add(attribute);

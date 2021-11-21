@@ -41,6 +41,9 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.openmrs.Allergen;
+import org.openmrs.AllergenType;
+import org.openmrs.Allergy;
 import org.openmrs.CodedOrFreeText;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
@@ -3136,5 +3139,28 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		}
 		
 		assertEquals(2, orderGroups.size(), "Two New Order Groups Get Saved");
+	}
+	
+	@Test
+	public void saveEncounter_shouldCascadeSaveToContainedAllergies() {
+
+		Encounter encounter = buildEncounter();
+		Allergen allergen = new Allergen(AllergenType.DRUG, new Concept(3), null);
+		Allergy allergy = new Allergy();
+		allergy.setAllergen(allergen);
+		allergy.setPatient(encounter.getPatient());
+		
+		final String NAMESPACE = "namespace";
+		final String FORMFIELD_PATH = "formFieldPath";
+		allergy.setFormField(NAMESPACE, FORMFIELD_PATH);
+		
+		encounter.addAllergy(allergy);
+		Context.getEncounterService().saveEncounter(encounter);
+		
+		encounter = Context.getEncounterService().getEncounter(encounter.getEncounterId());
+		Set<Allergy> allergies = encounter.getAllergies();
+		assertEquals(1, allergies.size());
+		assertTrue(allergies.contains(allergy));
+		assertEquals(NAMESPACE + "^" + FORMFIELD_PATH, allergies.iterator().next().getFormNamespaceAndPath());
 	}
 }

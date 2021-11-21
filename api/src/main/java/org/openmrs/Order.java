@@ -9,12 +9,14 @@
  */
 package org.openmrs;
 
-import java.util.Date;
-
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.util.OpenmrsUtil;
+
+import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Encapsulates information about the clinical action of a provider requesting something for a
@@ -30,11 +32,10 @@ import org.openmrs.util.OpenmrsUtil;
  * 
  * @version 1.0
  */
-public class Order extends BaseOpenmrsData {
-	
-	
+public class Order extends BaseCustomizableData<OrderAttribute> implements FormRecordable {
+
 	public static final long serialVersionUID = 4334343L;
-	
+
 	/**
 	 * @since 1.9.2, 1.10
 	 */
@@ -101,6 +102,8 @@ public class Order extends BaseOpenmrsData {
 	
 	private Date scheduledDate;
 	
+	private String formNamespaceAndPath;
+	
 	/**
 	 * Allows the orders if ordered as an orderGroup, to maintain a sequence of how members are
 	 * added in the group ex - for two orders of isoniazid and ampicillin, the sequence of 1 and 2
@@ -136,7 +139,7 @@ public class Order extends BaseOpenmrsData {
 	 * Represents the comment that goes along with with fulfiller status
 	 */	
 	private String fulfillerComment;
-	
+
 	// Constructors
 	
 	/** default constructor */
@@ -197,6 +200,7 @@ public class Order extends BaseOpenmrsData {
 		target.setSortWeight(getSortWeight());
 		target.setFulfillerComment(getFulfillerComment());
 		target.setFulfillerStatus(getFulfillerStatus());
+		target.setFormNamespaceAndPath(getFormNamespaceAndPath());
 		return target;
 	}
 	
@@ -769,6 +773,7 @@ public class Order extends BaseOpenmrsData {
 		target.setSortWeight(getSortWeight());
 		target.setFulfillerStatus(getFulfillerStatus());
 		target.setFulfillerComment(getFulfillerComment());
+		target.setFormNamespaceAndPath(getFormNamespaceAndPath());
 		
 		return target;
 	}
@@ -909,5 +914,38 @@ public class Order extends BaseOpenmrsData {
 	 */
 	public void setFulfillerComment(String fulfillerComment) {
 		this.fulfillerComment = fulfillerComment;		
+	}
+	
+	/**
+	 * @return Returns the formNamespaceAndPath.
+	 * @since 2.5.0
+	 */
+	public String getFormNamespaceAndPath() {
+		return formNamespaceAndPath;
+	}
+
+	/**
+	 * Sets the form namespace and path
+	 * 
+	 * @param formNamespaceAndPath the form namespace and path to set
+	 * @since 2.5.0
+	 */
+	public void setFormNamespaceAndPath(String formNamespaceAndPath) {
+		this.formNamespaceAndPath = formNamespaceAndPath;
+	}
+
+	@Override
+	public String getFormFieldNamespace() {
+		return BaseFormRecordableOpenmrsData.getFormFieldNamespace(formNamespaceAndPath);
+	}
+
+	@Override
+	public String getFormFieldPath() {
+		return BaseFormRecordableOpenmrsData.getFormFieldPath(formNamespaceAndPath);
+	}
+
+	@Override
+	public void setFormField(String namespace, String formFieldPath) {
+		formNamespaceAndPath = BaseFormRecordableOpenmrsData.getFormNamespaceAndPath(namespace, formFieldPath);
 	}
 }

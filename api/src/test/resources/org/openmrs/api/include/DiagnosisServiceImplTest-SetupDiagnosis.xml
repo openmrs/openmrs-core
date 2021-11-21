@@ -11,23 +11,28 @@
 
 -->
 <dataset>
-	<encounter encounter_id="6" encounter_type="1" patient_id="2" location_id="2" form_id="1" 
-			   encounter_datetime="2008-08-19 00:00:00.0" creator="1" date_created="2008-08-19 12:34:40.0" 
-			   voided="false" uuid="y403fafb-e5e4-42d0-9d11-4f52e89d123r"/>
+	<visit visit_id="7" patient_id="2" visit_type_id="1" date_started="2008-01-01 02:00:00.0" creator="1" date_created="2008-01-01 00:00:00.0" voided="0" uuid="a2c3868a-6b90-11e0-93c3-18a905e044dc" />
+	<visit visit_id="8" patient_id="2" visit_type_id="1" date_started="2008-01-01 02:00:00.0" creator="1" date_created="2008-01-01 00:00:00.0" voided="0" uuid="f2c3848a-6b90-11e0-93c3-18a905e044dc" />
+	<encounter encounter_id="5" encounter_type="1" patient_id="2" location_id="2" form_id="1"
+			   encounter_datetime="2008-08-19 00:00:00.0" creator="1" date_created="2008-08-19 12:34:40.0"
+			   voided="false" uuid="f403fafb-b5e4-42d0-9d11-4f52e89d123r" visit_id="7"/>
+	<encounter encounter_id="6" encounter_type="1" patient_id="2" location_id="2" form_id="1"
+			   encounter_datetime="2008-08-19 00:00:00.0" creator="1" date_created="2008-08-19 12:34:40.0"
+			   voided="false" uuid="y403fafb-e5e4-42d0-9d11-4f52e89d123r" visit_id="8"/>
 	<conditions condition_id="1" patient_id="2" clinical_status="INACTIVE" creator="1" date_created="2015-01-12 00:00:00" 
 			   voided="false" onset_date="2017-01-12 00:00:00" end_date="2017-01-15 00:00:00" verification_status="PROVISIONAL" 
 			   uuid="2cc6880e-2c46-15e4-9038-a6c5e4d22fb7"/>
 	<patient patient_id="2" creator="1" date_created="2005-09-22 00:00:00.0" changed_by="1" 
 			 date_changed="2008-08-18 12:29:59.0" voided="false" void_reason=""/>
 	<encounter_diagnosis diagnosis_id="1" encounter_id="6" patient_id="2" creator="1" date_created="2017-01-12 00:00:00"
-			   voided="false" rank="1" certainty="CONFIRMED" uuid="68802cce-6880-17e4-6880-a68804d22fb7"/>
+			   voided="false" dx_rank="1" certainty="CONFIRMED" uuid="68802cce-6880-17e4-6880-a68804d22fb7"/>
 	<encounter_diagnosis diagnosis_id="3" encounter_id="6" patient_id="2" creator="1" date_created="2016-01-12 00:00:00"
-						 voided="false" rank="2" certainty="CONFIRMED" uuid="688804ce-6880-8804-6880-a68804d88047"/>
+						 voided="false" dx_rank="2" certainty="CONFIRMED" uuid="688804ce-6880-8804-6880-a68804d88047"/>
 	<encounter_diagnosis diagnosis_id="2" encounter_id="5" patient_id="2" creator="1" date_created="2015-01-12 00:00:00"
-						 voided="false" rank="2" certainty="CONFIRMED" uuid="88042cce-8804-17e4-8804-a68804d22fb7"/>
+						 voided="false" dx_rank="2" certainty="CONFIRMED" uuid="88042cce-8804-17e4-8804-a68804d22fb7"/>
 	<encounter_diagnosis diagnosis_id="4" encounter_id="5" patient_id="2" creator="1" date_created="2015-01-12 00:00:00"
 						 voided="true" date_voided="2017-01-12 00:00:52" voided_by="1" void_reason="test reason" 
-						 rank="2" certainty="PROVISIONAL" uuid="77009cce-8804-17e4-8804-a68804d22fb7"/>
+						 dx_rank="2" certainty="PROVISIONAL" uuid="77009cce-8804-17e4-8804-a68804d22fb7"/>
 	<encounter encounter_id="16" encounter_type="1" patient_id="2" location_id="2" form_id="1"
 			   encounter_datetime="2008-08-19 00:00:00.0" creator="1" date_created="2008-08-19 12:34:40.0"
 			   voided="false" uuid="929809cc-8ef7-11e0-a7a1-91c116298e4b"/>

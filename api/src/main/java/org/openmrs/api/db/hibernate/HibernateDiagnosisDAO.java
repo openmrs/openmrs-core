@@ -14,11 +14,19 @@ import java.util.List;
 
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
+import org.openmrs.ConditionVerificationStatus;
 import org.openmrs.Diagnosis;
+import org.openmrs.DiagnosisAttribute;
+import org.openmrs.DiagnosisAttributeType;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
+import org.openmrs.Visit;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.DiagnosisDAO;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.TypedQuery;
 
 
 /**
@@ -86,32 +94,53 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 	}
 
 	/**
-	 * Gets all diagnoses for a given encounter
-	 *
-	 * @param encounter the specific encounter to get the diagnoses for.
-	 * @return list of diagnoses for an encounter
+	 * @see org.openmrs.api.db.DiagnosisDAO#getDiagnosesByEncounter(Encounter, boolean, boolean)
 	 */
 	@Override
-	public List<Diagnosis> getDiagnoses(Encounter encounter){
-		Query query = sessionFactory.getCurrentSession().createQuery(
-			"from Diagnosis d where d.encounter.encounterId = :encounterId order by dateCreated desc");
-		query.setInteger("encounterId", encounter.getId());
-		return query.list();	
+	public List<Diagnosis> getDiagnosesByEncounter(Encounter encounter, boolean primaryOnly, boolean confirmedOnly) {
+		String queryString = "from Diagnosis d where d.encounter.encounterId = :encounterId";
+		if (primaryOnly) {
+			queryString += " and d.rank = :rankId";
+		}
+		if (confirmedOnly) {
+			queryString += " and d.certainty = :certainty";
+		}
+		queryString += " order by d.dateCreated desc";
+
+		TypedQuery<Diagnosis> query = sessionFactory.getCurrentSession().createQuery(queryString, Diagnosis.class).setParameter("encounterId", encounter.getId());
+		if (primaryOnly) {
+			query.setParameter("rankId", PRIMARY_RANK);
+		}
+		if (confirmedOnly) {
+			query.setParameter("certainty", ConditionVerificationStatus.CONFIRMED);
+		}
+
+		return query.getResultList();
 	}
 
 	/**
-	 * Gets primary diagnoses for a given encounter
-	 *
-	 * @param encounter the specific encounter to get the primary diagnoses for.
-	 * @return list of primary diagnoses for an encounter
+	 * @see org.openmrs.api.db.DiagnosisDAO#getDiagnosesByVisit(Visit, boolean, boolean)
 	 */
 	@Override
-	public List<Diagnosis> getPrimaryDiagnoses(Encounter encounter) {
-		Query query = sessionFactory.getCurrentSession().createQuery(
-			"from Diagnosis d where d.encounter.encounterId = :encounterId and d.rank = :rankId order by dateCreated desc");
-		query.setInteger("encounterId", encounter.getId());
-		query.setInteger("rankId", PRIMARY_RANK);
-		return query.list();
+	public List<Diagnosis> getDiagnosesByVisit(Visit visit, boolean primaryOnly, boolean confirmedOnly) {
+		String queryString = "from Diagnosis d where d.encounter.visit.visitId = :visitId";
+		if (primaryOnly) {
+			queryString += " and d.rank = :rankId";
+		}
+		if (confirmedOnly) {
+			queryString += " and d.certainty = :certainty";
+		}
+		queryString += " order by d.dateCreated desc";
+
+		TypedQuery<Diagnosis> query = sessionFactory.getCurrentSession().createQuery(queryString, Diagnosis.class).setParameter("visitId", visit.getId());
+		if (primaryOnly) {
+			query.setParameter("rankId", PRIMARY_RANK);
+		}
+		if (confirmedOnly) {
+			query.setParameter("certainty", ConditionVerificationStatus.CONFIRMED);
+		}
+
+		return query.getResultList();
 	}
 
 	/**
@@ -144,5 +173,63 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 	@Override
 	public void deleteDiagnosis(Diagnosis diagnosis) throws DAOException{
 		sessionFactory.getCurrentSession().delete(diagnosis);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.DiagnosisDAO#getAllDiagnosisAttributeTypes()
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	@Transactional(readOnly = true)
+	public List<DiagnosisAttributeType> getAllDiagnosisAttributeTypes() throws DAOException {
+		return sessionFactory.getCurrentSession().createCriteria(DiagnosisAttributeType.class).list();
+	}
+
+	/**
+	 * @see org.openmrs.api.db.DiagnosisDAO#getDiagnosisAttributeTypeById(Integer) 
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public DiagnosisAttributeType getDiagnosisAttributeTypeById(Integer id) throws DAOException {
+		return sessionFactory.getCurrentSession().get(DiagnosisAttributeType.class, id);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.DiagnosisDAO#getDiagnosisAttributeTypeByUuid(String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public DiagnosisAttributeType getDiagnosisAttributeTypeByUuid(String uuid) throws DAOException {
+		return (DiagnosisAttributeType) sessionFactory.getCurrentSession().createCriteria(DiagnosisAttributeType.class).add(
+				Restrictions.eq("uuid", uuid)).uniqueResult();
+	}
+
+	/**
+	 * @see org.openmrs.api.db.DiagnosisDAO#saveDiagnosisAttributeType(DiagnosisAttributeType)
+	 */
+	@Override
+	@Transactional
+	public DiagnosisAttributeType saveDiagnosisAttributeType(DiagnosisAttributeType diagnosisAttributeType) throws DAOException {
+		sessionFactory.getCurrentSession().saveOrUpdate(diagnosisAttributeType);
+		return diagnosisAttributeType;
+	}
+
+	/**
+	 * @see org.openmrs.api.db.DiagnosisDAO#deleteDiagnosisAttributeType(DiagnosisAttributeType)
+	 */
+	@Override
+	@Transactional
+	public void deleteDiagnosisAttributeType(DiagnosisAttributeType diagnosisAttributeType) throws DAOException {
+		sessionFactory.getCurrentSession().delete(diagnosisAttributeType);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.DiagnosisDAO#getDiagnosisAttributeByUuid(String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public DiagnosisAttribute getDiagnosisAttributeByUuid(String uuid) throws DAOException {
+		return (DiagnosisAttribute) sessionFactory.getCurrentSession().createCriteria(DiagnosisAttribute.class).add(Restrictions.eq("uuid", uuid))
+				.uniqueResult();
 	}
 }

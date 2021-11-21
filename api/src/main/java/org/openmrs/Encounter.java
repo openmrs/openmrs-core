@@ -109,6 +109,9 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	@DisableHandlers(handlerTypes = { VoidHandler.class })
 	private Set<EncounterProvider> encounterProviders = new LinkedHashSet<>();
 	
+	@OneToMany(mappedBy = "encounter")
+	private Set<Allergy> allergies;
+	
 	// Constructors
 	
 	/** default constructor */
@@ -899,5 +902,68 @@ public class Encounter extends BaseChangeableOpenmrsData {
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * Basic property getter for the encounter's non-voided allergies.
+	 * 
+	 * @return all non-voided allergies
+	 * @since 2.5.0
+	 */
+	public Set<Allergy> getAllergies() {
+		return getAllergies(false);
+	}
+
+	/**
+	 * Returns all allergies where 'Allergy.encounterId = Encounter.encounterId'.
+	 *
+	 * @param includeVoided - Specifies whether or not to include voided allergies.
+	 * @return The set of allergies, or an empty set if there are no allergies to return.
+	 * @since 2.5.0
+	 */
+	public Set<Allergy> getAllergies(boolean includeVoided) {
+		return Optional.ofNullable(allergies).orElse(new LinkedHashSet<>())
+			.stream().filter(c -> includeVoided || !c.getVoided()).collect(Collectors.toSet());
+	}
+		
+	/**
+	 * Basic property setter for allergies
+	 *  
+	 * @param allergies - set of allergies
+	 * @since 2.5.0
+	 */
+	public void setAllergies(Set<Allergy> allergies) {
+		this.allergies = allergies;
+	}
+
+	/**
+	 * Add the given allergy to the set of allergies for this encounter.
+	 *
+	 * @param allergy - the allergy to add
+	 */
+	public void addAllergy(Allergy allergy) {
+		if (allergies == null) {
+			allergies = new LinkedHashSet<>();
+		}
+
+		if (allergy != null) {
+			allergy.setEncounter(this);
+			allergies.add(allergy);
+		}
+	}
+
+	/**
+	 * Remove the given allergy from the set of allergies for this encounter.
+	 * In practice the allergy is not removed but rather voided.
+	 *
+	 * @param allergy - the allergy to remove
+	 */
+	public void removeAllergy(Allergy allergy) {
+		Optional.ofNullable(allergies).orElse(new LinkedHashSet<>()).stream().filter(c -> !c.getVoided() && c.equals(allergy)).forEach(c -> {
+			c.setVoided(true);
+			c.setDateVoided(new Date());
+			c.setVoidReason("Voided by the API");
+			c.setVoidedBy(Context.getAuthenticatedUser());
+		});
 	}
 }

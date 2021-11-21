@@ -89,7 +89,7 @@ public class SimpleXStreamSerializerTest {
 		assertTrue(newList.get(0).equals("fooBar"));
 		assertTrue(newList.get(1).equals("bar"));
 
-		Map newMap = foo.getAttributeMap();
+		Map<Integer, String> newMap = foo.getAttributeMap();
 		assertEquals(3, newMap.size());
 		assertTrue(newMap.get(10).equals("foo"));
 		assertTrue(newMap.get(20).equals("fooBar"));
