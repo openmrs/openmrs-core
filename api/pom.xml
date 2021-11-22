@@ -13,7 +13,7 @@
    <parent>
       <groupId>org.openmrs</groupId>
       <artifactId>openmrs</artifactId>
-      <version>2.5.0-beta2</version>
+      <version>2.5.0-SNAPSHOT</version>
    </parent>
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.openmrs.api</groupId>
