@@ -41,6 +41,8 @@
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptReferenceTerm.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptMapType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptReferenceTermMap.hbm.xml" />
+		<mapping resource="org/openmrs/api/db/hibernate/DiagnosisAttribute.hbm.xml" />
+		<mapping resource="org/openmrs/api/db/hibernate/DiagnosisAttributeType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Drug.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/DrugIngredient.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/DrugReferenceMap.hbm.xml" />
@@ -71,6 +73,8 @@
 		<mapping resource="org/openmrs/api/db/hibernate/RelationshipType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/OrderType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Order.hbm.xml" />
+		<mapping resource="org/openmrs/api/db/hibernate/OrderAttribute.hbm.xml" />
+		<mapping resource="org/openmrs/api/db/hibernate/OrderAttributeType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/OrderSet.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/OrderSetMember.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/OrderSetAttributeType.hbm.xml" />
@@ -112,13 +116,11 @@
 		
 		<!-- Visit -->
 		<mapping resource="org/openmrs/api/db/hibernate/VisitType.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/VisitAttributeType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/VisitAttribute.hbm.xml" />
 		
 		<!-- Provider -->
 		<mapping resource="org/openmrs/api/db/hibernate/Provider.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ProviderAttribute.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/ProviderAttributeType.hbm.xml" />
 		
 		<mapping resource="org/openmrs/api/db/hibernate/ClobDatatypeStorage.hbm.xml" />
 		

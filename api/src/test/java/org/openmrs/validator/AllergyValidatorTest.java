@@ -24,10 +24,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.openmrs.Allergen;
 import org.openmrs.AllergenType;
-import org.openmrs.Allergies;
 import org.openmrs.Allergy;
-import org.openmrs.Concept;
+import org.openmrs.Allergies;
 import org.openmrs.Patient;
+import org.openmrs.AllergyReaction;
+import org.openmrs.Concept;
 import org.openmrs.api.PatientService;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.test.jupiter.BaseContextMockTest;
@@ -185,6 +186,7 @@ public class AllergyValidatorTest extends BaseContextMockTest {
 		Allergen allergen = new Allergen(AllergenType.DRUG, null , "45" );
 		allergy.setAllergen(allergen);
 		Errors errors = new BindException(allergy,"allergy");
+
 		validator.validate(allergy, errors);
 		assertTrue(errors.hasErrors());
 	}

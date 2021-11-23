@@ -10,19 +10,18 @@
 package org.openmrs;
 
 /**
- * This is a type of order that adds tests specific attributes like: laterality, clinical history,
- * etc.
+ * This is a type of order that adds referral specific attributes.
  * 
- * @since 1.9.2, 1.10
+ * @since 2.5.0
  */
-public class TestOrder extends ServiceOrder {
-	
-	public static final long serialVersionUID = 1L;
+public class ReferralOrder extends ServiceOrder {
+
+	private static final long serialVersionUID = 1L;
 	
 	/**
 	 * Default Constructor
 	 */
-	public TestOrder() {
+	public ReferralOrder() {
 		
 	}
 	
@@ -30,8 +29,8 @@ public class TestOrder extends ServiceOrder {
 	 * @see org.openmrs.ServiceOrder#copy()
 	 */
 	@Override
-	public TestOrder copy() {
-		TestOrder newOrder = new TestOrder();
+	public ReferralOrder copy() {
+		ReferralOrder newOrder = new ReferralOrder();
 		super.copyHelper(newOrder);
 		return newOrder;
 	}
@@ -43,21 +42,21 @@ public class TestOrder extends ServiceOrder {
 	 * @return the newly created order
 	 */
 	@Override
-	public TestOrder cloneForDiscontinuing() {
-		TestOrder newOrder = new TestOrder();
+	public ReferralOrder cloneForDiscontinuing() {
+		ReferralOrder newOrder = new ReferralOrder();
 		super.cloneForDiscontinuingHelper(newOrder);
 		return newOrder;
 	}
 	
 	/**
-	 * Creates a TestOrder for revision from this order, sets the previousOrder, action field and
+	 * Creates a ReferralOrder for revision from this order, sets the previousOrder, action field and
 	 * other test order fields.
 	 * 
 	 * @return the newly created order
 	 */
 	@Override
-	public TestOrder cloneForRevision() {
-		TestOrder newOrder = new TestOrder();
+	public ReferralOrder cloneForRevision() {
+		ReferralOrder newOrder = new ReferralOrder();
 		super.cloneForRevisionHelper(newOrder);
 		return newOrder;
 	}

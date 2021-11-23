@@ -9,12 +9,13 @@
  */
 package org.openmrs.util;
 
-import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.liquibase.ChangeLogVersionFinder;
+
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -29,7 +30,7 @@ public class DatabaseUpdaterDatabaseIT extends H2DatabaseIT {
 	 * This constant needs to be updated when adding new Liquibase update files to openmrs-core.
 	 */
 	
-	private static final int CHANGE_SET_COUNT_FOR_GREATER_THAN_2_1_X = 879;
+	private static final int CHANGE_SET_COUNT_FOR_GREATER_THAN_2_1_X = 890;
 
 	private static final int CHANGE_SET_COUNT_FOR_2_1_X = 870;
 

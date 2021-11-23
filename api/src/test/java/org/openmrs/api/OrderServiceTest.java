@@ -11,6 +11,7 @@ package org.openmrs.api;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -56,6 +57,9 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.openmrs.Order.Action;
+import org.openmrs.OrderAttribute;
+import org.openmrs.OrderAttributeType;
+import org.openmrs.ProviderAttributeType;
 import org.openmrs.TestOrder;
 import org.openmrs.Patient;
 import org.openmrs.DosingInstructions;
@@ -86,6 +90,7 @@ import org.openmrs.Encounter;
 import org.openmrs.Provider;
 import org.openmrs.Concept;
 import org.openmrs.CareSetting;
+import org.openmrs.VisitAttributeType;
 import org.openmrs.api.builder.DrugOrderBuilder;
 import org.openmrs.Obs;
 import org.openmrs.api.builder.OrderBuilder;
@@ -118,6 +123,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 	private static final String ORDER_GROUP_ATTRIBUTES = "org/openmrs/api/include/OrderServiceTest-createOrderGroupAttributes.xml";
 
+	private static final String ORDER_ATTRIBUTES = "org/openmrs/api/include/OrderServiceTest-createOrderAttributes.xml";
+
 	@Autowired
 	private ConceptService conceptService;
 
@@ -144,54 +151,11 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	
 	@BeforeEach
 	public void setUp(){
+		executeDataSet(ORDER_ATTRIBUTES);
 		executeDataSet(ORDER_GROUP_ATTRIBUTES);
 	}
 
-	@Entity
-	public class SomeTestOrder extends TestOrder {
-		@Id
-		private Integer orderId;
-		private Patient patient;
-		private OrderType orderType;
-		private Concept concept;
-		private String instructions;
-		private Date dateActivated;
-		private Date autoExpireDate;
-		private Encounter encounter;
-		private Provider orderer;
-		private Date dateStopped;
-		private Concept orderReason;
-		private String accessionNumber;
-		private String orderReasonNonCoded;
-		private Urgency urgency = Urgency.ROUTINE;
-		private String orderNumber;
-		private String commentToFulfiller;
-		private CareSetting careSetting;
-		private Date scheduledDate;
-		private Double sortWeight;
-		private Order previousOrder;
-		private Action action = Action.NEW;
-		private OrderGroup orderGroup;
-		private FulfillerStatus fulfillerStatus;
-		private String fulfillerComment;
-		private Double dose;
-		private Concept doseUnits;
-		private OrderFrequency frequency;
-		private Boolean asNeeded = false;
-		private Double quantity;
-		private Concept quantityUnits;
-		private Drug drug;
-		private String asNeededCondition;
-		private Class<? extends DosingInstructions> dosingType = SimpleDosingInstructions.class;
-		private Integer numRefills;
-		private String dosingInstructions;
-		private Integer duration;
-		private Concept durationUnits;
-		private Concept route;
-		private String brandName;
-		private Boolean dispenseAsWritten = Boolean.FALSE;
-		private String drugNonCoded;
-	}
+	public class SomeTestOrder extends TestOrder {}
 	
 
 	/**
@@ -2682,7 +2646,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Metadata metaData = new MetadataSources(standardRegistry).addAnnotatedClass(Allergy.class)
 			.addAnnotatedClass(Encounter.class).addAnnotatedClass(SomeTestOrder.class)
 			.addAnnotatedClass(Diagnosis.class).addAnnotatedClass(Condition.class)
-			.addAnnotatedClass(Visit.class).getMetadataBuilder().build();
+			.addAnnotatedClass(Visit.class).addAnnotatedClass(VisitAttributeType.class)
+			.addAnnotatedClass(ProviderAttributeType.class).getMetadataBuilder().build();
+
 
 		Field field = adminDAO.getClass().getDeclaredField("metadata");
 		field.setAccessible(true);
@@ -3976,5 +3942,84 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		order = orderService.saveOrder(order, null);
 		assertEquals(NAMESPACE + "^" + FORMFIELD_PATH, order.getFormNamespaceAndPath());
+	}
+
+	@Test
+	public void getAllOrderAttributeTypes_shouldReturnAllOrderAttributeTypes() {
+		assertThat(orderService.getAllOrderAttributeTypes(), hasSize(4));
+	}
+
+	@Test
+	public void getOrderAttributeTypeById_shouldReturnNullIfNoOrderAttributeTypeHasTheProvidedId() {
+		assertNull(orderService.getOrderAttributeTypeById(15));
+	}
+
+	@Test
+	public void getOrderAttributeTypeById_shouldReturnOrderAttributeTypeUsingProvidedId() {
+		assertThat(orderService.getOrderAttributeTypeById(2).getId(), is(2));
+	}
+
+	@Test
+	public void getOrderAttributeTypeByUuid_shouldReturnOrderAttributeTypeUsingProvidedUuid() {
+		assertEquals("Referral", orderService.getOrderAttributeTypeByUuid(
+				"9758d106-79b0-4f45-8d8c-ae8b3f25d72a").getName());
+	}
+	
+	@Test
+	public void saveOrderAttributeType_shouldEditTheExistingOrderAttributeType() {
+		OrderAttributeType orderAttributeType = orderService.getOrderAttributeTypeById(4);
+		assertEquals("Drug", orderAttributeType.getName());
+		orderAttributeType.setName("Drug Dispense");
+		orderService.saveOrderAttributeType(orderAttributeType);
+		assertThat(orderService.getOrderAttributeTypeById(orderAttributeType.getId()).getName(), is("Drug Dispense"));
+	}
+
+	@Test
+	public void retireOrderAttributeType_shouldRetireTheProvidedOrderAttributeType() throws ParseException {
+		OrderAttributeType orderAttributeType = orderService.getOrderAttributeTypeById(2);
+		assertFalse(orderAttributeType.getRetired());
+		assertNull(orderAttributeType.getRetiredBy());
+		assertNull(orderAttributeType.getRetireReason());
+		assertNull(orderAttributeType.getDateRetired());
+		orderService.retireOrderAttributeType(orderAttributeType, "Test Retire");
+		orderAttributeType = orderService.getOrderAttributeTypeById(orderAttributeType.getId());
+		assertTrue(orderAttributeType.getRetired());
+		assertNotNull(orderAttributeType.getRetiredBy());
+		assertEquals("Test Retire", orderAttributeType.getRetireReason());
+		assertNotNull(orderAttributeType.getDateRetired());
+	}
+
+	@Test
+	public void unretireOrderAttributeType_shouldUnretireTheProvidedOrderAttributeType() {
+		OrderAttributeType orderAttributeType = orderService.getOrderAttributeTypeById(4);
+		assertTrue(orderAttributeType.getRetired());
+		assertNotNull(orderAttributeType.getRetiredBy());
+		assertNotNull(orderAttributeType.getDateRetired());
+		assertNotNull(orderAttributeType.getRetireReason());
+		orderService.unretireOrderAttributeType(orderAttributeType);
+		assertFalse(orderAttributeType.getRetired());
+		assertNull(orderAttributeType.getRetiredBy());
+		assertNull(orderAttributeType.getDateRetired());
+		assertNull(orderAttributeType.getRetireReason());
+	}
+	
+	@Test
+	public void purgeOrderAttributeType_shouldPurgeTheProvidedOrderAttributeType() {
+		final int ORIGINAL_COUNT = orderService.getAllOrderAttributeTypes().size();
+		orderService.purgeOrderAttributeType(orderService.getOrderAttributeTypeById(3));
+		assertNull(orderService.getOrderAttributeTypeById(3));
+		assertEquals(ORIGINAL_COUNT - 1, orderService.getAllOrderAttributeTypes().size());
+	}
+
+	@Test
+	public void getOrderAttributeByUuid_shouldReturnNullIfNonExistingUuidIsProvided() {
+		assertNull(orderService.getOrderAttributeByUuid("26bbdf73-4268-4e65-aa72-54cb928870d6"));
+	}
+
+	@Test
+	public void getOrderAttributeByUuid_shouldReturnOrderAttributeUsingProvidedUuid() {
+		OrderAttribute orderAttribute = orderService.getOrderAttributeByUuid("8c3c27e4-030f-410e-86de-a5743b0b3361");
+		assertEquals("Testing Reference", orderAttribute.getValueReference());
+		assertEquals(1, orderAttribute.getId());
 	}
 }
