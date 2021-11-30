@@ -288,6 +288,24 @@
 		   <groupId>org.apache.lucene</groupId>
 		   <artifactId>lucene-analyzers-phonetic</artifactId>
 	   </dependency>
+	   	<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>testcontainers</artifactId>
+				<version>1.16.2</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>junit-jupiter</artifactId>
+				<version>1.16.2</version>
+				<scope>test</scope>
+			</dependency>
+			 <dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>mysql</artifactId>
+				<version>1.15.3</version>
+				<scope>test</scope>
+			</dependency>
    </dependencies>
    <build>
      <resources>

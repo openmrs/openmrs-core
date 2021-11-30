@@ -12,7 +12,12 @@ package org.openmrs.test.jupiter;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.springframework.test.context.TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS;
 
-import javax.swing.*;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.Window;x.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,12 +31,21 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Timer;
+import java.util.Timer
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.UIManager;;
 import java.util.TimerTask;
 
 import org.apache.commons.io.IOUtils;
@@ -91,6 +105,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.xml.sax.InputSource;
 
 /**
@@ -98,19 +113,14 @@ import org.xml.sax.InputSource;
  * use Services and/or the database should extend this class. NOTE: Tests that do not need access to
  * spring enabled services do not need this class and extending this will only slow those test cases
  * down. (because spring is started before test cases are run). Normal test cases do not need to
- * extend anything.
- * 
- * Use this class for Junit 5 tests.
+ * extend anything. Use this class for Junit 5 tests.
  * 
  * @since 2.4.0
  */
 @ContextConfiguration(locations = { "classpath:applicationContext-service.xml", "classpath*:openmrs-servlet.xml",
-        "classpath*:moduleApplicationContext.xml", "classpath*:TestingApplicationContext.xml" })
-@TestExecutionListeners(
-	listeners = { SkipBaseSetupAnnotationExecutionListener.class,
-		StartModuleExecutionListener.class },
-        mergeMode = MERGE_WITH_DEFAULTS
-)
+    "classpath*:moduleApplicationContext.xml", "classpath*:TestingApplicationContext.xml" })
+@TestExecutionListeners(listeners = { SkipBaseSetupAnnotationExecutionListener.class,
+    StartModuleExecutionListener.class }, mergeMode = MERGE_WITH_DEFAULTS)
 @Transactional
 @Rollback
 @ExtendWith(SpringExtension.class)
@@ -168,6 +178,7 @@ public abstract class BaseContextSensitiveTest {
 	
 	@Autowired
 	protected ApplicationContext applicationContext;
+	
 	/**
 	 * Allows mocking services returned by Context. See {@link ContextMockHelper}
 	 * 
@@ -217,8 +228,10 @@ public abstract class BaseContextSensitiveTest {
 	 */
 	@BeforeEach
 	public void checkNotModule() throws Exception {
-		if (this.getClass().getPackage().toString().contains("org.openmrs.module.") && !(this instanceof BaseContextSensitiveTest)) {
-			throw new RuntimeException("Module unit test classes should extend BaseModuleContextSensitiveTest, not just BaseContextSensitiveTest");
+		if (this.getClass().getPackage().toString().contains("org.openmrs.module.")
+		        && !(this instanceof BaseContextSensitiveTest)) {
+			throw new RuntimeException(
+			        "Module unit test classes should extend BaseModuleContextSensitiveTest, not just BaseContextSensitiveTest");
 		}
 	}
 	
@@ -318,8 +331,7 @@ public abstract class BaseContextSensitiveTest {
 			
 			// automatically create the tables defined in the hbm files
 			runtimeProperties.setProperty(Environment.HBM2DDL_AUTO, "create-drop");
-		}
-		else {
+		} else {
 			String url = System.getProperty("databaseUrl");
 			String username = System.getProperty("databaseUsername");
 			String password = System.getProperty("databasePassword");
@@ -350,8 +362,8 @@ public abstract class BaseContextSensitiveTest {
 			tempappdir.mkdir(); // turn it into a directory
 			tempappdir.deleteOnExit(); // clean up when we're done with tests
 			
-			runtimeProperties.setProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, tempappdir
-			        .getAbsolutePath());
+			runtimeProperties.setProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY,
+			    tempappdir.getAbsolutePath());
 			OpenmrsUtil.setApplicationDataDirectory(tempappdir.getAbsolutePath());
 		}
 		catch (IOException e) {
@@ -362,8 +374,9 @@ public abstract class BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * This method provides the credentials to authenticate the user that is authenticated through the base setup.
-	 * This method can be overridden when setting up test application contexts that are *not* using the default authentication scheme.
+	 * This method provides the credentials to authenticate the user that is authenticated through
+	 * the base setup. This method can be overridden when setting up test application contexts that
+	 * are *not* using the default authentication scheme.
 	 * 
 	 * @return The credentials to use for base setup authentication.
 	 * @since 2.3.0
@@ -450,8 +463,8 @@ public abstract class BaseContextSensitiveTest {
 	 * Utility method for obtaining username and password through Swing interface for tests. Any
 	 * tests extending the org.openmrs.BaseTest class may simply invoke this method by name.
 	 * Username and password are returned in a two-member String array. If the user aborts, null is
-	 * returned. <b> <em>Do not call for non-interactive tests, since this method will try to
-	 * render an interactive dialog box for authentication!</em></b>
+	 * returned. <b> <em>Do not call for non-interactive tests, since this method will try to render
+	 * an interactive dialog box for authentication!</em></b>
 	 * 
 	 * @param message string to display above username field
 	 * @return Two-member String array containing username and password, respectively, or
@@ -463,7 +476,7 @@ public abstract class BaseContextSensitiveTest {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		}
 		catch (Exception e) {
-
+			
 		}
 		
 		if (message == null || "".equals(message))
@@ -535,8 +548,8 @@ public abstract class BaseContextSensitiveTest {
 		
 		// response of 2 is the cancel button, response of -1 is the little red
 		// X in the top right
-		return (response == 2 || response == -1 ? null : new String[] { usernameField.getText(),
-		        String.valueOf(passwordField.getPassword()) });
+		return (response == 2 || response == -1 ? null
+		        : new String[] { usernameField.getText(), String.valueOf(passwordField.getPassword()) });
 	}
 	
 	/**
@@ -576,7 +589,7 @@ public abstract class BaseContextSensitiveTest {
 		if (!useInMemoryDatabase())
 			throw new RuntimeException(
 			        "You shouldn't be initializing a NON in-memory database. Consider unoverriding useInMemoryDatabase");
-
+		
 		//Because creator property in the superclass is mapped with optional set to false, the autoddl tool marks the 
 		//column as not nullable but for person it is actually nullable, we need to first drop the constraint from 
 		//person.creator column, historically this was to allow inserting the very first row. Ideally, this should not 
@@ -585,7 +598,7 @@ public abstract class BaseContextSensitiveTest {
 		setAutoIncrementOnTablesWithNativeIfNotAssignedIdentityGenerator();
 		executeDataSet(INITIAL_XML_DATASET_PACKAGE_PATH);
 	}
-
+	
 	public void setAutoIncrementOnTablesWithNativeIfNotAssignedIdentityGenerator() throws SQLException {
 		/*
 		 * Hbm2ddl used in tests creates primary key columns, which are not auto incremented if
@@ -594,10 +607,10 @@ public abstract class BaseContextSensitiveTest {
 		List<String> tables = Collections.singletonList("concept");
 		for (String table : tables) {
 			getConnection().prepareStatement("ALTER TABLE " + table + " ALTER COLUMN " + table + "_id INT AUTO_INCREMENT")
-					.execute();
+			        .execute();
 		}
 	}
-
+	
 	/**
 	 * Drops the not null constraint from the the specified column in the specified table
 	 *
@@ -612,7 +625,7 @@ public abstract class BaseContextSensitiveTest {
 		final String sql = "ALTER TABLE " + tableName + " ALTER COLUMN " + columnName + " SET NULL";
 		DatabaseUtil.executeSQL(getConnection(), sql, false);
 	}
-
+	
 	/**
 	 * Note that with the H2 DB this operation always commits an open transaction.
 	 * 
@@ -913,8 +926,7 @@ public abstract class BaseContextSensitiveTest {
 				
 				if (useInMemoryDatabase()) {
 					initializeInMemoryDatabase();
-				}
-				else {
+				} else {
 					executeDataSet(INITIAL_XML_DATASET_PACKAGE_PATH);
 				}
 				
@@ -922,7 +934,7 @@ public abstract class BaseContextSensitiveTest {
 				
 				//Commit so that it is not rolled back after a test.
 				getConnection().commit();
-
+				
 				updateSearchIndex();
 				
 				isBaseSetup = true;
@@ -940,7 +952,7 @@ public abstract class BaseContextSensitiveTest {
 	
 	public Class<?>[] getIndexedTypes() {
 		return new Class<?>[] { ConceptName.class, Drug.class, PersonName.class, PersonAttribute.class,
-				PatientIdentifier.class};
+		    PatientIdentifier.class };
 	}
 	
 	/**
@@ -1005,16 +1017,12 @@ public abstract class BaseContextSensitiveTest {
 	
 	/**
 	 * Don't run the {@link #setupDatabaseWithStandardData()} method. This means that the associated
-	 * "@Test" must call one of these:
-	 * 
-	 * <pre>
+	 * "@Test" must call one of these: <pre>
 	 *  * initializeInMemoryDatabase() ;
 	 *  * executeDataSet(EXAMPLE_DATA_SET);
 	 *  * Authenticate
-	 * </pre>
-	 * 
-	 * on its own if any of those results are needed. This method is called before all "@Test"
-	 * methods that have been annotated with the "@SkipBaseSetup" annotation.
+	 * </pre> on its own if any of those results are needed. This method is called before all
+	 * "@Test" methods that have been annotated with the "@SkipBaseSetup" annotation.
 	 * 
 	 * @throws Exception
 	 * @see SkipBaseSetup
