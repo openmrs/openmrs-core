@@ -1,34 +1,45 @@
+/**
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+ *
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
+ */
 package org.openmrs.test;
 
 import static org.junit.Assert.assertEquals;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.stream.Stream;
+
+import javax.sql.DataSource;
 
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.lifecycle.Startables;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 
-@Testcontainers
-public abstract class MYSQLTest extends BaseContextSensitiveTest {
+public abstract class MYSQLTest {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MYSQLTest.class);
 	
 	protected static Integer MYSQL_PORT;
 	
 	@Container
-	public MySQLContainer mysqlcontainer = new MySQLContainer(DockerImageName.parse("mysql:5.6")).withDatabaseName("openmrs")
+	public MySQLContainer<?> mysqlcontainer = new MySQLContainer<>(DockerImageName.parse("mysql:5.6")).withDatabaseName("openmrs")
 	        .withUsername("test").withPassword("test");
 	
 	@Before
@@ -56,6 +67,17 @@ public abstract class MYSQLTest extends BaseContextSensitiveTest {
 			assertEquals("A basic SELECT query succeeds", 1, resultSetInt);
 		}
 	}
+	
+	protected ResultSet performQuery(JdbcDatabaseContainer<?> container, String sql) throws SQLException {
+		DataSource ds = getDataSource(container);
+		Statement statement = ds.getConnection().createStatement();
+		statement.execute(sql);
+		ResultSet resultSet = statement.getResultSet();
+		resultSet.next();
+		return resultSet;
+	
+	}
+	protected abstract DataSource getDataSource(JdbcDatabaseContainer<?> container);
 	
 	@AfterClass
 	public void afterMysqlTestClass() {

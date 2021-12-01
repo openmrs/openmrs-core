@@ -97,6 +97,7 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.xml.sax.InputSource;
 
 /**
@@ -105,20 +106,15 @@ import org.xml.sax.InputSource;
  * spring enabled services do not need this class and extending this will only slow those test cases
  * down. (because spring is started before test cases are run). Normal test cases do not need to
  * extend anything
- * 
  * @deprecated as of 2.4
- *             <p>
- *             openmrs-core migrated its tests from JUnit 4 to JUnit 5. JUnit 4 helpers are still
- *             supported so module developers can gradually migrate tests from JUnit 4 to JUnit 5.
- *             To migrate your tests follow
- *             <a href="https://wiki.openmrs.org/display/docs/How+to+migrate+to+JUnit+5">How to
- *             migrate to JUnit 5</a>. The JUnit 5 version of the class is
- *             {@link org.openmrs.test.jupiter.BaseContextSensitiveTest}.
- *             <p>
+ * <p>openmrs-core migrated its tests from JUnit 4 to JUnit 5.
+ * JUnit 4 helpers are still supported so module developers can gradually migrate tests from JUnit 4 to JUnit 5. 
+ * To migrate your tests follow <a href="https://wiki.openmrs.org/display/docs/How+to+migrate+to+JUnit+5">How to migrate to JUnit 5</a>.
+ * The JUnit 5 version of the class is {@link org.openmrs.test.jupiter.BaseContextSensitiveTest}.<p>
  */
 @ContextConfiguration(locations = { "classpath:applicationContext-service.xml", "classpath*:openmrs-servlet.xml",
     "classpath*:moduleApplicationContext.xml", "classpath*:TestingApplicationContext.xml" })
-@TestExecutionListeners({ TransactionalTestExecutionListener.class, SkipBaseSetupAnnotationExecutionListener.class,
+@TestExecutionListeners( { TransactionalTestExecutionListener.class, SkipBaseSetupAnnotationExecutionListener.class,
     StartModuleExecutionListener.class })
 @Transactional
 @Rollback
@@ -336,7 +332,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			
 			// automatically create the tables defined in the hbm files
 			runtimeProperties.setProperty(Environment.HBM2DDL_AUTO, "create-drop");
-		} else {
+		} 
+		else {
 			String url = System.getProperty("databaseUrl");
 			String username = System.getProperty("databaseUsername");
 			String password = System.getProperty("databasePassword");
@@ -378,19 +375,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		return runtimeProperties;
 		
 	}
-	
-	protected ResultSet performQuery(JdbcDatabaseContainer<?> container, String sql) throws SQLException {
-		DataSource ds = getDataSource(container);
-		Statement statement = ds.getConnection().createStatement();
-		statement.execute(sql);
-		ResultSet resultSet = statement.getResultSet();
-		resultSet.next();
-		return resultSet;
-		
-	}
-	
-	protected abstract DataSource getDataSource(JdbcDatabaseContainer<?> container);
-	
+
 	/**
 	 * This method provides the credentials to authenticate the user that is authenticated through
 	 * the base setup. This method can be overridden when setting up test application contexts that
@@ -855,6 +840,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			DatabaseConfig config = dbUnitConn.getConfig();
 			config.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new H2DataTypeFactory());
 		}
+		return dbUnitConn;
 		
 	}
 	
@@ -941,7 +927,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 				
 				if (useInMemoryDatabase()) {
 					initializeInMemoryDatabase();
-				} else {
+				} 
+				else {
 					executeDataSet(INITIAL_XML_DATASET_PACKAGE_PATH);
 				}
 				
@@ -949,7 +936,6 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 				
 				//Commit so that it is not rolled back after a test.
 				getConnection().commit();
-				
 				updateSearchIndex();
 				
 				isBaseSetup = true;
@@ -967,7 +953,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	
 	public Class<?>[] getIndexedTypes() {
 		return new Class<?>[] { ConceptName.class, Drug.class, PersonName.class, PersonAttribute.class,
-		    PatientIdentifier.class };
+				PatientIdentifier.class};
 	}
 	
 	/**
@@ -1032,12 +1018,16 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	
 	/**
 	 * Don't run the {@link #setupDatabaseWithStandardData()} method. This means that the associated
-	 * "@Test" must call one of these: <pre>
+	 * "@Test" must call one of these:
+	 * 
+	 * <pre>
 	 *  * initializeInMemoryDatabase() ;
 	 *  * executeDataSet(EXAMPLE_DATA_SET);
 	 *  * Authenticate
-	 * </pre> on its own if any of those results are needed. This method is called before all
-	 * "@Test" methods that have been annotated with the "@SkipBaseSetup" annotation.
+	 * </pre>
+	 * 
+	 * on its own if any of those results are needed. This method is called before all "@Test"
+	 * methods that have been annotated with the "@SkipBaseSetup" annotation.
 	 * 
 	 * @throws Exception
 	 * @see SkipBaseSetup

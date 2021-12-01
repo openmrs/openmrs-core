@@ -12,12 +12,7 @@ package org.openmrs.test.jupiter;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.springframework.test.context.TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS;
 
-import java.awt.Font;
-import java.awt.Frame;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.Window;x.swing.*;
+import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,21 +26,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Timer
-
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-import javax.swing.UIManager;;
+import java.util.Timer;
 import java.util.TimerTask;
 
 import org.apache.commons.io.IOUtils;
@@ -105,7 +91,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.xml.sax.InputSource;
 
 /**
