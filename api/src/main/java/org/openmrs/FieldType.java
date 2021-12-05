@@ -25,7 +25,7 @@ import javax.persistence.Table;
 @Table(name = "field_type")
 @AttributeOverrides(value = {
 		@AttributeOverride(name = "name", column = @Column(name = "name", length = 50, nullable = false)),
-		@AttributeOverride(name = "retired", column = @Column(name = "retired"))
+		@AttributeOverride(name = "retired", column = @Column(name = "retired", columnDefinition = "boolean default false"))
 })
 public class FieldType extends BaseChangeableOpenmrsMetadata {
 	
