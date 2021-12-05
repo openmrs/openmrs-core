@@ -583,6 +583,8 @@
 						<target>${javaCompilerVersion}</target>
 						<source>${javaCompilerVersion}</source>
 						<encoding>UTF-8</encoding>
+						<fork>true</fork>
+						<useIncrementalCompilation>true</useIncrementalCompilation>
 					</configuration>
 				</plugin>
 				<plugin>
