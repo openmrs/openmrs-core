@@ -10,6 +10,7 @@
 package org.openmrs;
 
 import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,7 +23,10 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "field_type")
-@AttributeOverride(name = "name", column = @Column(name = "name", length = 50, nullable = false))
+@AttributeOverrides(value = {
+		@AttributeOverride(name = "name", column = @Column(name = "name", length = 50, nullable = false)),
+		@AttributeOverride(name = "retired", column = @Column(name = "retired"))
+})
 public class FieldType extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 35467L;
