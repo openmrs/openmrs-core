@@ -11,18 +11,31 @@ package org.openmrs;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 /**
  * ConceptMapType are used to define relationships between concepts and concept reference terms e.g
  * IS_A or SAME_AS, BROADER_THAN
  *
  * @since 1.9
  */
+@Entity
+@Table(name = "concept_map_type")
 public class ConceptMapType extends BaseChangeableOpenmrsMetadata {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
+	@Id
+	@Column(name = "concept_map_type_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer conceptMapTypeId;
-	
+
+	@Column(name = "is_hidden", nullable = false, length = 1)
 	private Boolean isHidden = Boolean.FALSE;
 	
 	public static final String SAME_AS_MAP_TYPE_UUID = "35543629-7d8c-11e1-909d-c80aa9edcf4e";
