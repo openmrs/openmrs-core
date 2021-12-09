@@ -56,43 +56,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import org.openmrs.*;
 import org.openmrs.Order.Action;
-import org.openmrs.OrderAttribute;
-import org.openmrs.OrderAttributeType;
-import org.openmrs.ProviderAttributeType;
-import org.openmrs.TestOrder;
-import org.openmrs.Patient;
-import org.openmrs.DosingInstructions;
-import org.openmrs.SimpleDosingInstructions;
-import org.openmrs.DrugOrder;
-import org.openmrs.FreeTextDosingInstructions;
-import org.openmrs.Drug;
-import org.openmrs.ConceptDescription;
-import org.openmrs.ConceptClass;
-import org.openmrs.ConceptDatatype;
-import org.openmrs.ConceptMap;
-import org.openmrs.ConceptName;
-import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.Encounter;
-import org.openmrs.GlobalProperty;
-import org.openmrs.Order;
-import org.openmrs.OrderType;
-import org.openmrs.Allergy;
-import org.openmrs.Condition;
-import org.openmrs.Diagnosis;
-import org.openmrs.Visit;
-import org.openmrs.OrderFrequency;
-import org.openmrs.OrderGroup;
-import org.openmrs.OrderSet;
-import org.openmrs.OrderGroupAttribute;
-import org.openmrs.OrderGroupAttributeType;
-import org.openmrs.Encounter;
-import org.openmrs.Provider;
-import org.openmrs.Concept;
-import org.openmrs.CareSetting;
-import org.openmrs.VisitAttributeType;
 import org.openmrs.api.builder.DrugOrderBuilder;
-import org.openmrs.Obs;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.HibernateAdministrationDAO;
@@ -2647,6 +2614,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.addAnnotatedClass(Encounter.class).addAnnotatedClass(SomeTestOrder.class)
 			.addAnnotatedClass(Diagnosis.class).addAnnotatedClass(Condition.class)
 			.addAnnotatedClass(Visit.class).addAnnotatedClass(VisitAttributeType.class)
+			.addAnnotatedClass(PersonAddress.class)
 			.addAnnotatedClass(ProviderAttributeType.class).getMetadataBuilder().build();
 
 
