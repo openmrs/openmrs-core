@@ -559,6 +559,16 @@
 				<artifactId>jaxb-impl</artifactId>
 			    <version>3.0.2</version>
 			</dependency>
+			<dependency>
+				<groupId>org.owasp</groupId>
+				<artifactId>csrfguard</artifactId>
+				<version>${owaspCsrfGuardVersion}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.owasp</groupId>
+				<artifactId>csrfguard-extension-session</artifactId>
+				<version>${owaspCsrfGuardVersion}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -1122,6 +1132,7 @@
 		<junitVersion>5.8.2</junitVersion>
 		<mockitoVersion>3.12.4</mockitoVersion>
 		<hamcrestVersion>2.2</hamcrestVersion>
+		<owaspCsrfGuardVersion>4.1.1</owaspCsrfGuardVersion>
 
 		<slf4jVersion>1.7.32</slf4jVersion>
 		<log4jVersion>2.14.1</log4jVersion>

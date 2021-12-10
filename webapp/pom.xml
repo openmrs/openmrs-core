@@ -41,6 +41,14 @@
             </exclusion>
          </exclusions>
       </dependency>
+	   <dependency>
+		   <groupId>org.owasp</groupId>
+		   <artifactId>csrfguard</artifactId>
+	   </dependency>
+	   <dependency>
+		   <groupId>org.owasp</groupId>
+		   <artifactId>csrfguard-extension-session</artifactId>
+	   </dependency>
    </dependencies>
 
    <build>
