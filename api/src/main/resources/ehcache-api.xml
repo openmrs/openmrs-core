@@ -33,4 +33,11 @@
         <persistence strategy="none"/>
     </cache>
 
+    <cache name="conceptIdsByMapping"
+           maxElementsInMemory="10000"
+           eternal="true"
+           memoryStoreEvictionPolicy="LRU">
+        <persistence strategy="localTempSwap"/>
+    </cache>
+
 </ehcache>
