@@ -2236,7 +2236,10 @@ public class OpenmrsUtil {
 	}
 	
 	/**
-	 * Get declared field names of a class
+	 * Returns a Set of Field objects reflecting all the fields declared by the class or interface represented by this Class object.
+	 * This includes public, protected, default (package) access, and private fields, but excludes inherited fields.
+	 * If this Class object represents a class or interface with no declared fields, then this method returns an array of length 0.
+	 * If this Class object represents an array type, a primitive type, or void, then this method returns an array of length 0.
 	 * 
 	 * @param clazz
 	 * @return

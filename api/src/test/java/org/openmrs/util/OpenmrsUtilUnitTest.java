@@ -16,6 +16,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.equalTo;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -478,4 +479,35 @@ public class OpenmrsUtilUnitTest {
 		assertNull(OpenmrsUtil.getRuntimePropertiesFilePathName("app-openmrs"));
 	}
 
+	@Test
+	public void getDeclaredFields_shouldReturnSetOfSizeZeroForPrimitiveTypeArrayTypeOrVoid() {
+
+		assertThat(OpenmrsUtil.getDeclaredFields(int.class).size(), is(0));
+		assertThat(OpenmrsUtil.getDeclaredFields(int[].class).size(), is(0));
+		assertThat(OpenmrsUtil.getDeclaredFields(void.class).size(), is(0));
+	}
+
+	@Test
+	public void convertToInteger_shouldThrowExceptionIfLongValueOutOfIntegerRange() {
+
+		Exception exception = assertThrows(IllegalArgumentException.class, ()-> OpenmrsUtil.convertToInteger(Long.MAX_VALUE-1));
+		assertThat(exception.getMessage(), containsString(Long.MAX_VALUE-1 + " cannot be cast to Integer without changing its value."));
+
+		exception = assertThrows(IllegalArgumentException.class, ()-> OpenmrsUtil.convertToInteger(Long.MIN_VALUE+1));
+		assertThat(exception.getMessage(), containsString(Long.MIN_VALUE+1 + " cannot be cast to Integer without changing its value."));
+	}
+
+	@Test
+	public void stringStartsWith_shouldReturnTrueIfAnyStringFromPrefixArrayMatchTheString() {
+
+		String[] prefixArray = { "save", "create", "update" };
+		assertThat(OpenmrsUtil.stringStartsWith("saveOrDelete", prefixArray), is(true));
+	}
+
+	@Test
+	public void stringStartsWith_shouldReturnFalseIfAnyStringFromPrefixArrayMatchTheStringWithCaseMismatched() {
+
+		String[] prefixArray = { "save", "create", "update" };
+		assertThat(OpenmrsUtil.stringStartsWith("SaveOrDelete", prefixArray), is(false));
+	}
 }
