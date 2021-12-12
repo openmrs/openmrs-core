@@ -3,7 +3,7 @@
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
  * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
- * <p>
+ *
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
@@ -11,16 +11,26 @@ package org.openmrs;
 
 import static org.apache.commons.lang3.StringUtils.defaultString;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.codehaus.jackson.annotate.JsonIgnore;
-import org.hibernate.annotations.Type;
 import org.openmrs.util.OpenmrsUtil;
 
-import javax.persistence.*;
+
 
 /**
  * This class is the representation of a person's address. This class is many-to-one to the Person
@@ -28,24 +38,24 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "person_address")
-public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PersonAddress>, Address {
+public class PersonAddress extends BaseChangeableOpenmrsData
+	implements java.io.Serializable, Cloneable, Comparable<PersonAddress>, Address {
 
 	public static final long serialVersionUID = 343333L;
 
 	// Fields
 	@Id
-	@Column(name = "person_address_id")
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "person_address_id_gen")
 	@SequenceGenerator(name = "person_address_id_gen", sequenceName = "person_address_person_address_id_seq")
+	@Column(name = "person_address_id")
 	private Integer personAddressId;
 
 	@ManyToOne
 	@JoinColumn(name = "person_id")
 	private Person person;
 
-	@Column(name = "preferred", nullable = false, length = 1)
-	@Convert(attributeName = "boolean")
-	private Boolean preferred = false;
+	@Column(name = "preferred", columnDefinition = "tinyint default false")
+	private Boolean preferred;
 
 	@Column(name = "address1")
 	private String address1;
@@ -120,30 +130,29 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	@Column(name = "end_date", length = 19)
 	@Temporal(TemporalType.DATE)
 	private Date endDate;
-
+	
 	// Constructors
-
-	/**
-	 * default constructor
-	 */
+	
+	/** default constructor */
 	public PersonAddress() {
 	}
-
-	/**
-	 * constructor with id
-	 */
+	
+	/** constructor with id */
 	public PersonAddress(Integer personAddressId) {
 		this.personAddressId = personAddressId;
 	}
-
+	
 	/**
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-		return "a1:" + getAddress1() + ", a2:" + getAddress2() + ", cv:" + getCityVillage() + ", sp:" + getStateProvince() + ", c:" + getCountry() + ", cd:" + getCountyDistrict() + ", nc:" + getAddress3() + ", pc:" + getPostalCode() + ", lat:" + getLatitude() + ", long:" + getLongitude();
+		return "a1:" + getAddress1() + ", a2:" + getAddress2() + ", cv:" +
+				getCityVillage() + ", sp:" + getStateProvince() + ", c:" + getCountry() +
+				", cd:" + getCountyDistrict() + ", nc:" + getAddress3() + ", pc:" +
+				getPostalCode() + ", lat:" + getLatitude() + ", long:" + getLongitude();
 	}
-
+	
 	/**
 	 * Compares this PersonAddress object to the given otherAddress. This method differs from
 	 * {@link #equals(Object)} in that this method compares the inner fields of each address for
@@ -154,9 +163,31 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	 * @return boolean true/false whether or not they are the same addresses
 	 */
 	public boolean equalsContent(PersonAddress otherAddress) {
-		return new EqualsBuilder().append(defaultString(otherAddress.getAddress1()), defaultString(address1)).append(defaultString(otherAddress.getAddress2()), defaultString(address2)).append(defaultString(otherAddress.getAddress3()), defaultString(address3)).append(defaultString(otherAddress.getAddress4()), defaultString(address4)).append(defaultString(otherAddress.getAddress5()), defaultString(address5)).append(defaultString(otherAddress.getAddress6()), defaultString(address6)).append(defaultString(otherAddress.getAddress7()), defaultString(address7)).append(defaultString(otherAddress.getAddress8()), defaultString(address8)).append(defaultString(otherAddress.getAddress9()), defaultString(address9)).append(defaultString(otherAddress.getAddress10()), defaultString(address10)).append(defaultString(otherAddress.getAddress11()), defaultString(address11)).append(defaultString(otherAddress.getAddress12()), defaultString(address12)).append(defaultString(otherAddress.getAddress13()), defaultString(address13)).append(defaultString(otherAddress.getAddress14()), defaultString(address14)).append(defaultString(otherAddress.getAddress15()), defaultString(address15)).append(defaultString(otherAddress.getCityVillage()), defaultString(cityVillage)).append(defaultString(otherAddress.getCountyDistrict()), defaultString(countyDistrict)).append(defaultString(otherAddress.getStateProvince()), defaultString(stateProvince)).append(defaultString(otherAddress.getCountry()), defaultString(country)).append(defaultString(otherAddress.getPostalCode()), defaultString(postalCode)).append(defaultString(otherAddress.getLatitude()), defaultString(latitude)).append(defaultString(otherAddress.getLongitude()), defaultString(longitude)).append(otherAddress.getStartDate(), startDate).append(otherAddress.getEndDate(), endDate).isEquals();
+		return new EqualsBuilder().append(defaultString(otherAddress.getAddress1()), defaultString(address1)).append(
+		    defaultString(otherAddress.getAddress2()), defaultString(address2)).append(
+		    defaultString(otherAddress.getAddress3()), defaultString(address3)).append(
+		    defaultString(otherAddress.getAddress4()), defaultString(address4)).append(
+		    defaultString(otherAddress.getAddress5()), defaultString(address5)).append(
+		    defaultString(otherAddress.getAddress6()), defaultString(address6)).append(
+		    defaultString(otherAddress.getAddress7()), defaultString(address7)).append(
+		    defaultString(otherAddress.getAddress8()), defaultString(address8)).append(
+		    defaultString(otherAddress.getAddress9()), defaultString(address9)).append(
+		    defaultString(otherAddress.getAddress10()), defaultString(address10)).append(
+		    defaultString(otherAddress.getAddress11()), defaultString(address11)).append(
+		    defaultString(otherAddress.getAddress12()), defaultString(address12)).append(
+		    defaultString(otherAddress.getAddress13()), defaultString(address13)).append(
+		    defaultString(otherAddress.getAddress14()), defaultString(address14)).append(
+		    defaultString(otherAddress.getAddress15()), defaultString(address15)).append(
+		    defaultString(otherAddress.getCityVillage()), defaultString(cityVillage)).append(
+		    defaultString(otherAddress.getCountyDistrict()), defaultString(countyDistrict)).append(
+		    defaultString(otherAddress.getStateProvince()), defaultString(stateProvince)).append(
+		    defaultString(otherAddress.getCountry()), defaultString(country)).append(
+		    defaultString(otherAddress.getPostalCode()), defaultString(postalCode)).append(
+		    defaultString(otherAddress.getLatitude()), defaultString(latitude)).append(
+		    defaultString(otherAddress.getLongitude()), defaultString(longitude)).append(otherAddress.getStartDate(),
+		    startDate).append(otherAddress.getEndDate(), endDate).isEquals();
 	}
-
+	
 	/**
 	 * bitwise copy of the personAddress object. NOTICE: THIS WILL NOT COPY THE PATIENT OBJECT. The
 	 * PersonAddress.person object in this object AND the cloned object will point at the same
@@ -168,11 +199,12 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	public Object clone() {
 		try {
 			return super.clone();
-		} catch (CloneNotSupportedException e) {
+		}
+		catch (CloneNotSupportedException e) {
 			throw new InternalError("PersonAddress should be cloneable");
 		}
 	}
-
+	
 	/**
 	 * @return Returns the address1.
 	 */
@@ -180,7 +212,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	public String getAddress1() {
 		return address1;
 	}
-
+	
 	/**
 	 * @param address1 The address1 to set.
 	 */
@@ -188,7 +220,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	public void setAddress1(String address1) {
 		this.address1 = address1;
 	}
-
+	
 	/**
 	 * @return Returns the address2.
 	 */
@@ -196,7 +228,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	public String getAddress2() {
 		return address2;
 	}
-
+	
 	/**
 	 * @param address2 The address2 to set.
 	 */
@@ -204,7 +236,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	public void setAddress2(String address2) {
 		this.address2 = address2;
 	}
-
+	
 	/**
 	 * @return Returns the cityVillage.
 	 */
@@ -212,7 +244,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	public String getCityVillage() {
 		return cityVillage;
 	}
-
+	
 	/**
 	 * @param cityVillage The cityVillage to set.
 	 */
@@ -220,7 +252,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	public void setCityVillage(String cityVillage) {
 		this.cityVillage = cityVillage;
 	}
-
+	
 	/**
 	 * @return Returns the country.
 	 */
@@ -228,7 +260,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	public String getCountry() {
 		return country;
 	}
-
+	
 	/**
 	 * @param country The country to set.
 	 */
@@ -236,9 +268,10 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	public void setCountry(String country) {
 		this.country = country;
 	}
-
+	
 	/**
 	 * @return Returns the preferred.
+	 * 
 	 * @deprecated as of 2.0, use {@link #getPreferred()}
 	 */
 	@Deprecated
@@ -246,18 +279,18 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	public Boolean isPreferred() {
 		return getPreferred();
 	}
-
+	
 	public Boolean getPreferred() {
 		return preferred == null ? Boolean.FALSE : preferred;
 	}
-
+	
 	/**
 	 * @param preferred The preferred to set.
 	 */
 	public void setPreferred(Boolean preferred) {
 		this.preferred = preferred;
 	}
-
+	
 	/**
 	 * @return Returns the latitude.
 	 */
@@ -265,7 +298,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	public String getLatitude() {
 		return latitude;
 	}
-
+	
 	/**
 	 * @param latitude The latitude to set.
 	 */
@@ -273,7 +306,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	public void setLatitude(String latitude) {
 		this.latitude = latitude;
 	}
-
+	
 	/**
 	 * @return Returns the longitude.
 	 */
@@ -281,7 +314,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	public String getLongitude() {
 		return longitude;
 	}
-
+	
 	/**
 	 * @param longitude The longitude to set.
 	 */
@@ -289,35 +322,35 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	public void setLongitude(String longitude) {
 		this.longitude = longitude;
 	}
-
+	
 	/**
 	 * @return Returns the person.
 	 */
 	public Person getPerson() {
 		return person;
 	}
-
+	
 	/**
 	 * @param person The person to set.
 	 */
 	public void setPerson(Person person) {
 		this.person = person;
 	}
-
+	
 	/**
 	 * @return Returns the personAddressId.
 	 */
 	public Integer getPersonAddressId() {
 		return personAddressId;
 	}
-
+	
 	/**
 	 * @param personAddressId The personAddressId to set.
 	 */
 	public void setPersonAddressId(Integer personAddressId) {
 		this.personAddressId = personAddressId;
 	}
-
+	
 	/**
 	 * @return Returns the postalCode.
 	 */
@@ -325,7 +358,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	public String getPostalCode() {
 		return postalCode;
 	}
-
+	
 	/**
 	 * @param postalCode The postalCode to set.
 	 */
@@ -333,7 +366,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	public void setPostalCode(String postalCode) {
 		this.postalCode = postalCode;
 	}
-
+	
 	/**
 	 * @return Returns the stateProvince.
 	 */
@@ -341,7 +374,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	public String getStateProvince() {
 		return stateProvince;
 	}
-
+	
 	/**
 	 * @param stateProvince The stateProvince to set.
 	 */
@@ -349,7 +382,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	public void setStateProvince(String stateProvince) {
 		this.stateProvince = stateProvince;
 	}
-
+	
 	/**
 	 * @return Returns the countyDistrict.
 	 */
@@ -357,7 +390,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	public String getCountyDistrict() {
 		return countyDistrict;
 	}
-
+	
 	/**
 	 * @param countyDistrict The countyDistrict to set.
 	 */
@@ -365,20 +398,26 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	public void setCountyDistrict(String countyDistrict) {
 		this.countyDistrict = countyDistrict;
 	}
-
+	
 	/**
 	 * Convenience method to test whether any of the fields in this address are set
 	 *
 	 * @return whether any of the address fields (address1, address2, cityVillage, stateProvince,
-	 * country, countyDistrict, neighborhoodCell, postalCode, latitude, longitude, etc) are
-	 * whitespace, empty ("") or null.
+	 *         country, countyDistrict, neighborhoodCell, postalCode, latitude, longitude, etc) are
+	 *         whitespace, empty ("") or null.
 	 */
 	public boolean isBlank() {
-
-		return StringUtils.isBlank(getAddress1()) && StringUtils.isBlank(getAddress2()) && StringUtils.isBlank(getAddress3()) && StringUtils.isBlank(getAddress4()) && StringUtils.isBlank(getAddress5()) && StringUtils.isBlank(getAddress6()) && StringUtils.isBlank(getCityVillage()) && StringUtils.isBlank(getStateProvince()) && StringUtils.isBlank(getCountry()) && StringUtils.isBlank(getCountyDistrict()) && StringUtils.isBlank(getPostalCode()) && StringUtils.isBlank(getLatitude()) && StringUtils.isBlank(getLongitude());
-
+		
+		return StringUtils.isBlank(getAddress1()) && StringUtils.isBlank(getAddress2())
+		        && StringUtils.isBlank(getAddress3()) && StringUtils.isBlank(getAddress4())
+		        && StringUtils.isBlank(getAddress5()) && StringUtils.isBlank(getAddress6())
+		        && StringUtils.isBlank(getCityVillage()) && StringUtils.isBlank(getStateProvince())
+		        && StringUtils.isBlank(getCountry()) && StringUtils.isBlank(getCountyDistrict())
+		        && StringUtils.isBlank(getPostalCode()) && StringUtils.isBlank(getLatitude())
+		        && StringUtils.isBlank(getLongitude());
+		
 	}
-
+			
 	/**
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 * Note: this comparator imposes orderings that are inconsistent with equals.
@@ -398,7 +437,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 			if (retValue == 0) {
 				retValue = OpenmrsUtil.compareWithNullAsGreatest(getPersonAddressId(), other.getPersonAddressId());
 			}
-
+			
 			// if we've gotten this far, just check all address values. If they are
 			// equal, leave the objects at 0. If not, arbitrarily pick retValue=1
 			// and return that (they are not equal).
@@ -408,99 +447,99 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 		}
 		return retValue;
 	}
-
+	
 	/**
-	 * @return the address3
 	 * @since 1.8
+	 * @return the address3
 	 */
 	@Override
 	public String getAddress3() {
 		return address3;
 	}
-
+	
 	/**
-	 * @param address3 the address3 to set
 	 * @since 1.8
+	 * @param address3 the address3 to set
 	 */
 	@Override
 	public void setAddress3(String address3) {
 		this.address3 = address3;
 	}
-
+	
 	/**
-	 * @return the address4
 	 * @since 1.8
+	 * @return the address4
 	 */
 	@Override
 	public String getAddress4() {
 		return address4;
 	}
-
+	
 	/**
-	 * @param address4 the address4 to set
 	 * @since 1.8
+	 * @param address4 the address4 to set
 	 */
 	@Override
 	public void setAddress4(String address4) {
 		this.address4 = address4;
 	}
-
+	
 	/**
-	 * @return the address6
 	 * @since 1.8
+	 * @return the address6
 	 */
 	@Override
 	public String getAddress6() {
 		return address6;
 	}
-
+	
 	/**
-	 * @param address6 the address6 to set
 	 * @since 1.8
+	 * @param address6 the address6 to set
 	 */
 	@Override
 	public void setAddress6(String address6) {
 		this.address6 = address6;
 	}
-
+	
 	/**
-	 * @return the address5
 	 * @since 1.8
+	 * @return the address5
 	 */
 	@Override
 	public String getAddress5() {
 		return address5;
 	}
-
+	
 	/**
-	 * @param address5 the address5 to set
 	 * @since 1.8
+	 * @param address5 the address5 to set
 	 */
 	@Override
 	public void setAddress5(String address5) {
 		this.address5 = address5;
 	}
-
+	
 	/**
-	 * @see org.openmrs.OpenmrsObject#getId()
 	 * @since 1.5
+	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
 	@Override
 	public Integer getId() {
-
+		
 		return getPersonAddressId();
 	}
-
+	
 	/**
-	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 * @since 1.5
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
 	@Override
 	public void setId(Integer id) {
 		setPersonAddressId(id);
-
+		
 	}
-
+	
 	/**
 	 * @return the startDate
 	 * @since 1.9
@@ -508,7 +547,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	public Date getStartDate() {
 		return startDate;
 	}
-
+	
 	/**
 	 * @param startDate to set to
 	 * @since 1.9
@@ -516,7 +555,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
-
+	
 	/**
 	 * @return the endDate
 	 * @since 1.9
@@ -524,7 +563,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	public Date getEndDate() {
 		return this.endDate;
 	}
-
+	
 	/**
 	 * @param endDate to set to
 	 * @since 1.9
@@ -532,7 +571,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
-
+	
 	/**
 	 * Returns true if the address' endDate is null
 	 *
@@ -542,7 +581,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	public Boolean isActive() {
 		return this.endDate == null;
 	}
-
+	
 	/**
 	 * Makes an address inactive by setting its endDate to the current time
 	 *
@@ -551,7 +590,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	public void deactivate() {
 		setEndDate(Calendar.getInstance().getTime());
 	}
-
+	
 	/**
 	 * Makes an address active by setting its endDate to null
 	 *
@@ -560,7 +599,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	public void activate() {
 		setEndDate(null);
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
