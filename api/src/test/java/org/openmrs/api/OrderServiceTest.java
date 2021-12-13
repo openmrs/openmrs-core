@@ -2615,7 +2615,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.addAnnotatedClass(Diagnosis.class).addAnnotatedClass(Condition.class)
 			.addAnnotatedClass(Visit.class).addAnnotatedClass(VisitAttributeType.class)
 			.addAnnotatedClass(PersonAddress.class).addAnnotatedClass(ProviderAttributeType.class)
-			.addAnnotatedClass(Privilege.class).getMetadataBuilder().build();
+			.addAnnotatedClass(Privilege.class).addAnnotatedClass(CohortMembership.class).
+			getMetadataBuilder().build();
 
 
 		Field field = adminDAO.getClass().getDeclaredField("metadata");
