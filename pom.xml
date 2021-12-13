@@ -1124,7 +1124,7 @@
 		<hamcrestVersion>2.2</hamcrestVersion>
 
 		<slf4jVersion>1.7.32</slf4jVersion>
-		<log4jVersion>2.15.0</log4jVersion>
+		<log4jVersion>2.16.0</log4jVersion>
 
 		<customArgLineForTesting />
 
