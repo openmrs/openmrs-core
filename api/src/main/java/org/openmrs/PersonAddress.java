@@ -53,8 +53,8 @@ public class PersonAddress extends BaseChangeableOpenmrsData
 	@JoinColumn(name = "person_id")
 	private Person person;
 
-	@Column(name = "preferred", columnDefinition = "tinyint default false")
-	private Boolean preferred=false;
+	@Column(name = "preferred", nullable = false)
+	private Boolean preferred = false;
 
 	@Column(name = "address1")
 	private String address1;
