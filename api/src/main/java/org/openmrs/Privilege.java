@@ -9,20 +9,28 @@
  */
 package org.openmrs;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 /**
  * Privilege
  * 
  * @version 1.0
  */
+@Entity
+@Table(name = "privilege")
+@AttributeOverride(name = "description", column = @Column(name = "description", length = 250))
 public class Privilege extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 312L;
 	
-	// Fields
-	
+	@Id
+	@Column(name = "privilege",nullable = false,length = 250)
 	private String privilege;
-	
-	// Constructors
 	
 	/** default constructor */
 	public Privilege() {
@@ -35,6 +43,7 @@ public class Privilege extends BaseChangeableOpenmrsMetadata {
 	
 	public Privilege(String privilege, String description) {
 		this.privilege = privilege;
+		setName(privilege);
 		setDescription(description);
 	}
 	
