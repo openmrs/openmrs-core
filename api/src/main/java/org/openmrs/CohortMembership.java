@@ -9,6 +9,19 @@
  */
 package org.openmrs;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.util.Date;
 import java.util.Objects;
 
@@ -17,21 +30,34 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  * @since 2.1.0
  */
+@Entity
+@Table(name = "cohort_member")
 public class CohortMembership extends BaseChangeableOpenmrsData implements Comparable<CohortMembership> {
 	
 	public static final long serialVersionUID = 0L;
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cohort_member_cohort_member_id_gen")
+	@SequenceGenerator(name = "cohort_member_cohort_member_id_gen", sequenceName = "cohort_member_cohort_member_id_seq")
+	@Column(name = "cohort_member_id")
 	private Integer cohortMemberId;
 	
+	@ManyToOne
+	@Access(AccessType.FIELD)
+	@JoinColumn(name = "cohort_id",nullable = false)
 	private Cohort cohort;
-	
+
+	@Column(name = "patient_id",nullable = false)
 	private Integer patientId;
-	
+
+	@Column(name = "start_date", length = 19)
+	@Temporal(TemporalType.DATE)
 	private Date startDate;
 	
+	@Column(name = "end_date", length = 19)
+	@Temporal(TemporalType.DATE)
 	private Date endDate;
 	
-	// Constructor
 	public CohortMembership() {
 	}
 	

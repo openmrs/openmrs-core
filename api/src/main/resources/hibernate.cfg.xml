@@ -96,7 +96,6 @@
 		<mapping resource="org/openmrs/api/db/hibernate/ProgramWorkflowState.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PatientState.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Cohort.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/CohortMembership.hbm.xml"/>
 		<mapping resource="org/openmrs/api/db/hibernate/SerializedObject.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/OrderFrequency.hbm.xml" />
 
