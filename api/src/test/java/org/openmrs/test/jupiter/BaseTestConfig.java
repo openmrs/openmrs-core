@@ -45,7 +45,7 @@ public class BaseTestConfig {
 		return liquibase;
 	}
 	
-	public DataSource testDataSource() {
+	public DataSource createDataSource() {
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
 		dataSource.setDriverClassName("org.postgresql.Driver");
 		dataSource.setUrl(postgreSqlContainer.getJdbcUrl());
