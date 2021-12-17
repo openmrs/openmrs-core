@@ -390,4 +390,50 @@
 		              tableName="encounter_diagnosis" />
 	</changeSet>
 
+	<changeSet id="20211217-001-TRUNK-5890" author="abertnamanya">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="privilege" columnName="creator"/>
+				<columnExists tableName="privilege" columnName="date_created"/>
+				<columnExists tableName="privilege" columnName="date_changed"/>
+				<columnExists tableName="privilege" columnName="changed_by"/>
+				<columnExists tableName="privilege" columnName="retired"/>
+				<columnExists tableName="privilege" columnName="retired_by"/>
+				<columnExists tableName="privilege" columnName="date_retired"/>
+				<columnExists tableName="privilege" columnName="retire_reason"/>
+			</not>
+		</preConditions>
+		<comment>Adding "missing generic columns" column to privilege table</comment>
+		<addColumn tableName="privilege">
+			<column name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+		</addColumn>
+		<addColumn tableName="privilege">
+			<column name="date_created" type="datetime">
+				<constraints nullable="false"/>
+			</column>
+		</addColumn>
+		<addColumn tableName="privilege">
+			<column name="date_changed" type="datetime" />
+		</addColumn>
+		<addColumn tableName="privilege">
+			<column name="changed_by" type="int"/>
+		</addColumn>
+		<addColumn tableName="privilege">
+		<column name="retired" type="boolean" defaultValueBoolean="false">
+			<constraints nullable="false" />
+		</column>
+		</addColumn>
+		<addColumn tableName="privilege">
+		     <column name="retired_by" type="int" />
+		</addColumn>
+		<addColumn tableName="privilege">
+		     <column name="date_retired" type="datetime" />
+		</addColumn>
+		<addColumn tableName="privilege">
+			 <column name="retire_reason" type="varchar(255)" />
+		</addColumn>
+	</changeSet>
+
 </databaseChangeLog>
