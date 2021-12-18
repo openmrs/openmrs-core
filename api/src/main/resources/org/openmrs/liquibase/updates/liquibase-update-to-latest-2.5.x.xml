@@ -390,4 +390,19 @@
 		              tableName="encounter_diagnosis" />
 	</changeSet>
 
+	<changeSet id="2021-18-12-010-TRUNK-5902" author="abertnamanya">
+		<preConditions onFail="MARK_RAN">
+				<columnExists tableName="cohort_member" columnName="changed_by" />
+				<columnExists tableName="cohort_member" columnName="date_changed" />
+		</preConditions>
+		<comment>Added date_change and changed_by columns to cohort_member table</comment>
+		<addColumn tableName="cohort_member">
+			<column name="changed_by" type="int"/>
+		</addColumn>
+		<addColumn tableName="cohort_member">
+			<column name="date_changed" type="datetime" />
+		</addColumn>
+		<addForeignKeyConstraint constraintName="cohort_member_changed_by_fk" baseTableName="cohort_member" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+
 </databaseChangeLog>
