@@ -123,6 +123,19 @@
 	<!--  End third filter -->
 	
 	<filter>
+        <filter-name>multipartFilter</filter-name>
+        <filter-class>org.springframework.web.multipart.support.MultipartFilter</filter-class>
+        <init-param>
+			<param-name>multipartResolverBeanName</param-name>
+			<param-value>multipartResolver</param-value>
+		</init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>multipartFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+	<filter>
         <filter-name>CSRFGuard</filter-name>
         <filter-class>org.owasp.csrfguard.CsrfGuardFilter</filter-class>
     </filter>
