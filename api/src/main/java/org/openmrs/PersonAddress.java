@@ -123,11 +123,11 @@ public class PersonAddress extends BaseChangeableOpenmrsData
 	private String longitude;
 
 	@Column(name = "start_date", length = 19)
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date startDate;
 
 	@Column(name = "end_date", length = 19)
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date endDate;
 	
 	// Constructors
