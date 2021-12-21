@@ -11,8 +11,11 @@ package org.openmrs.web;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
@@ -34,6 +37,7 @@ import javax.servlet.ServletException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -56,6 +60,7 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.filter.initialization.DatabaseDetective;
 import org.openmrs.web.filter.initialization.InitializationFilter;
 import org.openmrs.web.filter.update.UpdateFilter;
+import org.owasp.csrfguard.CsrfGuard;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
 import org.springframework.beans.factory.BeanCreationException;
@@ -154,6 +159,8 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			
 			setApplicationDataDirectory(servletContext);
 			
+			loadCsrfGuardProperties(servletContext);
+			
 			// Try to get the runtime properties
 			Properties props = getRuntimeProperties();
 			if (props != null) {
@@ -203,6 +210,29 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			log.error(MarkerFactory.getMarker("FATAL"), "Failed to obtain JDBC connection", e);
 		}
 		
+	}
+	
+	private void loadCsrfGuardProperties(ServletContext servletContext) throws FileNotFoundException, IOException {	
+		File file = new File(OpenmrsUtil.getApplicationDataDirectory(), "csrfguard.properties");
+		InputStream inputStream = null;
+		try {
+			inputStream = new FileInputStream(file);
+		}
+		catch (FileNotFoundException ex) {
+			final String fileName = servletContext.getRealPath("/WEB-INF/csrfguard.properties");
+			inputStream = new FileInputStream(fileName);
+			OutputStream outputStream = new FileOutputStream(file);
+			IOUtils.copy(inputStream, outputStream);
+		    IOUtils.closeQuietly(outputStream);
+		    IOUtils.closeQuietly(inputStream);
+		    
+		    //Moved to EOF by the copy operation. So open it again.
+		    inputStream = new FileInputStream(file);
+		}
+		Properties properties = new Properties();
+		properties.load(inputStream);
+		IOUtils.closeQuietly(inputStream);
+		CsrfGuard.load(properties);
 	}
 	
 	/**
