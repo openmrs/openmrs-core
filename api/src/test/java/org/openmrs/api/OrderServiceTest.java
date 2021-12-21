@@ -59,6 +59,7 @@ import org.junit.jupiter.api.Test;
 import org.openmrs.Order.Action;
 import org.openmrs.OrderAttribute;
 import org.openmrs.OrderAttributeType;
+import org.openmrs.ProviderAttributeType;
 import org.openmrs.TestOrder;
 import org.openmrs.Patient;
 import org.openmrs.DosingInstructions;
@@ -89,6 +90,7 @@ import org.openmrs.Encounter;
 import org.openmrs.Provider;
 import org.openmrs.Concept;
 import org.openmrs.CareSetting;
+import org.openmrs.VisitAttributeType;
 import org.openmrs.api.builder.DrugOrderBuilder;
 import org.openmrs.Obs;
 import org.openmrs.api.builder.OrderBuilder;
@@ -2644,7 +2646,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Metadata metaData = new MetadataSources(standardRegistry).addAnnotatedClass(Allergy.class)
 			.addAnnotatedClass(Encounter.class).addAnnotatedClass(SomeTestOrder.class)
 			.addAnnotatedClass(Diagnosis.class).addAnnotatedClass(Condition.class)
-			.addAnnotatedClass(Visit.class).getMetadataBuilder().build();
+			.addAnnotatedClass(Visit.class).addAnnotatedClass(VisitAttributeType.class)
+			.addAnnotatedClass(ProviderAttributeType.class).getMetadataBuilder().build();
+
 
 		Field field = adminDAO.getClass().getDeclaredField("metadata");
 		field.setAccessible(true);

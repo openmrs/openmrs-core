@@ -15,7 +15,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openmrs</groupId>
 	<artifactId>openmrs</artifactId>
-	<version>2.5.0</version>
+	<version>2.6.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>OpenMRS</name>
 	<description>Master project for the modules of OpenMRS</description>
@@ -42,7 +42,7 @@
 		<connection>scm:git:git@github.com:openmrs/openmrs-core</connection>
 		<developerConnection>scm:git:git@github.com:openmrs/openmrs-core</developerConnection>
 		<url>https://github.com/openmrs/openmrs-core</url>
-	  <tag>2.5.0</tag>
+	  <tag>HEAD</tag>
   </scm>
 
 	<ciManagement>
@@ -281,7 +281,7 @@
 			<dependency>
 				<groupId>org.reflections</groupId>
 				<artifactId>reflections</artifactId>
-				<version>0.10.1</version>
+				<version>0.10.2</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
@@ -389,7 +389,7 @@
 			<dependency>
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
-				<version>8.0.26</version>
+				<version>8.0.27</version>
 				<scope>runtime</scope>
 			</dependency>
 			<dependency>
@@ -400,7 +400,7 @@
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>42.2.24</version>
+				<version>42.3.1</version>
 				<scope>runtime</scope>
 			</dependency>
 			<dependency>
@@ -537,7 +537,7 @@
 			<dependency>
 			  <groupId>joda-time</groupId>
 			  <artifactId>joda-time</artifactId>
-			  <version>2.10.12</version>
+			  <version>2.10.13</version>
 			</dependency>
 			<dependency>
 			    <groupId>javax.annotation</groupId>
@@ -785,7 +785,7 @@
 				<plugin>
 					<groupId>org.sonarsource.scanner.maven</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
-					<version>3.9.0.2155</version>
+					<version>3.9.1.2184</version>
 				</plugin>
 				<plugin>
 					<groupId>org.jacoco</groupId>
@@ -1034,6 +1034,13 @@
 				</dependency>
 			</dependencies>
 		</profile>
+		<profile>
+			<id>sonar-cloud</id>
+			<properties>
+				<sonar.organization>openmrs</sonar.organization>
+				<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+			</properties>
+		</profile>
 	</profiles>
 
 	<reporting>
@@ -1107,8 +1114,8 @@
 			 version of Hibernate Search must be compatible with the version of Hibernate and Hibernate must
 			 be compatible with our version of Spring. -->
 		<springVersion>5.2.14.RELEASE</springVersion>
-		<hibernateVersion>5.6.0.Final</hibernateVersion>
-		<hibernateSearchVersion>5.11.9.Final</hibernateSearchVersion>
+		<hibernateVersion>5.6.1.Final</hibernateVersion>
+		<hibernateSearchVersion>5.11.10.Final</hibernateSearchVersion>
 		<luceneVersion>5.5.5</luceneVersion>
 		<aspectjVersion>1.9.7</aspectjVersion>
 		<jacksonVersion>2.13.0</jacksonVersion>
@@ -1121,7 +1128,7 @@
 
 		<customArgLineForTesting />
 
-		<sonar.host.url>https://sonar.openmrs.org</sonar.host.url>
+		<sonar.host.url>https://sonar.openmrs.org</sonar.host.url>		
 		<sonar.issuesReport.html.enable>true</sonar.issuesReport.html.enable>
 		<sonar.issuesReport.lightModeOnly>true</sonar.issuesReport.lightModeOnly>
 		<sonar.issuesReport.console.enable>true</sonar.issuesReport.console.enable>

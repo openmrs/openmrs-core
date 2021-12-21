@@ -9,6 +9,7 @@ on:
       - 2.4.x
       - 2.5.x
   pull_request:
+    types: [opened, synchronize, reopened]
     branches:
       - master
       - 2.4.x
@@ -26,7 +27,7 @@ jobs:
           - 11
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v2.3.4
+      - uses: actions/checkout@v2.4.0
       - name: Setup JDK
         uses: actions/setup-java@v2
         with:
@@ -38,6 +39,12 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v1
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
       - name: Install dependencies
         run: mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --show-version --file pom.xml
       - name: Build with Maven
@@ -52,6 +59,14 @@ jobs:
         run: |
           echo "::set-output name=branch_name::${BRANCH_NAME_OR_REF#refs/heads/}"
           echo "::set-output name=pr_number::$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")"
+      - name: Send data to Sonar
+        # only send sonar data for Java 11
+        if: ${{ matrix.java-version == '11' }}
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=openmrs_openmrs-core --batch-mode --file pom.xml -P sonar-cloud
       - name: Update coverage data
         # only send coverage data for Java 8
         if: ${{ matrix.java-version == '8' && steps.refs.outcome == 'success' }}
