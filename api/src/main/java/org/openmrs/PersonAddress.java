@@ -44,8 +44,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData
 	public static final long serialVersionUID = 343333L;
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "person_address_id_gen")
-	@SequenceGenerator(name = "person_address_id_gen", sequenceName = "person_address_person_address_id_seq")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "person_address_id")
 	private Integer personAddressId;
 
