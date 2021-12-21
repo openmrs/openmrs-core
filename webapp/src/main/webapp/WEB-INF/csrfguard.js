@@ -350,6 +350,12 @@ if (owaspCSRFGuardScriptHasLoaded !== true) {
 
             var value = tokenValue;
             var action = form.getAttribute('action');
+            if (action == null) {
+            	//Some OpenMRS forms do not have the action attribute. This results into the CSRF token
+            	//not being injected into these forms. Below is an example of such a form:
+            	//https://demo.openmrs.org/openmrs/admin/forms/formEdit.form
+            	action = "";
+            }
 
             if (action !== null && isValidUrl(action)) {
                 var uri = parseUri(action);
