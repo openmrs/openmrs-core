@@ -122,6 +122,16 @@
 	</filter-mapping>
 	<!--  End third filter -->
 	
+	<filter>
+        <filter-name>CSRFGuard</filter-name>
+        <filter-class>org.owasp.csrfguard.CsrfGuardFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>CSRFGuard</filter-name>
+        <!-- Filter any URL using CSRFGuard -->
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+	
 	<!--  Should be the second filter so that all requests are first wrapped by a 
 	      hibernate filter (to help with lazy loading) -->
 	<filter>
@@ -288,6 +298,19 @@
 		<servlet-name>jsp</servlet-name>
 		<url-pattern>*.jsp</url-pattern>
 	</servlet-mapping>
+	
+	<servlet>
+        <servlet-name>CsrfServlet</servlet-name>
+        <servlet-class>org.owasp.csrfguard.servlet.JavaScriptServlet</servlet-class>
+        <init-param>
+            <param-name>source-file</param-name>
+            <param-value>WEB-INF/csrfguard.js</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CsrfServlet</servlet-name>
+        <url-pattern>/csrfguard</url-pattern>
+    </servlet-mapping>
 	
 	<session-config>
 	    <cookie-config>
