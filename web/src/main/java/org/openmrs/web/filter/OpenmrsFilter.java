@@ -10,7 +10,6 @@
 package org.openmrs.web.filter;
 
 import java.io.IOException;
-import java.util.Collection;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -99,8 +98,6 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 		Context.setUserContext(userContext);
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		
-		addSameSiteCookie(httpResponse);
-		
 		log.debug("before chain.Filter");
 		
 		// continue the filter chain (going on to spring, authorization, etc)
@@ -115,26 +112,4 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 		
 	}
 	
-	/**
-	 * Adds the same site cookie to prevent CSRF Attacks
-	 * 
-	 * @param response the http servlet response
-	 */
-	private void addSameSiteCookie(HttpServletResponse response) {
-		
-		final String SET_COOKIE_HEADER = "Set-Cookie";
-		final String SET_COOKIE_HEADER_VALUE = "SameSite=Lax";
-		final String SET_COOKIE_HEADER_FORMAT = "%s; %s";
-			
-		Collection<String> headers = response.getHeaders(SET_COOKIE_HEADER);
-        boolean firstHeader = true;
-        for (String header : headers) {  
-        	if (firstHeader) {
-                response.setHeader(SET_COOKIE_HEADER, String.format(SET_COOKIE_HEADER_FORMAT, header, SET_COOKIE_HEADER_VALUE));
-                firstHeader = false;
-                continue;
-            }
-            response.addHeader(SET_COOKIE_HEADER, String.format(SET_COOKIE_HEADER_FORMAT, header, SET_COOKIE_HEADER_VALUE));
-        }
-    }
 }
