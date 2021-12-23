@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.sql.Driver;
@@ -61,6 +62,7 @@ import org.openmrs.web.filter.initialization.DatabaseDetective;
 import org.openmrs.web.filter.initialization.InitializationFilter;
 import org.openmrs.web.filter.update.UpdateFilter;
 import org.owasp.csrfguard.CsrfGuard;
+import org.owasp.csrfguard.CsrfGuardServletContextListener;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
 import org.springframework.beans.factory.BeanCreationException;
@@ -233,6 +235,18 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		properties.load(inputStream);
 		IOUtils.closeQuietly(inputStream);
 		CsrfGuard.load(properties);
+		
+		try {
+			//CSRFGuard by default loads properties using CsrfGuardServletContextListener
+			//which sets the servlet context path to be used during variable substitution of
+			//%servletContext% in the properties file.
+			Field field = CsrfGuardServletContextListener.class.getDeclaredField("servletContext");
+			field.setAccessible(true);
+			field.set(null, servletContext.getContextPath());
+		}
+		catch (Exception ex) {
+			log.error("Failed to set the CSRFGuard servlet context", ex);
+		}
 	}
 	
 	/**
