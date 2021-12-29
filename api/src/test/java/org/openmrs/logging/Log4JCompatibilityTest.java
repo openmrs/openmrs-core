@@ -7,7 +7,7 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.util;
+package org.openmrs.logging;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -31,11 +31,11 @@ public class Log4JCompatibilityTest {
 		final org.apache.logging.log4j.core.Logger compatibilityLogger = (org.apache.logging.log4j.core.Logger) org.apache.logging.log4j.LogManager.getLogger("Log4JCompatibility");
 		final Level originalLevel = compatibilityLogger.getLevel();
 		final boolean originalAdditive = compatibilityLogger.isAdditive();
-		final MemoryAppender ma = MemoryAppender.newBuilder()
-			.setName("MEMORY")
+		final org.openmrs.logging.MemoryAppender ma = MemoryAppender.newBuilder()
 			.setLayout(PatternLayout.newBuilder()
 				.withPattern("%m%n")
 				.build())
+			.setBufferSize(1)
 			.build();
 		
 		try {

@@ -7,7 +7,7 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.util;
+package org.openmrs.logging;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -34,7 +34,6 @@ public class MemoryAppenderTest {
 	@BeforeEach
 	public void setup() {
 		memoryAppender = MemoryAppender.newBuilder()
-			.setName("MEMORY_APPENDER_TEST")
 			.setLayout(PatternLayout.newBuilder().withPattern("%m").build())
 			.build();
 		memoryAppender.start();
@@ -83,7 +82,6 @@ public class MemoryAppenderTest {
 		logger.removeAppender(memoryAppender);
 		
 		memoryAppender = MemoryAppender.newBuilder()
-			.setName("MEMORY_APPENDER_TEST")
 			.setLayout(PatternLayout.newBuilder().withPattern("%m").build())
 			.setBufferSize(4)
 			.build();
