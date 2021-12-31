@@ -23,6 +23,7 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.PatientDAO;
 import org.openmrs.comparator.PatientIdentifierTypeDefaultComparator;
+import org.openmrs.PatientMergeAction;
 import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.person.PersonMergeLogData;
 import org.openmrs.serialization.SerializationException;
@@ -844,4 +845,23 @@ public interface PatientService extends OpenmrsService {
 	 * @throws PatientIdentifierTypeLockedException
 	 */
 	public void checkIfPatientIdentifierTypesAreLocked() throws PatientIdentifierTypeLockedException;
+	 /**
+     * Allows another module to add a patient merge action to the list of actions to be performed
+     * when a patient is merged; (ideally, this would just happen via @Autowired, but because @Autowired
+     * in service impls greatly slow down startup, instead we have other modules inject the beans explicitly
+     * via this method). 
+     * @param patientMergeAction
+     */
+    public void addPatientMergeAction(PatientMergeAction patientMergeAction);
+    /**
+     * Allows another module to remove a patient merge action to the list of actions to be performed
+     * when a patient is merged; (see addPatientMergeAction above)
+     *
+     * @param patientMergeAction
+     */
+    public void removePatientMergeAction(PatientMergeAction patientMergeAction);
+    
+ // for testing
+    public List<PatientMergeAction> getPatientMergeActions();
+
 }
