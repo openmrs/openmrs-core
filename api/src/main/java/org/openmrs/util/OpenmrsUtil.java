@@ -855,12 +855,11 @@ public class OpenmrsUtil {
 		
 		return ret;
 	}
-	
-	// TODO: properly handle duplicates
+
 	public static List<Concept> conceptListHelper(String descriptor) {
-		List<Concept> ret = new ArrayList<>();
+		Set<Concept> ret = new HashSet<>();
 		if (descriptor == null || descriptor.length() == 0) {
-			return ret;
+			return new ArrayList<>();
 		}
 		ConceptService cs = Context.getConceptService();
 		
@@ -889,7 +888,7 @@ public class OpenmrsUtil {
 				}
 			}
 		}
-		return ret;
+		return ret.stream().collect(Collectors.toList());
 	}
 	
 	/**
