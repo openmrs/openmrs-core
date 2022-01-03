@@ -26,6 +26,7 @@ import javax.mail.Session;
 
 import org.aopalliance.aop.Advice;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.SessionFactory;
 import org.openmrs.Allergen;
 import org.openmrs.GlobalProperty;
 import org.openmrs.PersonName;
@@ -1388,5 +1389,50 @@ public class Context {
 	 */
 	public static boolean isUseSystemClassLoader() {
 		return getServiceContext().isUseSystemClassLoader();
+	}
+
+	/**
+	 * Evicts the entity data for a particular entity "instance".
+	 *
+	 * @param sessionFactory
+	 * @since 2.6.0
+	 */
+	public static void evictSingleEntity(SessionFactory sessionFactory, Class<?> entityClass, String uuid) {
+		if(StringUtils.isBlank(uuid)) {
+			evictAllEntities(sessionFactory, entityClass);
+			return;
+		}
+		log.debug("Clearing DB cache for entity: {} with uuid: {}", entityClass, uuid);
+		sessionFactory.getCache().evictEntity(entityClass, uuid);
+		sessionFactory.getCache().evictCollectionRegions();
+		sessionFactory.getCache().evictQueryRegions();
+	}
+
+	/**
+	 * Evicts all entity data from the given region (i.e. for all entities of type).
+	 *
+	 * @param sessionFactory
+	 * @since 2.6.0
+	 */
+	public static void evictAllEntities(SessionFactory sessionFactory, Class<?> entityClass) {
+		if(entityClass == null){
+			clearEntireCache(sessionFactory);
+			return;
+		}
+		log.debug("Clearing DB cache for entities of type: {}", entityClass);
+		sessionFactory.getCache().evictEntityRegion(entityClass);
+		sessionFactory.getCache().evictCollectionRegions();
+		sessionFactory.getCache().evictQueryRegions();
+	}
+
+	/**
+	 * Evict data from all cache regions.
+	 *
+	 * @param sessionFactory
+	 * @since 2.6.0
+	 */
+	public static void clearEntireCache(SessionFactory sessionFactory) {
+		log.debug("Clearing DB cache from all regions");
+		sessionFactory.getCache().evictAllRegions();
 	}
 }
