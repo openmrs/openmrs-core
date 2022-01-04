@@ -9,7 +9,6 @@
  */
 package org.openmrs.logging;
 
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.commons.lang3.StringUtils;
@@ -29,7 +28,6 @@ import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.openmrs.annotation.Logging;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -58,10 +56,8 @@ public final class OpenmrsLoggingUtil {
 		MemoryAppender memoryAppender = ((LoggerContext) LogManager.getContext(true)).getConfiguration()
 			.getAppender(OpenmrsConstants.MEMORY_APPENDER_NAME);
 		
-		if (memoryAppender != null) {
-			if (!memoryAppender.isStarted()) {
-				memoryAppender.start();
-			}
+		if (memoryAppender != null && !memoryAppender.isStarted()) {
+			memoryAppender.start();
 		}
 		
 		return memoryAppender;

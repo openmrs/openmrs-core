@@ -24,10 +24,10 @@ import org.junit.jupiter.api.Test;
  * Class to ensure that we maintain some level of compatibility with Log4J 1.X
  * At some point in the future, this compatibility guarantee should be removed.
  */
-public class Log4JCompatibilityTest {
+class Log4JCompatibilityTest {
 
 	@Test
-	public void OpenmrsCore_shouldAllowUseOfLog4j1xAPI() {
+	void OpenmrsCore_shouldAllowUseOfLog4j1xAPI() {
 		final org.apache.logging.log4j.core.Logger compatibilityLogger = (org.apache.logging.log4j.core.Logger) org.apache.logging.log4j.LogManager.getLogger("Log4JCompatibility");
 		final Level originalLevel = compatibilityLogger.getLevel();
 		final boolean originalAdditive = compatibilityLogger.isAdditive();

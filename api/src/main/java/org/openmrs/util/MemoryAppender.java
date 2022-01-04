@@ -167,7 +167,7 @@ public class MemoryAppender extends org.openmrs.logging.MemoryAppender {
 	}
 	
 	@Override
-	public void addFilter(Filter filter) {
+	public synchronized void addFilter(Filter filter) {
 		if (implementation != null) {
 			implementation.addFilter(filter);
 		} else {
@@ -203,7 +203,7 @@ public class MemoryAppender extends org.openmrs.logging.MemoryAppender {
 	}
 	
 	@Override
-	public void removeFilter(Filter filter) {
+	public synchronized void removeFilter(Filter filter) {
 		if (implementation != null) {
 			implementation.removeFilter(filter);
 		} else {
