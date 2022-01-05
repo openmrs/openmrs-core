@@ -123,7 +123,7 @@ public final class OpenmrsLoggingUtil {
 				}
 			}
 			
-			// DO NOT USE LogManager#getContext() here as this will reset the logger context
+			// DO NOT USE LogManager#getContext() here as this might reset the logger context
 			((Logger) LogManager.getRootLogger()).getContext().updateLoggers();
 		}
 	}
@@ -140,7 +140,7 @@ public final class OpenmrsLoggingUtil {
 		if (StringUtils.isNotBlank(logLevel)) {
 			synchronized (OpenmrsLoggingUtil.class) {
 				applyLogLevelInternal(logClass, logLevel);
-				// DO NOT USE LogManager#getContext() here as this will reset the logger context
+				// DO NOT USE LogManager#getContext() here as this might reset the logger context
 				((Logger) LogManager.getRootLogger()).getContext().updateLoggers();
 			}
 		}
@@ -201,7 +201,7 @@ public final class OpenmrsLoggingUtil {
 	 */
 	public static void reloadLoggingConfiguration() {
 		// Works, but it might be necessary to verify this in the future
-		LogManager.getContext(true);
+		((LoggerContext) LogManager.getContext(true)).reconfigure();
 	}
 	
 }
