@@ -10,7 +10,6 @@
 package org.openmrs.web.filter;
 
 import java.io.IOException;
-import java.util.Collection;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -95,11 +94,19 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 		// set the locale on the session (for the servlet container as well)
 		httpSession.setAttribute("locale", userContext.getLocale());
 		
+		//TODO We do not cache pages that have CSRF tokens. There are smarter ways of dealing
+		//with this, like loading just the CSRF token with an AJAX request and replacing the 
+		//form field value with it, and others. But i did not go into these details. So for now,
+		//i have just done the simplest which is turning off caching for pages that have CSRF tokens.
+		if (httpRequest.getParameter("OWASP-CSRFTOKEN") != null) {
+			httpResponse.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
+			httpResponse.setHeader("Pragma", "no-cache"); // HTTP 1.0.
+			httpResponse.setHeader("Expires", "0"); // Proxies.
+		}
+		
 		// Add the user context to the current thread 
 		Context.setUserContext(userContext);
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
-		
-		addSameSiteCookie(httpResponse);
 		
 		log.debug("before chain.Filter");
 		
@@ -115,26 +122,4 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 		
 	}
 	
-	/**
-	 * Adds the same site cookie to prevent CSRF Attacks
-	 * 
-	 * @param response the http servlet response
-	 */
-	private void addSameSiteCookie(HttpServletResponse response) {
-		
-		final String SET_COOKIE_HEADER = "Set-Cookie";
-		final String SET_COOKIE_HEADER_VALUE = "SameSite=Lax";
-		final String SET_COOKIE_HEADER_FORMAT = "%s; %s";
-			
-		Collection<String> headers = response.getHeaders(SET_COOKIE_HEADER);
-        boolean firstHeader = true;
-        for (String header : headers) {  
-        	if (firstHeader) {
-                response.setHeader(SET_COOKIE_HEADER, String.format(SET_COOKIE_HEADER_FORMAT, header, SET_COOKIE_HEADER_VALUE));
-                firstHeader = false;
-                continue;
-            }
-            response.addHeader(SET_COOKIE_HEADER, String.format(SET_COOKIE_HEADER_FORMAT, header, SET_COOKIE_HEADER_VALUE));
-        }
-    }
 }
