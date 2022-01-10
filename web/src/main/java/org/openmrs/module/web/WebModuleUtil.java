@@ -20,13 +20,17 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Vector;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
@@ -81,21 +85,23 @@ public class WebModuleUtil {
 	
 	private static final Logger log = LoggerFactory.getLogger(WebModuleUtil.class);
 	
+	private static final Lock SERVLET_LOCK = new ReentrantLock();
+	
+	private static final Lock FILTERS_LOCK = new ReentrantLock();
+	
+	// caches all modules' mapped servlets
+	private static final Map<String, HttpServlet> MODULE_SERVLETS = new HashMap<>();
+	
+	// caches all modules filters and filter-mappings
+	private static final Map<Module, Collection<Filter>> MODULE_FILTERS = new HashMap<>();
+	
+	private static final Map<String, Filter> MODULE_FILTERS_BY_NAME = new HashMap<>();
+	
+	private static final Deque<ModuleFilterMapping> MODULE_FILTER_MAPPINGS = new LinkedList<>();
+	
 	private static DispatcherServlet dispatcherServlet = null;
 	
 	private static StaticDispatcherServlet staticDispatcherServlet = null;
-	
-	// caches all of the modules' mapped servlets
-	private static Map<String, HttpServlet> moduleServlets = Collections.synchronizedMap(new HashMap<>());
-	
-	// caches all of the module loaded filters and filter-mappings
-	private static Map<Module, Collection<Filter>> moduleFilters = Collections
-	        .synchronizedMap(new HashMap<>());
-	
-	private static Map<String, Filter> moduleFiltersByName = Collections.synchronizedMap(new HashMap<>());
-	
-	private static List<ModuleFilterMapping> moduleFilterMappings = Collections
-	        .synchronizedList(new Vector<>());
 	
 	/**
 	 * Performs the webapp specific startup needs for modules Normal startup is done in
@@ -342,7 +348,7 @@ public class WebModuleUtil {
 				
 				// find and cache the module's servlets
 				//(only if the module started successfully previously)
-				log.debug("Loading servlets and filters for module: " + mod);
+				log.debug("Loading servlets and filters for module {}", mod);
 				servletContext.setAttribute(OpenmrsJspServlet.OPENMRS_TLD_SCAN_NEEDED, true);
 				loadServlets(mod, servletContext);
 				loadFilters(mod, servletContext);
@@ -455,48 +461,57 @@ public class WebModuleUtil {
 			try {
 				httpServlet = (HttpServlet) ModuleFactory.getModuleClassLoader(mod).loadClass(className).newInstance();
 			}
+			catch (ClassCastException e) {
+				log.warn("Class {} from module {} is not a valid HttpServlet", className, mod, e);
+				continue;
+			}
 			catch (ClassNotFoundException e) {
-				log.warn("Class not found for servlet " + name + " for module " + mod.getName(), e);
+				log.warn("Class {} not found for servlet {} from module {}", className, name, mod, e);
 				continue;
 			}
 			catch (IllegalAccessException e) {
-				log.warn("Class cannot be accessed for servlet " + name + " for module " + mod.getName(), e);
+				log.warn("Class {} cannot be accessed for servlet {} from module {}", className, name, mod, e);
 				continue;
 			}
 			catch (InstantiationException e) {
-				log.warn("Class cannot be instantiated for servlet " + name + " for module " + mod.getName(), e);
+				log.warn("Class {} cannot be instantiated for servlet {} from module {}", className, name, mod, e);
 				continue;
 			}
 			
 			try {
-				log.debug("Initializing " + name + " servlet. - " + httpServlet + ".");
+				log.debug("Initializing {} servlet. - {}.", name, httpServlet);
 				ServletConfig servletConfig = new ModuleServlet.SimpleServletConfig(name, servletContext);
 				httpServlet.init(servletConfig);
 			}
 			catch (Exception e) {
-				log.warn("Unable to initialize servlet: ", e);
-				throw new ModuleException("Unable to initialize servlet: " + httpServlet, mod.getModuleId(), e);
+				log.warn("Unable to initialize servlet {}", name, e);
+				throw new ModuleException("Unable to initialize servlet " + name, mod.getModuleId(), e);
 			}
 			
 			// don't allow modules to overwrite servlets of other modules.
-			HttpServlet otherServletUsingSameName = moduleServlets.get(name);
+			HttpServlet otherServletUsingSameName = MODULE_SERVLETS.get(name);
 			if (otherServletUsingSameName != null) {
-				String otherServletName = otherServletUsingSameName.getClass().getPackage() + "."
-				        + otherServletUsingSameName.getClass().getName();
+				String otherServletName = otherServletUsingSameName.getClass().getName();
 				throw new ModuleException("A servlet mapping with name " + name + " is already in use and pointing at: "
 				        + otherServletName + " from another installed module and this module is trying"
-				        + " to use that same name.  Either the module attempting to be installed (" + mod.getModuleId()
+				        + " to use that same name.  Either the module attempting to be installed (" + mod
 				        + ") will not work or the other one will not.  Please consult the developers of these two"
 				        + " modules to sort this out.");
 			}
 			
-			log.debug("Caching the " + name + " servlet.");
-			moduleServlets.put(name, httpServlet);
+			log.debug("Caching the {} servlet.", name);
+			
+			SERVLET_LOCK.lock();
+			try {
+				MODULE_SERVLETS.put(name, httpServlet);
+			} finally {
+				SERVLET_LOCK.unlock();
+			}
 		}
 	}
 	
 	/**
-	 * Remove all of the servlets defined for this module
+	 * Remove the servlets defined for this module
 	 *
 	 * @param mod the module that is being stopped that needs its servlets removed
 	 */
@@ -512,10 +527,25 @@ public class WebModuleUtil {
 				Node childNode = childNodes.item(j);
 				if ("servlet-name".equals(childNode.getNodeName()) && childNode.getTextContent() != null) {
 					name = childNode.getTextContent().trim();
-					HttpServlet servlet = moduleServlets.get(name);
+					
+					HttpServlet servlet;
+					SERVLET_LOCK.lock();
+					try {
+						servlet = MODULE_SERVLETS.get(name);
+					} finally {
+						SERVLET_LOCK.unlock();
+					}
+					
 					if (servlet != null) {
-						servlet.destroy(); // shut down the servlet
-						moduleServlets.remove(name);
+						// shut down the servlet
+						servlet.destroy();
+					}
+					
+					SERVLET_LOCK.lock();
+					try {
+						MODULE_SERVLETS.remove(name);
+					} finally {
+						SERVLET_LOCK.unlock();
 					}
 				}
 			}
@@ -531,33 +561,82 @@ public class WebModuleUtil {
 	public static void loadFilters(Module module, ServletContext servletContext) {
 		
 		// Load Filters
-		Map<String, Filter> filters = new HashMap<>();
-		try {
-			for (ModuleFilterDefinition def : ModuleFilterDefinition.retrieveFilterDefinitions(module)) {
-				if (moduleFiltersByName.containsKey(def.getFilterName())) {
-					throw new ModuleException("A filter with name <" + def.getFilterName()
-					        + "> has already been registered.");
-				}
-				ModuleFilterConfig config = ModuleFilterConfig.getInstance(def, servletContext);
-				Filter f = (Filter) ModuleFactory.getModuleClassLoader(module).loadClass(def.getFilterClass()).newInstance();
-				f.init(config);
-				filters.put(def.getFilterName(), f);
-			}
-		}
-		catch (ModuleException e) {
-			throw e;
-		}
-		catch (Exception e) {
-			throw new ModuleException("An error occurred initializing Filters for module: " + module.getModuleId(), e);
-		}
-		moduleFilters.put(module, filters.values());
-		moduleFiltersByName.putAll(filters);
-		log.debug("Module: " + module.getModuleId() + " successfully loaded " + filters.size() + " filters.");
+		Map<String, Filter> filters = new LinkedHashMap<>();
 		
-		// Load Filter Mappings
-		List<ModuleFilterMapping> modMappings = ModuleFilterMapping.retrieveFilterMappings(module);
-		moduleFilterMappings.addAll(modMappings);
-		log.debug("Module: " + module.getModuleId() + " successfully loaded " + modMappings.size() + " filter mappings.");
+		Map<String, Filter> existingFilters;
+		FILTERS_LOCK.lock();
+		try {
+			existingFilters = new HashMap<>(MODULE_FILTERS_BY_NAME);
+		} finally {
+			FILTERS_LOCK.unlock();
+		}
+		
+		for (ModuleFilterDefinition def : ModuleFilterDefinition.retrieveFilterDefinitions(module)) {
+			String name = def.getFilterName();
+			String className = def.getFilterClass();
+			
+			if (existingFilters.containsKey(name)) {
+				throw new ModuleException("A filter with the name " + name + " is already in use and pointing at: "
+					+ existingFilters.get(name).getClass().getName()
+					+ " from another installed module and this module is trying"
+					+ " to use that same name.  Either the module attempting to be installed (" + module
+					+ ") will not work or the other one will not.  Please consult the developers of these two"
+					+ " modules to sort this out.");
+			}
+			
+			ModuleFilterConfig config = ModuleFilterConfig.getInstance(def, servletContext);
+			
+			Filter filter;
+			try {
+				filter = (Filter) ModuleFactory.getModuleClassLoader(module).loadClass(className).newInstance();
+			}
+			catch (ClassCastException e) {
+				log.warn("Class {} from module {} is not a valid Filter", className, module, e);
+				continue;
+			}
+			catch (ClassNotFoundException e) {
+				log.warn("Class {} not found for servlet {} from module {}", className, name, module, e);
+				continue;
+			}
+			catch (IllegalAccessException e) {
+				log.warn("Class {} cannot be accessed for servlet {} from module {}", className, name, module, e);
+				continue;
+			}
+			catch (InstantiationException e) {
+				log.warn("Class {} cannot be instantiated for servlet {} from module {}", className, name, module, e);
+				continue;
+			}
+			
+			try {
+				log.debug("Initializing {} filter. - {}.", name, filter);
+				filter.init(config);
+			}
+			catch (Exception e) {
+				log.warn("Unable to initialize servlet {}", name, e);
+				throw new ModuleException("Unable to initialize servlet " + name, module.getModuleId(), e);
+			}
+			
+			filters.put(name, filter);
+		}
+
+		FILTERS_LOCK.lock();
+		try {
+			MODULE_FILTERS.put(module, filters.values());
+			MODULE_FILTERS_BY_NAME.putAll(filters);
+			log.debug("Module {} successfully loaded {} filters.", module, filters.size());
+			
+			// Load Filter Mappings
+			Deque<ModuleFilterMapping> modMappings = ModuleFilterMapping.retrieveFilterMappings(module);
+			
+			// IMPORTANT: Filter load order
+			// retrieveFilterMappings will return the list of filters in the order they occur in the config.xml file
+			// here we add them to the *front* of the filter mappings
+			modMappings.descendingIterator().forEachRemaining(MODULE_FILTER_MAPPINGS::addFirst);
+			
+			log.debug("Module {} successfully loaded {} filter mappings.", module, modMappings.size());
+		} finally {
+			FILTERS_LOCK.unlock();
+		}
 	}
 	
 	/**
@@ -569,7 +648,7 @@ public class WebModuleUtil {
 	public static void unloadFilters(Module module) {
 		
 		// Unload Filter Mappings
-		for (Iterator<ModuleFilterMapping> mapIter = moduleFilterMappings.iterator(); mapIter.hasNext();) {
+		for (Iterator<ModuleFilterMapping> mapIter = MODULE_FILTER_MAPPINGS.iterator(); mapIter.hasNext();) {
 			ModuleFilterMapping mapping = mapIter.next();
 			if (module.equals(mapping.getModule())) {
 				mapIter.remove();
@@ -578,7 +657,7 @@ public class WebModuleUtil {
 		}
 		
 		// unload Filters
-		Collection<Filter> filters = moduleFilters.get(module);
+		Collection<Filter> filters = MODULE_FILTERS.get(module);
 		if (filters != null) {
 			try {
 				for (Filter f : filters) {
@@ -588,10 +667,11 @@ public class WebModuleUtil {
 			catch (Exception e) {
 				log.warn("An error occurred while trying to destroy and remove module Filter.", e);
 			}
+			
 			log.debug("Module: " + module.getModuleId() + " successfully unloaded " + filters.size() + " filters.");
-			moduleFilters.remove(module);
+			MODULE_FILTERS.remove(module);
 
-			moduleFiltersByName.values().removeIf(filters::contains);
+			MODULE_FILTERS_BY_NAME.values().removeIf(filters::contains);
 		}
 	}
 	
@@ -601,7 +681,7 @@ public class WebModuleUtil {
 	 * @return A Collection of {@link Filter}s that have been registered by a module
 	 */
 	public static Collection<Filter> getFilters() {
-		return moduleFiltersByName.values();
+		return MODULE_FILTERS_BY_NAME.values();
 	}
 	
 	/**
@@ -611,7 +691,7 @@ public class WebModuleUtil {
 	 *         Module
 	 */
 	public static Collection<ModuleFilterMapping> getFilterMappings() {
-		return moduleFilterMappings;
+		return MODULE_FILTER_MAPPINGS;
 	}
 	
 	/**
@@ -634,7 +714,7 @@ public class WebModuleUtil {
 				}
 				for (ModuleFilterMapping filterMapping : WebModuleUtil.getFilterMappings()) {
 					if (ModuleFilterMapping.filterMappingPasses(filterMapping, requestPath)) {
-						Filter passedFilter = moduleFiltersByName.get(filterMapping.getFilterName());
+						Filter passedFilter = MODULE_FILTERS_BY_NAME.get(filterMapping.getFilterName());
 						if (passedFilter != null) {
 							filters.add(passedFilter);
 						} else {
@@ -889,7 +969,7 @@ public class WebModuleUtil {
 	 * @return the current servlet or null if none defined
 	 */
 	public static HttpServlet getServlet(String servletName) {
-		return moduleServlets.get(servletName);
+		return MODULE_SERVLETS.get(servletName);
 	}
 	
 	/**
