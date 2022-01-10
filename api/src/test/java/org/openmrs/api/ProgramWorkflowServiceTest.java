@@ -457,22 +457,22 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		Assertions.assertThrows(APIException.class, ()->{
 			pws.saveProgram(program);
 		});
-//
-//		workflow.setConcept(cs.getConcept(4));
-//
-//		ProgramWorkflowState state1 = new ProgramWorkflowState();
-//		state1.setConcept(cs.getConcept(5));
-//		state1.setInitial(true);
-//		state1.setTerminal(false);
-//		workflow.addState(state1);
-//
-//		ProgramWorkflowState state2 = new ProgramWorkflowState();
-//		state2.setInitial(false);
-//		state2.setTerminal(true);
-//		workflow.addState(state2);
-//		Assertions.assertThrows(APIException.class, ()->{
-//			pws.saveProgram(program);
-//		});
+
+		workflow.setConcept(cs.getConcept(4));
+
+		ProgramWorkflowState state1 = new ProgramWorkflowState();
+		state1.setConcept(cs.getConcept(5));
+		state1.setInitial(true);
+		state1.setTerminal(false);
+		workflow.addState(state1);
+
+		ProgramWorkflowState state2 = new ProgramWorkflowState();
+		state2.setInitial(false);
+		state2.setTerminal(true);
+		workflow.addState(state2);
+		Assertions.assertThrows(APIException.class, ()->{
+			pws.saveProgram(program);
+		});
 	}
 
 	/**
