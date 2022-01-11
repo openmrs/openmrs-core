@@ -71,13 +71,19 @@
 		<property name="globalPropertyListenersToEmpty" value="false"/>
 	</bean>
 
+	<bean id="localeUtility" class="org.openmrs.util.LocaleUtility"/>
+	<bean id="locationUtility" class="org.openmrs.util.LocationUtility"/>
+	<bean id="personNameGlobalPropertyListener" class="org.openmrs.api.impl.PersonNameGlobalPropertyListener"/>
+	<bean id="loggingConfigurationGlobalPropertyListener"
+		  class="org.openmrs.logging.LoggingConfigurationGlobalPropertyListener"/>
+
 	<bean id="openmrsEventListeners" class="org.openmrs.api.EventListeners" depends-on="clearOpenmrsEventListeners">
 		<property name="globalPropertyListeners">
 			<list value-type="org.openmrs.api.GlobalPropertyListener">
-				<bean class="org.openmrs.util.LocaleUtility"/>
-				<bean class="org.openmrs.util.LocationUtility"/>
-				<bean class="org.openmrs.api.impl.PersonNameGlobalPropertyListener"/>
-				<bean class="org.openmrs.util.LoggingGlobalPropertyListener"/>
+				<ref bean="localeUtility"/>
+				<ref bean="locationUtility"/>
+				<ref bean="personNameGlobalPropertyListener"/>
+				<ref bean="loggingConfigurationGlobalPropertyListener"/>
 				<ref bean="globalLocaleList"/>
 				<ref bean="adminServiceTarget"/>
 				<ref bean="orderServiceTarget"/>
