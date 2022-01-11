@@ -12,20 +12,32 @@
 -->
 
 <Configuration xmlns="http://logging.apache.org/log4j/2.0/config">
+	<Properties>
+		<!-- The default pattern is stored as a property so that it's only defined once.
+		     It's also quite challenging to escape using Log4j2's variable substitution. -->
+		<Property name="defaultPattern">%p - %C{1}.%M(%L) |%d{ISO8601}| %m%n</Property>
+	</Properties>
 	<Appenders>
+		<!-- the console appender is not required but usually a good idea -->
 		<Console name="CONSOLE" target="SYSTEM_OUT">
-			<PatternLayout pattern="%p - %C{1}.%M(%L) |%d{ISO8601}| %m%n" />
+			<PatternLayout pattern="${openmrs:logLayout:-${defaultPattern}}" />
 		</Console>
-		<RollingFile name="DEBUGGING_FILE_APPENDER" fileName="openmrs.log" filePattern="openmrs.%i.log.gz" append="false">
-			<PatternLayout pattern="%d{ABSOLUTE} %-5p [%c{1}] %m%n" />
+		<!-- OpenMRS should have an appender called "OPENMRS FILE APPENDER" that appends to a file -->
+		<RollingFile name="OPENMRS FILE APPENDER"
+					 fileName="${openmrs:logLocation:-${openmrs:applicationDirectory}}/openmrs.log"
+					 filePattern="${openmrs:logLocation:-${openmrs:applicationDirectory}}/openmrs.%i.log">
+			<PatternLayout pattern="${openmrs:logLayout:-${defaultPattern}}" />
 			<Policies>
 				<OnStartupTriggeringPolicy />
 				<SizeBasedTriggeringPolicy size="10 MB" />
 			</Policies>
 			<DefaultRolloverStrategy max="1" />
 		</RollingFile>
-		<Memory name="MEMORY_APPENDER">
-			<PatternLayout pattern="%p - %C{1}.%M(%L) |%d{ISO8601}| %m%n" />
+		<!-- The MEMORY_APPENDER is used to keep a subset of logging messages in memory to be displayed to the user.
+		 	 If one is not configured here, it will be created automatically. -->
+		<Memory name="MEMORY_APPENDER"
+				bufferSize="200"> <!-- bufferSize is how many messages are kept in memory -->
+			<PatternLayout pattern="${openmrs:logLayout:-${defaultPattern}}" />
 		</Memory>
 	</Appenders>
 	<Loggers>
@@ -49,7 +61,7 @@
 		<Root level="WARN">
 			<AppenderRef ref="CONSOLE" />
 			<AppenderRef ref="MEMORY_APPENDER" />
-			<!--<AppenderRef ref="DEBUGGING_FILE_APPENDER" />-->
+			<AppenderRef ref="OPENMRS FILE APPENDER" />
 		</Root>
 	</Loggers>
 </Configuration>

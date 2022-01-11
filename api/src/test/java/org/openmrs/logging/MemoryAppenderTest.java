@@ -7,7 +7,7 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.util;
+package org.openmrs.logging;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -26,7 +26,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class MemoryAppenderTest {
+class MemoryAppenderTest {
 	
 	private MemoryAppender memoryAppender;
 	private Logger logger;
@@ -34,7 +34,6 @@ public class MemoryAppenderTest {
 	@BeforeEach
 	public void setup() {
 		memoryAppender = MemoryAppender.newBuilder()
-			.setName("MEMORY_APPENDER_TEST")
 			.setLayout(PatternLayout.newBuilder().withPattern("%m").build())
 			.build();
 		memoryAppender.start();
@@ -53,7 +52,7 @@ public class MemoryAppenderTest {
 	}
 	
 	@Test
-	public void memoryAppender_shouldAppendAMessage() {
+	void memoryAppender_shouldAppendAMessage() {
 		logger.warn("Logging message");
 
 		List<String> logLines = memoryAppender.getLogLines();
@@ -63,7 +62,7 @@ public class MemoryAppenderTest {
 	}
 
 	@Test
-	public void memoryAppender_shouldAppendMultipleMessages() {
+	void memoryAppender_shouldAppendMultipleMessages() {
 		int nTimes = 12;
 		for (int i = 0; i < nTimes; i++) {
 			logger.warn("Logging message");
@@ -78,12 +77,11 @@ public class MemoryAppenderTest {
 	}
 	
 	@Test
-	public void memoryAppender_shouldOnlyKeepBufferSizeItems() {
+	void memoryAppender_shouldOnlyKeepBufferSizeItems() {
 		// clear setup() results
 		logger.removeAppender(memoryAppender);
 		
 		memoryAppender = MemoryAppender.newBuilder()
-			.setName("MEMORY_APPENDER_TEST")
 			.setLayout(PatternLayout.newBuilder().withPattern("%m").build())
 			.setBufferSize(4)
 			.build();
