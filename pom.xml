@@ -310,11 +310,6 @@
 				<version>${slf4jVersion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>log4j-over-slf4j</artifactId>
-				<version>${slf4jVersion}</version>
-			</dependency>
-			<dependency>
 				<groupId>ca.uhn.hapi</groupId>
 				<artifactId>hapi-base</artifactId>
 				<version>2.1</version>
