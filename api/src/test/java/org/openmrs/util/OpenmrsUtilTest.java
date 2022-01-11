@@ -1014,7 +1014,6 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		String descriptor = "name:YES | name:NO | name:YES";
 		List<Concept> ret = OpenmrsUtil.conceptListHelper(descriptor);
 		assertEquals(2, ret.size());
-
 		descriptor = "set:30 | set:29";
 		ret = OpenmrsUtil.conceptListHelper(descriptor);
 		assertEquals(1, ret.size());
