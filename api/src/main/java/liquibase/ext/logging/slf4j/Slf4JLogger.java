@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Simple layer to ensure liquibase logs get written to our standard loggers
+ * 
+ * @since 2.6.0
  */
 public class Slf4JLogger extends AbstractLogger {
 	

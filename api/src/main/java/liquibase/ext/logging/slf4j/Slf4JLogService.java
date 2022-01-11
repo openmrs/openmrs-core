@@ -15,6 +15,11 @@ import java.util.Map;
 import liquibase.logging.Logger;
 import liquibase.logging.core.AbstractLogService;
 
+/**
+ * An implementation of {@link liquibase.logging.LogService} to use SLF4J for Liquibase logging
+ * 
+ * @since 2.6.0
+ */
 public class Slf4JLogService extends AbstractLogService {
 	
 	private final Map<Class<?>, Slf4JLogger> loggers = new HashMap<>();
@@ -26,6 +31,6 @@ public class Slf4JLogService extends AbstractLogService {
 	
 	@Override
 	public Logger getLog(Class clazz) {
-		return loggers.computeIfAbsent(clazz, (c) -> new Slf4JLogger(c, getFilter()));
+		return loggers.computeIfAbsent(clazz, c -> new Slf4JLogger(c, getFilter()));
 	}
 }
