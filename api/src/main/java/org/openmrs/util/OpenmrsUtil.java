@@ -857,9 +857,9 @@ public class OpenmrsUtil {
 	}
 
 	public static List<Concept> conceptListHelper(String descriptor) {
-		Set<Concept> ret = new HashSet<>();
+		Set<Concept> ret = new LinkedHashSet<>();
 		if (descriptor == null || descriptor.length() == 0) {
-			return new ArrayList<>();
+			return Collections.emptyList();
 		}
 		ConceptService cs = Context.getConceptService();
 		
@@ -888,7 +888,7 @@ public class OpenmrsUtil {
 				}
 			}
 		}
-		return ret.stream().collect(Collectors.toList());
+		return new ArrayList(ret);
 	}
 	
 	/**
