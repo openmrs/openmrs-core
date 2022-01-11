@@ -146,7 +146,7 @@ public class ChangeLogDetective {
 				    new LabelExpression());
 				liquibase.close();
 				
-				log.info("file '{}}' contains {} un-run change sets", filename, unrunChangeSets.size());
+				log.info("file '{}' contains {} un-run change sets", filename, unrunChangeSets.size());
 				logUnRunChangeSetDetails(filename, unrunChangeSets);
 				
 				if (!unrunChangeSets.isEmpty()) {

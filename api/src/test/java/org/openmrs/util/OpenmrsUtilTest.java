@@ -60,6 +60,8 @@ import org.openmrs.api.InvalidCharactersPasswordException;
 import org.openmrs.api.ShortPasswordException;
 import org.openmrs.api.WeakPasswordException;
 import org.openmrs.api.context.Context;
+import org.openmrs.logging.MemoryAppender;
+import org.openmrs.logging.OpenmrsLoggingUtil;
 import org.openmrs.test.TestUtil;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
@@ -971,15 +973,16 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void applyLogLevels_shouldWarnWhenCalledWithInvalidLevel() {
-		MemoryAppender memoryAppender = MemoryAppender.newBuilder().setName("MEMORY_APPENDER_TEST")
+		org.openmrs.logging.MemoryAppender memoryAppender = MemoryAppender.newBuilder()
 			.setLayout(PatternLayout.newBuilder().withPattern("%m").build()).build();
 		
 		memoryAppender.start();
 
 		org.apache.logging.log4j.core.Logger logger = (org.apache.logging.log4j.core.Logger) LogManager
-			.getLogger(OpenmrsUtil.class);
+			.getLogger(OpenmrsLoggingUtil.class);
 		
 		Level previousLevel = logger.getLevel();
+		logger.setAdditive(false);
 
 		LoggerContext context = logger.getContext();
 		LoggerConfig config = logger.get();

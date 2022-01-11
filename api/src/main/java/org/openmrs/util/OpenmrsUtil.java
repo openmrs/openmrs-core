@@ -30,6 +30,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -66,18 +67,6 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.Appender;
-import org.apache.logging.log4j.core.Logger;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.appender.RollingFileAppender;
-import org.apache.logging.log4j.core.appender.rolling.CompositeTriggeringPolicy;
-import org.apache.logging.log4j.core.appender.rolling.DefaultRolloverStrategy;
-import org.apache.logging.log4j.core.appender.rolling.OnStartupTriggeringPolicy;
-import org.apache.logging.log4j.core.appender.rolling.SizeBasedTriggeringPolicy;
-import org.apache.logging.log4j.core.config.LoggerConfig;
-import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptNumeric;
@@ -100,6 +89,7 @@ import org.openmrs.api.PasswordException;
 import org.openmrs.api.ShortPasswordException;
 import org.openmrs.api.WeakPasswordException;
 import org.openmrs.api.context.Context;
+import org.openmrs.logging.OpenmrsLoggingUtil;
 import org.openmrs.module.ModuleException;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.propertyeditor.CohortEditor;
@@ -114,7 +104,6 @@ import org.openmrs.propertyeditor.ProgramWorkflowStateEditor;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
-import org.springframework.context.ApplicationContextException;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.core.JdkVersion;
 import org.w3c.dom.Document;
@@ -487,11 +476,6 @@ public class OpenmrsUtil {
 			val = OpenmrsConstants.DATABASE_NAME;
 		}
 		OpenmrsConstants.DATABASE_BUSINESS_NAME = val;
-
-		setupLogAppenders();
-
-		// set global log level
-		applyLogLevels();
 	}
 	
 	/**
@@ -500,97 +484,35 @@ public class OpenmrsUtil {
 	 * to display logging message.
 	 *
 	 * @since 2.4.0
+	 * @deprecated As of 2.4.4, 2.5.1, and 2.6.0; replaced by {@link OpenmrsLoggingUtil#getMemoryAppender()} instead
 	 */
+	@Deprecated
 	public static MemoryAppender getMemoryAppender() {
-		MemoryAppender memoryAppender = ((LoggerContext) LogManager.getContext()).getConfiguration().getAppender("MEMORY_APPENDER");
-		if (memoryAppender != null) {
-			if (!memoryAppender.isStarted()) {
-				memoryAppender.start();
-			}
-		}
-		return memoryAppender;
+		return new MemoryAppender(OpenmrsLoggingUtil.getMemoryAppender());
 	}
 	
 	/**
 	 * Set the org.openmrs log4j logger's level if global property log.level.openmrs (
 	 * OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL ) exists. Valid values for global property are
 	 * trace, debug, info, warn, error or fatal.
+	 * 
+	 * @deprecated As of 2.4.4, 2.5.1, and 2.6.0; replaced by {@link OpenmrsLoggingUtil#applyLogLevels()}
 	 */
 	@Logging(ignore = true)
+	@Deprecated
 	public static void applyLogLevels() {
-		AdministrationService adminService = Context.getAdministrationService();
-		String logLevel = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL, "");
-
-		// reload the configuration from disk
-		LoggerContext context = ((Logger) LogManager.getRootLogger()).getContext();
-		context.reconfigure();
-
-		String[] levels = logLevel.split(",");
-		for (String level : levels) {
-			String[] classAndLevel = level.split(":");
-			if (classAndLevel.length == 0) {
-				return;
-			} else if (classAndLevel.length == 1) {
-				applyLogLevel(OpenmrsConstants.LOG_CLASS_DEFAULT, classAndLevel[0].trim());
-			} else {
-				applyLogLevel(classAndLevel[0].trim(), classAndLevel[1].trim());
-			}
-		}
+		OpenmrsLoggingUtil.applyLogLevels();
 	}
-
+	
 	/**
 	 * Setup root level log appenders.
 	 *
 	 * @since 1.9.2
+	 * @deprecated As of 2.4.4, 2.5.1, and 2.6.0; replaced by {@link OpenmrsLoggingUtil#reloadLoggingConfiguration()}
 	 */
+	@Deprecated
 	public static void setupLogAppenders() {
-		Logger rootLogger = (Logger) LogManager.getRootLogger();
-		LoggerContext loggerContext = rootLogger.getContext();
-
-		// stop the LoggerContext to reconfigure the scanning interval
-		loggerContext.stop();
-		// previously set in web.xml
-		loggerContext.getConfiguration().getWatchManager().setIntervalSeconds(60000);
-		loggerContext.start();
-
-		RollingFileAppender fileAppender = null;
-		for (Map.Entry<String, Appender> appenderEntry : rootLogger.getAppenders().entrySet()) {
-			Appender appender = appenderEntry.getValue();
-			if (appender instanceof RollingFileAppender && OpenmrsConstants.LOG_OPENMRS_FILE_APPENDER
-				.equals(appender.getName())) {
-				fileAppender = (RollingFileAppender) appender;
-				break;
-			}
-		}
-
-		if (fileAppender != null) {
-			rootLogger.removeAppender(fileAppender);
-		}
-
-		String logLayout = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_LOG_LAYOUT,
-			"%p - %C{1}.%M(%L) |%d{ISO8601}| %m%n");
-		PatternLayout patternLayout = PatternLayout.newBuilder()
-			.withPattern(logLayout)
-			.build();
-
-		String logLocation = OpenmrsUtil.getOpenmrsLogLocation();
-		String logPattern = logLocation.replace(".log", ".%i.log");
-		fileAppender = RollingFileAppender.newBuilder()
-			.setLayout(patternLayout)
-			.withFileName(logLocation)
-			.withFilePattern(logPattern)
-			.setName(OpenmrsConstants.LOG_OPENMRS_FILE_APPENDER)
-			.withPolicy(CompositeTriggeringPolicy.createPolicy(
-				OnStartupTriggeringPolicy.createPolicy(1),
-				SizeBasedTriggeringPolicy.createPolicy("10MB")
-			))
-			.withStrategy(DefaultRolloverStrategy.newBuilder().withMax("1").build())
-			.build();
-		fileAppender.start();
-		rootLogger.addAppender(fileAppender);
-
-		// update the logger configuration
-		loggerContext.updateLoggers();
+		OpenmrsLoggingUtil.reloadLoggingConfiguration();
 	}
 	
 	/**
@@ -599,48 +521,12 @@ public class OpenmrsUtil {
 	 * @param logClass optional string giving the class level to change. Defaults to
 	 *            OpenmrsConstants.LOG_CLASS_DEFAULT . Should be something like org.openmrs.___
 	 * @param logLevel one of OpenmrsConstants.LOG_LEVEL_*
+	 *                 
+	 * @deprecated As of 2.4.4, 2.5.1, and 2.6.0; replaced by {@link OpenmrsLoggingUtil#applyLogLevel(String, String)}
 	 */
+	@Deprecated
 	public static void applyLogLevel(String logClass, String logLevel) {
-		
-		if (logLevel != null) {
-			
-			// the default log level is org.openmrs
-			if (StringUtils.isEmpty(logClass)) {
-				logClass = OpenmrsConstants.LOG_CLASS_DEFAULT;
-			}
-			
-			// DO NOT USE LogManager#getContext() here as the will reset the logger context
-			LoggerContext context = ((Logger) LogManager.getRootLogger()).getContext();
-			LoggerConfig configuration = context.getConfiguration().getLoggerConfig(logClass);
-			
-			logLevel = logLevel.toLowerCase();
-			switch (logLevel) {
-				case OpenmrsConstants.LOG_LEVEL_TRACE:
-					configuration.setLevel(Level.TRACE);
-					break;
-				case OpenmrsConstants.LOG_LEVEL_DEBUG:
-					configuration.setLevel(Level.DEBUG);
-					break;
-				case OpenmrsConstants.LOG_LEVEL_INFO:
-					configuration.setLevel(Level.INFO);
-					break;
-				case OpenmrsConstants.LOG_LEVEL_WARN:
-					configuration.setLevel(Level.WARN);
-					break;
-				case OpenmrsConstants.LOG_LEVEL_ERROR:
-					configuration.setLevel(Level.ERROR);
-					break;
-				case OpenmrsConstants.LOG_LEVEL_FATAL:
-					configuration.setLevel(Level.FATAL);
-					break;
-				default:
-					log.warn("Log level {} is invalid. " +
-						"Valid values are trace, debug, info, warn, error or fatal", logLevel);
-					break;
-			}
-
-			context.updateLoggers();
-		}
+		OpenmrsLoggingUtil.applyLogLevel(logClass, logLevel);
 	}
 	
 	/**
@@ -1084,6 +970,10 @@ public class OpenmrsUtil {
 	 *         the application (runtime properties, modules, etc)
 	 */
 	public static String getApplicationDataDirectory() {
+		return getApplicationDataDirectoryAsFile().toString();
+	}
+	
+	public static File getApplicationDataDirectoryAsFile() {
 		String filepath = null;
 		final String openmrsDir = "OpenMRS";
 		
@@ -1093,7 +983,7 @@ public class OpenmrsUtil {
 			filepath = systemProperty;
 		} else {
 			String runtimeProperty = Context.getRuntimeProperties()
-			        .getProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, null);
+				.getProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, null);
 			if (StringUtils.isNotBlank(runtimeProperty)) {
 				filepath = runtimeProperty;
 			}
@@ -1104,15 +994,15 @@ public class OpenmrsUtil {
 				filepath = System.getProperty("user.home") + File.separator + "." + openmrsDir;
 				if (!canWrite(new File(filepath))) {
 					log.warn("Unable to write to users home dir, fallback to: "
-					        + OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_UNIX);
-					filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_UNIX + File.separator + openmrsDir;
+						+ OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_UNIX);
+					filepath = Paths.get(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_UNIX, openmrsDir).toString();
 				}
 			} else {
 				filepath = System.getProperty("user.home") + File.separator + "Application Data" + File.separator
 				        + "OpenMRS";
 				if (!canWrite(new File(filepath))) {
 					log.warn("Unable to write to users home dir, fallback to: "
-					        + OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_WIN);
+						+ OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_WIN);
 					filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_WIN + File.separator + openmrsDir;
 				}
 			}
@@ -1125,7 +1015,7 @@ public class OpenmrsUtil {
 			folder.mkdirs();
 		}
 		
-		return filepath;
+		return folder;
 	}
 	
 	/**
@@ -1170,16 +1060,19 @@ public class OpenmrsUtil {
 	
 	/**
 	 * Returns the location of the OpenMRS log file.
+	 * <p/>
+	 * <strong>Warning:</strong> as of 2.4.4, 2.5.1, and 2.6.0 which allows configuration via a configuration file, the
+	 * result of this call can return null if either the file appender uses a name other than
+	 * {@link OpenmrsConstants#LOG_OPENMRS_FILE_APPENDER} or if the appender with that name is not one of the default file
+	 * appending types.
 	 * 
 	 * @return the path to the OpenMRS log file
 	 * @since 1.9.2
+	 * @deprecated As of 2.4.4, 2.5.1, and 2.6.0; replaced by {@link OpenmrsLoggingUtil#getOpenmrsLogLocation()}
 	 */
+	@Deprecated
 	public static String getOpenmrsLogLocation() {
-		String logPathGP = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_LOG_LOCATION, "");
-		File logPath = OpenmrsUtil.getDirectoryInApplicationDataDirectory(logPathGP);
-		
-		File logFile = new File(logPath, "openmrs.log");
-		return logFile.getPath();
+		return OpenmrsLoggingUtil.getOpenmrsLogLocation();
 	}
 	
 	/**
@@ -1209,7 +1102,7 @@ public class OpenmrsUtil {
 		// be a folder in the
 		// application directory
 		if (!folder.isAbsolute()) {
-			folder = new File(OpenmrsUtil.getApplicationDataDirectory(), folderName);
+			folder = new File(getApplicationDataDirectoryAsFile(), folderName);
 		}
 		
 		// now create the directory folder if it doesn't exist
