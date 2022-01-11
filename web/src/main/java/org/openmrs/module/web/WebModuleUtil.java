@@ -691,7 +691,7 @@ public class WebModuleUtil {
 	 *         Module
 	 */
 	public static Collection<ModuleFilterMapping> getFilterMappings() {
-		return MODULE_FILTER_MAPPINGS;
+		return new ArrayList<>(MODULE_FILTER_MAPPINGS);
 	}
 	
 	/**
