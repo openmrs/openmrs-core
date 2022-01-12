@@ -18,7 +18,7 @@ import liquibase.logging.core.AbstractLogService;
 /**
  * An implementation of {@link liquibase.logging.LogService} to use SLF4J for Liquibase logging
  * 
- * @since 2.6.0
+ * @since 2.5.1, 2.6.0
  */
 public class Slf4JLogService extends AbstractLogService {
 	
