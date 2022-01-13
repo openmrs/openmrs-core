@@ -38,10 +38,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -752,12 +754,11 @@ public class OpenmrsUtil {
 		
 		return ret;
 	}
-	
-	// TODO: properly handle duplicates
+
 	public static List<Concept> conceptListHelper(String descriptor) {
-		List<Concept> ret = new ArrayList<>();
+		Set<Concept> ret = new LinkedHashSet<>();
 		if (descriptor == null || descriptor.length() == 0) {
-			return ret;
+			return Collections.emptyList();
 		}
 		ConceptService cs = Context.getConceptService();
 		
@@ -786,7 +787,7 @@ public class OpenmrsUtil {
 				}
 			}
 		}
-		return ret;
+		return new ArrayList<>(ret);
 	}
 	
 	/**
