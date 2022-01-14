@@ -118,9 +118,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 	private static final String ORDER_GROUP_ATTRIBUTES = "org/openmrs/api/include/OrderServiceTest-createOrderGroupAttributes.xml";
     
-
 	private static final String ORDER_ATTRIBUTES = "org/openmrs/api/include/OrderServiceTest-createOrderAttributes.xml";
-	
 	
 	@Autowired
 	private ConceptService conceptService;
