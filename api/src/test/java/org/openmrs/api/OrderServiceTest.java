@@ -122,6 +122,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	
 	private static final String UNVOID_ORDERS= "org/openmrs/api/include/OrderTest_unVoidOrderTest.xml";
 	
+	private static final String ORDER_ATTRIBUTES = "org/openmrs/api/include/OrderServiceTest-createOrderAttributes.xml";
+	
+	
 	@Autowired
 	private ConceptService conceptService;
 
