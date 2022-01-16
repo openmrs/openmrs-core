@@ -30,6 +30,8 @@ public class OrderType extends BaseChangeableOpenmrsMetadata {
 	
 	public static final String TEST_ORDER_TYPE_UUID = "52a447d3-a64a-11e3-9aeb-50e549534c5e";
 	
+	public static final String REFERRAL_ORDER_TYPE_UUID = "f1b63696-2b6c-11ec-8d3d-0242ac130003";
+	
 	private Integer orderTypeId;
 	
 	private String javaClassName;

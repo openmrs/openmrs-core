@@ -322,8 +322,16 @@ public interface ConceptDAO {
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#getConceptsByMapping(java.lang.String, java.lang.String)
+	 * 
+	 * @deprecated As of 2.5.0, this method has been deprecated in favor of {@link #getConceptIdsByMapping(String, String, boolean)}
 	 */
+	@Deprecated
 	public List<Concept> getConceptsByMapping(String code, String sourceName, boolean includeRetired);
+
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptIdsByMapping(String, String, boolean)
+	 */
+	public List<Integer> getConceptIdsByMapping(String code, String sourceName, boolean includeRetired);
 	
 	/**
 	 * @param uuid

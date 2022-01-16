@@ -38,6 +38,7 @@ import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.SerializationService;
+import org.openmrs.api.ServiceNotFoundException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
 import org.openmrs.hl7.HL7Service;
@@ -673,7 +674,7 @@ public class ServiceContext implements ApplicationContextAware {
 		
 		Object service = services.get(cls);
 		if (service == null) {
-			throw new APIException("Service not found: " + cls);
+			throw new ServiceNotFoundException(cls);
 		}
 		
 		return (T) service;
@@ -901,7 +902,7 @@ public class ServiceContext implements ApplicationContextAware {
 	@SuppressWarnings("unchecked")
 	private <T> Map<String, T> getRegisteredComponents(ApplicationContext context, Class<T> type) {
 		Map<String, T> components = new HashMap<>();
-		Map registeredComponents = context.getBeansOfType(type);
+		Map<String, T> registeredComponents = context.getBeansOfType(type);
 		if (log.isTraceEnabled()) {
 			log.trace("getRegisteredComponents(" + context + ", " + type + ") = " + registeredComponents);
 		}

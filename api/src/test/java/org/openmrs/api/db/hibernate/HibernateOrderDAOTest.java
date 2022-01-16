@@ -9,6 +9,9 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -22,12 +25,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
+import org.openmrs.OrderAttribute;
+import org.openmrs.OrderAttributeType;
 import org.openmrs.OrderGroup;
 import org.openmrs.OrderGroupAttributeType;
 import org.openmrs.Patient;
 import org.openmrs.api.APIException;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
+import org.openmrs.customdatatype.datatype.FreeTextDatatype;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -38,15 +44,18 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	
 	@Autowired
 	private HibernateOrderDAO dao;
-	
+
 	private static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
 	
 	private static final String ORDER_GROUP = "org/openmrs/api/include/OrderServiceTest-createOrderGroup.xml";
+
+	private static final String ORDER_ATTRIBUTES = "org/openmrs/api/include/OrderServiceTest-createOrderAttributes.xml";
 	
 	@BeforeEach
 	public void setUp() {
 		executeDataSet(ORDER_SET);
 		executeDataSet(ORDER_GROUP);
+		executeDataSet(ORDER_ATTRIBUTES);
 	}
 	
 	/**
@@ -172,5 +181,59 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 		assertNotNull(orderGroupAttributeType);
 		dao.deleteOrderGroupAttributeType(orderGroupAttributeType);
 		assertNull(dao.getOrderGroupAttributeByUuid(UUID));
+	}
+	
+	@Test
+	public void saveOrderAttributeType_shouldSaveTheProvidedOrderAttributeTypeToDatabase() {
+		final Order order = Context.getOrderService().getOrder(1);
+		final int ORIGINAL_COUNT = dao.getAllOrderAttributeTypes().size();
+		OrderAttributeType orderAttributeType = new OrderAttributeType();
+		orderAttributeType.setName("External Referral");
+		orderAttributeType.setMinOccurs(1);
+		orderAttributeType.setMaxOccurs(5);
+		orderAttributeType.setDatatypeClassname(FreeTextDatatype.class.getName());
+		orderAttributeType.setCreator(order.getCreator());
+		orderAttributeType.setDateCreated(order.getDateCreated());
+		orderAttributeType.setRetired(false);
+		orderAttributeType.setUuid("81b95c51-865b-48c6-aacf-cc8f21e69f5e");
+		dao.saveOrderAttributeType(orderAttributeType);
+		assertNotNull(orderAttributeType.getOrderAttributeTypeId(), "Saved OrderAttribute Type");
+		assertEquals(ORIGINAL_COUNT + 1, dao.getAllOrderAttributeTypes().size());
+		OrderAttributeType savedOrderAttributeType = dao.getOrderAttributeTypeByUuid("81b95c51-865b-48c6-aacf-cc8f21e69f5e");
+		assertEquals("External Referral", savedOrderAttributeType.getName());
+		assertEquals(1, savedOrderAttributeType.getMinOccurs());
+		assertEquals(5, savedOrderAttributeType.getMaxOccurs());
+		assertEquals(order.getCreator(), savedOrderAttributeType.getCreator());
+		assertEquals(order.getDateCreated(), savedOrderAttributeType.getDateCreated());
+		assertEquals("81b95c51-865b-48c6-aacf-cc8f21e69f5e", savedOrderAttributeType.getUuid());
+		assertEquals(false, savedOrderAttributeType.getRetired());
+	}
+
+	/**
+	 * @see {@link HibernateOrderDAO#getOrderAttributeTypeByName(String)}
+	 * @throws Exception
+	 */
+	@Test
+	public void getOrderAttributeTypeByName_shouldReturnOrderAttributeTypeUsingProvidedName() {
+		final String NAME = "Referral";
+		OrderAttributeType orderAttributeType = dao.getOrderAttributeTypeByName(NAME);
+		assertEquals(NAME, orderAttributeType.getName());
+		assertEquals(1, orderAttributeType.getId());
+		assertEquals("9758d106-79b0-4f45-8d8c-ae8b3f25d72a", orderAttributeType.getUuid());
+	}
+
+	/**
+	 * @see {@link HibernateOrderDAO#deleteOrderAttributeType(OrderAttributeType)}
+	 * @throws Exception
+	 */
+	@Test
+	public void deleteOrderAttributeType_shouldDeleteTheProvidedOrderAttributeTypeFromDatabase() {
+		final String UUID = "9a9e852b-868a-4c78-8e4d-805b52d4b33f";
+		final int ORIGINAL_COUNT = dao.getAllOrderAttributeTypes().size();
+		OrderAttributeType orderAttributeType = dao.getOrderAttributeTypeByUuid(UUID);
+		assertNotNull(orderAttributeType);
+		dao.deleteOrderAttributeType(orderAttributeType);
+		assertNull(dao.getOrderAttributeTypeByUuid(UUID));
+		assertEquals(ORIGINAL_COUNT - 1, dao.getAllOrderAttributeTypes().size());
 	}
 }

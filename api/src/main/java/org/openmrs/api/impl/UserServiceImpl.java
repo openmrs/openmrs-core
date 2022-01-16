@@ -28,11 +28,7 @@ import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Logging;
-import org.openmrs.api.APIException;
-import org.openmrs.api.AdministrationService;
-import org.openmrs.api.CannotDeleteRoleWithChildrenException;
-import org.openmrs.api.InvalidActivationKeyException;
-import org.openmrs.api.UserService;
+import org.openmrs.api.*;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LoginCredential;
@@ -645,8 +641,10 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 			}
 		} else if (!dao.getLoginCredential(user).checkPassword(oldPassword)) {
 			throw new APIException("old.password.not.correct", (Object[]) null);
+
+		} else if (newPassword != null && oldPassword.equals(newPassword)) {
+			throw new APIException("new.password.equal.to.old", (Object[]) null);
 		}
-	
 		updatePassword(user, newPassword);
 	}
 

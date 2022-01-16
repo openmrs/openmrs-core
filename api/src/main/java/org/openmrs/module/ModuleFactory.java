@@ -888,7 +888,7 @@ public class ModuleFactory {
 					Context.addAdvice(cls, (Advice) aopObject);
 				}
 			}
-			catch (ClassNotFoundException e) {
+			catch (ClassNotFoundException | NoClassDefFoundError e) {
 				log.warn("Could not load advice point: " + advice.getPoint(), e);
 			}
 		}

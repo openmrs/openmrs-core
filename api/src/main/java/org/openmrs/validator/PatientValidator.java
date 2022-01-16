@@ -52,7 +52,7 @@ public class PatientValidator extends PersonValidator {
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 * <strong>Should</strong> fail validation if gender is blank
-	 * <strong>Should</strong> fail validation if birthdate makes patient older that 120 years old
+	 * <strong>Should</strong> fail validation if birthdate makes patient older than 140 years old
 	 * <strong>Should</strong> fail validation if birthdate is a future date
 	 * <strong>Should</strong> fail validation if a preferred patient identifier is not chosen
 	 * <strong>Should</strong> fail validation if voidReason is blank when patient is voided

@@ -13,7 +13,7 @@
    <parent>
       <groupId>org.openmrs</groupId>
       <artifactId>openmrs</artifactId>
-      <version>2.5.0-SNAPSHOT</version>
+      <version>2.6.0-SNAPSHOT</version>
    </parent>
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.openmrs.api</groupId>
@@ -178,20 +178,9 @@
 		   <groupId>org.apache.logging.log4j</groupId>
 		   <artifactId>log4j-1.2-api</artifactId>
 	   </dependency>
-	   <!-- TODO This is necessary to support Hibernate 4.x with log4j2
-	    	this dependency should be removed when upgrading Hibernate -->
-	   <dependency>
-		   <groupId>org.jboss.logging</groupId>
-		   <artifactId>jboss-logging</artifactId>
-		   <version>3.4.2.Final</version>
-	   </dependency>
 	   <dependency>
 		   <groupId>org.slf4j</groupId>
 		   <artifactId>slf4j-api</artifactId>
-	   </dependency>
-	   <dependency>
-		   <groupId>org.slf4j</groupId>
-		   <artifactId>log4j-over-slf4j</artifactId>
 	   </dependency>
 	   <dependency>
          <groupId>com.thoughtworks.xstream</groupId>

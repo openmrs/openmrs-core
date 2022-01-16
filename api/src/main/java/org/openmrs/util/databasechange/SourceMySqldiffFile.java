@@ -16,6 +16,7 @@ import liquibase.exception.CustomChangeException;
 import liquibase.exception.DatabaseException;
 import liquibase.exception.SetupException;
 import liquibase.exception.ValidationErrors;
+import liquibase.resource.InputStreamList;
 import liquibase.resource.ResourceAccessor;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.ClassLoaderFileOpener;
@@ -94,10 +95,12 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 			tmpOutputFile = File.createTempFile(sqlFile, "tmp");
 			
 			fileOpener = new ClassLoaderFileOpener(OpenmrsClassLoader.getInstance());
-			Set<InputStream> sqlFileInputStream = fileOpener.getResourcesAsStream(sqlFile);
-			
-			OutputStream outputStream = new FileOutputStream(tmpOutputFile);
-			OpenmrsUtil.copyFile(sqlFileInputStream.iterator().next(), outputStream);
+			try (InputStreamList sqlFileInputStream = fileOpener.openStreams(null, sqlFile);
+			     OutputStream outputStream = new FileOutputStream(tmpOutputFile)) {
+				if (sqlFileInputStream != null && !sqlFileInputStream.isEmpty()) {
+					OpenmrsUtil.copyFile(sqlFileInputStream.iterator().next(), outputStream);
+				}
+			}
 		}
 		catch (IOException e) {
 			if (tmpOutputFile != null) {
@@ -194,7 +197,7 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 	/**
 	 * @param cmdWithArguments
 	 * @param wd
-	 * @param the string
+	 * @param out
 	 * @return process exit value
 	 */
 	private Integer execCmd(File wd, String[] cmdWithArguments, StringBuilder out) throws Exception {

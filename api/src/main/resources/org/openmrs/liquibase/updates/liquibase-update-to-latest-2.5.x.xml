@@ -28,4 +28,366 @@
 		<dropNotNullConstraint columnDataType="datetime" columnName="start_date" tableName="cohort_member"/>
 	</changeSet>
 	
+	<changeSet id="10000000-TRUNK-6015" author="dkayiwa">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="encounter_diagnosis" columnName="form_namespace_and_path"/>
+			</not>
+		</preConditions>
+		<comment>Adding "form_namespace_and_path" column to encounter_diagnosis table</comment>
+		<addColumn tableName="encounter_diagnosis">
+			<column name="form_namespace_and_path" type="varchar(255)">
+				<constraints nullable="true"/>
+			</column>
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="10000000-TRUNK-6016" author="dkayiwa">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="allergy" columnName="form_namespace_and_path"/>
+			</not>
+		</preConditions>
+		<comment>Adding "form_namespace_and_path" column to the allergy table</comment>
+		<addColumn tableName="allergy">
+			<column name="form_namespace_and_path" type="varchar(255)">
+				<constraints nullable="true"/>
+			</column>
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="10000001-TRUNK-6016" author="dkayiwa">
+    	<preConditions onFail="MARK_RAN">
+    		<not>
+    			<columnExists tableName="allergy" columnName="encounter_id"/>
+    		</not>
+    	</preConditions>
+    	<comment>Adding 'encounter_id' column to the allergy table</comment>
+    	<addColumn tableName="allergy">
+    		<column name="encounter_id" type="int">
+    			<constraints nullable="true" />
+    		</column>
+    	</addColumn>
+    	<addForeignKeyConstraint constraintName="allergy_encounter_id_fk"
+								 baseTableName="allergy" baseColumnNames="encounter_id"
+								 referencedTableName="encounter" referencedColumnNames="encounter_id" />
+    </changeSet>
+    
+    <changeSet id="10000000-TRUNK-6017" author="dkayiwa">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="orders" columnName="form_namespace_and_path"/>
+			</not>
+		</preConditions>
+		<comment>Adding "form_namespace_and_path" column to the orders table</comment>
+		<addColumn tableName="orders">
+			<column name="form_namespace_and_path" type="varchar(255)">
+				<constraints nullable="true"/>
+			</column>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="10000000-TRUNK-6018" author="aojwang">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="patient_state" columnName="form_namespace_and_path"/>
+			</not>
+		</preConditions>
+		<comment>Adding "form_namespace_and_path" column to the patient_state table</comment>
+		<addColumn tableName="patient_state">
+			<column name="form_namespace_and_path" type="varchar(255)">
+				<constraints nullable="true"/>
+			</column>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="10000001-TRUNK-6018" author="aojwang">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="patient_state" columnName="encounter_id"/>
+			</not>
+		</preConditions>
+		<comment>Adding 'encounter_id' column to the patient_state table</comment>
+		<addColumn tableName="patient_state">
+			<column name="encounter_id" type="int">
+				<constraints nullable="true" />
+			</column>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="patient_state_encounter_id_fk"
+								 baseTableName="patient_state" baseColumnNames="encounter_id"
+								 referencedTableName="encounter" referencedColumnNames="encounter_id" />
+	</changeSet>
+
+	<changeSet id="2021-09-02-TRUNK-6020-a" author="tendomart">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="user_property" columnName="property"></columnExists>
+		</preConditions>
+		<comment>Increasing user_property.property from VARCHAR(100) to VARCHAR(255)</comment>
+		<modifyDataType tableName="user_property" columnName="property" newDataType="varchar(255)" />
+	</changeSet>
+
+	<changeSet id="2021-09-02-TRUNK-6020-b" author="tendomart">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="user_property" columnName="property_value"></columnExists>
+		</preConditions>
+		<comment>Changing user_property.property_value from VARCHAR(255) to LONGTEXT</comment>
+		<modifyDataType tableName="user_property" columnName="property_value" newDataType="LONGTEXT" />
+	</changeSet>
+
+	<changeSet id="2021-27-09-0200-TRUNK-6027" author="miirochristopher">
+		<preConditions onFail="MARK_RAN" onFailMessage="Table order_attribute_type already exists">
+			<not>
+				<tableExists tableName="order_attribute_type" />
+			</not>
+		</preConditions>
+		<comment>Creating order_attribute_type table</comment>
+		<createTable tableName="order_attribute_type">
+			<column name="order_attribute_type_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="name" type="varchar(255)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+			<column name="description" type="varchar(1024)" />
+			<column name="datatype" type="varchar(255)" />
+			<column name="datatype_config" type="text" />
+			<column name="preferred_handler" type="varchar(255)" />
+			<column name="handler_config" type="text" />
+			<column name="min_occurs" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="max_occurs" type="int"/>
+			<column name="creator" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="date_created" type="datetime">
+				<constraints nullable="false" />
+			</column>
+			<column name="changed_by" type="int" />
+			<column name="date_changed" type="datetime" />
+			<column name="retired" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+			<column name="retired_by" type="int" />
+			<column name="date_retired" type="datetime" />
+			<column name="retire_reason" type="varchar(255)" />
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false" unique="true" />
+			</column>
+		</createTable>
+		<addForeignKeyConstraint constraintName="order_attribute_type_creator_fk" baseTableName="order_attribute_type" baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id"/>
+		<addForeignKeyConstraint constraintName="order_attribute_type_changed_by_fk" baseTableName="order_attribute_type" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id"/>
+		<addForeignKeyConstraint constraintName="order_attribute_type_retired_by_fk" baseTableName="order_attribute_type" baseColumnNames="retired_by" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+
+	<changeSet id="2021-27-09-0300-TRUNK-6027" author="miirochristopher">
+		<preConditions onFail="MARK_RAN" onFailMessage="Table order_attribute already exists">
+			<not>
+				<tableExists tableName="order_attribute" />
+			</not>
+		</preConditions>
+		<comment>Creating order_attribute table</comment>
+		<createTable tableName="order_attribute">
+			<column name="order_attribute_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="order_id" type="int"><constraints nullable="false" /></column>
+			<column name="attribute_type_id" type="int"><constraints nullable="false" /></column>
+			<column name="value_reference" type="text"><constraints nullable="false" /></column>
+			<column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
+			<column name="creator" type="int"><constraints nullable="false"/></column>
+			<column name="date_created" type="datetime"><constraints nullable="false"/></column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="datetime" />
+			<column name="voided" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+			<column name="voided_by" type="int" />
+			<column name="date_voided" type="datetime" />
+			<column name="void_reason" type="varchar(255)" />
+		</createTable>
+		<addForeignKeyConstraint constraintName="order_attribute_order_fk" baseTableName="order_attribute" baseColumnNames="order_id" referencedTableName="orders" referencedColumnNames="order_id" />
+		<addForeignKeyConstraint constraintName="order_attribute_attribute_type_id_fk" baseTableName="order_attribute" baseColumnNames="attribute_type_id" referencedTableName="order_attribute_type" referencedColumnNames="order_attribute_type_id" />
+		<addForeignKeyConstraint constraintName="order_attribute_creator_fk" baseTableName="order_attribute" baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="order_attribute_changed_by_fk" baseTableName="order_attribute" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="order_attribute_voided_by_fk" baseTableName="order_attribute" baseColumnNames="voided_by" referencedTableName="users" referencedColumnNames="user_id" />
+	</changeSet>
+	
+	<changeSet id="TRUNK-6036" author="dkayiwa">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="referral_order" />
+            </not>
+        </preConditions>
+        <comment>Create referral_order table</comment>
+        <createTable tableName="referral_order">
+            <column name="order_id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="specimen_source" type="int" />
+            <column name="laterality" type="varchar(20)" />
+            <column name="clinical_history" type="text" />
+            <column name="frequency" type="int"/>
+            <column name="number_of_repeats" type="int"/>
+            <column name="location" type="int"/>
+        </createTable>
+        <addForeignKeyConstraint constraintName="referral_order_order_id_fk"
+                                 baseTableName="referral_order" baseColumnNames="order_id"
+                                 referencedTableName="orders" referencedColumnNames="order_id" />
+        <addForeignKeyConstraint constraintName="referral_order_specimen_source_fk"
+                                 baseTableName="referral_order" baseColumnNames="specimen_source"
+                                 referencedTableName="concept" referencedColumnNames="concept_id" />
+        <addForeignKeyConstraint constraintName="referral_order_frequency_fk" 
+        						 baseTableName="referral_order" baseColumnNames="frequency" 
+        						 referencedTableName="order_frequency" referencedColumnNames="order_frequency_id"/>
+        <addForeignKeyConstraint constraintName="referral_order_location_fk" 
+        						 baseTableName="referral_order" baseColumnNames="location" 						 
+        						 referencedTableName="concept" referencedColumnNames="concept_id"/>
+        <createIndex indexName="referral_order_frequency_index" tableName="referral_order">
+            <column name="frequency"/>
+        </createIndex>
+        <createIndex indexName="referral_order_specimen_source_index" tableName="referral_order">
+            <column name="specimen_source"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet id="TRUNK-6035" author="dkayiwa">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="test_order" columnName="location"/>
+			</not>
+		</preConditions>
+		<comment>Adding location column to the test_order table</comment>
+		<addColumn tableName="test_order">
+			<column name="location" type="int">
+				<constraints nullable="true" />
+			</column>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="test_order_location_fk"
+								 baseTableName="test_order" baseColumnNames="location"
+								 referencedTableName="concept" referencedColumnNames="concept_id" />
+	</changeSet>
+
+	<changeSet id="TRUNK-6045" author="pmanko">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="location" columnName="location_type_concept_id" />
+			</not>
+		</preConditions>
+		<comment>Adding type field to the Location table</comment>
+		<addColumn tableName="location">
+			<column name="location_type_concept_id" type="int">
+				<constraints nullable="true"/>
+			</column>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="location_type_fk"
+								 baseTableName="location" baseColumnNames="location_type_concept_id"
+								 referencedTableName="concept" referencedColumnNames="concept_id" />
+	</changeSet>
+
+	<changeSet id="2021-24-10-1000-TRUNK-6038" author="miirochristopher">
+		<preConditions onFail="MARK_RAN" onFailMessage="Table diagnosis_attribute_type already exists">
+			<not>
+				<tableExists tableName="diagnosis_attribute_type" />
+			</not>
+		</preConditions>
+		<comment>Creating diagnosis_attribute_type table</comment>
+		<createTable tableName="diagnosis_attribute_type">
+			<column name="diagnosis_attribute_type_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="name" type="varchar(255)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+			<column name="description" type="varchar(1024)" />
+			<column name="datatype" type="varchar(255)" />
+			<column name="datatype_config" type="text" />
+			<column name="preferred_handler" type="varchar(255)" />
+			<column name="handler_config" type="text" />
+			<column name="min_occurs" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="max_occurs" type="int"/>
+			<column name="creator" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="date_created" type="datetime">
+				<constraints nullable="false" />
+			</column>
+			<column name="changed_by" type="int" />
+			<column name="date_changed" type="datetime" />
+			<column name="retired" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+			<column name="retired_by" type="int" />
+			<column name="date_retired" type="datetime" />
+			<column name="retire_reason" type="varchar(255)" />
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false" unique="true" />
+			</column>
+		</createTable>
+		<addForeignKeyConstraint constraintName="diagnosis_attribute_type_creator_fk" baseTableName="diagnosis_attribute_type" baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id"/>
+		<addForeignKeyConstraint constraintName="diagnosis_attribute_type_changed_by_fk" baseTableName="diagnosis_attribute_type" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id"/>
+		<addForeignKeyConstraint constraintName="diagnosis_attribute_type_retired_by_fk" baseTableName="diagnosis_attribute_type" baseColumnNames="retired_by" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+
+	<changeSet id="2021-24-10-1145-TRUNK-6038" author="miirochristopher">
+		<preConditions onFail="MARK_RAN" onFailMessage="Table diagnosis_attribute already exists">
+			<not>
+				<tableExists tableName="diagnosis_attribute" />
+			</not>
+		</preConditions>
+		<comment>Creating diagnosis_attribute table</comment>
+		<createTable tableName="diagnosis_attribute">
+			<column name="diagnosis_attribute_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="diagnosis_id" type="int"><constraints nullable="false" /></column>
+			<column name="attribute_type_id" type="int"><constraints nullable="false" /></column>
+			<column name="value_reference" type="text"><constraints nullable="false" /></column>
+			<column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
+			<column name="creator" type="int"><constraints nullable="false"/></column>
+			<column name="date_created" type="datetime"><constraints nullable="false"/></column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="datetime" />
+			<column name="voided" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+			<column name="voided_by" type="int" />
+			<column name="date_voided" type="datetime" />
+			<column name="void_reason" type="varchar(255)" />
+		</createTable>
+		<addForeignKeyConstraint constraintName="diagnosis_attribute_diagnosis_fk" baseTableName="diagnosis_attribute" baseColumnNames="diagnosis_id" referencedTableName="encounter_diagnosis" referencedColumnNames="diagnosis_id" />
+		<addForeignKeyConstraint constraintName="diagnosis_attribute_attribute_type_id_fk" baseTableName="diagnosis_attribute" baseColumnNames="attribute_type_id" referencedTableName="diagnosis_attribute_type" referencedColumnNames="diagnosis_attribute_type_id" />
+		<addForeignKeyConstraint constraintName="diagnosis_attribute_creator_fk" baseTableName="diagnosis_attribute" baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="diagnosis_attribute_changed_by_fk" baseTableName="diagnosis_attribute" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="diagnosis_attribute_voided_by_fk" baseTableName="diagnosis_attribute" baseColumnNames="voided_by" referencedTableName="users" referencedColumnNames="user_id" />
+	</changeSet>
+
+	<changeSet id="2020-09-16-1700-TRUNK-5736" author="miirochristopher">
+		<preConditions onFail="MARK_RAN" onFailMessage="Cannot delete or update user, foreign key constraint user_who_changed_user fails">
+			<foreignKeyConstraintExists foreignKeyName="user_who_changed_user"/>
+		</preConditions>
+		<comment>Updating foreign key user_who_changed_user to add delete CASCADE</comment>
+		<dropForeignKeyConstraint baseTableName="users" constraintName="user_who_changed_user"/>
+		<addForeignKeyConstraint  baseTableName="users" baseColumnNames="changed_by"
+		                          constraintName="user_who_changed_user"
+		                          referencedTableName="users" referencedColumnNames="user_id"
+		                          onDelete="CASCADE"/>
+	</changeSet>
+
+	<changeSet id="2021-17-11-0222-TRUNK-6044" author="miirochristopher">
+		<preConditions onFail="MARK_RAN" onFailMessage="Table encounter_diagnosis or column rank does not exist.">
+			<tableExists tableName="encounter_diagnosis" />
+			<and>
+				<columnExists tableName="encounter_diagnosis" columnName="rank" />
+			</and>
+		</preConditions>
+		<comment>Renaming column rank to dx_rank because rank is a reserved word in MySQL 8.0.2 and later</comment>
+		<renameColumn columnDataType="int"
+		              newColumnName="dx_rank"
+		              oldColumnName="rank"
+		              tableName="encounter_diagnosis" />
+	</changeSet>
+
 </databaseChangeLog>

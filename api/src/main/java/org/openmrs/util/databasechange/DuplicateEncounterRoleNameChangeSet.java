@@ -110,7 +110,7 @@ public class DuplicateEncounterRoleNameChangeSet implements CustomTaskChange {
 			for (Object o : duplicates.entrySet()) {
 				Map.Entry pairs = (Map.Entry) o;
 
-				HashSet values = (HashSet) pairs.getValue();
+				HashSet<Integer> values = (HashSet<Integer>) pairs.getValue();
 				List<Integer> ids = new ArrayList<Integer>(values);
 
 				int duplicateNameId = 1;

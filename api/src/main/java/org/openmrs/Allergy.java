@@ -37,7 +37,7 @@ import org.openmrs.util.OpenmrsUtil;
  */
 @Entity
 @Table(name = "allergy")
-public class Allergy extends BaseChangeableOpenmrsData {
+public class Allergy extends BaseFormRecordableOpenmrsData {
 	
 	public static final long serialVersionUID = 1;
 	
@@ -64,6 +64,10 @@ public class Allergy extends BaseChangeableOpenmrsData {
 	@OneToMany(mappedBy = "allergy", cascade = CascadeType.ALL, orphanRemoval = true)
 	@LazyCollection(LazyCollectionOption.FALSE)
 	private List<AllergyReaction> reactions = new ArrayList<>();
+	
+	@ManyToOne(optional = true)
+	@JoinColumn(name = "encounter_id")
+	private Encounter encounter;
 	
 	/**
 	 * Default constructor
@@ -427,5 +431,25 @@ public class Allergy extends BaseChangeableOpenmrsData {
 			return false;
 		}
 		return allergen.isSameAllergen(allergy.getAllergen());
+	}
+	
+	/**
+	 * Basic property getter for encounter
+	 * 
+	 * @return encounter - the associated encounter
+	 * @since 2.5.0
+	 */
+	public Encounter getEncounter() {
+		return encounter;
+	}
+	
+	/**
+	 * Basic property setter for encounter
+	 *  
+	 * @param encounter - the encounter to set
+	 * @since 2.5.0
+	 */
+	public void setEncounter(Encounter encounter) {
+		this.encounter = encounter;
 	}
 }

@@ -28,14 +28,14 @@ jobs:
           - 8
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v2.3.4
+      - uses: actions/checkout@v2.4.0
       - name: Setup JDK
         uses: actions/setup-java@v2
         with:
           distribution: 'adopt'
           java-version: ${{ matrix.java-version }}
       - name: Cache Maven packages
-        uses: actions/cache@v2.1.6
+        uses: actions/cache@v2.1.7
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}

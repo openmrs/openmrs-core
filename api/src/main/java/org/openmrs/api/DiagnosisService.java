@@ -10,9 +10,12 @@
 
 package org.openmrs.api;
 
+import org.openmrs.DiagnosisAttribute;
+import org.openmrs.DiagnosisAttributeType;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.Diagnosis;
+import org.openmrs.Visit;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.util.PrivilegeConstants;
 
@@ -68,11 +71,41 @@ public interface DiagnosisService extends OpenmrsService {
 	List<Diagnosis> getDiagnoses(Patient patient, Date fromDate);
 
 	/**
+	 * Gets diagnoses for an Encounter.
+	 *
+	 * @param encounter the encounter for which to fetch diagnoses
+	 * @param primaryOnly whether to return only primary diagnoses
+	 * @param confirmedOnly whether to return only confirmed diagnoses
+	 * @return the list of diagnoses for the given encounter
+	 * 
+	 * @since 2.5.0
+	 */
+	@Authorized({ PrivilegeConstants.GET_DIAGNOSES })
+	List<Diagnosis> getDiagnosesByEncounter(Encounter encounter, boolean primaryOnly, boolean confirmedOnly);
+	
+	/**
+	 * Gets diagnoses for a Visit.
+	 *
+	 * @param visit the visit for which to fetch diagnoses
+	 * @param primaryOnly whether to return only primary diagnoses
+	 * @param confirmedOnly whether to return only confirmed diagnoses
+	 * @return the list of diagnoses for the given visit
+	 * 
+	 * @since 2.5.0
+	 */
+	@Authorized({ PrivilegeConstants.GET_DIAGNOSES })
+	List<Diagnosis> getDiagnosesByVisit(Visit visit, boolean primaryOnly, boolean confirmedOnly);
+
+
+	/**
 	 * Finds the primary diagnoses for a given encounter
+	 *
+	 * @deprecated since 2.5.0, use {@link #getDiagnosesByEncounter}
 	 * 
 	 * @param encounter the encounter whose diagnoses we are to get
 	 * @return the list of diagnoses in the given encounter
 	 */
+	@Deprecated
 	List<Diagnosis> getPrimaryDiagnoses(Encounter encounter);
 
 	/**
@@ -118,5 +151,95 @@ public interface DiagnosisService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.DELETE_DIAGNOSES)
 	void purgeDiagnosis(Diagnosis diagnosis) throws APIException;
-	
+
+	/**
+	 * Fetches all diagnosis attribute types including retired ones.
+	 *
+	 * @return all {@link DiagnosisAttributeType}s
+	 * @since 2.5.0
+	 * <strong>Should</strong> return all diagnosis attribute types including retired ones.
+	 */
+	@Authorized(PrivilegeConstants.GET_DIAGNOSES_ATTRIBUTE_TYPES)
+	List<DiagnosisAttributeType> getAllDiagnosisAttributeTypes() throws APIException;
+
+	/**
+	 * Fetches a given diagnosis attribute type using the provided id
+	 *
+	 * @param id the id of the diagnosis attribute type to fetch
+	 * @return the {@link DiagnosisAttributeType} with the given id
+	 * @since 2.5.0
+	 * <strong>Should</strong> return the diagnosis attribute type with the given id
+	 * <strong>Should</strong> return null if no diagnosis attribute type exists with the given id
+	 */
+	@Authorized(PrivilegeConstants.GET_DIAGNOSES_ATTRIBUTE_TYPES)
+	DiagnosisAttributeType getDiagnosisAttributeTypeById(Integer id) throws APIException;
+
+	/**
+	 * Fetches a given diagnosis attribute type using the provided uuid
+	 * 
+	 * @param uuid the uuid of the diagnosis attribute type to fetch
+	 * @return the {@link DiagnosisAttributeType} with the given uuid
+	 * @since 2.5.0
+	 * <strong>Should</strong> return the diagnosis attribute type with the given uuid
+	 * <strong>Should</strong> return null if no diagnosis attribute type exists with the given uuid
+	 */
+	@Authorized(PrivilegeConstants.GET_DIAGNOSES_ATTRIBUTE_TYPES)
+	DiagnosisAttributeType getDiagnosisAttributeTypeByUuid(String uuid) throws APIException;
+
+	/**
+	 * Creates or updates the given diagnosis attribute type in the database
+	 *
+	 * @param diagnosisAttributeType the diagnosis attribute type to save or update
+	 * @return the DiagnosisAttributeType created/saved
+	 * @since 2.5.0
+	 * <strong>Should</strong> create a new diagnosis attribute type
+	 * <strong>Should</strong> edit an existing diagnosis attribute type
+	 */
+	@Authorized(PrivilegeConstants.EDIT_DIAGNOSES)
+	DiagnosisAttributeType saveDiagnosisAttributeType(DiagnosisAttributeType diagnosisAttributeType) throws APIException;
+
+	/**
+	 * Retires the given diagnosis attribute type in the database
+	 *
+	 * @param diagnosisAttributeType the diagnosis attribute type to retire
+	 * @param reason the reason why the diagnosis attribute type is being retired
+	 * @return the diagnosisAttributeType retired
+	 * @since 2.5.0
+	 * <strong>Should</strong> retire a diagnosis attribute type
+	 */
+	@Authorized(PrivilegeConstants.EDIT_DIAGNOSES)
+	DiagnosisAttributeType retireDiagnosisAttributeType(DiagnosisAttributeType diagnosisAttributeType, String reason) throws APIException;
+
+	/**
+	 * Restores a diagnosis attribute type that was previously retired
+	 *
+	 * @param diagnosisAttributeType the diagnosis attribute type to unretire.
+	 * @return the DiagnosisAttributeType unretired
+	 * @since 2.5.0
+	 * <strong>Should</strong> unretire a retired diagnosis attribute type
+	 */
+	@Authorized(PrivilegeConstants.EDIT_DIAGNOSES)
+	DiagnosisAttributeType unretireDiagnosisAttributeType(DiagnosisAttributeType diagnosisAttributeType) throws APIException;
+
+	/**
+	 * Completely removes a diagnosis attribute type from the database
+	 *
+	 * @param diagnosisAttributeType the diagnosis attribute type to purge
+	 * @since 2.5.0
+	 * <strong>Should</strong> completely remove a diagnosis attribute type
+	 */
+	@Authorized(PrivilegeConstants.DELETE_DIAGNOSES)
+	void purgeDiagnosisAttributeType(DiagnosisAttributeType diagnosisAttributeType) throws APIException;
+
+	/**
+	 * Fetches a given diagnosis attribute using the provided uuid
+	 *
+	 * @param uuid the uuid of the diagnosis attribute to fetch
+	 * @return the {@link DiagnosisAttribute} with the given uuid
+	 * @since 2.5.0
+	 * <strong>Should</strong> get the diagnosis attribute with the given uuid
+	 * <strong>Should</strong> return null if no diagnosis attribute has the given uuid
+	 */
+	@Authorized(PrivilegeConstants.GET_DIAGNOSES)
+	DiagnosisAttribute getDiagnosisAttributeByUuid(String uuid) throws APIException;
 }

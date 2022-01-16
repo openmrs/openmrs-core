@@ -1383,6 +1383,24 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 * @see UserService#changePassword(User,String,String)
 	 */
 	@Test
+	public void changePassword_shouldThrowAPIExceptionIfNewPasswordIsTheSameAsOld() {
+		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
+		//user 6001 has password userServiceTest
+		User user6001 = userService.getUser(6001);
+		String oldPassword = "userServiceTest";
+		String newPassword = "userServiceTest";
+		//log in user without change user passwords privileges
+		//user6001 has not got required priviliges
+		Context.authenticate(user6001.getUsername(), "userServiceTest");
+		
+		APIAuthenticationException exception = assertThrows(APIAuthenticationException.class, () -> userService.changePassword(user6001, oldPassword, newPassword));
+		assertThat(exception.getMessage(), is(messages.getMessage("error.privilegesRequired", new Object[] {PrivilegeConstants.EDIT_USER_PASSWORDS}, null)));
+	}
+
+	/**
+	 * @see UserService#changePassword(User,String,String)
+	 */
+	@Test
 	public void changePassword_shouldThrowExceptionIfOldPasswordIsNullAndChangingUserHaveNotPrivileges() {
 		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
 		//user 6001 has password userServiceTest
@@ -1631,5 +1649,14 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		} finally {
 			FieldUtils.getField(UserContext.class, "user", true).set(userContext, authenticatedUser);
 		}
+	}
+
+	@Test
+	public void saveUserProperty_shouldAddANewPropertyWithAVeryLargeStringWithoutRunningIntoError() {
+		final String USER_PROPERTY_KEY = liquibase.util.StringUtil.repeat("emrapi.lastViewedPatientIds,",10);
+		final String USER_PROPERTY_VALUE = liquibase.util.StringUtil.repeat("52345",9899);
+		User updatedUser = userService.saveUserProperty(USER_PROPERTY_KEY, USER_PROPERTY_VALUE);
+		assertEquals(280, updatedUser.getUserProperties().keySet().iterator().next().length());
+		assertEquals(49495, updatedUser.getUserProperties().get(USER_PROPERTY_KEY).length());
 	}
 }

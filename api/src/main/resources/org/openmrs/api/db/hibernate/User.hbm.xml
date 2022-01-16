@@ -78,9 +78,9 @@
         <map name="userProperties" table="user_property" lazy="true"
              cascade="save-update,merge,evict">
             <key column="user_id" not-null="true"/>
-            <map-key column="property" type="java.lang.String" length="100"/>
+            <map-key column="property" type="java.lang.String" length="255"/>
             <element column="property_value" type="java.lang.String"
-                     length="255"/>
+                     length="2147483647"/>
         </map>
 
     </class>
