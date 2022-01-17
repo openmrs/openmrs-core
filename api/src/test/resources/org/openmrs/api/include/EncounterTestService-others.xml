@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+
+<person person_id="212" gender="M" birthdate="1975-04-08 00:00:00.0" birthdate_estimated="0" dead="false" creator="1" date_created="2005-09-22 00:00:00.0" voided="false" uuid="da7f524f-27ce-4bb2-86d6-6d1d0c312bd5"/>
+<patient patient_id="212" creator="1" date_created="2005-09-22 00:00:00.0" changed_by="1" date_changed="2006-08-18 12:29:59.0" voided="false" void_reason=""/>
+<encounter encounter_id="616" encounter_type="1" patient_id="212" location_id="2" form_id="1" encounter_datetime="2008-08-17 00:00:00.0" creator="1" date_created="2008-08-17 12:34:40.0" voided="false" uuid="y403fafb-e5e4-42d0-9d11-4f52e81d123r"/>
+<orders order_id="210" order_type_id="1" order_number="2" urgency="ROUTINE" order_action="NEW" concept_id="792" orderer="1" instructions="3x daily" date_activated="2009-12-03 00:00:00.0" date_stopped="2090-12-10 00:00:00.0" creator="1" date_created="2007-12-03 00:00:00.0" voided="false" patient_id="212" uuid="dfca4l77-493c-496b-8312-856ej5d1cc26" care_setting="1" encounter_id="616" />
+<drug_order order_id="210" drug_inventory_id="2" dose="2.0" dose_units="51" as_needed="false" frequency="1" dosing_type="org.openmrs.SimpleDosingInstructions" route="22" quantity="1.0" quantity_units="51" num_refills="10" dispense_as_written="0" />
+<obs obs_id="211" person_id="7" status="FINAL" concept_id="5089" encounter_id="3" obs_datetime="2008-07-01 00:00:00.0" location_id="1" value_numeric="50.0" comments="" creator="1" date_created="2008-08-18 14:09:35.0" voided="true" voided_by="1" date_voided="2009-11-20 09:24:10.0" void_reason="Just Testing"  value_coded="[NULL]" value_coded_name_id="[NULL]" value_complex="[NULL]" value_text="[NULL]" value_datetime="[NULL]" value_drug="[NULL]" uuid="39fb7f47-e80a-4086-9285-bd798be13c63"/>
+
+</dataset> 

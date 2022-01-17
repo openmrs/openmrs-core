@@ -46,6 +46,8 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 	
 	protected static final String ORDER_ENTRY_DATASET_XML = "org/openmrs/api/include/OrderEntryIntegrationTest-other.xml";
 	
+	protected static final String ORDER_ENTRY_DATASET_OTHERS_XML = "org/openmrs/api/include/OrderServiceTest_others.xml";
+	
 	@Autowired
 	private OrderService orderService;
 	
@@ -151,9 +153,10 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 	public void shouldDiscontinueAnActiveOrder() {
 		executeDataSet(ORDER_ENTRY_DATASET_XML);
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-discontinueReason.xml");
+		executeDataSet(ORDER_ENTRY_DATASET_OTHERS_XML);
 		
-		Order firstOrderToDiscontinue = orderService.getOrder(3);
-		Encounter encounter = encounterService.getEncounter(3);
+		Order firstOrderToDiscontinue = orderService.getOrder(313);
+		Encounter encounter = encounterService.getEncounter(616);
 		assertTrue(OrderUtilTest.isActiveOrder(firstOrderToDiscontinue, null));
 		Patient patient = firstOrderToDiscontinue.getPatient();
 		int ordersCount = orderService.getActiveOrders(patient, null, null, null).size();
@@ -165,7 +168,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		assertEquals(firstOrderToDiscontinue, discontinuationOrder1.getPreviousOrder());
 		
 		//Lets discontinue another order with reason being a string instead of concept
-		Order secondOrderToDiscontinue = orderService.getOrder(5);
+		Order secondOrderToDiscontinue = orderService.getOrder(512);
 		assertEquals(patient, secondOrderToDiscontinue.getPatient());
 		assertTrue(OrderUtilTest.isActiveOrder(secondOrderToDiscontinue, null));
 		Order discontinuationOrder2 = orderService.discontinueOrder(secondOrderToDiscontinue, "Testing", null, orderer,
@@ -173,11 +176,11 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		assertEquals(secondOrderToDiscontinue, discontinuationOrder2.getPreviousOrder());
 		
 		//Lets discontinue another order by saving a DC order
-		Order thirdOrderToDiscontinue = orderService.getOrder(7);
+		Order thirdOrderToDiscontinue = orderService.getOrder(717);
 		assertTrue(OrderUtilTest.isActiveOrder(thirdOrderToDiscontinue, null));
 		Order discontinuationOrder = thirdOrderToDiscontinue.cloneForDiscontinuing();
 		discontinuationOrder.setOrderer(orderer);
-		discontinuationOrder.setEncounter(encounterService.getEncounter(6));
+		discontinuationOrder.setEncounter(encounterService.getEncounter(616));
 		orderService.saveOrder(discontinuationOrder, null);
 		
 		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
@@ -252,9 +255,10 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 	public void shouldDiscontinueAnActiveOrderAndFlushSuccessfully() {
 		executeDataSet(ORDER_ENTRY_DATASET_XML);
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-discontinueReason.xml");
+		executeDataSet(ORDER_ENTRY_DATASET_OTHERS_XML);
 		
-		Order firstOrderToDiscontinue = orderService.getOrder(3);
-		Encounter encounter = encounterService.getEncounter(3);
+		Order firstOrderToDiscontinue = orderService.getOrder(313);
+		Encounter encounter = encounterService.getEncounter(616);
 		assertTrue(OrderUtilTest.isActiveOrder(firstOrderToDiscontinue, null));
 		
 		Concept discontinueReason = Context.getConceptService().getConcept(1);
@@ -319,12 +323,17 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void shouldAllowEditingADiscontinuationOrder() {
-		Order originalDCOrder = orderService.getOrder(22);
+		executeDataSet(ORDER_ENTRY_DATASET_OTHERS_XML);
+		Order originalDCOrder = orderService.getOrder(211);
 		assertEquals(Order.Action.DISCONTINUE, originalDCOrder.getAction());
 		List<Order> originalPatientOrders = orderService.getAllOrdersByPatient(originalDCOrder.getPatient());
 		final Order previousOrder = originalDCOrder.getPreviousOrder();
 		assertNotNull(previousOrder);
-		final Date newStartDate = originalDCOrder.getEncounter().getEncounterDatetime();
+		Date original = originalDCOrder.getDateActivated();
+		Calendar cal = Calendar.getInstance(); 
+		cal.setTime(original); 
+		cal.add(Calendar.YEAR, 1);
+		final Date newStartDate = cal.getTime();
 		
 		Order newDcOrder = originalDCOrder.cloneForRevision();
 		newDcOrder.setEncounter(originalDCOrder.getEncounter());
@@ -346,18 +355,19 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void shouldAllowRetrospectiveDataEntryOfOrders() {
+		executeDataSet(ORDER_ENTRY_DATASET_OTHERS_XML);
 		Order order = new TestOrder();
-		order.setPatient(patientService.getPatient(2));
+		order.setPatient(patientService.getPatient(6));
 		order.setCareSetting(orderService.getCareSetting(2));
 		order.setConcept(conceptService.getConcept(5089));
-		order.setEncounter(encounterService.getEncounter(6));
+		order.setEncounter(encounterService.getEncounter(611));
 		order.setOrderer(providerService.getProvider(1));
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DAY_OF_WEEK, -1);
 		order.setDateActivated(cal.getTime());
 		orderService.saveOrder(order, null);
 		
-		cal.add(Calendar.HOUR_OF_DAY, -1);
+		cal.add(Calendar.HOUR_OF_DAY, -2);
 		Date stopDate = cal.getTime();
 		Order dcOrder = orderService.discontinueOrder(order, "Testing", stopDate, order.getOrderer(), order.getEncounter());
 		Context.flushSession(); // ensures that order is flushed and that the drop milliseconds interceptor is called

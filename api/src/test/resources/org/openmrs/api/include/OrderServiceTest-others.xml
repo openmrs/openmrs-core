@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+
+<person person_id="213" gender="M" birthdate="1975-03-08 00:00:00.0" birthdate_estimated="0" dead="false" creator="1" date_created="2005-01-22 00:00:00.0" voided="false" uuid="da7f524f-27ce-4bb2-86v6-6d1d0c312bd5"/>
+<person person_id="212" gender="M" birthdate="1975-04-08 00:00:00.0" birthdate_estimated="0" dead="false" creator="1" date_created="2005-09-22 00:00:00.0" voided="false" uuid="da7f524f-27ce-4bb2-86d6-6d1d0c312bd5"/>
+<patient patient_id="212" creator="1" date_created="2005-09-22 00:00:00.0" changed_by="1" date_changed="2006-08-18 12:29:59.0" voided="false" void_reason=""/>
+<patient patient_id="213" creator="1" date_created="2005-09-22 00:00:00.0" changed_by="1" date_changed="2006-08-18 12:29:59.0" voided="false" void_reason=""/>
+<encounter encounter_id="616" encounter_type="1" patient_id="212" location_id="2" form_id="1" encounter_datetime="2008-08-17 00:00:00.0" creator="1" date_created="2008-08-17 12:34:40.0" voided="false" uuid="y403fafb-e5e4-42d0-9d11-4f52e81d123r"/>
+<encounter encounter_id="617" encounter_type="1" patient_id="213" location_id="2" form_id="1" encounter_datetime="2008-08-16 00:00:00.0" creator="1" date_created="2008-08-15 12:34:40.0" voided="false" uuid="y40yfifb-e5e4-42d0-9d11-4f52e81d123r"/>
+<orders order_id="210" order_type_id="1" order_number="2" urgency="ROUTINE" order_action="NEW" concept_id="792" orderer="1" instructions="3x daily" date_activated="2009-12-03 00:00:00.0" date_stopped="2090-12-10 00:00:00.0" creator="1" date_created="2007-12-03 00:00:00.0" voided="false" patient_id="212" uuid="dfca4l77-493c-496b-8312-856ej5d1cc26" care_setting="1" encounter_id="616" />
+<orders order_id="223" order_type_id="1" order_number="ORD-22" previous_order_id="210" urgency="ROUTINE" order_action="DISCONTINUE" concept_id="792" orderer="1" date_activated="2009-12-10 00:00:00.0" auto_expire_date="2010-12-10 00:00:00.0" creator="1" date_created="2007-12-10 00:00:00.0" voided="false" patient_id="212" uuid="efka4077-493c-496b-8312-856el5d1cc27" care_setting="1" encounter_id="616" />
+<orders order_id="445" order_type_id="1" order_number="444" urgency="ROUTINE" order_action="NEW" concept_id="88" orderer="1" creator="1" date_activated="2009-06-25 00:00:00.0" date_created="2009-12-03 00:00:00.0" date_stopped="2090-12-10 00:00:00.0" voided="false" patient_id="212" uuid="9c51e407-697b-11e3-bd76-0800271l1b75" care_setting="1" encounter_id="616" />
+<orders order_id="717" order_type_id="1" order_number="1" urgency="ROUTINE" order_action="NEW" concept_id="88" orderer="1" instructions="2x daily" date_activated="2010-08-08 00:00:00.0"  creator="1" date_created="2008-08-08 00:00:00.0" voided="false" patient_id="212" uuid="92ide0a3-05c4-444a-be03-e01b4c4b9142" care_setting="1" encounter_id="616" />
+<drug_order order_id="717" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="org.openmrs.SimpleDosingInstructions" route="22" quantity="1.0" quantity_units="51" num_refills="10" dispense_as_written="0" />
+<orders order_id="214" order_type_id="1" order_number="2" urgency="ROUTINE" order_action="NEW" concept_id="792" orderer="1" instructions="3x daily" date_activated="2009-11-03 00:00:00.0" creator="1" date_created="2007-12-03 00:00:00.0" voided="false" patient_id="213" uuid="dfca4l77-493c-496k-8312-856eh5d1cc26" care_setting="1" encounter_id="617" />
+<drug_order order_id="214" drug_inventory_id="2" dose="2.0" dose_units="51" as_needed="false" frequency="1" dosing_type="org.openmrs.SimpleDosingInstructions" route="22" quantity="1.0" quantity_units="51" num_refills="10" dispense_as_written="0" />
+<drug_order order_id="445" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="org.openmrs.SimpleDosingInstructions" route="22" quantity="1.0" quantity_units="51" num_refills="10" dispense_as_written="0" />
+<drug_order order_id="223" drug_inventory_id="2" as_needed="0" brand_name="some brand name" dispense_as_written="1" />
+<drug_order order_id="210" drug_inventory_id="2" dose="2.0" dose_units="51" as_needed="false" frequency="1" dosing_type="org.openmrs.SimpleDosingInstructions" route="22" quantity="1.0" quantity_units="51" num_refills="10" dispense_as_written="0" />
+
+
+</dataset>

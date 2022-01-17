@@ -18,6 +18,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.commons.lang3.time.DateUtils;
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.CareSetting;
@@ -27,6 +28,7 @@ import org.openmrs.Order;
 import org.openmrs.OrderGroup;
 import org.openmrs.Patient;
 import org.openmrs.TestOrder;
+import org.openmrs.api.OrderContext;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
@@ -189,6 +191,54 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		new OrderValidator().validate(order, errors);
 		
 		assertTrue(errors.hasFieldErrors("encounter"));
+	}
+	
+	 /**
+     * @see OrderValidator#validate(Object, org.springframework.validation.Errors)
+     */
+
+	@Test
+	public void validate_shouldNotBeByPassedIfSomeFieldsAreSetFromOrderContext() {
+		DrugOrder order = new DrugOrder();
+		Encounter encounter = new Encounter();
+
+		order.setConcept(Context.getConceptService().getConcept(7));
+		order.setOrderer(Context.getProviderService().getProvider(1));
+
+		Patient patient = Context.getPatientService().getPatient(2);
+		encounter.setPatient(patient);
+		order.setEncounter(Context.getEncounterService().getEncounter(6));
+		order.setPatient(patient);
+
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
+
+		order.setDateActivated(cal.getTime());
+		order.setAutoExpireDate(new Date());
+		order.setUuid("a4ubkf10-ac05-11e3-a5e2-0800200c9a66");
+		order.setCareSetting(null);
+
+		order.setUrgency(Order.Urgency.ROUTINE);
+		order.setAction(Order.Action.NEW);
+		order.setOrderType(Context.getOrderService().getOrderTypeByName("Drug order"));
+
+		Double dose = new Double(2);
+		order.setDose(dose);
+		order.setDoseUnits(Context.getConceptService().getConcept(50));
+		order.setFrequency(Context.getOrderService().getOrderFrequency(1));
+
+		//using route from an existing drug order
+		DrugOrder drugOrder = (DrugOrder) Context.getOrderService().getOrder(2);
+		order.setRoute(drugOrder.getRoute());
+
+		OrderContext orderContext = new OrderContext();
+		orderContext.setCareSetting(orderService.getCareSetting(1));
+		order.setQuantity(42.0);
+		order.setQuantityUnits(Context.getConceptService().getConcept(50));
+		order.setNumRefills(3);
+		Context.getOrderService().saveOrder(order, orderContext);
+		Assert.assertNotNull(Context.getOrderService().getOrderByUuid("a4ubkf10-ac05-11e3-a5e2-0800200c9a66"));
+		
 	}
 	
 	/**

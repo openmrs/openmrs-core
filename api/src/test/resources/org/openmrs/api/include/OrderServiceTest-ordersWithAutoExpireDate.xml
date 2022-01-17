@@ -18,6 +18,9 @@
                   voided="0" uuid="8c2d5e4c-1bd1-11e4-ad81-b2227cce2b54"/>
     <concept_set concept_set_id="3000" concept_id="1001" concept_set="27" sort_weight="1.0" creator="1"
                  date_created="2004-08-12 00:00:00.0" uuid="937fb8a2-1bcc-11e4-ad81-b2227cce2b54"/>
+    
+    <concept_reference_map concept_map_id="2" concept_id="1001" concept_reference_term_id="4" concept_map_type_id="2" creator="1" 
+                 date_created="2005-08-11 00:00:00.0" uuid="2cj420ee-49d8-11e0-8fed-18a905e044dc"/>
 
     <person person_id="12" gender="M" birthdate="1975-04-08 00:00:00.0" birthdate_estimated="0" dead="false" creator="1"
             date_created="2005-09-22 00:00:00.0" voided="false" uuid="da7f524f-27ce-4bb2-629c-6d1d05312bd5"/>

@@ -1563,7 +1563,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void voidPatient_shouldVoidGivenPatientWithGivenReason() throws Exception {
-		Patient patient = Context.getPatientService().getPatient(2);
+		Patient patient = Context.getPatientService().getPatient(6);
 		Patient voidedPatient = Context.getPatientService().voidPatient(patient, "Void for testing");
 		
 		assertTrue(voidedPatient.getVoided());
@@ -1576,7 +1576,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void voidPatient_shouldVoidAllPatientIdentifiersAssociatedWithGivenPatient() throws Exception {
-		Patient patient = Context.getPatientService().getPatient(2);
+		Patient patient = Context.getPatientService().getPatient(6);
 		Patient voidedPatient = Context.getPatientService().voidPatient(patient, "Void for testing");
 		for (PatientIdentifier patientIdentifier : voidedPatient.getIdentifiers()) {
 			assertTrue(patientIdentifier.getVoided());
@@ -1592,7 +1592,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void voidPatient_shouldReturnVoidedPatientWithGivenReason() throws Exception {
-		Patient patient = Context.getPatientService().getPatient(2);
+		Patient patient = Context.getPatientService().getPatient(6);
 		Patient voidedPatient = Context.getPatientService().voidPatient(patient, "Void for testing");
 		
 		assertTrue(voidedPatient.getVoided());
@@ -2758,7 +2758,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void voidPatient_shouldVoidPerson() throws Exception {
 		//given
-		Patient patient = patientService.getPatient(2);
+		Patient patient = patientService.getPatient(6);
 		
 		//when
 		patientService.voidPatient(patient, "reason");
@@ -2773,7 +2773,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void voidPatient_shouldRetireUsers() throws Exception {
 		//given
-		Patient patient = patientService.getPatient(2);
+		Patient patient = patientService.getPatient(6);
 		User user = new User(patient);
 		Context.getUserService().createUser(user, "Admin123");
 		assertFalse(Context.getUserService().getUsersByPerson(patient, false).isEmpty());
@@ -2791,7 +2791,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void unvoidPatient_shouldUnvoidPerson() throws Exception {
 		//given
-		Patient patient = patientService.getPatient(2);
+		Patient patient = patientService.getPatient(6);
 		patientService.voidPatient(patient, "reason");
 		assertTrue(patient.getPersonVoided());
 		
@@ -2814,7 +2814,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void unvoidPatient_shouldNotUnretireUsers() throws Exception {
 		//given
-		Patient patient = patientService.getPatient(2);
+		Patient patient = patientService.getPatient(6);
 		User user = new User(patient);
 		Context.getUserService().createUser(user, "Admin123");
 		patientService.voidPatient(patient, "reason");

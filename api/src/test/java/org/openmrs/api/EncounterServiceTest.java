@@ -98,6 +98,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	protected static final String ENC_OBS_HIERARCHY_DATA_XML = "org/openmrs/api/include/EncounterServiceTest-saveObsHierarchyTests.xml";
 
 	protected static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
+	
+	protected static final String ENCOUNTER_SERVICE_TEST_OTHERS = "org/openmrs/api/include/EncounterTestService-others.xml";
 
 
 	/**
@@ -919,10 +921,11 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void voidEncounter_shouldVoidEncounterAndSetAttributes() {
+		executeDataSet(ENCOUNTER_SERVICE_TEST_OTHERS);
 		EncounterService encounterService = Context.getEncounterService();
 		
 		// get a nonvoided encounter
-		Encounter encounter = encounterService.getEncounter(1);
+		Encounter encounter = encounterService.getEncounter(616);
 		assertFalse(encounter.getVoided());
 		assertNull(encounter.getVoidedBy());
 		assertNull(encounter.getVoidReason());
@@ -945,13 +948,14 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void voidEncounter_shouldCascadeToObs() {
+		executeDataSet(ENCOUNTER_SERVICE_TEST_OTHERS);
 		EncounterService encounterService = Context.getEncounterService();
 		
 		// get a nonvoided encounter that has some obs
-		Encounter encounter = encounterService.getEncounter(1);
+		Encounter encounter = encounterService.getEncounter(616);
 		encounterService.voidEncounter(encounter, "Just Testing");
 		
-		Obs obs = Context.getObsService().getObs(1);
+		Obs obs = Context.getObsService().getObs(211);
 		assertTrue(obs.getVoided());
 		assertEquals("Just Testing", obs.getVoidReason());
 	}
@@ -961,13 +965,14 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void voidEncounter_shouldCascadeToOrders() {
+		executeDataSet(ENCOUNTER_SERVICE_TEST_OTHERS);
 		EncounterService encounterService = Context.getEncounterService();
 		
 		// get a nonvoided encounter that has some obs
-		Encounter encounter = encounterService.getEncounter(1);
+		Encounter encounter = encounterService.getEncounter(616);
 		encounterService.voidEncounter(encounter, "Just Testing");
 		
-		Order order = Context.getOrderService().getOrder(1);
+		Order order = Context.getOrderService().getOrder(210);
 		assertTrue(order.getVoided());
 		assertEquals("Just Testing", order.getVoidReason());
 	}

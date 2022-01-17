@@ -122,6 +122,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	protected static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
 
 	private static final String ORDER_GROUP_ATTRIBUTES = "org/openmrs/api/include/OrderServiceTest-createOrderGroupAttributes.xml";
+    
+    private static final String ORDER_OTHERS = "org/openmrs/api/include/OrderServiceTest_others.xml";
+
+    private static final String UNVOID_ORDERS = "org/openmrs/api/include/OrderTest_unVoidOrderTest.xml";
 
 	private static final String ORDER_ATTRIBUTES = "org/openmrs/api/include/OrderServiceTest-createOrderAttributes.xml";
 
@@ -884,7 +888,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveOrder_shouldPassIfTheExistingDrugOrderMatchesTheConceptAndDrugOfTheDCOrder() {
-		final DrugOrder orderToDiscontinue = (DrugOrder) orderService.getOrder(444);
+		executeDataSet(ORDER_OTHERS);
+		final DrugOrder orderToDiscontinue = (DrugOrder) orderService.getOrder(445);
 		assertTrue(OrderUtilTest.isActiveOrder(orderToDiscontinue, null));
 
 		DrugOrder order = new DrugOrder();
@@ -892,11 +897,11 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setOrderType(orderService.getOrderTypeByName("Drug order"));
 		order.setAction(Order.Action.DISCONTINUE);
 		order.setOrderReasonNonCoded("Discontinue this");
-		order.setPatient(orderToDiscontinue.getPatient());
+		order.setPatient(Context.getPatientService().getPatient(213));
 		order.setConcept(orderToDiscontinue.getConcept());
 		order.setOrderer(orderToDiscontinue.getOrderer());
 		order.setCareSetting(orderToDiscontinue.getCareSetting());
-		order.setEncounter(encounterService.getEncounter(6));
+		order.setEncounter(encounterService.getEncounter(617));
 		order.setDateActivated(new Date());
 		order.setDosingType(SimpleDosingInstructions.class);
 		order.setDose(orderToDiscontinue.getDose());
@@ -945,17 +950,23 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveOrder_shouldPassIfTheExistingDrugOrderMatchesTheConceptAndThereIsNoDrugOnThePreviousOrder() {
+		executeDataSet(ORDER_OTHERS);
 		DrugOrder orderToDiscontinue = new DrugOrder();
 		orderToDiscontinue.setAction(Action.NEW);
-		orderToDiscontinue.setPatient(Context.getPatientService().getPatient(7));
+		orderToDiscontinue.setPatient(Context.getPatientService().getPatient(212));
 		orderToDiscontinue.setConcept(Context.getConceptService().getConcept(5497));
 		orderToDiscontinue.setCareSetting(orderService.getCareSetting(1));
 		orderToDiscontinue.setOrderer(orderService.getOrder(1).getOrderer());
 		orderToDiscontinue.setEncounter(encounterService.getEncounter(3));
 		orderToDiscontinue.setDateActivated(new Date());
+		orderToDiscontinue.setEncounter(encounterService.getEncounter(616));
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.YEAR, -1);
+		Date dateActivated = cal.getTime();
+		orderToDiscontinue.setDateActivated(dateActivated);
 		orderToDiscontinue.setScheduledDate(new Date());
 		orderToDiscontinue.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
-		orderToDiscontinue.setEncounter(encounterService.getEncounter(3));
+		orderToDiscontinue.setEncounter(encounterService.getEncounter(616));
 		orderToDiscontinue.setOrderType(orderService.getOrderType(17));
 
 		orderToDiscontinue.setDrug(null);
@@ -973,7 +984,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		DrugOrder order = orderToDiscontinue.cloneForDiscontinuing();
 		order.setDateActivated(new Date());
 		order.setOrderer(providerService.getProvider(1));
-		order.setEncounter(encounterService.getEncounter(3));
+		order.setEncounter(encounterService.getEncounter(616));
 		order.setOrderReasonNonCoded("Discontinue this");
 
 		orderService.saveOrder(order, null);
@@ -1259,15 +1270,19 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveOrder_shouldSaveARevisedOrderForAScheduledOrderWhichIsNotStarted() {
+		executeDataSet(ORDER_OTHERS);
 		Order originalOrder = new Order();
 		originalOrder.setAction(Action.NEW);
-		originalOrder.setPatient(Context.getPatientService().getPatient(7));
+		originalOrder.setPatient(Context.getPatientService().getPatient(213));
 		originalOrder.setConcept(Context.getConceptService().getConcept(5497));
 		originalOrder.setCareSetting(orderService.getCareSetting(1));
 		originalOrder.setOrderer(orderService.getOrder(1).getOrderer());
-		originalOrder.setEncounter(encounterService.getEncounter(3));
+		originalOrder.setEncounter(encounterService.getEncounter(617));
 		originalOrder.setOrderType(orderService.getOrderType(17));
-		originalOrder.setDateActivated(new Date());
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.YEAR, -2);
+		Date dateActivated = cal.getTime();
+		originalOrder.setDateActivated(dateActivated);
 		originalOrder.setScheduledDate(DateUtils.addMonths(new Date(), 2));
 		originalOrder.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
 		originalOrder = orderService.saveOrder(originalOrder, null);
@@ -1279,11 +1294,11 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertTrue(originalActiveOrders.contains(originalOrder));
 
 		Order revisedOrder = originalOrder.cloneForRevision();
-		revisedOrder.setEncounter(encounterService.getEncounter(5));
+		revisedOrder.setEncounter(encounterService.getEncounter(617));
 		revisedOrder.setInstructions("Take after a meal");
 		revisedOrder.setDateActivated(new Date());
 		revisedOrder.setOrderer(providerService.getProvider(1));
-		revisedOrder.setEncounter(encounterService.getEncounter(3));
+		revisedOrder.setEncounter(encounterService.getEncounter(617));
 		orderService.saveOrder(revisedOrder, null);
 
 		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
@@ -2748,7 +2763,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void voidOrder_shouldUnsetDateStoppedOfThePreviousOrderIfTheSpecifiedOrderIsADiscontinuation() {
-		Order order = orderService.getOrder(22);
+		executeDataSet(ORDER_OTHERS);
+		Order order = orderService.getOrder(223);
 		assertEquals(Action.DISCONTINUE, order.getAction());
 		Order previousOrder = order.getPreviousOrder();
 		assertNotNull(previousOrder.getDateStopped());
@@ -2801,7 +2817,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void unvoidOrder_shouldStopThePreviousOrderIfTheSpecifiedOrderIsADiscontinuation() {
-		Order order = orderService.getOrder(22);
+		executeDataSet(ORDER_OTHERS);
+		Order order = orderService.getOrder(223);
 		assertEquals(Action.DISCONTINUE, order.getAction());
 		Order previousOrder = order.getPreviousOrder();
 		assertNotNull(previousOrder.getDateStopped());
@@ -2848,7 +2865,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void unvoidOrder_shouldFailForADiscontinuationOrderIfThePreviousOrderIsInactive() throws InterruptedException {
-		Order order = orderService.getOrder(22);
+		executeDataSet(UNVOID_ORDERS);
+		Order order = orderService.getOrder(220);
 		assertEquals(Action.DISCONTINUE, order.getAction());
 		Order previousOrder = order.getPreviousOrder();
 		assertNotNull(previousOrder.getDateStopped());
@@ -2917,9 +2935,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getDiscontinuationOrder_shouldReturnNullIfDcOrderIsVoided() {
-		Order order = orderService.getOrder(7);
+		executeDataSet(ORDER_OTHERS);
+		Order order = orderService.getOrder(717);
 		Order discontinueOrder = orderService.discontinueOrder(order, "Some reason", new Date(),
-			providerService.getProvider(1), encounterService.getEncounter(3));
+			providerService.getProvider(1), encounterService.getEncounter(616));
 		orderService.voidOrder(discontinueOrder, "Invalid reason");
 
 		Order discontinuationOrder = orderService.getDiscontinuationOrder(order);
