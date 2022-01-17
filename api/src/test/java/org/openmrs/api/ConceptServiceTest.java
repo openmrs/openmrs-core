@@ -2582,7 +2582,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		conceptService.saveConcept(concept);
 		assertNotNull(concept.getDateChanged());
 		Date date1=concept.getDateChanged();
-		//assertFalse(date.equals(date1));
+		assertFalse(date.equals(date1));
 		assertNotNull(concept.getChangedBy());
 	}
 	

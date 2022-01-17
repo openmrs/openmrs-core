@@ -367,7 +367,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		order.setDateActivated(cal.getTime());
 		orderService.saveOrder(order, null);
 		
-		cal.add(Calendar.HOUR_OF_DAY, -2);
+		cal.add(Calendar.HOUR_OF_DAY, 2);
 		Date stopDate = cal.getTime();
 		Order dcOrder = orderService.discontinueOrder(order, "Testing", stopDate, order.getOrderer(), order.getEncounter());
 		Context.flushSession(); // ensures that order is flushed and that the drop milliseconds interceptor is called

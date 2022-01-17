@@ -1523,7 +1523,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void unvoidPatient_shouldUnvoidGivenPatient() throws Exception {
-		Patient patient = Context.getPatientService().getPatient(2);
+		Patient patient = Context.getPatientService().getPatient(6);
 		
 		Patient voidedPatient = Context.getPatientService().voidPatient(patient, "Void for testing");
 		assertTrue(voidedPatient.getVoided());
@@ -1543,7 +1543,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void unvoidPatient_shouldReturnUnvoidedPatient() throws Exception {
-		Patient patient = Context.getPatientService().getPatient(2);
+		Patient patient = Context.getPatientService().getPatient(6);
 		
 		Patient voidedPatient = Context.getPatientService().voidPatient(patient, "Void for testing");
 		assertTrue(voidedPatient.getVoided());
