@@ -9,21 +9,36 @@
  */
 package org.openmrs;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 /**
  * DrugIngredient
  */
+@Entity
+@Table(name = "drug_ingredient")
 public class DrugIngredient extends BaseOpenmrsObject implements java.io.Serializable, OpenmrsObject {
 	
 	public static final long serialVersionUID = 94023L;
 	
-	// Fields
-	
+	@Id
+	@ManyToOne
+	@JoinColumn(name = "drug_id",referencedColumnName = "drug_id")
 	private Drug drug;
-	
+
+	@Id
+	@ManyToOne
+	@JoinColumn(name = "ingredient_id",referencedColumnName = "concept_id")
 	private Concept ingredient;
-	
+
+	@Column(name = "strength")
 	private Double strength;
 	
+	@ManyToOne
+	@JoinColumn(name = "units", updatable = false,insertable = false)
 	private Concept units;
 	
 	// Constructors
