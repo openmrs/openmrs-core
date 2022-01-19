@@ -84,7 +84,7 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>com.mycila</groupId>
+				<groupId><b>com.mycila<b></groupId>
 				<artifactId>license-maven-plugin</artifactId>
 				<configuration>
 					<header>${project.parent.basedir}/license-header.txt</header>
