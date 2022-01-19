@@ -13,8 +13,8 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.TaskDefinition;
 
@@ -26,7 +26,7 @@ import org.openmrs.scheduler.TaskDefinition;
 public class TaskThreadedInitializationWrapper implements Task {
 	
 	// Logger 
-	private Log log = LogFactory.getLog(TaskThreadedInitializationWrapper.class);
+	private Logger log = LoggerFactory.getLogger(TaskThreadedInitializationWrapper.class);
 	
 	private Task task;
 	

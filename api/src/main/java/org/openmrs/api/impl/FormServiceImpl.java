@@ -20,8 +20,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.hibernate.exception.ConstraintViolationException;
 import org.openmrs.Concept;
 import org.openmrs.ConceptComplex;
@@ -61,7 +61,7 @@ import org.springframework.validation.BindException;
 @Transactional
 public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	
-	protected final Log log = LogFactory.getLog(getClass());
+	protected final Logger log = LoggerFactory.getLogger(getClass());
 	
 	private FormDAO dao;
 	

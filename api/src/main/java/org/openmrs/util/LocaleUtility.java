@@ -15,8 +15,8 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.context.Context;
@@ -27,7 +27,7 @@ import org.springframework.util.StringUtils;
  */
 public class LocaleUtility implements GlobalPropertyListener {
 	
-	private static Log log = LogFactory.getLog(LocaleUtility.class);
+	private static Logger log = LoggerFactory.getLogger(LocaleUtility.class);
 	
 	/**
 	 * Cached version of the default locale. This is cached so that we don't have to look it up in

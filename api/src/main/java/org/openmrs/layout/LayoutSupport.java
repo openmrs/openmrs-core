@@ -11,15 +11,15 @@ package org.openmrs.layout;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @since 1.12
  */
 public abstract class LayoutSupport<T extends LayoutTemplate> {
 	
-	private Log log = LogFactory.getLog(getClass());
+	private Logger log = LoggerFactory.getLogger(getClass());
 	
 	protected String defaultLayoutFormat;
 	

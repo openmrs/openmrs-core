@@ -35,8 +35,8 @@ import java.util.zip.ZipEntry;
 
 import org.aopalliance.aop.Advice;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Privilege;
 import org.openmrs.api.AdministrationService;
@@ -62,7 +62,7 @@ import org.springframework.util.StringUtils;
  */
 public class ModuleFactory {
 	
-	private static Log log = LogFactory.getLog(ModuleFactory.class);
+	private static Logger log = LoggerFactory.getLogger(ModuleFactory.class);
 	
 	protected static volatile Map<String, Module> loadedModules = new WeakHashMap<String, Module>();
 	

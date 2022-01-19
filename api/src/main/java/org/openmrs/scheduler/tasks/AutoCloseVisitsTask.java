@@ -11,8 +11,8 @@ package org.openmrs.scheduler.tasks;
 
 import java.util.Date;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 
@@ -25,7 +25,7 @@ import org.openmrs.util.OpenmrsConstants;
  */
 public class AutoCloseVisitsTask extends AbstractTask {
 	
-	private static final Log log = LogFactory.getLog(AutoCloseVisitsTask.class);
+	private static final Logger log = LoggerFactory.getLogger(AutoCloseVisitsTask.class);
 	
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#execute()

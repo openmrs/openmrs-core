@@ -16,8 +16,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.GlobalPropertyListener;
 import org.springframework.web.servlet.ModelAndView;
@@ -35,7 +35,7 @@ import org.springframework.web.servlet.mvc.LastModified;
  */
 public class PseudoStaticContentController implements Controller, LastModified, GlobalPropertyListener {
 	
-	protected final Log log = LogFactory.getLog(getClass());
+	protected final Logger log = LoggerFactory.getLogger(getClass());
 	
 	private Boolean interpretJstl = false;
 	

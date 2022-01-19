@@ -14,8 +14,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -94,7 +94,7 @@ import ca.uhn.hl7v2.model.v25.segment.PID;
  */
 public class ADTA28Handler implements Application {
 	
-	private Log log = LogFactory.getLog(ADTA28Handler.class);
+	private Logger log = LoggerFactory.getLogger(ADTA28Handler.class);
 	
 	/**
 	 * Always returns true, assuming that the router calling this handler will only call this

@@ -10,8 +10,8 @@
 package org.openmrs;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Boost;
 import org.hibernate.search.annotations.DocumentId;
@@ -45,7 +45,7 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	
 	public static final long serialVersionUID = 11231211232111L;
 	
-	private static final Log log = LogFactory.getLog(PersonAttribute.class);
+	private static final Logger log = LoggerFactory.getLogger(PersonAttribute.class);
 	
 	// Fields
 	@DocumentId

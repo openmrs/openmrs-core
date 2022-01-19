@@ -9,8 +9,8 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -36,7 +36,7 @@ import java.util.List;
  */
 public class HibernateOrderSetDAO implements OrderSetDAO {
 	
-	protected static final Log log = LogFactory.getLog(HibernateOrderSetDAO.class);
+	protected static final Logger log = LoggerFactory.getLogger(HibernateOrderSetDAO.class);
 	
 	/**
 	 * Hibernate session factory

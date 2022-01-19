@@ -9,8 +9,8 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.hibernate.SessionFactory;
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,7 +19,7 @@ import org.openmrs.test.BaseContextSensitiveTest;
 
 public class PersonAttributeHelperTest extends BaseContextSensitiveTest {
 	
-	private final static Log log = LogFactory.getLog(PersonAttributeHelperTest.class);
+	private final static Logger log = LoggerFactory.getLogger(PersonAttributeHelperTest.class);
 	
 	private final static String PEOPLE_FROM_THE_SHIRE_XML = "org/openmrs/api/db/hibernate/include/HibernatePersonDAOTest-people.xml";
 	

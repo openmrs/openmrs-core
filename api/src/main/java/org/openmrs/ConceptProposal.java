@@ -9,8 +9,8 @@
  */
 package org.openmrs;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.util.OpenmrsConstants;
 
 import java.util.Date;
@@ -26,7 +26,7 @@ public class ConceptProposal extends BaseOpenmrsObject {
 	
 	public static final long serialVersionUID = 57344L;
 	
-	private static final Log log = LogFactory.getLog(ConceptProposal.class);
+	private static final Logger log = LoggerFactory.getLogger(ConceptProposal.class);
 	
 	// Fields
 	

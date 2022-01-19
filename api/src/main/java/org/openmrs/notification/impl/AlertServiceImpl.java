@@ -13,8 +13,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
@@ -37,7 +37,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	
 	private static final long serialVersionUID = 564561231321112365L;
 	
-	private Log log = LogFactory.getLog(this.getClass());
+	private Logger log = LoggerFactory.getLogger(this.getClass());
 	
 	private AlertDAO dao;
 	

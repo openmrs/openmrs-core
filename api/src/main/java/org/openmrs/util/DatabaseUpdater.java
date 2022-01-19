@@ -50,8 +50,8 @@ import liquibase.resource.FileSystemResourceAccessor;
 import liquibase.resource.ResourceAccessor;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.context.Context;
 
@@ -66,7 +66,7 @@ import org.openmrs.api.context.Context;
  */
 public class DatabaseUpdater {
 	
-	private static final Log log = LogFactory.getLog(DatabaseUpdater.class);
+	private static final Logger log = LoggerFactory.getLogger(DatabaseUpdater.class);
 	
 	private static final String CHANGE_LOG_FILE = "liquibase-update-to-latest.xml";
 	

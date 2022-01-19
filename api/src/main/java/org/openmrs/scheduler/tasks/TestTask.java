@@ -11,8 +11,8 @@ package org.openmrs.scheduler.tasks;
 
 import java.util.Date;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.scheduler.TaskDefinition;
 
 /**
@@ -23,7 +23,7 @@ public class TestTask extends AbstractTask {
 	private static int executionCount = 0;
 	
 	// Logger 
-	private Log log = LogFactory.getLog(TestTask.class);
+	private Logger log = LoggerFactory.getLogger(TestTask.class);
 	
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#initialize(TaskDefinition)

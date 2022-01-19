@@ -11,8 +11,8 @@ package org.openmrs.module;
 
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An extension is a small snippet of code that is run at certain "extension points" throughout the
@@ -25,7 +25,7 @@ import org.apache.commons.logging.LogFactory;
 
 public abstract class Extension {
 	
-	private Log log = LogFactory.getLog(this.getClass());
+	private Logger log = LoggerFactory.getLogger(this.getClass());
 	
 	// point which this extension is extending
 	private String pointId;

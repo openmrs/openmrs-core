@@ -26,8 +26,8 @@ import javax.mail.Session;
 
 import org.aopalliance.aop.Advice;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Allergen;
 import org.openmrs.GlobalProperty;
 import org.openmrs.PersonName;
@@ -127,7 +127,7 @@ import org.springframework.aop.Advisor;
  */
 public class Context {
 
-	private static final Log log = LogFactory.getLog(Context.class);
+	private static final Logger log = LoggerFactory.getLogger(Context.class);
 
 	// Global resources
 	private static ContextDAO contextDAO;

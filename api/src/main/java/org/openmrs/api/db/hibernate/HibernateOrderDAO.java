@@ -17,8 +17,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
 import org.hibernate.LockOptions;
@@ -59,7 +59,7 @@ import org.openmrs.util.OpenmrsConstants;
  */
 public class HibernateOrderDAO implements OrderDAO {
 	
-	protected static final Log log = LogFactory.getLog(HibernateOrderDAO.class);
+	protected static final Logger log = LoggerFactory.getLogger(HibernateOrderDAO.class);
 	
 	/**
 	 * Hibernate session factory

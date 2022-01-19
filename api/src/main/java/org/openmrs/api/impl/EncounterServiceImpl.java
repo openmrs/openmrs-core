@@ -64,7 +64,7 @@ import java.util.Vector;
 @Transactional
 public class EncounterServiceImpl extends BaseOpenmrsService implements EncounterService {
 	
-	// private Log log = LogFactory.getLog(this.getClass());
+	// private Logger log = LoggerFactory.getLogger(this.getClass());
 	
 	private EncounterDAO dao;
 	

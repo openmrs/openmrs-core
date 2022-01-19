@@ -16,8 +16,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
@@ -31,7 +31,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  */
 public class GZIPFilter extends OncePerRequestFilter {
 	
-	private static final Log log = LogFactory.getLog(GZIPFilter.class);
+	private static final Logger log = LoggerFactory.getLogger(GZIPFilter.class);
 	
 	private Boolean cachedGZipEnabledFlag = null;
 	

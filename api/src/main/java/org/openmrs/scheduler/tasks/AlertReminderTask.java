@@ -12,8 +12,8 @@ package org.openmrs.scheduler.tasks;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.Alert;
@@ -27,7 +27,7 @@ import org.openmrs.notification.MessageException;
 public class AlertReminderTask extends AbstractTask {
 	
 	// Logger 
-	private Log log = LogFactory.getLog(AlertReminderTask.class);
+	private Logger log = LoggerFactory.getLogger(AlertReminderTask.class);
 	
 	/**
 	 * Send alert reminder email to user(s) associated with the alert.
@@ -43,7 +43,7 @@ public class AlertReminderTask extends AbstractTask {
 			
 		}
 		catch (Exception e) {
-			log.error(e);
+			log.error("Exception",e);
 		}
 	}
 	
@@ -68,7 +68,7 @@ public class AlertReminderTask extends AbstractTask {
 			
 		}
 		catch (MessageException e) {
-			log.error(e);
+			log.error("MessageException ",e);
 		}
 	}
 	

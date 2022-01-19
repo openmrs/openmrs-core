@@ -11,8 +11,8 @@ package org.openmrs.util;
 
 import java.util.Comparator;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Drug;
 
 /**
@@ -23,7 +23,7 @@ import org.openmrs.Drug;
 public class DrugsByNameComparator implements Comparator<Drug> {
 	
 	/** The Constant log. */
-	private final static Log log = LogFactory.getLog(DrugsByNameComparator.class);
+	private final static Logger log = LoggerFactory.getLogger(DrugsByNameComparator.class);
 	
 	/* (non-Jsdoc)
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)

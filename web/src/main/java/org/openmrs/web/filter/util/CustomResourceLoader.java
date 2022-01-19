@@ -21,8 +21,8 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.util.LocaleUtility;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -32,7 +32,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
  */
 public class CustomResourceLoader {
 	
-	private static final Log log = LogFactory.getLog(CustomResourceLoader.class);
+	private static final Logger log = LoggerFactory.getLogger(CustomResourceLoader.class);
 	
 	/** */
 	public static final String PREFIX = "messages";

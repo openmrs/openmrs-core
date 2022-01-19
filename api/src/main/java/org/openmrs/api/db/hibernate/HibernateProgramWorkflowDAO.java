@@ -13,8 +13,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
@@ -44,7 +44,7 @@ import org.openmrs.api.db.ProgramWorkflowDAO;
  */
 public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	
-	protected final Log log = LogFactory.getLog(getClass());
+	protected final Logger log = LoggerFactory.getLogger(getClass());
 	
 	private SessionFactory sessionFactory;
 	

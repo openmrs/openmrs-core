@@ -9,8 +9,8 @@
  */
 package org.openmrs.api.context;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
@@ -30,7 +30,7 @@ import org.springframework.context.support.AbstractRefreshableApplicationContext
  */
 public class Daemon {
 	
-	protected static final Log log = LogFactory.getLog(Daemon.class);
+	protected static final Logger log = LoggerFactory.getLogger(Daemon.class);
 	
 	/**
 	 * The uuid defined for the daemon user object
@@ -248,7 +248,7 @@ public class Daemon {
 		}
 		catch (InterruptedException e) {
 			// ignore
-			log.error(e);
+			log.error("InterruptedException ", e);
 		}
 		
 		if (onStartupThread.exceptionThrown != null) {

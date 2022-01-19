@@ -17,8 +17,8 @@ import java.util.Properties;
 import java.util.concurrent.Future;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.hibernate.CacheMode;
 import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
@@ -53,7 +53,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  */
 public class HibernateContextDAO implements ContextDAO {
 	
-	private static Log log = LogFactory.getLog(HibernateContextDAO.class);
+	private static Logger log = LoggerFactory.getLogger(HibernateContextDAO.class);
 	
 	/**
 	 * Hibernate session factory

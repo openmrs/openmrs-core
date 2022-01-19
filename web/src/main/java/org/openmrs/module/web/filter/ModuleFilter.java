@@ -18,8 +18,8 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.module.web.WebModuleUtil;
 
 /**
@@ -28,7 +28,7 @@ import org.openmrs.module.web.WebModuleUtil;
  */
 public class ModuleFilter implements Filter {
 	
-	protected final Log log = LogFactory.getLog(getClass());
+	protected final Logger log = LoggerFactory.getLogger(getClass());
 	
 	/**
 	 * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)

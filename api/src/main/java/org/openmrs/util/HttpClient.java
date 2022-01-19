@@ -9,8 +9,8 @@
  */
 package org.openmrs.util;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -26,7 +26,7 @@ import java.util.Map;
  */
 public class HttpClient {
 	
-	private static Log log = LogFactory.getLog(HttpClient.class);
+	private static Logger log = LoggerFactory.getLogger(HttpClient.class);
 	
 	private HttpUrl url;
 	

@@ -21,8 +21,8 @@ import liquibase.exception.SetupException;
 
 import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.DatabaseUtil;
 
@@ -34,7 +34,7 @@ import org.openmrs.util.DatabaseUtil;
  */
 public class ProgramValidatorChangeSet implements CustomTaskChange {
 	
-	protected final static Log log = LogFactory.getLog(ProgramValidatorChangeSet.class);
+	protected final static Logger log = LoggerFactory.getLogger(ProgramValidatorChangeSet.class);
 	
 	/**
 	 * @see CustomTaskChange#execute(Database)

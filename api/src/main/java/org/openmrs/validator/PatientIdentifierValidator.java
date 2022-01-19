@@ -10,8 +10,8 @@
 package org.openmrs.validator;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientIdentifierType.LocationBehavior;
@@ -34,7 +34,7 @@ import org.springframework.validation.Validator;
 @Handler(supports = { PatientIdentifier.class }, order = 50)
 public class PatientIdentifierValidator implements Validator {
 	
-	private static Log log = LogFactory.getLog(PatientIdentifierValidator.class);
+	private static Logger log = LoggerFactory.getLogger(PatientIdentifierValidator.class);
 	
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)

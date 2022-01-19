@@ -15,8 +15,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Conjunction;
@@ -42,7 +42,7 @@ import org.openmrs.util.OpenmrsConstants;
 @Deprecated
 public class PatientSearchCriteria {
 	
-	private final static Log log = LogFactory.getLog(PatientSearchCriteria.class);
+	private final static Logger log = LoggerFactory.getLogger(PatientSearchCriteria.class);
 	
 	private final SessionFactory sessionFactory;
 	

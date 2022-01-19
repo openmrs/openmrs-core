@@ -13,8 +13,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
 import org.openmrs.ProgramWorkflow;
@@ -34,7 +34,7 @@ import org.springframework.validation.Validator;
 @Handler(supports = { PatientProgram.class }, order = 50)
 public class PatientProgramValidator implements Validator {
 	
-	private static final Log log = LogFactory.getLog(PatientProgramValidator.class);
+	private static final Logger log = LoggerFactory.getLogger(PatientProgramValidator.class);
 	
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)

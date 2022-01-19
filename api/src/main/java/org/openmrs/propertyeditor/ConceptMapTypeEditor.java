@@ -11,15 +11,15 @@ package org.openmrs.propertyeditor;
 
 import java.beans.PropertyEditorSupport;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.ConceptMapType;
 import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
 public class ConceptMapTypeEditor extends PropertyEditorSupport {
 	
-	private final static Log log = LogFactory.getLog(ConceptMapTypeEditor.class);
+	private final static Logger log = LoggerFactory.getLogger(ConceptMapTypeEditor.class);
 	
 	public ConceptMapTypeEditor() {
 	}

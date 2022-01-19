@@ -22,15 +22,15 @@ import liquibase.exception.DatabaseException;
 import liquibase.exception.SetupException;
 import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This change set is run to update layout.address.format global property
  */
 public class UpdateLayoutAddressFormatChangeSet implements CustomTaskChange {
 	
-	private final static Log log = LogFactory.getLog(UpdateLayoutAddressFormatChangeSet.class);
+	private final static Logger log = LoggerFactory.getLogger(UpdateLayoutAddressFormatChangeSet.class);
 	
 	/**
 	 * @see CustomTaskChange#execute(Database)

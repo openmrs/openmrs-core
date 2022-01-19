@@ -16,8 +16,8 @@ import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -29,7 +29,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	
 	public static final long serialVersionUID = 343333L;
 	
-	private static final Log log = LogFactory.getLog(PersonAddress.class);
+	private static final Logger log = LoggerFactory.getLogger(PersonAddress.class);
 	
 	// Fields
 

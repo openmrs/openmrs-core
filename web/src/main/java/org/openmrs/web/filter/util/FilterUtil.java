@@ -16,8 +16,8 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.OpenmrsConstants;
@@ -28,7 +28,7 @@ import org.openmrs.util.OpenmrsConstants;
  */
 public class FilterUtil {
 	
-	private static final Log log = LogFactory.getLog(FilterUtil.class);
+	private static final Logger log = LoggerFactory.getLogger(FilterUtil.class);
 	
 	public static final String LOCALE_ATTRIBUTE = "locale";
 	

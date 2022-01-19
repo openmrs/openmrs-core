@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -34,7 +34,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class HandlerUtil implements ApplicationListener<ContextRefreshedEvent> {
 	
-	private static final Log log = LogFactory.getLog(HandlerUtil.class);
+	private static final Logger log = LoggerFactory.getLogger(HandlerUtil.class);
 	
 	private static volatile Map<Key, List<?>> cachedHandlers = new WeakHashMap<HandlerUtil.Key, List<?>>();
 	

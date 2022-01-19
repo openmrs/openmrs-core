@@ -14,13 +14,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -36,10 +30,6 @@ import liquibase.exception.LockException;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.Appender;
-import org.apache.log4j.Logger;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback;
@@ -56,6 +46,7 @@ import org.openmrs.web.filter.initialization.InitializationFilter;
 import org.openmrs.web.filter.util.CustomResourceLoader;
 import org.openmrs.web.filter.util.ErrorMessageConstants;
 import org.openmrs.web.filter.util.FilterUtil;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.context.ContextLoader;
 
 /**
@@ -64,8 +55,8 @@ import org.springframework.web.context.ContextLoader;
  * authenticate and review the updates before continuing.
  */
 public class UpdateFilter extends StartupFilter {
-	
-	protected final Log log = LogFactory.getLog(getClass());
+
+	protected final org.slf4j.Logger log = LoggerFactory.getLogger(UpdateFilter.class);
 	
 	/**
 	 * The velocity macro page to redirect to if an error occurs or on initial startup
@@ -273,17 +264,18 @@ public class UpdateFilter extends StartupFilter {
 				result.put("message", updateJob.getMessage());
 				result.put("changesetIds", updateJob.getChangesetIds());
 				result.put("executingChangesetId", updateJob.getExecutingChangesetId());
-				Appender appender = Logger.getRootLogger().getAppender("MEMORY_APPENDER");
-				if (appender instanceof MemoryAppender) {
-					MemoryAppender memoryAppender = (MemoryAppender) appender;
-					List<String> logLines = memoryAppender.getLogLines();
+				MemoryAppender appender = OpenmrsUtil.getMemoryAppender();
+				if (appender != null) {
+					List<String> logLines = appender.getLogLines();
+
 					// truncate the list to the last five so we don't overwhelm jquery
 					if (logLines.size() > 5) {
 						logLines = logLines.subList(logLines.size() - 5, logLines.size());
 					}
+
 					result.put("logLines", logLines);
 				} else {
-					result.put("logLines", new ArrayList<String>());
+					result.put("logLines", Collections.emptyList());
 				}
 			}
 			

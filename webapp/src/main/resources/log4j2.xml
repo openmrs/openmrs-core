@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+
+<Configuration xmlns="http://logging.apache.org/log4j/2.0/config">
+    <Appenders>
+        <Console name="CONSOLE" target="SYSTEM_OUT">
+            <PatternLayout pattern="%p - %C{1}.%M(%L) |%d{ISO8601}| %m%n" />
+        </Console>
+        <RollingFile name="DEBUGGING_FILE_APPENDER" fileName="${sys:LOGS_DIR}/openmrs.log" filePattern="${sys:LOGS_DIR}/openmrs.%i.log.gz" append="true">
+            <PatternLayout pattern="%d{ABSOLUTE} %-5p [%c{1}] %m%n" />
+            <Policies>
+                <OnStartupTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="10 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="5" />
+        </RollingFile>
+        <Memory name="MEMORY_APPENDER" bufferSize="200">
+            <PatternLayout pattern="%p - %C{1}.%M(%L) |%d{ISO8601}| %m%n" />
+        </Memory>
+    </Appenders>
+    <Loggers>
+        <Logger name="org.apache" level="WARN" />
+        <Logger name="org.hibernate" level="ERROR" />
+        <Logger name="net.sf.ehcache" level="ERROR" />
+        <Logger name="org.springframework" level="WARN" />
+        <Logger name="org.openmrs" level="WARN" />
+        <Logger name="liquibase" level="INFO" />
+        <!--
+            This controls the LoggingAdvice class that wraps around the OpenMRS services
+            WARN == don't log anything special for the services
+            INFO == log all setters
+            DEBUG == log all setters & log all getters & log execution time
+        -->
+        <Logger name="org.openmrs.api" level="INFO" />
+        <Logger name="org.apache.fop" level="ERROR" />
+        <!-- Hide the useless MissingResourceException -->
+        <Logger name="org.springframework.context.support.ResourceBundleMessageSource" level="ERROR" />
+        <Logger name="org.springframework.beans.factory.support.DefaultListableBeanFactory" level="ERROR" />
+        <Root level="WARN">
+            <AppenderRef ref="CONSOLE" />
+            <AppenderRef ref="MEMORY_APPENDER" />
+            <AppenderRef ref="DEBUGGING_FILE_APPENDER" />
+        </Root>
+    </Loggers>
+</Configuration>

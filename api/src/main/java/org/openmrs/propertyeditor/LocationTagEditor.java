@@ -11,8 +11,8 @@ package org.openmrs.propertyeditor;
 
 import java.beans.PropertyEditorSupport;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.LocationTag;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
@@ -26,7 +26,7 @@ import org.springframework.util.StringUtils;
  */
 public class LocationTagEditor extends PropertyEditorSupport {
 	
-	private static Log log = LogFactory.getLog(LocationTagEditor.class);
+	private static Logger log = LoggerFactory.getLogger(LocationTagEditor.class);
 	
 	public LocationTagEditor() {
 	}

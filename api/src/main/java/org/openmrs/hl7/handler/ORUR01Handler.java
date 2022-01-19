@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptName;
@@ -96,7 +96,7 @@ import ca.uhn.hl7v2.parser.PipeParser;
  */
 public class ORUR01Handler implements Application {
 	
-	private Log log = LogFactory.getLog(ORUR01Handler.class);
+	private Logger log = LoggerFactory.getLogger(ORUR01Handler.class);
 	
 	private static EncounterRole unknownRole = null;
 	

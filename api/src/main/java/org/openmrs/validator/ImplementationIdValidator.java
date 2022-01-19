@@ -10,8 +10,8 @@
 package org.openmrs.validator;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.ImplementationId;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
@@ -26,7 +26,7 @@ import org.springframework.validation.Validator;
 @Handler(supports = { ImplementationId.class }, order = 50)
 public class ImplementationIdValidator implements Validator {
 	
-	protected final Log log = LogFactory.getLog(getClass());
+	protected final Logger log = LoggerFactory.getLogger(getClass());
 	
 	@Override
 	public boolean supports(Class<?> clazz) {

@@ -19,9 +19,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -56,10 +56,10 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	@Before
 	public void setUp() throws Exception {
 		// Temporary logger level changes to debug TRUNK-4212
-		LogManager.getLogger("org.hibernate.SQL").setLevel(Level.DEBUG);
-		LogManager.getLogger("org.hibernate.type").setLevel(Level.TRACE);
-		LogManager.getLogger("org.openmrs.api").setLevel(Level.DEBUG);
-		LogManager.getLogger("org.openmrs.scheduler").setLevel(Level.DEBUG);
+		((org.apache.logging.log4j.core.Logger) LogManager.getLogger("org.hibernate.SQL")).setLevel(Level.DEBUG);
+		((org.apache.logging.log4j.core.Logger) LogManager.getLogger("org.hibernate.type")).setLevel(Level.TRACE);
+		((org.apache.logging.log4j.core.Logger) LogManager.getLogger("org.openmrs.api")).setLevel(Level.DEBUG);
+		((org.apache.logging.log4j.core.Logger) LogManager.getLogger("org.openmrs.scheduler")).setLevel(Level.DEBUG);
 		log.debug("SchedulerServiceTest setup() start");
 		Context.flushSession();
 		
@@ -76,10 +76,10 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	@After
 	public void cleanUp() throws Exception {
 		// Temporary logger level changes to debug TRUNK-4212
-		LogManager.getLogger("org.hibernate.SQL").setLevel(Level.WARN);
-		LogManager.getLogger("org.hibernate.type").setLevel(Level.WARN);
-		LogManager.getLogger("org.openmrs.api").setLevel(Level.WARN);
-		LogManager.getLogger("org.openmrs.scheduler").setLevel(Level.WARN);
+		((org.apache.logging.log4j.core.Logger) LogManager.getLogger("org.hibernate.SQL")).setLevel(Level.WARN);
+		((org.apache.logging.log4j.core.Logger) LogManager.getLogger("org.hibernate.type")).setLevel(Level.WARN);
+		((org.apache.logging.log4j.core.Logger) LogManager.getLogger("org.openmrs.api")).setLevel(Level.WARN);
+		((org.apache.logging.log4j.core.Logger) LogManager.getLogger("org.openmrs.scheduler")).setLevel(Level.WARN);
 	}
 	
 	@Test

@@ -46,8 +46,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleException;
@@ -76,7 +76,7 @@ import org.xml.sax.SAXException;
 
 public class WebModuleUtil {
 	
-	private static Log log = LogFactory.getLog(WebModuleUtil.class);
+	private static Logger log = LoggerFactory.getLogger(WebModuleUtil.class);
 	
 	private static DispatcherServlet dispatcherServlet = null;
 	
@@ -971,10 +971,10 @@ public class WebModuleUtil {
 			
 		}
 		catch (ParserConfigurationException pce) {
-			log.error(pce);
+			log.error("ParserConfigurationException", pce);
 		}
 		catch (TransformerException tfe) {
-			log.error(tfe);
+			log.error("TransformerException",tfe);
 		}
 	}
 	

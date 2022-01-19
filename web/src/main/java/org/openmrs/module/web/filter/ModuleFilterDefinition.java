@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleException;
 import org.w3c.dom.Element;
@@ -43,7 +43,7 @@ public class ModuleFilterDefinition implements Serializable {
 	
 	public static final long serialVersionUID = 1;
 	
-	private static Log log = LogFactory.getLog(ModuleFilterDefinition.class);
+	private static Logger log = LoggerFactory.getLogger(ModuleFilterDefinition.class);
 	
 	// Properties
 	private Module module;

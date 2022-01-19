@@ -19,8 +19,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.hibernate.Session;
 import org.hibernate.jdbc.Work;
 import org.openmrs.api.db.DAOException;
@@ -33,7 +33,7 @@ import org.springframework.util.StringUtils;
  */
 public class DatabaseUtil {
 	
-	private final static Log log = LogFactory.getLog(DatabaseUtil.class);
+	private final static Logger log = LoggerFactory.getLogger(DatabaseUtil.class);
 
 	public final static String ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME = "order_entry_upgrade_settings.txt";
 

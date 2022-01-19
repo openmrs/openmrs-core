@@ -38,7 +38,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -66,16 +65,22 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.appender.RollingFileAppender;
+import org.apache.logging.log4j.core.appender.rolling.CompositeTriggeringPolicy;
+import org.apache.logging.log4j.core.appender.rolling.DefaultRolloverStrategy;
+import org.apache.logging.log4j.core.appender.rolling.OnStartupTriggeringPolicy;
+import org.apache.logging.log4j.core.appender.rolling.SizeBasedTriggeringPolicy;
+import org.apache.logging.log4j.core.config.LoggerConfig;
+import org.apache.logging.log4j.core.layout.PatternLayout;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.Appender;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.RollingFileAppender;
+
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptNumeric;
@@ -83,13 +88,13 @@ import org.openmrs.Drug;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
-import org.openmrs.Patient;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.User;
 import org.openmrs.annotation.AddOnStartup;
 import org.openmrs.annotation.HasAddOnStartupPrivileges;
+import org.openmrs.annotation.Logging;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
@@ -109,6 +114,8 @@ import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.PersonAttributeTypeEditor;
 import org.openmrs.propertyeditor.ProgramEditor;
 import org.openmrs.propertyeditor.ProgramWorkflowStateEditor;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MarkerFactory;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.NoSuchMessageException;
@@ -120,8 +127,8 @@ import org.w3c.dom.DocumentType;
  * Utility methods used in openmrs
  */
 public class OpenmrsUtil {
-	
-	private static Log log = LogFactory.getLog(OpenmrsUtil.class);
+
+	private static org.slf4j.Logger log = LoggerFactory.getLogger(OpenmrsUtil.class);
 	
 	private static Map<Locale, SimpleDateFormat> dateFormatCache = new HashMap<Locale, SimpleDateFormat>();
 	
@@ -455,8 +462,9 @@ public class OpenmrsUtil {
 					OpenmrsConstants.DATABASE_NAME = val;
 				}
 				catch (Exception e) {
-					log.fatal("Database name cannot be configured from 'connection.url' ."
-					        + "Either supply 'connection.database_name' or correct the url", e);
+					log.error(MarkerFactory.getMarker("FATAL"), "Database name cannot be configured from 'connection.url' ."
+									+ "Either supply 'connection.database_name' or correct the url",
+							e);
 				}
 			}
 		}
@@ -467,109 +475,151 @@ public class OpenmrsUtil {
 			val = OpenmrsConstants.DATABASE_NAME;
 		}
 		OpenmrsConstants.DATABASE_BUSINESS_NAME = val;
+
+		setupLogAppenders();
 		
 		// set global log level
 		applyLogLevels();
-		
-		setupLogAppenders();
 	}
-	
+
+
 	/**
 	 * Set the org.openmrs log4j logger's level if global property log.level.openmrs (
 	 * OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL ) exists. Valid values for global property are
 	 * trace, debug, info, warn, error or fatal.
 	 */
+	@Logging(ignore = true)
 	public static void applyLogLevels() {
 		AdministrationService adminService = Context.getAdministrationService();
 		String logLevel = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL, "");
+
+		// reload the configuration from disk
+		LoggerContext context = ((Logger) LogManager.getRootLogger()).getContext();
+		context.reconfigure();
 		
 		String[] levels = logLevel.split(",");
 		for (String level : levels) {
 			String[] classAndLevel = level.split(":");
-			if (classAndLevel.length == 1) {
-				applyLogLevel(OpenmrsConstants.LOG_CLASS_DEFAULT, logLevel);
+			if (classAndLevel.length == 0) {
+				return;
+			} else if (classAndLevel.length == 1) {
+				applyLogLevel(OpenmrsConstants.LOG_CLASS_DEFAULT, classAndLevel[0].trim());
 			} else {
 				applyLogLevel(classAndLevel[0].trim(), classAndLevel[1].trim());
 			}
 		}
 	}
-	
+
+	public static MemoryAppender getMemoryAppender() {
+		MemoryAppender memoryAppender = ((LoggerContext) LogManager.getContext()).getConfiguration().getAppender("MEMORY_APPENDER");
+		if (memoryAppender != null && !memoryAppender.isStarted()) {
+			memoryAppender.start();
+		}
+		return memoryAppender;
+	}
+
 	/**
 	 * Setup root level log appenders.
-	 * 
+	 *
 	 * @since 1.9.2
 	 */
 	public static void setupLogAppenders() {
-		Logger rootLogger = Logger.getRootLogger();
-		
-		FileAppender fileAppender = null;
-		@SuppressWarnings("rawtypes")
-		Enumeration appenders = rootLogger.getAllAppenders();
-		while (appenders.hasMoreElements()) {
-			Appender appender = (Appender) appenders.nextElement();
-			if (OpenmrsConstants.LOG_OPENMRS_FILE_APPENDER.equals(appender.getName())) {
-				fileAppender = (FileAppender) appender; //the appender already exists
+		Logger rootLogger = (Logger) LogManager.getRootLogger();
+		LoggerContext loggerContext = rootLogger.getContext();
+
+		// stop the LoggerContext to reconfigure the scanning interval
+		loggerContext.stop();
+		// previously set in web.xml
+		loggerContext.getConfiguration().getWatchManager().setIntervalSeconds(60000);
+		loggerContext.start();
+
+		RollingFileAppender fileAppender = null;
+		for (Map.Entry<String, Appender> appenderEntry : rootLogger.getAppenders().entrySet()) {
+			Appender appender = appenderEntry.getValue();
+			if (appender instanceof RollingFileAppender && OpenmrsConstants.LOG_OPENMRS_FILE_APPENDER
+					.equals(appender.getName())) {
+				fileAppender = (RollingFileAppender) appender;
 				break;
 			}
 		}
-		
+
+		if (fileAppender != null) {
+			rootLogger.removeAppender(fileAppender);
+		}
+
 		String logLayout = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_LOG_LAYOUT,
-		    "%p - %C{1}.%M(%L) |%d{ISO8601}| %m%n");
-		PatternLayout patternLayout = new PatternLayout(logLayout);
-		
-		String logLocation = null;
-		try {
-			logLocation = OpenmrsUtil.getOpenmrsLogLocation();
-			if (fileAppender == null) {
-				fileAppender = new RollingFileAppender(patternLayout, logLocation);
-				fileAppender.setName(OpenmrsConstants.LOG_OPENMRS_FILE_APPENDER);
-				rootLogger.addAppender(fileAppender);
-			} else {
-				fileAppender.setFile(logLocation);
-				fileAppender.setLayout(patternLayout);
-			}
-			fileAppender.activateOptions();
-		}
-		catch (IOException e) {
-			log.error("Error while setting an OpenMRS log file to " + logLocation, e);
-		}
+				"%p - %C{1}.%M(%L) |%d{ISO8601}| %m%n");
+		PatternLayout patternLayout = PatternLayout.newBuilder()
+				.withPattern(logLayout)
+				.build();
+
+		String logLocation = OpenmrsUtil.getOpenmrsLogLocation();
+		String logPattern = logLocation.replace(".log", ".%i.log");
+		fileAppender = RollingFileAppender.newBuilder()
+				.setLayout(patternLayout)
+				.withFileName(logLocation)
+				.withFilePattern(logPattern)
+				.setName(OpenmrsConstants.LOG_OPENMRS_FILE_APPENDER)
+				.withPolicy(CompositeTriggeringPolicy.createPolicy(
+						OnStartupTriggeringPolicy.createPolicy(1),
+						SizeBasedTriggeringPolicy.createPolicy("10MB")
+				))
+				.withStrategy(DefaultRolloverStrategy.newBuilder().withMax("1").build())
+				.build();
+		fileAppender.start();
+		rootLogger.addAppender(fileAppender);
+
+		// update the logger configuration
+		loggerContext.updateLoggers();
 	}
-	
+
 	/**
 	 * Set the log4j log level for class <code>logClass</code> to <code>logLevel</code>.
-	 * 
+	 *
 	 * @param logClass optional string giving the class level to change. Defaults to
 	 *            OpenmrsConstants.LOG_CLASS_DEFAULT . Should be something like org.openmrs.___
 	 * @param logLevel one of OpenmrsConstants.LOG_LEVEL_*
 	 */
 	public static void applyLogLevel(String logClass, String logLevel) {
-		
+
 		if (logLevel != null) {
-			
+
 			// the default log level is org.openmrs
 			if (StringUtils.isEmpty(logClass)) {
 				logClass = OpenmrsConstants.LOG_CLASS_DEFAULT;
 			}
-			
-			Logger logger = Logger.getLogger(logClass);
-			
+
+			// DO NOT USE LogManager#getContext() here as the will reset the logger context
+			LoggerContext context = ((Logger) LogManager.getRootLogger()).getContext();
+			LoggerConfig configuration = context.getConfiguration().getLoggerConfig(logClass);
+
 			logLevel = logLevel.toLowerCase();
-			if (OpenmrsConstants.LOG_LEVEL_TRACE.equals(logLevel)) {
-				logger.setLevel(Level.TRACE);
-			} else if (OpenmrsConstants.LOG_LEVEL_DEBUG.equals(logLevel)) {
-				logger.setLevel(Level.DEBUG);
-			} else if (OpenmrsConstants.LOG_LEVEL_INFO.equals(logLevel)) {
-				logger.setLevel(Level.INFO);
-			} else if (OpenmrsConstants.LOG_LEVEL_WARN.equals(logLevel)) {
-				logger.setLevel(Level.WARN);
-			} else if (OpenmrsConstants.LOG_LEVEL_ERROR.equals(logLevel)) {
-				logger.setLevel(Level.ERROR);
-			} else if (OpenmrsConstants.LOG_LEVEL_FATAL.equals(logLevel)) {
-				logger.setLevel(Level.FATAL);
-			} else {
-				log.warn("Global property " + logLevel + " is invalid. "
-				        + "Valid values are trace, debug, info, warn, error or fatal");
+			switch (logLevel) {
+				case OpenmrsConstants.LOG_LEVEL_TRACE:
+					configuration.setLevel(Level.TRACE);
+					break;
+				case OpenmrsConstants.LOG_LEVEL_DEBUG:
+					configuration.setLevel(Level.DEBUG);
+					break;
+				case OpenmrsConstants.LOG_LEVEL_INFO:
+					configuration.setLevel(Level.INFO);
+					break;
+				case OpenmrsConstants.LOG_LEVEL_WARN:
+					configuration.setLevel(Level.WARN);
+					break;
+				case OpenmrsConstants.LOG_LEVEL_ERROR:
+					configuration.setLevel(Level.ERROR);
+					break;
+				case OpenmrsConstants.LOG_LEVEL_FATAL:
+					configuration.setLevel(Level.FATAL);
+					break;
+				default:
+					log.warn("Log level {} is invalid. " +
+							"Valid values are trace, debug, info, warn, error or fatal", logLevel);
+					break;
 			}
+
+			context.updateLoggers();
 		}
 	}
 	
@@ -1674,7 +1724,7 @@ public class OpenmrsUtil {
 	 * Reader/Writer object as an argument, making this method unnecessary.
 	 * 
 	 * @param props the properties object to write into
-	 * @param input the input stream to read from
+	 * @param inputStream the input stream to read from
 	 */
 	public static void loadProperties(Properties props, InputStream inputStream) {
 		InputStreamReader reader = null;

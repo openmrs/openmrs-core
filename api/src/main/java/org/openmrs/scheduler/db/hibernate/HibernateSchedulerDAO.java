@@ -11,8 +11,8 @@ package org.openmrs.scheduler.db.hibernate;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
@@ -29,7 +29,7 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	/**
 	 * Logger
 	 */
-	private static final Log log = LogFactory.getLog(HibernateSchedulerDAO.class);
+	private static final Logger log = LoggerFactory.getLogger(HibernateSchedulerDAO.class);
 	
 	/**
 	 * Hibernate session factory

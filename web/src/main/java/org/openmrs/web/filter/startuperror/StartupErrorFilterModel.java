@@ -13,8 +13,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.web.filter.StartupFilter;
 import org.openmrs.web.filter.update.UpdateFilter;
 
@@ -25,7 +25,7 @@ import org.openmrs.web.filter.update.UpdateFilter;
  */
 public class StartupErrorFilterModel {
 	
-	protected static final Log log = LogFactory.getLog(StartupErrorFilterModel.class);
+	protected static final Logger log = LoggerFactory.getLogger(StartupErrorFilterModel.class);
 	
 	// automatically given to the .vm files and used there
 	public String headerTemplate = "org/openmrs/web/filter/startuperror/header.vm";
