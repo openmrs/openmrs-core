@@ -39,5 +39,32 @@ public enum ConditionClinicalStatus {
 	 * Remission is where the patient is no longer experiencing the symptoms of the condition, 
 	 * but there is a risk of the symptoms returning.
 	 * */
-	HISTORY_OF 
+	@Deprecated
+	HISTORY_OF,
+	
+	/**
+	 * The Patient is experiencing a re-occurence or repeating of a previously resolved condition, 
+	 * e.g. urinary tract infection, pancreatitis, cholangitis, conjunctivitis.
+	 */
+	RECURRENCE,
+	
+	/**
+	 * The Patient is experiencing a return of a condition, or signs and symptoms after a period of 
+	 * improvement or remission, e.g. relapse of cancer, multiple sclerosis, rheumatoid arthritis, 
+	 * systemic lupus erythematosus, bipolar disorder, [psychotic relapse of] schizophrenia, etc.
+	 */
+	RELAPSE,
+	
+	/**
+	 * The Patient is no longer experiencing the symptoms of the condition, but there is a risk 
+	 * of the symptoms returning.
+	 */
+	REMISSION,
+
+	/**
+	 * The Patient is no longer experiencing the symptoms of the condition and there is a 
+	 * negligible perceived risk of the symptoms returning.
+	 */
+	RESOLVED
+	
 }
