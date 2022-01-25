@@ -94,11 +94,9 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 		// set the locale on the session (for the servlet container as well)
 		httpSession.setAttribute("locale", userContext.getLocale());
 		
-		//TODO We do not cache pages that have CSRF tokens. There are smarter ways of dealing
-		//with this, like loading just the CSRF token with an AJAX request and replacing the 
-		//form field value with it, and others. But i did not go into these details. So for now,
-		//i have just done the simplest which is turning off caching for pages that have CSRF tokens.
-		if (httpRequest.getParameter("OWASP-CSRFTOKEN") != null) {
+		//TODO We do not cache the csrfguard javascript file because it contains the
+		//csrf token that is dynamically embedded in forms.
+		if (httpRequest.getRequestURI().endsWith("csrfguard")) {
 			httpResponse.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
 			httpResponse.setHeader("Pragma", "no-cache"); // HTTP 1.0.
 			httpResponse.setHeader("Expires", "0"); // Proxies.
