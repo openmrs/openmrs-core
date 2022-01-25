@@ -95,7 +95,8 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 		httpSession.setAttribute("locale", userContext.getLocale());
 		
 		//TODO We do not cache the csrfguard javascript file because it contains the
-		//csrf token that is dynamically embedded in forms.
+		//csrf token that is dynamically embedded in forms. For this to work,
+		//the OpenmrsFilter should be before the CSRFGuard filter in web.xml
 		if (httpRequest.getRequestURI().endsWith("csrfguard")) {
 			httpResponse.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
 			httpResponse.setHeader("Pragma", "no-cache"); // HTTP 1.0.
