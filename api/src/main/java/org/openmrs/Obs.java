@@ -1087,7 +1087,6 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 			} else {
 				
 				String[] supportedFormats = {"yyyy-MM-dd'T'HH:mm:ss.SSSZ", "yyyy-MM-dd'T'HH:mm:ss.SSS","yyyy-MM-dd'T'HH:mm:ssZ", "yyyy-MM-dd'T'HH:mm:ssXXX","yyyy-MM-dd'T'HH:mm:ss","yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd"};
-				
 				boolean flag = false;
 				
 				for (int i = 0; i < supportedFormats.length; i++) {
@@ -1095,13 +1094,10 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 					try {
 						
 					  DateFormat dateFormat = new SimpleDateFormat(supportedFormats[i]);
-					  
 					  setValueDatetime(dateFormat.parse(s));
 					  
 					  flag = false;
-					  
 					  break;
-					  
 					}
 					
 					catch(Exception e) {
