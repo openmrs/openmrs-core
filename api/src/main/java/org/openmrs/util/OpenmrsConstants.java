@@ -20,8 +20,8 @@ import java.util.Properties;
 import java.util.Vector;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.handler.ExistingVisitAssignmentHandler;
 import org.openmrs.customdatatype.datatype.BooleanDatatype;
@@ -40,7 +40,7 @@ import org.openmrs.scheduler.SchedulerConstants;
  */
 public final class OpenmrsConstants {
 	
-	private static final Log log = LogFactory.getLog(OpenmrsConstants.class);
+	private static final Logger log = LoggerFactory.getLogger(OpenmrsConstants.class);
 	
 	public static String KEY_OPENMRS_APPLICATION_DATA_DIRECTORY = "OPENMRS_APPLICATION_DATA_DIRECTORY";
 	
@@ -794,7 +794,7 @@ public final class OpenmrsConstants {
 		        .add(new GlobalProperty(
 		                GLOBAL_PROPERTY_LOG_LEVEL,
 		                "org.openmrs.api:" + LOG_LEVEL_INFO,
-		                "Logging levels for log4j.xml. Valid format is class:level,class:level. If class not specified, 'org.openmrs.api' presumed. Valid levels are trace, debug, info, warn, error or fatal"));
+		                "Logging levels for log4j2.xml. Valid format is class:level,class:level. If class not specified, 'org.openmrs.api' presumed. Valid levels are trace, debug, info, warn, error or fatal"));
 		
 		props.add(new GlobalProperty(GP_LOG_LOCATION, "",
 		        "A directory where the OpenMRS log file appender is stored. The log file name is 'openmrs.log'."));

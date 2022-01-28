@@ -17,8 +17,8 @@ import liquibase.exception.DatabaseException;
 import liquibase.exception.SetupException;
 import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.util.Security;
 
 import java.sql.PreparedStatement;
@@ -31,7 +31,7 @@ import java.sql.Statement;
  */
 public class EncryptSecretAnswersChangeSet implements CustomTaskChange {
 	
-	private final static Log log = LogFactory.getLog(EncryptSecretAnswersChangeSet.class);
+	private final static Logger log = LoggerFactory.getLogger(EncryptSecretAnswersChangeSet.class);
 	
 	/**
 	 * @see CustomTaskChange#execute(Database)

@@ -22,13 +22,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Random;
+import java.util.*;
 import java.util.zip.ZipInputStream;
 
 import javax.servlet.FilterChain;
@@ -40,10 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.Appender;
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.xerces.impl.dv.util.Base64;
 import org.openmrs.ImplementationId;
 import org.openmrs.api.APIAuthenticationException;
@@ -82,8 +73,8 @@ import liquibase.changelog.ChangeSet;
  * {@link Listener} wasn't able to find any runtime properties
  */
 public class InitializationFilter extends StartupFilter {
-	
-	private static final Log log = LogFactory.getLog(InitializationFilter.class);
+
+	protected static final org.slf4j.Logger log = LoggerFactory.getLogger(InitializationFilter.class);
 	
 	private static final String LIQUIBASE_SCHEMA_DATA = "liquibase-schema-only.xml";
 	
@@ -235,18 +226,19 @@ public class InitializationFilter extends StartupFilter {
 					result.put("executedTasks", initJob.getExecutedTasks());
 					result.put("completedPercentage", initJob.getCompletedPercentage());
 				}
-				
-				Appender appender = Logger.getRootLogger().getAppender("MEMORY_APPENDER");
-				if (appender instanceof MemoryAppender) {
-					MemoryAppender memoryAppender = (MemoryAppender) appender;
-					List<String> logLines = memoryAppender.getLogLines();
-					// truncate the list to the last 5 so we don't overwhelm jquery
+
+				MemoryAppender appender = OpenmrsUtil.getMemoryAppender();
+				if (appender != null) {
+					List<String> logLines = appender.getLogLines();
+
+					// truncate the list to the last five so we don't overwhelm jquery
 					if (logLines.size() > 5) {
 						logLines = logLines.subList(logLines.size() - 5, logLines.size());
 					}
+
 					result.put("logLines", logLines);
 				} else {
-					result.put("logLines", new ArrayList<String>());
+					result.put("logLines", Collections.emptyList());
 				}
 			}
 			

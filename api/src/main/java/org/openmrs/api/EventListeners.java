@@ -11,15 +11,15 @@ package org.openmrs.api;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Holds all OpenMRS event listeners
  */
 public class EventListeners {
 	
-	private static Log log = LogFactory.getLog(EventListeners.class);
+	private static Logger log = LoggerFactory.getLogger(EventListeners.class);
 	
 	private static List<GlobalPropertyListener> globalPropertyListeners = null;
 	

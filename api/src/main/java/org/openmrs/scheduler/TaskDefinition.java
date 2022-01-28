@@ -13,8 +13,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.BaseOpenmrsMetadata;
 
 /**
@@ -22,7 +22,7 @@ import org.openmrs.BaseOpenmrsMetadata;
  */
 public class TaskDefinition extends BaseOpenmrsMetadata {
 	
-	private Log log = LogFactory.getLog(this.getClass());
+	private Logger log = LoggerFactory.getLogger(this.getClass());
 	
 	// Task metadata
 	private Integer id;

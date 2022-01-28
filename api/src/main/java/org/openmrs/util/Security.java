@@ -22,8 +22,8 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.xerces.impl.dv.util.Base64;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -42,7 +42,7 @@ public class Security {
 	/**
 	 * encryption settings
 	 */
-	public static Log log = LogFactory.getLog(Security.class);
+	public static Logger log = LoggerFactory.getLogger(Security.class);
 	
 	/**
 	 * Compare the given hash and the given string-to-hash to see if they are equal. The

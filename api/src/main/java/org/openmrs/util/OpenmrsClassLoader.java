@@ -36,8 +36,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import net.sf.ehcache.CacheManager;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ModuleClassLoader;
@@ -52,7 +52,7 @@ import org.openmrs.scheduler.SchedulerService;
  */
 public class OpenmrsClassLoader extends URLClassLoader {
 	
-	private static Log log = LogFactory.getLog(OpenmrsClassLoader.class);
+	private static Logger log = LoggerFactory.getLogger(OpenmrsClassLoader.class);
 	
 	private static File libCacheFolder;
 	

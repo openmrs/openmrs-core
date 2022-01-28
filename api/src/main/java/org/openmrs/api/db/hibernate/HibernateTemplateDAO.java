@@ -11,8 +11,8 @@ package org.openmrs.api.db.hibernate;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.hibernate.SessionFactory;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.TemplateDAO;
@@ -20,7 +20,7 @@ import org.openmrs.notification.Template;
 
 public class HibernateTemplateDAO implements TemplateDAO {
 	
-	private final static Log log = LogFactory.getLog(HibernateTemplateDAO.class);
+	private final static Logger log = LoggerFactory.getLogger(HibernateTemplateDAO.class);
 	
 	/**
 	 * Hibernate session factory

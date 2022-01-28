@@ -29,8 +29,8 @@ import java.util.Vector;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptAttribute;
@@ -79,7 +79,7 @@ import org.springframework.util.StringUtils;
 @Transactional
 public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptService {
 	
-	private final Log log = LogFactory.getLog(getClass());
+	protected final Logger log = LoggerFactory.getLogger(getClass());
 	
 	private ConceptDAO dao;
 	

@@ -9,8 +9,8 @@
  */
 package org.openmrs.scheduler.tasks;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.hl7.HL7InQueueProcessor;
@@ -26,7 +26,7 @@ import ca.uhn.hl7v2.HL7Exception;
 public class ProcessHL7InQueueTask extends AbstractTask {
 	
 	// Logger
-	private static Log log = LogFactory.getLog(ProcessHL7InQueueTask.class);
+	private static Logger log = LoggerFactory.getLogger(ProcessHL7InQueueTask.class);
 	
 	// Instance of hl7 processor
 	private static HL7InQueueProcessor processor = null;

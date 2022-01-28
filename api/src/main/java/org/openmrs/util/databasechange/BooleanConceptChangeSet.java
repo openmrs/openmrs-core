@@ -26,8 +26,8 @@ import liquibase.exception.SetupException;
 import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -35,7 +35,7 @@ import org.openmrs.util.OpenmrsConstants;
  */
 public class BooleanConceptChangeSet implements CustomTaskChange {
 	
-	private static Log log = LogFactory.getLog(BooleanConceptChangeSet.class);
+	private static Logger log = LoggerFactory.getLogger(BooleanConceptChangeSet.class);
 	
 	private Integer trueConceptId;
 	

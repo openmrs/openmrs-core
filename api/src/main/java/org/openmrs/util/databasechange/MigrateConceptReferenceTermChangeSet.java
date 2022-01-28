@@ -27,8 +27,8 @@ import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Creates concept reference terms from existing rows in the concept_reference_map table.
@@ -37,7 +37,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class MigrateConceptReferenceTermChangeSet implements CustomTaskChange {
 	
-	protected final Log log = LogFactory.getLog(getClass());
+	protected final Logger log = LoggerFactory.getLogger(getClass());
 	
 	public static final String DEFAULT_CONCEPT_MAP_TYPE = "NARROWER-THAN";
 	

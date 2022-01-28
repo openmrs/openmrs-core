@@ -11,8 +11,8 @@ package org.openmrs.validator;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.DosingInstructions;
@@ -37,7 +37,7 @@ import org.springframework.validation.Validator;
 public class DrugOrderValidator extends OrderValidator implements Validator {
 	
 	/** Log for this class and subclasses */
-	protected final Log log = LogFactory.getLog(getClass());
+	protected final Logger log = LoggerFactory.getLogger(getClass());
 	
 	/**
 	 * Determines if the command object being submitted is a valid type

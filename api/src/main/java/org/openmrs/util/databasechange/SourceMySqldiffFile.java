@@ -31,8 +31,8 @@ import liquibase.exception.SetupException;
 
 import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -48,7 +48,7 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 	
 	public static final String CONNECTION_PASSWORD = "connection.password";
 	
-	private static Log log = LogFactory.getLog(SourceMySqldiffFile.class);
+	private static Logger log = LoggerFactory.getLogger(SourceMySqldiffFile.class);
 	
 	/**
 	 * Absolute path and name of file to source

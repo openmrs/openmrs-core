@@ -15,8 +15,8 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.util.Assert;
 
@@ -38,7 +38,7 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 	/** Views supported by this handler */
 	private static final String[] supportedViews = { ComplexObsHandler.RAW_VIEW, };
 	
-	public static final Log log = LogFactory.getLog(BinaryStreamHandler.class);
+	public static final Logger log = LoggerFactory.getLogger(BinaryStreamHandler.class);
 	
 	/**
 	 * Constructor initializes formats for alternative file names to protect from unintentionally

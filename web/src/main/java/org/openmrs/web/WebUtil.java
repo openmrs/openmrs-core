@@ -10,8 +10,8 @@
 package org.openmrs.web;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.context.Context;
@@ -29,7 +29,7 @@ import java.util.Locale;
 
 public class WebUtil implements GlobalPropertyListener {
 	
-	private static Log log = LogFactory.getLog(WebUtil.class);
+	private static Logger log = LoggerFactory.getLogger(WebUtil.class);
 	
 	private static String defaultDateCache = null;
 

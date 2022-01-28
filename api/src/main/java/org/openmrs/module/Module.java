@@ -21,8 +21,8 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Privilege;
 import org.w3c.dom.Document;
@@ -34,7 +34,7 @@ import org.w3c.dom.Document;
  */
 public final class Module {
 	
-	private Log log = LogFactory.getLog(this.getClass());
+	private Logger log = LoggerFactory.getLogger(this.getClass());
 	
 	private String name;
 	

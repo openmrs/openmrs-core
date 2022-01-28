@@ -9,8 +9,8 @@
  */
 package org.openmrs;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.util.RoleConstants;
 
 import java.util.Collection;
@@ -29,7 +29,7 @@ public class Role extends BaseOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 1234233L;
 	
-	private static final Log log = LogFactory.getLog(Role.class);
+	private static final Logger log = LoggerFactory.getLogger(Role.class);
 	
 	// Fields
 	

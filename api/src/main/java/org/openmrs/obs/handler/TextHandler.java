@@ -18,8 +18,8 @@ import java.io.InputStream;
 import java.io.Reader;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.util.Assert;
 
@@ -41,7 +41,7 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 	private static final String[] supportedViews = { ComplexObsHandler.TEXT_VIEW, ComplexObsHandler.RAW_VIEW,
 	        ComplexObsHandler.URI_VIEW };
 	
-	public static final Log log = LogFactory.getLog(TextHandler.class);
+	public static final Logger log = LoggerFactory.getLogger(TextHandler.class);
 	
 	/**
 	 * Constructor initializes formats for alternative file names to protect from unintentionally

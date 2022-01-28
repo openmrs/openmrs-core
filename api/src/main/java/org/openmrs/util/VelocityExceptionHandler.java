@@ -9,8 +9,8 @@
  */
 package org.openmrs.util;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.velocity.app.event.MethodExceptionEventHandler;
 
 /**
@@ -18,7 +18,7 @@ import org.apache.velocity.app.event.MethodExceptionEventHandler;
  */
 public class VelocityExceptionHandler implements MethodExceptionEventHandler {
 	
-	private Log log = LogFactory.getLog(this.getClass());
+	private Logger log = LoggerFactory.getLogger(this.getClass());
 	
 	/**
 	 * When a user-supplied method throws an exception, the MethodExceptionEventHandler is invoked

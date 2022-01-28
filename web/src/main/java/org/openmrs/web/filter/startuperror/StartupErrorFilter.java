@@ -29,8 +29,8 @@ import org.apache.commons.fileupload.RequestContext;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.module.OpenmrsCoreModuleException;
@@ -44,7 +44,7 @@ import org.openmrs.web.filter.StartupFilter;
  */
 public class StartupErrorFilter extends StartupFilter {
 	
-	protected final Log log = LogFactory.getLog(getClass());
+	protected final Logger log = LoggerFactory.getLogger(getClass());
 	
 	/**
 	 * The velocity macro page to redirect to if an error occurs or on initial startup

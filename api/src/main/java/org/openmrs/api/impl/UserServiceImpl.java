@@ -18,8 +18,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Person;
 import org.openmrs.Privilege;
 import org.openmrs.PrivilegeListener;
@@ -53,7 +53,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	
-	protected final Log log = LogFactory.getLog(UserServiceImpl.class);
+	protected final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 	
 	protected UserDAO dao;
 	

@@ -17,8 +17,8 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Location;
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -44,7 +44,7 @@ public class UserContext implements Serializable {
 	/**
 	 * Logger - shared by entire class
 	 */
-	private static final Log log = LogFactory.getLog(UserContext.class);
+	private static final Logger log = LoggerFactory.getLogger(UserContext.class);
 	
 	/**
 	 * User object containing details about the authenticated user

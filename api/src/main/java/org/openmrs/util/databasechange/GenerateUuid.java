@@ -17,8 +17,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.util.OpenmrsUtil;
 
 import liquibase.change.custom.CustomTaskChange;
@@ -47,7 +47,7 @@ import liquibase.resource.ResourceAccessor;
  */
 public class GenerateUuid implements CustomTaskChange {
 	
-	protected final Log log = LogFactory.getLog(getClass());
+	protected final Logger log = LoggerFactory.getLogger(getClass());
 	
 	public static final Integer TRANSACTION_BATCH_SIZE_LIMIT = 512;
 	
@@ -127,7 +127,7 @@ public class GenerateUuid implements CustomTaskChange {
 								statement.close();
 							}
 							catch (SQLException e) {
-								log.warn(e);
+								log.warn("SQLException", e);
 							}
 						}
 					}
@@ -175,7 +175,7 @@ public class GenerateUuid implements CustomTaskChange {
 									idStatement.close();
 								}
 								catch (SQLException e) {
-									log.warn(e);
+									log.warn("SQLException", e);
 								}
 							}
 							if (updateStatement != null) {
@@ -183,7 +183,7 @@ public class GenerateUuid implements CustomTaskChange {
 									updateStatement.close();
 								}
 								catch (SQLException e) {
-									log.warn(e);
+									log.warn("SQLException", e);
 								}
 							}
 						}

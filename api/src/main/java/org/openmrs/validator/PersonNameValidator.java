@@ -10,8 +10,8 @@
 package org.openmrs.validator;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.PersonName;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
@@ -27,7 +27,7 @@ import org.springframework.validation.Validator;
 @Handler(supports = { PersonName.class }, order = 50)
 public class PersonNameValidator implements Validator {
 	
-	private static Log log = LogFactory.getLog(PersonNameValidator.class);
+	private static Logger log = LoggerFactory.getLogger(PersonNameValidator.class);
 	
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)

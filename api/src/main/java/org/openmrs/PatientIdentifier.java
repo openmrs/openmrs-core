@@ -9,8 +9,8 @@
  */
 package org.openmrs;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Boost;
@@ -39,7 +39,7 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 	
 	public static final long serialVersionUID = 1123121L;
 	
-	private static final Log log = LogFactory.getLog(PatientIdentifier.class);
+	private static final Logger log = LoggerFactory.getLogger(PatientIdentifier.class);
 	
 	// Fields
 	

@@ -29,6 +29,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.api.PatientService;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.validation.BindException;
@@ -41,6 +42,7 @@ import org.openmrs.Allergies;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(Context.class)
+@PowerMockIgnore("javax.management.*")
 public class AllergyValidatorTest {
 	
 	@Rule

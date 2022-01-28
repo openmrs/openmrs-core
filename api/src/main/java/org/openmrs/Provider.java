@@ -9,8 +9,8 @@
  */
 package org.openmrs;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents a person who may provide care to a patient during an encounter
@@ -19,7 +19,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 	
-	private final Log log = LogFactory.getLog(getClass());
+	protected final Logger log = LoggerFactory.getLogger(getClass());
 	
 	private Integer providerId;
 	

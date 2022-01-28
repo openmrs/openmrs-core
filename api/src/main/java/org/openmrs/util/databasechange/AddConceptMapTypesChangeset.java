@@ -27,8 +27,8 @@ import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.util.DatabaseUpdater;
 
 /**
@@ -36,7 +36,7 @@ import org.openmrs.util.DatabaseUpdater;
  */
 public class AddConceptMapTypesChangeset implements CustomTaskChange {
 	
-	private static final Log log = LogFactory.getLog(AddConceptMapTypesChangeset.class);
+	private static final Logger log = LoggerFactory.getLogger(AddConceptMapTypesChangeset.class);
 	
 	/**
 	 * The "visibleConceptMapTypes" parameter defined in the liquibase xml changeSet element that is

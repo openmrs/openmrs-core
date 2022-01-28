@@ -29,8 +29,8 @@ import java.util.zip.ZipFile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.xerces.impl.dv.util.Base64;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
@@ -46,7 +46,7 @@ import org.openmrs.web.filter.util.FilterUtil;
  */
 public class TestInstallUtil {
 	
-	private static final Log log = LogFactory.getLog(TestInstallUtil.class);
+	private static final Logger log = LoggerFactory.getLogger(TestInstallUtil.class);
 	
 	/**
 	 * Adds data to the test database from a sql dump file

@@ -11,8 +11,8 @@ package org.openmrs.propertyeditor;
 
 import java.beans.PropertyEditorSupport;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Provider;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
@@ -27,7 +27,7 @@ import org.springframework.util.StringUtils;
  */
 public class ProviderEditor extends PropertyEditorSupport {
 	
-	private Log log = LogFactory.getLog(this.getClass());
+	private Logger log = LoggerFactory.getLogger(this.getClass());
 	
 	public ProviderEditor() {
 	}

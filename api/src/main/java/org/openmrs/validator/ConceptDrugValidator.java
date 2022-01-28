@@ -9,8 +9,8 @@
  */
 package org.openmrs.validator;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Drug;
 import org.openmrs.annotation.Handler;
 import org.springframework.validation.Errors;
@@ -26,7 +26,7 @@ import org.springframework.validation.Validator;
 public class ConceptDrugValidator implements Validator {
 	
 	// Log for this class
-	private static final Log log = LogFactory.getLog(ConceptDrugValidator.class);
+	private static final Logger log = LoggerFactory.getLogger(ConceptDrugValidator.class);
 	
 	/**
 	 * Determines if the command object being submitted is a valid type

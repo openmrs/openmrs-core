@@ -23,8 +23,8 @@ import liquibase.exception.SetupException;
 
 import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.hl7.HL7Constants;
 
 /**
@@ -32,7 +32,7 @@ import org.openmrs.hl7.HL7Constants;
  */
 public class MoveDeletedHL7sChangeSet implements CustomTaskChange {
 	
-	protected final static Log log = LogFactory.getLog(MoveDeletedHL7sChangeSet.class);
+	protected final static Logger log = LoggerFactory.getLogger(MoveDeletedHL7sChangeSet.class);
 	
 	/**
 	 * @see CustomTaskChange#execute(Database)

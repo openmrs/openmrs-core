@@ -17,14 +17,14 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.PrivilegeConstants;
 
 public class SchedulerUtil {
 	
-	private static Log log = LogFactory.getLog(SchedulerUtil.class);
+	private static Logger log = LoggerFactory.getLogger(SchedulerUtil.class);
 	
 	/**
 	 * Start the scheduler given the following start up properties.

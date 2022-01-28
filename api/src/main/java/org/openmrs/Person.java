@@ -9,8 +9,8 @@
  */
 package org.openmrs;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.DocumentId;
@@ -41,7 +41,7 @@ public class Person extends BaseOpenmrsData {
 	
 	public static final long serialVersionUID = 2L;
 	
-	protected final Log log = LogFactory.getLog(getClass());
+	protected final Logger log = LoggerFactory.getLogger(getClass());
 
 	@DocumentId
 	protected Integer personId;
@@ -259,7 +259,7 @@ public class Person extends BaseOpenmrsData {
             try {
                 return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(birthDateString + " " + birthTimeString);
             } catch (ParseException e) {
-                log.error(e);
+                log.error("ParseException", e);
             }
         }
         return null;

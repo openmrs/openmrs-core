@@ -12,8 +12,8 @@ package org.openmrs.util;
 import java.lang.reflect.Field;
 import java.util.Timer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import sun.net.www.http.KeepAliveCache;
 
@@ -22,7 +22,7 @@ import sun.net.www.http.KeepAliveCache;
  */
 public class MemoryLeakUtil {
 	
-	private final static Log log = LogFactory.getLog(MemoryLeakUtil.class);
+	private final static Logger log = LoggerFactory.getLogger(MemoryLeakUtil.class);
 	
 	//http://bugs.mysql.com/bug.php?id=36565
 	public static void shutdownMysqlCancellationTimer() {

@@ -9,8 +9,8 @@
  */
 package org.openmrs.scheduler.tasks;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.api.context.Context;
 
 /**
@@ -19,7 +19,7 @@ import org.openmrs.api.context.Context;
 public class SendEmailTask extends AbstractTask {
 	
 	// Logger 
-	private Log log = LogFactory.getLog(SendEmailTask.class);
+	private Logger log = LoggerFactory.getLogger(SendEmailTask.class);
 	
 	/**
 	 * Process the next form entry in the database and then remove the form entry from the database.

@@ -10,7 +10,9 @@
 package org.openmrs.util;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -36,6 +38,12 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.LoggerConfig;
+import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -795,4 +803,243 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		verify(output, times(1)).close();
 	}
 
+
+	/**
+	 * @see OpenmrsUtil#applyLogLevels()
+	 */
+	@Test
+	public void applyLogLevels_shouldUpdateLogLevels() {
+		Logger logger = LogManager.getLogger(OpenmrsConstants.LOG_CLASS_DEFAULT + ".test");
+		Level previousLevel = logger.getLevel();
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL,
+				OpenmrsConstants.LOG_CLASS_DEFAULT + ".test:" + OpenmrsConstants.LOG_LEVEL_DEBUG);
+
+		OpenmrsUtil.applyLogLevels();
+
+		try {
+			assertEquals(logger.getLevel(), Level.DEBUG);
+			assertNotEquals(previousLevel, logger.getLevel());
+		}
+		finally {
+			// undo the logging level
+			LoggerContext context = ((org.apache.logging.log4j.core.Logger) logger).getContext();
+			LoggerConfig config = context.getConfiguration().getLoggerConfig(OpenmrsConstants.LOG_CLASS_DEFAULT + ".test");
+			config.setLevel(previousLevel);
+			context.updateLoggers();
+		}
+	}
+
+	/**
+	 * @see OpenmrsUtil#applyLogLevels()
+	 */
+	@Test
+	public void applyLogLevels_shouldUpdateDefaultLoggerIfNoneSpecified() {
+		Logger logger = LogManager.getLogger(OpenmrsConstants.LOG_CLASS_DEFAULT);
+		Level previousLevel = logger.getLevel();
+		Context.getAdministrationService()
+				.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL, OpenmrsConstants.LOG_LEVEL_DEBUG);
+
+		OpenmrsUtil.applyLogLevels();
+
+		try {
+			assertEquals(Level.DEBUG, logger.getLevel());
+			assertNotEquals(previousLevel, logger.getLevel());
+		}
+		finally {
+			// undo the logging level
+			LoggerContext context = ((org.apache.logging.log4j.core.Logger) logger).getContext();
+			LoggerConfig config = context.getConfiguration().getLoggerConfig(OpenmrsConstants.LOG_CLASS_DEFAULT);
+			config.setLevel(previousLevel);
+			context.updateLoggers();
+		}
+	}
+
+	/**
+	 * @see OpenmrsUtil#applyLogLevel(String, String)
+	 */
+	@Test
+	public void applyLogLevels_shouldApplyTraceLevel() {
+		Logger logger = LogManager.getLogger(OpenmrsConstants.LOG_CLASS_DEFAULT);
+		Level previousLevel = logger.getLevel();
+
+		OpenmrsUtil.applyLogLevel(OpenmrsConstants.LOG_CLASS_DEFAULT, OpenmrsConstants.LOG_LEVEL_TRACE);
+
+		try {
+			assertEquals(Level.TRACE, logger.getLevel());
+		}
+		finally {
+			// undo the logging level
+			LoggerContext context = ((org.apache.logging.log4j.core.Logger) logger).getContext();
+			LoggerConfig config = context.getConfiguration().getLoggerConfig(OpenmrsConstants.LOG_CLASS_DEFAULT);
+			config.setLevel(previousLevel);
+			context.updateLoggers();
+		}
+	}
+
+	/**
+	 * @see OpenmrsUtil#applyLogLevel(String, String)
+	 */
+	@Test
+	public void applyLogLevels_shouldApplyDebugLevel() {
+		Logger logger = LogManager.getLogger(OpenmrsConstants.LOG_CLASS_DEFAULT);
+		Level previousLevel = logger.getLevel();
+
+		OpenmrsUtil.applyLogLevel(OpenmrsConstants.LOG_CLASS_DEFAULT, OpenmrsConstants.LOG_LEVEL_DEBUG);
+
+		try {
+			assertEquals(Level.DEBUG, logger.getLevel());
+		}
+		finally {
+			// undo the logging level
+			LoggerContext context = ((org.apache.logging.log4j.core.Logger) logger).getContext();
+			LoggerConfig config = context.getConfiguration().getLoggerConfig(OpenmrsConstants.LOG_CLASS_DEFAULT);
+			config.setLevel(previousLevel);
+			context.updateLoggers();
+		}
+	}
+
+	/**
+	 * @see OpenmrsUtil#applyLogLevel(String, String)
+	 */
+	@Test
+	public void applyLogLevels_shouldApplyInfoLevel() {
+		Logger logger = LogManager.getLogger(OpenmrsConstants.LOG_CLASS_DEFAULT);
+		Level previousLevel = logger.getLevel();
+
+		OpenmrsUtil.applyLogLevel(OpenmrsConstants.LOG_CLASS_DEFAULT, OpenmrsConstants.LOG_LEVEL_INFO);
+
+		try {
+			assertEquals(Level.INFO, logger.getLevel());
+		}
+		finally {
+			// undo the logging level
+			LoggerContext context = ((org.apache.logging.log4j.core.Logger) logger).getContext();
+			LoggerConfig config = context.getConfiguration().getLoggerConfig(OpenmrsConstants.LOG_CLASS_DEFAULT);
+			config.setLevel(previousLevel);
+			context.updateLoggers();
+		}
+	}
+
+	/**
+	 * @see OpenmrsUtil#applyLogLevel(String, String)
+	 */
+	@Test
+	public void applyLogLevels_shouldApplyWarnLevel() {
+		Logger logger = LogManager.getLogger(OpenmrsConstants.LOG_CLASS_DEFAULT);
+		Level previousLevel = logger.getLevel();
+
+		OpenmrsUtil.applyLogLevel(OpenmrsConstants.LOG_CLASS_DEFAULT, OpenmrsConstants.LOG_LEVEL_WARN);
+
+		try {
+			assertEquals(Level.WARN, logger.getLevel());
+		}
+		finally {
+			// undo the logging level
+			LoggerContext context = ((org.apache.logging.log4j.core.Logger) logger).getContext();
+			LoggerConfig config = context.getConfiguration().getLoggerConfig(OpenmrsConstants.LOG_CLASS_DEFAULT);
+			config.setLevel(previousLevel);
+			context.updateLoggers();
+		}
+	}
+
+	/**
+	 * @see OpenmrsUtil#applyLogLevel(String, String)
+	 */
+	@Test
+	public void applyLogLevels_shouldApplyErrorLevel() {
+		Logger logger = LogManager.getLogger(OpenmrsConstants.LOG_CLASS_DEFAULT);
+		Level previousLevel = logger.getLevel();
+
+		OpenmrsUtil.applyLogLevel(OpenmrsConstants.LOG_CLASS_DEFAULT, OpenmrsConstants.LOG_LEVEL_ERROR);
+
+		try {
+			assertEquals(Level.ERROR, logger.getLevel());
+		}
+		finally {
+			// undo the logging level
+			LoggerContext context = ((org.apache.logging.log4j.core.Logger) logger).getContext();
+			LoggerConfig config = context.getConfiguration().getLoggerConfig(OpenmrsConstants.LOG_CLASS_DEFAULT);
+			config.setLevel(previousLevel);
+			context.updateLoggers();
+		}
+	}
+
+	/**
+	 * @see OpenmrsUtil#applyLogLevel(String, String)
+	 */
+	@Test
+	public void applyLogLevels_shouldApplyFatalLevel() {
+		Logger logger = LogManager.getLogger(OpenmrsConstants.LOG_CLASS_DEFAULT);
+		Level previousLevel = logger.getLevel();
+
+		OpenmrsUtil.applyLogLevel(OpenmrsConstants.LOG_CLASS_DEFAULT, OpenmrsConstants.LOG_LEVEL_FATAL);
+
+		try {
+			assertEquals(Level.FATAL, logger.getLevel());
+		}
+		finally {
+			// undo the logging level
+			LoggerContext context = ((org.apache.logging.log4j.core.Logger) logger).getContext();
+			LoggerConfig config = context.getConfiguration().getLoggerConfig(OpenmrsConstants.LOG_CLASS_DEFAULT);
+			config.setLevel(previousLevel);
+			context.updateLoggers();
+		}
+	}
+
+	/**
+	 * @see OpenmrsUtil#applyLogLevel(String, String)
+	 */
+	@Test
+	public void applyLogLevels_shouldDefaultToDefaultLoggerName() {
+		Logger logger = LogManager.getLogger(OpenmrsConstants.LOG_CLASS_DEFAULT);
+		Level previousLevel = logger.getLevel();
+
+		OpenmrsUtil.applyLogLevel("", OpenmrsConstants.LOG_LEVEL_DEBUG);
+
+		try {
+			assertEquals(Level.DEBUG, logger.getLevel());
+		}
+		finally {
+			// undo the logging level
+			LoggerContext context = ((org.apache.logging.log4j.core.Logger) logger).getContext();
+			LoggerConfig config = context.getConfiguration().getLoggerConfig(OpenmrsConstants.LOG_CLASS_DEFAULT);
+			config.setLevel(previousLevel);
+			context.updateLoggers();
+		}
+	}
+
+	/**
+	 * @see OpenmrsUtil#applyLogLevel(String, String)
+	 */
+	@Test
+	public void applyLogLevels_shouldWarnWhenCalledWithInvalidLevel() {
+		MemoryAppender memoryAppender = MemoryAppender.newBuilder().setName("MEMORY_APPENDER_TEST")
+				.setLayout(PatternLayout.newBuilder().withPattern("%m").build()).build();
+
+		memoryAppender.start();
+
+		org.apache.logging.log4j.core.Logger logger = (org.apache.logging.log4j.core.Logger) LogManager
+				.getLogger(OpenmrsUtil.class);
+
+		Level previousLevel = logger.getLevel();
+
+		LoggerContext context = logger.getContext();
+		LoggerConfig config = logger.get();
+		config.setLevel(Level.WARN);
+		context.updateLoggers();
+
+		logger.addAppender(memoryAppender);
+
+		try {
+			OpenmrsUtil.applyLogLevel(OpenmrsConstants.LOG_CLASS_DEFAULT, "INVALID STRING");
+
+			assertNotNull(memoryAppender.getLogLines());
+			assertTrue(memoryAppender.getLogLines().size() > 0);
+		} finally {
+			logger.removeAppender(memoryAppender);
+
+			config.setLevel(previousLevel);
+			context.updateLoggers();
+		}
+	}
 }

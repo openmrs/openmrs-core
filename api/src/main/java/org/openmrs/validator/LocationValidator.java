@@ -9,8 +9,8 @@
  */
 package org.openmrs.validator;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Location;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
@@ -29,7 +29,7 @@ import org.springframework.validation.Validator;
 public class LocationValidator extends BaseCustomizableValidator implements Validator {
 	
 	/** Log for this class and subclasses */
-	protected final Log log = LogFactory.getLog(getClass());
+	protected final Logger log = LoggerFactory.getLogger(getClass());
 	
 	/**
 	 * Determines if the command object being submitted is a valid type

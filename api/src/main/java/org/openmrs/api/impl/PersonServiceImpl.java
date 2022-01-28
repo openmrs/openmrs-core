@@ -18,8 +18,8 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
@@ -55,7 +55,7 @@ import org.springframework.util.Assert;
 @Transactional
 public class PersonServiceImpl extends BaseOpenmrsService implements PersonService {
 	
-	private Log log = LogFactory.getLog(this.getClass());
+	private Logger log = LoggerFactory.getLogger(this.getClass());
 	
 	private PersonDAO dao;
 	
@@ -547,7 +547,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 			} else if (personType == PERSON_TYPE.USER) {
 				attrString = userListing;
 			} else {
-				log.fatal(fatalString);
+				log.error(fatalString);
 			}
 		} else if (viewType == ATTR_VIEW_TYPE.VIEWING) {
 			String patientViewing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES, "");
@@ -559,7 +559,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 			} else if (personType == PERSON_TYPE.USER) {
 				attrString = userViewing;
 			} else {
-				log.fatal(fatalString);
+				log.error(fatalString);
 			}
 		} else if (viewType == ATTR_VIEW_TYPE.HEADER) {
 			String patientHeader = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_HEADER_ATTRIBUTES, "");
@@ -571,11 +571,11 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 			} else if (personType == PERSON_TYPE.USER) {
 				attrString = userHeader;
 			} else {
-				log.fatal(fatalString);
+				log.error(fatalString);
 			}
 			
 		} else {
-			log.fatal(fatalString);
+			log.error(fatalString);
 		}
 		
 		// the java list object to hold the values from the global properties

@@ -32,11 +32,8 @@ import javax.servlet.ServletException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.MandatoryModuleException;
 import org.openmrs.module.Module;
@@ -73,7 +70,7 @@ import org.xml.sax.SAXException;
  */
 public final class Listener extends ContextLoader implements ServletContextListener { // extends ContextLoaderListener {
 
-	protected final Log log = LogFactory.getLog(getClass());
+	private static final org.slf4j.Logger log = LoggerFactory.getLogger(Listener.class);
 
 	private static boolean runtimePropertiesFound = false;
 
@@ -136,7 +133,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 */
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
-		Log log = LogFactory.getLog(Listener.class);
+		Logger log = LoggerFactory.getLogger(Listener.class);
 
 		log.debug("Starting the OpenMRS webapp");
 
@@ -170,7 +167,6 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				
 				//ensure that we always log the runtime properties file that we are using
 				//since openmrs is just booting, the log levels are not yet set. TRUNK-4835
-				Logger.getLogger(getClass()).setLevel(Level.INFO);
 				log.info("Using runtime properties file: "
 						+ OpenmrsUtil.getRuntimePropertiesFilePathName(WebConstants.WEBAPP_NAME));
 			}
@@ -202,7 +198,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		}
 		catch (Exception e) {
 			setErrorAtStartup(e);
-			log.fatal("Got exception while starting up: ", e);
+			log.error("Got exception while starting up: ", e);
 		}
 
 	}
@@ -328,11 +324,11 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				contextPath = contextPath.substring(contextPath.lastIndexOf("/"));
 			}
 			catch (Exception e) {
-				log.error(e);
+				log.error("Exception in getting context path", e);
 			}
 		}
 		catch (Exception e) {
-			log.error(e);
+			log.error("Exception in getting context path", e);
 		}
 
 		// trim off initial slash if it exists
@@ -350,7 +346,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 * @param servletContext
 	 */
 	private void clearDWRFile(ServletContext servletContext) {
-		Log log = LogFactory.getLog(Listener.class);
+		Logger log = LoggerFactory.getLogger(Listener.class);
 
 		String realPath = servletContext.getRealPath("");
 		String absPath = realPath + "/WEB-INF/dwr-modules.xml";
@@ -405,7 +401,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 * @param servletContext
 	 */
 	private void copyCustomizationIntoWebapp(ServletContext servletContext, Properties props) {
-		Log log = LogFactory.getLog(Listener.class);
+		Logger log = LoggerFactory.getLogger(Listener.class);
 
 		String realPath = servletContext.getRealPath("");
 		// TODO centralize map to WebConstants?
@@ -469,7 +465,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 * @return true/false whether the copy was a success
 	 */
 	private boolean copyFile(String fromPath, String toPath) {
-		Log log = LogFactory.getLog(Listener.class);
+		Logger log = LoggerFactory.getLogger(Listener.class);
 
 		FileInputStream inputStream = null;
 		FileOutputStream outputStream = null;
@@ -511,7 +507,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 * @param servletContext the current servlet context for the webapp
 	 */
 	public static void loadBundledModules(ServletContext servletContext) {
-		Log log = LogFactory.getLog(Listener.class);
+		Logger log = LoggerFactory.getLogger(Listener.class);
 
 		String path = servletContext.getRealPath("");
 		path += File.separator + "WEB-INF" + File.separator + "bundledModules";
@@ -563,7 +559,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			if (!"contextDAO is null".equals(e.getMessage())) {
 				// not using log.error here so it can be garbage collected
 				System.out.println("Listener.contextDestroyed: Error while shutting down openmrs: ");
-				log.error(e);
+				log.error("Listener.contextDestroyed: Error while shutting down openmrs: ", e);
 			}
 		}
 		finally {
@@ -596,7 +592,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		}
 		catch (Exception e) {
 			System.err.println("Listener.contextDestroyed: Failed to cleanup drivers in webapp");
-			log.error(e);
+			log.error("Listener.contextDestroyed: Failed to cleanup drivers in webapp", e);
 		}
 
 		MemoryLeakUtil.shutdownMysqlCancellationTimer();
@@ -604,7 +600,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 
 		OpenmrsClassLoader.onShutdown();
 
-		LogManager.shutdown();
+		//LogManager.shutdown();
 
 		// just to make things nice and clean.
 		// Suppressing sonar issue squid:S1215
@@ -637,7 +633,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 
 	public static void performWebStartOfModules(Collection<Module> startedModules, ServletContext servletContext)
 	        throws ModuleMustStartException, Exception {
-		Log log = LogFactory.getLog(Listener.class);
+		Logger log = LoggerFactory.getLogger(Listener.class);
 
 		boolean someModuleNeedsARefresh = false;
 		for (Module mod : startedModules) {
@@ -666,9 +662,9 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			catch (Exception e) {
 				Throwable rootCause = getActualRootCause(e, true);
 				if (rootCause != null) {
-					log.fatal("Unable to refresh the spring application context.  Root Cause was:", rootCause);
+					log.error("Unable to refresh the spring application context.  Root Cause was:", rootCause);
 				} else {
-					log.fatal("Unable to refresh the spring application context. Unloading all modules,  Error was:", e);
+					log.error("Unable to refresh the spring application context. Unloading all modules,  Error was:", e);
 				}
 
 				try {

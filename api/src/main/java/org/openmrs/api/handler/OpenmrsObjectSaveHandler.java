@@ -15,8 +15,8 @@ import java.util.Date;
 import java.util.UUID;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Obs;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.User;
@@ -42,7 +42,7 @@ import org.openmrs.api.APIException;
 @Handler(supports = OpenmrsObject.class)
 public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 	
-	private static final Log log = LogFactory.getLog(OpenmrsObjectSaveHandler.class);
+	private static final Logger log = LoggerFactory.getLogger(OpenmrsObjectSaveHandler.class);
 	
 	/**
 	 * This sets the uuid property on the given OpenmrsObject if it is non-null.
