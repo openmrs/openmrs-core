@@ -12,18 +12,14 @@
 -->
 <dataset>
     
-
   <person person_id="5505" gender="F" dead="false" creator="1" date_created="2008-08-15 15:46:47.0" voided="false" uuid="c4d125f7-5315-446c-9a45-c2f5e0fe96a8"/>
   <person_name person_name_id="4" preferred="true" person_id="5505" given_name="Susy" middle_name=" " family_name="Kingman" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="8d6142e2-f256-4fc7-a085-073646c66333"/>
 
   <person person_id="5506" gender="M" dead="false" creator="1" date_created="2008-08-15 15:57:09.0" voided="false" uuid="4e7f6953-0f86-4702-a06b-17112e8f144b"/>
   <person_name person_name_id="5" preferred="true" person_id="5506" given_name="Jack" middle_name=" " family_name="Black" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="6fc41fe3-b01f-42a8-a825-547d779b27d5"/>
 
-  
   <users user_id="5505" person_id="5505" system_id="6-7" username="incorrectlyhashedSha1" password="4a1750c8607dfa237de36c6305715c223415189" salt="c788c6ad82a157b712392ca695dfcf2eed193d7f" secret_question="" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" retired="false" retire_reason="" uuid="013c49c6-e132-11de-babe-001e378eb67e"/>
   <users user_id="5506" person_id="5506" system_id="7-5" username="correctlyhashedSha1" password="4a1750c8607d0fa237de36c6305715c223415189" salt="c788c6ad82a157b712392ca695dfcf2eed193d7f" secret_question="" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" retired="false" retire_reason="" uuid="06d05314-e132-11de-babe-001e378eb67e"/>
   <users user_id="5506" person_id="5506" system_id="7-5" username="correctlyhashedSha1" password="4a1750c8607d0fa237de36c6305715c223415189" salt="c788c6ad82a157b712392ca695dfcf2eed193d7f" secret_question="" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" retired="false" retire_reason="" uuid="06d05314-e132-11de-babe-001e378eb67e"/>
   
- 
- 	
 </dataset>
