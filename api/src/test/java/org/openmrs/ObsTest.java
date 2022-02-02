@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -35,7 +36,9 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.junit.Rule;
 import org.junit.jupiter.api.Test;
+import org.junit.rules.ExpectedException;
 import org.openmrs.api.APIException;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.util.Reflect;
@@ -51,6 +54,10 @@ public class ObsTest {
 	private static final String VERO = "Vero";
 	
 	private static final String FORM_NAMESPACE_PATH_SEPARATOR = "^";
+	
+	@SuppressWarnings("deprecation")
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
 	
 	//ignore these fields, groupMembers and formNamespaceAndPath field are taken care of by other tests
 	private static final List<String> IGNORED_FIELDS = Arrays.asList("dirty", "log", "serialVersionUID",
@@ -322,6 +329,33 @@ public class ObsTest {
 	public void setValueAsString_shouldFailIfTheValueOfTheStringIsNull() throws Exception {
 		Obs obs = new Obs();
 		assertThrows(RuntimeException.class, () -> obs.setValueAsString(null));
+	}
+	
+	@Test
+	public void setValueAsString_shouldPassForAllTheDatesWithTimeZones() throws Exception {
+		
+		Obs obs = new Obs();
+		ConceptDatatype conceptDatatype  = new ConceptDatatype();
+		Concept c = new Concept();
+		c.setDatatype(conceptDatatype);
+		
+		String abbrev = c.getDatatype().getHl7Abbreviation();
+		
+		obs.setConcept(c);
+		
+		//The different dates with time zones
+		
+		String[] datesWithTimeZones = {"2022-01-31 03:12:47"};
+		
+		for(String dateWithTimeZone:datesWithTimeZones) {
+			
+			obs.setValueAsString(dateWithTimeZone);
+			
+			//expectedException.expect(RuntimeException.class);
+			//expectedException.expectMessage("Don't know how to handle " + abbrev);
+		
+		}
+		
 	}
 	
 	/**
