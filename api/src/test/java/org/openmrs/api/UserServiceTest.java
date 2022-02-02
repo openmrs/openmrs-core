@@ -63,6 +63,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 
 	protected static final String XML_FILENAME = "org/openmrs/api/include/UserServiceTest.xml";
 	
+	protected static final String XML_FILENAME_GET_ALL_USERS = "org/openmrs/api/include/UserServiceTest-getAllUsers.xml";
+	
 	protected static final String XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION = "org/openmrs/api/include/UserServiceTest-changePasswordAction.xml";
 
 	protected static final String SOME_VALID_PASSWORD = "s0mePassword";
@@ -675,9 +677,9 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getAllUsers_shouldNotContainsAnyDuplicateUsers() {
-		executeDataSet(XML_FILENAME);
+		executeDataSet(XML_FILENAME_GET_ALL_USERS);
 		List<User> users = userService.getAllUsers();
-		assertEquals(12, users.size());
+		assertEquals(5, users.size());
 		// TODO Need to test with duplicate data in the dataset (not sure if that's possible)
 		
 	}
