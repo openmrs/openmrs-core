@@ -153,7 +153,6 @@ public class ModuleFilterDefinition implements Serializable {
 	 *         {@link Module}
 	 */
 	public static List<ModuleFilterDefinition> retrieveFilterDefinitions(Module module)  {
-		
 		List<ModuleFilterDefinition> filters = new ArrayList<>();
 		
 		try {
@@ -166,23 +165,27 @@ public class ModuleFilterDefinition implements Serializable {
 					NodeList configNodes = node.getChildNodes();
 					for (int j = 0; j < configNodes.getLength(); j++) {
 						Node configNode = configNodes.item(j);
-						if ("filter-name".equals(configNode.getNodeName())) {
-							filter.setFilterName(configNode.getTextContent().trim());
-						} else if ("filter-class".equals(configNode.getNodeName())) {
-							filter.setFilterClass(configNode.getTextContent().trim());
-						} else if ("init-param".equals(configNode.getNodeName())) {
-							NodeList paramNodes = configNode.getChildNodes();
-							String paramName = "";
-							String paramValue = "";
-							for (int k = 0; k < paramNodes.getLength(); k++) {
-								Node paramNode = paramNodes.item(k);
-								if ("param-name".equals(paramNode.getNodeName())) {
-									paramName = paramNode.getTextContent().trim();
-								} else if ("param-value".equals(paramNode.getNodeName())) {
-									paramValue = paramNode.getTextContent().trim();
+						switch (configNode.getNodeName()) {
+							case "filter-name":
+								filter.setFilterName(configNode.getTextContent().trim());
+								break;
+							case "filter-class":
+								filter.setFilterClass(configNode.getTextContent().trim());
+								break;
+							case "init-param":
+								NodeList paramNodes = configNode.getChildNodes();
+								String paramName = "";
+								String paramValue = "";
+								for (int k = 0; k < paramNodes.getLength(); k++) {
+									Node paramNode = paramNodes.item(k);
+									if ("param-name".equals(paramNode.getNodeName())) {
+										paramName = paramNode.getTextContent().trim();
+									} else if ("param-value".equals(paramNode.getNodeName())) {
+										paramValue = paramNode.getTextContent().trim();
+									}
 								}
-							}
-							filter.addInitParameter(paramName, paramValue);
+								filter.addInitParameter(paramName, paramValue);
+								break;
 						}
 					}
 					filters.add(filter);
@@ -192,7 +195,8 @@ public class ModuleFilterDefinition implements Serializable {
 		catch (Exception e) {
 			throw new ModuleException("Unable to parse filters in module configuration.", e);
 		}
-		log.debug("Retrieved " + filters.size() + " filters for " + module + ": " + filters);
+		
+		log.debug("Retrieved {} filters for {}: {}", filters.size(), module, filters);
 		return filters;
 	}
 }
