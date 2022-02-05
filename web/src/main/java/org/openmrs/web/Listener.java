@@ -700,7 +700,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		
 		// because we delayed the refresh, we need to load+start all servlets and filters now
 		// (this is to protect servlets/filters that depend on their module's spring xml config being available)
-		for (Module mod : ModuleFactory.getStartedModules()) {
+		for (Module mod : ModuleFactory.getStartedModulesInOrder()) {
 			WebModuleUtil.loadServlets(mod, servletContext);
 			WebModuleUtil.loadFilters(mod, servletContext);
 		}
