@@ -123,7 +123,7 @@ public abstract class StartupFilter implements Filter {
 				if (httpRequest.getPathInfo() != null) {
 					fullFilePath = fullFilePath.resolve(httpRequest.getPathInfo());
 					if (!(fullFilePath.normalize().startsWith(filePath))) {
-						log.warn("Detected attempted directory traversal in request for {}", httpRequest.getPathInfo());
+						log.warn("Detected attempted directory traversal in request for " + httpRequest.getPathInfo());
 						return;
 					}
 				}
@@ -132,10 +132,10 @@ public abstract class StartupFilter implements Filter {
 					OpenmrsUtil.copyFile(imageFileInputStream, httpResponse.getOutputStream());
 				}
 				catch (FileNotFoundException e) {
-					log.error("Unable to find file: {}", filePath, e);
+					log.error("Unable to find file: " + filePath, e);
 				}
 				catch (IOException e) {
-					log.warn("An error occurred while handling file {}", filePath, e);
+					log.warn("An error occurred while handling file " + filePath, e);
 				}
 			} else if (servletPath.startsWith("/scripts")) {
 				log.error("Calling /scripts during the initializationfilter pages will cause the openmrs_static_context-servlet.xml to initialize too early and cause errors after startup.  Use '/initfilter"
@@ -188,7 +188,7 @@ public abstract class StartupFilter implements Filter {
 				velocityEngine.init(props);
 			}
 			catch (Exception e) {
-				log.error("velocity init failed, because: {}", e, e);
+				log.error("velocity init failed, because: " + e, e);
 			}
 		}
 	}
