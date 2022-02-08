@@ -15,6 +15,7 @@ import static org.hamcrest.Matchers.equalToCompressingWhiteSpace;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -48,17 +49,17 @@ public class AbstractSnapshotTunerTest {
 	
 	@Test
 	public void shouldFindOpenMRSHeaderInFile() throws FileNotFoundException {
-		assertTrue(schemaOnlyTuner.isLicenseHeaderInFile(PATH_TO_TEST_RESOURCES + FILE_WITH_LICENSE_HEADER_MD));
+		assertTrue(schemaOnlyTuner.isLicenseHeaderInFile(PATH_TO_TEST_RESOURCES + File.separator + FILE_WITH_LICENSE_HEADER_MD));
 	}
 	
 	@Test
 	public void shouldDetectMissingOpenMRSHeaderInFile() throws FileNotFoundException {
-		assertFalse(schemaOnlyTuner.isLicenseHeaderInFile(PATH_TO_TEST_RESOURCES + FILE_WITHOUT_LICENSE_HEADER_MD));
+		assertFalse(schemaOnlyTuner.isLicenseHeaderInFile(PATH_TO_TEST_RESOURCES + File.separator + FILE_WITHOUT_LICENSE_HEADER_MD));
 	}
 	
 	@Test
 	public void shouldReadFile() throws FileNotFoundException {
-		assertTrue(schemaOnlyTuner.readFile(PATH_TO_TEST_RESOURCES + FILE_WITH_LICENSE_HEADER_MD)
+		assertTrue(schemaOnlyTuner.readFile(PATH_TO_TEST_RESOURCES + File.separator + FILE_WITH_LICENSE_HEADER_MD)
 		        .contains(HTTP_OPENMRS_ORG_LICENSE));
 	}
 	
@@ -84,7 +85,7 @@ public class AbstractSnapshotTunerTest {
 	@Test
 	public void shouldCreateUpdatedChangeLogFile(@TempDir Path tempDir) throws IOException {
 		// given
-		Path sourcePath = Paths.get(PATH_TO_TEST_RESOURCES + FILE_WITHOUT_LICENSE_HEADER_MD);
+		Path sourcePath = Paths.get(PATH_TO_TEST_RESOURCES + File.separator + FILE_WITHOUT_LICENSE_HEADER_MD);
 		Path targetPath = tempDir.resolve("file-to-add-license-header-to.txt");
 		
 		Files.copy(sourcePath, targetPath, REPLACE_EXISTING);
