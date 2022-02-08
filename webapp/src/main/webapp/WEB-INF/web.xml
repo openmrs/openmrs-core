@@ -134,16 +134,6 @@
         <filter-name>multipartFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-    
-	<filter>
-        <filter-name>CSRFGuard</filter-name>
-        <filter-class>org.owasp.csrfguard.CsrfGuardFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>CSRFGuard</filter-name>
-        <!-- Filter any URL using CSRFGuard -->
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
 	
 	<!--  Should be the second filter so that all requests are first wrapped by a 
 	      hibernate filter (to help with lazy loading) -->
@@ -172,6 +162,16 @@
 		<dispatcher>REQUEST</dispatcher>
 		<dispatcher>INCLUDE</dispatcher>
 	</filter-mapping>
+	
+	<filter>
+        <filter-name>CSRFGuard</filter-name>
+        <filter-class>org.owasp.csrfguard.CsrfGuardFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>CSRFGuard</filter-name>
+        <!-- Filter any URL using CSRFGuard -->
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 	
 	<filter>
 		<filter-name>ModuleFilter</filter-name> 
