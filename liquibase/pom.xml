@@ -51,6 +51,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<version>${junitVersion}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-params</artifactId>
 			<scope>test</scope>
 		</dependency>		
@@ -113,4 +118,5 @@
 			</plugin>
 		</plugins>
 	</build>
+		
 </project>

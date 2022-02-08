@@ -1251,6 +1251,11 @@ public final class OpenmrsConstants {
 	public static final String LOG_LEVEL_ERROR = "error";
 	
 	public static final String LOG_LEVEL_FATAL = "fatal";
+	
+	/**
+	 * The name of the in-memory appender
+	 */
+	public static final String MEMORY_APPENDER_NAME = "MEMORY_APPENDER";
 
 	/**
 	 * Default url responsible for authentication if a user is not logged in.
