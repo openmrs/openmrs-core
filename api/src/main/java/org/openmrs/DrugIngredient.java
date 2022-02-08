@@ -41,7 +41,6 @@ public class DrugIngredient extends BaseOpenmrsObject implements java.io.Seriali
 	@JoinColumn(name = "units", updatable = false,insertable = false)
 	private Concept units;
 	
-	// Constructors
 	
 	/** default constructor */
 	public DrugIngredient() {
