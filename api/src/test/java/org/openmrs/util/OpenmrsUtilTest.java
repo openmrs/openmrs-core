@@ -38,6 +38,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.SortedSet;
@@ -52,14 +53,18 @@ import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openmrs.Concept;
 import org.openmrs.GlobalProperty;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.User;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.InvalidCharactersPasswordException;
 import org.openmrs.api.ShortPasswordException;
 import org.openmrs.api.WeakPasswordException;
 import org.openmrs.api.context.Context;
+import org.openmrs.logging.MemoryAppender;
+import org.openmrs.logging.OpenmrsLoggingUtil;
 import org.openmrs.test.TestUtil;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
@@ -973,15 +978,16 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void applyLogLevels_shouldWarnWhenCalledWithInvalidLevel() {
-		MemoryAppender memoryAppender = MemoryAppender.newBuilder().setName("MEMORY_APPENDER_TEST")
+		org.openmrs.logging.MemoryAppender memoryAppender = MemoryAppender.newBuilder()
 			.setLayout(PatternLayout.newBuilder().withPattern("%m").build()).build();
 		
 		memoryAppender.start();
 
 		org.apache.logging.log4j.core.Logger logger = (org.apache.logging.log4j.core.Logger) LogManager
-			.getLogger(OpenmrsUtil.class);
+			.getLogger(OpenmrsLoggingUtil.class);
 		
 		Level previousLevel = logger.getLevel();
+		logger.setAdditive(false);
 
 		LoggerContext context = logger.getContext();
 		LoggerConfig config = logger.get();
@@ -1001,5 +1007,18 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 			config.setLevel(previousLevel);
 			context.updateLoggers();
 		}
+	}
+
+	/**
+	 * @see OpenmrsUtil#conceptListHelper(String)
+	 */
+	@Test
+	public void conceptListHelper_shouldNotReturnDuplicateConcepts() {
+		String descriptor = "name:YES | name:NO | name:YES";
+		List<Concept> ret = OpenmrsUtil.conceptListHelper(descriptor);
+		assertEquals(2, ret.size());
+		descriptor = "set:30 | set:29";
+		ret = OpenmrsUtil.conceptListHelper(descriptor);
+		assertEquals(1, ret.size());
 	}
 }

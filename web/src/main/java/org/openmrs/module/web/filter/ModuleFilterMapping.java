@@ -11,6 +11,8 @@ package org.openmrs.module.web.filter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.openmrs.module.Module;
@@ -261,12 +263,12 @@ public class ModuleFilterMapping implements Serializable {
 	 * 
 	 * @param module - The {@link Module} for which you want to retrieve the defined
 	 *            {@link ModuleFilterMapping}s
-	 * @return - a List of {@link ModuleFilterMapping}s that are defined for the passed
+	 * @return - a {@link Deque} of {@link ModuleFilterMapping}s that are defined for the passed
 	 *         {@link Module}
 	 */
-	public static List<ModuleFilterMapping> retrieveFilterMappings(Module module){
+	public static Deque<ModuleFilterMapping> retrieveFilterMappings(Module module){
 		
-		List<ModuleFilterMapping> mappings = new ArrayList<>();
+		Deque<ModuleFilterMapping> mappings = new LinkedList<>();
 		
 		try {
 			Element rootNode = module.getConfig().getDocumentElement();
@@ -278,12 +280,16 @@ public class ModuleFilterMapping implements Serializable {
 					NodeList configNodes = node.getChildNodes();
 					for (int j = 0; j < configNodes.getLength(); j++) {
 						Node configNode = configNodes.item(j);
-						if ("filter-name".equals(configNode.getNodeName())) {
-							mapping.setFilterName(configNode.getTextContent());
-						} else if ("url-pattern".equals(configNode.getNodeName())) {
-							mapping.addUrlPattern(configNode.getTextContent());
-						} else if ("servlet-name".equals(configNode.getNodeName())) {
-							mapping.addServletName(configNode.getTextContent());
+						switch (configNode.getNodeName()) {
+							case "filter-name":
+								mapping.setFilterName(configNode.getTextContent());
+								break;
+							case "url-pattern":
+								mapping.addUrlPattern(configNode.getTextContent());
+								break;
+							case "servlet-name":
+								mapping.addServletName(configNode.getTextContent());
+								break;
 						}
 					}
 					mappings.add(mapping);
@@ -293,7 +299,8 @@ public class ModuleFilterMapping implements Serializable {
 		catch (Exception e) {
 			throw new ModuleException("Unable to parse filters in module configuration.", e);
 		}
-		log.debug("Retrieved " + mappings.size() + " filter-mappings for " + module.getModuleId() + ": " + mappings);
+		
+		log.debug("Retrieved {} filter-mappings for {}: {}", mappings.size(), module, mappings);
 		return mappings;
 	}
 }

@@ -18,6 +18,8 @@ import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -116,30 +118,27 @@ public abstract class StartupFilter implements Filter {
 			// (the "/initfilter" part is needed so that the openmrs_static_context-servlet.xml file doesn't
 			//  get instantiated early, before the locale messages are all set up)
 			if (servletPath.startsWith("/images") || servletPath.startsWith("/initfilter/scripts")) {
-				servletPath = servletPath.replaceFirst("/initfilter", "/WEB-INF/view"); // strip out the /initfilter part
+				// strip out the /initfilter part
+				servletPath = servletPath.replaceFirst("/initfilter", "/WEB-INF/view");
 				// writes the actual image file path to the response
-				File file = new File(filterConfig.getServletContext().getRealPath(servletPath));
+				Path filePath = Paths.get(filterConfig.getServletContext().getRealPath(servletPath)).normalize();
+				Path fullFilePath = filePath;
 				if (httpRequest.getPathInfo() != null) {
-					file = new File(file, httpRequest.getPathInfo());
+					fullFilePath = fullFilePath.resolve(httpRequest.getPathInfo());
+					if (!(fullFilePath.normalize().startsWith(filePath))) {
+						log.warn("Detected attempted directory traversal in request for {}", httpRequest.getPathInfo());
+						return;
+					}
 				}
 				
-				InputStream imageFileInputStream = null;
-				try {
-					imageFileInputStream = new FileInputStream(file);
+				try (InputStream imageFileInputStream = new FileInputStream(fullFilePath.normalize().toFile())) {
 					OpenmrsUtil.copyFile(imageFileInputStream, httpResponse.getOutputStream());
 				}
 				catch (FileNotFoundException e) {
-					log.error("Unable to find file: " + file.getAbsolutePath());
+					log.error("Unable to find file: {}", filePath, e);
 				}
-				finally {
-					if (imageFileInputStream != null) {
-						try {
-							imageFileInputStream.close();
-						}
-						catch (IOException io) {
-							log.warn("Couldn't close imageFileInputStream: " + io);
-						}
-					}
+				catch (IOException e) {
+					log.warn("An error occurred while handling file {}", filePath, e);
 				}
 			} else if (servletPath.startsWith("/scripts")) {
 				log.error(
@@ -193,7 +192,7 @@ public abstract class StartupFilter implements Filter {
 				velocityEngine.init(props);
 			}
 			catch (Exception e) {
-				log.error("velocity init failed, because: " + e);
+				log.error("velocity init failed, because: {}", e, e);
 			}
 		}
 	}
