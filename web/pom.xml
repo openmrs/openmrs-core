@@ -134,6 +134,16 @@
 		   <version>8.5.71</version>
 		   <scope>provided</scope>
 	   </dependency>
+	   <dependency>
+			<groupId>org.owasp</groupId>
+			<artifactId>csrfguard</artifactId>
+			<version>${owaspCsrfGuardVersion}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.owasp</groupId>
+			<artifactId>csrfguard-extension-session</artifactId>
+			<version>${owaspCsrfGuardVersion}</version>
+		</dependency>
    </dependencies>
 
    <build>

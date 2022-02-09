@@ -9,8 +9,7 @@
  */
 package org.openmrs.api.impl;
 
-import static org.apache.commons.lang3.StringUtils.contains;
-
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,6 +26,8 @@ import java.util.UUID;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.hibernate.Hibernate;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
@@ -70,7 +71,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 /**
  * Default Implementation of ConceptService service layer classes
@@ -286,7 +286,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Override
 	public Concept retireConcept(Concept concept, String reason) throws APIException {
-		if (!StringUtils.hasText(reason)) {
+		if (StringUtils.isBlank(reason)) {
 			throw new IllegalArgumentException(Context.getMessageSourceService().getMessage("general.voidReason.empty"));
 		}
 		
@@ -335,6 +335,59 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Transactional(readOnly = true)
 	public Concept getConcept(Integer conceptId) throws APIException {
 		return dao.getConcept(conceptId);
+	}
+
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptByReference(String conceptRef)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public Concept getConceptByReference(String conceptRef) {
+		if (StringUtils.isBlank(conceptRef)) {
+			return null;
+		}
+		Concept cpt = null;
+		//check if input is a valid Uuid
+		if (isValidUuidFormat(conceptRef)) {
+			cpt = Context.getConceptService().getConceptByUuid(conceptRef);
+			if (cpt != null) {
+				return cpt;
+			}
+		}
+		//handle mapping
+		int idx = conceptRef.indexOf(":");
+		if (idx >= 0 && idx < conceptRef.length() - 1) {
+			String conceptSource = conceptRef.substring(0, idx);
+			String conceptCode = conceptRef.substring(idx + 1);
+			cpt = Context.getConceptService().getConceptByMapping(conceptCode, conceptSource);
+			if (cpt != null) {
+				return cpt;
+			}
+		}
+		//handle id
+		int conceptId = NumberUtils.toInt(conceptRef, -1);
+		if (conceptId >= 0) {
+			cpt = Context.getConceptService().getConcept(conceptId);
+			if (cpt != null) {
+				return cpt;
+			}
+		} else {
+			//handle name
+			cpt = Context.getConceptService().getConceptByName(conceptRef);
+			if (cpt != null) {
+				return cpt;
+			}
+		}
+		//handle static constant
+		if (conceptRef.contains(".")) {
+			try {
+				return getConceptByReference(evaluateStaticConstant(conceptRef));
+			}
+			catch (APIException e) {
+				log.warn("Unable to translate '{}' into a concept", conceptRef, e);
+			}
+		}
+		return cpt == null ? null : cpt;
 	}
 	
 	/**
@@ -417,7 +470,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Override
 	@Transactional(readOnly = true)
 	public Concept getConceptByName(String name) {
-		if (!StringUtils.hasText(name)) {
+		if (StringUtils.isBlank(name)) {
 			return null;
 		}
 		return dao.getConceptByName(name);
@@ -769,7 +822,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		}
 		
 		ConceptName conceptName = null;
-		if (cp.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_CONCEPT) || !StringUtils.hasText(cp.getFinalText())) {
+		if (cp.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_CONCEPT) || StringUtils.isBlank(cp.getFinalText())) {
 			cp.setState(OpenmrsConstants.CONCEPT_PROPOSAL_CONCEPT);
 			cp.setFinalText("");
 		} else if (cp.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_SYNONYM)) {
@@ -1454,7 +1507,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			dao.deleteConceptStopWord(conceptStopWordId);
 		}
 		catch (DAOException e) {
-			if (contains(e.getMessage(), "Concept Stop Word not found or already deleted")) {
+			if (StringUtils.contains(e.getMessage(), "Concept Stop Word not found or already deleted")) {
 				throw new ConceptStopWordException("ConceptStopWord.error.notfound", e);
 			}
 			throw new ConceptStopWordException("general.cannot.delete", e);
@@ -1645,7 +1698,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Override
 	public ConceptMapType retireConceptMapType(ConceptMapType conceptMapType, String retireReason) throws APIException {
 		String tmpRetireReason = retireReason;
-		if (!StringUtils.hasText(tmpRetireReason)) {
+		if (StringUtils.isBlank(tmpRetireReason)) {
 			tmpRetireReason = Context.getMessageSourceService().getMessage("general.default.retireReason");
 		}
 		conceptMapType.setRetireReason(tmpRetireReason);
@@ -1717,7 +1770,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		//On addition of extra attributes to concept maps, terms that were generated from existing maps have 
 		//empty string values for the name property, ignore the search when name is an empty string but allow 
 		//white space characters
-		if (!StringUtils.hasLength(name)) {
+		if (StringUtils.isBlank(name)) {
 			return null;
 		}
 		return dao.getConceptReferenceTermByName(name, conceptSource);
@@ -1749,7 +1802,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	public ConceptReferenceTerm retireConceptReferenceTerm(ConceptReferenceTerm conceptReferenceTerm, String retireReason)
 	        throws APIException {
 		String tmpRetireReason = retireReason;
-		if (!StringUtils.hasText(tmpRetireReason)) {
+		if (StringUtils.isBlank(tmpRetireReason)) {
 			tmpRetireReason = Context.getMessageSourceService().getMessage("general.default.retireReason");
 		}
 		conceptReferenceTerm.setRetireReason(tmpRetireReason);
@@ -2002,6 +2055,42 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		return dao.getConceptAttributeCount(conceptAttributeType) > 0;
 	}
 
+	/***
+	 * Determines if the passed string is in valid uuid format By OpenMRS standards, a uuid must be 36
+	 * characters in length and not contain whitespace, but we do not enforce that a uuid be in the
+	 * "canonical" form, with alphanumerics seperated by dashes, since the MVP dictionary does not use
+	 * this format (We also are being slightly lenient and accepting uuids that are 37 or 38 characters
+	 * in length, since the uuid data field is 38 characters long)
+	 */
+	public static boolean isValidUuidFormat(String uuid) {
+		if (uuid.length() < 36 || uuid.length() > 38 || uuid.contains(" ") || uuid.contains(".")) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Evaluates the specified Java constant using reflection: if input is org.openmrs.CLASS_NAME.CONSTANT_NAME
+	 * then, output will be CONSTANT_NAME
+	 * @param fqn the fully qualified name of the constant
+	 * @return the constant value or null
+	 */
+	private static String evaluateStaticConstant(String fqn) {
+		int lastPeriod = fqn.lastIndexOf(".");
+		String clazzName = fqn.substring(0, lastPeriod);
+		String constantName = fqn.substring(lastPeriod + 1);
+		try {
+			Class<?> clazz = Context.loadClass(clazzName);
+			Field constantField = clazz.getDeclaredField(constantName);
+			constantField.setAccessible(true);
+			Object val = constantField.get(null);
+			return val != null ? String.valueOf(val) : null;
+		}
+		catch (Exception ex) {
+			throw new APIException("Error while evaluating " + fqn + " as a constant" , ex);
+		}
+	}
+	
 	private List<ConceptClass> getConceptClassesOfOrderTypes() {
 		List<ConceptClass> mappedClasses = new ArrayList<>();
 		AdministrationService administrationService = Context.getAdministrationService();
