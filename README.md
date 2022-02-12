@@ -8,7 +8,7 @@ tools: [![tools](https://snyk.io/test/github/openmrs/openmrs-core/badge.svg?targ
 web: [![web](https://snyk.io/test/github/openmrs/openmrs-core/badge.svg?targetFile=web%2Fpom.xml)](https://snyk.io/test/github/openmrs/openmrs-core?targetFile=web%2Fpom.xml)
 webapp: [![webapp](https://snyk.io/test/github/openmrs/openmrs-core/badge.svg?targetFile=webapp%2Fpom.xml)](https://snyk.io/test/github/openmrs/openmrs-core?targetFile=webapp%2Fpom.xml)
 
-OpenMRS is a patient-based medical record system focusing on giving providers a free customizable electronic medical record system (EMR).
+OpenMRS is a patient-based medical record system focusing on providing a free customizable electronic medical record system (EMR).
 
 The mission of OpenMRS is to improve health care delivery in resource-constrained environments by coordinating a global community that creates a robust, scalable, user-driven, open source medical record system platform.
 
