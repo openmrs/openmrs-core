@@ -68,6 +68,7 @@ import org.openmrs.notification.mail.MailMessageSender;
 import org.openmrs.notification.mail.velocity.VelocityMessagePreparator;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.SchedulerUtil;
+import org.openmrs.util.ConfigUtil;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.InputRequiredException;
@@ -594,30 +595,30 @@ public class Context {
 		if (mailSession == null) {
 			synchronized (Context.class) {
 				if (mailSession == null) {
-					AdministrationService adminService = getAdministrationService();
-
 					Properties props = new Properties();
-					props.setProperty("mail.transport.protocol", adminService.getGlobalProperty("mail.transport_protocol"));
-					props.setProperty("mail.smtp.host", adminService.getGlobalProperty("mail.smtp_host"));
-					props.setProperty("mail.smtp.port", adminService.getGlobalProperty("mail.smtp_port"));
-					props.setProperty("mail.from", adminService.getGlobalProperty("mail.from"));
-					props.setProperty("mail.debug", adminService.getGlobalProperty("mail.debug"));
-					props.setProperty("mail.smtp.auth", adminService.getGlobalProperty("mail.smtp_auth"));
-					props.setProperty(OpenmrsConstants.GP_MAIL_SMTP_STARTTLS_ENABLE, adminService.getGlobalProperty(OpenmrsConstants.GP_MAIL_SMTP_STARTTLS_ENABLE));
-
+					props.setProperty("mail.transport.protocol", ConfigUtil.getProperty("mail.transport_protocol"));
+					props.setProperty("mail.smtp.host", ConfigUtil.getProperty("mail.smtp_host"));
+					props.setProperty("mail.smtp.port", ConfigUtil.getProperty("mail.smtp_port"));
+					props.setProperty("mail.from", ConfigUtil.getProperty("mail.from"));
+					props.setProperty("mail.debug", ConfigUtil.getProperty("mail.debug"));
+					props.setProperty("mail.smtp.auth", ConfigUtil.getProperty("mail.smtp_auth"));
+					props.setProperty(
+						OpenmrsConstants.GP_MAIL_SMTP_STARTTLS_ENABLE,
+						ConfigUtil.getProperty(OpenmrsConstants.GP_MAIL_SMTP_STARTTLS_ENABLE)
+					);
 					Authenticator auth = new Authenticator() {
 
 						@Override
 						public PasswordAuthentication getPasswordAuthentication() {
-							return new PasswordAuthentication(getAdministrationService().getGlobalProperty("mail.user"),
-									getAdministrationService().getGlobalProperty("mail.password"));
+							return new PasswordAuthentication(
+								ConfigUtil.getProperty("mail.user"),
+								ConfigUtil.getProperty("mail.password")
+							);
 						}
 					};
-
 					mailSession = Session.getInstance(props, auth);
 				}
 			}
-
 		}
 		return mailSession;
 	}

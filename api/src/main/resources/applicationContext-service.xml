@@ -76,6 +76,7 @@
 			<list value-type="org.openmrs.api.GlobalPropertyListener">
 				<bean class="org.openmrs.util.LocaleUtility" />
 				<bean class="org.openmrs.util.LocationUtility" />
+				<bean class="org.openmrs.util.ConfigUtil"/>
 				<bean class="org.openmrs.api.impl.PersonNameGlobalPropertyListener" />
 				<ref bean="globalLocaleList" />
 				<ref bean="adminServiceTarget" />
