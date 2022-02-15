@@ -47,7 +47,7 @@ public class ConfigUtil implements GlobalPropertyListener {
 	}
 
 	/**
-	 * Returns the value of the given OpenMRS runtime property
+	 * Returns true if a runtime property with the given name has been defined, even if the value is empty
 	 */
 	public static boolean hasRuntimeProperty(String propertyName) {
 		return Context.getRuntimeProperties().containsKey(propertyName);
@@ -61,7 +61,7 @@ public class ConfigUtil implements GlobalPropertyListener {
 	}
 
 	/**
-	 * Returns the value of the given OpenMRS runtime property
+	 * Returns true if a system property with the given name has been defined, even if the value is empty
 	 */
 	public static boolean hasSystemProperty(String propertyName) {
 		return System.getProperties().containsKey(propertyName);
