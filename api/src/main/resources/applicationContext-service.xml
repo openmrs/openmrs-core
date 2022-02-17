@@ -73,6 +73,7 @@
 
 	<bean id="localeUtility" class="org.openmrs.util.LocaleUtility"/>
 	<bean id="locationUtility" class="org.openmrs.util.LocationUtility"/>
+	<bean id="configUtilGlobalPropertyListener" class="org.openmrs.util.ConfigUtil"/>
 	<bean id="personNameGlobalPropertyListener" class="org.openmrs.api.impl.PersonNameGlobalPropertyListener"/>
 	<bean id="loggingConfigurationGlobalPropertyListener"
 		  class="org.openmrs.logging.LoggingConfigurationGlobalPropertyListener"/>
@@ -82,6 +83,7 @@
 			<list value-type="org.openmrs.api.GlobalPropertyListener">
 				<ref bean="localeUtility"/>
 				<ref bean="locationUtility"/>
+				<ref bean="configUtilGlobalPropertyListener"/>
 				<ref bean="personNameGlobalPropertyListener"/>
 				<ref bean="loggingConfigurationGlobalPropertyListener"/>
 				<ref bean="globalLocaleList"/>
