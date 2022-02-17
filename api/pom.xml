@@ -277,6 +277,11 @@
 		   <groupId>org.apache.lucene</groupId>
 		   <artifactId>lucene-analyzers-phonetic</artifactId>
 	   </dependency>
+	   <dependency>
+		   <groupId>com.sun.mail</groupId>
+		   <artifactId>javax.mail</artifactId>
+		   <scope>test</scope>
+	   </dependency>
    </dependencies>
    <build>
      <resources>
