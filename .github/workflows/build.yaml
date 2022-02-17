@@ -9,7 +9,7 @@ on:
       - 2.4.x
       - 2.5.x
   pull_request:
-    types: [opened, synchronize, reopened]
+    types:
     branches:
       - master
       - 2.4.x
