@@ -12,4 +12,4 @@ jobs:
         with:
           token: ${{secrets.ACTIONS_TOKEN}}
           repository: openmrs/openmrs-contrib-qaframework
-          event-type: qa-initialSetup
+          event-type: qa
