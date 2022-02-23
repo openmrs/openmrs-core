@@ -1090,7 +1090,6 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 				
 				boolean flag = false;
 	
-				
 				for (int i = 0; i < supportedFormats.length; i++) {
 				
 					try {
@@ -1109,7 +1108,6 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 				}
 				
 				if(flag == false) {
-					
 				   throw new RuntimeException("Don't know how to handle " + abbrev);
 				}
 			}
