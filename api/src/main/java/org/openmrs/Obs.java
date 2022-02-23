@@ -1140,7 +1140,7 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 
 				}
 
-				if (flag) {
+				if (flag == false) {
 					throw new RuntimeException("Don't know how to handle " + abbrev);
 				}
 			}
