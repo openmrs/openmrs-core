@@ -338,23 +338,58 @@ public class ObsTest {
 		ConceptDatatype conceptDatatype  = new ConceptDatatype();
 		Concept c = new Concept();
 		c.setDatatype(conceptDatatype);
-		
-		String abbrev = c.getDatatype().getHl7Abbreviation();
-		
 		obs.setConcept(c);
 		
-		//The different dates with time zones
+		//Testing the supported time zones in rest module
 		
-		String[] datesWithTimeZones = {"2022-01-31 03:12:47"};
+		//yyyy-MM-dd'T'HH:mm:ss.SSSZ
 		
-		for(String dateWithTimeZone:datesWithTimeZones) {
-			
-			obs.setValueAsString(dateWithTimeZone);
-			
-			//expectedException.expect(RuntimeException.class);
-			//expectedException.expectMessage("Don't know how to handle " + abbrev);
+	    String timezone1 = "2022-02-24T15:47:38.855+0300";
+		obs.setValueAsString(timezone1);
+		Date date1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").parse(timezone1);
+		assertEquals(date1,obs.getValueDate());
 		
-		}
+		
+		//yyyy-MM-dd'T'HH:mm:ss.SSS
+		
+		String timezone2 = "2022-02-24T15:52:56.626";
+		obs.setValueAsString(timezone2);
+		Date date2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(timezone2);
+		assertEquals(date2,obs.getValueDate());
+		
+		
+		//yyyy-MM-dd'T'HH:mm:ssZ
+		
+		String timezone3 = "2022-02-24T15:57:49+0300";
+		obs.setValueAsString(timezone3);
+		Date date3 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(timezone3);
+		assertEquals(date3,obs.getValueDate());
+		
+		
+		//yyyy-MM-dd'T'HH:mm:ssXXX
+		
+		String timezone4 = "2022-02-24T15:59:56+03:00";
+		obs.setValueAsString(timezone4);
+		Date date4 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").parse(timezone4);
+		assertEquals(date4,obs.getValueDate());
+		
+		
+	   //yyyy-MM-dd'T'HH:mm:ss
+		
+		String timezone5 = "2022-02-24T16:02:11";
+		obs.setValueAsString(timezone5);
+		Date date5 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(timezone5);
+		assertEquals(date5,obs.getValueDate());
+		
+
+		//yyyy-MM-dd HH:mm:ss
+		
+		String timezone6 = "2022-02-24 16:05:02";
+		obs.setValueAsString(timezone6);
+		Date date6 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(timezone6);
+		assertEquals(date6,obs.getValueDate());
+		
+		
 		
 	}
 	
