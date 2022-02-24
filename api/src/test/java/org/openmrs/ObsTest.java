@@ -55,10 +55,6 @@ public class ObsTest {
 	
 	private static final String FORM_NAMESPACE_PATH_SEPARATOR = "^";
 	
-	@SuppressWarnings("deprecation")
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
-	
 	//ignore these fields, groupMembers and formNamespaceAndPath field are taken care of by other tests
 	private static final List<String> IGNORED_FIELDS = Arrays.asList("dirty", "log", "serialVersionUID",
 	    "DATE_TIME_PATTERN", "TIME_PATTERN", "DATE_PATTERN", "FORM_NAMESPACE_PATH_SEPARATOR",
@@ -343,53 +339,40 @@ public class ObsTest {
 		//Testing the supported time zones in rest module
 		
 		//yyyy-MM-dd'T'HH:mm:ss.SSSZ
-		
 	    String timezone1 = "2022-02-24T15:47:38.855+0300";
 		obs.setValueAsString(timezone1);
 		Date date1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").parse(timezone1);
 		assertEquals(date1,obs.getValueDate());
 		
-		
 		//yyyy-MM-dd'T'HH:mm:ss.SSS
-		
 		String timezone2 = "2022-02-24T15:52:56.626";
 		obs.setValueAsString(timezone2);
 		Date date2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(timezone2);
 		assertEquals(date2,obs.getValueDate());
 		
-		
 		//yyyy-MM-dd'T'HH:mm:ssZ
-		
 		String timezone3 = "2022-02-24T15:57:49+0300";
 		obs.setValueAsString(timezone3);
 		Date date3 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(timezone3);
 		assertEquals(date3,obs.getValueDate());
 		
-		
 		//yyyy-MM-dd'T'HH:mm:ssXXX
-		
 		String timezone4 = "2022-02-24T15:59:56+03:00";
 		obs.setValueAsString(timezone4);
 		Date date4 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").parse(timezone4);
 		assertEquals(date4,obs.getValueDate());
 		
-		
-	   //yyyy-MM-dd'T'HH:mm:ss
-		
+	    //yyyy-MM-dd'T'HH:mm:ss
 		String timezone5 = "2022-02-24T16:02:11";
 		obs.setValueAsString(timezone5);
 		Date date5 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(timezone5);
 		assertEquals(date5,obs.getValueDate());
-		
-
+	
 		//yyyy-MM-dd HH:mm:ss
-		
 		String timezone6 = "2022-02-24 16:05:02";
 		obs.setValueAsString(timezone6);
 		Date date6 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(timezone6);
 		assertEquals(date6,obs.getValueDate());
-		
-		
 		
 	}
 	
