@@ -885,16 +885,18 @@ public class ModuleFactory {
 			try {
 				cls = Context.loadClass(advice.getPoint());
 				Object aopObject = advice.getClassInstance();
-				if (Advisor.class.isInstance(aopObject)) {
-					log.debug("adding advisor: " + aopObject.getClass());
+				if (aopObject instanceof Advisor) {
+					log.debug("adding advisor [{}]", aopObject.getClass());
 					Context.addAdvisor(cls, (Advisor) aopObject);
-				} else {
-					log.debug("Adding advice: " + aopObject.getClass());
+				} else if (aopObject != null) {
+					log.debug("adding advice [{}]", aopObject.getClass());
 					Context.addAdvice(cls, (Advice) aopObject);
+				} else {
+					log.debug("Could not load advice class for {} [{}]", advice.getPoint(), advice.getClassName());
 				}
 			}
-			catch (ClassNotFoundException e) {
-				log.warn("Could not load advice point: " + advice.getPoint(), e);
+			catch (ClassNotFoundException | NoClassDefFoundError e) {
+				log.warn("Could not load advice point [{}]", advice.getPoint(), e);
 			}
 		}
 	}
