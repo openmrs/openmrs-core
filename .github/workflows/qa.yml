@@ -8,12 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger QAFramework
-        uses: convictional/trigger-workflow-and-wait@v1.3.0
+        uses: peter-evans/repository-dispatch@v1.1.3
         with:
-          owner: openmrs
           repository: openmrs/openmrs-contrib-qaframework
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          event-type: qa-initialSetup
-          ref: master
-          propagate_failure: true
-          wait_interval: 10
+          event-type: qa
