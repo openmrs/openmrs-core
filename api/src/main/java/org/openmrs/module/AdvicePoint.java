@@ -33,7 +33,7 @@ public class AdvicePoint {
 			this.classInstance = clazz.newInstance();
 		}
 		catch (Exception e) {
-			log.error("Unable to get instance of: " + clazz.getName(), e);
+			log.error("Unable to get instance of: [{}]", clazz.getName(), e);
 		}
 	}
 	
@@ -60,8 +60,8 @@ public class AdvicePoint {
 			Class<?> c = ModuleFactory.getModuleClassLoader(getModule()).loadClass(getClassName());
 			o = c.newInstance();
 		}
-		catch (Exception e) {
-			log.warn("Could not get instance for advice point: " + point, e);
+		catch (Exception | LinkageError e) {
+			log.warn("Could not get instance for advice point [{}]", point, e);
 		}
 		classInstance = o;
 		return o;
