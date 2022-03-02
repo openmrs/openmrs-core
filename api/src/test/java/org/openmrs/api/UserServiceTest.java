@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -1524,14 +1525,9 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void setUserActivationKey_shouldCreateUserActivationKey() throws Exception {
-		User u = new User();
-		u.setPerson(new Person());
-		u.addName(new PersonName("Benjamin", "A", "Wolfe"));
-		u.setUsername("bwolfe");
-		u.getPerson().setGender("M");
+		User createdUser = createTestUser();
 		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_HOST_URL,
 		    "http://localhost:8080/openmrs/admin/users/changePassword.form/{activationKey}");
-		User createdUser = userService.createUser(u, "Openmr5xy");
 		assertNull(dao.getLoginCredential(createdUser).getActivationKey());
 		assertThrows(MessageException.class, () -> userService.setUserActivationKey(createdUser));
 		assertNotNull(dao.getLoginCredential(createdUser).getActivationKey());
@@ -1539,12 +1535,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	
 	@Test 
 	public void getUserByActivationKey_shouldGetUserByActivationKey(){
-		User u = new User();
-		u.setPerson(new Person());
-		u.addName(new PersonName("Benjamin", "A", "Wolfe"));
-		u.setUsername("bwolfe");
-		u.getPerson().setGender("M");
-		User createdUser = userService.createUser(u, "Openmr5xy");
+		User createdUser = createTestUser();
 		String key="h4ph0fpNzQCIPSw8plJI";
 		int validTime = 10*60*1000; //equivalent to 10 minutes for token to be valid
 		Long tokenTime = System.currentTimeMillis() + validTime;
@@ -1556,12 +1547,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void getUserByActivationKey_shouldReturnNullIfTokenTimeExpired(){
-		User u = new User();
-		u.setPerson(new Person());
-		u.addName(new PersonName("Benjamin", "A", "Wolfe"));
-		u.setUsername("bwolfe");
-		u.getPerson().setGender("M");
-		User createdUser = userService.createUser(u, "Openmr5xy");
+		User createdUser = createTestUser();
 		String key="h4ph0fpNzQCIPSw8plJI";
 		int validTime = 10*60*1000; //equivalent to 10 minutes for token to be valid
 		Long tokenTime = System.currentTimeMillis() - validTime;
@@ -1573,12 +1559,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void changePasswordUsingActivationKey_shouldUpdatePasswordIfActivationKeyIsCorrect() {
-		User u = new User();
-		u.setPerson(new Person());
-		u.addName(new PersonName("Benjamin", "A", "Wolfe"));
-		u.setUsername("bwolfe");
-		u.getPerson().setGender("M");
-		User createdUser = userService.createUser(u, "Openmr5xy");
+		User createdUser = createTestUser();
 		String key = "h4ph0fpNzQCIPSw8plJI";
 		int validTime = 10 * 60 * 1000; //equivalent to 10 minutes for token to be valid
 		Long tokenTime = System.currentTimeMillis() + validTime;
@@ -1597,12 +1578,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void changePasswordUsingActivationKey_shouldNotUpdatePasswordIfActivationKeyIsIncorrect() {
-		User u = new User();
-		u.setPerson(new Person());
-		u.addName(new PersonName("Benjamin", "A", "Wolfe"));
-		u.setUsername("bwolfe");
-		u.getPerson().setGender("M");
-		User createdUser = userService.createUser(u, "Openmr5xy");
+		User createdUser = createTestUser();
 		String key = "wrongactivationkeyin";
 		Context.authenticate(createdUser.getUsername(), "Openmr5xy");
 		InvalidActivationKeyException exception = assertThrows(InvalidActivationKeyException.class, () -> userService.changePasswordUsingActivationKey(key, "Pa55w0rd"));
@@ -1611,12 +1587,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void changePasswordUsingActivationKey_shouldNotUpdatePasswordIfActivationKeyExpired() {
-		User u = new User();
-		u.setPerson(new Person());
-		u.addName(new PersonName("Benjamin", "A", "Wolfe"));
-		u.setUsername("bwolfe");
-		u.getPerson().setGender("M");
-		User createdUser = userService.createUser(u, "Openmr5xy");
+		User createdUser = createTestUser();
 		String key = "h4ph0fpNzQCIPSw8plJI";
 		int validTime = 10 * 60 * 1000; //equivalent to 10 minutes for token to be valid
 		Long tokenTime = System.currentTimeMillis() - validTime;
@@ -1658,5 +1629,32 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User updatedUser = userService.saveUserProperty(USER_PROPERTY_KEY, USER_PROPERTY_VALUE);
 		assertEquals(280, updatedUser.getUserProperties().keySet().iterator().next().length());
 		assertEquals(49495, updatedUser.getUserProperties().get(USER_PROPERTY_KEY).length());
+	}
+	
+	@Test
+	public void getDefaultLocaleForUser_shouldReturnSystemLocaleIfNoUserLocaleConfigured() {
+		User createdUser = createTestUser();
+		assertEquals("", createdUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE));
+		assertEquals(Context.getLocale(), Context.getUserService().getDefaultLocaleForUser(createdUser));
+	}
+
+	@Test
+	public void getDefaultLocaleForUser_shouldReturnDefaultLocaleForUserIfConfigured() {
+		User createdUser = createTestUser();
+		createdUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE, "en");
+		Context.getUserService().saveUser(createdUser);
+		assertEquals(Locale.ENGLISH, Context.getUserService().getDefaultLocaleForUser(createdUser));
+		createdUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE, "fr");
+		Context.getUserService().saveUser(createdUser);
+		assertEquals(Locale.FRENCH, Context.getUserService().getDefaultLocaleForUser(createdUser));
+	}
+
+	private User createTestUser() {
+		User u = new User();
+		u.setPerson(new Person());
+		u.addName(new PersonName("Benjamin", "A", "Wolfe"));
+		u.setUsername("bwolfe");
+		u.getPerson().setGender("M");
+		return userService.createUser(u, "Openmr5xy");
 	}
 }
