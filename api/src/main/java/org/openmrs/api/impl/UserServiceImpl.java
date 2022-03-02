@@ -767,9 +767,10 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	}
 
 	/**
-	 * @return the default locale for the given User, or the default system locale if none configured
+	 * @see UserService#getDefaultLocaleForUser(User) 
 	 */
-	private Locale getDefaultLocaleForUser(User user) {
+	@Override
+	public Locale getDefaultLocaleForUser(User user) {
 		Locale locale = null;
 		if (user != null) {
 			try {
