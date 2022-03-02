@@ -571,7 +571,7 @@ public interface UserService extends OpenmrsService {
 	/**
 	 * @param user the User whose Locale to retrieve
 	 * @return the default Locale of the given user, or the system locale if unspecified
-	 * @since 2.3.6
+	 * @since 2.3.6, 2.4.6
 	 */
 	Locale getDefaultLocaleForUser(User user);
 }
