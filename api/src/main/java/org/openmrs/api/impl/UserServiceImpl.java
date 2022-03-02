@@ -9,19 +9,10 @@
  */
 package org.openmrs.api.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Person;
 import org.openmrs.Privilege;
-import org.openmrs.PrivilegeListener;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
@@ -39,6 +30,7 @@ import org.openmrs.api.db.UserDAO;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.notification.MessageException;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
+import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
@@ -46,9 +38,17 @@ import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Default implementation of the user service. This class should not be used on its own. The current
@@ -747,16 +747,45 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		
 		MessageSourceService messages = Context.getMessageSourceService();
 		AdministrationService adminService = Context.getAdministrationService();
+		Locale locale = getDefaultLocaleForUser(user);
+		
 		String link = adminService.getGlobalProperty(OpenmrsConstants.GP_HOST_URL)
 		        .replace("{activationKey}", token);
-		String msg = messages.getMessage("mail.passwordreset.content").replace("{name}", user.getUsername())
+		
+		String sender = adminService.getGlobalProperty("mail.from");
+		
+		String subject = messages.getMessage("mail.passwordreset.subject",null, locale);
+		
+		String msg = messages.getMessage("mail.passwordreset.content", null, locale)
+				.replace("{name}", user.getUsername())
 		        .replace("{link}", link)
 		        .replace("{time}", String.valueOf(getValidTime() / 60000));
-		Context.getMessageService().sendMessage(user.getEmail(),
-		    adminService.getGlobalProperty("mail.from"),
-		    messages.getMessage("mail.passwordreset.subject"), msg);
+		
+		Context.getMessageService().sendMessage(user.getEmail(), sender, subject, msg);
 		
 		return user;
+	}
+
+	/**
+	 * @see UserService#getDefaultLocaleForUser(User) 
+	 */
+	@Override
+	public Locale getDefaultLocaleForUser(User user) {
+		Locale locale = null;
+		if (user != null) {
+			try {
+				String preferredLocale = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE);
+				if (StringUtils.isNotBlank(preferredLocale)) {
+					locale = LocaleUtility.fromSpecification(preferredLocale);
+				}
+			} catch (Exception e) {
+				log.warn("Unable to parse user locale into a Locale", e);
+			}
+		}
+		if (locale == null) {
+			locale = Context.getLocale();
+		}
+		return locale;
 	}
 	
 	/**
