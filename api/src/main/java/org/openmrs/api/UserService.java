@@ -10,6 +10,7 @@
 package org.openmrs.api;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.openmrs.Person;
@@ -566,4 +567,11 @@ public interface UserService extends OpenmrsService {
 	 * @param newPassword the new password
 	 */
 	public void changePasswordUsingActivationKey(String activationKey, String newPassword);
+
+	/**
+	 * @param user the User whose Locale to retrieve
+	 * @return the default Locale of the given user, or the system locale if unspecified
+	 * @since 2.3.6, 2.4.6
+	 */
+	Locale getDefaultLocaleForUser(User user);
 }
