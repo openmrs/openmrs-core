@@ -9,7 +9,7 @@ on:
       - 2.4.x
       - 2.5.x
   pull_request:
-    types: [opened, synchronize, reopened]
+    types:
     branches:
       - master
       - 2.4.x
@@ -27,7 +27,7 @@ jobs:
           - 11
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v3
       - name: Setup JDK
         uses: actions/setup-java@v2
         with:

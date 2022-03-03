@@ -100,7 +100,7 @@ import org.springframework.validation.Errors;
 public class ConceptServiceTest extends BaseContextSensitiveTest {
 	
 	protected ConceptService conceptService = null;
-	
+
 	protected static final String INITIAL_CONCEPTS_XML = "org/openmrs/api/include/ConceptServiceTest-initialConcepts.xml";
 	
 	protected static final String GET_CONCEPTS_BY_SET_XML = "org/openmrs/api/include/ConceptServiceTest-getConceptsBySet.xml";
@@ -111,6 +111,13 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 
 	@Autowired
 	CacheManager cacheManager;
+
+	// For testing concept lookups by static constant
+	private static final String TEST_CONCEPT_CONSTANT_ID = "3";
+ 
+	private static final String TEST_CONCEPT_CONSTANT_UUID = "35d3346a-6769-4d52-823f-b4b234bac3e3";
+	
+	private static final String TEST_CONCEPT_CONSTANT_NAME = "COUGH SYRUP";
 	
 	/**
 	 * Run this before each unit test in this class. The "@Before" method in
@@ -2302,8 +2309,10 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		List<Concept> actualConcepts = conceptService.getConceptsByClass(new ConceptClass(3));
 		
 		// verify
-		assertThat(actualConcepts.size(), is(4));
-		assertThat(actualConcepts, containsInAnyOrder(conceptService.getConcept(3), conceptService.getConcept(60), conceptService.getConcept(88), conceptService.getConcept(792)));
+		assertThat(actualConcepts.size(), is(6));
+		assertThat(actualConcepts,
+		    containsInAnyOrder(conceptService.getConcept(3), conceptService.getConcept(60), conceptService.getConcept(64),
+		        conceptService.getConcept(67), conceptService.getConcept(88), conceptService.getConcept(792)));
 	}
 	
 	/**
@@ -2834,7 +2843,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getAllConcepts_shouldExcludeRetiredConceptsWhenSetIncludeRetiredToFalse() {
 		final List<Concept> allConcepts = conceptService.getAllConcepts(null, true, false);
 		
-		assertEquals(34, allConcepts.size());
+		assertEquals(36, allConcepts.size());
 		assertEquals(3, allConcepts.get(0).getConceptId().intValue());
 	}
 	
@@ -2845,14 +2854,14 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getAllConcepts_shouldOrderByAConceptField() {
 		List<Concept> allConcepts = conceptService.getAllConcepts("dateCreated", true, true);
 		
-		assertEquals(36, allConcepts.size());
+		assertEquals(38, allConcepts.size());
 		assertEquals(88, allConcepts.get(0).getConceptId().intValue());
 		assertEquals(27, allConcepts.get(allConcepts.size() - 1).getConceptId().intValue());
 		
 		//check desc order
 		allConcepts = conceptService.getAllConcepts("dateCreated", false, true);
 		
-		assertEquals(36, allConcepts.size());
+		assertEquals(38, allConcepts.size());
 		assertEquals(23, allConcepts.get(0).getConceptId().intValue());
 		assertEquals(88, allConcepts.get(allConcepts.size() - 1).getConceptId().intValue());
 	}
@@ -2883,7 +2892,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getAllConcepts_shouldOrderByConceptIdAndIncludeRetiredWhenGivenNoParameters() {
 		final List<Concept> allConcepts = conceptService.getAllConcepts();
 		
-		assertEquals(36, allConcepts.size());
+		assertEquals(38, allConcepts.size());
 		assertEquals(3, allConcepts.get(0).getConceptId().intValue());
 	}
 	
@@ -2894,7 +2903,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getAllConcepts_shouldOrderByConceptIdDescendingWhenSetAscParameterToFalse() {
 		final List<Concept> allConcepts = conceptService.getAllConcepts(null, false, true);
 		
-		assertEquals(36, allConcepts.size());
+		assertEquals(38, allConcepts.size());
 		assertEquals(5497, allConcepts.get(0).getConceptId().intValue());
 	}
 	
@@ -3580,5 +3589,69 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	
 		assertEquals(1, searchResults.size());
 		assertThat(searchResults.get(0).getWord(), is("SALBUTAMOL INHALER NOT"));
+	}
+	
+	/**
+	 * @see ConceptService#getConceptByReference(String)
+	 */
+	@Test
+	public void getConceptByReference_shouldFindAConceptByItsConceptName() {
+		assertEquals(3, conceptService.getConceptByReference(TEST_CONCEPT_CONSTANT_NAME).getConceptId());
+	}
+	
+	/**
+	 * @see ConceptService#getConceptByReference(String)
+	 */
+	@Test
+	public void getConceptByReference_shouldFindAConceptByItsConceptId() {
+		assertEquals("COUGH SYRUP", conceptService.getConceptByReference(TEST_CONCEPT_CONSTANT_ID).getName().toString());
+	}
+	
+	/**
+	 * @see ConceptService#getConceptByReference(String)
+	 */
+	@Test
+	public void getConceptByReference_shouldFindAConceptByItsMapping() {
+		Concept concept = conceptService.getConceptByReference("SSTRM:454545");
+		assertEquals(24, concept.getId().intValue());
+	}
+	
+	/**
+	 * @see ConceptService#getConceptByReference(String)
+	 */
+	@Test
+	public void getConceptByReference_shouldFindAConceptByItsUuid() {
+		assertEquals(60, conceptService.getConceptByReference(TEST_CONCEPT_CONSTANT_UUID).getConceptId());
+	}
+	
+	/**
+	 * @see ConceptService#getConceptByReference(String)
+	 */
+	@Test
+	public void getConcept_shouldFindAConceptWithNonStandardUuid() throws Exception {
+		String nonStandardUuid = "1000AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+		assertEquals(64, conceptService.getConceptByReference(nonStandardUuid).getConceptId());
+	}
+	
+	/**
+	 * @see ConceptService#getConceptByReference(String) tests static constant containing ids and
+	 *      UUIDs
+	 */
+	@Test
+	public void getConceptByReference_shouldFindAConceptWithStaticConstant() {
+		assertNotNull(conceptService.getConceptByReference("org.openmrs.api.ConceptServiceTest.TEST_CONCEPT_CONSTANT_UUID"));
+		assertNotNull(conceptService.getConceptByReference("org.openmrs.api.ConceptServiceTest.TEST_CONCEPT_CONSTANT_ID"));
+		assertNotNull(conceptService.getConceptByReference("org.openmrs.api.ConceptServiceTest.TEST_CONCEPT_CONSTANT_NAME"));
+	}
+	
+	/**
+	 * @see ConceptService#getConceptByReference(String)
+	 */
+	@Test
+	public void getConceptByReference_shouldReturnNullWhenEitherConceptRefIsInvalidOrDoesNotMatchAnyConcept() {
+		assertNull(conceptService.getConceptByReference(null));  //given null 
+		assertNull(conceptService.getConceptByReference(""));  //with empty string
+		assertNull(conceptService.getConceptByReference("id, name or map which does not match to any concept"));
+		assertNull(conceptService.getConceptByReference("1000")); //invalid uuid but exists in standardTestDataset
 	}
 }
