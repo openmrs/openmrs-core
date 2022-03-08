@@ -80,13 +80,7 @@ public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void deleteAlert_shouldReturnNullAfterDeleting() {
 		Alert savedAlert = hibernateAlertDAO.getAlert(2);
-		Date currentDate = new Date();
-		dateFormat.format(currentDate);
-		Calendar c = Calendar.getInstance();
-		c.setTime(currentDate);
-		c.add(Calendar.YEAR,1);
-		Date currentDatePlusOneYear = c.getTime();
-		savedAlert.setDateToExpire(currentDatePlusOneYear);
+		savedAlert.setDateToExpire(Date.from(ZonedDateTime.now().plusYears(1).toInstant()));
 		Assertions.assertNotNull(savedAlert);
 		hibernateAlertDAO.deleteAlert(savedAlert);
 		Assertions.assertNull(hibernateAlertDAO.getAlert(2));
