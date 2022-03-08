@@ -14,21 +14,18 @@ import java.text.DateFormat;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
-import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.Assertions;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.Alert;
-import org.openmrs.notification.AlertRecipient;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -76,13 +73,7 @@ public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAlert_shouldGetAlertById() {
 		Alert savedAlert = hibernateAlertDAO.getAlert(2);
-		Date currentDate = new Date();
-		dateFormat.format(currentDate);
-		Calendar c = Calendar.getInstance();
-		c.setTime(currentDate);
-		c.add(Calendar.YEAR,1);
-		Date currentDatePlusOneYear = c.getTime();
-		savedAlert.setDateToExpire(currentDatePlusOneYear);
+		savedAlert.setDateToExpire(Date.from(ZonedDateTime.now().plusYears(1).toInstant()));
 		Assertions.assertEquals((int) savedAlert.getAlertId(), 2);
 	}
 
