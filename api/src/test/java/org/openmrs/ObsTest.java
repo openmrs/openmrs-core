@@ -41,7 +41,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.obs.ComplexData;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.Reflect;
 
 /**
@@ -50,7 +50,7 @@ import org.openmrs.util.Reflect;
  * 
  * @see Obs
  */
-public class ObsTest extends BaseContextSensitiveTest{
+public class ObsTest extends  BaseContextSensitiveTest {
 	
 	private static final String VERO = "Vero";
 	
@@ -967,12 +967,14 @@ public class ObsTest extends BaseContextSensitiveTest{
 	
 	@Test
 	public void removingObsFromObsGroup_shouldRemoveChildObs() throws Exception {
+		
 		executeDataSet(INITIAL_OBS_XML);
+		
 		ObsService os = Context.getObsService();
 		Obs oParent = os.getObs(7);
 		Obs oChild = os.getObs(9);
     	oParent.removeGroupMember(oChild);
-		os.saveObs(oParent,"Updating");
+		os.saveObs(oParent,"Updating to reproduce the error");
 		Context.evictFromSession(oParent);
 		Context.flushSession();
 		oParent = os.getObs(9);
