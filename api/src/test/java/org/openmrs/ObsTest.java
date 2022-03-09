@@ -967,20 +967,17 @@ public class ObsTest extends  BaseContextSensitiveTest {
 	
 	@Test
 	public void removingObsFromObsGroup_shouldRemoveChildObs() throws Exception {
-		
 		executeDataSet(INITIAL_OBS_XML);
-		
 		ObsService os = Context.getObsService();
-		Obs oParent = os.getObs(7);
-		Obs oChild = os.getObs(9);
-    	oParent.removeGroupMember(oChild);
+		Obs oParent = os.getObs(17);
+		Obs oChild = os.getObs(18);
+		oParent.removeGroupMember(oChild);
 		os.saveObs(oParent,"Updating to reproduce the error");
 		Context.evictFromSession(oParent);
 		Context.flushSession();
-		oParent = os.getObs(9);
-		assertEquals(0,oParent.getGroupMembers().stream().filter(obs -> obs.getObsId() == 9).count());
-		
-		
+        oParent = os.getObs(17);
+		assertEquals(17,oParent.getId());
+		assertEquals(0,oParent.getGroupMembers().stream().filter(obs -> obs.getObsId() == 18).count());	
 	}
 	
 }

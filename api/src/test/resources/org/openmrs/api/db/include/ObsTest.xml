@@ -11,12 +11,11 @@
 
 -->
 <dataset>
-  <obs obs_id="7" person_id="7" status="FINAL" concept_id="5089" encounter_id="3" obs_datetime="2008-07-01 00:00:00.0" location_id="1" value_numeric="50.0" comments="" creator="1" date_created="2008-08-18 14:09:35.0" voided="false" value_coded="[NULL]" value_coded_name_id="[NULL]" value_complex="[NULL]" value_text="[NULL]" value_datetime="2008-07-01 00:00:00.0" value_drug="[NULL]" uuid="39fb7f47-e80a-4056-9285-bd798be13c63"/>
-  <obs obs_id="9" person_id="7" status="FINAL" concept_id="5497" encounter_id="3" obs_datetime="2008-07-08 00:00:00.0" location_id="1" value_numeric="50.0" comments="" creator="1" date_created="2008-08-18 14:09:35.0" voided="false" value_coded="[NULL]" value_coded_name_id="[NULL]" value_complex="[NULL]" value_text="[NULL]" value_datetime="2008-07-08 00:00:00.0" value_drug="[NULL]" uuid="be48cdcb-6a76-47e3-9f2e-2635032f3a9a"/>
-  <person person_id="7" gender="M" birthdate="1948-01-01 00:00:00.0" birthdate_estimated="0" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="ba1b19c2-3ed6-4f63-b8c0-f162dc8d7562"/>
-  <location location_id="1" name="Unknown Location" description="The default location used when limited information is known" address1="" address2="" city_village="" state_province="" postal_code="" country="" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="8d6c993e-c2cc-11de-8d13-1010c6dfed0f"/>
-  <concept concept_id="5089" retired="false" datatype_id="8" class_id="7" is_set="false" creator="1" date_created="2008-08-18 12:33:37.0" version="" uuid="11716f9c-1434-4f8d-b9fc-9aa14c4d6196"/>
-  <concept concept_id="5497" retired="false" datatype_id="8" class_id="7" is_set="false" creator="1" date_created="2008-08-18 12:33:37.0" version="" uuid="11716f9c-1734-4f8d-b9fc-9aa14c4d6126"/>
-  <encounter encounter_id="3" encounter_type="1" patient_id="7" location_id="1" form_id="1" encounter_datetime="2008-08-19 00:00:00.0" creator="1" date_created="2008-08-19 12:34:40.0" voided="false" uuid="e403fafb-e5e4-92f0-9d11-4f52e89d148c"/>
-  <encounter_type encounter_type_id="1" name="Scheduled" description="Scheduled Visit" creator="1" date_created="2005-02-24 00:00:00.0" retired="false" uuid="61ne96f4-6afe-4351-b6f8-cd4fc383cke1"/>
+  <encounter encounter_id="2" encounter_type="2" patient_id="7" location_id="1" form_id="1" encounter_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" uuid="8382158d-401e-4190-a75d-347b5f04a893"/>
+  <encounter_provider encounter_provider_id="1" encounter_id="2" provider_id="1" encounter_role_id="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" uuid="363fe09b-c1e8-4bdf-aa7d-dd212632f295"/>
+  
+  <obs obs_id="17" person_id="7" status="FINAL" concept_id="23" encounter_id="2" obs_datetime="2008-07-01 00:00:00.0" location_id="1" value_text="some value" comments="" creator="1" date_created="2008-08-18 14:09:35.0" voided="false" uuid="4db1b07d-2fc5-46ad-8aa1-ac8357f88458"/>
+  <obs obs_id="18" person_id="7" status="FINAL" obs_group_id="17" concept_id="19" encounter_id="2" obs_datetime="2008-07-01 00:00:00.0" location_id="1" value_text="some value" comments="" creator="1" date_created="2008-08-18 14:09:35.0" voided="false" uuid="4db1b07d-2fc5-46ad-8aa1-ac8357f88459"/>
+  
+
 </dataset>
