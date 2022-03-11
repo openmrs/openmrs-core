@@ -26,4 +26,23 @@
 		<comment>Empty change set for integration tests.</comment>
 	</changeSet>
 	
+		<changeSet id="TRUNK-5466-2020-06-19" author="jnsereko">
+    	<preConditions onFail="MARK_RAN">
+    		<not>
+    			<columnExists tableName="location" columnName="supports_visits"/>
+    		</not>
+    	</preConditions>
+    	<comment>Adding 'supports_visits' column to 'location' table</comment>
+    	<addColumn tableName="location">
+    		<column name="supports_visits" type="boolean">
+    			<constraints nullable="true" />
+    		</column>
+    	</addColumn>
+    	<addForeignKeyConstraint constraintName="location_supports_visits_fk"
+								 baseTableName="location" 
+								 baseColumnNames="supports_visits"
+								 referencedTableName="location" 
+								 referencedColumnNames="location_id" />
+    </changeSet>
+
 </databaseChangeLog>

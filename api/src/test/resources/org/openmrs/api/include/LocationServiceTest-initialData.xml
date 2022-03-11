@@ -29,6 +29,7 @@
   <location_tag location_tag_id="4" name="Everyone gets this one" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="11a11086-47ed-11df-bc8b-001e378eb67e"/>
   <location_tag location_tag_id="5" name="Test Retired Tag" creator="1" date_created="2005-01-01 00:00:00.0" retired="true" retired_by="1" retire_reason="for the lulz" uuid="156029fa-47ed-11df-bc8b-001e378eb67e"/>
   <location_tag location_tag_id="6" name="Nobody got this tag" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="356029fa-47ed-11df-bc8b-001e378eb67e"/>
+  <location_tag_map location_id="1901" location_tag_id="23"/>
   <location_tag_map location_id="1" location_tag_id="1" />
   <location_tag_map location_id="1" location_tag_id="2" />
   <location_tag_map location_id="1" location_tag_id="4" />

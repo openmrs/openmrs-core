@@ -31,6 +31,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.VisitDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.ValidateUtil;
 import org.springframework.transaction.annotation.Transactional;
@@ -379,6 +380,120 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		}
 	}
 	
+	/**
+	 * @see org.openmrs.api.VisitService#isSuitableVisit(Visit, Location, Date)
+	 */
+	@Override
+	public boolean isSuitableVisit(Visit visit, Location location, Date when) {
+		if (OpenmrsUtil.compare(when, visit.getStartDatetime()) < 0) {
+			return false;
+		}
+		if (OpenmrsUtil.compareWithNullAsLatest(when, visit.getStopDatetime()) > 0) {
+			return false;
+		}
+		return isSameOrAncestor(visit.getLocation(), location);
+	}
+	
+	/**
+	 * @see org.openmrs.api.VisitService#ensureVisit(Patient, Date, Location)
+	 */
+    @Override
+	@Transactional
+	public Visit ensureVisit(Patient patient, Date visitTime, Location department) {
+		if (visitTime == null) {
+			visitTime = new Date();
+		}
+		Visit visit = null;
+		List<Patient> patientList = Collections.singletonList(patient);
+		
+		// visits that have not ended by the encounter date.
+		List<Visit> candidates = dao.getVisits(null, patientList, null, null, null, visitTime, null, null, null, true,
+		    false);
+		
+		if (candidates != null) {
+			for (Visit candidate : candidates) {
+				if (isSuitableVisit(candidate, department, visitTime)) {
+					return candidate;
+				}
+			}
+		}
+		if (visit == null) {
+			visit = buildVisit(patient, department, visitTime);
+			dao.saveVisit(visit);
+		}
+		return visit;
+	}
+	
+	/**
+	 * @see org.openmrs.api.VisitService#ensureActiveVisit(Patient, Date, Location)
+	 */
+	@Override
+	@Transactional
+	public Visit ensureActiveVisit(Patient patient, Location department) {
+		Visit activeVisit = getActiveVisitHelper(patient, department);
+		if (activeVisit == null) {
+			activeVisit = buildVisit(patient, department, new Date());
+			dao.saveVisit(activeVisit);
+		}
+		return activeVisit;
+	}
+	
+	/**
+	 * @see org.openmrs.api.VisitService#getLocationThatSupportsVisits(Location)
+	 */
+	@Override
+	public Location getLocationThatSupportsVisits(Location location) {
+		if (location == null) {
+			throw new IllegalArgumentException("Location does not support visits");
+		} else if (location.hasTag(OpenmrsConstants.LOCATION_TAG_SUPPORTS_VISITS)) {
+			return location;
+		} else {
+			return getLocationThatSupportsVisits(location.getParentLocation());
+		}
+	}
+	
+	/**
+	 * Anything that calls this needs to be @Transactional
+	 * @param patient is the patient whose visit is tp get 
+	 * @param department is the location of the visit
+	 * @return visit
+	 */
+	@Transactional(readOnly = true)
+	private Visit getActiveVisitHelper(Patient patient, Location department) {
+		List<Visit> candidates = getVisitsByPatient(patient);
+		Visit ret = null;
+		for (Visit candidate : candidates) {
+			if (isSuitableVisit(candidate, department, new Date())) {
+				ret = candidate;
+			}
+		}
+		
+		return ret;
+	}
+	
+	/**
+	 * @param a is the parent location 
+	 * @param b is the child or parent location 
+	 * @return true if a.equals(b) or a is an ancestor of b.
+	 */
+	private boolean isSameOrAncestor(Location a, Location b) {
+		if (a == null || b == null) {
+			return a == null && b == null;
+		}
+		return a.equals(b) || isSameOrAncestor(a, b.getParentLocation());
+	}
+	
+	private Visit buildVisit(Patient patient, Location location, Date when) {
+		final Visit visit = new Visit();
+		visit.setPatient(patient);
+		visit.setLocation(getLocationThatSupportsVisits(location));
+		VisitType visitType = new VisitType();
+		visitType.setName(OpenmrsConstants.GP_AT_FACILITY_VISIT_TYPE);
+		Context.getVisitService().saveVisitType(visitType);
+		visit.setVisitType(visitType);
+		visit.setStartDatetime(when);
+		return visit;
+	}
 	private List<VisitType> getVisitTypesToStop() {
 		String gpValue = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_VISIT_TYPES_TO_AUTO_CLOSE);
 		if (StringUtils.isBlank(gpValue)) {

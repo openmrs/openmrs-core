@@ -9,6 +9,8 @@
  */
 package org.openmrs.api;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -248,7 +250,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getAllLocations_shouldReturnAllLocationsIncludingRetired() {
 		List<Location> locations = Context.getLocationService().getAllLocations();
 		
-		assertEquals(7, locations.size());
+		assertEquals(8, locations.size());
 	}
 	
 	/**
@@ -258,7 +260,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getRootLocations_shouldReturnRootLocationsIncludingRetired() {
 		List<Location> locations = Context.getLocationService().getRootLocations(true);
 		
-		assertEquals(3, locations.size());
+		assertEquals(4, locations.size());
 	}
 	
 	/**
@@ -268,7 +270,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getRootLocations_shouldReturnOnlyUnretiredRootLocations() {
 		List<Location> locations = Context.getLocationService().getRootLocations(false);
 		
-		assertEquals(2, locations.size());
+		assertEquals(3, locations.size());
 	}
 	
 	/**
@@ -278,7 +280,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getAllLocations_shouldReturnAllLocationsWhenIncludeRetiredIsTrue() {
 		List<Location> locations = Context.getLocationService().getAllLocations(true);
 		
-		assertEquals(7, locations.size());
+		assertEquals(8, locations.size());
 	}
 	
 	/**
@@ -288,7 +290,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getAllLocations_shouldReturnOnlyUnretiredLocationsWhenIncludeRetiresIsFalse() {
 		List<Location> locations = Context.getLocationService().getAllLocations(false);
 		
-		assertEquals(6, locations.size());
+		assertEquals(7, locations.size());
 	}
 	
 	/**
@@ -409,7 +411,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getLocationsHavingAllTags_shouldReturnAllUnretiredLocationsGivenAnEmptyTagList() {
 		LocationService ls = Context.getLocationService();
-		assertEquals(6, ls.getLocationsHavingAllTags(Collections.EMPTY_LIST).size());
+		assertEquals(7, ls.getLocationsHavingAllTags(Collections.EMPTY_LIST).size());
 	}
 	
 	/**
@@ -716,7 +718,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getAllLocationTags_shouldReturnAllLocationTagsIncludingRetired() {
 		List<LocationTag> tags = Context.getLocationService().getAllLocationTags();
 		
-		assertEquals(6, tags.size());
+		assertEquals(7, tags.size());
 	}
 	
 	/**
@@ -726,7 +728,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getAllLocationTags_shouldReturnAllLocationTagsIfIncludeRetiredIsTrue() {
 		List<LocationTag> tags = Context.getLocationService().getAllLocationTags(true);
 		
-		assertEquals(6, tags.size());
+		assertEquals(7, tags.size());
 	}
 	
 	/**
@@ -736,7 +738,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getAllLocationTags_shouldReturnOnlyUnretiredLocationTagsIfIncludeRetiredIsFalse() {
 		List<LocationTag> tags = Context.getLocationService().getAllLocationTags(false);
 		
-		assertEquals(5, tags.size());
+		assertEquals(6, tags.size());
 	}
 	
 	/**
@@ -1196,6 +1198,15 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		location.addTag(tag);
 		locationService.retireLocation(location, "test retire reason");
 		assertFalse(tag.getRetired());
+	}
+	
+	/**
+	 * @see LocationService#getAllLocationsThatSupportVisits()
+	 */
+	@Test
+	public void getAllLocationsThatSupportVisits_shouldReturnAllLocationsTaggedWithVisitLocations() {
+		List<Location> visitLocation = Context.getLocationService().getAllLocationsThatSupportVisits();
+		assertThat(visitLocation.size(), is(1));
 	}
 	
 }

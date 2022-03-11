@@ -1300,6 +1300,12 @@ public final class OpenmrsConstants {
 	/** Value for the long person name format */
 	public static final String PERSON_NAME_FORMAT_LONG = "long";
 	
+	/** Value for facility visit type */
+	public static final String GP_AT_FACILITY_VISIT_TYPE = "Faculty VisitType";
+	
+	/** Value for the location supports visists tag */
+	public static final String LOCATION_TAG_SUPPORTS_VISITS = "Visit Location";
+	
 	private OpenmrsConstants() {
 	}
 	

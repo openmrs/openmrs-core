@@ -508,4 +508,14 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	public LocationAttributeType getLocationAttributeTypeByName(String name) {
 		return dao.getLocationAttributeTypeByName(name);
 	}
+
+	/**
+	 * @see org.openmrs.api.LocationService#getAllLocationsThatSupportVisits()
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<Location> getAllLocationsThatSupportVisits() {
+		LocationTag supportsVisitsTag = dao.getLocationTagByName(OpenmrsConstants.LOCATION_TAG_SUPPORTS_VISITS);
+		return Context.getLocationService().getLocationsByTag(supportsVisitsTag);
+	}
 }

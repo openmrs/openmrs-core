@@ -379,4 +379,54 @@ public interface VisitService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.EDIT_VISITS)
 	public void stopVisits(Date maximumStartDate);
+	
+	/**
+	 * @param visit is the vist to check 
+	 * @param location is the location of the vist
+	 * @param when is the time of the visit
+	 * @return true if when falls in the visits timespan AND location is within visit.location
+	 * @since 2.6.0 
+	 * <strong>Should</strong> return false if when is either less than VisitStartTime or greater than VisitEndTime 
+	 */
+	@Authorized(PrivilegeConstants.GET_VISITS)
+	public boolean isSuitableVisit(Visit visit, Location location, Date when);
+	
+	/**
+	 * If the patient has no active visit on the day of @visitTime, one is created (and persisted).
+	 * The visit's location will be a valid visit location per our business logic.
+	 * @param patient is the patient whose visit is to get
+	 * @param visitTime is the time of the visit 
+	 * @param department is the location of the visit
+	 * @return Visit
+	 * @since 2.6.0 
+	 * <strong>Should</strong> return a Visit basing on VisitTime
+	 * <strong>Should</strong> return new Visit if patient has no Visit
+	 * <strong>Should</strong> create new Visit if VisitTime is either less than VisitStartTime or Greater than VisitEndTime
+	 */
+	public Visit ensureVisit(Patient patient, Date visitTime, Location department);
+	
+	/**
+	 * Like #getActiveVisit, but if the patient has no active visit, one is created (and persisted).
+	 * (This has the same side-effects as #getActiveVisit.) The visit's location will be a valid
+	 * visit location per our business logic.
+	 * @param patient is the patient whose vist is to get
+	 * @param department is the location of the visit
+	 * @return Visit
+	 * @since 2.6.0
+	 * <strong>Should</strong> find most recent Visit
+	 * <strong>Should</strong> not find old Visit
+	 */
+	public Visit ensureActiveVisit(Patient patient, Location department);
+	
+	/**
+	 * Looks at location, and if necessary its ancestors in the location hierarchy, until it finds
+	 * one tagged with "Visit Location"
+	 * @param location is the location on which to check for supports visits tag
+	 * @return location, or an ancestor
+	 * @throws IllegalArgumentException if neither location nor its ancestors support visits
+	 * @since 2.6.0 
+	 * <strong>Should</strong> throw IllegalAgumentException if parent and child lack VisitLocationTag
+	 */
+	@Authorized(PrivilegeConstants.GET_VISITS)
+	public Location getLocationThatSupportsVisits(Location location);
 }
