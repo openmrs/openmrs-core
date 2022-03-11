@@ -501,7 +501,7 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 		if (groupMembers.remove(member)) {
 			Obs oldObs=Context.getObsService().getObsByUuid(member.getUuid());
 			Obs voidedObs=Context.getObsService().voidObs(oldObs,"Not needed");
-			member.setObsGroup(null);
+			member.setObsGroup(voidedObs);
 		}
 	}
 	
