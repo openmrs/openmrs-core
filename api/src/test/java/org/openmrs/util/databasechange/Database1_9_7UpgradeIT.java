@@ -24,6 +24,8 @@ import java.util.Properties;
 import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.hamcrest.Matchers;
+import org.junit.ClassRule;
+import org.junit.rules.TemporaryFolder;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -62,7 +64,8 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 	
 	private DatabaseUpgradeTestUtil upgradeTestUtil;
 	
-	private static File testAppDataDir;
+	@ClassRule
+	public static TemporaryFolder testAppDataDir = TemporaryFolder.builder().assureDeletion().build();
 	
 	private Map<String, String> row(String... values) {
 		Map<String, String> row = new HashMap<>();
@@ -116,17 +119,12 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 	
 	@BeforeAll
 	public static void beforeClass() throws IOException {
-		testAppDataDir = File.createTempFile("appdir-for-unit-tests", "");
-		testAppDataDir.delete();// so we can make turn it into a directory
-		testAppDataDir.mkdir();
-		
-		System.setProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, testAppDataDir.getAbsolutePath());
-		OpenmrsUtil.setApplicationDataDirectory(testAppDataDir.getAbsolutePath());
+		System.setProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, testAppDataDir.getRoot().getAbsolutePath());
+		OpenmrsUtil.setApplicationDataDirectory(testAppDataDir.getRoot().getAbsolutePath());
 	}
 	
 	@AfterAll
 	public static void afterClass() throws Exception {
-		FileUtils.deleteDirectory(testAppDataDir);
 		//Just to be safe, not to affect other units in the test suite
 		System.clearProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY);
 	}

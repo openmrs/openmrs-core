@@ -60,6 +60,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmrs.ConceptName;
@@ -130,6 +131,9 @@ public abstract class BaseContextSensitiveTest {
 	 * cached runtime properties
 	 */
 	protected static Properties runtimeProperties;
+	
+	@TempDir
+	public static File tempappdir;
 	
 	/**
 	 * Used for username/password dialog
@@ -343,20 +347,10 @@ public abstract class BaseContextSensitiveTest {
 		
 		// we don't want to try to load core modules in tests
 		runtimeProperties.setProperty(ModuleConstants.IGNORE_CORE_MODULES_PROPERTY, "true");
-		
-		try {
-			File tempappdir = File.createTempFile("appdir-for-unit-tests-", "");
-			tempappdir.delete(); // so we can make it into a directory
-			tempappdir.mkdir(); // turn it into a directory
-			tempappdir.deleteOnExit(); // clean up when we're done with tests
 			
 			runtimeProperties.setProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, tempappdir
 			        .getAbsolutePath());
 			OpenmrsUtil.setApplicationDataDirectory(tempappdir.getAbsolutePath());
-		}
-		catch (IOException e) {
-			log.error("Unable to create temp dir", e);
-		}
 		
 		return runtimeProperties;
 	}
