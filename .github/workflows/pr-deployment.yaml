@@ -1,0 +1,115 @@
+name: pr-deployment
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  deploy-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: acknowledge deployment request to commenter
+        id: check
+        uses: khan/pull-request-comment-trigger@master
+        with:
+          trigger: "/deploy"
+          reaction: rocket
+        env:
+          GITHUB_TOKEN: "${{ secrets.DEPLOYMENT_TOKEN }}"
+    outputs:
+      triggered: ${{ steps.check.outputs.triggered }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: deploy-check
+    if: needs.deploy-check.outputs.triggered == 'true'
+    steps:
+      - name: get pull request ref
+        id: get_pull_request_ref
+        uses: octokit/request-action@v2.x
+        with:
+          route: GET /repos/:repository/pulls/:issue_id
+          repository: ${{ github.repository }}
+          issue_id: ${{ github.event.issue.number }}
+        env:
+          GITHUB_TOKEN: "${{ secrets.DEPLOYMENT_TOKEN }}"
+
+      - name: create deployment
+        id: create_deployment
+        uses: octokit/request-action@v2.x
+        with:
+          route: POST /repos/:repository/deployments
+          repository: ${{ github.repository }}
+          ref: ${{ fromJson(steps.get_pull_request_ref.outputs.data).head.ref }}
+          environment: dev
+          auto_merge: false
+        env:
+          GITHUB_TOKEN: "${{ secrets.DEPLOYMENT_TOKEN }}"
+
+      - name: set deployment status to in progress
+        id: start_deployment
+        uses: octokit/request-action@v2.x
+        with:
+          route: POST /repos/:repository/deployments/:deployment/statuses
+          repository: ${{ github.repository }}
+          deployment: ${{ fromJson(steps.create_deployment.outputs.data).id }}
+          environment: dev
+          environment_url: https://qa-refapp.openmrs.org/openmrs
+          log_url: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          state: in_progress
+          mediaType: '{"previews": ["flash", "ant-man"]}'
+        env:
+          GITHUB_TOKEN: "${{ secrets.DEPLOYMENT_TOKEN }}"
+
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: Build with Maven
+        run: mvn clean package
+
+      - name: Publish to JFrog Artifactory
+        run: mvn deploy
+        env:
+          registry: https://openmrs.jfrog.io
+          username: "${{ secrets.JFROG_USERNAME_WRITER }}"
+          password: "${{ secrets.JFROG_PASSWORD_WRITER }}"
+          GITHUB_TOKEN: "${{ secrets.DEPLOYMENT_TOKEN }}"
+ 
+      - name: set deployment status to success
+        id: successful_deployment
+        uses: octokit/request-action@v2.x
+        with:
+          route: POST /repos/:repository/deployments/:deployment/statuses
+          repository: ${{ github.repository }}
+          deployment: ${{ fromJson(steps.create_deployment.outputs.data).id }}
+          environment: dev
+          environment_url: https://qa-refapp.openmrs.org/openmrs
+          log_url: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          mediaType: '{"previews": ["ant-man"]}'
+          state: success
+        env:
+          GITHUB_TOKEN: "${{ secrets.DEPLOYMENT_TOKEN }}"
+
+      - name: set deployment status to failure
+        id: failed_deployment
+        uses: octokit/request-action@v2.x
+        if: failure()
+        with:
+          route: POST /repos/:repository/deployments/:deployment/statuses
+          repository: ${{ github.repository }}
+          deployment: ${{ fromJson(steps.create_deployment.outputs.data).id }}
+          environment: dev
+          environment_url: https://qa-refapp.openmrs.org/openmrs/
+          log_url: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          mediaType: '{"previews": ["ant-man"]}'
+          state: failure
+        env:
+          GITHUB_TOKEN: "${{ secrets.DEPLOYMENT_TOKEN }}"
