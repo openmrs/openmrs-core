@@ -118,7 +118,7 @@ public class VerhoeffIdentifierValidatorTest {
 	@Test
 	public void checkDigit_shouldChangeWhenAdjacentCharsAreTransposed() {
 		getCheckDigitVerhoeffIdentifier checkDigitObj = new getCheckDigitVerhoeffIdentifier();
-		VerhoeffIdentifierValidator validator = new VerhoeffIdentifierValidator();
+		//VerhoeffIdentifierValidator validator = new VerhoeffIdentifierValidator();
 		String test;
 		int checkDigit;
 		String pre;

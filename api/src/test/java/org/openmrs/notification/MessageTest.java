@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
+import org.openmrs.notification.impl.MessageServiceImpl;
 
 /**
  * Unit testing for the Message class
@@ -92,16 +93,16 @@ public class MessageTest {
 	}
 	
 	/**
-	 * @see Message#addRecipient(String)
 	 */
 	@Test
 	public void addRecipient_shouldAddNewRecipient() {
 		Message testMessage = createTestMessage1();
+		MessageServiceImpl messageService = new MessageServiceImpl();
 		
-		String oldRecipients = testMessage.getRecipients();
+		StringBuilder oldRecipients = testMessage.getRecipients();
 		String newRecipient = "bob@example.com";
 		
-		testMessage.addRecipient(newRecipient);
+		messageService.addRecipient(newRecipient);
 		
 		assertEquals(testMessage.getRecipients(), oldRecipients + "," + newRecipient);
 	}

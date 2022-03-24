@@ -43,6 +43,12 @@ public class MessageServiceImpl implements MessageService {
 	public void setTemplateDAO(TemplateDAO dao) {
 		this.templateDAO = dao;
 	}
+	public void addRecipient(String recipient) {
+		Message message = new Message();
+		if (recipient != null) {
+			message.getRecipients().append(",").append(recipient);
+		}
+	}
 	
 	/**
 	 * Public constructor Required for use with spring's method injection. Be careful because this
@@ -173,7 +179,7 @@ public class MessageServiceImpl implements MessageService {
 	public void sendMessage(Message message, Integer recipientId) throws MessageException {
 		log.debug("Sending message to user with user id " + recipientId);
 		User user = Context.getUserService().getUser(recipientId);
-		message.addRecipient(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS));
+		addRecipient(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS));
 		Context.getMessageService().sendMessage(message);
 	}
 	
@@ -188,7 +194,7 @@ public class MessageServiceImpl implements MessageService {
 		log.debug("Sending message to user " + user);
 		String address = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS);
 		if (address != null) {
-			message.addRecipient(address);
+			addRecipient(address);
 		}
 		Context.getMessageService().sendMessage(message);
 	}
@@ -202,7 +208,7 @@ public class MessageServiceImpl implements MessageService {
 		for (User user : users) {
 			String address = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS);
 			if (address != null) {
-				message.addRecipient(address);
+				addRecipient(address);
 			}
 		}
 		Context.getMessageService().sendMessage(message);

@@ -9,6 +9,8 @@
  */
 package org.openmrs.notification;
 
+import org.openmrs.notification.impl.MessageServiceImpl;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -100,14 +102,15 @@ public class Message implements Serializable {
 	 * @param recipients
 	 * <strong>Should</strong> set multiple recipients
 	 */
+	
 	public void setRecipients(String recipients) {
 		if (recipients != null) {
 			this.recipients = new StringBuilder(recipients);
 		}
 	}
 	
-	public String getRecipients() {
-		return this.recipients.toString();
+	public StringBuilder getRecipients() {
+		return this.recipients;
 	}
 	
 	/**
@@ -115,15 +118,14 @@ public class Message implements Serializable {
 	 * comma. If no recipients exist, this method has no effect (TODO is this the correct
 	 * behavior??!).
 	 *
-	 * @param recipient a new address to assign
-	 * <strong>Should</strong> add new recipient
 	 */
-	public void addRecipient(String recipient) {
+	
+	/*public void addRecipient(String recipient) {
 		if (recipient != null) {
 			this.recipients.append(",").append(recipient);
 		}
-	}
-	
+	}*/
+
 	public void setSender(String sender) {
 		this.sender = sender;
 	}
