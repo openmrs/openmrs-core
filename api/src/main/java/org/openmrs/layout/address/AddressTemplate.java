@@ -24,17 +24,27 @@ public class AddressTemplate extends LayoutTemplate implements Serializable {
 	public AddressTemplate(String string) {
 		super(string);
 	}
-	
+
 	@Override
 	public String getLayoutToken() {
-		return "IS_ADDR_TOKEN";
+		return super.getLayoutToken();
 	}
-	
+
 	@Override
 	public String getNonLayoutToken() {
-		return "IS_NOT_ADDR_TOKEN";
+		return super.getNonLayoutToken();
 	}
-	
+
+	/*@Override
+			public String getLayoutToken() {
+				return "IS_ADDR_TOKEN";
+			}
+			
+			@Override
+			public String getNonLayoutToken() {
+				return "IS_NOT_ADDR_TOKEN";
+			}
+			*/
 	@Override
 	public LayoutSupport<?> getLayoutSupportInstance() {
 		return AddressSupport.getInstance();

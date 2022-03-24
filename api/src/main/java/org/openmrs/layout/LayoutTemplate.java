@@ -19,7 +19,7 @@ import java.util.Map;
  * Generic class used by AddressTemplate and NameTemplate layouts
  * @since 1.12
  */
-public abstract class LayoutTemplate {
+public class LayoutTemplate {
 	
 	protected static final String LAYOUT_TOKEN = "<!-- openmrsToken -->";
 	
@@ -64,9 +64,15 @@ public abstract class LayoutTemplate {
 		setLineByLineFormat(Collections.singletonList(simpleTemplate));
 	}
 	
-	public abstract String getLayoutToken();
 	
-	public abstract String getNonLayoutToken();
+	
+	public String getLayoutToken(){
+		return "IS_ADDR_TOKEN";
+	}
+	
+	public  String getNonLayoutToken(){
+		return "IS_NOT_ADDR_TOKEN";
+	}
 	
 	private String replaceTokens(String line) {
 		LayoutSupport<?> as = getLayoutSupportInstance();
@@ -357,9 +363,11 @@ public abstract class LayoutTemplate {
 	public void setSizeMappings(Map<String, String> sizeMappings) {
 		this.sizeMappings = sizeMappings;
 	}
-	
-	public abstract LayoutSupport<?> getLayoutSupportInstance();
-	
+
+	public LayoutSupport<?> getLayoutSupportInstance() {
+		return null;
+	}
+
 	public List<String> nonUniqueStringsGoLast(List<String> strListArg) {
 		List<String> dup = new ArrayList<>();
 		// copy the list so we don't get concurrentmodification exceptions
