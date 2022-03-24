@@ -117,6 +117,7 @@ public class VerhoeffIdentifierValidatorTest {
 
 	@Test
 	public void checkDigit_shouldChangeWhenAdjacentCharsAreTransposed() {
+		getCheckDigitVerhoeffIdentifier checkDigitObj = new getCheckDigitVerhoeffIdentifier();
 		VerhoeffIdentifierValidator validator = new VerhoeffIdentifierValidator();
 		String test;
 		int checkDigit;
@@ -129,7 +130,7 @@ public class VerhoeffIdentifierValidatorTest {
 		final String lineSeparator = System.getProperty("line.separator");
 		for (String allowedIdentifier: allowedIdentifiers) {
 			for (int i = 0; i < allowedIdentifier.length(); i++) {
-				checkDigit = validator.getCheckDigit(allowedIdentifier);
+				checkDigit = checkDigitObj.getCheckDigit(allowedIdentifier);
 				for (int j = 1; j < allowedIdentifier.length(); j++) {
 					c = allowedIdentifier.charAt(j - 1);
 					d = allowedIdentifier.charAt(j);
@@ -138,7 +139,7 @@ public class VerhoeffIdentifierValidatorTest {
 						pre = allowedIdentifier.substring(0, j - 1);
 						post = allowedIdentifier.substring(j + 1);
 						test = pre + d + c + post;
-						if (checkDigit == validator.getCheckDigit(test)) {
+						if (checkDigit == checkDigitObj.getCheckDigit(test)) {
 							failureMsg.append("Check digits for '");
 							failureMsg.append(allowedIdentifier);
 							failureMsg.append("' and '");

@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.rmi.activation.Activator;
+//import java.rmi.activation.Activator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -1025,7 +1025,7 @@ public class ModuleFactory {
 	 * it is shutting down. When normally stopping a module, use {@link #stopModule(Module)} (or leave
 	 * value as false). This property controls whether the globalproperty is set for startup/shutdown.
 	 * <br>
-	 * Also calls module's {@link Activator#shutdown()}
+	 * Also calls module's 
 	 * 
 	 * @param mod module to stop
 	 * @param skipOverStartedProperty true if we don't want to set &lt;moduleid&gt;.started to false
