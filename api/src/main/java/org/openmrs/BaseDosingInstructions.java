@@ -26,7 +26,7 @@ public abstract class BaseDosingInstructions implements DosingInstructions {
 		if (drugOrder.getDuration() == null || drugOrder.getDurationUnits() == null) {
 			return null;
 		}
-		String durationCode = Duration.getCode(drugOrder.getDurationUnits());
+		String durationCode = Duration.getCode((Concept) drugOrder.getDurationUnits());
 		if (durationCode == null) {
 			return null;
 		}

@@ -802,12 +802,7 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	 * <strong>Should</strong> return false if other order is null
 	 * <strong>Should</strong> return true if the orders have the same concept
 	 */
-	public boolean hasSameOrderableAs(Order otherOrder) {
-		if (otherOrder == null) {
-			return false;
-		}
-		return OpenmrsUtil.nullSafeEquals(this.getConcept(), otherOrder.getConcept());
-	}
+	
 	
 	/**
 	 * A convenience method to return start of the schedule for order.

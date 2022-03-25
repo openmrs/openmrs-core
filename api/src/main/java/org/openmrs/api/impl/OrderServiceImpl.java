@@ -26,7 +26,6 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.Patient;
 import org.openmrs.Provider;
 import org.openmrs.ReferralOrder;
-import org.openmrs.Order.FulfillerStatus;
 import org.openmrs.OrderGroupAttribute;
 import org.openmrs.OrderGroupAttributeType;
 import org.openmrs.TestOrder;
@@ -36,7 +35,6 @@ import org.openmrs.api.CannotDeleteObjectInUseException;
 import org.openmrs.api.CannotStopDiscontinuationOrderException;
 import org.openmrs.api.CannotStopInactiveOrderException;
 import org.openmrs.api.CannotUnvoidOrderException;
-import org.openmrs.api.CannotUpdateObjectInUseException;
 import org.openmrs.api.EditedOrderDoesNotMatchPreviousException;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.MissingRequiredPropertyException;
@@ -80,7 +78,7 @@ import static org.openmrs.Order.Action.REVISE;
  * @see org.openmrs.api.OrderService
  */
 @Transactional
-public class OrderServiceImpl extends BaseOpenmrsService implements OrderService, OrderNumberGenerator, GlobalPropertyListener {
+public class OrderServiceImpl extends DrugOrder implements OrderService, OrderNumberGenerator, GlobalPropertyListener {
 	
 	private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
 	
@@ -172,10 +170,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		} else if (DISCONTINUE == order.getAction()) {
 			discontinueExistingOrdersIfNecessary(order, isRetrospective);
 		}
-		
 		if (previousOrder != null) {
 			//concept should be the same as on previous order, same applies to drug for drug orders
-			if (!order.hasSameOrderableAs(previousOrder)) {
+			if (!hasSameOrderableAs(previousOrder)) {
 				throw new EditedOrderDoesNotMatchPreviousException("Order.orderable.doesnot.match");
 			} else if (!order.getOrderType().equals(previousOrder.getOrderType())) {
 				throw new EditedOrderDoesNotMatchPreviousException("Order.type.doesnot.match");
@@ -292,7 +289,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 
 	private boolean areDrugOrdersOfSameOrderableAndOverlappingSchedule(Order firstOrder, Order secondOrder) {
-		return firstOrder.hasSameOrderableAs(secondOrder)
+		return hasSameOrderableAs(secondOrder)
 		        && !OpenmrsUtil.nullSafeEquals(firstOrder.getPreviousOrder(), secondOrder)
 		        && OrderUtil.checkScheduleOverlap(firstOrder, secondOrder)
 		        && firstOrder.getOrderType().equals(
@@ -423,7 +420,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			}
 			//For drug orders, the drug must match if the order has a drug
 			if (isDrugOrderAndHasADrug) {
-				Order existing = order.hasSameOrderableAs(activeOrder) ? activeOrder : null;
+				Order existing = hasSameOrderableAs(activeOrder) ? activeOrder : null;
 				if (existing != null) {
 					if (orderToBeDiscontinued == null) {
 						orderToBeDiscontinued = existing;
@@ -1102,7 +1099,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeTypes()
+	 * @see org.openmrs.api.OrderService
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -1111,7 +1108,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeTypeById()
+	 * @see org.openmrs.api.OrderService
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -1120,7 +1117,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeTypeByUuid()
+	 * @see org.openmrs.api.OrderService
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -1129,7 +1126,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#saveOrderGroupAttributeType()
+	 * @see org.openmrs.api.OrderService
 	 */
 	@Override
 	public OrderGroupAttributeType saveOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws APIException{
@@ -1137,7 +1134,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#retireOrderGroupAttributeType()
+	 * @see org.openmrs.api.OrderService
 	 */
 	@Override
 	public OrderGroupAttributeType retireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType, String reason)throws APIException {
@@ -1145,7 +1142,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#unretireOrderGroupAttributeType()
+	 * @see org.openmrs.api.OrderService
 	 */
 	@Override
 	public OrderGroupAttributeType unretireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType)throws APIException {
@@ -1153,7 +1150,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#purgeOrderGroupAttributeType()
+	 * @see org.openmrs.api.OrderService
 	 */
 	@Override
 	public void purgeOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws APIException{
@@ -1161,7 +1158,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeTypeByName()
+	 * @see org.openmrs.api.OrderService
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -1170,7 +1167,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderGroupAttributeByUuid()
+	 * @see org.openmrs.api.OrderService
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -1214,7 +1211,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#retireOrderAttributeType(OrderAttributeType)
+	 * @see org.openmrs.api.OrderService(OrderAttributeType)
 	 */
 	@Override
 	public OrderAttributeType retireOrderAttributeType(OrderAttributeType orderAttributeType, String reason)throws APIException {
@@ -1253,5 +1250,15 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Transactional(readOnly = true)
 	public OrderAttribute getOrderAttributeByUuid(String uuid)throws APIException {
 		return dao.getOrderAttributeByUuid(uuid);
+	}
+
+	@Override
+	public void onStartup() {
+		
+	}
+
+	@Override
+	public void onShutdown() {
+
 	}
 }

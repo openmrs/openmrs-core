@@ -14,6 +14,8 @@ import static org.openmrs.Order.Action.DISCONTINUE;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.util.OpenmrsUtil;
 
+import java.util.List;
+
 /**
  * DrugOrder
  *
@@ -95,7 +97,7 @@ public class DrugOrder extends Order {
 		target.setDosingType(getDosingType());
 		target.setDosingInstructions(getDosingInstructions());
 		target.setDuration(getDuration());
-		target.setDurationUnits(getDurationUnits());
+		target.setDurationUnits((Concept) getDurationUnits());
 		target.setNumRefills(getNumRefills());
 		target.setRoute(getRoute());
 		target.setBrandName(getBrandName());
@@ -359,9 +361,10 @@ public class DrugOrder extends Order {
 	 * Gets durationUnits of a Drug Order
 	 *
 	 * @since 1.10
+	 * @return
 	 */
-	public Concept getDurationUnits() {
-		return durationUnits;
+	public List<Concept> getDurationUnits() {
+		return (List<Concept>) durationUnits;
 	}
 
 	/**
@@ -459,7 +462,7 @@ public class DrugOrder extends Order {
 		target.setDosingType(getDosingType());
 		target.setDosingInstructions(getDosingInstructions());
 		target.setDuration(getDuration());
-		target.setDurationUnits(getDurationUnits());
+		target.setDurationUnits((Concept) getDurationUnits());
 		target.setRoute(getRoute());
 		target.setNumRefills(getNumRefills());
 		target.setBrandName(getBrandName());
@@ -515,9 +518,17 @@ public class DrugOrder extends Order {
 	 * <strong>Should</strong> return true if both drugs are null and the concepts match
 	 * <strong>Should</strong> return true if the drugs match
 	 */
-	@Override
+
+
+	public boolean checkOrder(Order otherOrder) {
+		if (otherOrder == null) {
+			return false;
+		}
+		return OpenmrsUtil.nullSafeEquals(this.getConcept(), otherOrder.getConcept());
+	}
+	
 	public boolean hasSameOrderableAs(Order otherOrder) {
-        if (!super.hasSameOrderableAs(otherOrder)) {
+        if (checkOrder(otherOrder)) {
             return false;
         }
         if (!(otherOrder instanceof DrugOrder)) {

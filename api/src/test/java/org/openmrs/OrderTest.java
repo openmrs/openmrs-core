@@ -325,22 +325,22 @@ public class OrderTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see Order#hasSameOrderableAs(Order)
+	 * @see Order(Order)
 	 */
 	@Test
 	public void hasSameOrderableAs_shouldReturnFalseIfOtherOrderIsNull() throws Exception {
-		Order order = new Order();
+		DrugOrder order = new DrugOrder();
 		order.setConcept(new Concept());
 		
 		assertFalse(order.hasSameOrderableAs(null));
 	}
 	
 	/**
-	 * @see Order#hasSameOrderableAs(Order)
+	 * @see Order(Order)
 	 */
 	@Test
 	public void hasSameOrderableAs_shouldReturnFalseIfTheConceptOfTheOrdersDoNotMatch() throws Exception {
-		Order order = new Order();
+		DrugOrder order = new DrugOrder();
 		order.setConcept(new Concept());
 		
 		Order otherOrder = new Order();
@@ -350,11 +350,11 @@ public class OrderTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see Order#hasSameOrderableAs(Order)
+	 * @see Order(Order)
 	 */
 	@Test
 	public void hasSameOrderableAs_shouldReturnTrueIfTheOrdersHaveTheSameConcept() throws Exception {
-		Order order = new Order();
+		DrugOrder order = new DrugOrder();
 		Concept concept = new Concept();
 		order.setConcept(concept);
 		
@@ -416,7 +416,7 @@ public class OrderTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see Order#isFuture(java.util.Date)
+	 * @see Order(java.util.Date)
 	 */
 	@Test
 	public void isFuture_shouldReturnFalseForAVoidedOrder() throws Exception {
@@ -427,7 +427,7 @@ public class OrderTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see Order#isFuture(java.util.Date)
+	 * @see Order(java.util.Date)
 	 */
 	@Test
 	public void isFuture_shouldReturnFalseIfDateActivatedIsNull() throws Exception {

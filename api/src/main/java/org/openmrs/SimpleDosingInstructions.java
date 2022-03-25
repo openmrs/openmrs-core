@@ -104,7 +104,7 @@ public class SimpleDosingInstructions extends BaseDosingInstructions {
 		simpleDosingInstructions.setRoute(order.getRoute());
 		simpleDosingInstructions.setFrequency(order.getFrequency());
 		simpleDosingInstructions.setDuration(order.getDuration());
-		simpleDosingInstructions.setDurationUnits(order.getDurationUnits());
+		simpleDosingInstructions.setDurationUnits((Concept) order.getDurationUnits());
 		simpleDosingInstructions.setAsNeeded(order.getAsNeeded());
 		simpleDosingInstructions.setAsNeededCondition(order.getAsNeededCondition());
 		simpleDosingInstructions.setAdministrationInstructions(order.getDosingInstructions());
@@ -124,7 +124,7 @@ public class SimpleDosingInstructions extends BaseDosingInstructions {
 		ValidationUtils.rejectIfEmpty(errors, "route", "DrugOrder.error.routeIsNullForDosingTypeSimple");
 		ValidationUtils.rejectIfEmpty(errors, "frequency", "DrugOrder.error.frequencyIsNullForDosingTypeSimple");
 		if (order.getAutoExpireDate() == null && order.getDurationUnits() != null
-		        && Duration.getCode(order.getDurationUnits()) == null) {
+		        && Duration.getCode((Concept) order.getDurationUnits()) == null) {
 			errors.rejectValue("durationUnits", "DrugOrder.error.durationUnitsNotMappedToSnomedCtDurationCode");
 		}
 	}
