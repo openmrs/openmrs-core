@@ -519,11 +519,7 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 			ret.addAll(this.getGroupMembers());
 			Obs parentObs = this;
 			while (parentObs.getObsGroup() != null) {
-				for (Obs obsSibling : parentObs.getObsGroup().getGroupMembers()) {
-					if (!obsSibling.isObsGrouping()) {
-						ret.add(obsSibling);
-					}
-				}
+				addToRet(parentObs,ret);
 				parentObs = parentObs.getObsGroup();
 			}
 		} else if (this.getObsGroup() != null) {
@@ -536,6 +532,14 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 		return ret;
 	}
 	
+	public Set<Obs> addToRet(Obs parentObs, Set<Obs> ret){
+		for (Obs obsSibling : parentObs.getObsGroup().getGroupMembers()) {
+			if (!obsSibling.isObsGrouping()) {
+				ret.add(obsSibling);
+			}
+		}
+		return ret;
+	}
 	/**
 	 * @return Returns the obsId.
 	 */
