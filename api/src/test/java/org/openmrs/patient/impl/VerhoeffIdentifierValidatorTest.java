@@ -23,19 +23,19 @@ import org.junit.jupiter.api.Test;
  *
  */
 public class VerhoeffIdentifierValidatorTest {
-	
+
 	private VerhoeffIdentifierValidator validator = new VerhoeffIdentifierValidator();
-	
+
 	private String[] allowedIdentifiers = { "12345678", "87654321", "11111111", "64537218", "00000000" };
-	
+
 	private char[] allowedIdentifiersCheckDigits = { 'G', 'E', 'B', 'A', 'B' };
-	
+
 	private int[] allowedIdentifiersCheckDigitsInt = { 6, 4, 1, 0, 2 };
-	
+
 	private char unusedCheckDigit = 'C';
-	
+
 	private String[] invalidIdentifiers = { "", " ", "-", "adsfalasdf-adfasdf", "ABC DEF", "!234*", "++", " ABC", "def ",
-	        "ab32kcdak3", "chaseisreallycoolyay", "1", "moose", "MOOSE", "MooSE", "adD3Eddf429daD999" };
+		"ab32kcdak3", "chaseisreallycoolyay", "1", "moose", "MOOSE", "MooSE", "adD3Eddf429daD999" };
 
 	private static final int EXPECTED_RAW_IDENTIFIER_LENGTH = 8;
 
@@ -49,7 +49,7 @@ public class VerhoeffIdentifierValidatorTest {
 
 		for (int i = 0; i < allowedIdentifiers.length; i++) {
 			assertEquals(validator.getValidIdentifier(allowedIdentifiers[i]), allowedIdentifiers[i] + "-"
-					+ allowedIdentifiersCheckDigits[i]);
+				+ allowedIdentifiersCheckDigits[i]);
 		}
 	}
 
@@ -117,7 +117,8 @@ public class VerhoeffIdentifierValidatorTest {
 
 	@Test
 	public void checkDigit_shouldChangeWhenAdjacentCharsAreTransposed() {
-		VerhoeffIdentifierValidator validator = new VerhoeffIdentifierValidator();
+		getCheckDigitVerhoeffIdentifier checkDigitObj = new getCheckDigitVerhoeffIdentifier();
+		//VerhoeffIdentifierValidator validator = new VerhoeffIdentifierValidator();
 		String test;
 		int checkDigit;
 		String pre;
@@ -129,7 +130,7 @@ public class VerhoeffIdentifierValidatorTest {
 		final String lineSeparator = System.getProperty("line.separator");
 		for (String allowedIdentifier: allowedIdentifiers) {
 			for (int i = 0; i < allowedIdentifier.length(); i++) {
-				checkDigit = validator.getCheckDigit(allowedIdentifier);
+				checkDigit = checkDigitObj.getCheckDigit(allowedIdentifier);
 				for (int j = 1; j < allowedIdentifier.length(); j++) {
 					c = allowedIdentifier.charAt(j - 1);
 					d = allowedIdentifier.charAt(j);
@@ -138,7 +139,7 @@ public class VerhoeffIdentifierValidatorTest {
 						pre = allowedIdentifier.substring(0, j - 1);
 						post = allowedIdentifier.substring(j + 1);
 						test = pre + d + c + post;
-						if (checkDigit == validator.getCheckDigit(test)) {
+						if (checkDigit == checkDigitObj.getCheckDigit(test)) {
 							failureMsg.append("Check digits for '");
 							failureMsg.append(allowedIdentifier);
 							failureMsg.append("' and '");
