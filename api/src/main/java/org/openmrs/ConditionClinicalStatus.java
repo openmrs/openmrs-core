@@ -38,12 +38,9 @@ public enum ConditionClinicalStatus {
 	 * the common OpenMRS use case.
 	 * Remission is where the patient is no longer experiencing the symptoms of the condition, 
 	 * but there is a risk of the symptoms returning.
+	 * 
+	 * @deprecated as of 2.6.0
 	 * */
-	
-	/**
-	 * @since 2.5
-	 * @deprecated 
-	 */
 	HISTORY_OF,
 	
 	/**
