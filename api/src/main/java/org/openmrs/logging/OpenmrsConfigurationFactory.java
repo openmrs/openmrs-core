@@ -84,7 +84,7 @@ public class OpenmrsConfigurationFactory extends ConfigurationFactory {
 	
 	@Override
 	public Configuration getConfiguration(LoggerContext loggerContext, ConfigurationSource source) {
-		switch (FilenameUtils.getExtension(source.getFile().getName()).toLowerCase(Locale.ROOT)) {
+		switch (FilenameUtils.getExtension(source.getLocation()).toLowerCase(Locale.ROOT)) {
 			case "xml":
 				return new OpenmrsXmlConfiguration(loggerContext, source);
 			case "yaml":
