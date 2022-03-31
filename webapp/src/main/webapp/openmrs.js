@@ -297,7 +297,7 @@ function gotoUser(select, userId) {
 	} 
 	
 	var localeBirthDate = new Date();
-	localeBirthDate.setDate(1);
+	localeBirthDate.setDate(1); // This is necessary to avoid this bug:  TRUNK-4035
 	localeBirthDate.setYear(year); 
 	localeBirthDate.setMonth(month - 1); 
 	localeBirthDate.setDate(day);
