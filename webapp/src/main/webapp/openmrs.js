@@ -296,7 +296,8 @@ function gotoUser(select, userId) {
 		day = birthdate.substr(0, 2); 
 	} 
 	
-	var localeBirthDate = new Date(); 
+	var localeBirthDate = new Date();
+	localeBirthDate.setDate(1);
 	localeBirthDate.setYear(year); 
 	localeBirthDate.setMonth(month - 1); 
 	localeBirthDate.setDate(day);
