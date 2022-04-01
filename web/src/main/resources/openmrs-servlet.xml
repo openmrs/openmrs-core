@@ -94,7 +94,7 @@
 	
 	<!-- So that controllers can use annotations like @Controller and @RequestMapping
 -->
-	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
 		<!-- makes annotations more important than default mappings -->
 		<property name="order"><value>98</value></property>
 		<!-- allows for locale changes on any annotation based page -->
@@ -109,7 +109,7 @@
 
 	<bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
 
-	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
 		<property name="webBindingInitializer">
 			<bean class="org.openmrs.web.OpenmrsBindingInitializer"/>
 		</property>
