@@ -36,6 +36,7 @@ import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientIdentifierType.UniquenessBehavior;
+import org.openmrs.PatientProgram;
 import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
@@ -994,5 +995,16 @@ public class HibernatePatientDAO implements PatientDAO {
     public Allergy saveAllergy(Allergy allergy) {
     	sessionFactory.getCurrentSession().save(allergy);
     	return allergy;
+    }
+
+
+    /**
+     * @see org.openmrs.api.db.PatientDAO#getPatientIdentifierByProgram(org.openmrs.PatientProgram)
+     */
+    public List<PatientIdentifier> getPatientIdentifierByProgram(PatientProgram patientProgram) {
+
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientIdentifier.class);
+        criteria.add(Restrictions.eq("patientProgram", patientProgram));
+        return criteria.list();
     }
 }
