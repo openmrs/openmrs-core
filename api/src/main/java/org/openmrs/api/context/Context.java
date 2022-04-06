@@ -27,6 +27,7 @@ import org.openmrs.api.DiagnosisService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.LocationService;
+import org.openmrs.api.MedicationDispenseService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.api.OrderService;
@@ -472,6 +473,14 @@ public class Context {
 	 */
 	public static DiagnosisService getDiagnosisService(){
 		return getServiceContext().getDiagnosisService();
+	}
+
+	/**
+	 * @return MedicationDispense-related service
+	 * @since 2.6.0
+	 */
+	public static MedicationDispenseService getMedicationDispenseService(){
+		return getServiceContext().getMedicationDispenseService();
 	}
 
 	/**
