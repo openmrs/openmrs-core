@@ -17,6 +17,7 @@ import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.PatientProgram;
 import org.openmrs.api.PatientService;
 
 /**
@@ -296,5 +297,11 @@ public interface PatientDAO {
 	 * @return the saved allergy
 	 */
 	public Allergy saveAllergy(Allergy allergy);
+
+	/**
+	 * @param patientProgram the program that matches the patientIdentifier
+	 * @return patient identifier or null
+	 */
+	public List getPatientIdentifierByProgram(PatientProgram patientProgram);
 	
 }
