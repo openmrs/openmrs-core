@@ -68,7 +68,7 @@ public class HibernateMedicationDispenseDAO implements MedicationDispenseDAO {
 		if (predicates.size() > 0) {
 			criteriaQuery.where(predicates.toArray(new Predicate[]{}));
 		}
-		// TODO: What should we order by here for consistency?
+		criteriaQuery.orderBy(criteriaBuilder.asc(md.get("medicationDispenseId")));
 		return sessionFactory.getCurrentSession().createQuery(criteriaQuery).list();
 	}
 
