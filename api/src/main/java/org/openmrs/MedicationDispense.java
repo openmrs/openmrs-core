@@ -84,7 +84,6 @@ public class MedicationDispense extends BaseFormRecordableOpenmrsData {
 	 * Note that FHIR provides support for 0..x "performers" and each performer may have a "performer.function" 
 	 * where "function" is a codeable concept and reflects a role like "packager" or "checker"; 
 	 * we will start with support for just a single 0..1 "provider"
-	 * TODO: Should this be 1-N and include provider role similar to encounter
 	 */
 	@ManyToOne(optional = true)
 	@JoinColumn(name = "provider_id")
@@ -212,8 +211,7 @@ public class MedicationDispense extends BaseFormRecordableOpenmrsData {
 	/**
 	 * FHIR:note.text
 	 * FHIR supports 0..n but we will only support 0..1 to start.
-	 * It also supports the author and the time via the "annotation" type. 
-	 * TODO: Should this be 1-N, should this be a clob. Also, I made this 65535 rather than 1024.  Question should it be clob?
+	 * It also supports the author and the time via the "annotation" type.
 	 */
 	@Column(name = "note", length=65535)
 	private String note;
