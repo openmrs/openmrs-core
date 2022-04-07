@@ -27,7 +27,7 @@ public class ChangeLogVersions {
 	 * openmrs-core/api/src/main/resources/liquibase/snapshots/schema-only. If the actual change log
 	 * files and this list get out of sync, org.openmrs.liquibase.ChangeLogVersionsTest fails.
 	 */
-	private static final List<String> SNAPSHOT_VERSIONS = Arrays.asList("1.9.x", "2.1.x", "2.2.x", "2.3.x", "2.4.x", "2.5.x");
+	private static final List<String> SNAPSHOT_VERSIONS = Arrays.asList("1.9.x", "2.1.x", "2.2.x", "2.3.x", "2.4.x", "2.5.x","2.6.x");
 	
 	/**
 	 * This definition of Liquibase update versions needs to be kept in sync with the actual change log
