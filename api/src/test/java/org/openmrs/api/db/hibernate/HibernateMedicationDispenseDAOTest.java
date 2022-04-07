@@ -181,7 +181,7 @@ public class HibernateMedicationDispenseDAOTest extends BaseContextSensitiveTest
 		assertThat(existing.getConcept().getConceptId(), is(792));
 		assertThat(existing.getDrug().getDrugId(), is(2));
 		assertThat(existing.getLocation().getLocationId(), is(2));
-		assertThat(existing.getProvider().getProviderId(), is(1));
+		assertThat(existing.getDispenser().getProviderId(), is(1));
 		assertThat(existing.getStatus().getConceptId(), is(11112));
 		assertNull(existing.getStatusReason());
 		assertThat(existing.getType().getConceptId(), is(11310));

@@ -80,14 +80,14 @@ public class MedicationDispense extends BaseFormRecordableOpenmrsData {
 	private Location location;
 
 	/**
-	 * FHIR:performer.actor
-	 * Note that FHIR provides support for 0..x "performers" and each performer may have a "performer.function" 
-	 * where "function" is a codeable concept and reflects a role like "packager" or "checker"; 
-	 * we will start with support for just a single 0..1 "provider"
+	 * FHIR:performer.actor with null for performer.function.
+	 * Per <a href="https://www.hl7.org/fhir/medicationdispense-definitions.html#MedicationDispense.performer">
+	 *     	https://www.hl7.org/fhir/medicationdispense-definitions.html#MedicationDispense.performer
+	 *     </a>specification, It should be assumed that the actor is the dispenser of the medication
 	 */
 	@ManyToOne(optional = true)
-	@JoinColumn(name = "provider_id")
-	private Provider provider;
+	@JoinColumn(name = "dispenser")
+	private Provider dispenser;
 
 	/**
 	 * FHIR:authorizingPrescription
@@ -311,12 +311,12 @@ public class MedicationDispense extends BaseFormRecordableOpenmrsData {
 		this.location = location;
 	}
 
-	public Provider getProvider() {
-		return provider;
+	public Provider getDispenser() {
+		return dispenser;
 	}
 
-	public void setProvider(Provider provider) {
-		this.provider = provider;
+	public void setDispenser(Provider dispenser) {
+		this.dispenser = dispenser;
 	}
 
 	public DrugOrder getDrugOrder() {

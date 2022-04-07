@@ -44,7 +44,7 @@
 			</column>
 			<column name="drug_id" type="int" />
 			<column name="location_id" type="int" />
-			<column name="provider_id" type="int" />
+			<column name="dispenser" type="int" />
 			<column name="drug_order_id" type="int" />
 			<column name="status" type="int">
 				<constraints nullable="false"/>
