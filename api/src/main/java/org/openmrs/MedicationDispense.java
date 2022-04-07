@@ -116,7 +116,6 @@ public class MedicationDispense extends BaseFormRecordableOpenmrsData {
 	 *     		https://www.hl7.org/fhir/valueset-medicationdispense-status-reason.html
 	 *     	</a>
 	 * i.e "Stock Out"
-	 * TODO: Should this be an enum if we are going to code specific logic around these?
 	 */
 	@ManyToOne(optional = true)
 	@JoinColumn(name = "status_reason")
@@ -128,7 +127,6 @@ public class MedicationDispense extends BaseFormRecordableOpenmrsData {
 	 *     		https://www.hl7.org/fhir/v3/ActPharmacySupplyType/vs.html
 	 *     	</a> for potential example concepts
 	 * i.e. "Refill" and "Partial Fill"
-	 * TODO: Should this be an enum if we are going to code specific logic around these?
 	 */
 	@ManyToOne(optional = true)
 	@JoinColumn(name = "type")
@@ -232,7 +230,6 @@ public class MedicationDispense extends BaseFormRecordableOpenmrsData {
 	 * @see <a href="https://www.hl7.org/fhir/v3/ActSubstanceAdminSubstitutionCode/vs.html">
 	 *     		https://www.hl7.org/fhir/v3/ActSubstanceAdminSubstitutionCode/vs.html
 	 *      </a>
-	 * TODO: Should this be an enum if we are going to code specific logic around these?
 	 */
 	@ManyToOne(optional = true)
 	@JoinColumn(name = "substitution_type")
@@ -243,7 +240,6 @@ public class MedicationDispense extends BaseFormRecordableOpenmrsData {
 	 * @see <a href="https://www.hl7.org/fhir/v3/SubstanceAdminSubstitutionReason/vs.html">
 	 *     		https://www.hl7.org/fhir/v3/SubstanceAdminSubstitutionReason/vs.html
 	 *      </a>
-	 * TODO: Should this be an enum if we are going to code specific logic around these?
 	 */
 	@ManyToOne(optional = true)
 	@JoinColumn(name = "substitution_reason")

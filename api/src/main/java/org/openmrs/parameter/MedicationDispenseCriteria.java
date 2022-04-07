@@ -9,16 +9,9 @@
  */
 package org.openmrs.parameter;
 
-import org.openmrs.Concept;
-import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
-import org.openmrs.Location;
 import org.openmrs.Patient;
-import org.openmrs.Provider;
-
-import java.util.Date;
-import java.util.List;
 
 /**
  * The search parameter object for MedicationDispense. A convenience interface for building
@@ -32,26 +25,6 @@ public class MedicationDispenseCriteria {
 	private Encounter encounter;
 	private DrugOrder drugOrder;
 	private boolean includeVoided = false;
-	
-	// TODO: Consider what else we might want to add here to start out with, eg:
-	private List<Concept> concept;
-	private List<Drug> drug;
-	private List<Location> location;
-	private List<Provider> provider;
-	private List<Concept> status;
-	private List<Concept> statusReason;
-	private List<Concept> type;
-	private Date orderDateActivatedFrom;
-	private Date orderDateActivatedTo;
-	private Date encounterDateFrom;
-	private Date encounterDateTo;
-	private Date datePreparedFrom;
-	private Date datePreparedTo;
-	private Date dateHandedOverFrom;
-	private Date dateHandedOverTo;
-	private Boolean substituted;
-	private List<Concept> substitutionType;
-	private List<Concept> substitutionReason;
 	
 	public MedicationDispenseCriteria() {}
 
