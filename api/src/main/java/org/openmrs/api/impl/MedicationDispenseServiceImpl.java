@@ -60,7 +60,6 @@ public class MedicationDispenseServiceImpl extends BaseOpenmrsService implements
 
 	@Override
 	public MedicationDispense saveMedicationDispense(MedicationDispense medicationDispense) {
-		// TODO: Do we want to void and re-create if represents an edit with changed data?
 		return medicationDispenseDAO.saveMedicationDispense(medicationDispense);
 	}
 
