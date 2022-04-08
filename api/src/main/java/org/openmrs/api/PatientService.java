@@ -20,6 +20,7 @@ import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.PatientProgram;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.PatientDAO;
 import org.openmrs.comparator.PatientIdentifierTypeDefaultComparator;
@@ -844,4 +845,13 @@ public interface PatientService extends OpenmrsService {
 	 * @throws PatientIdentifierTypeLockedException
 	 */
 	public void checkIfPatientIdentifierTypesAreLocked() throws PatientIdentifierTypeLockedException;
+
+	/**
+	 * Get all patientIdentifiers that are associated to the patient program
+	 * @param patientProgram the patientProgram to be used to fetch the associated identifiers
+	 * @return PatientIdentifiers matching the patient program
+	 * @since 2.3.6
+	 */
+	@Authorized({PrivilegeConstants.GET_PATIENT_IDENTIFIERS})
+	public List<PatientIdentifier> getPatientIdentifiersByPatientProgram(PatientProgram patientProgram);
 }

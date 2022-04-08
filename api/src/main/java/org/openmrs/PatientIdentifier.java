@@ -66,6 +66,9 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	
 	private Location location;
 
+	private PatientProgram patientProgram;
+	
+
 	@Field
 	private Boolean preferred = false;
 	
@@ -327,5 +330,24 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 			
 			return retValue;
 		}
+	}
+
+
+	/**
+	 * Gets patient program associated to the identifier in context
+	 * @since 2.3.6
+	 * @return patientProgram the patient program associated to an identifier
+	 */
+	public PatientProgram getPatientProgram() {
+		return patientProgram;
+	}
+
+	/**
+	 * This method sets the patient program on a patient Identifier
+	 * @since 2.3.6
+	 * @param patientProgram The patientProgram to set.
+	 */
+	public void setPatientProgram(PatientProgram patientProgram) {
+		this.patientProgram = patientProgram;
 	}
 }
