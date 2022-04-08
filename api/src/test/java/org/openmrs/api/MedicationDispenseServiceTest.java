@@ -14,11 +14,13 @@ import org.junit.jupiter.api.Test;
 import org.openmrs.DrugOrder;
 import org.openmrs.MedicationDispense;
 import org.openmrs.api.builder.MedicationDispenseBuilder;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.HibernateMedicationDispenseDAOTest;
 import org.openmrs.parameter.MedicationDispenseCriteria;
 import org.openmrs.parameter.MedicationDispenseCriteriaBuilder;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.Date;
 import java.util.List;
@@ -37,16 +39,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class MedicationDispenseServiceTest extends BaseContextSensitiveTest {
 	
 	@Autowired
-	private MedicationDispenseService medicationDispenseService;
+	MedicationDispenseService medicationDispenseService;
 	
 	@Autowired
-	private PatientService patientService;
+	PatientService patientService;
 
 	@Autowired
-	private EncounterService encounterService;
+	EncounterService encounterService;
 
 	@Autowired
-	private OrderService orderService;
+	OrderService orderService;
+	
+	@Autowired @Qualifier("adminService")
+	AdministrationService administrationService;
 
 	@BeforeEach
 	public void setUp() {
@@ -61,6 +66,19 @@ public class MedicationDispenseServiceTest extends BaseContextSensitiveTest {
 	public void getMedicationDispense_shouldGetExistingMedicationDispense() {
 		MedicationDispense existing = medicationDispenseService.getMedicationDispense(1);
 		HibernateMedicationDispenseDAOTest.testMedicationDispense1(existing);
+	}
+
+	/**
+	 * @see MedicationDispenseService#getMedicationDispenseByUuid(String)
+	 */
+	@Test
+	public void getMedicationDispense_shouldGetNotesInOrder() {
+		MedicationDispense existing = medicationDispenseService.getMedicationDispense(1);
+		HibernateMedicationDispenseDAOTest.testMedicationDispense1(existing);
+		assertThat(existing.getNotes().size(), is(3));
+		assertThat(existing.getNotes().get(0).getMedicationDispenseNoteId(), is(12));
+		assertThat(existing.getNotes().get(1).getMedicationDispenseNoteId(), is(13));
+		assertThat(existing.getNotes().get(2).getMedicationDispenseNoteId(), is(11));
 	}
 
 	/**
@@ -165,9 +183,12 @@ public class MedicationDispenseServiceTest extends BaseContextSensitiveTest {
 		MedicationDispenseCriteria criteria = new MedicationDispenseCriteriaBuilder().build();
 		List<MedicationDispense> allBefore = medicationDispenseService.getMedicationDispenseByCriteria(criteria);
 		MedicationDispense existing = medicationDispenseService.getMedicationDispense(1);
-		existing.setNote("This is a modified note");
+		existing.setFormNamespaceAndPath("newNamespace^newPath");
+		assertThat(existing.getNonVoidedNotes().size(), is(2));
+		existing.addNote("This is a new note", new Date(), null);
 		MedicationDispense saved = medicationDispenseService.saveMedicationDispense(existing);
-		assertThat(saved.getNote(), is("This is a modified note"));
+		assertThat(saved.getNonVoidedNotes().size(), is(3));
+		assertThat(saved.getFormNamespaceAndPath(), is("newNamespace^newPath"));
 		List<MedicationDispense> allAfter = medicationDispenseService.getMedicationDispenseByCriteria(criteria);
 		assertThat(allAfter.size(), is(allBefore.size()));
 	}
@@ -199,6 +220,20 @@ public class MedicationDispenseServiceTest extends BaseContextSensitiveTest {
 		assertTrue(existing.getVoided());
 		assertThat(existing.getDateVoided().toString(), is("2008-08-19 10:00:00.0"));
 		assertThat(existing.getVoidReason(), is("Testing"));
+	}
+
+	/**
+	 * @see MedicationDispenseService#voidMedicationDispense(MedicationDispense, String)
+	 */
+	@Test
+	public void voidMedicationDispense_shouldVoidNotes() {
+		MedicationDispense existing = medicationDispenseService.getMedicationDispense(1);
+		assertThat(existing.getNotes().size(), is(3));
+		assertThat(existing.getNonVoidedNotes().size(), is(2));
+		existing = medicationDispenseService.voidMedicationDispense(existing, "A new reason");
+		assertTrue(existing.getVoided());
+		assertThat(existing.getNotes().size(), is(3));
+		assertThat(existing.getNonVoidedNotes().size(), is(0));
 	}
 
 	/**
@@ -242,6 +277,20 @@ public class MedicationDispenseServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see MedicationDispenseService#unvoidMedicationDispense(MedicationDispense)
+	 */
+	@Test
+	public void unvoidMedicationDispense_shouldUnvoidNotesWithMatchingDateVoided() {
+		MedicationDispense existing = medicationDispenseService.getMedicationDispense(2);
+		assertThat(existing.getNotes().size(), is(2));
+		assertThat(existing.getNonVoidedNotes().size(), is(0));
+		existing = medicationDispenseService.unvoidMedicationDispense(existing);
+		assertFalse(existing.getVoided());
+		assertThat(existing.getNotes().size(), is(2));
+		assertThat(existing.getNonVoidedNotes().size(), is(1));
+	}
+
+	/**
 	 * @see MedicationDispenseService#purgeMedicationDispense(MedicationDispense)
 	 */
 	@Test
@@ -251,5 +300,22 @@ public class MedicationDispenseServiceTest extends BaseContextSensitiveTest {
 		medicationDispenseService.purgeMedicationDispense(existing);
 		existing = medicationDispenseService.getMedicationDispense(1);
 		assertNull(existing);
+	}
+
+	/**
+	 * @see MedicationDispenseService#purgeMedicationDispense(MedicationDispense)
+	 */
+	@Test
+	public void purgeMedicationDispense_shouldDeleteNotes() {
+		String sql = "select count(*) from medication_dispense_note where medication_dispense_id = 1";
+		MedicationDispense existing = medicationDispenseService.getMedicationDispense(1);
+		assertNotNull(existing);
+		assertThat(existing.getNotes().size(), is(3));
+		assertThat(administrationService.executeSQL(sql, true).get(0).get(0), is(3L));
+		medicationDispenseService.purgeMedicationDispense(existing);
+		Context.flushSession();
+		existing = medicationDispenseService.getMedicationDispense(1);
+		assertNull(existing);
+		assertThat(administrationService.executeSQL(sql, true).get(0).get(0), is(0L));
 	}
 }
