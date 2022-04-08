@@ -299,6 +299,7 @@ public interface PatientDAO {
 	public Allergy saveAllergy(Allergy allergy);
 
 	/**
+	 * Gets a List of Patient Identifiers associated to a program 
 	 * @param patientProgram the program that matches the patientIdentifier
 	 * @return patient identifier or null
 	 */

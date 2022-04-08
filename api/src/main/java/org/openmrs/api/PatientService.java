@@ -848,7 +848,6 @@ public interface PatientService extends OpenmrsService {
 
 	/**
 	 * Get all patientIdentifiers that are associated to the patient program
-	 * returned
 	 * @param patientProgram the patientProgram to be used to fetch the associated identifiers
 	 * @return PatientIdentifiers matching the patient program
 	 * @since 2.3.6
