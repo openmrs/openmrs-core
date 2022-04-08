@@ -29,7 +29,6 @@ import java.util.List;
 import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Order.Urgency;
 import org.openmrs.api.APIException;
