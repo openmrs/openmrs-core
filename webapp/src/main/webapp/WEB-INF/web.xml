@@ -70,7 +70,11 @@
 		<listener-class>org.openmrs.web.Listener</listener-class>
 		<!--  extends ContextLoader -->
 	</listener>
-	
+
+	<listener>
+		<listener-class>org.openmrs.web.SessionListener</listener-class>
+	</listener>
+
 	<!--  This charsetFilter MUST BE THE FIRST FILTER so that all UTF-8 characters are caught -->
 	<filter>
 		<filter-name>charsetFilter</filter-name>
