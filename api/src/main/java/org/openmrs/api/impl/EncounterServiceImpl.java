@@ -355,7 +355,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		}
 		
 		List<Encounter> encs = new ArrayList<>();
-		for (Patient p : Context.getPatientService().getPatients(identifier, null, null, false)) {
+		for (Patient p : Context.getPatientService().getPatients(null, identifier, null, true)) {
 			encs.addAll(Context.getEncounterService().getEncountersByPatientId(p.getPatientId()));
 		}
 		return Context.getEncounterService().filterEncountersByViewPermissions(encs, null);
