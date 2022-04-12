@@ -20,6 +20,21 @@
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 	
 	<!-- Create the medication_dispense table.  See TRUNK-6071 -->
+
+	<changeSet id="TRUNK-6070-2022-03-10" author="slubwama">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="patient_identifier" columnName="patient_program_id"/>
+			</not>
+		</preConditions>
+		<comment>Adding 'patient_program_id' column to 'patient_identifier' table</comment>
+		<addColumn tableName="patient_identifier">
+			<column name="patient_program_id" type="int">
+				<constraints nullable="true" />
+			</column>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="patient_identifier_program_id_fk" baseTableName="patient_identifier" baseColumnNames="patient_program_id" referencedTableName="patient_program" referencedColumnNames="patient_program_id" />
+	</changeSet>
 	
 	<changeSet id="TRUNK-6071-20220406" author="PIH">
 		<preConditions onFail="MARK_RAN" onFailMessage="Table medication_dispense already exists">
@@ -100,5 +115,5 @@
 		<addForeignKeyConstraint constraintName="medication_dispense_changed_by_fk" baseTableName="medication_dispense" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id"/>
 		<addForeignKeyConstraint constraintName="medication_dispense_voided_by_fk" baseTableName="medication_dispense" baseColumnNames="voided_by" referencedTableName="users" referencedColumnNames="user_id"/>
 	</changeSet>
-
+	
 </databaseChangeLog>
