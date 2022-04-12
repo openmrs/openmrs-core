@@ -69,21 +69,13 @@ public class MedicationDispenseServiceImpl extends BaseOpenmrsService implements
 		if (StringUtils.isBlank(reason)) {
 			throw new IllegalArgumentException("voidReason cannot be null or empty");
 		}
-		if (BooleanUtils.isNotTrue(medicationDispense.getVoided())) {
-			medicationDispense.setVoided(true);
-			medicationDispense.setVoidedBy(Context.getAuthenticatedUser());
-			medicationDispense.setDateVoided(new Date());
-			medicationDispense.setVoidReason(reason);
-		}
+		// Actual voiding logic is done in the BaseVoidHandler
 		return saveMedicationDispense(medicationDispense);
 	}
 
 	@Override
 	public MedicationDispense unvoidMedicationDispense(MedicationDispense medicationDispense) {
-		medicationDispense.setVoided(false);
-		medicationDispense.setVoidedBy(null);
-		medicationDispense.setDateVoided(null);
-		medicationDispense.setVoidReason(null);
+		// Actual un-voiding logic is done in the BaseUnvoidHandler
 		return saveMedicationDispense(medicationDispense);
 	}
 
