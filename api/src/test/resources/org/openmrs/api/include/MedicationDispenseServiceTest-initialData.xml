@@ -117,60 +117,6 @@
 		date_voided="[NULL]"
 		void_reason="[NULL]" 
 	/>
-	
-	<medication_dispense_note
-		medication_dispense_note_id="11"
-		medication_dispense_id="1"
-		uuid="ab1897f3-b735-11ec-8065-0242ac110002"
-		provider_id="1"
-		note_datetime="2008-08-19 10:09:01.0"
-		note_text="First Note Text"
-		form_namespace_and_path="formNamespace^formPath"
-		creator="1"
-		date_created="2008-08-19 10:01:01.0"
-		changed_by="[NULL]"
-		date_changed="[NULL]"
-		voided="false"
-		voided_by="[NULL]"
-		date_voided="[NULL]"
-		void_reason="[NULL]"
-	/>
-
-	<medication_dispense_note
-		medication_dispense_note_id="12"
-		medication_dispense_id="1"
-		uuid="fa0defc1-b735-11ec-8065-0242ac110002"
-		provider_id="1"
-		note_datetime="2008-08-19 10:05:00.0"
-		note_text="Second not Text"
-		form_namespace_and_path="formNamespace^formPath"
-		creator="1"
-		date_created="2008-08-19 10:05:01.0"
-		changed_by="[NULL]"
-		date_changed="[NULL]"
-		voided="true"
-		voided_by="1"
-		date_voided="2008-08-19 10:06:01.0"
-		void_reason="Typo"
-	/>
-
-	<medication_dispense_note
-		medication_dispense_note_id="13"
-		medication_dispense_id="1"
-		uuid="115e8509-b736-11ec-8065-0242ac110002"
-		provider_id="1"
-		note_datetime="2008-08-19 10:05:00.0"
-		note_text="Second Note Text"
-		form_namespace_and_path="formNamespace^formPath"
-		creator="1"
-		date_created="2008-08-19 10:06:01.0"
-		changed_by="[NULL]"
-		date_changed="[NULL]"
-		voided="false"
-		voided_by="[NULL]"
-		date_voided="[NULL]"
-		void_reason="[NULL]"
-	/>
 
 	<!-- Patient #2, voided -->
 	<medication_dispense
@@ -188,38 +134,6 @@
 		voided="true"
 		voided_by="1"
 		date_voided="2008-08-19 10:00:00.0"
-		void_reason="Testing"
-	/>
-
-	<medication_dispense_note
-		medication_dispense_note_id="21"
-		medication_dispense_id="2"
-		uuid="751f122b-b747-11ec-8065-0242ac110002"
-		note_datetime="2008-08-19 10:05:00.0"
-		note_text="A note with matching void information"
-		creator="1"
-		date_created="2008-08-19 10:05:01.0"
-		changed_by="[NULL]"
-		date_changed="[NULL]"
-		voided="true"
-		voided_by="1"
-		date_voided="2008-08-19 10:00:00.0"
-		void_reason="Testing"
-	/>
-
-	<medication_dispense_note
-		medication_dispense_note_id="22"
-		medication_dispense_id="2"
-		uuid="cbd160e3-b747-11ec-8065-0242ac110002"
-		note_datetime="2008-08-19 10:05:00.0"
-		note_text="A note with different void information"
-		creator="1"
-		date_created="2008-08-19 10:05:01.0"
-		changed_by="[NULL]"
-		date_changed="[NULL]"
-		voided="true"
-		voided_by="1"
-		date_voided="2008-08-19 09:00:00.0"
 		void_reason="Testing"
 	/>
 

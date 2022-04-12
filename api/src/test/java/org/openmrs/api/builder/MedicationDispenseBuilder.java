@@ -13,7 +13,6 @@ package org.openmrs.api.builder;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.MedicationDispense;
-import org.openmrs.Provider;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.OrderService;
@@ -132,11 +131,6 @@ public class MedicationDispenseBuilder {
 	
 	public MedicationDispenseBuilder withDateHandedOver(Date dateHandedOver) {
 		medicationDispense.setDateHandedOver(dateHandedOver);
-		return this;
-	}
-	
-	public MedicationDispenseBuilder withNote(String note, Date date, Provider provider) {
-		medicationDispense.addNote(note, date, provider);
 		return this;
 	}
 	

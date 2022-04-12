@@ -16,7 +16,6 @@ import org.openmrs.Encounter;
 import org.openmrs.MedicationDispense;
 import org.openmrs.Patient;
 import org.openmrs.api.builder.MedicationDispenseBuilder;
-import org.openmrs.api.context.Context;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.api.db.MedicationDispenseDAO;
 import org.openmrs.parameter.MedicationDispenseCriteria;
@@ -24,7 +23,6 @@ import org.openmrs.parameter.MedicationDispenseCriteriaBuilder;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -56,19 +54,6 @@ public class HibernateMedicationDispenseDAOTest extends BaseContextSensitiveTest
 	public void getMedicationDispense_shouldGetExistingMedicationDispense() {
 		MedicationDispense existing = medicationDispenseDAO.getMedicationDispense(1);
 		testMedicationDispense1(existing);
-	}
-
-	/**
-	 * @see MedicationDispenseDAO#getMedicationDispenseByUuid(String)
-	 */
-	@Test
-	public void getMedicationDispense_shouldGetNotesInOrder() {
-		MedicationDispense existing = medicationDispenseDAO.getMedicationDispense(1);
-		testMedicationDispense1(existing);
-		assertThat(existing.getNotes().size(), is(3));
-		assertThat(existing.getNotes().get(0).getMedicationDispenseNoteId(), is(12));
-		assertThat(existing.getNotes().get(1).getMedicationDispenseNoteId(), is(13));
-		assertThat(existing.getNotes().get(2).getMedicationDispenseNoteId(), is(11));
 	}
 
 	/**
@@ -174,10 +159,7 @@ public class HibernateMedicationDispenseDAOTest extends BaseContextSensitiveTest
 		List<MedicationDispense> allBefore = medicationDispenseDAO.getMedicationDispenseByCriteria(criteria);
 		MedicationDispense existing = medicationDispenseDAO.getMedicationDispense(1);
 		existing.setFormNamespaceAndPath("newNamespace^newPath");
-		assertThat(existing.getNonVoidedNotes().size(), is(2));
-		existing.addNote("This is a new note", new Date(), null);
 		MedicationDispense saved = medicationDispenseDAO.saveMedicationDispense(existing);
-		assertThat(saved.getNonVoidedNotes().size(), is(3));
 		assertThat(saved.getFormNamespaceAndPath(), is("newNamespace^newPath"));
 		List<MedicationDispense> allAfter = medicationDispenseDAO.getMedicationDispenseByCriteria(criteria);
 		assertThat(allAfter.size(), is(allBefore.size()));
@@ -193,24 +175,6 @@ public class HibernateMedicationDispenseDAOTest extends BaseContextSensitiveTest
 		medicationDispenseDAO.deleteMedicationDispense(existing);
 		existing = medicationDispenseDAO.getMedicationDispense(1);
 		assertNull(existing);
-	}
-
-
-	/**
-	 * @see MedicationDispenseDAO#deleteMedicationDispense(MedicationDispense)
-	 */
-	@Test
-	public void deleteMedicationDispense_shouldDeleteNotes() {
-		String sql = "select count(*) from medication_dispense_note where medication_dispense_id = 1";
-		MedicationDispense existing = medicationDispenseDAO.getMedicationDispense(1);
-		assertNotNull(existing);
-		assertThat(existing.getNotes().size(), is(3));
-		assertThat(administrationDAO.executeSQL(sql, true).get(0).get(0), is(3L));
-		medicationDispenseDAO.deleteMedicationDispense(existing);
-		Context.flushSession();
-		existing = medicationDispenseDAO.getMedicationDispense(1);
-		assertNull(existing);
-		assertThat(administrationDAO.executeSQL(sql, true).get(0).get(0), is(0L));
 	}
 	
 	public static void testMedicationDispense1(MedicationDispense existing) {
@@ -235,8 +199,6 @@ public class HibernateMedicationDispenseDAOTest extends BaseContextSensitiveTest
 		assertThat(existing.getDosingInstructions(), is("Take as directed"));
 		assertThat(existing.getDatePrepared().toString(), is("2008-08-19 10:00:00.0"));
 		assertThat(existing.getDateHandedOver().toString(), is("2008-08-19 10:22:00.0"));
-		assertThat(existing.getNonVoidedNotes().size(), is(2));
-		assertThat(existing.getNotes().size(), is(3));
 		assertThat(existing.getWasSubstituted(), is(Boolean.FALSE));
 		assertNull(existing.getSubstitutionType());
 		assertNull(existing.getSubstitutionReason());

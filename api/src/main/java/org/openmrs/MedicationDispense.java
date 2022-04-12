@@ -9,11 +9,6 @@
  */
 package org.openmrs;
 
-import org.apache.commons.lang.BooleanUtils;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -21,13 +16,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 import javax.persistence.Table;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * The MedicationDispense class records detailed information about the provision of a supply of a medication 
@@ -217,15 +207,6 @@ public class MedicationDispense extends BaseFormRecordableOpenmrsData {
 	 */
 	@Column(name = "date_handed_over")
 	private Date dateHandedOver;
-
-	/**
-	 * FHIR:note
-	 * From FHIR:  Extra information about the dispense that could not be conveyed in the other attributes.
-	 */
-	@OneToMany(mappedBy = "medicationDispense", cascade = CascadeType.ALL, orphanRemoval = true)
-	@OrderBy("noteDatetime, dateCreated, medicationDispenseNoteId")
-	@LazyCollection(LazyCollectionOption.FALSE)
-	private List<MedicationDispenseNote> notes = new ArrayList<>();
 
 	/**
 	 * FHIR:substitution.wasSubstituted
@@ -440,52 +421,6 @@ public class MedicationDispense extends BaseFormRecordableOpenmrsData {
 
 	public void setDateHandedOver(Date dateHandedOver) {
 		this.dateHandedOver = dateHandedOver;
-	}
-
-	/**
-	 * @return all notes, both voided and non-voided, or an empty list if there are no associated notes
-	 */
-	public List<MedicationDispenseNote> getNotes() {
-		if (notes == null) {
-			notes = new ArrayList<>();
-		}
-		return notes;
-	}
-
-	public void setNotes(List<MedicationDispenseNote> notes) {
-		this.notes = notes;
-	}
-
-	/**
-	 * @return all non-voided notes
-	 */
-	public List<MedicationDispenseNote> getNonVoidedNotes() {
-		return getNotes().stream()
-			.filter(note -> BooleanUtils.isNotTrue(note.getVoided()))
-			.collect(Collectors.toList());
-	}
-
-	/**
-	 * Adds the given note to ths MedicationDispense, setting the MedicationDispense on the note
-	 */
-	public void addNote(MedicationDispenseNote note) {
-		note.setMedicationDispense(this);
-		getNotes().add(note);
-	}
-
-	/**
-	 * Constructs and adds a new MedicationDispenseNote with the given noteText, noteDatetime, and provider
-	 * @param noteText - the text of the note (required)
-	 * @param noteDatetime - the datetime of the note (required)
-	 * @param provider - the provider of the note (optional)
-	 */
-	public void addNote(String noteText, Date noteDatetime, Provider provider) {
-		MedicationDispenseNote note = new MedicationDispenseNote();
-		note.setMedicationDispense(this);
-		note.setProvider(provider);
-		note.setNoteDatetime(noteDatetime);
-		note.setNoteText(noteText);
-		addNote(note);
 	}
 
 	public Boolean getWasSubstituted() {
