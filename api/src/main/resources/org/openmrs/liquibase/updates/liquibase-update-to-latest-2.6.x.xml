@@ -18,8 +18,6 @@
 	    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
 		http://www.liquibase.org/xml/ns/dbchangelog 
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
-	
-	<!-- Create the medication_dispense table.  See TRUNK-6071 -->
 
 	<changeSet id="TRUNK-6070-2022-03-10" author="slubwama">
 		<preConditions onFail="MARK_RAN">
@@ -35,6 +33,8 @@
 		</addColumn>
 		<addForeignKeyConstraint constraintName="patient_identifier_program_id_fk" baseTableName="patient_identifier" baseColumnNames="patient_program_id" referencedTableName="patient_program" referencedColumnNames="patient_program_id" />
 	</changeSet>
+
+	<!-- Create the medication_dispense table.  See TRUNK-6071 -->
 	
 	<changeSet id="TRUNK-6071-20220406" author="PIH">
 		<preConditions onFail="MARK_RAN" onFailMessage="Table medication_dispense already exists">
