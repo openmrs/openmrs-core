@@ -580,4 +580,12 @@ public class PrivilegeConstants {
 
 	public static final String PURGE_ORDER_SET_ATTRIBUTE_TYPES = "Purge Order Set Attribute Types";
 
+	@AddOnStartup(description = "Able to get Medication Dispenses")
+	public static final String GET_MEDICATION_DISPENSE = "Get Medication Dispense";
+	
+	@AddOnStartup(description = "Able to edit Medication Dispenses")
+	public static final String EDIT_MEDICATION_DISPENSE = "Edit Medication Dispense";
+
+	@AddOnStartup(description = "Able to delete Medication Dispenses")
+	public static final String DELETE_MEDICATION_DISPENSE = "Delete Medication Dispense";
 }

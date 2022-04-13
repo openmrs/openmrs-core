@@ -19,13 +19,6 @@
 		http://www.liquibase.org/xml/ns/dbchangelog 
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
-	<!--
-		The empty change set is needed for integration tests. It can be removed if this file contains other change sets.
-	-->
-	<changeSet id="42ddb873-f064-4418-a6c0-6c09426c4832" author="wschlegel">
-		<comment>Empty change set for integration tests.</comment>
-	</changeSet>
-
 	<changeSet id="TRUNK-6070-2022-03-10" author="slubwama">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -39,6 +32,88 @@
 			</column>
 		</addColumn>
 		<addForeignKeyConstraint constraintName="patient_identifier_program_id_fk" baseTableName="patient_identifier" baseColumnNames="patient_program_id" referencedTableName="patient_program" referencedColumnNames="patient_program_id" />
+	</changeSet>
+
+	<!-- Create the medication_dispense table.  See TRUNK-6071 -->
+	
+	<changeSet id="TRUNK-6071-20220406" author="PIH">
+		<preConditions onFail="MARK_RAN" onFailMessage="Table medication_dispense already exists">
+			<not>
+				<tableExists tableName="medication_dispense" />
+			</not>
+		</preConditions>
+		<comment>Creating medication_dispense table</comment>
+		<createTable tableName="medication_dispense">
+			<column name="medication_dispense_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false" unique="true" />
+			</column>
+			<column name="patient_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="encounter_id" type="int" />
+			<column name="concept" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="drug_id" type="int" />
+			<column name="location_id" type="int" />
+			<column name="dispenser" type="int" />
+			<column name="drug_order_id" type="int" />
+			<column name="status" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="status_reason" type="int" />
+			<column name="type" type="int" />
+			<column name="quantity" type="double" />
+			<column name="quantity_units" type="int" />
+			<column name="dose" type="double" />
+			<column name="dose_units" type="int" />
+			<column name="route" type="int" />
+			<column name="frequency" type="int" />
+			<column name="as_needed" type="boolean" />
+			<column name="dosing_instructions" type="text" />
+			<column name="date_prepared" type="datetime" />
+			<column name="date_handed_over" type="datetime" />
+			<column name="was_substituted" type="boolean" />
+			<column name="substitution_type" type="int" />
+			<column name="substitution_reason" type="int" />
+			<column name="form_namespace_and_path" type="varchar(255)" />
+			<column name="creator" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="date_created" type="datetime">
+				<constraints nullable="false" />
+			</column>
+			<column name="changed_by" type="int" />
+			<column name="date_changed" type="datetime" />
+			<column name="voided" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+			<column name="voided_by" type="int" />
+			<column name="date_voided" type="datetime" />
+			<column name="void_reason" type="varchar(255)" />
+		</createTable>
+		<addForeignKeyConstraint constraintName="medication_dispense_patient_fk" baseTableName="medication_dispense" baseColumnNames="patient_id" referencedTableName="patient" referencedColumnNames="patient_id"/>
+		<addForeignKeyConstraint constraintName="medication_dispense_encounter_fk" baseTableName="medication_dispense" baseColumnNames="encounter_id" referencedTableName="encounter" referencedColumnNames="encounter_id"/>
+		<addForeignKeyConstraint constraintName="medication_dispense_concept_fk" baseTableName="medication_dispense" baseColumnNames="concept" referencedTableName="concept" referencedColumnNames="concept_id"/>
+		<addForeignKeyConstraint constraintName="medication_dispense_drug_fk" baseTableName="medication_dispense" baseColumnNames="drug_id" referencedTableName="drug" referencedColumnNames="drug_id"/>
+		<addForeignKeyConstraint constraintName="medication_dispense_location_fk" baseTableName="medication_dispense" baseColumnNames="location_id" referencedTableName="location" referencedColumnNames="location_id"/>
+		<addForeignKeyConstraint constraintName="medication_dispense_dispenser_fk" baseTableName="medication_dispense" baseColumnNames="dispenser" referencedTableName="provider" referencedColumnNames="provider_id"/>
+		<addForeignKeyConstraint constraintName="medication_dispense_drug_order_fk" baseTableName="medication_dispense" baseColumnNames="drug_order_id" referencedTableName="drug_order" referencedColumnNames="order_id"/>
+		<addForeignKeyConstraint constraintName="medication_dispense_status_fk" baseTableName="medication_dispense" baseColumnNames="status" referencedTableName="concept" referencedColumnNames="concept_id"/>
+		<addForeignKeyConstraint constraintName="medication_dispense_status_reason_fk" baseTableName="medication_dispense" baseColumnNames="status_reason" referencedTableName="concept" referencedColumnNames="concept_id"/>
+		<addForeignKeyConstraint constraintName="medication_dispense_type_fk" baseTableName="medication_dispense" baseColumnNames="type" referencedTableName="concept" referencedColumnNames="concept_id"/>
+		<addForeignKeyConstraint constraintName="medication_dispense_quantity_units_fk" baseTableName="medication_dispense" baseColumnNames="quantity_units" referencedTableName="concept" referencedColumnNames="concept_id"/>
+		<addForeignKeyConstraint constraintName="medication_dispense_dose_units_fk" baseTableName="medication_dispense" baseColumnNames="dose_units" referencedTableName="concept" referencedColumnNames="concept_id"/>
+		<addForeignKeyConstraint constraintName="medication_dispense_route_fk" baseTableName="medication_dispense" baseColumnNames="route" referencedTableName="concept" referencedColumnNames="concept_id"/>
+		<addForeignKeyConstraint constraintName="medication_dispense_frequency_fk" baseTableName="medication_dispense" baseColumnNames="frequency" referencedTableName="order_frequency" referencedColumnNames="order_frequency_id"/>
+		<addForeignKeyConstraint constraintName="medication_dispense_substitution_type_fk" baseTableName="medication_dispense" baseColumnNames="substitution_type" referencedTableName="concept" referencedColumnNames="concept_id"/>
+		<addForeignKeyConstraint constraintName="medication_dispense_substitution_reason_fk" baseTableName="medication_dispense" baseColumnNames="substitution_reason" referencedTableName="concept" referencedColumnNames="concept_id"/>
+		<addForeignKeyConstraint constraintName="medication_dispense_creator_fk" baseTableName="medication_dispense" baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id"/>
+		<addForeignKeyConstraint constraintName="medication_dispense_changed_by_fk" baseTableName="medication_dispense" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id"/>
+		<addForeignKeyConstraint constraintName="medication_dispense_voided_by_fk" baseTableName="medication_dispense" baseColumnNames="voided_by" referencedTableName="users" referencedColumnNames="user_id"/>
 	</changeSet>
 	
 </databaseChangeLog>
