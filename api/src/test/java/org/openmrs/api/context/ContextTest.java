@@ -9,6 +9,7 @@
  */
 package org.openmrs.api.context;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -19,9 +20,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import java.util.Locale;
 
+import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Location;
+import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.User;
@@ -33,6 +37,7 @@ import org.openmrs.api.handler.ExistingOrNewVisitAssignmentHandler;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Validator;
 
 /**
@@ -41,6 +46,17 @@ import org.springframework.validation.Validator;
  * @see Context
  */
 public class ContextTest extends BaseContextSensitiveTest {
+	
+	@Autowired
+	private SessionFactory sf;
+
+	private static final Class PERSON_NAME_CLASS = PersonName.class;
+
+	private static final Integer PERSON_NAME_ID_2 = 2;
+
+	private static final Integer PERSON_NAME_ID_9349 = 9349;
+
+	private static final String QUERY_REGION = "test";
 	
 	/**
 	 * Methods in this class might authenticate with a different user, so log that user out after
@@ -238,4 +254,23 @@ public class ContextTest extends BaseContextSensitiveTest {
 		
 		Context.logout();
 	}
+	
+	/**
+	 * @see Context#evictSingleEntity(SessionFactory, Class, String)
+	 */
+	@Test
+	public void evictSingleEntity_shouldClearSingleEntityFromCaches(){
+		//SessionFactory sf = (SessionFactory) applicationContext.getBean("sessionFactory");
+		PersonName name = Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
+		//Load the person so that the names are also stored  in person names collection region
+		Context.getPersonService().getPerson(name.getPerson().getPersonId());
+
+		//Let's have the name in a query cache
+		sf.getCurrentSession().createCriteria(PERSON_NAME_CLASS)
+			.add(Restrictions.eq("personNameId", PERSON_NAME_ID_2))
+			.setCacheable(true)
+			.setCacheRegion(QUERY_REGION)
+			.list();
+		assertTrue(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_2));
+		assertNotNull(sf.getStatistics().getSecondLevelCacheStatistics(Person.class.getName() + ".names")
 }
