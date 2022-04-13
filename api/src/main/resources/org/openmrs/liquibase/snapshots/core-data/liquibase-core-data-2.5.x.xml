@@ -41,7 +41,7 @@
       <column name="system_id" value="admin"/>  
       <column name="username" value=""/>  
       <column name="password" value="4a1750c8607dfa237de36c6305715c223415189"/>  
-      <column name="salt" value="b742759bb3f880fa9cd9097b16bc13b6ec6ced865cc5833a5cb7e15f24ed23edc8d2005d6f507b37870a99cc043023529dba1c149e1d5373b89a0c948d623fa3"/>  
+      <column name="salt" value="c788c6ad82a157b712392ca695dfcf2eed193d7f"/>  
       <column name="secret_question"/>  
       <column name="secret_answer"/>  
       <column name="creator" valueNumeric="1"/>  

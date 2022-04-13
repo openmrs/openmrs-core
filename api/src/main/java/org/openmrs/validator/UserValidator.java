@@ -124,9 +124,18 @@ public class UserValidator implements Validator {
 					errors.rejectValue("username", "error.username.pattern");
 				}
 			}
-			
-			if (!StringUtils.isBlank(user.getEmail()) && !isEmailValid(user.getEmail())) {
-				errors.rejectValue("email", "error.email.invalid");
+
+			if (StringUtils.isNotBlank(user.getEmail())) {
+				if (!isEmailValid(user.getEmail())) {
+					errors.rejectValue("email", "error.email.invalid");
+				} else {
+					User existingUser = Context.getUserService().getUserByUsernameOrEmail(user.getEmail());
+					if (existingUser != null && !existingUser.equals(user)) {
+						if (user.getEmail().equalsIgnoreCase(existingUser.getEmail())) {
+							errors.rejectValue("email", "error.email.alreadyInUse");
+						}
+					}
+				}
 			}
 			
 			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "username", "systemId", "retireReason");

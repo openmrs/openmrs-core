@@ -29,6 +29,7 @@ import org.openmrs.api.DiagnosisService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.LocationService;
+import org.openmrs.api.MedicationDispenseService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.api.OrderService;
@@ -236,6 +237,22 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	public void setDiagnosisService(DiagnosisService diagnosisService) {
 		setService(DiagnosisService.class, diagnosisService);
+	}
+
+	/**
+	 * @return MedicationDispense related service
+	 * @since 2.6.0
+	 */
+	public MedicationDispenseService getMedicationDispenseService() {
+		return getService(MedicationDispenseService.class);
+	}
+
+	/**
+	 * @param medicationDispenseService MedicationDispense related service
+	 * @since 2.6.0
+	 */
+	public void setMedicationDispenseService(MedicationDispenseService medicationDispenseService) {
+		setService(MedicationDispenseService.class, medicationDispenseService);
 	}
 	
 	/**

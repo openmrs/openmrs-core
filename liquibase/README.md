@@ -282,6 +282,9 @@ sets that are introduced
 
 Include the new file in `resources/liquibase-update-to-latest-from-1.9.x.xml`, it is used by integration tests (as mentioned above).
 
+Increment, by one, the changeset count constant `CHANGE_SET_COUNT_FOR_GREATER_THAN_2_1_X` in `org.openmrs.util.DatabaseUpdaterDatabaseIT`
+This caters for the one empty changeset in the liquibase update file that you have just created.
+
 #### Step 3 - Update references in legacy Liquibase change log files
 The following files in `openmrs-core/api/src/main/resources` contain references to the latest Liquibase snapshot and 
 update change logs and need to be updated after the new change log files were added:
