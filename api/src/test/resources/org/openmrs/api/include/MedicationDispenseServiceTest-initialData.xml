@@ -1,0 +1,216 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+
+	<!-- Dispense Status Concepts, see https://www.hl7.org/fhir/valueset-medicationdispense-status.html -->
+	
+	<concept_reference_source concept_source_id="11100" name="HL7 Medication Dispense Status" description="HL7 Medication Dispense Status" creator="1" date_created="2005-02-24 00:00:00.0" uuid="c611dd29-b67c-11ec-8065-0242ac110002" retired="false"/>
+	
+	<!-- Preparation -->
+	<concept concept_id="11110" uuid="c6c840c2-b66f-11ec-8065-0242ac110002" retired="false" datatype_id="4" class_id="11" is_set="false" creator="1" date_created="2007-01-16 15:51:57.0" version="" />
+	<concept_name concept_name_id="11110" uuid="a7cc2d1f-b67c-11ec-8065-0242ac110002" concept_id="11110" name="Preparation" locale="en" creator="1" date_created="2008-08-18 12:32:35.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" />
+	<concept_reference_term concept_reference_term_id="11110" uuid="46b2fffe-b67d-11ec-8065-0242ac110002" concept_source_id="11100" code="preparation" retired="0" creator="1" date_created="2004-08-12 00:00:00.0" />
+	<concept_reference_map concept_map_id="11110" uuid="613d6e0f-b67d-11ec-8065-0242ac110002" concept_id="11110" concept_reference_term_id="11110" concept_map_type_id="2" creator="1" date_created="2004-08-12 00:00:00.0" />
+
+	<!-- Cancelled -->
+	<concept concept_id="11111" uuid="11307d39-b670-11ec-8065-0242ac110002" retired="false" datatype_id="4" class_id="11" is_set="false" creator="1" date_created="2007-01-16 15:51:57.0" version="" />
+	<concept_name concept_name_id="11111" uuid="2c31fed0-b67e-11ec-8065-0242ac110002" concept_id="11111" name="Cancelled" locale="en" creator="1" date_created="2008-08-18 12:32:35.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" />
+	<concept_reference_term concept_reference_term_id="11111" uuid="3218ab59-b67e-11ec-8065-0242ac110002" concept_source_id="11100" code="cancelled" retired="0" creator="1" date_created="2004-08-12 00:00:00.0" />
+	<concept_reference_map concept_map_id="11111" uuid="3510bba8-b67e-11ec-8065-0242ac110002" concept_id="11111" concept_reference_term_id="11111" concept_map_type_id="2" creator="1" date_created="2004-08-12 00:00:00.0" />
+
+	<!-- Completed -->
+	<concept concept_id="11112" uuid="7d8791fb-b67e-11ec-8065-0242ac110002" retired="false" datatype_id="4" class_id="11" is_set="false" creator="1" date_created="2007-01-16 15:51:57.0" version="" />
+	<concept_name concept_name_id="11112" uuid="81094c48-b67e-11ec-8065-0242ac110002" concept_id="11112" name="Completed" locale="en" creator="1" date_created="2008-08-18 12:32:35.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" />
+	<concept_reference_term concept_reference_term_id="11112" uuid="83df30b5-b67e-11ec-8065-0242ac110002" concept_source_id="11100" code="completed" retired="0" creator="1" date_created="2004-08-12 00:00:00.0" />
+	<concept_reference_map concept_map_id="11112" uuid="8812398e-b67e-11ec-8065-0242ac110002" concept_id="11112" concept_reference_term_id="11112" concept_map_type_id="2" creator="1" date_created="2004-08-12 00:00:00.0" />
+
+	<!-- Dispense Status Reason Concepts, see https://www.hl7.org/fhir/valueset-medicationdispense-status-reason.html -->
+
+	<!-- Drug not available - out of stock -->
+	<concept concept_id="11210" uuid="32f41c66-b67f-11ec-8065-0242ac110002" retired="false" datatype_id="4" class_id="11" is_set="false" creator="1" date_created="2007-01-16 15:51:57.0" version="" />
+	<concept_name concept_name_id="11210" uuid="383c21b2-b67f-11ec-8065-0242ac110002" concept_id="11210" name="Drug not available - out of stock" locale="en" creator="1" date_created="2008-08-18 12:32:35.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" />
+
+	<!-- Prescription/Request requires clarification -->
+	<concept concept_id="11211" uuid="fd306769-b67f-11ec-8065-0242ac110002" retired="false" datatype_id="4" class_id="11" is_set="false" creator="1" date_created="2007-01-16 15:51:57.0" version="" />
+	<concept_name concept_name_id="11211" uuid="02935223-b680-11ec-8065-0242ac110002" concept_id="11211" name="Prescription/Request requires clarification" locale="en" creator="1" date_created="2008-08-18 12:32:35.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" />
+
+	<!-- Dispense Type Concepts, see https://www.hl7.org/fhir/v3/ActPharmacySupplyType/vs.html -->
+
+	<!-- First Fill -->
+	<concept concept_id="11310" uuid="4f4a9254-b680-11ec-8065-0242ac110002" retired="false" datatype_id="4" class_id="11" is_set="false" creator="1" date_created="2007-01-16 15:51:57.0" version="" />
+	<concept_name concept_name_id="11310" uuid="523abb11-b680-11ec-8065-0242ac110002" concept_id="11310" name="First Fill" locale="en" creator="1" date_created="2008-08-18 12:32:35.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" />
+
+	<!-- Refill -->
+	<concept concept_id="11311" uuid="6af1344a-b680-11ec-8065-0242ac110002" retired="false" datatype_id="4" class_id="11" is_set="false" creator="1" date_created="2007-01-16 15:51:57.0" version="" />
+	<concept_name concept_name_id="11311" uuid="6de983f5-b680-11ec-8065-0242ac110002" concept_id="11311" name="Refill" locale="en" creator="1" date_created="2008-08-18 12:32:35.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" />
+
+	<!-- First Fill - Part Fill -->
+	<concept concept_id="11312" uuid="70bf684c-b680-11ec-8065-0242ac110002" retired="false" datatype_id="4" class_id="11" is_set="false" creator="1" date_created="2007-01-16 15:51:57.0" version="" />
+	<concept_name concept_name_id="11312" uuid="736f8f58-b680-11ec-8065-0242ac110002" concept_id="11312" name="First Fill - Part Fill" locale="en" creator="1" date_created="2008-08-18 12:32:35.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" />
+
+	<!-- Substitution Type Concepts, see https://www.hl7.org/fhir/v3/ActSubstanceAdminSubstitutionCode/vs.html -->
+
+	<!-- Equivalent -->
+	<concept concept_id="11410" uuid="d6ccf64d-b680-11ec-8065-0242ac110002" retired="false" datatype_id="4" class_id="11" is_set="false" creator="1" date_created="2007-01-16 15:51:57.0" version="" />
+	<concept_name concept_name_id="11410" uuid="d9a319bc-b680-11ec-8065-0242ac110002" concept_id="11410" name="Equivalent" locale="en" creator="1" date_created="2008-08-18 12:32:35.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" />
+
+	<!-- Equivalent composition -->
+	<concept concept_id="11411" uuid="fa752c21-b680-11ec-8065-0242ac110002" retired="false" datatype_id="4" class_id="11" is_set="false" creator="1" date_created="2007-01-16 15:51:57.0" version="" />
+	<concept_name concept_name_id="11411" uuid="fda60bce-b680-11ec-8065-0242ac110002" concept_id="11411" name="Equivalent composition" locale="en" creator="1" date_created="2008-08-18 12:32:35.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" />
+	
+	<!-- Substitution Reason Concepts, see https://www.hl7.org/fhir/v3/SubstanceAdminSubstitutionReason/vs.html -->
+
+	<!-- Out of Stock -->
+	<concept concept_id="11510" uuid="50a3b6a8-b681-11ec-8065-0242ac110002" retired="false" datatype_id="4" class_id="11" is_set="false" creator="1" date_created="2007-01-16 15:51:57.0" version="" />
+	<concept_name concept_name_id="11510" uuid="546d7c46-b681-11ec-8065-0242ac110002" concept_id="11510" name="Out of Stock" locale="en" creator="1" date_created="2008-08-18 12:32:35.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" />
+
+	<!-- Formulary Policy -->
+	<concept concept_id="11511" uuid="57247645-b681-11ec-8065-0242ac110002" retired="false" datatype_id="4" class_id="11" is_set="false" creator="1" date_created="2007-01-16 15:51:57.0" version="" />
+	<concept_name concept_name_id="11511" uuid="59d30c1b-b681-11ec-8065-0242ac110002" concept_id="11511" name="Formulary Policy" locale="en" creator="1" date_created="2008-08-18 12:32:35.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" />
+
+	<!-- Initial Data, uses existing patients, encounters, drug orders from standard test dataset -->
+
+	<!-- Patient #2, Completed, first fill of order with 10 refills -->
+	<medication_dispense 
+		medication_dispense_id="1" 
+		uuid="b75c5c9e-b66c-11ec-8065-0242ac110002" 
+		patient_id="2" 
+		encounter_id="6" 
+		drug_order_id="2" 
+		concept="792" 
+		drug_id="2" 
+		location_id="2" 
+		dispenser="1"
+		status="11112"
+		status_reason="[NULL]"
+		type="11310"
+		quantity="1.0"
+		quantity_units="51"
+		dose="1.0"
+		dose_units="51"
+		route="22"
+		frequency="1"
+		as_needed="false"
+		dosing_instructions="Take as directed"
+		date_prepared="2008-08-19 10:00:00.0"
+		date_handed_over="2008-08-19 10:22:00.0"
+		was_substituted="false"
+		substitution_type="[NULL]"
+		substitution_reason="[NULL]"
+		form_namespace_and_path="formNamespace^formPath"
+		creator="1"
+		date_created="2008-08-19 10:00:00.0"
+		changed_by="[NULL]"
+		date_changed="[NULL]"
+		voided="false"
+		voided_by="[NULL]"
+		date_voided="[NULL]"
+		void_reason="[NULL]" 
+	/>
+
+	<!-- Patient #2, voided -->
+	<medication_dispense
+		medication_dispense_id="2"
+		uuid="abf9d333-b688-11ec-8065-0242ac110002"
+		patient_id="2"
+		encounter_id="6"
+		drug_order_id="2"
+		concept="792"
+		status="11111"
+		creator="1"
+		date_created="2008-08-19 10:00:00.0"
+		changed_by="[NULL]"
+		date_changed="[NULL]"
+		voided="true"
+		voided_by="1"
+		date_voided="2008-08-19 10:00:00.0"
+		void_reason="Testing"
+	/>
+
+	<!-- Patient #7, Completed, first fill of order with 10 refills -->
+	<medication_dispense
+		medication_dispense_id="10"
+		uuid="7a0282eb-b686-11ec-8065-0242ac110002"
+		patient_id="7"
+		encounter_id="3"
+		drug_order_id="1"
+		concept="88"
+		drug_id="3"
+		location_id="2"
+		dispenser="1"
+		status="11112"
+		status_reason="[NULL]"
+		type="11310"
+		quantity="1.0"
+		quantity_units="51"
+		dose="325.0"
+		dose_units="50"
+		route="22"
+		frequency="1"
+		as_needed="false"
+		dosing_instructions="2x daily"
+		date_prepared="2008-08-19 10:00:00.0"
+		date_handed_over="2008-08-19 10:22:00.0"
+		was_substituted="false"
+		substitution_type="[NULL]"
+		substitution_reason="[NULL]"
+		form_namespace_and_path="formNamespace^formPath"
+		creator="1"
+		date_created="2008-08-19 10:00:00.0"
+		changed_by="[NULL]"
+		date_changed="[NULL]"
+		voided="false"
+		voided_by="[NULL]"
+		date_voided="[NULL]"
+		void_reason="[NULL]"
+	/>
+
+	<!-- Patient #7, In Progress, second fill of order with 10 refills -->
+	<medication_dispense
+		medication_dispense_id="11"
+		uuid="1bcb299c-b687-11ec-8065-0242ac110002"
+		patient_id="7"
+		encounter_id="[NULL]"
+		drug_order_id="[NULL]"
+		concept="88"
+		drug_id="3"
+		location_id="2"
+		dispenser="1"
+		status="11110"
+		status_reason="[NULL]"
+		type="11311"
+		quantity="1.0"
+		quantity_units="51"
+		dose="325.0"
+		dose_units="50"
+		route="22"
+		frequency="1"
+		as_needed="false"
+		dosing_instructions="2x daily"
+		date_prepared="2008-09-22 13:00:00.0"
+		date_handed_over="2008-09-22 14:11:00.0"
+		was_substituted="false"
+		substitution_type="[NULL]"
+		substitution_reason="[NULL]"
+		form_namespace_and_path="formNamespace^formPath"
+		creator="1"
+		date_created="2008-09-22 13:00:00.0"
+		changed_by="[NULL]"
+		date_changed="[NULL]"
+		voided="false"
+		voided_by="[NULL]"
+		date_voided="[NULL]"
+		void_reason="[NULL]"
+	/>
+	
+</dataset>

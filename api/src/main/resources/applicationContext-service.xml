@@ -109,6 +109,7 @@
 		<property name="orderService" ref="orderService"/>
 		<property name="conditionService" ref="conditionService"/>
 		<property name="diagnosisService" ref="diagnosisService"/>
+		<property name="medicationDispenseService" ref="medicationDispenseService"/>
 		<property name="orderSetService" ref="orderSetService"/>
 		<property name="formService" ref="formService"/>
 		<property name="administrationService" ref="adminService"/>
@@ -210,7 +211,9 @@
 	<bean id="diagnosisDAO" class="org.openmrs.api.db.hibernate.HibernateDiagnosisDAO">
 		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
-
+	<bean id="medicationDispenseDAO" class="org.openmrs.api.db.hibernate.HibernateMedicationDispenseDAO">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
 
 	<!--  **************************  SCHEDULER SERVICE  *************************  -->
 	<!-- 
@@ -272,6 +275,9 @@
 	</bean>
 	<bean id="diagnosisServiceTarget" class="org.openmrs.api.impl.DiagnosisServiceImpl">
 		<property name="diagnosisDAO" ref="diagnosisDAO"/>
+	</bean>
+	<bean id="medicationDispenseServiceTarget" class="org.openmrs.api.impl.MedicationDispenseServiceImpl">
+		<property name="medicationDispenseDAO" ref="medicationDispenseDAO"/>
 	</bean>
 	<bean id="orderSetServiceTarget" class="org.openmrs.api.impl.OrderSetServiceImpl">
 		<property name="orderSetDAO" ref="orderSetDAO"/>
@@ -422,6 +428,12 @@
 	<bean id="diagnosisService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="target" ref="diagnosisServiceTarget"/>
+		<property name="preInterceptors" ref="serviceInterceptors"/>
+		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
+	</bean>
+	<bean id="medicationDispenseService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="target" ref="medicationDispenseServiceTarget"/>
 		<property name="preInterceptors" ref="serviceInterceptors"/>
 		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
 	</bean>
