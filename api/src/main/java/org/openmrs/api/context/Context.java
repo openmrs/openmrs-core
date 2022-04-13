@@ -70,6 +70,7 @@ import org.springframework.aop.Advisor;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
+import org.hibernate.SessionFactory;
 
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;
@@ -1426,5 +1427,45 @@ public class Context {
 	 */
 	public static boolean isUseSystemClassLoader() {
 		return getServiceContext().isUseSystemClassLoader();
+	}
+	
+	/**
+	 * Evicts the entity data for a particular entity "instance".
+	 *
+	 * @param sessionFactory
+	 * @since 2.6.0
+	 */
+	public static void evictSingleEntity(SessionFactory sessionFactory, Class<?> entityClass, String uuid) throws IllegalArgumentException{
+		if(StringUtils.isBlank(uuid) || (entityClass == null)) throw IllegalArgumentException;
+		log.debug("Clearing DB cache for entity: {} with uuid: {}", entityClass, uuid);
+		OpenmrsObject object = (OpenmrsObject) ((BaseDelegatingResource) resource).getByUniqueId(uuid);
+		sf.getCache().evictEntity(entityClass, object.getId());
+		sessionFactory.getCache().evictCollectionRegions();
+		sessionFactory.getCache().evictQueryRegions();
+	}
+
+	/**
+	 * Evicts all entity data from the given region (i.e. for all entities of type).
+	 *
+	 * @param sessionFactory
+	 * @since 2.6.0
+	 */
+	public static void evictAllEntities(SessionFactory sessionFactory, Class<?> entityClass) throws IllegalArgumentException{
+		if(entityClass == null) throw IllegalArgumentException;
+		log.debug("Clearing DB cache for entities of type: {}", entityClass);
+		sessionFactory.getCache().evictEntityRegion(entityClass);
+		sessionFactory.getCache().evictCollectionRegions();
+		sessionFactory.getCache().evictQueryRegions();
+	}
+	
+	/**
+	 * Evict data from all cache regions.
+	 *
+	 * @param sessionFactory
+	 * @since 2.6.0
+	 */
+	public static void clearEntireCache(SessionFactory sessionFactory) {
+		log.debug("Clearing DB cache from all regions");
+		sessionFactory.getCache().evictAllRegions();
 	}
 }
