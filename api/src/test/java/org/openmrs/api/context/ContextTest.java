@@ -263,9 +263,10 @@ public class ContextTest extends BaseContextSensitiveTest {
 		//SessionFactory sf = (SessionFactory) applicationContext.getBean("sessionFactory");
 		PersonName name = Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
 		//Load the person so that the names are also stored  in person names collection region
+		if(name.getPerson() == null) return;
 		Context.getPersonService().getPerson(name.getPerson().getPersonId());
 
-		//Let's have the name in a query cache
+		//Puts the name in a query cache
 		sf.getCurrentSession().createCriteria(PERSON_NAME_CLASS)
 			.add(Restrictions.eq("personNameId", PERSON_NAME_ID_2))
 			.setCacheable(true)
@@ -273,4 +274,92 @@ public class ContextTest extends BaseContextSensitiveTest {
 			.list();
 		assertTrue(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_2));
 		assertNotNull(sf.getStatistics().getSecondLevelCacheStatistics(Person.class.getName() + ".names")
+					  .getEntries().get(name.getPerson().getPersonId()));
+		assertEquals(1, sf.getCache().getQueryCache.(QUERY_REGION).getRegion().getElementCountInMemory()));
+		Context.evictSingleEntity(sf, PERSON_NAME_CLASS, name.getUuid());
+
+		assertFalse(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_2));
+		assertNull(sf.getStatistics().getSecondLevelCacheStatistics(Person.class.getName() + ".names")
+			.getEntries().get(name.getPerson().getPersonId()));
+		assertEquals(0, sf.getStatistics().getCacheRegionStatistics(QUERY_REGION).getElementCountInMemory());
+	}
+
+	/**
+	 * @see Context#evictAllEntities(SessionFactory, Class)
+	 */
+	@Test
+	public void evictAllEntities_shouldClearAllEntityFromCaches(){
+		//SessionFactory sf = (SessionFactory) applicationContext.getBean("sessionFactory");
+		PersonName name1 = Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
+		PersonName name2 = Context.getPersonService().getPersonName(PERSON_NAME_ID_9349);
+		//Load the person so that the names are also stored  in person names collection region
+		Context.getPersonService().getPerson(name1.getPerson().getPersonId());
+		Context.getPersonService().getPerson(name2.getPerson().getPersonId());
+		//Let's have the names in a query cache
+		sf.getCurrentSession().createCriteria(PERSON_NAME_CLASS)
+			.add(Restrictions.or(Restrictions.eq("personNameId", PERSON_NAME_ID_2),
+				Restrictions.eq("personNameId", PERSON_NAME_ID_9349)))
+			.setCacheable(true)
+			.setCacheRegion(QUERY_REGION)
+			.list();
+		assertTrue(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_2));
+		assertTrue(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_9349));
+		assertNotNull(sf.getStatistics().getSecondLevelCacheStatistics(Person.class.getName() + ".names")
+			.getEntries().get(name1.getPerson().getPersonId()));
+		assertNotNull(sf.getStatistics().getSecondLevelCacheStatistics(Person.class.getName() + ".names")
+			.getEntries().get(name2.getPerson().getPersonId()));
+		assertEquals(1, sf.getStatistics().getCacheRegionStatistics(QUERY_REGION).getElementCountInMemory());
+
+		Context.evictAllEntities(sf, PERSON_NAME_CLASS);
+
+		assertFalse(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_2));
+		assertFalse(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_9349));
+		assertNotNull(sf.getStatistics().getSecondLevelCacheStatistics(Person.class.getName() + ".names")
+			.getEntries().get(name1.getPerson().getPersonId()));
+		assertNotNull(sf.getStatistics().getSecondLevelCacheStatistics(Person.class.getName() + ".names")
+			.getEntries().get(name2.getPerson().getPersonId()));
+		assertEquals(0, sf.getStatistics().getCacheRegionStatistics(QUERY_REGION).getElementCountInMemory());
+
+	}
+
+	/**
+	 * @see Context#clearEntireCache(SessionFactory)
+	 */
+	@Test
+	public void clearEntireCache_shouldClearEntireCache(){
+		//SessionFactory sf = (SessionFactory) applicationContext.getBean("sessionFactory");
+		PersonName name1 = Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
+		PersonName name2 = Context.getPersonService().getPersonName(PERSON_NAME_ID_9349);
+		//Load the person and patient so that the names are also stored  in person names collection region
+		Context.getPersonService().getPerson(name1.getPerson().getPersonId());
+		Context.getPersonService().getPerson(name2.getPerson().getPersonId());
+		Context.getPatientService().getPatient(PERSON_NAME_ID_2);
+		//Let's have the names in a query cache
+		sf.getCurrentSession().createCriteria(PERSON_NAME_CLASS)
+			.add(Restrictions.or(Restrictions.eq("personNameId", PERSON_NAME_ID_2), 
+				Restrictions.eq("personNameId", PERSON_NAME_ID_9349)))
+			.setCacheable(true)
+			.setCacheRegion(QUERY_REGION)
+			.list();
+		assertTrue(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_2));
+		assertTrue(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_9349));
+		assertTrue(sf.getCache().containsEntity(Patient.class, PERSON_NAME_ID_2));
+		assertNotNull(sf.getStatistics().getSecondLevelCacheStatistics(Person.class.getName() + ".names")
+			.getEntries().get(name1.getPerson().getPersonId()));		
+		assertNotNull(sf.getStatistics().getSecondLevelCacheStatistics(Person.class.getName() + ".names")
+			.getEntries().get(name2.getPerson().getPersonId()));
+		assertEquals(1, sf.getStatistics().getCacheRegionStatistics(QUERY_REGION).getElementCountInMemory());
+
+		Context.clearEntireCache(sf);
+
+		assertFalse(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_2));
+		assertFalse(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_9349));
+		assertFalse(sf.getCache().containsEntity(Patient.class, PERSON_NAME_ID_2));
+		assertNull(sf.getStatistics().getSecondLevelCacheStatistics(Person.class.getName() + ".names")
+			.getEntries().get(name1.getPerson().getPersonId()));
+		assertNull(sf.getStatistics().getSecondLevelCacheStatistics(Person.class.getName() + ".names")
+			.getEntries().get(name2.getPerson().getPersonId()));
+		assertEquals(0, sf.getStatistics().getCacheRegionStatistics(QUERY_REGION).getElementCountInMemory());
+	}
+}
 }
