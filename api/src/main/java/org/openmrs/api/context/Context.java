@@ -1436,7 +1436,7 @@ public class Context {
 	 * @since 2.6.0
 	 */
 	public static void evictSingleEntity(SessionFactory sessionFactory, Class<?> entityClass, Integer id) {
-		if((id == null) || (entityClass == null) {
+		if((id == null) || (entityClass == null)) {
 			throw new IllegalArgumentException;
 			return;
 		}
