@@ -1437,7 +1437,7 @@ public class Context {
 	 */
 	public static void evictSingleEntity(SessionFactory sessionFactory, Class<?> entityClass, Integer id) {
 		if((id == null) || (entityClass == null)) {
-			throw new IllegalArgumentException;
+			throw new IllegalArgumentException();
 			return;
 		}
 		log.debug("Clearing DB cache for entity: {} with id: {}", entityClass, id);
@@ -1454,7 +1454,7 @@ public class Context {
 	 */
 	public static void evictAllEntities(SessionFactory sessionFactory, Class<?> entityClass) {
 		if(entityClass == null){
-			throw new IllegalArgumentException;
+			throw new IllegalArgumentException();
 			return;
 		}
 		log.debug("Clearing DB cache for entities of type: {}", entityClass);
