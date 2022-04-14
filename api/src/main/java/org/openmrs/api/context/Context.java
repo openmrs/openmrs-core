@@ -1436,8 +1436,9 @@ public class Context {
 	 * @since 2.6.0
 	 */
 	public static void evictSingleEntity(SessionFactory sessionFactory, Class<?> entityClass, String uuid) throws IllegalArgumentException {
-		if(StringUtils.isBlank(uuid))
+		if(StringUtils.isBlank(uuid)){
 			throw new IllegalArgumentException();
+		}
 		log.debug("Clearing DB cache for entity: {} with uuid: {}", entityClass, uuid);
 		OpenmrsObject object = (OpenmrsObject) ((BaseDelegatingResource) resource).getByUniqueId(uuid);
 		sessionFactory.getCache().evictEntity(entityClass, object.getId());
