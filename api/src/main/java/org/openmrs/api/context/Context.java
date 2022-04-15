@@ -1438,7 +1438,6 @@ public class Context {
 	public static void evictSingleEntity(SessionFactory sessionFactory, Class<?> entityClass, Integer id) {
 		if((id == null) || (entityClass == null)) {
 			throw new IllegalArgumentException();
-			return;
 		}
 		log.debug("Clearing DB cache for entity: {} with id: {}", entityClass, id);
 		sessionFactory.getCache().evictEntity(entityClass, id);
@@ -1455,7 +1454,6 @@ public class Context {
 	public static void evictAllEntities(SessionFactory sessionFactory, Class<?> entityClass) {
 		if(entityClass == null){
 			throw new IllegalArgumentException();
-			return;
 		}
 		log.debug("Clearing DB cache for entities of type: {}", entityClass);
 		sessionFactory.getCache().evictEntityRegion(entityClass);
@@ -1464,7 +1462,7 @@ public class Context {
 	}
 
 	/**
-	 * Evict data from all cache regions.
+	 * Evicts data from all cache regions.
 	 *
 	 * @param sessionFactory
 	 * @since 2.6.0
