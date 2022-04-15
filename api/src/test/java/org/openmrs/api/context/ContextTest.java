@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.junit.jupiter.api.AfterAll;
@@ -261,7 +262,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	public void evictSingleEntity_shouldClearSingleEntityFromCaches(){
 		
 		PersonName name = Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
-		if(name == null){
+		if(StringUtils.isNotEmpty(name)){
 			throw new IllegalArgumentException();
 		}
 		//Load the person so that the names are also stored  in person names collection region
