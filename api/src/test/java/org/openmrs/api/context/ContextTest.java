@@ -264,7 +264,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 		if(name == null){
 			throw new IllegalArgumentException();
 		}
-		//Load the person so that the names are also stored  in person names collection region
+		//Load the person so that the names are also stored in person names collection region
 		Context.getPersonService().getPerson(name.getPerson().getPersonId());
 
 		//Let's have the name in a query cache
@@ -289,7 +289,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	public void evictAllEntities_shouldClearAllEntityFromCaches(){
 		PersonName name1 = Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
 		PersonName name2 = Context.getPersonService().getPersonName(PERSON_NAME_ID_9349);
-		//Load the person so that the names are also stored  in person names collection region
+		//Load the person so that the names are also stored in person names collection region
 		Context.getPersonService().getPerson(name1.getPerson().getPersonId());
 		Context.getPersonService().getPerson(name2.getPerson().getPersonId());
 		//Add the names in a query cache
@@ -318,7 +318,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 		//SessionFactory sf = (SessionFactory) applicationContext.getBean("sessionFactory");
 		PersonName name1 = Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
 		PersonName name2 = Context.getPersonService().getPersonName(PERSON_NAME_ID_9349);
-		//Load the person and patient so that the names are also stored  in person names collection region
+		//Load the person and patient so that the names are also stored in person names collection region
 		Context.getPersonService().getPerson(name1.getPerson().getPersonId());
 		Context.getPersonService().getPerson(name2.getPerson().getPersonId());
 		Context.getPatientService().getPatient(PERSON_NAME_ID_2);
