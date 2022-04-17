@@ -44,11 +44,17 @@ public class Format {
 	public static String format(double d) {
 		return "" + (d);
 	}
-	
+
 	public static String format(Double d) {
 		return d == null ? "" : format(d.doubleValue());
 	}
 	
+	/**
+	 * This method formats a date object according to the default locale and returns a string in the format (month, day and year).
+	 *
+	 * @param date input date to format as a string
+	 * @return empty string if date is null. Otherwise a string object containing the date in (month, day and year) format.
+	 */
 	public static String formatTextBoxDate(Date date) {
 		return format(date, Context.getLocale(), FORMAT_TYPE.DATE);
 	}
@@ -57,6 +63,15 @@ public class Format {
 		return format(date, Context.getLocale(), FORMAT_TYPE.DATE);
 	}
 	
+	/**
+	 * This method formats a date object according to the default locale and returns the date as a string.
+	 * The string can contain only the date (month, day and year), only the time (hours, minutes, seconds) or as a
+	 * timestamp (both date and time) based on the FORMAT_TYPE.
+	 * @param type input type to determine how much information from the date is returned
+	 * @param date input date to format as a string
+	 
+	 * @return empty string if date is null. Otherwise a string object containing the date in (month, day and year) format.
+	 */
 	public static String format(Date date, FORMAT_TYPE type) {
 		return format(date, Context.getLocale(), type);
 	}
@@ -98,6 +113,10 @@ public class Format {
 		return dateFormat.format(date);
 	}
 	
+	/**
+	 * @param t input t to be formatted as a string
+	 * @return a formatted string containing the the detail message of the throwable and the stack trace of the exception.
+	 */
 	public static String format(Throwable t) {
 		return t + "\n" + ExceptionUtils.getStackTrace(t);
 	}
