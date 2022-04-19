@@ -21,9 +21,9 @@ public class InvalidIdentifierFormatException extends PatientIdentifierException
 		format = null;
 	}
 	
-	public InvalidIdentifierFormatException(String message) {
+	public InvalidIdentifierFormatException(String message, String format) {
 		super(message);
-		format = null;
+		this.format = format;
 	}
 	
 	public InvalidIdentifierFormatException(String message, PatientIdentifier identifier) {
