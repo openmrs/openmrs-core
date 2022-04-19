@@ -76,6 +76,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
+import org.openmrs.MedicationDispense;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Allergy;
@@ -2648,6 +2649,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.addAnnotatedClass(Encounter.class).addAnnotatedClass(SomeTestOrder.class)
 			.addAnnotatedClass(Diagnosis.class).addAnnotatedClass(Condition.class)
 			.addAnnotatedClass(Visit.class).addAnnotatedClass(VisitAttributeType.class)
+			.addAnnotatedClass(MedicationDispense.class)
 			.addAnnotatedClass(ProviderAttributeType.class).addAnnotatedClass(ConceptMapType.class).getMetadataBuilder().build();
 
 
