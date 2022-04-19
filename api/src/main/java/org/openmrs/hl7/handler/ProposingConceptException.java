@@ -19,9 +19,9 @@ public class ProposingConceptException extends APIException {
 	
 	public static final long serialVersionUID = 120002000200L;
 	
-	private Concept concept;
+	private final Concept concept;
 	
-	private String valueName;
+	private final String valueName;
 	
 	/**
 	 * Default constructor that takes in the required parameters
@@ -41,25 +41,13 @@ public class ProposingConceptException extends APIException {
 		return concept;
 	}
 	
-	/**
-	 * @param concept the concept to set
-	 */
-	public void setConcept(Concept concept) {
-		this.concept = concept;
-	}
 	
+
 	/**
 	 * @return the valueName
 	 */
 	public String getValueName() {
 		return valueName;
-	}
-	
-	/**
-	 * @param valueName the valueName to set
-	 */
-	public void setValueName(String valueName) {
-		this.valueName = valueName;
 	}
 	
 }

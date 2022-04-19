@@ -15,33 +15,35 @@ public class PatientIdentifierException extends APIException {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private PatientIdentifier patientIdentifier;
+	private final PatientIdentifier patientIdentifier;
 	
 	public PatientIdentifierException() {
+		patientIdentifier = null;
 	}
 	
 	public PatientIdentifierException(String message) {
 		super(message);
+		patientIdentifier = null;
 	}
 	
 	public PatientIdentifierException(String message, PatientIdentifier identifier) {
 		super(message);
-		this.setPatientIdentifier(identifier);
+		patientIdentifier = identifier;
 	}
 	
 	public PatientIdentifierException(String message, Throwable cause) {
 		super(message, cause);
+		patientIdentifier = null;
 	}
 	
 	public PatientIdentifierException(Throwable cause) {
 		super(cause);
+		patientIdentifier = null;
 	}
 	
 	public PatientIdentifier getPatientIdentifier() {
 		return patientIdentifier;
 	}
 	
-	public void setPatientIdentifier(PatientIdentifier patientIdentifier) {
-		this.patientIdentifier = patientIdentifier;
-	}
+
 }
