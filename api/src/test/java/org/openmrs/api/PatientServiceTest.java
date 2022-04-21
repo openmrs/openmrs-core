@@ -92,7 +92,9 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	
 	// Datasets
 	protected static final String CREATE_PATIENT_XML = "org/openmrs/api/include/PatientServiceTest-createPatient.xml";
-	
+
+	protected static final String CREATE_PATIENT_WITH_PATIENT_IDENTIFIER_PROGRAM_XML = "org/openmrs/api/include/PatientServiceTest-createPatientWithPatientProgramIdentifier.xml";
+
 	protected static final String CREATE_PATIENT_VALID_IDENT_XML = "org/openmrs/api/include/PatientServiceTest-createPatientValidIdent.xml";
 	
 	protected static final String JOHN_PATIENTS_XML = "org/openmrs/api/include/PatientServiceTest-lotsOfJohns.xml";
@@ -3279,6 +3281,37 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertEquals(8, encounterService.getEncounter(57).getAllObs(true).size());
 		assertEquals(1, encounterService.getEncounter(57).getObsAtTopLevel(false).size());
 		assertEquals(2, encounterService.getEncounter(57).getObsAtTopLevel(true).size());
+	}
+
+
+	/**
+	 * Gets the patient , then sees if it can get the patient identifier by the patient program as well
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void getPatientIdentifiersByPatientProgram_shouldGetPatientsByIdentifierByProgram() throws Exception {
+
+		executeDataSet(CREATE_PATIENT_WITH_PATIENT_IDENTIFIER_PROGRAM_XML);
+		updateSearchIndex();
+
+		// get the first patient
+		Collection<Patient> panPatients = patientService.getPatients("Pan", null, null, false);
+
+		assertFalse( panPatients.isEmpty(),"The patient List should not be null");
+
+		Patient patient = panPatients.iterator().next();
+
+		assertEquals(patient.getActiveIdentifiers().size(), 2);
+
+		PatientProgram patientProgram = Context.getProgramWorkflowService().getPatientProgramByUuid("e2d4c2f9-d4d6-4dc7-8b4a-b4073dd6e097");
+
+		assertNotNull(patientProgram, "Test Patient Program not found");
+
+		List<PatientIdentifier> patientIdentifier = Context.getPatientService().getPatientIdentifiersByPatientProgram(patientProgram);
+
+		assertEquals(patientIdentifier.size(), 1);
+		assertEquals(patientIdentifier.iterator().next().getIdentifier(), "XXXCCCAAA11");
 	}
 
 }
