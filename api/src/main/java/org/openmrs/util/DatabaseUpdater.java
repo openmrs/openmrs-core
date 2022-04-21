@@ -859,7 +859,7 @@ public class DatabaseUpdater {
 					Scope.exit(scopeId);
 				}
 				catch (Exception e) {
-					// Do nothing
+					log.warn("An error occurred trying to exit the liquibase scope", e);
 				}
 			}
 		}
