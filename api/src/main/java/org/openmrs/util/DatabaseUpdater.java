@@ -9,33 +9,11 @@
  */
 package org.openmrs.util;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
 import liquibase.Contexts;
 import liquibase.LabelExpression;
 import liquibase.Liquibase;
 import liquibase.RuntimeEnvironment;
+import liquibase.Scope;
 import liquibase.changelog.ChangeLogHistoryServiceFactory;
 import liquibase.changelog.ChangeLogIterator;
 import liquibase.changelog.ChangeSet;
@@ -64,6 +42,30 @@ import org.openmrs.liquibase.ChangeSetExecutorCallback;
 import org.openmrs.liquibase.LiquibaseProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * This class uses Liquibase to update the database. <br>
@@ -415,19 +417,14 @@ public class DatabaseUpdater {
 				database.setDatabaseChangeLogTableName(database.getDatabaseChangeLogTableName().toUpperCase());
 				database.setDatabaseChangeLogLockTableName(database.getDatabaseChangeLogLockTableName().toUpperCase());
 			}
-			
-			ResourceAccessor openmrsFO = new ClassLoaderFileOpener(cl);
-			ResourceAccessor fsFO = new FileSystemResourceAccessor();
-			
+
 			if (changeLogFile == null) {
 				changeLogFile = EMPTY_CHANGE_LOG_FILE;
 			}
 
 			// ensure that the change log history service is initialised
-			//
 			ChangeLogHistoryServiceFactory.getInstance().getChangeLogService(database).init();
-			
-			return new Liquibase(changeLogFile, new CompositeResourceAccessor(openmrsFO, fsFO), database);
+			return new Liquibase(changeLogFile, getCompositeResourceAccessor(cl), database);
 		}
 		catch (Exception e) {
 			// if an error occurs, close the connection
@@ -847,7 +844,36 @@ public class DatabaseUpdater {
 			if (callback != null) {
 				callback.executing(changeSet, numChangeSetsToRun);
 			}
-			super.visit(changeSet, databaseChangeLog, database, filterResults);
+			Map<String, Object> scopevalues = new HashMap<>();
+			scopevalues.put(Scope.Attr.resourceAccessor.name(), getCompositeResourceAccessor(null));
+			String scopeId = null;
+			try {
+				scopeId = Scope.enter(scopevalues);
+				super.visit(changeSet, databaseChangeLog, database, filterResults);
+			}
+			catch (Exception e) {
+				throw new LiquibaseException("Unable to execute change set: " + changeSet, e);
+			}
+			finally {
+				try {
+					Scope.exit(scopeId);
+				}
+				catch (Exception e) {
+					// Do nothing
+				}
+			}
 		}
+	}
+
+	/**
+	 * @return a resourceAccessor that includes both classpath and filesystem at the application data directory
+	 */
+	private static CompositeResourceAccessor getCompositeResourceAccessor(ClassLoader classLoader) {
+		if (classLoader == null) {
+			classLoader = OpenmrsClassLoader.getInstance();
+		}
+		ResourceAccessor openmrsFO = new ClassLoaderFileOpener(classLoader);
+		ResourceAccessor fsFO = new FileSystemResourceAccessor(OpenmrsUtil.getApplicationDataDirectoryAsFile());
+		return new CompositeResourceAccessor(openmrsFO, fsFO);
 	}
 }
