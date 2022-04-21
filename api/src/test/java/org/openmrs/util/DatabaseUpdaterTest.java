@@ -9,20 +9,25 @@
  */
 package org.openmrs.util;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
 import liquibase.exception.LockException;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.openmrs.liquibase.ChangeSetExecutorCallback;
 import org.openmrs.liquibase.LiquibaseProvider;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.InputStream;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests methods on the {@link DatabaseUpdater} class. This class expects /metadata/model to be on
@@ -83,5 +88,23 @@ public class DatabaseUpdaterTest extends BaseContextSensitiveTest {
 		DatabaseUpdater.getLiquibase( "filename" );
 		verify(liquibaseProvider, times(1)).getLiquibase("filename");
 		DatabaseUpdater.unsetLiquibaseProvider();
+	}
+	
+	@Test
+	public void shouldExecuteLiquibaseFileRelativeToApplicationDataDirectory() throws Exception {
+		copyResourcesToApplicationDataDirectory();
+		DatabaseUpdater.executeChangelog("testLiquibase.xml", (ChangeSetExecutorCallback) null);
+	}
+	
+	private void copyResourcesToApplicationDataDirectory() throws Exception {
+		File appDataDir = OpenmrsUtil.getApplicationDataDirectoryAsFile();
+		String[] files = {"testLiquibase.xml", "sql/testSqlFile.sql"};
+		for (String fileName : files) {
+			String inputResource = "org/openmrs/util/" + fileName;
+			InputStream in = getClass().getClassLoader().getResourceAsStream(inputResource);
+			String contents = IOUtils.toString(in, "UTF-8");
+			File outputFile = new File(appDataDir, fileName);
+			FileUtils.write(outputFile, contents, "UTF-8");
+		}
 	}
 }
