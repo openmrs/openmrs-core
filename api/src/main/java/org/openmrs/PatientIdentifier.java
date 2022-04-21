@@ -68,7 +68,6 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 
 	private PatientProgram patientProgram;
 	
-
 	@Field
 	private Boolean preferred = false;
 	

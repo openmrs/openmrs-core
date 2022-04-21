@@ -995,7 +995,6 @@ public class HibernatePatientDAO implements PatientDAO {
     	return allergy;
     }
 
-
     /**
      * @see org.openmrs.api.db.PatientDAO#getPatientIdentifierByProgram(org.openmrs.PatientProgram)
      */
