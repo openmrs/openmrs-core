@@ -3297,7 +3297,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		// get the first patient
 		Collection<Patient> panPatients = patientService.getPatients("Pan", null, null, false);
 
-		assertFalse( panPatients.isEmpty(),"The patient List should not be null");
+		assertFalse(panPatients.isEmpty(), "The patient List should not be null");
 
 		Patient patient = panPatients.iterator().next();
 
