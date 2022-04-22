@@ -300,7 +300,7 @@ public interface PatientDAO {
 
 	/**
 	 * Gets a List of Patient Identifiers associated to a program 
-	 * @param patientProgram the program that matches the patientIdentifier
+	 * @param patientProgram the program that matches the patient Identifier
 	 * @return patient identifier or null
 	 */
 	public List getPatientIdentifierByProgram(PatientProgram patientProgram);

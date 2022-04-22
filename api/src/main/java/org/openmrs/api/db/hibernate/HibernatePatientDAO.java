@@ -996,8 +996,7 @@ public class HibernatePatientDAO implements PatientDAO {
     	sessionFactory.getCurrentSession().save(allergy);
     	return allergy;
     }
-
-
+    
     /**
      * @see org.openmrs.api.db.PatientDAO#getPatientIdentifierByProgram(org.openmrs.PatientProgram)
      */

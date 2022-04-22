@@ -3285,7 +3285,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 
 
 	/**
-	 * Gets the patient , then sees if it can get the patient identifier by the patient program as well
+	 * Gets the patient, then sees if it can get the patient identifier by the patient program as well
 	 *
 	 * @throws Exception
 	 */
