@@ -3282,8 +3282,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertEquals(1, encounterService.getEncounter(57).getObsAtTopLevel(false).size());
 		assertEquals(2, encounterService.getEncounter(57).getObsAtTopLevel(true).size());
 	}
-
-
+	
 	/**
 	 * Gets the patient, then sees if it can get the patient identifier by the patient program as well
 	 *
