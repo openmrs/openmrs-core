@@ -343,7 +343,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	/**
 	 * This method sets the patient program on a patient Identifier
 	 * @since 2.3.6
-	 * @param patientProgram The patientProgram to set.
+	 * @param patientProgram The patient program to set.
 	 */
 	public void setPatientProgram(PatientProgram patientProgram) {
 		this.patientProgram = patientProgram;
