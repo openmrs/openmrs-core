@@ -1638,4 +1638,14 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	public List<PatientIdentifier> getPatientIdentifiersByPatientProgram(PatientProgram patientProgram) {
 		return dao.getPatientIdentifierByProgram(patientProgram);
 	}
+
+	/**
+	 * @see org.openmrs.api.PatientService#getPatientByIdentifier(java.lang.String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<Patient> getPatientByIdentifier(String identifier, boolean matchIdentifierExactly) throws APIException {
+		return Context.getPatientService().getPatientByIdentifier(identifier, matchIdentifierExactly);
+	}
+
 }
