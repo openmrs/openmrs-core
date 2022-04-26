@@ -210,19 +210,21 @@ public class HibernatePatientDAO implements PatientDAO {
 
 		return new ArrayList<>(patients);
 	}
-
+	
 	/**
-	 * @see org.openmrs.api.PatientService#getPatientByIdentifier(String, boolean)
-	 * <strong>Should</strong> return exact match first
+	 * @see org.openmrs.api.PatientService#getPatientByIdentifier(String, String, List, boolean, boolean, boolean)
+	 * <strong>Should</strong> return only exact match 
 	 */
-	public List<Patient> getPatientByIdentifier(String identifier, boolean matchIdentifierExactly) throws DAOException {	
+	public List<Patient> getPatientsByIdentifier(String name, String identifier, List<PatientIdentifierType> identifierTypes,
+		boolean matchIdentifierExactly) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
-		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(identifier, matchIdentifierExactly);
+		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier, identifierTypes,
+			matchIdentifierExactly, false, false);
 		
 		criteria.setFirstResult(0);
 		criteria.setMaxResults(HibernatePersonDAO.getMaximumSearchResults());
 		
-		return criteria.list();	
+		return criteria.list();
 	}
 
 	/**

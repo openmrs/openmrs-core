@@ -115,7 +115,8 @@ public interface PatientService extends OpenmrsService {
 	 * <strong>Should</strong> return null if patient not found with given identifier
 	 */
 	@Authorized( { PrivilegeConstants.GET_PATIENTS })
-	public List<Patient> getPatientByIdentifier(String identifier, boolean matchIdentifierExactly) throws APIException;
+	public List<Patient> getPatientsByIdentifier(String name, String identifier, List<PatientIdentifierType> identifierTypes,
+	        boolean matchIdentifierExactly) throws APIException;
 	
 	/**
 	 * Get patient identifier by universally unique identifier.

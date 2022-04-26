@@ -1640,12 +1640,17 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	}
 
 	/**
-	 * @see org.openmrs.api.PatientService#getPatientByIdentifier(java.lang.String)
+	 * @see PatientService#getPatientsByIdentifier(org.openmrs.api.PatientService)
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public List<Patient> getPatientByIdentifier(String identifier, boolean matchIdentifierExactly) throws APIException {
-		return Context.getPatientService().getPatientByIdentifier(identifier, matchIdentifierExactly);
+	public List<Patient> getPatientsByIdentifier(String name, String identifier,
+			List<PatientIdentifierType> identifierTypes, boolean matchIdentifierExactly) throws APIException {
+		if (identifierTypes == null) {
+			identifierTypes = Collections.emptyList();
+		}
+
+		return Context.getPatientService().getPatients(name, identifier, identifierTypes, matchIdentifierExactly, 0, null);
 	}
 
 }
