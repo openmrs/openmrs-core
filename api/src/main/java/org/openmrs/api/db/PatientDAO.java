@@ -18,7 +18,10 @@ import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientProgram;
+import org.openmrs.annotation.Authorized;
+import org.openmrs.api.APIException;
 import org.openmrs.api.PatientService;
+import org.openmrs.util.PrivilegeConstants;
 
 /**
  * Database methods for the PatientService
@@ -130,8 +133,18 @@ public interface PatientDAO {
 	 */
 	public List<Patient> getPatients(String name, List<PatientIdentifierType> identifierTypes,
 		boolean matchIdentifierExactly, Integer start, Integer length) throws DAOException;
-	
-	
+
+	/**
+	 * Get patient by universally unique identifier.
+	 * 
+	 * @param uuid universally unique identifier
+	 * @throws APIException
+	 * <strong>Should</strong> fetch patient with given identifier
+	 * <strong>Should</strong> return null if patient not found with given identifier
+	 */
+	@Authorized( { PrivilegeConstants.GET_PATIENTS })
+	public List<Patient> getPatientsByIdentifier(String name, String identifier, List<PatientIdentifierType> identifierTypes,
+	        boolean matchIdentifierExactly) throws APIException;
 	
 	/**
 	 * @see org.openmrs.api.PatientService#getPatientIdentifiers(java.lang.String, java.util.List,

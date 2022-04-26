@@ -46,6 +46,7 @@
   <person person_id="3" gender="F" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="4b3f42da-2029-4e47-9396-a1b6a969e802"/>
   <person_name person_name_id="2" preferred="true" person_id="3" given_name="John3" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="38f9c631-7168-4944-8e2b-e96b1b0ee882"/>
   <patient_identifier patient_identifier_id="2" patient_id="3" creator="1" date_created="2005-01-01 00:00:00.0" identifier="12345" identifier_type="1" preferred="1" voided="false" location_id="1"  uuid="037d7208-da34-48e3-9761-24b614b99b56"/>
+  <patient_identifier patient_identifier_id="5" patient_id="2" creator="1" date_created="2022-04-26 00:00:00.0" identifier="4321" identifier_type="1" preferred="1" voided="false" location_id="1" uuid="727bdbf7-ecee-4cb0-88c5-99e7e9eea371"/>
   
   <person person_id="4" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" gender="M"  uuid="c2482297-d022-42ae-a4b8-6f14b73f12fa"/>
   <person_name person_id="4" person_name_id="4" preferred="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" given_name="Some" middle_name="Other" family_name="User"  uuid="6ca5379d-b9d7-4b42-b65f-cdcbc94a54dd"/>
