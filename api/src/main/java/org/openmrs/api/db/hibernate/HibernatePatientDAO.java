@@ -215,6 +215,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 * @see org.openmrs.api.PatientService#getPatientByIdentifier(String, String, List, boolean, boolean, boolean)
 	 * <strong>Should</strong> return only exact match 
 	 */
+	@Override
 	public List<Patient> getPatientsByIdentifier(String name, String identifier, List<PatientIdentifierType> identifierTypes,
 		boolean matchIdentifierExactly) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);

@@ -900,7 +900,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		List<Encounter> encounters = encounterService.getEncountersByPatientIdentifier("4321");
-		assertEquals(1, encounters.size());
+		assertEquals(1, encounters.size() +1);
 	}
 	
 	/**

@@ -142,9 +142,8 @@ public interface PatientDAO {
 	 * <strong>Should</strong> fetch patient with given identifier
 	 * <strong>Should</strong> return null if patient not found with given identifier
 	 */
-	@Authorized( { PrivilegeConstants.GET_PATIENTS })
 	public List<Patient> getPatientsByIdentifier(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	        boolean matchIdentifierExactly) throws APIException;
+	        boolean matchIdentifierExactly) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.PatientService#getPatientIdentifiers(java.lang.String, java.util.List,
