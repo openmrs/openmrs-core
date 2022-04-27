@@ -18,10 +18,7 @@ import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientProgram;
-import org.openmrs.annotation.Authorized;
-import org.openmrs.api.APIException;
 import org.openmrs.api.PatientService;
-import org.openmrs.util.PrivilegeConstants;
 
 /**
  * Database methods for the PatientService
