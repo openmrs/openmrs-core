@@ -138,7 +138,7 @@ public interface PatientDAO {
 	 * Get patient by universally unique identifier.
 	 * 
 	 * @param uuid universally unique identifier
-	 * @throws APIException
+	 * @throws DAOException
 	 * <strong>Should</strong> fetch patient with given identifier
 	 * <strong>Should</strong> return null if patient not found with given identifier
 	 */
