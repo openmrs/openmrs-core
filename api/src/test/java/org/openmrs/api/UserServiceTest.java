@@ -47,7 +47,6 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.messagesource.MessageSourceService;
-import org.openmrs.notification.MessageException;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
@@ -55,6 +54,7 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -1529,7 +1529,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_HOST_URL,
 		    "http://localhost:8080/openmrs/admin/users/changePassword.form/{activationKey}");
 		assertNull(dao.getLoginCredential(createdUser).getActivationKey());
-		assertThrows(MessageException.class, () -> userService.setUserActivationKey(createdUser));
+		assertThrows(BeanCreationException.class, () -> userService.setUserActivationKey(createdUser));
 		assertNotNull(dao.getLoginCredential(createdUser).getActivationKey());
 	}
 	

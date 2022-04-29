@@ -70,6 +70,8 @@ import org.springframework.aop.Advisor;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
+import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;
@@ -576,6 +578,8 @@ public class Context {
 	 */
 	public static MessageService getMessageService() {
 		MessageService ms = getServiceContext().getMessageService();
+		AbstractApplicationContext context = new ClassPathXmlApplicationContext("applicationContext-service.xml");
+		ms = (MessageService) context.getBean("messageServiceBean", MessageService.class);
 		try {
 			// Message service dependencies
 			if (ms.getMessagePreparator() == null) {

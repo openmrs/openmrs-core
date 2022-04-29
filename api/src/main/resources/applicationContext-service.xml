@@ -597,6 +597,14 @@
 
 	<!--  ******************************  MESSAGE SERVICES  ****************************** -->
 
+    <bean id="messageServiceBean" class="org.openmrs.notification.MessageService">
+      <lookup-method name="setMessageSender" bean="messageServiceImpl"/>
+      <lookup-method name="getMessageSender" bean="messageServiceImpl"/>
+      <lookup-method name="setMessagePreparator" bean="messageServiceImpl"/>
+      <lookup-method name="getMessagePreparator" bean="messageServiceImpl"/>
+    </bean>
+    <bean id="messageServiceImpl" class="org.openmrs.notification.impl.MessageServiceImpl" scope="prototype"></bean>
+    
 	<!-- Messaging Service -->
 	<!--
     <bean id="messageService" class="org.openmrs.notification.impl.MessageServiceImpl">
