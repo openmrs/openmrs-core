@@ -104,7 +104,6 @@
 			<property name="allowByTailComment" value="true"/>
 			<property name="allowNonPrintableEscapes" value="true"/>
 		</module>
-
 		<module name="AvoidStarImport">
 			<property name="severity" value="error"/>
 		</module>
