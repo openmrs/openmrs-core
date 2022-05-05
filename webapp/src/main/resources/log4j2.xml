@@ -58,6 +58,7 @@
 		<!-- Hide the useless MissingResourceException -->
 		<Logger name="org.springframework.context.support.ResourceBundleMessageSource" level="ERROR" />
 		<Logger name="org.springframework.beans.factory.support.DefaultListableBeanFactory" level="ERROR" />
+		<Logger name="org.hibernate.orm.deprecation" additivity="false" level="ERROR"/>
 		<Root level="WARN">
 			<AppenderRef ref="CONSOLE" />
 			<AppenderRef ref="MEMORY_APPENDER" />
