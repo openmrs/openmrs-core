@@ -58,6 +58,23 @@ mvn -version
 
 which will tell you what version Maven is using. Refer to the [Maven docs](https://maven.apache.org/configure.html) if you need to configure Maven.
 
+#### Jetty
+
+OpenMRS is a web-app that runs on top of a Jetty server.
+
+Download Jetty server from the [eclipse website](https://www.eclipse.org/jetty/download.php), the tar.gz version works best.
+
+[Setup JAVA_HOME for the OS you are using.](https://www.baeldung.com/java-home-on-windows-7-8-10-mac-os-x-linux)
+
+To test Jetty,
+```bash
+cd your-home-directory/
+java -jar /jetty-directory/jetty-home-11.0.9/start.jar
+```
+
+Don't launch Jetty from its own directory, you have to be somewhere else when test running it. Read the difference between JETTY_BASE and JETTY_HOME [here](https://xy2401.com/local-docs/java/jetty.9.4.24.v20191120/startup-base-and-home.html)
+ 
+
 #### Git
 
 Install the version control tool [git](https://git-scm.com/) and clone this repository with
