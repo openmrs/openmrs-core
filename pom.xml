@@ -512,7 +512,7 @@
 			<dependency>
 				<groupId>net.sf.ehcache</groupId>
 				<artifactId>ehcache</artifactId>
-				<version>2.10.10.2.29</version>
+				<version>2.10.10.3.24</version>
 			</dependency>
 			<dependency>
 			    <groupId>commons-validator</groupId>
