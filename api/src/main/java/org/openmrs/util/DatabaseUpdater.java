@@ -208,6 +208,8 @@ public class DatabaseUpdater {
 			cl = OpenmrsClassLoader.getInstance();
 		}
 		
+		Thread.currentThread().setContextClassLoader(cl);
+		
 		log.debug("Setting up liquibase object to run changelog: {}", changeLogFile);
 		Liquibase liquibase = getLiquibase(changeLogFile, cl);
 		
