@@ -1085,7 +1085,7 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 			} else if ("ST".equals(abbrev)) {
 				setValueText(s);
 			} else {
-				throw new RuntimeException("Don't know how to handle " + abbrev);
+				throw new RuntimeException("Don't know how to handle " + abbrev + " for concept: " + getConcept().getName().getName());
 			}
 			
 		} else {
