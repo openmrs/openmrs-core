@@ -28,11 +28,11 @@ public class Format {
 		TIME,
 		TIMESTAMP
 	}
-	
+	/* Method that needs a comment */
 	public static String formatPercentage(double pct) {
 		return NumberFormat.getPercentInstance().format(pct);
 	}
-	
+	/* Method that needs a comment */
 	public static String formatPercentage(Number pct) {
 		if (pct == null) {
 			return "";
@@ -40,23 +40,23 @@ public class Format {
 			return NumberFormat.getPercentInstance().format(pct.doubleValue());
 		}
 	}
-	
+	/* Method that needs a comment */
 	public static String format(double d) {
 		return "" + (d);
 	}
-	
+	/* Method that needs a comment */
 	public static String format(Double d) {
 		return d == null ? "" : format(d.doubleValue());
 	}
-	
+	/* Method that needs a comment */
 	public static String formatTextBoxDate(Date date) {
 		return format(date, Context.getLocale(), FORMAT_TYPE.DATE);
 	}
-	
+	/* Method that needs a comment */
 	public static String format(Date date) {
 		return format(date, Context.getLocale(), FORMAT_TYPE.DATE);
 	}
-	
+	/* Method that needs a comment */
 	public static String format(Date date, FORMAT_TYPE type) {
 		return format(date, Context.getLocale(), type);
 	}
