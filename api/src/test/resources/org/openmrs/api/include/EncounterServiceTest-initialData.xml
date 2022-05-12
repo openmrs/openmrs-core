@@ -33,6 +33,7 @@
   <person person_id="2" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" gender="M"  uuid="a194be38-271a-44cb-ba3f-f2dbf4831fe9"/>
   <person_name person_id="2" person_name_id="2" preferred="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" given_name="John" middle_name=" " family_name="Doe"  uuid="765b882e-db79-498b-aff7-b5b53f12caf1"/>
   <patient patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <patient patient_id="4" creator="1" date_created="2022-05-15 00:00:00.0" voided="false"/>
 
   <patient_identifier patient_identifier_id="1" patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" identifier="1234" identifier_type="1" preferred="1" voided="false" location_id="1"  uuid="b2c299e7-2679-44b8-a7a3-c69159a20ac0"/>
   
@@ -41,6 +42,7 @@
   <patient patient_id="3" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
   <patient_identifier patient_identifier_id="3" patient_id="2" identifier="1234" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="3878b920-a9d6-445b-b7a6-e7744da68abc"/>
   <patient_identifier patient_identifier_id="4" patient_id="3" identifier="12345" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="cf62c4b2-39d2-4c8e-befa-630f9387a748"/>
+  <patient_identifier patient_identifier_id="5" patient_id="4" identifier="4321" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2022-05-15 00:00:00.0" voided="false" uuid="727bdbf7-ecee-4cb0-88c5-99e7e9eea371"/>
   <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false" uuid="d6b27c63-3984-4fba-b683-1b0126a8e370"/>
   <person person_id="2" gender="M" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="19887889-7110-46a7-a9f0-ebf1eb4bbd48"/>
   <person person_id="3" gender="F" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="4b3f42da-2029-4e47-9396-a1b6a969e802"/>
