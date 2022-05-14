@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+
+<!-- Beans to add to the current Application context definition -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:util="http://www.springframework.org/schema/util"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations" value="classpath:/org/openmrs/notification/mail.properties"/>
+
+	</bean>
+	<bean id="testPasswordAuth" class="javax.mail.PasswordAuthentication">
+		<constructor-arg>
+			<value></value>
+		</constructor-arg>
+		<constructor-arg>
+			<value></value>
+		</constructor-arg>
+	</bean>
+	<bean id="testAuthenticator" class="javax.mail.Authenticator">
+		<lookup-method name="getPasswordAuthentication" bean="testPasswordAuth" />
+	</bean>
+	<bean id="testMailSession" class="javax.mail.Session">
+		<constructor-arg>
+			<props>
+				<prop key="mail.smtp.auth">false</prop>
+				<prop key="mail.smtp.host">${mail.smtp.host}</prop>
+				<prop key="mail.smtp.port">${mail.smtp.port}</prop>
+			</props>
+		</constructor-arg>
+		<constructor-arg ref="testAuthenticator" />
+	</bean>
+	<bean id="testMessageService" primary="true" class="org.openmrs.notification.impl.MessageServiceImpl">
+		<property name="templateDAO">
+			<ref bean="templateDAO"/>
+		</property>
+		<property name="messagePreparator">
+			<bean id="testMailMessagePreparator" class="org.openmrs.notification.mail.velocity.VelocityMessagePreparator"/>
+		</property>
+		<property name="messageSender">
+			<bean id="testMailMessageSender" class="org.openmrs.notification.mail.MailMessageSender">
+				<property name="mailSession">
+					<ref bean="testMailSession"/>
+				</property>
+			</bean>
+		</property>
+	</bean>
+</beans>

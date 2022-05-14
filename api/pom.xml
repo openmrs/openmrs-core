@@ -46,6 +46,18 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.icegreen</groupId>
+			<artifactId>greenmail</artifactId>
+			<version>1.6.5</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.icegreen</groupId>
+			<artifactId>greenmail-junit5</artifactId>
+			<version>1.6.5</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>commons-collections</groupId>
 			<artifactId>commons-collections</artifactId>
 		</dependency>
@@ -339,8 +351,6 @@
 				<configuration>
 					<excludes>
 						<exclude>org/openmrs/test/*</exclude>
-						<!-- Exclude mail test, slows build, breaks portability with requirements on port 25 -->
-						<exclude>**/notification/MessageServiceTest.java</exclude>
 					</excludes>
 				</configuration>
 			</plugin>

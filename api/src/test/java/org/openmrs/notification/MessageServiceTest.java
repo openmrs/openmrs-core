@@ -9,23 +9,69 @@
  */
 package org.openmrs.notification;
 
+import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
+import javax.mail.Address;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.openmrs.Role;
+import org.openmrs.User;
+import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ServiceContext;
+import org.openmrs.notification.impl.MessageServiceImpl;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+
+import com.icegreen.greenmail.junit5.GreenMailExtension;
+import com.icegreen.greenmail.util.GreenMailUtil;
+import com.icegreen.greenmail.util.ServerSetupTest;
+import org.openmrs.util.OpenmrsConstants;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.IntStream;
 
 /**
  * Unit tests for the MessageService.
  */
 public class MessageServiceTest extends BaseContextSensitiveTest {
 	
-	private static final String NO_SMTP_SERVER_ERROR = "Could not connect to SMTP host:";
+	// Most messages are sent from this email address
+	private static final String MAIL_SENDER = "sender@example.com";
 	
-	MessageService ms = null;
+	// Most messages, to random mailboxes, are sent to this domain
+	private static final String RECIPIENT_DOMAIN = "@test.net";
+
+	/**
+	 * MessageService used during these tests. 
+	 * Will replace the original MessageService - which is not suitable - defined in applicationContext-service.xml
+ 	 */
+	private MessageService testMessageService;
+
+	/**
+	 * We keep the original MessageService and restore it after each test.
+	 */
+	private MessageService originalMessageService;
 	
+	/**
+	* One GreenMail server is shared for all test methods of this test class.
+	* To ensure tests are independent and don't fail if a previous test sends an email to the same inbox, 
+	* use random email addresses.
+	 */
+	@RegisterExtension
+	static GreenMailExtension greenMail = new GreenMailExtension(ServerSetupTest.SMTP)
+		.withPerMethodLifecycle(true);
+
 	/**
 	 * Run this before each unit test in this class. The "@Before" method in
 	 * {@link BaseContextSensitiveTest} is run right before this method.
@@ -33,12 +79,17 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@BeforeEach
-	public void runBeforeEachTest() {
+	public void runBeforeEachTest() throws MessageException {
 		executeDataSet("org/openmrs/notification/include/MessageServiceTest-initial.xml");
 		
-		ms = Context.getMessageService();
+		setupMessageService();
 	}
-	
+
+	@AfterEach
+	public void cleanup() {
+		restoreOriginalMessageService();
+	}
+
 	/**
 	 * @throws MessageException
 	 * @see MessageService#createMessage(String,String,String,String)
@@ -53,10 +104,10 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 		String attachmentContentType = "text/plain";
 		String attachmentFileName = "inga.txt";
 		
-		Message msg1 = ms.createMessage(recipients, sender, subject, message);
-		Message msg2 = ms.createMessage(subject, message);
-		Message msg3 = ms.createMessage(sender, subject, message);
-		Message msg4 = ms.createMessage(recipients, sender, subject, message, attachment, attachmentContentType,
+		Message msg1 = testMessageService.createMessage(recipients, sender, subject, message);
+		Message msg2 = testMessageService.createMessage(subject, message);
+		Message msg3 = testMessageService.createMessage(sender, subject, message);
+		Message msg4 = testMessageService.createMessage(recipients, sender, subject, message, attachment, attachmentContentType,
 		    attachmentFileName);
 		
 		assertEquals(recipients, msg1.getRecipients());
@@ -86,31 +137,217 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 	 * @see MessageService#sendMessage(Message)
 	 */
 	@Test
-	public void sendMessage_shouldSendMessage() throws MessageException {
-		Message tryToSend1 = ms.createMessage("recipient@example.com", "sender@example.com", "subject", "content");
-		try {
-			ms.sendMessage(tryToSend1);
-		}
-		catch (MessageException e) {
-			//So that this test doesn't fail just because the user isn't running an SMTP server.
-			if (!e.getMessage().contains(NO_SMTP_SERVER_ERROR)) {
-				e.printStackTrace();
-				fail();
-			}
-		}
+	public void sendMessage_shouldSendMessage() throws MessageException, MessagingException {
+		String recipientOfFirstMessage = "first@example.com";
+		String contentOfFirstMessage = GreenMailUtil.random();
+		String subjectOfFirstMessage = GreenMailUtil.random();
+		Message firstMessageToSend = testMessageService.createMessage(recipientOfFirstMessage, MAIL_SENDER, subjectOfFirstMessage, contentOfFirstMessage);
 		
-		Message tryToSend2 = ms.createMessage("recipient@example.com,recipient2@example.com", "openmrs.emailer@gmail.com",
-		    "subject", "content", "moo", "text/plain", "moo.txt");
-		try {
-			ms.sendMessage(tryToSend2);
+		testMessageService.sendMessage(firstMessageToSend);
+		
+		String recipientsOfSecondMessage = "second@example.com,copy@example.com";
+		String contentOfSecondMessage = GreenMailUtil.random();
+		String subjectOfSecondMessage = GreenMailUtil.random();		
+		String attachment = "test";
+		String attachmentContentType = "text/plain";
+		String attachmentFileName = "filename.txt";
+		Message secondMessageToSend = testMessageService.createMessage(recipientsOfSecondMessage, MAIL_SENDER,
+				subjectOfSecondMessage, contentOfSecondMessage, attachment, attachmentContentType, attachmentFileName);
+		
+		testMessageService.sendMessage(secondMessageToSend);
+		
+		MimeMessage firstMessageReceived = greenMail.getReceivedMessages()[0];
+		assertEquals(contentOfFirstMessage, GreenMailUtil.getBody(firstMessageReceived));
+		assertEquals(1, firstMessageReceived.getAllRecipients().length);
+		assertEquals(recipientOfFirstMessage, firstMessageReceived.getAllRecipients()[0].toString());
+		
+		MimeMessage secondMessageReceived = greenMail.getReceivedMessages()[1];
+		Address[] actualRecipients = secondMessageReceived.getAllRecipients();
+		assertEquals(2, actualRecipients.length);
+		assertEquals(recipientsOfSecondMessage, formatRecipients(actualRecipients));
+	}
+	@Test
+	public void sendMessage_withGivenParameters_shouldSendMessage() throws MessageException, MessagingException {
+		String recipients = "foo@bar.com,marco@polo.com";
+		String subject = "foo";
+		String content = "content";
+		
+		testMessageService.sendMessage(recipients, MAIL_SENDER, subject, content);
+
+		MimeMessage receivedMessage = greenMail.getReceivedMessages()[0];
+		Address[] allMessageRecipients = receivedMessage.getAllRecipients();
+		
+		assertEquals(2, allMessageRecipients.length);
+		assertEquals(recipients, formatRecipients(allMessageRecipients));
+	}
+
+	@Test
+	public void sendMessage_withRecipientId_shouldSendMessage() throws MessageException, MessagingException {
+		List<User> users = getSomeUsers(5);
+
+		List<String> subjects = IntStream.range(0, users.size()).mapToObj(i -> GreenMailUtil.random())
+			.collect(toList());
+		
+		List<String> contents = IntStream.range(0, users.size()).mapToObj(i -> GreenMailUtil.random())
+			.collect(toList());
+
+		List<Message> messages = new ArrayList<>();
+		for(User user : users) {
+			int i = users.indexOf(user);
+			messages.add(testMessageService.createMessage(subjects.get(i), contents.get(i)));
+			testMessageService.sendMessage(messages.get(i), user.getId());
 		}
-		catch (MessageException e) {
-			//So that this test doesn't fail just because the user isn't running an SMTP server.
-			if (!e.getMessage().contains(NO_SMTP_SERVER_ERROR)) {
-				e.printStackTrace();
-				fail();
-			}
+
+		assertEquals(users.size(), greenMail.getReceivedMessages().length);
+
+		contents.forEach(content -> {
+			int i = contents.indexOf(content);
+			MimeMessage mimeMessage = greenMail.getReceivedMessages()[i];
+			assertEquals(content, GreenMailUtil.getBody(mimeMessage));
+		});
+		
+		for(User user : users) {
+			int i = users.indexOf(user);
+			MimeMessage mimeMessage = greenMail.getReceivedMessages()[i];
+			assertEquals(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS), 
+				mimeMessage.getAllRecipients()[0].toString());
 		}
 	}
-	
+
+	@Test
+	void sendMessage_withUser_shouldSendMessage() throws MessageException, MessagingException {
+		User user = getOneUser();
+		Message message = testMessageService.createMessage(GreenMailUtil.random(), GreenMailUtil.random());
+		
+		testMessageService.sendMessage(message, user);
+
+		MimeMessage receivedMessage = greenMail.getReceivedMessages()[0];
+		String recipient = receivedMessage.getAllRecipients()[0].toString();
+		assertEquals(getNotificationAddress(user), recipient);
+	}
+
+	@Test
+	void sendMessage_withCollectionOfUsers_shouldSendMessage() throws MessageException, MessagingException {
+		List<User> users = getSomeUsers(5);
+		Message message = testMessageService.createMessage(GreenMailUtil.random(), GreenMailUtil.random());
+		
+		testMessageService.sendMessage(message, users);
+
+		MimeMessage receivedMessage = greenMail.getReceivedMessages()[0];
+		Address[] recipients = receivedMessage.getAllRecipients();
+		String emailAddresses = String.join(",",
+			users.stream().map(this::getNotificationAddress).collect(toList()));
+		
+		assertEquals(emailAddresses, formatRecipients(recipients));
+	}
+
+	@Test
+	void sendMessage_withRoleName_shouldSendMessage() throws MessageException, MessagingException {
+		User user = getOneUser();
+		String roleName = new ArrayList<>(user.getAllRoles()).get(0).getName();
+		Message message = testMessageService.createMessage(GreenMailUtil.random(), GreenMailUtil.random());
+
+		testMessageService.sendMessage(message, roleName);
+
+		MimeMessage receivedMessage = greenMail.getReceivedMessages()[0];
+		String recipient = receivedMessage.getAllRecipients()[0].toString();
+		assertEquals(getNotificationAddress(user), recipient);
+	}
+
+	@Test
+	void sendMessage_withRole_shouldSendMessage() throws MessageException, MessagingException {
+		User user = getOneUser();
+		Role role = new ArrayList<>(user.getAllRoles()).get(0);
+		Message message = testMessageService.createMessage(GreenMailUtil.random(), GreenMailUtil.random());
+
+		testMessageService.sendMessage(message, role);
+
+		MimeMessage receivedMessage = greenMail.getReceivedMessages()[0];
+		String recipient = receivedMessage.getAllRecipients()[0].toString();
+		assertEquals(getNotificationAddress(user), recipient);
+	}
+
+	/**
+	 * Private utility method
+	 *
+	 * @param user the user whom notification email address we want
+	 * @return String representation of an email address
+	 */
+	private String getNotificationAddress(User user) {
+		return user.getUserProperties().get(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS);
+	}
+
+	/**
+	 * Private utility method
+	 *
+	 * @param maxNumber the maximum number of users to return
+	 * @return List of users with random notification email address
+	 */
+	private List<User> getSomeUsers(int maxNumber) {
+		UserService userService = Context.getUserService();
+		List<User> allUsers = userService.getAllUsers();
+		int maxUsers = Math.min(allUsers.size(), maxNumber);
+		List<User> users = allUsers.subList(0, maxUsers);
+
+		users.forEach(user -> {
+			user.getUserProperties()
+				.put(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS,
+					GreenMailUtil.random() + RECIPIENT_DOMAIN);
+		});
+
+		return users;
+	}
+
+	/**
+	 * Private utility method
+	 *
+	 * @return User with a random notification email address
+	 */
+	private User getOneUser() {
+		User user = Context.getUserService().getAllUsers().get(0);
+		user.getUserProperties().put(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS, 
+			GreenMailUtil.random() + RECIPIENT_DOMAIN);
+		return user;
+	}
+
+	/**
+	 * Private utility method
+	 *
+	 * @param allRecipients an array of Address
+	 * @return String which concatenates all addresses
+	 */
+	private String formatRecipients(Address[] allRecipients) {
+		return Arrays.stream(allRecipients).map(Address::toString).collect(joining(","));
+	}
+
+	/**
+	 * Private utility method
+	 *
+	 * A mail <code>Session</code> is defined in <code>MessageServiceTest-context.xml</code>
+	 * That mail Session is used by <code>messageSender</code> in <code>testMessageService</code>.
+	 * We put <code>testMessageService</code> in the Openmrs context; because, strangely, <code>MessageServiceImpl</code> 
+	 * does not always use its field <code>messageSender</code> to send messages. <code>MessageServiceImpl</code> often 
+	 * retrieves a <code>MessageService</code> from the Openmrs context and calls <code>sendMessage</code> on it.
+	 * Short of using a  <code>@TestExecutionListeners</code> as it's done in <code>BaseContextSensitiveTest</code>, 
+	 * we needed a way to replace beans.
+	 */
+	private void setupMessageService() {
+		originalMessageService = ServiceContext.getInstance().getMessageService();
+
+		String[] xmlFiles = new String[]{"/org/openmrs/notification/MessageServiceTest-context.xml"};
+		ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(xmlFiles, applicationContext);
+		testMessageService = ctx.getBean(MessageServiceImpl.class);
+		ServiceContext.getInstance().setMessageService(testMessageService);
+	}
+
+	/**
+	 * Private utility method
+	 *
+	 * Restores the original <code>MessageService</code> to the Openmrs context
+	 */
+	private void restoreOriginalMessageService() {
+		if (nonNull(originalMessageService)) {
+			ServiceContext.getInstance().setMessageService(originalMessageService);
+		}
+	}
 }
