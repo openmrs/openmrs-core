@@ -38,8 +38,8 @@ public class Format {
 	}
 	
 	/**
-	* This method formats a Number value to its nearest whole number as a percentage.
-	* @param pct input pct to format as a percentage.
+	* Formats a Number value to its nearest whole number as a percentage.
+	* @param pct value to format as a percentage.
 	* @return an empty string if the parameter is null. Otherwise the percentage form of the 
 	* parameter rounded up to the nearest whole number.
 	*/
@@ -52,7 +52,7 @@ public class Format {
 	}
 	
 	/**
-	* This method takes in a double value and converts it into a string.
+	* Takes a double value and converts it into a string.
 	* @param d input d to convert into a string.
 	* @return a string that denotes the percentage of the parameter.
 	*/
@@ -61,7 +61,7 @@ public class Format {
 	}
 	
 	/**
-	* This method formats a Double value to its nearest whole number as a percentage.
+	* Formats a Double value to its nearest whole number as a percentage.
 	* @param d input d to format as a percentage.
 	* @return an empty string if the parameter is null. Otherwise the percentage form of the 
 	* parameter rounded up to the nearest whole number.
@@ -70,29 +70,17 @@ public class Format {
 		return d == null ? "" : format(d.doubleValue());
 	}
 
-	/**
-	* This method does something blah blah blah
-	* @param arg this does something
-	* @return the Object
-	*/
+
 	public static String formatTextBoxDate(Date date) {
 		return format(date, Context.getLocale(), FORMAT_TYPE.DATE);
 	}
 	
-	/**
-	* This method does something blah blah blah
-	* @param arg this does something
-	* @return the Object
-	*/
+	
 	public static String format(Date date) {
 		return format(date, Context.getLocale(), FORMAT_TYPE.DATE);
 	}
 	
-	/**
-	* This method does something blah blah blah
-	* @param arg this does something
-	* @return the Object
-	*/
+
 	public static String format(Date date, FORMAT_TYPE type) {
 		return format(date, Context.getLocale(), type);
 	}
