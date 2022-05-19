@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.CacheMode;
@@ -58,6 +59,8 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 public class HibernateContextDAO implements ContextDAO {
 	
 	private static final Logger log = LoggerFactory.getLogger(HibernateContextDAO.class);
+	
+	private static final Long DEFAULT_UNLOCK_ACCOUNT_WAITING_TIME = TimeUnit.MILLISECONDS.convert(15L, TimeUnit.MINUTES);
 	
 	/**
 	 * Hibernate session factory
@@ -135,9 +138,10 @@ public class HibernateContextDAO implements ContextDAO {
 
 			// if they've been locked out, don't continue with the authentication
 			if (lockoutTime != null) {
-				// unlock them after 5 mins, otherwise reset the timestamp
-				// to now and make them wait another 5 mins
-				if (System.currentTimeMillis() - lockoutTime > 300000) {
+				// unlock them after x mins, otherwise reset the timestamp
+				// to now and make them wait another x mins
+				final Long unlockTime = getUnlockTimeMs();
+				if (System.currentTimeMillis() - lockoutTime > unlockTime) {
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "0");
 					candidateUser.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP);
 					saveUserProperties(candidateUser);
@@ -208,6 +212,28 @@ public class HibernateContextDAO implements ContextDAO {
 		// message regardless of username/pw combo entered
 		log.info("Failed login attempt (login={}) - {}", login, errorMsg);
 		throw new ContextAuthenticationException(errorMsg);
+	}
+	
+	private Long getUnlockTimeMs() {
+		String unlockTimeGPValue = Context.getAdministrationService().getGlobalProperty(
+				OpenmrsConstants.GP_UNLOCK_ACCOUNT_WAITING_TIME);
+		if (StringUtils.isNotBlank(unlockTimeGPValue)) {
+			return convertUnlockAccountWaitingTimeGP(unlockTimeGPValue);
+		}
+		else {
+			return DEFAULT_UNLOCK_ACCOUNT_WAITING_TIME;
+		}
+	}
+	
+	private Long convertUnlockAccountWaitingTimeGP(String waitingTime) {
+		try {
+			return TimeUnit.MILLISECONDS.convert(Long.valueOf(waitingTime), TimeUnit.MINUTES);
+		} catch (Exception ex) {
+			log.error("Unable to convert the global property "
+					+ OpenmrsConstants.GP_UNLOCK_ACCOUNT_WAITING_TIME
+					+ "to a valid Long. Using default value of 15");
+			return DEFAULT_UNLOCK_ACCOUNT_WAITING_TIME;
+		}
 	}
 	
 	/**

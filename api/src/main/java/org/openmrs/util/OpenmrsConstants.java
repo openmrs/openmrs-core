@@ -127,7 +127,7 @@ public final class OpenmrsConstants {
 		
 		return null;
 	}
-		
+	
 	public static String DATABASE_NAME = "openmrs";
 	
 	public static String DATABASE_BUSINESS_NAME = "openmrs";
@@ -178,7 +178,7 @@ public final class OpenmrsConstants {
 	
 	/**
 	 * These words are ignored in concept and patient searches
-	 * 
+	 *
 	 * @return Collection&lt;String&gt; of words that are ignored
 	 */
 	public static final Collection<String> STOP_WORDS() {
@@ -201,7 +201,7 @@ public final class OpenmrsConstants {
 	 * A gender character to gender name map<br>
 	 * TODO issues with localization. How should this be handled?
 	 * @deprecated As of 2.2, replaced by {@link #GENDERS}
-	 * 
+	 *
 	 * @return Map&lt;String, String&gt; of gender character to gender name
 	 */
 	@Deprecated
@@ -217,10 +217,10 @@ public final class OpenmrsConstants {
 	 * A list of 1-letter strings representing genders
 	 */
 	public static final List<String> GENDERS = Collections.unmodifiableList(asList("M", "F"));
-		
+	
 	/**
 	 * These roles are given to a user automatically and cannot be assigned
-	 * 
+	 *
 	 * @return <code>Collection&lt;String&gt;</code> of the auto-assigned roles
 	 */
 	public static final Collection<String> AUTO_ROLES() {
@@ -567,6 +567,8 @@ public final class OpenmrsConstants {
 	public static final String AUTO_CLOSE_VISITS_TASK_NAME = "Auto Close Visits Task";
 	
 	public static final String GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT = "security.allowedFailedLoginsBeforeLockout";
+
+	public static final String GP_UNLOCK_ACCOUNT_WAITING_TIME  = "security.unlockAccountWaitingTime";
 	
 	/**
 	 * @since 1.9.9, 1.10.2, 1.11
@@ -603,7 +605,7 @@ public final class OpenmrsConstants {
 	
 	/**
 	 * Indicates the version of the search index. The index will be rebuilt, if the version changes.
-	 * 
+	 *
 	 * @since 1.11
 	 */
 	public static final Integer SEARCH_INDEX_VERSION = 7;
@@ -627,7 +629,7 @@ public final class OpenmrsConstants {
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
 	 * database if they do not exist yet.
-	 * 
+	 *
 	 * @return List&lt;GlobalProperty&gt; of the core global properties
 	 */
 	public static final List<GlobalProperty> CORE_GLOBAL_PROPERTIES() {
@@ -976,7 +978,10 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT, "7",
 		        "Maximum number of failed logins allowed after which username is locked out"));
-		
+
+		props.add(new GlobalProperty(GP_UNLOCK_ACCOUNT_WAITING_TIME, "15",
+			"Waiting time for account to get automatically unlocked after getting locked due to multiple invalid login tries"));
+
 		props.add(new GlobalProperty(GP_DEFAULT_CONCEPT_MAP_TYPE, "NARROWER-THAN",
 		        "Default concept map type which is used when no other is set"));
 		
@@ -1217,14 +1222,14 @@ public final class OpenmrsConstants {
 	
 	/**
 	 * It points to a directory where 'openmrs.log' is stored.
-	 * 
+	 *
 	 * @since 1.9.2
 	 */
 	public static final String GP_LOG_LOCATION = "log.location";
 	
 	/**
 	 * It specifies a log layout pattern used by the OpenMRS file appender.
-	 * 
+	 *
 	 * @since 1.9.2
 	 */
 	public static final String GP_LOG_LAYOUT = "log.layout";
@@ -1259,13 +1264,13 @@ public final class OpenmrsConstants {
 
 	/**
 	 * Default url responsible for authentication if a user is not logged in.
-	 * 
+	 *
 	 * @see  #GP_LOGIN_URL
 	 */
 	public static final String LOGIN_URL = "login.htm";
 	
 	/**
-	 * Global property name that defines the default url 
+	 * Global property name that defines the default url
 	 * responsible for authentication if user is not logged in.
 	 *
 	 *  @see #LOGIN_URL
@@ -1275,7 +1280,7 @@ public final class OpenmrsConstants {
 	/**
 	 * These enumerations should be used in ObsService and PersonService getters to help determine
 	 * which type of object to restrict on
-	 * 
+	 *
 	 * @see org.openmrs.api.ObsService
 	 * @see org.openmrs.api.PersonService
 	 */
