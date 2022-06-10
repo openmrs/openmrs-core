@@ -135,7 +135,7 @@ public abstract class ImmutableEntityInterceptor extends EmptyInterceptor {
 	/**
 	 *  This allows code that is attempting to save immutable entities to bypass standard validation by allowing
 	 *  additional properties to be considered mutable for the duration of the thread.
-	 *  Note that the caller should ensure that {@link #removeMutablePropertyForThread} is invoked when the operation is done
+	 *  Note that the caller should ensure that {@link #removeMutablePropertiesForThread} is invoked when the operation is done
 	 *  
 	 * @param properties any additional properties that one wishes to make mutable for a given thread
 	 */
@@ -148,7 +148,7 @@ public abstract class ImmutableEntityInterceptor extends EmptyInterceptor {
 	 * this removes them.  NOTE, any usage of {@link #addMutablePropertiesForThread} should typically be followed by
 	 * an invocation of this method in a finally block
 	 */
-	public void removeMutablePropertyForThread() {
+	public void removeMutablePropertiesForThread() {
 		additionalMutableProperties.remove();
 	}
 }
