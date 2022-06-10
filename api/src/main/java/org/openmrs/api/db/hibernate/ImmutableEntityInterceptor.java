@@ -9,10 +9,6 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.hibernate.EmptyInterceptor;
@@ -23,6 +19,10 @@ import org.openmrs.api.UnchangeableObjectException;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Superclass for all Interceptors that would like to ensure that changes to immutable entities of
@@ -39,6 +39,9 @@ import org.slf4j.LoggerFactory;
 public abstract class ImmutableEntityInterceptor extends EmptyInterceptor {
 	
 	private static final Logger log = LoggerFactory.getLogger(ImmutableEntityInterceptor.class);
+	
+	// This thread local enables storing additional mutable properties to allow for a given thread
+	private final ThreadLocal<String[]> additionalMutableProperties = new ThreadLocal<>();
 	
 	/**
 	 * Returns the class handled by the interceptor
@@ -81,7 +84,7 @@ public abstract class ImmutableEntityInterceptor extends EmptyInterceptor {
 			List<String> changedProperties = null;
 			for (int i = 0; i < propertyNames.length; i++) {
 				String property = propertyNames[i];
-				if (ArrayUtils.contains(getMutablePropertyNames(), property)) {
+				if (isMutableProperty(property)) {
 					continue;
 				}
 				
@@ -113,5 +116,33 @@ public abstract class ImmutableEntityInterceptor extends EmptyInterceptor {
 		}
 		
 		return false;
+	}
+
+	/**
+	 * @return true if the given property is allowed to be mutable
+	 */
+	private boolean isMutableProperty(String property) {
+		if (ArrayUtils.contains(getMutablePropertyNames(), property)) {
+			return true;
+		}
+		String[] threadMutable = additionalMutableProperties.get();
+		if (threadMutable != null && ArrayUtils.contains(threadMutable, property)) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * @param properties any additional properties that one wishes to make mutable for a given thread
+	 */
+	public void addMutablePropertiesForThread(String... properties) {
+		additionalMutableProperties.set(properties);
+	}
+
+	/**
+	 * If any additional properties were added for a given thread, this removes and cleans up
+	 */
+	public void removeMutablePropertyForThread() {
+		additionalMutableProperties.remove();
 	}
 }
