@@ -17,7 +17,7 @@ services:
     openmrs-core:
         image: openmrs-core:dev
         build:
-            target: build
+            target: dev
             context: .
         ports:
             - "8080:8080"
