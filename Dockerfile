@@ -8,8 +8,8 @@
 #	Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS 
 #	graphic logo is a trademark of OpenMRS Inc.
 
-### Build Stage
-FROM maven:3.8-jdk-11 as build
+### Development Stage
+FROM maven:3.8-jdk-11 as dev
 WORKDIR /app
 
 ENV DEPENDENCY_PLUGIN="org.apache.maven.plugins:maven-dependency-plugin:3.3.0"
@@ -128,7 +128,7 @@ ENV OMRS_WEBAPP_NAME="openmrs"
 RUN sed -i '/Connector port="8080"/a URIEncoding="UTF-8" relaxedPathChars="[]|" relaxedQueryChars="[]|{}^&#x5c;&#x60;&quot;&lt;&gt;"' /usr/local/tomcat/conf/server.xml
     
 # Copy the app
-COPY --from=build /app/webapp/target/openmrs.war /openmrs/distribution/openmrs_core/openmrs.war
+COPY --from=dev /app/webapp/target/openmrs.war /openmrs/distribution/openmrs_core/openmrs.war
 
 EXPOSE 8080
 
