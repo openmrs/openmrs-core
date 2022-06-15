@@ -75,6 +75,10 @@ RUN groupadd -r openmrs  \
     && mkdir -p /openmrs  \
     && chown -R openmrs /openmrs 
 
+# Copy in the start-up scripts
+COPY wait-for-it.sh startup.sh /usr/local/tomcat/
+RUN chmod -R 755 /usr/local/tomcat/wait-for-it.sh && chmod -R 755 /usr/local/tomcat/startup.sh
+
 USER openmrs
 
 WORKDIR /openmrs
@@ -120,9 +124,6 @@ ENV OMRS_CONFIG_CONNECTION_DATABASE="openmrs"
 
 # Additional environment variables as needed. This should match the name of the distribution supplied OpenMRS war file
 ENV OMRS_WEBAPP_NAME="openmrs"
-
-# Copy in the start-up scripts
-COPY --chmod=0755 wait-for-it.sh startup.sh /usr/local/tomcat/
 
 RUN sed -i '/Connector port="8080"/a URIEncoding="UTF-8" relaxedPathChars="[]|" relaxedQueryChars="[]|{}^&#x5c;&#x60;&quot;&lt;&gt;"' /usr/local/tomcat/conf/server.xml
     
