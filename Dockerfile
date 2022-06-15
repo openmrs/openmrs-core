@@ -24,9 +24,7 @@ COPY api/pom.xml ./api/
 COPY webapp/pom.xml ./webapp/
 
 # Resolve dependencies in order to cache them and run offline builds
-# Store dependencies for re-use when running
-# If mounting ~/.m2:/root/.m2 then the m2 repo content will be copied over from the image
-RUN mvn $DEPENDENCY_PLUGIN:go-offline && cp -r /root/.m2/repository /usr/share/maven/ref/repository
+RUN mvn $DEPENDENCY_PLUGIN:go-offline
 
 ARG MVN_ARGS='install'
 
@@ -54,7 +52,8 @@ RUN mvn -pl web $MVN_ARGS
 COPY webapp/ ./webapp/
 RUN mvn -pl webapp $MVN_ARGS
 
-# Store build artifacts
+# Store dependencies for re-use when running
+# If mounting ~/.m2:/root/.m2 then the m2 repo content will be copied over from the image
 RUN cp -r /root/.m2/repository /usr/share/maven/ref/repository
 
 WORKDIR /app/webapp
