@@ -13,6 +13,7 @@ FROM maven:3.8-jdk-11 as dev
 WORKDIR /app
 
 ENV DEPENDENCY_PLUGIN="org.apache.maven.plugins:maven-dependency-plugin:3.3.0"
+ENV MVN_ARGS_SETTINGS="-s /usr/share/maven/ref/settings-docker.xml"
 
 # Copy poms to resolve dependencies
 COPY pom.xml .
@@ -24,7 +25,9 @@ COPY api/pom.xml ./api/
 COPY webapp/pom.xml ./webapp/
 
 # Resolve dependencies in order to cache them and run offline builds
-RUN mvn $DEPENDENCY_PLUGIN:go-offline
+# Store dependencies in /usr/share/maven/ref/repository for re-use when running
+# If mounting ~/.m2:/root/.m2 then the m2 repo content will be copied over from the image
+RUN mvn $DEPENDENCY_PLUGIN:resolve-plugins $DEPENDENCY_PLUGIN:resolve $MVN_ARGS_SETTINGS
 
 ARG MVN_ARGS='install'
 
@@ -35,26 +38,22 @@ COPY checkstyle.xml checkstyle-suppressions.xml CONTRIBUTING.md findbugs-include
  NOTICE.md README.md ruleset.xml SECURITY.md ./
 
 COPY liquibase ./liquibase/
-RUN mvn -pl liquibase $MVN_ARGS
+RUN mvn -pl liquibase $MVN_ARGS_SETTINGS $MVN_ARGS
 
 COPY tools/ ./tools/
-RUN mvn -pl tools $MVN_ARGS
+RUN mvn -pl tools $MVN_ARGS_SETTINGS $MVN_ARGS
 
 COPY test/ ./test/
-RUN mvn -pl test $MVN_ARGS
+RUN mvn -pl test $MVN_ARGS_SETTINGS $MVN_ARGS
 
 COPY api/ ./api/
-RUN mvn -pl api $MVN_ARGS
+RUN mvn -pl test,tools,api $MVN_ARGS_SETTINGS $MVN_ARGS
 
 COPY web/ ./web/
-RUN mvn -pl web $MVN_ARGS
+RUN mvn -pl test,tools,api,web $MVN_ARGS_SETTINGS $MVN_ARGS
 
 COPY webapp/ ./webapp/
-RUN mvn -pl webapp $MVN_ARGS
-
-# Store dependencies for re-use when running
-# If mounting ~/.m2:/root/.m2 then the m2 repo content will be copied over from the image
-RUN cp -r /root/.m2/repository /usr/share/maven/ref/repository
+RUN mvn -pl test,tools,api,web,webapp $MVN_ARGS_SETTINGS $MVN_ARGS
 
 WORKDIR /app/webapp
 
