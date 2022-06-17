@@ -47,13 +47,13 @@ COPY test/ ./test/
 RUN mvn -pl test $MVN_ARGS_SETTINGS $MVN_ARGS
 
 COPY api/ ./api/
-RUN mvn -pl test,tools,api $MVN_ARGS_SETTINGS $MVN_ARGS
+RUN mvn -pl api $MVN_ARGS_SETTINGS $MVN_ARGS
 
 COPY web/ ./web/
-RUN mvn -pl test,tools,api,web $MVN_ARGS_SETTINGS $MVN_ARGS
+RUN mvn -pl web $MVN_ARGS_SETTINGS $MVN_ARGS
 
 COPY webapp/ ./webapp/
-RUN mvn -pl test,tools,api,web,webapp $MVN_ARGS_SETTINGS $MVN_ARGS
+RUN mvn -pl webapp $MVN_ARGS_SETTINGS $MVN_ARGS
 
 WORKDIR /app/webapp
 
