@@ -15,7 +15,7 @@ services:
         restart: "no"
 
     openmrs-core:
-        image: openmrs-core:dev
+        image: openmrs/openmrs-core:${TAG:-dev}
         build:
             target: dev
             context: .
