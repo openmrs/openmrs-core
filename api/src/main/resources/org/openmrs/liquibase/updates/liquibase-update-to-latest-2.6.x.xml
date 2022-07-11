@@ -116,4 +116,8 @@
 		<addForeignKeyConstraint constraintName="medication_dispense_voided_by_fk" baseTableName="medication_dispense" baseColumnNames="voided_by" referencedTableName="users" referencedColumnNames="user_id"/>
 	</changeSet>
 	
+	<changeSet id="TRUNK-6081-2022-07-10" author="wikumChamith">
+		<addNotNullConstraint tableName="encounter_diagnosis" columnName="dx_rank" columnDataType="int"/>
+	</changeSet>
+	
 </databaseChangeLog>
