@@ -16,7 +16,7 @@ ENV DEPENDENCY_PLUGIN="org.apache.maven.plugins:maven-dependency-plugin:3.3.0"
 ENV MVN_ARGS_SETTINGS="-s /usr/share/maven/ref/settings-docker.xml"
 
 # Setup SDK
-RUN mvn org.openmrs.maven.plugins:openmrs-sdk-maven-plugin:4.5.0:setup-sdk -DbatchAnswers=n -B $MVN_ARGS_SETTINGS
+RUN mvn org.openmrs.maven.plugins:openmrs-sdk-maven-plugin:setup-sdk -DbatchAnswers=n -B $MVN_ARGS_SETTINGS
 
 # Copy poms to resolve dependencies
 COPY pom.xml .
