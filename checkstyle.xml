@@ -345,6 +345,9 @@
 			<property name="allowMissingReturnTag" value="true"/>
 			<property name="allowedAnnotations" value="Override, Test"/>
 		</module>
+		<module name="MissingJavadocMethodCheck">
+		    <property name="minLineCount" value="2"/>
+		</module>
 		<module name="MethodName">
 			<property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9_]*$"/>
 			<message key="name.invalidPattern"
