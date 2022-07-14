@@ -40,6 +40,7 @@ import org.openmrs.liquibase.ChangeLogDetective;
 import org.openmrs.liquibase.ChangeLogVersionFinder;
 import org.openmrs.liquibase.ChangeSetExecutorCallback;
 import org.openmrs.liquibase.LiquibaseProvider;
+import org.openmrs.module.ModuleClassLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -207,6 +208,8 @@ public class DatabaseUpdater {
 		if (cl == null) {
 			cl = OpenmrsClassLoader.getInstance();
 		}
+		
+		Thread.currentThread().setContextClassLoader(cl);
 		
 		log.debug("Setting up liquibase object to run changelog: {}", changeLogFile);
 		Liquibase liquibase = getLiquibase(changeLogFile, cl);
@@ -844,11 +847,11 @@ public class DatabaseUpdater {
 			if (callback != null) {
 				callback.executing(changeSet, numChangeSetsToRun);
 			}
-			Map<String, Object> scopevalues = new HashMap<>();
-			scopevalues.put(Scope.Attr.resourceAccessor.name(), getCompositeResourceAccessor(null));
+			Map<String, Object> scopeValues = new HashMap<>();
+			scopeValues.put(Scope.Attr.resourceAccessor.name(), getCompositeResourceAccessor(null));
 			String scopeId = null;
 			try {
-				scopeId = Scope.enter(scopevalues);
+				scopeId = Scope.enter(scopeValues);
 				super.visit(changeSet, databaseChangeLog, database, filterResults);
 			}
 			catch (Exception e) {
@@ -870,8 +873,12 @@ public class DatabaseUpdater {
 	 */
 	private static CompositeResourceAccessor getCompositeResourceAccessor(ClassLoader classLoader) {
 		if (classLoader == null) {
-			classLoader = OpenmrsClassLoader.getInstance();
+			classLoader = Thread.currentThread().getContextClassLoader();
+			if (!(classLoader instanceof OpenmrsClassLoader) && !(classLoader instanceof ModuleClassLoader)) {
+				classLoader = OpenmrsClassLoader.getInstance();
+			}
 		}
+		
 		ResourceAccessor openmrsFO = new ClassLoaderFileOpener(classLoader);
 		ResourceAccessor fsFO = new FileSystemResourceAccessor(OpenmrsUtil.getApplicationDataDirectoryAsFile());
 		return new CompositeResourceAccessor(openmrsFO, fsFO);
