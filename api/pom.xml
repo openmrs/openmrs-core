@@ -178,20 +178,9 @@
 		   <groupId>org.apache.logging.log4j</groupId>
 		   <artifactId>log4j-1.2-api</artifactId>
 	   </dependency>
-	   <!-- TODO This is necessary to support Hibernate 4.x with log4j2
-	    	this dependency should be removed when upgrading Hibernate -->
-	   <dependency>
-		   <groupId>org.jboss.logging</groupId>
-		   <artifactId>jboss-logging</artifactId>
-		   <version>3.4.2.Final</version>
-	   </dependency>
 	   <dependency>
 		   <groupId>org.slf4j</groupId>
 		   <artifactId>slf4j-api</artifactId>
-	   </dependency>
-	   <dependency>
-		   <groupId>org.slf4j</groupId>
-		   <artifactId>log4j-over-slf4j</artifactId>
 	   </dependency>
 	   <dependency>
          <groupId>com.thoughtworks.xstream</groupId>
@@ -306,6 +295,11 @@
 				<version>1.15.3</version>
 				<scope>test</scope>
 			</dependency>
+	   <dependency>
+		   <groupId>com.sun.mail</groupId>
+		   <artifactId>javax.mail</artifactId>
+		   <scope>test</scope>
+	   </dependency>
    </dependencies>
    <build>
      <resources>

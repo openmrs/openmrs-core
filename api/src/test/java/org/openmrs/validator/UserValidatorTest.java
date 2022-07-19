@@ -9,22 +9,23 @@
  */
 package org.openmrs.validator;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
+import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests methods on the {@link UserValidator} class.
@@ -35,6 +36,9 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 
 	@Autowired
 	private UserValidator validator;
+
+	@Autowired
+	private UserService userService;
 	
 	/**
 	 * @see UserValidator#isUserNameValid(String)
@@ -315,5 +319,28 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(user, "user");
 		validator.validate(user, errors);	
 		assertFalse(errors.hasFieldErrors("email"));
+	}
+
+	/**
+	 * @see UserValidator#validate(Object,Errors)
+	 */
+	@Test
+	public void validate_shouldFailValidationIfEmailIsNotUnique() {
+		User existingUser = userService.getAllUsers().get(0);
+		existingUser.setEmail("test@example.com");
+		userService.saveUser(existingUser);
+		
+		User newUser = new User();
+		
+		newUser.setEmail("test@example.org");
+		Errors errors = new BindException(newUser, "user");
+		validator.validate(newUser, errors);
+		assertFalse(errors.hasFieldErrors("email"));
+
+		newUser.setEmail("test@example.com");
+		errors = new BindException(newUser, "user");
+		validator.validate(newUser, errors);
+		assertTrue(errors.hasFieldErrors("email"));
+		assertEquals("error.email.alreadyInUse", errors.getFieldError("email").getCode());
 	}
 }

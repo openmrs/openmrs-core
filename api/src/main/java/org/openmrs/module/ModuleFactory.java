@@ -880,16 +880,18 @@ public class ModuleFactory {
 			try {
 				cls = Context.loadClass(advice.getPoint());
 				Object aopObject = advice.getClassInstance();
-				if (Advisor.class.isInstance(aopObject)) {
-					log.debug("adding advisor: " + aopObject.getClass());
+				if (aopObject instanceof Advisor) {
+					log.debug("adding advisor [{}]", aopObject.getClass());
 					Context.addAdvisor(cls, (Advisor) aopObject);
-				} else {
-					log.debug("Adding advice: " + aopObject.getClass());
+				} else if (aopObject != null) {
+					log.debug("adding advice [{}]", aopObject.getClass());
 					Context.addAdvice(cls, (Advice) aopObject);
+				} else {
+					log.debug("Could not load advice class for {} [{}]", advice.getPoint(), advice.getClassName());
 				}
 			}
 			catch (ClassNotFoundException | NoClassDefFoundError e) {
-				log.warn("Could not load advice point: " + advice.getPoint(), e);
+				log.warn("Could not load advice point [{}]", advice.getPoint(), e);
 			}
 		}
 	}
@@ -974,22 +976,30 @@ public class ModuleFactory {
 	 * @param module the module being executed on
 	 */
 	private static void runLiquibase(Module module) {
-		ModuleClassLoader moduleClassLoader = ModuleFactory.getModuleClassLoader(module);
-		InputStream inStream = moduleClassLoader.getResourceAsStream(MODULE_CHANGELOG_FILENAME);
-		boolean liquibaseFileExists = (inStream != null);
+		ModuleClassLoader moduleClassLoader = getModuleClassLoader(module);
+		boolean liquibaseFileExists = false;
+		
+		if (moduleClassLoader != null) {
+			try (InputStream inStream = moduleClassLoader.getResourceAsStream(MODULE_CHANGELOG_FILENAME)) {
+				liquibaseFileExists = (inStream != null);
+			}
+			catch (IOException ignored) {
+				
+			}
+		}
 		
 		if (liquibaseFileExists) {
 			try {
 				// run liquibase.xml by Liquibase API
-				DatabaseUpdater.executeChangelog(MODULE_CHANGELOG_FILENAME, new Contexts(), null,
-				    getModuleClassLoader(module));
+				DatabaseUpdater.executeChangelog(MODULE_CHANGELOG_FILENAME, new Contexts(), null, moduleClassLoader);
 			}
-			catch (InputRequiredException ire) {
+			catch (InputRequiredException e) {
 				// the user would be stepped through the questions returned here.
-				throw new ModuleException("Input during database updates is not yet implemented.", module.getName(), ire);
+				throw new ModuleException("Input during database updates is not yet implemented.", module.getName(), e);
 			}
 			catch (Exception e) {
-				throw new ModuleException("Unable to update data model using liquibase.xml.", module.getName(), e);
+				throw new ModuleException("Unable to update data model using " + MODULE_CHANGELOG_FILENAME + ".",
+					module.getName(), e);
 			}
 		}
 	}

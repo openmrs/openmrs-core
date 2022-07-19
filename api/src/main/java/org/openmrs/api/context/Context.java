@@ -9,21 +9,6 @@
  */
 package org.openmrs.api.context;
 
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.concurrent.Future;
-
-import javax.mail.Authenticator;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-
 import org.aopalliance.aop.Advice;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Allergen;
@@ -42,6 +27,7 @@ import org.openmrs.api.DiagnosisService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.LocationService;
+import org.openmrs.api.MedicationDispenseService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.api.OrderService;
@@ -68,6 +54,7 @@ import org.openmrs.notification.mail.MailMessageSender;
 import org.openmrs.notification.mail.velocity.VelocityMessagePreparator;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.SchedulerUtil;
+import org.openmrs.util.ConfigUtil;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.InputRequiredException;
@@ -83,6 +70,20 @@ import org.springframework.aop.Advisor;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
+
+import javax.mail.Authenticator;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.Future;
 
 /**
  * Represents an OpenMRS <code>Context</code>, which may be used to authenticate to the database and
@@ -475,6 +476,14 @@ public class Context {
 	}
 
 	/**
+	 * @return MedicationDispense-related service
+	 * @since 2.6.0
+	 */
+	public static MedicationDispenseService getMedicationDispenseService(){
+		return getServiceContext().getMedicationDispenseService();
+	}
+
+	/**
 	 * @return Returns the hl7Service.
 	 */
 	public static HL7Service getHL7Service() {
@@ -585,6 +594,46 @@ public class Context {
 	}
 
 	/**
+	 * @return all of the configured properties that are used to configure the Mail Session in the Message Service
+	 * These properties are defined as all properties that are prefixed with "mail." and this will return all such
+	 * properties as defined in global properties, runtime properties, and/or system properties, with 
+	 * system properties overriding runtime properties overriding global properties.
+	 */
+	public static Properties getMailProperties() {
+		Properties p = new Properties();
+		String prefix = "mail.";
+		for (GlobalProperty gp : getAdministrationService().getGlobalPropertiesByPrefix(prefix)) {
+			// Historically, some mail properties defined with underscores, support these for legacy compatibility
+			if (gp.getProperty().equals("mail.transport_protocol")) {
+				p.setProperty("mail.transport.protocol", gp.getPropertyValue());
+			}
+			else if (gp.getProperty().equals("mail.smtp_host")) {
+				p.setProperty("mail.smtp.host", gp.getPropertyValue());
+			}
+			else if (gp.getProperty().equals("mail.smtp_port")) {
+				p.setProperty("mail.smtp.port", gp.getPropertyValue());
+			}
+			else if (gp.getProperty().equals("mail.smtp_auth")) {
+				p.setProperty("mail.smtp.auth", gp.getPropertyValue());
+			}
+			else {
+				p.setProperty(gp.getProperty(), gp.getPropertyValue());
+			}
+		}
+		for (String runtimeProperty : runtimeProperties.stringPropertyNames()) {
+			if (runtimeProperty.startsWith(prefix)) {
+				p.setProperty(runtimeProperty, runtimeProperties.getProperty(runtimeProperty));
+			}
+		}
+		for (String systemProperty : System.getProperties().stringPropertyNames()) {
+			if (systemProperty.startsWith(prefix)) {
+				p.setProperty(systemProperty, System.getProperty(systemProperty));
+			}
+		}
+		return p;
+	}
+
+	/**
 	 * Gets the mail session required by the mail message service. This function forces
 	 * authentication via the getAdministrationService() method call
 	 *
@@ -594,30 +643,19 @@ public class Context {
 		if (mailSession == null) {
 			synchronized (Context.class) {
 				if (mailSession == null) {
-					AdministrationService adminService = getAdministrationService();
-
-					Properties props = new Properties();
-					props.setProperty("mail.transport.protocol", adminService.getGlobalProperty("mail.transport_protocol"));
-					props.setProperty("mail.smtp.host", adminService.getGlobalProperty("mail.smtp_host"));
-					props.setProperty("mail.smtp.port", adminService.getGlobalProperty("mail.smtp_port"));
-					props.setProperty("mail.from", adminService.getGlobalProperty("mail.from"));
-					props.setProperty("mail.debug", adminService.getGlobalProperty("mail.debug"));
-					props.setProperty("mail.smtp.auth", adminService.getGlobalProperty("mail.smtp_auth"));
-					props.setProperty(OpenmrsConstants.GP_MAIL_SMTP_STARTTLS_ENABLE, adminService.getGlobalProperty(OpenmrsConstants.GP_MAIL_SMTP_STARTTLS_ENABLE));
-
 					Authenticator auth = new Authenticator() {
 
 						@Override
 						public PasswordAuthentication getPasswordAuthentication() {
-							return new PasswordAuthentication(getAdministrationService().getGlobalProperty("mail.user"),
-									getAdministrationService().getGlobalProperty("mail.password"));
+							return new PasswordAuthentication(
+								ConfigUtil.getProperty("mail.user"),
+								ConfigUtil.getProperty("mail.password")
+							);
 						}
 					};
-
-					mailSession = Session.getInstance(props, auth);
+					mailSession = Session.getInstance(getMailProperties(), auth);
 				}
 			}
-
 		}
 		return mailSession;
 	}

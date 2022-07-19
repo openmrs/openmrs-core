@@ -37,6 +37,10 @@ public class EventListeners {
 	 * @param globalPropertyListeners
 	 */
 	public void setGlobalPropertyListeners(List<GlobalPropertyListener> globalPropertyListeners) {
+		if (globalPropertyListeners == null) {
+			return;
+		}
+		
 		if (log.isDebugEnabled()) {
 			StringBuilder sb = new StringBuilder();
 			for (GlobalPropertyListener gpl : globalPropertyListeners) {
@@ -45,8 +49,7 @@ public class EventListeners {
 				}
 				sb.append(gpl.getClass().getName());
 			}
-			log.debug("GlobalPropertyListeners set to: " + sb.toString());
-			
+			log.debug("GlobalPropertyListeners set to: " + sb);
 		}
 		
 		if (EventListeners.globalPropertyListeners == null) {
@@ -72,7 +75,7 @@ public class EventListeners {
 	 */
 	public void setGlobalPropertyListenersToEmpty(boolean nullList) {
 		if (nullList) {
-			setGlobalPropertyListeners(null);
+			EventListeners.globalPropertyListeners = null;
 		} else if (EventListeners.globalPropertyListeners != null) {
 			EventListeners.globalPropertyListeners.clear();
 		}

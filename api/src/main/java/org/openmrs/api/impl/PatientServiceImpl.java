@@ -1631,4 +1631,11 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			throw new PatientIdentifierTypeLockedException();
 		}
 	}
+
+	/**
+	 * @see PatientService#getPatientIdentifiersByPatientProgram(org.openmrs.PatientProgram)
+	 */
+	public List<PatientIdentifier> getPatientIdentifiersByPatientProgram(PatientProgram patientProgram) {
+		return dao.getPatientIdentifierByProgram(patientProgram);
+	}
 }

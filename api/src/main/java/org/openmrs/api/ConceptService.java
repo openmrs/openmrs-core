@@ -332,6 +332,17 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public Concept getConcept(String conceptIdOrName) throws APIException;
+
+	/**
+	 * Get the concept by conceptRef where the conceptRef can either be: 1) an integer id like 5090
+	 * 2) a mapping type id like "XYZ:HT" 3) a uuid like "a3e12268-74bf-11df-9768-17cfc9833272" 4) a
+	 * name like "PLATELETS" 5) the fully qualified name of a Java constant which contains one of the above
+	 * @param conceptRef the concept string identifier
+	 * @since 2.6.0
+	 * @return the concept if it exists otherwise null
+	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	public Concept getConceptByReference(String conceptRef);
 	
 	/**
 	 * Get Drug by its UUID
@@ -1025,6 +1036,28 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public List<Concept> getConceptsByMapping(String code, String sourceName, boolean includeRetired) throws APIException;
+
+	/**
+	 * Looks up concepts via {@link ConceptMap} This will return the list of ids for all
+	 * {@link Concept}s which contain a {@link ConceptMap} entry whose <code>sourceCode</code> is
+	 * equal to the passed <code>conceptCode</code> and whose {@link ConceptSource} has either a
+	 * <code>name</code> or <code>hl7Code</code> that is equal to the passed
+	 * <code>mappingCode</code>
+	 *
+	 * @param code the code associated with a concept within a given {@link ConceptSource}
+	 * @param sourceName the name or hl7Code of the {@link ConceptSource} to check
+	 * @param includeRetired whether or not to include retired concepts
+	 * @return the list ids for all non-voided {@link Concept}s that have the given mapping, or an empty List if none found
+	 * @throws APIException if the specified source+code maps to more than one concept
+	 * @should get concepts with given code and and source hl7 code
+	 * @should get concepts with given code and source name
+	 * @should return empty list if source code does not exist
+	 * @should return empty list if mapping does not exist
+	 * @should include retired concepts
+	 * @since 2.3
+	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	public List<Integer> getConceptIdsByMapping(String code, String sourceName, boolean includeRetired) throws APIException;
 	
 	/**
 	 * Get all the concept name tags defined in the database, included voided ones

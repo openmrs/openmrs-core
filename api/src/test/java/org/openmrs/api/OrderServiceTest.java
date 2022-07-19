@@ -56,6 +56,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import org.openmrs.ConceptMapType;
 import org.openmrs.Order.Action;
 import org.openmrs.OrderAttribute;
 import org.openmrs.OrderAttributeType;
@@ -75,6 +76,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
+import org.openmrs.MedicationDispense;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Allergy;
@@ -2647,7 +2649,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.addAnnotatedClass(Encounter.class).addAnnotatedClass(SomeTestOrder.class)
 			.addAnnotatedClass(Diagnosis.class).addAnnotatedClass(Condition.class)
 			.addAnnotatedClass(Visit.class).addAnnotatedClass(VisitAttributeType.class)
-			.addAnnotatedClass(ProviderAttributeType.class).getMetadataBuilder().build();
+			.addAnnotatedClass(MedicationDispense.class)
+			.addAnnotatedClass(ProviderAttributeType.class).addAnnotatedClass(ConceptMapType.class).getMetadataBuilder().build();
 
 
 		Field field = adminDAO.getClass().getDeclaredField("metadata");
