@@ -36,10 +36,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.*;
+
 /**
  * A Person can have zero to n PersonName(s).
  */
 @Indexed
+@Entity
+@Table(name = "person_name")
 public class PersonName extends BaseChangeableOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PersonName> {
 	
 	public static final long serialVersionUID = 4353L;
@@ -48,9 +52,14 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 
 	// Fields
 	@DocumentId
+	@Id
+	@Column(name = "person_name_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer personNameId;
 
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
+	@ManyToOne
+	@JoinColumn(name = "person_id", nullable = false)
 	private Person person;
 
 	private Boolean preferred = false;
