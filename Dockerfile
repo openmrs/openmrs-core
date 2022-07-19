@@ -67,7 +67,7 @@ CMD ["mvn", "jetty:run", "-o"]
 ### Production Stage
 FROM tomcat:8.5-jdk8-adoptopenjdk-hotspot
 
-RUN apt-get update && apt-get install -y zip \
+RUN apt-get update && apt-get install -y zip dumb-init \
     && apt-get clean  \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/local/tomcat/webapps/*
 
@@ -134,5 +134,5 @@ COPY --from=dev /app/webapp/target/openmrs.war /openmrs/distribution/openmrs_cor
 
 EXPOSE 8080
 
-CMD ["/usr/local/tomcat/startup.sh"]
+CMD ["dumb-init", "/usr/local/tomcat/startup.sh"]
 
