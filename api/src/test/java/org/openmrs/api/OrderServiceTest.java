@@ -69,7 +69,6 @@ import org.openmrs.order.OrderUtilTest;
 import org.openmrs.orders.TimestampOrderNumberGenerator;
 import org.openmrs.parameter.OrderSearchCriteria;
 import org.openmrs.parameter.OrderSearchCriteriaBuilder;
-import org.openmrs.PersonName;
 import org.openmrs.test.TestUtil;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.DateUtil;
@@ -2614,8 +2613,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.addAnnotatedClass(Visit.class).addAnnotatedClass(VisitAttributeType.class)
 			.addAnnotatedClass(MedicationDispense.class)
 			.addAnnotatedClass(ProviderAttributeType.class).addAnnotatedClass(ConceptMapType.class).getMetadataBuilder().build();
-		    .addAnnotatedClass(Visit.class).addAnnotatedClass(PersonName.class)
-			.getMetadataBuilder().build();
 
 
 		Field field = adminDAO.getClass().getDeclaredField("metadata");
