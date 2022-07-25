@@ -40,14 +40,12 @@ TOMCAT_SETENV_FILE="$TOMCAT_DIR/bin/setenv.sh"
 
 echo "Clearing out existing directories of any previous artifacts"
 
-rm -fR $TOMCAT_WEBAPPS_DIR;
-rm -fR $OMRS_MODULES_DIR;
-rm -fR $OMRS_OWA_DIR
-rm -fR $OMRS_CONFIG_DIR
-rm -fR $TOMCAT_WORK_DIR
-rm -fR $TOMCAT_TEMP_DIR
-
-mkdir -p $TOMCAT_TEMP_DIR
+rm -fR $TOMCAT_WEBAPPS_DIR/*
+rm -fR $OMRS_MODULES_DIR/*
+rm -fR $OMRS_OWA_DIR/*
+rm -fR $OMRS_CONFIG_DIR/*
+rm -fR $TOMCAT_WORK_DIR/*
+rm -fR $TOMCAT_TEMP_DIR/*
 
 echo "Loading artifacts into appropriate locations"
 
@@ -56,7 +54,6 @@ cp -r $OMRS_DISTRO_CORE $TOMCAT_WEBAPPS_DIR
 [ -d "$OMRS_DISTRO_OWAS" ] && cp -r $OMRS_DISTRO_OWAS $OMRS_OWA_DIR
 [ -d "$OMRS_DISTRO_CONFIG" ] && cp -r $OMRS_DISTRO_CONFIG $OMRS_CONFIG_DIR
 
-# setup database configuration properties
 # Setup database configuration properties
 OMRS_CONFIG_DATABASE="${OMRS_CONFIG_DATABASE:-mysql}"
 OMRS_CONFIG_CONNECTION_SERVER="${OMRS_CONFIG_CONNECTION_SERVER:-localhost}"
