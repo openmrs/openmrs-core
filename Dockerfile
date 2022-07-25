@@ -74,7 +74,9 @@ RUN apt-get update && apt-get install -y zip dumb-init \
 RUN groupadd -r openmrs  \
     && useradd --no-log-init -r -g openmrs openmrs  \
     && chown -R openmrs $CATALINA_HOME  \
-    && mkdir -p /openmrs/data  \
+    && mkdir -p /openmrs/data/modules \
+    && mkdir -p /openmrs/data/owa  \
+    && mkdir -p /openmrs/data/configuration  \
     && chown -R openmrs /openmrs 
 
 # Copy in the start-up scripts
