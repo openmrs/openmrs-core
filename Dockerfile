@@ -15,6 +15,9 @@ WORKDIR /app
 ENV DEPENDENCY_PLUGIN="org.apache.maven.plugins:maven-dependency-plugin:3.3.0"
 ENV MVN_ARGS_SETTINGS="-s /usr/share/maven/ref/settings-docker.xml"
 
+# Setup SDK
+RUN mvn org.openmrs.maven.plugins:openmrs-sdk-maven-plugin:setup-sdk -DbatchAnswers=n -B $MVN_ARGS_SETTINGS
+
 # Copy poms to resolve dependencies
 COPY pom.xml .
 COPY liquibase/pom.xml ./liquibase/
@@ -71,7 +74,9 @@ RUN apt-get update && apt-get install -y zip dumb-init \
 RUN groupadd -r openmrs  \
     && useradd --no-log-init -r -g openmrs openmrs  \
     && chown -R openmrs $CATALINA_HOME  \
-    && mkdir -p /openmrs/data  \
+    && mkdir -p /openmrs/data/modules \
+    && mkdir -p /openmrs/data/owa  \
+    && mkdir -p /openmrs/data/configuration  \
     && chown -R openmrs /openmrs 
 
 # Copy in the start-up scripts

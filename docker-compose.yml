@@ -40,7 +40,8 @@ services:
             test: ["CMD", "curl", "-f", "http://localhost:8080/openmrs"]
             timeout: 5s
         volumes:
-            - ./target/openmrs-data:/openmrs/data/:z
+            - openmrs-data:/openmrs/data/
 
 volumes:
     db-data:
+    openmrs-data:
