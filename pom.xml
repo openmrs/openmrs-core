@@ -399,7 +399,7 @@
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>42.4.0</version>
+				<version>42.4.1</version>
 				<scope>runtime</scope>
 			</dependency>
 			<dependency>
@@ -578,7 +578,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>3.2.0</version>
+					<version>3.3.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -1124,7 +1124,7 @@
 		<luceneVersion>5.5.5</luceneVersion>
 		<aspectjVersion>1.9.9.1</aspectjVersion>
 		<jacksonVersion>2.13.3</jacksonVersion>
-		<junitVersion>5.8.2</junitVersion>
+		<junitVersion>5.9.0</junitVersion>
 		<mockitoVersion>3.12.4</mockitoVersion>
 		<hamcrestVersion>2.2</hamcrestVersion>
 
