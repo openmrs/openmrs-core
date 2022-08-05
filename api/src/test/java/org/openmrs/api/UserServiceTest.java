@@ -1527,7 +1527,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void setUserActivationKey_shouldCreateUserActivationKey() throws Exception {
 		User createdUser = createTestUser();
-		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_HOST_URL,
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_PASSWORD_RESET_URL,
 		    "http://localhost:8080/openmrs/admin/users/changePassword.form/{activationKey}");
 		assertNull(dao.getLoginCredential(createdUser).getActivationKey());
 		assertThrows(MessageException.class, () -> userService.setUserActivationKey(createdUser));

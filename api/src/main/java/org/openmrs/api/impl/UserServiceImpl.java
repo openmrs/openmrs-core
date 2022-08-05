@@ -731,7 +731,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		AdministrationService adminService = Context.getAdministrationService();
 		Locale locale = getDefaultLocaleForUser(user);
 		
-		String link = adminService.getGlobalProperty(OpenmrsConstants.GP_HOST_URL)
+		String link = adminService.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_RESET_URL)
 		        .replace("{activationKey}", token);
 		
 		String sender = adminService.getGlobalProperty("mail.from");
