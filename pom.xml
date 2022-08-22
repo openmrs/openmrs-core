@@ -1128,7 +1128,7 @@
 		<mockitoVersion>3.12.4</mockitoVersion>
 		<hamcrestVersion>2.2</hamcrestVersion>
 
-		<slf4jVersion>1.7.36</slf4jVersion>
+		<slf4jVersion>2.0.0</slf4jVersion>
 		<log4jVersion>2.18.0</log4jVersion>
 		<owaspCsrfGuardVersion>4.1.4</owaspCsrfGuardVersion>
 
