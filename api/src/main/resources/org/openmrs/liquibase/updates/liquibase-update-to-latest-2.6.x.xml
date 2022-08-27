@@ -118,6 +118,7 @@
 	
 	<!-- Adding not null constraint to encounter_diagnosis.dx_rank. TRUNK-6081-->
 	<changeSet id="TRUNK-6081-2022-07-10" author="wikumChamith">
+		<comment>Adding not null constraint to encounter_diagnosis.dx_rank. TRUNK-6081</comment>
 		<addNotNullConstraint tableName="encounter_diagnosis" columnName="dx_rank" columnDataType="int"/>
 	</changeSet>
 	
