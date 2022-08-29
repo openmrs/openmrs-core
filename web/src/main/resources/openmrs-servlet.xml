@@ -55,6 +55,7 @@
 	<bean id="contentNegotiationManager"
 		  class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
 		<property name="defaultContentType" value="application/json" />
+		<property name="favorPathExtension" value="true" />
 
 		<property name="mediaTypes">
 			<map>
