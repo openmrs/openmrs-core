@@ -9,35 +9,6 @@
  */
 package org.openmrs.web;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.StringReader;
-import java.lang.reflect.Field;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
-import java.sql.Driver;
-import java.sql.DriverManager;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.ServletException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -74,13 +45,43 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpSessionEvent;
+import javax.servlet.http.HttpSessionListener;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.StringReader;
+import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
 /**
  * Our Listener class performs the basic starting functions for our webapp. Basic needs for starting
  * the API: 1) Get the runtime properties 2) Start Spring 3) Start the OpenMRS APi (via
  * Context.startup) Basic startup needs specific to the web layer: 1) Do the web startup of the
  * modules 2) Copy the custom look/images/messages over into the web layer
  */
-public final class Listener extends ContextLoader implements ServletContextListener {
+public final class Listener extends ContextLoader implements ServletContextListener, HttpSessionListener {
 	
 	private static final org.slf4j.Logger log = LoggerFactory.getLogger(Listener.class);
 	
@@ -136,7 +137,47 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	public static void setErrorAtStartup(Throwable errorAtStartup) {
 		Listener.errorAtStartup = errorAtStartup;
 	}
-	
+
+	/**
+	 * This get all Spring components that implement HttpSessionListener 
+	 * and passes the HttpSession event to them whenever an HttpSession is created
+	 * @see HttpSessionListener#sessionCreated(HttpSessionEvent) 
+	 */
+	@Override
+	public void sessionCreated(HttpSessionEvent se) {
+		for (HttpSessionListener listener : getHttpSessionListeners()) {
+			listener.sessionCreated(se);
+		}
+	}
+
+	/**
+	 * 	This get all Spring components that implement HttpSessionListener 
+	 * 	and passes the HttpSession event to them whenever an HttpSession is destroyed
+	 * @see HttpSessionListener#sessionDestroyed(HttpSessionEvent)
+	 */
+	@Override
+	public void sessionDestroyed(HttpSessionEvent se) {
+		for (HttpSessionListener listener : getHttpSessionListeners()) {
+			listener.sessionDestroyed(se);
+		}
+	}
+
+	/**
+	 * 	This retrieves all Spring components that implement HttpSessionListener
+	 * 	If an exception is thrown trying to retrieve these beans from the Context, a warning is logged
+	 * @see HttpSessionListener#sessionDestroyed(HttpSessionEvent)
+	 */
+	private List<HttpSessionListener> getHttpSessionListeners() {
+		List<HttpSessionListener> httpSessionListeners = new ArrayList<>();
+		try {
+			httpSessionListeners = Context.getRegisteredComponents(HttpSessionListener.class);
+		}
+		catch (Exception e) {
+			log.warn("An error occurred trying to retrieve HttpSessionListener beans from the context", e);
+		}
+		return httpSessionListeners;
+	}
+
 	/**
 	 * This method is called when the servlet context is initialized(when the Web Application is
 	 * deployed). You can initialize servlet context related data here.
@@ -298,7 +339,6 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		// TODO catch openmrs errors here and drop the user back out to the setup screen
 		
 		try {
-			
 			// web load modules
 			Listener.performWebStartOfModules(servletContext);
 			
