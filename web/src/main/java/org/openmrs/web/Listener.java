@@ -139,7 +139,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	}
 
 	/**
-	 * This get all Spring components that implement HttpSessionListener 
+	 * This gets all Spring components that implement HttpSessionListener 
 	 * and passes the HttpSession event to them whenever an HttpSession is created
 	 * @see HttpSessionListener#sessionCreated(HttpSessionEvent) 
 	 */
@@ -151,7 +151,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	}
 
 	/**
-	 * 	This get all Spring components that implement HttpSessionListener 
+	 * 	This gets all Spring components that implement HttpSessionListener 
 	 * 	and passes the HttpSession event to them whenever an HttpSession is destroyed
 	 * @see HttpSessionListener#sessionDestroyed(HttpSessionEvent)
 	 */
@@ -339,6 +339,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		// TODO catch openmrs errors here and drop the user back out to the setup screen
 		
 		try {
+			
 			// web load modules
 			Listener.performWebStartOfModules(servletContext);
 			
