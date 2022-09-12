@@ -428,6 +428,11 @@
 				<version>${jacksonVersion}</version>
 			</dependency>
 			<dependency>
+				<groupId>com.fasterxml.jackson.datatype</groupId>
+				<artifactId>jackson-datatype-jsr310</artifactId>
+				<version>${jacksonVersion}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.azeckoski</groupId>
 				<artifactId>reflectutils</artifactId>
 				<version>0.9.20</version>
