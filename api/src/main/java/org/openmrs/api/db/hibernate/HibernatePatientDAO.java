@@ -147,10 +147,11 @@ public class HibernatePatientDAO implements PatientDAO {
 				patient.setDateCreated(new Date());
 			}
 			
-			String insert = "INSERT INTO patient (patient_id, creator, voided, date_created) VALUES (:patientId, :creator, 0, :dateCreated)";
+			String insert = "INSERT INTO patient (patient_id, creator, voided, date_created) VALUES (:patientId, :creator, :voided, :dateCreated)";
 			Query query = sessionFactory.getCurrentSession().createSQLQuery(insert);
 			query.setInteger("patientId", patient.getPatientId());
 			query.setInteger("creator", patient.getCreator().getUserId());
+			query.setBoolean("voided", false);
 			query.setDate("dateCreated", patient.getDateCreated());
 			
 			query.executeUpdate();
