@@ -116,4 +116,17 @@
 		<addForeignKeyConstraint constraintName="medication_dispense_voided_by_fk" baseTableName="medication_dispense" baseColumnNames="voided_by" referencedTableName="users" referencedColumnNames="user_id"/>
 	</changeSet>
 	
+	<changeSet id="20200604-soundex_extension" author="aman" dbms="postgresql">
+        <comment> Soundex extension for PostgreSQL</comment>
+        <sql> CREATE EXTENSION IF NOT EXISTS fuzzystrmatch SCHEMA public;</sql>
+    </changeSet>
+    
+    <changeSet id="20200715-uuid_ossp_extension" author="aman" dbms="postgresql">
+        <comment> Extension to use UUID functions with PostgreSQL and creating an alias similar to MySQL</comment>
+        <sql>
+        	CREATE EXTENSION IF NOT EXISTS "uuid-ossp" SCHEMA public;
+        	CREATE FUNCTION UUID() RETURNS UUID LANGUAGE SQL AS $$ SELECT uuid_generate_v1() $$;
+        </sql>
+    </changeSet>
+	
 </databaseChangeLog>
