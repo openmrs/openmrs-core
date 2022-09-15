@@ -9,14 +9,6 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import java.io.File;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.Future;
-
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.CacheMode;
 import org.hibernate.FlushMode;
@@ -48,6 +40,17 @@ import org.springframework.orm.hibernate5.SessionHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import javax.sql.DataSource;
+import java.io.File;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.Future;
+
 /**
  * Hibernate specific implementation of the {@link ContextDAO}. These methods should not be used
  * directly, instead, the methods on the static {@link Context} file should be used.
@@ -63,6 +66,11 @@ public class HibernateContextDAO implements ContextDAO {
 	 * Hibernate session factory
 	 */
 	private SessionFactory sessionFactory;
+
+	/**
+	 * Static cache of dataSource used by the SessionFactory
+	 */
+	private static DataSource dataSource;
 	
 	@Autowired
 	private FullTextSessionFactory fullTextSessionFactory;
@@ -77,6 +85,7 @@ public class HibernateContextDAO implements ContextDAO {
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
+		HibernateContextDAO.dataSource = SessionFactoryUtils.getDataSource(sessionFactory);
 	}
 	
 	public void setUserDAO(UserDAO userDao) {
@@ -546,5 +555,18 @@ public class HibernateContextDAO implements ContextDAO {
 		catch (Exception e) {
 			throw new RuntimeException("Failed to start asynchronous search index update", e);
 		}
+	}
+
+	/**
+	 * This method exists in order to enable retrieving a database connection backed by the Hibernate data source
+	 * to support configuring, for example, log4j2 JDBC appenders if desired.
+	 * Ths is preferable over using org.openmrs.util.DatabaseUpdater.getConnection, which creates a new Connection
+	 * each time it is invoked, rather than using the configured Hibernate datasource, backed by a C3PO connection pool
+	 */
+	public static Connection getConnection() throws SQLException {
+		if (dataSource == null) {
+			throw new SQLException("Cannot retrieve data source from hibernate session factory");
+		}
+		return dataSource.getConnection();
 	}
 }
