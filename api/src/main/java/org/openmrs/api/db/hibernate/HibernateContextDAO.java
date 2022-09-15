@@ -562,6 +562,8 @@ public class HibernateContextDAO implements ContextDAO {
 	 * to support configuring, for example, log4j2 JDBC appenders if desired.
 	 * Ths is preferable over using org.openmrs.util.DatabaseUpdater.getConnection, which creates a new Connection
 	 * each time it is invoked, rather than using the configured Hibernate datasource, backed by a C3PO connection pool
+	 * 
+	 * @since 2.5.7
 	 */
 	public static Connection getConnection() throws SQLException {
 		if (dataSource == null) {
