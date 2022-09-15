@@ -42,7 +42,7 @@ public class SchemaOnlyTunerTest {
 	        .get("org", "openmrs", "liquibase", "snapshots", "schema-only", "liquibase-schema-only-UPDATED-SNAPSHOT.xml")
 	        .toString();
 	
-	private static String PATH_TO_TEST_RESOURCES = Paths.get("src", "test", "resources").toString();
+	private static String PATH_TO_TEST_RESOURCES = Paths.get("src", "test", "resources").toString() + "/";
 	
 	private Document document;
 	

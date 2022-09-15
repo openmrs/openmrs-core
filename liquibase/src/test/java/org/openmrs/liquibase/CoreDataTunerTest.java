@@ -42,7 +42,7 @@ public class CoreDataTunerTest {
 	        .get("org", "openmrs", "liquibase", "snapshots", "core-data", "liquibase-core-data-UPDATED-SNAPSHOT.xml")
 	        .toString();
 	
-	private static String PATH_TO_TEST_RESOURCES = Paths.get("src", "test", "resources").toString();
+	private static String PATH_TO_TEST_RESOURCES = Paths.get("src", "test", "resources").toString() + "/";
 	
 	public static final int TWENTY_FIVE = 25;
 	

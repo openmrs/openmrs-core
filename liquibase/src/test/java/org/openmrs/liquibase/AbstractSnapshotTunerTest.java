@@ -33,7 +33,7 @@ public class AbstractSnapshotTunerTest {
 	
 	private static final String HTTP_OPENMRS_ORG_LICENSE = "http://openmrs.org/license";
 	
-	private static String PATH_TO_TEST_RESOURCES = Paths.get("src", "test", "resources").toString();
+	private static String PATH_TO_TEST_RESOURCES = Paths.get("src", "test", "resources").toString() + "/";
 	
 	/*
 	 * An instance of org.openmrs.liquibase.SchemaOnlyTuner is used to test behaviour implemented in the 
