@@ -124,7 +124,6 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			catch (UnknownHostException e) {
 				systemVariables.put("OPENMRS_HOSTNAME", "Unknown host: " + e.getMessage());
 			}
-			
 			systemVariables.put("OPENMRS_VERSION", String.valueOf(OpenmrsConstants.OPENMRS_VERSION));
 			systemVariables.put("DATABASE_NAME", OpenmrsConstants.DATABASE_NAME);
 			systemVariables.put("DATABASE_BUSINESS_NAME", OpenmrsConstants.DATABASE_BUSINESS_NAME);
