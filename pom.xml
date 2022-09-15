@@ -1123,7 +1123,7 @@
 			 For instance, our version of Lucene is tied to the version of Hibernate Search. Similarly, our
 			 version of Hibernate Search must be compatible with the version of Hibernate and Hibernate must
 			 be compatible with our version of Spring. -->
-		<springVersion>5.3.22</springVersion>
+		<springVersion>5.3.23</springVersion>
 		<hibernateVersion>5.6.11.Final</hibernateVersion>
 		<hibernateSearchVersion>5.11.10.Final</hibernateSearchVersion>
 		<luceneVersion>5.5.5</luceneVersion>
