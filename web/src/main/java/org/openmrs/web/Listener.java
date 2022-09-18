@@ -68,6 +68,7 @@ import java.sql.Driver;
 import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -89,6 +90,8 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	private static Throwable errorAtStartup = null;
 	
 	private static boolean setupNeeded = false;
+	
+	private static boolean initialized = false;
 	
 	/**
 	 * Boolean flag set on webapp startup marking whether there is a runtime properties file or not.
@@ -167,13 +170,17 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 * @see HttpSessionListener#sessionDestroyed(HttpSessionEvent)
 	 */
 	private List<HttpSessionListener> getHttpSessionListeners() {
-		List<HttpSessionListener> httpSessionListeners = new ArrayList<>();
-		try {
-			httpSessionListeners = Context.getRegisteredComponents(HttpSessionListener.class);
+		List<HttpSessionListener> httpSessionListeners = Collections.emptyList();
+		
+		if (initialized) {
+			try {
+				httpSessionListeners = Context.getRegisteredComponents(HttpSessionListener.class);
+			}
+			catch (Exception e) {
+				log.warn("An error occurred trying to retrieve HttpSessionListener beans from the context", e);
+			}
 		}
-		catch (Exception e) {
-			log.warn("An error occurred trying to retrieve HttpSessionListener beans from the context", e);
-		}
+		
 		return httpSessionListeners;
 	}
 
@@ -251,6 +258,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			log.error(MarkerFactory.getMarker("FATAL"), "Failed to obtain JDBC connection", e);
 		}
 		
+		initialized = true;
 	}
 	
 	private void loadCsrfGuardProperties(ServletContext servletContext) throws FileNotFoundException, IOException {	
