@@ -58,18 +58,18 @@ public class AbstractSnapshotTunerTest {
 	}
 	
 	@Test
-	public void shouldReadFile() throws FileNotFoundException {
+	public void shouldReadFile() throws IOException {
 		assertTrue(schemaOnlyTuner.readFile(PATH_TO_TEST_RESOURCES + File.separator + FILE_WITH_LICENSE_HEADER_MD)
 		        .contains(HTTP_OPENMRS_ORG_LICENSE));
 	}
 	
 	@Test
-	public void shouldReadResource() throws FileNotFoundException {
+	public void shouldReadResource() throws IOException {
 		assertTrue(schemaOnlyTuner.readResource(FILE_WITH_LICENSE_HEADER_MD).contains(HTTP_OPENMRS_ORG_LICENSE));
 	}
 	
 	@Test
-	public void shouldAddLicenseHeaderToXmlFile() throws FileNotFoundException {
+	public void shouldAddLicenseHeaderToXmlFile() throws IOException {
 		// given
 		String contentWithoutLicenseHeader = schemaOnlyTuner.readResource(FILE_WITHOUT_LICENSE_HEADER_MD);
 		assertFalse(contentWithoutLicenseHeader.contains(HTTP_OPENMRS_ORG_LICENSE));
