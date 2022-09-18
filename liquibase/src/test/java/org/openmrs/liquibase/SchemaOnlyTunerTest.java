@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -52,7 +53,7 @@ public class SchemaOnlyTunerTest {
 	private SchemaOnlyTuner schemaOnlyTuner;
 	
 	@BeforeEach
-	public void setup() throws DocumentException {
+	public void setup() throws DocumentException, FileNotFoundException {
 		schemaOnlyTuner = new SchemaOnlyTuner();
 		document = schemaOnlyTuner.readChangeLogResource(LIQUIBASE_SCHEMA_ONLY_SNAPSHOT_XML);
 		namespaceUris = schemaOnlyTuner.getNamespaceUris();

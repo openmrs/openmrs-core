@@ -10,10 +10,14 @@
 package org.openmrs.liquibase;
 
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,10 +48,10 @@ public abstract class AbstractSnapshotTuner {
 	
 	private static final String OPENMRS_LICENSE_SNIPPET = "the terms of the Healthcare Disclaimer located at http://openmrs.org/license";
 	
-	private Map<String, String> namespaceUris;
+	private final Map<String, String> namespaceUris;
 	
 	public AbstractSnapshotTuner() {
-		namespaceUris = new HashMap<>();
+		namespaceUris = new HashMap<>(1);
 		namespaceUris.put("dbchangelog", "http://www.liquibase.org/xml/ns/dbchangelog");
 	}
 	
@@ -78,7 +82,7 @@ public abstract class AbstractSnapshotTuner {
 	
 	String addLicenseHeaderToFileContent(String path) throws FileNotFoundException {
 		Scanner scanner = null;
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 		
 		try {
 			scanner = new Scanner(new File(path));
@@ -99,7 +103,7 @@ public abstract class AbstractSnapshotTuner {
 			}
 		}
 		catch (FileNotFoundException e) {
-			log.error(String.format("file '{}' was not found", path), e);
+			log.error("file '{}' was not found", path, e);
 			throw e;
 		}
 		finally {
@@ -118,9 +122,7 @@ public abstract class AbstractSnapshotTuner {
 	}
 	
 	boolean isLicenseHeaderInFile(String path) throws FileNotFoundException {
-		Scanner scanner = null;
-		try {
-			scanner = new Scanner(new File(path));
+		try (Scanner scanner = new Scanner(new File(path))) {
 			while (scanner.hasNextLine()) {
 				if (scanner.nextLine().contains(OPENMRS_LICENSE_SNIPPET)) {
 					return true;
@@ -128,11 +130,8 @@ public abstract class AbstractSnapshotTuner {
 			}
 		}
 		catch (FileNotFoundException e) {
-			log.error(String.format("file '{}' was not found", path), e);
+			log.error("file '{}' was not found", path, e);
 			throw e;
-		}
-		finally {
-			scanner.close();
 		}
 		return false;
 	}
@@ -146,58 +145,70 @@ public abstract class AbstractSnapshotTuner {
 			System.exit(0);
 		}
 		SAXReader reader = new SAXReader();
-		Document document = null;
+		Document document;
 		try {
 			document = reader.read(file);
 		}
 		catch (DocumentException e) {
-			log.error(String.format("processing the file '{}' raised an exception", path), e);
+			log.error("processing the file '{}' raised an exception", path, e);
 			throw e;
 		}
 		return document;
 	}
 	
-	Document readChangeLogResource(String resourceName) throws DocumentException {
-		File file = new File(getClass().getClassLoader().getResource(resourceName).getFile());
+	Document readChangeLogResource(String resourceName) throws DocumentException, FileNotFoundException {
+		File file = getResourceAsFile(resourceName);
 		SAXReader reader = new SAXReader();
-		Document document = null;
+		Document document;
 		try {
 			document = reader.read(file);
 		}
 		catch (DocumentException e) {
-			log.error(String.format("processing the resource '{}' raised an exception", resourceName), e);
+			log.error("processing the resource '{}' raised an exception", resourceName, e);
 			throw e;
 		}
 		return document;
 	}
 	
-	private String readFile(File file) throws FileNotFoundException {
-		Scanner scanner = null;
-		StringBuffer buffer = new StringBuffer();
-		try {
-			scanner = new Scanner(file);
-			while (scanner.hasNextLine()) {
-				buffer.append(scanner.nextLine());
+	private String readFile(File file) throws IOException {
+		if (file == null) {
+			log.error("No file was supplied to readFile()");
+			throw new RuntimeException("No file was supplied to readFile()");
+		}
+		
+		if (!file.exists()) {
+			throw new FileNotFoundException(file.getAbsolutePath());
+		}
+		
+		// this may over-allocate, but we're only holding it in memory temporarily
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream(8192);
+		byte[] buffer = new byte[8192];
+		int length;
+		try (FileInputStream is = new FileInputStream(file)) {
+			while ((length = is.read(buffer)) != -1) {
+				outputStream.write(buffer, 0, length);
 			}
 		}
-		catch (FileNotFoundException e) {
-			log.error(String.format("file '{}' was not found", file.getPath()), e);
-			throw e;
-		}
-		finally {
-			scanner.close();
-		}
-		return buffer.toString();
+		
+		return outputStream.toString(StandardCharsets.UTF_8.name());
 	}
 	
-	String readFile(String path) throws FileNotFoundException {
+	private File getResourceAsFile(String resourceName) throws FileNotFoundException {
+		URL resourceUrl = getClass().getClassLoader().getResource(resourceName);
+		if (resourceUrl == null || resourceUrl.getFile() == null) {
+			throw new FileNotFoundException("Could not find resolve '" + resourceName + "' to a file. Instead got '" + resourceUrl + "'.");
+		}
+		
+		return new File(resourceUrl.getFile());
+	}
+	
+	String readFile(String path) throws IOException {
 		File file = Paths.get(path).toFile();
 		return readFile(file);
 	}
 	
-	String readResource(String resourceName) throws FileNotFoundException {
-		File file = new File(getClass().getClassLoader().getResource(resourceName).getFile());
-		return readFile(file);
+	String readResource(String resourceName) throws IOException {
+		return readFile(getResourceAsFile(resourceName));
 	}
 	
 	void writeChangeLogFile(Document document, String path) throws IOException {
@@ -209,40 +220,30 @@ public abstract class AbstractSnapshotTuner {
 			xmlWriter = new XMLWriter(fileWriter, format);
 			xmlWriter.write(document);
 		}
-		catch (IOException e) {
-			log.error(String.format("writing the updated changelog file to '%s' raised an exception", path), e);
+		catch (IOException | UnsupportedOperationException e) {
+			log.error("writing the updated changelog file to '{}' raised an exception", path, e);
 			throw e;
 		}
 		finally {
 			try {
-				xmlWriter.close();
+				if (xmlWriter != null) {
+					xmlWriter.close();
+				}
 			}
 			catch (IOException e) {
-				log.error(String.format("closing the xml writer for '%s' raised an exception", path), e);
-				throw e;
+				log.error("closing the xml writer for '{}' raised an exception", path, e);
 			}
 		}
 	}
 	
 	void writeFile(String content, String path) throws IOException {
-		BufferedWriter writer = null;
-		try {
-			File file = Paths.get(path).toFile();
-			writer = new BufferedWriter(new FileWriter(file));
+		File file = Paths.get(path).toFile();
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
 			writer.write(content);
 		}
 		catch (IOException e) {
-			log.error(String.format("writing a file to '%s' raised an exception", path), e);
+			log.error("writing a file to '{}' raised an exception", path, e);
 			throw e;
-		}
-		finally {
-			try {
-				writer.close();
-			}
-			catch (IOException e) {
-				log.error(String.format("closing the writer for '%s' raised an exception", path), e);
-				throw e;
-			}
 		}
 	}
 }
