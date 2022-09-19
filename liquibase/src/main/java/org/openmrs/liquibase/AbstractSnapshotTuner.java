@@ -12,16 +12,16 @@ package org.openmrs.liquibase;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.io.OutputFormat;
@@ -39,12 +39,12 @@ public abstract class AbstractSnapshotTuner {
 	private static final Logger log = LoggerFactory.getLogger(AbstractSnapshotTuner.class);
 	
 	private static final String OPENMRS_LICENSE_HEADER = "<!--\n" + "\n"
-	        + "    This Source Code Form is subject to the terms of the Mozilla Public License,\n"
-	        + "    v. 2.0. If a copy of the MPL was not distributed with this file, You can\n"
-	        + "    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under\n"
-	        + "    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.\n" + "\n"
-	        + "    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS\n"
-	        + "    graphic logo is a trademark of OpenMRS Inc.\n" + "\n" + "-->\n";
+		+ "    This Source Code Form is subject to the terms of the Mozilla Public License,\n"
+		+ "    v. 2.0. If a copy of the MPL was not distributed with this file, You can\n"
+		+ "    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under\n"
+		+ "    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.\n" + "\n"
+		+ "    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS\n"
+		+ "    graphic logo is a trademark of OpenMRS Inc.\n" + "\n" + "-->\n";
 	
 	private static final String OPENMRS_LICENSE_SNIPPET = "the terms of the Healthcare Disclaimer located at http://openmrs.org/license";
 	
@@ -81,33 +81,25 @@ public abstract class AbstractSnapshotTuner {
 	}
 	
 	String addLicenseHeaderToFileContent(String path) throws FileNotFoundException {
-		Scanner scanner = null;
 		StringBuilder buffer = new StringBuilder();
 		
-		try {
-			scanner = new Scanner(new File(path));
-			
+		try (Scanner scanner = new Scanner(new File(path))) {
 			// read first line of xml file
 			if (scanner.hasNextLine()) {
-				buffer.append(scanner.nextLine());
-				buffer.append("\n");
+				buffer.append(scanner.nextLine()).append("\n");
 			}
 			
 			// append license header
-			buffer.append(OPENMRS_LICENSE_HEADER);
+			buffer.append(OPENMRS_LICENSE_HEADER).append("\n");
 			
 			// append the rest of the xml file
 			while (scanner.hasNextLine()) {
-				buffer.append(scanner.nextLine());
-				buffer.append("\n");
+				buffer.append(scanner.nextLine()).append("\n");
 			}
 		}
 		catch (FileNotFoundException e) {
 			log.error("file '{}' was not found", path, e);
 			throw e;
-		}
-		finally {
-			scanner.close();
 		}
 		
 		return buffer.toString();
@@ -140,8 +132,8 @@ public abstract class AbstractSnapshotTuner {
 		File file = Paths.get(path).toFile();
 		if (!file.exists()) {
 			log.error("The source file '{}' does not exist. Please generate both Liquibase changelog files and retry. "
-			        + "Please check if you are running this program from the 'openmrs-core/liquibase' folder.",
-			    path);
+					+ "Please check if you are running this program from the 'openmrs-core/liquibase' folder.",
+				path);
 			System.exit(0);
 		}
 		SAXReader reader = new SAXReader();
@@ -156,59 +148,41 @@ public abstract class AbstractSnapshotTuner {
 		return document;
 	}
 	
-	Document readChangeLogResource(String resourceName) throws DocumentException, FileNotFoundException {
-		File file = getResourceAsFile(resourceName);
-		SAXReader reader = new SAXReader();
+	Document readChangeLogResource(String resourceName) throws DocumentException, IOException {
 		Document document;
-		try {
-			document = reader.read(file);
-		}
-		catch (DocumentException e) {
-			log.error("processing the resource '{}' raised an exception", resourceName, e);
-			throw e;
+		try (InputStream is = getResourceAsStream(resourceName)) {
+			SAXReader reader = new SAXReader();
+			try {
+				document = reader.read(is);
+			}
+			catch (DocumentException e) {
+				log.error("processing the resource '{}' raised an exception", resourceName, e);
+				throw e;
+			}
 		}
 		return document;
 	}
 	
-	private String readFile(File file) throws IOException {
-		if (file == null) {
-			log.error("No file was supplied to readFile()");
-			throw new RuntimeException("No file was supplied to readFile()");
-		}
-		
-		if (!file.exists()) {
-			throw new FileNotFoundException(file.getAbsolutePath());
-		}
-		
+	static String readInputStream(InputStream is) throws IOException {
 		// this may over-allocate, but we're only holding it in memory temporarily
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream(8192);
 		byte[] buffer = new byte[8192];
 		int length;
-		try (FileInputStream is = new FileInputStream(file)) {
-			while ((length = is.read(buffer)) != -1) {
-				outputStream.write(buffer, 0, length);
-			}
+		while ((length = is.read(buffer)) != -1) {
+			outputStream.write(buffer, 0, length);
 		}
 		
 		return outputStream.toString(StandardCharsets.UTF_8.name());
 	}
 	
-	private File getResourceAsFile(String resourceName) throws FileNotFoundException {
-		URL resourceUrl = getClass().getClassLoader().getResource(resourceName);
-		if (resourceUrl == null || resourceUrl.getFile() == null) {
-			throw new FileNotFoundException("Could not find resolve '" + resourceName + "' to a file. Instead got '" + resourceUrl + "'.");
-		}
-		
-		return new File(resourceUrl.getFile());
-	}
-	
-	String readFile(String path) throws IOException {
-		File file = Paths.get(path).toFile();
-		return readFile(file);
+	private InputStream getResourceAsStream(String resourceName) {
+		return getClass().getClassLoader().getResourceAsStream(resourceName);
 	}
 	
 	String readResource(String resourceName) throws IOException {
-		return readFile(getResourceAsFile(resourceName));
+		try (InputStream is = getResourceAsStream(resourceName)) {
+			return readInputStream(is);
+		}
 	}
 	
 	void writeChangeLogFile(Document document, String path) throws IOException {

@@ -59,7 +59,7 @@ public class CoreDataTunerTest {
 	private CoreDataTuner coreDataTuner;
 	
 	@BeforeEach
-	public void setup() throws DocumentException, FileNotFoundException {
+	public void setup() throws DocumentException, IOException {
 		coreDataTuner = new CoreDataTuner();
 		document = coreDataTuner.readChangeLogResource(LIQUIBASE_CORE_DATA_SNAPSHOT_XML);
 		namespaceUris = coreDataTuner.getNamespaceUris();

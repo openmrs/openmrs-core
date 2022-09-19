@@ -53,7 +53,7 @@ public class SchemaOnlyTunerTest {
 	private SchemaOnlyTuner schemaOnlyTuner;
 	
 	@BeforeEach
-	public void setup() throws DocumentException, FileNotFoundException {
+	public void setup() throws DocumentException, IOException {
 		schemaOnlyTuner = new SchemaOnlyTuner();
 		document = schemaOnlyTuner.readChangeLogResource(LIQUIBASE_SCHEMA_ONLY_SNAPSHOT_XML);
 		namespaceUris = schemaOnlyTuner.getNamespaceUris();
