@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -59,7 +60,7 @@ public class AbstractSnapshotTunerTest {
 	
 	@Test
 	public void shouldReadFile() throws IOException {
-		assertTrue(schemaOnlyTuner.readFile(PATH_TO_TEST_RESOURCES + File.separator + FILE_WITH_LICENSE_HEADER_MD)
+		assertTrue(readFile(PATH_TO_TEST_RESOURCES + File.separator + FILE_WITH_LICENSE_HEADER_MD)
 		        .contains(HTTP_OPENMRS_ORG_LICENSE));
 	}
 	
@@ -90,15 +91,34 @@ public class AbstractSnapshotTunerTest {
 		
 		Files.copy(sourcePath, targetPath, REPLACE_EXISTING);
 		
-		assertTrue(!schemaOnlyTuner.readFile(targetPath.toString()).contains(HTTP_OPENMRS_ORG_LICENSE));
+		assertTrue(!readFile(targetPath.toString()).contains(HTTP_OPENMRS_ORG_LICENSE));
 		
 		// when
 		schemaOnlyTuner.addLicenseHeaderToFileIfNeeded(targetPath.toString());
 		
 		// then
-		String actual = schemaOnlyTuner.readFile(targetPath.toString());
+		String actual = readFile(targetPath.toString());
 		String expected = schemaOnlyTuner.readResource(FILE_WITH_LICENSE_HEADER_MD);
 		
 		assertThat(expected, equalToCompressingWhiteSpace(actual));
+	}
+	
+	private String readFile(String path) throws IOException {
+		File file = Paths.get(path).toFile();
+		return readFile(file);
+	}
+	
+	private String readFile(File file) throws IOException {
+		if (file == null) {
+			throw new RuntimeException("No file was supplied to readFile()");
+		}
+		
+		if (!file.exists()) {
+			throw new FileNotFoundException(file.getAbsolutePath());
+		}
+		
+		try (FileInputStream is = new FileInputStream(file)) {
+			return AbstractSnapshotTuner.readInputStream(is);
+		}
 	}
 }
