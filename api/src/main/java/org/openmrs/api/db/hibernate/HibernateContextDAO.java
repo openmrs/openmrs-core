@@ -40,7 +40,6 @@ import org.springframework.orm.hibernate5.SessionHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import javax.sql.DataSource;
 import java.io.File;
 import java.net.URL;
 import java.sql.Connection;
@@ -556,8 +555,7 @@ public class HibernateContextDAO implements ContextDAO {
 	 */
 	public Connection getDatabaseConnection() {
 		try {
-			DataSource dataSource = SessionFactoryUtils.getDataSource(sessionFactory);
-			return dataSource.getConnection();
+			return SessionFactoryUtils.getDataSource(sessionFactory).getConnection();
 		}
 		catch (SQLException e) {
 			throw new RuntimeException("Unable to retrieve a database connection", e);

@@ -1421,7 +1421,7 @@ public class Context {
 	}
 
 	/**
-	 * @return a Connection to the OpenMRS database
+	 * @return a Connection from the OpenMRS database connection pool
 	 * @since 2.5.7
 	 */
 	public static Connection getDatabaseConnection() {
