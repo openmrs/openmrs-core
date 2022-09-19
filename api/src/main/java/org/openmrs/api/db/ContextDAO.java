@@ -180,7 +180,7 @@ public interface ContextDAO {
 	public void updateSearchIndexForType(Class<?> type);
 
 	/**
-	 * @return a Connection to the OpenMRS database
+	 * @return a Connection from the OpenMRS database connection pool
 	 * @since 2.5.7
 	 */
 	public Connection getDatabaseConnection();
