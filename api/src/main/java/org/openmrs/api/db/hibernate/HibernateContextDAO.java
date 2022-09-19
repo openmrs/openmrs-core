@@ -9,14 +9,6 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import java.io.File;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.Future;
-
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.CacheMode;
 import org.hibernate.FlushMode;
@@ -47,6 +39,16 @@ import org.springframework.orm.hibernate5.SessionFactoryUtils;
 import org.springframework.orm.hibernate5.SessionHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+
+import java.io.File;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.Future;
 
 /**
  * Hibernate specific implementation of the {@link ContextDAO}. These methods should not be used
@@ -545,6 +547,18 @@ public class HibernateContextDAO implements ContextDAO {
 		}
 		catch (Exception e) {
 			throw new RuntimeException("Failed to start asynchronous search index update", e);
+		}
+	}
+
+	/**
+	 * @see ContextDAO#getDatabaseConnection() 
+	 */
+	public Connection getDatabaseConnection() {
+		try {
+			return SessionFactoryUtils.getDataSource(sessionFactory).getConnection();
+		}
+		catch (SQLException e) {
+			throw new RuntimeException("Unable to retrieve a database connection", e);
 		}
 	}
 }
