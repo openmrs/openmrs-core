@@ -66,11 +66,6 @@ public class HibernateContextDAO implements ContextDAO {
 	 * Hibernate session factory
 	 */
 	private SessionFactory sessionFactory;
-
-	/**
-	 * Static cache of dataSource used by the SessionFactory
-	 */
-	private static DataSource dataSource;
 	
 	@Autowired
 	private FullTextSessionFactory fullTextSessionFactory;
@@ -85,7 +80,6 @@ public class HibernateContextDAO implements ContextDAO {
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
-		HibernateContextDAO.dataSource = SessionFactoryUtils.getDataSource(sessionFactory);
 	}
 	
 	public void setUserDAO(UserDAO userDao) {
@@ -558,17 +552,15 @@ public class HibernateContextDAO implements ContextDAO {
 	}
 
 	/**
-	 * This method exists in order to enable retrieving a database connection backed by the Hibernate data source
-	 * to support configuring, for example, log4j2 JDBC appenders if desired.
-	 * Ths is preferable over using org.openmrs.util.DatabaseUpdater.getConnection, which creates a new Connection
-	 * each time it is invoked, rather than using the configured Hibernate datasource, backed by a C3PO connection pool
-	 * 
-	 * @since 2.5.7
+	 * @see ContextDAO#getDatabaseConnection() 
 	 */
-	public static Connection getConnection() throws SQLException {
-		if (dataSource == null) {
-			throw new SQLException("Cannot retrieve data source from hibernate session factory");
+	public Connection getDatabaseConnection() {
+		try {
+			DataSource dataSource = SessionFactoryUtils.getDataSource(sessionFactory);
+			return dataSource.getConnection();
 		}
-		return dataSource.getConnection();
+		catch (SQLException e) {
+			throw new RuntimeException("Unable to retrieve a database connection", e);
+		}
 	}
 }

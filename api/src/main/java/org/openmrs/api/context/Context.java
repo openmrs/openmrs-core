@@ -73,6 +73,7 @@ import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
+import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -1417,5 +1418,13 @@ public class Context {
 	 */
 	public static boolean isUseSystemClassLoader() {
 		return getServiceContext().isUseSystemClassLoader();
+	}
+
+	/**
+	 * @return a Connection to the OpenMRS database
+	 * @since 2.5.7
+	 */
+	public static Connection getDatabaseConnection() {
+		return getContextDAO().getDatabaseConnection();
 	}
 }

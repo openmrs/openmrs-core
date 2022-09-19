@@ -9,6 +9,7 @@
  */
 package org.openmrs.api.db;
 
+import java.sql.Connection;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Future;
@@ -177,4 +178,10 @@ public interface ContextDAO {
 	 * @see Context#updateSearchIndexForType(Class)
 	 */
 	public void updateSearchIndexForType(Class<?> type);
+
+	/**
+	 * @return a Connection to the OpenMRS database
+	 * @since 2.5.7
+	 */
+	public Connection getDatabaseConnection();
 }
