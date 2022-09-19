@@ -1134,7 +1134,7 @@
 		<hamcrestVersion>2.2</hamcrestVersion>
 
 		<slf4jVersion>1.7.36</slf4jVersion>
-		<log4jVersion>2.18.0</log4jVersion>
+		<log4jVersion>2.19.0</log4jVersion>
 		<owaspCsrfGuardVersion>4.2.0</owaspCsrfGuardVersion>
 
 		<customArgLineForTesting />
