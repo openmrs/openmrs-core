@@ -77,6 +77,9 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 			}
 		});
 		
+		newOrderGroup.setPatient(order.getPatient());
+		newOrderGroup.setEncounter(order.getEncounter());
+		
 		OrderGroup savedOrderGroup = dao.saveOrderGroup(newOrderGroup);
 		assertNotNull(savedOrderGroup.getOrderGroupId(), "OrderGroup gets saved");
 		
