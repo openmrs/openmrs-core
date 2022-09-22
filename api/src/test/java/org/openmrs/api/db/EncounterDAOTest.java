@@ -11,11 +11,13 @@ package org.openmrs.api.db;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Encounter;
@@ -82,7 +84,7 @@ public class EncounterDAOTest extends BaseContextSensitiveTest {
 	public void getEncounters_shouldWork_WithNameQuery() {
 		List<Encounter> expectedEncountersForPatientOne = initializeExpectedEncounters();
 		List<Encounter> encounters = dao.getEncounters("John Doe", null, null, null, true);
-		assertEquals(expectedEncountersForPatientOne, encounters);
+		assertThat(expectedEncountersForPatientOne, Matchers.containsInAnyOrder(encounters.toArray()));
 	}
 	
 	/**
@@ -93,10 +95,10 @@ public class EncounterDAOTest extends BaseContextSensitiveTest {
 		List<Encounter> expectedEncountersForPatientOne = initializeExpectedEncounters();
 		
 		List<Encounter> encountersByNumericIdentifier = dao.getEncounters("1234", null, null, null, true);
-		assertEquals(expectedEncountersForPatientOne, encountersByNumericIdentifier);
+		assertThat(expectedEncountersForPatientOne, Matchers.containsInAnyOrder(encountersByNumericIdentifier.toArray()));
 		
 		List<Encounter> encountersByStringIdentifier = dao.getEncounters("abcd", null, null, null, true);
-		assertEquals(expectedEncountersForPatientOne, encountersByStringIdentifier);
+		assertThat(expectedEncountersForPatientOne, Matchers.containsInAnyOrder(encountersByStringIdentifier.toArray()));
 	}
 	
 	private List<Encounter> initializeExpectedEncounters() {
