@@ -48,6 +48,7 @@ import org.openmrs.CodedOrFreeText;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.Condition;
+import org.openmrs.ConditionClinicalStatus;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterRole;
@@ -404,12 +405,14 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		freeTextForPregnancy.setNonCoded("Pregnancy");
 		pregnancy.setCondition(freeTextForPregnancy);
 		pregnancy.setPatient(encounter.getPatient());
+		pregnancy.setClinicalStatus(ConditionClinicalStatus.ACTIVE);
 		
 		Condition edema = new Condition();
 		CodedOrFreeText freeTextForEdema = new CodedOrFreeText();
 		freeTextForEdema.setNonCoded("Edema");
 		edema.setCondition(freeTextForEdema);
 		edema.setPatient(encounter.getPatient());
+		edema.setClinicalStatus(ConditionClinicalStatus.ACTIVE);
 		
 		// replay
 		encounter.addCondition(pregnancy);
@@ -1833,7 +1836,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void saveEncounterRole_shouldSaveEncounterRoleWithBasicDetails() {
 		EncounterRole encounterRole = new EncounterRole();
-		encounterRole.setName("Attending physician");
+		encounterRole.setName("Attending physician 2");
 		encounterRole.setDescription("The person in charge");
 		EncounterService encounterService = Context.getEncounterService();
 		encounterService.saveEncounterRole(encounterRole);
@@ -1970,12 +1973,12 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		Provider provider = new Provider();
 		provider.setIdentifier("id1");
-		provider.setPerson(newPerson("name"));
+		provider.setPerson(new Person(2));
 		provider = Context.getProviderService().saveProvider(provider);
 		
 		Provider provider2 = new Provider();
 		provider2.setIdentifier("id2");
-		provider2.setPerson(newPerson("name2"));
+		provider2.setPerson(new Person(2));
 		provider2 = Context.getProviderService().saveProvider(provider2);
 		
 		encounter.addProvider(role, provider);
@@ -2021,13 +2024,13 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		Provider provider = new Provider();
 		provider.setIdentifier("id1");
-		provider.setPerson(newPerson("name1"));
+		provider.setPerson(new Person(2));
 		provider = Context.getProviderService().saveProvider(provider);
 		
 		Provider provider2 = new Provider();
 		provider2.setIdentifier("id2");
 		
-		provider2.setPerson(newPerson("name2"));
+		provider2.setPerson(new Person(2));
 		provider2 = Context.getProviderService().saveProvider(provider2);
 		
 		encounter.addProvider(role, provider);
@@ -2281,7 +2284,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		Provider provider = new Provider();
 		provider.setIdentifier("id1");
-		provider.setPerson(newPerson("name"));
+		provider.setPerson(new Person(2));
 		provider = Context.getProviderService().saveProvider(provider);
 		
 		encounter.addProvider(role, provider);
@@ -2320,7 +2323,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Provider provider = new Provider();
 		provider.setIdentifier("id1");
 		
-		provider.setPerson(newPerson("name"));
+		provider.setPerson(new Person(2));
 		provider = Context.getProviderService().saveProvider(provider);
 		
 		encounter.addProvider(role, provider);
@@ -2369,7 +2372,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		Provider provider = new Provider();
 		provider.setIdentifier("id1");
-		provider.setPerson(newPerson("name"));
+		provider.setPerson(new Person(2));
 		provider = Context.getProviderService().saveProvider(provider);
 		
 		encounter.addProvider(role, provider);
@@ -3008,16 +3011,6 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		return new EncounterSearchCriteriaBuilder().setIncludeVoided(true).setDateChanged(sdf.parse(dateChanged))
 		        .createEncounterSearchCriteria();
-	}
-	
-	private Person newPerson(String name) {
-		Person person = new Person();
-		Set<PersonName> personNames = new TreeSet<>();
-		PersonName personName = new PersonName();
-		personName.setFamilyName(name);
-		personNames.add(personName);
-		person.setNames(personNames);
-		return person;
 	}
 
 	@Test
