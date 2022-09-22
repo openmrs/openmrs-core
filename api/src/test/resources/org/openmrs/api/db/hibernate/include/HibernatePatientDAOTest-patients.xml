@@ -51,11 +51,11 @@
     <!--
         Patients referring to people with short names
     -->
-    <patient patient_id="53" creator="1" date_created="2013-12-27 00:00:00.0" changed_by="1" voided="false" void_reason=""/>
-    <patient patient_id="54" creator="1" date_created="2013-12-27 00:00:00.0" changed_by="1" voided="false" void_reason=""/>
-    <patient patient_id="55" creator="1" date_created="2013-12-27 00:00:00.0" changed_by="1" voided="false" void_reason=""/>
-    <patient patient_id="56" creator="1" date_created="2013-12-27 00:00:00.0" changed_by="1" voided="false" void_reason=""/>
-    <patient patient_id="57" creator="1" date_created="2013-12-27 00:00:00.0" changed_by="1" voided="false" void_reason=""/>
+    <patient patient_id="53" creator="1" date_created="2013-12-27" changed_by="1" voided="false" void_reason=""/>
+    <patient patient_id="54" creator="1" date_created="2013-12-27" changed_by="1" voided="false" void_reason=""/>
+    <patient patient_id="55" creator="1" date_created="2013-12-27" changed_by="1" voided="false" void_reason=""/>
+    <patient patient_id="56" creator="1" date_created="2013-12-27" changed_by="1" voided="false" void_reason=""/>
+    <patient patient_id="57" creator="1" date_created="2013-12-27" changed_by="1" voided="false" void_reason=""/>
     <patient patient_id="58" creator="1" date_created="2013-12-27 00:00:00.0" changed_by="1" voided="false" void_reason=""/>
 
     <!--
