@@ -2058,7 +2058,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		List<String> attributes = new ArrayList<>();
 		attributes.add("birthdate");
 		List<Patient> patients = dao.getDuplicatePatientsByAttributes(attributes);
-		assertEquals(31, patients.size());
+		assertEquals(41, patients.size());
 	}
 	/**
 	 * @see HibernatePatientDAO#getDuplicatePatientsByAttributes(List)
@@ -2069,7 +2069,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		attributes.add("gender");
 		attributes.add("birthdate");
 		List<Patient> patients = dao.getDuplicatePatientsByAttributes(attributes);
-		assertEquals(31, patients.size());
+		assertEquals(41, patients.size());
 	}
 	/**
 	 * @see HibernatePatientDAO#getDuplicatePatientsByAttributes(List)
@@ -2131,7 +2131,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		attributes.add("abcDef");
 		attributes.add("birthdate");
 		List<Patient> patients = dao.getDuplicatePatientsByAttributes(attributes);
-		assertEquals(31, patients.size());
+		assertEquals(41, patients.size());
 	}
 
 	@Test
