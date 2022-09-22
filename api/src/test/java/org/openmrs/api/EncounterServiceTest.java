@@ -1978,7 +1978,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		Provider provider2 = new Provider();
 		provider2.setIdentifier("id2");
-		provider2.setPerson(new Person(2));
+		provider2.setPerson(new Person(3));
 		provider2 = Context.getProviderService().saveProvider(provider2);
 		
 		encounter.addProvider(role, provider);
@@ -2030,7 +2030,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Provider provider2 = new Provider();
 		provider2.setIdentifier("id2");
 		
-		provider2.setPerson(new Person(2));
+		provider2.setPerson(new Person(3));
 		provider2 = Context.getProviderService().saveProvider(provider2);
 		
 		encounter.addProvider(role, provider);
