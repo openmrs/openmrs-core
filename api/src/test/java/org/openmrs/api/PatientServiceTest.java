@@ -449,7 +449,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void shouldGetPatientsByIdegntifierAndIdentifierType() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet(FIND_PATIENTS_XML);
 		authenticate();
 		updateSearchIndex();
@@ -493,7 +492,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void shouldGetPatientsByIdentifierAndMoreThanOneIdentifierTypes() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet(FIND_PATIENTS_XML);
 		authenticate();
 		updateSearchIndex();
@@ -602,7 +600,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPatients_shouldAllowSearchStringToBeOneAccordingToMinsearchcharactersGlobalProperty() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet(FIND_PATIENTS_XML);
 		updateSearchIndex();
 		
@@ -1867,7 +1864,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void getPatients_shouldReturnEmptyListWhenNoMatchIsFound() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet(CREATE_PATIENT_XML);
 		authenticate();
 		
