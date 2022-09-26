@@ -830,11 +830,14 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	
 	protected IDatabaseConnection setupDatabaseConnection(Connection connection) throws DatabaseUnitException {
 		IDatabaseConnection dbUnitConn = new DatabaseConnection(connection);
+		DatabaseConfig config = dbUnitConn.getConfig();
 		
 		if (useInMemoryDatabase()) {
 			//Setup the db connection to use H2 config.
-			DatabaseConfig config = dbUnitConn.getConfig();
 			config.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new H2DataTypeFactory());
+		}
+		else {
+			config.setProperty(DatabaseConfig.PROPERTY_METADATA_HANDLER, new OpenmrsMetadataHandler());
 		}
 		
 		return dbUnitConn;
@@ -858,7 +861,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			IDatabaseConnection dbUnitConn = setupDatabaseConnection(connection);
 			
 			// find all the tables for this connection
-			ResultSet resultSet = connection.getMetaData().getTables(null, "PUBLIC", "%", null);
+			ResultSet resultSet = connection.getMetaData().getTables(System.getProperty("databaseName"), "PUBLIC", "%", null);
 			DefaultDataSet dataset = new DefaultDataSet();
 			while (resultSet.next()) {
 				String tableName = resultSet.getString(3);
