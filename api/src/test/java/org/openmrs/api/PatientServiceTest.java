@@ -449,7 +449,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void shouldGetPatientsByIdegntifierAndIdentifierType() throws Exception {
 		executeDataSet(FIND_PATIENTS_XML);
-		authenticate();
 		updateSearchIndex();
 		
 		List<PatientIdentifierType> types = new ArrayList<>();
@@ -492,7 +491,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void shouldGetPatientsByIdentifierAndMoreThanOneIdentifierTypes() throws Exception {
 		executeDataSet(FIND_PATIENTS_XML);
-		authenticate();
 		updateSearchIndex();
 		
 		List<PatientIdentifierType> types = new ArrayList<>();
@@ -1864,7 +1862,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getPatients_shouldReturnEmptyListWhenNoMatchIsFound() throws Exception {
 		executeDataSet(CREATE_PATIENT_XML);
-		authenticate();
 		
 		List<Patient> patientList = patientService.getPatients(null, "???", null, false);
 		assertNotNull(patientList, "an empty list should be returned instead of a null object");
@@ -1926,7 +1923,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getPatients_shouldFetchAllPatientsThatPartiallyMatchGivenName() throws Exception {
 		executeDataSet(FIND_PATIENTS_XML);
-		authenticate();
 		updateSearchIndex();
 		
 		List<Patient> patients = patientService.getPatients("Jea", null, null, false);
@@ -1955,7 +1951,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getPatients_shouldIgnoreAccentsWhenMatchingName() throws Exception {
 		executeDataSet(FIND_PATIENTS_ACCENTS_XML);
-		authenticate();
 		updateSearchIndex();
 		
 		List<Patient> patients = patientService.getPatients("Jose", null, null, false);
@@ -1991,7 +1986,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void purgePatient_shouldDeletePatientFromDatabase() throws Exception {
 		executeDataSet(FIND_PATIENTS_XML);
-		authenticate();
 		
 		// verify patient with ID 2 exists in database
 		Patient patientToPurge = patientService.getPatient(2);
@@ -2007,7 +2001,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getPatients_shouldNotReturnVoidedPatients() throws Exception {
 		executeDataSet(FIND_PATIENTS_XML);
-		authenticate();
 		
 		// verify patient is voided
 		assertTrue(patientService.getPatient(3).getVoided());
