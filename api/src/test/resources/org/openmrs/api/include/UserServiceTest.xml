@@ -51,8 +51,6 @@
   <person_name person_name_id="5553" preferred="true" person_id="4" given_name="John" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="8d6142e2-f256-4fc7-a085-073646c66663"/>
   <person_name person_name_id="5555" preferred="false" person_id="4" given_name="John" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="8d6142e2-f256-4fc7-a085-073646c66664"/>
   
-  <user_property user_id="5505" property="some key" property_value="some value" />
-  
   <person person_id="5508" gender="F" dead="false" creator="1" date_created="2008-08-15 15:46:47.0" voided="false" uuid="edc3d446-e53b-11de-8404-001e378eb67e"/>
   <person_name person_name_id="5508" preferred="true" person_id="5508" given_name="Someone" middle_name="With" family_name="MultipleUserAccounts" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="f5bbff8e-e53b-11de-8404-001e378eb67e"/>
   <users user_id="5508" person_id="5508" system_id="508-x" username="firstaccount" password="74e3ed4f9e5b955de443feabc9f12ecd291ac6a7eaa2f09a72a5c811ec618b044d7131f687c0a0465fc0c660d09fd245e410e12ffe77d78b2a0c504b40afa202" salt="1c30292f0b438b49b181950f3e831c6a9f38ef1c7d559fca566e8cd6b4efb417150585d4c3345f0fb0b520fc0884ad82ea7c1a28f48c2c562106a3d110716cfc" secret_question="a secret" secret_answer="an answer" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" retired="false" retire_reason="" uuid="2eadf946-e53c-11de-8404-001e378eb67e"/> 
@@ -61,7 +59,5 @@
 
   <person person_id="5511" gender="F" dead="false" creator="1" date_created="2008-08-15 15:46:47.0" voided="false" uuid="edc3d446-e53b-11de-8404-001e378eb23e"/>
   <users user_id="5511" person_id="5511" system_id="511-x" username="test" password="e9fb6ffdc1f903bdd8ae621347d5329762de868347d317dacecebf6e9e73f4d97297cb1237d8edaa02c5a9bd25949b251c2169202236455c23cdf4d828487c4a" salt="b3cc5eea8fdc9f8579b07267f209fe184f2202cc6379922e0b13f2753c641808bbba8b0ecf4d0592db8e5001e57876c506ae4d3579d5274d88ca8f26b7e14d9d" secret_question="a secret" secret_answer="an answer" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" retired="false" retire_reason="" uuid="658db69a-e53c-11de-8404-001e378eb99e"/>
-
-  <user_property user_id="5511" property="some key" property_value="some value" />
 	
 </dataset>
