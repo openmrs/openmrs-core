@@ -75,6 +75,7 @@ import org.openmrs.api.context.ContextMockHelper;
 import org.openmrs.api.context.Credentials;
 import org.openmrs.api.context.UsernamePasswordCredentials;
 import org.openmrs.module.ModuleConstants;
+import org.openmrs.test.OpenmrsMetadataHandler;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.SkipBaseSetupAnnotationExecutionListener;
 import org.openmrs.test.TestUtil;
@@ -818,11 +819,14 @@ public abstract class BaseContextSensitiveTest {
 	
 	protected IDatabaseConnection setupDatabaseConnection(Connection connection) throws DatabaseUnitException {
 		IDatabaseConnection dbUnitConn = new DatabaseConnection(connection);
+		DatabaseConfig config = dbUnitConn.getConfig();
 		
 		if (useInMemoryDatabase()) {
 			//Setup the db connection to use H2 config.
-			DatabaseConfig config = dbUnitConn.getConfig();
 			config.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new H2DataTypeFactory());
+		}
+		else {
+			config.setProperty(DatabaseConfig.PROPERTY_METADATA_HANDLER, new OpenmrsMetadataHandler());
 		}
 		
 		return dbUnitConn;
