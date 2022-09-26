@@ -13,9 +13,11 @@ import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -188,11 +190,11 @@ public abstract class AbstractSnapshotTuner {
 	void writeChangeLogFile(Document document, String path) throws IOException {
 		XMLWriter xmlWriter = null;
 		try {
-			File file = Paths.get(path).toFile();
-			FileWriter fileWriter = new FileWriter(file);
-			OutputFormat format = OutputFormat.createPrettyPrint();
-			xmlWriter = new XMLWriter(fileWriter, format);
-			xmlWriter.write(document);
+			try (OutputStreamWriter out = new OutputStreamWriter (new FileOutputStream (path), StandardCharsets.UTF_8);) {
+				OutputFormat format = OutputFormat.createPrettyPrint();
+				xmlWriter = new XMLWriter(out, format);
+				xmlWriter.write(document);
+			}
 		}
 		catch (IOException | UnsupportedOperationException e) {
 			log.error("writing the updated changelog file to '{}' raised an exception", path, e);
