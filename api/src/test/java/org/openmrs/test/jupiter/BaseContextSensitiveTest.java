@@ -630,7 +630,12 @@ public abstract class BaseContextSensitiveTest {
 		if (useInMemoryDatabase()) {
 			constraintsOnSql = "SET REFERENTIAL_INTEGRITY TRUE";
 		} else {
-			constraintsOnSql = "SET FOREIGN_KEY_CHECKS=1;";
+			if ("postgres".equals(System.getProperty("database"))) {
+				constraintsOnSql = "SET session_replication_role = origin;";
+			}
+			else {
+				constraintsOnSql = "SET FOREIGN_KEY_CHECKS=1;";
+			}
 		}
 		PreparedStatement ps = connection.prepareStatement(constraintsOnSql);
 		ps.execute();
@@ -642,7 +647,12 @@ public abstract class BaseContextSensitiveTest {
 		if (useInMemoryDatabase()) {
 			constraintsOffSql = "SET REFERENTIAL_INTEGRITY FALSE";
 		} else {
-			constraintsOffSql = "SET FOREIGN_KEY_CHECKS=0;";
+			if ("postgres".equals(System.getProperty("database"))) {
+				constraintsOffSql = "SET session_replication_role = replica;";
+			}
+			else {
+				constraintsOffSql = "SET FOREIGN_KEY_CHECKS=0;";
+			}
 		}
 		PreparedStatement ps = connection.prepareStatement(constraintsOffSql);
 		ps.execute();
