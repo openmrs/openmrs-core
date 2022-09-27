@@ -17,9 +17,11 @@ import java.util.Map;
 
 import org.hibernate.CallbackException;
 import org.hibernate.EmptyInterceptor;
+import org.hibernate.collection.internal.PersistentSet;
 import org.hibernate.type.Type;
 import org.openmrs.Auditable;
 import org.openmrs.OpenmrsObject;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,6 +86,21 @@ public class AuditableInterceptor extends EmptyInterceptor {
 			objectWasChanged = changeProperties(currentState, propertyNames, objectWasChanged, propertyValues, false);
 		}
 		return objectWasChanged;
+	}
+	
+	@Override
+	public void onCollectionRecreate(Object collection, Serializable key) throws CallbackException {
+		handleCollectionChange(collection);
+	}
+	
+	@Override
+	public void onCollectionUpdate(Object collection, Serializable key) throws CallbackException {
+		handleCollectionChange(collection);
+	}
+	
+	@Override
+	public void onCollectionRemove(Object collection, Serializable key) throws CallbackException {
+		handleCollectionChange(collection);
 	}
 	
 	/**
@@ -163,5 +180,21 @@ public class AuditableInterceptor extends EmptyInterceptor {
 			return true;
 		}
 		return false;
+	}
+	
+	private void handleCollectionChange(Object collection) {
+		if (collection instanceof PersistentSet) {
+			PersistentSet persistentCollection = (PersistentSet) collection; 
+			if ("org.openmrs.User.roles".equals(persistentCollection.getRole())) {
+				Object owner = persistentCollection.getOwner();
+				if (owner instanceof User) {
+					User user = (User) owner;
+					if (user.getCreator() != null) {
+						user.setChangedBy(Context.getAuthenticatedUser());
+						user.setDateChanged(new Date());
+					}
+				}
+			}
+		}
 	}
 }

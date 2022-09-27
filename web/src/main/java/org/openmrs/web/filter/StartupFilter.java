@@ -9,13 +9,11 @@
  */
 package org.openmrs.web.filter;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -37,6 +35,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -49,11 +48,13 @@ import org.apache.velocity.tools.config.DefaultKey;
 import org.apache.velocity.tools.config.FactoryConfiguration;
 import org.apache.velocity.tools.config.ToolConfiguration;
 import org.apache.velocity.tools.config.ToolboxConfiguration;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.OpenmrsCharacterEscapes;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.*;
+import org.openmrs.logging.MemoryAppender;
+import org.openmrs.logging.OpenmrsLoggingUtil;
+import org.openmrs.util.LocaleUtility;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.filter.initialization.InitializationFilter;
 import org.openmrs.web.filter.update.UpdateFilter;
@@ -325,7 +326,7 @@ public abstract class StartupFilter implements Filter {
 	 * @param result A map to be returned as a JSON document
 	 */
 	protected void addLogLinesToResponse(Map<String, Object> result) {
-		MemoryAppender appender = OpenmrsUtil.getMemoryAppender();
+		MemoryAppender appender = OpenmrsLoggingUtil.getMemoryAppender();
 		if (appender != null) {
 			List<String> logLines = appender.getLogLines();
 			
@@ -349,7 +350,7 @@ public abstract class StartupFilter implements Filter {
 	 */
 	protected String toJSONString(Object object) {
 		ObjectMapper mapper = new ObjectMapper();
-		mapper.getJsonFactory().setCharacterEscapes(new OpenmrsCharacterEscapes());
+		mapper.getFactory().setCharacterEscapes(new OpenmrsCharacterEscapes());
 		try {
 			return mapper.writeValueAsString(object);
 		}
@@ -401,9 +402,8 @@ public abstract class StartupFilter implements Filter {
 			// from tool context, then changing its locale property and putting this tool back to the context
 			// First, we need to obtain the value of default key annotation of our localization tool
 			// class using reflection
-			Annotation annotation = LocalizationTool.class.getAnnotation(DefaultKey.class);
-			DefaultKey defaultKeyAnnotation = (DefaultKey) annotation;
-			String key = defaultKeyAnnotation.value();
+			DefaultKey annotation = LocalizationTool.class.getAnnotation(DefaultKey.class);
+			String key = annotation.value();
 			//
 			LocalizationTool localizationTool = (LocalizationTool) toolContext.get(key);
 			localizationTool.setLocale(systemLocale);

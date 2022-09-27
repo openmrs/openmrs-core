@@ -52,6 +52,7 @@ public class ProgramWorkflowDAOTest extends BaseContextSensitiveTest {
 		program.setName("OpenMRS");
 		program.setDescription("An opensource medical record system");
 		program.setDateCreated(new Date());
+		program.setConcept(new Concept(3));
 		return program;
 	}
 	

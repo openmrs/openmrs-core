@@ -528,7 +528,6 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		
 		List<GlobalProperty> props = new ArrayList<>();
 		props.add(new GlobalProperty("a.property.key", "something"));
-		props.add(new GlobalProperty("a.property.KEY", "somethingelse"));
 		adminService.saveGlobalProperties(props);
 		int afterSaveSize = adminService.getAllGlobalProperties().size();
 		

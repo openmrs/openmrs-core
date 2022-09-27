@@ -17,7 +17,7 @@
 	<visit visit_id="102" patient_id="2" visit_type_id="4" date_started="2005-01-01 04:00:00.0" date_stopped="2005-02-01 16:00:00.0" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="5e17f414-1ade-11e1-9c71-00248140a5eb" />
 	<visit visit_id="103" patient_id="2" visit_type_id="4" date_started="2005-01-02 00:00:00.0" creator="1" date_created="2005-01-01 00:00:00.0" voided="1" uuid="6722bdbe-1ade-11e1-9c71-00248140a5eb" />
  	<visit visit_id="104" patient_id="2" visit_type_id="4" date_started="2005-01-05 00:00:00.0" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="12c60592-206e-11e1-9cf0-00248140a5eb" />
- 	<visit visit_id="105" patient_id="2" visit_type_id="4" date_started="2005-01-04 23:59:59.999" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="7d137c80-1ade-11e1-9c71-00248140a5eb" />
+ 	<visit visit_id="105" patient_id="2" visit_type_id="4" date_started="2005-01-04 23:59:59.0" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="7d137c80-1ade-11e1-9c71-00248140a5eb" />
   	<visit visit_id="106" patient_id="2" visit_type_id="4" date_started="2005-01-03 00:00:00.0" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="844fe4f2-1ade-11e1-9c71-00248140a5eb" />
   	
   	<global_property property="visits.autoCloseVisitType" property_value="Initial HIV Clinic Visit, Auto closeable Visits" uuid="88cdb936-1c2e-11e1-9cf0-00248140a5eb" />

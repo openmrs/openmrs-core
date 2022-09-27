@@ -75,6 +75,8 @@ import org.openmrs.api.context.ContextMockHelper;
 import org.openmrs.api.context.Credentials;
 import org.openmrs.api.context.UsernamePasswordCredentials;
 import org.openmrs.module.ModuleConstants;
+import org.openmrs.test.Containers;
+import org.openmrs.test.OpenmrsMetadataHandler;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.SkipBaseSetupAnnotationExecutionListener;
 import org.openmrs.test.TestUtil;
@@ -190,6 +192,10 @@ public abstract class BaseContextSensitiveTest {
 		
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		
+		if (!useInMemoryDatabase()) {
+			Containers.ensureDatabaseRunning();
+		}
+		
 		Properties props = getRuntimeProperties();
 		
 		log.debug("props: {}", props);
@@ -304,7 +310,7 @@ public abstract class BaseContextSensitiveTest {
 		// properties
 		if (useInMemoryDatabase()) {
 			runtimeProperties.setProperty(Environment.DIALECT, H2Dialect.class.getName());
-			String url = "jdbc:h2:mem:openmrs;DB_CLOSE_DELAY=30;LOCK_TIMEOUT=10000";
+			String url = "jdbc:h2:mem:openmrs;DB_CLOSE_DELAY=30;LOCK_TIMEOUT=10000;IGNORECASE=TRUE";
 			runtimeProperties.setProperty(Environment.URL, url);
 			runtimeProperties.setProperty(Environment.DRIVER, "org.h2.Driver");
 			runtimeProperties.setProperty(Environment.USER, "sa");
@@ -818,11 +824,14 @@ public abstract class BaseContextSensitiveTest {
 	
 	protected IDatabaseConnection setupDatabaseConnection(Connection connection) throws DatabaseUnitException {
 		IDatabaseConnection dbUnitConn = new DatabaseConnection(connection);
+		DatabaseConfig config = dbUnitConn.getConfig();
 		
 		if (useInMemoryDatabase()) {
 			//Setup the db connection to use H2 config.
-			DatabaseConfig config = dbUnitConn.getConfig();
 			config.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new H2DataTypeFactory());
+		}
+		else {
+			config.setProperty(DatabaseConfig.PROPERTY_METADATA_HANDLER, new OpenmrsMetadataHandler());
 		}
 		
 		return dbUnitConn;

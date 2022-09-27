@@ -211,7 +211,7 @@
 			<dependency>
 				<groupId>org.javassist</groupId>
 				<artifactId>javassist</artifactId>
-				<version>3.29.0-GA</version>
+				<version>3.29.2-GA</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
@@ -399,7 +399,7 @@
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>42.4.1</version>
+				<version>42.5.0</version>
 				<scope>runtime</scope>
 			</dependency>
 			<dependency>
@@ -425,6 +425,11 @@
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-databind</artifactId>
+				<version>${jacksonVersion}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.datatype</groupId>
+				<artifactId>jackson-datatype-jsr310</artifactId>
 				<version>${jacksonVersion}</version>
 			</dependency>
 			<dependency>
@@ -516,7 +521,7 @@
 			<dependency>
 				<groupId>net.sf.ehcache</groupId>
 				<artifactId>ehcache</artifactId>
-				<version>2.10.10.3.24</version>
+				<version>2.10.10.4.43</version>
 			</dependency>
 			<dependency>
 			    <groupId>commons-validator</groupId>
@@ -536,7 +541,7 @@
 			<dependency>
 			  <groupId>joda-time</groupId>
 			  <artifactId>joda-time</artifactId>
-			  <version>2.10.14</version>
+			  <version>2.11.2</version>
 			</dependency>
 			<dependency>
 			    <groupId>javax.annotation</groupId>
@@ -554,14 +559,21 @@
 			    <version>4.0.0</version>
 			</dependency>
 			<dependency>
-				<groupId>com.sun.xml.bind</groupId>
-				<artifactId>jaxb-impl</artifactId>
-			    <version>3.0.2</version>
-			</dependency>
-			<dependency>
 				<groupId>com.sun.mail</groupId>
 				<artifactId>javax.mail</artifactId>
 				<version>1.6.2</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>mysql</artifactId>
+				<version>1.17.3</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>postgresql</artifactId>
+				<version>1.17.3</version>
 				<scope>test</scope>
 			</dependency>
 		</dependencies>
@@ -593,7 +605,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
-					<version>3.2.2</version>
+					<version>3.3.0</version>
 					<configuration>
 						<archive>
 							<manifestEntries>
@@ -659,7 +671,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-checkstyle-plugin</artifactId>
-					<version>3.1.2</version>
+					<version>3.2.0</version>
 					<configuration>
 						<configLocation>checkstyle.xml</configLocation>
 					</configuration>
@@ -700,7 +712,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>3.4.0</version>
+					<version>3.4.1</version>
 					<configuration>
 						<!-- For some reason some packages from org.springframework are being
 						included and causing errors. -->
@@ -1054,7 +1066,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.4.0</version>
+				<version>3.4.1</version>
 				<configuration>
 					<docfilessubdirs>true</docfilessubdirs>
 					<bottom>&lt;em&gt;&lt;small&gt; Generated ${TIMESTAMP} NOTE - these libraries are in active development and subject to change&lt;/small&gt;&lt;/em&gt;</bottom>
@@ -1065,7 +1077,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jxr-plugin</artifactId>
-				<version>3.2.0</version>
+				<version>3.3.0</version>
 			</plugin>
 		</plugins>
 	</reporting>
@@ -1118,19 +1130,19 @@
 			 For instance, our version of Lucene is tied to the version of Hibernate Search. Similarly, our
 			 version of Hibernate Search must be compatible with the version of Hibernate and Hibernate must
 			 be compatible with our version of Spring. -->
-		<springVersion>5.3.22</springVersion>
-		<hibernateVersion>5.6.10.Final</hibernateVersion>
+		<springVersion>5.3.23</springVersion>
+		<hibernateVersion>5.6.11.Final</hibernateVersion>
 		<hibernateSearchVersion>5.11.10.Final</hibernateSearchVersion>
 		<luceneVersion>5.5.5</luceneVersion>
 		<aspectjVersion>1.9.9.1</aspectjVersion>
-		<jacksonVersion>2.13.3</jacksonVersion>
-		<junitVersion>5.9.0</junitVersion>
+		<jacksonVersion>2.13.4</jacksonVersion>
+		<junitVersion>5.9.1</junitVersion>
 		<mockitoVersion>3.12.4</mockitoVersion>
 		<hamcrestVersion>2.2</hamcrestVersion>
 
 		<slf4jVersion>1.7.36</slf4jVersion>
-		<log4jVersion>2.18.0</log4jVersion>
-		<owaspCsrfGuardVersion>4.1.4</owaspCsrfGuardVersion>
+		<log4jVersion>2.19.0</log4jVersion>
+		<owaspCsrfGuardVersion>4.2.0</owaspCsrfGuardVersion>
 
 		<customArgLineForTesting />
 

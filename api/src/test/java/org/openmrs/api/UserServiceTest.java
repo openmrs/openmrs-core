@@ -49,7 +49,6 @@ import org.openmrs.api.db.UserDAO;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.notification.MessageException;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
-import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
@@ -117,16 +116,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@SkipBaseSetup
 	public void createUser_shouldShouldCreateUserWhoIsPatientAlready() throws SQLException {
-		// create the basic user and give it full rights
-		initializeInMemoryDatabase();
-		
-		// authenticate to the temp database
-		authenticate();
-		
-		assertTrue(Context.isAuthenticated(), "The context needs to be correctly authenticated to by a user");
-		
 		// add in some basic data
 		executeDataSet(XML_FILENAME);
 
@@ -173,11 +163,11 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Context.clearSession();
 		
 		List<User> allUsers = userService.getAllUsers();
-		assertEquals(10, allUsers.size());
+		assertEquals(12, allUsers.size());
 		
 		// there should still only be the one patient we created in the xml file
 		List<Patient> allPatientsSet = Context.getPatientService().getAllPatients();
-		assertEquals(1, allPatientsSet.size());
+		assertEquals(4, allPatientsSet.size());
 	}
 
 	@Test
@@ -685,22 +675,16 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@SkipBaseSetup
 	public void getUserByUuid_shouldFetchUserWithGivenUuid() throws SQLException {
-		initializeInMemoryDatabase();
 		executeDataSet(XML_FILENAME);
-		authenticate();
 
 		User user = userService.getUserByUuid("013c49c6-e132-11de-babe-001e378eb67e");
 		assertEquals(user, userService.getUser(5505), "Did not fetch user with given uuid");
 	}
 	
 	@Test
-	@SkipBaseSetup
 	public void getUsersByName_shouldFetchUsersExactlyMatchingTheGivenGivenNameAndFamilyName() throws SQLException {
-		initializeInMemoryDatabase();
 		executeDataSet(XML_FILENAME);
-		authenticate();
 
 		// this generates an error:
 		// org.hibernate.QueryException: illegal attempt to dereference 
@@ -738,11 +722,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@SkipBaseSetup
 	public void getUsersByName_shouldNotFetchAnyDuplicateUsers() throws SQLException {
-		initializeInMemoryDatabase();
 		executeDataSet(XML_FILENAME);
-		authenticate();
 
 		// user with ID 4 has a preferred name "John Doe" and a not preferred name "John Doe."
 		// If this method does not fetch any duplicate users, this user should only 
@@ -1527,7 +1508,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void setUserActivationKey_shouldCreateUserActivationKey() throws Exception {
 		User createdUser = createTestUser();
-		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_HOST_URL,
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_PASSWORD_RESET_URL,
 		    "http://localhost:8080/openmrs/admin/users/changePassword.form/{activationKey}");
 		assertNull(dao.getLoginCredential(createdUser).getActivationKey());
 		assertThrows(MessageException.class, () -> userService.setUserActivationKey(createdUser));

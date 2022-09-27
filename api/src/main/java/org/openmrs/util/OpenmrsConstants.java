@@ -22,6 +22,7 @@ import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
 import org.openmrs.GlobalProperty;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.handler.ExistingVisitAssignmentHandler;
 import org.openmrs.customdatatype.datatype.BooleanDatatype;
 import org.openmrs.customdatatype.datatype.FreeTextDatatype;
@@ -621,8 +622,15 @@ public final class OpenmrsConstants {
 
 	/**
 	 * Global property that stores the base url for the application.
+	 * @deprecated as of 2.6.0, replaced by {@link #GP_PASSWORD_RESET_URL}
 	 */
+	@Deprecated
 	public static final String GP_HOST_URL = "host.url";
+	
+	/**
+	 * Global property that stores the base url for the password reset.
+	 */
+	public static final String GP_PASSWORD_RESET_URL = "security.passwordResetUrl";
 	
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
@@ -705,10 +713,9 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GP_MAIL_SMTP_STARTTLS_ENABLE, "false",
 		        "Set to true to enable TLS encryption, else set to false"));
-		
-		props.add(new GlobalProperty(GP_HOST_URL, "",
+
+		props.add(new GlobalProperty(GP_PASSWORD_RESET_URL, "",
 		        "The URL to redirect to after requesting for a password reset. Always provide a place holder in this url with name {activationKey}, it will get substituted by the actual activation key."));
-		
 		
 		props.add(new GlobalProperty("mail.transport_protocol", "smtp",
 		        "Transport protocol for the messaging engine. Valid values: smtp"));

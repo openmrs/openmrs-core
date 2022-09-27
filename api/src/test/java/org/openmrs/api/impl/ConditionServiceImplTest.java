@@ -220,6 +220,7 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 		Condition condition = new Condition();
 		condition.setUuid(uuid);
 		condition.setPatient(new Patient(2));
+		condition.setClinicalStatus(ConditionClinicalStatus.ACTIVE);
 		
 		// replay
 		condition.setEncounter(new Encounter(2039));
