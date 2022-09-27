@@ -75,6 +75,7 @@ import org.openmrs.api.context.ContextMockHelper;
 import org.openmrs.api.context.Credentials;
 import org.openmrs.api.context.UsernamePasswordCredentials;
 import org.openmrs.module.ModuleConstants;
+import org.openmrs.test.Containers;
 import org.openmrs.test.OpenmrsMetadataHandler;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.SkipBaseSetupAnnotationExecutionListener;
@@ -190,6 +191,10 @@ public abstract class BaseContextSensitiveTest {
 	public BaseContextSensitiveTest() {
 		
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
+		
+		if (!useInMemoryDatabase()) {
+			Containers.ensureDatabaseRunning();
+		}
 		
 		Properties props = getRuntimeProperties();
 		
