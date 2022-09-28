@@ -1374,7 +1374,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Concept frequencyConcept = expectedOrderFrequency.getConcept();
 		final String newConceptName = searchPhrase + " A Day";
 		frequencyConcept.addName(new ConceptName(newConceptName, locale));
-		frequencyConcept.addDescription(new ConceptDescription("some description", null));
+		frequencyConcept.addDescription(new ConceptDescription("some description", locale));
+		Context.flushSession(); //needed by postgresql
 		conceptService.saveConcept(frequencyConcept);
 
 		orderFrequencies = orderService.getOrderFrequencies(searchPhrase, locale, true, false);
