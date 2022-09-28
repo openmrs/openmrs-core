@@ -17,6 +17,7 @@ import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.dialect.MySQLDialect;
+import org.hibernate.dialect.PostgreSQL82Dialect;
 import org.openmrs.api.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,8 @@ public class MySqlUtil {
 	
 	private static boolean databaseCreated = false;
 	
+	private static boolean isMySql = true;
+	
 	public static void ensureDatabaseCreated() {
 		if (databaseCreated) {
 			return;
@@ -53,6 +56,8 @@ public class MySqlUtil {
 	}
 	
 	private static void createDatabase() {
+		
+		isMySql = !"postgres".equals(System.getProperty("database"));
 		
 		String databaseName = System.getProperty("databaseName");
 		if (StringUtils.isBlank(databaseName)) {
@@ -71,20 +76,17 @@ public class MySqlUtil {
 		
 		String url = System.getProperty("databaseUrl");
 		if (StringUtils.isBlank(url)) {
-			url = String
-			        .format(
-			            "jdbc:mysql://localhost:3306/%s?autoReconnect=true&sessionVariables=default_storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8",
-			            databaseName);
+			url = String.format(getConnectionUrl(), databaseName);
 		}
 		
 		System.setProperty("databaseUrl", url);
 		System.setProperty("databaseName", databaseName);
 		System.setProperty("databaseUsername", username);
 		System.setProperty("databasePassword", password);
-		System.setProperty("databaseDriver", "com.mysql.cj.jdbc.Driver");
-		System.setProperty("databaseDialect", MySQLDialect.class.getName());
+		System.setProperty("databaseDriver", isMySql ? "com.mysql.cj.jdbc.Driver" : "org.postgresql.Driver");
+		System.setProperty("databaseDialect", isMySql ? MySQLDialect.class.getName() : PostgreSQL82Dialect.class.getName());
 		
-		String sql = String.format("create database if not exists %s default character set utf8", databaseName);
+		String sql = String.format(isMySql ? "create database if not exists %s default character set utf8" : "create database %s encoding utf8", databaseName);
 		createDatabase(username, password, sql, url.replace(databaseName, ""));
 		
 		//needed for running liquibase changesets
@@ -136,5 +138,16 @@ public class MySqlUtil {
 		}
 		
 		return -1;
+	}
+	
+	private static String getConnectionUrl() {
+		
+		String url = "jdbc:mysql://localhost:3306/%s?autoReconnect=true&sessionVariables=default_storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8";
+		
+		if (!isMySql) {
+			url = "jdbc:postgresql://localhost:5432/%s?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8";
+		}
+		
+		return url;
 	}
 }
