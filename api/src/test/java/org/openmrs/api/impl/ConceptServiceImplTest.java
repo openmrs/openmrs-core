@@ -97,6 +97,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		c.setConceptClass(new ConceptClass(1));
 		Concept savedC = Context.getConceptService().saveConcept(c);
 		assertNotNull(savedC);
+		Context.flushSession(); //required for postgresql
 		Concept updatedC = Context.getConceptService().saveConcept(c);
 		assertNotNull(updatedC);
 		assertEquals(updatedC.getConceptId(), savedC.getConceptId());
@@ -198,6 +199,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 			
 		assertNotNull(Context.getConceptService().saveConcept(c), "Concept is legit, save succeeds");
 		
+		Context.flushSession(); //needed for postgresql
 		Context.getConceptService().saveConcept(c);
 		assertNotNull(c.getPreferredName(loc), "there's a preferred name");
 		assertTrue(c.getPreferredName(loc).isPreferred(), "name was explicitly marked preferred");
