@@ -65,6 +65,7 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		}
 		
 		dao.saveUser(userJoe, null);
+		Context.flushSession(); //needed by postgres
 	}
 	
 	@Test
