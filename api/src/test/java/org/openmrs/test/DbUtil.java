@@ -24,20 +24,21 @@ import org.slf4j.LoggerFactory;
 
 /**
  * I did not want to throw away this utility which i used while working on TRUNK-6028
- * for my local instance of MySQL before switching to the one running in a docker container.
+ * for my local database instances, before switching to the ones running in a docker container.
  * To use this utility, in org.openmrs.test.jupiter.BaseContextSensitiveTest 
  * and org.openmrs.test.BaseContextSensitiveTest, replace Containers.ensureDatabaseRunning()
- * with MySqlUtil.ensureDatabaseCreated() and then run: mvn test -DuseInMemoryDatabase=false
- * If you do not want to use the defaults, you can use the optional command line options for
+ * with DbUtil.ensureDatabaseCreated() and then run: mvn test -DuseInMemoryDatabase=false
+ * If you do not want to use the defaults, you can use the optional command line options below:
  * -DdatabaseName -DdatabaseUsername -DdatabasePassword -DdatabaseUrl
  * The default values are: database username=root, database password=test, 
  * database name=openmrs_test, database host=localhost and database port=3306
  * If you want to override the default database connection url, you would need to use
- * %s for the database name.
+ * %s for the database name. To use PostgreSQL, you would need -Ddatabase=postgres
+ * and then the default database port would change to 5432
  */
-public class MySqlUtil {
+public class DbUtil {
 	
-	private static final Logger log = LoggerFactory.getLogger(MySqlUtil.class);
+	private static final Logger log = LoggerFactory.getLogger(DbUtil.class);
 	
 	private static boolean databaseCreated = false;
 	
