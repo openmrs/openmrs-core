@@ -581,6 +581,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		resource.setValue(expected);
 
 		Context.getFormService().saveFormResource(resource);
+		Context.flushSession();
 		Integer resourceId = resource.getFormResourceId();
 
 		Context.clearSession();
@@ -607,6 +608,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		resource.setValue(expected);
 
 		resource = Context.getFormService().saveFormResource(resource);
+		Context.flushSession();
 		Integer resourceId = resource.getFormResourceId();
 
 		// duplicate the form
@@ -637,6 +639,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		resource.setValue(previous);
 
 		resource = Context.getFormService().saveFormResource(resource);
+		Context.flushSession();
 		Integer resourceId = resource.getFormResourceId();
 
 		// clear the session
@@ -799,6 +802,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		formField.setField(field);
 		FormService fs = Context.getFormService();
 		formField.setForm(fs.getForm(1));
+		Context.flushSession(); //needed by postgres
 
 		List<FormField> originalFormFields = fs.getAllFormFields();
 		int initialFormFieldCount = originalFormFields.size();
