@@ -120,10 +120,6 @@
                        <name>OPENMRS_INSTALLATION_SCRIPT</name>
                        <value>${OPENMRS_INSTALLATION_SCRIPT}</value>
                    </systemProperty>
-				   <systemProperty>
-					   <name>OPENMRS_APPLICATION_DATA_DIRECTORY</name>
-					   <value>${OPENMRS_APPLICATION_DATA_DIRECTORY}</value>
-				   </systemProperty>
                </systemProperties>
             </configuration>
          </plugin>

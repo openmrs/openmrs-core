@@ -13,23 +13,15 @@ services:
         ports:
             - "3306:3306"
         restart: "no"
-        volumes:
-            # Comment out if DB should be created from scratch
-            - ./initial_test_db.sql:/docker-entrypoint-initdb.d/initial_test_db.sql
 
-    api:
-        image: openmrs/openmrs-core:${TAG:-dev-local}
+    openmrs-core:
+        image: openmrs/openmrs-core:${TAG:-dev}
         build:
             target: dev
-            context: .    
+            context: .
         ports:
             - "8080:8080"
             - "8000:8000"
-        environment:
-            OMRS_DEV_DEBUG_PORT: ${OMRS_DEV_DEBUG_PORT:-8000}
-            OMRS_SKIP_BUILD: ${OMRS_SKIP_BUILD:-}
-            OMRS_CREATE_TABLES: ${OMRS_CREATE_TABLES:-false}
         volumes:
             - ~/.m2:/root/.m2
-            - ./:/app
         restart: "no"
