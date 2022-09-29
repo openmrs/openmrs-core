@@ -13,14 +13,13 @@ FROM maven:3.8-jdk-11 as dev
 WORKDIR /app
 
 ENV DEPENDENCY_PLUGIN="org.apache.maven.plugins:maven-dependency-plugin:3.3.0"
-ENV OPENMRS_SDK_PLUGIN="org.openmrs.maven.plugins:openmrs-sdk-maven-plugin:4.5.0"
-ENV OPENMRS_SDK_PLUGIN_VERSION="4.5.0"
 ENV MVN_ARGS_SETTINGS="-s /usr/share/maven/ref/settings-docker.xml"
 
-COPY pom.xml .
-RUN mvn $OPENMRS_SDK_PLUGIN:setup-sdk -N -DbatchAnswers=n $MVN_ARGS_SETTINGS
+# Setup SDK
+RUN mvn org.openmrs.maven.plugins:openmrs-sdk-maven-plugin:setup-sdk -DbatchAnswers=n -B $MVN_ARGS_SETTINGS
 
 # Copy poms to resolve dependencies
+COPY pom.xml .
 COPY liquibase/pom.xml ./liquibase/
 COPY tools/pom.xml ./tools/
 COPY test/pom.xml ./test/
@@ -30,8 +29,8 @@ COPY webapp/pom.xml ./webapp/
 
 # Resolve dependencies in order to cache them and run offline builds
 # Store dependencies in /usr/share/maven/ref/repository for re-use when running
-# If mounting ~/.m2:/root/.m2 then the /usr/share/maven/ref content will be copied over from the image to /root/.m2
-RUN mvn $DEPENDENCY_PLUGIN:go-offline -U -B $MVN_ARGS_SETTINGS
+# If mounting ~/.m2:/root/.m2 then the m2 repo content will be copied over from the image
+RUN mvn $DEPENDENCY_PLUGIN:resolve-plugins $DEPENDENCY_PLUGIN:resolve $MVN_ARGS_SETTINGS
 
 ARG MVN_ARGS='install'
 
@@ -41,7 +40,7 @@ ARG MVN_ARGS='install'
 COPY checkstyle.xml checkstyle-suppressions.xml CONTRIBUTING.md findbugs-include.xml LICENSE license-header.txt \
  NOTICE.md README.md ruleset.xml SECURITY.md ./
 
-# Build the parent project first
+# build the parent project first
 RUN mvn --non-recursive $MVN_ARGS_SETTINGS $MVN_ARGS
 
 COPY liquibase ./liquibase/
@@ -62,18 +61,11 @@ RUN mvn -pl web $MVN_ARGS_SETTINGS $MVN_ARGS
 COPY webapp/ ./webapp/
 RUN mvn -pl webapp $MVN_ARGS_SETTINGS $MVN_ARGS
 
-USER root
-
-# Copy in the start-up scripts
-COPY wait-for-it.sh startup-init.sh startup.sh startup-dev.sh ./
-RUN chmod 755 wait-for-it.sh && chmod 755 startup-init.sh && chmod 755 startup.sh  \
-    && chmod 755 startup-dev.sh 
-
-EXPOSE 8080
+WORKDIR /app/webapp
 
 # Startup jetty by default for the dev image
 # TODO: Use Tomcat with spring devtools instead
-CMD ["bash", "./startup-dev.sh"]
+CMD ["mvn", "jetty:run", "-o"]
 
 ### Production Stage
 FROM tomcat:8.5-jdk8-adoptopenjdk-hotspot
@@ -91,12 +83,54 @@ RUN groupadd -r openmrs  \
     && chown -R openmrs /openmrs 
 
 # Copy in the start-up scripts
-COPY wait-for-it.sh startup-init.sh startup.sh /openmrs/
-RUN chmod -R 755 /openmrs/wait-for-it.sh && chmod -R 755 /openmrs/startup-init.sh && chmod -R 755 /openmrs/startup.sh
+COPY wait-for-it.sh startup.sh /usr/local/tomcat/
+RUN chmod -R 755 /usr/local/tomcat/wait-for-it.sh && chmod -R 755 /usr/local/tomcat/startup.sh
 
 USER openmrs
 
 WORKDIR /openmrs
+
+# All environment variables that are available to configure on this container are listed here
+# for clarity. These list the variables supported, and the default values if not overridden
+
+# These environment variables are appended to configure the Tomcat JAVA_OPTS
+ENV OMRS_JAVA_MEMORY_OPTS="-XX:NewSize=128m"
+ENV OMRS_JAVA_SERVER_OPTS="-Dfile.encoding=UTF-8 -server -Djava.security.egd=file:/dev/./urandom -Djava.awt.headless=true -Djava.awt.headlesslib=true"
+
+# These environment variables are used to create the openmrs-server.properties file, which controls how OpenMRS initializes
+ENV OMRS_CONFIG_ADD_DEMO_DATA="false"
+ENV OMRS_CONFIG_ADMIN_USER_PASSWORD="Admin123"
+ENV OMRS_CONFIG_AUTO_UPDATE_DATABASE="true"
+ENV OMRS_CONFIG_CREATE_DATABASE_USER="false"
+ENV OMRS_CONFIG_CREATE_TABLES="false"
+ENV OMRS_CONFIG_HAS_CURRENT_OPENMRS_DATABASE="true"
+ENV OMRS_CONFIG_INSTALL_METHOD="auto"
+ENV OMRS_CONFIG_MODULE_WEB_ADMIN="true"
+
+# These variables are specific to database connections
+# Supported values for OMRS_CONFIG_CONNECTION_TYPE are "mysql" and "postgresql"
+# other values are treated as MySQL
+ENV OMRS_CONFIG_CONNECTION_TYPE="mysql"
+ENV OMRS_CONFIG_CONNECTION_USERNAME="openmrs"
+ENV OMRS_CONFIG_CONNECTION_PASSWORD="openmrs"
+ENV OMRS_CONFIG_CONNECTION_SERVER="localhost"
+ENV OMRS_CONFIG_CONNECTION_DATABASE="openmrs"
+
+# These environment variables can be used to customise the database connection.
+# Their default values depend on which database you are using.
+# OMRS_CONFIG_CONNECTION_DRIVER_CLASS
+# OMRS_CONFIG_CONNECTION_PORT
+# OMRS_CONFIG_CONNECTION_ARGS
+# OMRS_CONFIG_CONNECTION_EXTRA_ARGS
+#
+# If you really need complete control, you can just set
+# OMRS_CONFIG_CONNECTION_URL to whatever the URL should be
+
+# These environment variables are meant to enable developer settings
+# OMRS_DEV_DEBUG_PORT
+
+# Additional environment variables as needed. This should match the name of the distribution supplied OpenMRS war file
+ENV OMRS_WEBAPP_NAME="openmrs"
 
 RUN sed -i '/Connector port="8080"/a URIEncoding="UTF-8" relaxedPathChars="[]|" relaxedQueryChars="[]|{}^&#x5c;&#x60;&quot;&lt;&gt;"' /usr/local/tomcat/conf/server.xml
 
@@ -106,6 +140,5 @@ COPY --from=dev /app/webapp/target/openmrs.war /openmrs/distribution/openmrs_cor
 
 EXPOSE 8080
 
-# See startup-init.sh for all configurable environment variables
-CMD ["dumb-init", "./startup.sh"]
+CMD ["dumb-init", "/usr/local/tomcat/startup.sh"]
 
