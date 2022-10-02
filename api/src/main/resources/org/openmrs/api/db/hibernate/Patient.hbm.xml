@@ -17,7 +17,7 @@
 	
 	<joined-subclass name="Patient" table="patient" extends="Person">
 
-		<key column="patient_id" not-null="true" on-delete="cascade" />
+		<key column="patient_id" not-null="true" />
 
 		<property name="patientId" type="int" not-null="true"
 			column="patient_id" update="false" insert="false" />
