@@ -157,8 +157,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		
 		Patient patient = new Patient(3);
 		
-		Context.clearSession();
-		
 		// check for any obs
 		List<Obs> obsForPatient2 = obsService.getObservationsByPerson(patient);
 		assertNotNull(obsForPatient2);
