@@ -18,7 +18,7 @@
 	<class name="Obs" table="obs" batch-size="25">
 
 		<id name="obsId" type="int" column="obs_id" unsaved-value="null">
-			<generator class="native">
+			<generator class="identity">
 				<param name="sequence">obs_obs_id_seq</param>
 			</generator>
 		</id>
