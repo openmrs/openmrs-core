@@ -782,7 +782,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		ArrayList<ProgramWorkflow> programWorkflows = new ArrayList<>();
 		programWorkflows.add(programWorkflow);
 		Set<ProgramWorkflow> allWorkflows = new HashSet<>(programWorkflows);
-		Program programTest = pws.getAllPrograms().get(1);
+		Program programTest = pws.getProgram(2);
 		programTest.setAllWorkflows(allWorkflows);
 		Program program = pws.retireProgram(programTest, "expired");
 		for (ProgramWorkflow workflow : program.getWorkflows()) {
