@@ -18,7 +18,7 @@
 <class name="PatientProgram" table="patient_program">
 
 	<id name="patientProgramId" type="java.lang.Integer" column="patient_program_id">
-		<generator class="native">
+		<generator class="identity">
 			<param name="sequence">patient_program_patient_program_id</param>
 		</generator>
 	</id>
