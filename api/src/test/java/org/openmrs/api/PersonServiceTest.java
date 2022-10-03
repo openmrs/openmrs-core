@@ -200,7 +200,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		patient.setBirthdate(new Date());
 		patient.setBirthdateEstimated(true);
 		patient.setDeathDate(new Date());
-		patient.setCauseOfDeath(new Concept(1));
+		patient.setCauseOfDeath(new Concept(3));
 		patient.setGender("male");
 		List<PatientIdentifierType> patientIdTypes = ps.getAllPatientIdentifierTypes();
 		assertNotNull(patientIdTypes);
