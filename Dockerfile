@@ -68,7 +68,7 @@ WORKDIR /app/webapp
 CMD ["mvn", "jetty:run", "-o"]
 
 ### Production Stage
-FROM tomcat:8.5-jdk8-adoptopenjdk-hotspot
+FROM tomcat:8.5-jdk8
 
 RUN apt-get update && apt-get install -y zip dumb-init \
     && apt-get clean  \
