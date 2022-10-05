@@ -68,6 +68,7 @@ import java.sql.Driver;
 import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -89,6 +90,8 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	private static Throwable errorAtStartup = null;
 	
 	private static boolean setupNeeded = false;
+	
+	private static boolean openmrsStarted = false;
 	
 	/**
 	 * Boolean flag set on webapp startup marking whether there is a runtime properties file or not.
@@ -167,13 +170,17 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 * @see HttpSessionListener#sessionDestroyed(HttpSessionEvent)
 	 */
 	private List<HttpSessionListener> getHttpSessionListeners() {
-		List<HttpSessionListener> httpSessionListeners = new ArrayList<>();
-		try {
-			httpSessionListeners = Context.getRegisteredComponents(HttpSessionListener.class);
+		List<HttpSessionListener> httpSessionListeners = Collections.emptyList();
+		
+		if (openmrsStarted) {
+			try {
+				httpSessionListeners = Context.getRegisteredComponents(HttpSessionListener.class);
+			}
+			catch (Exception e) {
+				log.warn("An error occurred trying to retrieve HttpSessionListener beans from the context", e);
+			}
 		}
-		catch (Exception e) {
-			log.warn("An error occurred trying to retrieve HttpSessionListener beans from the context", e);
-		}
+		
 		return httpSessionListeners;
 	}
 
@@ -250,7 +257,6 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			setErrorAtStartup(e);
 			log.error(MarkerFactory.getMarker("FATAL"), "Failed to obtain JDBC connection", e);
 		}
-		
 	}
 	
 	private void loadCsrfGuardProperties(ServletContext servletContext) throws FileNotFoundException, IOException {	
@@ -315,6 +321,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 * @throws ServletException
 	 */
 	public static void startOpenmrs(ServletContext servletContext) throws ServletException {
+		openmrsStarted = false;
 		// start openmrs
 		try {
 			// load bundled modules that are packaged into the webapp
@@ -352,6 +359,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		finally {
 			Context.closeSession();
 		}
+		openmrsStarted = true;
 	}
 	
 	/**
@@ -596,6 +604,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	public void contextDestroyed(ServletContextEvent event) {
 		
 		try {
+			openmrsStarted = false;
 			Context.openSession();
 			
 			Context.shutdown();
