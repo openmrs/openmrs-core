@@ -91,7 +91,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	
 	private static boolean setupNeeded = false;
 	
-	private static boolean initialized = false;
+	private static boolean openmrsStarted = false;
 	
 	/**
 	 * Boolean flag set on webapp startup marking whether there is a runtime properties file or not.
@@ -172,7 +172,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	private List<HttpSessionListener> getHttpSessionListeners() {
 		List<HttpSessionListener> httpSessionListeners = Collections.emptyList();
 		
-		if (initialized) {
+		if (openmrsStarted) {
 			try {
 				httpSessionListeners = Context.getRegisteredComponents(HttpSessionListener.class);
 			}
@@ -257,8 +257,6 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			setErrorAtStartup(e);
 			log.error(MarkerFactory.getMarker("FATAL"), "Failed to obtain JDBC connection", e);
 		}
-		
-		initialized = true;
 	}
 	
 	private void loadCsrfGuardProperties(ServletContext servletContext) throws FileNotFoundException, IOException {	
@@ -323,6 +321,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 * @throws ServletException
 	 */
 	public static void startOpenmrs(ServletContext servletContext) throws ServletException {
+		openmrsStarted = false;
 		// start openmrs
 		try {
 			// load bundled modules that are packaged into the webapp
@@ -360,6 +359,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		finally {
 			Context.closeSession();
 		}
+		openmrsStarted = true;
 	}
 	
 	/**
@@ -629,6 +629,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			}
 			// remove the user context that we set earlier
 			Context.closeSession();
+			openmrsStarted = false;
 		}
 		try {
 			for (Enumeration<Driver> e = DriverManager.getDrivers(); e.hasMoreElements();) {
