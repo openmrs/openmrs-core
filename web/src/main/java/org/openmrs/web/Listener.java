@@ -604,6 +604,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	public void contextDestroyed(ServletContextEvent event) {
 		
 		try {
+			openmrsStarted = false;
 			Context.openSession();
 			
 			Context.shutdown();
@@ -629,7 +630,6 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			}
 			// remove the user context that we set earlier
 			Context.closeSession();
-			openmrsStarted = false;
 		}
 		try {
 			for (Enumeration<Driver> e = DriverManager.getDrivers(); e.hasMoreElements();) {
