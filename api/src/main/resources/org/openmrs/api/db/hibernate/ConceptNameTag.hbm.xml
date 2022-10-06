@@ -18,7 +18,7 @@
 	<class name="ConceptNameTag" table="concept_name_tag" batch-size="25">
 
 		<id name="conceptNameTagId" type="int" column="concept_name_tag_id">
-			<generator class="native">
+			<generator class="identity">
 				<param name="sequence">concept_name_tag_concept_name_tag_id_seq</param>
 			</generator>
 		</id>
