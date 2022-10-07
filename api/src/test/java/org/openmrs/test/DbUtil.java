@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.dialect.MySQLDialect;
 import org.hibernate.dialect.PostgreSQL82Dialect;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,7 +88,8 @@ public class DbUtil {
 		System.setProperty("databaseDriver", isMySql ? "com.mysql.cj.jdbc.Driver" : "org.postgresql.Driver");
 		System.setProperty("databaseDialect", isMySql ? MySQLDialect.class.getName() : PostgreSQL82Dialect.class.getName());
 		
-		String sql = String.format(isMySql ? "create database if not exists %s default character set utf8" : "create database %s encoding utf8", databaseName);
+		String sql = String.format(isMySql ? "create database if not exists %s default character set utf8"
+		        : "create database %s encoding utf8", databaseName);
 		createDatabase(username, password, sql, url.replace(databaseName, ""));
 		
 		//needed for running liquibase changesets
@@ -96,6 +98,8 @@ public class DbUtil {
 		runtimeProperties.setProperty("connection.password", password);
 		runtimeProperties.setProperty("connection.url", url);
 		Context.setRuntimeProperties(runtimeProperties);
+		
+		OpenmrsConstants.DATABASE_NAME = databaseName;
 	}
 	
 	private static int createDatabase(String user, String pw, String sql, String url) {
