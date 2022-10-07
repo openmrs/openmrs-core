@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('vcs') {
             steps {
-                git branch: ' ', 
+                git branch: 'SPRINT_1_DEV', url: 'https://github.com/satishnamgadda/openmrs-core.git'
             }
         }
         stage('build') {
