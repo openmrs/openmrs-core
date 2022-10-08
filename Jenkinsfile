@@ -2,7 +2,7 @@ pipeline {
     agent { label 'MRS-CORE'}
     options {
         timeout(time: 1, unit: 'HOURS')
-        retry(3)
+        retry(1)
     }
     triggers {
         cron('H * * * *')
