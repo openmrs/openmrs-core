@@ -41,7 +41,6 @@ public class LiquibaseUtil {
 			ChangeLogVersionFinder changeLogVersionFinder = new ChangeLogVersionFinder();
 			
 			String liquibaseSchemaFileName = changeLogVersionFinder.getLatestSchemaSnapshotFilename().get();
-			String liquibaseCoreDataFileName = changeLogVersionFinder.getLatestCoreDataSnapshotFilename().get();
 
 			log.info("Executing Liquibase file "+ liquibaseSchemaFileName);
 			
@@ -50,19 +49,7 @@ public class LiquibaseUtil {
 			}
 			catch(Exception ex) {
 				log.error("Failed to run the liquibase schema file", ex);
-			}
-			
-			log.info("executing Liquibase file " + liquibaseCoreDataFileName);
-			
-			try {
-				DatabaseUpdater.executeChangelog(liquibaseCoreDataFileName, new PrintingChangeSetExecutorCallback("OpenMRS core data file"));
-			}
-			catch(Exception ex) {
-				log.error("Failed to run the liquibase core data file", ex);
-			}
-			
-			log.info("Created database tables and added core data");
-			
+			}			
 			
 			log.info("Now updating the database to the latest version");
 			
