@@ -54,7 +54,7 @@ public class Containers {
                 .withUrlParam("sessionVariables", "default_storage_engine=InnoDB")
                 .withUrlParam("useUnicode", "true")
                 .withUrlParam("characterEncoding", "UTF-8")
-                .withCommand("mysqld --character-set-server=utf8 --collation-server=utf8_general_ci")
+                .withCommand("mysqld --character-set-server=utf8 --collation-server=utf8_bin")
                 .withTmpFs(Collections.singletonMap("/var/lib/mysql", "rw"))
                 .withReuse(true);
         }
