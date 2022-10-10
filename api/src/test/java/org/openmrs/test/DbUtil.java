@@ -88,8 +88,9 @@ public class DbUtil {
 		System.setProperty("databaseDriver", isMySql ? "com.mysql.cj.jdbc.Driver" : "org.postgresql.Driver");
 		System.setProperty("databaseDialect", isMySql ? MySQLDialect.class.getName() : PostgreSQL82Dialect.class.getName());
 		
-		String sql = String.format(isMySql ? "create database if not exists %s default character set utf8 collate utf8_bin"
-		        : "create database %s encoding utf8", databaseName);
+		String sql = String.format(
+		    isMySql ? "create database if not exists %s default character set utf8 collate utf8_general_ci"
+		            : "create database %s encoding utf8", databaseName);
 		createDatabase(username, password, sql, url.replace(databaseName, ""));
 		
 		//needed for running liquibase changesets
