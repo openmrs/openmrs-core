@@ -20,7 +20,7 @@
 	<drug drug_id="100" concept_id="5584" name="Some Test Drug" combination="true" creator="1" date_created="2014-06-02 15:51:00.0" retired="false" uuid="9e2323fa-0fa0-461f-9b59-6765997d849f"/>
 	
     <orders order_id="584" order_type_id="1" order_number="1" urgency="ROUTINE" order_action="NEW" concept_id="5584"
-            orderer="1" instructions="2x daily" date_activated="2008-08-19 00:00:00.0"
+            orderer="1" instructions="2x daily" date_activated="2008-08-19 00:00:00.1"
             creator="1" date_created="2008-08-19 00:0:00.0" voided="false" patient_id="2" uuid="584de0a3-05o4-4p4a-be03-e01b4c4b9584"
             care_setting="1" encounter_id="6"/>
     <drug_order order_id="584"  dose="3" dose_units="50" as_needed="false" frequency="1" drug_non_coded="non coded drug Crocine"
