@@ -82,6 +82,7 @@ public class Containers {
                 .withUsername(USERNAME)
                 .withPassword(PASSWORD)
                 .withDatabaseName(DATABASE)
+                .withTmpFs(Collections.singletonMap("/var/lib/postgresql", "rw"))
                 .withReuse(true);
         }
         
