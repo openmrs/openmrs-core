@@ -55,6 +55,7 @@ public class Containers {
                 .withUrlParam("useUnicode", "true")
                 .withUrlParam("characterEncoding", "UTF-8")
                 .withCommand("mysqld --character-set-server=utf8 --collation-server=utf8_general_ci")
+                .withTmpFs(Collections.singletonMap("/var/lib/mysql", "rw"))
                 .withReuse(true);
         }
         
