@@ -75,6 +75,8 @@ public class Containers {
     }
     
     private static void ensurePostgreSQLRunning() {
+    	
+    	final String DATADIR = "/var/lib/postgresql/data";
 
         if (postgres == null) {
         	
@@ -82,7 +84,8 @@ public class Containers {
                 .withUsername(USERNAME)
                 .withPassword(PASSWORD)
                 .withDatabaseName(DATABASE)
-                .withTmpFs(Collections.singletonMap("/var/lib/postgresql", "rw"))
+                .withEnv("PGDATA", DATADIR)
+                .withTmpFs(Collections.singletonMap(DATADIR, "rw"))
                 .withReuse(true);
         }
         
