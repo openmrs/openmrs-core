@@ -55,7 +55,6 @@ public class Containers {
                 .withUrlParam("useUnicode", "true")
                 .withUrlParam("characterEncoding", "UTF-8")
                 .withCommand("mysqld --character-set-server=utf8 --collation-server=utf8_general_ci")
-                .withTmpFs(Collections.singletonMap("/var/lib/mysql", "rw"))
                 .withReuse(true);
         }
         
@@ -75,8 +74,6 @@ public class Containers {
     }
     
     private static void ensurePostgreSQLRunning() {
-    	
-    	final String DATADIR = "/var/lib/postgresql/data";
 
         if (postgres == null) {
         	
@@ -84,8 +81,6 @@ public class Containers {
                 .withUsername(USERNAME)
                 .withPassword(PASSWORD)
                 .withDatabaseName(DATABASE)
-                .withEnv("PGDATA", DATADIR)
-                .withTmpFs(Collections.singletonMap(DATADIR, "rw"))
                 .withReuse(true);
         }
         
