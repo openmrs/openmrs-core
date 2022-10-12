@@ -862,7 +862,7 @@ public abstract class BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void deleteAllData() {
+	public synchronized void deleteAllData() {
 		try {
 			Context.clearSession();
 			
