@@ -8,15 +8,13 @@
 #	Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS 
 #	graphic logo is a trademark of OpenMRS Inc.
 
-### Development Stage
-FROM maven:3.8-jdk-11 as dev
+### build Stage
+FROM maven:3.8-jdk-11 as maven_builder
+
 WORKDIR /app
 
 ENV DEPENDENCY_PLUGIN="org.apache.maven.plugins:maven-dependency-plugin:3.3.0"
 ENV MVN_ARGS_SETTINGS="-s /usr/share/maven/ref/settings-docker.xml"
-
-# Setup SDK
-RUN mvn org.openmrs.maven.plugins:openmrs-sdk-maven-plugin:setup-sdk -DbatchAnswers=n -B $MVN_ARGS_SETTINGS
 
 # Copy poms to resolve dependencies
 COPY pom.xml .
@@ -61,11 +59,52 @@ RUN mvn -pl web $MVN_ARGS_SETTINGS $MVN_ARGS
 COPY webapp/ ./webapp/
 RUN mvn -pl webapp $MVN_ARGS_SETTINGS $MVN_ARGS
 
-WORKDIR /app/webapp
+# Development stage
+FROM tomcat:8.5-jdk8-adoptopenjdk-hotspot as dev
 
-# Startup jetty by default for the dev image
-# TODO: Use Tomcat with spring devtools instead
-CMD ["mvn", "jetty:run", "-o"]
+ARG MAVEN_VERSION=3.8.6
+ARG USER_HOME_DIR="/root"
+ARG BASE_URL=https://apache.osuosl.org/maven/maven-3/${MAVEN_VERSION}/binaries
+
+#Download and install maven
+RUN mkdir -p /usr/share/maven /usr/share/maven/ref \
+ && curl -fsSL -o /tmp/apache-maven.tar.gz ${BASE_URL}/apache-maven-${MAVEN_VERSION}-bin.tar.gz \
+ && tar -xzf /tmp/apache-maven.tar.gz -C /usr/share/maven --strip-components=1 \
+ && rm -f /tmp/apache-maven.tar.gz \
+ && ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
+
+ENV MAVEN_HOME /usr/share/maven
+ENV MAVEN_CONFIG "$USER_HOME_DIR/.m2"
+
+# Setup OpenMRS-SDK
+RUN mvn org.openmrs.maven.plugins:openmrs-sdk-maven-plugin:setup-sdk -DbatchAnswers=n -B
+
+RUN apt-get update && apt-get install -y zip dumb-init \
+    && apt-get clean  \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/local/tomcat/webapps/* 
+
+RUN groupadd -r openmrs  \
+    && useradd --no-log-init -r -g openmrs openmrs  \
+    && chown -R openmrs $CATALINA_HOME  \
+    && mkdir -p /openmrs/data/modules \
+    && mkdir -p /openmrs/data/owa  \
+    && mkdir -p /openmrs/data/configuration  \
+    && chown -R openmrs /openmrs 
+
+# Copy in the start-up scripts
+COPY wait-for-it.sh startup-init.sh deploy-module.sh startup-dev.sh /usr/local/tomcat/
+RUN  chmod -R 755 /usr/local/tomcat/startup-dev.sh \
+     && chmod -R 755 /usr/local/tomcat/wait-for-it.sh \
+     && chmod -R 755 /usr/local/tomcat/deploy-module.sh \
+     && chmod -R 755 /usr/local/tomcat/startup-init.sh 
+
+RUN sed -i '/Connector port="8080"/a URIEncoding="UTF-8" relaxedPathChars="[]|" relaxedQueryChars="[]|{}^&#x5c;&#x60;&quot;&lt;&gt;"' /usr/local/tomcat/conf/server.xml
+
+COPY --from=maven_builder /app/webapp/target/openmrs.war /openmrs/openmrs_core/openmrs.war
+
+EXPOSE 8080
+
+CMD ["dumb-init", "/usr/local/tomcat/startup-dev.sh"]
 
 ### Production Stage
 FROM tomcat:8.5-jdk8-adoptopenjdk-hotspot
@@ -134,9 +173,9 @@ ENV OMRS_WEBAPP_NAME="openmrs"
 
 RUN sed -i '/Connector port="8080"/a URIEncoding="UTF-8" relaxedPathChars="[]|" relaxedQueryChars="[]|{}^&#x5c;&#x60;&quot;&lt;&gt;"' /usr/local/tomcat/conf/server.xml
 
-COPY --from=dev /app/LICENSE LICENSE
+COPY --from=maven_builder /app/LICENSE LICENSE
 # Copy the app
-COPY --from=dev /app/webapp/target/openmrs.war /openmrs/distribution/openmrs_core/openmrs.war
+COPY --from=maven_builder /app/webapp/target/openmrs.war /openmrs/distribution/openmrs_core/openmrs.war
 
 EXPOSE 8080
 
