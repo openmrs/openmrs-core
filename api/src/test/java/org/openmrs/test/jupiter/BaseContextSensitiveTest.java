@@ -1009,7 +1009,7 @@ public abstract class BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@AfterAll
-	public static void closeSessionAfterEachClass() throws Exception {
+	public static synchronized void closeSessionAfterEachClass() throws Exception {
 		//Some tests add data via executeDataset()
 		//We need to delete it in order not to interfere with others
 		if (instance != null) {
