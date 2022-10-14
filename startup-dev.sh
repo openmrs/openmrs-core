@@ -22,10 +22,12 @@ else
 	source "$TOMCAT_DIR/deploy-module.sh"
 fi
 
-# Build module src
-mvn clean install -f "$MODULE_SOURCE_DIR/pom.xml" -DskipTests
+if [[ -f $MODULE_SOURCE_DIR/pom.xml ]]; then
+	# Build mounted module source
+	mvn clean install -f "$MODULE_SOURCE_DIR/pom.xml" -DskipTests
 
-find "$MODULE_SOURCE_DIR/omod/target" -name \*.omod -exec cp {} "$OMRS_MODULES_DIR" \;
+	find "$MODULE_SOURCE_DIR/omod/target" -name \*.omod -exec cp {} "$OMRS_MODULES_DIR" \;
+fi
 
 # Loading artifacts into appropriate locations
 cp -r /openmrs/openmrs_core/. "$TOMCAT_WEBAPPS_DIR"
