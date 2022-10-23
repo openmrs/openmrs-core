@@ -65,7 +65,7 @@ public class DispatcherServlet extends org.springframework.web.servlet.Dispatche
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		((XmlWebApplicationContext) getWebApplicationContext()).setClassLoader(OpenmrsClassLoader.getInstance());
 		
-		refresh();
+		init();
 		
 		// the spring context gets reset by the framework servlet, so we need to 
 		// reload the advice points that were lost when refreshing Spring
