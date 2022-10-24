@@ -12,6 +12,7 @@ package org.openmrs.api;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
@@ -28,8 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.openmrs.test.OpenmrsMatchers.hasId;
 import static org.openmrs.test.TestUtil.containsId;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
 import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -50,7 +49,6 @@ import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -3759,6 +3757,39 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 		assertNotNull(expectedGroupValidationError, "Validation should cause order group to fail to save");
 		assertEquals(expectedValidationError.getMessage(), expectedGroupValidationError.getMessage());
+	}
+
+	/**
+	 * @see OrderService#saveOrder(Order, OrderContext)
+	 */
+	@Test
+	public void saveOrderGroup_shouldSavePreviouslySavedOrderGroup() {
+		executeDataSet(ORDER_SET);
+
+		// Create and save initial order group
+		Encounter encounter = encounterService.getEncounter(3);
+		OrderSet orderSet = Context.getOrderSetService().getOrderSet(2000);
+		OrderGroup orderGroup = new OrderGroup();
+		orderGroup.setOrderSet(orderSet);
+		orderGroup.setPatient(encounter.getPatient());
+		orderGroup.setEncounter(encounter);
+
+		Order order = new OrderBuilder().withAction(Order.Action.NEW).withPatient(7).withConcept(1000)
+			.withCareSetting(1).withOrderer(1).withEncounter(3).withDateActivated(new Date()).withOrderType(17)
+			.withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date()).withOrderGroup(orderGroup)
+			.build();
+		orderGroup.addOrder(order);
+
+		Context.getOrderService().saveOrderGroup(orderGroup);
+		Integer orderGroupId = orderGroup.getOrderGroupId();
+		assertThat(orderGroupId, notNullValue());
+
+		// Re-retrieve this order group, and try to save it
+		Context.flushSession();
+		Context.clearSession();
+		
+		orderGroup = Context.getOrderService().getOrderGroup(orderGroupId);
+		Context.getOrderService().saveOrderGroup(orderGroup);
 	}
 	
 	@Test
