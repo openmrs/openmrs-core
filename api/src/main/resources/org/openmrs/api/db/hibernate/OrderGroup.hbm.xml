@@ -82,7 +82,7 @@
 		 <!-- one-to-many association to all nested orderGroups in this grouping -->
         <set name="nestedOrderGroups" inverse="true" cascade="delete" order-by="order_group_id"
             access="field" batch-size="25">
-            <key column="order_group_id" />
+            <key column="parent_order_group" />
             <one-to-many class="OrderGroup" />
         </set>
 		<many-to-one name="previousOrderGroup" class="org.openmrs.OrderGroup"
