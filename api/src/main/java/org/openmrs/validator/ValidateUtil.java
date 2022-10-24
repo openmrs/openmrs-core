@@ -9,9 +9,6 @@
  */
 package org.openmrs.validator;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.api.ValidationException;
@@ -22,6 +19,9 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * This class should be used in the *Services to validate objects before saving them. <br>
@@ -49,6 +49,9 @@ public class ValidateUtil {
 	 */
 	private static Boolean disableValidation = false;
 	
+	/** This enables consuming code to disable validation if needed for specific operations in the current thread */
+	private static final ThreadLocal<Boolean> disableValidationForThread = new ThreadLocal<>();
+	
 	/**
 	 * Test the given object against all validators that are registered as compatible with the
 	 * object class
@@ -59,7 +62,7 @@ public class ValidateUtil {
 	 * <strong>Should</strong> return immediately if validation is disabled
 	 */
 	public static void validate(Object obj) throws ValidationException {
-		if (disableValidation) {
+		if (disableValidation || isValidationDisabledForThread()) {
 			return;
 		}
 
@@ -146,4 +149,28 @@ public class ValidateUtil {
 		ValidateUtil.disableValidation = disableValidation;
 	}
 
+	/**
+	 * @return true if validation has been disabled for the current thread, false otherwise
+	 */
+	public static boolean isValidationDisabledForThread() {
+		return disableValidationForThread.get() == Boolean.TRUE;
+	}
+
+	/**
+	 * Sets a ThreadLocal variable to indicate that validation should be disabled for the current thread
+	 * NOTE: This should always be used in conjunction with the resumeValidationForThread method to 
+	 * ensure the ThreadLocal instance is cleaned up at the end of the operation
+	 */
+	public static void disableValidationForThread() {
+		disableValidationForThread.set(Boolean.TRUE);
+	}
+
+	/**
+	 * Removes a ThreadLocal variable to indicate that validation should be re-enabled for the current thread
+	 * Typically this would be placed in a `finally` block or similar construct to ensure this is called to 
+	 * remove the ThreadLocal instance any time the disableValidationForThread method is used
+	 */
+	public static void resumeValidationForThread() {
+		disableValidationForThread.remove();
+	}
 }

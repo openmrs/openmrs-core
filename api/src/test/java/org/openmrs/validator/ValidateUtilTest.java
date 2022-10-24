@@ -11,6 +11,7 @@ package org.openmrs.validator;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -71,6 +72,49 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 		}
 
 		ValidateUtil.setDisableValidation(prevVal);
+	}
+
+	/**
+	 * @see ValidateUtil#validate(Object)
+	 */
+	@Test
+	public void validate_shouldReturnImmediatelyIfValidationIsDisabledForThread() {
+		
+		// Validation fails initially
+		ValidationException caughtException = null;
+		try {
+			assertFalse(ValidateUtil.isValidationDisabledForThread());
+			ValidateUtil.validate(new Patient());
+		}
+		catch (ValidationException e) {
+			caughtException = e;
+		}
+		assertNotNull(caughtException);
+		
+		// Validation does not fail if disabled for thread
+		caughtException = null;
+		try {
+			ValidateUtil.disableValidationForThread();
+			assertTrue(ValidateUtil.isValidationDisabledForThread());
+			ValidateUtil.validate(new Patient());
+		}
+		catch (ValidationException e) {
+			caughtException = e;
+		}
+		finally {
+			ValidateUtil.resumeValidationForThread();
+		}
+		assertNull(caughtException);
+		
+		// Validation fails again if re-enabled for thread
+		try {
+			assertFalse(ValidateUtil.isValidationDisabledForThread());
+			ValidateUtil.validate(new Patient());
+		}
+		catch (ValidationException e) {
+			caughtException = e;
+		}
+		assertNotNull(caughtException);
 	}
 	
 	/**
