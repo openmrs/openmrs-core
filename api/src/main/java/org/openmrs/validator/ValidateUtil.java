@@ -151,6 +151,7 @@ public class ValidateUtil {
 
 	/**
 	 * @return true if validation has been disabled for the current thread, false otherwise
+	 * @since 2.5.8
 	 */
 	public static boolean isValidationDisabledForThread() {
 		return disableValidationForThread.get() == Boolean.TRUE;
@@ -160,6 +161,7 @@ public class ValidateUtil {
 	 * Sets a ThreadLocal variable to indicate that validation should be disabled for the current thread
 	 * NOTE: This should always be used in conjunction with the resumeValidationForThread method to 
 	 * ensure the ThreadLocal instance is cleaned up at the end of the operation
+	 * @since 2.5.8
 	 */
 	public static void disableValidationForThread() {
 		disableValidationForThread.set(Boolean.TRUE);
@@ -169,6 +171,7 @@ public class ValidateUtil {
 	 * Removes a ThreadLocal variable to indicate that validation should be re-enabled for the current thread
 	 * Typically this would be placed in a `finally` block or similar construct to ensure this is called to 
 	 * remove the ThreadLocal instance any time the disableValidationForThread method is used
+	 * @since 2.5.8
 	 */
 	public static void resumeValidationForThread() {
 		disableValidationForThread.remove();
