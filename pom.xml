@@ -1132,7 +1132,7 @@
 			 be compatible with our version of Spring. -->
 		<springVersion>5.3.23</springVersion>
 		<hibernateVersion>5.6.12.Final</hibernateVersion>
-		<hibernateSearchVersion>5.11.10.Final</hibernateSearchVersion>
+		<hibernateSearchVersion>5.11.11.Final</hibernateSearchVersion>
 		<luceneVersion>5.5.5</luceneVersion>
 		<aspectjVersion>1.9.9.1</aspectjVersion>
 		<jacksonVersion>2.13.4</jacksonVersion>
