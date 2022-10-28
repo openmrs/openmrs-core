@@ -168,7 +168,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void refreshAuthenticatedUser_shouldNotUnsetUserLocation() {
-		Location userLocation = Context.getLocationService().getLocation(1);
+		Location userLocation = Context.getLocationService().getLocation(2);
 		Context.getUserContext().setLocation(userLocation);
 		User evictedUser = Context.getAuthenticatedUser();
 		Context.evictFromSession(evictedUser);
@@ -183,17 +183,17 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void refreshAuthenticatedUser_shouldSetDefaultLocationIfLocationNull() {
-		Location userLocation = Context.getLocationService().getLocation(1);
 		User evictedUser = Context.getAuthenticatedUser();
 		Map<String, String> properties = evictedUser.getUserProperties();
-		properties.put(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION, "1");
+		properties.put(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION, "2");
 		evictedUser.setUserProperties(properties);
 		Context.getUserService().saveUser(evictedUser);
+		Context.flushSession();
 		Context.evictFromSession(evictedUser);
 		
 		Context.refreshAuthenticatedUser();
 		
-		assertEquals(userLocation, Context.getUserContext().getLocation());
+		assertEquals(Context.getLocationService().getLocation(2), Context.getUserContext().getLocation());
 	}
 	
 	/**
