@@ -144,7 +144,7 @@ public class Context {
 	// bug in Java 1.5
 	private static final ThreadLocal<Object[] /* UserContext */> userContextHolder = new ThreadLocal<>();
 
-	private static ServiceContext serviceContext;
+	private static volatile ServiceContext serviceContext;
 
 	private static Properties runtimeProperties = new Properties();
 
@@ -271,7 +271,7 @@ public class Context {
 		if (serviceContext == null) {
 			synchronized (Context.class) {
 				if (serviceContext == null) {
-					log.error("serviceContext is null.  Creating new ServiceContext()");
+					log.info("Creating new service context");
 					serviceContext = ServiceContext.getInstance();
 				}
 			}

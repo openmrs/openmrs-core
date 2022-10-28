@@ -45,12 +45,15 @@ public class LocationUtilityTest extends BaseContextSensitiveTest {
 	public void getUserDefaultLocation_shouldReturnTheUserSpecifiedLocationIfAnyIsSet() {
 		//sanity check
 		assertNull(LocationUtility.getUserDefaultLocation());
+		
 		User user = Context.getAuthenticatedUser();
 		Map<String, String> properties = user.getUserProperties();
 		properties.put(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION, "2");
 		user.setUserProperties(properties);
 		Context.getUserService().saveUser(user);
+		
 		Context.refreshAuthenticatedUser();
+		
 		assertEquals("Xanadu", LocationUtility.getUserDefaultLocation().getName());
 	}
 }
