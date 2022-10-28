@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
@@ -160,6 +161,39 @@ public class ContextTest extends BaseContextSensitiveTest {
 		Context.refreshAuthenticatedUser();
 		
 		assertEquals("new username", Context.getAuthenticatedUser().getGivenName());
+	}
+	
+	/**
+	 * @see Context#refreshAuthenticatedUser()
+	 */
+	@Test
+	public void refreshAuthenticatedUser_shouldNotUnsetUserLocation() {
+		Location userLocation = Context.getLocationService().getLocation(2);
+		Context.getUserContext().setLocation(userLocation);
+		User evictedUser = Context.getAuthenticatedUser();
+		Context.evictFromSession(evictedUser);
+		
+		Context.refreshAuthenticatedUser();
+		
+		assertEquals(userLocation, Context.getUserContext().getLocation());
+	}
+	
+	/**
+	 * @see Context#refreshAuthenticatedUser()
+	 */
+	@Test
+	public void refreshAuthenticatedUser_shouldSetDefaultLocationIfLocationNull() {
+		User evictedUser = Context.getAuthenticatedUser();
+		Map<String, String> properties = evictedUser.getUserProperties();
+		properties.put(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION, "2");
+		evictedUser.setUserProperties(properties);
+		Context.getUserService().saveUser(evictedUser);
+		Context.flushSession();
+		Context.evictFromSession(evictedUser);
+		
+		Context.refreshAuthenticatedUser();
+		
+		assertEquals(Context.getLocationService().getLocation(2), Context.getUserContext().getLocation());
 	}
 	
 	/**
