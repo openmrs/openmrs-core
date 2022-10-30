@@ -11,25 +11,46 @@ package org.openmrs;
 
 import java.util.Date;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 /**
  * Relationship
  */
+    @Entity
+    @Table(name="relationship")
 public class Relationship extends BaseChangeableOpenmrsData {
-	
+
 	public static final long serialVersionUID = 323423L;
 	
 	// Fields
-	
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "relationship_id")
 	private Integer relationshipId;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "person_a",nullable=false)
 	private Person personA;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "relationship",nullable = false)
 	private RelationshipType relationshipType;
 	
+	@ManyToOne
+	@JoinColumn(name = "person_b",nullable = false)
 	private Person personB;
-	
+
+	@Column(name="start_date")
 	private Date startDate;
 	
+	@Column(name = "end_date")
 	private Date endDate;
 	
 	// Constructors
