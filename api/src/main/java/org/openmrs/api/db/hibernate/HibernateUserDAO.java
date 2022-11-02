@@ -301,8 +301,10 @@ public class HibernateUserDAO implements UserDAO {
 		}
 		
 		log.debug("updating password");
-		//update the user with the new password
-		String salt = Security.getRandomToken();
+		String salt = getLoginCredential(u).getSalt();
+		if (StringUtils.isBlank(salt)) {
+			salt = Security.getRandomToken();
+		}
 		String newHashedPassword = Security.encodeString(pw + salt);
 		
 		updateUserPassword(newHashedPassword, salt, authUser.getUserId(), new Date(), u.getUserId());
@@ -363,7 +365,7 @@ public class HibernateUserDAO implements UserDAO {
 		log.info("updating password for {}", u.getUsername());
 		
 		// update the user with the new password
-		String salt = Security.getRandomToken();
+		String salt = credentials.getSalt();
 		String newHashedPassword = Security.encodeString(pw2 + salt);
 		updateUserPassword(newHashedPassword, salt, u.getUserId(), new Date(), u.getUserId());
 	}
