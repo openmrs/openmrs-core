@@ -31,7 +31,7 @@ public class Relationship extends BaseChangeableOpenmrsData {
 	
 	// Fields
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "relationship_id")
 	private Integer relationshipId;
 
