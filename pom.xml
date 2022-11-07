@@ -362,6 +362,7 @@
 				<groupId>javax.mail</groupId>
 				<artifactId>javax.mail-api</artifactId>
 				<version>1.6.2</version>
+				<scope>provided</scope>
 				<exclusions>
 					<exclusion>  <!-- declare the exclusion here -->
 						<groupId>javax.activation</groupId>
@@ -567,7 +568,13 @@
 				<groupId>com.sun.mail</groupId>
 				<artifactId>javax.mail</artifactId>
 				<version>1.6.2</version>
-				<scope>test</scope>
+				<scope>runtime</scope>
+				<exclusions>
+					<exclusion>
+						<groupId>javax.activation</groupId>
+						<artifactId>activation</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
