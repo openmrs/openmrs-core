@@ -1142,7 +1142,7 @@
 		<hibernateSearchVersion>5.11.11.Final</hibernateSearchVersion>
 		<luceneVersion>5.5.5</luceneVersion>
 		<aspectjVersion>1.9.9.1</aspectjVersion>
-		<jacksonVersion>2.13.4</jacksonVersion>
+		<jacksonVersion>2.14.0</jacksonVersion>
 		<junitVersion>5.9.1</junitVersion>
 		<mockitoVersion>3.12.4</mockitoVersion>
 		<hamcrestVersion>2.2</hamcrestVersion>
