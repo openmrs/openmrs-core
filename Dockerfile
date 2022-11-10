@@ -30,7 +30,7 @@ ARG TOMCAT_SHA="57cbe9608a9c4e88135e5f5480812e8d57690d5f3f6c43a7c05fe647bddb7c3b
 RUN curl -fL -o /tmp/apache-tomcat.tar.gz \
     https://dlcdn.apache.org/tomcat/tomcat-8/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz \
     && echo "${TOMCAT_SHA}  /tmp/apache-tomcat.tar.gz" | sha512sum -c \
-    && mkdir -p /usr/local/tomcat && tar -xvzf /tmp/apache-tomcat.tar.gz -C /usr/local/tomcat/ --strip-components=1 \
+    && mkdir -p /usr/local/tomcat && gzip -d /tmp/apache-tomcat.tar.gz && tar -xvf /tmp/apache-tomcat.tar -C /usr/local/tomcat/ --strip-components=1 \
     && rm -rf /tmp/apache-tomcat.tar.gz /usr/local/tomcat/webapps/*
 
 WORKDIR /openmrs_core
