@@ -50,6 +50,7 @@ import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttributeType;
+import org.openmrs.Relationship;
 import org.openmrs.SimpleDosingInstructions;
 import org.openmrs.TestOrder;
 import org.openmrs.Visit;
@@ -2646,6 +2647,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.addAnnotatedClass(Diagnosis.class).addAnnotatedClass(Condition.class)
 			.addAnnotatedClass(Visit.class).addAnnotatedClass(VisitAttributeType.class)
 			.addAnnotatedClass(MedicationDispense.class)
+			.addAnnotatedClass(Relationship.class)
 			.addAnnotatedClass(ProviderAttributeType.class).addAnnotatedClass(ConceptMapType.class).getMetadataBuilder().build();
 
 

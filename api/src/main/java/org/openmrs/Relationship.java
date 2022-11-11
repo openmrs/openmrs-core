@@ -11,25 +11,47 @@ package org.openmrs;
 
 import java.util.Date;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 /**
  * Relationship
  */
+
+@Entity
+@Table(name = "relationship")
 public class Relationship extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 323423L;
 	
 	// Fields
-	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "relationship_id", nullable = false)
 	private Integer relationshipId;
 	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "person_a")
 	private Person personA;
 	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "relationship")
 	private RelationshipType relationshipType;
 	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "person_b")
 	private Person personB;
 	
+	@Column(name = "start_date", length = 19)
 	private Date startDate;
 	
+	@Column(name = "end_date", length = 19)
 	private Date endDate;
 	
 	// Constructors
@@ -138,6 +160,7 @@ public class Relationship extends BaseChangeableOpenmrsData {
 	
 	/**
 	 * If not null, this indicates that the relationship started on a particular date
+	 * 
 	 * @since 1.9
 	 * @return the relationship's start date.
 	 */
@@ -155,6 +178,7 @@ public class Relationship extends BaseChangeableOpenmrsData {
 	
 	/**
 	 * If not null, this indicates that the relationship ended on a particular date
+	 * 
 	 * @since 1.9
 	 * @return Returns relationship's end date.
 	 */
