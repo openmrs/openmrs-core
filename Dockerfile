@@ -91,9 +91,6 @@ RUN mvn -pl webapp $MVN_ARGS_SETTINGS $MVN_ARGS
 RUN mkdir -p /openmrs/distribution/openmrs_core/ \
     && cp /openmrs_core/webapp/target/openmrs.war /openmrs/distribution/openmrs_core/openmrs.war
 
-# Clean up after the build to save space
-RUN mvn clean $MVN_ARGS_SETTINGS
-
 # Copy in the start-up scripts
 COPY wait-for-it.sh startup-init.sh startup.sh startup-dev.sh /openmrs/
 RUN chmod +x /openmrs/wait-for-it.sh && chmod +x /openmrs/startup-init.sh && chmod +x /openmrs/startup.sh \
