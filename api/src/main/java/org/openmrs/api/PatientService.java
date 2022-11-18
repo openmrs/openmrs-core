@@ -850,7 +850,7 @@ public interface PatientService extends OpenmrsService {
 	 * Get all patientIdentifiers that are associated to the patient program
 	 * @param patientProgram the patientProgram to be used to fetch the associated identifiers
 	 * @return PatientIdentifiers matching the patient program
-	 * @since 2.3.6
+	 * @since 2.6.0
 	 */
 	@Authorized({PrivilegeConstants.GET_PATIENT_IDENTIFIERS})
 	public List<PatientIdentifier> getPatientIdentifiersByPatientProgram(PatientProgram patientProgram);
