@@ -337,7 +337,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 
 	/**
 	 * Gets patient program associated to the identifier in context
-	 * @since 2.3.6
+	 * @since 2.6.0
 	 * @return patientProgram the patient program associated to an identifier
 	 */
 	public PatientProgram getPatientProgram() {
@@ -346,7 +346,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 
 	/**
 	 * This method sets the patient program on a patient Identifier
-	 * @since 2.3.6
+	 * @since 2.6.0
 	 * @param patientProgram The patientProgram to set.
 	 */
 	public void setPatientProgram(PatientProgram patientProgram) {
