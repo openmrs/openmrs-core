@@ -128,5 +128,10 @@
         	CREATE FUNCTION UUID() RETURNS UUID LANGUAGE SQL AS $$ SELECT uuid_generate_v1() $$;
         </sql>
     </changeSet>
+
+	<changeSet id="TRUNK-6081-2022-11-21" author="wikumChamith">
+		<comment>Adding not null constraint to encounter_diagnosis.dx_rank. TRUNK-6081</comment>
+		<addNotNullConstraint tableName="encounter_diagnosis" columnName="dx_rank" columnDataType="int"/>
+	</changeSet>
 	
 </databaseChangeLog>
