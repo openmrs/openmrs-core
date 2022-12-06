@@ -15,6 +15,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -161,24 +162,28 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 				Voidable voidable = (Voidable) args[0];
 				Date dateVoided = voidable.getDateVoided() == null ? new Date() : voidable.getDateVoided();
 				String voidReason = (String) args[1];
-				recursivelyHandle(VoidHandler.class, voidable, Context.getAuthenticatedUser(), dateVoided, voidReason, null);
+				recursivelyHandle(VoidHandler.class, voidable, Context.getAuthenticatedUser(), dateVoided, voidReason,
+					(Set<OpenmrsObject>) null);
 				
 			} else if (methodName.startsWith("unvoid")) {
 				Voidable voidable = (Voidable) args[0];
 				Date originalDateVoided = voidable.getDateVoided();
 				User originalVoidingUser = voidable.getVoidedBy();
-				recursivelyHandle(UnvoidHandler.class, voidable, originalVoidingUser, originalDateVoided, null, null);
+				recursivelyHandle(UnvoidHandler.class, voidable, originalVoidingUser, originalDateVoided, 
+					null, (Set<OpenmrsObject>) null);
 				
 			} else if (methodName.startsWith("retire")) {
-				Retireable retirable = (Retireable) args[0];
+				Retireable retireable = (Retireable) args[0];
+				Date dateRetired = retireable.getDateRetired() == null ? new Date() : retireable.getDateRetired();
 				String retireReason = (String) args[1];
-				recursivelyHandle(RetireHandler.class, retirable, retireReason);
+				recursivelyHandle(RetireHandler.class, retireable, Context.getAuthenticatedUser(), dateRetired,
+					retireReason, (Set<OpenmrsObject>) null);
 				
 			} else if (methodName.startsWith("unretire")) {
-				Retireable retirable = (Retireable) args[0];
-				Date originalDateRetired = retirable.getDateRetired();
-				recursivelyHandle(UnretireHandler.class, retirable, Context.getAuthenticatedUser(), originalDateRetired,
-				    null, null);
+				Retireable retireable = (Retireable) args[0];
+				Date originalDateRetired = retireable.getDateRetired();
+				recursivelyHandle(UnretireHandler.class, retireable, Context.getAuthenticatedUser(), originalDateRetired,
+					null, (Set<OpenmrsObject>) null);
 			}
 		}
 	}
@@ -197,13 +202,15 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	 *         name
 	 */
 	private boolean methodNameEndsWithClassName(Method method, Class<?> mainArgumentClass) {
-		if (method.getName().endsWith(mainArgumentClass.getSimpleName())) {
+		String methodName = method.getName();
+		if (methodName.endsWith(mainArgumentClass.getSimpleName())) {
 			return true;
 		} else {
-			mainArgumentClass = mainArgumentClass.getSuperclass();
-			// stop recursing if no super class
-			if (mainArgumentClass != null) {
-				return methodNameEndsWithClassName(method, mainArgumentClass);
+			while (mainArgumentClass.getSuperclass() != null) {
+				mainArgumentClass = mainArgumentClass.getSuperclass();
+				if (methodName.endsWith(mainArgumentClass.getSimpleName())) {
+					return true;
+				}
 			}
 		}
 		
@@ -221,9 +228,9 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	 *            void/retire reason)
 	 * @see #recursivelyHandle(Class, OpenmrsObject, User, Date, String, List)
 	 */
-	public static <H extends RequiredDataHandler> void recursivelyHandle(Class<H> handlerType, OpenmrsObject openmrsObject,
-	        String reason) {
-		recursivelyHandle(handlerType, openmrsObject, Context.getAuthenticatedUser(), new Date(), reason, null);
+	public static <H extends RequiredDataHandler<OpenmrsObject>> void recursivelyHandle(Class<H> handlerType, OpenmrsObject openmrsObject,
+		String reason) {
+		recursivelyHandle(handlerType, openmrsObject, Context.getAuthenticatedUser(), new Date(), reason, (Set<OpenmrsObject>) null);
 	}
 	
 	/**
@@ -242,9 +249,32 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	 *            handling collection properties.
 	 * @see HandlerUtil#getHandlersForType(Class, Class)
 	 */
-	@SuppressWarnings("unchecked")
-	public static <H extends RequiredDataHandler> void recursivelyHandle(Class<H> handlerType, OpenmrsObject openmrsObject,
-	        User currentUser, Date currentDate, String other, List<OpenmrsObject> alreadyHandled) {
+	public static <H extends RequiredDataHandler<OpenmrsObject>> void recursivelyHandle(Class<H> handlerType, OpenmrsObject openmrsObject,
+		User currentUser, Date currentDate, String other, List<OpenmrsObject> alreadyHandled) {
+		recursivelyHandle(handlerType, openmrsObject, currentUser, currentDate, other,
+			alreadyHandled != null ? new HashSet<>(alreadyHandled) : null);
+	}
+	
+	/**
+	 * This loops over all declared collections on the given object and all declared collections on
+	 * parent objects to use the given <code>handlerType</code>.
+	 *
+	 * @param <H> the type of Handler to get (should extend {@link RequiredDataHandler})
+	 * @param handlerType the type of Handler to get (should extend {@link RequiredDataHandler})
+	 * @param openmrsObject the object that is being acted upon
+	 * @param currentUser the current user to set recursively on the object
+	 * @param currentDate the date to set recursively on the object
+	 * @param other an optional second argument that was passed to the service method (usually a
+	 *            void/retire reason)
+	 * @param alreadyHandled an optional list of objects that have already been handled and should
+	 *            not be processed again. this is intended to prevent infinite recursion when
+	 *            handling collection properties.
+	 * @see HandlerUtil#getHandlersForType(Class, Class)
+	 * 
+	 * @since 2.7.0
+	 */
+	public static <H extends RequiredDataHandler<OpenmrsObject>> void recursivelyHandle(Class<H> handlerType, OpenmrsObject openmrsObject,
+		User currentUser, Date currentDate, String other, Set<OpenmrsObject> alreadyHandled) {
 		if (openmrsObject == null) {
 			return;
 		}
@@ -252,7 +282,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 		Class<? extends OpenmrsObject> openmrsObjectClass = openmrsObject.getClass();
 		
 		if (alreadyHandled == null) {
-			alreadyHandled = new ArrayList<>();
+			alreadyHandled = new HashSet<>();
 		}
 		
 		// fetch all handlers for the object being saved
@@ -262,6 +292,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 		for (H handler : handlers) {
 			handler.handle(openmrsObject, currentUser, currentDate, other);
 		}
+		
 		alreadyHandled.add(openmrsObject);
 		
 		Reflect reflect = new Reflect(OpenmrsObject.class);
@@ -281,16 +312,15 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 				Collection<OpenmrsObject> childCollection = getChildCollection(openmrsObject, field);
 				
 				if (childCollection != null) {
-					for (Object collectionElement : childCollection) {
+					for (OpenmrsObject collectionElement : childCollection) {
 						if (!alreadyHandled.contains(collectionElement)) {
-							recursivelyHandle(handlerType, (OpenmrsObject) collectionElement, currentUser, currentDate,
-							    other, alreadyHandled);
+							recursivelyHandle(handlerType, collectionElement, currentUser, currentDate,
+								other, alreadyHandled);
 						}
 					}
 				}
 			}
 		}
-		
 	}
 	
 	/**
@@ -335,16 +365,16 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 				throw new APIException("unable.get.field", new Object[] { fieldName, openmrsObject.getClass() });
 			} else {
 				throw new APIException(UNABLE_GETTER_METHOD, new Object[] { "use", getterName, fieldName,
-				        openmrsObject.getClass() });
+					openmrsObject.getClass() });
 			}
 		}
 		catch (InvocationTargetException e) {
 			throw new APIException(UNABLE_GETTER_METHOD, new Object[] { "run", getterName, fieldName,
-			        openmrsObject.getClass() });
+				openmrsObject.getClass() });
 		}
 		catch (NoSuchMethodException e) {
 			throw new APIException(UNABLE_GETTER_METHOD, new Object[] { "find", getterName, fieldName,
-			        openmrsObject.getClass() });
+				openmrsObject.getClass() });
 		}
 	}
 	
