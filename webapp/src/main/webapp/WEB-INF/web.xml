@@ -137,6 +137,17 @@
 	</filter-mapping>
 	<!--  End second filter -->
 	
+	<!-- This filter should come before the OpenmrsFilter, i.e., before we've created
+	     a session. -->
+	<filter>
+		<filter-name>CookieClearingFilter</filter-name>
+		<filter-class>org.openmrs.web.filter.CookieClearingFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>CookieClearingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
 	<filter>
 		<filter-name>OpenmrsFilter</filter-name> 
 		<filter-class>org.openmrs.web.filter.OpenmrsFilter</filter-class> 
