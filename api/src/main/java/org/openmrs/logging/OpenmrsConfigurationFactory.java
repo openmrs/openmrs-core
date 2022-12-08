@@ -9,11 +9,7 @@
  */
 package org.openmrs.logging;
 
-import javax.validation.constraints.NotNull;
-import java.io.File;
-import java.net.URI;
-import java.util.Locale;
-
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
@@ -24,6 +20,7 @@ import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.config.Order;
+import org.apache.logging.log4j.core.config.composite.CompositeConfiguration;
 import org.apache.logging.log4j.core.config.json.JsonConfiguration;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.config.xml.XmlConfiguration;
@@ -34,6 +31,14 @@ import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.LoggerFactory;
+
+import javax.validation.constraints.NotNull;
+import java.io.File;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * {@link ConfigurationFactory} to handle OpenMRS's logging configuration.
@@ -53,33 +58,39 @@ public class OpenmrsConfigurationFactory extends ConfigurationFactory {
 	private static final org.slf4j.Logger log = LoggerFactory.getLogger(OpenmrsConfigurationFactory.class);
 	
 	public static final String[] SUFFIXES = new String[] { ".xml", ".yml", ".yaml", ".json", "*" };
-	
+
 	@Override
 	public Configuration getConfiguration(LoggerContext loggerContext, String name, URI configLocation) {
 		if (!isActive()) {
 			return null;
 		}
-		
-		// try to load the configuration from the application directory
+
+		// try to load the configuration from the application data directory
 		if (configLocation == null) {
-			for (File applicationDirectory : new File[] {
-				OpenmrsUtil.getDirectoryInApplicationDataDirectory("configuration"),
-				OpenmrsUtil.getApplicationDataDirectoryAsFile()
- 			}) {
-				for (String suffix : getSupportedTypes()) {
-					if (suffix.equals("*")) {
-						continue;
+			List<File> configurationFiles = getConfigurationFiles();
+			if (!configurationFiles.isEmpty()) {
+				if (configurationFiles.size() == 1) {
+					System.out.println("Adding log4j2 configuration file: " + configurationFiles.get(0).getPath());
+					return super.getConfiguration(loggerContext, name, configurationFiles.get(0).toURI());
+				}
+				else {
+					List<AbstractConfiguration> abstractConfigurations = new ArrayList<>();
+					for (File configFile : configurationFiles) {
+						Configuration configuration = super.getConfiguration(loggerContext, name, configFile.toURI());
+						if (configuration instanceof AbstractConfiguration) {
+							System.out.println("Adding log4j2 configuration file: " + configFile.getPath());
+							abstractConfigurations.add((AbstractConfiguration) configuration);
+						}
+						else {
+							System.out.println("Unable to add log4j2 configuration file: " + configFile.getPath());
+						}
 					}
-					
-					File configFile = new File(applicationDirectory, getDefaultPrefix() + suffix);
-					if (configFile.exists() && configFile.canRead()) {
-						return super.getConfiguration(loggerContext, name, configFile.toURI());
-					}
+					return new CompositeConfiguration(abstractConfigurations);
 				}
 			}
 		}
-		
-		return super.getConfiguration(loggerContext, name, configLocation);		
+
+		return super.getConfiguration(loggerContext, name, configLocation);
 	}
 	
 	@Override
@@ -101,6 +112,33 @@ public class OpenmrsConfigurationFactory extends ConfigurationFactory {
 	@Override
 	protected String[] getSupportedTypes() {
 		return SUFFIXES;
+	}
+	
+	public List<File> getConfigurationFiles() {
+		List<File> configurationFiles = new ArrayList<>();
+
+		// Get all extensions except for the wildcard extension
+		List<String> extensionList = new ArrayList<>();
+		for (String suffix : SUFFIXES) {
+			if (!suffix.equals("*")) {
+				extensionList.add(suffix.substring(1)); // Add the suffix without the leading "."
+			}
+		}
+		String[] extensions = extensionList.toArray(new String[] {});
+		
+		for (File configDir : new File[] {
+			OpenmrsUtil.getDirectoryInApplicationDataDirectory("configuration"),
+			OpenmrsUtil.getApplicationDataDirectoryAsFile()
+		}) {
+			for (File configFile : FileUtils.listFiles(configDir, extensions, false)) {
+				if (configFile.getName().startsWith(getDefaultPrefix()) && configFile.canRead()) {
+					configurationFiles.add(configFile);
+				}
+			}
+		}
+		
+		configurationFiles.sort(Comparator.comparing(File::getName));
+		return configurationFiles;
 	}
 	
 	protected static void doOpenmrsCustomisations(AbstractConfiguration configuration) {
