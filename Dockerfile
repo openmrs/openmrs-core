@@ -66,6 +66,14 @@ RUN mvn -pl !tools dependency:go-offline $MVN_ARGS_SETTINGS
 # Build modules individually to benefit from caching
 ARG MVN_ARGS='install'
 
+ARG OPENMRS_VERSION="SNAPSHOT"
+ENV SEMVER_REGEX="^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-((0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*))*)){0,1}(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)){0,1}$"
+
+RUN if [[ "$OPENMRS_VERSION" != "SNAPSHOT" ]]; then  \
+    if [[ ! "$OPENMRS_VERSION" =~ $SEMVER_REGEX ]]; then  \
+    echo "[ERROR] Version $OPENMRS_VERSION is not semver, e.g. 1.7.0. Check http://semver.org/ " 1>&2; exit 1; \
+    else mvn versions:set -DnewVersion=$OPENMRS_VERSION; fi; fi
+
 # Build the parent project
 RUN mvn --non-recursive $MVN_ARGS_SETTINGS $MVN_ARGS
 
