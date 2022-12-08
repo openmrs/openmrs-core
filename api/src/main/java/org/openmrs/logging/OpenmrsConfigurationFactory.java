@@ -36,6 +36,7 @@ import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -58,6 +59,10 @@ public class OpenmrsConfigurationFactory extends ConfigurationFactory {
 	private static final org.slf4j.Logger log = LoggerFactory.getLogger(OpenmrsConfigurationFactory.class);
 	
 	public static final String[] SUFFIXES = new String[] { ".xml", ".yml", ".yaml", ".json", "*" };
+
+	// Extensions are all SUFFIXES except wildcard, with leading "." removed
+	public static final String[] EXTENSIONS = Arrays.stream(SUFFIXES)
+		.filter(s -> !s.equals("*")).map(s -> s.substring(1)).toArray(String[]::new);
 
 	@Override
 	public Configuration getConfiguration(LoggerContext loggerContext, String name, URI configLocation) {
@@ -82,7 +87,7 @@ public class OpenmrsConfigurationFactory extends ConfigurationFactory {
 							abstractConfigurations.add((AbstractConfiguration) configuration);
 						}
 						else {
-							System.out.println("Unable to add log4j2 configuration file: " + configFile.getPath());
+							System.err.println("Unable to add log4j2 configuration file: " + configFile.getPath());
 						}
 					}
 					return new CompositeConfiguration(abstractConfigurations);
@@ -116,27 +121,16 @@ public class OpenmrsConfigurationFactory extends ConfigurationFactory {
 	
 	public List<File> getConfigurationFiles() {
 		List<File> configurationFiles = new ArrayList<>();
-
-		// Get all extensions except for the wildcard extension
-		List<String> extensionList = new ArrayList<>();
-		for (String suffix : SUFFIXES) {
-			if (!suffix.equals("*")) {
-				extensionList.add(suffix.substring(1)); // Add the suffix without the leading "."
-			}
-		}
-		String[] extensions = extensionList.toArray(new String[] {});
-		
 		for (File configDir : new File[] {
 			OpenmrsUtil.getDirectoryInApplicationDataDirectory("configuration"),
 			OpenmrsUtil.getApplicationDataDirectoryAsFile()
 		}) {
-			for (File configFile : FileUtils.listFiles(configDir, extensions, false)) {
+			for (File configFile : FileUtils.listFiles(configDir, EXTENSIONS, false)) {
 				if (configFile.getName().startsWith(getDefaultPrefix()) && configFile.canRead()) {
 					configurationFiles.add(configFile);
 				}
 			}
 		}
-		
 		configurationFiles.sort(Comparator.comparing(File::getName));
 		return configurationFiles;
 	}
