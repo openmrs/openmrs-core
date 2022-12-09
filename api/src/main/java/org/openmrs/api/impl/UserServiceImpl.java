@@ -45,6 +45,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -734,7 +735,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		String link = adminService.getGlobalProperty(OpenmrsConstants.GP_HOST_URL)
 		        .replace("{activationKey}", token);
 		
-		String sender = adminService.getGlobalProperty("mail.from");
+		Properties mailProperties = Context.getMailProperties();
+		
+		String sender = mailProperties.getProperty("mail.from");
 		
 		String subject = messages.getMessage("mail.passwordreset.subject",null, locale);
 		
