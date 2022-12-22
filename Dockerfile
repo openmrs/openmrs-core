@@ -35,9 +35,8 @@ RUN curl -fL -o /tmp/apache-tomcat.tar.gz "$TOMCAT_URL" \
 
 WORKDIR /openmrs_core
 
-ENV OPENMRS_SDK_PLUGIN="org.openmrs.maven.plugins:openmrs-sdk-maven-plugin:4.5.0"
-ENV OPENMRS_SDK_PLUGIN_VERSION="4.5.0"
-ENV MVN_ARGS_SETTINGS="-s /usr/share/maven/ref/settings-docker.xml"
+ENV OMRS_SDK_PLUGIN="org.openmrs.maven.plugins:openmrs-sdk-maven-plugin"
+ENV OMRS_SDK_PLUGIN_VERSION="4.5.0"
 
 COPY checkstyle.xml checkstyle-suppressions.xml CONTRIBUTING.md findbugs-include.xml LICENSE license-header.txt \
  NOTICE.md README.md ruleset.xml SECURITY.md ./
@@ -45,56 +44,48 @@ COPY checkstyle.xml checkstyle-suppressions.xml CONTRIBUTING.md findbugs-include
 COPY pom.xml .
 
 # Setup and cache SDK
-RUN mvn $OPENMRS_SDK_PLUGIN:setup-sdk -N -DbatchAnswers=n $MVN_ARGS_SETTINGS
+RUN --mount=type=cache,target=/root/.m2 mvn $OMRS_SDK_PLUGIN:$OMRS_SDK_PLUGIN_VERSION:setup-sdk -N -DbatchAnswers=n
 
-# Store dependencies in /usr/share/maven/ref/repository for re-use when running
-# If mounting ~/.m2:/root/.m2 then the /usr/share/maven/ref content will be copied over from the image to /root/.m2
-RUN mvn --non-recursive dependency:go-offline $MVN_ARGS_SETTINGS
-
-# Copy remainig poms to satisfy dependencies
+# Copy remainign poms
 COPY liquibase/pom.xml ./liquibase/
 COPY tools/pom.xml ./tools/
 COPY test/pom.xml ./test/
 COPY api/pom.xml ./api/
 COPY web/pom.xml ./web/
 COPY webapp/pom.xml ./webapp/
-	
-# Exclude tools as it fails trying to fetch tools.jar
-RUN mvn -pl !tools dependency:go-offline $MVN_ARGS_SETTINGS
 
-# Append --build-arg MVN_ARGS='install' to change default maven arguments
-# Build modules individually to benefit from caching
-ARG MVN_ARGS='install'
-
-ARG OPENMRS_VERSION="SNAPSHOT"
+ARG OMRS_VERSION="SNAPSHOT"
 ENV SEMVER_REGEX="^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-((0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*))*)){0,1}(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)){0,1}$"
 
-RUN if [[ "$OPENMRS_VERSION" != "SNAPSHOT" ]]; then  \
-    if [[ ! "$OPENMRS_VERSION" =~ $SEMVER_REGEX ]]; then  \
-    echo "[ERROR] Version $OPENMRS_VERSION is not semver, e.g. 1.7.0. Check http://semver.org/ " 1>&2; exit 1; \
-    else mvn versions:set -DnewVersion=$OPENMRS_VERSION; fi; fi
+RUN --mount=type=cache,target=/root/.m2 if [[ "$OMRS_VERSION" != "SNAPSHOT" ]]; then  \
+    if [[ ! "$OMRS_VERSION" =~ $SEMVER_REGEX ]]; then  \
+    echo "[ERROR] Version $OMRS_VERSION is not semver, e.g. 1.7.0. Check http://semver.org/ " 1>&2; exit 1; \
+    else mvn versions:set -DnewVersion=$OMRS_VERSION; fi; fi 
+
+# Append --build-arg MVN_ARGS='clean install' to change default maven arguments
+ARG MVN_ARGS='clean install'
 
 # Build the parent project
-RUN mvn --non-recursive $MVN_ARGS_SETTINGS $MVN_ARGS
+RUN --mount=type=cache,target=/root/.m2 mvn --non-recursive $MVN_ARGS
 
-# Build individually to benefit from caching
+# Build modules individually to benefit from caching
 COPY liquibase ./liquibase/
-RUN mvn -pl liquibase $MVN_ARGS_SETTINGS $MVN_ARGS
+RUN --mount=type=cache,target=/root/.m2 mvn -pl liquibase $MVN_ARGS
 
 COPY tools/ ./tools/
-RUN mvn -pl tools $MVN_ARGS_SETTINGS $MVN_ARGS
+RUN --mount=type=cache,target=/root/.m2 mvn -pl tools $MVN_ARGS
 
 COPY test/ ./test/
-RUN mvn -pl test $MVN_ARGS_SETTINGS $MVN_ARGS
+RUN --mount=type=cache,target=/root/.m2 mvn -pl test $MVN_ARGS
 
 COPY api/ ./api/
-RUN mvn -pl api $MVN_ARGS_SETTINGS $MVN_ARGS
+RUN --mount=type=cache,target=/root/.m2 mvn -pl api $MVN_ARGS
 
 COPY web/ ./web/
-RUN mvn -pl web $MVN_ARGS_SETTINGS $MVN_ARGS
+RUN --mount=type=cache,target=/root/.m2 mvn -pl web $MVN_ARGS
 
 COPY webapp/ ./webapp/
-RUN mvn -pl webapp $MVN_ARGS_SETTINGS $MVN_ARGS
+RUN --mount=type=cache,target=/root/.m2 mvn -pl webapp $MVN_ARGS
 
 RUN mkdir -p /openmrs/distribution/openmrs_core/ \
     && cp /openmrs_core/webapp/target/openmrs.war /openmrs/distribution/openmrs_core/openmrs.war
