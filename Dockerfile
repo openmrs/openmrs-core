@@ -54,14 +54,6 @@ COPY api/pom.xml ./api/
 COPY web/pom.xml ./web/
 COPY webapp/pom.xml ./webapp/
 
-ARG OMRS_VERSION="SNAPSHOT"
-ENV SEMVER_REGEX="^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-((0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*))*)){0,1}(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)){0,1}$"
-
-RUN --mount=type=cache,target=/root/.m2 if [[ "$OMRS_VERSION" != "SNAPSHOT" ]]; then  \
-    if [[ ! "$OMRS_VERSION" =~ $SEMVER_REGEX ]]; then  \
-    echo "[ERROR] Version $OMRS_VERSION is not semver, e.g. 1.7.0. Check http://semver.org/ " 1>&2; exit 1; \
-    else mvn versions:set -DnewVersion=$OMRS_VERSION; fi; fi 
-
 # Append --build-arg MVN_ARGS='clean install' to change default maven arguments
 ARG MVN_ARGS='clean install'
 
