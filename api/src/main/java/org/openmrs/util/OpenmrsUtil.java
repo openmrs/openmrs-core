@@ -996,7 +996,7 @@ public class OpenmrsUtil {
 				if (!canWrite(new File(filepath))) {
 					log.warn("Unable to write to users home dir, fallback to: "
 						+ OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_WIN);
-					filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_WIN + File.separator + openmrsDir;
+					filepath = Paths.get(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_WIN, openmrsDir).toString();
 				}
 			}
 			

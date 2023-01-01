@@ -109,7 +109,7 @@ public class WebModuleUtilTest {
 			realPath = System.getProperty("user.dir");
 		
 		// manually delete dwr-modules.xml 
-		File f = new File(realPath + "/WEB-INF/dwr-modules.xml");
+		File f = new File(Paths.get(realPath , "WEB-INF", "dwr-modules.xml").toString());
 		f.delete();
 		
 		// start the dummy module
@@ -141,7 +141,7 @@ public class WebModuleUtilTest {
 		WebModuleUtil.startModule(mod, servletContext, true);
 		
 		// test if dwr-modules.xml contains id of started dummy module
-		File f = new File(realPath + "/WEB-INF/dwr-modules.xml");
+		File f = Paths.get(realPath , "WEB-INF", "dwr-modules.xml").toFile();
 		Scanner scanner = new Scanner(f);
 		boolean found = false;
 		while (scanner.hasNextLine()) {

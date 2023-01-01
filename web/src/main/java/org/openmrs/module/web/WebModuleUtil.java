@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
@@ -132,7 +133,7 @@ public class WebModuleUtil {
 				realPath = System.getProperty("user.dir");
 			}
 			
-			File webInf = new File(realPath + "/WEB-INF".replace("/", File.separator));
+			File webInf = Paths.get(realPath, "WEB-INF").toFile();
 			if (!webInf.exists()) {
 				webInf.mkdir();
 			}
@@ -241,7 +242,7 @@ public class WebModuleUtil {
 				if (root.getElementsByTagName("dwr").getLength() > 0) {
 					
 					// get the dwr-module.xml file that we're appending our code to
-					File f = new File(realPath + "/WEB-INF/dwr-modules.xml".replace("/", File.separator));
+					File f = Paths.get(realPath, "WEB-INF", "dwr-modules.xml").toFile();
 					
 					// testing if file exists
 					if (!f.exists()) {
@@ -759,7 +760,7 @@ public class WebModuleUtil {
 		String realPath = getRealPath(servletContext);
 		
 		// clear the module messages
-		String messagesPath = realPath + "/WEB-INF/";
+		String messagesPath = Paths.get(realPath , "/WEB-INF/").toString();
 		File folder = new File(messagesPath.replace("/", File.separator));
 		
 		File[] files = folder.listFiles();
@@ -811,8 +812,8 @@ public class WebModuleUtil {
 		String realPath = getRealPath(servletContext);
 		
 		// delete the web files from the webapp
-		String absPath = realPath + "/WEB-INF/view/module/" + moduleId;
-		File moduleWebFolder = new File(absPath.replace("/", File.separator));
+		String absPath = Paths.get(realPath, "WEB-INF", "view", "module", moduleId).toString();
+		File moduleWebFolder = new File(absPath);
 		if (moduleWebFolder.exists()) {
 			try {
 				OpenmrsUtil.deleteDirectory(moduleWebFolder);
@@ -842,7 +843,7 @@ public class WebModuleUtil {
 			if (root.getElementsByTagName("dwr").getLength() > 0) {
 				
 				// get the dwr-module.xml file that we're appending our code to
-				File f = new File(realPath + "/WEB-INF/dwr-modules.xml".replace("/", File.separator));
+				File f = Paths.get(realPath, "WEB-INF", "dwr-modules.xml").toFile();
 				
 				// testing if file exists
 				if (!f.exists()) {
@@ -1018,8 +1019,8 @@ public class WebModuleUtil {
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
 			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new File(realPath
-			        + "/WEB-INF/dwr-modules.xml".replace("/", File.separator)));
+			StreamResult result = new StreamResult(
+				Paths.get(realPath, "WEB-INF", "dwr-modules.xml").toFile());
 			
 			transformer.transform(source, result);
 			
