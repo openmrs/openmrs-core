@@ -9,6 +9,16 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.io.File;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.Future;
+
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.CacheMode;
 import org.hibernate.FlushMode;
@@ -39,16 +49,6 @@ import org.springframework.orm.hibernate5.SessionFactoryUtils;
 import org.springframework.orm.hibernate5.SessionHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-
-import java.io.File;
-import java.net.URL;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.Future;
 
 /**
  * Hibernate specific implementation of the {@link ContextDAO}. These methods should not be used
@@ -137,9 +137,22 @@ public class HibernateContextDAO implements ContextDAO {
 
 			// if they've been locked out, don't continue with the authentication
 			if (lockoutTime > 0) {
-				// unlock them after 5 mins, otherwise reset the timestamp
-				// to now and make them wait another 5 mins
-				if (System.currentTimeMillis() - lockoutTime > 300000) {
+				float userUnlockWaitTime = 300000;
+				
+				//Set the value of user lockout time as defined in the Global properties
+				//Note that in the Global properties, the user lockout time is defined in minutes
+				try {
+					userUnlockWaitTime = Math.abs(Float.parseFloat(Context.getAdministrationService()
+					        .getGlobalProperty(OpenmrsConstants.GP_USER_UNLOCK_WAIT_TIME).trim())) * 60000;
+				}
+				catch (Exception ex) {
+					log.error("Unable to convert the global property {} to a valid number. Using default value of 5 mins.",
+						OpenmrsConstants.GP_USER_UNLOCK_WAIT_TIME);
+				}
+				
+				// unlock them after a time defined by userUnlockWaitTime in milliseconds, otherwise reset the timestamp
+				// to now and make them wait for another period of time defined by userUnlockWaitTime in milliseconds
+				if (System.currentTimeMillis() - lockoutTime > userUnlockWaitTime) {
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "0");
 					candidateUser.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP);
 					saveUserProperties(candidateUser);
@@ -553,6 +566,7 @@ public class HibernateContextDAO implements ContextDAO {
 	/**
 	 * @see ContextDAO#getDatabaseConnection() 
 	 */
+	@Override
 	public Connection getDatabaseConnection() {
 		try {
 			return SessionFactoryUtils.getDataSource(sessionFactory).getConnection();

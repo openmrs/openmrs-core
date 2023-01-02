@@ -9,20 +9,21 @@
  */
 package org.openmrs.util;
 
+import static java.util.Arrays.asList;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
 import org.openmrs.GlobalProperty;
-import org.openmrs.api.context.Context;
 import org.openmrs.api.handler.ExistingVisitAssignmentHandler;
 import org.openmrs.customdatatype.datatype.BooleanDatatype;
 import org.openmrs.customdatatype.datatype.FreeTextDatatype;
@@ -33,8 +34,6 @@ import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.scheduler.SchedulerConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static java.util.Arrays.asList;
 
 /**
  * Constants used in OpenMRS. Contents built from build properties (version, version_short, and
@@ -570,6 +569,12 @@ public final class OpenmrsConstants {
 	public static final String GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT = "security.allowedFailedLoginsBeforeLockout";
 	
 	/**
+	 * Time in minutes needed for re-activation of a user account locked due to successive entry of
+	 * incorrect login credentials
+	 */
+	public static final String GP_USER_UNLOCK_WAIT_TIME = "security.userUnlockWaitTime";
+	
+	/**
 	 * @since 1.9.9, 1.10.2, 1.11
 	 */
 	public static final String GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON = "search.caseSensitiveDatabaseStringComparison";
@@ -983,6 +988,9 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT, "7",
 		        "Maximum number of failed logins allowed after which username is locked out"));
+		
+		props.add(new GlobalProperty(GP_USER_UNLOCK_WAIT_TIME, "5",
+		        "Time in minutes needed for re-activation of a user account locked due to successive entry of incorrect login credentials"));
 		
 		props.add(new GlobalProperty(GP_DEFAULT_CONCEPT_MAP_TYPE, "NARROWER-THAN",
 		        "Default concept map type which is used when no other is set"));
