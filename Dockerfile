@@ -96,7 +96,7 @@ COPY wait-for-it.sh startup-init.sh startup.sh startup-dev.sh /openmrs/
 RUN chmod +x /openmrs/wait-for-it.sh && chmod +x /openmrs/startup-init.sh && chmod +x /openmrs/startup.sh \
     && chmod +x /openmrs/startup-dev.sh 
 
-EXPOSE 8080
+EXPOSE 8081
 
 ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/mvn-entrypoint.sh"]
 
@@ -138,7 +138,7 @@ COPY --from=dev /openmrs_core/LICENSE LICENSE
 # Copy the app
 COPY --from=dev /openmrs/distribution/openmrs_core/openmrs.war /openmrs/distribution/openmrs_core/openmrs.war
 
-EXPOSE 8080
+EXPOSE 8081
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
