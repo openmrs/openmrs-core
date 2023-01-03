@@ -169,7 +169,7 @@ public class HandlerUtil implements ApplicationListener<ContextRefreshedEvent> {
 			throw new IllegalArgumentException("You must specify both a handlerType and a type");
 		}
 		List<H> handlers = getHandlersForType(handlerType, type);
-		if (handlers == null || handlers.isEmpty()) {
+		if (handlers.isEmpty()) {
 			throw new APIException("handler.type.not.found", new Object[] { handlerType, type });
 		}
 		

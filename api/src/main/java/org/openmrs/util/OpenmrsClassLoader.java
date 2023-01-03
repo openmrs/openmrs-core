@@ -475,7 +475,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 					}
 					
 					log.info("onShutdown Stopping thread: {}", thread.getName());
-					thread.stop();
+					thread.interrupt();
 				}
 				catch (Exception ex) {
 					log.error(ex.getMessage(), ex);

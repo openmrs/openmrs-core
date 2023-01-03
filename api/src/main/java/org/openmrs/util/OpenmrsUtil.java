@@ -30,6 +30,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.text.DateFormat;
@@ -915,7 +916,7 @@ public class OpenmrsUtil {
 	public static InputStream getResourceInputStream(final URL url) throws IOException {
 		File file = url2file(url);
 		if (file != null) {
-			return new BufferedInputStream(new FileInputStream(file));
+			return new BufferedInputStream(Files.newInputStream(file.toPath()));
 		}
 		if (!"jar".equalsIgnoreCase(url.getProtocol())) {
 			return url.openStream();
@@ -1139,6 +1140,7 @@ public class OpenmrsUtil {
 		}
 		catch (TransformerException e) {
 			throw new ModuleException("Error while saving dwrmodulexml back to dwr-modules.xml", e);
+			
 		}
 		catch (FileNotFoundException e) {
 			throw new ModuleException(outFile.getAbsolutePath() + " file doesn't exist.", e);

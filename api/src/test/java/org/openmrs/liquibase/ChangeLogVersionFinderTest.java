@@ -3,7 +3,6 @@
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
  * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
- *
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
@@ -66,12 +65,10 @@ public class ChangeLogVersionFinderTest {
 	private static final String VERSION_2_2_X = "2.2.x";
 	
 	private ChangeLogVersionFinder changeLogVersionFinder;
-	
-	private ChangeLogVersions changeLogVersions;
-	
+
 	@BeforeEach
 	public void setup() {
-		changeLogVersions = mock(ChangeLogVersions.class);
+		ChangeLogVersions changeLogVersions = mock(ChangeLogVersions.class);
 		
 		when(changeLogVersions.getSnapshotVersions()).thenReturn(Arrays.asList(VERSION_1_9_X, VERSION_2_1_X));
 		
@@ -190,15 +187,13 @@ public class ChangeLogVersionFinderTest {
 	@Test
 	public void shouldGetVersionAsDotXFromShortVersionName() {
 		String actual = changeLogVersionFinder.getVersionAsDotX(OPENMRS_SHORT_VERSION);
-		String expected = OPENMRS_MAJOR_MINOR_X;
-		assertEquals(expected, actual);
+		assertEquals(OPENMRS_MAJOR_MINOR_X, actual);
 	}
 	
 	@Test
 	public void shouldGetVersionAsDotXFromLongVersionName() {
 		String actual = changeLogVersionFinder.getVersionAsDotX(OPENMRS_LONG_VERSION);
-		String expected = OPENMRS_MAJOR_MINOR_X;
-		assertEquals(expected, actual);
+		assertEquals(OPENMRS_MAJOR_MINOR_X, actual);
 	}
 	
 	@Test
