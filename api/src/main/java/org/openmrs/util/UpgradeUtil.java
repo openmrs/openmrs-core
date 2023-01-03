@@ -42,9 +42,6 @@ public class UpgradeUtil {
 		String appDataDir = OpenmrsUtil.getApplicationDataDirectory();
 		Properties props = new Properties();
 		String conceptId = null;
-//		String filePath = appDataDir +
-//				System.getProperty("file.separator") +
-//				DatabaseUtil.ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME;
 		String filePath = Paths.get(appDataDir,
 			System.getProperty("file.separator"),
 			DatabaseUtil.ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME).toString();
