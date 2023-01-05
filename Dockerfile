@@ -21,7 +21,8 @@ ARG TINI_SHA="93dcc18adc78c65a028a84799ecf8ad40c936fdfc5f2a57b1acda5a8117fa82c"
 ARG TINI_SHA_ARM64="07952557df20bfd2a95f9bef198b445e006171969499a1d361bd9e6f8e5e0e81"
 RUN if [ "$TARGETARCH" = "arm64" ] ; then TINI_URL="${TINI_URL}-arm64" TINI_SHA=${TINI_SHA_ARM64} ; fi \
     && curl -fsSL -o /usr/bin/tini ${TINI_URL} \
-    && echo "${TINI_SHA}  /usr/bin/tini" | sha256sum -c 
+    && echo "${TINI_SHA}  /usr/bin/tini" | sha256sum -c \
+    && chmod +x /usr/bin/tini 
 
 # Setup Tomcat for development
 ARG TOMCAT_VERSION=8.5.83
