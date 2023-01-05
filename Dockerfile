@@ -21,8 +21,7 @@ ARG TINI_SHA="93dcc18adc78c65a028a84799ecf8ad40c936fdfc5f2a57b1acda5a8117fa82c"
 ARG TINI_SHA_ARM64="07952557df20bfd2a95f9bef198b445e006171969499a1d361bd9e6f8e5e0e81"
 RUN if [ "$TARGETARCH" = "arm64" ] ; then TINI_URL="${TINI_URL}-arm64" TINI_SHA=${TINI_SHA_ARM64} ; fi \
     && curl -fsSL -o /usr/bin/tini ${TINI_URL} \
-    && echo "${TINI_SHA}  /usr/bin/tini" | sha256sum -c \
-    && chmod +x /usr/bin/tini 
+    && echo "${TINI_SHA}  /usr/bin/tini" | sha256sum -c 
 
 # Setup Tomcat for development
 ARG TOMCAT_VERSION=8.5.83
@@ -30,8 +29,9 @@ ARG TOMCAT_SHA="57cbe9608a9c4e88135e5f5480812e8d57690d5f3f6c43a7c05fe647bddb7c3b
 ARG TOMCAT_URL="https://www.apache.org/dyn/closer.cgi?action=download&filename=tomcat/tomcat-8/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz"
 RUN curl -fL -o /tmp/apache-tomcat.tar.gz "$TOMCAT_URL" \
     && echo "${TOMCAT_SHA}  /tmp/apache-tomcat.tar.gz" | sha512sum -c \
-    && mkdir -p /usr/local/tomcat && gzip -d /tmp/apache-tomcat.tar.gz && tar -xvf /tmp/apache-tomcat.tar -C /usr/local/tomcat/ --strip-components=1 \
-    && rm -rf /tmp/apache-tomcat.tar.gz /usr/local/tomcat/webapps/*
+    && mkdir -p /usr/local/tomcat && gzip -d /tmp/apache-tomcat.tar.gz  \
+    && tar -xvf /tmp/apache-tomcat.tar -C /usr/local/tomcat/ --strip-components=1 \
+    && rm -rf /tmp/apache-tomcat.tar.gz /usr/local/tomcat/webapps/* 
 
 WORKDIR /openmrs_core
 
@@ -98,7 +98,7 @@ CMD ["/openmrs/startup-dev.sh"]
 ### Production Stage
 FROM tomcat:8.5-jdk8-corretto
 
-RUN yum -y update && yum -y install shadow-utils && yum clean all && rm -rf /usr/local/tomcat/webapps/*
+RUN yum -y update && yum clean all && rm -rf /usr/local/tomcat/webapps/*
 
 # Setup Tini
 ARG TARGETARCH
@@ -109,19 +109,22 @@ ARG TINI_SHA_ARM64="07952557df20bfd2a95f9bef198b445e006171969499a1d361bd9e6f8e5e
 RUN if [ "$TARGETARCH" = "arm64" ] ; then TINI_URL="${TINI_URL}-arm64" TINI_SHA=${TINI_SHA_ARM64} ; fi \
     && curl -fsSL -o /usr/bin/tini ${TINI_URL} \
     && echo "${TINI_SHA}  /usr/bin/tini" | sha256sum -c \
-    && chmod +x /usr/bin/tini 
+    && chmod g+rx /usr/bin/tini 
 
 RUN sed -i '/Connector port="8080"/a URIEncoding="UTF-8" relaxedPathChars="[]|" relaxedQueryChars="[]|{}^&#x5c;&#x60;&quot;&lt;&gt;"' \
-    /usr/local/tomcat/conf/server.xml
+    /usr/local/tomcat/conf/server.xml \
+    && chmod -R g+rx /usr/local/tomcat \
+    && touch /usr/local/tomcat/bin/setenv.sh && chmod g+w /usr/local/tomcat/bin/setenv.sh \
+    && chmod -R g+w /usr/local/tomcat/webapps /usr/local/tomcat/logs /usr/local/tomcat/work /usr/local/tomcat/temp 
 
-RUN adduser openmrs && mkdir -p /openmrs/data/modules \
+RUN mkdir -p /openmrs/data/modules \
     && mkdir -p /openmrs/data/owa  \
     && mkdir -p /openmrs/data/configuration \
-    && chown -R openmrs /openmrs
+    && chmod -R g+rw /openmrs
     
 # Copy in the start-up scripts
 COPY wait-for-it.sh startup-init.sh startup.sh /openmrs/
-RUN chmod +x /openmrs/wait-for-it.sh && chmod +x /openmrs/startup-init.sh && chmod +x /openmrs/startup.sh
+RUN chmod g+x /openmrs/wait-for-it.sh && chmod g+x /openmrs/startup-init.sh && chmod g+x /openmrs/startup.sh
 
 WORKDIR /openmrs
 
@@ -130,6 +133,10 @@ COPY --from=dev /openmrs_core/LICENSE LICENSE
 COPY --from=dev /openmrs/distribution/openmrs_core/openmrs.war /openmrs/distribution/openmrs_core/openmrs.war
 
 EXPOSE 8080
+
+# Run as non-root user using Bitnami approach, see e.g.
+# https://github.com/bitnami/containers/blob/6c8f10bbcf192ab4e575614491abf10697c46a3e/bitnami/tomcat/8.5/debian-11/Dockerfile#L54
+USER 1001
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
