@@ -246,7 +246,7 @@ Release:
                         echo "Unable to update the main branch to a new SNAPSHOT version. Please update it manually if needed."
                         exit 0
                         )
-            description: Build and push images
+              description: Build and push images
         - any-task:
               plugin-key: com.atlassian.bamboo.plugins.variable.updater.variable-updater-generic:variable-file-reader
               configuration:
