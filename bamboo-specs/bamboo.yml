@@ -64,24 +64,6 @@ Build:
                   variable: docker.image.id
                   variableScope: RESULT
               description: Store docker image id
-    # com.atlassian.bamboo.plugins.maven:task.builder.mvn3 is disabled. This state is not supported at YAML
-    # com.atlassian.bamboo.plugins.maven:task.builder.mvn3 is disabled. This state is not supported at YAML
-    artifacts:
-        - name: openmrs-war
-          location: webapp/target
-          pattern: '**/openmrs.war'
-          shared: false
-          required: false
-        - name: openmrs-api
-          location: webapp/target/openmrs/WEB-INF/lib
-          pattern: '**/openmrs-api*.jar'
-          shared: false
-          required: false
-        - name: sonar-issues
-          location: target/sonar/issues-report
-          pattern: '**/*'
-          shared: false
-          required: false
     artifact-subscriptions: []
 Unit Test:
     key: UT
@@ -140,17 +122,6 @@ Deploy to maven:
                       docker run -v m2-repo:/root/.m2/repository -v ~/.m2/settings.xml:/.m2/settings.xml:ro \
                           --rm ${IMAGE} mvn deploy -DskipTests --settings /.m2/settings.xml
               description: Deploy to maven repo
-    artifacts:
-        - name: openmrs 1.11 war
-          location: webapp/target
-          pattern: '**/openmrs.war'
-          shared: false
-          required: false
-        - name: openmrs 1.11 api jar
-          location: webapp/target/openmrs/WEB-INF/lib
-          pattern: '**/openmrs-api*.jar'
-          shared: false
-          required: false
     artifact-subscriptions: []
 Deploy to docker:
     key: DTD
@@ -261,22 +232,6 @@ Release:
                   removeSnapshot: 'true'
                   variableScope: PLAN
               description: Save next release version
-    artifacts:
-        - name: openmrs-war
-          location: webapp/target
-          pattern: '**/openmrs.war'
-          shared: false
-          required: false
-        - name: openmrs-api
-          location: webapp/target/openmrs/WEB-INF/lib
-          pattern: '**/openmrs-api*.jar'
-          shared: false
-          required: false
-        - name: sonar-issues
-          location: target/sonar/issues-report
-          pattern: '**/*'
-          shared: false
-          required: false
     artifact-subscriptions: []
 variables:
     docker.image.name: openmrs/openmrs-core
