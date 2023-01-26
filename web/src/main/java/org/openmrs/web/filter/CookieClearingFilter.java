@@ -41,7 +41,7 @@ public class CookieClearingFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 		throws ServletException, IOException {
-			
+		
 		// if an earlier filter has already written a response, we cannot do anything
 		if (response.isCommitted()) {
 			filterChain.doFilter(request, response);
@@ -60,7 +60,8 @@ public class CookieClearingFilter extends OncePerRequestFilter {
 				cookiesToClear = Arrays.stream(cookiesToClearSetting.split("\\s*,\\s*")).map(String::trim).toArray(
 					String[]::new);
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			log.warn("Caught exception while trying to determine cookies to clear", e);
 		}
 		
@@ -74,7 +75,8 @@ public class CookieClearingFilter extends OncePerRequestFilter {
 		// handle the request
 		try {
 			filterChain.doFilter(request, response);
-		} finally {
+		}
+		finally {
 			if (cookiesToClear.length > 0 && !response.isCommitted()) {
 				HttpSession session = request.getSession(false);
 				// session was invalidated
@@ -82,12 +84,13 @@ public class CookieClearingFilter extends OncePerRequestFilter {
 					for (Cookie cookie : request.getCookies()) {
 						for (String cookieToClear : cookiesToClear) {
 							if (cookieToClear.equalsIgnoreCase(cookie.getName())) {
-								// NB This doesn't preserve the HttpOnly flag, but it seems irrelevant since Max-Age: 0 expires
-								// the cookie, i.e., a well-behaved user agent will throw it away and, in any case, we delete
-								// the value
-								Cookie clearedCookie = (Cookie) cookie.clone();
-								clearedCookie.setValue(null);
+								Cookie clearedCookie = new Cookie(cookie.getName(), null);
+								String contextPath = request.getContextPath();
+								clearedCookie.setPath(
+									contextPath == null || contextPath.trim().equals("") ? "/" : contextPath);
 								clearedCookie.setMaxAge(0);
+								clearedCookie.setHttpOnly(true);
+								clearedCookie.setSecure(request.isSecure());
 								response.addCookie(clearedCookie);
 								break;
 							}
