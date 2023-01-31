@@ -1176,7 +1176,7 @@
 		<aspectjVersion>1.9.19</aspectjVersion>
 		<jacksonVersion>2.14.2</jacksonVersion>
 		<junitVersion>5.9.2</junitVersion>
-		<mockitoVersion>3.12.4</mockitoVersion>
+		<mockitoVersion>5.1.1</mockitoVersion>
 		<hamcrestVersion>2.2</hamcrestVersion>
 
 		<slf4jVersion>1.7.36</slf4jVersion>
