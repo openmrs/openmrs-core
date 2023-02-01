@@ -209,7 +209,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			diagnosis.setPatient(p);
 			diagnosis.setEncounter(encounter);
 		});
-		encounter.getDiagnoses().stream().forEach(diagnosis -> diagnosis.setPatient(p));
 		encounter.getDiagnoses().forEach(Context.getDiagnosisService()::save);
 		
 		return encounter;
