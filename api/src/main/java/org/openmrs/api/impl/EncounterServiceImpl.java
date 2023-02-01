@@ -35,6 +35,7 @@ import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
+import org.openmrs.api.DiagnosisService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.EncounterTypeLockedException;
 import org.openmrs.api.ObsService;
@@ -199,8 +200,17 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		
 		// save the conditions
 		encounter.getConditions().forEach(Context.getConditionService()::saveCondition);
-		
+
+		// save the allergies
 		encounter.getAllergies().forEach(Context.getPatientService()::saveAllergy);
+
+		// save the diagnoses
+		encounter.getDiagnoses().stream().forEach(diagnosis -> {
+			diagnosis.setPatient(p);
+			diagnosis.setEncounter(encounter);
+		});
+		encounter.getDiagnoses().stream().forEach(diagnosis -> diagnosis.setPatient(p));
+		encounter.getDiagnoses().forEach(Context.getDiagnosisService()::save);
 		
 		return encounter;
 	}
@@ -421,6 +431,13 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			// There is intentionally no voided check around this method call.  See TRUNK-5996.
 			orderService.voidOrder(o, reason);
 		}
+
+		DiagnosisService diagnosisService = Context.getDiagnosisService();
+		encounter.getDiagnoses().stream()
+			.filter(d -> !d.getVoided())
+			.forEach(d ->
+				diagnosisService.voidDiagnosis(d, reason)
+			);
 		
 		encounter.setVoided(true);
 		encounter.setVoidedBy(Context.getAuthenticatedUser());
@@ -447,10 +464,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			        .getEditPrivilege() });
 		}
 		
-		String voidReason = encounter.getVoidReason();
-		if (voidReason == null) {
-			voidReason = "";
-		}
+		String voidReason = encounter.getVoidReason()== null ? "" : encounter.getVoidReason();
 		
 		ObsService os = Context.getObsService();
 		for (Obs o : encounter.getObsAtTopLevel(true)) {
@@ -465,6 +479,13 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 				orderService.unvoidOrder(o);
 			}
 		}
+
+		DiagnosisService diagnosisService = Context.getDiagnosisService();
+		encounter.getDiagnoses().stream()
+			.filter(d -> voidReason.equals(d.getVoidReason()))
+			.forEach(d ->
+				diagnosisService.unvoidDiagnosis(d)
+			);
 		
 		encounter.setVoided(false);
 		encounter.setVoidedBy(null);

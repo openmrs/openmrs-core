@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.HashSet;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,6 +50,8 @@ import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.Condition;
 import org.openmrs.ConditionClinicalStatus;
+import org.openmrs.ConditionVerificationStatus;
+import org.openmrs.Diagnosis;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterRole;
@@ -424,6 +427,33 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertEquals(2, savedConditions.size());
 		assertTrue(savedConditions.contains(pregnancy));
 		assertTrue(savedConditions.contains(edema));
+	}
+
+	@Test
+	public void saveEncounter_shouldCascadeSaveToContainedDiagnoses() {
+		// setup
+		Encounter encounter = buildEncounter();
+		Diagnosis diagnosis1 = new Diagnosis();
+		diagnosis1.setDiagnosis(new CodedOrFreeText(null, null, "Fever"));
+		diagnosis1.setRank(1);
+		diagnosis1.setCertainty(ConditionVerificationStatus.CONFIRMED);
+
+		Diagnosis diagnosis2 = new Diagnosis();
+		diagnosis2.setDiagnosis(new CodedOrFreeText(null, null, "Also fever"));
+		diagnosis2.setRank(2);
+		diagnosis2.setCertainty(ConditionVerificationStatus.PROVISIONAL);
+		
+		// replay
+		Set<Diagnosis> diagnoses = new HashSet<>();
+		encounter.getDiagnoses().add(diagnosis1);
+		encounter.getDiagnoses().add(diagnosis);
+		Context.getEncounterService().saveEncounter(encounter);
+
+		// verify
+		Set<Diagnosis> savedDiagnoses = encounter.getDiagnoses();
+		assertEquals(2, savedDiagnoses.size());
+		assertTrue(savedDiagnoses.contains(diagnosis1));
+		assertTrue(savedDiagnoses.contains(diagnosis2));
 	}
 	
 	private Encounter buildEncounter() {
@@ -974,7 +1004,23 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertTrue(order.getVoided());
 		assertEquals("Just Testing", order.getVoidReason());
 	}
+	
+	/**
+	 * @see EncounterService#voidEncounter(Encounter,String)
+	 */
+	@Test
+	public void voidEncounter_shouldCascadeVoidToDiagnoses() {
+		EncounterService encounterService = Context.getEncounterService();
 
+		// get a nonvoided encounter that has some obs
+		Encounter encounter = encounterService.getEncounter(1);
+		encounterService.voidEncounter(encounter, "Just Testing");
+
+		Diagnosis diagnosis = Context.getDiagnosisService().getDiagnosis(1); 
+		assertTrue(diagnosis.getVoided());
+		assertEquals("Just Testing", diagnosis.getVoidReason());
+	}
+	
 	/**
 	 * @see OrderService#voidOrder(org.openmrs.Order, String)
 	 */
@@ -1046,6 +1092,23 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Order order = Context.getOrderService().getOrder(2);
 		assertFalse(order.getVoided());
 		assertNull(order.getVoidReason());
+	}
+
+
+	/**
+	 * @see EncounterService#unvoidEncounter(Encounter)
+	 */
+	@Test
+	public void unvoidEncounter_shouldCascadeUnvoidToDiagnoses() {
+		EncounterService encounterService = Context.getEncounterService();
+
+		// get a voided encounter that has some voided obs
+		Encounter encounter = encounterService.getEncounter(2);
+		encounterService.unvoidEncounter(encounter);
+
+		Diagnosis diagnosis = Context.getDiagnosisService().getDiagnosis(2);
+		assertFalse(diagnosis.getVoided());
+		assertNull(diagnosis.getVoidReason());
 	}
 	
 	/**

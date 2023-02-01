@@ -62,7 +62,8 @@
   <encounter_provider encounter_provider_id="1" encounter_id="2" provider_id="2" encounter_role_id="2" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" uuid="c92be2b5-b167-4c3b-9bab-5f8c01ae727a" />
   <obs obs_id="4" status="FINAL" person_id="3" encounter_id="2" concept_id="1" obs_datetime="2005-01-01 00:00:00.0" location_id="1" value_numeric="1.0" creator="1" date_created="2006-02-10 15:57:35.0" voided="1" voided_by="1" date_voided="2008-02-01 00:00:00.0" void_reason="Because" uuid="8f92ca37-9aee-4834-a1e4-26cd517421da"/>
   <orders order_id="2" order_type_id="2" order_number="2" urgency="ROUTINE" patient_id="3" encounter_id="2" concept_id="1" date_activated="2012-08-19 00:00:00.0" orderer="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="1" voided_by="1" date_voided="2008-02-01 00:00:00.0" void_reason="Because" uuid="81bc39d2-9a62-46b1-9df6-c35d3cb29e08" order_action="NEW" care_setting="1"/>
-
+  <encounter_diagnosis diagnosis_id="2" encounter_id="2" patient_id="3" diagnosis_non_coded="Fever" certainty="CONFIRMED" dx_rank="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="1" voided_by="1" date_voided="2008-02-01 00:00:00.0" void_reason="Because" uuid="0d86e8b4-2f33-495e-aa22-6954785e4e9f"/>
+	
   <!-- A real non-voided encounter -->
   <encounter encounter_id="1" encounter_type="1" form_id="1" encounter_datetime="2005-01-01 00:00:00.0" patient_id="3" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="430bbb70-6a9c-4e1e-badb-9d1034b1b5e9"/>
   <encounter_provider encounter_provider_id="2" encounter_id="1" provider_id="2" encounter_role_id="2" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" uuid="b566821c-1ad9-473b-836b-9e9c67688e02" />
@@ -72,7 +73,9 @@
   <obs obs_id="3" status="FINAL" person_id="3" encounter_id="1" concept_id="1" obs_datetime="2006-01-01 00:00:00.0" location_id="1" value_numeric="3.0" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" uuid="544c0a4c-fdbf-4eb8-be4b-8fde603a76f7"/>
 
   <orders order_id="1" order_type_id="2" order_number="1" urgency="ROUTINE" patient_id="3" encounter_id="1" date_activated="2012-08-19 00:00:00.0" concept_id="1" orderer="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" uuid="0d86e8b4-2f33-495e-aa22-6954785e4e9e" order_action="NEW" care_setting="1"/>
-
+	
+  <encounter_diagnosis diagnosis_id="1" encounter_id="1" patient_id="3" diagnosis_non_coded="Fever" certainty="CONFIRMED" dx_rank="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" uuid="0d86e8b4-2f33-495e-aa22-6954785e4e9f"/>
+	
   <!-- an encounter with a mismatched order.patient_id -->
   <encounter encounter_id="15" encounter_type="1" form_id="1" encounter_datetime="2001-01-01 00:00:00.0" patient_id="3" location_id="1" visit_id="1" creator="1" date_created="2005-01-01 00:00:00.0" date_changed="2006-01-01 00:00:00.0" voided="0" uuid="7fffd6b9-0970-4967-88c7-0b7b50f12bc6"/>
   <encounter_provider encounter_provider_id="3" encounter_id="15" provider_id="1" encounter_role_id="2" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" uuid="8a030bef-4362-4a1c-9967-ac4a4b425b45" />
