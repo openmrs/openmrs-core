@@ -444,7 +444,6 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		diagnosis2.setCertainty(ConditionVerificationStatus.PROVISIONAL);
 		
 		// replay
-		Set<Diagnosis> diagnoses = new HashSet<>();
 		encounter.getDiagnoses().add(diagnosis1);
 		encounter.getDiagnoses().add(diagnosis2);
 		Context.getEncounterService().saveEncounter(encounter);
