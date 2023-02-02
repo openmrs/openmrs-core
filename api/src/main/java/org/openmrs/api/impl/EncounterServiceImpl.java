@@ -430,13 +430,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			// There is intentionally no voided check around this method call.  See TRUNK-5996.
 			orderService.voidOrder(o, reason);
 		}
-
-		DiagnosisService diagnosisService = Context.getDiagnosisService();
-		encounter.getDiagnoses().stream()
-			.filter(d -> !d.getVoided())
-			.forEach(d ->
-				diagnosisService.voidDiagnosis(d, reason)
-			);
 		
 		encounter.setVoided(true);
 		encounter.setVoidedBy(Context.getAuthenticatedUser());
@@ -478,13 +471,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 				orderService.unvoidOrder(o);
 			}
 		}
-
-		DiagnosisService diagnosisService = Context.getDiagnosisService();
-		encounter.getDiagnoses().stream()
-			.filter(d -> voidReason.equals(d.getVoidReason()))
-			.forEach(d ->
-				diagnosisService.unvoidDiagnosis(d)
-			);
 		
 		encounter.setVoided(false);
 		encounter.setVoidedBy(null);
