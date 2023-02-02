@@ -1092,8 +1092,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertFalse(order.getVoided());
 		assertNull(order.getVoidReason());
 	}
-
-
+	
 	/**
 	 * @see EncounterService#unvoidEncounter(Encounter)
 	 */
