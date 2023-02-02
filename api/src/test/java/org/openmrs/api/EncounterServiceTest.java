@@ -446,13 +446,11 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// replay
 		encounter.getDiagnoses().add(diagnosis1);
 		encounter.getDiagnoses().add(diagnosis2);
-		Context.getEncounterService().saveEncounter(encounter);
+		encounter = Context.getEncounterService().saveEncounter(encounter);
 
 		// verify
-		Set<Diagnosis> savedDiagnoses = encounter.getDiagnoses();
-		assertEquals(2, savedDiagnoses.size());
-		assertTrue(savedDiagnoses.contains(diagnosis1));
-		assertTrue(savedDiagnoses.contains(diagnosis2));
+		assertTrue(Context.getDiagnosisService().getDiagnosesByEncounter(encounter, true, true).contains(diagnosis1));
+		assertTrue(Context.getDiagnosisService().getDiagnosesByEncounter(encounter, false, false).contains(diagnosis2));
 	}
 	
 	private Encounter buildEncounter() {
