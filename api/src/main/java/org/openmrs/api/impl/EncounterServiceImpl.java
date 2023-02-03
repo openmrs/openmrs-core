@@ -456,7 +456,10 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			        .getEditPrivilege() });
 		}
 		
-		String voidReason = encounter.getVoidReason()== null ? "" : encounter.getVoidReason();
+		String voidReason = encounter.getVoidReason();
+		if (voidReason == null) {
+			voidReason = "";
+		}
 		
 		ObsService os = Context.getObsService();
 		for (Obs o : encounter.getObsAtTopLevel(true)) {
