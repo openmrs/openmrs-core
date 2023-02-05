@@ -10,6 +10,6 @@ jobs:
       - name: Trigger QAFramework
         uses: peter-evans/repository-dispatch@v2
         with:
-          token: ${{secrets.ACTIONS_TOKEN}}
+          token: ${{secrets.GITHUB_TOKEN}}
           repository: openmrs/openmrs-contrib-qaframework
           event-type: qa
