@@ -482,21 +482,25 @@ public class HibernateContextDAO implements ContextDAO {
 			session.setCacheMode(CacheMode.IGNORE);
 			
 			//Scrollable results will avoid loading too many objects in memory
-			ScrollableResults results = session.createCriteria(type).setFetchSize(1000).scroll(ScrollMode.FORWARD_ONLY);
-			int index = 0;
-			while (results.next()) {
-				index++;
-				//index each element
-				session.index(results.get(0));
-				if (index % 1000 == 0) {
-					//apply changes to indexes
-					session.flushToIndexes();
-					//free memory since the queue is processed
-					session.clear();
+			try (ScrollableResults results = session.createCriteria(type).setFetchSize(1000).scroll(ScrollMode.FORWARD_ONLY)) {
+				int index = 0;
+				while (results.next()) {
+					index++;
+					//index each element
+					session.index(results.get(0));
+					if (index % 1000 == 0) {
+						//apply changes to indexes
+						session.flushToIndexes();
+						//free memory since the queue is processed
+						session.clear();
+						// reset index to avoid overflows
+						index = 0;
+					}
 				}
+			} finally {
+				session.flushToIndexes();
+				session.clear();
 			}
-			session.flushToIndexes();
-			session.clear();
 		}
 		finally {
 			session.setHibernateFlushMode(flushMode);
