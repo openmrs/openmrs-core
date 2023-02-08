@@ -1009,13 +1009,21 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	public void voidEncounter_shouldCascadeVoidToDiagnoses() {
 		EncounterService encounterService = Context.getEncounterService();
 
-		// get a nonvoided encounter that has some obs
+		// get a nonvoided encounter that has some Diagnoses
 		Encounter encounter = encounterService.getEncounter(1);
+
+		// Test that diagnoses is unvoided
+		Diagnosis unvoidedDiagnosis = encounter.getDiagnoses().iterator().next();
+		assertEquals(unvoidedDiagnosis.getDiagnosisId(), 1);
+		assertTrue(!unvoidedDiagnosis.getVoided());
+		
+		// Run test
 		encounterService.voidEncounter(encounter, "Just Testing");
 
-		Diagnosis diagnosis = Context.getDiagnosisService().getDiagnosis(1); 
-		assertTrue(diagnosis.getVoided());
-		assertEquals("Just Testing", diagnosis.getVoidReason());
+		// Test that diagnoses is voided
+		Diagnosis voidedDiagnoses = Context.getDiagnosisService().getDiagnosis(1); 
+		assertTrue(voidedDiagnoses.getVoided());
+		assertEquals("Just Testing", voidedDiagnoses.getVoidReason());
 	}
 	
 	/**
