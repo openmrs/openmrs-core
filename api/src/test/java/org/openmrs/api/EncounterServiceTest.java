@@ -1106,7 +1106,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	public void unvoidEncounter_shouldCascadeUnvoidToDiagnoses() {
 		EncounterService encounterService = Context.getEncounterService();
 
-		// get a voided encounter that has some voided obs
+		// get a voided encounter that has some voided Diagnoses
 		Encounter encounter = encounterService.getEncounter(2);
 		encounterService.unvoidEncounter(encounter);
 
