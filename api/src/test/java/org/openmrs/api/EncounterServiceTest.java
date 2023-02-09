@@ -1015,7 +1015,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// Test that diagnoses is unvoided
 		Diagnosis unvoidedDiagnosis = encounter.getDiagnoses().iterator().next();
 		assertEquals(unvoidedDiagnosis.getDiagnosisId(), 1);
-		assertTrue(!unvoidedDiagnosis.getVoided());
+		assertFalse(unvoidedDiagnosis.getVoided());
+		assertFalse(encounter.getVoided());
 		
 		// Run test
 		encounterService.voidEncounter(encounter, "Just Testing");
@@ -1024,6 +1025,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Diagnosis voidedDiagnoses = Context.getDiagnosisService().getDiagnosis(1); 
 		assertTrue(voidedDiagnoses.getVoided());
 		assertEquals("Just Testing", voidedDiagnoses.getVoidReason());
+		assertTrue(encounter.getVoided());
 	}
 	
 	/**
@@ -1108,11 +1110,21 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 
 		// get a voided encounter that has some voided Diagnoses
 		Encounter encounter = encounterService.getEncounter(2);
+
+		// Test that diagnoses is voided
+		Diagnosis voidedDiagnosis = encounter.getDiagnoses().iterator().next();
+		assertEquals(voidedDiagnosis.getDiagnosisId(), 2);
+		assertTrue(voidedDiagnosis.getVoided());
+		assertTrue(encounter.getVoided());
+		
+		// Run test
 		encounterService.unvoidEncounter(encounter);
 
+		// Test that diagnoses is unvoided		
 		Diagnosis diagnosis = Context.getDiagnosisService().getDiagnosis(2);
 		assertFalse(diagnosis.getVoided());
 		assertNull(diagnosis.getVoidReason());
+		assertFalse(encounter.getVoided());
 	}
 	
 	/**
