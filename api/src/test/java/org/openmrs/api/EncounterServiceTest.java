@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.HashSet;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,6 +50,8 @@ import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.Condition;
 import org.openmrs.ConditionClinicalStatus;
+import org.openmrs.ConditionVerificationStatus;
+import org.openmrs.Diagnosis;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterRole;
@@ -424,6 +427,30 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertEquals(2, savedConditions.size());
 		assertTrue(savedConditions.contains(pregnancy));
 		assertTrue(savedConditions.contains(edema));
+	}
+
+	@Test
+	public void saveEncounter_shouldCascadeSaveToContainedDiagnoses() {
+		// setup
+		Encounter encounter = buildEncounter();
+		Diagnosis diagnosis1 = new Diagnosis();
+		diagnosis1.setDiagnosis(new CodedOrFreeText(null, null, "Fever"));
+		diagnosis1.setRank(1);
+		diagnosis1.setCertainty(ConditionVerificationStatus.CONFIRMED);
+
+		Diagnosis diagnosis2 = new Diagnosis();
+		diagnosis2.setDiagnosis(new CodedOrFreeText(null, null, "Also fever"));
+		diagnosis2.setRank(2);
+		diagnosis2.setCertainty(ConditionVerificationStatus.PROVISIONAL);
+		
+		// replay
+		encounter.getDiagnoses().add(diagnosis1);
+		encounter.getDiagnoses().add(diagnosis2);
+		encounter = Context.getEncounterService().saveEncounter(encounter);
+
+		// verify
+		assertTrue(Context.getDiagnosisService().getDiagnosesByEncounter(encounter, true, true).contains(diagnosis1));
+		assertTrue(Context.getDiagnosisService().getDiagnosesByEncounter(encounter, false, false).contains(diagnosis2));
 	}
 	
 	private Encounter buildEncounter() {
@@ -974,7 +1001,33 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertTrue(order.getVoided());
 		assertEquals("Just Testing", order.getVoidReason());
 	}
+	
+	/**
+	 * @see EncounterService#voidEncounter(Encounter,String)
+	 */
+	@Test
+	public void voidEncounter_shouldCascadeVoidToDiagnoses() {
+		EncounterService encounterService = Context.getEncounterService();
 
+		// get a nonvoided encounter that has some Diagnoses
+		Encounter encounter = encounterService.getEncounter(1);
+
+		// Test that diagnoses is unvoided
+		Diagnosis unvoidedDiagnosis = encounter.getDiagnoses().iterator().next();
+		assertEquals(unvoidedDiagnosis.getDiagnosisId(), 1);
+		assertFalse(unvoidedDiagnosis.getVoided());
+		assertFalse(encounter.getVoided());
+		
+		// Run test
+		encounterService.voidEncounter(encounter, "Just Testing");
+
+		// Test that diagnoses is voided
+		Diagnosis voidedDiagnoses = Context.getDiagnosisService().getDiagnosis(1); 
+		assertTrue(voidedDiagnoses.getVoided());
+		assertEquals("Just Testing", voidedDiagnoses.getVoidReason());
+		assertTrue(encounter.getVoided());
+	}
+	
 	/**
 	 * @see OrderService#voidOrder(org.openmrs.Order, String)
 	 */
@@ -1046,6 +1099,32 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Order order = Context.getOrderService().getOrder(2);
 		assertFalse(order.getVoided());
 		assertNull(order.getVoidReason());
+	}
+	
+	/**
+	 * @see EncounterService#unvoidEncounter(Encounter)
+	 */
+	@Test
+	public void unvoidEncounter_shouldCascadeUnvoidToDiagnoses() {
+		EncounterService encounterService = Context.getEncounterService();
+
+		// get a voided encounter that has some voided Diagnoses
+		Encounter encounter = encounterService.getEncounter(2);
+
+		// Test that diagnoses is voided
+		Diagnosis voidedDiagnosis = encounter.getDiagnoses().iterator().next();
+		assertEquals(voidedDiagnosis.getDiagnosisId(), 2);
+		assertTrue(voidedDiagnosis.getVoided());
+		assertTrue(encounter.getVoided());
+		
+		// Run test
+		encounterService.unvoidEncounter(encounter);
+
+		// Test that diagnoses is unvoided		
+		Diagnosis diagnosis = Context.getDiagnosisService().getDiagnosis(2);
+		assertFalse(diagnosis.getVoided());
+		assertNull(diagnosis.getVoidReason());
+		assertFalse(encounter.getVoided());
 	}
 	
 	/**

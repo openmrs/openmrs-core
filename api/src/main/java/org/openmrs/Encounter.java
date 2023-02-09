@@ -480,6 +480,9 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * @since 2.2
 	 */
 	public Set<Diagnosis> getDiagnoses() {
+		if (diagnoses == null) {
+			diagnoses = new LinkedHashSet<>();
+		}
 		return diagnoses;
 	}
 	
