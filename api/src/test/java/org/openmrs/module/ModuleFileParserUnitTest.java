@@ -91,7 +91,7 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 	@AfterEach
 	public void after() {
 		// needed so other are not affected by tests registering a ModuleClassLoader
-		ModuleFactory.moduleClassLoaders = null;
+		ModuleFactory.moduleClassLoaders.invalidateAll();
 	}
 
 	@Test

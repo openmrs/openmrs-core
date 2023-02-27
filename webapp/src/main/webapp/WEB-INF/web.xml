@@ -43,7 +43,7 @@
     <!-- directory cannot be used. Note: A trailing slash MUST be used -->
     <context-param>
         <param-name>application.data.directory</param-name>
-        <param-value></param-value>
+        <param-value />
     </context-param>
 	<!-- // End init parameters -->
 

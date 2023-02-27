@@ -67,7 +67,7 @@ public class ModuleUtil {
 	 *
 	 * @param props Properties (OpenMRS runtime properties)
 	 */
-	public static void startup(Properties props) throws ModuleMustStartException, OpenmrsCoreModuleException {
+	public static void startup(Properties props) throws ModuleMustStartException {
 		
 		String moduleListString = props.getProperty(ModuleConstants.RUNTIMEPROPERTY_MODULE_LIST_TO_LOAD);
 		
@@ -164,10 +164,10 @@ public class ModuleUtil {
 		log.debug("done shutting down modules");
 		
 		// clean up the static variables just in case they weren't done before
-		ModuleFactory.extensionMap = null;
-		ModuleFactory.loadedModules = null;
-		ModuleFactory.moduleClassLoaders = null;
-		ModuleFactory.startedModules = null;
+		ModuleFactory.extensionMap.clear();
+		ModuleFactory.loadedModules.invalidateAll();
+		ModuleFactory.moduleClassLoaders.invalidateAll();
+		ModuleFactory.startedModules.invalidateAll();
 	}
 	
 	/**
@@ -186,9 +186,7 @@ public class ModuleUtil {
 		
 		File file = new File(folder.getAbsolutePath(), filename);
 		
-		FileOutputStream outputStream = null;
-		try {
-			outputStream = new FileOutputStream(file);
+		try (FileOutputStream outputStream = new FileOutputStream(file)) {
 			OpenmrsUtil.copyFile(inputStream, outputStream);
 		}
 		catch (IOException e) {
@@ -197,10 +195,6 @@ public class ModuleUtil {
 		finally {
 			try {
 				inputStream.close();
-			}
-			catch (Exception e) { /* pass */}
-			try {
-				outputStream.close();
 			}
 			catch (Exception e) { /* pass */}
 		}
@@ -222,7 +216,6 @@ public class ModuleUtil {
 	 * <strong>Should</strong> return false if current openmrs version does not match any element in versions
 	 */
 	public static boolean isOpenmrsVersionInVersions(String ...versions) {
-
 		if (versions == null || versions.length == 0) {
 			return false;
 		}
@@ -526,9 +519,6 @@ public class ModuleUtil {
 		try {
 			return file.getCanonicalFile().toURI().toURL();
 		}
-		catch (MalformedURLException mue) {
-			throw mue;
-		}
 		catch (IOException | NoSuchMethodError ioe) {
 			throw new MalformedURLException("Cannot convert: " + file.getName() + " to url");
 		}
@@ -553,11 +543,8 @@ public class ModuleUtil {
 	 * <strong>Should</strong> expand file with parent tree if name is file and keepFullPath is true
 	 */
 	public static void expandJar(File fileToExpand, File tmpModuleDir, String name, boolean keepFullPath) throws IOException {
-		JarFile jarFile = null;
-		InputStream input = null;
 		String docBase = tmpModuleDir.getAbsolutePath();
-		try {
-			jarFile = new JarFile(fileToExpand);
+		try (JarFile jarFile = new JarFile(fileToExpand)) {
 			Enumeration<JarEntry> jarEntries = jarFile.entries();
 			boolean foundName = (name == null);
 			
@@ -582,10 +569,9 @@ public class ModuleUtil {
 					if (entryName.endsWith("/") || "".equals(entryName)) {
 						continue;
 					}
-					input = jarFile.getInputStream(jarEntry);
-					expand(input, docBase, entryName);
-					input.close();
-					input = null;
+					try(InputStream input = jarFile.getInputStream(jarEntry)) {
+						expand(input, docBase, entryName);
+					}
 					foundName = true;
 				}
 			}
@@ -597,16 +583,6 @@ public class ModuleUtil {
 		catch (IOException e) {
 			log.warn("Unable to delete tmpModuleFile on error", e);
 			throw e;
-		}
-		finally {
-			try {
-				input.close();
-			}
-			catch (Exception e) { /* pass */}
-			try {
-				jarFile.close();
-			}
-			catch (Exception e) { /* pass */}
 		}
 	}
 	
@@ -625,16 +601,8 @@ public class ModuleUtil {
 		log.debug("expanding: {}", name);
 		
 		File file = new File(fileDir, name);
-		FileOutputStream outStream = null;
-		try {
-			outStream = new FileOutputStream(file);
+		try (FileOutputStream outStream = new FileOutputStream(file)) {
 			OpenmrsUtil.copyFile(input, outStream);
-		}
-		finally {
-			try {
-				outStream.close();
-			}
-			catch (Exception e) { /* pass */}
 		}
 		
 		return file;
