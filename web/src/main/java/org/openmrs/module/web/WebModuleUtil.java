@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
@@ -96,7 +97,7 @@ public class WebModuleUtil {
 	
 	private static final Map<String, Filter> MODULE_FILTERS_BY_NAME = new HashMap<>();
 	
-	private static final Deque<ModuleFilterMapping> MODULE_FILTER_MAPPINGS = new LinkedList<>();
+	private static final Deque<ModuleFilterMapping> MODULE_FILTER_MAPPINGS = new ArrayDeque<>();
 	
 	private static DispatcherServlet dispatcherServlet = null;
 	

@@ -10,9 +10,9 @@
 package org.openmrs.module.web.filter;
 
 import java.io.Serializable;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.openmrs.module.Module;
@@ -31,6 +31,8 @@ public class ModuleFilterMapping implements Serializable {
 	public static final long serialVersionUID = 1;
 	
 	private static final Logger log = LoggerFactory.getLogger(ModuleFilterMapping.class);
+	
+	private static final Deque<ModuleFilterMapping> EMPTY_DEQUE = new ArrayDeque<>(0);
 	
 	// Properties
 	private Module module;
@@ -267,13 +269,13 @@ public class ModuleFilterMapping implements Serializable {
 	 *         {@link Module}
 	 */
 	public static Deque<ModuleFilterMapping> retrieveFilterMappings(Module module){
-		
-		Deque<ModuleFilterMapping> mappings = new LinkedList<>();
+		Deque<ModuleFilterMapping> mappings;
 		
 		try {
 			Element rootNode = module.getConfig().getDocumentElement();
 			NodeList mappingNodes = rootNode.getElementsByTagName("filter-mapping");
 			if (mappingNodes.getLength() > 0) {
+				mappings = new ArrayDeque<>(mappingNodes.getLength());
 				for (int i = 0; i < mappingNodes.getLength(); i++) {
 					ModuleFilterMapping mapping = new ModuleFilterMapping(module);
 					Node node = mappingNodes.item(i);
@@ -294,13 +296,15 @@ public class ModuleFilterMapping implements Serializable {
 					}
 					mappings.add(mapping);
 				}
+				
+				log.debug("Retrieved {} filter-mappings for {}: {}", mappings.size(), module, mappings);
+				return mappings;
 			}
 		}
 		catch (Exception e) {
 			throw new ModuleException("Unable to parse filters in module configuration.", e);
 		}
 		
-		log.debug("Retrieved {} filter-mappings for {}: {}", mappings.size(), module, mappings);
-		return mappings;
+		return EMPTY_DEQUE;
 	}
 }

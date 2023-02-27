@@ -48,7 +48,7 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
  * 
  * @since 2.4.0
  */
-class StartModuleExecutionListener extends AbstractTestExecutionListener {
+public class StartModuleExecutionListener extends AbstractTestExecutionListener {
 	
 	private static final Logger log = LoggerFactory.getLogger(StartModuleExecutionListener.class);
 	
