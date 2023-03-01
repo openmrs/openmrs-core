@@ -137,7 +137,9 @@ module.allow_web_admin=${OMRS_MODULE_WEB_ADMIN}
 EOF
 
 if [ -f "$OMRS_RUNTIME_PROPERTIES_FILE" ]; then
-  echo "Found existing runtime properties file at $OMRS_RUNTIME_PROPERTIES_FILE. Overwriting with $OMRS_SERVER_PROPERTIES_FILE"
-  cp "$OMRS_SERVER_PROPERTIES_FILE" "$OMRS_RUNTIME_PROPERTIES_FILE"
+  echo "Found existing runtime properties file at $OMRS_RUNTIME_PROPERTIES_FILE. Merging with $OMRS_SERVER_PROPERTIES_FILE"
+  awk -F= '!a[$1]++' "$OMRS_SERVER_PROPERTIES_FILE" "$OMRS_RUNTIME_PROPERTIES_FILE" > openmrs-merged.properties
+  cp openmrs-merged.properties "$OMRS_RUNTIME_PROPERTIES_FILE"
+  cat "$OMRS_RUNTIME_PROPERTIES_FILE"
 fi
 
