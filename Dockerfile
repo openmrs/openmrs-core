@@ -11,7 +11,7 @@
 ### Development Stage
 FROM maven:3.8-amazoncorretto-8 as dev
 
-RUN yum -y update && yum -y install tar gzip && yum clean all
+RUN yum -y update && yum -y install tar gzip git && yum clean all
 
 # Setup Tini
 ARG TARGETARCH
@@ -143,3 +143,4 @@ ENTRYPOINT ["/usr/bin/tini", "--"]
 
 # See startup-init.sh for all configurable environment variables
 CMD ["/openmrs/startup.sh"]
+
