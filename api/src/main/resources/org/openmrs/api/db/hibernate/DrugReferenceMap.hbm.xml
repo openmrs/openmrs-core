@@ -17,7 +17,7 @@
 <hibernate-mapping package="org.openmrs">
 	<class name="DrugReferenceMap" table="drug_reference_map">
 
-		<id name="drugReferenceMapId" type="java.lang.Integer" column="drug_reference_map_id">
+		<id name="drugReferenceMapId" type="java.lang.Integer" column="drug_reference_map_id" unsaved-value="0">
 			<generator class="native">
 				<param name="sequence">drug_reference_map_drug_reference_map_id_seq</param>
 			</generator>
@@ -27,7 +27,7 @@
 
 		<many-to-one name="drug" class="Drug" column="drug_id" not-null="true"/>
 
-		<many-to-one name="conceptReferenceTerm" class="ConceptReferenceTerm" column="term_id" not-null="true"/>
+		<many-to-one name="conceptReferenceTerm" class="ConceptReferenceTerm" column="term_id" not-null="true" cascade="save-update"/>
 
 		<many-to-one name="conceptMapType" class="ConceptMapType" column="concept_map_type" not-null="true"/>
 
