@@ -47,15 +47,16 @@ Build:
                       docker login -u ${bamboo.dockerhub.username} -p ${bamboo.dockerhub.password}
                       
                       docker buildx build --pull --push --platform ${bamboo.docker.image.platforms} \
-                          --cache-to=type=registry,mode=max,ref=${IMAGE}-cache --cache-from ${IMAGE}-cache --target dev \
+                          --cache-to=type=registry,mode=max,ref=${IMAGE}-cache --cache-from ${IMAGE}-cache \
+                          --target dev --iidfile docker-image.txt \
                           --build-arg MVN_ARGS="clean install -DskipTests" -t ${IMAGE} .
                       
                       sleep 10
                       
-                      docker pull ${IMAGE}
+                      #docker pull ${IMAGE}
                       
-                      echo "Inspecting image for id"
-                      docker image inspect --format='{{index .RepoDigests 0}}' ${IMAGE} > docker-image.txt
+                      #echo "Inspecting image for id"
+                      #docker image inspect --format='{{index .RepoDigests 0}}' ${IMAGE} > docker-image.txt
               description: Build and push dev image
         - any-task:
               plugin-key: com.atlassian.bamboo.plugins.variable.updater.variable-updater-generic:variable-file-reader
@@ -148,7 +149,7 @@ Deploy to docker:
                       docker buildx build --pull --push --platform ${bamboo.docker.image.platforms} \
                           --cache-to=type=registry,mode=max,ref=${IMAGE_NIGHTLY}-cache \
                           --cache-from=${IMAGE},${IMAGE_DEV}-cache,${IMAGE_NIGHTLY}-cache \
-                          --build-arg MVN_ARGS="install -DskipTests" -t ${IMAGE_NIGHTLY}  .
+                          --build-arg MVN_ARGS="clean install -DskipTests" -t ${IMAGE_NIGHTLY}  .
               description: Deploy to docker
     artifact-subscriptions: []
 Release:
