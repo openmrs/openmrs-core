@@ -18,7 +18,7 @@ services:
             - ./initial_test_db.sql:/docker-entrypoint-initdb.d/initial_test_db.sql
 
     api:
-        image: openmrs/openmrs-core:${TAG:dev}
+        image: openmrs/openmrs-core:${TAG:-dev}
         build:
             target: dev
             context: .    
