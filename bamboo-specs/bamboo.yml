@@ -48,7 +48,7 @@ Build:
                       
                       docker buildx build --pull --push --platform ${bamboo.docker.image.platforms} \
                           --cache-to=type=registry,mode=max,ref=${IMAGE}-cache --cache-from ${IMAGE}-cache --target dev \
-                          --build-arg MVN_ARGS="install -DskipTests" -t ${IMAGE} .
+                          --build-arg MVN_ARGS="clean install -DskipTests" -t ${IMAGE} .
                       
                       sleep 10
                       
@@ -278,14 +278,4 @@ plan-permissions:
           - anonymous
       permissions:
           - view
-    - users:
-          - ibacher
-      roles:
-          - logged-in
-      permissions:
-          - view
-          - edit
-          - build
-          - clone
-          - admin
 ...
