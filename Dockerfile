@@ -129,7 +129,7 @@ RUN mkdir -p /openmrs/data/modules \
     
 # Copy in the start-up scripts
 COPY wait-for-it.sh startup-init.sh startup.sh /openmrs/
-RUN chmod g+x /openmrs/wait-for-it.sh && chmod g+x /openmrs/startup-init.sh && chmod g+x /openmrs/startup.sh
+RUN chmod +x /openmrs/wait-for-it.sh && chmod +x /openmrs/startup-init.sh && chmod +x /openmrs/startup.sh
 
 WORKDIR /openmrs
 
