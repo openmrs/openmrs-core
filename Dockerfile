@@ -112,7 +112,7 @@ RUN if [ "$TARGETARCH" = "arm64" ] ; then TINI_URL="${TINI_URL}-arm64" TINI_SHA=
     && echo "${TINI_SHA}  /usr/bin/tini" | sha256sum -c \
     && chmod +rx /usr/bin/tini
 
-RUN useradd -m -d /openmrs/home -u 1001 openmrs
+RUN useradd -u 1001 openmrs
 
 RUN sed -i '/Connector port="8080"/a URIEncoding="UTF-8" relaxedPathChars="[]|" relaxedQueryChars="[]|{}^&#x5c;&#x60;&quot;&lt;&gt;"' \
     /usr/local/tomcat/conf/server.xml \
@@ -139,9 +139,7 @@ COPY --from=dev /openmrs/distribution/openmrs_core/openmrs.war /openmrs/distribu
 
 EXPOSE 8080
 
-# Run as non-root user using Bitnami approach, see e.g.
-# https://github.com/bitnami/containers/blob/6c8f10bbcf192ab4e575614491abf10697c46a3e/bitnami/tomcat/8.5/debian-11/Dockerfile#L54
-USER 1001
+USER openmrs
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
