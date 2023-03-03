@@ -99,7 +99,7 @@ CMD ["/openmrs/startup-dev.sh"]
 ### Production Stage
 FROM tomcat:8.5-jdk8-corretto
 
-RUN yum -y update && yum -y install shadow-utils && yum clean all && rm -rf /usr/local/tomcat/webapps/*
+RUN yum -y update && yum clean all && rm -rf /usr/local/tomcat/webapps/*
 
 # Setup Tini
 ARG TARGETARCH
@@ -110,26 +110,22 @@ ARG TINI_SHA_ARM64="07952557df20bfd2a95f9bef198b445e006171969499a1d361bd9e6f8e5e
 RUN if [ "$TARGETARCH" = "arm64" ] ; then TINI_URL="${TINI_URL}-arm64" TINI_SHA=${TINI_SHA_ARM64} ; fi \
     && curl -fsSL -o /usr/bin/tini ${TINI_URL} \
     && echo "${TINI_SHA}  /usr/bin/tini" | sha256sum -c \
-    && chmod +rx /usr/bin/tini
-
-RUN useradd -u 1001 openmrs
+    && chmod g+rx /usr/bin/tini 
 
 RUN sed -i '/Connector port="8080"/a URIEncoding="UTF-8" relaxedPathChars="[]|" relaxedQueryChars="[]|{}^&#x5c;&#x60;&quot;&lt;&gt;"' \
     /usr/local/tomcat/conf/server.xml \
-    && chmod -R 644 /usr/local/tomcat \
-    && chmod +x /usr/local/tomcat/bin/*.sh \
-    && chmod -R 644 /usr/local/tomcat/webapps /usr/local/tomcat/logs /usr/local/tomcat/work /usr/local/tomcat/temp \
-    && chown -R openmrs:openmrs /usr/local/tomcat
+    && chmod -R g+rx /usr/local/tomcat \
+    && touch /usr/local/tomcat/bin/setenv.sh && chmod g+w /usr/local/tomcat/bin/setenv.sh \
+    && chmod -R g+w /usr/local/tomcat/webapps /usr/local/tomcat/logs /usr/local/tomcat/work /usr/local/tomcat/temp 
 
 RUN mkdir -p /openmrs/data/modules \
     && mkdir -p /openmrs/data/owa  \
     && mkdir -p /openmrs/data/configuration \
-    && chmod -R 644 /openmrs \
-    && chown -R openmrs:openmrs /openmrs
+    && chmod -R g+rw /openmrs
     
 # Copy in the start-up scripts
 COPY wait-for-it.sh startup-init.sh startup.sh /openmrs/
-RUN chmod +x /openmrs/wait-for-it.sh && chmod +x /openmrs/startup-init.sh && chmod +x /openmrs/startup.sh
+RUN chmod g+x /openmrs/wait-for-it.sh && chmod g+x /openmrs/startup-init.sh && chmod g+x /openmrs/startup.sh
 
 WORKDIR /openmrs
 
@@ -139,7 +135,9 @@ COPY --from=dev /openmrs/distribution/openmrs_core/openmrs.war /openmrs/distribu
 
 EXPOSE 8080
 
-USER openmrs
+# Run as non-root user using Bitnami approach, see e.g.
+# https://github.com/bitnami/containers/blob/6c8f10bbcf192ab4e575614491abf10697c46a3e/bitnami/tomcat/8.5/debian-11/Dockerfile#L54
+USER 1001
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
