@@ -14,11 +14,11 @@ pipeline {
         }
         stage('post build') {
             steps {
-                archiveArtifacts artifacts: '**/*.txt',
-                   allowEmptyArchive: true,
-                   fingerprint: true,
-                   onlyIfSuccessful: true
-                junit testResults: '**/surefire-reports/TEST-*.xml'
+                archiveArtifacts artifacts: '**/*.jar',
+                                 allowEmptyArchive: true,
+                                 fingerprint: true,
+                                 onlyIfSuccessful: true
+                                 junit testResults: '**/surefire-reports/TEST-*.xml'
             }
         }
     }
