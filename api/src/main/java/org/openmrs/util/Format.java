@@ -66,6 +66,7 @@ public class Format {
 	 * The string can contain only the date (month, day and year), only the time (hours, minutes, seconds) or as a
 	 * timestamp (both date and time).
 	 *
+	 * 
 	 * @param date input date to format as a string
 	 * @param locale input locale to determine how to format the date
 	 * @param type input type to determine how much information from the date is returned
