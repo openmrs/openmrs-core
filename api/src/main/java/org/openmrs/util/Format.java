@@ -28,11 +28,18 @@ public class Format {
 		TIME,
 		TIMESTAMP
 	}
+
 	
 	public static String formatPercentage(double pct) {
 		return NumberFormat.getPercentInstance().format(pct);
 	}
-	
+
+
+	/**
+	 * this method formats numbers to Percentage
+	 * @param  pct
+	 * @return it is static util method that allows to return null value without exception
+	 */
 	public static String formatPercentage(Number pct) {
 		if (pct == null) {
 			return "";
@@ -79,6 +86,7 @@ public class Format {
 	 * <strong>Should</strong> not fail when date and type is null
 	 * <strong>Should</strong> not fail when locale and type is null
 	 * <strong>Should</strong> not fail when all parameters are null
+	 * <strong>Should</strong> not fail when none of the parameters are null
 	 * <strong>Should</strong> not fail when none of the parameters are null
 	 */
 	public static String format(Date date, Locale locale, FORMAT_TYPE type) {
