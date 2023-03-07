@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -1027,7 +1028,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	public List<Concept> getConceptsByMapping(String code, String sourceName, boolean includeRetired) {
 		Criteria criteria = createSearchConceptMapCriteria(code, sourceName, includeRetired);
 		criteria.setProjection(Projections.property("concept"));
-		return (List<Concept>) criteria.list();
+		List<Concept> concepts = criteria.list();
+		return concepts.stream().distinct().collect(Collectors.toList());
 	}
 
 	/**
@@ -1038,7 +1040,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	public List<Integer> getConceptIdsByMapping(String code, String sourceName, boolean includeRetired) {
 		Criteria criteria = createSearchConceptMapCriteria(code, sourceName, includeRetired);
 		criteria.setProjection(Projections.property("concept.conceptId"));
-		return (List<Integer>) criteria.list();
+		List<Integer> conceptIds = criteria.list();
+		return conceptIds.stream().distinct().collect(Collectors.toList());
 	}
 
 	/**
@@ -2084,9 +2087,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 			// sort retired concepts to the end of the list
 			criteria.addOrder(Order.asc("concept.retired"));
 		}
-
-		// we only want distinct concepts
-		criteria.setResultTransformer(DistinctRootEntityResultTransformer.INSTANCE);
 
 		return criteria;
 	}
