@@ -2088,6 +2088,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 			criteria.addOrder(Order.asc("concept.retired"));
 		}
 
+		// we only want distinct concepts
+		criteria.setResultTransformer(DistinctRootEntityResultTransformer.INSTANCE);
+
 		return criteria;
 	}
 }
