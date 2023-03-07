@@ -112,7 +112,7 @@ In order to deploy the project locally run:
 ```
 docker-compose up
 ```
-This command will deploy the development version with debug enabled.
+This command will deploy the development version with debugging enabled.
 
 If you want to deploy the production version please run:
 ```
