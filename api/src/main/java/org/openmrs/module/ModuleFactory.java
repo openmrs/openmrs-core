@@ -1408,6 +1408,8 @@ public class ModuleFactory {
 	 * @return Map&lt;Module, ModuleClassLoader&gt;
 	 */
 	public static Map<Module, ModuleClassLoader> getModuleClassLoaderMap() {
+		// because the OpenMRS classloader depends on this static function, it is weirdly possible for this to get called
+		// as this classfile is loaded, in which case, the static final field can be null.
 		if (moduleClassLoaders == null) {
 			return Collections.emptyMap();
 		}
