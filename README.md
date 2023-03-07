@@ -93,6 +93,32 @@ If all goes well (check the console output) you can access the OpenMRS applicati
 Refer to [Getting Started as a Developer - Maven](https://wiki.openmrs.org/display/docs/Maven) for some more information
 on useful Maven commands and build options.
 
+## Docker Build
+
+### Prerequisites
+
+All you need is Docker https://www.docker.com/. Please make sure you run the latest version for the best performance and stability. If you encounter any issues with the build, please first try updating Docker.
+
+### Build command
+
+In order to build the project run:
+```
+docker-compose build
+```
+
+### Deploy
+
+In order to deploy the project locally run:
+```
+docker-compose up
+```
+This command will deploy the development version with debug enabled.
+
+If you want to deploy the production version please run:
+```
+docker-compose -f docker-compose.yml up
+```
+
 ## Navigating the repository
 
 The project tree is set up as follows:
