@@ -55,6 +55,7 @@ import org.openmrs.person.PersonMergeLogData;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.test.TestUtil;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsObjectIdMatcher;
 
 /**
  * This class tests methods in the PersonService class. TODO: Test all methods in the PersonService
@@ -549,7 +550,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		assertTrue(containsId(matches, 1003));
 	}
 	
-	
 	/**
 	 * @see PersonService#getSimilarPeople(String,Integer,String)
 	 */
@@ -557,42 +557,12 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	public void getSimilarPeople_shouldMatchN2InTwoNamesSearch() throws Exception {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-names.xml");
 		updateSearchIndex();
-		
-		Set<Person> matches = Context.getPersonService().getSimilarPeople("D Graham", 1979, "M");
-		assertEquals(8, matches.size());
-		assertTrue(containsId(matches, 1010));
-		assertTrue(containsId(matches, 1011));
-		assertTrue(containsId(matches, 1013));
-		
-		assertTrue(containsId(matches, 1006));
-		assertTrue(containsId(matches, 1003));
-		assertTrue(containsId(matches, 1007));
-		assertTrue(containsId(matches, 1004));
-		assertTrue(containsId(matches, 1005));
-	}
-	
-	
-	/**
-	 * @see PersonService#getSimilarPeople(String,Integer,String)
-	 */
-	@Test
-	public void getSimilarPeople_shouldMatchN2InOneLastNameAndEmptyNames() throws Exception {
-		executeDataSet("org/openmrs/api/include/PersonServiceTest-names.xml");
-		updateSearchIndex();
-		
-		Set<Person> matches = Context.getPersonService().getSimilarPeople("D Graham", 1979, "M");
-		assertEquals(8, matches.size());
 
-		assertTrue(containsId(matches, 1010));
-		assertTrue(containsId(matches, 1011));
-		assertTrue(containsId(matches, 1013));
-		
-		assertTrue(containsId(matches, 1006));
-		assertTrue(containsId(matches, 1003));
-		assertTrue(containsId(matches, 1007));
-		assertTrue(containsId(matches, 1004));
-		assertTrue(containsId(matches, 1005));
-		
+		Set<Person> matches = Context.getPersonService().getSimilarPeople("D Graham", 1979, "M");
+		assertThat(matches, containsInAnyOrder(new OpenmrsObjectIdMatcher(1010),
+			new OpenmrsObjectIdMatcher(1011), new OpenmrsObjectIdMatcher(1013), new OpenmrsObjectIdMatcher(1006),
+			new OpenmrsObjectIdMatcher(1003), new OpenmrsObjectIdMatcher(1007), new OpenmrsObjectIdMatcher(1004),
+			new OpenmrsObjectIdMatcher(1005)));
 	}
 
 	/**
