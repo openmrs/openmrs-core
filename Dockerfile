@@ -48,37 +48,13 @@ COPY pom.xml .
 RUN --mount=type=cache,target=/root/.m2 mvn $OMRS_SDK_PLUGIN:$OMRS_SDK_PLUGIN_VERSION:setup-sdk -N -DbatchAnswers=n
 
 # Copy remainign poms
-COPY liquibase/pom.xml ./liquibase/
-COPY tools/pom.xml ./tools/
-COPY test/pom.xml ./test/
-COPY api/pom.xml ./api/
-COPY web/pom.xml ./web/
-COPY webapp/pom.xml ./webapp/
+COPY . .
 
 # Append --build-arg MVN_ARGS='clean install' to change default maven arguments
 ARG MVN_ARGS='clean install'
 
-# Build the parent project
-RUN --mount=type=cache,target=/root/.m2 mvn --non-recursive $MVN_ARGS
-
-# Build modules individually to benefit from caching
-COPY liquibase ./liquibase/
-RUN --mount=type=cache,target=/root/.m2 mvn -pl liquibase $MVN_ARGS
-
-COPY tools/ ./tools/
-RUN --mount=type=cache,target=/root/.m2 mvn -pl tools $MVN_ARGS
-
-COPY test/ ./test/
-RUN --mount=type=cache,target=/root/.m2 mvn -pl test $MVN_ARGS
-
-COPY api/ ./api/
-RUN --mount=type=cache,target=/root/.m2 mvn -pl api $MVN_ARGS
-
-COPY web/ ./web/
-RUN --mount=type=cache,target=/root/.m2 mvn -pl web $MVN_ARGS
-
-COPY webapp/ ./webapp/
-RUN --mount=type=cache,target=/root/.m2 mvn -pl webapp $MVN_ARGS
+# Build the project
+RUN --mount=type=cache,target=/root/.m2 mvn $MVN_ARGS
 
 RUN mkdir -p /openmrs/distribution/openmrs_core/ \
     && cp /openmrs_core/webapp/target/openmrs.war /openmrs/distribution/openmrs_core/openmrs.war
