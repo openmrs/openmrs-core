@@ -1,0 +1,109 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+	<concept concept_id="60111" retired="false" datatype_id="4" class_id="11" is_set="true" creator="1" date_created="2004-08-12 00:00:00.0" version="" changed_by="1" date_changed="2005-02-25 11:43:43.0" uuid="baef67ac-b24e-4b04-ac83-c3b994132b85"/>
+	<concept concept_id="60112" retired="false" datatype_id="4" class_id="11" is_set="true" creator="1" date_created="2004-08-12 00:00:00.0" version="" changed_by="1" date_changed="2005-02-25 11:43:43.0" uuid="faef67ac-b24e-4b04-ac83-c3b994132b85"/>
+	<concept concept_id="60113" retired="false" datatype_id="4" class_id="11" is_set="true" creator="1" date_created="2004-08-12 00:00:00.0" version="" changed_by="1" date_changed="2005-02-25 11:43:43.0" uuid="uaef67ac-b24e-4b04-ac83-c3b994132b85"/>
+	<concept concept_id="60114" retired="false" datatype_id="4" class_id="11" is_set="true" creator="1" date_created="2004-08-12 00:00:00.0" version="" changed_by="1" date_changed="2005-02-25 11:43:43.0" uuid="6aef67ac-b24e-4b04-ac83-c3b994132b85"/>
+	<concept concept_id="60115" retired="false" datatype_id="4" class_id="11" is_set="true" creator="1" date_created="2004-08-12 00:00:00.0" version="" changed_by="1" date_changed="2005-02-25 11:43:43.0" uuid="7aef67ac-b24e-4b04-ac83-c3b994132b85"/>
+	<concept concept_id="60116" retired="false" datatype_id="4" class_id="11" is_set="true" creator="1" date_created="2004-08-12 00:00:00.0" version="" changed_by="1" date_changed="2005-02-25 11:43:43.0" uuid="8aef67ac-b24e-4b04-ac83-c3b994132b85"/>
+
+  	<concept concept_id="230" retired="false" datatype_id="4" class_id="10" is_set="true" creator="1" date_created="2008-08-18 12:38:58.0" version="" uuid="0f97e14e-cdc2-49ac-9255-b5126f8a5148"/>
+  	<concept concept_id="180" retired="false" datatype_id="10" class_id="7" is_set="true" creator="1" date_created="2008-08-18 12:31:52.0" version="" uuid="0dde1358-7fcf-4341-a330-f119241a46e9"/>
+	<concept concept_id="181" retired="false" datatype_id="10" class_id="7" is_set="true" creator="1" date_created="2008-08-18 12:31:52.0" version="" uuid="8dde1358-7fcf-4341-a330-f119241a46e9"/>
+	<concept concept_id="182" retired="false" datatype_id="1" class_id="7" is_set="false" creator="1" date_created="2008-08-18 12:31:52.0" version="" uuid="1ade1358-7fcf-4341-a330-f119241a46e9"/>
+	<concept concept_id="183" retired="false" datatype_id="1" class_id="7" is_set="false" creator="1" date_created="2008-08-18 12:31:52.0" version="" uuid="2bde1358-7fcf-4341-a330-f119241a46e9"/>
+	<concept concept_id="184" retired="false" datatype_id="1" class_id="7" is_set="false" creator="1" date_created="2008-08-18 12:31:52.0" version="" uuid="3cde1358-7fcf-4341-a330-f119241a46e9"/>
+	<concept concept_id="185" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2008-08-18 12:31:52.0" version="" uuid="4dde1358-7fcf-4341-a330-f119241a46e9"/>
+	<concept concept_id="186" retired="false" datatype_id="10" class_id="7" is_set="true" creator="1" date_created="2008-08-18 12:31:52.0" version="" uuid="9bde1358-7fcf-4341-a330-f119241a46e9"/>
+	<concept concept_id="187" retired="false" datatype_id="10" class_id="7" is_set="true" creator="1" date_created="2008-08-18 12:31:52.0" version="" uuid="1zde1358-7fcf-4341-a330-f119241a46e9"/>
+	<concept concept_id="188" retired="false" datatype_id="1" class_id="7" is_set="false" creator="1" date_created="2008-08-18 12:31:52.0" version="" uuid="aade1358-7fcf-4341-a330-f119241a46e9"/>
+	<concept concept_id="189" retired="false" datatype_id="1" class_id="7" is_set="false" creator="1" date_created="2008-08-18 12:31:52.0" version="" uuid="bbde1358-7fcf-4341-a330-f119241a46e9"/>
+	<concept concept_id="190" retired="false" datatype_id="1" class_id="7" is_set="false" creator="1" date_created="2008-08-18 12:31:52.0" version="" uuid="ccde1358-7fcf-4341-a330-f119241a46e9"/>
+	
+	<concept_numeric concept_id="182" hi_normal="50" low_critical="0.0" units="L/L" precise="true" />
+	<concept_numeric concept_id="183" hi_normal="150" low_critical="0.0" units="mcL" precise="true" />
+	<concept_numeric concept_id="184" hi_normal="25" low_critical="0.0" units="g/dl" precise="true" />
+	<concept_numeric concept_id="185" hi_normal="250.0" low_critical="0.0" units="mmol/L" precise="true" />
+	
+	<concept_name concept_id="230" name="Bloodwork" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="100" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="1bc5693a-f558-40c9-8177-145a4b119ca7"/>
+	<concept_name concept_id="60111" name="Some Other Set" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="101" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="2bc5693a-f558-40c9-8177-145a4b119ca7"/>
+	<concept_name concept_id="180" name="Hematology" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="102" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="3bc5693a-f558-40c9-8177-145a4b119ca7"/>
+	<concept_name concept_id="181" name="Complete Blood Count" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="103" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="4bc5693a-f558-40c9-8177-145a4b119ca7"/>
+	<concept_name concept_id="182" name="Hematocrit" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="104" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="4cc5693a-f558-40c9-8177-145a4b119ca7"/>
+	<concept_name concept_id="183" name="Platelets" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="105" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="5dc5693a-f558-40c9-8177-145a4b119ca7"/>
+	<concept_name concept_id="184" name="Haemoglobin" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="106" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="6ec5693a-f558-40c9-8177-145a4b119ca7"/>
+	<concept_name concept_id="185" name="White blood cells" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="107" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="7fc5693a-f558-40c9-8177-145a4b119ca7"/>
+	<concept_name concept_id="186" name="Chemistry" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="108" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="8hc5693a-f558-40c9-8177-145a4b119ca7"/>
+	<concept_name concept_id="187" name="Serum Chemistry Panel" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="109" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="9oc5693a-f558-40c9-8177-145a4b119ca7"/>
+	<concept_name concept_id="188" name="Serum Chloride" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="110" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="aac5693a-f558-40c9-8177-145a4b119ca7"/>
+	<concept_name concept_id="189" name="Serum Carbon Dioxide" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="111" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="bbc5693a-f558-40c9-8177-145a4b119ca7"/>
+	<concept_name concept_id="190" name="Blood Urea Nitrogen" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="112" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="ccc5693a-f558-40c9-8177-145a4b119ca7"/>
+	<concept_name concept_id="60112" name="CONCEPT SET 1" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="113" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="ddd5693a-f558-40c9-8177-145a4b119ca7"/>
+	<concept_name concept_id="60113" name="CONCEPT SET 2" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="114" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="eee5693a-f558-40c9-8177-145a4b119ca7"/>
+	<concept_name concept_id="60114" name="CONCEPT SET 3" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="115" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="fff5693a-f558-40c9-8177-145a4b119ca7"/>
+	<concept_name concept_id="60115" name="CONCEPT SET 4" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="116" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="ggg5693a-f558-40c9-8177-145a4b119ca7"/>
+	
+	<concept_set concept_set_id="1" concept_id="180" concept_set="230" sort_weight="0.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="1a111827-639f-4cb4-961f-1e025bf88d91"/>
+	<concept_set concept_set_id="2" concept_id="19" concept_set="230" sort_weight="2.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="df26fc1a-6fc0-4867-8982-9e5dfe3f8260"/>
+    <concept_set concept_set_id="3" concept_id="20" concept_set="230" sort_weight="1.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="fdefaa94-3f99-464c-8b1f-3e1d1c61335a"/>
+	<concept_set concept_set_id="4" concept_id="60111" concept_set="230" sort_weight="1.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="adefaa94-3f99-464c-8b1f-3e1d1c61335a"/>
+	
+	<concept_set concept_set_id="5" concept_id="4" concept_set="60111" sort_weight="0.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="2a111827-639f-4cb4-961f-1e025bf88d91"/>
+	<concept_set concept_set_id="6" concept_id="5" concept_set="60111" sort_weight="2.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="bf26fc1a-6fc0-4867-8982-9e5dfe3f8260"/>
+	
+	<concept_set concept_set_id="7" concept_id="60112" concept_set="60111" sort_weight="2.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="mf26fc1a-6fc0-4867-8982-9e5dfe3f8260"/>
+	
+	<concept_set concept_set_id="8" concept_id="6" concept_set="60112" sort_weight="1.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="pdefaa94-3f99-464c-8b1f-3e1d1c61335a"/>
+	
+	<concept_set concept_set_id="9" concept_id="60113" concept_set="60112" sort_weight="1.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="qdefaa94-3f99-464c-8b1f-3e1d1c61335a"/>
+	
+	<concept_set concept_set_id="10" concept_id="7" concept_set="60113" sort_weight="1.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="tdefaa94-3f99-464c-8b1f-3e1d1c61335a"/>
+	<concept_set concept_set_id="11" concept_id="8" concept_set="60113" sort_weight="1.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="zdefaa94-3f99-464c-8b1f-3e1d1c61335a"/>
+	
+	<concept_set concept_set_id="12" concept_id="60114" concept_set="60113" sort_weight="1.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="jdefaa94-3f99-464c-8b1f-3e1d1c61335a"/>
+	<concept_set concept_set_id="13" concept_id="60115" concept_set="60113" sort_weight="1.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="9defaa94-3f99-464c-8b1f-3e1d1c61335a"/>
+	
+	<concept_set concept_set_id="14" concept_id="60116" concept_set="60114" sort_weight="1.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="1defaa94-3f99-464c-8b1f-3e1d1c61335a"/>
+	<concept_set concept_set_id="15" concept_id="9" concept_set="60116" sort_weight="1.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="2defaa94-3f99-464c-8b1f-3e1d1c61335a"/>
+	
+	<concept_set concept_set_id="16" concept_id="181" concept_set="180" sort_weight="0.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="xa111827-639f-4cb4-961f-1e025bf88d91"/>
+	
+	<concept_set concept_set_id="17" concept_id="182" concept_set="181" sort_weight="0.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="1s111827-639f-4cb4-961f-1e025bf88d91"/>
+	<concept_set concept_set_id="18" concept_id="183" concept_set="181" sort_weight="0.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="2d111827-639f-4cb4-961f-1e025bf88d91"/>
+	<concept_set concept_set_id="19" concept_id="184" concept_set="181" sort_weight="0.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="3g111827-639f-4cb4-961f-1e025bf88d91"/>
+	<concept_set concept_set_id="20" concept_id="185" concept_set="181" sort_weight="0.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="4f111827-639f-4cb4-961f-1e025bf88d91"/>
+	<concept_set concept_set_id="21" concept_id="186" concept_set="230" sort_weight="0.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="8w111827-639f-4cb4-961f-1e025bf88d91"/>
+	<concept_set concept_set_id="22" concept_id="187" concept_set="186" sort_weight="0.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="z4111827-639f-4cb4-961f-1e025bf88d91"/>
+	<concept_set concept_set_id="23" concept_id="188" concept_set="187" sort_weight="0.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="aa111827-639f-4cb4-961f-1e025bf88d91"/>
+	<concept_set concept_set_id="24" concept_id="189" concept_set="187" sort_weight="0.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="bb111827-639f-4cb4-961f-1e025bf88d91"/>
+	<concept_set concept_set_id="25" concept_id="190" concept_set="187" sort_weight="0.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="cc111827-639f-4cb4-961f-1e025bf88d91"/>
+	
+  	<obs obs_id="13" person_id="7" concept_id="181" encounter_id="4" obs_datetime="2008-08-15 00:00:00.0" location_id="1" value_coded="7" comments="" creator="1" date_created="2008-08-19 12:32:20.0" voided="false" uuid="b6521c32-47b6-47da-9c6f-3673ddfb74f1"/>
+	<obs obs_id="14" person_id="7" concept_id="181" encounter_id="5" obs_datetime="2008-08-15 00:00:00.0" location_id="1" value_coded="7" comments="" creator="1" date_created="2008-08-19 12:32:20.0" voided="false" uuid="e6521c32-47b6-47da-9c6f-3673ddfb74f1"/>
+	<obs obs_id="16" person_id="7" concept_id="181" encounter_id="6" obs_datetime="2008-08-15 00:00:00.0" location_id="1" value_coded="8" comments="" creator="1" date_created="2008-08-19 12:32:20.0" voided="false" uuid="m6521c32-47b6-47da-9c6f-3673ddfb74f1"/>
+	<obs obs_id="130" person_id="7" concept_id="4" encounter_id="4" obs_datetime="2008-08-15 00:00:00.0" location_id="1" value_coded="7" comments="" creator="1" date_created="2008-08-19 12:32:20.0" voided="false" uuid="c6521c32-47b6-47da-9c6f-3673ddfb74f1"/>
+	<obs obs_id="131" person_id="7" concept_id="5" encounter_id="4" obs_datetime="2008-08-15 00:00:00.0" location_id="1" value_coded="7" comments="" creator="1" date_created="2008-08-19 12:32:20.0" voided="false" uuid="d6521c32-47b6-47da-9c6f-3673ddfb74f1"/>
+	<obs obs_id="132" person_id="7" concept_id="6" encounter_id="4" obs_datetime="2008-08-15 00:00:00.0" location_id="1" value_coded="7" comments="" creator="1" date_created="2008-08-19 12:32:20.0" voided="false" uuid="l6521c32-47b6-47da-9c6f-3673ddfb74f1"/>
+	<obs obs_id="133" person_id="7" concept_id="7" encounter_id="4" obs_datetime="2008-08-15 00:00:00.0" location_id="1" value_coded="7" comments="" creator="1" date_created="2008-08-19 12:32:20.0" voided="false" uuid="s6521c32-47b6-47da-9c6f-3673ddfb74f1"/>
+	<obs obs_id="134" person_id="7" concept_id="8" encounter_id="4" obs_datetime="2008-08-15 00:00:00.0" location_id="1" value_coded="7" comments="" creator="1" date_created="2008-08-19 12:32:20.0" voided="false" uuid="x6521c32-47b6-47da-9c6f-3673ddfb74f1"/>
+	<obs obs_id="135" person_id="7" concept_id="9" encounter_id="4" obs_datetime="2008-08-15 00:00:00.0" location_id="1" value_coded="7" comments="" creator="1" date_created="2008-08-19 12:32:20.0" voided="false" uuid="06521c32-47b6-47da-9c6f-3673ddfb74f1"/>
+	<obs obs_id="136" person_id="7" concept_id="182" encounter_id="4" obs_datetime="2008-08-15 00:00:00.0" location_id="1" value_numeric="7" comments="" creator="1" date_created="2008-08-19 12:32:20.0" voided="false" uuid="a1521c32-47b6-47da-9c6f-3673ddfb74f1"/>
+	<obs obs_id="137" person_id="7" concept_id="183" encounter_id="4" obs_datetime="2008-08-15 00:00:00.0" location_id="1" value_numeric="8" comments="" creator="1" date_created="2008-08-19 12:32:20.0" voided="false" uuid="b2521c32-47b6-47da-9c6f-3673ddfb74f1"/>
+	<obs obs_id="138" person_id="7" concept_id="184" encounter_id="4" obs_datetime="2008-08-15 00:00:00.0" location_id="1" value_numeric="9" comments="" creator="1" date_created="2008-08-19 12:32:20.0" voided="false" uuid="c3521c32-47b6-47da-9c6f-3673ddfb74f1"/>
+	<obs obs_id="139" person_id="7" concept_id="185" encounter_id="4" obs_datetime="2008-08-15 00:00:00.0" location_id="1" value_numeric="10" comments="" creator="1" date_created="2008-08-19 12:32:20.0" voided="false" uuid="d4521c32-47b6-47da-9c6f-3673ddfb74f1"/>
+	<obs obs_id="140" person_id="7" concept_id="188" encounter_id="4" obs_datetime="2008-08-15 00:00:00.0" location_id="1" value_numeric="62" comments="" creator="1" date_created="2008-08-19 12:32:20.0" voided="false" uuid="aa521c32-47b6-47da-9c6f-3673ddfb74f1"/>
+	<obs obs_id="141" person_id="7" concept_id="189" encounter_id="4" obs_datetime="2008-08-15 00:00:00.0" location_id="1" value_numeric="51" comments="" creator="1" date_created="2008-08-19 12:32:20.0" voided="false" uuid="bb521c32-47b6-47da-9c6f-3673ddfb74f1"/>
+	<obs obs_id="142" person_id="7" concept_id="190" encounter_id="4" obs_datetime="2008-08-15 00:00:00.0" location_id="1" value_numeric="44" comments="" creator="1" date_created="2008-08-19 12:32:20.0" voided="false" uuid="cc521c32-47b6-47da-9c6f-3673ddfb74f1"/>
+	
+</dataset>

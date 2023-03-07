@@ -57,7 +57,8 @@
 		<module>web</module>
 		<module>webapp</module>
 		<module>liquibase</module>
-	</modules>
+        <module>myfirstmodule</module>
+    </modules>
 
 	<dependencyManagement>
 		<dependencies>

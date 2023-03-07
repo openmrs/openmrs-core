@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+    <program program_id="100" concept_id="9" creator="1" date_created="2008-08-15 16:07:11.0" changed_by="1" date_changed="2008-08-15 17:04:50.0" retired="false" name="Test Program" description="test program" uuid="45ad63a8-84cb-4bcb-bb2c-ec5b233502bc"/>
+    <program_workflow program_workflow_id="100" program_id="100" concept_id="13" creator="1" date_created="2008-08-15 17:01:00.0" retired="false" changed_by="1" date_changed="2008-08-15 17:04:50.0" uuid="6afa32ca-a8e2-4604-a14f-37dea0681e34"/>
+    <program_workflow program_workflow_id="101" program_id="100" concept_id="12" creator="1" date_created="2008-08-15 17:01:00.0" retired="true" changed_by="1" date_changed="2008-08-15 17:04:50.0" uuid="c010bda4-4169-4211-b67d-433fd2caee9a"/>
+    <program_workflow_state program_workflow_state_id="100" program_workflow_id="100" concept_id="16" initial="false" terminal="true" creator="1" date_created="2008-08-15 17:04:02.0" retired="false" changed_by="1" date_changed="2008-08-15 17:04:50.0" uuid="7dab9d1b-c225-42c2-b114-23b84e70d70e"/>
+    <program_workflow_state program_workflow_state_id="101" program_workflow_id="100" concept_id="17" initial="true" terminal="false" creator="1" date_created="2008-08-15 17:04:02.0" retired="true" changed_by="1" date_changed="2008-08-15 17:04:50.0" uuid="487a71c1-4361-4c8c-b14e-71a814b51645"/>
+</dataset>

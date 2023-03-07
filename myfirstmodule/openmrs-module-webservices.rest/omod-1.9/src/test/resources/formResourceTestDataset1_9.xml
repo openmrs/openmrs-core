@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+    <form form_id="3200" name="test form 3200" encounter_type="1" creator="1" date_created="2014-08-07 18:12:01"
+          version="1.0" retired="false" uuid="df887dee-1350-11df-a1f1-0026b9348838"/>
+
+    <form_resource form_resource_id="12000" form_id="3200" name="Resource 1" value_reference="56caf699-7de1-4882-b14b-767fabd07f1b"
+            datatype="org.openmrs.customdatatype.datatype.LongFreeTextDatatype"
+            preferred_handler="org.openmrs.web.attribute.handler.LongFreeTextFileUploadHandler"
+            uuid="bd8295b2-be62-405e-8950-6bf708d6dc24"/>
+
+    <form_resource form_resource_id="12001" form_id="3200" name="Resource 2" value_reference="a4c65286-f295-4a0f-8813-f39e1df3da48"
+                   datatype="org.openmrs.customdatatype.datatype.LongFreeTextDatatype"
+                   preferred_handler="org.openmrs.web.attribute.handler.LongFreeTextFileUploadHandler"
+                   uuid="efd9f224-0994-47fb-b8fb-4f59de70ccdf"/>
+
+    <form_resource form_resource_id="12002" form_id="3200" name="Resource 3" value_reference="d8761749-db75-4902-b861-9fa043943ccf"
+                   datatype="org.openmrs.customdatatype.datatype.LongFreeTextDatatype"
+                   preferred_handler="org.openmrs.web.attribute.handler.LongFreeTextFileUploadHandler"
+                   uuid="749e36c0-7266-4617-a464-2e021047f93e"/>
+
+    <clob_datatype_storage id="1" uuid="a4c65286-f295-4a0f-8813-f39e1df3da48"
+                           value="This is test data that is typically a longer string of data than this"/>
+</dataset>

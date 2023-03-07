@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+     <!--patient one-->
+    <person person_id="100" gender="M" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="41c6b35e-c093-11e3-be87-005056821db0"/>
+    <patient patient_id="100" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+    <person_name person_name_id="100" preferred="true" person_id="100" given_name="John" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="48076422-c093-11e3-be87-005056821db0"/>
+
+    <!--patient two-->
+    <patient patient_id="101" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+    <person person_id="101" gender="M" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="52f87f42-c093-11e3-be87-005056821db0"/>
+    <person_name person_name_id="101" preferred="true" person_id="101" given_name="John" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="57ead7cc-c093-11e3-be87-005056821db0"/>
+
+    <encounter_type encounter_type_id="100" name="sample encounter a" description="sample encounter a" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="ff7397ea-c090-11e3-be87-005056821db0"/>
+    <encounter_type encounter_type_id="101" name="sample encounter b" description="sample encounter b" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="07d68e11-c091-11e3-be87-005056821db0"/>
+
+    <encounter encounter_id="2000" encounter_type="100" patient_id="100" location_id="1" encounter_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" void_reason="" uuid="62967e68-96bb-11e0-8d6b-9b9415a91465" />
+    <!-- obs group -->
+    <obs obs_id="2000" person_id="100" encounter_id="2000" concept_id="23" obs_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" uuid="47f18998-96cc-11e0-8d6b-9b9415a91465" />
+    <!-- containing two obs -->
+    <obs obs_id="2001" person_id="100" encounter_id="2000" obs_group_id="2000" concept_id="19" value_text="Some text" obs_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" uuid="5117f5d4-96cc-11e0-8d6b-9b9415a91465" />
+    <obs obs_id="2002" person_id="100" encounter_id="2000" obs_group_id="2000" concept_id="20" value_datetime="2011-06-12 00:00:00.0" obs_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" uuid="565f39c6-96cc-11e0-8d6b-9b9415a91465" />
+
+    <encounter encounter_id="2001" encounter_type="101" patient_id="100" location_id="1" encounter_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" void_reason="" uuid="63ca2dce-c091-11e3-be87-005056821db0" />
+    <!-- obs group -->
+    <obs obs_id="2003" person_id="100" encounter_id="2001" concept_id="23" obs_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" uuid="7ef6b093-c092-11e3-be87-005056821db0" />
+    <!-- containing two obs -->
+    <obs obs_id="2004" person_id="100" encounter_id="2001" obs_group_id="2003" concept_id="19" value_text="Some text" obs_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" uuid="8c6d6d78-c091-11e3-be87-005056821db0" />
+    <obs obs_id="2005" person_id="100" encounter_id="2001" obs_group_id="2003" concept_id="20" value_datetime="2011-06-12 00:00:00.0" obs_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" uuid="9107afcf-c091-11e3-be87-005056821db0" />
+
+    <encounter encounter_id="2002" encounter_type="101" patient_id="101" location_id="1" encounter_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" void_reason="" uuid="8d4561fe-c092-11e3-be87-005056821db0" />
+    <!-- obs group -->
+    <obs obs_id="2004" person_id="101" encounter_id="2002" concept_id="23" obs_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" uuid="94d1f65b-c092-11e3-be87-005056821db0" />
+    <!-- containing two obs -->
+    <obs obs_id="2005" person_id="101" encounter_id="2002" obs_group_id="2004" concept_id="19" value_text="Some text" obs_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" uuid="99479024-c092-11e3-be87-005056821db0" />
+    <obs obs_id="2006" person_id="101" encounter_id="2002" obs_group_id="2004" concept_id="20" value_datetime="2011-06-12 00:00:00.0" obs_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" uuid="9e0c23de-c092-11e3-be87-005056821db0" />
+</dataset>

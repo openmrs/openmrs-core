@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+-->
+<dataset>
+  <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="4f93c695-ac43-450a-93f8-4b2b4d50a3c8"/>
+  
+  <person person_id="1" uuid="5631b434-78aa-102b-91a0-001e378eb671" gender="M" birthdate="1950-04-01" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <person_name person_name_id="1" preferred="true" person_id="1" given_name="Mozn" middle_name="xxx" family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="1f1f7d08-076b-4fc6-acac-4bb91515141e"/>
+  <patient patient_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false" uuid="1cbecb62-7249-4f91-8edf-d0206ecceb63" check_digit="1"/>
+  <patient_identifier patient_identifier_id="1" patient_id="1" identifier="1a" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="1ac98ec8-e9d9-4626-998c-c795c2f0aa9f"/>
+   
+  
+  <person person_id="2" uuid="5631b434-78aa-102b-91a0-001e378eb672" gender="M" birthdate="1950-04-01" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <person_name person_name_id="2" preferred="true" person_id="2" given_name="vbfd" middle_name="Moznh" family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="2f1f7d08-076b-4fc6-acac-4bb91515141e"/>
+  <patient patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <patient_identifier_type patient_identifier_type_id="2" name="Test Identifier Type" description="Test description" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false" uuid="2cbecb62-7249-4f91-8edf-d0206ecceb63" check_digit="1"/>
+  <patient_identifier patient_identifier_id="2" patient_id="2" identifier="2aa" identifier_type="2" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="2ac98ec8-e9d9-4626-998c-c795c2f0aa9f"/>
+  
+  <person person_id="3" uuid="5631b434-78aa-102b-91a0-001e378eb673" gender="M" birthdate="1950-04-01" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <person_name person_name_id="3" preferred="true" person_id="3" given_name="edrt" middle_name="gg" family_name="Moznhh" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="3f1f7d08-076b-4fc6-acac-4bb91515141e"/>
+  <patient patient_id="3" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <patient_identifier_type patient_identifier_type_id="3" name="Test Identifier Type" description="Test description" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false" uuid="0cbecb62-7249-4f91-8edf-d0206ecceb63" check_digit="1"/>
+  <patient_identifier patient_identifier_id="3" patient_id="3" identifier="3aa" identifier_type="3" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="3ac98ec8-e9d9-4626-998c-c795c2f0aa9f"/>
+   
+  
+  <person person_id="4" uuid="5631b434-78aa-102b-91a0-001e378eb674" gender="M" birthdate="1950-04-01" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <person_name person_name_id="4" preferred="true" person_id="4" given_name="xxx" middle_name="yyyy" family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="4f1f7d08-076b-4fc6-acac-4bb91515141e"/>
+  <patient patient_id="4" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <patient_identifier_type patient_identifier_type_id="4" name="Test Identifier Type" description="Test description" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false" uuid="4cbecb62-7249-4f91-8edf-d0206ecceb63" check_digit="1"/>
+  <patient_identifier patient_identifier_id="4" patient_id="4" identifier="Moz4" identifier_type="4" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="4ac98ec8-e9d9-4626-998c-c795c2f0aa9f"/>
+ 
+  
+  <person person_id="5" uuid="5631b434-78aa-102b-91a0-001e378eb675" gender="M" birthdate="1950-04-01" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <person_name person_name_id="5" preferred="true" person_id="5" given_name="xxx" middle_name="zzz" family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="5f1f7d08-076b-4fc6-acac-4bb91515141e"/>
+  <patient patient_id="5" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <patient_identifier_type patient_identifier_type_id="5" name="Test Identifier Type" description="Test description" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false" uuid="5cbecb62-7249-4f91-8edf-d0206ecceb63" check_digit="1"/>
+  <patient_identifier patient_identifier_id="5" patient_id="5" identifier="5aa" identifier_type="5" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="5ac98ec8-e9d9-4626-998c-c795c2f0aa9f"/>    
+</dataset>

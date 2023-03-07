@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+-->
+<dataset>
+   <!--  <concept_reference_source concept_source_id="1" name="CIEL" description="A made up source" hl7_code="SSTRM" creator="1" date_created="2005-02-24 00:00:00.0" uuid="00001827-639f-4cb4-961f-1e025bf80000" retired="false"/> -->
+    <concept_reference_term concept_reference_term_id="100" concept_source_id="1" code="WGT234" name="random" retired="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="ee7693a0-8a55-22e3-8507-1f26fdd6e3f3"/>
+    
+    <drug_reference_map drug_reference_map_id="1" drug_id="2" term_id="1" concept_map_type="1" creator="1" date_created="2014-01-31 00:00:00.0" uuid="fe7693a0-8a55-11e3-8507-1f26fdd6e3f2"/>
+	<drug_reference_map drug_reference_map_id="2" drug_id="3" term_id="2" concept_map_type="2" creator="1" date_created="2014-01-31 00:00:00.0" uuid="e17472ba-8a58-11e3-9d36-1b7d05b63b69"/>
+	
+	<concept concept_id="10001" datatype_id="4" class_id="3" is_set="0" retired="false" creator="1" date_created="2004-01-01 00:00:00.0" uuid="25f83cd6-64e9-4e07-a5f9-364d3b14a43e"/>
+    <concept_name concept_name_id="301" concept_id="10001" name="another name" locale="fr" locale_preferred="0" voided="false" creator="1" date_created="2004-01-01 00:00:00.0"  uuid="cd901f80-eac7-22e0-aadd-00248140a5ec" />
+    
+	<concept concept_id="10002" datatype_id="4" class_id="3" is_set="0" retired="false" creator="1" date_created="2004-01-01 00:00:00.0" uuid="sec5f83cd6-64e9-4e07-a5f9-364d3b14a43e"/>
+    <concept_name concept_name_id="301" concept_id="10002" name="name" locale="fr" locale_preferred="0" voided="false" creator="1" date_created="2004-01-01 00:00:00.0"  uuid="2d901f80-eac7-22e0-aadd-00248140a5ec" />
+   
+   
+    <drug drug_id="2" concept_id="10001" name="Panadol" combination="0" retired="false" creator="1" date_created="2008-08-15 15:34:03.0" uuid="8e2323fa-0fa0-461f-9b59-6765997d849d" />
+    <drug drug_id="3" concept_id="10002" name="Albendazole" combination="0" retired="false" creator="1" date_created="2008-08-15 15:34:03.0" uuid="sece2323fa-0fa0-461f-9b59-6765997d849d" />
+	
+	<concept_map_type concept_map_type_id="1" name ="concept_map_type"  creator ="1"  date_created="2008-08-15 15:34:03.0"  is_hidden="1" retired="0" uuid="8e2323fa-0fa0-461f-9b59-6765997d84td" />
+	<concept_map_type concept_map_type_id="2" name ="concept_map_type2"  creator ="1"  date_created="2008-08-15 15:34:03.0"  is_hidden="1" retired="0" uuid="sece2323fa-0fa0-461f-9b59-6765997d84" />
+	
+</dataset>

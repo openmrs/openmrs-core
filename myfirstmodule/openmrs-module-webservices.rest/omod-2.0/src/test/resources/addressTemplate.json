@@ -1,0 +1,98 @@
+{
+    "displayName": null,
+    "codeName": "default",
+    "country": null,
+    "lines": [
+        [
+            {
+                "isToken": "IS_NOT_ADDR_TOKEN",
+                "displayText": ""
+            },
+            {
+                "isToken": "IS_ADDR_TOKEN",
+                "displayText": "Location.address1",
+                "codeName": "address1",
+                "displaySize": "40"
+            }
+        ],
+        [
+            {
+                "isToken": "IS_NOT_ADDR_TOKEN",
+                "displayText": ""
+            },
+            {
+                "isToken": "IS_ADDR_TOKEN",
+                "displayText": "Location.address2",
+                "codeName": "address2",
+                "displaySize": "40"
+            }
+        ],
+        [
+            {
+                "isToken": "IS_NOT_ADDR_TOKEN",
+                "displayText": ""
+            },
+            {
+                "isToken": "IS_ADDR_TOKEN",
+                "displayText": "Location.cityVillage",
+                "codeName": "cityVillage",
+                "displaySize": "10"
+            },
+            {
+                "isToken": "IS_NOT_ADDR_TOKEN",
+                "displayText": " "
+            },
+            {
+                "isToken": "IS_ADDR_TOKEN",
+                "displayText": "Location.stateProvince",
+                "codeName": "stateProvince",
+                "displaySize": "10"
+            },
+            {
+                "isToken": "IS_NOT_ADDR_TOKEN",
+                "displayText": " "
+            },
+            {
+                "isToken": "IS_ADDR_TOKEN",
+                "displayText": "Location.country",
+                "codeName": "country",
+                "displaySize": "10"
+            },
+            {
+                "isToken": "IS_NOT_ADDR_TOKEN",
+                "displayText": " "
+            },
+            {
+                "isToken": "IS_ADDR_TOKEN",
+                "displayText": "Location.postalCode",
+                "codeName": "postalCode",
+                "displaySize": "10"
+            }
+        ]
+    ],
+    "lineByLineFormat": [
+        "address1",
+        "address2",
+        "cityVillage stateProvince country postalCode"
+    ],
+    "nameMappings": {
+        "address2": "Location.address2",
+        "stateProvince": "Location.stateProvince",
+        "address1": "Location.address1",
+        "postalCode": "Location.postalCode",
+        "cityVillage": "Location.cityVillage",
+        "country": "Location.country"
+    },
+    "sizeMappings": {
+        "address2": "40",
+        "stateProvince": "10",
+        "address1": "40",
+        "postalCode": "10",
+        "cityVillage": "10",
+        "country": "10"
+    },
+    "elementDefaults": null,
+    "elementRegex": null,
+    "elementRegexFormats": null,
+    "requiredElements": null
+}

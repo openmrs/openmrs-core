@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+	<scheduler_task_config task_config_id="1" name="Nursing Education" description="Educate other clinicians" schedulable_class="org.openmrs.scheduler.tasks.TestTask" repeat_interval="36000" start_on_startup="false" started="false" created_by="1" date_created="2021-12-01 12:00:00" uuid="72c8f222-f30f-4151-a449-b81200a8f673"/>
+	<scheduler_task_config task_config_id="2" name="Equipment Maintenance" description="Disinfection, cleaning and storage" schedulable_class="org.openmrs.scheduler.tasks.TestTask" repeat_interval="3600" start_on_startup="false" created_by="1" date_created="2021-12-01 12:00:00" uuid="6896a870-554f-494b-bd99-4fbdec1dedba"/>
+	<scheduler_task_config task_config_id="3" name="Nurse Precepting" description="Develop nursing practice" schedulable_class="org.openmrs.scheduler.tasks.TestTask" start_on_startup="false" repeat_interval="3640" started="false" created_by="1" date_created="2021-12-01 12:00:00" uuid="5f88cf86-cada-48f6-be76-13a18880bbdf"/>
+	<scheduler_task_config task_config_id="4" name="Chronic Care" description="Pain, Symptom management" start_on_startup="false" repeat_interval="18000" started="false" created_by="1" date_created="2021-12-01 12:00:00" uuid="845f9c24-0f46-4990-8d53-06fa5a275d5a"/>
+</dataset>

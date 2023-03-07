@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//OpenMRS//DTD OpenMRS Config 1.0//EN" "http://resources.openmrs.org/doctype/config-1.2.dtd">
+
+<module configVersion="1.2">
+	
+	<!-- Base Module Properties -->
+	<id>@MODULE_ID@</id>
+	<name>@MODULE_NAME@</name>
+	<version>@MODULE_VERSION@.${revisionNumber}</version>
+	<package>@MODULE_PACKAGE@</package>
+	<author>OpenMRS</author>
+	<description>
+			Publishes Rest Web Services exposing the OpenMRS API
+	</description>
+	<activator>@MODULE_PACKAGE@.Activator</activator>
+
+	<updateURL>https://modules.openmrs.org/modules/download/webservices.rest/update.rdf</updateURL>
+	<!-- /Base Module Properties -->
+	
+	<require_version>${openmrs.version}</require_version>
+	
+	<aware_of_modules>
+	    <aware_of_module>org.openmrs.module.legacyui</aware_of_module>
+	</aware_of_modules>
+	
+	<!-- Extensions -->
+	<extension>
+		<point>org.openmrs.admin.list</point>
+		<class>org.openmrs.module.webservices.rest.web.AdminSection</class>
+	</extension>
+	
+	<conditionalResources>
+		<conditionalResource>
+			<path>/lib/webservices.rest-omod-2.0.*</path>
+			<openmrsVersion>2.*</openmrsVersion>
+		</conditionalResource>
+		<conditionalResource>
+			<path>/lib/webservices.rest-omod-2.1.*</path>
+			<openmrsVersion>2.1.* - 9.*</openmrsVersion>
+		</conditionalResource>
+		<conditionalResource>
+			<path>/lib/webservices.rest-omod-2.2.*</path>
+			<openmrsVersion>2.2.* - 9.*</openmrsVersion>
+		</conditionalResource>
+		<conditionalResource>
+			<path>/lib/webservices.rest-omod-2.3.*</path>
+			<openmrsVersion>2.3.* - 9.*</openmrsVersion>
+		</conditionalResource>
+		<conditionalResource>
+			<path>/lib/webservices.rest-omod-2.4.*</path>
+			<openmrsVersion>2.4.* - 9.*</openmrsVersion>
+		</conditionalResource>
+	</conditionalResources>
+	
+	<!-- AOP -->
+	
+	<!-- Required Privileges -->
+
+	<!-- Required Global Properties -->
+    <globalProperty>
+        <property>@MODULE_ID@.maxResultsDefault</property>
+        <defaultValue>50</defaultValue>
+        <description>The default max results limit if the user does not provide a maximum when making the web service call.</description>
+    </globalProperty>
+    <globalProperty>
+        <property>@MODULE_ID@.maxResultsAbsolute</property>
+        <defaultValue>100</defaultValue>
+        <description>The absolute max results limit. If the client requests a larger number of results, then will get an error</description>
+    </globalProperty>
+    <globalProperty>
+        <property>@MODULE_ID@.uriPrefix</property>
+        <description>The URI prefix through which clients consuming web services will connect to the web application, should be of the form http://{ipAddress}:{port}/{contextPath}</description>
+    </globalProperty>
+    <globalProperty>
+        <property>@MODULE_ID@.allowedips</property>
+        <defaultValue></defaultValue>
+        <description>A comma-separate list of IP addresses that are allowed to access the web services. An empty string allows everyone to access all ws. 
+        IPs can be declared with bit masks e.g. 10.0.0.0/30 matches 10.0.0.0 - 10.0.0.3 and 10.0.0.0/24 matches 10.0.0.0 - 10.0.0.255.</description>
+    </globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.quietDocs</property>
+		<defaultValue>true</defaultValue>
+		<description>If the value of this setting is "true", then nothing is logged while the Swagger specification is being generated.</description>
+	</globalProperty>
+
+    <!-- DWR -->
+	
+	<!-- Servlets -->
+	
+	<!-- Filters -->
+    <filter>
+		<filter-name>shallowEtagHeaderFilter</filter-name>
+		<filter-class>org.springframework.web.filter.ShallowEtagHeaderFilter</filter-class>
+	</filter>
+	<filter>
+		<filter-name>REST Web Service Content-Type</filter-name>
+		<filter-class>org.openmrs.module.webservices.rest.web.filter.ContentTypeFilter</filter-class>
+	</filter>
+    <filter>
+		<filter-name>REST Web Service Authorization</filter-name>
+		<filter-class>org.openmrs.module.webservices.rest.web.filter.AuthorizationFilter</filter-class>
+	</filter>
+    <filter>
+        <filter-name>compressionFilter</filter-name>
+        <filter-class>org.openmrs.web.filter.GZIPFilter</filter-class>
+    </filter>
+    
+    <filter-mapping>
+		<filter-name>shallowEtagHeaderFilter</filter-name>
+		<url-pattern>/ws/rest/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>REST Web Service Content-Type</filter-name>
+		<url-pattern>/ws/rest/*</url-pattern>
+	</filter-mapping>
+    <filter-mapping>
+		<filter-name>REST Web Service Authorization</filter-name>
+		<url-pattern>/ws/rest/*</url-pattern>
+	</filter-mapping>
+    <filter-mapping>
+        <filter-name>compressionFilter</filter-name>
+        <url-pattern>/ws/rest/*</url-pattern>
+    </filter-mapping>
+	
+	<!-- Internationalization -->
+	<!-- All message codes should start with moduleId.* -->
+	<messages>
+		<lang>en</lang>
+		<file>messages.properties</file>
+	</messages>
+	<!-- /Internationalization -->
+	
+	<mappingFiles>
+	</mappingFiles>
+
+	<privilege>
+		<name>Manage RESTWS</name>
+		<description>Allows to configure RESTWS module</description>
+	</privilege>
+
+	<privilege>
+		<name>View RESTWS</name>
+		<description>Gives access to RESTWS in administration</description>
+	</privilege>
+	
+</module>

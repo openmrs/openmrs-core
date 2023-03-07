@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+    <encounter encounter_id="5000" encounter_type="2" patient_id="7" location_id="1" encounter_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" void_reason="" uuid="62967e68-96bb-11e0-8d6b-9b9415a91434" />
+
+    <!-- obs group -->
+    <obs obs_id="5000" person_id="7" encounter_id="5000" concept_id="23" obs_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" uuid="47f18998-96cc-11e0-8d6b-9b9415a91423" />
+    <!-- containing one obs -->
+    <obs obs_id="5001" person_id="7" encounter_id="5000" obs_group_id="5000" concept_id="19" value_text="Some text" obs_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" uuid="5117f5d4-96cc-11e0-8d6b-9b9415a91433" />
+
+    <!-- containing two obs -->
+    <obs obs_id="5002" person_id="7" encounter_id="5000" obs_group_id="5001" concept_id="19" value_text="Some text" obs_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" uuid="5117f5d4-96cc-11e0-8d6b-9b9415a91436" /><!-- containing one obs -->
+    <obs obs_id="5003" person_id="7" encounter_id="5000" obs_group_id="5001" concept_id="19" value_text="Some text" obs_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" uuid="5117f5d4-96cc-11e0-8d6b-9b9415a91439" />
+
+
+
+    <person person_id="1024" gender="M" dead="false" creator="1" birthdate_estimated="0" date_created="2008-08-15 15:57:09.0" voided="false" void_reason="For test purposes" uuid="86526ed5-3c11-11de-a0ba-001e378eb67a"/>
+    <person person_id="1025" gender="M" dead="false" creator="1" birthdate_estimated="0" birthdate = "1983-01-30" date_created="2008-08-15 15:57:09.0" voided="false" uuid="341b4e41-790c-484f-b6ed-71dc8da222db"/>
+    <person person_id="1026" gender="F" dead="false" creator="1" birthdate_estimated="0" date_created="2009-09-09 15:46:47.0" voided="false" uuid="df8ae447-6745-45be-b859-403241d9913d"/>
+    <person person_id="1027" gender="F" dead="false" creator="1" birthdate_estimated="0" date_created="2008-08-15 15:46:47.0" voided="false" uuid="df8ae447-6745-45be-b859-403241d991dd"/>
+
+
+
+    <patient patient_id="1024" creator="1" date_created="2005-09-22 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:29:59.0" voided="false" void_reason=""/>
+    <patient patient_id="1025" creator="1" date_created="2006-01-18 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:25:31.0" voided="false" void_reason=""/>
+    <patient patient_id="1026" creator="1" date_created="2006-01-18 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:25:57.0" voided="false" void_reason=""/>
+
+    <concept_datatype concept_datatype_id="1" name="numeric" hl7_abbreviation="NM" description="foo" date_created="2013-12-04 11:36:42" retired="0"/>
+    <concept_datatype concept_datatype_id="2" name="text" hl7_abbreviation="ST" description="bar" date_created="2013-12-04 11:36:42" retired="0"/>
+
+    <concept concept_id="111" retired="0" datatype_id="1" class_id="1" is_set="1" creator="1" date_created="2013-12-04 11:36:42" uuid="3f596de5-5caa-11e3-a4c0-0800271c1b75" />
+    <concept concept_id="222" retired="0" datatype_id="2" class_id="1" is_set="0" creator="1" date_created="2013-12-04 11:36:42" uuid="4f596de5-5caa-11e3-a4c0-0800271c1b75" />
+    <concept concept_id="333" retired="0" datatype_id="1" class_id="1" is_set="0" creator="1" date_created="2013-12-04 11:36:42" uuid="5f596de5-5caa-11e3-a4c0-0800271c1b75" />
+    <concept concept_id="444" retired="0" datatype_id="2" class_id="1" is_set="0" creator="1" date_created="2013-12-04 11:36:42" uuid="6f596de5-5caa-11e3-a4c0-0800271c1b75" />
+    <concept concept_id="555" retired="0" datatype_id="1" class_id="1" is_set="1" creator="1" date_created="2013-12-04 11:36:42" uuid="7f596de5-5caa-11e3-a4c0-0800271c1b75" />
+    <concept concept_id="666" retired="0" datatype_id="2" class_id="1" is_set="0" creator="1" date_created="2013-12-04 11:36:42" uuid="8f596de5-5caa-11e3-a4c0-0800271c1b75" />
+
+    <concept_set concept_set_id="11" sort_weight="0" concept_id="222" concept_set="111" creator="1" date_created="2013-12-04 11:36:42" uuid="8f596de5-5caa-11e3-a4c0-0800271c1b75" ></concept_set>
+    <concept_set concept_set_id="12" sort_weight="0" concept_id="333" concept_set="111" creator="1" date_created="2013-12-04 11:36:42" uuid="8f596de5-5caa-11e3-a4c0-0800271c1b76" ></concept_set>
+    <concept_set concept_set_id="13" sort_weight="0" concept_id="444" concept_set="111" creator="1" date_created="2013-12-04 11:36:42" uuid="8f596de5-5caa-11e3-a4c0-0800271c1b77" ></concept_set>
+    <concept_set concept_set_id="14" sort_weight="0" concept_id="555" concept_set="111" creator="1" date_created="2013-12-04 11:36:42" uuid="8f596de5-5caa-11e3-a4c0-0800271c1b78" ></concept_set>
+    <concept_set concept_set_id="15" sort_weight="0" concept_id="666" concept_set="555" creator="1" date_created="2013-12-04 11:36:42" uuid="8f596de5-5caa-11e3-a4c0-0800271c1b79" ></concept_set>
+
+
+    <obs obs_id="1024" person_id="1024" concept_id="111" value_numeric="1.1" obs_datetime="2013-12-04 11:36:42" creator="1" voided="0" date_created="2013-12-04 11:36:42" />
+    <obs obs_id="1025" person_id="1024" obs_group_id="1025" concept_id="222" value_text="foo" obs_datetime="2013-12-04 11:36:42" creator="1" voided="0" date_created="2013-12-04 11:36:42" />
+    <obs obs_id="1026" person_id="1024" obs_group_id="1025" concept_id="333" value_numeric="2.1" obs_datetime="2013-12-04 11:36:42" creator="1" voided="0" date_created="2013-12-04 11:36:42" />
+    <obs obs_id="1027" person_id="1024" obs_group_id="1025" concept_id="444" value_text="foo" obs_datetime="2013-12-04 11:36:42" creator="1" voided="0" date_created="2013-12-04 11:36:42" />
+    <obs obs_id="1028" person_id="1024" concept_id="555" value_numeric="3.1" obs_datetime="2013-12-04 11:36:42" creator="1" voided="0" date_created="2013-12-04 11:36:42" />
+    <obs obs_id="1029" person_id="1024" concept_id="666" value_text="foo" obs_datetime="2013-12-04 11:36:42" creator="1" voided="0" date_created="2013-12-04 11:36:42" />
+    <obs obs_id="1030" person_id="1024" concept_id="111" value_text="foo" obs_datetime="2013-12-04 11:36:42" creator="1" voided="0" date_created="2013-12-04 11:36:42" />
+    <obs obs_id="1031" person_id="1024" obs_group_id="1030" concept_id="666" value_text="foo" obs_datetime="2013-12-04 11:36:42" creator="1" voided="0" date_created="2013-12-04 11:36:42" />
+
+</dataset>

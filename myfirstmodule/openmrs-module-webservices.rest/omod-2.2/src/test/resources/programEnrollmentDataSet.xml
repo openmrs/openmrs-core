@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+
+<dataset>
+    <!-- Marital outcome -->
+    <concept concept_id="25" retired="false" datatype_id="4" class_id="10" is_set="true" creator="1"
+             date_created="2008-08-18 12:38:58.0" version="" uuid="b554b366-d7d8-4a4a-849e-e687b6be2206"/>
+    <concept_name concept_id="25" name="MARITAL OUTCOME" locale="en" creator="1" date_created="2008-08-18 12:38:58.0"
+                  concept_name_id="5150" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false"
+                  uuid="4c5f877d-9b44-40f7-9d4c-6445559781dc"/>
+    <concept_description concept_description_id="15" concept_id="25" description="The outcome of the program"
+                         locale="en" creator="1" date_created="2008-08-18 12:38:58.0"
+                         uuid="1a671857-b5e2-4232-8177-c53f483fc5f6"/>
+    <!-- Single and Married -->
+    <concept_set concept_set_id="4" concept_id="5" concept_set="25" sort_weight="0.0" creator="1"
+                 date_created="2008-08-18 12:38:58.0" uuid="7a75ca28-d979-4f21-9573-b70a404a46d8"/>
+    <concept_set concept_set_id="5" concept_id="6" concept_set="25" sort_weight="2.0" creator="1"
+                 date_created="2008-08-18 12:38:58.0" uuid="c4b6c521-f66f-4efb-adc2-9cc20f6d11bb"/>
+
+    <!-- concept with outcome concept with set of data -->
+    <program program_id="4" concept_id="9" outcomes_concept_id="25" creator="1" date_created="2008-08-15 16:07:11.0"
+             changed_by="1" date_changed="2008-08-15 17:04:50.0" retired="false" name="HIV Program"
+             description="hiv program" uuid="5dc2a3b0-863c-4074-8f84-45762c3aa04c"/>
+
+    <!-- Marital outcome -->
+    <concept concept_id="99" retired="false" datatype_id="4" class_id="10" is_set="false" creator="1"
+             date_created="2008-08-18 12:38:58.0" version="" uuid="cf25712e-f193-48d5-a85a-5fd8d0244c71"/>
+    <concept_name concept_id="99" name="MARITAL OUTCOME" locale="en" creator="1" date_created="2008-08-18 12:38:58.0"
+                  concept_name_id="5151" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false"
+                  uuid="d1093cd6-3c89-45f0-8731-13c551c14b4f"/>
+    <concept_description concept_description_id="151" concept_id="99" description="The outcome of the program"
+                         locale="en" creator="1" date_created="2008-08-18 12:38:58.0"
+                         uuid="b2be1127-4ee8-4110-a3ed-9450ad097734"/>
+    <!-- Single and Married -->
+    <concept_answer concept_answer_id="91" concept_id="99" answer_concept="7" creator="1"
+                    date_created="2008-08-18 12:34:26.0" uuid="48a39ce1-acae-4c5a-abfa-f99e0 aeeac30"/>
+    <concept_answer concept_answer_id="92" concept_id="99" answer_concept="8" creator="1"
+                    date_created="2008-08-18 12:34:26.0" uuid="189d00be-ff1a-4128-aa35-3665014c0cb9"/>
+
+    <!-- concept with outcome concept of type question -->
+    <program program_id="5" concept_id="9" outcomes_concept_id="99" creator="1" date_created="2008-08-15 16:07:11.0"
+             changed_by="1" date_changed="2008-08-15 17:04:50.0" retired="false" name="HIV Program"
+             description="hiv program" uuid="d7477c21-bfc3-4922-9591-e89d8b9c8efa"/>
+
+    <program_attribute_type program_attribute_type_id="1" name="stage" min_occurs="1" retired="false"
+                            creator="1" date_created="2008-08-15 17:04:50.0" datatype="org.openmrs.customdatatype.datatype.FreeTextDatatype"
+                            uuid="d7477c21-bfc3-4922-9591-e89d8b9c8efb"/>
+    <program_attribute_type program_attribute_type_id="2" name="facility" min_occurs="1" retired="false"
+                            creator="1" date_created="2008-08-15 17:04:50.0" datatype="org.openmrs.customdatatype.datatype.FreeTextDatatype"
+                            uuid="d7477c21-bfc3-4922-9591-e89d8b9c8efe"/>
+
+    <program_attribute_type program_attribute_type_id="9" name="Caste" min_occurs="1" retired="false"
+                            creator="1" date_created="2008-08-15 17:04:50.0" datatype="org.openmrs.customdatatype.datatype.ConceptDatatype" datatype_config="100"
+                            uuid="d7477c21-bfc3-4922-9591-e89d8b9c8efh"/>
+
+    <concept concept_id="100" retired="false" datatype_id="2" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="" changed_by="1" date_changed="2005-02-25 11:43:43.0" uuid="d102c80f-1yz9-4da3-bb88-8122ce8868dd"/>
+
+    <person person_id="2" gender="M" dead="false" creator="1" birthdate_estimated="0" date_created="2008-08-15 15:57:09.0" voided="false" void_reason="" uuid="75e04d42-3ca8-11e3-bf2b-0808633c1b75"/>
+    <patient patient_id="2" creator="1" date_created="2005-09-22 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:29:59.0" voided="false" void_reason=""/>
+    <person_name person_name_id="1" preferred="true" person_id="2" prefix="" given_name="Abc" middle_name="" family_name="Def" family_name_suffix="" creator="1" date_created="2005-09-22 00:00:00.0" voided="false" void_reason="" uuid="399e3a7b-6482-409d-94ce-c87bb3ca3cca"/>
+
+    <patient_program patient_program_id="1" patient_id="2" program_id="5" date_enrolled="2006-10-14 00:00:00.0" creator="1" date_created="2007-09-20 00:00:00.0" voided="false" uuid="9119b9f8-af3d-4ad8-9e2e-2317c3de91c6"/>
+    <patient_program_attribute patient_program_attribute_id="1" patient_program_id="1" attribute_type_id="1" value_reference="Stage1" uuid="3a2bdb18-6faa-11e0-8414-001e378eb67e" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" />
+</dataset>

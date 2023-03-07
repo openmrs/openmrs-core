@@ -1,0 +1,50 @@
+{
+    "person": {
+        "gender": "F",
+        "age": 33,
+        "birthdate": "1979-12-08T00:00:00.000+0530",
+        "birthdateEstimated": false,
+        "names": [
+            {
+                "uuid": "399e3a7b-6482-487d-94ce-c07bb3ca3cc7",
+                "preferred" : true,
+                "givenName": "Rama",
+                "middleName": null,
+                "familyName": "Kabira",
+                "familyName2": null,
+                "voided": false,
+                "dateCreated": "2013-12-08T00:00:00.000+0530"
+            }
+        ],
+        "addresses": [
+            {
+                "uuid": "3350d0b5-821c-4e5e-ad1d-a9bce331e118",
+                "preferred": true,
+                "address1": "address 1",
+                "address2": "address 2",
+                "cityVillage": "city",
+                "stateProvince": "state",
+                "country": "country",
+                "postalCode": "postal",
+                "countyDistrict": null,
+                "address3": "address 3",
+                "address4": "address 4",
+                "address5": "address 5",
+                "address6": "address 6",
+                "latitude": null,
+                "longitude": null,
+                "voided": false,
+                "dateCreated": "2013-12-08T00:00:00.000+0530"
+            }
+        ],
+        "attributes": [
+            {
+                "uuid": "15d694af-43d6-443a-971c-ec210e3ec5c5",
+                "value": "Muslim",
+                "attributeType": {
+                    "uuid": "b3b6d540-a32e-44c7-91b3-292d97667518"
+                }
+            }
+        ]
+    }
+}

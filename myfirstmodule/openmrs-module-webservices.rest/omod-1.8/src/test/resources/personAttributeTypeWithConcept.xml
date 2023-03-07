@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+    <concept concept_id="100" retired="false" datatype_id="2" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="" changed_by="1" date_changed="2005-02-25 11:43:43.0" uuid="d102c80f-1yz9-4da3-bb88-8122ce8868dd"/>
+
+    <concept concept_id="101" retired="false" datatype_id="3" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="" changed_by="1" date_changed="2005-02-25 11:43:43.0" uuid="e102c80f-1yz9-4da3-bb88-8122ce8868dd"/>
+    <concept concept_id="102" retired="false" datatype_id="3" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="" changed_by="1" date_changed="2005-02-25 11:43:43.0" uuid="f102c80f-1yz9-4da3-bb88-8122ce8868dd"/>
+
+    <concept_answer concept_answer_id="201" concept_id="100" answer_concept="101" creator="1" date_created="2008-08-18 12:34:26.0" uuid="c1230431-2fe5-49fc-b535-ae42bc849747"/>
+    <concept_answer concept_answer_id="202" concept_id="100" answer_concept="102" creator="1" date_created="2008-08-18 12:34:26.0" uuid="d1230431-2fe5-49fc-b535-ae42bc849747"/>
+
+    <person_attribute_type person_attribute_type_id="9" name="Caste" description="Caste of this person" format="org.openmrs.Concept" foreign_key="100" searchable="false" creator="1" date_created="2008-08-15 15:53:36.0" retired="false" uuid="55e6ce9e-25bf-11e3-a013-3c0754156a5d" sort_weight="2"/>
+    <person_attribute_type person_attribute_type_id="10" name="BooleanTest" description="Test Attribute for Boolean data type" format="java.lang.Boolean" creator="1" searchable="false" date_created="2008-08-15 15:53:36.0" retired="false" uuid="55e6ce9e-25bf-11e3-a013-3c0754156a5f" sort_weight="2"/>
+</dataset>

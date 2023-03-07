@@ -1,0 +1,58 @@
+{
+    "identifiers": [
+        {
+            "identifier": "id-B",
+            "identifierType": {
+                "uuid": "1a339fe9-38bc-4ab3-b180-320988c0b968"
+            },
+            "location": {
+                "uuid": "8d6c993e-c2cc-11de-8d13-0010c6dffd0f"
+            },
+            "preferred": true
+        }
+    ],
+    "person": {
+        "gender": "F",
+        "age": 33,
+        "birthdate": "1979-12-08T00:00:00.000+0530",
+        "birthdateEstimated": false,
+        "dead": false,
+        "names": [
+            {
+                "givenName": "Ram",
+                "middleName": null,
+                "familyName": "Kabir",
+                "familyName2": null,
+                "voided": false,
+                "preferred": true
+            }
+        ],
+        "addresses": [
+            {
+                "preferred": true,
+                "address1": null,
+                "address2": null,
+                "cityVillage": "Khodri",
+                "stateProvince": null,
+                "country": null,
+                "postalCode": null,
+                "countyDistrict": null,
+                "address3": null,
+                "address4": null,
+                "address5": null,
+                "address6": null,
+                "latitude": null,
+                "longitude": null,
+                "voided": false
+            }
+        ],
+        "attributes": [
+            {
+                "value": "Bangalore",
+                "attributeType": {
+                    "uuid": "54fc8400-1683-4d71-a1ac-98d40836ff7c"
+                }
+            }
+        ]
+    }
+}

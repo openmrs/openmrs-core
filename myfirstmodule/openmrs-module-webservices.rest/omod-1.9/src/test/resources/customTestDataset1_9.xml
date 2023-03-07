@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+    <location location_id="10" name="Mumbai" parent_location="[NULL]" description="test description" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="f08ba64b-ea57-4a41-nfdr-9dfc59b0c60a"/>
+    <location_attribute_type location_attribute_type_id="1" name="Audit Date" datatype="org.openmrs.customdatatype.datatype.DateDatatype" uuid="9516cc50-6f9f-11e0-8414-001e378eb67e" creator="1" date_created="2005-01-01 00:00:00.0" min_occurs="0" retired="false" />
+    <location_attribute_type location_attribute_type_id="2" name="A Date We Don't Care About" datatype="org.openmrs.customdatatype.datatype.DateDatatype" uuid="9516cc50-6f9f-11e0-8414-001e378eb67f" creator="1" date_created="2005-01-01 00:00:00.0" min_occurs="0" retired="true" retired_by="1" date_retired="2005-01-01 02:00:00.0" retire_reason="for fun and profit" />
+    <location_attribute_type location_attribute_type_id="3" name="Care Date" datatype="org.openmrs.customdatatype.datatype.DateDatatype" uuid="9516cc50-6f9f-132r-5433-001e378eb67f" creator="1" date_created="2005-01-01 00:00:00.0" min_occurs="0" retired="false"/>
+    <location_attribute_type location_attribute_type_id="4" name="Head of Department" datatype="org.openmrs.customdatatype.datatype.FreeTextDatatype" uuid="9516cc50-6f9f-132r-6556-001e378eb67f" creator="1" date_created="2005-01-01 00:00:00.0" min_occurs="0" retired="false"/>
+    <location_attribute location_attribute_id="10" location_id="10" attribute_type_id="1" value_reference="2011-04-25 00:00:00.0" uuid="3a2bdb18-6faa-11e0-8414-001e378eb67e" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" />
+    <location_attribute location_attribute_id="11" location_id="10" attribute_type_id="4" value_reference="Dr. Batra" uuid="3a2bdb18-nadm-11e0-8414-001e378eb67e" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" />
+    <location_attribute location_attribute_id="12" location_id="10" attribute_type_id="4" value_reference="Dr. Batra 2" uuid="1a2bdb18-nadm-11e0-8414-001e378eb67e" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" />
+    <provider provider_id="2" person_id="502" name="Mr. Horatio Test Hornblower Esq." identifier="Test2" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="c2299800-dgha-11e0-9572-0800200c9a66" />
+    <provider provider_id="3" person_id="501" name="Ms. Test Provider" identifier="Test3" creator="1" date_created="2015-01-01 00:00:00.0" retired="false" uuid="ACF198C0-4735-4886-8F3A-C4184676A932" />
+    <provider_attribute_type provider_attribute_type_id="1" name="Joining Date" datatype="org.openmrs.customdatatype.datatype.DateDatatype" uuid="9516cc50-n8ik-bc4f-8414-001e378eb67e" creator="1" date_created="2005-01-01 00:00:00.0" min_occurs="0" retired="false" />
+    <provider_attribute_type provider_attribute_type_id="2" name="Work Department" datatype="org.openmrs.customdatatype.datatype.FreeTextDatatype" uuid="9516cc50-bm8q-mibn-8414-001e378eb67e" creator="1" date_created="2005-01-01 00:00:00.0" min_occurs="0" retired="false" />
+    <provider_attribute_type provider_attribute_type_id="3" name="Leave Date" datatype="org.openmrs.customdatatype.datatype.DateDatatype" uuid="9516cc50-n8ik-bc4f-8dw4-001e378eb67e" creator="1" date_created="2005-01-01 00:00:00.0" min_occurs="0" retired="false" />
+    <provider_attribute provider_attribute_id="1" provider_id="2" attribute_type_id="1" value_reference="2011-04-25 00:00:00.0" uuid="3a2bdb18-6faa-n3g3-6e62-001e378eb67e" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" />
+    <provider_attribute provider_attribute_id="2" provider_id="2" attribute_type_id="2" value_reference="Outpatient" uuid="3a2bdb18-6aan-kwf3-6e62-001e378eb67e" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" />
+	<visit_attribute_type visit_attribute_type_id="2" name="Return Date" datatype="org.openmrs.customdatatype.datatype.DateDatatype" min_occurs="0" max_occurs="2" creator="1" date_created="2005-01-01 00:00:00.0" retired="0" uuid="7770f6d6-7673-11e0-8f03-001e378eb67f" />
+	<visit_attribute_type visit_attribute_type_id="3" name="Random Attribute" datatype="org.openmrs.customdatatype.datatype.DateDatatype" min_occurs="0" max_occurs="1" creator="1" date_created="2005-01-01 00:00:00.0" retired="0" uuid="6770f6d6-7673-11e0-8f03-001e378eb67g" />
+	<visit_attribute_type visit_attribute_type_id="4" name="Date Of Discharge" datatype="org.openmrs.customdatatype.datatype.DateDatatype" min_occurs="0" max_occurs="1" creator="1" date_created="2005-01-01 00:00:00.0" retired="1" retire_reason="none" uuid="5770f6d6-7673-11e0-8f03-001e378eb67h" />
+	<visit_attribute_type visit_attribute_type_id="5" name="Random Attribute2" datatype="org.openmrs.customdatatype.datatype.DateDatatype" min_occurs="0" creator="1" date_created="2005-01-01 00:00:00.0" retired="0" uuid="4770f6d6-7673-11e0-8f03-001e378eb67i" /> 
+        <visit_attribute visit_attribute_id="10" visit_id="1" attribute_type_id="1" value_reference="2011-04-25 00:00:00.0" creator="1" date_created="2005-02-01 00:00:00.0" voided="0" uuid="4c2tyr18-6faa-11e0-7899-001e378eb66a" />
+	<visit_attribute visit_attribute_id="11" visit_id="2" attribute_type_id="2" value_reference="2011-05-25 00:00:00.0" creator="1" date_created="2005-02-02 00:00:00.0" voided="0" uuid="5c2tyr18-6faa-11e0-7899-001e378eb66b" />
+	<visit_attribute visit_attribute_id="12" visit_id="1" attribute_type_id="1" value_reference="2011-06-25 00:00:00.0" creator="1" date_created="2005-02-03 00:00:00.0" voided="1" void_reason="none" uuid="6c2tyr18-6faa-11e0-7899-001e378eb66c" />
+        <visit_attribute visit_attribute_id="13" visit_id="1" attribute_type_id="5" value_reference="2011-05-25 00:00:00.0" creator="1" date_created="2005-02-02 00:00:00.0" voided="0" uuid="7c2tyr18-6faa-11e0-7899-001e378eb66d" />
+        
+    <encounter_role encounter_role_id="1" name="Unknown" creator="1" retired="false" date_created="2015-06-16 00:00:00.0"
+        uuid="a0b03050-c99b-11e0-9572-0800200c9a66"/>
+
+    <encounter_role encounter_role_id="2" name="Medicine Dispenser" creator="1" retired="false" date_created="2015-06-16 00:00:00.0"
+                    uuid="a0b03050-c99b-11e0-9572-0800201c9a71"/>
+
+    <encounter_provider encounter_provider_id="1" provider_id="1" encounter_id="1" encounter_role_id="1" date_created="2015-06-19 10:46:45.2" voided="false"
+                        uuid="bf218490-1691-11df-97a5-7038c432aabf"/>
+
+    <encounter encounter_id="1" patient_id="2" location_id="10" form_id="1" encounter_datetime="2015-05-10 10:46:44.2"
+            creator="1" date_created="2015-06-19 10:44:45.2" voided="false" uuid="c59b3942-4fdd-11e5-8c3c-410f8777c163"/>
+
+    <encounter_provider encounter_provider_id="2" provider_id="3" encounter_id="2" encounter_role_id="1" date_created="2015-09-30 10:46:45.2" voided="true" uuid="BDB06BD6-6C41-4E6B-8C9C-8B24D5BF62E5"/>
+    <encounter_provider encounter_provider_id="3" provider_id="1" encounter_id="2" encounter_role_id="1" date_created="2015-09-30 10:46:45.2" voided="false" uuid="9D375D92-708D-4823-8D87-1749FFAE174F"/>
+    <encounter encounter_id="2" patient_id="2" location_id="10" form_id="1" encounter_datetime="2015-09-30 10:46:44.2"
+               creator="1" date_created="2015-09-30 10:44:45.2" voided="false" uuid="E8B79256-213C-4E2D-B812-D09D6C220273"/>
+
+</dataset>

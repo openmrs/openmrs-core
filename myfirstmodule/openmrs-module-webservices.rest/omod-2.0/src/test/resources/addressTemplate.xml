@@ -1,0 +1,23 @@
+<org.openmrs.layout.address.AddressTemplate>
+     <nameMappings class="properties">
+       <property name="postalCode" value="Location.postalCode"/>
+       <property name="address2" value="Location.address2"/>
+       <property name="address1" value="Location.address1"/>
+       <property name="country" value="Location.country"/>
+       <property name="stateProvince" value="Location.stateProvince"/>
+       <property name="cityVillage" value="Location.cityVillage"/>
+     </nameMappings>
+     <sizeMappings class="properties">
+       <property name="postalCode" value="10"/>
+       <property name="address2" value="40"/>
+       <property name="address1" value="40"/>
+       <property name="country" value="10"/>
+       <property name="stateProvince" value="10"/>
+       <property name="cityVillage" value="10"/>
+     </sizeMappings>
+     <lineByLineFormat>
+       <string>address1</string>
+       <string>address2</string>
+       <string>cityVillage stateProvince country postalCode</string>
+     </lineByLineFormat>
+</org.openmrs.layout.address.AddressTemplate>

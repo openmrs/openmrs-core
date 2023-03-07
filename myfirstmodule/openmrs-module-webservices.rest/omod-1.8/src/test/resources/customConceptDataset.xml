@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+	<concept concept_id="5819" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="" changed_by="1" date_changed="2005-02-25 11:43:43.0" uuid="d102c80f-1yz9-4da3-bb88-8122ce8868dd"/>
+	<concept_description concept_description_id="1" concept_id="5819" description="A custom concept" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" uuid="d102c80f-1yz9-4da3-bb88-8122ce8868dd"/>
+	<concept_name concept_id="5819" name="Test Concept" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="1439" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="d102c80f-1yz9-4da3-bb88-8122ce8868dd"/>
+	<concept_numeric concept_id="5819" hi_normal="250.0" low_critical="0.0" units="" precise="0"/>
+	<concept concept_id="4" retired="false" datatype_id="2" class_id="10" is_set="false" creator="1" date_created="2008-08-15 15:51:39.0" version="" changed_by="1" date_changed="2008-08-15 15:52:38.0" uuid="89ca642a-dab6-4f20-b712-e12ca4fc6d36"/>
+</dataset>

@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+<relationship_type relationship_type_id="10" a_is_to_b="Doctor" b_is_to_a="Patient" preferred="0" weight="0" description="Relationship from a primary care provider to the patient" creator="1" date_created="2007-01-01 00:00:00.0" retired="false" uuid="d47f056e-f147-49a3-88e1-0c91d199510d"/>
+<relationship_type relationship_type_id="11" a_is_to_b="Sibling" b_is_to_a="Sibling" preferred="0" weight="0" description="Relationship between brother/sister, brother/brother, and sister/sister" creator="1" date_created="2007-01-01 00:00:00.0" retired="false" uuid="d38a8159-3e37-410d-83ae-245a205cb83c"/>
+<relationship_type relationship_type_id="12" a_is_to_b="Aunt/Uncle" b_is_to_a="Niece/Nephew" preferred="0" weight="0" description="" creator="1" date_created="2007-01-01 00:00:00.0" retired="false" uuid="c063c027-7b6e-4419-bbbd-e2b8da417f28"/>
+<relationship relationship_id="18" person_a="7" relationship="1" person_b="2" creator="1" date_created="2008-08-18 11:50:15.0" voided="false" uuid="839a3da7-d8f0-4803-80a9-c7d99b07cb79"/>
+<relationship relationship_id="19" person_a="1" relationship="1" person_b="7" creator="1" date_created="2008-08-18 11:53:50.0" voided="false" uuid="105528ca-cb2b-4035-8f4e-72dd4d7f6c91"/>
+<relationship relationship_id="20" person_a="2" relationship="2" person_b="1" creator="1" date_created="2008-01-01 00:00:00.0" voided="false" uuid="f792df8d-db06-456e-b375-46c40e0b5e06"/>
+<relationship relationship_id="21" person_a="999" relationship="1" person_b="2" creator="1" date_created="2008-01-01 00:00:00.0" voided="false" uuid="4ce634c8-d744-40b3-9d5f-577a5f025b01"/>
+<relationship relationship_id="22" person_a="999" relationship="12" person_b="1" creator="1" date_created="2008-01-01 00:00:00.0" voided="false" uuid="9b5031d9-32e7-4707-8cf9-a82a9fdf8da2"/>
+<relationship relationship_id="23" person_a="7" relationship="11" person_b="999" creator="1" date_created="2008-01-01 00:00:00.0" voided="false" uuid="70c34cf1-770b-49ec-9cc1-f79190834143"/>
+<relationship relationship_id="24" person_a="999" relationship="1" person_b="7" creator="1" date_created="2008-01-01 00:00:00.0" voided="false" uuid="83d17902-2c7e-41e6-9d11-2d405c897da3"/>
+</dataset>

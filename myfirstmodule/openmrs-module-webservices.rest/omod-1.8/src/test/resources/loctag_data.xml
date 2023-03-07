@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <location location_id="33333001" name="Chhattisgarh" description="State" state_province="Chhattisgarh" creator="1" date_created="2011-12-01 00:00:00.0" county_district="Bilaspur" retired="false" uuid="e686a658-2292-11e1-ba72-00265e639063"/>
+  <location location_id="33333002" name="Bilaspur" description="District" state_province="Chhattisgarh" creator="1" date_created="2011-12-01 00:00:00.0" county_district="Bilaspur" retired="false" parent_location="33333001" uuid="e686e018-2292-11e1-ba72-00265e639063"/>
+  <location location_id="33333003" name="Ganiyari" description="City" state_province="Chhattisgarh" creator="1" date_created="2011-12-01 00:00:00.0" county_district="Bilaspur" retired="false" parent_location="33333002" uuid="e687126c-2292-11e1-ba72-00265e639063"/>
+  <location location_id="33333004" name="JSS Ganiyari" description="Hospital" state_province="Chhattisgarh" creator="1" date_created="2011-12-01 00:00:00.0" county_district="Bilaspur" retired="false" parent_location="33333003" uuid="e68747a2-2292-11e1-ba72-00265e639063"/>
+  <location location_id="33333005" name="JSS Lab" description="Lab" state_province="Chhattisgarh" creator="1" date_created="2011-12-01 00:00:00.0" county_district="Bilaspur" retired="false" parent_location="33333004" uuid="e6877a18-2292-11e1-ba72-00265e639063"/>
+  <location location_id="33333011" name="External Lab" description="Non-JSS Lab" state_province="Chhattisgarh" creator="1" date_created="2011-12-01 00:00:00.0" county_district="Bilaspur" retired="false" parent_location="33333003" uuid="e688ec3b-2292-11e1-ba72-00265e639063"/>
+  <location_tag location_tag_id="33333001" name="Laboratory" description="Laboratory location" creator="1" date_created="2012-04-01" retired="0" uuid="60cedb47-88bb-11e1-b45c-0024e8c61285" />
+  <location_tag_map location_tag_id="33333001" location_id="33333011" />
+  <location_tag_map location_tag_id="33333001" location_id="33333005" />
+</dataset>
+  

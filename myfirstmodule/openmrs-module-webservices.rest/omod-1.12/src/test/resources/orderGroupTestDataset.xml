@@ -1,0 +1,95 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+-->
+<dataset>
+   
+   <concept concept_id="1" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="985ff1a2-c2ef-49fd-836f-8a1d936d9ef9"/>
+  <concept_datatype concept_datatype_id="1" name="Numeric" hl7_abbreviation="NM" description="Numeric value, including integer or float" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="07ab5f37-4f18-4932-a0b5-16de3811789a"/>
+  <concept_description concept_description_id="1" concept_id="1" description="this is a description" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" uuid="ff6721f2-3e44-488c-a22d-e79ea06e6bc3"/>
+  <concept_name concept_id="1" name="Some non numeric concept name" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="1" voided="false" uuid="637de959-e1c4-41d4-b2d6-bc4335835ea9" concept_name_type="FULLY_SPECIFIED" locale_preferred="0"/>
+   
+   <concept concept_id="2" retired="0" datatype_id="4" class_id="19" is_set="0" creator="1" date_created="2004-08-12 00:00:00.0" version="" uuid="8e02d1a0-7869-11e3-981f-0800200c9a76"/>
+   <concept_name concept_name_id="2000" concept_id="2" name="Once" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1"
+                  voided="0" uuid="93f24a00-7869-11e3-981f-0800200c9a67"/>
+   <concept_description concept_description_id="1" concept_id="2" description="Once concept description" locale="en" creator="1"
+                         date_created="2004-08-12 00:00:00.0" uuid="5f4d710b-d333-40b7-b449-6e0e739d15e1"/>
+
+  
+   <order_type order_type_id="100" name="Drug Order Type" java_class_name="org.openmrs.DrugOrder" description="Some drug order" creator="1" date_created="2008-08-15 15:49:04.0"
+                retired="0" uuid="113fb1d0-ae06-22e3-a5e2-0800211c9a78"/>
+   <order_type order_type_id="100" name="Drug Order Type" java_class_name="org.openmrs.DrugOrder" description="Some drug order" creator="1" date_created="2008-08-15 15:49:04.0"
+                retired="0" uuid="113fb1d0-ae06-22e3-a5e2-0800211c9a78"/>
+   <order_type order_type_id="101" name="Lab Order Type" java_class_name="org.openmrs.Order" description="Some lab order" creator="1" date_created="2008-08-15 15:49:04.0"
+                retired="0" uuid="2d3fb1d0-ae06-22e3-a5e2-0140211c9a66"/>
+    
+    <order_set order_set_id="2000" name="Order_Set_1" description="Order_Set_1_desc" operator="ALL" creator="1" date_created="2008-08-15 15:49:04.0" retired="0" uuid="2d3fb1d0-ae06-22e3-a5e2-0140211c1001" />
+    <order_set_member order_set_member_id="51" order_set_id="2000" order_type="100" concept_id="1" creator="1" sequence_number="0" date_created="2008-08-15 15:49:04.0"
+                      retired="0" uuid="2d3fb1d0-ae06-22e3-a5e2-0140211c2002" />
+    <order_set_member order_set_member_id="52" order_set_id="2000" order_type="100" concept_id="2" creator="1" sequence_number="1" date_created="2008-08-15 15:49:04.0"
+                      retired="0" uuid="443fb1d0-ae06-22e3-a5e3-0140211c2003" />
+   
+     
+  <concept concept_id="1" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="985ff1a2-c2ef-49fd-836f-8a1d936d9ef9"/>
+  <concept_datatype concept_datatype_id="1" name="Numeric" hl7_abbreviation="NM" description="Numeric value, including integer or float" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="07ab5f37-4f18-4932-a0b5-16de3811789a"/>
+  <concept_description concept_description_id="1" concept_id="1" description="this is a description" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" uuid="ff6721f2-3e44-488c-a22d-e79ea06e6bc3"/>
+  <concept_name concept_id="1" name="Some non numeric concept name" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="1" voided="false" uuid="637de959-e1c4-41d4-b2d6-bc4335835ea9" concept_name_type="FULLY_SPECIFIED" locale_preferred="0"/>
+ 
+  <!-- This retired encounter type must come before the others so that the extra columns are picked up -->
+  <encounter_type encounter_type_id="4" name="Some Retired Type" description="This type is retired." creator="1" date_created="2005-01-01 00:00:00.0" retired="true" retired_by="1" date_retired="2005-01-01 00:00:00.0" retire_reason="Because" uuid="c0c579b0-8e59-401d-8a4a-976a0b183519"/>
+  <encounter_type encounter_type_id="1" name="Test Enc Type B" description="Some desc" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="759799ab-c9a5-435e-b671-77773ada74e4"/>
+
+  <!-- an encounter role -->
+  <encounter_role encounter_role_id="2" name = "surgeon" description = "who did the operation" creator="1" date_created="2005-01-01 00:00:00.0" retired = "true" retired_by="1" date_retired="2005-01-01 00:00:00.0" retire_reason="for testing" uuid="430bbb70-6a9c-4e1e-badb-9c1054b1b5e9"/>
+  <encounter_role encounter_role_id="3" name = "attending physician" description = "The person in charge" creator="1" date_created="2005-01-01 00:00:00.0" retired = "false" uuid="430bbb70-6a9c-4e1e-badb-9d1054b1b5e9"/>
+  
+  <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false"  uuid="1d64befb-3b2e-48e5-85f5-353d43e23e45"/>
+  
+  <person person_id="2" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" gender="M"  uuid="a194be38-271a-44cb-ba3f-f2dbf4831fe9"/>
+  <person_name person_id="2" person_name_id="2" preferred="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" given_name="John" middle_name=" " family_name="Doe"  uuid="765b882e-db79-498b-aff7-b5b53f12caf1"/>
+  <patient patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+
+  <patient_identifier patient_identifier_id="1" patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" identifier="1234" identifier_type="1" preferred="1" voided="false" location_id="1"  uuid="b2c299e7-2679-44b8-a7a3-c69159a20ac0"/>
+  
+  <person person_id="3" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" gender="F"  uuid="2fffba52-dfef-4c09-97e1-c987f5e64692"/>
+  <person_name person_id="3" person_name_id="3" preferred="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" given_name="John3" middle_name=" " family_name="Doe"  uuid="d9999a3e-0ed8-4c45-b1db-7969a37c88be"/>
+  <patient patient_id="3" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <patient_identifier patient_identifier_id="3" patient_id="2" identifier="1234" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="3878b920-a9d6-445b-b7a6-e7744da68abc"/>
+  <patient_identifier patient_identifier_id="4" patient_id="3" identifier="12345" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="cf62c4b2-39d2-4c8e-befa-630f9387a748"/>
+  <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false" uuid="d6b27c63-3984-4fba-b683-1b0126a8e370"/>
+  <person person_id="2" gender="M" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="19887889-7110-46a7-a9f0-ebf1eb4bbd48"/>
+  <person person_id="3" gender="F" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="4b3f42da-2029-4e47-9396-a1b6a969e802"/>
+  <person_name person_name_id="2" preferred="true" person_id="3" given_name="John3" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="38f9c631-7168-4944-8e2b-e96b1b0ee882"/>
+  <patient_identifier patient_identifier_id="2" patient_id="3" creator="1" date_created="2005-01-01 00:00:00.0" identifier="12345" identifier_type="1" preferred="1" voided="false" location_id="1"  uuid="037d7208-da34-48e3-9761-24b614b99b56"/>
+  
+  <person person_id="4" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" gender="M"  uuid="c2482297-d022-42ae-a4b8-6f14b73f12fa"/>
+  <person_name person_id="4" person_name_id="4" preferred="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" given_name="Some" middle_name="Other" family_name="User"  uuid="6ca5379d-b9d7-4b42-b65f-cdcbc94a54dd"/>
+  <users user_id="4" person_id="4" username="2nduser" system_id="2ndusersystemid" retired="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="1ae5c06a-e136-11de-babe-001e378eb67e"/>
+  
+  <form form_id="1" name="Basic Form" version="0.1" build="0" published="0" description="Test form" creator="1" date_created="2005-08-07 00:00:00.0" changed_by="1" date_changed="2007-10-24 14:51:53.0" retired="false"  uuid="2a45c87e-e43d-42ff-83c7-e70a229fa99d"/>
+  
+  <provider provider_id="1" name="physician" identifier="1" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="c2299800-cca9-11e0-9572-0800200c9a66" />
+  <provider provider_id="2" person_id="1" identifier="2"  creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="04df6c50-772c-42d5-88ba-5a582957afa8" />
+ 
+  
+  <encounter encounter_id="2" encounter_type="1" form_id="1" encounter_datetime="2008-01-01 00:00:00.0" patient_id="3" location_id="1" creator="1" date_created="2008-02-01 00:00:00.0" voided="1" voided_by="1" date_voided="2008-02-01 00:00:00.0" void_reason="Because" uuid="33d70956-b359-452a-b3da-b69c8ab459ce"/>
+  <encounter_provider encounter_provider_id="1" encounter_id="2" provider_id="2" encounter_role_id="2" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" uuid="c92be2b5-b167-4c3b-9bab-5f8c01ae727a" />
+
+  <!-- A real non-voided encounter -->
+  <encounter encounter_id="1" encounter_type="1" form_id="1" encounter_datetime="2005-01-01 00:00:00.0" patient_id="3" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="430bbb70-6a9c-4e1e-badb-9d1034b1b5e9"/>
+  <encounter_provider encounter_provider_id="2" encounter_id="1" provider_id="2" encounter_role_id="2" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" uuid="b566821c-1ad9-473b-836b-9e9c67688e02" />
+
+ 
+  
+   <orders order_id="1" order_type_id="100" concept_id="1" urgency="ROUTINE" orderer="1" instructions="" date_activated="2012-09-19 00:00:00.0"  creator="1" date_created="2012-02-19 12:24:10.0" voided="true" patient_id="2" uuid="1c96f25c-4949-4f72-9931-d808fbcdb613" order_number="ORD-101" order_action="NEW" care_setting="1" encounter_id="2"/>
+   <orders order_id="3" order_type_id="101" concept_id="2" urgency="ROUTINE" orderer="2" instructions="" date_activated="2012-09-19 00:01:00.0"  creator="1" date_created="2012-02-19 12:24:10.0" voided="true" patient_id="2" uuid="1c96f25c-4949-4f72-9932-d808fbcdb614" order_number="ORD-102" order_action="NEW" care_setting="1" encounter_id="2"/>
+   <order_group order_group_id="1" order_set_id="2000" patient_id="2" encounter_id="2"   creator="1" date_created="2012-02-19 12:24:10.0" voided="false" uuid="1c96f25c-4949-4f72-9931-d808fbcdb613" />
+     
+</dataset>
+
+

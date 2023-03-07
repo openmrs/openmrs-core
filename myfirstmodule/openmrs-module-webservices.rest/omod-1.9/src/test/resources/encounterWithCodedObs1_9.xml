@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+    <concept concept_id="1918" retired="false" datatype_id="2" class_id="7" is_set="false" creator="1" date_created="2008-08-18 12:31:52.0" version="" uuid="59800cf7-c1a9-11e8-9554-54ee75ef41c2"/>
+    <concept_name concept_id="1918" name="FOOD ASSISTANCE" locale="en" creator="1" date_created="2008-08-18 12:31:52.0" concept_name_id="192467" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="b80d562a-c1a9-11e8-9554-54ee75ef41c2"/>
+    <obs obs_id="1913" person_id="7" concept_id="1918" encounter_id="4" obs_datetime="2008-08-15 00:00:00.0" location_id="1" value_coded="7" comments="" creator="1" date_created="2008-08-19 12:32:20.0" voided="false" uuid="62a1b5de-c1a9-11e8-9554-54ee75ef41c2"/>
+    <obs obs_id="1914" person_id="7" concept_id="1918" encounter_id="4" obs_datetime="2008-08-15 00:00:00.0" location_id="1" value_coded="8" comments="" creator="1" date_created="2008-08-19 12:32:20.0" voided="false" uuid="6be50156-c1ba-11e8-9554-54ee75ef41c2"/>
+</dataset>

@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+
+    <concept concept_id="5819" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1"
+             date_created="2004-08-12 00:00:00.0" version="" changed_by="1" date_changed="2005-02-25 11:43:43.0"
+             uuid="concept_uuid1"/>
+    <concept_description concept_description_id="1" concept_id="5819" description="A custom concept" locale="en"
+                         creator="1" date_created="2004-08-12 00:00:00.0" uuid="concept_description_uuid1"/>
+    <concept_name concept_id="5819" name="Test Concept" locale="en" creator="1" date_created="2004-08-12 00:00:00.0"
+                  concept_name_id="1439" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false"
+                  uuid="concept_name_uuid1"/>
+
+    <concept concept_id="5829" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1"
+             date_created="2004-08-12 00:00:00.0" version="" changed_by="1" date_changed="2005-02-25 11:43:43.0"
+             uuid="concept_uuid2"/>
+    <concept_description concept_description_id="1" concept_id="5819" description="A custom concept" locale="en"
+                         creator="1" date_created="2004-08-12 00:00:00.0" uuid="concept_description_uuid2"/>
+    <concept_name concept_id="5829" name="Test Concept" locale="en" creator="1" date_created="2004-08-12 00:00:00.0"
+                  concept_name_id="1439" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false"
+                  uuid="concept_name_uuid2"/>
+
+    <order_set order_set_id="1" operator="ALL" name="orderSet1" description="orderSet1 description" creator="1"
+               date_created="2015-09-15 00:00:00.0" retired="false" uuid="order_set_uuid1"/>
+    <order_set order_set_id="2" operator="ALL" name="orderSet2" description="orderSet2 description" creator="1"
+               date_created="2016-09-15 00:00:00.0" retired="false" uuid="order_set_uuid2"/>
+    <order_set order_set_id="3" operator="ALL" name="orderSet3" description="orderSet3 description" creator="1"
+               date_created="2016-09-15 00:00:00.0" retired="true" uuid="order_set_uuid3"/>
+
+    <order_set_member order_set_member_id="1" order_type="2" order_set_id="1" sequence_number="0" concept_id="5819" creator="1"
+                      date_created="2015-09-15 00:00:00.0" retired="false" uuid="order_set_member_uuid1"/>
+    <order_set_member order_set_member_id="2" order_type="2" order_set_id="1" sequence_number="1" concept_id="5829" creator="1"
+                      date_created="2015-09-15 00:00:00.0" retired="false" uuid="order_set_member_uuid2"/>
+
+</dataset>

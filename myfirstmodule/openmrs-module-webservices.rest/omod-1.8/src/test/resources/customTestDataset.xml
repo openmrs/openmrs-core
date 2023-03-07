@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <person_name person_name_id="71" preferred="false" person_id="7" given_name="Collet2" middle_name="Test2" family_name="Chebaskwony2" creator="1" date_created="2006-01-18 00:00:00.0" voided="false" void_reason="" uuid="g65c347e-1384-493a-a55b-d325924acd94"/>
+  <cohort cohort_id="1" name="B13 deficit" description="Has explicit deficit of B13" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" voided_by="1" date_voided="2005-01-02 00:00:00.0" void_reason="because" changed_by="1" date_changed="2005-01-02 00:00:00.0" uuid="05e08b3b-5690-41e1-b651-5391fd946c1a" />
+  <cohort cohort_id="2" name="B13 normal" description="Has no deficiency of B13" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" voided_by="1" date_voided="2005-01-02 00:00:00.0" void_reason="because" changed_by="1" date_changed="2005-01-02 00:00:00.0" uuid="c804ee60-ecbc-4d70-abda-1e4f6f64e5b5" />
+  <cohort_member cohort_id="1" patient_id="6" />
+  <cohort_member cohort_id="1" patient_id="7" />
+  <cohort_member cohort_id="1" patient_id="8" />
+  <cohort_member cohort_id="2" patient_id="2" />
+  <hl7_source hl7_source_id="0" name="AMRS.ELD" creator="1" description="AMRS.ELD" date_created="2006-09-01 00:00:00" uuid="8d6b8bb6-c2cc-11de-8d13-0010c6dffd0f"/>
+  <orders order_id="991" urgency="ROUTINE" order_type_id="1" concept_id="5497" orderer="1" instructions="Do a CD4 Test" start_date="2008-08-08 00:00:00.0" auto_expire_date="2008-09-08 00:00:00.0" discontinued="false" creator="1" date_created="2008-08-19 12:20:22.0" voided="false" patient_id="7" uuid="ff97d3a0-8dbf-11e1-bc86-da3a922f3783"/>
+  <orders order_id="992" urgency="ROUTINE" order_type_id="1" concept_id="5497" orderer="1" instructions="Do a CD4 Test" start_date="2008-08-08 00:00:00.0" auto_expire_date="2008-09-08 00:00:00.0" discontinued="false" creator="1" date_created="2008-08-19 12:20:22.0" voided="true" patient_id="7" uuid="b7ed4e20-f27a-11e1-aff1-0800200c9a66"/>
+</dataset>

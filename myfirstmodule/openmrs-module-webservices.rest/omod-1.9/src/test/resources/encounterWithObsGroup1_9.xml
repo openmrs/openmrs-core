@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+	
+	<encounter encounter_id="1000" encounter_type="2" patient_id="7" location_id="1" encounter_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" void_reason="" uuid="62967e68-96bb-11e0-8d6b-9b9415a91465" />
+	<encounter_provider encounter_provider_id="4" encounter_id="1000" provider_id="1" encounter_role_id="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" uuid="29e0aae8-20ee-46b7-ade6-9e68f897b7a8" />
+	<!-- obs group -->
+	<obs obs_id="1000" person_id="7" encounter_id="1000" concept_id="23" obs_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" uuid="47f18998-96cc-11e0-8d6b-9b9415a91465" />
+	<!-- containing two obs -->
+	<obs obs_id="1001" person_id="7" encounter_id="1000" obs_group_id="1000" concept_id="19" value_text="Some text" obs_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" uuid="5117f5d4-96cc-11e0-8d6b-9b9415a91465" />
+	<obs obs_id="1002" person_id="7" encounter_id="1000" obs_group_id="1000" concept_id="20" value_datetime="2011-06-12 00:00:00.0" obs_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" uuid="565f39c6-96cc-11e0-8d6b-9b9415a91465" />
+	
+	<!-- Unrealistic, but put another group in the group -->
+	<obs obs_id="1003" person_id="7" encounter_id="1000" obs_group_id="1000" concept_id="23" obs_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" uuid="05ba548c-96cd-11e0-8d6b-9b9415a91465" />
+	<obs obs_id="1004" person_id="7" encounter_id="1000" obs_group_id="1003" concept_id="19" value_text="Some text" obs_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" uuid="0d37552a-96cd-11e0-8d6b-9b9415a91465" />
+	<obs obs_id="1005" person_id="7" encounter_id="1000" obs_group_id="1003" concept_id="20" value_datetime="2011-06-12 00:00:00.0" obs_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" uuid="11de743c-96cd-11e0-8d6b-9b9415a91465" />
+</dataset>

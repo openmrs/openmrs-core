@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+
+<dataset>
+	<concept concept_id="111" retired="true" datatype_id="1" class_id="1" is_set="false" creator="1"
+			 date_created="2004-08-12 00:00:00.0" version="" uuid="62a26128-006f-4e77-859b-4aa502e3dd62"/>
+	<concept concept_id="112" retired="true" datatype_id="1" class_id="1" is_set="false" creator="1"
+			 date_created="2004-08-12 00:00:00.0" version="" uuid="dbe22178-3c4e-446d-9f6e-8b374c40b5e5"/>
+	<concept_name concept_id="111" name="Concept 1" concept_name_id="1111" locale="en" creator="1"
+				  date_created="2008-08-15 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1"
+				  voided="false" uuid="acdd935c-36bd-4a24-8078-f3a63fbae886"/>
+	<concept_name concept_id="112" name="Concept 2" concept_name_id="1112" locale="en" creator="1"
+				  date_created="2008-08-15 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1"
+				  voided="false" uuid="b4129154-cd40-4fd1-ac13-dd9d7cd2cc80"/>
+	<patient patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" />
+	<conditions condition_id="1" patient_id="2" creator="1" condition_coded="111" condition_coded_name="1111"
+			   date_created="2015-01-12 00:00:00" clinical_status="ACTIVE" verification_status="CONFIRMED"
+			   onset_date="2017-01-12 00:00:00" voided="false" uuid="c1d4185b-0364-4978-a635-3165a82a3178"/>
+	<conditions condition_id="2" patient_id="2" creator="1" condition_non_coded="Non coded condition"
+			   date_created="2015-01-12 00:00:00" clinical_status="ACTIVE" verification_status="CONFIRMED"
+			   onset_date="2017-01-12 00:00:00" voided="false" uuid="d5361660-c917-4aef-adfc-fb2e6138dc07"/>
+	<conditions condition_id="3" patient_id="2" creator="1" condition_non_coded="Non coded condition 2"
+			   date_created="2015-01-12 00:00:00" clinical_status="ACTIVE" verification_status="CONFIRMED"
+			   onset_date="2017-01-12 00:00:00" voided="true" date_voided="2018-02-23 00:00:00.0" void_reason="Testing void"
+			   uuid="2e7563eb-0dca-46c9-8ba3-7c5945f673fc"/>
+	<conditions condition_id="4" patient_id="2" creator="1" condition_non_coded="Non coded condition 3"
+				date_created="2015-01-12 00:00:00" clinical_status="ACTIVE" verification_status="CONFIRMED"
+				onset_date="2017-01-12 00:00:00" voided="false" uuid="d91e3696-6cd5-11ed-a1eb-0242ac120002" end_date="2017-01-22 00:00:00"/>
+</dataset>

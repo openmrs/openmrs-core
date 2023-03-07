@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <cohort cohort_id="1" name="B13 deficit" description="Has explicit deficit of B13" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" voided_by="1" date_voided="2005-01-02 00:00:00.0" void_reason="because" changed_by="1" date_changed="2005-01-02 00:00:00.0" uuid="05e08b3b-5690-41e1-b651-5391fd946c1a" />
+  <cohort cohort_id="2" name="B13 normal" description="Has no deficiency of B13" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" voided_by="1" date_voided="2005-01-02 00:00:00.0" void_reason="because" changed_by="1" date_changed="2005-01-02 00:00:00.0" uuid="c804ee60-ecbc-4d70-abda-1e4f6f64e5b5" />
+  <cohort_member cohort_id="1" patient_id="6" />
+  <cohort_member cohort_id="1" patient_id="7" />
+  <cohort_member cohort_id="1" patient_id="8" />
+  <cohort_member cohort_id="2" patient_id="2" />
+  <hl7_source hl7_source_id="0" name="TEST" creator="1" description="test" date_created="2006-09-01 00:00:00" uuid="8d6b8bb6-c2cc-11de-8d13-0010c6dffd0f"/>
+</dataset>

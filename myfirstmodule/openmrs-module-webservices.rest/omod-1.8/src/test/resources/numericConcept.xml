@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+    <concept concept_id="798" retired="0" datatype_id="1" class_id="3" is_set="false" creator="1" date_created="2008-08-15 15:27:51.0" uuid="568b58c8-e878-11e0-950d-00248140a5e3"/>
+    <concept_numeric concept_id="798" hi_absolute="123.0" precise="false"/>
+    <concept_name concept_id="798" name="HEIGHT" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="798" voided="false" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" uuid="67ce91b2-e879-11e0-950d-00248140a5e3"/>
+    <concept_word concept_word_id="14009" concept_id="798" word="HEIGHT" locale="en" concept_name_id="3256" weight="2.126666666666667"/>
+</dataset>
