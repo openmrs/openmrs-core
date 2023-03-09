@@ -52,9 +52,9 @@ public class AlertValidator implements Validator {
 
 		if (obj == null || !(obj instanceof Alert)) {
 			throw new IllegalArgumentException("error.general and must be of type " + Alert.class);
-	} else {
+	} 
 		Alert alert = (Alert) obj;
-
+        else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "text", "Alert.text.required");
 			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "text");
 
