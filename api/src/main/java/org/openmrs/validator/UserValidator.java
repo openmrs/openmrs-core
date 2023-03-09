@@ -69,9 +69,13 @@ public class UserValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
+		// variable type check done here before casting
+		if(obj == null || !(obj instanceof User)) {
+			throw new IllegalArguentException("obj should not be null and must be of type " + User.class);
+		}
+		// actuall casting
 		User user = (User) obj;
-		if (user == null) {
-			errors.reject("error.general");
+		
 		} else {
 			if (user.getRetired() && StringUtils.isBlank(user.getRetireReason())) {
 				errors.rejectValue("retireReason", "error.null");
