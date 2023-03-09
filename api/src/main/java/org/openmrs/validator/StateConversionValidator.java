@@ -49,11 +49,15 @@ public class StateConversionValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
-		ConceptStateConversion c = (ConceptStateConversion) obj;
-		if (c == null) {
+		if (obj == null || obj instanceof ConceptStateConversion) {
+			throw new IllegalArgumentException("error.general and must be of type " + Alert.class);
 			log.debug("Rejecting because c is null");
 			errors.rejectValue("conceptStateConversion", "error.general");
-		} else {
+
+		}
+		ConceptStateConversion c = (ConceptStateConversion) obj;
+			
+		else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "concept", "error.concept");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "programWorkflow", "error.programWorkflow");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "programWorkflowState", "error.programWorkflowState");
