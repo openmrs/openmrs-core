@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -333,7 +334,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public List<Encounter> getEncountersByPatientId(Integer patientId) throws APIException {
+	public List<Encounter> getEncountersByPatientId(List<Integer> patientId) throws APIException {
 		if (patientId == null) {
 			throw new IllegalArgumentException("The 'patientId' parameter is requred and cannot be null");
 		}
@@ -351,12 +352,13 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			throw new IllegalArgumentException("The 'identifier' parameter is required and cannot be null");
 		}
 		
-		List<Encounter> encs = new ArrayList<>();
-		for (Patient p : Context.getPatientService().getPatients(identifier, null, null, false)) {
-			encs.addAll(Context.getEncounterService().getEncountersByPatientId(p.getPatientId()));
-		}
+		List<Patient> patients = Context.getPatientService().getPatients(identifier, null, null, false);
+		List<Integer> patientIds = patients.stream().map(Patient::getPatientId).collect(Collectors.toList());
+		List<Encounter> encs = Context.getEncounterService().getEncountersByPatientId(patientIds);
 		return Context.getEncounterService().filterEncountersByViewPermissions(encs, null);
+		
 	}
+	
 	
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.Patient,

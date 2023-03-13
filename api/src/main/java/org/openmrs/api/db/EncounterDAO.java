@@ -57,7 +57,7 @@ public interface EncounterDAO {
 	 * @return all encounters for the given patient identifier
 	 * @throws DAOException
 	 */
-	public List<Encounter> getEncountersByPatientId(Integer patientId) throws DAOException;
+	public List<Encounter> getEncountersByPatientId(List<Integer> patientId) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.parameter.EncounterSearchCriteria)

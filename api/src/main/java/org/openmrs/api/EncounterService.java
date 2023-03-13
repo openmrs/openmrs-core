@@ -120,7 +120,7 @@ public interface EncounterService extends OpenmrsService {
 	 * <strong>Should</strong> throw error if given a null parameter
 	 */
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
-	public List<Encounter> getEncountersByPatientId(Integer patientId) throws APIException;
+	public List<Encounter> getEncountersByPatientId(List<Integer> patientId) throws APIException;
 	
 	/**
 	 * Get encounters (not voided) for a patient identifier
