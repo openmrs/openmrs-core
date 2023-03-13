@@ -9,78 +9,117 @@
  */
 package org.openmrs;
 
-import static org.apache.commons.lang3.StringUtils.defaultString;
-
-import java.util.Calendar;
-import java.util.Date;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.openmrs.util.OpenmrsUtil;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import java.util.Calendar;
+import java.util.Date;
+
+import static org.apache.commons.lang3.StringUtils.defaultString;
+
 /**
  * This class is the representation of a person's address. This class is many-to-one to the Person
  * class, so a Person/Patient/User can have zero to n addresses
  */
+@Entity
+@Table(name = "person_address")
 public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PersonAddress>, Address {
 	
 	public static final long serialVersionUID = 343333L;
 	
 	// Fields
-
+	@Id
+	@Column(name = "person_address_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer personAddressId;
-
+	
+	@ManyToOne
+	@JoinColumn(name = "person_id")
 	private Person person;
 	
+	@Column(name = "preferred", length = 1, nullable = false)
 	private Boolean preferred = false;
-
+	
+	@Column(name = "address1")
 	private String address1;
-
+	
+	@Column(name = "address2")
 	private String address2;
-
+	
+	@Column(name = "address3")
 	private String address3;
-
+	
+	@Column(name = "address4")
 	private String address4;
-
+	
+	@Column(name = "address5")
 	private String address5;
-
+	
+	@Column(name = "address6")
 	private String address6;
-
+	
+	@Column(name = "address7")
 	private String address7;
-
+	
+	@Column(name = "address8")
 	private String address8;
-
+	
+	@Column(name = "address9")
 	private String address9;
-
+	
+	@Column(name = "address10")
 	private String address10;
-
+	
+	@Column(name = "address11")
 	private String address11;
-
+	
+	@Column(name = "address12")
 	private String address12;
-
+	
+	@Column(name = "address13")
 	private String address13;
-
+	
+	@Column(name = "address14")
 	private String address14;
-
+	
+	@Column(name = "address15")
 	private String address15;
 
+	@Column(name = "city_village")
 	private String cityVillage;
 
+	@Column(name = "county_district")
 	private String countyDistrict;
 
+	@Column(name = "state_province")
 	private String stateProvince;
 
+	@Column(name = "country")
 	private String country;
 
+	@Column(name = "postal_code", length = 50)
 	private String postalCode;
 
+	@Column(name = "latitude", length = 50)
 	private String latitude;
-
+	
+	@Column(name = "longitude", length = 50)
 	private String longitude;
 	
+	@Column(name = "start_date", length = 19)
 	private Date startDate;
 	
+	@Column(name = "end_date", length = 19)
 	private Date endDate;
 	
 	// Constructors
