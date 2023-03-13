@@ -94,12 +94,20 @@
 		    column="date_changed" length="19" />
 
 		<!-- Associations -->
+<<<<<<< HEAD
 		<many-to-one name="type" column="location_type_concept_id" class="org.openmrs.Concept" not-null="false" />
 
 		<many-to-one name="parentLocation" class="Location" column="parent_location" />
 		
 		<many-to-one name="changedBy" class="User">
     		<column name="changed_by" />
+=======
+		
+		<many-to-one name="parentLocation" class="Location" column="parent_location" />
+		
+		 <many-to-one name="changedBy" class="User">
+    	 <column name="changed_by" />
+>>>>>>> 2f3cd8a06 (Issue with method in EncounterService causing extreme slowness.)
   	    </many-to-one>
 		
 		<set name="childLocations" inverse="true" cascade="all" order-by="name" batch-size="100">
