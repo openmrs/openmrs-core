@@ -87,7 +87,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	@Override
 	public Encounter getEncounter(Integer encounterId) throws DAOException {
-		return (Encounter) sessionFactory.getCurrentSession().get(Encounter.class, encounterId);
+		return sessionFactory.getCurrentSession().get(Encounter.class, encounterId);
 	}
 	
 	/**
@@ -95,7 +95,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<Encounter> getEncountersByPatientId(Integer patientId) throws DAOException {
+	public List<Encounter> getEncountersByPatientId(List<Integer> patientId) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Encounter.class).createAlias("patient", "p").add(
 		    Restrictions.eq("p.patientId", patientId)).add(Restrictions.eq("voided", false)).addOrder(
 		    Order.desc("encounterDatetime"));
@@ -180,7 +180,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	@Override
 	public EncounterType getEncounterType(Integer encounterTypeId) throws DAOException {
-		return (EncounterType) sessionFactory.getCurrentSession().get(EncounterType.class, encounterTypeId);
+		return sessionFactory.getCurrentSession().get(EncounterType.class, encounterTypeId);
 	}
 	
 	/**
@@ -481,7 +481,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	@Override
 	public EncounterRole getEncounterRole(Integer encounterRoleId) throws DAOException {
-		return (EncounterRole) sessionFactory.getCurrentSession().get(EncounterRole.class, encounterRoleId);
+		return sessionFactory.getCurrentSession().get(EncounterRole.class, encounterRoleId);
 	}
 	
 	/**
