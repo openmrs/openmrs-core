@@ -35,8 +35,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
-import java.util.HashSet;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -66,7 +64,6 @@ import org.openmrs.OrderGroup;
 import org.openmrs.OrderSet;
 import org.openmrs.Patient;
 import org.openmrs.Person;
-import org.openmrs.PersonName;
 import org.openmrs.Privilege;
 import org.openmrs.Provider;
 import org.openmrs.Role;
@@ -904,13 +901,13 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see EncounterService#getEncountersByPatientId(Integer)
+	 * @see EncounterService#getEncountersByPatientId()
 	 */
 	@Test
 	public void getEncountersByPatientId_shouldNotGetVoidedEncounters() {
 		EncounterService encounterService = Context.getEncounterService();
 		
-		List<Encounter> encounters = encounterService.getEncountersByPatientId(3);
+		List<Encounter> encounters = encounterService.getEncountersByPatientId(Arrays.asList(3));
 		assertEquals(2, encounters.size());
 	}
 	
@@ -2385,7 +2382,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	{
 		EncounterService encounterService = Context.getEncounterService();
 		
-		int expectedSize = encounterService.getEncountersByPatientId(3).size();
+		int expectedSize = encounterService.getEncountersByPatientId(Arrays.asList(3)).size();
 		
 		Encounter encounter = new Encounter();
 		encounter.setLocation(new Location(1));
@@ -2408,7 +2405,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		encounter.addProvider(role, provider);
 		encounterService.saveEncounter(encounter);
 		
-		List<Encounter> patientEncounters = encounterService.getEncountersByPatientId(3);
+		List<Encounter> patientEncounters = encounterService.getEncountersByPatientId(Arrays.asList(3));
 		assertEquals(expectedSize + 1, patientEncounters.size());
 		
 		if (Context.isAuthenticated()) {
@@ -2417,7 +2414,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Context.authenticate("test_user", "test");
 		Context.addProxyPrivilege(PrivilegeConstants.GET_ENCOUNTERS);
 		
-		patientEncounters = encounterService.getEncountersByPatientId(3);
+		patientEncounters = encounterService.getEncountersByPatientId(Arrays.asList(3));
 		int actualSize = patientEncounters.size();
 		
 		Context.removeProxyPrivilege(PrivilegeConstants.GET_ENCOUNTERS);
@@ -2435,7 +2432,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	{
 		EncounterService encounterService = Context.getEncounterService();
 		
-		int beforeSize = encounterService.getEncountersByPatientId(3).size();
+		int beforeSize = encounterService.getEncountersByPatientId(Arrays.asList(3)).size();
 		
 		Encounter encounter = new Encounter();
 		encounter.setLocation(new Location(1));
@@ -2457,7 +2454,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		encounter.addProvider(role, provider);
 		encounterService.saveEncounter(encounter);
 		
-		List<Encounter> patientEncounters = encounterService.getEncountersByPatientId(3);
+		List<Encounter> patientEncounters = encounterService.getEncountersByPatientId(Arrays.asList(3));
 		assertNotNull(patientEncounters);
 		assertEquals(beforeSize + 1, patientEncounters.size());
 	}
