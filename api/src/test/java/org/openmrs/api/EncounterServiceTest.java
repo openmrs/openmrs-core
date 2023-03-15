@@ -907,7 +907,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	public void getEncountersByPatientId_shouldNotGetVoidedEncounters() {
 		EncounterService encounterService = Context.getEncounterService();
 		
-		List<Encounter> encounters = encounterService.getEncountersByPatientId(Arrays.asList(3));
+		List<Integer> patientIds = new ArrayList<>();
+		patientIds.add(3);
+		List<Encounter> encounters = encounterService.getEncountersByPatientId(patientIds);
 		assertEquals(2, encounters.size());
 	}
 	
@@ -2382,7 +2384,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	{
 		EncounterService encounterService = Context.getEncounterService();
 		
-		int expectedSize = encounterService.getEncountersByPatientId(Arrays.asList(3)).size();
+		List<Integer> patientIds = new ArrayList<>();
+		patientIds.add(3);
+		int expectedSize = encounterService.getEncountersByPatientId(patientIds).size();
 		
 		Encounter encounter = new Encounter();
 		encounter.setLocation(new Location(1));
@@ -2432,7 +2436,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	{
 		EncounterService encounterService = Context.getEncounterService();
 		
-		int beforeSize = encounterService.getEncountersByPatientId(Arrays.asList(3)).size();
+		List<Integer> patientIds = new ArrayList<>();
+		patientIds.add(3);
+		int beforeSize = encounterService.getEncountersByPatientId(patientIds).size();
 		
 		Encounter encounter = new Encounter();
 		encounter.setLocation(new Location(1));
