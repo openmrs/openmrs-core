@@ -97,6 +97,7 @@ RUN sed -i '/Connector port="8080"/a URIEncoding="UTF-8" relaxedPathChars="[]|" 
 RUN mkdir -p /openmrs/data/modules \
     && mkdir -p /openmrs/data/owa  \
     && mkdir -p /openmrs/data/configuration \
+    && mkdir -p /openmrs/data/configuration_checksums \
     && chmod -R g+rw /openmrs
     
 # Copy in the start-up scripts
