@@ -9,19 +9,6 @@
  */
 package org.openmrs.api.impl;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.CodedOrFreeText;
@@ -30,11 +17,30 @@ import org.openmrs.ConditionClinicalStatus;
 import org.openmrs.ConditionVerificationStatus;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.ConditionService;
+import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for methods that are specific to the {@link ConditionServiceImpl}. General tests that
@@ -53,6 +59,12 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 	
 	@Autowired
 	private PatientService patientService;
+
+	@Autowired
+	private EncounterService encounterService;
+
+	@Autowired
+	private ConceptService conceptService;
 	
 	@BeforeEach
 	public void setup (){
@@ -108,6 +120,74 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 		// asserting previous behaviour using onset and end date no longer has any effect
 		assertNull(newCondition.getOnsetDate());
 		assertNull(oldCondition.getEndDate());
+	}
+
+	@Test
+	public void saveCondition_shouldRetainPropertiesOfCondition() throws Exception {
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		// setup
+		Condition c = new Condition();
+		CodedOrFreeText codedOrFreeText = new CodedOrFreeText();
+		codedOrFreeText.setCoded(conceptService.getConcept(11));
+		codedOrFreeText.setSpecificName(conceptService.getConceptName(2460));
+		c.setCondition(codedOrFreeText);
+		c.setClinicalStatus(ConditionClinicalStatus.INACTIVE);
+		c.setVerificationStatus(ConditionVerificationStatus.CONFIRMED);
+		c.setAdditionalDetail("Additional information");
+		c.setOnsetDate(df.parse("2021-06-30"));
+		c.setEndDate(df.parse("2022-01-25"));
+		c.setEndReason("This is an end reason");
+		c.setPatient(patientService.getPatient(2));
+		c.setEncounter(encounterService.getEncounter(6));
+		c.setFormNamespaceAndPath("form1/namespace2/path3");
+		c = conditionService.saveCondition(c);
+		Integer conditionId1 = c.getConditionId();
+		Context.clearSession();
+		
+		// edit
+		c.setAdditionalDetail("Edited info");
+		c = conditionService.saveCondition(c);
+		Integer conditionId2 = c.getConditionId();
+		Context.flushSession();
+		Context.clearSession();
+		
+		// verify
+		assertNotEquals(conditionId1, conditionId2);
+		Condition c1 = conditionService.getCondition(conditionId1);
+		Condition c2 = conditionService.getCondition(conditionId2);
+		assertNotEquals(c1.getUuid(), c2.getUuid());
+		assertEquals(11, c2.getCondition().getCoded().getConceptId());
+		assertNull(c2.getCondition().getNonCoded());
+		assertEquals(2460, c2.getCondition().getSpecificName().getConceptNameId());
+		assertEquals(ConditionClinicalStatus.INACTIVE, c2.getClinicalStatus());
+		assertEquals(ConditionVerificationStatus.CONFIRMED, c2.getVerificationStatus());
+		assertEquals("Additional information", c1.getAdditionalDetail());
+		assertEquals("Edited info", c2.getAdditionalDetail());
+		assertEquals("2021-06-30", df.format(c2.getOnsetDate()));
+		assertEquals("2022-01-25", df.format(c2.getEndDate()));
+		// assertEquals("This is an end reason", c2.getEndReason()); // End reason is not persisted in the DB
+		assertEquals(2, c2.getPatient().getPatientId());
+		assertEquals(6, c2.getEncounter().getEncounterId());
+		assertEquals("form1/namespace2/path3", c2.getFormNamespaceAndPath());
+		assertEquals(c1, c2.getPreviousVersion());
+		assertTrue(c1.getVoided());
+		assertFalse(c2.getVoided());
+
+		// edit again
+		codedOrFreeText = new CodedOrFreeText();
+		codedOrFreeText.setNonCoded("Non-coded condition");
+		c.setCondition(codedOrFreeText);
+		c = conditionService.saveCondition(c);
+		Integer conditionId3 = c.getConditionId();
+		Context.flushSession();
+		Context.clearSession();
+
+		// verify again
+		Condition c3 = conditionService.getCondition(conditionId3);
+		assertEquals(c3.getPreviousVersion(), c2);
+		assertNull(c3.getCondition().getCoded());
+		assertNull(c3.getCondition().getSpecificName());
+		assertEquals("Non-coded condition", c3.getCondition().getNonCoded());
 	}
 	
 	@Test
@@ -229,6 +309,12 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 		// verify
 		Condition savedCondition = conditionService.getConditionByUuid(uuid);
 		assertEquals(Integer.valueOf(2039), savedCondition.getEncounter().getId());
+		
+		// edit and verify edit
+		savedCondition.setOnsetDate(new Date());
+		Condition editedCondition = conditionService.saveCondition(condition);
+		assertNotNull(editedCondition.getEncounter());
+		assertEquals(savedCondition.getEncounter(), editedCondition.getEncounter());
 	}
 
 	/**
@@ -255,6 +341,12 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 
 		// Validate test
 		assertEquals(ns + FORM_NAMESPACE_PATH_SEPARATOR + path, savedCondition.getFormNamespaceAndPath());
+
+		// edit and verify edit
+		savedCondition.setOnsetDate(new Date());
+		Condition editedCondition = conditionService.saveCondition(condition);
+		assertNotNull(editedCondition.getFormNamespaceAndPath());
+		assertEquals(savedCondition.getFormNamespaceAndPath(), editedCondition.getFormNamespaceAndPath());
 	}
 	
 	/**
