@@ -1186,7 +1186,7 @@
 
 		<slf4jVersion>1.7.36</slf4jVersion>
 		<log4jVersion>2.20.0</log4jVersion>
-		<owaspCsrfGuardVersion>4.2.0</owaspCsrfGuardVersion>
+		<owaspCsrfGuardVersion>4.2.1</owaspCsrfGuardVersion>
 
 		<customArgLineForTesting />
 
