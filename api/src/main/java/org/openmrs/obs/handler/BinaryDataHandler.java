@@ -52,6 +52,10 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 	@Override
 	public Obs getObs(Obs obs, String view) {
 		File file = getComplexDataFile(obs);
+		//will return the original obs object if the valueComplex field is null or empty
+		if (file == null) {
+			return obs;
+		}
 		log.debug("value complex: " + obs.getValueComplex());
 		log.debug("file path: " + file.getAbsolutePath());
 		ComplexData complexData = null;

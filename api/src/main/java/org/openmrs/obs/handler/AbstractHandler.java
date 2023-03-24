@@ -105,6 +105,10 @@ public class AbstractHandler {
 	 */
 	public Obs getObs(Obs obs, String view) {
 		File file = BinaryDataHandler.getComplexDataFile(obs);
+		// null check to ensure that the file variable is not null before attempting to read its contents
+		if (file == null) {
+			return obs;
+		}
 		log.debug("value complex: " + obs.getValueComplex());
 		log.debug("file path: " + file.getAbsolutePath());
 		ComplexData complexData = null;
