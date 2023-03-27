@@ -55,6 +55,10 @@ public class AbstractHandler {
 	 * @return File that the complex data should be written to
 	 */
 	public File getOutputFileToWrite(Obs obs) throws IOException {
+		//null check for obs
+		if (obs == null || obs.getComplexData() == null) {
+			throw new IllegalArgumentException("Obs  cannot be null");
+		}
 		String title = obs.getComplexData().getTitle();
 		String titleWithoutExtension = FilenameUtils.removeExtension(title);
 		String extension = "." + StringUtils.defaultIfEmpty(FilenameUtils.getExtension(title), "dat");
@@ -129,6 +133,10 @@ public class AbstractHandler {
 	 * @see org.openmrs.obs.ComplexObsHandler#purgeComplexData(org.openmrs.Obs)
 	 */
 	public boolean purgeComplexData(Obs obs) {
+		//null check for the obs object before using it to get the file for the complex data
+		if (obs == null) {
+			throw new IllegalArgumentException("Obs cannot be null");
+		}
 		File file = getComplexDataFile(obs);
 		if (!file.exists()) {
 			return true;
@@ -149,7 +157,8 @@ public class AbstractHandler {
 	 * @return File object
 	 */
 	public static File getComplexDataFile(Obs obs) {
-		String[] names = obs.getValueComplex().split("\\|");
+		//check for null value before splitting
+		String[] names = (obs.getValueComplex()!=null)? obs.getValueComplex().split("\\|"): new String[0];
 		String filename = names.length < 2 ? names[0] : names[names.length - 1];
 		File dir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(
 		    Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));

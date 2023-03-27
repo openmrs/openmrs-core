@@ -64,8 +64,9 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 		if (ComplexObsHandler.RAW_VIEW.equals(view)) {
 			// to handle problem with downloading/saving files with blank spaces or commas in their names
 			// also need to remove the "file" text appended to the end of the file name
-			String[] names = obs.getValueComplex().split("\\|");
-			String originalFilename = names[0];
+			// null check
+			String[] names = (obs.getValueComplex()!=null)? obs.getValueComplex().split("\\|"):new String[0];
+			String originalFilename =  (names.length > 0) ? names[0] : "";
 			originalFilename = originalFilename.replaceAll(",", "").replaceAll(" ", "").replaceAll("file$", "");
 			
 			try {
