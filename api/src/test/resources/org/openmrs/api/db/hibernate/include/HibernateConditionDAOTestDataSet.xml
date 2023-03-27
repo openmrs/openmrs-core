@@ -19,4 +19,16 @@
     onset_date="2017-01-12 00:00:52" end_date="2017-06-12 00:10:52" verification_status="CONFIRMED" uuid="2cb6880e-2cd6-11e4-9138-a6c5e4d20fb7"/>
   <conditions condition_id="6" patient_id="8" clinical_status="ACTIVE" creator="1" date_created="2015-04-12 00:00:00" voided="false"
     onset_date="2017-02-12 00:40:00" verification_status="CONFIRMED" uuid="2cd6780e-2a46-11e4-9038-a6c5e4d26fc2"/>
+  <conditions condition_id="7" patient_id="8" clinical_status="INACTIVE" creator="1" date_created="2015-04-12 00:00:00" voided="false"
+	onset_date="2017-02-12 00:40:00" verification_status="CONFIRMED" uuid="45c3b712-cca9-11ed-b5dc-0242ac120002"/>
+  <conditions condition_id="8" patient_id="8" clinical_status="HISTORY_OF" creator="1" date_created="2015-04-12 00:00:00" voided="false"
+	onset_date="2017-02-12 00:40:00" verification_status="CONFIRMED" uuid="518f7352-cca9-11ed-b5dc-0242ac120002"/>
+  <conditions condition_id="9" patient_id="8" clinical_status="RECURRENCE" creator="1" date_created="2015-04-12 00:00:00" voided="false"
+	onset_date="2017-02-12 00:40:00" verification_status="CONFIRMED" uuid="55bc5a3d-cca9-11ed-b5dc-0242ac120002"/>
+  <conditions condition_id="10" patient_id="8" clinical_status="RELAPSE" creator="1" date_created="2015-04-12 00:00:00" voided="false"
+	onset_date="2017-02-12 00:40:00" verification_status="CONFIRMED" uuid="593cb96e-cca9-11ed-b5dc-0242ac120002"/>
+  <conditions condition_id="11" patient_id="8" clinical_status="REMISSION" creator="1" date_created="2015-04-12 00:00:00" voided="false"
+	onset_date="2017-02-12 00:40:00" verification_status="CONFIRMED" uuid="5c6b5bda-cca9-11ed-b5dc-0242ac120002"/>
+  <conditions condition_id="12" patient_id="8" clinical_status="RESOLVED" creator="1" date_created="2015-04-12 00:00:00" voided="false"
+	onset_date="2017-02-12 00:40:00" verification_status="CONFIRMED" uuid="5fdf3744-cca9-11ed-b5dc-0242ac120002"/>
 </dataset>
