@@ -9,6 +9,7 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.hibernate.query.Query;
@@ -19,6 +20,10 @@ import org.openmrs.Patient;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.ConditionDAO;
 import org.openmrs.api.db.DAOException;
+
+import static org.openmrs.ConditionClinicalStatus.ACTIVE;
+import static org.openmrs.ConditionClinicalStatus.RECURRENCE;
+import static org.openmrs.ConditionClinicalStatus.RELAPSE;
 
 /**
  * Hibernate implementation of the ConditionDAO
@@ -85,9 +90,13 @@ public class HibernateConditionDAO implements ConditionDAO {
 	@Override
 	public List<Condition> getActiveConditions(Patient patient) {
 		Query<Condition> query = sessionFactory.getCurrentSession().createQuery(
-				"from Condition c where c.patient.patientId = :patientId and c.clinicalStatus = 'ACTIVE' and c.voided = false order "
-						+ "by c.dateCreated desc", Condition.class);
+				 "from Condition c " +
+					 "where c.patient.patientId = :patientId " +
+					"and c.clinicalStatus in :activeStatuses " +
+					"and c.voided = false " +
+					"order by c.dateCreated desc", Condition.class);
 		query.setParameter("patientId", patient.getId());
+		query.setParameterList("activeStatuses", Arrays.asList(ACTIVE, RECURRENCE, RELAPSE));
 		return query.list();
 	}
 
