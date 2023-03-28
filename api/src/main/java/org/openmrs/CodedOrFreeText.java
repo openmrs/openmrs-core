@@ -49,7 +49,7 @@ public class CodedOrFreeText {
 		this.specificName = specificName;
 		this.nonCoded = nonCoded;
 	}
-
+	
 	/**
 	 * Gets the coded concept
 	 *
