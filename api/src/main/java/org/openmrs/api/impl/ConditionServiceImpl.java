@@ -118,20 +118,8 @@ public class ConditionServiceImpl extends BaseOpenmrsService implements Conditio
 		boolean conditionHasChanged = !newCondition.matches(condition);
 		boolean existingVoided = BooleanUtils.isTrue(condition.getVoided());
 		boolean newVoided = BooleanUtils.isTrue(newCondition.getVoided());
-		boolean unVoidOriginal = existingVoided && !newVoided;
 		boolean voidOriginal = !existingVoided && conditionHasChanged;
-		boolean saveNew = !newVoided && !unVoidOriginal && conditionHasChanged;
-
-		// If the intention is to un-void the original, then modify the original Condition and return it
-		if (unVoidOriginal) {
-			Condition.copy(newCondition, condition);
-			condition.setVoided(false);
-			condition.setVoidedBy(null);
-			condition.setDateVoided(null);
-			condition.setVoidReason(null);
-			condition = conditionDAO.saveCondition(condition);
-			return condition;
-		}
+		boolean saveNew = !newVoided && conditionHasChanged;
 		
 		// If the intention is to void or change the original Condition, then void the existing and save the new
 		if (voidOriginal) {

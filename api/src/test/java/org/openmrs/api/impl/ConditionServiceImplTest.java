@@ -252,9 +252,9 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 		assertNull(unvoidedCondition.getVoidReason());
 
 		Condition oldCondition = conditionService.getConditionByUuid(EXISTING_CONDITION_UUID);
-		assertEquals(unvoidedCondition.getId(), oldCondition.getId());
-		assertFalse(oldCondition.getVoided());
-		assertNull(oldCondition.getVoidReason());
+		assertNotEquals(unvoidedCondition.getId(), oldCondition.getId());
+		assertTrue(oldCondition.getVoided());
+		assertEquals("Voided by a test", oldCondition.getVoidReason());
 		int endingNum = conditionService.getAllConditions(patient).size();
 		assertEquals(startingNum, endingNum-1);
 	}
