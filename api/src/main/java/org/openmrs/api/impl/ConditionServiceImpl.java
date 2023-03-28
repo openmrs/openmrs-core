@@ -9,10 +9,12 @@
  */
 package org.openmrs.api.impl;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Condition;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
+import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConditionService;
 import org.openmrs.api.context.Context;
@@ -101,46 +103,41 @@ public class ConditionServiceImpl extends BaseOpenmrsService implements Conditio
 	 */
 	@Override
 	public Condition saveCondition(Condition condition) throws APIException {
-		Condition existingCondition = Context.getConditionService().getConditionByUuid(condition.getUuid());
+		
 		// If there is no existing condition, then we are creating a condition
-		if (existingCondition == null) {
+		Integer existingConditionId = condition.getConditionId();
+		if (existingConditionId == null) {
 			return conditionDAO.saveCondition(condition);
 		}
-
-		// If the incoming condition has been voided, we simply void the existing condition
-		// All other changes are ignored
-		if (condition.getVoided()) {
-			if (!existingCondition.getVoided()) {
-				return Context.getConditionService().voidCondition(existingCondition,
-					StringUtils.isNotBlank(condition.getVoidReason()) ? condition.getVoidReason() : "Condition deleted");
-			} else {
-				return existingCondition;
-			}
+		
+		// If there is an existing condition, create a new condition from it and reset the existing instance state
+		Condition newCondition = Condition.newInstance(condition);
+		Context.refreshEntity(condition);
+		
+		// Determine how the existing state and new state have changed
+		boolean conditionHasChanged = !newCondition.matches(condition);
+		boolean existingVoided = BooleanUtils.isTrue(condition.getVoided());
+		boolean newVoided = BooleanUtils.isTrue(newCondition.getVoided());
+		boolean voidOriginal = !existingVoided && conditionHasChanged;
+		boolean saveNew = !newVoided && conditionHasChanged;
+		
+		// If the intention is to void or change the original Condition, then void the existing and save the new
+		if (voidOriginal) {
+			User currentUser = Context.getAuthenticatedUser();
+			String reason = saveNew ? "Condition replaced by " + newCondition.getUuid() : "Condition removed";
+			condition.setVoided(true);
+			condition.setVoidedBy(newCondition.getVoidedBy() == null ? currentUser : newCondition.getVoidedBy());
+			condition.setVoidReason(newCondition.getVoidReason() == null ? reason : newCondition.getVoidReason());
+			condition = conditionDAO.saveCondition(condition);
 		}
 		
-		// If the existing condition is voided, we will only calls to unvoid the condition
-		// All other changes are ignored
-		if (existingCondition.getVoided()) {
-			if (!condition.getVoided()) {
-				return Context.getConditionService().unvoidCondition(existingCondition);
-			} else {
-				return existingCondition;
-			}
+		if (saveNew) {
+			newCondition.setPreviousVersion(condition);
+			return conditionDAO.saveCondition(newCondition);
 		}
-
-		// If we got here, the updated condition and the existing condition are both live, so the updated condition is now
-		// replacing the existing condition
-		Condition newCondition = Condition.newInstance(condition);
-		newCondition.setPreviousVersion(existingCondition);
-
-		if (!existingCondition.getVoided()) {
-			existingCondition.setVoided(true);
-			existingCondition.setVoidedBy(Context.getAuthenticatedUser());
-			existingCondition.setVoidReason("Condition replaced");
-			conditionDAO.saveCondition(existingCondition);
+		else {
+			return condition;
 		}
-
-		return conditionDAO.saveCondition(newCondition);
 	}
 
 	/**
