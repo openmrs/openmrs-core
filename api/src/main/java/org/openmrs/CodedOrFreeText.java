@@ -9,6 +9,9 @@
  */
 package org.openmrs;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
 
@@ -49,7 +52,25 @@ public class CodedOrFreeText {
 		this.specificName = specificName;
 		this.nonCoded = nonCoded;
 	}
-	
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder().append(coded).append(specificName).append(nonCoded).toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (object == null || !(object instanceof CodedOrFreeText)) {
+			return false;
+		}
+		CodedOrFreeText that = (CodedOrFreeText) object; 
+		EqualsBuilder b = new EqualsBuilder();
+		b.append(this.coded, that.coded);
+		b.append(this.specificName, that.specificName);
+		b.append(this.nonCoded, that.nonCoded);
+		return b.isEquals();
+	}
+
 	/**
 	 * Gets the coded concept
 	 *
