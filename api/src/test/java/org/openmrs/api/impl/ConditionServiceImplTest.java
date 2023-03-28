@@ -100,26 +100,34 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void saveCondition_shouldReplaceExistingCondition() {
+
 		// setup
-		Condition condition = new Condition();
-		condition.setCondition(new CodedOrFreeText());
-		condition.setClinicalStatus(ConditionClinicalStatus.INACTIVE);
-		condition.setVerificationStatus(ConditionVerificationStatus.CONFIRMED);
-		condition.setUuid(EXISTING_CONDITION_UUID);
-		condition.setPatient(new Patient(2));
+		Condition condition = conditionService.getConditionByUuid(EXISTING_CONDITION_UUID);
+		Integer oldConditionId = condition.getConditionId();
 		
 		// perform
-		Condition newCondition = conditionService.saveCondition(condition);
+		condition.setClinicalStatus(ConditionClinicalStatus.INACTIVE);
+		condition = conditionService.saveCondition(condition);
+		Integer newConditionId = condition.getConditionId();
 		
 		// verify
-		Condition oldCondition = conditionService.getConditionByUuid(EXISTING_CONDITION_UUID);
+		assertNotEquals(oldConditionId, newConditionId);
+		
+		// existing condition should be unchanged, but voided
+		Condition oldCondition = conditionService.getCondition(oldConditionId);
+		assertEquals(EXISTING_CONDITION_UUID, oldCondition.getUuid());
+		assertEquals(ConditionClinicalStatus.ACTIVE, oldCondition.getClinicalStatus());
 		assertTrue(oldCondition.getVoided());
+		assertNotNull(oldCondition.getOnsetDate());
+		assertNull(oldCondition.getEndDate());
+		
+		// new condition should reflect changed existing condition and have it as a previous version
+		Condition newCondition = conditionService.getCondition(newConditionId);
+		assertNotEquals(EXISTING_CONDITION_UUID, newCondition.getUuid());
 		assertEquals(newCondition.getPreviousVersion(), oldCondition);
 		assertEquals(newCondition.getClinicalStatus(), ConditionClinicalStatus.INACTIVE);
-		
-		// asserting previous behaviour using onset and end date no longer has any effect
-		assertNull(newCondition.getOnsetDate());
-		assertNull(oldCondition.getEndDate());
+		assertEquals(oldCondition.getOnsetDate().getTime(), newCondition.getOnsetDate().getTime());
+		assertNull(newCondition.getEndDate());
 	}
 
 	@Test
@@ -142,14 +150,11 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 		c.setFormNamespaceAndPath("form1/namespace2/path3");
 		c = conditionService.saveCondition(c);
 		Integer conditionId1 = c.getConditionId();
-		Context.clearSession();
 		
 		// edit
 		c.setAdditionalDetail("Edited info");
 		c = conditionService.saveCondition(c);
 		Integer conditionId2 = c.getConditionId();
-		Context.flushSession();
-		Context.clearSession();
 		
 		// verify
 		assertNotEquals(conditionId1, conditionId2);
@@ -179,8 +184,6 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 		c.setCondition(codedOrFreeText);
 		c = conditionService.saveCondition(c);
 		Integer conditionId3 = c.getConditionId();
-		Context.flushSession();
-		Context.clearSession();
 
 		// verify again
 		Condition c3 = conditionService.getCondition(conditionId3);
@@ -189,16 +192,29 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 		assertNull(c3.getCondition().getSpecificName());
 		assertEquals("Non-coded condition", c3.getCondition().getNonCoded());
 	}
+
+	@Test
+	public void saveCondition_shouldNotVoidAndRecreateIfUnchanged() throws Exception {
+		Condition condition = conditionService.getConditionByUuid(EXISTING_CONDITION_UUID);
+		Integer conditionId = condition.getConditionId();
+		int startingNum = conditionService.getAllConditions(condition.getPatient()).size();
+		condition = conditionService.saveCondition(condition);
+		int endingNum = conditionService.getAllConditions(condition.getPatient()).size();
+		assertEquals(startingNum, endingNum);
+		assertEquals(EXISTING_CONDITION_UUID, condition.getUuid());
+		assertEquals(conditionId, condition.getConditionId());
+	}
 	
 	@Test
-	public void saveCondition_shouldVoidExistingCondition() {
+	public void saveCondition_shouldVoidExistingConditionAndNotCreateNewCondition() {
 		// setup
-		Condition condition = new Condition();
-		condition.setUuid(EXISTING_CONDITION_UUID);
-		condition.setVoided(true);
-		condition.setVoidReason("Voided by a test");
+		Condition condition = conditionService.getConditionByUuid(EXISTING_CONDITION_UUID);
+		Patient patient = condition.getPatient();
+		int startingNum = conditionService.getAllConditions(patient).size();
 		
 		// perform
+		condition.setVoided(true);
+		condition.setVoidReason("Voided by a test");
 		Condition voidedCondition = conditionService.saveCondition(condition);
 		
 		// verify
@@ -209,85 +225,38 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 		assertEquals(voidedCondition.getId(), oldCondition.getId());
 		assertTrue(oldCondition.getVoided());
 		assertEquals(voidedCondition.getVoidReason(), oldCondition.getVoidReason());
-	}
 
-	@Test
-	public void saveCondition_shouldNotChangeAnyOtherFieldsWhenVoidingCondition() {
-		// setup
-		Condition condition = new Condition();
-		condition.setUuid(EXISTING_CONDITION_UUID);
-		condition.setVoided(true);
-		condition.setVoidReason("Voided by a test");
-		condition.setPatient(new Patient(8));
-
-		// perform
-		Condition voidedCondition = conditionService.saveCondition(condition);
-
-		// verify
-		assertTrue(voidedCondition.getVoided());
-		assertEquals("Voided by a test", voidedCondition.getVoidReason());
-		assertEquals(voidedCondition.getPatient().getId(), 2);
+		int endingNum = conditionService.getAllConditions(patient).size();
+		assertEquals(startingNum, endingNum+1);
 	}
 
 	@Test
 	public void saveCondition_shouldUnvoidExistingVoidedCondition() {
 		// setup
-		Context.getConditionService().voidCondition(conditionService.getConditionByUuid(EXISTING_CONDITION_UUID), "Voided for test");
-		assertTrue(conditionService.getConditionByUuid(EXISTING_CONDITION_UUID).getVoided());
-		
-		Condition condition = new Condition();
-		condition.setVoided(false);
-		condition.setUuid(EXISTING_CONDITION_UUID);
+		Condition condition = conditionService.getConditionByUuid(EXISTING_CONDITION_UUID);
+		Patient patient = condition.getPatient();
+		condition.setVoided(true);
+		condition.setVoidReason("Voided by a test");
+		condition = conditionService.saveCondition(condition);
+		assertTrue(condition.getVoided());
+		int startingNum = conditionService.getAllConditions(patient).size();
 
 		// perform
+		condition.setVoided(false);
 		Condition unvoidedCondition = conditionService.saveCondition(condition);
 
 		// verify
 		assertFalse(unvoidedCondition.getVoided());
+		assertNull(unvoidedCondition.getDateVoided());
+		assertNull(unvoidedCondition.getVoidedBy());
 		assertNull(unvoidedCondition.getVoidReason());
 
 		Condition oldCondition = conditionService.getConditionByUuid(EXISTING_CONDITION_UUID);
-		assertEquals(unvoidedCondition.getId(), oldCondition.getId());
-		assertFalse(oldCondition.getVoided());
-		assertEquals(unvoidedCondition.getVoidReason(), oldCondition.getVoidReason());
-	}
-
-	@Test
-	public void saveCondition_shouldNotChangeAnyOtherFieldsWhenUnvoidingCondition() {
-		// setup
-		Context.getConditionService().voidCondition(conditionService.getConditionByUuid(EXISTING_CONDITION_UUID), "Voided for test");
-		assertTrue(conditionService.getConditionByUuid(EXISTING_CONDITION_UUID).getVoided());
-
-		Condition condition = new Condition();
-		condition.setVoided(false);
-		condition.setUuid(EXISTING_CONDITION_UUID);
-		condition.setPatient(new Patient(8));
-
-		// perform
-		Condition unvoidedCondition = conditionService.saveCondition(condition);
-
-		// verify
-		assertFalse(unvoidedCondition.getVoided());
-		assertEquals(unvoidedCondition.getPatient().getId(), 2);
-	}
-
-	@Test
-	public void saveCondition_shouldNotUpdateAVoidedCondition() {
-		// setup
-		Context.getConditionService().voidCondition(conditionService.getConditionByUuid(EXISTING_CONDITION_UUID), "Voided for test");
-		assertTrue(conditionService.getConditionByUuid(EXISTING_CONDITION_UUID).getVoided());
-
-		Condition condition = new Condition();
-		condition.setVoided(true);
-		condition.setUuid(EXISTING_CONDITION_UUID);
-		condition.setPatient(new Patient(8));
-
-		// perform
-		Condition voidedCondition = conditionService.saveCondition(condition);
-
-		// verify
-		assertTrue(voidedCondition.getVoided());
-		assertEquals(voidedCondition.getPatient().getId(), 2);
+		assertNotEquals(unvoidedCondition.getId(), oldCondition.getId());
+		assertTrue(oldCondition.getVoided());
+		assertEquals("Voided by a test", oldCondition.getVoidReason());
+		int endingNum = conditionService.getAllConditions(patient).size();
+		assertEquals(startingNum, endingNum-1);
 	}
 
 	/**
@@ -302,7 +271,7 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 		condition.setPatient(new Patient(2));
 		
 		// replay
-		condition.setEncounter(new Encounter(2039));
+		condition.setEncounter(encounterService.getEncounter(2039));
 		conditionService.saveCondition(condition);
 		
 		// verify
@@ -383,9 +352,7 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 	@Test
 	public void getActiveConditions_shouldGetActiveConditions() {
 		List<Condition> activeConditions = conditionService.getActiveConditions(patientService.getPatient(2));
-		
 		assertThat(activeConditions, hasSize(1));
-		
 		assertEquals("2cc6880e-2c46-11e4-9138-a6c5e4d20fb7", activeConditions.get(0).getUuid());
 	}
 
@@ -393,14 +360,13 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 	 * @see ConditionService#getAllConditions(Patient)
 	 */
 	@Test
-	public void getAllConditions_shouldGetAllConditions() {
-		List<Condition> conditions = conditionService.getAllConditions(patientService.getPatient(2));
-		
-		assertThat(conditions, hasSize(3));
-		
-		assertThat(conditions.get(0).getUuid(), equalTo("2cb6880e-2cd6-11e4-9138-a6c5e4d20fb7"));
-		assertThat(conditions.get(1).getUuid(), equalTo("2cc6880e-2c46-15e4-9038-a6c5e4d22fb7"));
-		assertThat(conditions.get(2).getUuid(), equalTo("2cc6880e-2c46-11e4-9138-a6c5e4d20fb7"));
+	public void getAllConditions_shouldGetAllUnvoidedConditions() {
+		Patient patient = patientService.getPatient(2);
+		List<Condition> conditions = conditionService.getAllConditions(patient);
+		assertThat(conditions, hasSize(2));
+		// Condition with uuid 2cb6880e-2cd6-11e4-9138-a6c5e4d20fb7 is voided
+		assertThat(conditions.get(0).getUuid(), equalTo("2cc6880e-2c46-15e4-9038-a6c5e4d22fb7"));
+		assertThat(conditions.get(1).getUuid(), equalTo("2cc6880e-2c46-11e4-9138-a6c5e4d20fb7"));
 	}
 	
 	/**
@@ -450,7 +416,7 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 		assertTrue(voidedCondition.getVoided());
 		assertNotNull(voidedCondition.getVoidReason());
 		assertNotNull(voidedCondition.getDateVoided());
-		assertEquals(new Integer(1), voidedCondition.getVoidedBy().getUserId());
+		assertEquals(1, voidedCondition.getVoidedBy().getUserId());
 		
 		Condition unVoidedCondition = conditionService.unvoidCondition(voidedCondition);
 		

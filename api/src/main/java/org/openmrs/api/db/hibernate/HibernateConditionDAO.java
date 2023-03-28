@@ -97,8 +97,10 @@ public class HibernateConditionDAO implements ConditionDAO {
 	@Override
 	public List<Condition> getAllConditions(Patient patient) {
 		Query<Condition> query = sessionFactory.getCurrentSession().createQuery(
-				"from Condition con where con.patient.patientId = :patientId " +
-						"order by con.dateCreated desc", Condition.class);
+				"from Condition c " +
+					"where c.patient.patientId = :patientId " +
+					"and c.voided = false " +
+					"order by c.dateCreated desc", Condition.class);
 		query.setParameter("patientId", patient.getId());
 		return query.list();
 	}
