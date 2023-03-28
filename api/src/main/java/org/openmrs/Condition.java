@@ -165,13 +165,18 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 		if (c == null) {
 			return false;
 		}
+		CodedOrFreeText coft1 = getCondition() == null ? new CodedOrFreeText() : getCondition();
+		CodedOrFreeText coft2 = c.getCondition() == null ? new CodedOrFreeText() : c.getCondition();
+		
 		boolean ret = (OpenmrsUtil.nullSafeEquals(getPreviousVersion(), c.getPreviousVersion()));
 		ret = ret && (OpenmrsUtil.nullSafeEquals(getPatient(), c.getPatient()));
 		ret = ret && (OpenmrsUtil.nullSafeEquals(getEncounter(), c.getEncounter()));
 		ret = ret && (OpenmrsUtil.nullSafeEquals(getFormNamespaceAndPath(), c.getFormNamespaceAndPath()));
 		ret = ret && (OpenmrsUtil.nullSafeEquals(getClinicalStatus(), c.getClinicalStatus()));
 		ret = ret && (OpenmrsUtil.nullSafeEquals(getVerificationStatus(), c.getVerificationStatus()));
-		ret = ret && (OpenmrsUtil.nullSafeEquals(getCondition(), c.getCondition()));
+		ret = ret && (OpenmrsUtil.nullSafeEquals(coft1.getCoded(), coft2.getCoded()));
+		ret = ret && (OpenmrsUtil.nullSafeEquals(coft1.getSpecificName(), coft2.getSpecificName()));
+		ret = ret && (OpenmrsUtil.nullSafeEquals(coft1.getNonCoded(), coft2.getNonCoded()));
 		ret = ret && (OpenmrsUtil.nullSafeEquals(getOnsetDate(), c.getOnsetDate()));
 		ret = ret && (OpenmrsUtil.nullSafeEquals(getAdditionalDetail(), c.getAdditionalDetail()));
 		ret = ret && (OpenmrsUtil.nullSafeEquals(getEndDate(), c.getEndDate()));
