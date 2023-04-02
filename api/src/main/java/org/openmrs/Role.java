@@ -9,13 +9,26 @@
  */
 package org.openmrs;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.search.annotations.Field;
 import org.openmrs.util.RoleConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A Role is just an aggregater of {@link Privilege}s. {@link User}s contain a number of roles
@@ -25,20 +38,51 @@ import org.slf4j.LoggerFactory;
  *
  * @see Privilege
  */
-public class Role extends BaseChangeableOpenmrsMetadata {
+
+@Entity
+@Table(name="role")
+public class Role extends BaseOpenmrsObject {
 	
 	public static final long serialVersionUID = 1234233L;
 	
 	private static final Logger log = LoggerFactory.getLogger(Role.class);
 	
-	// Fields
-	
+	@Id
+	@Column(name = "role")
 	private String role;
 	
+	@Transient
+	@Field
+	private String name;
+	
+	@Column(name = "description", length = 255)
+	private String description;
+	
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(
+		name = "role_privilege",
+		joinColumns = @JoinColumn(name = "role"),
+		inverseJoinColumns = @JoinColumn(name = "privilege")
+	)
+	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	private Set<Privilege> privileges;
 	
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(
+		name = "role_role",
+		joinColumns = @JoinColumn(name = "child_role"),
+		inverseJoinColumns = @JoinColumn(name = "parent_role")
+	)
+	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	private Set<Role> inheritedRoles;
 	
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(
+		name = "role_role",
+		joinColumns = @JoinColumn(name = "parent_role"),
+		inverseJoinColumns = @JoinColumn(name = "child_role")
+	)
+	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	private Set<Role> childRoles;
 	
 	// Constructors
@@ -50,6 +94,20 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 	/** constructor with id */
 	public Role(String role) {
 		this.role = role;
+	}
+	
+	/**
+	 * @return the description
+	 */
+	public String getDescription() {
+		return this.description;
+	}
+	
+	/**
+	 * @param description the description to set
+	 */
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	
 	/** constructor with all database required properties */
@@ -72,11 +130,16 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 		this.privileges = privileges;
 	}
 	
-	@Override
 	public String getName() {
 		return this.getRole();
 	}
 	
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+	}
+		
 	/**
 	 * Adds the given Privilege to the list of privileges
 	 *
