@@ -699,7 +699,12 @@ public class Context {
 		if (Daemon.isDaemonThread()) {
 			return true;
 		} else {
-			return getAuthenticatedUser() != null;
+			try {
+				return getAuthenticatedUser() != null;
+			} catch (APIException e) {
+				log.info("Could not get authenticated user inside called to isAuthenticated(), assuming no user context has been defined", e);
+				return false;
+			}
 		}
 	}
 
