@@ -83,7 +83,11 @@ public class Daemon {
 					exceptionThrown = e;
 				}
 				finally {
-					Context.closeSession();
+					try {
+						Context.closeSession();
+					} finally {
+						isDaemonThread.remove();
+					}
 				}
 			}
 		};
@@ -145,7 +149,7 @@ public class Daemon {
 
 					if (!CollectionUtils.isEmpty(roleNames)) {
 						List<Role> roles = roleNames.stream().map(roleName -> Context.getUserService().getRole(roleName)).collect(Collectors.toList()); 
-						roles.forEach(role -> user.addRole(role));
+						roles.forEach(user::addRole);
 					}
 
 					returnedObject = Context.getUserService().createUser(user, password);
@@ -154,7 +158,11 @@ public class Daemon {
 					exceptionThrown = e;
 				}
 				finally {
-					Context.closeSession();
+					try {
+						Context.closeSession();
+					} finally {
+						isDaemonThread.remove();
+					}
 				}
 			}
 		};
@@ -208,7 +216,11 @@ public class Daemon {
 					exceptionThrown = e;
 				}
 				finally {
-					Context.closeSession();
+					try {
+						Context.closeSession();
+					} finally {
+						isDaemonThread.remove();
+					}
 				}
 				
 			}
@@ -260,7 +272,11 @@ public class Daemon {
 					runnable.run();
 				}
 				finally {
-					Context.closeSession();
+					try {
+						Context.closeSession();
+					} finally {
+						isDaemonThread.remove();
+					}
 				}
 			}
 		};
@@ -305,7 +321,11 @@ public class Daemon {
 					exceptionThrown = e;
 				}
 				finally {
-					Context.closeSession();
+					try {
+						Context.closeSession();
+					} finally {
+						isDaemonThread.remove();
+					}
 				}
 			}
 		};
@@ -356,7 +376,11 @@ public class Daemon {
 					runnable.run();
 				}
 				finally {
-					Context.closeSession();
+					try {
+						Context.closeSession();
+					} finally {
+						isDaemonThread.remove();
+					}
 				}
 			}
 		};
