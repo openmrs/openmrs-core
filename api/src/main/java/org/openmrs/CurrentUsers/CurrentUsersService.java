@@ -13,38 +13,59 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.TreeMap;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
+import org.openmrs.web.WebConstants;
 
 /**
- * A service that manages the list of current users.
+ * Utility methods which maintain the list of current users.
  */
-public class CurrentUsersService extends User{
+public class CurrentUsersService {
 	
-	private static final long serialVersionUID = 1L;
-
-	private static final Log log = LogFactory.getLog(CurrentUsersService.class);
+	private static final Log log = LogFactory.getLog(CurrentUsers.class);
 	
-	private static final Map<String, String> currentUserMap = new ConcurrentHashMap<>();
-	
-	private static List<HttpSession> currentUsers = new ArrayList<>();
-	
-	public static Map<String, String> getCurrentUserMap() {
+	/**
+	 * Initialize the current users list.
+	 * 
+	 * @param servletContext
+	 */
+	public static Map<String, String> init(ServletContext servletContext) {
+		Map<String, String> currentUserMap = Collections.synchronizedMap(new TreeMap<String, String>());
+		servletContext.setAttribute(WebConstants.CURRENT_USERS, currentUserMap);
 		return currentUserMap;
 	}
-
+	
+	/**
+	 * Get the current list of map of users stored in the session
+	 * 
+	 * @param httpSession the current session
+	 * @return map of users logged in
+	 */
+	@SuppressWarnings("unchecked")
+	private static Map<String, String> getCurrentUsers(HttpSession httpSession) {
+		Map<String, String> currentUsers = (Map<String, String>) httpSession.getServletContext()
+		        .getAttribute(WebConstants.CURRENT_USERS);
+		if (currentUsers == null) {
+			currentUsers = init(httpSession.getServletContext());
+		}
+		return currentUsers;
+	}
+	
 	/**
 	 * Add the user to the current users.
 	 * 
+	 * @param httpSession
 	 * @param user the user that just logged in
 	 */
-	public void addUser(User user) {
+	public static void addUser(HttpSession httpSession, User user) {
+		Map<String, String> currentUsers = getCurrentUsers(httpSession);
 		String currentUserName = user.getUsername();
 		// if user name is blank then print their system id
 		if (StringUtils.isBlank(currentUserName)) {
@@ -53,45 +74,40 @@ public class CurrentUsersService extends User{
 		if (log.isDebugEnabled()) {
 			log.debug("Adding current user " + currentUserName);
 		}
-		currentUserMap.put(user.getSessionId(), currentUserName);
+		currentUsers.put(httpSession.getId(), currentUserName);
 	}
 	
 	/**
 	 * Remove the current user from the list of current users.
 	 * 
-	 * @param sessionId the session ID of the user to remove
+	 * @param httpSession
 	 */
-	public void removeUser(String sessionId) {
+	public static void removeUser(HttpSession httpSession) {
+		String sessionId = httpSession.getId();
+		Map<String, String> currentUsers = getCurrentUsers(httpSession);
 		if (log.isDebugEnabled()) {
 			log.debug(
-			    "Removing user from the current users. session: " + sessionId + " user: " + currentUserMap.get(sessionId));
+			    "Removing user from the current users. session: " + sessionId + " user: " + currentUsers.get(sessionId));
 		}
-		currentUserMap.remove(sessionId);
-	}
-	
-	public static List<HttpSession> getCurrentUsers() {
-		return currentUsers;
+		currentUsers.remove(sessionId);
 	}
 	
 	/**
 	 * Get sorted user names list.
 	 * 
+	 * @param httpSession
 	 * @return sorted user names
 	 */
-	public List<String> getCurrentUsernames() {
-		List<String> userNames = new ArrayList<String>(currentUserMap.values());
+	public static List<String> getCurrentUsernames(HttpSession httpSession) {
+		Map<String, String> currentUsers = getCurrentUsers(httpSession);
+		List<String> userNames = new ArrayList<String>();
+		synchronized (currentUsers) {
+			for (String value : currentUsers.values()) {
+				userNames.add(value);
+			}
+		}
 		Collections.sort(userNames);
 		return userNames;
-	}
-
-	
-	public boolean isUserLoggedIn(HttpSession session) {
-		String username = (String) session.getAttribute("username");
-		return username != null && currentUsers.contains(username);
-	}
-	
-	public void setCurrentUsers(List<HttpSession> currentUsers) {
-		this.currentUsers = currentUsers;
 	}
 	
 }

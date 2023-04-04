@@ -20,8 +20,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.http.HttpSession;
-
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.LocaleUtility;
@@ -97,9 +95,9 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 		this.person = person;
 	}
 	
-	public User(HttpSession sessionId) {
-		this.sessionId = sessionId.getId();
-	}
+	/*	public User(HttpSession sessionId) {
+			this.sessionId = sessionId.getId();
+		}*/
 	
 	public String getSessionId() {
 		return sessionId;
