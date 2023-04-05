@@ -107,7 +107,7 @@ public class AbstractHandler {
 	/**
 	 * @see org.openmrs.obs.ComplexObsHandler#getObs(Obs, String)
 	 */
-	public Obs getObs(Obs obs, String view) {
+	public Obs getObs(Obs obs, String fILENAME) {
 		File file = BinaryDataHandler.getComplexDataFile(obs);
 		// null check to ensure that the file variable is not null before attempting to read its contents
 		if (file == null) {

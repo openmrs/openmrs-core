@@ -9,6 +9,7 @@
  */
 package org.openmrs.obs;
 
+import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
@@ -43,6 +44,8 @@ public class AbstractHandlerTest extends BaseContextSensitiveTest {
 	private final String FILENAME = "mytxtfile.txt";
 	
 	private  AbstractHandler handler;
+
+	private Obs obs;
 	
 	@Autowired
 	private AdministrationService adminService;
@@ -70,10 +73,9 @@ public class AbstractHandlerTest extends BaseContextSensitiveTest {
 		for (int i = 0; i <= 101; i++) {
 			String currentData = (i % 2 == 0) ? content1 : content2;
 			
-			ComplexData complexData = new ComplexData(FILENAME, currentData);
-			
 			Obs obs = new Obs();
-			obs.setComplexData(complexData);
+            obs.setComplexData(new ComplexData(FILENAME, ""));
+
 			
 			currentFile = handler.getOutputFileToWrite(obs);
 			
@@ -156,5 +158,99 @@ public class AbstractHandlerTest extends BaseContextSensitiveTest {
 		assertEquals(extensionPartWithNullTitle, "dat");
 		assertEquals(uuidPartWithNullTitle, obsWithNullTitle.getUuid());
 	}
-	
+
+	@Test
+    public void getOutputFileToWrite_shouldThrowIllegalArgumentExceptionIfObsIsNull() throws IOException {
+		try {
+			handler.getOutputFileToWrite(null);
+			fail("Expected IllegalArgumentException was not thrown");
+		} catch (IllegalArgumentException e) {
+			// Test passed
+		}
+    }
+
+	@Test
+    public void getOutputFileToWrite_shouldThrowIllegalArgumentExceptionIfComplexDataIsNull() throws IOException {
+		try {
+			obs.setComplexData(null);
+			handler.getOutputFileToWrite(obs);
+			fail("Expected IllegalArgumentException was not thrown");
+		} catch (IllegalArgumentException e) {
+			// Test passed
+		}
+    }
+
+	@Test
+    public void purgeComplexData_shouldThrowIllegalArgumentExceptionIfObsIsNull() {
+		try {
+			handler.purgeComplexData(null);
+			fail("Expected an IllegalArgumentException to be thrown");
+		} catch (IllegalArgumentException e) {
+			// expected exception thrown
+		}
+    }
+
+	@Test
+    public void getObs_shouldReturnOriginalObsIfFileIsNull() {
+        Obs result = handler.getObs(obs, null);
+        assertEquals(obs, result);
+    }
+
+
+	@Test
+	public void getObs_shouldReturnOriginalObsIfFileIsValid() throws Exception {
+	String testContent = "test content";
+	File file = new File(FILENAME);
+    FileUtils.writeByteArrayToFile(file, testContent.getBytes(StandardCharsets.UTF_8));
+
+	obs.setComplexData(new ComplexData("text/plain", new File(FILENAME).toURI().toURL()));
+	Obs result = handler.getObs(obs, FILENAME);
+
+	assertEquals(obs, result);
+	}
+	@Test
+    public void getComplexDataFile_shouldReturnEmptyArrayIfValueComplexIsNull() {
+        obs.setValueComplex(null);
+        File result = AbstractHandler.getComplexDataFile(obs);
+        assertEquals(0, result.length());
+    }
+
+	@Test
+    public void testGetOutputFileToWriteWithNullComplexData() {
+    Obs obs = new Obs();
+    obs.setComplexData(null);
+		try {
+			handler.getOutputFileToWrite(obs);
+			fail("Expected an IllegalArgumentException to be thrown");
+		} catch (IllegalArgumentException e) {
+			// expected exception
+		} catch (Exception e) {
+			fail("Expected an IllegalArgumentException to be thrown, but got " + e);
+		}
+    }
+
+	@Test
+    public void getObs_shouldReturnEmptyArrayIfObsValueComplexIsNull() throws Exception {
+        obs.setValueComplex(null);
+
+        String result = handler.getObs(obs, FILENAME).getValueComplex();
+
+        assertEquals(0, result.length());
+    }
+    
+
+	@Test
+    public void getObs_shouldReturnOriginalObsIfObsValueComplexIsNull() throws Exception {
+        obs.setValueComplex(null);
+        Obs result = handler.getObs(obs, FILENAME);
+        assertEquals(obs, result);
+    }
+
+
+	@Test
+    public void getComplexDataFile_shouldReturnEmptyArrayIfObsIsNull() {
+        File result = AbstractHandler.getComplexDataFile(null);
+        assertEquals(0, result.length());
+    }
+
 }

@@ -119,7 +119,7 @@ import org.xml.sax.InputSource;
 @ExtendWith(MockitoExtension.class)
 public abstract class BaseContextSensitiveTest {
 	
-	private static final Logger log = LoggerFactory.getLogger(BaseContextSensitiveTest.class);
+	public static final Logger log = LoggerFactory.getLogger(BaseContextSensitiveTest.class);
 	
 	/**
 	 * Only the classpath/package path and filename of the initial dataset

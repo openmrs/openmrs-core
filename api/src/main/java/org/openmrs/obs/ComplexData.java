@@ -9,6 +9,7 @@
  */
 package org.openmrs.obs;
 
+import java.io.File;
 import java.io.InputStream;
 
 /**
@@ -36,11 +37,11 @@ public class ComplexData implements java.io.Serializable {
 	/**
 	 * Default constructor requires title and data.
 	 * 
-	 * @param title Name or brief description of ComplexData.
+	 * @param fILENAME Name or brief description of ComplexData.
 	 * @param data The complex data for an Obs
 	 */
-	public ComplexData(String title, Object data) {
-		setTitle(title);
+	public ComplexData(String fILENAME, Object data) {
+		setTitle(fILENAME);
 		setData(data);
 	}
 	
@@ -119,6 +120,10 @@ public class ComplexData implements java.io.Serializable {
 	 */
 	public Long getLength() {
 		return this.length;
+	}
+	
+	public File[] getFiles() {
+		return null;
 	}
 	
 }

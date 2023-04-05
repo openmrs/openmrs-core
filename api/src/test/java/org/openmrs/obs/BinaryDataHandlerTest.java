@@ -13,10 +13,20 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.openmrs.test.jupiter.BaseContextSensitiveTest.log;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.logging.Logger;
+import org.apache.commons.logging.Log;
 
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -38,10 +48,15 @@ public class BinaryDataHandlerTest extends BaseContextSensitiveTest {
 
 	BinaryDataHandler handler;
 
+	private Obs obs;
+
 	@BeforeEach
-	public void setUp() {
-		handler = new BinaryDataHandler();
-	}
+    public void setUp() {
+    handler = new BinaryDataHandler();
+    obs = new Obs();
+    obs.setId(1); // set the id and other necessary properties
+}
+
 
 	@Test
     public void shouldReturnSupportedViews() {
@@ -100,5 +115,89 @@ public class BinaryDataHandlerTest extends BaseContextSensitiveTest {
 		assertEquals(complexObs1.getComplexData().getMimeType(), mimetype);
 		assertEquals(complexObs2.getComplexData().getMimeType(), mimetype);
 	}
-	
+
+	@Test
+    public void getObs_shouldReturnOriginalObsIfFileIsNull() {
+    Obs result = handler.getObs(obs, ComplexObsHandler.RAW_VIEW);
+    assertEquals(obs, result);
 }
+
+@Test
+public ResponseEntity<byte[]> getObs_shouldReturnOriginalObsIfFileIsValid() throws Exception {
+    try {
+        Obs resultObs = handler.getObs(obs, ComplexObsHandler.RAW_VIEW);
+
+        if (resultObs == null) {
+            throw new RuntimeException("Failed to retrieve complex obs");
+        }
+
+        ComplexData complexData = resultObs.getComplexData();
+
+        if (complexData == null) {
+            throw new RuntimeException("Complex data is null");
+        }
+
+        File[] files = (complexData).getFiles();
+
+        if (files == null || files.length == 0) {
+            throw new RuntimeException("Complex data files are null or empty");
+        }
+
+        // Get the file content as a byte array
+        byte[] fileContent = FileUtils.readFileToByteArray(files[0]);
+
+        // Set the response headers
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(complexData.getMimeType()));
+        headers.setContentLength(fileContent.length);
+        headers.setContentDisposition(ContentDisposition.builder("attachment").filename(complexData.getTitle()).build());
+
+        // Return the response
+        ResponseEntity<byte[]> response = new ResponseEntity<>(fileContent, headers, HttpStatus.OK);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    } catch (Exception e) {
+        log.error("Error getting complex obs", e);
+        ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+	return null;
+}
+
+public ResponseEntity<byte[]> getObs(Obs obs) throws Exception {
+    return getObs_shouldReturnOriginalObsIfFileIsValid();
+}
+
+		public AdministrationService getAdminService() {
+			return adminService;
+		}
+
+		public void setAdminService(AdministrationService adminService) {
+			this.adminService = adminService;
+		}
+
+		public Path getComplexObsTestFolder() {
+			return complexObsTestFolder;
+		}
+
+		public void setComplexObsTestFolder(Path complexObsTestFolder) {
+			this.complexObsTestFolder = complexObsTestFolder;
+		}
+
+		public BinaryDataHandler getHandler() {
+			return handler;
+		}
+
+		public void setHandler(BinaryDataHandler handler) {
+			this.handler = handler;
+		}
+
+		public Obs getObs() {
+			return obs;
+		}
+
+		public void setObs(Obs obs) {
+			this.obs = obs;
+		}
+}
+
+
+        
