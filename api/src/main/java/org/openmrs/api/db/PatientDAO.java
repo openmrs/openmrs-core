@@ -199,6 +199,9 @@ public interface PatientDAO {
 	
 	public PatientIdentifier getPatientIdentifierByUuid(String uuid);
 	
+	public List<Patient> getPatientByIdentifier(String name, String identifier, List<PatientIdentifierType> identifierTypes,
+	        boolean matchIdentifierExactly, boolean orderByNames, boolean searchOnNamesOrIdentifiers) throws DAOException;
+	
 	/**
 	 * @param uuid
 	 * @return patient identifier type or null

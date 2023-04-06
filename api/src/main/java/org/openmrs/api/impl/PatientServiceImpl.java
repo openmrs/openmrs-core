@@ -57,6 +57,7 @@ import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientDAO;
 import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.parameter.EncounterSearchCriteria;
@@ -536,6 +537,20 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 		
 		return dao.getDuplicatePatientsByAttributes(attributes);
+	}
+	
+	/**
+	 * @see PatientService#getPatientsByIdentifier(org.openmrs.api.PatientService)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<Patient> getPatientsByIdentifier(String name, String identifier, List<PatientIdentifierType> identifierTypes,
+	        boolean matchIdentifierExactly, boolean orderByNames, boolean searchOnNamesOrIdentifiers) throws DAOException {
+		if (identifierTypes == null) {
+			identifierTypes = Collections.emptyList();
+		}
+		
+		return Context.getPatientService().getPatients(name, identifier, identifierTypes, matchIdentifierExactly, 0, null);
 	}
 	
 	/**
@@ -1635,6 +1650,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	/**
 	 * @see PatientService#getPatientIdentifiersByPatientProgram(org.openmrs.PatientProgram)
 	 */
+	@Override
 	public List<PatientIdentifier> getPatientIdentifiersByPatientProgram(PatientProgram patientProgram) {
 		return dao.getPatientIdentifierByProgram(patientProgram);
 	}

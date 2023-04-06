@@ -22,6 +22,7 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientProgram;
 import org.openmrs.annotation.Authorized;
+import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientDAO;
 import org.openmrs.comparator.PatientIdentifierTypeDefaultComparator;
 import org.openmrs.patient.IdentifierValidator;
@@ -105,6 +106,9 @@ public interface PatientService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.GET_PATIENTS })
 	public Patient getPatientByUuid(String uuid) throws APIException;
+	
+	public List<Patient> getPatientsByIdentifier(String name, String identifier, List<PatientIdentifierType> identifierTypes,
+	        boolean matchIdentifierExactly, boolean orderByNames, boolean searchOnNamesOrIdentifiers) throws DAOException;
 	
 	/**
 	 * Get patient identifier by universally unique identifier.
