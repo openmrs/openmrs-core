@@ -106,7 +106,7 @@ docker-compose build
 ```
 It calls `mvn install` by default. If you would like to customize mvn build arguments you can do so by running:
 ```bash
-docker-compose build --build-args MVN_ARGS='install -DskipTests'
+docker-compose build --build-arg MVN_ARGS='install -DskipTests'
 ```
 It is also possible to use the built dev image to run jetty:
 ```bash
