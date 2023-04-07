@@ -135,21 +135,19 @@ public class ModifyColumnGenerator extends AbstractSqlGenerator<ModifyColumnStat
 	 * @return either "MODIFY" or "ALTER COLUMN" depending on the current db
 	 */
 	String getModifyString(Database database) {
-		if (database instanceof HsqlDatabase
-			|| database instanceof H2Database
-			|| database instanceof DerbyDatabase
-			|| database instanceof DB2Database
-			|| database instanceof MSSQLDatabase) {
-			return "ALTER COLUMN";
-		} else if (database instanceof SybaseASADatabase
-			|| database instanceof SybaseDatabase
-			|| database instanceof MySQLDatabase) {
-			return "MODIFY";
+		DatabaseModifier modifier;
+
+		if (database instanceof HsqlDatabase || database instanceof H2Database || database instanceof DerbyDatabase || database instanceof DB2Database || database instanceof MSSQLDatabase) {
+			modifier = new HsqlDatabaseModifier();
+		} else if (database instanceof SybaseASADatabase || database instanceof SybaseDatabase || database instanceof MySQLDatabase) {
+			modifier = new SybaseASADatabaseModifier();
 		} else if (database instanceof OracleDatabase) {
-			return "MODIFY (";
+			modifier = new OracleDatabaseModifier();
 		} else {
-			return "ALTER COLUMN";
+			modifier = new DefaultDatabaseModifier();
 		}
+
+		return modifier.getModifyString();
 	}
 
 	/**

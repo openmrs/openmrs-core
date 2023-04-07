@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
+import java.util.MissingResourceException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.GlobalProperty;
@@ -311,7 +312,7 @@ public class WebUtil implements GlobalPropertyListener {
 			}
 		}
 		Locale locale = LocaleUtility.fromSpecification(localeString);
-		if (LocaleUtility.isValid(locale)) {
+		if (isValid(locale)) {
 			return locale;
 		} else {
 			return null;
@@ -426,5 +427,21 @@ public class WebUtil implements GlobalPropertyListener {
 	 */
 	@Override
 	public void globalPropertyDeleted(String propertyName) {
+	}
+
+	/**
+	 * Checks if specified locale object is valid
+	 *
+	 * @param locale
+	 *            object for validation
+	 * @return true if locale is available
+	 */
+	private static boolean isValid(Locale locale) {
+		try {
+			return locale.getISO3Language() != null && locale.getISO3Country() != null;
+		}
+		catch (MissingResourceException e) {
+			return false;
+		}
 	}
 }

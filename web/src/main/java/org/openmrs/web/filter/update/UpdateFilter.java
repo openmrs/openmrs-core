@@ -490,38 +490,21 @@ public class UpdateFilter extends StartupFilter {
 		super.init(filterConfig);
 		
 		log.debug("Initializing the UpdateFilter");
-		
-		if (!InitializationFilter.initializationRequired()
-		        || (Listener.isSetupNeeded() && Listener.runtimePropertiesFound())) {
-			updateFilterModel = new UpdateFilterModel();
+		boolean initializationRequired = InitializationFilter.initializationRequired();
+		boolean runtimePropertiesFound = Listener.runtimePropertiesFound();
+		UpdateRequiredChecker updateRequiredChecker;
 			/*
 			 * In this case, Listener#runtimePropertiesFound == true and InitializationFilter Wizard is skipped,
 			 * so no need to reset Context's RuntimeProperties again, because of Listener.contextInitialized has set it.
 			 */
-			try {
-				// this pings the DatabaseUpdater.updatesRequired which also
-				// considers a db lock to be a 'required update'
-				if (updateFilterModel.updateRequired) {
-					setUpdatesRequired(true);
-				} else if (updateFilterModel.changes == null) {
-					setUpdatesRequired(false);
-				} else {
-					log.debug("Setting updates required to {} because of the size of unrun changes", (!updateFilterModel.changes.isEmpty()));
-					setUpdatesRequired(!updateFilterModel.changes.isEmpty());
-				}
+			if (initializationRequired || (Listener.isSetupNeeded() && runtimePropertiesFound)) {
+				updateRequiredChecker = new UpdateRequiredCheckerFromModel();
+			} else {
+				updateRequiredChecker = new UpdateRequiredCheckerFromProperties();
 			}
-			catch (Exception e) {
-				throw new ServletException("Unable to determine if updates are required", e);
-			}
-		} else {
-			/*
-			 * The initialization wizard will update the database to the latest version, so the user will not need any updates here.
-			 * See end of InitializationFilter#InitializationCompletion
-			 */
-			log.debug(
-			    "Setting updates required to false because the user doesn't have any runtime properties yet or database is empty");
-			setUpdatesRequired(false);
-		}
+
+			boolean updatesRequired = updateRequiredChecker.isUpdateRequired(updateFilterModel, initializationRequired, runtimePropertiesFound);
+			setUpdatesRequired(updatesRequired);
 	}
 	
 	/**

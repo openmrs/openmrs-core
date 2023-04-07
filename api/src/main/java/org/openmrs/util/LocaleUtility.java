@@ -208,20 +208,20 @@ public class LocaleUtility implements GlobalPropertyListener {
 		
 	}
 	
-	/**
-	 * Checks if specified locale object is valid
-	 *
-	 * @param locale
-	 *            object for validation
-	 * @return true if locale is available
-	 */
-	public static boolean isValid(Locale locale) {
-		try {
-			return locale.getISO3Language() != null && locale.getISO3Country() != null;
-		}
-		catch (MissingResourceException e) {
-			return false;
-		}
-	}
+//	/**
+//	 * Checks if specified locale object is valid
+//	 *
+//	 * @param locale
+//	 *            object for validation
+//	 * @return true if locale is available
+//	 */
+//	public static boolean isValid(Locale locale) {
+//		try {
+//			return locale.getISO3Language() != null && locale.getISO3Country() != null;
+//		}
+//		catch (MissingResourceException e) {
+//			return false;
+//		}
+//	}
 	
 }

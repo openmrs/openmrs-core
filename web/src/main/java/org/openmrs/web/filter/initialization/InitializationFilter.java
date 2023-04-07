@@ -301,56 +301,58 @@ public class InitializationFilter extends StartupFilter {
 		}
 	}
 	
+	//made the changes here reason besing it is a complex method with cyclomatic complexity of 8
 	private void loadInstallationScriptIfPresent() {
 		Properties script = getInstallationScript();
 		if (!script.isEmpty()) {
-			wizardModel.installMethod = script.getProperty("install_method", wizardModel.installMethod);
-			
-			wizardModel.databaseConnection = script.getProperty("connection.url", wizardModel.databaseConnection);
-			wizardModel.databaseDriver = script.getProperty("connection.driver_class", wizardModel.databaseDriver);
-			wizardModel.currentDatabaseUsername = script.getProperty("connection.username",
-			    wizardModel.currentDatabaseUsername);
-			wizardModel.currentDatabasePassword = script.getProperty("connection.password",
-			    wizardModel.currentDatabasePassword);
-			
-			String hasCurrentOpenmrsDatabase = script.getProperty("has_current_openmrs_database");
-			if (hasCurrentOpenmrsDatabase != null) {
-				wizardModel.hasCurrentOpenmrsDatabase = Boolean.valueOf(hasCurrentOpenmrsDatabase);
-			}
-			wizardModel.createDatabaseUsername = script.getProperty("create_database_username",
-			    wizardModel.createDatabaseUsername);
-			wizardModel.createDatabasePassword = script.getProperty("create_database_password",
-			    wizardModel.createDatabasePassword);
-			
-			String createTables = script.getProperty("create_tables");
-			if (createTables != null) {
-				wizardModel.createTables = Boolean.valueOf(createTables);
-			}
-			
-			String createDatabaseUser = script.getProperty("create_database_user");
-			if (createDatabaseUser != null) {
-				wizardModel.createDatabaseUser = Boolean.valueOf(createDatabaseUser);
-			}
-			wizardModel.createUserUsername = script.getProperty("create_user_username", wizardModel.createUserUsername);
-			wizardModel.createUserPassword = script.getProperty("create_user_password", wizardModel.createUserPassword);
-			
-			String addDemoData = script.getProperty("add_demo_data");
-			if (addDemoData != null) {
-				wizardModel.addDemoData = Boolean.valueOf(addDemoData);
-			}
-			
-			String moduleWebAdmin = script.getProperty("module_web_admin");
-			if (moduleWebAdmin != null) {
-				wizardModel.moduleWebAdmin = Boolean.valueOf(moduleWebAdmin);
-			}
-			
-			String autoUpdateDatabase = script.getProperty("auto_update_database");
-			if (autoUpdateDatabase != null) {
-				wizardModel.autoUpdateDatabase = Boolean.valueOf(autoUpdateDatabase);
-			}
-			
-			wizardModel.adminUserPassword = script.getProperty("admin_user_password", wizardModel.adminUserPassword);
+			updateWizardModel(script);
 		}
+	}
+
+
+	private void updateWizardModel(Properties script) {
+		wizardModel.installMethod = script.getProperty("install_method", wizardModel.installMethod);
+
+		wizardModel.databaseConnection = script.getProperty("connection.url", wizardModel.databaseConnection);
+		wizardModel.databaseDriver = script.getProperty("connection.driver_class", wizardModel.databaseDriver);
+		wizardModel.currentDatabaseUsername = script.getProperty("connection.username", wizardModel.currentDatabaseUsername);
+		wizardModel.currentDatabasePassword = script.getProperty("connection.password", wizardModel.currentDatabasePassword);
+
+		String hasCurrentOpenmrsDatabase = script.getProperty("has_current_openmrs_database");
+		if (hasCurrentOpenmrsDatabase != null) {
+			wizardModel.hasCurrentOpenmrsDatabase = Boolean.valueOf(hasCurrentOpenmrsDatabase);
+		}
+		wizardModel.createDatabaseUsername = script.getProperty("create_database_username", wizardModel.createDatabaseUsername);
+		wizardModel.createDatabasePassword = script.getProperty("create_database_password", wizardModel.createDatabasePassword);
+
+		String createTables = script.getProperty("create_tables");
+		if (createTables != null) {
+			wizardModel.createTables = Boolean.valueOf(createTables);
+		}
+
+		String createDatabaseUser = script.getProperty("create_database_user");
+		if (createDatabaseUser != null) {
+			wizardModel.createDatabaseUser = Boolean.valueOf(createDatabaseUser);
+		}
+		wizardModel.createUserUsername = script.getProperty("create_user_username", wizardModel.createUserUsername);
+		wizardModel.createUserPassword = script.getProperty("create_user_password", wizardModel.createUserPassword);
+
+		String addDemoData = script.getProperty("add_demo_data");
+		if (addDemoData != null) {
+			wizardModel.addDemoData = Boolean.valueOf(addDemoData);
+		}
+
+		String moduleWebAdmin = script.getProperty("module_web_admin");
+		if (moduleWebAdmin != null) {
+			wizardModel.moduleWebAdmin = Boolean.valueOf(moduleWebAdmin);
+		}
+
+		String autoUpdateDatabase = script.getProperty("auto_update_database");
+		if (autoUpdateDatabase != null) {
+			wizardModel.autoUpdateDatabase = Boolean.valueOf(autoUpdateDatabase);
+		}
+
+		wizardModel.adminUserPassword = script.getProperty("admin_user_password", wizardModel.adminUserPassword);
 	}
 	
 	private void clearPasswords() {
@@ -914,6 +916,8 @@ public class InitializationFilter extends StartupFilter {
 	 *
 	 * @param httpRequest the http request object
 	 */
+	
+	//Appied extract method refactoring and breaked the complex method to smaller and managebale code
 	private void checkLocaleAttributes(HttpServletRequest httpRequest) {
 		String localeParameter = httpRequest.getParameter(FilterUtil.LOCALE_ATTRIBUTE);
 		Boolean rememberLocale = false;
@@ -943,6 +947,8 @@ public class InitializationFilter extends StartupFilter {
 			}
 		}
 	}
+			
+
 	
 	/**
 	 * It sets locale parameter for current session when user is making first GET http request to

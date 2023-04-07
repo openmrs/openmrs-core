@@ -80,8 +80,9 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 					if (id.equals(origConceptAnswer.getAnswerConcept().getConceptId())) {
 						if (drugId == null && answerDrug == null) {
 							answerDeleted = false;
-						} else if ((drugId != null && answerDrug != null)
-						        && drugId.equals(origConceptAnswer.getAnswerDrug().getDrugId())) {
+						} 
+						//introduced decompose conditional refactoring here as it has complex conditional smell
+						else if (isMatchingAnswerDrugId(drugId,answerDrug,origConceptAnswer)) {
 							answerDeleted = false;
 						}
 					}
@@ -225,5 +226,13 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 		
 		return null;
 	}
-	
+
+
+	//introduced decompose conditional refactoring here as it has complex conditional smell
+
+	private boolean isMatchingAnswerDrugId(Integer drugId,Drug answerDrug,ConceptAnswer origConceptAnswer)
+	{
+		return (drugId != null && answerDrug != null)
+			&& drugId.equals(origConceptAnswer.getAnswerDrug().getDrugId());
+	}
 }

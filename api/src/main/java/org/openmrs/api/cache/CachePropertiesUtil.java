@@ -12,7 +12,6 @@ package org.openmrs.api.cache;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -20,7 +19,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -40,44 +38,12 @@ public class CachePropertiesUtil {
         List<CacheConfiguration> openmrsCacheConfigurationList = new ArrayList<>();
         Resource[] resourceFromClassPath = getResourceFromClassPath();
         Arrays.stream(resourceFromClassPath)
-                .forEach(r -> addCacheConfigsFormResourceToList(r, openmrsCacheConfigurationList));
+                .forEach(r -> CacheConfigurationUtil.addCacheConfigsFormResourceToList(r, openmrsCacheConfigurationList));
 
         return openmrsCacheConfigurationList;
     }
-
-    private static CacheConfiguration createCacheConfiguration(OpenmrsCacheConfiguration openmrsCacheConfiguration) {
-        CacheConfiguration cacheConfiguration = new CacheConfiguration();
-        openmrsCacheConfiguration.getAllKeys()
-                .forEach(key -> {
-                    try {
-                        BeanUtils.setProperty(cacheConfiguration, key, openmrsCacheConfiguration.getProperty(key));
-                    } catch (IllegalAccessException | InvocationTargetException e) {
-                        throw new IllegalStateException(e);
-                    }
-                });
-        return cacheConfiguration;
-    }
-
-    private static void addCacheConfigsFormResourceToList(Resource resource, List<CacheConfiguration> openmrsCacheConfigurationList) {
-        Properties cacheProperties = getPropertiesFromResource(resource);
-        getAllCacheNames(cacheProperties.keySet())
-                .forEach(cacheName -> {
-                    OpenmrsCacheConfiguration openmrsCacheConfiguration = new OpenmrsCacheConfiguration();
-                    openmrsCacheConfiguration.addProperty("name", cacheName);
-                    cacheProperties.keySet()
-                            .stream()
-                            .filter(key -> key.toString().startsWith(cacheName))
-                            .forEach(key -> {
-                                String s = key.toString();
-                                openmrsCacheConfiguration.addProperty(
-                                        s.replace(cacheName+".", ""),
-                                        cacheProperties.getProperty(key.toString()));
-                            });
-                    openmrsCacheConfigurationList.add(createCacheConfiguration(openmrsCacheConfiguration));
-                });
-    }
-
-    private static Set<String> getAllCacheNames(Set<Object> keys) {
+	
+    public static Set<String> getAllCacheNames(Set<Object> keys) {
         Set<String> cacheNames = new HashSet<>();
         keys.forEach(cacheName -> {
             String s = cacheName.toString();
@@ -86,7 +52,7 @@ public class CachePropertiesUtil {
         return cacheNames;
     }
 
-    private static Properties getPropertiesFromResource(Resource resource) {
+    public static Properties getPropertiesFromResource(Resource resource) {
         Properties properties = new Properties();
         try (InputStream inputStream = resource.getInputStream()){
             properties.load(inputStream);

@@ -156,16 +156,20 @@ public class WebModuleUtil {
 					JarEntry entry = entries.nextElement();
 					String name = entry.getName();
 					log.debug("Entry name: " + name);
-					if (name.startsWith("web/module/")) {
+					//introducing explaining varaiable WebModulePrefix.length instead of 11 as WebModulePrefix length=5
+					String WebModulePrefix = "web/module/";
+					if (name.startsWith(WebModulePrefix)) {
 						// trim out the starting path of "web/module/"
-						String filepath = name.substring(11);
-						
+						String filepath = name.substring(WebModulePrefix.length());
 						StringBuilder absPath = new StringBuilder(realPath + "/WEB-INF");
 						
 						// If this is within the tag file directory, copy it into /WEB-INF/tags/module/moduleId/...
-						if (filepath.startsWith("tags/")) {
-							filepath = filepath.substring(5);
-							absPath.append("/tags/module/");
+						//introducing explain varaiable tagsPrefix.length instead of 5 as tagsPrefix length=5
+						String tagsPrefix = "tags/";
+						String modulePrefix = "/tags/module/";
+						if (filepath.startsWith(tagsPrefix)) {
+							filepath = filepath.substring(tagsPrefix.length());
+							absPath.append(modulePrefix);
 						}
 						// Otherwise, copy it into /WEB-INF/view/module/moduleId/...
 						else {
