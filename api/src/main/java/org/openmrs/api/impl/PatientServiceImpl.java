@@ -265,6 +265,20 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	}
 	
 	/**
+	 * @see PatientService#getPatientsByIdentifier(org.openmrs.api.PatientService)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<Patient> getPatientsByIdentifier(String name, String identifier, List<PatientIdentifierType> identifierTypes,
+	        boolean matchIdentifierExactly) throws APIException {
+		if (identifierTypes == null) {
+			identifierTypes = Collections.emptyList();
+		}
+		
+		return dao.getPatientsByIdentifier(name, identifier, identifierTypes, matchIdentifierExactly);
+	}
+	
+	/**
 	 * @see org.openmrs.api.PatientService#checkPatientIdentifiers(org.openmrs.Patient)
 	 */
 	@Override
@@ -1635,6 +1649,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	/**
 	 * @see PatientService#getPatientIdentifiersByPatientProgram(org.openmrs.PatientProgram)
 	 */
+	@Override
 	public List<PatientIdentifier> getPatientIdentifiersByPatientProgram(PatientProgram patientProgram) {
 		return dao.getPatientIdentifierByProgram(patientProgram);
 	}

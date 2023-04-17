@@ -83,7 +83,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
         @Override
 	public Patient getPatient(Integer patientId) {
-		return (Patient) sessionFactory.getCurrentSession().get(Patient.class, patientId);
+		return sessionFactory.getCurrentSession().get(Patient.class, patientId);
 	}
 	
 	/**
@@ -161,12 +161,13 @@ public class HibernatePatientDAO implements PatientDAO {
 			//org.hibernate.NonUniqueObjectException: a different object with the same identifier
 			//value was already associated with the session: [org.openmrs.Patient#]
 			//see TRUNK-3728
-			Person person = (Person) sessionFactory.getCurrentSession().get(Person.class, patient.getPersonId());
+			Person person = sessionFactory.getCurrentSession().get(Person.class, patient.getPersonId());
 			sessionFactory.getCurrentSession().evict(person);
 		}
 		
 	}
 	
+	@Override
 	public List<Patient> getPatients(String query, List<PatientIdentifierType> identifierTypes,
 		boolean matchIdentifierExactly, Integer start, Integer length) throws DAOException{
 		
@@ -249,6 +250,20 @@ public class HibernatePatientDAO implements PatientDAO {
 		return criteria.list();
 	}
 	
+	@Override
+	@SuppressWarnings("deprecation")
+	public List<Patient> getPatientsByIdentifier(String name, String identifier, List<PatientIdentifierType> identifierTypes,
+	        boolean matchIdentifierExactly) throws DAOException {
+		
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
+		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier, identifierTypes,
+		    matchIdentifierExactly, false, false);
+		// restricting the search to the max search results value
+		criteria.setFirstResult(0);
+		criteria.setMaxResults(HibernatePersonDAO.getMaximumSearchResults());
+		
+		return criteria.list();
+	}
 	/**
 	 * @see org.openmrs.api.PatientService#purgePatientIdentifierType(org.openmrs.PatientIdentifierType)
 	 * @see org.openmrs.api.db.PatientDAO#deletePatientIdentifierType(org.openmrs.PatientIdentifierType)
@@ -321,7 +336,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
         @Override
 	public PatientIdentifierType getPatientIdentifierType(Integer patientIdentifierTypeId) throws DAOException {
-		return (PatientIdentifierType) sessionFactory.getCurrentSession().get(PatientIdentifierType.class,
+		return sessionFactory.getCurrentSession().get(PatientIdentifierType.class,
 		    patientIdentifierTypeId);
 	}
 	
@@ -638,7 +653,7 @@ public class HibernatePatientDAO implements PatientDAO {
         @Override
 	public PatientIdentifier getPatientIdentifier(Integer patientIdentifierId) throws DAOException {
 		
-		return (PatientIdentifier) sessionFactory.getCurrentSession().get(PatientIdentifier.class, patientIdentifierId);
+		return sessionFactory.getCurrentSession().get(PatientIdentifier.class, patientIdentifierId);
 		
 	}
 	
@@ -1000,7 +1015,8 @@ public class HibernatePatientDAO implements PatientDAO {
     /**
      * @see org.openmrs.api.db.PatientDAO#getPatientIdentifierByProgram(org.openmrs.PatientProgram)
      */
-    public List<PatientIdentifier> getPatientIdentifierByProgram(PatientProgram patientProgram) {
+    @Override
+	public List<PatientIdentifier> getPatientIdentifierByProgram(PatientProgram patientProgram) {
 
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientIdentifier.class);
         criteria.add(Restrictions.eq("patientProgram", patientProgram));

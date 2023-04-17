@@ -18,6 +18,7 @@ import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientProgram;
+import org.openmrs.api.APIException;
 import org.openmrs.api.PatientService;
 
 /**
@@ -37,6 +38,16 @@ public interface PatientDAO {
 	 * @see org.openmrs.api.PatientService#getPatient(Integer)
 	 */
 	public Patient getPatient(Integer patientId) throws DAOException;
+	
+	/**
+	 * Get patient by universally unique identifier.
+	 * 
+	 * @param uuid universally unique identifier
+	 * @throws APIException <strong>Should</strong> fetch patient with given identifier
+	 *             <strong>Should</strong> return null if patient not found with given identifier
+	 */
+	public List<Patient> getPatientsByIdentifier(String name, String identifier, List<PatientIdentifierType> identifierTypes,
+	        boolean matchIdentifierExactly) throws DAOException;
 	
 	/**
 	 * Delete patient from database. This <b>should not be called</b> except for testing and

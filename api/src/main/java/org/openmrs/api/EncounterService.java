@@ -21,6 +21,7 @@ import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.Provider;
 import org.openmrs.User;
 import org.openmrs.Visit;
@@ -133,7 +134,8 @@ public interface EncounterService extends OpenmrsService {
 	 * <strong>Should</strong> throw error if given null parameter
 	 */
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
-	public List<Encounter> getEncountersByPatientIdentifier(String identifier) throws APIException;
+	public List<Encounter> getEncountersByPatientIdentifier(String name, String identifier,
+	        List<PatientIdentifierType> identifierTypes, boolean matchIdentifierExactly) throws APIException;
 		
 	/**
 	 * Get all encounters that match a variety of (nullable) criteria. Each extra value for a

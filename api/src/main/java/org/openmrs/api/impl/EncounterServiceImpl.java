@@ -29,13 +29,13 @@ import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.OrderGroup;
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.Privilege;
 import org.openmrs.Provider;
 import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
-import org.openmrs.api.DiagnosisService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.EncounterTypeLockedException;
 import org.openmrs.api.ObsService;
@@ -358,13 +358,15 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public List<Encounter> getEncountersByPatientIdentifier(String identifier) throws APIException {
+	public List<Encounter> getEncountersByPatientIdentifier(String name, String identifier,
+	        List<PatientIdentifierType> identifierTypes, boolean matchIdentifierExactly) throws APIException {
 		if (identifier == null) {
 			throw new IllegalArgumentException("The 'identifier' parameter is required and cannot be null");
 		}
 		
 		List<Encounter> encs = new ArrayList<>();
-		for (Patient p : Context.getPatientService().getPatients(identifier, null, null, false)) {
+		for (Patient p : Context.getPatientService().getPatientsByIdentifier(name, identifier, identifierTypes,
+		    matchIdentifierExactly)) {
 			encs.addAll(Context.getEncounterService().getEncountersByPatientId(p.getPatientId()));
 		}
 		return Context.getEncounterService().filterEncountersByViewPermissions(encs, null);

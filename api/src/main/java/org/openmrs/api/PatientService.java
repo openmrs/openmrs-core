@@ -107,13 +107,24 @@ public interface PatientService extends OpenmrsService {
 	public Patient getPatientByUuid(String uuid) throws APIException;
 	
 	/**
+	 * Get patient by universally unique identifier.
+	 * 
+	 * @param uuid universally unique identifier
+	 * @throws APIException <strong>Should</strong> fetch patient with given identifier
+	 *             <strong>Should</strong> return null if patient not found with given identifier
+	 */
+	@Authorized({ PrivilegeConstants.GET_PATIENTS })
+	public List<Patient> getPatientsByIdentifier(String name, String identifier, List<PatientIdentifierType> identifierTypes,
+	        boolean matchIdentifierExactly) throws APIException;
+	
+	/**
 	 * Get patient identifier by universally unique identifier.
 	 * 
 	 * @param uuid universally unique identifier
 	 * @return the patient identifier that matches the uuid
-	 * @throws APIException
-	 * <strong>Should</strong> fetch patient identifier with given uuid
-	 * <strong>Should</strong> return null if patient identifier not found with given uuid
+	 * @throws APIException <strong>Should</strong> fetch patient identifier with given uuid
+	 *             <strong>Should</strong> return null if patient identifier not found with given
+	 *             uuid
 	 */
 	@Authorized( { PrivilegeConstants.GET_PATIENT_IDENTIFIERS })
 	public PatientIdentifier getPatientIdentifierByUuid(String uuid) throws APIException;

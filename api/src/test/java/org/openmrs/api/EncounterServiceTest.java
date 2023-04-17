@@ -35,8 +35,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
-import java.util.HashSet;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -66,7 +64,6 @@ import org.openmrs.OrderGroup;
 import org.openmrs.OrderSet;
 import org.openmrs.Patient;
 import org.openmrs.Person;
-import org.openmrs.PersonName;
 import org.openmrs.Privilege;
 import org.openmrs.Provider;
 import org.openmrs.Role;
@@ -923,22 +920,23 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see EncounterService#getEncountersByPatientIdentifier(String)
+	 * @see EncounterService#getEncountersByPatientIdentifier(String,String,List<PatientIdentifierType>,boolean)
 	 */
 	@Test
 	public void getEncountersByPatientIdentifier_shouldNotGetVoidedEncounters() {
 		EncounterService encounterService = Context.getEncounterService();
 		
-		List<Encounter> encounters = encounterService.getEncountersByPatientIdentifier("12345");
+		List<Encounter> encounters = encounterService.getEncountersByPatientIdentifier(null, "12345", null, true);
 		assertEquals(2, encounters.size());
 	}
 	
 	/**
-	 * @see EncounterService#getEncountersByPatientIdentifier(String)
+	 * @see EncounterService#getEncountersByPatientIdentifier(String,String,List<PatientIdentifierType>,boolean)
 	 */
 	@Test
 	public void getEncountersByPatientIdentifier_shouldThrowErrorIfGivenNullParameter() {
-		assertThrows(IllegalArgumentException.class, () -> Context.getEncounterService().getEncountersByPatientIdentifier(null));
+		assertThrows(IllegalArgumentException.class,
+		    () -> Context.getEncounterService().getEncountersByPatientIdentifier(null, null, null, false));
 	}
 	
 	/**
