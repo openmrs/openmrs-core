@@ -254,7 +254,6 @@ public class HibernatePatientDAO implements PatientDAO {
 	@SuppressWarnings("deprecation")
 	public List<Patient> getPatientsByIdentifier(String name, String identifier, List<PatientIdentifierType> identifierTypes,
 	        boolean matchIdentifierExactly) throws DAOException {
-		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
 		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier, identifierTypes,
 		    matchIdentifierExactly, false, false);
@@ -336,8 +335,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
         @Override
 	public PatientIdentifierType getPatientIdentifierType(Integer patientIdentifierTypeId) throws DAOException {
-		return sessionFactory.getCurrentSession().get(PatientIdentifierType.class,
-		    patientIdentifierTypeId);
+		return sessionFactory.getCurrentSession().get(PatientIdentifierType.class, patientIdentifierTypeId);
 	}
 	
 	/**
