@@ -60,9 +60,11 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	 * @since 2.2.0
 	 */
 	public enum FulfillerStatus {
-		RECEIVED, 
+		RECEIVED,
 		IN_PROGRESS,
 		EXCEPTION,
+		ON_HOLD,
+		DECLINED,
 		COMPLETED
 	}
 	
