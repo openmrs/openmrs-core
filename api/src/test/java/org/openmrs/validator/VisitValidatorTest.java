@@ -11,7 +11,6 @@ package org.openmrs.validator;
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -201,6 +200,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		visit.setPatient(encounter.getPatient());
 		encounter.setVisit(visit);
 		encounter.setEncounterDatetime(visit.getStartDatetime());
+		Context.flushSession();
 		Context.getEncounterService().saveEncounter(encounter);
 		
 		//Set visit start date to after the encounter date.
@@ -223,6 +223,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		visit.setPatient(encounter.getPatient());
 		encounter.setVisit(visit);
 		encounter.setEncounterDatetime(visit.getStartDatetime());
+		Context.flushSession();
 		Context.getEncounterService().saveEncounter(encounter);
 		
 		//Set visit stop date to before the encounter date.
