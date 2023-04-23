@@ -35,7 +35,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -62,6 +61,8 @@ import org.openmrs.web.filter.util.FilterUtil;
 import org.openmrs.web.filter.util.LocalizationTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Abstract class used when a small wizard is needed before Spring, jsp, etc has been started up.
@@ -177,9 +178,9 @@ public abstract class StartupFilter implements Filter {
 			velocityEngine = new VelocityEngine();
 			
 			Properties props = new Properties();
-			props.setProperty(RuntimeConstants.RUNTIME_LOG, "startup_wizard_vel.log");
+			props.setProperty(RuntimeConstants.RUNTIME_LOG_NAME, "startup_wizard_vel.log");
 			// Linux requires setting logging properties to initialize Velocity Context.
-			props.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,
+			props.setProperty(RuntimeConstants.RUNTIME_LOG_INSTANCE,
 			    "org.apache.velocity.runtime.log.CommonsLogLogChute");
 			props.setProperty(CommonsLogLogChute.LOGCHUTE_COMMONS_LOG_NAME, "initial_wizard_velocity");
 			

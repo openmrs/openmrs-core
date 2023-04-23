@@ -9,18 +9,15 @@
  */
 package org.openmrs.api.impl;
 
-import org.apache.commons.lang.BooleanUtils;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.MedicationDispense;
 import org.openmrs.api.APIException;
 import org.openmrs.api.MedicationDispenseService;
-import org.openmrs.api.context.Context;
 import org.openmrs.api.db.MedicationDispenseDAO;
 import org.openmrs.parameter.MedicationDispenseCriteria;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Date;
-import java.util.List;
 
 /**
  * This class implements the {@link MedicationDispenseService} interface

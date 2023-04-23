@@ -10,6 +10,8 @@
 package org.openmrs.util;
 
 import org.apache.velocity.app.event.MethodExceptionEventHandler;
+import org.apache.velocity.context.Context;
+import org.apache.velocity.util.introspection.Info;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +32,9 @@ public class VelocityExceptionHandler implements MethodExceptionEventHandler {
 	 *      java.lang.String, java.lang.Exception)
 	 */
 	@Override
-	public Object methodException(Class claz, String method, Exception e) throws Exception {
+	public Object methodException(Context context, @SuppressWarnings("rawtypes") Class claz, String method, Exception e,
+	        Info info)
+	        throws RuntimeException {
 		
 		log.debug("Claz: " + claz.getName() + " method: " + method, e);
 		
@@ -40,7 +44,7 @@ public class VelocityExceptionHandler implements MethodExceptionEventHandler {
 		}
 		
 		// keep the default behavior
-		throw e;
+		return e;
 	}
 	
 }

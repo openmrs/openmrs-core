@@ -133,8 +133,8 @@
 			</dependency>
 			<dependency>
 				<groupId>org.apache.velocity</groupId>
-				<artifactId>velocity</artifactId>
-				<version>1.7</version>
+				<artifactId>velocity-engine-core</artifactId>
+				<version>2.0</version>
 				<exclusions>
 					<exclusion>
 						<groupId>oro</groupId>
@@ -169,6 +169,13 @@
 				<scope>test</scope>
 				<type>test-jar</type>
 			</dependency>
+			<!-- https://mvnrepository.com/artifact/org.apache.commons/org.apache.commons.lang -->
+			<dependency>
+    			<groupId>org.apache.commons</groupId>
+    			<artifactId>org.apache.commons.lang</artifactId>
+    			<version>3.2.0</version>
+			</dependency>
+
 			<dependency>
 				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>
