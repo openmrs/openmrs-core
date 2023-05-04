@@ -18,6 +18,7 @@ import static org.openmrs.test.jupiter.BaseContextSensitiveTest.log;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+<<<<<<< HEAD
 import java.util.logging.Logger;
 import org.apache.commons.logging.Log;
 
@@ -27,6 +28,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.apache.commons.io.FileUtils;
+=======
+<<<<<<< HEAD
+
+=======
+import org.slf4j.LoggerFactory;
+
+
+import org.apache.commons.io.FileUtils;
+>>>>>>> e09e68135 (TRUNK-7521: Complex obs handlers to return obs as is when underlying file is null)
+>>>>>>> 58a93d278 (TRUNK-7521: Complex obs handlers to return obs as is when underlying file is null)
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -37,6 +48,11 @@ import org.openmrs.obs.handler.BinaryDataHandler;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
 
 public class BinaryDataHandlerTest extends BaseContextSensitiveTest {
 	
@@ -48,8 +64,16 @@ public class BinaryDataHandlerTest extends BaseContextSensitiveTest {
 
 	BinaryDataHandler handler;
 
+<<<<<<< HEAD
 	private Obs obs;
 
+=======
+<<<<<<< HEAD
+=======
+	private Obs obs;
+	
+>>>>>>> e09e68135 (TRUNK-7521: Complex obs handlers to return obs as is when underlying file is null)
+>>>>>>> 58a93d278 (TRUNK-7521: Complex obs handlers to return obs as is when underlying file is null)
 	@BeforeEach
     public void setUp() {
     handler = new BinaryDataHandler();
@@ -121,9 +145,20 @@ public class BinaryDataHandlerTest extends BaseContextSensitiveTest {
     Obs result = handler.getObs(obs, ComplexObsHandler.RAW_VIEW);
     assertEquals(obs, result);
 }
+<<<<<<< HEAD
 
 @Test
 public ResponseEntity<byte[]> getObs_shouldReturnOriginalObsIfFileIsValid() throws Exception {
+=======
+<<<<<<< HEAD
+=======
+
+@Test
+public ResponseEntity<byte[]> getObs_shouldReturnOriginalObsIfFileIsValid() throws Exception {
+	org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
+
+
+>>>>>>> 58a93d278 (TRUNK-7521: Complex obs handlers to return obs as is when underlying file is null)
     try {
         Obs resultObs = handler.getObs(obs, ComplexObsHandler.RAW_VIEW);
 
@@ -148,7 +183,11 @@ public ResponseEntity<byte[]> getObs_shouldReturnOriginalObsIfFileIsValid() thro
 
         // Set the response headers
         HttpHeaders headers = new HttpHeaders();
+<<<<<<< HEAD
         headers.setContentType(MediaType.parseMediaType(complexData.getMimeType()));
+=======
+        headers.setContentType(org.springframework.http.MediaType.parseMediaType(complexData.getMimeType()));
+>>>>>>> 58a93d278 (TRUNK-7521: Complex obs handlers to return obs as is when underlying file is null)
         headers.setContentLength(fileContent.length);
         headers.setContentDisposition(ContentDisposition.builder("attachment").filename(complexData.getTitle()).build());
 
@@ -156,6 +195,10 @@ public ResponseEntity<byte[]> getObs_shouldReturnOriginalObsIfFileIsValid() thro
         ResponseEntity<byte[]> response = new ResponseEntity<>(fileContent, headers, HttpStatus.OK);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     } catch (Exception e) {
+<<<<<<< HEAD
+=======
+		
+>>>>>>> 58a93d278 (TRUNK-7521: Complex obs handlers to return obs as is when underlying file is null)
         log.error("Error getting complex obs", e);
         ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
@@ -200,4 +243,9 @@ public ResponseEntity<byte[]> getObs(Obs obs) throws Exception {
 }
 
 
+<<<<<<< HEAD
         
+=======
+        
+>>>>>>> e09e68135 (TRUNK-7521: Complex obs handlers to return obs as is when underlying file is null)
+>>>>>>> 58a93d278 (TRUNK-7521: Complex obs handlers to return obs as is when underlying file is null)

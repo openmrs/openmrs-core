@@ -75,6 +75,12 @@
 			<artifactId>reflectutils</artifactId>
 		</dependency>
 		<dependency>
+		<groupId>org.springframework</groupId>
+		<artifactId>spring-web</artifactId>
+		<version>5.3.9</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.apache.velocity</groupId>
 			<artifactId>velocity</artifactId>
 		</dependency>
@@ -296,12 +302,19 @@
 			<groupId>org.testcontainers</groupId>
 			<artifactId>mysql</artifactId>
 		</dependency>
+<<<<<<< HEAD
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
 			<version>5.3.13</version>
 		</dependency>
 
+=======
+<<<<<<< HEAD
+=======
+
+>>>>>>> e09e68135 (TRUNK-7521: Complex obs handlers to return obs as is when underlying file is null)
+>>>>>>> 58a93d278 (TRUNK-7521: Complex obs handlers to return obs as is when underlying file is null)
 	</dependencies>
 	<build>
 		<resources>

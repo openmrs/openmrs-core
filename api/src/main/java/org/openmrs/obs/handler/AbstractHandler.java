@@ -107,12 +107,29 @@ public class AbstractHandler {
 	/**
 	 * @see org.openmrs.obs.ComplexObsHandler#getObs(Obs, String)
 	 */
+<<<<<<< HEAD
 	public Obs getObs(Obs obs, String fILENAME) {
 		File file = BinaryDataHandler.getComplexDataFile(obs);
 		// null check to ensure that the file variable is not null before attempting to read its contents
 		if (file == null) {
 			return obs;
 		}
+=======
+	public Obs getObs(Obs obs, String view) {
+<<<<<<< HEAD
+		File file = BinaryDataHandler.getComplexDataFile(obs);
+=======
+		if (obs == null) {
+			return null;
+		}
+		File file = getComplexDataFile(obs);
+		// will return the original obs object if the valueComplex field is null or empty
+		if (file == null) {
+			return obs;
+		}
+		
+>>>>>>> e09e68135 (TRUNK-7521: Complex obs handlers to return obs as is when underlying file is null)
+>>>>>>> 58a93d278 (TRUNK-7521: Complex obs handlers to return obs as is when underlying file is null)
 		log.debug("value complex: " + obs.getValueComplex());
 		log.debug("file path: " + file.getAbsolutePath());
 		ComplexData complexData = null;
