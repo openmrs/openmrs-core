@@ -400,7 +400,7 @@
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>42.5.4</version>
+				<version>42.6.0</version>
 				<scope>runtime</scope>
 			</dependency>
 			<dependency>
@@ -542,7 +542,7 @@
 			<dependency>
 			  <groupId>joda-time</groupId>
 			  <artifactId>joda-time</artifactId>
-			  <version>2.12.2</version>
+			  <version>2.12.5</version>
 			</dependency>
 			<dependency>
 			    <groupId>javax.annotation</groupId>
@@ -579,13 +579,13 @@
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>mysql</artifactId>
-				<version>1.17.6</version>
+				<version>1.18.0</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>1.17.6</version>
+				<version>1.18.0</version>
 				<scope>test</scope>
 			</dependency>
 		</dependencies>
@@ -597,12 +597,12 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.22.2</version>
+					<version>3.1.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>3.3.0</version>
+					<version>3.3.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -683,7 +683,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-checkstyle-plugin</artifactId>
-					<version>3.2.1</version>
+					<version>3.2.2</version>
 					<configuration>
 						<configLocation>checkstyle.xml</configLocation>
 					</configuration>
@@ -699,7 +699,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-release-plugin</artifactId>
-					<version>2.5.3</version>
+					<version>3.0.0</version>
 					<configuration>
 						<preparationGoals>clean install</preparationGoals>
 						<autoVersionSubmodules>true</autoVersionSubmodules>
@@ -819,7 +819,7 @@
 				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>0.8.8</version>
+					<version>0.8.10</version>
 					<configuration>
 						<includes>
 							<include>org/openmrs/**</include>
@@ -929,7 +929,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.0.0-M7</version>
+				<version>3.1.0</version>
 				<configuration>
 					<failIfNoTests>false</failIfNoTests>
 					<useSystemClassLoader>false</useSystemClassLoader>
@@ -1179,14 +1179,14 @@
 		<hibernateSearchVersion>5.11.12.Final</hibernateSearchVersion>
 		<luceneVersion>5.5.5</luceneVersion>
 		<aspectjVersion>1.9.19</aspectjVersion>
-		<jacksonVersion>2.14.2</jacksonVersion>
-		<junitVersion>5.9.2</junitVersion>
+		<jacksonVersion>2.15.0</jacksonVersion>
+		<junitVersion>5.9.3</junitVersion>
 		<mockitoVersion>3.12.4</mockitoVersion>
 		<hamcrestVersion>2.2</hamcrestVersion>
 
 		<slf4jVersion>1.7.36</slf4jVersion>
 		<log4jVersion>2.20.0</log4jVersion>
-		<owaspCsrfGuardVersion>4.2.0</owaspCsrfGuardVersion>
+		<owaspCsrfGuardVersion>4.2.1</owaspCsrfGuardVersion>
 
 		<customArgLineForTesting />
 

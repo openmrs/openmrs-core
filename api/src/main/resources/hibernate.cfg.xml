@@ -55,8 +55,6 @@
 		<mapping resource="org/openmrs/api/db/hibernate/Obs.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Person.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PersonAttribute.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/PersonAttributeType.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/PersonAddress.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PersonMergeLog.hbm.xml" />		
 		<mapping resource="org/openmrs/api/db/hibernate/PersonName.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/User.hbm.xml" />
@@ -82,7 +80,6 @@
 		<mapping resource="org/openmrs/api/db/hibernate/OrderGroupAttribute.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/OrderGroupAttributeType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/CareSetting.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/Location.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/LocationTag.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/LocationAttributeType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/LocationAttribute.hbm.xml" />

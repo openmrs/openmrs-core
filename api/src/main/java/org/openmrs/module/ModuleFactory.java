@@ -1102,7 +1102,7 @@ public class ModuleFactory {
 						try {
 							cls = Context.loadClass(advice.getPoint());
 							Object aopObject = advice.getClassInstance();
-							if (Advisor.class.isInstance(aopObject)) {
+							if (aopObject instanceof Advisor) {
 								log.debug("adding advisor: " + aopObject.getClass());
 								Context.removeAdvisor(cls, (Advisor) aopObject);
 							} else {
@@ -1408,6 +1408,12 @@ public class ModuleFactory {
 	 * @return Map&lt;Module, ModuleClassLoader&gt;
 	 */
 	public static Map<Module, ModuleClassLoader> getModuleClassLoaderMap() {
+		// because the OpenMRS classloader depends on this static function, it is weirdly possible for this to get called
+		// as this classfile is loaded, in which case, the static final field can be null.
+		if (moduleClassLoaders == null) {
+			return Collections.emptyMap();
+		}
+		
 		return moduleClassLoaders.asMap();
 	}
 	

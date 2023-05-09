@@ -12,6 +12,7 @@ package org.openmrs.api.db.hibernate;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.List;
 import java.util.Locale;
@@ -22,7 +23,11 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptAttributeType;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptMap;
+import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptReferenceTerm;
+import org.openmrs.ConceptSource;
 import org.openmrs.Drug;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.context.Context;
@@ -151,7 +156,6 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	public void getDrugs_shouldReturnDrugEvenIf_DrugNameHasSpecialCharacters() {
 		List<Drug> drugList1 = dao.getDrugs("DRUG_NAME_WITH_SPECIAL_CHARACTERS (", null, true);
 		assertEquals(1, drugList1.size());
-
 	}
 
 	/**
@@ -189,4 +193,24 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 		assertThat(duplicate, is(false));
 	}
 
+	@Test
+	public void getConceptIdsByMapping_shouldReturnDistinctConceptIds() {
+		ConceptSource source = dao.getConceptSourceByName("Some Standardized Terminology");
+		ConceptMapType sameAs = dao.getConceptMapTypeByName("same-as");
+		Concept weightConcept = dao.getConcept(5089);
+		assertNotNull(source);
+		List<Integer> conceptIds = dao.getConceptIdsByMapping("WGT234", source.getName(), true);
+		assertEquals(1, conceptIds.size());
+		assertEquals(weightConcept.getConceptId(), conceptIds.get(0));
+		
+		// Add another mapping that matches
+		ConceptReferenceTerm term = new ConceptReferenceTerm(source, "wgt234", null);
+		weightConcept.addConceptMapping(new ConceptMap(term, sameAs));
+		dao.saveConcept(weightConcept);
+		
+		// Querying by this mapping should only return the weight concept id once, even if 2 of its terms match
+		conceptIds = dao.getConceptIdsByMapping("WGT234", source.getName(), true);
+		assertEquals(1, conceptIds.size());
+		assertEquals(weightConcept.getConceptId(), conceptIds.get(0));
+	}
 }

@@ -45,7 +45,11 @@ public class WebDaemon extends Daemon {
 					exceptionThrown = e;
 				}
 				finally {
-					Context.closeSession();
+					try {
+						Context.closeSession();
+					} finally {
+						isDaemonThread.remove();
+					}
 				}
 			}
 		};

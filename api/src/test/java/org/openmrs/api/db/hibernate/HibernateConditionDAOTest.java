@@ -116,8 +116,10 @@ public class HibernateConditionDAOTest extends BaseContextSensitiveTest {
 	public void shouldGetAllConditions() {
 		Patient patient = new Patient(2);
 		List<Condition> conditions = dao.getAllConditions(patient);
-		
 		assertEquals(3, conditions.size());
+		patient = new Patient(8);
+		conditions = dao.getAllConditions(patient);
+		assertEquals(7, conditions.size());
 	}
 	
 	@Test
@@ -125,6 +127,9 @@ public class HibernateConditionDAOTest extends BaseContextSensitiveTest {
 		Patient patient = new Patient(2);
 		List<Condition> active = dao.getActiveConditions(patient);
 		assertEquals(1, active.size());
+		patient = new Patient(8);
+		active = dao.getActiveConditions(patient);
+		assertEquals(3, active.size());
 	}
 	
 	@Test

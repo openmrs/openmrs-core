@@ -41,6 +41,7 @@ import org.openmrs.ConceptSearchResult;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSource;
 import org.openmrs.Drug;
+import org.openmrs.DrugReferenceMap;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
@@ -343,6 +344,31 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		savedDrug.setCombination(true);
 		conceptService.saveDrug(savedDrug);
 		assertTrue(conceptService.getDrug(savedDrug.getDrugId()).getCombination());
+	}
+
+	/**
+	 * @see ConceptServiceImpl#saveDrug(Drug)
+	 */
+	@Test
+	public void saveDrug_shouldSaveNewDrugReferenceMap() {
+		Drug drug = new Drug();
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("Concept", new Locale("en", "US")));
+		concept.addDescription(new ConceptDescription("Description", new Locale("en", "US")));
+		concept.setConceptClass(new ConceptClass(1));
+		concept.setDatatype(new ConceptDatatype(1));
+		Concept savedConcept = conceptService.saveConcept(concept);
+		drug.setConcept(savedConcept);
+		drug.setName("Example Drug");
+		ConceptMapType sameAs = conceptService.getConceptMapTypeByUuid(ConceptMapType.SAME_AS_MAP_TYPE_UUID);
+		ConceptSource snomedCt = conceptService.getConceptSourceByName("SNOMED CT");
+		DrugReferenceMap map = new DrugReferenceMap();
+		map.setDrug(drug);
+		map.setConceptMapType(sameAs);
+		map.setConceptReferenceTerm(new ConceptReferenceTerm(snomedCt, "example", ""));
+		drug.addDrugReferenceMap(map);
+		drug = conceptService.saveDrug(drug);
+		assertEquals(1, conceptService.getDrug(drug.getDrugId()).getDrugReferenceMaps().size());
 	}
 	
 	/**

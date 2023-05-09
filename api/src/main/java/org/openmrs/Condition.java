@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import org.openmrs.util.OpenmrsUtil;
+
 import javax.persistence.AssociationOverride;
 import javax.persistence.AssociationOverrides;
 import javax.persistence.AttributeOverride;
@@ -25,7 +27,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
 import java.util.Date;
 
 /**
@@ -113,25 +114,78 @@ public class Condition extends BaseFormRecordableOpenmrsData {
 		this.endDate = endDate != null ? new Date(endDate.getTime()) : null;
 		this.patient = patient;
 	}
-	
+
+	/**
+	 * Creates a new Condition instance from the passed condition such that the newly created Condition
+	 * matches the passed Condition @see Condition#matches, but does not equal the passed Condition (uuid, id differ)
+	 * @param condition the Condition to copy
+	 * @return a new Condition that is a copy of the passed condition
+	 */
 	public static Condition newInstance(Condition condition) {
 		return copy(condition, new Condition());
 	}
-	
+
+	/**
+	 * Copies property values from the fromCondition to the toCondition such that fromCondition
+	 * matches toCondition @see Condition#matches, but does not equal toCondition (uuid, id differ)
+	 * @param fromCondition the Condition to copy from
+	 * @param toCondition the Condition to copy into                      
+	 * @return a new Condition that is a copy of the passed condition
+	 */
 	public static Condition copy(Condition fromCondition, Condition toCondition) {
 		toCondition.setPreviousVersion(fromCondition.getPreviousVersion());
 		toCondition.setPatient(fromCondition.getPatient());
+		toCondition.setEncounter(fromCondition.getEncounter());
+		toCondition.setFormNamespaceAndPath(fromCondition.getFormNamespaceAndPath());
 		toCondition.setClinicalStatus(fromCondition.getClinicalStatus());
 		toCondition.setVerificationStatus(fromCondition.getVerificationStatus());
 		toCondition.setCondition(fromCondition.getCondition());
 		toCondition.setOnsetDate(fromCondition.getOnsetDate());
 		toCondition.setAdditionalDetail(fromCondition.getAdditionalDetail());
 		toCondition.setEndDate(fromCondition.getEndDate());
+		toCondition.setEndReason(fromCondition.getEndReason());
 		toCondition.setVoided(fromCondition.getVoided());
 		toCondition.setVoidedBy(fromCondition.getVoidedBy());
 		toCondition.setVoidReason(fromCondition.getVoidReason());
 		toCondition.setDateVoided(fromCondition.getDateVoided());
 		return toCondition;
+	}
+
+	/**
+	 * Compares properties with those in the given Condition to determine if they have the same meaning
+	 * This method will return true immediately following the creation of a Condition from another Condition
+	 * @see Condition#newInstance(Condition)
+	 * This method will return false if any value is different, excepting identity data (id, uuid)
+	 * If the given instance is null, this will return false
+	 * @param c the Condition to compare against 	
+	 * @return true if the given Condition has the same meaningful properties as the passed Condition
+	 * @since 2.6.1
+	 */
+	public boolean matches(Condition c) {
+		if (c == null) {
+			return false;
+		}
+		CodedOrFreeText coft1 = getCondition() == null ? new CodedOrFreeText() : getCondition();
+		CodedOrFreeText coft2 = c.getCondition() == null ? new CodedOrFreeText() : c.getCondition();
+		
+		boolean ret = (OpenmrsUtil.nullSafeEquals(getPreviousVersion(), c.getPreviousVersion()));
+		ret = ret && (OpenmrsUtil.nullSafeEquals(getPatient(), c.getPatient()));
+		ret = ret && (OpenmrsUtil.nullSafeEquals(getEncounter(), c.getEncounter()));
+		ret = ret && (OpenmrsUtil.nullSafeEquals(getFormNamespaceAndPath(), c.getFormNamespaceAndPath()));
+		ret = ret && (OpenmrsUtil.nullSafeEquals(getClinicalStatus(), c.getClinicalStatus()));
+		ret = ret && (OpenmrsUtil.nullSafeEquals(getVerificationStatus(), c.getVerificationStatus()));
+		ret = ret && (OpenmrsUtil.nullSafeEquals(coft1.getCoded(), coft2.getCoded()));
+		ret = ret && (OpenmrsUtil.nullSafeEquals(coft1.getSpecificName(), coft2.getSpecificName()));
+		ret = ret && (OpenmrsUtil.nullSafeEquals(coft1.getNonCoded(), coft2.getNonCoded()));
+		ret = ret && (OpenmrsUtil.nullSafeEquals(getOnsetDate(), c.getOnsetDate()));
+		ret = ret && (OpenmrsUtil.nullSafeEquals(getAdditionalDetail(), c.getAdditionalDetail()));
+		ret = ret && (OpenmrsUtil.nullSafeEquals(getEndDate(), c.getEndDate()));
+		ret = ret && (OpenmrsUtil.nullSafeEquals(getEndReason(), c.getEndReason()));
+		ret = ret && (OpenmrsUtil.nullSafeEquals(getVoided(), c.getVoided()));
+		ret = ret && (OpenmrsUtil.nullSafeEquals(getVoidedBy(), c.getVoidedBy()));
+		ret = ret && (OpenmrsUtil.nullSafeEquals(getVoidReason(), c.getVoidReason()));
+		ret = ret && (OpenmrsUtil.nullSafeEquals(getDateVoided(), c.getDateVoided()));
+		return ret;
 	}
 	
 	/**
