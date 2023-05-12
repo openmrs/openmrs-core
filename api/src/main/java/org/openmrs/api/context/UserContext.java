@@ -122,6 +122,7 @@ public class UserContext implements Serializable {
 		}
 		
 		setUserLocation(true);
+		setUserLocale(true);
 		
 		log.debug("Authenticated as: {}", this.user);
 		
@@ -142,6 +143,7 @@ public class UserContext implements Serializable {
 			user = Context.getUserService().getUser(user.getUserId());
 			//update the stored location in the user's session
 			setUserLocation(false);
+			setUserLocale(false);
 		}
 	}
 	
@@ -181,8 +183,9 @@ public class UserContext implements Serializable {
 		
 		this.user = userToBecome;
 		
-		//update the user's location
+		//update the user's location and locale
 		setUserLocation(false);
+		setUserLocale(false);
 		
 		log.debug("Becoming user: {}", user);
 		
@@ -445,6 +448,29 @@ public class UserContext implements Serializable {
 			
 			if (useDefault || defaultLocationId != null) {
 				this.locationId = defaultLocationId;
+			}
+		}
+	}
+
+	/**
+	 * Convenience method that sets the default localeused by the currently authenticated user, using
+	 * the value of the user's default local property
+	 */
+	private void setUserLocale(boolean useDefault) {
+		// local should be null if no user is logged in
+		if (this.user == null) {
+			this.locale = null;
+			return;
+		}
+
+		// intended to be when the user initially authenticates
+		if (this.locationId == null || useDefault) {
+			if (user.getUserProperties().containsKey("defaultLocale")) {
+				String localeString = user.getUserProperty("defaultLocale");
+				locale = LocaleUtility.fromSpecification(localeString);
+			}
+			if (locale == null) {
+				locale = LocaleUtility.getDefaultLocale();
 			}
 		}
 	}
