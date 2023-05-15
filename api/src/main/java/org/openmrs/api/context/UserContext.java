@@ -443,12 +443,8 @@ public class UserContext implements Serializable {
 		}
 		
 		// intended to be when the user initially authenticates
-		if (this.locationId == null || useDefault) {
-			Integer defaultLocationId = getDefaultLocationId(this.user);
-			
-			if (useDefault || defaultLocationId != null) {
-				this.locationId = defaultLocationId;
-			}
+		if (this.locationId == null && useDefault) {
+			this.locationId = getDefaultLocationId(this.user);
 		}
 	}
 

@@ -52,7 +52,8 @@ public class LocationUtilityTest extends BaseContextSensitiveTest {
 		user.setUserProperties(properties);
 		Context.getUserService().saveUser(user);
 		
-		Context.refreshAuthenticatedUser();
+		Context.logout();
+		authenticate();
 		
 		assertEquals("Xanadu", LocationUtility.getUserDefaultLocation().getName());
 	}

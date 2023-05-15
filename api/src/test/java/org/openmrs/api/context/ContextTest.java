@@ -191,7 +191,8 @@ public class ContextTest extends BaseContextSensitiveTest {
 		Context.flushSession();
 		Context.evictFromSession(evictedUser);
 		
-		Context.refreshAuthenticatedUser();
+		Context.logout();
+		authenticate();
 		
 		assertEquals(Context.getLocationService().getLocation(2), Context.getUserContext().getLocation());
 	}
