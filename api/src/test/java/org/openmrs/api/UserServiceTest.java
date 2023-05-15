@@ -1275,7 +1275,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Context.authenticate(user.getUsername(), "testUser1234");
 		
 		final int numberOfUserProperties = user.getUserProperties().size();
-		assertEquals(1, user.getUserProperties().size());
+		assertEquals(2, user.getUserProperties().size());
 		final String USER_PROPERTY_KEY = "test-key";
 		final String USER_PROPERTY_VALUE = "test-value";
 		
@@ -1294,7 +1294,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 
 		//  retrieve a user who has UserProperties
 		User user = userService.getUser(5511);
-		assertEquals(1, user.getUserProperties().size());
+		assertEquals(2, user.getUserProperties().size());
 		// Authenticate the test  user so that Context.getAuthenticatedUser() method returns above user
 		Context.authenticate(user.getUsername(), "testUser1234");
 		final String USER_PROPERTY_KEY_1 = "test-key1";
