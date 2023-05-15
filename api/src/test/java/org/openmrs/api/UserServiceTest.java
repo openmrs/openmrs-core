@@ -1631,6 +1631,15 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertEquals(Locale.FRENCH, Context.getUserService().getDefaultLocaleForUser(createdUser));
 	}
 
+	@Test
+	public void getDefaultLocaleForUser_shouldReturnDefaultLocaleForUserIfAlreadySet() {
+		executeDataSet(XML_FILENAME);
+		Context.authenticate("test", "testUser1234");
+
+		Locale locale = Context.getLocale();
+		assertEquals(Locale.FRENCH, locale);
+	}
+
 	private User createTestUser() {
 		User u = new User();
 		u.setPerson(new Person());

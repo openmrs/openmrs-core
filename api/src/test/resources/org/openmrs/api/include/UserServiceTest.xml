@@ -63,5 +63,7 @@
   <users user_id="5511" person_id="5511" system_id="511-x" username="test" password="e9fb6ffdc1f903bdd8ae621347d5329762de868347d317dacecebf6e9e73f4d97297cb1237d8edaa02c5a9bd25949b251c2169202236455c23cdf4d828487c4a" salt="b3cc5eea8fdc9f8579b07267f209fe184f2202cc6379922e0b13f2753c641808bbba8b0ecf4d0592db8e5001e57876c506ae4d3579d5274d88ca8f26b7e14d9d" secret_question="a secret" secret_answer="an answer" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" retired="false" retire_reason="" uuid="658db69a-e53c-11de-8404-001e378eb99e"/>
 
   <user_property user_id="5511" property="some key" property_value="some value" />
-	
+  <user_property user_id="5511" property="defaultLocale" property_value="fr" />
+
+
 </dataset>
