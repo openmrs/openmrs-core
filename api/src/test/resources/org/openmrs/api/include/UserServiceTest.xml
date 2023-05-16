@@ -64,6 +64,4 @@
 
   <user_property user_id="5511" property="some key" property_value="some value" />
   <user_property user_id="5511" property="defaultLocale" property_value="fr" />
-
-
 </dataset>
