@@ -19,9 +19,11 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.azeckoski.reflectutils.ClassDataCacher;
 import org.azeckoski.reflectutils.ClassFields;
 import org.azeckoski.reflectutils.exceptions.FieldnameNotFoundException;
+import org.codehaus.jackson.map.util.BeanUtil;
 
 /**
  * This class has convenience methods to find the fields on a class and superclass as well as
@@ -71,9 +73,18 @@ public class Reflect {
 	 * @return List&lt;Field&gt;
 	 * <strong>Should</strong> return all fields include private and super classes
 	 */
-	public static List<Field> getAllFields(Class<?> fieldClass) {
-		List<Field> fields = ClassDataCacher.getInstance().getClassData(fieldClass).getFields();
-		return new ArrayList<>(fields);
+	public static List<Field> getAllFields(Class<?> fieldClass){
+		List<Field> fields = new ArrayList<Field>();
+		Class<?> currentClass = fieldClass;
+		while (currentClass != null){
+			Field[] declaredFields = currentClass.getDeclaredFields();
+			for (Field field : declaredFields){
+				field.setAccessible(true);
+				fields.add(field);
+			}
+			currentClass = currentClass.getSuperclass();
+		}
+		return fields;
 	}
 	
 	/**
@@ -129,6 +140,14 @@ public class Reflect {
 			throw new IllegalArgumentException("Don't know how to handle: " + t.getClass());
 		}
 	}
+	public static Object getPropertyValue(Object object, String property) {
+		try {
+			return BeanUtils.getProperty(object, property);
+		} catch (Exception e) {
+			throw new IllegalArgumentException(e);
+		}
+	}
+
 	
 	/**
 	 * @param object Object
