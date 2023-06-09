@@ -69,6 +69,8 @@ public class Reflect {
 	 * This method return all the fields (including private) from the given class and its super
 	 * classes.
 	 * 
+	 * 
+	 * 
 	 * @param fieldClass Class
 	 * @return List&lt;Field&gt;
 	 * <strong>Should</strong> return all fields include private and super classes
@@ -147,6 +149,7 @@ public class Reflect {
 			throw new IllegalArgumentException(e);
 		}
 	}
+	
 
 	
 	/**
