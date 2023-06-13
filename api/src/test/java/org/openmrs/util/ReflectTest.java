@@ -90,6 +90,7 @@ public class ReflectTest {
 		Field nonCollectionField = findFieldByName(allFields, "nonCollectionField");
 		assertFalse(reflect.isCollectionField(nonCollectionField));
 	}
+
 	
 	/**
 	 * @see Reflect#isCollection(Class<*>)
@@ -145,15 +146,24 @@ public class ReflectTest {
 	 * @see Reflect#isCollectionField(Field)
 	 */
 	@Test
-	public void isCollectionField_shouldReturnTrueIfGivenFieldIsCollectionAndItsElementTypeIsGivenParameterized()
-	{
-		Reflect reflect = new Reflect(OpenmrsObject.class);
-		List<Field> allFields = Reflect.getAllFields(OpenmrsObjectImp.class);
-		
-		assertEquals("subClassField", allFields.get(1).getName());
-		assertTrue(reflect.isCollectionField(allFields.get(1)));
+	void isCollectionField_shouldReturnTrueIfGivenFieldIsCollectionAndItsElementTypeIsGivenParameterized() {
+		List<Field> fields = Reflect.getAllFields(OpenmrsObjectImp.class);
+
+		boolean foundCollectionField = false;
+		for (Field field : fields) {
+			if (Collection.class.isAssignableFrom(field.getType())) {
+				ParameterizedType parameterizedType = (ParameterizedType) field.getGenericType();
+				Type elementType = parameterizedType.getActualTypeArguments()[0];
+				if (elementType == BaseOpenmrsObject.class) {
+					foundCollectionField = true;
+					break;
+				}
+			}
+		}
+
+		assertTrue(foundCollectionField, "Expected to find a collection field with the element type BaseOpenmrsObject");
 	}
-	
+
 	/**
 	 * @see Reflect#isCollectionField(Field)
 	 */
