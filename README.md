@@ -124,6 +124,28 @@ The production version can be run with:
 ```bash
 docker-compose -f docker-compose.yml up
 ```
+If you want to debug, you need to run a development version and connect your debugger to port 8000, which is exposed by default.
+
+Unfortunately, at this point any code changes require full restart and rebuild of the docker container. To speed up the process,
+please use:
+```bash
+docker-compose build --build-arg MVN_ARGS='install -DskipTests'
+docker-compose up
+```
+We are working towards providing support for Spring Boot auto-reload feature, which will be documented here once ready.
+
+It is also possible to deploy an image built by our CI, which is published at 
+https://hub.docker.com/r/openmrs/openmrs-core
+
+You can run any tag available with:
+```bash
+TAG=nightly docker-compose -f docker-compose.yml up
+```
+It is also possible to run a development version of an image with:
+```bash
+TAG=dev docker-compose up
+```
+All development versions contain dev suffix. The cache suffix is for use by our CI.
 
 ## Navigating the repository
 
