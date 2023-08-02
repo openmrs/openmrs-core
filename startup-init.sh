@@ -134,7 +134,25 @@ has_current_openmrs_database=${OMRS_HAS_CURRENT_OPENMRS_DATABASE}
 install_method=${OMRS_INSTALL_METHOD}
 module_web_admin=${OMRS_MODULE_WEB_ADMIN}
 module.allow_web_admin=${OMRS_MODULE_WEB_ADMIN}
+
 EOF
+
+EXTRA_VARS=(${!OMRS_EXTRA_@})
+if [[ -n "${EXTRA_VARS+x}" ]]; then 
+	EXTRA_PROPERTIES=""
+	for i in "${EXTRA_VARS[@]}"
+	do
+	  :
+	  var=$(echo "${i#OMRS_EXTRA_}" | tr [:upper:] [:lower:])
+	  var=${var//_/.}
+	  var=${var//../_}
+	  EXTRA_PROPERTIES+="${var}=${!i} \n"
+	done
+	
+	echo -e "$EXTRA_PROPERTIES" >> "$OMRS_SERVER_PROPERTIES_FILE"
+fi
+
+cat "$OMRS_SERVER_PROPERTIES_FILE"
 
 if [ -f "$OMRS_RUNTIME_PROPERTIES_FILE" ]; then
   echo "Found existing runtime properties file at $OMRS_RUNTIME_PROPERTIES_FILE. Merging with $OMRS_SERVER_PROPERTIES_FILE"
