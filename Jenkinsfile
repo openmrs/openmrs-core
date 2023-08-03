@@ -10,6 +10,6 @@ stages{
     stage('git'){
         steps{
             git branch: 'declarative',
-                url: 'https://github.com/sridharkomati/newjenkinsspc.git'              
+                url: 'https://github.com/sridharkomati/openmrs-core.git'              
         }
     }  
