@@ -13,3 +13,5 @@ stages{
                 url: 'https://github.com/sridharkomati/openmrs-core.git'              
         }
     }  
+}
+}
