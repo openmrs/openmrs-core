@@ -32,6 +32,13 @@ stages{
             )    
     }
     }  
+    stage('reporting') {
+            steps {
+                archiveArtifacts onlyIfSuccessful : true,
+                       artifacts: '**/target/openmrs.war'
+                junit testResults: '**/target/surefire-reports/TEST-*.xml'
+            }
+        }
     stage('Sonarcube'){
         steps{
             withSonarQubeEnv('sonar-cloud'){
