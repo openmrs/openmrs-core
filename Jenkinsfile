@@ -1,5 +1,5 @@
 pipeline{
-    agent { label 'JDK-8'}
+    agent { label 'jdk-8'}
     tools {
         jdk 'JDK-8'
         maven 'mvn'
@@ -19,13 +19,13 @@ stages{
             id: "maven-ID",
             serverId: "JFROG_CLOUD",
             releaseRepo: 'samskruti-libs-release',
-            snapshotRepo: 'samskruti-libs-snapshot',
+            snapshotRepo: 'samskruti-libs-snapshot'
             )
         rtMavenRun (
             tool: 'mvn',
             pom: 'pom.xml',
             goals: 'clean install',
-            deployerId: "maven-ID",
+            deployerId: "maven-ID"
         )
         rtPublishBuildInfo (
             serverId: "JFROG_CLOUD"
