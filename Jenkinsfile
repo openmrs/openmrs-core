@@ -42,7 +42,7 @@ stages{
     stage('Sonarcube'){
         steps{
             withSonarQubeEnv('sonar-cloud'){
-                sh 'mvn clean install sonar:sonar -Dsonar.organization=OPENMRSSONAR -Dsonar.token=38a2b058cb0a7a17862cf58f21c431a3945582cd -Dsonar.projectKey=sridhardevops'
+                sh 'mvn clean install sonar:sonar -Dsonar.organization=OPENMRSSONAR -Dsonar.token=38a2b058cb0a7a17862cf58f21c431a3945582cd -Dsonar.projectKey=openmrs231'
             }                                                  
 
         }
