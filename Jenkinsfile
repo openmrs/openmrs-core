@@ -1,5 +1,5 @@
 pipeline{
-    agent { label 'jdk-8'}
+    agent { label 'jdk-8-new'}
     tools {
         jdk 'JDK-8'
         maven 'mvn'
