@@ -22,6 +22,8 @@ services:
         build:
             target: dev
             context: .    
+            cache_from:
+                -   openmrs/openmrs-core:${TAG-dev}
         ports:
             - "8080:8080"
             - "8000:8000"
