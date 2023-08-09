@@ -53,10 +53,10 @@ Build:
                       
                       sleep 10
                       
-                      docker pull ${IMAGE}
+                      docker pull ${IMAGE_DEV}
                       
                       echo "Inspecting image for id"
-                      docker image inspect --format='{{index .RepoDigests 0}}' ${IMAGE} > docker-image.txt
+                      docker image inspect --format='{{index .RepoDigests 0}}' ${IMAGE_DEV} > docker-image.txt
               description: Build and push dev image
         - any-task:
               plugin-key: com.atlassian.bamboo.plugins.variable.updater.variable-updater-generic:variable-file-reader
