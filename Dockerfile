@@ -8,6 +8,43 @@
 #	Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS 
 #	graphic logo is a trademark of OpenMRS Inc.
 
+### Compile Stage (platform-agnostic)
+FROM --platform=$BUILDPLATFORM maven:3.8-amazoncorretto-8 as compile
+
+RUN yum -y update && yum -y install git && yum clean all
+
+WORKDIR /openmrs_core
+
+ENV OMRS_SDK_PLUGIN="org.openmrs.maven.plugins:openmrs-sdk-maven-plugin"
+ENV OMRS_SDK_PLUGIN_VERSION="4.5.0"
+
+COPY docker-pom.xml .
+
+ARG MVN_SETTINGS="-s /usr/share/maven/ref/settings-docker.xml"
+
+# Setup and cache SDK
+RUN mvn $MVN_SETTINGS -f docker-pom.xml $OMRS_SDK_PLUGIN:$OMRS_SDK_PLUGIN_VERSION:setup-sdk -N -DbatchAnswers=n
+
+COPY pom.xml .
+COPY test/pom.xml test/
+COPY tools/pom.xml tools/
+COPY liquibase/pom.xml liquibase/
+COPY api/pom.xml api/
+COPY web/pom.xml web/
+COPY webapp/pom.xml webapp/
+
+# Install dependencies
+RUN mvn $MVN_SETTINGS -B dependency:go-offline -P !default-tools.jar,!mac-tools.jar
+
+# Copy remaining files
+COPY . .
+
+# Append --build-arg MVN_ARGS='clean install' to change default maven arguments
+ARG MVN_ARGS='clean install'
+
+# Build the project
+RUN mvn $MVN_SETTINGS $MVN_ARGS
+
 ### Development Stage
 FROM maven:3.8-amazoncorretto-8 as dev
 
@@ -36,32 +73,14 @@ RUN curl -fL -o /tmp/apache-tomcat.tar.gz "$TOMCAT_URL" \
 
 WORKDIR /openmrs_core
 
-ENV OMRS_SDK_PLUGIN="org.openmrs.maven.plugins:openmrs-sdk-maven-plugin"
-ENV OMRS_SDK_PLUGIN_VERSION="4.5.0"
+COPY --from=compile /usr/share/maven/ref /usr/share/maven/ref
 
-COPY checkstyle.xml checkstyle-suppressions.xml CONTRIBUTING.md findbugs-include.xml LICENSE license-header.txt \
- NOTICE.md README.md ruleset.xml SECURITY.md ./
-
-COPY pom.xml .
-
-# Setup and cache SDK
-RUN --mount=type=cache,target=/root/.m2 mvn $OMRS_SDK_PLUGIN:$OMRS_SDK_PLUGIN_VERSION:setup-sdk -N -DbatchAnswers=n
-
-# Copy sources
-COPY . .
-
-# Append --build-arg MVN_ARGS='clean install' to change default maven arguments
-ARG MVN_ARGS='clean install'
-
-# Build the project
-RUN --mount=type=cache,target=/root/.m2 mvn $MVN_ARGS
+COPY --from=compile /openmrs_core /openmrs_core/
 
 RUN mkdir -p /openmrs/distribution/openmrs_core/ \
-    && cp /openmrs_core/webapp/target/openmrs.war /openmrs/distribution/openmrs_core/openmrs.war
-
-# Copy in the start-up scripts
-COPY wait-for-it.sh startup-init.sh startup.sh startup-dev.sh /openmrs/
-RUN chmod +x /openmrs/wait-for-it.sh && chmod +x /openmrs/startup-init.sh && chmod +x /openmrs/startup.sh \
+    && cp /openmrs_core/webapp/target/openmrs.war /openmrs/distribution/openmrs_core/openmrs.war \
+    && cp /openmrs_core/wait-for-it.sh /openmrs_core/startup-init.sh /openmrs_core/startup.sh /openmrs_core/startup-dev.sh /openmrs/  \
+    && chmod +x /openmrs/wait-for-it.sh && chmod +x /openmrs/startup-init.sh && chmod +x /openmrs/startup.sh \
     && chmod +x /openmrs/startup-dev.sh 
 
 EXPOSE 8080
@@ -101,7 +120,7 @@ RUN mkdir -p /openmrs/data/modules \
     && chmod -R g+rw /openmrs
     
 # Copy in the start-up scripts
-COPY wait-for-it.sh startup-init.sh startup.sh /openmrs/
+COPY --from=dev /openmrs/wait-for-it.sh /openmrs/startup-init.sh /openmrs/startup.sh /openmrs/
 RUN chmod g+x /openmrs/wait-for-it.sh && chmod g+x /openmrs/startup-init.sh && chmod g+x /openmrs/startup.sh
 
 WORKDIR /openmrs

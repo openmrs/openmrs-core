@@ -137,6 +137,9 @@ module.allow_web_admin=${OMRS_MODULE_WEB_ADMIN}
 
 EOF
 
+
+# Supports any custom env variable with the OMRS_EXTRA_ prefix, which translates to a property without the 
+# OMRS_EXTRA_ prefix. The '_' is replaced with '.' and '__' with '_'.
 EXTRA_VARS=(${!OMRS_EXTRA_@})
 if [[ -n "${EXTRA_VARS+x}" ]]; then 
 	EXTRA_PROPERTIES=""

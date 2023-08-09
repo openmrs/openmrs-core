@@ -27,7 +27,11 @@ services:
 
     api:
         image: openmrs/openmrs-core:${TAG:-2.5.x-nightly}
-        build: .
+        build:
+            context: .
+            cache_from:
+                - openmrs/openmrs-core:${TAG:-2.5.x-dev}
+                - openmrs/openmrs-core:${TAG:-2.5.x-nightly}
         depends_on:
             - db
         ports:
