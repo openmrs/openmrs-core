@@ -8,31 +8,10 @@
 #	Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS 
 #	graphic logo is a trademark of OpenMRS Inc.
 
-### Development Stage
-FROM maven:3.8-amazoncorretto-8 as dev
+### Compile Stage (platform-agnostic)
+FROM --platform=$BUILDPLATFORM maven:3.8-amazoncorretto-8 as compile
 
-RUN yum -y update && yum -y install tar gzip git && yum clean all
-
-# Setup Tini
-ARG TARGETARCH
-ARG TINI_VERSION=v0.19.0
-ARG TINI_URL="https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini"
-ARG TINI_SHA="93dcc18adc78c65a028a84799ecf8ad40c936fdfc5f2a57b1acda5a8117fa82c"
-ARG TINI_SHA_ARM64="07952557df20bfd2a95f9bef198b445e006171969499a1d361bd9e6f8e5e0e81"
-RUN if [ "$TARGETARCH" = "arm64" ] ; then TINI_URL="${TINI_URL}-arm64" TINI_SHA=${TINI_SHA_ARM64} ; fi \
-    && curl -fsSL -o /usr/bin/tini ${TINI_URL} \
-    && echo "${TINI_SHA}  /usr/bin/tini" | sha256sum -c \
-    && chmod +x /usr/bin/tini 
-
-# Setup Tomcat for development
-ARG TOMCAT_VERSION=8.5.83
-ARG TOMCAT_SHA="57cbe9608a9c4e88135e5f5480812e8d57690d5f3f6c43a7c05fe647bddb7c3b684bf0fc0efebad399d05e80c6d20c43d5ecdf38ec58f123e6653e443f9054e3"
-ARG TOMCAT_URL="https://www.apache.org/dyn/closer.cgi?action=download&filename=tomcat/tomcat-8/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz"
-RUN curl -fL -o /tmp/apache-tomcat.tar.gz "$TOMCAT_URL" \
-    && echo "${TOMCAT_SHA}  /tmp/apache-tomcat.tar.gz" | sha512sum -c \
-    && mkdir -p /usr/local/tomcat && gzip -d /tmp/apache-tomcat.tar.gz  \
-    && tar -xvf /tmp/apache-tomcat.tar -C /usr/local/tomcat/ --strip-components=1 \
-    && rm -rf /tmp/apache-tomcat.tar.gz /usr/local/tomcat/webapps/* 
+RUN yum -y update && yum -y install git && yum clean all
 
 WORKDIR /openmrs_core
 
@@ -65,6 +44,38 @@ ARG MVN_ARGS='clean install'
 
 # Build the project
 RUN mvn $MVN_SETTINGS $MVN_ARGS
+
+### Development Stage
+FROM maven:3.8-amazoncorretto-8 as dev
+
+RUN yum -y update && yum -y install tar gzip git && yum clean all
+
+# Setup Tini
+ARG TARGETARCH
+ARG TINI_VERSION=v0.19.0
+ARG TINI_URL="https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini"
+ARG TINI_SHA="93dcc18adc78c65a028a84799ecf8ad40c936fdfc5f2a57b1acda5a8117fa82c"
+ARG TINI_SHA_ARM64="07952557df20bfd2a95f9bef198b445e006171969499a1d361bd9e6f8e5e0e81"
+RUN if [ "$TARGETARCH" = "arm64" ] ; then TINI_URL="${TINI_URL}-arm64" TINI_SHA=${TINI_SHA_ARM64} ; fi \
+    && curl -fsSL -o /usr/bin/tini ${TINI_URL} \
+    && echo "${TINI_SHA}  /usr/bin/tini" | sha256sum -c \
+    && chmod +x /usr/bin/tini 
+
+# Setup Tomcat for development
+ARG TOMCAT_VERSION=8.5.83
+ARG TOMCAT_SHA="57cbe9608a9c4e88135e5f5480812e8d57690d5f3f6c43a7c05fe647bddb7c3b684bf0fc0efebad399d05e80c6d20c43d5ecdf38ec58f123e6653e443f9054e3"
+ARG TOMCAT_URL="https://www.apache.org/dyn/closer.cgi?action=download&filename=tomcat/tomcat-8/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz"
+RUN curl -fL -o /tmp/apache-tomcat.tar.gz "$TOMCAT_URL" \
+    && echo "${TOMCAT_SHA}  /tmp/apache-tomcat.tar.gz" | sha512sum -c \
+    && mkdir -p /usr/local/tomcat && gzip -d /tmp/apache-tomcat.tar.gz  \
+    && tar -xvf /tmp/apache-tomcat.tar -C /usr/local/tomcat/ --strip-components=1 \
+    && rm -rf /tmp/apache-tomcat.tar.gz /usr/local/tomcat/webapps/* 
+
+WORKDIR /openmrs_core
+
+COPY --from=compile /usr/share/maven/ref /usr/share/maven/ref
+
+COPY --from=compile /openmrs_core /openmrs_core/
 
 RUN mkdir -p /openmrs/distribution/openmrs_core/ \
     && cp /openmrs_core/webapp/target/openmrs.war /openmrs/distribution/openmrs_core/openmrs.war \
