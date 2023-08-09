@@ -30,8 +30,8 @@ services:
         build:
             context: .
             cache_from:
-                - openmrs/openmrs-core:${TAG-dev}
-                - openmrs/openmrs-core:${TAG-nightly}
+                - openmrs/openmrs-core:${TAG:-dev}
+                - openmrs/openmrs-core:${TAG:-nightly}
         depends_on:
             - db
         ports:

@@ -23,7 +23,7 @@ services:
             target: dev
             context: .    
             cache_from:
-                -   openmrs/openmrs-core:${TAG-dev}
+                -   openmrs/openmrs-core:${TAG:-dev}
         ports:
             - "8080:8080"
             - "8000:8000"
