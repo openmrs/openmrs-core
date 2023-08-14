@@ -43,7 +43,7 @@
     <!-- directory cannot be used. Note: A trailing slash MUST be used -->
     <context-param>
         <param-name>application.data.directory</param-name>
-        <param-value></param-value>
+        <param-value />
     </context-param>
 	<!-- // End init parameters -->
 
@@ -149,6 +149,17 @@
 		<dispatcher>REQUEST</dispatcher>
 	</filter-mapping>
 	<!--  End second filter -->
+	
+	<!-- This filter should come before the OpenmrsFilter, i.e., before we've created
+	     a session. -->
+	<filter>
+		<filter-name>CookieClearingFilter</filter-name>
+		<filter-class>org.openmrs.web.filter.CookieClearingFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>CookieClearingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
 	
 	<filter>
 		<filter-name>OpenmrsFilter</filter-name> 

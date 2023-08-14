@@ -209,7 +209,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		// Patient Program Architecture
 		PatientProgram patientprogram = new PatientProgram();
 		patientprogram.setProgram(program);
-		patientprogram.setPatient(new Patient());
+		patientprogram.setPatient(new Patient(2));
 		patientprogram.setDateEnrolled(day1);
 		patientprogram.setDateCompleted(null);
 
@@ -336,7 +336,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		// Patient Program Architecture
 		PatientProgram patientprogram = new PatientProgram();
 		patientprogram.setProgram(program);
-		patientprogram.setPatient(new Patient());
+		patientprogram.setPatient(new Patient(2));
 		patientprogram.setDateEnrolled(day1);
 		patientprogram.setDateCompleted(null);
 
@@ -782,7 +782,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		ArrayList<ProgramWorkflow> programWorkflows = new ArrayList<>();
 		programWorkflows.add(programWorkflow);
 		Set<ProgramWorkflow> allWorkflows = new HashSet<>(programWorkflows);
-		Program programTest = pws.getAllPrograms().get(1);
+		Program programTest = pws.getProgram(2);
 		programTest.setAllWorkflows(allWorkflows);
 		Program program = pws.retireProgram(programTest, "expired");
 		for (ProgramWorkflow workflow : program.getWorkflows()) {
@@ -973,7 +973,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	public void saveConceptStateConversion_shouldTestSaveConceptStateConversion() {
 		ConceptStateConversion newConceptStateConversion = new ConceptStateConversion();
 		ConceptStateConversion existingConceptStateConversion = pws.getAllConceptStateConversions().get(0);
-		newConceptStateConversion.setConcept(existingConceptStateConversion.getConcept());
+		newConceptStateConversion.setConcept(new Concept(3));
 		newConceptStateConversion.setProgramWorkflow(existingConceptStateConversion.getProgramWorkflow());
 		newConceptStateConversion.setProgramWorkflowState(existingConceptStateConversion.getProgramWorkflowState());
 		String conceptStateConversionUuid = newConceptStateConversion.getUuid();

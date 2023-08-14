@@ -76,7 +76,6 @@ import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.person.PersonMergeLog;
 import org.openmrs.person.PersonMergeLogData;
 import org.openmrs.serialization.SerializationException;
-import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.TestUtil;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
@@ -449,9 +448,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void shouldGetPatientsByIdegntifierAndIdentifierType() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet(FIND_PATIENTS_XML);
-		authenticate();
 		updateSearchIndex();
 		
 		List<PatientIdentifierType> types = new ArrayList<>();
@@ -493,9 +490,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void shouldGetPatientsByIdentifierAndMoreThanOneIdentifierTypes() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet(FIND_PATIENTS_XML);
-		authenticate();
 		updateSearchIndex();
 		
 		List<PatientIdentifierType> types = new ArrayList<>();
@@ -602,7 +597,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPatients_shouldAllowSearchStringToBeOneAccordingToMinsearchcharactersGlobalProperty() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet(FIND_PATIENTS_XML);
 		updateSearchIndex();
 		
@@ -1867,9 +1861,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void getPatients_shouldReturnEmptyListWhenNoMatchIsFound() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet(CREATE_PATIENT_XML);
-		authenticate();
 		
 		List<Patient> patientList = patientService.getPatients(null, "???", null, false);
 		assertNotNull(patientList, "an empty list should be returned instead of a null object");
@@ -1928,12 +1920,9 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertEquals(6, allPatients.size());
 	}
 	
-	@SkipBaseSetup
 	@Test
 	public void getPatients_shouldFetchAllPatientsThatPartiallyMatchGivenName() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet(FIND_PATIENTS_XML);
-		authenticate();
 		updateSearchIndex();
 		
 		List<Patient> patients = patientService.getPatients("Jea", null, null, false);
@@ -1959,12 +1948,9 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertFalse(patients.contains(patientService.getPatient(3)), "getPatients failed to exclude patient whose name did not include the partial string");
 	}
 	
-	@SkipBaseSetup
 	@Test
 	public void getPatients_shouldIgnoreAccentsWhenMatchingName() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet(FIND_PATIENTS_ACCENTS_XML);
-		authenticate();
 		updateSearchIndex();
 		
 		List<Patient> patients = patientService.getPatients("Jose", null, null, false);
@@ -1997,12 +1983,9 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertFalse(patients.contains(patientService.getPatient(209)), "unexpectedly found a Russian name with an ASCII search");
 	}
 
-	@SkipBaseSetup
 	@Test
 	public void purgePatient_shouldDeletePatientFromDatabase() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet(FIND_PATIENTS_XML);
-		authenticate();
 		
 		// verify patient with ID 2 exists in database
 		Patient patientToPurge = patientService.getPatient(2);
@@ -2015,12 +1998,9 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertNull(patientService.getPatient(2));
 	}
 	
-	@SkipBaseSetup
 	@Test
 	public void getPatients_shouldNotReturnVoidedPatients() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet(FIND_PATIENTS_XML);
-		authenticate();
 		
 		// verify patient is voided
 		assertTrue(patientService.getPatient(3).getVoided());

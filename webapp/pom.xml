@@ -13,7 +13,7 @@
    <parent>
       <groupId>org.openmrs</groupId>
       <artifactId>openmrs</artifactId>
-      <version>2.6.0-SNAPSHOT</version>
+      <version>2.7.0-SNAPSHOT</version>
    </parent>
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.openmrs.web</groupId>
@@ -65,7 +65,7 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-antrun-plugin</artifactId>
-            <version>3.0.0</version>
+            <version>3.1.0</version>
             <executions>
                <execution>
                   <phase>process-resources</phase>
@@ -120,6 +120,10 @@
                        <name>OPENMRS_INSTALLATION_SCRIPT</name>
                        <value>${OPENMRS_INSTALLATION_SCRIPT}</value>
                    </systemProperty>
+				   <systemProperty>
+					   <name>OPENMRS_APPLICATION_DATA_DIRECTORY</name>
+					   <value>${OPENMRS_APPLICATION_DATA_DIRECTORY}</value>
+				   </systemProperty>
                </systemProperties>
             </configuration>
          </plugin>
@@ -233,7 +237,7 @@
 		  <plugin>
               <groupId>org.codehaus.cargo</groupId>
               <artifactId>cargo-maven3-plugin</artifactId>
-              <version>1.9.8</version>
+              <version>1.10.9</version>
               <configuration>
                   <container>
                       <containerId>tomcat9x</containerId>

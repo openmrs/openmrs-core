@@ -13,9 +13,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Set;
-import java.util.TreeSet;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.ProviderService;
@@ -49,7 +46,7 @@ public class BaseCustomizableMetadataTest extends BaseContextSensitiveTest {
 		Provider provider = new Provider();
 		provider.setIdentifier("test");
 		
-		provider.setPerson(newPerson("name"));
+		provider.setPerson(new Person(2));
 		
 		ProviderAttributeType place = service.getProviderAttributeType(3);
 		provider.setAttribute(buildProviderAttribute(place, "bangalore"));
@@ -74,7 +71,7 @@ public class BaseCustomizableMetadataTest extends BaseContextSensitiveTest {
 		Provider provider = new Provider();
 		provider.setIdentifier("test");
 		
-		provider.setPerson(newPerson("name"));
+		provider.setPerson(new Person(2));
 		
 		ProviderAttributeType cv = service.getProviderAttributeType(4);
 		provider.setAttribute(buildProviderAttribute(cv, "Worked lots of places..."));
@@ -97,15 +94,5 @@ public class BaseCustomizableMetadataTest extends BaseContextSensitiveTest {
 		providerAttribute.setAttributeType(providerAttributeType);
 		providerAttribute.setValue(value.toString());
 		return providerAttribute;
-	}
-	
-	private Person newPerson(String name) {
-		Person person = new Person();
-		Set<PersonName> personNames = new TreeSet<>();
-		PersonName personName = new PersonName();
-		personName.setFamilyName(name);
-		personNames.add(personName);
-		person.setNames(personNames);
-		return person;
 	}
 }

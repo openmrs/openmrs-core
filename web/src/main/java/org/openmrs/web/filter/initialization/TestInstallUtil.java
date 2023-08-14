@@ -184,9 +184,14 @@ public class TestInstallUtil {
 					
 					//delete all previously added modules in case of prior test installations
 					FileUtils.cleanDirectory(moduleRepository);
+
+					final File zipEntryFile = new File(moduleRepository, fileName);
+
+					if (!zipEntryFile.toPath().normalize().startsWith(moduleRepository.toPath().normalize())) {
+						throw new IOException("Bad zip entry");
+					}
 					
-					OpenmrsUtil.copyFile(zipFile.getInputStream(entry), new BufferedOutputStream(new FileOutputStream(
-				        new File(moduleRepository, fileName))));
+					OpenmrsUtil.copyFile(zipFile.getInputStream(entry), new BufferedOutputStream(new FileOutputStream(zipEntryFile)));
 				} else {
 					log.debug("Ignoring file that is not a .omod '{}'", fileName);
 				}

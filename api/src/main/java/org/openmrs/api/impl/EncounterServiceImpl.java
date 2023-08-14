@@ -35,6 +35,7 @@ import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
+import org.openmrs.api.DiagnosisService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.EncounterTypeLockedException;
 import org.openmrs.api.ObsService;
@@ -199,8 +200,16 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		
 		// save the conditions
 		encounter.getConditions().forEach(Context.getConditionService()::saveCondition);
-		
+
+		// save the allergies
 		encounter.getAllergies().forEach(Context.getPatientService()::saveAllergy);
+
+		// save the diagnoses
+		encounter.getDiagnoses().stream().forEach(diagnosis -> {
+			diagnosis.setPatient(p);
+			diagnosis.setEncounter(encounter);
+		});
+		encounter.getDiagnoses().forEach(Context.getDiagnosisService()::save);
 		
 		return encounter;
 	}

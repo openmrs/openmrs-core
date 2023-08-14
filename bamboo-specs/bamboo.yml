@@ -1,0 +1,282 @@
+---
+version: 2
+plan:
+    project-key: TRUNK
+    key: MASTER
+    name: OpenMRS Core Master
+    description: OpenMRS Core Master
+stages:
+    - Build:
+          manual: false
+          final: false
+          jobs:
+              - Build
+    - Test:
+          manual: false
+          final: false
+          jobs:
+              - Unit Test
+              - Integration Test
+    - Deploy:
+          manual: false
+          final: false
+          jobs:
+              - Deploy to maven
+              - Deploy to docker
+    - Release:
+          manual: true
+          final: false
+          jobs:
+              - Release
+Build:
+    key: BUIL
+    tasks:
+        - checkout:
+              force-clean-build: 'false'
+              description: Checkout Default Repository
+        - script:
+              interpreter: SHELL
+              scripts:
+                  - |-
+                      #!/bin/bash -eux
+                      
+                      set +x
+                      
+                      export IMAGE_DEV=${bamboo.docker.image.name}:dev
+                      
+                      docker login -u ${bamboo.dockerhub.username} -p ${bamboo.dockerhub.password}
+                      
+                      docker buildx build --pull --push --platform ${bamboo.docker.image.platforms} \
+                          --cache-to=type=registry,mode=max,ref=${IMAGE_DEV}-cache --cache-from ${IMAGE_DEV}-cache \
+                          --target dev \
+                          --build-arg MVN_ARGS="clean install -DskipTests" -t ${IMAGE_DEV} .
+                      
+                      sleep 10
+                      
+                      docker pull ${IMAGE_DEV}
+                      
+                      echo "Inspecting image for id"
+                      docker image inspect --format='{{index .RepoDigests 0}}' ${IMAGE_DEV} > docker-image.txt
+              description: Build and push dev image
+        - any-task:
+              plugin-key: com.atlassian.bamboo.plugins.variable.updater.variable-updater-generic:variable-file-reader
+              configuration:
+                  filename: docker-image.txt
+                  variable: docker.image.id
+                  variableScope: RESULT
+              description: Store docker image id
+    artifact-subscriptions: []
+Unit Test:
+    key: UT
+    tasks:
+        # Checkout Task for default repository will be added implicitly during Specs import
+        - script:
+              interpreter: SHELL
+              scripts:
+                  - |-
+                      #!/bin/bash -eu
+                      
+                      set -x
+                      
+                      export IMAGE=${bamboo.docker.image.id}
+                      
+                      docker pull ${IMAGE}
+                      
+                      docker run -v m2-repo:/root/.m2/repository --rm ${IMAGE} mvn test
+              description: Run unit tests
+    artifact-subscriptions: []
+Integration Test:
+    key: IT
+    tasks:
+        # Checkout Task for default repository will be added implicitly during Specs import
+        - script:
+              interpreter: SHELL
+              scripts:
+                  - |-
+                      #!/bin/bash -eu
+                      
+                      set -x
+                      
+                      export IMAGE=${bamboo.docker.image.id}
+                      
+                      docker pull ${IMAGE}
+                      
+                      docker run -v m2-repo:/root/.m2/repository --rm ${IMAGE} mvn test -Pskip-default-test -Pintegration-test
+              description: Run integration tests
+    artifact-subscriptions: []
+Deploy to maven:
+    key: DTM
+    tasks:
+        # Checkout Task for default repository will be added implicitly during Specs import
+        - script:
+              interpreter: SHELL
+              scripts:
+                  - |-
+                      #!/bin/bash -eu
+                      
+                      set -x
+                      
+                      export IMAGE=${bamboo.docker.image.id}
+                      
+                      docker pull $IMAGE
+                      
+                      docker run -v m2-repo:/root/.m2/repository -v ~/.m2/settings.xml:/.m2/settings.xml:ro \
+                          --rm ${IMAGE} mvn deploy -DskipTests --settings /.m2/settings.xml
+              description: Deploy to maven repo
+    artifact-subscriptions: []
+Deploy to docker:
+    key: DTD
+    tasks:
+        - checkout:
+              force-clean-build: 'false'
+              description: Checkout source
+        - script:
+              interpreter: SHELL
+              scripts:
+                  - |-
+                      #!/bin/bash -eux
+                      
+                      set +x
+                      
+                      export IMAGE=${bamboo.docker.image.id}
+                      export IMAGE_NIGHTLY=${bamboo.docker.image.name}:${bamboo.docker.image.tag}
+                      export IMAGE_DEV=${bamboo.docker.image.name}:dev
+                      
+                      docker login -u ${bamboo.dockerhub.username} -p ${bamboo.dockerhub.password}
+                      
+                      docker pull $IMAGE
+                      
+                      docker buildx build --pull --push --platform ${bamboo.docker.image.platforms} \
+                          --cache-to=type=registry,mode=max,ref=${IMAGE_NIGHTLY}-cache \
+                          --cache-from=${IMAGE},${IMAGE_DEV}-cache,${IMAGE_NIGHTLY}-cache \
+                          --build-arg MVN_ARGS="clean install -DskipTests" -t ${IMAGE_NIGHTLY}  .
+              description: Deploy to docker
+    artifact-subscriptions: []
+Release:
+    key: RTD
+    tasks:
+        - checkout:
+              force-clean-build: 'false'
+              description: Checkout Default Repository
+        - script:
+              interpreter: SHELL
+              scripts:
+                  - |-
+                        #!/bin/bash -eux
+    
+                        set +x
+                        
+                        export OMRS_VERSION=${bamboo.maven.release.version}
+                        export IMAGE=${bamboo.docker.image.name}:${OMRS_VERSION}
+                        export DEV_IMAGE=${bamboo.docker.image.name}:${OMRS_VERSION}-dev
+                        export BUILD_IMAGE=${bamboo.docker.image.id}
+                      
+                        # Set to be able to push
+                        git remote set-url origin git@github.com:openmrs/openmrs-core.git
+                        
+                        docker login -u ${bamboo.dockerhub.username} -p ${bamboo.dockerhub.password}
+                        
+                        echo "Setting the release version"
+                        docker pull ${BUILD_IMAGE}
+                        docker run --rm -v m2-repo:/root/.m2/repository -v $(pwd):/openmrs_core \
+                        ${BUILD_IMAGE} mvn versions:set -DnewVersion=${OMRS_VERSION} -DgenerateBackupPoms=false
+                        git commit -am "[skip-ci] Releasing ${OMRS_VERSION}"
+                        
+                        echo "Building the dev image"
+                        docker buildx build --pull --push --platform ${bamboo.docker.image.platforms} \
+                        --cache-from ${BUILD_IMAGE} --target dev \
+                        --build-arg MVN_ARGS="clean install -DskipTests" -t ${DEV_IMAGE} .
+                        
+                        echo "Building the production image"
+                        docker buildx build --pull --push --platform ${bamboo.docker.image.platforms} \
+                        --cache-from ${BUILD_IMAGE}-cache \
+                        --build-arg MVN_ARGS="clean install -DskipTests" -t ${IMAGE} .
+                        
+                        echo "Inspecting the image for id"
+                        sleep 10
+                        docker pull ${IMAGE}
+                        docker image inspect --format='{{index .RepoDigests 0}}' ${IMAGE} > docker-image.txt
+                        
+                        echo "Releasing to maven"
+                        docker pull ${DEV_IMAGE}
+                        docker run -v m2-repo:/root/.m2/repository -v ~/.m2/settings.xml:/.m2/settings.xml:ro \
+                        --rm ${DEV_IMAGE} mvn deploy -DskipTests --settings /.m2/settings.xml
+                        
+                        echo "Tagging the release in git"
+                        git tag ${OMRS_VERSION}
+                        git push origin ${OMRS_VERSION}
+                        
+                        (
+                        echo "Updating the main branch to a new SNAPSHOT version"
+                        git push
+                        docker run --rm -v m2-repo:/root/.m2/repository -v $(pwd):/openmrs_core \
+                        ${DEV_IMAGE} mvn versions:set -DnextSnapshot=true -DgenerateBackupPoms=false
+                        
+                        git commit -am "Setting new SNAPSHOT version"
+                        git push
+                        ) || (
+                        echo "Unable to update the main branch to a new SNAPSHOT version. Please update it manually if needed."
+                        exit 0
+                        )
+              description: Build and push images
+        - any-task:
+              plugin-key: com.atlassian.bamboo.plugins.variable.updater.variable-updater-generic:variable-file-reader
+              configuration:
+                  filename: docker-image.txt
+                  variable: docker.image.id
+                  variableScope: RESULT
+              description: Store docker image id
+        - any-task:
+              plugin-key: com.atlassian.bamboo.plugins.variable.updater.variable-updater-generic:variable-extractor
+              configuration:
+                  variable: maven.release.version
+                  removeSnapshot: 'true'
+                  variableScope: PLAN
+              description: Save next release version
+    artifact-subscriptions: []
+variables:
+    docker.image.name: openmrs/openmrs-core
+    docker.image.tag: nightly
+    maven.release.version: 2.7.0
+repositories:
+    - openmrs-core:
+          scope: global
+    - Release scripts:
+          scope: global
+triggers:
+    - polling:
+          period: '180'
+          repositories:
+              - openmrs-core
+branches:
+    create: manually
+    delete: never
+    link-to-jira: true
+notifications:
+    - events:
+          - plan-failed
+      recipients:
+          - committers
+          - emails:
+                - dev@openmrs.org
+          - watchers
+labels:
+    - platform
+    - test
+dependencies:
+    require-all-stages-passing: false
+    enabled-for-branches: true
+    block-strategy: block_if_parent_has_changes
+    plans: []
+other:
+    concurrent-build-plugin: system-default
+---
+version: 2
+plan:
+    key: TRUNK-MASTER
+plan-permissions:
+    - roles:
+          - anonymous
+      permissions:
+          - view
+...

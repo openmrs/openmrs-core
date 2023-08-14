@@ -859,7 +859,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		String[] visitTypeNames = StringUtils.split(Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GP_VISIT_TYPES_TO_AUTO_CLOSE), ",");
 		
-		String openVisitsQuery = "SELECT visit_id FROM visit WHERE voided = 0 AND date_stopped IS NULL AND visit_type_id IN (SELECT visit_type_id FROM visit_type WHERE NAME IN ('"
+		String openVisitsQuery = "SELECT visit_id FROM visit WHERE voided = false AND date_stopped IS NULL AND visit_type_id IN (SELECT visit_type_id FROM visit_type WHERE NAME IN ('"
 		        + StringUtils.join(visitTypeNames, "','") + "'))";
 		int activeVisitCount = Context.getAdministrationService().executeSQL(openVisitsQuery, true).size();
 		//sanity check

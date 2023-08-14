@@ -35,11 +35,11 @@
     <!--
         People without attributes for testing searches for different parts of names
     -->
-    <person person_id="44" gender="M" birthdate="1984-09-30 12:34:56.7" birthdate_estimated="0" dead="false" creator="1" date_created="2013-04-18 12:34:56.7" voided="false" uuid="03409E24-E6FA-483A-9EE6-F5BE456B7A6F"/>
-    <person person_id="45" gender="M" birthdate="1985-09-30 12:34:56.7" birthdate_estimated="0" dead="false" creator="1" date_created="2013-04-18 12:34:56.7" voided="false" uuid="F6D19167-EF3C-4693-AB1E-02B49D1AF084"/>
-    <person person_id="46" gender="M" birthdate="1986-09-30 12:34:56.7" birthdate_estimated="0" dead="false" creator="1" date_created="2013-04-18 12:34:56.7" voided="false" uuid="B2EFCA4C-9499-4D52-80A1-87AC64547A44"/>
-    <person person_id="47" gender="M" birthdate="1987-09-30 12:34:56.7" birthdate_estimated="0" dead="false" creator="1" date_created="2013-04-18 12:34:56.7" voided="false" uuid="7026D388-9541-4FC3-813B-E68A6FAF6854"/>
-    <person person_id="48" gender="M" birthdate="1988-09-30 12:34:56.7" birthdate_estimated="0" dead="false" creator="1" date_created="2013-04-18 12:34:56.7" voided="false" uuid="7D1C9CE1-F776-4FC6-AC32-F659FAFEAD91"/>
+    <person person_id="44" gender="M" birthdate="1984-09-30" birthdate_estimated="0" dead="false" creator="1" date_created="2013-04-18 12:34:56.7" voided="false" uuid="03409E24-E6FA-483A-9EE6-F5BE456B7A6F"/>
+    <person person_id="45" gender="M" birthdate="1985-09-30" birthdate_estimated="0" dead="false" creator="1" date_created="2013-04-18 12:34:56.7" voided="false" uuid="F6D19167-EF3C-4693-AB1E-02B49D1AF084"/>
+    <person person_id="46" gender="M" birthdate="1986-09-30" birthdate_estimated="0" dead="false" creator="1" date_created="2013-04-18 12:34:56.7" voided="false" uuid="B2EFCA4C-9499-4D52-80A1-87AC64547A44"/>
+    <person person_id="47" gender="M" birthdate="1987-09-30" birthdate_estimated="0" dead="false" creator="1" date_created="2013-04-18 12:34:56.7" voided="false" uuid="7026D388-9541-4FC3-813B-E68A6FAF6854"/>
+    <person person_id="48" gender="M" birthdate="1988-09-30" birthdate_estimated="0" dead="false" creator="1" date_created="2013-04-18 12:34:56.7" voided="false" uuid="7D1C9CE1-F776-4FC6-AC32-F659FAFEAD91"/>
 
     <person_name person_name_id="44" preferred="true" person_id="44" prefix="Mr." given_name="alpha"   middle_name="echo"    family_name="india"  family_name2="mike"     creator="1" date_created="2013-04-18 12:34:56.7" voided="false" void_reason="" uuid="A9656873-5034-43CE-B4D1-D2A6784ADCD7"/>
     <person_name person_name_id="45" preferred="true" person_id="45" prefix="Mr." given_name="alpha"   middle_name="foxtrot" family_name="juliet" family_name2="november" creator="1" date_created="2013-04-18 12:34:56.7" voided="false" void_reason="" uuid="EBB4A295-DCC1-4D8F-A30D-5E0C650D51AB"/>

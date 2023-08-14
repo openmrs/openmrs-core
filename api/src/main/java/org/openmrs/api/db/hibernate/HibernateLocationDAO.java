@@ -155,7 +155,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	public List<LocationTag> getAllLocationTags(boolean includeRetired) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(LocationTag.class);
 		if (!includeRetired) {
-			criteria.add(Restrictions.like("retired", false));
+			criteria.add(Restrictions.eq("retired", false));
 		}
 		criteria.addOrder(Order.asc("name"));
 		return criteria.list();

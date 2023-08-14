@@ -9,14 +9,6 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import java.io.File;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.Future;
-
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.CacheMode;
 import org.hibernate.FlushMode;
@@ -48,6 +40,17 @@ import org.springframework.orm.hibernate5.SessionHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import java.io.File;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
 /**
  * Hibernate specific implementation of the {@link ContextDAO}. These methods should not be used
  * directly, instead, the methods on the static {@link Context} file should be used.
@@ -58,6 +61,8 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 public class HibernateContextDAO implements ContextDAO {
 	
 	private static final Logger log = LoggerFactory.getLogger(HibernateContextDAO.class);
+	
+	private static final Long DEFAULT_UNLOCK_ACCOUNT_WAITING_TIME = TimeUnit.MILLISECONDS.convert(5L, TimeUnit.MINUTES);
 	
 	/**
 	 * Hibernate session factory
@@ -121,11 +126,11 @@ public class HibernateContextDAO implements ContextDAO {
 			log.debug("Candidate user id: {}", candidateUser.getUserId());
 
 			String lockoutTimeString = candidateUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, null);
-			Long lockoutTime = null;
-			if (lockoutTimeString != null && !"0".equals(lockoutTimeString)) {
+			long lockoutTime = -1;
+			if (StringUtils.isNotBlank(lockoutTimeString) && !"0".equals(lockoutTimeString)) {
 				try {
 					// putting this in a try/catch in case the admin decided to put junk into the property
-					lockoutTime = Long.valueOf(lockoutTimeString);
+					lockoutTime = Long.parseLong(lockoutTimeString);
 				}
 				catch (NumberFormatException e) {
 					log.warn("bad value stored in {} user property: {}", OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP,
@@ -134,10 +139,11 @@ public class HibernateContextDAO implements ContextDAO {
 			}
 
 			// if they've been locked out, don't continue with the authentication
-			if (lockoutTime != null) {
-				// unlock them after 5 mins, otherwise reset the timestamp
-				// to now and make them wait another 5 mins
-				if (System.currentTimeMillis() - lockoutTime > 300000) {
+			if (lockoutTime > 0) {
+				// unlock them after x mins, otherwise reset the timestamp
+				// to now and make them wait another x mins
+				final Long unlockTime = getUnlockTimeMs();
+				if (System.currentTimeMillis() - lockoutTime > unlockTime) {
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "0");
 					candidateUser.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP);
 					saveUserProperties(candidateUser);
@@ -208,6 +214,28 @@ public class HibernateContextDAO implements ContextDAO {
 		// message regardless of username/pw combo entered
 		log.info("Failed login attempt (login={}) - {}", login, errorMsg);
 		throw new ContextAuthenticationException(errorMsg);
+	}
+	
+	private Long getUnlockTimeMs() {
+		String unlockTimeGPValue = Context.getAdministrationService().getGlobalProperty(
+				OpenmrsConstants.GP_UNLOCK_ACCOUNT_WAITING_TIME);
+		if (StringUtils.isNotBlank(unlockTimeGPValue)) {
+			return convertUnlockAccountWaitingTimeGP(unlockTimeGPValue);
+		}
+		else {
+			return DEFAULT_UNLOCK_ACCOUNT_WAITING_TIME;
+		}
+	}
+	
+	private Long convertUnlockAccountWaitingTimeGP(String waitingTime) {
+		try {
+			return TimeUnit.MILLISECONDS.convert(Long.valueOf(waitingTime), TimeUnit.MINUTES);
+		} catch (Exception ex) {
+			log.error("Unable to convert the global property "
+					+ OpenmrsConstants.GP_UNLOCK_ACCOUNT_WAITING_TIME
+					+ "to a valid Long. Using default value of 5");
+			return DEFAULT_UNLOCK_ACCOUNT_WAITING_TIME;
+		}
 	}
 	
 	/**
@@ -467,21 +495,25 @@ public class HibernateContextDAO implements ContextDAO {
 			session.setCacheMode(CacheMode.IGNORE);
 			
 			//Scrollable results will avoid loading too many objects in memory
-			ScrollableResults results = session.createCriteria(type).setFetchSize(1000).scroll(ScrollMode.FORWARD_ONLY);
-			int index = 0;
-			while (results.next()) {
-				index++;
-				//index each element
-				session.index(results.get(0));
-				if (index % 1000 == 0) {
-					//apply changes to indexes
-					session.flushToIndexes();
-					//free memory since the queue is processed
-					session.clear();
+			try (ScrollableResults results = session.createCriteria(type).setFetchSize(1000).scroll(ScrollMode.FORWARD_ONLY)) {
+				int index = 0;
+				while (results.next()) {
+					index++;
+					//index each element
+					session.index(results.get(0));
+					if (index % 1000 == 0) {
+						//apply changes to indexes
+						session.flushToIndexes();
+						//free memory since the queue is processed
+						session.clear();
+						// reset index to avoid overflows
+						index = 0;
+					}
 				}
+			} finally {
+				session.flushToIndexes();
+				session.clear();
 			}
-			session.flushToIndexes();
-			session.clear();
 		}
 		finally {
 			session.setHibernateFlushMode(flushMode);
@@ -545,6 +577,18 @@ public class HibernateContextDAO implements ContextDAO {
 		}
 		catch (Exception e) {
 			throw new RuntimeException("Failed to start asynchronous search index update", e);
+		}
+	}
+
+	/**
+	 * @see ContextDAO#getDatabaseConnection() 
+	 */
+	public Connection getDatabaseConnection() {
+		try {
+			return SessionFactoryUtils.getDataSource(sessionFactory).getConnection();
+		}
+		catch (SQLException e) {
+			throw new RuntimeException("Unable to retrieve a database connection", e);
 		}
 	}
 }

@@ -75,6 +75,8 @@ import org.openmrs.api.context.ContextMockHelper;
 import org.openmrs.api.context.Credentials;
 import org.openmrs.api.context.UsernamePasswordCredentials;
 import org.openmrs.module.ModuleConstants;
+import org.openmrs.test.Containers;
+import org.openmrs.test.OpenmrsMetadataHandler;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.SkipBaseSetupAnnotationExecutionListener;
 import org.openmrs.test.TestUtil;
@@ -190,6 +192,10 @@ public abstract class BaseContextSensitiveTest {
 		
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		
+		if (!useInMemoryDatabase()) {
+			Containers.ensureDatabaseRunning();
+		}
+		
 		Properties props = getRuntimeProperties();
 		
 		log.debug("props: {}", props);
@@ -304,7 +310,7 @@ public abstract class BaseContextSensitiveTest {
 		// properties
 		if (useInMemoryDatabase()) {
 			runtimeProperties.setProperty(Environment.DIALECT, H2Dialect.class.getName());
-			String url = "jdbc:h2:mem:openmrs;DB_CLOSE_DELAY=30;LOCK_TIMEOUT=10000";
+			String url = "jdbc:h2:mem:openmrs;DB_CLOSE_DELAY=30;LOCK_TIMEOUT=10000;IGNORECASE=TRUE";
 			runtimeProperties.setProperty(Environment.URL, url);
 			runtimeProperties.setProperty(Environment.DRIVER, "org.h2.Driver");
 			runtimeProperties.setProperty(Environment.USER, "sa");
@@ -624,7 +630,12 @@ public abstract class BaseContextSensitiveTest {
 		if (useInMemoryDatabase()) {
 			constraintsOnSql = "SET REFERENTIAL_INTEGRITY TRUE";
 		} else {
-			constraintsOnSql = "SET FOREIGN_KEY_CHECKS=1;";
+			if ("postgres".equals(System.getProperty("database"))) {
+				constraintsOnSql = "SET session_replication_role = origin;";
+			}
+			else {
+				constraintsOnSql = "SET FOREIGN_KEY_CHECKS=1;";
+			}
 		}
 		PreparedStatement ps = connection.prepareStatement(constraintsOnSql);
 		ps.execute();
@@ -636,7 +647,12 @@ public abstract class BaseContextSensitiveTest {
 		if (useInMemoryDatabase()) {
 			constraintsOffSql = "SET REFERENTIAL_INTEGRITY FALSE";
 		} else {
-			constraintsOffSql = "SET FOREIGN_KEY_CHECKS=0;";
+			if ("postgres".equals(System.getProperty("database"))) {
+				constraintsOffSql = "SET session_replication_role = replica;";
+			}
+			else {
+				constraintsOffSql = "SET FOREIGN_KEY_CHECKS=0;";
+			}
 		}
 		PreparedStatement ps = connection.prepareStatement(constraintsOffSql);
 		ps.execute();
@@ -810,19 +826,30 @@ public abstract class BaseContextSensitiveTest {
 			//Do the actual update/insert:
 			//insert new rows, update existing rows, and leave others alone
 			DatabaseOperation.REFRESH.execute(dbUnitConn, dataset);
+			
+			if (isPostgreSQL()) {
+				Context.getAdministrationService().updatePostgresSequence();
+			}
 		}
 		catch (DatabaseUnitException | SQLException e) {
 			throw new DatabaseUnitRuntimeException(e);
 		}
 	}
 	
+	protected boolean isPostgreSQL() {
+		return "postgres".equals(System.getProperty("database"));
+	}
+	
 	protected IDatabaseConnection setupDatabaseConnection(Connection connection) throws DatabaseUnitException {
 		IDatabaseConnection dbUnitConn = new DatabaseConnection(connection);
+		DatabaseConfig config = dbUnitConn.getConfig();
 		
 		if (useInMemoryDatabase()) {
 			//Setup the db connection to use H2 config.
-			DatabaseConfig config = dbUnitConn.getConfig();
 			config.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new H2DataTypeFactory());
+		}
+		else {
+			config.setProperty(DatabaseConfig.PROPERTY_METADATA_HANDLER, new OpenmrsMetadataHandler());
 		}
 		
 		return dbUnitConn;
@@ -835,7 +862,7 @@ public abstract class BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void deleteAllData() {
+	public synchronized void deleteAllData() {
 		try {
 			Context.clearSession();
 			
@@ -848,7 +875,7 @@ public abstract class BaseContextSensitiveTest {
 			String databaseName = System.getProperty("databaseName");
 			
 			// find all the tables for this connection
-			ResultSet resultSet = connection.getMetaData().getTables(databaseName, "PUBLIC", "%", null);
+			ResultSet resultSet = connection.getMetaData().getTables(databaseName, getSchemaPattern(), "%", new String[] {"TABLE"});
 			DefaultDataSet dataset = new DefaultDataSet();
 			while (resultSet.next()) {
 				String tableName = resultSet.getString(3);
@@ -868,6 +895,15 @@ public abstract class BaseContextSensitiveTest {
 		}
 		catch (SQLException | DatabaseUnitException e) {
 			throw new DatabaseUnitRuntimeException(e);
+		}
+	}
+	
+	private String getSchemaPattern() {
+		if (useInMemoryDatabase()) {
+			return "PUBLIC";
+		}
+		else {
+			return "public";
 		}
 	}
 	
@@ -973,7 +1009,7 @@ public abstract class BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@AfterAll
-	public static void closeSessionAfterEachClass() throws Exception {
+	public static synchronized void closeSessionAfterEachClass() throws Exception {
 		//Some tests add data via executeDataset()
 		//We need to delete it in order not to interfere with others
 		if (instance != null) {

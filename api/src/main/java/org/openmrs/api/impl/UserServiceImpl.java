@@ -45,6 +45,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -731,10 +732,15 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		AdministrationService adminService = Context.getAdministrationService();
 		Locale locale = getDefaultLocaleForUser(user);
 		
-		String link = adminService.getGlobalProperty(OpenmrsConstants.GP_HOST_URL)
+//		Delete this method call when removing {@link OpenmrsConstants#GP_HOST_URL}
+		copyHostURLGlobalPropertyToPasswordResetGlobalProperty(adminService);
+
+		String link = adminService.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_RESET_URL)
 		        .replace("{activationKey}", token);
 		
-		String sender = adminService.getGlobalProperty("mail.from");
+		Properties mailProperties = Context.getMailProperties();
+		
+		String sender = mailProperties.getProperty("mail.from");
 		
 		String subject = messages.getMessage("mail.passwordreset.subject",null, locale);
 		
@@ -746,6 +752,17 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		Context.getMessageService().sendMessage(user.getEmail(), sender, subject, msg);
 		
 		return user;
+	}
+
+	/**
+	 * Delete this method when deleting {@link OpenmrsConstants#GP_HOST_URL}
+	 */
+	private void copyHostURLGlobalPropertyToPasswordResetGlobalProperty(AdministrationService adminService) {
+		String hostURLGP = adminService.getGlobalProperty(OpenmrsConstants.GP_HOST_URL);
+		String passwordResetGP = adminService.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_RESET_URL);
+		if(StringUtils.isNotBlank(hostURLGP) && StringUtils.isBlank(passwordResetGP)) {
+			adminService.setGlobalProperty(OpenmrsConstants.GP_PASSWORD_RESET_URL,  hostURLGP);
+		}
 	}
 
 	/**

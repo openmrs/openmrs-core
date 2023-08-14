@@ -1,0 +1,40 @@
+version: "3.7"
+
+#    This Source Code Form is subject to the terms of the Mozilla Public License,
+#    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+#    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+#    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+#    
+#    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+#    graphic logo is a trademark of OpenMRS Inc.
+
+services:
+    db:
+        ports:
+            - "3306:3306"
+        restart: "no"
+        volumes:
+            # Comment out if DB should be created from scratch
+            - ./initial_test_db.sql:/docker-entrypoint-initdb.d/initial_test_db.sql
+
+    api:
+        image: openmrs/openmrs-core:${TAG:-dev}
+        build:
+            target: dev
+            context: .    
+            cache_from:
+                -   openmrs/openmrs-core:${TAG:-dev}
+        ports:
+            - "8080:8080"
+            - "8000:8000"
+        environment:
+            OMRS_DEV_DEBUG_PORT: ${OMRS_DEV_DEBUG_PORT:-8000}
+            OMRS_CREATE_TABLES: ${OMRS_CREATE_TABLES:-true}
+            
+            OMRS_BUILD: ${OMRS_BUILD:-true}
+            OMRS_BUILD_GOALS: ${OMRS_BUILD_GOALS:-}
+            OMRS_BUILD_ARGS: ${OMRS_BUILD_ARGS:-}
+        volumes:
+            - ~/.m2:/root/.m2
+            - ./:/openmrs_core
+        restart: "no"

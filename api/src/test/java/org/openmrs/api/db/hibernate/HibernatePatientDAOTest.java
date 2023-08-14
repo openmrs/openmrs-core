@@ -106,6 +106,7 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		person2.addName(new PersonName("Ioan", "Theo", "Fletcher"));
 		person2 = hibernatePersonDAO.savePerson(person2);
 		hibernatePatientDao.savePatient(new Patient(person2));
+		Context.flushSession(); //needed by postgres
 
 		// when
 		List<String> attributes = Arrays.asList("givenName", "middleName", "familyName");
@@ -128,6 +129,7 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		person2.addName(new PersonName("Ioan1", "Theo1", "Fletcher"));
 		person2 = hibernatePersonDAO.savePerson(person2);
 		hibernatePatientDao.savePatient(new Patient(person2));
+		Context.flushSession(); //needed by postgres
 
 		// when
 		List<Patient> duplicatePatients = hibernatePatientDao.getDuplicatePatientsByAttributes(singletonList("familyName"));
@@ -152,6 +154,7 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		person2.setBirthdate(Date.valueOf("2021-06-26"));
 		person2 = hibernatePersonDAO.savePerson(person2);
 		hibernatePatientDao.savePatient(new Patient(person2));
+		Context.flushSession(); //needed by postgres
 
 		// when
 		List<String> attributes = Arrays.asList("gender", "birthdate", "givenName", "middleName", "familyName");
@@ -197,7 +200,7 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		person1.setBirthdate(Date.valueOf("2021-06-26"));
 		person1 = hibernatePersonDAO.savePerson(person1);
 		Patient patient1 = new Patient(person1);
-		patient1.addIdentifier(new PatientIdentifier("101X", null, null));
+		patient1.addIdentifier(new PatientIdentifier("101X", new PatientIdentifierType(1), null));
 		hibernatePatientDao.savePatient(patient1);
 
 		Person person2 = new Person();
@@ -206,8 +209,9 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		person2.setBirthdate(Date.valueOf("2021-06-26"));
 		person2 = hibernatePersonDAO.savePerson(person2);
 		Patient patient2 = new Patient(person2);
-		patient2.addIdentifier(new PatientIdentifier("101X", null, null));
+		patient2.addIdentifier(new PatientIdentifier("101X", new PatientIdentifierType(1), null));
 		hibernatePatientDao.savePatient(patient2);
+		Context.flushSession(); //needed by postgres
 
 		// when
 		List<String> attributes = Arrays.asList("gender", "identifier", "birthdate", "givenName", "middleName", "familyName");
@@ -227,7 +231,7 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		person1.setBirthdate(Date.valueOf("2021-06-26"));
 		person1 = hibernatePersonDAO.savePerson(person1);
 		Patient patient1 = new Patient(person1);
-		patient1.addIdentifier(new PatientIdentifier("101X", null, null));
+		patient1.addIdentifier(new PatientIdentifier("101X", new PatientIdentifierType(1), null));
 		patient1.setVoided(true);
 		hibernatePatientDao.savePatient(patient1);
 
@@ -237,7 +241,7 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		person2.setBirthdate(Date.valueOf("2021-06-26"));
 		person2 = hibernatePersonDAO.savePerson(person2);
 		Patient patient2 = new Patient(person2);
-		patient2.addIdentifier(new PatientIdentifier("101X", null, null));
+		patient2.addIdentifier(new PatientIdentifier("101X", new PatientIdentifierType(1), null));
 		patient2.setVoided(true);
 		hibernatePatientDao.savePatient(patient2);
 
@@ -262,7 +266,7 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		person1.setBirthdate(Date.valueOf("2021-06-26"));
 		person1 = hibernatePersonDAO.savePerson(person1);
 		Patient patient1 = new Patient(person1);
-		patient1.addIdentifier(new PatientIdentifier("101X", null, null));
+		patient1.addIdentifier(new PatientIdentifier("101X", new PatientIdentifierType(1), null));
 		patient1.setVoided(true);
 		hibernatePatientDao.savePatient(patient1);
 
@@ -272,7 +276,7 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		person2.setBirthdate(Date.valueOf("2021-06-26"));
 		person2 = hibernatePersonDAO.savePerson(person2);
 		Patient patient2 = new Patient(person2);
-		patient2.addIdentifier(new PatientIdentifier("101X", null, null));
+		patient2.addIdentifier(new PatientIdentifier("101X", new PatientIdentifierType(1), null));
 		patient2.setVoided(true);
 		hibernatePatientDao.savePatient(patient2);
 

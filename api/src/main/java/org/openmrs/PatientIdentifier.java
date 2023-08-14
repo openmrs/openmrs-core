@@ -22,6 +22,7 @@ import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.annotations.SortableField;
 import org.openmrs.api.db.hibernate.search.LuceneAnalyzers;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
@@ -59,6 +60,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 			@Field(name = "identifierStart", analyzer = @Analyzer(definition = LuceneAnalyzers.START_ANALYZER), boost = @Boost(2f)),
 			@Field(name = "identifierAnywhere", analyzer = @Analyzer(definition = LuceneAnalyzers.ANYWHERE_ANALYZER))
 	})
+	@SortableField(forField = "identifierExact")
 	private String identifier;
 
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
@@ -335,7 +337,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 
 	/**
 	 * Gets patient program associated to the identifier in context
-	 * @since 2.3.6
+	 * @since 2.6.0
 	 * @return patientProgram the patient program associated to an identifier
 	 */
 	public PatientProgram getPatientProgram() {
@@ -344,7 +346,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 
 	/**
 	 * This method sets the patient program on a patient Identifier
-	 * @since 2.3.6
+	 * @since 2.6.0
 	 * @param patientProgram The patientProgram to set.
 	 */
 	public void setPatientProgram(PatientProgram patientProgram) {

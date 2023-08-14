@@ -187,6 +187,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		Concept concept = cd4Count;
 		ConceptName preferredName = new ConceptName("preferred name", Context.getLocale());
 		concept.setPreferredName(preferredName);
+		Context.flushSession(); //required for postgresql org.hibernate.UnresolvableObjectException:
 		conceptService.saveConcept(concept);
 		assertEquals("preferred name", concept.getPreferredName(Context.getLocale()).getName());
 		Concept anotherConcept = weight;

@@ -1,0 +1,55 @@
+version: "3.7"
+
+#    This Source Code Form is subject to the terms of the Mozilla Public License,
+#    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+#    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+#    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+#    
+#    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+#    graphic logo is a trademark of OpenMRS Inc.
+
+services:
+    db:
+        image: mariadb:10.3
+        command: "mysqld --character-set-server=utf8 --collation-server=utf8_general_ci"
+        environment:
+            MYSQL_DATABASE: ${OMRS_DB_NAME:-openmrs}
+            MYSQL_USER: ${OMRS_DB_USER:-openmrs}
+            MYSQL_PASSWORD: ${OMRS_DB_PASSWORD:-openmrs}
+            MYSQL_ROOT_PASSWORD: ${OMRS_DB_ROOT_PASSWORD:-openmrs}
+        healthcheck:
+            test: "mysql --user=${OMRS_DB_USER:-openmrs} --password=${OMRS_DB_PASSWORD:-openmrs} --execute \"SHOW DATABASES;\""
+            interval: 3s
+            timeout: 5s
+            retries: 3
+        volumes:
+            - db-data:/var/lib/mysql
+
+    api:
+        image: openmrs/openmrs-core:${TAG:-nightly}
+        build:
+            context: .
+            cache_from:
+                - openmrs/openmrs-core:${TAG:-dev}
+                - openmrs/openmrs-core:${TAG:-nightly}
+        depends_on:
+            - db
+        ports:
+            - "8080:8080"
+        environment:
+            OMRS_DB_HOSTNAME: ${OMRS_DB_HOSTNAME:-db}
+            OMRS_DB_NAME: ${OMRS_DB_NAME:-openmrs}
+            OMRS_DB_USERNAME: ${OMRS_DB_USERNAME:-openmrs}
+            OMRS_DB_PASSWORD: ${OMRS_DB_PASSWORD:-openmrs}
+            OMRS_ADMIN_USER_PASSWORD: ${OMRS_ADMIN_USER_PASSWORD-Admin123}
+        healthcheck:
+            test: ["CMD", "curl", "-f", "http://localhost:8080/openmrs"]
+            interval: 3s
+            timeout: 5s
+            retries: 3
+        volumes:
+            - openmrs-data:/openmrs/data/
+
+volumes:
+    db-data:
+    openmrs-data:

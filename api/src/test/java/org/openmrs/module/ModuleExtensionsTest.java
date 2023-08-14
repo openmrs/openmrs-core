@@ -54,7 +54,7 @@ public class ModuleExtensionsTest extends BaseContextMockTest {
 	public void after() {
 		// needed so other tests which rely on no ModuleClassLoaderFound
 		// are not affected by tests registering one
-		ModuleFactory.moduleClassLoaders = null;
+		ModuleFactory.moduleClassLoaders.invalidateAll();
 	}
 
 	@Test
@@ -80,7 +80,7 @@ public class ModuleExtensionsTest extends BaseContextMockTest {
 		extensionNames.put(EXTENSION_POINT_ID_PATIENT_DASHBOARD, AccessibleExtension.class.getName());
 		module.setExtensionNames(extensionNames);
 		
-		ModuleFactory.moduleClassLoaders = null;
+		ModuleFactory.moduleClassLoaders.invalidateAll();
 
 		assertThat(module.getExtensions(), is(equalTo(Collections.EMPTY_LIST)));
 	}

@@ -69,7 +69,7 @@
   <concept concept_id="24" retired="true" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="" uuid="11716f9c-1434-4f8d-b9fc-9aa14c4d6129"/>
   <concept concept_id="25" retired="false" datatype_id="4" class_id="10" is_set="true" creator="1" date_created="2008-08-18 12:38:58.0" version="" uuid="c9386d70-d9c5-11e3-9c1a-0800200c9a66"/>
   <concept concept_id="26" retired="false" datatype_id="4" class_id="10" is_set="true" creator="1" date_created="2008-08-18 12:38:58.0" version="" uuid="d198bec0-d9c5-11e3-9c1a-0800200c9a66"/>
-  <concept concept_id="27" retired="false" datatype_id="4" class_id="10" is_set="true" creator="1" date_created="2008-08-18 12:38:58.0" version="" uuid="54d29840-d9e6-11e3-9c1a-0800200c9a66"/>
+  <concept concept_id="27" retired="false" datatype_id="4" class_id="10" is_set="true" creator="1" date_created="2008-08-18 12:38:59.0" version="" uuid="54d29840-d9e6-11e3-9c1a-0800200c9a66"/>
   <concept concept_id="28" retired="false" datatype_id="3" class_id="20" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="" uuid="7bfdcbf0-d9e7-11e3-9c1a-0800200c9a66"/>
   <concept concept_id="29" retired="false" datatype_id="4" class_id="11" is_set="1" creator="1" date_created="2004-08-12 00:00:00.0" uuid="5e02d1a0-7869-11e4-981f-0800200c9a73"/>
   <concept concept_id="30" retired="false" datatype_id="4" class_id="11" is_set="1" creator="1" date_created="2004-08-12 00:00:00.0" uuid="6e02d1a0-7869-11e4-981f-0800200c9a89"/>
@@ -325,7 +325,7 @@
   <encounter_provider encounter_provider_id="2" encounter_id="4" provider_id="1" encounter_role_id="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" uuid="1609ac3f-090c-4b1c-a497-4c307e24c5dd" />
   <encounter encounter_id="5" encounter_type="1" patient_id="7" location_id="2" form_id="1" encounter_datetime="2008-08-19 00:00:00.0" creator="1" date_created="2008-08-19 12:34:40.0" voided="false" uuid="e403fafb-e5e4-42d0-9d11-4f52e89d148c"/>
   <encounter_provider encounter_provider_id="3" encounter_id="5" provider_id="1" encounter_role_id="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" uuid="2417c6c5-77a4-41b0-b7eb-564e163e55e4" />
-  <encounter encounter_id="6" encounter_type="1" patient_id="2" location_id="2" form_id="1" encounter_datetime="2008-08-19 00:00:00.0" creator="1" date_created="2008-08-19 12:34:40.0" voided="false" uuid="y403fafb-e5e4-42d0-9d11-4f52e89d123r"/>
+  <encounter encounter_id="6" encounter_type="1" patient_id="2" location_id="2" form_id="1" encounter_datetime="2008-08-19 00:00:00.1" creator="1" date_created="2008-08-19 12:34:40.0" voided="false" uuid="y403fafb-e5e4-42d0-9d11-4f52e89d123r"/>
   <encounter_provider encounter_provider_id="4" encounter_id="6" provider_id="1" encounter_role_id="1" creator="1" date_created="2008-08-19 00:00:00.0" voided="false" uuid="4527c6c5-77a4-41b0-b7eb-564e163e55e5" />
   <concept_proposal concept_proposal_id="1" original_text="I want this concept but I can't have it" state="REJECT" encounter_id="3" obs_concept_id="4" creator="1" date_created="2009-06-03 13:55:12.0" uuid="57a68666-5067-11de-80cb-001e378eb67e"/>
   <concept_proposal concept_proposal_id="2" original_text="unmapped concept proposal" state="UNMAPPED" encounter_id="3" creator="1" date_created="2010-12-21 08:41:10.0" uuid="af4ae460-0e2b-11e0-a94b-469c3c5a0c2f"/>  

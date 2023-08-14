@@ -191,6 +191,10 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		
+		if (!useInMemoryDatabase()) {
+			Containers.ensureDatabaseRunning();
+		}
+		
 		Properties props = getRuntimeProperties();
 		
 		log.debug("props: {}", props);
@@ -636,7 +640,12 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		if (useInMemoryDatabase()) {
 			constraintsOnSql = "SET REFERENTIAL_INTEGRITY TRUE";
 		} else {
-			constraintsOnSql = "SET FOREIGN_KEY_CHECKS=1;";
+			if ("postgres".equals(System.getProperty("database"))) {
+				constraintsOnSql = "SET session_replication_role = origin;";
+			}
+			else {
+				constraintsOnSql = "SET FOREIGN_KEY_CHECKS=1;";
+			}
 		}
 		PreparedStatement ps = connection.prepareStatement(constraintsOnSql);
 		ps.execute();
@@ -648,7 +657,12 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		if (useInMemoryDatabase()) {
 			constraintsOffSql = "SET REFERENTIAL_INTEGRITY FALSE";
 		} else {
-			constraintsOffSql = "SET FOREIGN_KEY_CHECKS=0;";
+			if ("postgres".equals(System.getProperty("database"))) {
+				constraintsOffSql = "SET session_replication_role = replica;";
+			}
+			else {
+				constraintsOffSql = "SET FOREIGN_KEY_CHECKS=0;";
+			}
 		}
 		PreparedStatement ps = connection.prepareStatement(constraintsOffSql);
 		ps.execute();
@@ -830,11 +844,14 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	
 	protected IDatabaseConnection setupDatabaseConnection(Connection connection) throws DatabaseUnitException {
 		IDatabaseConnection dbUnitConn = new DatabaseConnection(connection);
+		DatabaseConfig config = dbUnitConn.getConfig();
 		
 		if (useInMemoryDatabase()) {
 			//Setup the db connection to use H2 config.
-			DatabaseConfig config = dbUnitConn.getConfig();
 			config.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new H2DataTypeFactory());
+		}
+		else {
+			config.setProperty(DatabaseConfig.PROPERTY_METADATA_HANDLER, new OpenmrsMetadataHandler());
 		}
 		
 		return dbUnitConn;
@@ -858,7 +875,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			IDatabaseConnection dbUnitConn = setupDatabaseConnection(connection);
 			
 			// find all the tables for this connection
-			ResultSet resultSet = connection.getMetaData().getTables(null, "PUBLIC", "%", null);
+			ResultSet resultSet = connection.getMetaData().getTables(System.getProperty("databaseName"), "PUBLIC", "%", null);
 			DefaultDataSet dataset = new DefaultDataSet();
 			while (resultSet.next()) {
 				String tableName = resultSet.getString(3);

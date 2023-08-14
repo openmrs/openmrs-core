@@ -82,49 +82,49 @@ public class UserContext implements Serializable {
 	/**
 	 * The authentication scheme for this user
 	 */
-	private AuthenticationScheme authenticationScheme;
+	private final AuthenticationScheme authenticationScheme;
 	
 	/**
 	 * Creates a user context based on the provided auth. scheme.
-	 * 
+	 *
 	 * @param authenticationScheme The auth. scheme that applies for this user context.
-	 * 
 	 * @since 2.3.0
 	 */
 	public UserContext(AuthenticationScheme authenticationScheme) {
-		this.authenticationScheme = authenticationScheme; 
+		this.authenticationScheme = authenticationScheme;
 	}
 	
 	/**
 	 * Authenticate user with the provided credentials. The authentication scheme must be Spring wired, see {@link Context#getAuthenticationScheme()}.
-	 * 
+	 *
 	 * @param credentials The credentials to use to authenticate
 	 * @return The authenticated client information
-	 * @throws ContextAuthenticationException
-	 * 
+	 * @throws ContextAuthenticationException if authentication fails
 	 * @since 2.3.0
 	 */
 	public Authenticated authenticate(Credentials credentials)
-			throws ContextAuthenticationException {
-
-		log.debug("Authenticating client '" + credentials.getClientName() + "' with sheme: " + credentials.getAuthenticationScheme());
-
+		throws ContextAuthenticationException {
+		
+		log.debug("Authenticating client '{}' with scheme '{}'", credentials.getClientName(),
+			credentials.getAuthenticationScheme());
+		
 		Authenticated authenticated = null;
 		try {
 			authenticated = authenticationScheme.authenticate(credentials);
 			this.user = authenticated.getUser();
 			notifyUserSessionListener(this.user, Event.LOGIN, Status.SUCCESS);
 		}
-		catch(ContextAuthenticationException e) {
+		catch (ContextAuthenticationException e) {
 			User loggingInUser = new User();
 			loggingInUser.setUsername(credentials.getClientName());
 			notifyUserSessionListener(loggingInUser, Event.LOGIN, Status.FAIL);
 			throw e;
 		}
 		
-		setUserLocation();
+		setUserLocation(true);
+		setUserLocale(true);
 		
-		log.debug("Authenticated as: " + this.user);
+		log.debug("Authenticated as: {}", this.user);
 		
 		return authenticated;
 	}
@@ -142,7 +142,8 @@ public class UserContext implements Serializable {
 		if (user != null) {
 			user = Context.getUserService().getUser(user.getUserId());
 			//update the stored location in the user's session
-			setUserLocation();
+			setUserLocation(false);
+			setUserLocale(false);
 		}
 	}
 	
@@ -171,16 +172,20 @@ public class UserContext implements Serializable {
 		if (userToBecome.getAllRoles() != null) {
 			userToBecome.getAllRoles().size();
 		}
+		
 		if (userToBecome.getUserProperties() != null) {
 			userToBecome.getUserProperties().size();
 		}
+		
 		if (userToBecome.getPrivileges() != null) {
 			userToBecome.getPrivileges().size();
 		}
 		
 		this.user = userToBecome;
-		//update the user's location
-		setUserLocation();
+		
+		//update the user's location and locale
+		setUserLocation(false);
+		setUserLocale(false);
 		
 		log.debug("Becoming user: {}", user);
 		
@@ -210,6 +215,9 @@ public class UserContext implements Serializable {
 		log.debug("setting user to null on logout");
 		notifyUserSessionListener(user, Event.LOGOUT, Status.SUCCESS);
 		user = null;
+		locationId = null;
+		locale = null;
+		proxies.clear();
 	}
 	
 	/**
@@ -291,7 +299,7 @@ public class UserContext implements Serializable {
 		roles.add(getAnonymousRole());
 		
 		// add the Authenticated role
-		if (user != null && getAuthenticatedUser() != null && getAuthenticatedUser().equals(user)) {
+		if (getAuthenticatedUser() != null && getAuthenticatedUser().equals(user)) {
 			roles.addAll(user.getAllRoles());
 			roles.add(getAuthenticatedRole());
 		}
@@ -300,7 +308,7 @@ public class UserContext implements Serializable {
 	}
 	
 	/**
-	 * Tests whether or not currently authenticated user has a particular privilege
+	 * Tests whether currently authenticated user has a particular privilege
 	 *
 	 * @param privilege
 	 * @return true if authenticated user has given privilege
@@ -317,7 +325,7 @@ public class UserContext implements Serializable {
 		
 		// if a user has logged in, check their privileges
 		if (isAuthenticated()
-		        && (getAuthenticatedUser().hasPrivilege(privilege) || getAuthenticatedRole().hasPrivilege(privilege))) {
+			&& (getAuthenticatedUser().hasPrivilege(privilege) || getAuthenticatedRole().hasPrivilege(privilege))) {
 			
 			// check user's privileges
 			notifyPrivilegeListeners(getAuthenticatedUser(), privilege, true);
@@ -358,7 +366,8 @@ public class UserContext implements Serializable {
 		
 		anonymousRole = Context.getUserService().getRole(RoleConstants.ANONYMOUS);
 		if (anonymousRole == null) {
-			throw new RuntimeException("Database out of sync with code: " + RoleConstants.ANONYMOUS + " role does not exist");
+			throw new RuntimeException(
+				"Database out of sync with code: " + RoleConstants.ANONYMOUS + " role does not exist");
 		}
 		
 		return anonymousRole;
@@ -379,7 +388,7 @@ public class UserContext implements Serializable {
 		authenticatedRole = Context.getUserService().getRole(RoleConstants.AUTHENTICATED);
 		if (authenticatedRole == null) {
 			throw new RuntimeException("Database out of sync with code: " + RoleConstants.AUTHENTICATED
-			        + " role does not exist");
+				+ " role does not exist");
 		}
 		
 		return authenticatedRole;
@@ -426,59 +435,93 @@ public class UserContext implements Serializable {
 	 * Convenience method that sets the default location of the currently authenticated user using
 	 * the value of the user's default location property
 	 */
-	private void setUserLocation() {
-		if (this.user != null) {
-			String locationId = this.user.getUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION);
-			if (StringUtils.isNotBlank(locationId)) {
-				//only go ahead if it has actually changed OR if wasn't set before
-				if (this.locationId == null || this.locationId != Integer.parseInt(locationId)) {
-					try {
-						this.locationId = Context.getLocationService().getLocation(Integer.valueOf(locationId))
-						        .getLocationId();
+	private void setUserLocation(boolean useDefault) {
+		// location should be null if no user is logged in
+		if (this.user == null) {
+			this.locationId = null;
+			return;
+		}
+		
+		// intended to be when the user initially authenticates
+		if (this.locationId == null && useDefault) {
+			this.locationId = getDefaultLocationId(this.user);
+		}
+	}
+
+	/**
+	 * Convenience method that sets the default localeused by the currently authenticated user, using
+	 * the value of the user's default local property
+	 */
+	private void setUserLocale(boolean useDefault) {
+		// local should be null if no user is logged in
+		if (this.user == null) {
+			this.locale = null;
+			return;
+		}
+
+		// intended to be when the user initially authenticates
+		if (user.getUserProperties().containsKey("defaultLocale")) {
+			String localeString = user.getUserProperty("defaultLocale");
+			locale = LocaleUtility.fromSpecification(localeString);
+		}
+
+		if (locale == null && useDefault) {
+			locale = LocaleUtility.getDefaultLocale();
+		}
+
+	}
+	
+	private Integer getDefaultLocationId(User user) {
+		String locationId = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION);
+		if (StringUtils.isNotBlank(locationId)) {
+			//only go ahead if it has actually changed OR if wasn't set before
+			try {
+				int defaultId = Integer.parseInt(locationId);
+				if (this.locationId == null || this.locationId != defaultId) {
+					// validate that the id is a valid id
+					if (Context.getLocationService().getLocation(defaultId) != null) {
+						return defaultId;
+					} else {
+						log.warn("The default location for user '{}' is set to '{}', which is not a valid location",
+							user.getUserId(), locationId);
 					}
-					catch (NumberFormatException e) {
-						//Drop the stored value since we have no match for the set id
-						if (this.locationId != null) {
-							this.locationId = null;
-						}
-						log.warn("The value of the default Location property of the user with id:" + this.user.getUserId()
-						        + " should be an integer", e);
-					}
-				}
-			} else {
-				if (this.locationId != null) {
-					this.locationId = null;
 				}
 			}
+			catch (NumberFormatException e) {
+				log.warn("The value of the default Location property of the user with id: {} should be an integer",
+					user.getUserId(), e);
+			}
 		}
+		
+		return null;
 	}
 	
 	/**
 	 * Notifies privilege listener beans about any privilege check.
-     * <p>
-     * It is called by {@link UserContext#hasPrivilege(java.lang.String)}.
-     * 
-     * @see PrivilegeListener
-     * @param user the authenticated user or <code>null</code> if not authenticated
-     * @param privilege the checked privilege
-     * @param hasPrivilege <code>true</code> if the authenticated user has the required privilege or
-	 *            if it is a proxy privilege
-     * @since 1.8.4, 1.9.1, 1.10
-     */
+	 * <p>
+	 * It is called by {@link UserContext#hasPrivilege(java.lang.String)}.
+	 *
+	 * @param user         the authenticated user or <code>null</code> if not authenticated
+	 * @param privilege    the checked privilege
+	 * @param hasPrivilege <code>true</code> if the authenticated user has the required privilege or
+	 *                     if it is a proxy privilege
+	 * @see PrivilegeListener
+	 * @since 1.8.4, 1.9.1, 1.10
+	 */
 	private void notifyPrivilegeListeners(User user, String privilege, boolean hasPrivilege) {
-	    for (PrivilegeListener privilegeListener : Context.getRegisteredComponents(PrivilegeListener.class)) {
-		    try {
-			    privilegeListener.privilegeChecked(user, privilege, hasPrivilege);
-		    }
-		    catch (Exception e) {
-			    log.error("Privilege listener has failed", e);
-		    }
-	    }
-    }
+		for (PrivilegeListener privilegeListener : Context.getRegisteredComponents(PrivilegeListener.class)) {
+			try {
+				privilegeListener.privilegeChecked(user, privilege, hasPrivilege);
+			}
+			catch (Exception e) {
+				log.error("Privilege listener has failed", e);
+			}
+		}
+	}
 	
-    private void notifyUserSessionListener(User user, Event event, Status status) {
-	    for(UserSessionListener userSessionListener : Context.getRegisteredComponents(UserSessionListener.class)) {
-		    userSessionListener.loggedInOrOut(user, event, status);
-	    }
-    }
+	private void notifyUserSessionListener(User user, Event event, Status status) {
+		for (UserSessionListener userSessionListener : Context.getRegisteredComponents(UserSessionListener.class)) {
+			userSessionListener.loggedInOrOut(user, event, status);
+		}
+	}
 }

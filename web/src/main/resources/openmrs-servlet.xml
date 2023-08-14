@@ -55,6 +55,7 @@
 	<bean id="contentNegotiationManager"
 		  class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
 		<property name="defaultContentType" value="application/json" />
+		<property name="favorPathExtension" value="true" />
 
 		<property name="mediaTypes">
 			<map>
@@ -105,6 +106,14 @@
 
 	<bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
 
+	<bean id="openmrsObjectMapperFactoryBean" class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean">
+		<property name="modulesToInstall" value="org.openmrs.util.OpenmrsJacksonLocaleModule" />
+	</bean>
+	
+	<bean id="jacksonMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+		<property name="objectMapper" ref="openmrsObjectMapperFactoryBean" />
+	</bean>
+
 	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
 		<property name="webBindingInitializer">
 			<bean class="org.openmrs.web.OpenmrsBindingInitializer"/>
@@ -115,7 +124,7 @@
 				<bean class="org.springframework.http.converter.StringHttpMessageConverter" />
 				<bean class="org.springframework.http.converter.FormHttpMessageConverter" />
 				<bean class="org.springframework.http.converter.xml.SourceHttpMessageConverter" />
-				<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
+				<ref bean="jacksonMessageConverter" />
 				<ref bean="xmlMarshallingHttpMessageConverter" />
 			</list>
 		</property>

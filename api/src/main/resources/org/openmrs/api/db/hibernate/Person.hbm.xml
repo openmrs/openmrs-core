@@ -20,7 +20,7 @@
         <cache usage="read-write"/>
 
 		<id name="personId" type="java.lang.Integer" column="person_id" unsaved-value="0">
-			<generator class="native">
+			<generator class="identity">
 				<param name="sequence">person_person_id_seq</param>
 			</generator>
 		</id>

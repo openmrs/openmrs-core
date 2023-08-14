@@ -9,23 +9,35 @@
  */
 package org.openmrs;
 
+import org.hibernate.annotations.BatchSize;
+import org.openmrs.attribute.Attribute;
+import org.openmrs.customdatatype.CustomValueDescriptor;
+import org.openmrs.customdatatype.Customizable;
+
+import javax.persistence.CascadeType;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.openmrs.attribute.Attribute;
-import org.openmrs.customdatatype.CustomValueDescriptor;
-import org.openmrs.customdatatype.Customizable;
-
 /**
  * Extension of {@link org.openmrs.BaseOpenmrsMetadata} for classes that support customization via user-defined attributes.
  * @param <A> the type of attribute held
  * @since 1.9
  */
+@MappedSuperclass
 public abstract class BaseCustomizableMetadata<A extends Attribute> extends BaseChangeableOpenmrsMetadata implements Customizable<A> {
 	
+	@OrderBy("voided asc")
+	@BatchSize(size = 100)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "location_id")
 	private Set<A> attributes = new LinkedHashSet<>();
 	
 	/**
