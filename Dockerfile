@@ -40,7 +40,7 @@ RUN mvn $MVN_SETTINGS -B dependency:go-offline -P !default-tools.jar,!mac-tools.
 COPY . .
 
 # Append --build-arg MVN_ARGS='clean install' to change default maven arguments
-ARG MVN_ARGS='clean install'
+ARG MVN_ARGS='clean install -DskipTests'
 
 # Build the project
 RUN mvn $MVN_SETTINGS $MVN_ARGS

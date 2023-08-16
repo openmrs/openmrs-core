@@ -11,6 +11,7 @@
 # Configurable environment variables
 OMRS_ADD_DEMO_DATA=${OMRS_ADD_DEMO_DATA:-false}
 OMRS_ADMIN_USER_PASSWORD=${OMRS_ADMIN_USER_PASSWORD:-Admin123}
+OMRS_ADMIN_PASSWORD_LOCKED=${OMRS_ADMIN_PASSWORD_LOCKED:-false}
 # When set to 'true' all DB updates are applied automatically upon startup
 OMRS_AUTO_UPDATE_DATABASE=${OMRS_AUTO_UPDATE_DATABASE:-true}
 OMRS_CREATE_DATABASE_USER=${OMRS_CREATE_DATABASE_USER:-false}
@@ -123,6 +124,7 @@ echo "Writing out $OMRS_SERVER_PROPERTIES_FILE"
 cat > $OMRS_SERVER_PROPERTIES_FILE << EOF
 add_demo_data=${OMRS_ADD_DEMO_DATA}
 admin_user_password=${OMRS_ADMIN_USER_PASSWORD}
+admin_password_locked=${OMRS_ADMIN_PASSWORD_LOCKED}
 auto_update_database=${OMRS_AUTO_UPDATE_DATABASE}
 connection.driver_class=${OMRS_DB_DRIVER_CLASS}
 connection.username=${OMRS_DB_USERNAME}
