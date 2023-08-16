@@ -54,9 +54,10 @@ public class ObsTest {
 	
 	//ignore these fields, groupMembers and formNamespaceAndPath field are taken care of by other tests
 	private static final List<String> IGNORED_FIELDS = Arrays.asList("dirty", "log", "serialVersionUID",
-	    "DATE_TIME_PATTERN", "TIME_PATTERN", "DATE_PATTERN", "FORM_NAMESPACE_PATH_SEPARATOR",
-	    "FORM_NAMESPACE_PATH_MAX_LENGTH", "obsId", "groupMembers", "uuid", "changedBy", "dateChanged", "voided", "voidedBy",
-	    "voidReason", "dateVoided", "formNamespaceAndPath", "$jacocoData");
+	    "DATE_TIME_PATTERN", "DATE_TIME_PATTERN2", "DATE_TIME_PATTERN3", "DATE_TIME_PATTERN4", "DATE_TIME_PATTERN5", 
+		"TIME_PATTERN", "DATE_PATTERN", "FORM_NAMESPACE_PATH_SEPARATOR", "FORM_NAMESPACE_PATH_MAX_LENGTH", "obsId", 
+		"groupMembers", "uuid", "changedBy", "dateChanged", "voided", "voidedBy", "voidReason", "dateVoided", 
+		"formNamespaceAndPath", "$jacocoData");
 	
 	private void resetObs(Obs obs) throws Exception {
 		Field field = Obs.class.getDeclaredField("dirty");
