@@ -1782,7 +1782,9 @@ public class InitializationFilter extends StartupFilter {
 							if (wizardModel.createTables) {
 								try {
 									Context.authenticate("admin", "test");
+									Context.addProxyPrivilege(PrivilegeConstants.EDIT_ADMIN_USER_PASSWORD);
 									Context.getUserService().changePassword("test", wizardModel.adminUserPassword);
+									Context.removeProxyPrivilege(PrivilegeConstants.EDIT_ADMIN_USER_PASSWORD);
 									Context.logout();
 								}
 								catch (ContextAuthenticationException ex) {

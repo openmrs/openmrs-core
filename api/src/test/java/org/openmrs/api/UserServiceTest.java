@@ -390,6 +390,36 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		userService.changePassword("test", "Tester12");
 		userService.changePassword("Tester12", "Tester13");
 	}
+	
+	@Test
+	public void changePassword_shouldRespectLockingViaRuntimeProperty() {
+		User u = userService.getUserByUsername(ADMIN_USERNAME);
+		
+		Context.getRuntimeProperties().setProperty(UserService.ADMIN_PASSWORD_LOCKED_PROPERTY, "true");
+		
+		assertThrows(APIException.class, () -> userService.changePassword("admin", "SuperAdmin123"));
+
+		Context.getRuntimeProperties().setProperty(UserService.ADMIN_PASSWORD_LOCKED_PROPERTY, "True");
+
+		assertThrows(APIException.class, () -> userService.changePassword("admin", "SuperAdmin123"));
+
+		Context.getRuntimeProperties().remove(UserService.ADMIN_PASSWORD_LOCKED_PROPERTY);
+
+		userService.changePassword(u,"test", "SuperAdmin123");
+	}
+
+	@Test
+	public void changePassword_shouldRespectLockingViaRuntimePropertyExceptForStartup() {
+		User u = userService.getUserByUsername(ADMIN_USERNAME);
+
+		Context.getRuntimeProperties().setProperty(UserService.ADMIN_PASSWORD_LOCKED_PROPERTY, "true");
+		
+		Context.addProxyPrivilege(PrivilegeConstants.EDIT_ADMIN_USER_PASSWORD);
+
+		userService.changePassword(u,"test", "SuperAdmin123");
+		
+		Context.removeProxyPrivilege(PrivilegeConstants.EDIT_ADMIN_USER_PASSWORD);
+	}
 
 	@Test
 	public void saveUser_shouldGrantNewRolesInRolesListToUser() {
