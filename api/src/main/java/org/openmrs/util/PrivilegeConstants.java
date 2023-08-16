@@ -191,6 +191,9 @@ public class PrivilegeConstants {
 	
 	@AddOnStartup(description = "Able to change the passwords of users in OpenMRS")
 	public static final String EDIT_USER_PASSWORDS = "Edit User Passwords";
+
+	@AddOnStartup(description = "Able to change the admin user password even if locked (for startup use only)")
+	public static final String EDIT_ADMIN_USER_PASSWORD = "Edit Admin User Password";
 	
 	@AddOnStartup(description = "Able to add patient encounters")
 	public static final String ADD_ENCOUNTERS = "Add Encounters";
