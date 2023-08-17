@@ -651,9 +651,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	}
 
 	private void updatePassword(User user, String newPassword) {
-		if (user.isSuperUser() && Boolean.valueOf(Context.getRuntimeProperties()
-			.getProperty(ADMIN_PASSWORD_LOCKED_PROPERTY, "false")) &&
-		!Context.hasPrivilege(PrivilegeConstants.EDIT_ADMIN_USER_PASSWORD)) {
+		if ("admin".equals(user.getUsername()) && Boolean.valueOf(Context.getRuntimeProperties()
+			.getProperty(ADMIN_PASSWORD_LOCKED_PROPERTY, "false"))) {
 			throw new APIException("admin.password.is.locked");
 		}
 		
