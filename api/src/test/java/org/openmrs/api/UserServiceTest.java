@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -393,32 +394,29 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void changePassword_shouldRespectLockingViaRuntimeProperty() {
+		assertThat("admin", is(Context.getAuthenticatedUser().getUsername()));
 		User u = userService.getUserByUsername(ADMIN_USERNAME);
 		
-		Context.getRuntimeProperties().setProperty(UserService.ADMIN_PASSWORD_LOCKED_PROPERTY, "true");
+		assertThat(u.isSuperUser(), is(true));
+
+		Properties props = Context.getRuntimeProperties();
+		props.setProperty(UserService.ADMIN_PASSWORD_LOCKED_PROPERTY, "true");
+		Context.setRuntimeProperties(props);
+
+		APIException apiException = assertThrows(APIException.class, () -> userService.changePassword(u,"test", "SuperAdmin123"));
 		
-		assertThrows(APIException.class, () -> userService.changePassword("admin", "SuperAdmin123"));
+		assertThat(apiException.getMessage(), is("admin.password.is.locked"));
 
-		Context.getRuntimeProperties().setProperty(UserService.ADMIN_PASSWORD_LOCKED_PROPERTY, "True");
-
-		assertThrows(APIException.class, () -> userService.changePassword("admin", "SuperAdmin123"));
-
-		Context.getRuntimeProperties().remove(UserService.ADMIN_PASSWORD_LOCKED_PROPERTY);
+		props.setProperty(UserService.ADMIN_PASSWORD_LOCKED_PROPERTY, "True");
+		Context.setRuntimeProperties(props);
+		
+		apiException = assertThrows(APIException.class, () -> userService.changePassword(u,"test", "SuperAdmin123"));
+		assertThat(apiException.getMessage(), is("admin.password.is.locked"));
+		
+		props.remove(UserService.ADMIN_PASSWORD_LOCKED_PROPERTY);
+		Context.setRuntimeProperties(props);
 
 		userService.changePassword(u,"test", "SuperAdmin123");
-	}
-
-	@Test
-	public void changePassword_shouldRespectLockingViaRuntimePropertyExceptForStartup() {
-		User u = userService.getUserByUsername(ADMIN_USERNAME);
-
-		Context.getRuntimeProperties().setProperty(UserService.ADMIN_PASSWORD_LOCKED_PROPERTY, "true");
-		
-		Context.addProxyPrivilege(PrivilegeConstants.EDIT_ADMIN_USER_PASSWORD);
-
-		userService.changePassword(u,"test", "SuperAdmin123");
-		
-		Context.removeProxyPrivilege(PrivilegeConstants.EDIT_ADMIN_USER_PASSWORD);
 	}
 
 	@Test
