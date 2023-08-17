@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -389,6 +390,33 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		
 		userService.changePassword("test", "Tester12");
 		userService.changePassword("Tester12", "Tester13");
+	}
+	
+	@Test
+	public void changePassword_shouldRespectLockingViaRuntimeProperty() {
+		assertThat("admin", is(Context.getAuthenticatedUser().getUsername()));
+		User u = userService.getUserByUsername(ADMIN_USERNAME);
+		
+		assertThat(u.isSuperUser(), is(true));
+
+		Properties props = Context.getRuntimeProperties();
+		props.setProperty(UserService.ADMIN_PASSWORD_LOCKED_PROPERTY, "true");
+		Context.setRuntimeProperties(props);
+
+		APIException apiException = assertThrows(APIException.class, () -> userService.changePassword(u,"test", "SuperAdmin123"));
+		
+		assertThat(apiException.getMessage(), is("admin.password.is.locked"));
+
+		props.setProperty(UserService.ADMIN_PASSWORD_LOCKED_PROPERTY, "True");
+		Context.setRuntimeProperties(props);
+		
+		apiException = assertThrows(APIException.class, () -> userService.changePassword(u,"test", "SuperAdmin123"));
+		assertThat(apiException.getMessage(), is("admin.password.is.locked"));
+		
+		props.remove(UserService.ADMIN_PASSWORD_LOCKED_PROPERTY);
+		Context.setRuntimeProperties(props);
+
+		userService.changePassword(u,"test", "SuperAdmin123");
 	}
 
 	@Test

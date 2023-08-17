@@ -316,7 +316,6 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	@Override
 	public void changePassword(String pw, String pw2) throws APIException {
 		User user = Context.getAuthenticatedUser();
-		
 		changePassword(user, pw, pw2);
 	}
 	
@@ -652,6 +651,11 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	}
 
 	private void updatePassword(User user, String newPassword) {
+		if ("admin".equals(user.getUsername()) && Boolean.valueOf(Context.getRuntimeProperties()
+			.getProperty(ADMIN_PASSWORD_LOCKED_PROPERTY, "false"))) {
+			throw new APIException("admin.password.is.locked");
+		}
+		
 		OpenmrsUtil.validatePassword(user.getUsername(), newPassword, user.getSystemId());
 		dao.changePassword(user, newPassword);
 	}
