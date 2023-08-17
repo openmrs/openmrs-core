@@ -43,6 +43,7 @@ import org.apache.commons.io.IOUtils;
 import org.openmrs.ImplementationId;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.PasswordException;
+import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.liquibase.ChangeLogDetective;
@@ -1782,9 +1783,20 @@ public class InitializationFilter extends StartupFilter {
 							if (wizardModel.createTables) {
 								try {
 									Context.authenticate("admin", "test");
-									Context.addProxyPrivilege(PrivilegeConstants.EDIT_ADMIN_USER_PASSWORD);
+									
+									Properties props = Context.getRuntimeProperties();
+									String initValue = props.getProperty(UserService.ADMIN_PASSWORD_LOCKED_PROPERTY);
+									props.setProperty(UserService.ADMIN_PASSWORD_LOCKED_PROPERTY, "false");
+									Context.setRuntimeProperties(props);
+									
 									Context.getUserService().changePassword("test", wizardModel.adminUserPassword);
-									Context.removeProxyPrivilege(PrivilegeConstants.EDIT_ADMIN_USER_PASSWORD);
+									
+									if (initValue == null) {
+										props.remove(UserService.ADMIN_PASSWORD_LOCKED_PROPERTY);
+									} else {
+										props.setProperty(UserService.ADMIN_PASSWORD_LOCKED_PROPERTY, initValue);
+									}
+									Context.setRuntimeProperties(props);
 									Context.logout();
 								}
 								catch (ContextAuthenticationException ex) {

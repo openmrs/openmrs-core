@@ -328,7 +328,6 @@ public interface UserService extends OpenmrsService {
 	 * <strong>Should</strong> match on sha512 hashed password
 	 * <strong>Should</strong> be able to update password multiple times
 	 * <strong>Should</strong> respect locking via runtime properties
-	 * <strong>Should</strong> respect locking via runtime properties except for startup
 	 */
 	@Logging(ignoredArgumentIndexes = { 0, 1 })
 	public void changePassword(String pw, String pw2) throws APIException;
