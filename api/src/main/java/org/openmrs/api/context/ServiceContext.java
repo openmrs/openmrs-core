@@ -742,7 +742,9 @@ public class ServiceContext implements ApplicationContextAware {
 		Object classInstance = params.get(1);
 		
 		if (classString == null || classInstance == null) {
-			throw new APIException("service.unable.find", (Object[]) null);
+			throw new APIException(
+			        String.format("Unable to find service as unexpected null value found for class [%s] or instance [%s]",
+			            classString, classInstance));
 		}
 		
 		Class cls = null;
@@ -775,7 +777,7 @@ public class ServiceContext implements ApplicationContextAware {
 			}
 		}
 		catch (ClassNotFoundException e) {
-			throw new APIException("service.unable.set", new Object[] { classString }, e);
+			throw new APIException("Unable to find service as class not found: " + classString, e);
 		}
 		
 		// add this module service to the normal list of services
