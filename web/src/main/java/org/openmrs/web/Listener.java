@@ -63,6 +63,7 @@ import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -258,29 +259,28 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			log.error(MarkerFactory.getMarker("FATAL"), "Failed to obtain JDBC connection", e);
 		}
 	}
-	
-	private void loadCsrfGuardProperties(ServletContext servletContext) throws FileNotFoundException, IOException {	
-		File file = new File(OpenmrsUtil.getApplicationDataDirectory(), "csrfguard.properties");
-		InputStream inputStream = null;
-		try {
-			inputStream = new FileInputStream(file);
+
+	private void loadCsrfGuardProperties(ServletContext servletContext) throws IOException {
+		File csrfGuardFile = new File(OpenmrsUtil.getApplicationDataDirectory(), "csrfguard.properties");
+		InputStream csrfGuardInputStream = null;
+		Properties csrfGuardProperties = new Properties();
+		if(csrfGuardFile.exists()) {
+			csrfGuardInputStream = Files.newInputStream(csrfGuardFile.toPath());
 		}
-		catch (FileNotFoundException ex) {
+		else {
 			final String fileName = servletContext.getRealPath("/WEB-INF/csrfguard.properties");
-			inputStream = new FileInputStream(fileName);
-			OutputStream outputStream = new FileOutputStream(file);
-			IOUtils.copy(inputStream, outputStream);
-		    IOUtils.closeQuietly(outputStream);
-		    IOUtils.closeQuietly(inputStream);
-		    
-		    //Moved to EOF by the copy operation. So open it again.
-		    inputStream = new FileInputStream(file);
+			csrfGuardInputStream = Files.newInputStream(Paths.get(fileName));
+			Properties runtimeProperties = OpenmrsUtil.getRuntimeProperties(WebConstants.WEBAPP_NAME);
+			runtimeProperties.stringPropertyNames().forEach(property -> {
+				 if(property.contains("org.owasp.csrfguard")) {
+					 csrfGuardProperties.setProperty(property, runtimeProperties.getProperty(property));
+				 }
+			 });
 		}
-		Properties properties = new Properties();
-		properties.load(inputStream);
-		IOUtils.closeQuietly(inputStream);
-		CsrfGuard.load(properties);
-		
+		csrfGuardProperties.load(csrfGuardInputStream);
+		IOUtils.closeQuietly(csrfGuardInputStream);
+		CsrfGuard.load(csrfGuardProperties);
+
 		try {
 			//CSRFGuard by default loads properties using CsrfGuardServletContextListener
 			//which sets the servlet context path to be used during variable substitution of
