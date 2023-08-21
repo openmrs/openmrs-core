@@ -264,20 +264,26 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		File csrfGuardFile = new File(OpenmrsUtil.getApplicationDataDirectory(), "csrfguard.properties");
 		InputStream csrfGuardInputStream = null;
 		Properties csrfGuardProperties = new Properties();
-		if(csrfGuardFile.exists()) {
+		try {
 			csrfGuardInputStream = Files.newInputStream(csrfGuardFile.toPath());
-		}
-		else {
+		} 
+		catch (IOException ioException) {
 			final String fileName = servletContext.getRealPath("/WEB-INF/csrfguard.properties");
-			csrfGuardInputStream = Files.newInputStream(Paths.get(fileName));
-			Properties runtimeProperties = OpenmrsUtil.getRuntimeProperties(WebConstants.WEBAPP_NAME);
-			runtimeProperties.stringPropertyNames().forEach(property -> {
-				 if(property.contains("org.owasp.csrfguard")) {
-					 csrfGuardProperties.setProperty(property, runtimeProperties.getProperty(property));
-				 }
-			 });
+			try {
+				csrfGuardInputStream = Files.newInputStream(Paths.get(fileName));
+			} 
+			catch (IOException ioException1) {
+				ioException1.printStackTrace();
+				throw ioException1;
+			}
 		}
 		csrfGuardProperties.load(csrfGuardInputStream);
+		Properties runtimeProperties = OpenmrsUtil.getRuntimeProperties(WebConstants.WEBAPP_NAME);
+		runtimeProperties.stringPropertyNames().forEach(property -> {
+			if(property.startsWith("org.owasp.csrfguard")) {
+				csrfGuardProperties.setProperty(property, runtimeProperties.getProperty(property));
+			}
+		});		
 		IOUtils.closeQuietly(csrfGuardInputStream);
 		CsrfGuard.load(csrfGuardProperties);
 
