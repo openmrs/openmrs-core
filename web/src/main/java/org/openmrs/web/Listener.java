@@ -209,7 +209,6 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			
 			setApplicationDataDirectory(servletContext);
 			
-			loadCsrfGuardProperties(servletContext);
 			
 			// Try to get the runtime properties
 			Properties props = getRuntimeProperties();
@@ -232,6 +231,8 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				log.info("Using runtime properties file: {}",
 				         OpenmrsUtil.getRuntimePropertiesFilePathName(WebConstants.WEBAPP_NAME));
 			}
+
+			loadCsrfGuardProperties(servletContext);
 			
 			Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 			
@@ -262,31 +263,33 @@ public final class Listener extends ContextLoader implements ServletContextListe
 
 	private void loadCsrfGuardProperties(ServletContext servletContext) throws IOException {
 		File csrfGuardFile = new File(OpenmrsUtil.getApplicationDataDirectory(), "csrfguard.properties");
-		InputStream csrfGuardInputStream = null;
 		Properties csrfGuardProperties = new Properties();
-		try {
-			csrfGuardInputStream = Files.newInputStream(csrfGuardFile.toPath());
-		} 
-		catch (IOException ioException) {
-			final String fileName = servletContext.getRealPath("/WEB-INF/csrfguard.properties");
-			try {
-				csrfGuardInputStream = Files.newInputStream(Paths.get(fileName));
-			} 
-			catch (IOException ioException1) {
-				ioException1.printStackTrace();
-				throw ioException1;
+		if(csrfGuardFile.exists()) {
+			try(InputStream csrfGuardInputStream = Files.newInputStream(csrfGuardFile.toPath())) {
+				csrfGuardProperties.load(csrfGuardInputStream);
+			}
+			catch (Exception e) {
+				log.error(e.getMessage());
 			}
 		}
-		csrfGuardProperties.load(csrfGuardInputStream);
-		Properties runtimeProperties = OpenmrsUtil.getRuntimeProperties(WebConstants.WEBAPP_NAME);
+		else {
+			String fileName = servletContext.getRealPath("/WEB-INF/csrfguard.properties");
+			try (InputStream csrfGuardInputStream = Files.newInputStream(Paths.get(fileName))) {
+				csrfGuardProperties.load(csrfGuardInputStream);
+			}
+			catch (Exception e) {
+				log.error(e.getMessage());
+			}
+		}
+		
+		Properties runtimeProperties = getRuntimeProperties();
 		runtimeProperties.stringPropertyNames().forEach(property -> {
 			if(property.startsWith("org.owasp.csrfguard")) {
 				csrfGuardProperties.setProperty(property, runtimeProperties.getProperty(property));
 			}
-		});		
-		IOUtils.closeQuietly(csrfGuardInputStream);
+		});	
 		CsrfGuard.load(csrfGuardProperties);
-
+		
 		try {
 			//CSRFGuard by default loads properties using CsrfGuardServletContextListener
 			//which sets the servlet context path to be used during variable substitution of
