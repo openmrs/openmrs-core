@@ -261,12 +261,13 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	private void loadCsrfGuardProperties(ServletContext servletContext) throws IOException {
 		File csrfGuardFile = new File(OpenmrsUtil.getApplicationDataDirectory(), "csrfguard.properties");
 		Properties csrfGuardProperties = new Properties();
-		if(csrfGuardFile.exists()) {
+		if (csrfGuardFile.exists()) {
 			try(InputStream csrfGuardInputStream = Files.newInputStream(csrfGuardFile.toPath())) {
 				csrfGuardProperties.load(csrfGuardInputStream);
 			}
 			catch (Exception e) {
-				log.error(e.getMessage());
+				log.error("Error loading csrfguard.properties file", e);
+				throw e;
 			}
 		}
 		else {
@@ -275,13 +276,14 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				csrfGuardProperties.load(csrfGuardInputStream);
 			}
 			catch (Exception e) {
-				log.error(e.getMessage());
+				log.error("Error loading csrfguard.properties file", e);
+				throw e;
 			}
 		}
 		
 		Properties runtimeProperties = getRuntimeProperties();
 		runtimeProperties.stringPropertyNames().forEach(property -> {
-			if(property.startsWith("org.owasp.csrfguard")) {
+			if (property.startsWith("org.owasp.csrfguard")) {
 				csrfGuardProperties.setProperty(property, runtimeProperties.getProperty(property));
 			}
 		});	
