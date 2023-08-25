@@ -9,7 +9,6 @@
  */
 package org.openmrs.web;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.openmrs.api.context.Context;
 import org.openmrs.logging.OpenmrsLoggingUtil;
@@ -54,15 +53,14 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -208,7 +206,6 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			
 			setApplicationDataDirectory(servletContext);
 			
-			loadCsrfGuardProperties(servletContext);
 			
 			// Try to get the runtime properties
 			Properties props = getRuntimeProperties();
@@ -231,6 +228,8 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				log.info("Using runtime properties file: {}",
 				         OpenmrsUtil.getRuntimePropertiesFilePathName(WebConstants.WEBAPP_NAME));
 			}
+
+			loadCsrfGuardProperties(servletContext);
 			
 			Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 			
@@ -258,28 +257,37 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			log.error(MarkerFactory.getMarker("FATAL"), "Failed to obtain JDBC connection", e);
 		}
 	}
-	
-	private void loadCsrfGuardProperties(ServletContext servletContext) throws FileNotFoundException, IOException {	
-		File file = new File(OpenmrsUtil.getApplicationDataDirectory(), "csrfguard.properties");
-		InputStream inputStream = null;
-		try {
-			inputStream = new FileInputStream(file);
+
+	private void loadCsrfGuardProperties(ServletContext servletContext) throws IOException {
+		File csrfGuardFile = new File(OpenmrsUtil.getApplicationDataDirectory(), "csrfguard.properties");
+		Properties csrfGuardProperties = new Properties();
+		if (csrfGuardFile.exists()) {
+			try (InputStream csrfGuardInputStream = Files.newInputStream(csrfGuardFile.toPath())) {
+				csrfGuardProperties.load(csrfGuardInputStream);
+			}
+			catch (Exception e) {
+				log.error("Error loading csrfguard.properties file at " + csrfGuardFile.getAbsolutePath(), e);
+				throw e;
+			}
 		}
-		catch (FileNotFoundException ex) {
-			final String fileName = servletContext.getRealPath("/WEB-INF/csrfguard.properties");
-			inputStream = new FileInputStream(fileName);
-			OutputStream outputStream = new FileOutputStream(file);
-			IOUtils.copy(inputStream, outputStream);
-		    IOUtils.closeQuietly(outputStream);
-		    IOUtils.closeQuietly(inputStream);
-		    
-		    //Moved to EOF by the copy operation. So open it again.
-		    inputStream = new FileInputStream(file);
+		else {
+			String fileName = servletContext.getRealPath("/WEB-INF/csrfguard.properties");
+			try (InputStream csrfGuardInputStream = Files.newInputStream(Paths.get(fileName))) {
+				csrfGuardProperties.load(csrfGuardInputStream);
+			}
+			catch (Exception e) {
+				log.error("Error loading csrfguard.properties file at " +  fileName, e);
+				throw e;
+			}
 		}
-		Properties properties = new Properties();
-		properties.load(inputStream);
-		IOUtils.closeQuietly(inputStream);
-		CsrfGuard.load(properties);
+		
+		Properties runtimeProperties = getRuntimeProperties();
+		runtimeProperties.stringPropertyNames().forEach(property -> {
+			if (property.startsWith("org.owasp.csrfguard")) {
+				csrfGuardProperties.setProperty(property, runtimeProperties.getProperty(property));
+			}
+		});	
+		CsrfGuard.load(csrfGuardProperties);
 		
 		try {
 			//CSRFGuard by default loads properties using CsrfGuardServletContextListener
