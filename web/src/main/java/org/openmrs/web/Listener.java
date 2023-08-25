@@ -262,11 +262,11 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		File csrfGuardFile = new File(OpenmrsUtil.getApplicationDataDirectory(), "csrfguard.properties");
 		Properties csrfGuardProperties = new Properties();
 		if (csrfGuardFile.exists()) {
-			try(InputStream csrfGuardInputStream = Files.newInputStream(csrfGuardFile.toPath())) {
+			try (InputStream csrfGuardInputStream = Files.newInputStream(csrfGuardFile.toPath())) {
 				csrfGuardProperties.load(csrfGuardInputStream);
 			}
 			catch (Exception e) {
-				log.error("Error loading csrfguard.properties file", e);
+				log.error("Error loading csrfguard.properties file at " + csrfGuardFile.getAbsolutePath(), e);
 				throw e;
 			}
 		}
@@ -276,7 +276,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				csrfGuardProperties.load(csrfGuardInputStream);
 			}
 			catch (Exception e) {
-				log.error("Error loading csrfguard.properties file", e);
+				log.error("Error loading csrfguard.properties file at " +  fileName, e);
 				throw e;
 			}
 		}
