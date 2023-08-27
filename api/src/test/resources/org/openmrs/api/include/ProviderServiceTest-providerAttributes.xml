@@ -11,6 +11,7 @@
 
 -->
 <dataset>
+	<provider_attribute_type provider_attribute_type_id="4" name="Audit Date" datatype="org.openmrs.customdatatype.datatype.DateDatatype" uuid="9516cc50-6f9f-11e0-8414-001e378eb67x" creator="1" date_created="2005-01-01 00:00:00.0" min_occurs="0" max_occurs="1" retired="false" />	
   <provider_attribute_type provider_attribute_type_id="1" name="Audit Date" datatype="org.openmrs.customdatatype.datatype.DateDatatype" uuid="9516cc50-6f9f-11e0-8414-001e378eb67e" creator="1" date_created="2005-01-01 00:00:00.0" min_occurs="0" max_occurs="1" retired="false" />
   <provider_attribute_type provider_attribute_type_id="2" name="A Date We Don't Care About" datatype="org.openmrs.customdatatype.datatype.DateDatatype" uuid="9516cc50-6f9f-11e0-8414-001e378eb67f" creator="1" date_created="2005-01-01 00:00:00.0" min_occurs="0" retired="true" retired_by="1" date_retired="2005-01-01 02:00:00.0" retire_reason="for fun and profit" />
   <provider_attribute_type provider_attribute_type_id="3" name="place" datatype="org.openmrs.customdatatype.datatype.FreeTextDatatype" uuid="9516cc50-6f9f-11e0-8414-001e378eb67d" creator="1" date_created="2005-01-01 00:00:00.0" min_occurs="0" retired="false"/>

@@ -205,6 +205,15 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	}
 	
 	/**
+	 * @see org.openmrs.api.ProviderService#getProviderAttributeTypeByName(java.lang.String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<ProviderAttributeType> getProviderAttributeTypeByName(String name) {
+		return dao.getProviderAttributeTypesByName(name);
+	}
+	
+	/**
 	 * @see org.openmrs.api.ProviderService#getProviderAttributeTypeByUuid(java.lang.String)
 	 */
 	@Override

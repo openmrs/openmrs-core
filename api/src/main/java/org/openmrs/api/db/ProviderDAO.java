@@ -91,6 +91,11 @@ public interface ProviderDAO {
 	ProviderAttributeType getProviderAttributeType(Integer providerAttributeTypeId);
 	
 	/**
+	 * @see ProviderService#getProviderAttributeTypesByName(String)
+	 */
+	List<ProviderAttributeType> getProviderAttributeTypesByName(String name);
+	
+	/**
 	 * @see ProviderService#getProviderAttributeTypeByUuid(String)
 	 */
 	ProviderAttributeType getProviderAttributeTypeByUuid(String uuid);

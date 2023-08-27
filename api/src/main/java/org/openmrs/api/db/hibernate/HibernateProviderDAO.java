@@ -279,6 +279,16 @@ public class HibernateProviderDAO implements ProviderDAO {
 		return (ProviderAttributeType) getSession().get(ProviderAttributeType.class, providerAttributeTypeId);
 	}
 	
+	/**
+	 * @see org.openmrs.api.db.ProviderDAO#getProviderAttributeTypesByName(String) 
+	 */
+	@Override
+	public List<ProviderAttributeType> getProviderAttributeTypesByName(String name) {
+		Criteria criteria = getSession().createCriteria(ProviderAttributeType.class);
+		criteria.add(Restrictions.eq("name", name));
+		return criteria.list();
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.openmrs.api.db.ProviderDAO#getProviderAttributeTypeByUuid(java.lang.String)
 	 */
