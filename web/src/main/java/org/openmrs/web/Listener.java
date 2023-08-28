@@ -282,11 +282,14 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		}
 		
 		Properties runtimeProperties = getRuntimeProperties();
-		runtimeProperties.stringPropertyNames().forEach(property -> {
-			if (property.startsWith("org.owasp.csrfguard")) {
-				csrfGuardProperties.setProperty(property, runtimeProperties.getProperty(property));
-			}
-		});	
+		if (runtimeProperties != null) {
+			runtimeProperties.stringPropertyNames().forEach(property -> {
+				if (property.startsWith("org.owasp.csrfguard")) {
+					csrfGuardProperties.setProperty(property, runtimeProperties.getProperty(property));
+				}
+			});	
+		}
+		
 		CsrfGuard.load(csrfGuardProperties);
 		
 		try {
