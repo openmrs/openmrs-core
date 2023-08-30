@@ -269,7 +269,7 @@ public class OrderTest extends BaseContextSensitiveTest {
 		
 		assertThatAllFieldsAreCopied(revisedOrder, "cloneForRevision", "creator", "dateCreated", "action", "changedBy",
 		    "dateChanged", "voided", "dateVoided", "voidedBy", "voidReason", "encounter", "orderNumber", "orderer",
-		    "previousOrder", "dateActivated", "dateStopped", "accessionNumber");
+		    "previousOrder", "dateActivated", "dateStopped", "accessionNumber","fullfillerLocation");
 	}
 	
 	/**

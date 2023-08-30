@@ -160,7 +160,7 @@
             <property name="numberOfRepeats" type="int" column="number_of_repeats"/>
             <many-to-one name="frequency" class="org.openmrs.OrderFrequency" />
 			<many-to-one name="location" class="org.openmrs.Concept" />
-			
+			<many-to-one name="fullfillerLocation" class="org.openmrs.Location" column="fullfuller_location" not-null="false"/>
         </joined-subclass>
         
 	</class>

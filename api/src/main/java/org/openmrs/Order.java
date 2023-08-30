@@ -101,6 +101,8 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	
 	private String commentToFulfiller;
 	
+	private Location fullfillerLocation;
+	
 	private CareSetting careSetting;
 	
 	private Date scheduledDate;
@@ -203,6 +205,7 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 		target.setSortWeight(getSortWeight());
 		target.setFulfillerComment(getFulfillerComment());
 		target.setFulfillerStatus(getFulfillerStatus());
+		target.setFullfillerLocation(getFullfillerLocation());
 		target.setFormNamespaceAndPath(getFormNamespaceAndPath());
 		return target;
 	}
@@ -770,6 +773,7 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 		target.setInstructions(getInstructions());
 		target.setUrgency(getUrgency());
 		target.setCommentToFulfiller(getCommentToFulfiller());
+		target.setFullfillerLocation(getFullfillerLocation());
 		target.setOrderReason(getOrderReason());
 		target.setOrderReasonNonCoded(getOrderReasonNonCoded());
 		target.setOrderGroup(getOrderGroup());
@@ -950,5 +954,13 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	@Override
 	public void setFormField(String namespace, String formFieldPath) {
 		formNamespaceAndPath = BaseFormRecordableOpenmrsData.getFormNamespaceAndPath(namespace, formFieldPath);
+	}
+
+	public Location getFullfillerLocation() {
+		return fullfillerLocation;
+	}
+
+	public void setFullfillerLocation(Location fullfillerLocation) {
+		this.fullfillerLocation = fullfillerLocation;
 	}
 }
