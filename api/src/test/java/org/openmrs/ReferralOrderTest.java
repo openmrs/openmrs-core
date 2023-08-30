@@ -46,7 +46,7 @@ public class ReferralOrderTest {
 		
 		OrderTest.assertThatAllFieldsAreCopied(revisedReferralOrder, "cloneForRevision", "creator", "dateCreated", "action",
 		    "changedBy", "dateChanged", "voided", "dateVoided", "voidedBy", "voidReason", "encounter", "orderNumber",
-		    "orderer", "previousOrder", "dateActivated", "dateStopped", "accessionNumber","fullfillerLocation");
+		    "orderer", "previousOrder", "dateActivated", "dateStopped", "accessionNumber","fulfillerLocation");
 	}
 	
 	/**
