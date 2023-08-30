@@ -232,7 +232,7 @@ public interface ProviderService extends OpenmrsService {
 	 * 	<strong>Should</strong> get the provider attribute type by it's name
 	 */
 	@Authorized( { PrivilegeConstants.GET_PROVIDER_ATTRIBUTE_TYPES })
-	public List<ProviderAttributeType> getProviderAttributeTypeByName(String name);
+	public ProviderAttributeType getProviderAttributeTypeByName(String name);
 	
 	/**
 	 * Get a provider attribute type by it's uuid

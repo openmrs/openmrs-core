@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -67,7 +66,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAllProviderAttributeTypes_shouldGetAllProviderAttributeTypesExcludingRetired() {
 		List<ProviderAttributeType> types = service.getAllProviderAttributeTypes(false);
-		assertEquals(3, types.size());
+		assertEquals(2, types.size());
 	}
 	
 	/**
@@ -76,7 +75,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAllProviderAttributeTypes_shouldGetAllProviderAttributeTypesIncludingRetired() {
 		List<ProviderAttributeType> types = service.getAllProviderAttributeTypes(true);
-		assertEquals(4, types.size());
+		assertEquals(3, types.size());
 	}
 	
 	/**
@@ -85,7 +84,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAllProviderAttributeTypes_shouldGetAllProviderAttributeTypesIncludingRetiredByDefault() {
 		List<ProviderAttributeType> types = service.getAllProviderAttributeTypes();
-		assertEquals(4, types.size());
+		assertEquals(3, types.size());
 	}
 	
 	/**
@@ -159,9 +158,9 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getProviderAttributeTypeByName_shouldGetTheProviderAttributeTypeByItsName() {
-		List<ProviderAttributeType> providerAttributeType = service.getProviderAttributeTypeByName("Audit Date");
-		assertEquals("Audit Date", providerAttributeType.get(0).getName());
-		assertEquals("9516cc50-6f9f-11e0-8414-001e378eb67e", providerAttributeType.get(0).getUuid());
+		ProviderAttributeType providerAttributeType = service.getProviderAttributeTypeByName("Audit Date");
+		assertEquals("Audit Date", providerAttributeType.getName());
+		assertEquals("9516cc50-6f9f-11e0-8414-001e378eb67e", providerAttributeType.getUuid());
 	}
 	
 	/**
@@ -259,11 +258,11 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		ProviderAttributeType providerAttributeType = service.getProviderAttributeType(1);
 		assertFalse(providerAttributeType.getRetired());
 		assertNull(providerAttributeType.getRetireReason());
-		assertEquals(3, service.getAllProviderAttributeTypes(false).size());
+		assertEquals(2, service.getAllProviderAttributeTypes(false).size());
 		service.retireProviderAttributeType(providerAttributeType, "retire reason");
 		assertTrue(providerAttributeType.getRetired());
 		assertEquals("retire reason", providerAttributeType.getRetireReason());
-		assertEquals(2, service.getAllProviderAttributeTypes(false).size());
+		assertEquals(1, service.getAllProviderAttributeTypes(false).size());
 	}
 	
 	/**

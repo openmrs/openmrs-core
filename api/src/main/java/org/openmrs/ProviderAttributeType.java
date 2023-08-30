@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import org.hibernate.search.annotations.Field;
 import org.openmrs.attribute.AttributeType;
 import org.openmrs.attribute.BaseAttributeType;
 
@@ -57,4 +58,10 @@ public class ProviderAttributeType extends BaseAttributeType<Provider> implement
 		return providerAttributeTypeId;
 	}
 	
+	@Override
+	@Column(name = "name", nullable = false, length = 255, unique = true)
+	@Field
+	public String getName() {
+		return super.getName();
+	}
 }
