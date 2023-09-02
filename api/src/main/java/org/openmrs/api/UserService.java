@@ -320,8 +320,8 @@ public interface UserService extends OpenmrsService {
 	/**
 	 * Changes the current user's password.
 	 * 
-	 * @param pw current password
-	 * @param pw2 new password
+	 * @param oldPassword current password
+	 * @param newPassword new password
 	 * @throws APIException
 	 * <strong>Should</strong> match on correctly hashed sha1 stored password
 	 * <strong>Should</strong> match on incorrectly hashed sha1 stored password
@@ -330,18 +330,7 @@ public interface UserService extends OpenmrsService {
 	 * <strong>Should</strong> respect locking via runtime properties
 	 */
 	@Logging(ignoredArgumentIndexes = { 0, 1 })
-	public void changePassword(String pw, String pw2) throws APIException;
-
-	/**
-	 * Changes password of {@link User} passed in
-	 * @param user user whose password is to be changed
-	 * @param newPassword new password to set
-	 * @throws APIException
-	 * <strong>Should</strong> update password of given user when logged in user has edit users password privilege
-	 * <strong>Should</strong> not update password of given user when logged in user does not have edit users password privilege
-	 */
-	@Authorized({PrivilegeConstants.EDIT_USER_PASSWORDS})
-	public void changePassword(User user, String newPassword) throws APIException;
+	public void changePassword(String oldPassword, String newPassword) throws APIException;
 	
 	/**
 	 * Changes the current user's password directly. This is most useful if migrating users from
