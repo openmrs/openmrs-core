@@ -66,7 +66,7 @@ public class HibernateUserDAO implements UserDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.UserService#saveUser(org.openmrs.User, java.lang.String)
+	 * @see org.openmrs.api.UserService#saveUser(org.openmrs.User, java.lang.String, java.lang.String)
 	 */
 	@Override
 	public User saveUser(User user, String password) {
@@ -354,10 +354,10 @@ public class HibernateUserDAO implements UserDAO {
 	 * @see org.openmrs.api.UserService#changePassword(java.lang.String, java.lang.String)
 	 */
 	@Override
-	public void changePassword(String pw, String pw2) throws DAOException {
+	public void changePassword(String oldPassword, String newPassword) throws DAOException {
 		User u = Context.getAuthenticatedUser();
 		LoginCredential credentials = getLoginCredential(u);
-		if (!credentials.checkPassword(pw)) {
+		if (!credentials.checkPassword(oldPassword)) {
 			log.error("Passwords don't match");
 			throw new DAOException("Passwords don't match");
 		}
@@ -366,7 +366,7 @@ public class HibernateUserDAO implements UserDAO {
 		
 		// update the user with the new password
 		String salt = credentials.getSalt();
-		String newHashedPassword = Security.encodeString(pw2 + salt);
+		String newHashedPassword = Security.encodeString(newPassword + salt);
 		updateUserPassword(newHashedPassword, salt, u.getUserId(), new Date(), u.getUserId());
 	}
 	
