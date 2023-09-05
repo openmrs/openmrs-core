@@ -101,6 +101,8 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	
 	private String commentToFulfiller;
 	
+	private Location fulfillerLocation;
+	
 	private CareSetting careSetting;
 	
 	private Date scheduledDate;
@@ -203,6 +205,7 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 		target.setSortWeight(getSortWeight());
 		target.setFulfillerComment(getFulfillerComment());
 		target.setFulfillerStatus(getFulfillerStatus());
+		target.setFulfillerLocation(getFulfillerLocation());
 		target.setFormNamespaceAndPath(getFormNamespaceAndPath());
 		return target;
 	}
@@ -770,6 +773,7 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 		target.setInstructions(getInstructions());
 		target.setUrgency(getUrgency());
 		target.setCommentToFulfiller(getCommentToFulfiller());
+		target.setFulfillerLocation(getFulfillerLocation());
 		target.setOrderReason(getOrderReason());
 		target.setOrderReasonNonCoded(getOrderReasonNonCoded());
 		target.setOrderGroup(getOrderGroup());
@@ -950,5 +954,27 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	@Override
 	public void setFormField(String namespace, String formFieldPath) {
 		formNamespaceAndPath = BaseFormRecordableOpenmrsData.getFormNamespaceAndPath(namespace, formFieldPath);
+	}
+
+
+	/**
+	 * Returns the current status that was received from a fulfiller for this order. It can either be RECEIVED, IN_PROGRESS,
+	 * EXCEPTION or COMPLETED.  
+	 *
+	 * @since 2.2.0
+	 * @return the status that was received from a fulfiller
+	 */
+	public Location getFulfillerLocation() {
+		return fulfillerLocation;
+	}
+
+	/**
+	 * Sets the fulfillerLocation
+	 *
+	 * @param fulfillerLocation the form namespace and path to set
+	 * @since 2.7.0
+	 */
+	public void setFulfillerLocation(Location fulfillerLocation) {
+		this.fulfillerLocation = fulfillerLocation;
 	}
 }
