@@ -1466,7 +1466,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User user = userService.getUserByUsername(ADMIN_USERNAME);
 		assertNotNull(user, "There needs to be a user with username 'admin' in the database");
 		
-		userService.changePassword(user, "testTest123");
+		userService.changePassword(user, "test", "testTest123");
 		
 		Context.authenticate(user.getUsername(), "testTest123");
 	}
@@ -1477,7 +1477,9 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User user = userService.getUser(6001);
 		assertFalse(user.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS));
 		Context.authenticate(user.getUsername(), "userServiceTest");
-		APIAuthenticationException exception = assertThrows(APIAuthenticationException.class, () ->  userService.changePassword(user, "testTest123"));
+		
+		APIAuthenticationException exception = assertThrows(APIAuthenticationException.class, () ->  userService.changePassword(user, "userServiceTest", "testTest123"));
+		
 		assertThat(exception.getMessage(), is(messages.getMessage("error.privilegesRequired", new Object[] {PrivilegeConstants.EDIT_USER_PASSWORDS}, null)));
 	}
 	
