@@ -71,6 +71,8 @@ jobs:
           path: app/build/reports/coverage/debug
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
+        with:
+          files: "app/build/reports/coverage/debug/report.xml"
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       # - name: Send data to Sonar
