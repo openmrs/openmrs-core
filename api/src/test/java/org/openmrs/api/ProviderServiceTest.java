@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.GlobalProperty;
@@ -295,6 +296,21 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		providerAttributeType = service.saveProviderAttributeType(providerAttributeType);
 		assertEquals(size + 1, service.getAllProviderAttributeTypes().size());
 		assertNotNull(providerAttributeType.getId());
+	}
+	
+	/**
+	 * @see ProviderService#saveProviderAttributeType(ProviderAttributeType)
+	 */
+	@Test
+	public void saveProviderAttributeType_shouldNotSaveProviderAttributeTypeWithDuplicateName() {
+		//duplication
+		ProviderAttributeType duplicatedAttributeType = new ProviderAttributeType();
+		duplicatedAttributeType.setName("Audit Date");
+		duplicatedAttributeType.setDatatypeClassname(FreeTextDatatype.class.getName());
+		
+		assertThrows(ConstraintViolationException.class, () -> {
+			service.saveProviderAttributeType(duplicatedAttributeType);
+		});		
 	}
 	
 	/**

@@ -13,6 +13,7 @@ import org.hibernate.search.annotations.Field;
 import org.openmrs.attribute.AttributeType;
 import org.openmrs.attribute.BaseAttributeType;
 
+import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -27,6 +28,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "provider_attribute_type")
+@AttributeOverride(name = "name", column = @Column(name = "name", unique = true, nullable = false, length = 255))
 public class ProviderAttributeType extends BaseAttributeType<Provider> implements AttributeType<Provider> {
 
 	@Id
@@ -56,12 +58,5 @@ public class ProviderAttributeType extends BaseAttributeType<Provider> implement
 	
 	public Integer getProviderAttributeTypeId() {
 		return providerAttributeTypeId;
-	}
-	
-	@Override
-	@Column(name = "name", nullable = false, length = 255, unique = true)
-	@Field
-	public String getName() {
-		return super.getName();
 	}
 }
