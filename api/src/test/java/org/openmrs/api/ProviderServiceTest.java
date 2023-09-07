@@ -308,7 +308,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		duplicatedAttributeType.setName("Audit Date");
 		duplicatedAttributeType.setDatatypeClassname(FreeTextDatatype.class.getName());
 		
-		assertThrows(ConstraintViolationException.class, () -> {
+		assertThrows(ValidationException.class, () -> {
 			service.saveProviderAttributeType(duplicatedAttributeType);
 		});		
 	}

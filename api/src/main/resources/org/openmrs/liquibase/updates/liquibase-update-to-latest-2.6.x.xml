@@ -133,5 +133,10 @@
 		<comment>Adding not null constraint to encounter_diagnosis.dx_rank. TRUNK-6081</comment>
 		<addNotNullConstraint tableName="encounter_diagnosis" columnName="dx_rank" columnDataType="int"/>
 	</changeSet>
+
+	<changeSet id="TRUNK-6189-2023-09-06" author="mherman22">
+		<comment>Avoid creation of duplicate names in the 'provider_attribute_type' table</comment>
+		<addUniqueConstraint tableName="provider_attribute_type" columnNames="name"/>
+	</changeSet>
 	
 </databaseChangeLog>

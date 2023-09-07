@@ -11,7 +11,10 @@ package org.openmrs.validator;
 
 import org.openmrs.ProviderAttributeType;
 import org.openmrs.annotation.Handler;
+import org.openmrs.api.ProviderService;
+import org.openmrs.api.context.Context;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 
 /**
  * Validates attributes on the {@link ProviderAttributeType} object.
@@ -33,12 +36,30 @@ public class ProviderAttributeTypeValidator extends BaseAttributeTypeValidator<P
 		return ProviderAttributeType.class.isAssignableFrom(c);
 	}
 	
+	/**
+	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
+	 *      org.springframework.validation.Errors)
+	 * <strong>Should</strong> fail validation if name is null
+	 * <strong>Should</strong> fail validation if datatypeClassname is empty
+	 * <strong>Should</strong> fail validation if name already in use
+	 * <strong>Should</strong> pass validation if description is null or empty or whitespace
+	 * <strong>Should</strong> pass validation if all fields are correct
+	 * <strong>Should</strong> pass validation if field lengths are correct
+	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
 		if (obj != null) {
 			super.validate(obj, errors);
 			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "description", "datatypeClassname",
 			    "preferredHandlerClassname", "retireReason");
+			ProviderAttributeType type = (ProviderAttributeType) obj;
+			ValidationUtils.rejectIfEmpty(errors, "name", "ProviderAttributeType.error.nameEmpty");
+			ValidationUtils.rejectIfEmpty(errors, "datatypeClassname", "ProviderAttributeType.error.datatypeEmpty");
+			ProviderService service = Context.getProviderService();
+			ProviderAttributeType attributeType = service.getProviderAttributeTypeByName(type.getName());
+			if (attributeType != null && !attributeType.getUuid().equals(type.getUuid())) {
+				errors.rejectValue("name", "ProviderAttributeType.error.nameAlreadyInUse");
+			}
 		}
 	}
 }
