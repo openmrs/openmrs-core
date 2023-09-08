@@ -1037,8 +1037,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getCareSettingByUuid_shouldReturnTheCareSettingWithTheSpecifiedUuid() {
-		CareSetting cs = orderService.getCareSettingByUuid("6f0c9a92-6f24-11e3-af88-005056821db0");
-		assertEquals(1, cs.getId().intValue());
+		CareSetting cs = orderService.getCareSettingByUuid("c365e560-c3ec-11e3-9c1a-0800200c9a66");
+		assertEquals(2, cs.getId().intValue());
 	}
 
 	/**
@@ -3962,6 +3962,48 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		e2.addOrder(o2);
 		encounterService.saveEncounter(e2);
 		assertThat(new SimpleDateFormat("yyyy-MM-dd").format(o1.getDateStopped()), is("2008-08-14"));
+	}
+
+	/**
+	 * @see OrderService#saveOrderGroup(org.openmrs.OrderGroup, OrderContext)
+	 */
+	@Test
+	public void saveOrderGroup_shouldSaveOrderGroupWithOrderContext() {
+		executeDataSet(ORDER_SET);
+		Encounter encounter = encounterService.getEncounter(3);
+		OrderSet orderSet = Context.getOrderSetService().getOrderSet(1);
+		OrderGroup orderGroup = new OrderGroup();
+		orderGroup.setOrderSet(orderSet);
+		orderGroup.setPatient(encounter.getPatient());
+		orderGroup.setEncounter(encounter);
+
+		Order firstOrder = new OrderBuilder().withAction(Order.Action.NEW).withPatient(1).withConcept(10).withOrderer(1)
+			.withEncounter(3).withDateActivated(new Date()).withOrderType(17)
+			.withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date()).build();
+
+		Order secondOrder = new OrderBuilder().withAction(Order.Action.NEW).withPatient(7).withConcept(10).withOrderer(1)
+			.withEncounter(3).withDateActivated(new Date()).withOrderType(17)
+			.withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date()).build();
+
+		orderGroup.addOrder(firstOrder);
+		orderGroup.addOrder(secondOrder);
+
+		OrderType orderType = new OrderType();
+		orderGroup.setId(1);
+		orderType.setOrderTypeId(17);
+
+		CareSetting careSetting = new CareSetting();
+		careSetting.setId(1);
+		careSetting.setName("Neonatal Clinic");
+
+		OrderContext orderContext = new OrderContext();
+		orderContext.setCareSetting(careSetting);
+		orderContext.setOrderType(orderType);
+		OrderGroup result = orderService.saveOrderGroup(orderGroup, orderContext);
+
+		assertEquals(2, result.getOrders().size());
+		assertEquals(17, result.getOrders().get(0).getOrderType().getOrderTypeId());
+		assertEquals("Neonatal Clinic", result.getOrders().get(0).getCareSetting().getName());
 	}
 	
 	/**
