@@ -139,9 +139,11 @@
 		<validCheckSum>8:865356f71fa118cbaf4bcac13e0e61a6</validCheckSum>
 		<comment>Avoid creation of duplicate names in the 'provider_attribute_type' table for active attribute types</comment>
 		<sql>
-			ALTER TABLE provider_attribute_type
-			ADD CONSTRAINT unique_active_names UNIQUE (name)
-			WHERE retired = false;
+			<![CDATA[
+        ALTER TABLE provider_attribute_type
+        ADD CONSTRAINT unique_active_names UNIQUE (name)
+        WHERE retired = false;
+        ]]>
 		</sql>
 	</changeSet>
 </databaseChangeLog>
