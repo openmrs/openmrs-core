@@ -841,8 +841,7 @@ public interface OrderService extends OpenmrsService {
 	 * @param orderContext the order context data transfer object containing care setting and 
 	 * the order type to save with the order group
 	 * @return the order group that was saved with the specified order context data
-	 * @since 2.5.0
-	 * @should throw an exception if no order context is provided
+	 * @since 2.7.0
 	 * @throws APIException
 	 */
 	@Authorized({ PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })

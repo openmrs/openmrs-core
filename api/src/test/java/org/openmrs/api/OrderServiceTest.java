@@ -1037,8 +1037,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getCareSettingByUuid_shouldReturnTheCareSettingWithTheSpecifiedUuid() {
-		CareSetting cs = orderService.getCareSettingByUuid("c365e560-c3ec-11e3-9c1a-0800200c9a66");
-		assertEquals(2, cs.getId().intValue());
+		CareSetting cs = orderService.getCareSettingByUuid("6f0c9a92-6f24-11e3-af88-005056821db0");
+		assertEquals(1, cs.getId().intValue());
 	}
 
 	/**
@@ -3988,13 +3988,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		orderGroup.addOrder(firstOrder);
 		orderGroup.addOrder(secondOrder);
 
-		OrderType orderType = new OrderType();
-		orderGroup.setId(1);
-		orderType.setOrderTypeId(17);
-
-		CareSetting careSetting = new CareSetting();
-		careSetting.setId(1);
-		careSetting.setName("Neonatal Clinic");
+		OrderType orderType = orderService.getOrderType(17);
+		CareSetting careSetting = orderService.getCareSetting(1);
 
 		OrderContext orderContext = new OrderContext();
 		orderContext.setCareSetting(careSetting);
@@ -4002,8 +3997,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		OrderGroup result = orderService.saveOrderGroup(orderGroup, orderContext);
 
 		assertEquals(2, result.getOrders().size());
-		assertEquals(17, result.getOrders().get(0).getOrderType().getOrderTypeId());
-		assertEquals("Neonatal Clinic", result.getOrders().get(0).getCareSetting().getName());
+		assertEquals(orderType, result.getOrders().get(0).getOrderType());
+		assertEquals(careSetting, result.getOrders().get(1).getCareSetting());
 	}
 	
 	/**

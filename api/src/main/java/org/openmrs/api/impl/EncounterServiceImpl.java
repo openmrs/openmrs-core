@@ -167,7 +167,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 
 		// save the new orderGroups
 		for (OrderGroup orderGroup : encounter.getOrderGroups()) {
-			Context.getOrderService().saveOrderGroup(orderGroup,null);
+			Context.getOrderService().saveOrderGroup(orderGroup);
 		}
 		//save the new orders which do not have order groups
 		for (Order o : encounter.getOrdersWithoutOrderGroups()) {
