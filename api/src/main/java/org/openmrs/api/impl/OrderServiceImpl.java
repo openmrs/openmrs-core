@@ -114,6 +114,14 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public OrderGroup saveOrderGroup(OrderGroup orderGroup) throws APIException {
+		return saveOrderGroup(orderGroup, null);
+	}
+
+	/**
+	 * @see org.openmrs.api.OrderService#saveOrderGroup(org.openmrs.OrderGroup, org.openmrs.api.OrderContext)
+	 */
+	@Override
+	public OrderGroup saveOrderGroup(OrderGroup orderGroup, OrderContext orderContext) throws APIException {
 		if (orderGroup.getId() == null) {
 			// an OrderGroup requires an encounter, which has a patient, so it
 			// is odd that OrderGroup has a patient field. There is no obvious
@@ -126,13 +134,13 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		for (Order order : orders) {
 			if (order.getId() == null) {
 				order.setEncounter(orderGroup.getEncounter());
-				Context.getOrderService().saveOrder(order, null);
+				Context.getOrderService().saveOrder(order, orderContext);
 			}
 		}
 		Set<OrderGroup> nestedGroups = orderGroup.getNestedOrderGroups();
 		if (nestedGroups != null) {
 			for (OrderGroup nestedGroup : nestedGroups) {
-				Context.getOrderService().saveOrderGroup(nestedGroup);
+				Context.getOrderService().saveOrderGroup(nestedGroup, orderContext);
 			}
 		}
 		return orderGroup;

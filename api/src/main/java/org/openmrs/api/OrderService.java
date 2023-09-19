@@ -835,6 +835,19 @@ public interface OrderService extends OpenmrsService {
 	public OrderGroup saveOrderGroup(OrderGroup orderGroup) throws APIException;
 
 	/**
+	 * Saves an order group with a specific order context
+	 *
+	 * @param orderGroup the order group to be saved
+	 * @param orderContext the order context data transfer object containing care setting and 
+	 * the order type to save with the order group
+	 * @return the order group that was saved with the specified order context data
+	 * @since 2.7.0
+	 * @throws APIException
+	 */
+	@Authorized({ PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
+	public  OrderGroup saveOrderGroup(OrderGroup orderGroup, OrderContext orderContext) throws APIException;
+
+	/**
 	 * Fetches all order groups for the specified patient
 	 * 
 	 * @param patient the patient to match on
