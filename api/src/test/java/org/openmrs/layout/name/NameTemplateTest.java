@@ -26,12 +26,12 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 public class NameTemplateTest extends BaseContextSensitiveTest {
 	
 	private NameSupport nameSupport;
+	protected static final String NAME_TEMPLATE_DATASET_PATH = "src/test/resources/org/openmrs/include/nameSupportTestDataSet.xml";
 	
 	@BeforeEach
 	public void setup() {
+		executeDataSet(NAME_TEMPLATE_DATASET_PATH);
 		nameSupport = NameSupport.getInstance();
-		nameSupport.setSpecialTokens(Arrays.asList("prefix", "givenName", "middleName", "familyNamePrefix",
-		    "familyNameSuffix", "familyName2", "familyName", "degree"));
 	}
 	
 	@Test

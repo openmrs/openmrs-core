@@ -42,6 +42,8 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	private static final String PROVIDER_ATTRIBUTE_TYPES_XML = "org/openmrs/api/include/ProviderServiceTest-providerAttributes.xml";
 	
 	private static final String OTHERS_PROVIDERS_XML = "org/openmrs/api/include/ProviderServiceTest-otherProviders.xml";
+
+	protected static final String NAME_TEMPLATE_DATASET_PATH = "src/test/resources/org/openmrs/include/nameSupportTestDataSet.xml";
 	
 	@BeforeEach
 	public void setup() {
@@ -49,6 +51,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 		errors = new BindException(provider, "provider");
 		providerValidator = new ProviderValidator();
 		providerService = Context.getProviderService();
+		executeDataSet(NAME_TEMPLATE_DATASET_PATH);
 	}
 	
 	/**
