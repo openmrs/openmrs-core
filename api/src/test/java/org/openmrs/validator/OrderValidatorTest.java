@@ -30,6 +30,7 @@ import org.openmrs.TestOrder;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
+import org.openmrs.layout.name.NameSupport;
 import org.openmrs.order.OrderUtilTest;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
@@ -43,12 +44,13 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	private class SomeDrugOrder extends DrugOrder {}
 	
 	private OrderService orderService;
-	
+	protected static final String NAME_TEMPLATE_DATASET_PATH = "src/test/resources/org/openmrs/include/nameSupportTestDataSet.xml";
 	protected static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
 	
 	@BeforeEach
 	public void setup() {
 		orderService = Context.getOrderService();
+		executeDataSet(NAME_TEMPLATE_DATASET_PATH);
 	}
 	
 	/**

@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Date;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
@@ -36,6 +37,13 @@ import org.springframework.validation.Errors;
  *
  */
 public class TestOrderValidatorTest extends BaseContextSensitiveTest {
+
+	protected static final String NAME_TEMPLATE_DATASET_PATH = "src/test/resources/org/openmrs/include/nameSupportTestDataSet.xml";
+
+	@BeforeEach
+	public void setup() {
+		executeDataSet(NAME_TEMPLATE_DATASET_PATH);
+	}
 	
 	/**
 	 * @see TestOrderValidator#validate(Object, org.springframework.validation.Errors)

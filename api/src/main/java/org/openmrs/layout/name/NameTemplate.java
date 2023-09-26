@@ -25,6 +25,12 @@ import org.openmrs.layout.LayoutTemplate;
  */
 public class NameTemplate extends LayoutTemplate {
 	
+	public NameTemplate() {}
+	
+	public NameTemplate(String string) {
+		super(string);
+	}
+	
 	@Override
 	public String getLayoutToken() {
 		return "IS_NAME_TOKEN";

@@ -23,6 +23,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.junit.Assert;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
@@ -39,6 +40,7 @@ import org.openmrs.SimpleDosingInstructions;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.layout.name.NameSupport;
 import org.openmrs.order.OrderUtilTest;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
@@ -55,6 +57,12 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	@Autowired
 	@Qualifier("adminService")
 	AdministrationService adminService;
+	protected static final String NAME_TEMPLATE_DATASET_PATH = "src/test/resources/org/openmrs/include/nameSupportTestDataSet.xml";
+
+	@BeforeEach
+	public void setup() {
+		executeDataSet(NAME_TEMPLATE_DATASET_PATH);
+	}
 	
 	/**
 	 * @see DrugOrderValidator#validate(Object,Errors)
