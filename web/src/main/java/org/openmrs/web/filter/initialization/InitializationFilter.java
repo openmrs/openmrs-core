@@ -1795,8 +1795,7 @@ public class InitializationFilter extends StartupFilter {
 									props.setProperty(UserService.ADMIN_PASSWORD_LOCKED_PROPERTY, "false");
 									Context.setRuntimeProperties(props);
 									
-									((UserServiceImpl) Context.getUserService()).changePassword(
-										Context.getAuthenticatedUser(), wizardModel.adminUserPassword);
+									Context.getUserService().changePassword("test", wizardModel.adminUserPassword);
 									
 									if (initValue == null) {
 										props.remove(UserService.ADMIN_PASSWORD_LOCKED_PROPERTY);
