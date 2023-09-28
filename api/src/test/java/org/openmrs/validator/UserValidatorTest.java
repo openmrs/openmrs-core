@@ -9,7 +9,6 @@
  */
 package org.openmrs.validator;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Person;
@@ -40,13 +39,6 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 
 	@Autowired
 	private UserService userService;
-
-	protected static final String NAME_TEMPLATE_DATASET_PATH = "src/test/resources/org/openmrs/include/nameSupportTestDataSet.xml";
-
-	@BeforeEach
-	public void setup() {
-		executeDataSet(NAME_TEMPLATE_DATASET_PATH);
-	}
 	
 	/**
 	 * @see UserValidator#isUserNameValid(String)

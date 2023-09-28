@@ -13,11 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openmrs.GlobalProperty;
-import org.openmrs.api.APIException;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.context.Context;
 import org.openmrs.layout.LayoutSupport;
-import org.openmrs.layout.address.AddressSupport;
 import org.openmrs.serialization.SerializationException;
 import org.openmrs.util.OpenmrsConstants;
 import org.slf4j.Logger;
@@ -27,10 +25,10 @@ import org.slf4j.LoggerFactory;
  * @since 1.12
  */
 public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPropertyListener {
-	
+
+	private static final Logger log = LoggerFactory.getLogger(NameSupport.class);
 	private static NameSupport singleton;
 	private boolean initialized = false;
-	private static final Logger log = LoggerFactory.getLogger(AddressSupport.class);
 	
 	public NameSupport() {
 		if (singleton == null) {
@@ -41,7 +39,7 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 	public static NameSupport getInstance() {
 		synchronized (NameSupport.class) {
 			if (singleton == null) {
-				singleton = new NameSupport();
+				new NameSupport();
 			}
 		}
 		singleton.init();
@@ -50,10 +48,13 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 
 	private void init() {
 		if (!initialized) {
-			Context.getAdministrationService().addGlobalPropertyListener(singleton);
-			String layoutTemplateXml = Context.getAdministrationService().getGlobalPropertyObject(
-				OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT).toString();
-			setNameTemplate(layoutTemplateXml);
+			try {
+				Context.getAdministrationService().addGlobalPropertyListener(singleton);
+				// Get layout NameTemplate format to override the default if any
+				String layoutTemplateXml = Context.getAdministrationService().getGlobalProperty(
+					OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT);
+				setNameTemplate(layoutTemplateXml);
+			} catch (NullPointerException ignored) {}
 
 			List<String> specialTokens = new ArrayList<>();
 			specialTokens.add("prefix");
@@ -64,7 +65,6 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 			specialTokens.add("familyName2");
 			specialTokens.add("familyNameSuffix");
 			specialTokens.add("degree");
-
 			setSpecialTokens(specialTokens);
 			initialized = true;
 		}
@@ -72,17 +72,19 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 	
 	public void setNameTemplate(List<NameTemplate> nameTemplates) {
 		this.layoutTemplates = nameTemplates;
-		setDefaultLayoutFormat(nameTemplates.get(0).getCodeName());
 	}
 	
 	private void setNameTemplate(String xml) {
-		NameTemplate nameTemplate;
+		NameTemplate nameTemplate = new NameTemplate();
 		try {
 			nameTemplate = Context.getSerializationService().getDefaultSerializer().deserialize(xml,
 				NameTemplate.class);
 		} catch (SerializationException e) {
-			log.error("Error in deserializing name template", e);
-			nameTemplate = new NameTemplate("Error while deserializing name layout template.");
+			log.error("Error in deserializing provided name template, loading default template", e);
+			try {
+				nameTemplate = Context.getSerializationService().getDefaultSerializer().deserialize(OpenmrsConstants.DEFAULT_NAME_TEMPLATE,
+					NameTemplate.class);
+			} catch (SerializationException ignored) {}
 		}
 		
 		List<NameTemplate> list = new ArrayList<NameTemplate>();
@@ -105,7 +107,8 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 	
 	@Override
 	public String getDefaultLayoutFormat() {
-		return  defaultLayoutFormat;
+		String ret = Context.getAdministrationService().getGlobalProperty("layout.name.format");
+		return (ret != null && ret.length() > 0) ? ret : defaultLayoutFormat;
 	}
 
 	@Override
