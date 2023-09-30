@@ -54,9 +54,10 @@ public class ObsTest {
 	
 	//ignore these fields, groupMembers and formNamespaceAndPath field are taken care of by other tests
 	private static final List<String> IGNORED_FIELDS = Arrays.asList("dirty", "log", "serialVersionUID",
-	    "DATE_TIME_PATTERN", "TIME_PATTERN", "DATE_PATTERN", "FORM_NAMESPACE_PATH_SEPARATOR",
-	    "FORM_NAMESPACE_PATH_MAX_LENGTH", "obsId", "groupMembers", "uuid", "changedBy", "dateChanged", "voided", "voidedBy",
-	    "voidReason", "dateVoided", "formNamespaceAndPath", "$jacocoData");
+	    "DATE_TIME_PATTERN", "DATE_TIME_PATTERN2", "DATE_TIME_PATTERN3", "DATE_TIME_PATTERN4", "DATE_TIME_PATTERN5", 
+		"TIME_PATTERN", "DATE_PATTERN", "FORM_NAMESPACE_PATH_SEPARATOR", "FORM_NAMESPACE_PATH_MAX_LENGTH", "obsId", 
+		"groupMembers", "uuid", "changedBy", "dateChanged", "voided", "voidedBy", "voidReason", "dateVoided", 
+		"formNamespaceAndPath", "$jacocoData");
 	
 	private void resetObs(Obs obs) throws Exception {
 		Field field = Obs.class.getDeclaredField("dirty");
@@ -322,6 +323,25 @@ public class ObsTest {
 	public void setValueAsString_shouldFailIfTheValueOfTheStringIsNull() throws Exception {
 		Obs obs = new Obs();
 		assertThrows(RuntimeException.class, () -> obs.setValueAsString(null));
+	}
+
+	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test
+	public void setValueAsString_shouldPassForAllTheDates() throws Exception {
+		Obs obs = new Obs();
+		ConceptDatatype cd = new ConceptDatatype();
+		cd.setName("Datetime");
+		cd.setHl7Abbreviation("TS");
+		Concept c = new Concept();
+		c.setDatatype(cd);
+		obs.setConcept(c);
+
+		String[] dateFormats = {"2011-05-01 00:00:00", "2011-05-01T00:00:00.000", "2011-05-01T00:00:00.000",
+			"2016-01-12T06:00:00+05:30", "2016-01-12T06:00:00+0530", "2014-02-20T11:00:00.000-05:00", "2014-02-20T11:00:00.000-05" };
+		for (String dateFormat : dateFormats)
+			obs.setValueAsString(dateFormat);
 	}
 	
 	/**
