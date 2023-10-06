@@ -10,6 +10,7 @@
 package org.openmrs.notification.mail.velocity;
 
 import java.io.StringWriter;
+import java.util.Properties;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -40,7 +41,11 @@ public class VelocityMessagePreparator implements MessagePreparator {
 	public VelocityMessagePreparator() throws MessageException {
 		try {
 			engine = new VelocityEngine();
-			engine.init();
+			Properties props = new Properties();
+			props.put("runtime.log.logsystem.class", "org.apache.velocity.runtime.log.SimpleLog4JLogSystem");
+			props.put("runtime.log.logsystem.log4j.category", "velocity");
+			props.put("runtime.log.logsystem.log4j.logger", "velocity");
+			engine.init(props);
 		}
 		catch (Exception e) {
 			log.error("Failed to create velocity engine " + e.getMessage(), e);
