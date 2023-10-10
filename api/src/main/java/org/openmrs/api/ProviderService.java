@@ -20,6 +20,7 @@ import org.openmrs.ProviderAttributeType;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Handler;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * This service contains methods relating to providers.
@@ -232,6 +233,17 @@ public interface ProviderService extends OpenmrsService {
 	 * <strong>Should</strong> get the provider attribute type by it's uuid
 	 */
 	public ProviderAttributeType getProviderAttributeTypeByUuid(String uuid);
+	
+	/**
+	 * Get a provider attribute type by it's name
+	 *
+	 * @param name the name of the provider attribute type
+	 * @return the provider attribute type for the given name
+	 * <strong>Should</strong> get the provider attribute type by it's name
+	 * @since 2.7.0
+	 */
+	@Authorized({PrivilegeConstants.GET_PROVIDER_ATTRIBUTE_TYPES})
+	public ProviderAttributeType getProviderAttributeTypeByName(String name);
 	
 	/**
 	 * Get a provider attribute by it's providerAttributeID
