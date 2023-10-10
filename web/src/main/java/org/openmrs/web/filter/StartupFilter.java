@@ -55,6 +55,7 @@ import org.openmrs.logging.MemoryAppender;
 import org.openmrs.logging.OpenmrsLoggingUtil;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.web.Listener;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.filter.initialization.InitializationFilter;
 import org.openmrs.web.filter.update.UpdateFilter;
@@ -107,7 +108,10 @@ public abstract class StartupFilter implements Filter {
 	@Override
 	public final void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 	        throws IOException, ServletException {
-		if (skipFilter((HttpServletRequest) request)) {
+		if (((HttpServletRequest)request).getServletPath().equals("/health/started")) {
+			((HttpServletResponse) response).setStatus(Listener.isOpenmrsStarted() ? HttpServletResponse.SC_OK : HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+		}
+		else if (skipFilter((HttpServletRequest) request)) {
 			chain.doFilter(request, response);
 		} else {
 			
