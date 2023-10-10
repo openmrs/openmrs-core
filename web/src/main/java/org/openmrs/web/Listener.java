@@ -122,6 +122,15 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	}
 	
 	/**
+	 * Boolean flag that tells if OpenMRS is started and ready to handle requests via REST.
+	 *
+	 * @return true if started, else false.
+	 */
+	public static boolean isOpenmrsStarted() {
+		return openmrsStarted;
+	}
+	
+	/**
 	 * Get the error thrown at startup
 	 *
 	 * @return get the error thrown at startup
