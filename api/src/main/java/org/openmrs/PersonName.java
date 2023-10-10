@@ -27,6 +27,7 @@ import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.openmrs.api.APIException;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.search.LuceneAnalyzers;
 import org.openmrs.layout.name.NameSupport;
 import org.openmrs.layout.name.NameTemplate;
@@ -409,7 +410,21 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 	public String getFullName() {
 		NameTemplate nameTemplate = null;
 		try {
+			String xml = Context.getPersonService().getNameTemplate();
+			if (!OpenmrsConstants.PERSON_NAME_FORMAT_LONG.equals(PersonName.getFormat())) {
+				try {
+					Context.getPersonService().updateNameTemplate(OpenmrsConstants.SHORT_NAME_TEMPLATE);
+				} catch (Exception e) {
+					throw new APIException();
+				}
+			}
+
 			nameTemplate = NameSupport.getInstance().getDefaultLayoutTemplate();
+			if (!OpenmrsConstants.PERSON_NAME_FORMAT_LONG.equals(PersonName.getFormat())) {
+				nameTemplate.setCodeName("short");
+				nameTemplate.setDisplayName("Short Name Format");
+				Context.getPersonService().updateNameTemplate(xml); // Clean up to previous nameTemplate or to default
+			}
 		}
 		catch (APIException ex) {
 			log.warn("No name layout format set");

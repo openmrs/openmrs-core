@@ -36,7 +36,10 @@
 	  &lt;string&gt;prefix&lt;/string&gt;
 	  &lt;string&gt;givenName&lt;/string&gt;
 	  &lt;string&gt;middleName&lt;/string&gt;
-	  &lt;string&gt;familyNamePrefix  familyName familyName2 familyNameSuffix&lt;/string&gt;
+	  &lt;string&gt;familyNamePrefix&lt;/string&gt;
+	  &lt;string&gt;familyName&lt;/string&gt;
+	  &lt;string&gt;familyName2&lt;/string&gt;
+	  &lt;string&gt;familyNameSuffix&lt;/string&gt;
 	  &lt;string&gt;degree&lt;/string&gt;
 	&lt;/lineByLineFormat&gt;
 	&lt;requiredElements&gt;
