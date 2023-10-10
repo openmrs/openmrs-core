@@ -42,14 +42,14 @@
 	</changeSet>
 	<changeSet author="vshankar" id="201609171146-1">
 		<preConditions onFail="MARK_RAN">
-			<foreignKeyConstraintExists foreignKeyName="member_patient"/>
+			<foreignKeyConstraintExists foreignKeyTableName="cohort_member" foreignKeyName="member_patient"/>
 		</preConditions>
 		<comment>Dropping foreign key constraint member_patient</comment>
 		<dropForeignKeyConstraint constraintName="member_patient" baseTableName="cohort_member"/>
 	</changeSet>
 	<changeSet author="vshankar" id="201609171146-1.1">
 		<preConditions onFail="MARK_RAN">
-			<foreignKeyConstraintExists foreignKeyName="parent_cohort"/>
+			<foreignKeyConstraintExists foreignKeyTableName="cohort_member" foreignKeyName="parent_cohort"/>
 		</preConditions>
 		<comment>Dropping foreign key constraint parent_cohort</comment>
 		<dropForeignKeyConstraint constraintName="parent_cohort" baseTableName="cohort_member"/>

@@ -74,7 +74,7 @@
 			<plugin>
 				<groupId>org.liquibase</groupId>
 				<artifactId>liquibase-maven-plugin</artifactId>
-				<version>3.10.3</version>
+				<version>4.8.0</version>
 				<configuration>
 					<changeLogFile>snapshots/${changelogfile}</changeLogFile>
 					<diffTypes>${diffTypes}</diffTypes>

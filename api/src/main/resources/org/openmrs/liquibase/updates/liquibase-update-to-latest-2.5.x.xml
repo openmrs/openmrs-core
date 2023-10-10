@@ -366,7 +366,7 @@
 
 	<changeSet id="2020-09-16-1700-TRUNK-5736" author="miirochristopher">
 		<preConditions onFail="MARK_RAN" onFailMessage="Cannot delete or update user, foreign key constraint user_who_changed_user fails">
-			<foreignKeyConstraintExists foreignKeyName="user_who_changed_user"/>
+			<foreignKeyConstraintExists foreignKeyTableName="users" foreignKeyName="user_who_changed_user"/>
 		</preConditions>
 		<comment>Updating foreign key user_who_changed_user to add delete CASCADE</comment>
 		<dropForeignKeyConstraint baseTableName="users" constraintName="user_who_changed_user"/>

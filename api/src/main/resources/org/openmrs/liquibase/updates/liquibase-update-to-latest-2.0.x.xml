@@ -56,7 +56,7 @@
 	
 	<changeSet id="2" author="upul" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
-			<not><foreignKeyConstraintExists foreignKeyName="privilege_which_can_edit"/></not>
+			<not><foreignKeyConstraintExists foreignKeyTableName="person_attribute_type" foreignKeyName="privilege_which_can_edit"/></not>
 		</preConditions>
 		<comment>
 			Create the foreign key from the privilege required for to edit
@@ -1702,7 +1702,7 @@
 
 	<changeSet id="20090414-0804" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
-			<foreignKeyConstraintExists foreignKeyName="is_a" />
+			<foreignKeyConstraintExists foreignKeyTableName="concept_set" foreignKeyName="is_a" />
 		</preConditions>
 		<comment>Dropping foreign key on concept_set.concept_id table</comment>
 		<dropForeignKeyConstraint baseTableName="concept_set" constraintName="is_a" />
@@ -1745,7 +1745,7 @@
 
 	<changeSet id="20090414-0808a" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
-			<foreignKeyConstraintExists foreignKeyName="identifies_patient" />
+			<foreignKeyConstraintExists foreignKeyTableName="patient_identifier" foreignKeyName="identifies_patient" />
 		</preConditions>
 		<comment>Dropping foreign key on patient_identifier.patient_id column</comment>
 		<dropForeignKeyConstraint baseTableName="patient_identifier" constraintName="identifies_patient" />
@@ -2265,7 +2265,7 @@
 	
 	<changeSet id="20090414-0811a" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
-			<foreignKeyConstraintExists foreignKeyName="word_for" />
+			<foreignKeyConstraintExists foreignKeyTableName="concept_word" foreignKeyName="word_for" />
 		</preConditions>
 		<comment>Dropping foreign key on concept_word.concept_id column</comment>
 		<dropForeignKeyConstraint baseTableName="concept_word" constraintName="word_for" />
@@ -2305,7 +2305,7 @@
 	
 	<changeSet id="20090414-0812b" author="bwolfe" failOnError="false" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
-			<not><foreignKeyConstraintExists foreignKeyName="word_for_name"/></not>
+			<not><foreignKeyConstraintExists foreignKeyTableName="concept_word" foreignKeyName="word_for_name"/></not>
 		</preConditions>
 		<comment>Re-adding foreign key for concept_word.concept_name_id</comment>
 		<addForeignKeyConstraint baseTableName="concept_word" baseColumnNames="concept_name_id" constraintName="word_for_name" referencedTableName="concept_name" referencedColumnNames="concept_name_id"/>
@@ -2314,7 +2314,7 @@
 	<changeSet id="20090428-0854" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
-				<foreignKeyConstraintExists foreignKeyName="word_for"/>
+				<foreignKeyConstraintExists foreignKeyTableName="concept_word" foreignKeyName="word_for"/>
 			</not>
 		</preConditions>
 		<comment>Adding foreign key for concept_word.concept_id column</comment>
@@ -2527,7 +2527,7 @@
 		<renameColumn tableName="concept_source" oldColumnName="date_voided" newColumnName="date_retired" columnDataType="datetime" />
 	</changeSet>
 	<changeSet id="20090907-2a" author="Knoll_Frank" dbms="mysql">
-		<preConditions onFail="MARK_RAN"><foreignKeyConstraintExists foreignKeyName="user_who_voided_concept_source"/></preConditions>
+		<preConditions onFail="MARK_RAN"><foreignKeyConstraintExists foreignKeyTableName="concept_source" foreignKeyName="user_who_voided_concept_source"/></preConditions>
 		<comment>Remove the concept_source.voided_by foreign key constraint</comment>	
 		<dropForeignKeyConstraint baseTableName="concept_source" constraintName="user_who_voided_concept_source" />
 	</changeSet>
@@ -2727,7 +2727,7 @@
 	<changeSet id="201102280948" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<and>
-				<foreignKeyConstraintExists foreignKeyName="person_id_for_user"/>
+				<foreignKeyConstraintExists foreignKeyTableName="users" foreignKeyName="person_id_for_user"/>
 				<not><changeSetExecuted changeLogFile="liquibase-update-to-latest.xml" author="djazayeri" id="200912031846-3"/></not>
 			</and>
 		</preConditions>
@@ -2771,7 +2771,7 @@
 	<changeSet id="200912031846-3" author="djazayeri" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
-				<foreignKeyConstraintExists foreignKeyName="person_id_for_user"/>
+				<foreignKeyConstraintExists foreignKeyTableName="users" foreignKeyName="person_id_for_user"/>
 			</not>
 		</preConditions>
 		<comment>Restoring foreign key constraint on users.person_id</comment>
@@ -2951,7 +2951,7 @@
 	
 	<changeSet id="20091001-1025" author="rcrichton" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
-			<not><foreignKeyConstraintExists foreignKeyName="user_who_retired_relationship_type"/></not>
+			<not><foreignKeyConstraintExists foreignKeyTableName="relationship_type" foreignKeyName="user_who_retired_relationship_type"/></not>
 		</preConditions>
 		<comment>
 			Create the foreign key from the relationship.retired_by to users.user_id.
@@ -3026,7 +3026,7 @@
 	
 	<changeSet id="20100306-095513a" author="thilini.hg" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
-			<foreignKeyConstraintExists foreignKeyName="alert_assigned_to_user"/>
+			<foreignKeyConstraintExists foreignKeyTableName="notification_alert" foreignKeyName="alert_assigned_to_user"/>
 		</preConditions>
 		<comment>Dropping unused foreign key from notification alert table</comment>
 		<dropForeignKeyConstraint baseTableName="notification_alert" constraintName="alert_assigned_to_user"/>
@@ -3490,7 +3490,7 @@
 
 	<changeSet id="20100607-1550c" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
-			<foreignKeyConstraintExists foreignKeyName="mapped_concept_name_tag"/>
+			<foreignKeyConstraintExists foreignKeyTableName="concept_name_tag_map" foreignKeyName="mapped_concept_name_tag"/>
 		</preConditions>
 		<comment>Dropping foreign key constraint on concept_name_tag_map.concept_name_tag_id</comment>
 		<dropForeignKeyConstraint baseTableName="concept_name_tag_map" constraintName="mapped_concept_name_tag"/>		
@@ -3613,7 +3613,7 @@
 	<changeSet id="20100607-1550i" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">			
 			<not>
-				<foreignKeyConstraintExists foreignKeyName="mapped_concept_name_tag"/>
+				<foreignKeyConstraintExists foreignKeyTableName="concept_name_tag_map" foreignKeyName="mapped_concept_name_tag"/>
 			</not>
 		</preConditions>
 		<comment>Restoring foreign key constraint on concept_name_tag_map.concept_name_tag_id</comment>
@@ -4131,7 +4131,7 @@
 	<changeSet id="20110124-1030" author="surangak" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
-				<foreignKeyConstraintExists
+				<foreignKeyConstraintExists foreignKeyTableName="concept_answer"
 					foreignKeyName="answer_answer_drug_fk" />
 			</not>
 		</preConditions>
@@ -5384,7 +5384,7 @@
 	
 	<changeSet id="20110301-1030n" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
-			<not><foreignKeyConstraintExists foreignKeyName="mapped_concept_reference_term" /></not>
+			<not><foreignKeyConstraintExists foreignKeyTableName="concept_reference_map" foreignKeyName="mapped_concept_reference_term" /></not>
 		</preConditions>
 		<comment>Adding foreign key constraint to concept_reference_map.concept_reference_term_id column</comment>
 		<addForeignKeyConstraint constraintName="mapped_concept_reference_term" 
@@ -5394,7 +5394,7 @@
 	
 	<changeSet id="20110301-1030o" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
-			<foreignKeyConstraintExists foreignKeyName="map_source"/>
+			<foreignKeyConstraintExists foreignKeyTableName="concept_reference_map" foreignKeyName="map_source"/>
 		</preConditions>
 		<comment>Dropping foreign key constraint on concept_reference_map.source column</comment>
 		<dropForeignKeyConstraint baseTableName="concept_reference_map"  constraintName="map_source"/>
@@ -5426,7 +5426,7 @@
 
 	<changeSet id="20110913-0300" author="sunbiz">
 		<preConditions onFail="MARK_RAN">
-			<foreignKeyConstraintExists foreignKeyName="person_a" />
+			<foreignKeyConstraintExists foreignKeyTableName="relationship" foreignKeyName="person_a" />
 		</preConditions>
 		<comment>Remove ON DELETE CASCADE from relationship table for person_a</comment>
 		<dropForeignKeyConstraint baseTableName="relationship" constraintName="person_a" />
@@ -5436,7 +5436,7 @@
 
 	<changeSet id="20110913-0300b" author="sunbiz">
 		<preConditions onFail="MARK_RAN">
-			<foreignKeyConstraintExists foreignKeyName="person_b" />
+			<foreignKeyConstraintExists foreignKeyTableName="relationship" foreignKeyName="person_b" />
 		</preConditions>
 		<comment>Remove ON DELETE CASCADE from relationship table for person_b</comment>
 		<dropForeignKeyConstraint baseTableName="relationship" constraintName="person_b" />
@@ -6433,7 +6433,7 @@
 	<changeSet id="20120504-1030" author="raff">
 		<preConditions onFail="MARK_RAN">
 			<not>
-				<foreignKeyConstraintExists
+				<foreignKeyConstraintExists foreignKeyTableName="drug_ingredient"
 					foreignKeyName="drug_ingredient_units_fk" />
 			</not>
 		</preConditions>
@@ -6446,7 +6446,7 @@
 	<changeSet id="20120504-1040" author="raff">
 		<preConditions onFail="MARK_RAN">
 			<not>
-				<foreignKeyConstraintExists
+				<foreignKeyConstraintExists foreignKeyTableName="drug_ingredient"
 					foreignKeyName="drug_ingredient_drug_id_fk" />
 			</not>
 		</preConditions>
@@ -6459,7 +6459,7 @@
 	<changeSet id="20120504-1050" author="raff">
 		<preConditions onFail="MARK_RAN">
 			<not>
-				<foreignKeyConstraintExists
+				<foreignKeyConstraintExists foreignKeyTableName="drug_ingredient"
 					foreignKeyName="drug_ingredient_ingredient_id_fk" />
 			</not>
 		</preConditions>
@@ -7143,7 +7143,7 @@
 
     <changeSet id="20121008-order_specimen_source_fk" author="djazayeri">
         <preConditions onFail="MARK_RAN">
-            <not><foreignKeyConstraintExists foreignKeyName="test_order_specimen_source_fk"/></not>
+            <not><foreignKeyConstraintExists foreignKeyTableName="test_order" foreignKeyName="test_order_specimen_source_fk"/></not>
         </preConditions>
         <comment>Adding FK constraint for test_order.specimen_source if necessary</comment>
         <addForeignKeyConstraint constraintName="test_order_specimen_source_fk"
@@ -7822,7 +7822,7 @@
 
     <changeSet id="201312161618-TRUNK-4129" author="rkorytkowski">
         <preConditions onFail="MARK_RAN">
-            <not><foreignKeyConstraintExists foreignKeyName="drug_order_quantity_units"/></not>
+            <not><foreignKeyConstraintExists foreignKeyTableName="drug_order" foreignKeyName="drug_order_quantity_units"/></not>
         </preConditions>
         <comment>Adding quantity_units column to drug_order table</comment>
         <addColumn tableName="drug_order">
@@ -7875,7 +7875,7 @@
 
     <changeSet id="201312191300-TRUNK-4167" author="banka">
         <preConditions onFail="MARK_RAN">
-            <not><foreignKeyConstraintExists foreignKeyName="drug_order_dose_units"/></not>
+            <not><foreignKeyConstraintExists foreignKeyTableName="drug_order" foreignKeyName="drug_order_dose_units"/></not>
         </preConditions>
         <comment>Adding foreignKey constraint on dose_units</comment>
         <addForeignKeyConstraint baseTableName="drug_order" baseColumnNames="dose_units"
@@ -7985,7 +7985,7 @@
 
     <changeSet id="201312201601-TRUNK-4138" author="wyclif">
         <preConditions onFail="MARK_RAN">
-            <foreignKeyConstraintExists foreignKeyName="user_who_discontinued_order" />
+            <foreignKeyConstraintExists foreignKeyTableName="orders" foreignKeyName="user_who_discontinued_order" />
         </preConditions>
         <comment>Dropping fk constraint on orders.discontinued_by column to users.user_id column</comment>
         <dropForeignKeyConstraint baseTableName="orders" constraintName="user_who_discontinued_order" />
@@ -8011,7 +8011,7 @@
     <changeSet id="201401031434-TRUNK-4135" author="rkorytkowski">
         <preConditions onFail="MARK_RAN">
             <not><columnExists tableName="drug_order" columnName="frequency" /></not>
-            <not><foreignKeyConstraintExists foreignKeyName="drug_order_frequency_fk" /></not>
+            <not><foreignKeyConstraintExists foreignKeyTableName="drug_order" foreignKeyName="drug_order_frequency_fk" /></not>
         </preConditions>
         <comment>Adding the frequency column to the drug_order table</comment>
         <addColumn tableName="drug_order">
@@ -8163,7 +8163,7 @@
 
     <changeSet id="201312271829-TRUNK-4156" author="vinay">
         <preConditions onFail="MARK_RAN">
-            <not><foreignKeyConstraintExists foreignKeyName="orders_care_setting"/></not>
+            <not><foreignKeyConstraintExists foreignKeyTableName="orders" foreignKeyName="orders_care_setting"/></not>
         </preConditions>
         <comment>Add foreign key constraint</comment>
         <addForeignKeyConstraint constraintName="orders_care_setting"
@@ -8237,7 +8237,7 @@
 
     <changeSet id="201402041600-TRUNK-4138" author="wyclif">
         <preConditions onFail="MARK_RAN">
-            <foreignKeyConstraintExists foreignKeyName="discontinued_because" />
+            <foreignKeyConstraintExists foreignKeyTableName="orders" foreignKeyName="discontinued_because" />
         </preConditions>
         <comment>Temporary dropping foreign key on orders.discontinued_reason column</comment>
         <dropForeignKeyConstraint baseTableName="orders" constraintName="discontinued_because" />
@@ -8253,7 +8253,7 @@
 
     <changeSet id="201402041602-TRUNK-4138" author="wyclif">
         <preConditions onFail="MARK_RAN">
-            <not><foreignKeyConstraintExists foreignKeyName="discontinued_because" /></not>
+            <not><foreignKeyConstraintExists foreignKeyTableName="orders" foreignKeyName="discontinued_because" /></not>
         </preConditions>
         <comment>Adding back foreign key on orders.discontinued_reason column</comment>
         <addForeignKeyConstraint constraintName="discontinued_because" baseTableName="orders" baseColumnNames="order_reason"
@@ -8270,7 +8270,7 @@
 
     <changeSet id="201402051638-TRUNK-4202" author="wyclif">
         <preConditions onFail="MARK_RAN">
-            <foreignKeyConstraintExists foreignKeyName="orderer_not_drug" />
+            <foreignKeyConstraintExists foreignKeyTableName="orders" foreignKeyName="orderer_not_drug" />
         </preConditions>
         <comment>Temporarily removing foreign key constraint from orders.orderer column</comment>
         <dropForeignKeyConstraint baseTableName="orders" constraintName="orderer_not_drug" />
@@ -8286,7 +8286,7 @@
 
     <changeSet id="201402051639-TRUNK-4202" author="wyclif">
         <preConditions onFail="MARK_RAN">
-            <not><foreignKeyConstraintExists foreignKeyName="fk_orderer_provider" /></not>
+            <not><foreignKeyConstraintExists foreignKeyTableName="orders" foreignKeyName="fk_orderer_provider" /></not>
         </preConditions>
         <comment>Adding foreign key constraint to orders.orderer column</comment>
         <addForeignKeyConstraint constraintName="fk_orderer_provider" baseTableName="orders" baseColumnNames="orderer"
@@ -8497,7 +8497,7 @@
 
     <changeSet id="20150428-TRUNK-4693-1" author="mseaton">
         <preConditions onFail="MARK_RAN">
-            <foreignKeyConstraintExists foreignKeyName="order_type_parent"/>
+            <foreignKeyConstraintExists foreignKeyTableName="order_type" foreignKeyName="order_type_parent"/>
         </preConditions>
         <comment>Removing invalid foreign key constraint from order_type.parent column to order.order_id column</comment>
         <dropForeignKeyConstraint baseTableName="order_type" constraintName="order_type_parent"/>
@@ -8505,7 +8505,7 @@
 
     <changeSet id="20150428-TRUNK-4693-2" author="mseaton">
         <preConditions onFail="MARK_RAN">
-            <not><foreignKeyConstraintExists foreignKeyName="order_type_parent_order_type"/></not>
+            <not><foreignKeyConstraintExists foreignKeyTableName="order_type" foreignKeyName="order_type_parent_order_type"/></not>
         </preConditions>
         <comment>Adding foreign key constraint from order_type.parent column to order_type.order_type_id column</comment>
         <addForeignKeyConstraint baseTableName="order_type" baseColumnNames="parent" constraintName="order_type_parent_order_type" referencedTableName="order_type" referencedColumnNames="order_type_id"/>
@@ -8528,7 +8528,7 @@
 
 	<changeSet id="drop-tribe-foreign-key-TRUNK-4492" author="dkayiwa">
 		<preConditions onFail="MARK_RAN">
-			<foreignKeyConstraintExists foreignKeyName="belongs_to_tribe" />
+			<foreignKeyConstraintExists foreignKeyTableName="patient" foreignKeyName="belongs_to_tribe" />
 		</preConditions>
 		<comment>Dropping foreign key on patient.tribe</comment>
 		<dropForeignKeyConstraint baseTableName="patient" constraintName="belongs_to_tribe" />
@@ -8633,7 +8633,7 @@
 
     <changeSet id="201411101055-TRUNK-3386" author="pmuchowski">
         <preConditions onFail="MARK_RAN">
-            <foreignKeyConstraintExists foreignKeyName="privilege_which_can_edit" />
+            <foreignKeyConstraintExists foreignKeyTableName="person_attribute_type" foreignKeyName="privilege_which_can_edit" />
         </preConditions>
         <comment>Temporarily removing foreign key constraint from person_attribute_type.edit_privilege column</comment>
         <dropForeignKeyConstraint baseTableName="person_attribute_type" constraintName="privilege_which_can_edit" />
@@ -8641,7 +8641,7 @@
 
     <changeSet id="201411101056-TRUNK-3386" author="pmuchowski">
         <preConditions onFail="MARK_RAN">
-            <foreignKeyConstraintExists foreignKeyName="privilege_definitions" />
+            <foreignKeyConstraintExists foreignKeyTableName="role_privilege" foreignKeyName="privilege_definitions" />
         </preConditions>
         <comment>Temporarily removing foreign key constraint from role_privilege.privilege column</comment>
         <dropForeignKeyConstraint baseTableName="role_privilege" constraintName="privilege_definitions" />
@@ -8661,7 +8661,7 @@
 
     <changeSet id="201411101058-TRUNK-3386" author="pmuchowski">
         <preConditions onFail="MARK_RAN">
-            <not><foreignKeyConstraintExists foreignKeyName="privilege_which_can_edit" /></not>
+            <not><foreignKeyConstraintExists foreignKeyTableName="person_attribute_type" foreignKeyName="privilege_which_can_edit" /></not>
         </preConditions>
         <comment>Adding foreign key constraint to person_attribute_type.edit_privilege column</comment>
         <addForeignKeyConstraint constraintName="privilege_which_can_edit" baseTableName="person_attribute_type" baseColumnNames="edit_privilege"
@@ -8682,7 +8682,7 @@
 
     <changeSet id="201411101107-TRUNK-3386" author="pmuchowski">
         <preConditions onFail="MARK_RAN">
-            <not><foreignKeyConstraintExists foreignKeyName="privilege_definitions" /></not>
+            <not><foreignKeyConstraintExists foreignKeyTableName="role_privilege" foreignKeyName="privilege_definitions" /></not>
         </preConditions>
         <comment>Adding foreign key constraint to role_privilege.privilege column</comment>
         <addForeignKeyConstraint constraintName="privilege_definitions" baseTableName="role_privilege" baseColumnNames="privilege"
@@ -8691,7 +8691,7 @@
     <changeSet id="20150221-1644" author="sandeepraparthi">
         <preConditions onFail="MARK_RAN">
             <columnExists columnName="patient_id" tableName="patient_identifier" />
-            <not><foreignKeyConstraintExists foreignKeyName="fk_patient_id_patient_identifier"/></not>
+            <not><foreignKeyConstraintExists foreignKeyTableName="patient_identifier" foreignKeyName="fk_patient_id_patient_identifier"/></not>
         </preConditions>
          <comment>Adding foreign key on patient_identifier.patient_id column</comment>
         <addForeignKeyConstraint constraintName="fk_patient_id_patient_identifier" baseTableName="patient_identifier" baseColumnNames="patient_id"	referencedTableName="patient" referencedColumnNames="patient_id" /> 
