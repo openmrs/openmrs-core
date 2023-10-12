@@ -48,10 +48,12 @@ public class FieldTypeValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
+		if (obj == null || obj instanceof FieldType) {
+			throw new IllegalArgumentException("error.general and must be of type " + Alert.class);
+		}
 		FieldType fieldType = (FieldType) obj;
-		if (fieldType == null) {
-			errors.rejectValue("fieldType", "error.general");
-		} else {
+		
+		else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
 			if (!errors.hasErrors()) {
 				FieldType exist = Context.getFormService().getFieldTypeByName(fieldType.getName());

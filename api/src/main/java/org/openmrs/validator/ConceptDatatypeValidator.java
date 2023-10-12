@@ -46,9 +46,13 @@ public class ConceptDatatypeValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
+		
+		if(obj == null || !(obj instanceof ConceptDatatype)) {
+			throw new IllegalArgumentException("The parameter onj should not be null and should be of type
+											   + ConceptDatatype.class);
+		// this is now the valid casting after check is done	
 		ConceptDatatype cd = (ConceptDatatype) obj;
-		if (cd == null) {
-			errors.rejectValue("conceptDatatype", "error.general");
+		
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
 			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "hl7Abbreviation", "description",

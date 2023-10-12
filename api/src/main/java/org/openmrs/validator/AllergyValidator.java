@@ -56,18 +56,12 @@ public class AllergyValidator implements Validator {
 	@Override
 	public void validate(Object target, Errors errors) {
 		
-		if (target == null) {
-			throw new IllegalArgumentException("Allergy should not be null");
+		if (target == null || !(target instanceof Allergy)) {
+			throw new IllegalArgumentException("Allergy should not be null and must be of type" + Allergy.class);
 		}
-		
-		ValidationUtils.rejectIfEmpty(errors, "patient", "allergyapi.patient.required");
 		
 		Allergy allergy = (Allergy) target;
 		
-		if (allergy.getReactionNonCoded() != null) {
-			if (NumberUtils.isParsable(allergy.getReactionNonCoded())) {
-				errors.rejectValue("reactionNonCoded", "error.allergyapi.allergy.ReactionNonCoded.cannotBeNumeric");
-			}
 		}
 		if (allergy.getAllergen() == null) {
 			errors.rejectValue("allergen", "allergyapi.allergen.required");
