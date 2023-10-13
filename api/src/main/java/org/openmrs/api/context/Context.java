@@ -11,8 +11,10 @@ package org.openmrs.api.context;
 
 import org.aopalliance.aop.Advice;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.SessionFactory;
 import org.openmrs.Allergen;
 import org.openmrs.GlobalProperty;
+import org.openmrs.OpenmrsObject;
 import org.openmrs.PersonName;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
@@ -890,6 +892,57 @@ public class Context {
 		getContextDAO().evictFromSession(obj);
 	}
 
+	/**
+	 * Evicts the entity data for a particular entity instance.
+	 *
+	 * @param sessionFactory
+	 * @param entityClass entity class of the instance to evict from the DB cache
+	 * @param object entity instance to evict from the DB cache
+	 */
+	public static void evictSingleEntity(SessionFactory sessionFactory, Class<?> entityClass, OpenmrsObject object) {
+		
+		String uuid = object != null ? object.getUuid() : null;
+		if (StringUtils.isBlank(uuid)) {
+			evictAllEntities(sessionFactory, entityClass);
+			return;
+		}
+		
+		log.debug("Clearing DB cache for entity: {} with uuid: {}", entityClass, uuid);
+		sessionFactory.getCache().evictEntity(entityClass, object.getId());
+		sessionFactory.getCache().evictCollectionRegions();
+		sessionFactory.getCache().evictQueryRegions();
+	}
+	
+	/**
+	 * Evicts all entity data of a particular class from the given region.
+	 *
+	 * @param sessionFactory
+	 * @param entityClass entity class to evict from the DB cache
+	 */
+	public static void evictAllEntities(SessionFactory sessionFactory, Class<?> entityClass) {
+		
+		if (entityClass == null) {
+			clearEntireCache(sessionFactory);
+			return;
+		}
+		
+		log.debug("Clearing DB cache for entities of type: {}", entityClass);
+		sessionFactory.getCache().evictEntityRegion(entityClass);
+		sessionFactory.getCache().evictCollectionRegions();
+		sessionFactory.getCache().evictQueryRegions();
+	}
+	
+	/**
+	 * Evicts data from all cache regions.
+	 *
+	 * @param sessionFactory
+	 */
+	public static void clearEntireCache(SessionFactory sessionFactory) {
+		
+		log.debug("Clearing DB cache from all regions");
+		sessionFactory.getCache().evictAllRegions();
+	}
+	
 	/**
 	 * Starts the OpenMRS System Should be called prior to any kind of activity
 	 *
