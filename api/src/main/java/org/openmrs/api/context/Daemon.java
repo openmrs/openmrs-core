@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.openmrs.PersonName;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
@@ -26,7 +25,6 @@ import org.openmrs.module.ModuleException;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.timer.TimerSchedulerTask;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsSecurityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,7 +158,6 @@ public class Daemon {
 						roles.forEach(user::addRole);
 					}
 
-					PersonName.setFormat(OpenmrsConstants.PERSON_NAME_FORMAT_LONG); // Use long name format template in this thread
 					returnedObject = Context.getUserService().createUser(user, password);
 				}
 				catch (Exception e) {

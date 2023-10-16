@@ -841,27 +841,4 @@ public interface PersonService extends OpenmrsService {
 	 * @throws PersonAttributeTypeLockedException
 	 */
 	public void checkIfPersonAttributeTypesAreLocked() throws PersonAttributeTypeLockedException;
-
-	/**
-	 * Returns the xml of default name template.
-	 *
-	 * @return a string value of the default name template. If the GP is empty, the default
-	 *         template is returned
-	 * @see OpenmrsConstants#GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT
-	 * @see OpenmrsConstants#LONG_NAME_TEMPLATE
-	 * @since 1.9
-	 */
-	public String getNameTemplate() throws APIException;
-
-	/**
-	 * Save default name template to global properties
-	 *
-	 * @param xml is a string to be saved as name template
-	 * <strong>Should</strong> throw APIException if the string is empty
-	 * <strong>Should</strong> update default name template successfully
-	 * <strong>Should</strong> create default name template successfully
-	 * @since 1.9
-	 */
-	@Authorized({ PrivilegeConstants.MANAGE_NAME_TEMPLATES })
-	public void updateNameTemplate(String xml) throws APIException;
 }

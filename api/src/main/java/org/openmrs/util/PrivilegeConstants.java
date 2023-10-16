@@ -224,9 +224,6 @@ public class PrivilegeConstants {
 	
 	@AddOnStartup(description = "Able to add/edit/delete address templates")
 	public static final String MANAGE_ADDRESS_TEMPLATES = "Manage Address Templates";
-
-	@AddOnStartup(description = "Able to add/edit/delete name templates")
-	public static final String MANAGE_NAME_TEMPLATES = "Manage Name Templates";
 	
 	public static final String PURGE_LOCATION_TAGS = "Purge Location Tags";
 	
