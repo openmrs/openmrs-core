@@ -116,7 +116,7 @@
 	
 	<changeSet id="20200622-cascade_delete_concept_comlex" author="aman" dbms="postgresql">
 		<preConditions onFail="MARK_RAN">
-    	    <foreignKeyConstraintExists foreignKeyName="concept_attributes"/>
+    	    <foreignKeyConstraintExists foreignKeyTableName="concept_complex" foreignKeyName="concept_attributes"/>
 		</preConditions>
 		<comment>Updating foreign key concept_attributes to add delete CASCADES</comment>
    		<dropForeignKeyConstraint baseTableName="concept_complex" constraintName="concept_attributes"/>
@@ -125,7 +125,7 @@
 	
 	<changeSet id="20200622-cascade_delete_concept_numeric" author="aman" dbms="postgresql">
 		<preConditions onFail="MARK_RAN">
-   	    	<foreignKeyConstraintExists foreignKeyName="numeric_attributes"/>
+   	    	<foreignKeyConstraintExists foreignKeyTableName="concept_numeric" foreignKeyName="numeric_attributes"/>
 		</preConditions>
 		<comment>Updating foreign key numeric_attributes to add delete CASCADES</comment>
 		<dropForeignKeyConstraint baseTableName="concept_numeric" constraintName="numeric_attributes"/>
@@ -133,7 +133,7 @@
 	</changeSet>
 	<changeSet id="20200622-cascade_delete_patient" author="aman" dbms="postgresql">
 		<preConditions onFail="MARK_RAN">
-   		   <foreignKeyConstraintExists foreignKeyName="person_id_for_patient"/>
+   		   <foreignKeyConstraintExists foreignKeyTableName="patient" foreignKeyName="person_id_for_patient"/>
 		</preConditions>
 		<comment>Updating foreign key person_id_for_patient to add delete CASCADES</comment>
    		<dropForeignKeyConstraint baseTableName="patient" constraintName="person_id_for_patient"/>
@@ -141,7 +141,7 @@
 	</changeSet>
 	<changeSet id="20200622-cascade_delete_test_order" author="aman" dbms="postgresql">
 		<preConditions onFail="MARK_RAN">
-	        <foreignKeyConstraintExists foreignKeyName="test_order_order_id_fk"/>
+	        <foreignKeyConstraintExists foreignKeyTableName="test_order" foreignKeyName="test_order_order_id_fk"/>
 		</preConditions>
 		<comment>Updating foreign key test_order_order_id_fk to add delete CASCADES</comment>
     	<dropForeignKeyConstraint baseTableName="test_order" constraintName="test_order_order_id_fk"/>
