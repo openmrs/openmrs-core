@@ -9,6 +9,7 @@
  */
 package org.openmrs.util;
 
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -16,18 +17,15 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
-import org.azeckoski.reflectutils.ClassDataCacher;
-import org.azeckoski.reflectutils.ClassFields;
-import org.azeckoski.reflectutils.exceptions.FieldnameNotFoundException;
 
 /**
  * This class has convenience methods to find the fields on a class and superclass as well as
  * methods to check the class type of members in a collection
  */
 public class Reflect {
+	
 	
 	private Class parametrizedClass;
 	
@@ -72,8 +70,16 @@ public class Reflect {
 	 * <strong>Should</strong> return all fields include private and super classes
 	 */
 	public static List<Field> getAllFields(Class<?> fieldClass) {
-		List<Field> fields = ClassDataCacher.getInstance().getClassData(fieldClass).getFields();
-		return new ArrayList<>(fields);
+		List<Field> fields = new ArrayList<>();
+		while (fieldClass != null) {
+			Field[] declaredFields = fieldClass.getDeclaredFields();
+			for (Field field : declaredFields) {
+				field.setAccessible(true);
+				fields.add(field);
+			}
+			fieldClass = fieldClass.getSuperclass();
+		}
+		return fields;
 	}
 	
 	/**
@@ -85,11 +91,11 @@ public class Reflect {
 	 * @return true if the given annotation is present
 	 */
 	public static boolean isAnnotationPresent(Class<?> fieldClass, String fieldName, Class<? extends Annotation> annotation) {
-		ClassFields<?> classFields = ClassDataCacher.getInstance().getClassFields(fieldClass);
 		try {
-			return classFields.getFieldAnnotation(annotation, fieldName) != null;
-		} catch (FieldnameNotFoundException e) {
-			return false;
+			Field field = fieldClass.getDeclaredField(fieldName);
+			return field.isAnnotationPresent(annotation);
+		} catch (NoSuchFieldException e) {
+			return false; 
 		}
 	}
 	

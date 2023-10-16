@@ -33,7 +33,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.openmrs.Concept;
 import org.openmrs.Location;
@@ -284,7 +283,7 @@ public class PatientServiceImplTest extends BaseContextMockTest {
 		final Date dateDied = new Date();
 		final Concept causeOfDeath = new Concept(2);
 
-		when(conceptService.getConcept((String)Matchers.any())).thenReturn(new Concept());
+		when(conceptService.getConcept((String)any())).thenReturn(new Concept());
 		when(locationService.getDefaultLocation()).thenReturn(new Location());
 
 		UserContext userContext = mock(UserContext.class);
