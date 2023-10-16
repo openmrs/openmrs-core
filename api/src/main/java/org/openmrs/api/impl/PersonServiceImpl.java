@@ -998,35 +998,4 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 			throw new PersonAttributeTypeLockedException();
 		}
 	}
-
-	/**
-	 * @see org.openmrs.api.PersonService#getNameTemplate()
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public String getNameTemplate() throws APIException {
-		String nameTemplate = Context.getAdministrationService().getGlobalProperty(
-			OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT);
-		if (StringUtils.isBlank(nameTemplate)) {
-			nameTemplate = OpenmrsConstants.LONG_NAME_TEMPLATE;
-		}
-		
-		return nameTemplate;
-	}
-
-	/**
-	 * @see org.openmrs.api.PersonService#updateNameTemplate(String)
-	 */
-	@Override
-	public void updateNameTemplate(String xml) throws APIException {
-		try {
-			Context.getAdministrationService().updateGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT, xml);
-		} catch (Exception e) {
-			try {
-				Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT, xml);
-			} catch (Exception e2) {
-				log.error("Failed to update name template");
-			}
-		}
-	}
 }

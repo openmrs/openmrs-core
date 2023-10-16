@@ -25,13 +25,14 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 public class NameTemplateTest extends BaseContextSensitiveTest {
 	
+	protected static final String NAME_SUPPORT_DATASET_PATH = "src/test/resources/org/openmrs/include/nameSupportTestDataSet.xml";
 	private NameSupport nameSupport;
 	
 	@BeforeEach
 	public void setup() {
 		nameSupport = NameSupport.getInstance();
 		nameSupport.setSpecialTokens(Arrays.asList("prefix", "givenName", "middleName", "familyNamePrefix",
-			"familyNameSuffix", "familyName2", "familyName", "degree"));
+		   	"familyNameSuffix", "familyName2", "familyName", "degree"));
 	}
 	
 	@Test
@@ -96,6 +97,20 @@ public class NameTemplateTest extends BaseContextSensitiveTest {
 		
 		assertEquals("Goodrich, Mark \"Blue State\"", nameTemplate.format(personName));
 		
+	}
+
+	@Test
+	public void shouldOverrideTheExistingDefaultNameTemplate() {
+		executeDataSet(NAME_SUPPORT_DATASET_PATH);
+		NameTemplate nameTemplate = nameSupport.getDefaultLayoutTemplate();
+
+		PersonName personName = new PersonName();
+		personName.setGivenName("Moses");
+		personName.setMiddleName("Tusha");
+		personName.setFamilyName("Mujuzi");
+
+		// nameTemplate.format() uses the custom GP loaded
+		assertEquals("Moses Mujuzi", nameTemplate.format(personName));
 	}
 	
 }

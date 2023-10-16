@@ -363,6 +363,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT = "layout.name.format";
 	
+	public static final String GLOBAL_PROPERTY_LAYOUT_NAME_TEMPLATE = "layout.name.template";
+	
 	public static final String GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED = "EncounterType.encounterTypes.locked";
 	
 	public static final String GLOBAL_PROPERTY_FORMS_LOCKED = "forms.locked";
@@ -391,50 +393,6 @@ public final class OpenmrsConstants {
 	        + "      <string>address1</string>\n" + "      <string>address2</string>\n"
 	        + "      <string>cityVillage stateProvince country postalCode</string>\n" + "    </lineByLineFormat>\n"
 	        + "   <requiredElements>\\n\" + \" </requiredElements>\\n\" + \" </org.openmrs.layout.address.AddressTemplate>";
-
-	public static final String LONG_NAME_TEMPLATE = "<org.openmrs.layout.name.NameTemplate>\n"
-		+ "    <nameMappings class=\"properties\">\n"
-		+ "      <property name=\"prefix\" value=\"PersonName.prefix\"/>\n"
-		+ "      <property name=\"givenName\" value=\"PersonName.givenName\"/>\n"
-		+ "      <property name=\"middleName\" value=\"PersonName.middleName\"/>\n"
-		+ "      <property name=\"familyNamePrefix\" value=\"PersonName.familyNamePrefix\"/>\n"
-		+ "      <property name=\"familyName\" value=\"PersonName.familyName\"/>\n"
-		+ "      <property name=\"familyName2\" value=\"PersonName.familyName2\"/>\n"
-		+ "      <property name=\"familyNameSuffix\" value=\"PersonName.familyNameSuffix\"/>\n"
-		+ "      <property name=\"degree\" value=\"PersonName.degree\"/>\n" + "    </nameMappings>\n"
-		+ "    <sizeMappings class=\"properties\">\n"
-		+ "      <property name=\"prefix\" value=\"5\"/>\n"
-		+ "      <property name=\"givenName\" value=\"30\"/>\n"
-		+ "      <property name=\"middleName\" value=\"30\"/>\n"
-		+ "      <property name=\"familyNamePrefix\" value=\"5\"/>\n"
-		+ "      <property name=\"familyName\" value=\"25\"/>\n"
-		+ "      <property name=\"familyName2\" value=\"25\"/>\n"
-		+ "      <property name=\"familyNameSuffix\" value=\"8\"/>\n"
-		+ "      <property name=\"degree\" value=\"5\"/>\n" + "    </sizeMappings>\n" + "    <lineByLineFormat>\n"
-		+ "      <string>prefix</string>\n"
-		+ "      <string>givenName</string>\n"
-		+ "      <string>middleName</string>\n" + "      <string>familyNamePrefix</string>\n" + "      <string>familyName</string>\n"
-		+ "      <string>familyName2</string>\n" + "      <string>familyNameSuffix</string>\n" + "      <string>degree</string>\n" 
-		+ "    </lineByLineFormat>\n"
-		+ "   <requiredElements>\n" + " </requiredElements>\n" + " </org.openmrs.layout.name.NameTemplate>";
-	
-	public static final String SHORT_NAME_TEMPLATE = "<org.openmrs.layout.name.NameTemplate>\n"
-		+ "    <nameMappings class=\"properties\">\n"
-		+ "      <property name=\"prefix\" value=\"PersonName.prefix\"/>\n"
-		+ "      <property name=\"givenName\" value=\"PersonName.givenName\"/>\n"
-		+ "      <property name=\"middleName\" value=\"PersonName.middleName\"/>\n"
-		+ "      <property name=\"familyName\" value=\"PersonName.familyName\"/>\n"
-		+ "    </nameMappings>\n"
-		+ "    <sizeMappings class=\"properties\">\n"
-		+ "      <property name=\"prefix\" value=\"5\"/>\n"
-		+ "      <property name=\"givenName\" value=\"30\"/>\n"
-		+ "      <property name=\"middleName\" value=\"30\"/>\n"
-		+ "      <property name=\"familyName\" value=\"25\"/>\n"
-		+ "    </sizeMappings>\n" + "    <lineByLineFormat>\n"
-		+ "      <string>prefix</string>\n"
-		+ "      <string>givenName</string>\n" + "      <string>middleName</string>\n"
-		+ "      <string>familyName</string>\n" + "    </lineByLineFormat>\n"
-		+ "   <requiredElements>\n" + " </requiredElements>\n" + " </org.openmrs.layout.name.NameTemplate>";
 	
 	/**
 	 * Global property name that allows specification of whether user passwords must contain both

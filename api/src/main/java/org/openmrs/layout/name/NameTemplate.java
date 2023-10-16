@@ -74,21 +74,5 @@ public class NameTemplate extends LayoutTemplate {
 	public LayoutSupport<?> getLayoutSupportInstance() {
 		return NameSupport.getInstance();
 	}
-
-	@Override
-	public String getCodeName() {
-		if (this.codeName == null) {
-			this.codeName = "long";
-		}
-		return this.codeName;
-	}
-	
-	@Override
-	public String getDisplayName() {
-		if (this.displayName == null) {
-			this.displayName = "Long Name Format";
-		}
-		return this.displayName;
-	}
 	
 }

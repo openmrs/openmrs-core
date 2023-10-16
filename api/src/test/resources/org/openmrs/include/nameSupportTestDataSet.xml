@@ -11,36 +11,23 @@
 
 -->
 <dataset>
-	<global_property property="layout.name.format" property_value="&lt;org.openmrs.layout.name.NameTemplate&gt;	
+	<global_property property="layout.name.template" property_value="&lt;org.openmrs.layout.name.NameTemplate&gt;
+    &lt;codeName&gt;custom&lt;/codeName&gt;
+    &lt;displayName&gt;Custom Name Format&lt;/displayName&gt;
     &lt;nameMappings class=&quot;properties&quot;&gt;
       &lt;property name=&quot;prefix&quot; value=&quot;PersonName.prefix&quot;/&gt;
       &lt;property name=&quot;givenName&quot; value=&quot;PersonName.givenName&quot;/&gt;
-      &lt;property name=&quot;middleName&quot; value=&quot;PersonName.middleName&quot;/&gt;
-      &lt;property name=&quot;familyNamePrefix&quot; value=&quot;PersonName.familyNamePrefix&quot;/&gt;
       &lt;property name=&quot;familyName&quot; value=&quot;PersonName.familyName&quot;/&gt;
-      &lt;property name=&quot;familyName2&quot; value=&quot;PersonName.familyName2&quot;/&gt;
-      &lt;property name=&quot;familyNameSuffix&quot; value=&quot;PersonName.familyNameSuffix&quot;/&gt;
-      &lt;property name=&quot;degree&quot; value=&quot;PersonName.degree&quot;/&gt;
     &lt;/nameMappings&gt;
     &lt;sizeMappings class=&quot;properties&quot;&gt;
       &lt;property name=&quot;prefix&quot; value=&quot;5&quot;/&gt;
       &lt;property name=&quot;givenName&quot; value=&quot;30&quot;/&gt;
-	  &lt;property name=&quot;middleName&quot; value=&quot;30&quot;/&gt;
-	  &lt;property name=&quot;familyNamePrefix&quot; value=&quot;5&quot;/&gt;
 	  &lt;property name=&quot;familyName&quot; value=&quot;25&quot;/&gt;
-	  &lt;property name=&quot;familyName2&quot; value=&quot;25&quot;/&gt;
-	  &lt;property name=&quot;familyNameSuffix&quot; value=&quot;8&quot;/&gt;
-	  &lt;property name=&quot;degree&quot; value=&quot;5&quot;/&gt;
 	&lt;/sizeMappings&gt;
 	&lt;lineByLineFormat&gt;
 	  &lt;string&gt;prefix&lt;/string&gt;
 	  &lt;string&gt;givenName&lt;/string&gt;
-	  &lt;string&gt;middleName&lt;/string&gt;
-	  &lt;string&gt;familyNamePrefix&lt;/string&gt;
 	  &lt;string&gt;familyName&lt;/string&gt;
-	  &lt;string&gt;familyName2&lt;/string&gt;
-	  &lt;string&gt;familyNameSuffix&lt;/string&gt;
-	  &lt;string&gt;degree&lt;/string&gt;
 	&lt;/lineByLineFormat&gt;
 	&lt;requiredElements&gt;
       &lt;string&gt;givenName&lt;/string&gt;
