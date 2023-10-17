@@ -340,7 +340,6 @@ public interface UserService extends OpenmrsService {
 	 * <strong>Should</strong> update password of given user when logged in user has edit users password privilege
 	 * <strong>Should</strong> not update password of given user when logged in user does not have edit users password privilege
 	 */
-	@Deprecated
 	@Authorized({PrivilegeConstants.EDIT_USER_PASSWORDS})
 	public void changePassword(User user, String newPassword) throws APIException;
 	
