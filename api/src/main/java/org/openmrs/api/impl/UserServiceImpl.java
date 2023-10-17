@@ -660,19 +660,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		updatePassword(user, newPassword);
 	}
 	
-	/**
-	 * This is for internal use only. DO NOT CALL THIS METHOD.
-	 * 
-	 * @param user The user's password to change
-	 * @param newPassword The password to change it to
-	 */
-	@Authorized(PrivilegeConstants.EDIT_USER_PASSWORDS)
+	@Override
 	public void changePassword(User user, String newPassword) {
-		if (!Daemon.isDaemonThread() || !Context.getUserContext().getAuthenticatedUser().isSuperUser()) {
-			throw new APIAuthenticationException(Context.getMessageSourceService().getMessage("error.privilegesRequired",
-				new Object[] { "System Developer" }, Context.getLocale()));
-		}
-		
 		updatePassword(user, newPassword);
 	}
 	
