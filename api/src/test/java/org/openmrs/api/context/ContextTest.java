@@ -290,17 +290,17 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void evictSingleEntity_shouldClearSingleEntityFromCaches() {
-		//Load the person so that the names are also stored in the cache
+		// Load the person so that the names are also stored in the cache
 		PersonName name = Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
 		Context.getPersonService().getPersonName(PERSON_NAME_ID_8);
 		
-		//Test whether the name has been added
+		// Assert that the names has been added to cache
 		assertTrue(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_2));
 		assertTrue(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_8));
 
 		Context.evictSingleEntity(sf, PERSON_NAME_CLASS, name);
 
-		//Test whether the name has been removed
+		// Assert that the entity name has been removed from cache
 		assertFalse(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_2));
 		assertTrue(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_8));
 	}
@@ -310,19 +310,19 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void evictAllEntities_shouldClearAllEntityFromCaches() {
-		//Load the person so that they are stored in the cache
+		// Load the person and patient so that they are stored in the cache
 		Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
 		Context.getPersonService().getPersonName(PERSON_NAME_ID_8);
 		Context.getPatientService().getPatient(PERSON_NAME_ID_2);
 		
-		//Test whether the names are in the cache
+		// Assert that the entities have been added to cache
 		assertTrue(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_2));
 		assertTrue(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_8));
 		assertTrue(sf.getCache().containsEntity(Patient.class, PERSON_NAME_ID_2));
 
 		Context.evictAllEntities(sf, PERSON_NAME_CLASS);
 
-		//Test whether the names have been removed
+		// Assert that the class entities have been removed from cache
 		assertFalse(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_2));
 		assertFalse(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_8));
 		assertTrue(sf.getCache().containsEntity(Patient.class, PERSON_NAME_ID_2));
@@ -333,19 +333,19 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void clearEntireCache_shouldClearEntireCache() {
-		//Load the person and patient so that they are stored in the cache
+		// Load the person and patient so that they are stored in the cache
 		Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
 		Context.getPersonService().getPersonName(PERSON_NAME_ID_8);
 		Context.getPatientService().getPatient(PERSON_NAME_ID_2);
 		
-		//Test whether the names are in the cache
+		// Assert that the entities have been added to cache
 		assertTrue(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_2));
 		assertTrue(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_8));
 		assertTrue(sf.getCache().containsEntity(Patient.class, PERSON_NAME_ID_2));
 
 		Context.clearEntireCache(sf);
 
-		//Test whether the cache has been cleared
+		// Assert that all entities have been removed from cache
 		assertFalse(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_2));
 		assertFalse(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_8));
 		assertFalse(sf.getCache().containsEntity(Patient.class, PERSON_NAME_ID_2));

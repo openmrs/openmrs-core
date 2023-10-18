@@ -901,13 +901,7 @@ public class Context {
 	 */
 	public static void evictSingleEntity(SessionFactory sessionFactory, Class<?> entityClass, OpenmrsObject object) {
 		
-		String uuid = object != null ? object.getUuid() : null;
-		if (StringUtils.isBlank(uuid)) {
-			evictAllEntities(sessionFactory, entityClass);
-			return;
-		}
-		
-		log.debug("Clearing DB cache for entity: {} with uuid: {}", entityClass, uuid);
+		log.debug("Clearing DB cache for entity: {} with uuid: {}", entityClass, object.getUuid());
 		sessionFactory.getCache().evictEntity(entityClass, object.getId());
 		sessionFactory.getCache().evictCollectionRegions();
 		sessionFactory.getCache().evictQueryRegions();
@@ -920,11 +914,6 @@ public class Context {
 	 * @param entityClass entity class to evict from the DB cache
 	 */
 	public static void evictAllEntities(SessionFactory sessionFactory, Class<?> entityClass) {
-		
-		if (entityClass == null) {
-			clearEntireCache(sessionFactory);
-			return;
-		}
 		
 		log.debug("Clearing DB cache for entities of type: {}", entityClass);
 		sessionFactory.getCache().evictEntityRegion(entityClass);
