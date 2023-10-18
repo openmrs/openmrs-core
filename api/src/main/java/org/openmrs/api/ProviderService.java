@@ -20,7 +20,6 @@ import org.openmrs.ProviderAttributeType;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Handler;
 import org.openmrs.util.PrivilegeConstants;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * This service contains methods relating to providers.

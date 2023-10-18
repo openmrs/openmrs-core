@@ -26,7 +26,7 @@ import org.springframework.validation.Errors;
  */
 public class ProviderAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	
-	protected static final String PROVIDER_ATTRIBUTE_DATA_XML = "org/openmrs/api/include/ProviderServiceTest-providerAttributes.xml";
+	private static final String PROVIDER_ATTRIBUTE_DATA_XML = "org/openmrs/api/include/ProviderServiceTest-providerAttributes.xml";
 	
 	/**
 	 * Run this before each unit test in this class. This adds a bit more data to the base data that
