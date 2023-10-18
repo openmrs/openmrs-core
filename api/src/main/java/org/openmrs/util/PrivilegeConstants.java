@@ -109,6 +109,9 @@ public class PrivilegeConstants {
 	@AddOnStartup(description = "Able to get person attribute types")
 	public static final String GET_PERSON_ATTRIBUTE_TYPES = "Get Person Attribute Types";
 	
+	@AddOnStartup(description = "Able to get provider attribute types")
+	public static final String GET_PROVIDER_ATTRIBUTE_TYPES = "Get Provider Attribute Types";
+	
 	@AddOnStartup(description = "Able to get person objects")
 	public static final String GET_PERSONS = "Get People";
 	

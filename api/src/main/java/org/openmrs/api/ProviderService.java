@@ -234,6 +234,17 @@ public interface ProviderService extends OpenmrsService {
 	public ProviderAttributeType getProviderAttributeTypeByUuid(String uuid);
 	
 	/**
+	 * Get a provider attribute type by it's name
+	 *
+	 * @param name the name of the provider attribute type
+	 * @return the provider attribute type for the given name
+	 * <strong>Should</strong> get the provider attribute type by it's name
+	 * @since 2.7.0
+	 */
+	@Authorized({PrivilegeConstants.GET_PROVIDER_ATTRIBUTE_TYPES})
+	public ProviderAttributeType getProviderAttributeTypeByName(String name);
+	
+	/**
 	 * Get a provider attribute by it's providerAttributeID
 	 * 
 	 * @param providerAttributeID the provider attribute ID of the providerAttribute
