@@ -155,6 +155,16 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see ProviderService#getProviderAttributeTypeByName(String)
+	 */
+	@Test
+	public void getProviderAttributeTypeByName_shouldGetTheProviderAttributeTypeByItsName() {
+		ProviderAttributeType providerAttributeType = service.getProviderAttributeTypeByName("Audit Date");
+		assertEquals("Audit Date", providerAttributeType.getName());
+		assertEquals("9516cc50-6f9f-11e0-8414-001e378eb67e", providerAttributeType.getUuid());
+	}
+	
+	/**
 	 * @see ProviderService#getProviderByUuid(String)
 	 */
 	@Test
@@ -282,6 +292,32 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		int size = service.getAllProviderAttributeTypes().size();
 		ProviderAttributeType providerAttributeType = new ProviderAttributeType();
 		providerAttributeType.setName("new");
+		providerAttributeType.setDatatypeClassname(FreeTextDatatype.class.getName());
+		providerAttributeType = service.saveProviderAttributeType(providerAttributeType);
+		assertEquals(size + 1, service.getAllProviderAttributeTypes().size());
+		assertNotNull(providerAttributeType.getId());
+	}
+	
+	/**
+	 * @see ProviderService#saveProviderAttributeType(ProviderAttributeType)
+	 */
+	@Test
+	public void saveProviderAttributeType_shouldNotSaveProviderAttributeTypeWithDuplicateName() {
+		//duplication
+		ProviderAttributeType duplicatedAttributeType = new ProviderAttributeType();
+		duplicatedAttributeType.setName("Audit Date");
+		duplicatedAttributeType.setDatatypeClassname(FreeTextDatatype.class.getName());
+		
+		assertThrows(ValidationException.class, () -> {
+			service.saveProviderAttributeType(duplicatedAttributeType);
+		});
+	}
+	
+	@Test
+	public void saveProviderAttributeType_shouldSaveProviderAttributeTypeWithSameNameAsRetiredType() {
+		int size = service.getAllProviderAttributeTypes().size();
+		ProviderAttributeType providerAttributeType = new ProviderAttributeType();
+		providerAttributeType.setName("A Date We Don't Care About");
 		providerAttributeType.setDatatypeClassname(FreeTextDatatype.class.getName());
 		providerAttributeType = service.saveProviderAttributeType(providerAttributeType);
 		assertEquals(size + 1, service.getAllProviderAttributeTypes().size());
