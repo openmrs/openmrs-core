@@ -895,52 +895,29 @@ public class Context {
 	/**
 	 * Evicts the entity data for a particular entity instance.
 	 *
-	 * @param sessionFactory
-	 * @param entityClass entity class of the instance to evict from the DB cache
 	 * @param object entity instance to evict from the DB cache
 	 */
-	public static void evictSingleEntity(SessionFactory sessionFactory, Class<?> entityClass, OpenmrsObject object) {
-		
-		String uuid = object != null ? object.getUuid() : null;
-		if (StringUtils.isBlank(uuid)) {
-			evictAllEntities(sessionFactory, entityClass);
-			return;
-		}
-		
-		log.debug("Clearing DB cache for entity: {} with uuid: {}", entityClass, uuid);
-		sessionFactory.getCache().evictEntity(entityClass, object.getId());
-		sessionFactory.getCache().evictCollectionRegions();
-		sessionFactory.getCache().evictQueryRegions();
+	public static void evictEntity(OpenmrsObject object) {
+		log.debug("Clearing DB cache for entity: {} with id: {}", object.getClass(), object.getId());
+		getContextDAO().evictEntity(object);
 	}
 	
 	/**
 	 * Evicts all entity data of a particular class from the given region.
-	 *
-	 * @param sessionFactory
+	 * 
 	 * @param entityClass entity class to evict from the DB cache
 	 */
-	public static void evictAllEntities(SessionFactory sessionFactory, Class<?> entityClass) {
-		
-		if (entityClass == null) {
-			clearEntireCache(sessionFactory);
-			return;
-		}
-		
+	public static void evictAllEntities(Class<?> entityClass) {
 		log.debug("Clearing DB cache for entities of type: {}", entityClass);
-		sessionFactory.getCache().evictEntityRegion(entityClass);
-		sessionFactory.getCache().evictCollectionRegions();
-		sessionFactory.getCache().evictQueryRegions();
+		getContextDAO().evictAllEntities(entityClass);
 	}
 	
 	/**
 	 * Evicts data from all cache regions.
-	 *
-	 * @param sessionFactory
 	 */
-	public static void clearEntireCache(SessionFactory sessionFactory) {
-		
+	public static void clearEntireCache() {
 		log.debug("Clearing DB cache from all regions");
-		sessionFactory.getCache().evictAllRegions();
+		getContextDAO().clearEntireCache();
 	}
 	
 	/**

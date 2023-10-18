@@ -21,6 +21,7 @@ import org.hibernate.stat.QueryStatistics;
 import org.hibernate.stat.Statistics;
 import org.hibernate.type.StandardBasicTypes;
 import org.openmrs.GlobalProperty;
+import org.openmrs.OpenmrsObject;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
@@ -362,6 +363,32 @@ public class HibernateContextDAO implements ContextDAO {
 	@Override
 	public void evictFromSession(Object obj) {
 		sessionFactory.getCurrentSession().evict(obj);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ContextDAO#evictEntity(OpenmrsObject)
+	 */
+	@Override
+	public void evictEntity(OpenmrsObject obj) {
+		sessionFactory.getCache().evictEntity(obj.getClass(), obj.getId());
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ContextDAO#evictAllEntities(Class)
+	 */
+	@Override
+	public void evictAllEntities(Class<?> entityClass) {
+		sessionFactory.getCache().evictEntityRegion(entityClass);
+		sessionFactory.getCache().evictCollectionRegions();
+		sessionFactory.getCache().evictQueryRegions();
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ContextDAO#clearEntireCache()
+	 */
+	@Override
+	public void clearEntireCache() {
+		sessionFactory.getCache().evictAllRegions();
 	}
 	
 	/**
