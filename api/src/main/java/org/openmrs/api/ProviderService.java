@@ -36,14 +36,13 @@ public interface ProviderService extends OpenmrsService {
 	 * @return a list of provider objects.
 	 * <strong>Should</strong> get all providers
 	 */
-	
 	@Authorized( { PrivilegeConstants.GET_PROVIDERS })
 	public List<Provider> getAllProviders();
 	
 	/**
-	 * Gets all Provider
+	 * Gets all providers
 	 * 
-	 * @param includeRetired - whether or not to include retired Provider
+	 * @param includeRetired - if true, retired providers are also included
 	 * <strong>Should</strong> get all providers that are unretired
 	 */
 	@Authorized( { PrivilegeConstants.GET_PROVIDERS })
@@ -225,21 +224,21 @@ public interface ProviderService extends OpenmrsService {
 	public ProviderAttributeType getProviderAttributeType(Integer providerAttributeTypeId);
 	
 	/**
-	 * Get a provider attribute type by it's uuid
+	 * Get a provider attribute type by its uuid
 	 * 
 	 * @param uuid the uuid of the provider attribute type
 	 * @return the provider attribute type for the given uuid
-	 * <strong>Should</strong> get the provider attribute type by it's uuid
+	 * <strong>Should</strong> get the provider attribute type by its uuid
 	 */
 	public ProviderAttributeType getProviderAttributeTypeByUuid(String uuid);
 	
 	/**
-	 * Get a provider attribute type by it's name
+	 * Get a provider attribute type by its name
 	 *
 	 * @param name the name of the provider attribute type
 	 * @return the provider attribute type for the given name
-	 * <strong>Should</strong> get the provider attribute type by it's name
-	 * @since 2.7.0
+	 * <strong>Should</strong> get the provider attribute type by its name
+	 * @since 2.7.0, 2.6.3
 	 */
 	@Authorized({PrivilegeConstants.GET_PROVIDER_ATTRIBUTE_TYPES})
 	public ProviderAttributeType getProviderAttributeTypeByName(String name);
@@ -254,11 +253,11 @@ public interface ProviderService extends OpenmrsService {
 	public ProviderAttribute getProviderAttribute(Integer providerAttributeID);
 	
 	/**
-	 * Get a provider attribute by it's providerAttributeUuid
+	 * Get a provider attribute by its providerAttributeUuid
 	 * 
 	 * @param uuid the provider attribute uuid of the providerAttribute
 	 * @return the provider attribute for the given providerAttributeUuid
-	 * <strong>Should</strong> get the provider attribute by it's providerAttributeUuid
+	 * <strong>Should</strong> get the provider attribute by its providerAttributeUuid
 	 */
 	public ProviderAttribute getProviderAttributeByUuid(String uuid);
 	
