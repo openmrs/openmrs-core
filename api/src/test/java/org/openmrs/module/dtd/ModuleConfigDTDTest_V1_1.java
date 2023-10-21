@@ -19,6 +19,7 @@ import javax.xml.transform.TransformerException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,11 +33,11 @@ import static org.openmrs.module.dtd.DtdTestValidator.isValidConfigXml;
 
 public class ModuleConfigDTDTest_V1_1 {
 	
-	private static final String[] compatibleVersions = new String[] { "1.1", "1.2", "1.3", "1.4", "1.5", "1.6" };
+	private static final String[] compatibleVersions = new String[] { "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7" };
 	
 	@ParameterizedTest
 	@MethodSource("getCompatibleVersions")
-	public void requireModulesWithVersionsAttributeSet(String version) throws ParserConfigurationException, TransformerException, IOException {
+	public void requireModulesWithVersionsAttributeSet(String version) throws ParserConfigurationException, TransformerException, IOException, URISyntaxException {
 		
 		List<String> modules = new ArrayList<>();
 		modules.add("module1");
@@ -57,7 +58,7 @@ public class ModuleConfigDTDTest_V1_1 {
 	
 	@ParameterizedTest
 	@MethodSource("getCompatibleVersions")
-	public void requireModulesWithVersionsAttributeNotSet(String version) throws ParserConfigurationException, TransformerException, IOException {
+	public void requireModulesWithVersionsAttributeNotSet(String version) throws ParserConfigurationException, TransformerException, IOException, URISyntaxException {
 		
 		List<String> modules = new ArrayList<>();
 		modules.add("module1");

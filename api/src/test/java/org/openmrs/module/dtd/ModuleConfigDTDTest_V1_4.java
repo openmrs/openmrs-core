@@ -24,6 +24,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,11 +39,11 @@ import static org.openmrs.module.dtd.DtdTestValidator.isValidConfigXml;
 
 public class ModuleConfigDTDTest_V1_4 {
 	
-	private static final String[] compatibleVersions = new String[] {"1.4", "1.5", "1.6" };
+	private static final String[] compatibleVersions = new String[] {"1.4", "1.5", "1.6", "1.7" };
 	
 	@ParameterizedTest
 	@MethodSource("getCompatibleVersions")
-	public void validXmlWithMultipleAwareOfModules(String version) throws ParserConfigurationException, TransformerException, IOException {
+	public void validXmlWithMultipleAwareOfModules(String version) throws ParserConfigurationException, TransformerException, IOException, URISyntaxException {
 		List<ConfigXmlBuilder.AwareOfModule> awareOfModules = new ArrayList<>();
 		awareOfModules.add(new ConfigXmlBuilder.AwareOfModule(Optional.of("mod1"), Optional.of("1.2.3")));
 		awareOfModules.add(new ConfigXmlBuilder.AwareOfModule(Optional.of("mod2"), Optional.of("1.2.4")));
@@ -76,7 +77,7 @@ public class ModuleConfigDTDTest_V1_4 {
 	
 	@ParameterizedTest
 	@MethodSource("getCompatibleVersions")
-	public void validXmlWithMissingVersion(String version) throws ParserConfigurationException, TransformerException, IOException {
+	public void validXmlWithMissingVersion(String version) throws ParserConfigurationException, TransformerException, IOException, URISyntaxException {
 		List<ConfigXmlBuilder.AwareOfModule> awareOfModules = new ArrayList<>();
 		awareOfModules.add(new ConfigXmlBuilder.AwareOfModule(Optional.of("mod1"), Optional.empty()));
 		awareOfModules.add(new ConfigXmlBuilder.AwareOfModule(Optional.of("mod2"), Optional.of("1.2.4")));
@@ -93,7 +94,7 @@ public class ModuleConfigDTDTest_V1_4 {
 	
 	@ParameterizedTest
 	@MethodSource("getCompatibleVersions")
-	public void xmlFailsWithNoModules(String version) throws ParserConfigurationException, TransformerException, IOException {
+	public void xmlFailsWithNoModules(String version) throws ParserConfigurationException, TransformerException, IOException, URISyntaxException {
 		List<ConfigXmlBuilder.AwareOfModule> awareOfModules = new ArrayList<>();
 		
 		Document configXml = withMinimalTags(version)

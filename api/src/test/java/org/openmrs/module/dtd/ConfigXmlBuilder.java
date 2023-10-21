@@ -28,9 +28,14 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -192,7 +197,7 @@ public class ConfigXmlBuilder {
 	 * Note: This constructor is intended for use in testing scenarios only. Do not use it for 
 	 * generating configuration XML files for production use.
 	 */
-	public ConfigXmlBuilder(String dtdVersion) throws ParserConfigurationException {
+	public ConfigXmlBuilder(String dtdVersion) throws ParserConfigurationException, FileNotFoundException, URISyntaxException {
 		this.dtdVersion = dtdVersion;
 		initDocument();
 		setDocType();
@@ -224,7 +229,7 @@ public class ConfigXmlBuilder {
 		return new ByteArrayInputStream(outputStream.toByteArray());
 	}
 	
-	protected static ConfigXmlBuilder withMinimalTags(String dtdVersion) throws ParserConfigurationException {
+	protected static ConfigXmlBuilder withMinimalTags(String dtdVersion) throws ParserConfigurationException, FileNotFoundException, URISyntaxException {
 		return new ConfigXmlBuilder(dtdVersion).withId("basicexample").withName("Basicexample").withVersion("1.2.3")
 				.withPackage("org.openmrs.module.basicexample").withAuthor("Community").withDescription("First module")
 				.withActivator("org.openmrs.module.basicexample.BasicexampleActivator");
@@ -237,10 +242,15 @@ public class ConfigXmlBuilder {
 		documentBuilder.newDocument();
 	}
 	
-	private void setDocType() {
+	private void setDocType() throws FileNotFoundException, URISyntaxException {
 		DOMImplementation domImpl = configXml.getImplementation();
-		DocumentType doctype = domImpl.createDocumentType(MODULE_NAME, PUBLIC_IDENTIFIER,
-				"https://resources.openmrs.org/doctype/config-" + dtdVersion + ".dtd");
+
+		URL dtdResource = ConfigXmlBuilder.class.getResource("/org/openmrs/module/dtd/config-" + dtdVersion + ".dtd");
+		if (dtdResource == null) {
+			throw new FileNotFoundException("DTD file not found for version " + dtdVersion);
+		}
+		String dtdUri = dtdResource.toURI().toString();
+		DocumentType doctype = domImpl.createDocumentType(MODULE_NAME, PUBLIC_IDENTIFIER, dtdUri);
 		configXml.appendChild(doctype);
 		Element root = configXml.createElement(MODULE_NAME);
 		configXml.appendChild(root);
@@ -482,19 +492,36 @@ public class ConfigXmlBuilder {
 		
 		return this;
 	}
-	
-	public ConfigXmlBuilder withServlet(Optional<String> servletName, Optional<String> servletClass) {
+
+	public ConfigXmlBuilder withServlet(Optional<String> servletName, Optional<String> servletClass, Map<String, String> initParams) {
 		Element servletElement = configXml.createElement(TAG_SERVLET);
+
 		servletName.ifPresent(servletNameVal -> {
 			Element servletNameElement = configXml.createElement("servlet-name");
 			servletNameElement.setTextContent(servletNameVal);
 			servletElement.appendChild(servletNameElement);
 		});
+
 		servletClass.ifPresent(servletClassVal -> {
 			Element servletClassElement = configXml.createElement("servlet-class");
 			servletClassElement.setTextContent(servletClassVal);
 			servletElement.appendChild(servletClassElement);
 		});
+
+		for (Map.Entry<String, String> entry : initParams.entrySet()) {
+			Element initParamElement = configXml.createElement("init-param");
+
+			Element paramNameElement = configXml.createElement("param-name");
+			paramNameElement.setTextContent(entry.getKey());
+			initParamElement.appendChild(paramNameElement);
+
+			Element paramValueElement = configXml.createElement("param-value");
+			paramValueElement.setTextContent(entry.getValue());
+			initParamElement.appendChild(paramValueElement);
+
+			servletElement.appendChild(initParamElement);
+		}
+
 		configXml.getDocumentElement().appendChild(servletElement);
 		return this;
 	}

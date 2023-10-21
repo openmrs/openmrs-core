@@ -18,6 +18,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -30,11 +31,11 @@ import static org.openmrs.module.dtd.DtdTestValidator.isValidConfigXml;
 
 public class ModuleConfigDTDTest_V1_2 {
 	
-	private static final String[] compatibleVersions = new String[] {"1.2", "1.3", "1.4", "1.5", "1.6" };
+	private static final String[] compatibleVersions = new String[] {"1.2", "1.3", "1.4", "1.5", "1.6", "1.7" };
 	
 	@ParameterizedTest
 	@MethodSource("getCompatibleVersions")
-	public void filterWithAllValuesSet(String version) throws ParserConfigurationException, TransformerException, IOException {
+	public void filterWithAllValuesSet(String version) throws ParserConfigurationException, TransformerException, IOException, URISyntaxException {
 		ConfigXmlBuilder.Filter filter = new ConfigXmlBuilder.Filter(Optional.of("FilterName"), Optional.of("FilterClass"));
 		filter.addInitParam(new ConfigXmlBuilder.InitParam(Optional.of("paramName1"), Optional.of("paramVal1")));
 		filter.addInitParam(new ConfigXmlBuilder.InitParam(Optional.of("paramName2"), Optional.of("paramVal2")));
@@ -51,7 +52,7 @@ public class ModuleConfigDTDTest_V1_2 {
 	
 	@ParameterizedTest
 	@MethodSource("getCompatibleVersions")
-	public void filterValidWithoutInitParams(String version) throws ParserConfigurationException, TransformerException, IOException {
+	public void filterValidWithoutInitParams(String version) throws ParserConfigurationException, TransformerException, IOException, URISyntaxException {
 		ConfigXmlBuilder.Filter filter = new ConfigXmlBuilder.Filter(Optional.of("FilterName"), Optional.of("FilterClass"));
 		filter.addInitParam(new ConfigXmlBuilder.InitParam(Optional.empty(), Optional.of("paramVal1")));
 		filter.addInitParam(new ConfigXmlBuilder.InitParam(Optional.of("paramName2"), Optional.of("paramVal2")));
@@ -68,7 +69,7 @@ public class ModuleConfigDTDTest_V1_2 {
 	
 	@ParameterizedTest
 	@MethodSource("getCompatibleVersions")
-	public void filterInvalidWhenMissingFilterName(String version) throws ParserConfigurationException, TransformerException, IOException {
+	public void filterInvalidWhenMissingFilterName(String version) throws ParserConfigurationException, TransformerException, IOException, URISyntaxException {
 		ConfigXmlBuilder.Filter filter = new ConfigXmlBuilder.Filter(Optional.empty(), Optional.of("FilterClass"));
 		filter.addInitParam(new ConfigXmlBuilder.InitParam(Optional.of("paramName1"), Optional.of("paramVal1")));
 		filter.addInitParam(new ConfigXmlBuilder.InitParam(Optional.of("paramName2"), Optional.of("paramVal2")));
@@ -85,7 +86,7 @@ public class ModuleConfigDTDTest_V1_2 {
 	
 	@ParameterizedTest
 	@MethodSource("getCompatibleVersions")
-	public void filterInvalidWhenMissingFilterClass(String version) throws ParserConfigurationException, TransformerException, IOException {
+	public void filterInvalidWhenMissingFilterClass(String version) throws ParserConfigurationException, TransformerException, IOException, URISyntaxException {
 		ConfigXmlBuilder.Filter filter = new ConfigXmlBuilder.Filter(Optional.of("FilterName"), Optional.empty());
 		filter.addInitParam(new ConfigXmlBuilder.InitParam(Optional.of("paramName1"), Optional.of("paramVal1")));
 		filter.addInitParam(new ConfigXmlBuilder.InitParam(Optional.of("paramName2"), Optional.of("paramVal2")));
@@ -102,7 +103,7 @@ public class ModuleConfigDTDTest_V1_2 {
 	
 	@ParameterizedTest
 	@MethodSource("getCompatibleVersions")
-	public void filterInvalidWithInitParamNameMissing(String version) throws ParserConfigurationException, TransformerException, IOException {
+	public void filterInvalidWithInitParamNameMissing(String version) throws ParserConfigurationException, TransformerException, IOException, URISyntaxException {
 		ConfigXmlBuilder.Filter filter = new ConfigXmlBuilder.Filter(Optional.of("FilterName"), Optional.of("FilterClass"));
 		
 		Document configXml = withMinimalTags(version)
@@ -116,7 +117,7 @@ public class ModuleConfigDTDTest_V1_2 {
 	
 	@ParameterizedTest
 	@MethodSource("getCompatibleVersions")
-	public void filterInvalidWithInitParamValueMissing(String version) throws ParserConfigurationException, TransformerException, IOException {
+	public void filterInvalidWithInitParamValueMissing(String version) throws ParserConfigurationException, TransformerException, IOException, URISyntaxException {
 		ConfigXmlBuilder.Filter filter = new ConfigXmlBuilder.Filter(Optional.of("FilterName"), Optional.of("FilterClass"));
 		filter.addInitParam(new ConfigXmlBuilder.InitParam(Optional.of("paramName1"), Optional.empty()));
 		filter.addInitParam(new ConfigXmlBuilder.InitParam(Optional.of("paramName2"), Optional.of("paramVal2")));
@@ -133,7 +134,7 @@ public class ModuleConfigDTDTest_V1_2 {
 	
 	@ParameterizedTest
 	@MethodSource("getCompatibleVersions")
-	public void filterMappingWithUrlPattern(String version) throws ParserConfigurationException, TransformerException, IOException {
+	public void filterMappingWithUrlPattern(String version) throws ParserConfigurationException, TransformerException, IOException, URISyntaxException {
 		ConfigXmlBuilder.FilterMapping filterMapping = new ConfigXmlBuilder.FilterMapping(Optional.of("FilterName"), Optional.of("*.jsp"), Optional.empty());
 
 		Document configXml = withMinimalTags(version)
@@ -147,7 +148,7 @@ public class ModuleConfigDTDTest_V1_2 {
 	
 	@ParameterizedTest
 	@MethodSource("getCompatibleVersions")
-	public void filterMappingWithServletName(String version) throws ParserConfigurationException, TransformerException, IOException {
+	public void filterMappingWithServletName(String version) throws ParserConfigurationException, TransformerException, IOException, URISyntaxException {
 		ConfigXmlBuilder.FilterMapping filterMapping = new ConfigXmlBuilder.FilterMapping(Optional.of("FilterName"), Optional.empty(), Optional.of("ServletName"));
 		
 		Document configXml = withMinimalTags(version)
@@ -161,7 +162,7 @@ public class ModuleConfigDTDTest_V1_2 {
 	
 	@ParameterizedTest
 	@MethodSource("getCompatibleVersions")
-	public void filterMappingWithBothUrlPatternAndServletNameFails(String version) throws ParserConfigurationException, TransformerException, IOException {
+	public void filterMappingWithBothUrlPatternAndServletNameFails(String version) throws ParserConfigurationException, TransformerException, IOException, URISyntaxException {
 		ConfigXmlBuilder.FilterMapping filterMapping = new ConfigXmlBuilder.FilterMapping(Optional.of("FilterName"), Optional.of("*.jsp"), Optional.of("ServletName"));
 		
 		Document configXml = withMinimalTags(version)
@@ -175,7 +176,7 @@ public class ModuleConfigDTDTest_V1_2 {
 	
 	@ParameterizedTest
 	@MethodSource("getCompatibleVersions")
-	public void filterMappingWithNeitherUrlPatternOrServletNameFails(String version) throws ParserConfigurationException, TransformerException, IOException {
+	public void filterMappingWithNeitherUrlPatternOrServletNameFails(String version) throws ParserConfigurationException, TransformerException, IOException, URISyntaxException {
 		ConfigXmlBuilder.FilterMapping filterMapping = new ConfigXmlBuilder.FilterMapping(Optional.of("FilterName"), Optional.empty(), Optional.empty());
 		
 		Document configXml = withMinimalTags(version)

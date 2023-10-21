@@ -18,9 +18,13 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -32,11 +36,11 @@ import static org.openmrs.module.dtd.DtdTestValidator.isValidConfigXml;
 
 public class ModuleConfigDTDTest_V1_6 {
 	
-	private static final String[] compatibleVersions = new String[] {"1.6"};
+	private static final String[] compatibleVersions = new String[] { "1.6", "1.7" };
 	
 	@ParameterizedTest
 	@MethodSource("getCompatibleVersions")
-	public void validXmlConditionalResourcesWithVersion(String version) throws ParserConfigurationException, TransformerException, IOException {
+	public void validXmlConditionalResourcesWithVersion(String version) throws ParserConfigurationException, TransformerException, IOException, URISyntaxException {
 		List<ConfigXmlBuilder.ConditionalResource> conditionalResources = new ArrayList<>();
 		
 		ConfigXmlBuilder.ConditionalResource conditionalResource1 = new ConfigXmlBuilder.ConditionalResource(Optional.of("path/to/resource1"), Optional.of("1.2.3"));
@@ -56,7 +60,7 @@ public class ModuleConfigDTDTest_V1_6 {
 	
 	@ParameterizedTest
 	@MethodSource("getCompatibleVersions")
-	public void validXmlConditionalResourcesWithLoadModules(String version) throws ParserConfigurationException, TransformerException, IOException {
+	public void validXmlConditionalResourcesWithLoadModules(String version) throws ParserConfigurationException, TransformerException, IOException, URISyntaxException {
 		List<ConfigXmlBuilder.ConditionalResource> conditionalResources = new ArrayList<>();
 		
 		ConfigXmlBuilder.ConditionalResource conditionalResource1 = new ConfigXmlBuilder.ConditionalResource(Optional.of("path/to/resource1"), Optional.empty());
@@ -81,7 +85,7 @@ public class ModuleConfigDTDTest_V1_6 {
 	
 	@ParameterizedTest
 	@MethodSource("getCompatibleVersions")
-	public void invalidXmlWhenLoadModulesPresentWithVersion(String version) throws ParserConfigurationException, TransformerException, IOException {
+	public void invalidXmlWhenLoadModulesPresentWithVersion(String version) throws ParserConfigurationException, TransformerException, IOException, URISyntaxException {
 		List<ConfigXmlBuilder.ConditionalResource> conditionalResources = new ArrayList<>();
 
 		ConfigXmlBuilder.ConditionalResource conditionalResource1 = new ConfigXmlBuilder.ConditionalResource(Optional.of("path/to/resource1"), Optional.of("1.2.3"));
@@ -106,7 +110,7 @@ public class ModuleConfigDTDTest_V1_6 {
 	
 	@ParameterizedTest
 	@MethodSource("getCompatibleVersions")
-	public void invalidXmlWhenMissingPath(String version) throws ParserConfigurationException, TransformerException, IOException {
+	public void invalidXmlWhenMissingPath(String version) throws ParserConfigurationException, TransformerException, IOException, URISyntaxException {
 		List<ConfigXmlBuilder.ConditionalResource> conditionalResources = new ArrayList<>();
 		
 		ConfigXmlBuilder.ConditionalResource conditionalResource1 = new ConfigXmlBuilder.ConditionalResource(Optional.empty(), Optional.of("1.2.3"));
@@ -126,7 +130,7 @@ public class ModuleConfigDTDTest_V1_6 {
 	
 	@ParameterizedTest
 	@MethodSource("getCompatibleVersions")
-	public void invalidXmlWhenBothVersionAndLoadModulesMissing(String version) throws ParserConfigurationException, TransformerException, IOException {
+	public void invalidXmlWhenBothVersionAndLoadModulesMissing(String version) throws ParserConfigurationException, TransformerException, IOException, URISyntaxException {
 		List<ConfigXmlBuilder.ConditionalResource> conditionalResources = new ArrayList<>();
 		
 		ConfigXmlBuilder.ConditionalResource conditionalResource1 = new ConfigXmlBuilder.ConditionalResource(Optional.of("path/to/resource1"), Optional.empty());
@@ -146,7 +150,7 @@ public class ModuleConfigDTDTest_V1_6 {
 	
 	@ParameterizedTest
 	@MethodSource("getCompatibleVersions")
-	public void invalidXmlWhenLoadModulesMissingModuleId(String version) throws ParserConfigurationException, TransformerException, IOException {
+	public void invalidXmlWhenLoadModulesMissingModuleId(String version) throws ParserConfigurationException, TransformerException, IOException, URISyntaxException {
 		List<ConfigXmlBuilder.ConditionalResource> conditionalResources = new ArrayList<>();
 		
 		ConfigXmlBuilder.ConditionalResource conditionalResource1 = new ConfigXmlBuilder.ConditionalResource(Optional.of("path/to/resource1"), Optional.empty());
@@ -166,7 +170,7 @@ public class ModuleConfigDTDTest_V1_6 {
 	
 	@ParameterizedTest
 	@MethodSource("getCompatibleVersions")
-	public void invalidXmlWhenLoadModulesMissingVersion(String version) throws ParserConfigurationException, TransformerException, IOException {
+	public void invalidXmlWhenLoadModulesMissingVersion(String version) throws ParserConfigurationException, TransformerException, IOException, URISyntaxException {
 		List<ConfigXmlBuilder.ConditionalResource> conditionalResources = new ArrayList<>();
 		
 		ConfigXmlBuilder.ConditionalResource conditionalResource1 = new ConfigXmlBuilder.ConditionalResource(Optional.of("path/to/resource1"), Optional.empty());
