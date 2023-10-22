@@ -78,6 +78,7 @@ public class ModuleFileParser {
 		validConfigVersions.add("1.4");
 		validConfigVersions.add("1.5");
 		validConfigVersions.add("1.6");
+		validConfigVersions.add("1.7");
 	}
 	
 	// TODO - remove this field once ModuleFileParser(File), ModuleFileParser(InputStream) are removed.

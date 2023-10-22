@@ -122,7 +122,7 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 		String invalidConfigVersion = "0.0.1";
 		String expectedMessage = messageSourceService
 			.getMessage("Module.error.invalidConfigVersion",
-				new Object[] { invalidConfigVersion, "1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6" }, Context.getLocale());
+				new Object[] { invalidConfigVersion, "1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7" }, Context.getLocale());
 
 		Document configXml = documentBuilder.newDocument();
 		Element root = configXml.createElement("module");
