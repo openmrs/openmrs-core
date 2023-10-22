@@ -441,6 +441,8 @@ public class WebModuleUtil {
 			Node node = servletTags.item(i);
 			NodeList childNodes = node.getChildNodes();
 			String name = "", className = "";
+
+			Map<String, String> initParams = new HashMap<>();
 			for (int j = 0; j < childNodes.getLength(); j++) {
 				Node childNode = childNodes.item(j);
 				if ("servlet-name".equals(childNode.getNodeName())) {
@@ -449,6 +451,21 @@ public class WebModuleUtil {
 					}
 				} else if ("servlet-class".equals(childNode.getNodeName()) && childNode.getTextContent() != null) {
 					className = childNode.getTextContent().trim();
+				} else if ("init-param".equals(childNode.getNodeName())) {
+					NodeList initParamChildren = childNode.getChildNodes();
+					String paramName = null, paramValue = null;
+					for (int k = 0; k < initParamChildren.getLength(); k++) {
+						Node initParamChild = initParamChildren.item(k);
+						if ("param-name".equals(initParamChild.getNodeName()) && initParamChild.getTextContent() != null) {
+							paramName = initParamChild.getTextContent().trim();
+						} else if ("param-value".equals(initParamChild.getNodeName()) && initParamChild.getTextContent() != null) {
+							paramValue = initParamChild.getTextContent().trim();
+						}
+					}
+
+					if (paramName != null && paramValue != null) {
+						initParams.put(paramName, paramValue);
+					}
 				}
 			}
 			if (name.length() == 0 || className.length() == 0) {
@@ -480,7 +497,7 @@ public class WebModuleUtil {
 			
 			try {
 				log.debug("Initializing {} servlet. - {}.", name, httpServlet);
-				ServletConfig servletConfig = new ModuleServlet.SimpleServletConfig(name, servletContext);
+				ServletConfig servletConfig = new ModuleServlet.SimpleServletConfig(name, servletContext, initParams);
 				httpServlet.init(servletConfig);
 			}
 			catch (Exception e) {
@@ -1032,7 +1049,7 @@ public class WebModuleUtil {
 			log.error("Failed to transorm xml source", tfe);
 		}
 	}
-	
+
 	public static String getRealPath(ServletContext servletContext) {
 		return servletContext.getRealPath("");
 	}

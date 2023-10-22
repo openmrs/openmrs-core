@@ -10,7 +10,9 @@
 package org.openmrs.module.web;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -70,7 +72,7 @@ public class ModuleServlet extends HttpServlet {
 		
 		servlet.service(request, response);
 	}
-	
+
 	/**
 	 * Internal implementation of the ServletConfig interface, to be passed to module servlets when
 	 * they are first loaded
@@ -80,10 +82,13 @@ public class ModuleServlet extends HttpServlet {
 		private String name;
 		
 		private ServletContext servletContext;
-		
-		public SimpleServletConfig(String name, ServletContext servletContext) {
+
+		private final Map<String, String> initParameters;
+
+		public SimpleServletConfig(String name, ServletContext servletContext, Map<String, String> initParameters) {
 			this.name = name;
 			this.servletContext = servletContext;
+			this.initParameters = initParameters;
 		}
 		
 		@Override
@@ -99,14 +104,12 @@ public class ModuleServlet extends HttpServlet {
 		// not implemented in a module's config.xml yet
 		@Override
 		public String getInitParameter(String paramName) {
-			return null;
+			return initParameters.get(paramName);
 		}
-		
-		// not implemented in a module's config.xml yet
+
 		@Override
-		@SuppressWarnings("unchecked")
-		public Enumeration getInitParameterNames() {
-			return null;
+		public Enumeration<String> getInitParameterNames() {
+			return Collections.enumeration(initParameters.keySet());
 		}
 	}
 }
