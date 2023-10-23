@@ -20,9 +20,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Location;
+import org.openmrs.OpenmrsObject;
+import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.User;
@@ -34,6 +37,7 @@ import org.openmrs.api.handler.ExistingOrNewVisitAssignmentHandler;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Validator;
 
 /**
@@ -42,6 +46,13 @@ import org.springframework.validation.Validator;
  * @see Context
  */
 public class ContextTest extends BaseContextSensitiveTest {
+	
+	private static final Class PERSON_NAME_CLASS = PersonName.class;
+	private static final Integer PERSON_NAME_ID_2 = 2;
+	private static final Integer PERSON_NAME_ID_8 = 8;
+
+	@Autowired
+	private SessionFactory sf;
 	
 	/**
 	 * Methods in this class might authenticate with a different user, so log that user out after
@@ -272,5 +283,71 @@ public class ContextTest extends BaseContextSensitiveTest {
 		assertEquals("BR", locale.getCountry());
 		
 		Context.logout();
+	}
+
+	/**
+	 * @see org.openmrs.api.context.Context#evictSingleEntity(SessionFactory, Class, OpenmrsObject) 
+	 */
+	@Test
+	public void evictSingleEntity_shouldClearSingleEntityFromCaches() {
+		// Load the person so that the names are also stored in the cache
+		PersonName name = Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
+		Context.getPersonService().getPersonName(PERSON_NAME_ID_8);
+		
+		// Assert that the names has been added to cache
+		assertTrue(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_2));
+		assertTrue(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_8));
+
+		Context.evictSingleEntity(sf, PERSON_NAME_CLASS, name);
+
+		// Assert that the entity name has been removed from cache
+		assertFalse(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_2));
+		assertTrue(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_8));
+	}
+
+	/**
+	 * @see org.openmrs.api.context.Context#evictAllEntities(SessionFactory, Class)
+	 */
+	@Test
+	public void evictAllEntities_shouldClearAllEntityFromCaches() {
+		// Load the person and patient so that they are stored in the cache
+		Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
+		Context.getPersonService().getPersonName(PERSON_NAME_ID_8);
+		Context.getPatientService().getPatient(PERSON_NAME_ID_2);
+		
+		// Assert that the entities have been added to cache
+		assertTrue(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_2));
+		assertTrue(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_8));
+		assertTrue(sf.getCache().containsEntity(Patient.class, PERSON_NAME_ID_2));
+
+		Context.evictAllEntities(sf, PERSON_NAME_CLASS);
+
+		// Assert that the class entities have been removed from cache
+		assertFalse(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_2));
+		assertFalse(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_8));
+		assertTrue(sf.getCache().containsEntity(Patient.class, PERSON_NAME_ID_2));
+	}
+
+	/**
+	 * @see org.openmrs.api.context.Context#clearEntireCache(SessionFactory)
+	 */
+	@Test
+	public void clearEntireCache_shouldClearEntireCache() {
+		// Load the person and patient so that they are stored in the cache
+		Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
+		Context.getPersonService().getPersonName(PERSON_NAME_ID_8);
+		Context.getPatientService().getPatient(PERSON_NAME_ID_2);
+		
+		// Assert that the entities have been added to cache
+		assertTrue(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_2));
+		assertTrue(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_8));
+		assertTrue(sf.getCache().containsEntity(Patient.class, PERSON_NAME_ID_2));
+
+		Context.clearEntireCache(sf);
+
+		// Assert that all entities have been removed from cache
+		assertFalse(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_2));
+		assertFalse(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_8));
+		assertFalse(sf.getCache().containsEntity(Patient.class, PERSON_NAME_ID_2));
 	}
 }
