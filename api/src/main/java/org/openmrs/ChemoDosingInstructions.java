@@ -17,6 +17,9 @@ import org.openmrs.api.APIException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 
+/**
+ * @since 2.7.0
+ */
 public class ChemoDosingInstructions implements DosingInstructions{
 
 	private Double dosageAdjustmentPercentage;
@@ -33,13 +36,13 @@ public class ChemoDosingInstructions implements DosingInstructions{
 
 
 	/**
+	 * Serializing adjustment percentage, timing and dilution instructions to compose dosing instructions.
+	 * 
 	 * @see DosingInstructions#getDosingInstructionsAsString(java.util.Locale)
 	 */
 	@Override
 	public String getDosingInstructionsAsString(Locale locale) {
 		StringBuilder dosingInstructions = new StringBuilder();
-
-		// serializing adjustment percentage, timing and dilution instructions to compose dosing instructions
 		if (this.dosageAdjustmentPercentage != null) {
 			dosingInstructions.append(this.formatDosingInformation(ADJUSTMENT_PERCENTAGE, this.dosageAdjustmentPercentage.toString()));
 		}
@@ -53,18 +56,25 @@ public class ChemoDosingInstructions implements DosingInstructions{
 	}
 
 	/**
+	 * Setting <b>DosingType</b> of the <b>DrugOrder</b> object as "ChemoDosingInstructions" and serialize dosing 
+	 * instructions as <tt>String</tt> into the <b>DrugOrder</b> object.
+	 * 
+	 * @param order DrugOrder to set dosing instructions
+	 * 
 	 * @see DosingInstructions#setDosingInstructions(DrugOrder)
 	 */
 	@Override
 	public void setDosingInstructions(DrugOrder order) {
-		// storing dosing instruction type as "ChemoDosingInstructions"
 		order.setDosingType(this.getClass());
-
-		// storing dosing instruction string into DrugOrder object
 		order.setDosingInstructions(this.getDosingInstructionsAsString(Locale.getDefault()));
 	}
 
 	/**
+	 * Get human-readable version of <b>ChemoDosingInstructions</b> from <b>DrugOrder</b> object
+	 * 
+	 * @param order DrugOrder to get dosing instructions
+	 * @throws APIException if dosing type of passing order is not matched with dosing type of <tt>"ChemoDosingInstructions"</tt>.
+	 * 
 	 * @see DosingInstructions#getDosingInstructions(DrugOrder)
 	 */
 	@Override
@@ -73,13 +83,11 @@ public class ChemoDosingInstructions implements DosingInstructions{
 			throw new APIException("DrugOrder.error.dosingTypeIsMismatched", new Object[] { this.getClass().getName(),
 				order.getDosingType() });
 		}
+		
 		ChemoDosingInstructions chemoDosingInstructions = new ChemoDosingInstructions();
-
-		// dosing instructions in drug order consist of several lines each having a different type of instruction
 		StringTokenizer tokenizeDosingInstructions = new StringTokenizer(order.getDosingInstructions(), "\n");
+		
 		while (tokenizeDosingInstructions.hasMoreTokens()) {
-
-			//Every instruction line is of the form "inLineType : inLineValue"
 			String instructionLine = tokenizeDosingInstructions.nextToken();
 			int indexOfColon = instructionLine.indexOf(':');
 			String inLineType = instructionLine.substring(0, indexOfColon).trim();

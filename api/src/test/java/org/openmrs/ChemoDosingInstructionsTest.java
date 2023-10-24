@@ -39,44 +39,48 @@ public class ChemoDosingInstructionsTest extends BaseContextSensitiveTest {
 		chemoDosingInstructions = new ChemoDosingInstructions();
 	}
 
+	/**
+	 * @see org.openmrs.ChemoDosingInstructions#getDosingInstructionsAsString(Locale) 
+	 */
 	@Test
 	public void getDosingInstructionsAsString_shouldInferCorrectly() {
-		
 		chemoDosingInstructions.setDosageAdjustmentPercentage(ADJUSTMENT_PERCENTAGE_CONSTANT);
 		chemoDosingInstructions.setDosageDilutionInstructions(DILUTION_INSTRUCTIONS_CONSTANT);
 		chemoDosingInstructions.setDosageDeliveredTiming(DELIVERED_TIMING_CONSTANT);
-
-		// when getDosingInstructionsAsString(Locale) is called, results should be in this format
-		String shouldBeResult = ADJUSTMENT_PERCENTAGE + ADJUSTMENT_PERCENTAGE_CONSTANT + "\n" + DELIVERED_TIMING +
+		
+		String expectedResult = ADJUSTMENT_PERCENTAGE + ADJUSTMENT_PERCENTAGE_CONSTANT + "\n" + DELIVERED_TIMING +
 			DELIVERED_TIMING_CONSTANT + "\n" + DILUTION_INSTRUCTIONS + DILUTION_INSTRUCTIONS_CONSTANT + "\n";
 
 		String dosingInstructions = chemoDosingInstructions.getDosingInstructionsAsString(Locale.getDefault());
 		
-		// assert that results returned by getDosingInstructionsAsString(Locale) are same as shouldBeResult
-		Assertions.assertEquals(dosingInstructions, shouldBeResult);
+		// assert that results returned by getDosingInstructionsAsString(Locale) are same as expectedResult
+		Assertions.assertEquals(dosingInstructions, expectedResult);
 	}
 
+	/**
+	 * @see org.openmrs.ChemoDosingInstructions#setDosingInstructions(DrugOrder) 
+	 */
 	@Test
 	public void setDosingInstructions_shouldBeSetCorrectly() {
-		
 		chemoDosingInstructions.setDosageAdjustmentPercentage(ADJUSTMENT_PERCENTAGE_CONSTANT);
 		chemoDosingInstructions.setDosageDilutionInstructions(DILUTION_INSTRUCTIONS_CONSTANT);
 		
-		// when getDosingInstructions() is called, results should be in this format
-		String shouldBeResult = ADJUSTMENT_PERCENTAGE + ADJUSTMENT_PERCENTAGE_CONSTANT + "\n" + DILUTION_INSTRUCTIONS +
+		String expectedResult = ADJUSTMENT_PERCENTAGE + ADJUSTMENT_PERCENTAGE_CONSTANT + "\n" + DILUTION_INSTRUCTIONS +
 			DILUTION_INSTRUCTIONS_CONSTANT + "\n";
 
 		chemoDosingInstructions.setDosingInstructions(drugOrder);
-
-		// assert that results returned by getDosingInstructions() are same as shouldBeResult if the dosingType of 
-		// drugOrder is ChemoDosingInstructions
+		
 		Assertions.assertEquals(drugOrder.getDosingType(), ChemoDosingInstructions.class);
-		Assertions.assertEquals(drugOrder.getDosingInstructions(), shouldBeResult);
+
+		// assert that results returned by getDosingInstructions() are same as expectedResult
+		Assertions.assertEquals(drugOrder.getDosingInstructions(), expectedResult);
 	}
 
+	/**
+	 * @see org.openmrs.ChemoDosingInstructions#getDosingInstructions(DrugOrder) 
+	 */
 	@Test
 	public void getDosingInstructions_shouldInferCorrectly() {
-
 		drugOrder.setDosingType(ChemoDosingInstructions.class);
 		String instStr = ADJUSTMENT_PERCENTAGE + ADJUSTMENT_PERCENTAGE_CONSTANT + "\n" + DELIVERED_TIMING +
 			DELIVERED_TIMING_CONSTANT + "\n" + DILUTION_INSTRUCTIONS + DILUTION_INSTRUCTIONS_CONSTANT + "\n";
@@ -89,5 +93,4 @@ public class ChemoDosingInstructionsTest extends BaseContextSensitiveTest {
 		Assertions.assertEquals(chemoDosingInstructions.getDosageDeliveredTiming(), DELIVERED_TIMING_CONSTANT);
 		Assertions.assertEquals(chemoDosingInstructions.getDosageDilutionInstructions(), DILUTION_INSTRUCTIONS_CONSTANT);
 	}
-		
 }
