@@ -1,0 +1,80 @@
+# standard build with Maven and push coverage data
+name: Build with Maven
+
+# trigger build on branches that *should* support both Java 8 and Java 11
+on:
+  push:
+    branches:
+      - master
+      - 2.4.x
+      - 2.5.x
+  pull_request:
+    types:
+    branches:
+      - master
+      - 2.4.x
+      - 2.5.x
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        platform:
+          - ubuntu-latest
+        java-version:
+          - 8
+          - 11
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: ${{ matrix.java-version }}
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - name: Install dependencies
+        run: mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --show-version --file pom.xml
+      - name: Build with Maven
+        run: mvn --batch-mode --update-snapshots verify
+      # this is necessary to populate the environment variables for Coveralls properly
+      - name: Set branch name and PR number
+        id: refs
+        if: ${{ matrix.java-version == '8' }}
+        continue-on-error: true
+        env:
+          BRANCH_NAME_OR_REF: ${{ github.head_ref || github.ref }}
+        run: |
+          echo "::set-output name=branch_name::${BRANCH_NAME_OR_REF#refs/heads/}"
+          echo "::set-output name=pr_number::$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")"
+      - name: Send data to Sonar
+        # only send sonar data for Java 11
+        # if: ${{ matrix.java-version == '11' }}
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=openmrs_openmrs-core --batch-mode --file pom.xml -P sonar-cloud
+      - name: Update coverage data
+        # only send coverage data for Java 8
+        if: ${{ matrix.java-version == '8' && steps.refs.outcome == 'success' }}
+        continue-on-error: true
+        env:
+          CI_NAME: Github
+          CI_BUILD_NUMBER: ${{ github.run_id }}
+          CI_BUILD_URL: https://github.com/${{ github.repository }}/commit/${{ github.event.after }}/checks
+          CI_BRANCH: ${{ steps.refs.outputs.branch_name }}
+          CI_PULL_REQUEST: ${{ steps.refs.outputs.pr_number }}
+        run: mvn jacoco:report coveralls:report --batch-mode --file pom.xml --no-transfer-progress -DrepoToken=${{ secrets.COVERALLS_TOKEN }}
