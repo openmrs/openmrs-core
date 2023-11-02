@@ -22,23 +22,41 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
+import org.openmrs.api.UserService;
 import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.tasks.AbstractTask;
 import org.openmrs.scheduler.tasks.HelloWorldTask;
 import org.openmrs.scheduler.timer.TimerSchedulerTask;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.PrivilegeConstants;
 
 /**
  * Tests the methods on the {@link Daemon} class
  */
 public class DaemonTest extends BaseContextSensitiveTest {
 	
+	/**
+	 * Methods in this class might create a new user, so delete that user after this whole junit class is done.
+	 */
+	@AfterAll
+	public static void deleteUserAfterThisTest() {
+		UserService userService = Context.getUserService();
+		
+		Context.addProxyPrivilege(PrivilegeConstants.GET_USERS);
+		Context.addProxyPrivilege(PrivilegeConstants.PURGE_USERS);
+		
+		userService.purgeUser(userService.getUserByUsername("jdoe"));
+		
+		Context.removeProxyPrivilege(PrivilegeConstants.GET_USERS);
+		Context.removeProxyPrivilege(PrivilegeConstants.PURGE_USERS);
+	}
 	
 	/**
 	 * @see Daemon#executeScheduledTask(Task)
