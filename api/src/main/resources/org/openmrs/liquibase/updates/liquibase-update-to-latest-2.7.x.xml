@@ -18,7 +18,58 @@
 	    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
 		http://www.liquibase.org/xml/ns/dbchangelog 
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+	
+	<changeSet id="TRUNK-6206-2023-10-31-1001" author="mujuzi">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="global_property" columnName="view_privilege" />
+			</not>
+		</preConditions>
+		<comment>Adding optional property 'view_privilege' to 'global_property' table</comment>
+		<addColumn tableName="global_property">
+			<column name="view_privilege" type="VARCHAR(255)">
+				<constraints nullable="true" />
+			</column>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="global_property_view_privilege_fk"
+								 baseTableName="global_property" baseColumnNames="view_privilege"
+								 referencedTableName="privilege" referencedColumnNames="privilege" />
 
+	</changeSet>
+
+	<changeSet id="TRUNK-6206-2023-10-31-1002" author="mujuzi">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="global_property" columnName="edit_privilege" />
+			</not>
+		</preConditions>
+		<comment>Adding optional property 'edit_privilege' to 'global_property' table</comment>
+		<addColumn tableName="global_property">
+			<column name="edit_privilege" type="VARCHAR(255)">
+				<constraints nullable="true" />
+			</column>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="global_property_edit_privilege_fk"
+								 baseTableName="global_property" baseColumnNames="edit_privilege"
+								 referencedTableName="privilege" referencedColumnNames="privilege" />
+
+	</changeSet>
+
+	<changeSet id="TRUNK-6206-2023-10-31-1003" author="mujuzi">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="global_property" columnName="delete_privilege" />
+			</not>
+		</preConditions>
+		<comment>Adding optional property 'delete_privilege' to 'global_property' table</comment>
+		<addColumn tableName="global_property">
+			<column name="delete_privilege" type="VARCHAR(255)">
+				<constraints nullable="true" />
+			</column>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="global_property_delete_privilege_fk"
+								 baseTableName="global_property" baseColumnNames="delete_privilege"
+								 referencedTableName="privilege" referencedColumnNames="privilege" />
 	<changeSet id="TRUNK-6204-2023-10-23" author="manojll">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="location_tag" columnName="name"/>
