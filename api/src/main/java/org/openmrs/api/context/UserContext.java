@@ -25,6 +25,7 @@ import org.openmrs.UserSessionListener;
 import org.openmrs.UserSessionListener.Event;
 import org.openmrs.UserSessionListener.Status;
 import org.openmrs.api.APIAuthenticationException;
+import org.openmrs.api.LocationService;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.RoleConstants;
@@ -449,7 +450,7 @@ public class UserContext implements Serializable {
 	}
 
 	/**
-	 * Convenience method that sets the default localeused by the currently authenticated user, using
+	 * Convenience method that sets the default locale used by the currently authenticated user, using
 	 * the value of the user's default local property
 	 */
 	private void setUserLocale(boolean useDefault) {
@@ -471,26 +472,31 @@ public class UserContext implements Serializable {
 
 	}
 	
-	private Integer getDefaultLocationId(User user) {
-		String locationId = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION);
-		if (StringUtils.isNotBlank(locationId)) {
+	protected Integer getDefaultLocationId(User user) {
+		String defaultLocation = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION);
+		if (StringUtils.isNotBlank(defaultLocation)) {
+			LocationService ls = Context.getLocationService();
 			//only go ahead if it has actually changed OR if wasn't set before
 			try {
-				int defaultId = Integer.parseInt(locationId);
+				int defaultId = Integer.parseInt(defaultLocation);
 				if (this.locationId == null || this.locationId != defaultId) {
 					// validate that the id is a valid id
-					if (Context.getLocationService().getLocation(defaultId) != null) {
+					if (ls.getLocation(defaultId) != null) {
 						return defaultId;
-					} else {
-						log.warn("The default location for user '{}' is set to '{}', which is not a valid location",
-							user.getUserId(), locationId);
 					}
 				}
 			}
-			catch (NumberFormatException e) {
-				log.warn("The value of the default Location property of the user with id: {} should be an integer",
-					user.getUserId(), e);
+			catch (NumberFormatException ignored) {
 			}
+
+			Location possibleLocation = ls.getLocationByUuid(defaultLocation);
+
+			if (possibleLocation != null && (this.locationId == null || !this.locationId.equals(possibleLocation.getId()))) {
+				return possibleLocation.getId();
+			}
+
+			log.warn("The default location for user '{}' is set to '{}', which is not a valid location",
+				user.getUsername(), defaultLocation);
 		}
 		
 		return null;
