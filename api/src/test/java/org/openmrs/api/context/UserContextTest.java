@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.context;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
@@ -30,132 +32,83 @@ public class UserContextTest extends BaseContextSensitiveTest {
 	
 	@Autowired
 	private PersonService personService;
+	
+	Person testPerson;
+	
+	User testUser;
+	
+	@BeforeEach
+	void createUser() {
+		testPerson = new Person();
+		testPerson.addName(new PersonName("Carroll", "", "Deacon"));
+		testPerson.setGender("U");
+		testPerson = personService.savePerson(testPerson);
+		
+		testUser = new User();
+		testUser.setUsername("testUser");
+		testUser.setPerson(testPerson);
+		testUser = userService.createUser(testUser, "Test1234");
+	}
+	
+	@AfterEach
+	void deleteUser() {
+		userService.purgeUser(testUser);
+		personService.purgePerson(testPerson);
+	}
 
 	@Test
 	void getDefaultLocationId_shouldGetDefaultLocationById() {
 		// arrange
 		Context.getUserContext().setLocationId(null);
-		Person testPerson = new Person();
-		testPerson.addName(new PersonName("Carroll", "", "Deacon"));
-		testPerson.setGender("U");
-		personService.savePerson(testPerson);
-		
-		User testUser = new User();
-		testUser.setUsername("testUser");
 		testUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION, "1");
-		testUser.setPerson(testPerson);
-		userService.createUser(testUser, "Test1234");
+		userService.saveUser(testUser);
 		
-		try {
-			// act
-			Integer locationId = Context.getUserContext().getDefaultLocationId(testUser);
+		// act
+		Integer locationId = Context.getUserContext().getDefaultLocationId(testUser);
 
-			// assert
-			assertThat(locationId, equalTo(1));
-		} finally {
-			try {
-				userService.purgeUser(testUser);
-			} catch (Exception ignored) {}
-			
-			try {
-				personService.purgePerson(testPerson);
-			} catch (Exception ignored) {}
-		}
+		// assert
+		assertThat(locationId, equalTo(1));
 	}
 
 	@Test
 	void getDefaultLocationId_shouldGetDefaultLocationByUuid() {
 		// arrange
 		Context.getUserContext().setLocationId(null);
-		Person testPerson = new Person();
-		testPerson.addName(new PersonName("Carroll", "", "Deacon"));
-		testPerson.setGender("U");
-		personService.savePerson(testPerson);
-
-		User testUser = new User();
-		testUser.setUsername("testUser");
 		testUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION, "8d6c993e-c2cc-11de-8d13-0010c6dffd0f");
-		testUser.setPerson(testPerson);
-		userService.createUser(testUser, "Test1234");
+		userService.saveUser(testUser);
+		
+		// act
+		Integer locationId = Context.getUserContext().getDefaultLocationId(testUser);
 
-		try {
-			// act
-			Integer locationId = Context.getUserContext().getDefaultLocationId(testUser);
-
-			// assert
-			assertThat(locationId, equalTo(1));
-		} finally {
-			try {
-				userService.purgeUser(testUser);
-			} catch (Exception ignored) {}
-
-			try {
-				personService.purgePerson(testPerson);
-			} catch (Exception ignored) {}
-		}
+		// assert
+		assertThat(locationId, equalTo(1));
 	}
 
 	@Test
 	void getDefaultLocationId_shouldReturnNullForInvalidId() {
 		// arrange
 		Context.getUserContext().setLocationId(null);
-		Person testPerson = new Person();
-		testPerson.addName(new PersonName("Carroll", "", "Deacon"));
-		testPerson.setGender("U");
-		personService.savePerson(testPerson);
-
-		User testUser = new User();
-		testUser.setUsername("testUser");
 		testUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION, String.valueOf(Integer.MAX_VALUE));
-		testUser.setPerson(testPerson);
-		userService.createUser(testUser, "Test1234");
+		userService.saveUser(testUser);
+		
+		// act
+		Integer locationId = Context.getUserContext().getDefaultLocationId(testUser);
 
-		try {
-			// act
-			Integer locationId = Context.getUserContext().getDefaultLocationId(testUser);
-
-			// assert
-			assertThat(locationId, nullValue());
-		} finally {
-			try {
-				userService.purgeUser(testUser);
-			} catch (Exception ignored) {}
-
-			try {
-				personService.purgePerson(testPerson);
-			} catch (Exception ignored) {}
-		}
+		// assert
+		assertThat(locationId, nullValue());
 	}
 
 	@Test
 	void getDefaultLocationId_shouldReturnNullForInvalidUuid() {
 		// arrange
 		Context.getUserContext().setLocationId(null);
-		Person testPerson = new Person();
-		testPerson.addName(new PersonName("Carroll", "", "Deacon"));
-		testPerson.setGender("U");
-		personService.savePerson(testPerson);
-
-		User testUser = new User();
-		testUser.setUsername("testUser");
 		testUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION, "0e32f474-eca5-4cc2-a64d-53b086f27e52");
-		testUser.setPerson(testPerson);
-		userService.createUser(testUser, "Test1234");
+		userService.saveUser(testUser);
+		
+		// act
+		Integer locationId = Context.getUserContext().getDefaultLocationId(testUser);
 
-		try {
-			// act
-			Integer locationId = Context.getUserContext().getDefaultLocationId(testUser);
-
-			// assert
-			assertThat(locationId, nullValue());
-		} finally {
-			try {
-				userService.purgeUser(testUser);
-			} catch (Exception ignored) {}
-
-			try {
-				personService.purgePerson(testPerson);
-			} catch (Exception ignored) {}
-		}
+		// assert
+		assertThat(locationId, nullValue());
 	}
 }
