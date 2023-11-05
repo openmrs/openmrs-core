@@ -61,7 +61,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * TODO add more tests to cover the methods in <code>UserService</code>
  */
 public class UserServiceTest extends BaseContextSensitiveTest {
-	
+
 	protected static final String XML_FILENAME = "org/openmrs/api/include/UserServiceTest.xml";
 	
 	protected static final String XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION = "org/openmrs/api/include/UserServiceTest-changePasswordAction.xml";
