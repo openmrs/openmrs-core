@@ -19,11 +19,19 @@
 		http://www.liquibase.org/xml/ns/dbchangelog 
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
-	<!--
-		The empty change set is needed for integration tests. It can be removed if this file contains other change sets.
-	-->
-	<changeSet id="42ddb873-f064-4418-a6c0-6c09426c4832" author="wschlegel">
-		<comment>Empty change set for integration tests.</comment>
+	<changeSet id="TRUNK-6204-2023-10-23" author="manojll">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="location_tag" columnName="name"/>
+			<and>
+				<not>
+					<indexExists indexName="location_tag_name"/>
+				</not>
+			</and>
+		</preConditions>
+		<comment>Adding unique index on location_tag name column</comment>
+		<createIndex tableName="location_tag" indexName="location_tag_name" unique="true">
+			<column name="name"/>
+		</createIndex>
 	</changeSet>
 	
 </databaseChangeLog>
