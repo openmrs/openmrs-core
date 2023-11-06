@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+  <concept concept_id="240" retired="0" datatype_id="4" class_id="3" is_set="false" creator="1" date_created="2008-08-15 15:27:51.0" uuid="568b58c8-e878-11e0-950d-00248140a5e1"/>
+  <concept concept_id="357" retired="0" datatype_id="4" class_id="3" is_set="false" creator="1" date_created="2008-08-15 15:27:51.0" uuid="568b58c8-e878-11e0-950d-00248140a5e2"/>
+  <concept concept_id="798" retired="0" datatype_id="4" class_id="8" is_set="false" creator="1" date_created="2008-08-15 15:27:51.0" uuid="568b58c8-e878-11e0-950d-00248140a5e3"/>
+  <concept concept_id="328" retired="0" datatype_id="4" class_id="5" is_set="false" creator="1" date_created="2008-08-15 15:27:51.0" uuid="568b58c8-e878-11e0-950d-00248140a5e4"/>
+
+  <concept_name concept_id="240" name="Hysterectomie subtotal" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="240" voided="false" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" uuid="67ce91b2-e879-11e0-950d-00248140a5e1"/>
+  <concept_name concept_id="357" name="Hysterectomie hemostatique post-partum" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="357" voided="false" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" uuid="67ce91b2-e879-11e0-950d-00248140a5e2"/>
+  <concept_name concept_id="798" name="Hystérectomie" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="798" voided="false" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" uuid="67ce91b2-e879-11e0-950d-00248140a5e3"/>
+  <concept_name concept_id="328" name="Caesarean hysterectomy" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="328" voided="false" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" uuid="67ce91b2-e879-11e0-950d-00248140a5e7"/>
+
+</dataset>

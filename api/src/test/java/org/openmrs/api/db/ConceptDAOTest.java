@@ -226,5 +226,28 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 		assertEquals(c1, searchResults1.get(0).getConcept());
 		assertEquals(cn1b, searchResults1.get(0).getConceptName());
 	}
-	
+
+	/**
+	 * @see {@link ConceptDAO#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)} 
+	 */
+	@SuppressWarnings("unchecked")
+	@Test
+	public void getConcepts_shouldBeDiacriticInsensitive() {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-accents.xml");
+		Context.getConceptService().updateConceptIndexes();
+		List<ConceptSearchResult> searchResults = dao.getConcepts(
+			"Hysterectom", 
+			Collections.singletonList(Locale.ENGLISH), 
+			false, 
+			Collections.EMPTY_LIST,
+			Collections.EMPTY_LIST, 
+			Collections.EMPTY_LIST, 
+			Collections.EMPTY_LIST, 
+			null, 
+			null, 
+			null
+		);
+		assertEquals(4, searchResults.size());
+		assertEquals("Hystérectomie", searchResults.get(0).getConcept().getName().getName());
+	}
 }
