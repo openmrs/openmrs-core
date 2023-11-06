@@ -16,6 +16,7 @@ import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
+import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilterFactory;
 import org.apache.lucene.analysis.standard.StandardFilterFactory;
 import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -37,8 +38,12 @@ import org.openmrs.api.db.hibernate.search.bridge.LocaleFieldBridge;
  * locale.
  */
 @Indexed
-@AnalyzerDef(name = "ConceptNameAnalyzer", tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class), filters = {
-        @TokenFilterDef(factory = StandardFilterFactory.class), @TokenFilterDef(factory = LowerCaseFilterFactory.class) })
+@AnalyzerDef(
+	name = "ConceptNameAnalyzer", tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class), filters = {
+        @TokenFilterDef(factory = StandardFilterFactory.class), 
+		@TokenFilterDef(factory = LowerCaseFilterFactory.class), 
+		@TokenFilterDef(factory = ASCIIFoldingFilterFactory.class)
+	})
 @Analyzer(definition = "ConceptNameAnalyzer")
 public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidable, java.io.Serializable {
 	
