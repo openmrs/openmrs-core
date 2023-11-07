@@ -36,6 +36,12 @@
         
         <property name="handlerConfig" type="text" column="handler_config" length="65535" />
 
+		<many-to-one name="editPrivilege" column="edit_privilege" class="org.openmrs.Privilege" not-null="false" />
+		
+		<many-to-one name="viewPrivilege" column="view_privilege" class="org.openmrs.Privilege" not-null="false" />
+		
+		<many-to-one name="deletePrivilege" column="delete_privilege" class="org.openmrs.Privilege" not-null="false" />
+
 		<property name="uuid" type="java.lang.String" 
 			column="uuid" length="38" unique="true" />
 
