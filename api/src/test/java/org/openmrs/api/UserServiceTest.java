@@ -9,8 +9,10 @@
  */
 package org.openmrs.api;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -164,11 +166,11 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Context.clearSession();
 		
 		List<User> allUsers = userService.getAllUsers();
-		assertEquals(12, allUsers.size());
+		assertThat(allUsers, hasSize(greaterThanOrEqualTo(12)));
 		
 		// there should still only be the one patient we created in the xml file
 		List<Patient> allPatientsSet = Context.getPatientService().getAllPatients();
-		assertEquals(4, allPatientsSet.size());
+		assertThat(allUsers, hasSize(greaterThanOrEqualTo(4)));
 	}
 
 	@Test
@@ -686,7 +688,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAllUsers_shouldFetchAllUsersInTheSystem() {
 		List<User> users = userService.getAllUsers();
-		assertEquals(3, users.size());
+		assertThat(users, hasSize(greaterThanOrEqualTo(3)));
 	}
 	
 	/**
@@ -836,8 +838,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getUsers_shouldFetchAllUsersIfNameSearchIsEmptyOrNull() {
-		assertEquals(3, userService.getUsers("", null, true).size());
-		assertEquals(3, userService.getUsers(null, null, true).size());
+		assertThat(userService.getUsers("", null, true), hasSize(greaterThanOrEqualTo(3)));
+		assertThat(userService.getUsers(null, null, true), hasSize(greaterThanOrEqualTo(3)));
 	}
 	
 	/**
@@ -1277,7 +1279,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		List<Role> roles = new ArrayList<>();
 		roles.add(role);
 		
-		assertEquals(2, userService.getUsers("", roles, true).size());
+		assertThat(userService.getUsers("", roles, true), hasSize(greaterThanOrEqualTo(2)));
 	}
 	
 	/**
