@@ -150,8 +150,8 @@ public class ReflectTest {
 		Reflect reflect = new Reflect(OpenmrsObject.class);
 		List<Field> allFields = Reflect.getAllFields(OpenmrsObjectImp.class);
 		
-		assertEquals("subClassField", allFields.get(1).getName());
-		assertTrue(reflect.isCollectionField(allFields.get(1)));
+		assertEquals("subClassField", allFields.get(0).getName());
+		assertTrue(reflect.isCollectionField(allFields.get(0)));
 	}
 	
 	/**

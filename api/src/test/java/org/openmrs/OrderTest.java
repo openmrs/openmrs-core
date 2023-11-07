@@ -94,6 +94,7 @@ public class OrderTest extends BaseContextSensitiveTest {
 		
 		Order copy = (Order) MethodUtils.invokeExactMethod(original, methodName, null);
 		for (Field field : fields) {
+			field.setAccessible(true);
 			Object copyValue = field.get(copy);
 			if (fieldsToExclude.contains(field.getName())) {
 				continue;

@@ -10,6 +10,7 @@
 package org.openmrs.util;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -20,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -361,8 +363,8 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	public void getDateFormat_shouldReturnAPatternWithFourYCharactersInIt() {
 		assertEquals("MM/dd/yyyy", OpenmrsUtil.getDateFormat(Locale.US).toLocalizedPattern());
 		assertEquals("dd/MM/yyyy", OpenmrsUtil.getDateFormat(Locale.UK).toLocalizedPattern());
-		assertEquals("tt.MM.uuuu", OpenmrsUtil.getDateFormat(Locale.GERMAN).toLocalizedPattern());
-		assertEquals("dd-MM-yyyy", OpenmrsUtil.getDateFormat(new Locale("pt", "pt")).toLocalizedPattern());
+		assertThat(OpenmrsUtil.getDateFormat(Locale.GERMAN).toLocalizedPattern(), anyOf(is("tt.MM.uuuu"), is("dd.MM.yyyy")));
+		assertThat(OpenmrsUtil.getDateFormat(new Locale("pt", "pt")).toLocalizedPattern(), anyOf(is("dd-MM-yyyy"), is("dd/MM/yyyy")));
 	}
 	
 	/**

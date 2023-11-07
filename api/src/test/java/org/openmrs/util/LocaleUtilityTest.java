@@ -186,7 +186,8 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 		Locale locale = LocaleUtility.fromSpecification("en_US_Traditional_WIN");
 		assertEquals(Locale.US.getLanguage(), locale.getLanguage());
 		assertEquals(Locale.US.getCountry(), locale.getCountry());
-		assertEquals("Traditional,WIN", locale.getDisplayVariant());
+		// In Java 17 locale.getDisplayVariant() is formatted like 'Traditional, WIN'
+		assertEquals("Traditional,WIN", locale.getDisplayVariant().replaceAll(" ", ""));
 	}
 	
 	/**
