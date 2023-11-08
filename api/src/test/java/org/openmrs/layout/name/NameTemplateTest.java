@@ -20,12 +20,15 @@ import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openmrs.GlobalProperty;
 import org.openmrs.PersonName;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.OpenmrsConstants;
 
 public class NameTemplateTest extends BaseContextSensitiveTest {
 	
-	protected static final String NAME_SUPPORT_DATASET_PATH = "src/test/resources/org/openmrs/include/nameSupportTestDataSet.xml";
+	protected static final String NAME_TEMPLATE_GP_DATASET_PATH = "src/test/resources/org/openmrs/include/nameSupportTestDataSet.xml";
 	private NameSupport nameSupport;
 	
 	@BeforeEach
@@ -100,16 +103,20 @@ public class NameTemplateTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void shouldOverrideTheExistingDefaultNameTemplate() {
-		executeDataSet(NAME_SUPPORT_DATASET_PATH);
-		NameTemplate nameTemplate = nameSupport.getDefaultLayoutTemplate();
-
+	public void shouldUseNameTemplateConfiguredViaGlobalProperties() {
+		// setup
+		executeDataSet(NAME_TEMPLATE_GP_DATASET_PATH);
+		Context.getAdministrationService().saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT, "customXmlTemplate"));
+		
 		PersonName personName = new PersonName();
 		personName.setGivenName("Moses");
 		personName.setMiddleName("Tusha");
 		personName.setFamilyName("Mujuzi");
+		
+		// replay
+		NameTemplate nameTemplate = NameSupport.getInstance().getDefaultLayoutTemplate();
 
-		// nameTemplate.format() uses the custom GP loaded
+		// verify
 		assertEquals("Moses Mujuzi", nameTemplate.format(personName));
 	}
 	

@@ -12,7 +12,7 @@
 -->
 <dataset>
 	<global_property property="layout.name.template" property_value="&lt;org.openmrs.layout.name.NameTemplate&gt;
-    &lt;codeName&gt;custom&lt;/codeName&gt;
+    &lt;codeName&gt;customXmlTemplate&lt;/codeName&gt;
     &lt;displayName&gt;Custom Name Format&lt;/displayName&gt;
     &lt;nameMappings class=&quot;properties&quot;&gt;
       &lt;property name=&quot;prefix&quot; value=&quot;PersonName.prefix&quot;/&gt;
