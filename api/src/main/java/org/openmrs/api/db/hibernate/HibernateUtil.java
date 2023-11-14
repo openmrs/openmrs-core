@@ -9,6 +9,9 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
@@ -16,6 +19,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.DetachedCriteria;
@@ -28,6 +32,7 @@ import org.hibernate.dialect.PostgreSQL82Dialect;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.proxy.HibernateProxy;
 import org.openmrs.Location;
+import org.openmrs.api.db.DAOException;
 import org.openmrs.attribute.AttributeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -187,5 +192,15 @@ public class HibernateUtil {
 		}
 		
 		return persistentObject;
+	}
+
+	public static <T> T getUniqueEntityByUUID(SessionFactory sessionFactory, Class<T> entityClass, String uuid) throws DAOException {
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<T> query = cb.createQuery(entityClass);
+		Root<T> root = query.from(entityClass);
+
+		query.where(cb.equal(root.get("uuid"), uuid));
+		return session.createQuery(query).uniqueResult();
 	}
 }

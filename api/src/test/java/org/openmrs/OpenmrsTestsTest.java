@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 import org.junit.Ignore;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
 import org.openmrs.annotation.OpenmrsProfileExcludeFilterWithModulesJUnit4Test;
 import org.openmrs.annotation.StartModuleAnnotationJUnit4Test;
 import org.openmrs.annotation.StartModuleAnnotationReuseJUnit4Test;
@@ -98,7 +99,7 @@ public class OpenmrsTestsTest {
 				
 				// make sure every should___ method has an @Test annotation
 				if (methodName.startsWith("should") || methodName.contains("_should")) {
-					assertTrue(method.getAnnotation(Test.class) != null || method.getAnnotation(org.junit.Test.class) != null, currentClass.getName() + "#" + methodName + " does not have the @Test annotation on it even though the method name starts with 'should'");
+					assertTrue(method.getAnnotation(Test.class) != null || method.getAnnotation(org.junit.Test.class) != null || method.getAnnotation(ParameterizedTest.class) != null, currentClass.getName() + "#" + methodName + " does not have the @Test annotation on it even though the method name starts with 'should'");
 				}
 			}
 		}

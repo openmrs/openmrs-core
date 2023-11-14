@@ -291,6 +291,57 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 			assertTrue(property.getPropertyValue().startsWith("correct-value"));
 		}
 	}
+
+	@Test
+	public void getGlobalPropertiesByInvalidPrefix_shouldReturnEmptyList() {
+		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
+
+		String invalidPrefix = "non.existing.prefix.";
+		List<GlobalProperty> properties = adminService.getGlobalPropertiesByPrefix(invalidPrefix);
+
+		assertTrue(properties.isEmpty());
+	}
+
+	@Test
+	public void getGlobalPropertiesByPrefix_shouldReturnEmptyWhenPrefixIsNull() {
+		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
+		List<GlobalProperty> properties = adminService.getGlobalPropertiesByPrefix(null);
+		
+		assertNotNull(properties);
+		assertTrue(properties.isEmpty());
+	}
+
+	@Test
+	public void getGlobalPropertiesBySuffix_shouldReturnAllRelevantGlobalPropertiesInTheDatabase() {
+		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
+
+		List<GlobalProperty> properties = adminService.getGlobalPropertiesBySuffix(".abcd");
+
+		assertNotNull(properties);
+		assertTrue(properties.size() > 0);
+		for (GlobalProperty property : properties) {
+			assertTrue(property.getProperty().endsWith(".abcd"));
+		}
+	}
+
+	@Test
+	public void getGlobalPropertiesByInvalidSuffix_shouldReturnEmptyList() {
+		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
+
+		String invalidSuffix = "non.existing.suffix.";
+		List<GlobalProperty> properties = adminService.getGlobalPropertiesBySuffix(invalidSuffix);
+
+		assertTrue(properties.isEmpty());
+	}
+
+	@Test
+	public void getGlobalPropertiesBySuffix_shouldReturnEmptyWhenSuffixIsNull() {
+		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
+		List<GlobalProperty> properties = adminService.getGlobalPropertiesBySuffix(null);
+
+		assertNotNull(properties);
+		assertTrue(properties.isEmpty());
+	}
 	
 	@Test
 	public void getAllowedLocales_shouldNotFailIfNotGlobalPropertyForLocalesAllowedDefinedYet() {
@@ -349,7 +400,24 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(ADMIN_INITIAL_DATA_XML);
 		assertEquals(allGlobalPropertiesSize + 9, adminService.getAllGlobalProperties().size());
 	}
-	
+
+	@Test
+	public void getAllGlobalProperties_shouldReturnPropertiesInAscendingOrder() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		List<GlobalProperty> properties = adminService.getAllGlobalProperties();
+
+		assertFalse(properties.isEmpty(), "The list of global properties should not be empty");
+
+		// Verify the properties are in ascending order
+		for (int i = 0; i < properties.size() - 1; i++) {
+			String currentProperty = properties.get(i).getProperty();
+			String nextProperty = properties.get(i + 1).getProperty();
+
+			assertTrue(currentProperty.compareTo(nextProperty) <= 0,
+				"The global properties should be in ascending order by the property name");
+		}
+	}
+
 	@Test
 	public void getAllowedLocales_shouldReturnAtLeastOneLocaleIfNoLocalesDefinedInDatabaseYet() {
 		assertTrue(adminService.getAllowedLocales().size() > 0);
