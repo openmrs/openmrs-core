@@ -9,6 +9,8 @@
  */
 package org.openmrs.layout.name;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -87,6 +89,9 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 	 */
 	private NameTemplate deserializeXmlTemplate(String xml) {
 		NameTemplate nameTemplate = null;
+		if (StringUtils.isBlank(xml)) {
+			return null;
+		}
 		try {
 			nameTemplate = Context.getSerializationService().getDefaultSerializer().deserialize(xml,
 				NameTemplate.class);
