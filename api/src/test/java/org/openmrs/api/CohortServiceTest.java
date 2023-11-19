@@ -43,6 +43,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	protected static final String CREATE_PATIENT_XML = "org/openmrs/api/include/PatientServiceTest-createPatient.xml";
 	
 	protected static final String COHORT_XML = "org/openmrs/api/include/CohortServiceTest-cohort.xml";
+	protected static final String COHORT_ORDERING_XML = "org/openmrs/api/include/CohortServiceOrderingTest-cohort.xml";
 	
 	protected static CohortService service = null;
 	
@@ -145,7 +146,51 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		matchedCohorts = service.getCohorts("Examples");
 		assertEquals(0, matchedCohorts.size());
 	}
-	
+
+	/**
+	 * @see CohortService#getCohorts(String)
+	 */
+	@Test
+	public void getCohorts_shouldBeCaseInsensitive() {
+		executeDataSet(COHORT_XML);
+
+		List<Cohort> lowerCaseMatch = service.getCohorts("example");
+		List<Cohort> upperCaseMatch = service.getCohorts("EXAMPLE");
+		List<Cohort> mixedCaseMatch = service.getCohorts("ExAmPlE");
+
+		assertNotNull(lowerCaseMatch);
+		assertNotNull(upperCaseMatch);
+		assertNotNull(mixedCaseMatch);
+
+		assertEquals(2, lowerCaseMatch.size());
+		assertEquals(2, upperCaseMatch.size());
+		assertEquals(2, mixedCaseMatch.size());
+
+		assertTrue(lowerCaseMatch.containsAll(upperCaseMatch) && 
+			upperCaseMatch.containsAll(lowerCaseMatch) && 
+			mixedCaseMatch.containsAll(upperCaseMatch));
+	}
+
+	/**
+	 * @see CohortService#getCohorts(String)
+	 */
+	@Test
+	public void getCohorts_shouldReturnCohortsInAscendingOrder() {
+		executeDataSet(COHORT_ORDERING_XML);
+
+		List<Cohort> cohorts = service.getCohorts("Cohort");
+		assertNotNull(cohorts);
+		assertFalse(cohorts.isEmpty());
+
+		// validate enough cohorts to check ordering
+		assertTrue(cohorts.size() > 2);
+		String previousName = "";
+		for (Cohort cohort : cohorts) {
+			assertTrue(cohort.getName().compareTo(previousName) >= 0);
+			previousName = cohort.getName();
+		}
+	}
+
 	/**
 	 * @see CohortService#saveCohort(Cohort)
 	 */
@@ -337,7 +382,25 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		assertEquals(1, allCohorts.size());
 		assertFalse(allCohorts.get(0).getVoided());
 	}
-	
+
+	@Test
+	public void getAllCohorts_shouldReturnCohortsInAscendingOrderByName() {
+		executeDataSet(COHORT_ORDERING_XML);
+
+		List<Cohort> allCohorts = service.getAllCohorts(false);
+		assertNotNull(allCohorts);
+		assertFalse(allCohorts.isEmpty());
+
+		// validate enough cohorts to check ordering
+		assertTrue(allCohorts.size() > 2);
+		String previousName = "";
+		for (Cohort cohort : allCohorts) {
+			assertTrue(cohort.getName().compareTo(previousName) >= 0);
+			previousName = cohort.getName();
+		}
+	}
+
+
 	/**
 	 * @see CohortService#getAllCohorts()
 	 */
@@ -434,7 +497,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		List<Cohort> cohortsWithGivenPatient = service.getCohortsContainingPatientId(patientToAdd.getId());
 		assertTrue(cohortsWithGivenPatient.contains(service.getCohort(2)));
 	}
-	
+
 	/**
 	 * @see CohortService#addPatientToCohort(Cohort,Patient)
 	 */
@@ -525,7 +588,17 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		assertEquals(reason, cm.getVoidReason());
 		assertFalse(cohort.contains(cm.getPatientId()));
 	}
-	
+
+	@Test
+	public void getCohort_shouldGetCohortByName() {
+		executeDataSet(COHORT_XML);
+
+		Cohort cohort = service.getCohortByName("Example Cohort");
+		assertNotNull(cohort);
+		assertEquals("Example Cohort", cohort.getName());
+		assertFalse(cohort.getVoided());
+	}
+
 	@Test
 	public void endCohortMembership_shouldEndTheCohortMembership() {
 		Date endOnDate = new Date();
@@ -728,5 +801,27 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		Date longAgo = DateUtils.parseDate("1999-12-31", "yyyy-MM-dd");
 		List<CohortMembership> memberships = service.getCohortMemberships(6, longAgo, false);
 		assertThat(memberships.size(), is(0));
+	}
+
+	@Test
+	public void getCohortMemberships_shouldIncludeVoidedMembershipsWhenSpecified() throws Exception {
+		executeDataSet(COHORT_XML);
+
+		// patientId 2 is in a voided cohort (cohortId 1)
+		List<CohortMembership> memberships = service.getCohortMemberships(2, null, true);
+
+		assertNotNull(memberships);
+		assertFalse(memberships.isEmpty());
+
+		boolean foundVoidedCohortMembership = false;
+		for (CohortMembership cm : memberships) {
+			if (cm.getCohort().getCohortId().equals(1)) {
+				assertTrue(cm.getCohort().getVoided());
+				foundVoidedCohortMembership = true;
+				break;
+			}
+		}
+
+		assertTrue(foundVoidedCohortMembership, "Expected to find a membership from a voided cohort");
 	}
 }
