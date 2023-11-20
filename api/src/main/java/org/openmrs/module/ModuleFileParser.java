@@ -524,8 +524,8 @@ public class ModuleFileParser {
 		
 		log.debug("property: {}, defaultValue: {}", property, defaultValue);
 		log.debug("description: {}, datatypeClassname: {}", description, datatypeClassname);
-		log.debug("datatypeConfig: {}, viewPrivilege: {}", datatypeConfig, viewPrivilege);
-		log.debug("editPrivilege: {}, deletePrivilege: {}", editPrivilege, deletePrivilege);
+		log.debug("datatypeConfig: {}", datatypeConfig);
+		log.debug("viewPrivilege: {}, editPrivilege: {}, deletePrivilege: {}", viewPrivilege, editPrivilege, deletePrivilege);
 
 		return createGlobalProperty(property, defaultValue, description, datatypeClassname,
 			datatypeConfig, viewPrivilege, editPrivilege, deletePrivilege);
