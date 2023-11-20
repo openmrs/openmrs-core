@@ -392,4 +392,71 @@ public interface AdministrationService extends OpenmrsService {
 	 * @since 2.4
 	 */
 	public void updatePostgresSequence();
+	
+	/**
+	 * Filters out all <code>globalProperties</code> to which given user does not have access. If user is not specified
+	 * then implementations should treat authenticated user from context as given user by default.<p>
+	 *
+	 * <strong>Should</strong> filter <code>globalProperties</code> if user is not allowed to see some <code>globalProperties</code>.<br>
+	 * <strong>Should</strong> not filter all <code>globalProperties</code> when the <code>globalProperty</code> view privilege column is null.
+	 *
+	 * @param properties the list of <code>globalProperties</code> to be filtered.
+	 * @param user the user instance to filter "visible" <code>globalProperties</code> for.
+	 * @return list, that does not include <code>globalProperties</code>, which can not be shown to given user due to
+	 *         permissions check.
+	 *
+	 * @since 2.7.0
+	 */
+	public List<GlobalProperty> filterGlobalPropertiesByViewPermissions(List<GlobalProperty> properties, User user);
+	
+	/**
+	 * Checks if passed in user can edit given <code>globalProperty</code>. If user is not specified, then
+	 * authenticated user will be taken by default.<p>
+	 *
+	 * <strong>Should</strong> return true if <code>globalProperty.getEditPrivilege()</code> is null.<br>
+	 * <strong>Should</strong> return true if user can edit <code>globalProperty</code>.<br>
+	 * <strong>Should</strong> return false if user can not edit <code>globalProperty</code>.<br>
+	 * <strong>Should</strong> fail if <code>globalProperty</code> is null.
+	 *
+	 * @param property the <code>globalProperty</code> instance to be checked.
+	 * @param subject the user, who requests edit access.
+	 * @return true if user has privilege denoted by <em>editPrivilege</em> given on <code>globalProperty</code>.
+	 *
+	 * @since 2.7.0
+	 */
+	public boolean canEditGlobalProperty(GlobalProperty property, User subject);
+	
+	/**
+	 * Checks if passed in user can view given <code>globalProperty</code>. If user is not specified, then
+	 * authenticated user will be taken by default.<p>
+	 *
+	 * <strong>Should</strong> return true if <code>globalProperty.getViewPrivilege()</code> is null.<br>
+	 * <strong>Should</strong> return true if user can view <code>globalProperty</code>.<br>
+	 * <strong>Should</strong> return false if user can not view <code>globalProperty</code>.<br>
+	 * <strong>Should</strong> fail if <code>globalProperty</code> is null.
+	 *
+	 * @param property the <code>globalProperty</code> instance to be checked.
+	 * @param subject the user, who requests view access.
+	 * @return true if user has privilege denoted by <em>viewPrivilege</em> given on <code>globalProperty</code>.
+	 *
+	 * @since 2.7.0
+	 */
+	public boolean canViewGlobalProperty(GlobalProperty property, User subject);
+	
+	/**
+	 * Checks if passed in user can delete given <code>globalProperty</code>. If user is not specified, then
+	 * authenticated user will be taken by default.<p>
+	 *
+	 * <strong>Should</strong> return true if <code>globalProperty.getDeletePrivilege()</code> is null.<br>
+	 * <strong>Should</strong> return true if user can delete <code>globalProperty</code>.<br>
+	 * <strong>Should</strong> return false if user can not delete <code>globalProperty</code>.<br>
+	 * <strong>Should</strong> fail if <code>globalProperty</code> is null.
+	 *
+	 * @param property the <code>globalProperty</code> instance to be checked.
+	 * @param subject the user, who requests delete access.
+	 * @return true if user has privilege denoted by <em>viewPrivilege</em> given on <code>globalProperty</code>.
+	 *
+	 * @since 2.7.0
+	 */
+	public boolean canDeleteGlobalProperty(GlobalProperty property, User subject);
 }
