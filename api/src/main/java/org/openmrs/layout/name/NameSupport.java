@@ -40,13 +40,11 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 	}
 	
 	public static NameSupport getInstance() {
-		synchronized (NameSupport.class) {
-			if (singleton == null) {
-				throw new APIException("Not Yet Instantiated");
-			} else {
-				singleton.init();
-				return singleton;
-			}
+		if (singleton == null) {
+			throw new APIException("Not Yet Instantiated");
+		} else {
+			singleton.init();
+			return singleton;
 		}
 	}
 
