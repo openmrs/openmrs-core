@@ -28,7 +28,7 @@ import org.openmrs.util.OpenmrsConstants;
 
 public class NameTemplateTest extends BaseContextSensitiveTest {
 	
-	protected static final String NAME_TEMPLATE_GP_DATASET_PATH = "src/test/resources/org/openmrs/include/nameSupportTestDataSet.xml";
+	private final String NAME_TEMPLATE_GP_DATASET_PATH = "src/test/resources/org/openmrs/include/nameSupportTestDataSet.xml";
 	private NameSupport nameSupport;
 	
 	@BeforeEach
