@@ -19,6 +19,8 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
+import org.hibernate.ScrollMode;
+import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Conjunction;
@@ -194,6 +196,15 @@ public class HibernateUtil {
 		return persistentObject;
 	}
 
+	/**
+	 * Retrieves a unique entity by its UUID.
+	 *
+	 * @param sessionFactory the session factory to create sessions.
+	 * @param entityClass the class of the entity to retrieve.
+	 * @param uuid the UUID of the entity.
+	 * @return the entity if found, null otherwise.
+	 * @throws DAOException if there's an issue in data access.
+	 */
 	public static <T> T getUniqueEntityByUUID(SessionFactory sessionFactory, Class<T> entityClass, String uuid) throws DAOException {
 		Session session = sessionFactory.getCurrentSession();
 		CriteriaBuilder cb = session.getCriteriaBuilder();
@@ -202,5 +213,25 @@ public class HibernateUtil {
 
 		query.where(cb.equal(root.get("uuid"), uuid));
 		return session.createQuery(query).uniqueResult();
+	}
+
+	/**
+	 * Creates a ScrollableResults instance for the given entity type with the specified fetch size.
+	 *
+	 * @param sessionFactory the session factory to create sessions.
+	 * @param type the class type of the entity for which the ScrollableResults is created.
+	 * @param fetchSize the number of rows to fetch in a batch.
+	 * @return ScrollableResults instance for batch processing.
+	 */
+	public static <T> ScrollableResults getScrollableResult(SessionFactory sessionFactory, Class<T> type, int fetchSize) {
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+		CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(type);
+		Root<T> root = criteriaQuery.from(type);
+		criteriaQuery.select(root);
+
+		return session.createQuery(criteriaQuery)
+			.setFetchSize(fetchSize)
+			.scroll(ScrollMode.FORWARD_ONLY);
 	}
 }
