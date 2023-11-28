@@ -362,6 +362,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT = "layout.name.format";
 	
+	public static final String GLOBAL_PROPERTY_LAYOUT_NAME_TEMPLATE = "layout.name.template";
+	
 	public static final String GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED = "EncounterType.encounterTypes.locked";
 	
 	public static final String GLOBAL_PROPERTY_FORMS_LOCKED = "forms.locked";
