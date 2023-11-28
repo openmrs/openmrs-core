@@ -20,6 +20,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -185,7 +186,201 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		List<Concept> firstConceptsByPartialNameList = conceptService.getConceptsByName(partialNameToFetch);
 		assertThat(firstConceptsByPartialNameList, containsInAnyOrder(hasId(1), hasId(2)));
 	}
+
+	/**
+	 * @see ConceptService#getPrevConcept(Concept) 
+	 */
+	@Test
+	public void getPrevConcept_shouldReturnPreviousConceptBasedOnConceptId() {
+		executeDataSet(INITIAL_CONCEPTS_XML);
+
+		Concept currentConcept = conceptService.getConcept(4);
+		assertNotNull(currentConcept);
+
+		Concept previousConcept = conceptService.getPrevConcept(currentConcept);
+
+		assertNotNull(previousConcept);
+		assertEquals((Integer)(currentConcept.getConceptId() - 1), previousConcept.getConceptId());
+	}
+
+	/**
+	 * @see ConceptService#getPrevConcept(Concept)
+	 */
+	@Test
+	public void getPrevConcept_shouldReturnNullIfNoPrevConceptId() {
+		executeDataSet(INITIAL_CONCEPTS_XML);
+
+		Concept currentConcept = conceptService.getConcept(1);
+		assertNotNull(currentConcept);
+
+		Concept previousConcept = conceptService.getPrevConcept(currentConcept);
+
+		assertNull(previousConcept);
+	}
+
+	/**
+	 * @see ConceptService#getNextConcept(Concept) 
+	 */
+	@Test
+	public void getNextConcept_shouldReturnNextConceptBasedOnConceptId() {
+		executeDataSet(INITIAL_CONCEPTS_XML);
+
+		Concept currentConcept = conceptService.getConcept(3);
+		assertNotNull(currentConcept);
+
+		Concept nextConcept = conceptService.getNextConcept(currentConcept);
+
+		assertNotNull(nextConcept);
+		assertEquals((Integer)(currentConcept.getConceptId() + 1), nextConcept.getConceptId());
+	}
+
+	/**
+	 * @see ConceptService#getNextConcept(Concept)
+	 */
+	@Test
+	public void getNextConcept_shouldReturnNullIfNoNextConceptId() {
+		executeDataSet(INITIAL_CONCEPTS_XML);
+
+		// Use the highest concept ID in your dataset
+		Concept currentConcept = conceptService.getConcept(5497);
+		assertNotNull(currentConcept);
+
+		Concept nextConcept = conceptService.getNextConcept(currentConcept);
+
+		assertNull(nextConcept);
+	}
+
+	/**
+	 * @see ConceptService#getAllConceptProposals(boolean)  
+	 */
+	@Test
+	public void getAllConceptProposals_whenIncludeCompletedIsFalse_shouldReturnOnlyUncompletedProposals() {
+		executeDataSet(INITIAL_CONCEPTS_XML);
+
+		List<ConceptProposal> proposals = conceptService.getAllConceptProposals(false);
+
+		ConceptProposal previousProposal = null;
+		for (ConceptProposal proposal : proposals) {
+			assertEquals(OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED, proposal.getState());
+
+			if (previousProposal != null) {
+				assertTrue(previousProposal.getOriginalText().compareTo(proposal.getOriginalText()) <= 0);
+			}
+			previousProposal = proposal;
+		}
+	}
+
+	/**
+	 * @see ConceptService#getConceptProposals(String))
+	 */
+	@Test
+	public void getConceptProposals_shouldReturnProposalsMatchingTextAndUnmappedState() {
+		executeDataSet(INITIAL_CONCEPTS_XML);
+
+		String searchText = "unmapped concept proposal";
+		
+		List<ConceptProposal> proposals = conceptService.getConceptProposals(searchText);
+
+		assertEquals(1, proposals.size());
+		for (ConceptProposal proposal : proposals) {
+			assertEquals(OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED, proposal.getState());
+			assertEquals(searchText, proposal.getOriginalText());
+		}
+	}
+
+	/**
+	 * @see ConceptService#getProposedConcepts(String))
+	 */
+	@Test
+	public void getProposedConcepts_shouldReturnConceptsMatchingTextAndExcludingUnmappedState() {
+		executeDataSet(INITIAL_CONCEPTS_XML);
+
+		String searchText = "mapped concept proposal";
+
+		List<ConceptProposal> allProposals = conceptService.getAllConceptProposals(true);
+		assertTrue(allProposals.size() > 0);
+
+		List<Concept> concepts = conceptService.getProposedConcepts(searchText);
+		assertEquals(1, concepts.size());
+		
+		Concept actualConcept = concepts.get(0);
+		for (ConceptProposal proposal : allProposals) {
+			if (proposal.getMappedConcept() == null) {
+				continue;
+			}
+			
+			if (proposal.getMappedConcept().getConceptId().intValue() == actualConcept.getConceptId().intValue()) {
+				assertNotNull(proposal.getMappedConcept());
+				assertNotEquals(OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED, proposal.getState());
+				assertEquals(actualConcept.getConceptId(), proposal.getMappedConcept().getConceptId());
+			}
+		}
+	}
+
+	/**
+	 * @see ConceptService#getProposedConcepts(String))
+	 */
+	@Test
+	public void getProposedConcepts_shouldReturnEmptyWhenNoMappedConcepts() {
+		executeDataSet(INITIAL_CONCEPTS_XML);
+
+		String searchText = "unmapped concept proposal";
+
+		List<Concept> concepts = conceptService.getProposedConcepts(searchText);
+		assertEquals(0, concepts.size());
+	}
+
+	/**
+	 * @see ConceptService#getProposedConcepts(String))
+	 */
+	@Test
+	public void getConceptSetsByConcept_shouldReturnConceptSetsOrderedBySortWeight() {
+		executeDataSet(INITIAL_CONCEPTS_XML);
+
+
+		Concept concept = conceptService.getConceptByUuid("0f97e14e-cdc2-49ac-9255-b5126f8a5147");
+
+		List<ConceptSet> conceptSets = conceptService.getConceptSetsByConcept(concept);
+		assertEquals(3, conceptSets.size());
+
+		for (int i = 0; i < conceptSets.size() - 1; i++) {
+			ConceptSet current = conceptSets.get(i);
+			ConceptSet next = conceptSets.get(i + 1);
+
+			assertNotNull(current.getSortWeight());
+			assertNotNull(next.getSortWeight());
+			assertTrue(current.getSortWeight() <= next.getSortWeight());
+		}
+	}
 	
+	/**
+	 * @see ConceptService#getAllConceptProposals(boolean)
+	 */
+	@Test
+	public void getAllConceptProposals_WhenIncludeCompletedIsTrue_shouldReturnAllProposals() {
+		executeDataSet(INITIAL_CONCEPTS_XML);
+
+		List<ConceptProposal> proposals = conceptService.getAllConceptProposals(true);
+
+		assertFalse(proposals.isEmpty());
+
+
+		boolean foundCompletedProposal = false;
+		ConceptProposal previousProposal = null;
+		for (ConceptProposal proposal : proposals) {
+			if (!proposal.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED)) {
+				foundCompletedProposal = true;
+			}
+			
+			if (previousProposal != null) {
+				assertTrue(previousProposal.getOriginalText().compareTo(proposal.getOriginalText()) <= 0);
+			}
+			previousProposal = proposal;
+		}
+		assertTrue(foundCompletedProposal, "No completed proposals were returned.");
+	}
+
+
 	/**
 	 * @see ConceptService#saveConcept(Concept)
 	 */
@@ -412,7 +607,68 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		concept = Context.getConceptService().saveConcept(concept);
 		assertTrue(concept.getConceptId().equals(conceptId));
 	}
-	
+
+	/**
+	 * @see ConceptService#getAllConceptClasses(boolean)
+	 */
+	@Test
+	public void getAllConceptClasses_whenIncludeRetiredIsFalse_shouldNotReturnRetiredConceptClasses() {
+		boolean includeRetired = false;
+		
+		List<ConceptClass> conceptClasses = conceptService.getAllConceptClasses(includeRetired);
+
+		assertNotNull(conceptClasses);
+		assertTrue(conceptClasses.size() > 0);
+		for (ConceptClass conceptClass : conceptClasses) {
+			assertFalse(conceptClass.isRetired());
+		}
+	}
+
+	/**
+	 * @see ConceptService#getAllConceptDatatypes(boolean)
+	 */
+	@Test
+	public void getAllConceptDatatypes_whenIncludeRetiredIsFalse_shouldNotReturnRetiredConceptDatatypes() {
+		boolean includeRetired = false;
+
+		List<ConceptDatatype> conceptDatatypes = conceptService.getAllConceptDatatypes(includeRetired);
+
+		assertNotNull(conceptDatatypes);
+		assertTrue(conceptDatatypes.size() > 0);
+		for (ConceptDatatype conceptDatatype : conceptDatatypes) {
+			assertFalse(conceptDatatype.isRetired());
+		}
+	}
+
+	/**
+	 * @see ConceptService#getAllConceptClasses(boolean)
+	 */
+	@Test
+	public void getAllConceptClasses_whenIncludeRetiredIsTrue_shouldReturnAllConceptClasses() {
+		boolean includeRetired = true;
+
+		List<ConceptClass> conceptClasses = conceptService.getAllConceptClasses(includeRetired);
+
+		assertNotNull(conceptClasses);
+		assertTrue(conceptClasses.size() > 0);
+		
+		boolean foundRetired = false;
+		boolean foundNonRetired = false;
+		for (ConceptClass conceptClass : conceptClasses) {
+			if (conceptClass.isRetired()) {
+				foundRetired = true;
+			} else {
+				foundNonRetired = true;
+			}
+			if (foundRetired && foundNonRetired) {
+				break;
+			}
+		}
+
+		assertTrue(foundRetired, "No retired concept classes found.");
+		assertTrue(foundNonRetired, "No non-retired concept classes found.");
+	}
+
 	/**
 	 * @see ConceptService#conceptIterator()
 	 */
@@ -2384,7 +2640,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		assertEquals(3, concepts.size());
 		assertTrue(concepts.containsAll(Arrays.asList(concept1, concept2, concept3)));
 	}
-	
+
 	/**
 	 * @see ConceptService#getConceptsByName(String,Locale)
 	 */

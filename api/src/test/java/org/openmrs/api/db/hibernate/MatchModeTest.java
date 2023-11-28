@@ -36,7 +36,7 @@ public class MatchModeTest {
 	@MethodSource("data")
 	public void shouldMatchPatternCorrectly(MatchMode matchMode, String input, boolean caseInsensitive, String expectedPattern) {
 		if (caseInsensitive) {
-			assertEquals(expectedPattern, matchMode.toCaseInsensitivePattern(input));
+			assertEquals(expectedPattern, matchMode.toLowerCasePattern(input));
 		} else {
 			assertEquals(expectedPattern, matchMode.toCaseSensitivePattern(input));
 		}

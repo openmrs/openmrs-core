@@ -19,7 +19,7 @@ public enum MatchMode {
 		return toPatternInternal(str, false);
 	}
 
-	public String toCaseInsensitivePattern(String str) {
+	public String toLowerCasePattern(String str) {
 		return toPatternInternal(str, true);
 	}
 

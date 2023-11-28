@@ -515,7 +515,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getAllConceptClasses_shouldReturnAListOfAllConceptClasses() {
-		int resultSize = 20;
+		int resultSize = 21;
 		List<ConceptClass> conceptClasses = conceptService.getAllConceptClasses();
 		assertEquals(resultSize, conceptClasses.size());
 	}
@@ -525,7 +525,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getAllConceptClasses_shouldReturnAllConceptClassesIncludingRetiredOnesWhenGivenTrue() {
-		int resultSizeWhenTrue = 20;
+		int resultSizeWhenTrue = 21;
 		List<ConceptClass> conceptClasses = conceptService.getAllConceptClasses(true);
 		assertEquals(resultSizeWhenTrue, conceptClasses.size());
 	}
@@ -657,7 +657,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getAllConceptProposals_shouldReturnAllConceptProposalsIncludingRetiredOnesWhenGivenTrue() {
-		int matchedConceptProposals = 2;
+		int matchedConceptProposals = 3;
 		List<ConceptProposal> conceptProposals = conceptService.getAllConceptProposals(true);
 		assertEquals(matchedConceptProposals, conceptProposals.size());
 	}
