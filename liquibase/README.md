@@ -80,7 +80,7 @@ a **snapshot** generated from OpenMRS 4.7.x.
 * `org/openmrs/liquibase/updates/liquibase-update-to-latest-4.8.x.xml` contains database changes introduced by 
 OpenMRS 4.8.x
 
-### Further Liquibase files
+### Further Liquibase files <a name="#Further-Liquibase-files"></a>
 The folder `openmrs-core/api/src/main/resources` contains further Liquibase files: 
 
 * `liquibase-schema-only.xml` references the latest snapshot file for creating the OpenMRS schema and continues to
@@ -125,7 +125,30 @@ need to be updated so that they include the change.
 The pom file of the openmrs-liquibase module contains a template for generating Liquibase snapshots from an existing 
 database and applying snapshots to an OpenMRS database.
 
-### How to generate Liquibase snapshots
+### How to generate Liquibase snapshots automatically
+#### step 1 - checkout to project root folder
+ 	cd <some root folder>/openmrs-core
+#### step 2 - run the script `openmrs/liquibase/scripts/generate_liquilbase_snapshots.sh`:
+Run the following commands to generate the Liquibase snapshots automatically, where username and password refer to a MySQL user:
+
+	. liquibase/scripts/generate_liquibase_snapshots.sh <username> <password>
+
+After running this script, the following files are generated.
+
+* `org/openmrs/liquibase/snapshots/schema-only/liquibase-schema-only-<snapshot version>.x.xml` defines the OpenMRS schema. This file is a snapshot generated from OpenMRS current version.
+* `org/openmrs/liquibase/snapshots/core-data/liquibase-core-data--<snapshot version>.x.xml` defines core data. Again, this file is a snapshot generated from OpenMRS current version
+* `org/openmrs/liquibase/updates/liquibase-update-to-latest-<new openmrs version>-x.xml` contains database changes introduced by OpenMRS new version
+
+and also updated following files, 
+
+* `openmrs-core/api/src/main/resources/liquibase-schema-only.xml` references the latest snapshot file.
+* `openmrs-core/api/src/main/resources/liquibase-core-data.xml` references the latest snapshot file.
+* `openmrs-core/api/src/main/resources/liquibase-update-to-latest.xml` references the latest update file.
+* `openmrs-core/api/src/main/resources/liquibase-update-to-latest-from-1.9.x.xml` references the latest update file.
+* `openmrs-core/api/src/test/java/org/openmrs/util/DatabaseUpdaterDatabaseIT.java` increase the `CHANGE_SET_COUNT_FOR_GREATER_THAN_2_1_X` variable value by one.
+* `openmrs-core/api/src/main/java/org/openmrs/liquibase/ChangeLogVersions.java` include the newly created snapshot and update version to the `SNAPSHOT_VERSIONS` and `UPDATED_VERSIONS` lists. 
+
+### How to generate Liquibase snapshots manually
 #### Step 1 - Drop your local OpenMRS schema
 E.g. by running the script `openmrs-core/liquibase/scripts/drop_openmrs_schema.sql`:
 
