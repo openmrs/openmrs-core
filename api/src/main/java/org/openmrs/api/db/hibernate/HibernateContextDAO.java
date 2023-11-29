@@ -13,7 +13,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.CacheMode;
 import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
-import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -249,8 +248,7 @@ public class HibernateContextDAO implements ContextDAO {
 		FlushMode flushMode = sessionFactory.getCurrentSession().getHibernateFlushMode();
 		sessionFactory.getCurrentSession().setHibernateFlushMode(FlushMode.MANUAL);
 		
-		User u = (User) sessionFactory.getCurrentSession().createQuery("from User u where u.uuid = :uuid").setString("uuid",
-		    uuid).uniqueResult();
+		User u = HibernateUtil.getUniqueEntityByUUID(sessionFactory, User.class, uuid);
 		
 		// reset the flush mode to whatever it was before
 		sessionFactory.getCurrentSession().setHibernateFlushMode(flushMode);
@@ -495,7 +493,7 @@ public class HibernateContextDAO implements ContextDAO {
 			session.setCacheMode(CacheMode.IGNORE);
 			
 			//Scrollable results will avoid loading too many objects in memory
-			try (ScrollableResults results = session.createCriteria(type).setFetchSize(1000).scroll(ScrollMode.FORWARD_ONLY)) {
+			try (ScrollableResults results = HibernateUtil.getScrollableResult(sessionFactory, type, 1000)) {
 				int index = 0;
 				while (results.next()) {
 					index++;
