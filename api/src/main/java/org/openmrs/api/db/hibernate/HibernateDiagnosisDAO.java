@@ -12,9 +12,8 @@ package org.openmrs.api.db.hibernate;
 import java.util.Date;
 import java.util.List;
 
-import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
 import org.openmrs.ConditionVerificationStatus;
 import org.openmrs.Diagnosis;
 import org.openmrs.DiagnosisAttribute;
@@ -26,7 +25,10 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.DiagnosisDAO;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 
 
 /**
@@ -86,11 +88,11 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 			"from Diagnosis d where d.patient.patientId = :patientId and d.voided = false " 
 				+ fromDateCriteria  
 				+ " order by d.dateCreated desc");
-		query.setInteger("patientId", patient.getId());
+		query.setParameter("patientId", patient.getId());
 		if(fromDate != null){
-			query.setDate("fromDate", fromDate);
+			query.setParameter("fromDate", fromDate);
 		}
-		return query.list();
+		return query.getResultList();
 	}
 
 	/**
@@ -151,7 +153,7 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 	 */
 	@Override
 	public Diagnosis getDiagnosisById(Integer diagnosisId) {
-		return (Diagnosis) sessionFactory.getCurrentSession().get(Diagnosis.class, diagnosisId);
+		return sessionFactory.getCurrentSession().get(Diagnosis.class, diagnosisId);
 	}
 	
 	/**
@@ -162,8 +164,7 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 	 */
 	@Override
 	public Diagnosis getDiagnosisByUuid(String uuid){
-		return (Diagnosis) sessionFactory.getCurrentSession().createQuery("from Diagnosis d where d.uuid = :uuid")
-			.setString("uuid", uuid).uniqueResult();
+		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, Diagnosis.class, uuid);
 	}
 
 	/**
@@ -178,11 +179,15 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 	/**
 	 * @see org.openmrs.api.db.DiagnosisDAO#getAllDiagnosisAttributeTypes()
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional(readOnly = true)
 	public List<DiagnosisAttributeType> getAllDiagnosisAttributeTypes() throws DAOException {
-		return sessionFactory.getCurrentSession().createCriteria(DiagnosisAttributeType.class).list();
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<DiagnosisAttributeType> cq = cb.createQuery(DiagnosisAttributeType.class);
+		cq.from(DiagnosisAttributeType.class);
+
+		return session.createQuery(cq).getResultList();
 	}
 
 	/**
@@ -200,8 +205,7 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 	@Override
 	@Transactional(readOnly = true)
 	public DiagnosisAttributeType getDiagnosisAttributeTypeByUuid(String uuid) throws DAOException {
-		return (DiagnosisAttributeType) sessionFactory.getCurrentSession().createCriteria(DiagnosisAttributeType.class).add(
-				Restrictions.eq("uuid", uuid)).uniqueResult();
+		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, DiagnosisAttributeType.class, uuid);
 	}
 
 	/**
@@ -229,7 +233,6 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 	@Override
 	@Transactional(readOnly = true)
 	public DiagnosisAttribute getDiagnosisAttributeByUuid(String uuid) throws DAOException {
-		return (DiagnosisAttribute) sessionFactory.getCurrentSession().createCriteria(DiagnosisAttribute.class).add(Restrictions.eq("uuid", uuid))
-				.uniqueResult();
+		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, DiagnosisAttribute.class, uuid);
 	}
 }
