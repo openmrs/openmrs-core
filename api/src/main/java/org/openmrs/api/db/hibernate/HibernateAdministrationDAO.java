@@ -154,7 +154,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 		CriteriaQuery<GlobalProperty> query = cb.createQuery(GlobalProperty.class);
 		Root<GlobalProperty> root = query.from(GlobalProperty.class);
 
-		query.where(cb.like(cb.lower(root.get(PROPERTY)), MatchMode.START.toCaseInsensitivePattern(prefix)));
+		query.where(cb.like(cb.lower(root.get(PROPERTY)), MatchMode.START.toLowerCasePattern(prefix)));
 
 		return session.createQuery(query).getResultList();
 	}
@@ -174,7 +174,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 		CriteriaQuery<GlobalProperty> query = cb.createQuery(GlobalProperty.class);
 		Root<GlobalProperty> root = query.from(GlobalProperty.class);
 
-		query.where(cb.like(cb.lower(root.get(PROPERTY)), MatchMode.END.toCaseInsensitivePattern(suffix)));
+		query.where(cb.like(cb.lower(root.get(PROPERTY)), MatchMode.END.toLowerCasePattern(suffix)));
 
 		return session.createQuery(query).getResultList();
 	}

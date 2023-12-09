@@ -13,6 +13,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Locale;
@@ -212,5 +213,32 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 		conceptIds = dao.getConceptIdsByMapping("WGT234", source.getName(), true);
 		assertEquals(1, conceptIds.size());
 		assertEquals(weightConcept.getConceptId(), conceptIds.get(0));
+	}
+
+	/**
+	 * @see HibernateConceptDAO#getConceptDatatypes(String)
+	 */
+	@Test
+	public void getConceptDatatypes_shouldReturnDatatypesWithNameStartingWithGivenString() {
+		String namePrefix = "Numeric";
+
+		List<ConceptDatatype> datatypes = dao.getConceptDatatypes(namePrefix);
+
+		assertTrue(datatypes.size() > 0);
+		for (ConceptDatatype datatype : datatypes) {
+			assertTrue(datatype.getName().startsWith(namePrefix));
+		}
+	}
+
+	/**
+	 * @see HibernateConceptDAO#getConceptDatatypes(String)
+	 */
+	@Test
+	public void getConceptDatatypes_shouldReturnEmptyListForNonExistentName() {
+		String nonExistentPrefix = "NonExistent";
+
+		List<ConceptDatatype> datatypes = dao.getConceptDatatypes(nonExistentPrefix);
+
+		assertTrue(datatypes.isEmpty());
 	}
 }

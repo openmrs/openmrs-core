@@ -123,7 +123,7 @@ public class HibernateCohortDAO implements CohortDAO {
 		Root<Cohort> root = cq.from(Cohort.class);
 
 		cq.where(cb.like(cb.lower(root.get("name")), 
-			MatchMode.ANYWHERE.toCaseInsensitivePattern(nameFragment)));
+			MatchMode.ANYWHERE.toLowerCasePattern(nameFragment)));
 		cq.orderBy(cb.asc(root.get("name")));
 
 		return session.createQuery(cq).getResultList();
