@@ -518,13 +518,17 @@ public class ModuleFileParser {
 		String description = removeTabsAndTrim(getElementTrimmed(element, "description"));
 		String datatypeClassname = getElementTrimmed(element, "datatypeClassname");
 		String datatypeConfig = getElementTrimmed(element, "datatypeConfig");
+		String viewPrivilege = removeTabsAndTrim(getElementTrimmed(element, "viewPrivilege"));
+		String editPrivilege = removeTabsAndTrim(getElementTrimmed(element, "editPrivilege"));
+		String deletePrivilege = removeTabsAndTrim(getElementTrimmed(element, "deletePrivilege"));
 		
 		log.debug("property: {}, defaultValue: {}", property, defaultValue);
 		log.debug("description: {}, datatypeClassname: {}", description, datatypeClassname);
 		log.debug("datatypeConfig: {}", datatypeConfig);
+		log.debug("viewPrivilege: {}, editPrivilege: {}, deletePrivilege: {}", viewPrivilege, editPrivilege, deletePrivilege);
 
 		return createGlobalProperty(property, defaultValue, description, datatypeClassname,
-			datatypeConfig);
+			datatypeConfig, viewPrivilege, editPrivilege, deletePrivilege);
 	}
 
 	private String removeTabsAndTrim(String string) {
@@ -532,7 +536,7 @@ public class ModuleFileParser {
 	}
 
 	private GlobalProperty createGlobalProperty(String property, String defaultValue, String description,
-		String datatypeClassname, String datatypeConfig) {
+		String datatypeClassname, String datatypeConfig, String viewPrivilege, String editPrivilege, String deletePrivilege) {
 
 		GlobalProperty globalProperty = null;
 		if (property.isEmpty()) {
@@ -546,6 +550,17 @@ public class ModuleFileParser {
 		} else {
 			globalProperty = new GlobalProperty(property, defaultValue, description);
 		}
+		
+		if (!viewPrivilege.isEmpty()) {
+			globalProperty.setViewPrivilege(new Privilege(viewPrivilege));
+		}
+		if (!editPrivilege.isEmpty()) {
+			globalProperty.setEditPrivilege(new Privilege(editPrivilege));
+		}
+		if (!deletePrivilege.isEmpty()) {
+			globalProperty.setDeletePrivilege(new Privilege(deletePrivilege));
+		}
+		
 		return globalProperty;
 	}
 

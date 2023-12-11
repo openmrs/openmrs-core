@@ -35,8 +35,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.openmrs.GlobalProperty;
 import org.openmrs.ImplementationId;
+import org.openmrs.Privilege;
+import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.UserContext;
 import org.openmrs.customdatatype.datatype.BooleanDatatype;
 import org.openmrs.customdatatype.datatype.DateDatatype;
 import org.openmrs.messagesource.MutableMessageSource;
@@ -45,6 +48,7 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.HttpClient;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.interceptor.SimpleKeyGenerator;
@@ -554,6 +558,202 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		// try to get a global property with invalid case
 		String noprop = adminService.getGlobalProperty("ANOTher-global-property");
 		assertEquals(orig, noprop);
+	}
+	
+	@Test
+	public void filterGlobalPropertiesByViewPrivilege_shouldFilterGlobalPropertiesIfUserIsNotAllowedToViewSomeGlobalProperties() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		
+		final int originalSize = adminService.getAllGlobalProperties().size();
+		// create a new test global property and add view privileges
+		GlobalProperty property = new GlobalProperty();
+		property.setProperty("test_property");
+		property.setPropertyValue("test_property_value");
+		property.setViewPrivilege(Context.getUserService().getPrivilege("Some Privilege For View Global Properties"));
+		adminService.saveGlobalProperty(property);
+		// assert new test global property is saved properly
+		List<GlobalProperty> properties = adminService.getAllGlobalProperties();
+		assertEquals(originalSize + 1, properties.size());
+
+		// authenticate new user to test view privilege
+		Context.logout();
+		Context.authenticate("test_user", "test");
+		// have to add privilege in order to be able to call getAllGlobalProperties() method for new user
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		
+		properties = adminService.getAllGlobalProperties();
+		int actualSize = properties.size();
+		
+		Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		Context.logout();
+		
+		assertEquals(actualSize, originalSize);
+		assertTrue(!properties.contains(property));
+	}
+	
+	/**
+	 * @see org.openmrs.api.AdministrationService#getGlobalProperty(java.lang.String)
+	 */
+	@Test
+	public void getGlobalProperty_shouldFailIfUserHasNoPrivileges() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		GlobalProperty property = getGlobalPropertyWithViewPrivilege();
+
+		// authenticate new user without privileges
+		Context.logout();
+		Context.authenticate("test_user", "test");
+		
+		APIException exception = assertThrows(APIException.class, () -> adminService.getGlobalProperty(property.getProperty()));
+		assertEquals(exception.getMessage(), String.format("Privilege: %s, required to view globalProperty: %s",
+			property.getViewPrivilege(), property.getProperty()));
+	}
+	
+	/**
+	 * @see org.openmrs.api.AdministrationService#getGlobalProperty(java.lang.String)
+	 */
+	@Test
+	public void getGlobalProperty_shouldReturnGlobalPropertyIfUserIsAllowedToView() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		GlobalProperty property = getGlobalPropertyWithViewPrivilege();
+
+		// authenticate new user without privileges
+		Context.logout();
+		Context.authenticate("test_user", "test");
+		// add required privilege to user
+		Role role = Context.getUserService().getRole("Provider");
+		role.addPrivilege(property.getViewPrivilege());
+		Context.getAuthenticatedUser().addRole(role);
+		
+		assertNotNull(adminService.getGlobalProperty(property.getProperty()));
+	}
+	
+	/**
+	 * @see org.openmrs.api.AdministrationService#updateGlobalProperty(java.lang.String, java.lang.String)
+	 */
+	@Test
+	public void updateGlobalProperty_shouldFailIfUserIsNotAllowedToEditGlobalProperty() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		GlobalProperty property = getGlobalPropertyWithEditPrivilege();
+		assertEquals("anothervalue", property.getPropertyValue());
+
+		// authenticate new user without privileges
+		Context.logout();
+		Context.authenticate("test_user", "test");
+		
+		APIException exception = assertThrows(APIException.class, () -> adminService.updateGlobalProperty(property.getProperty(), "new-value"));
+		assertEquals(exception.getMessage(), String.format("Privilege: %s, required to edit globalProperty: %s",
+			property.getEditPrivilege(), property.getProperty()));
+	}
+	
+	/**
+	 * @see org.openmrs.api.AdministrationService#updateGlobalProperty(java.lang.String, java.lang.String)
+	 */
+	@Test
+	public void updateGlobalProperty_shouldUpdateIfUserIsAllowedToEditGlobalProperty() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		GlobalProperty property = getGlobalPropertyWithEditPrivilege();
+		assertEquals("anothervalue", property.getPropertyValue());
+
+		// authenticate new user without privileges
+		Context.logout();
+		Context.authenticate("test_user", "test");
+		// add required privilege to user
+		Role role = Context.getUserService().getRole("Provider");
+		role.addPrivilege(property.getEditPrivilege());
+		Context.getAuthenticatedUser().addRole(role);
+		
+		adminService.updateGlobalProperty(property.getProperty(), "new-value");
+		String newValue = adminService.getGlobalProperty(property.getProperty());
+		assertEquals("new-value", newValue);
+	}
+	
+	/**
+	 * @see org.openmrs.api.AdministrationService#saveGlobalProperty(org.openmrs.GlobalProperty)
+	 */
+	@Test
+	public void saveGlobalProperty_shouldFailIfUserIsNotSupposedToEditGlobalProperty() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		GlobalProperty property = getGlobalPropertyWithEditPrivilege();
+
+		// authenticate new user without privileges
+		Context.logout();
+		Context.authenticate("test_user", "test");
+		// have to add privilege in order to be able to call saveGlobalProperty(GlobalProperty) method
+		Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
+		
+		APIException exception = assertThrows(APIException.class, () -> adminService.saveGlobalProperty(property));
+		assertEquals(exception.getMessage(), String.format("Privilege: %s, required to edit globalProperty: %s",
+			property.getEditPrivilege(), property.getProperty()));
+	}
+	
+	/**
+	 * @see org.openmrs.api.AdministrationService#purgeGlobalProperty(org.openmrs.GlobalProperty)
+	 */
+	@Test
+	public void purgeGlobalProperty_shouldFailIfUserIsNotSupposedToDeleteGlobalProperty() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		GlobalProperty property = getGlobalPropertyWithDeletePrivilege();
+
+		// authenticate new user without privileges
+		Context.logout();
+		Context.authenticate("test_user", "test");
+		// have to add privilege in order to be able to call purgeGlobalProperty(GlobalProperty) method
+		Context.addProxyPrivilege(PrivilegeConstants.PURGE_GLOBAL_PROPERTIES);
+		
+		APIException exception = assertThrows(APIException.class, () -> adminService.purgeGlobalProperty(property));
+		assertEquals(exception.getMessage(), String.format("Privilege: %s, required to purge globalProperty: %s",
+			property.getDeletePrivilege(), property.getProperty()));
+	}
+	
+	/**
+	 * Gets global property and adds view privilege to it
+	 *
+	 * @return global property having non-null view privilege
+	 */
+	private GlobalProperty getGlobalPropertyWithViewPrivilege() {
+		GlobalProperty property = adminService.getGlobalPropertyObject("another-global-property");
+		assertNotNull(property);
+		
+		Privilege viewPrivilege = Context.getUserService().getPrivilege("Some Privilege For View Global Properties");
+		property.setViewPrivilege(viewPrivilege);
+		property = adminService.saveGlobalProperty(property);
+		assertNotNull(property.getViewPrivilege());
+		
+		return property;
+	}
+	
+	/**
+	 * Gets global property and adds edit privilege to it
+	 *
+	 * @return global property having non-null edit privilege
+	 */
+	private GlobalProperty getGlobalPropertyWithEditPrivilege() {
+		GlobalProperty property = adminService.getGlobalPropertyObject("another-global-property");
+		assertNotNull(property);
+		
+		Privilege editPrivilege = Context.getUserService().getPrivilege("Some Privilege For Edit Global Properties");
+		property.setEditPrivilege(editPrivilege);
+		property = adminService.saveGlobalProperty(property);
+		assertNotNull(property.getEditPrivilege());
+		
+		return property;
+	}
+	
+	/**
+	 * Gets global property and adds delete privilege to it
+	 *
+	 * @return global property having non-null delete privilege
+	 */
+	private GlobalProperty getGlobalPropertyWithDeletePrivilege() {
+		GlobalProperty property = adminService.getGlobalPropertyObject("another-global-property");
+		assertNotNull(property);
+		
+		Privilege deletePrivilege = Context.getUserService().getPrivilege("Some Privilege For Delete Global Properties");
+		property.setDeletePrivilege(deletePrivilege);
+		property = adminService.saveGlobalProperty(property);
+		assertNotNull(property.getDeletePrivilege());
+		
+		return property;
 	}
 	
 	@Test
