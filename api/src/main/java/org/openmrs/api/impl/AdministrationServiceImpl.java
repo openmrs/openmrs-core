@@ -158,7 +158,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 				return gp.getPropertyValue();
 			} else {
 				throw new APIException("GlobalProperty.error.privilege.required.view", new Object[] {
-					gp.getViewPrivilege().getPrivilege(), propertyName });
+					gp.getViewPrivilege(), propertyName });
 			}
 		} else {
 			return null;
@@ -222,7 +222,13 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Override
 	@Transactional(readOnly = true)
 	public GlobalProperty getGlobalPropertyObject(String propertyName) {
-		return dao.getGlobalPropertyObject(propertyName);
+		GlobalProperty gp = dao.getGlobalPropertyObject(propertyName);
+		if (canViewGlobalProperty(gp)) {
+			return gp;
+		} else {
+			throw new APIException("GlobalProperty.error.privilege.required.view", new Object[] {
+				gp.getViewPrivilege(), propertyName });
+		}
 	}
 	
 	/**
@@ -253,7 +259,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		
 		if (!canEditGlobalProperty(gp)) {
 			throw new APIException("GlobalProperty.error.privilege.required.edit", new Object[] {
-				gp.getEditPrivilege().getPrivilege(), propertyName });
+				gp.getEditPrivilege(), propertyName });
 		}
 		
 		gp.setPropertyValue(propertyValue);
@@ -294,7 +300,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	public void purgeGlobalProperty(GlobalProperty globalProperty) throws APIException {
 		if (!canDeleteGlobalProperty(globalProperty)) {
 			throw new APIException("GlobalProperty.error.privilege.required.purge", new Object[] {
-				globalProperty.getDeletePrivilege().getPrivilege(), globalProperty.getProperty() });
+				globalProperty.getDeletePrivilege(), globalProperty.getProperty() });
 		}
 		
 		notifyGlobalPropertyDelete(globalProperty.getProperty());
@@ -328,7 +334,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 
 		if (!canEditGlobalProperty(gp)) {
 			throw new APIException("GlobalProperty.error.privilege.required.edit", new Object[] {
-				gp.getEditPrivilege().getPrivilege(), gp.getProperty() });
+				gp.getEditPrivilege(), gp.getProperty() });
 		}
 		
 		// only try to save it if the global property has a key
@@ -694,7 +700,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			return gp;
 		} else {
 			throw new APIException("GlobalProperty.error.privilege.required.view", new Object[] {
-				gp.getViewPrivilege().getPrivilege(), gp.getProperty() });
+				gp.getViewPrivilege(), gp.getProperty() });
 		}
 	}
 	

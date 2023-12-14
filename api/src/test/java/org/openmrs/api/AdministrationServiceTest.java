@@ -626,6 +626,42 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		
 		assertNotNull(adminService.getGlobalProperty(property.getProperty()));
 	}
+
+	/**
+	 * @see org.openmrs.api.AdministrationService#getGlobalPropertyObject(java.lang.String)
+	 */
+	@Test
+	public void getGlobalPropertyObject_shouldFailIfUserHasNoPrivileges() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		GlobalProperty property = getGlobalPropertyWithViewPrivilege();
+
+		// authenticate new user without privileges
+		Context.logout();
+		Context.authenticate("test_user", "test");
+
+		APIException exception = assertThrows(APIException.class, () -> adminService.getGlobalPropertyObject(property.getProperty()));
+		assertEquals(exception.getMessage(), String.format("Privilege: %s, required to view globalProperty: %s",
+			property.getViewPrivilege(), property.getProperty()));
+	}
+
+	/**
+	 * @see org.openmrs.api.AdministrationService#getGlobalPropertyObject(java.lang.String)
+	 */
+	@Test
+	public void getGlobalPropertyObject_shouldReturnGlobalPropertyIfUserIsAllowedToView() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		GlobalProperty property = getGlobalPropertyWithViewPrivilege();
+
+		// authenticate new user without privileges
+		Context.logout();
+		Context.authenticate("test_user", "test");
+		// add required privilege to user
+		Role role = Context.getUserService().getRole("Provider");
+		role.addPrivilege(property.getViewPrivilege());
+		Context.getAuthenticatedUser().addRole(role);
+
+		assertNotNull(adminService.getGlobalPropertyObject(property.getProperty()));
+	}
 	
 	/**
 	 * @see org.openmrs.api.AdministrationService#updateGlobalProperty(java.lang.String, java.lang.String)
