@@ -11,9 +11,14 @@ package org.openmrs.api.db.hibernate;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +39,7 @@ import org.hibernate.dialect.PostgreSQL82Dialect;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.proxy.HibernateProxy;
 import org.openmrs.Location;
+import org.openmrs.LocationAttribute;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.attribute.AttributeType;
 import org.slf4j.Logger;
@@ -173,6 +179,35 @@ public class HibernateUtil {
 		}
 		
 		criteria.add(conjunction);
+	}
+
+	/**
+	 * Constructs a list of predicates for attribute value criteria for use in a JPA Criteria query.
+	 *
+	 * @param cb The CriteriaBuilder used to construct the CriteriaQuery
+	 * @param locationRoot The root of the CriteriaQuery for the Location entity
+	 * @param serializedAttributeValues A map of AttributeType to serialized attribute values
+	 * @param <AT> The type of the attribute
+	 * @return A list of Predicate objects for use in a CriteriaQuery
+	 */
+	public static <AT extends AttributeType> List<Predicate> getAttributePredicate(CriteriaBuilder cb,
+	        Root<Location> locationRoot, Map<AT, String> serializedAttributeValues) {
+		List<Predicate> predicates = new ArrayList<>();
+		
+		for (Map.Entry<AT, String> entry : serializedAttributeValues.entrySet()) {
+			Subquery<Integer> subquery = cb.createQuery().subquery(Integer.class);
+			Root<Location> locationSubRoot = subquery.from(Location.class);
+			Join<Location, LocationAttribute> attributeJoin = locationSubRoot.join("attributes");
+			
+			Predicate[] attributePredicates = new Predicate[] { cb.equal(attributeJoin.get("attributeType"), entry.getKey()),
+			        cb.equal(attributeJoin.get("valueReference"), entry.getValue()),
+			        cb.isFalse(attributeJoin.get("voided")) };
+			
+			subquery.select(locationSubRoot.get("locationId")).where(attributePredicates);
+			predicates.add(cb.in(locationRoot.get("locationId")).value(subquery));
+		}
+		
+		return predicates;
 	}
 	
 	/**
