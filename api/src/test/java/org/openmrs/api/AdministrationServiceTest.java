@@ -39,7 +39,9 @@ import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.Credentials;
 import org.openmrs.api.context.UserContext;
+import org.openmrs.api.context.UsernamePasswordCredentials;
 import org.openmrs.customdatatype.datatype.BooleanDatatype;
 import org.openmrs.customdatatype.datatype.DateDatatype;
 import org.openmrs.messagesource.MutableMessageSource;
@@ -577,7 +579,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 
 		// authenticate new user to test view privilege
 		Context.logout();
-		Context.authenticate("test_user", "test");
+		Context.authenticate(getTestUserCredentials());
 		// have to add privilege in order to be able to call getAllGlobalProperties() method for new user
 		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		
@@ -601,7 +603,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 
 		// authenticate new user without privileges
 		Context.logout();
-		Context.authenticate("test_user", "test");
+		Context.authenticate(getTestUserCredentials());
 		
 		APIException exception = assertThrows(APIException.class, () -> adminService.getGlobalProperty(property.getProperty()));
 		assertEquals(exception.getMessage(), String.format("Privilege: %s, required to view globalProperty: %s",
@@ -618,7 +620,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 
 		// authenticate new user without privileges
 		Context.logout();
-		Context.authenticate("test_user", "test");
+		Context.authenticate(getTestUserCredentials());
 		// add required privilege to user
 		Role role = Context.getUserService().getRole("Provider");
 		role.addPrivilege(property.getViewPrivilege());
@@ -637,7 +639,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 
 		// authenticate new user without privileges
 		Context.logout();
-		Context.authenticate("test_user", "test");
+		Context.authenticate(getTestUserCredentials());
 
 		APIException exception = assertThrows(APIException.class, () -> adminService.getGlobalPropertyObject(property.getProperty()));
 		assertEquals(exception.getMessage(), String.format("Privilege: %s, required to view globalProperty: %s",
@@ -654,7 +656,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 
 		// authenticate new user without privileges
 		Context.logout();
-		Context.authenticate("test_user", "test");
+		Context.authenticate(getTestUserCredentials());
 		// add required privilege to user
 		Role role = Context.getUserService().getRole("Provider");
 		role.addPrivilege(property.getViewPrivilege());
@@ -674,7 +676,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 
 		// authenticate new user without privileges
 		Context.logout();
-		Context.authenticate("test_user", "test");
+		Context.authenticate(getTestUserCredentials());
 		
 		APIException exception = assertThrows(APIException.class, () -> adminService.updateGlobalProperty(property.getProperty(), "new-value"));
 		assertEquals(exception.getMessage(), String.format("Privilege: %s, required to edit globalProperty: %s",
@@ -692,7 +694,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 
 		// authenticate new user without privileges
 		Context.logout();
-		Context.authenticate("test_user", "test");
+		Context.authenticate(getTestUserCredentials());
 		// add required privilege to user
 		Role role = Context.getUserService().getRole("Provider");
 		role.addPrivilege(property.getEditPrivilege());
@@ -713,7 +715,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 
 		// authenticate new user without privileges
 		Context.logout();
-		Context.authenticate("test_user", "test");
+		Context.authenticate(getTestUserCredentials());
 		// have to add privilege in order to be able to call saveGlobalProperty(GlobalProperty) method
 		Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
 		
@@ -732,7 +734,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 
 		// authenticate new user without privileges
 		Context.logout();
-		Context.authenticate("test_user", "test");
+		Context.authenticate(getTestUserCredentials());
 		// have to add privilege in order to be able to call purgeGlobalProperty(GlobalProperty) method
 		Context.addProxyPrivilege(PrivilegeConstants.PURGE_GLOBAL_PROPERTIES);
 		
@@ -790,6 +792,15 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(property.getDeletePrivilege());
 		
 		return property;
+	}
+
+	/**
+	 * Gets the credentials of the test_user to be authenticated
+	 *
+	 * @return test_user credentials
+	 */
+	private Credentials getTestUserCredentials() {
+		return new UsernamePasswordCredentials("test_user", "test");
 	}
 	
 	@Test
