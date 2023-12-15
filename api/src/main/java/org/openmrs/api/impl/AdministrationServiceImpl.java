@@ -222,7 +222,17 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Override
 	@Transactional(readOnly = true)
 	public GlobalProperty getGlobalPropertyObject(String propertyName) {
-		return dao.getGlobalPropertyObject(propertyName);
+		GlobalProperty gp = dao.getGlobalPropertyObject(propertyName);
+		if (gp != null) {
+			if (canViewGlobalProperty(gp)) {
+				return gp;
+			} else {
+				throw new APIException("GlobalProperty.error.privilege.required.view", new Object[] {
+					gp.getViewPrivilege().getPrivilege(), propertyName });
+			}
+		} else {
+			return null;
+		}
 	}
 	
 	/**
