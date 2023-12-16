@@ -19,7 +19,7 @@ pipeline {
             }
             post {
                 success {
-                    archiveArtifact artifact: '**/openmrs.war'
+                    archiveArtifacts artifacts: '**/openmrs.war'
                     junit testResults: '**/TEST-*.xml'
                 }
                 failure { 
