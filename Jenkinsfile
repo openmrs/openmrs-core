@@ -22,7 +22,7 @@ pipeline {
                     archiveArtifact artifact: '**/openmrs.war'
                     junit testResults: '**/TEST-*.xml'
                 }
-                failuer { 
+                failure { 
                     mail subject: '$JOB_BASE_NAME Failed',
                          from: 'siddhant.hemant.kadu@vz.com',
                          to: 'vzi-devops@vz.com',
