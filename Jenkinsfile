@@ -19,7 +19,7 @@ pipeline {
             }
             post {
                 always {
-                    realtimeJUnit testResults: '**/TEST-*.xml'   
+                    junit testResults: '**/TEST-*.xml'   
                 }
                 success {
                     archiveArtifacts artifacts: '**/openmrs.war'
