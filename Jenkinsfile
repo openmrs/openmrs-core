@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Clone') {
             steps {
-                git url: 'https://github.com/siddhaantkadu/openmrs-core.git'
+                git url: 'https://github.com/siddhaantkadu/openmrs-core.git',
                     branch: 'main'
             }
         }
