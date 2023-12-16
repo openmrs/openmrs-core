@@ -1,5 +1,5 @@
 pipeline {
-    agent { lable 'MAVEN'}
+    agent { label 'MAVEN'}
     options {
         timeout(time: 1, unit: 'HOURS')
     }
@@ -24,7 +24,7 @@ pipeline {
                 success {
                     archiveArtifacts artifacts: '**/openmrs.war'
                 }
-                failuer {
+                failure {
                     mail subject: 'OpenMRS Project Has been faild',
                          from: 'siddhant.kadu@vz.com',
                          to: 'devops.vzi@vz.com',
