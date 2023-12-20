@@ -9,14 +9,16 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.hibernate.Criteria;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Restrictions;
 import org.openmrs.Auditable;
 import org.openmrs.OpenmrsData;
 import org.openmrs.OpenmrsMetadata;
@@ -66,7 +68,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	@Override
 	public SerializedObject getSerializedObject(Integer id) throws DAOException {
 		if (id != null) {
-			return (SerializedObject) sessionFactory.getCurrentSession().get(SerializedObject.class, id);
+			return sessionFactory.getCurrentSession().get(SerializedObject.class, id);
 		}
 		return null;
 	}
@@ -85,13 +87,10 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	 */
 	@Override
 	public SerializedObject getSerializedObjectByUuid(String uuid) throws DAOException {
-		SerializedObject ret = null;
 		if (uuid != null) {
-			Criteria c = sessionFactory.getCurrentSession().createCriteria(SerializedObject.class);
-			c.add(Restrictions.eq("uuid", uuid));
-			ret = (SerializedObject) c.uniqueResult();
+			return HibernateUtil.getUniqueEntityByUUID(sessionFactory, SerializedObject.class, uuid);
 		}
-		return ret;
+		return null;
 	}
 	
 	/**
@@ -110,17 +109,28 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	 * @see SerializedObjectDAO#getAllSerializedObjectsByName(Class, String, boolean)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<SerializedObject> getAllSerializedObjectsByName(Class<?> type, String name, boolean exactMatchOnly)
-	        throws DAOException {
-		Criteria c = sessionFactory.getCurrentSession().createCriteria(SerializedObject.class);
-		c.add(Restrictions.or(Restrictions.eq("type", type.getName()), Restrictions.eq("subtype", type.getName())));
+		throws DAOException {
+
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<SerializedObject> cq = cb.createQuery(SerializedObject.class);
+		Root<SerializedObject> root = cq.from(SerializedObject.class);
+
+		Predicate predicateForType = cb.or(
+			cb.equal(root.get("type"), type.getName()), 
+			cb.equal(root.get("subtype"), type.getName())
+		);
+		
+		Predicate predicateForName;
 		if (exactMatchOnly) {
-			c.add(Restrictions.eq("name", name));
+			predicateForName = cb.equal(root.get("name"), name);
 		} else {
-			c.add(Restrictions.ilike("name", name, MatchMode.ANYWHERE));
+			predicateForName = cb.like(cb.lower(root.get("name")), MatchMode.ANYWHERE.toLowerCasePattern(name));
 		}
-		return (List<SerializedObject>) c.list();
+
+		cq.where(predicateForType, predicateForName);
+		return session.createQuery(cq).getResultList();
 	}
 	
 	/**
@@ -141,14 +151,25 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	 * @see SerializedObjectDAO#getAllObjects(Class, boolean)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	public List<SerializedObject> getAllSerializedObjects(Class<?> type, boolean includeRetired) throws DAOException {
-		Criteria c = sessionFactory.getCurrentSession().createCriteria(SerializedObject.class);
-		c.add(Restrictions.or(Restrictions.eq("type", type.getName()), Restrictions.eq("subtype", type.getName())));
+	public List<SerializedObject> getAllSerializedObjects(Class<?> type, boolean includeRetired) {
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<SerializedObject> cq = cb.createQuery(SerializedObject.class);
+		Root<SerializedObject> root = cq.from(SerializedObject.class);
+
+		List<Predicate> predicates = new ArrayList<>();
+		predicates.add(cb.or(
+			cb.equal(root.get("type"), type.getName()),
+			cb.equal(root.get("subtype"), type.getName())
+		));
+		
 		if (!includeRetired) {
-			c.add(Restrictions.eq("retired", false));
+			predicates.add(cb.isFalse(root.get("retired")));
 		}
-		return (List<SerializedObject>) c.list();
+		
+		cq.where(predicates.toArray(new Predicate[]{}));
+
+		return session.createQuery(cq).getResultList();
 	}
 	
 	/**
