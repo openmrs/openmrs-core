@@ -9,6 +9,12 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -16,12 +22,8 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 
-import org.hibernate.Criteria;
-import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.FlushMode;
 import org.hibernate.type.StandardBasicTypes;
 import org.openmrs.Cohort;
@@ -82,49 +84,62 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	 */
 	@Override
 	public Program getProgram(Integer programId) throws DAOException {
-		return (Program) sessionFactory.getCurrentSession().get(Program.class, programId);
+		return sessionFactory.getCurrentSession().get(Program.class, programId);
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.ProgramWorkflowDAO#getAllPrograms(boolean)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<Program> getAllPrograms(boolean includeRetired) throws DAOException {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Program.class);
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Program> cq = cb.createQuery(Program.class);
+		Root<Program> root = cq.from(Program.class);
+
 		if (!includeRetired) {
-			criteria.add(Restrictions.eq("retired", false));
+			cq.where(cb.isFalse(root.get("retired")));
 		}
-		return criteria.list();
+
+		return session.createQuery(cq).getResultList();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.ProgramWorkflowDAO#getProgramsByName(String, boolean)
 	 */
 	@Override
 	public List<Program> getProgramsByName(String programName, boolean includeRetired) {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Program.class);
-		criteria.add(Restrictions.eq("name", programName));
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Program> cq = cb.createQuery(Program.class);
+		Root<Program> root = cq.from(Program.class);
+
+		List<Predicate> predicates = new ArrayList<>();
+		predicates.add(cb.equal(root.get("name"), programName));
+
 		if (!includeRetired) {
-			criteria.add(Restrictions.eq("retired", false));
+			predicates.add(cb.isFalse(root.get("retired")));
 		}
-		
-		@SuppressWarnings("unchecked")
-		List<Program> list = criteria.list();
-		
-		return list;
+
+		cq.where(cb.and(predicates.toArray(new Predicate[]{})));
+		return session.createQuery(cq).getResultList();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.ProgramWorkflowDAO#findPrograms(java.lang.String)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<Program> findPrograms(String nameFragment) throws DAOException {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Program.class, "program");
-		criteria.add(Restrictions.ilike("name", nameFragment, MatchMode.ANYWHERE));
-		criteria.addOrder(Order.asc("name"));
-		return criteria.list();
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Program> cq = cb.createQuery(Program.class);
+		Root<Program> root = cq.from(Program.class);
+
+		Predicate nameLike = cb.like(cb.lower(root.get("name")), MatchMode.ANYWHERE.toLowerCasePattern(nameFragment));
+
+		cq.where(nameLike).orderBy(cb.asc(root.get("name")));
+
+		return session.createQuery(cq).getResultList();
 	}
 	
 	/**
@@ -146,7 +161,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	public PatientProgram savePatientProgram(PatientProgram patientProgram) throws DAOException {
                 CustomDatatypeUtil.saveAttributesIfNecessary(patientProgram);
 
-                if (patientProgram.getPatientProgramId() == null) {
+		if (patientProgram.getPatientProgramId() == null) {
 			sessionFactory.getCurrentSession().save(patientProgram);
 		} else {
 			sessionFactory.getCurrentSession().merge(patientProgram);
@@ -160,7 +175,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	 */
 	@Override
 	public PatientProgram getPatientProgram(Integer patientProgramId) throws DAOException {
-		return (PatientProgram) sessionFactory.getCurrentSession().get(PatientProgram.class, patientProgramId);
+		return sessionFactory.getCurrentSession().get(PatientProgram.class, patientProgramId);
 	}
 	
 	/**
@@ -168,35 +183,44 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	 *      Date, Date, boolean)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<PatientProgram> getPatientPrograms(Patient patient, Program program, Date minEnrollmentDate,
-	        Date maxEnrollmentDate, Date minCompletionDate, Date maxCompletionDate, boolean includeVoided)
-	        throws DAOException {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PatientProgram.class);
+												   Date maxEnrollmentDate, Date minCompletionDate, Date maxCompletionDate, boolean includeVoided)
+		throws DAOException {
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<PatientProgram> cq = cb.createQuery(PatientProgram.class);
+		Root<PatientProgram> root = cq.from(PatientProgram.class);
+		
+		List<Predicate> predicates = new ArrayList<>();
 		if (patient != null) {
-			crit.add(Restrictions.eq("patient", patient));
+			predicates.add(cb.equal(root.get("patient"), patient));
 		}
 		if (program != null) {
-			crit.add(Restrictions.eq("program", program));
+			predicates.add(cb.equal(root.get("program"), program));
 		}
 		if (minEnrollmentDate != null) {
-			crit.add(Restrictions.ge("dateEnrolled", minEnrollmentDate));
+			predicates.add(cb.greaterThanOrEqualTo(root.get("dateEnrolled"), minEnrollmentDate));
 		}
 		if (maxEnrollmentDate != null) {
-			crit.add(Restrictions.le("dateEnrolled", maxEnrollmentDate));
+			predicates.add(cb.lessThanOrEqualTo(root.get("dateEnrolled"), maxEnrollmentDate));
 		}
 		if (minCompletionDate != null) {
-			crit.add(Restrictions.or(Restrictions.isNull("dateCompleted"), Restrictions.ge("dateCompleted",
-			    minCompletionDate)));
+			predicates.add(cb.or(
+				cb.isNull(root.get("dateCompleted")),
+				cb.greaterThanOrEqualTo(root.get("dateCompleted"), minCompletionDate)
+			));
 		}
 		if (maxCompletionDate != null) {
-			crit.add(Restrictions.le("dateCompleted", maxCompletionDate));
+			predicates.add(cb.lessThanOrEqualTo(root.get("dateCompleted"), maxCompletionDate));
 		}
 		if (!includeVoided) {
-			crit.add(Restrictions.eq("voided", false));
+			predicates.add(cb.isFalse(root.get("voided")));
 		}
-		crit.addOrder(Order.asc("dateEnrolled"));
-		return crit.list();
+
+		cq.where(cb.and(predicates.toArray(new Predicate[]{})))
+			.orderBy(cb.asc(root.get("dateEnrolled")));
+
+		return session.createQuery(cq).getResultList();
 	}
 	
 	/**
@@ -222,12 +246,12 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 		hql += " order by patient.patientId, dateEnrolled";
 		Query query = sessionFactory.getCurrentSession().createQuery(hql);
 		if (cohort != null) {
-			query.setParameterList("patientIds", cohort.getMemberIds());
+			query.setParameter("patientIds", cohort.getMemberIds());
 		}
 		if (programs != null) {
-			query.setParameterList("programs", programs);
+			query.setParameter("programs", programs);
 		}
-		return query.list();
+		return query.getResultList();
 	}
 	
 	/**
@@ -255,17 +279,21 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	 * @see org.openmrs.api.db.ProgramWorkflowDAO#getAllConceptStateConversions()
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<ConceptStateConversion> getAllConceptStateConversions() throws DAOException {
-		return sessionFactory.getCurrentSession().createCriteria(ConceptStateConversion.class).list();
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<ConceptStateConversion> cq = cb.createQuery(ConceptStateConversion.class);
+		cq.from(ConceptStateConversion.class);
+
+		return session.createQuery(cq).getResultList();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.ProgramWorkflowDAO#getConceptStateConversion(java.lang.Integer)
 	 */
 	@Override
 	public ConceptStateConversion getConceptStateConversion(Integer conceptStateConversionId) {
-		return (ConceptStateConversion) sessionFactory.getCurrentSession().get(ConceptStateConversion.class,
+		return sessionFactory.getCurrentSession().get(ConceptStateConversion.class,
 		    conceptStateConversionId);
 	}
 	
@@ -283,16 +311,21 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	 */
 	@Override
 	public ConceptStateConversion getConceptStateConversion(ProgramWorkflow workflow, Concept trigger) {
-		ConceptStateConversion csc = null;
-		
-		if (workflow != null && trigger != null) {
-			Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptStateConversion.class, "csc");
-			criteria.add(Restrictions.eq("csc.programWorkflow", workflow));
-			criteria.add(Restrictions.eq("csc.concept", trigger));
-			csc = (ConceptStateConversion) criteria.uniqueResult();
+		if (workflow == null || trigger == null) {
+			return null;
 		}
-		
-		return csc;
+
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<ConceptStateConversion> cq = cb.createQuery(ConceptStateConversion.class);
+		Root<ConceptStateConversion> root = cq.from(ConceptStateConversion.class);
+
+		cq.where(cb.and(
+			cb.equal(root.get("programWorkflow"), workflow),
+			cb.equal(root.get("concept"), trigger)
+		));
+
+		return session.createQuery(cq).uniqueResult();
 	}
 	
 	/**
@@ -300,8 +333,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	 */
 	@Override
 	public ConceptStateConversion getConceptStateConversionByUuid(String uuid) {
-		return (ConceptStateConversion) sessionFactory.getCurrentSession().createQuery(
-		    "from ConceptStateConversion csc where csc.uuid = :uuid").setString("uuid", uuid).uniqueResult();
+		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, ConceptStateConversion.class, uuid);
 	}
 	
 	/**
@@ -309,8 +341,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	 */
 	@Override
 	public PatientProgram getPatientProgramByUuid(String uuid) {
-		return (PatientProgram) sessionFactory.getCurrentSession().createQuery(
-		    "from PatientProgram pp where pp.uuid = :uuid").setString("uuid", uuid).uniqueResult();
+		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, PatientProgram.class, uuid);
 	}
 	
 	/**
@@ -318,8 +349,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	 */
 	@Override
 	public Program getProgramByUuid(String uuid) {
-		return (Program) sessionFactory.getCurrentSession().createQuery("from Program p where p.uuid = :uuid").setString(
-		    "uuid", uuid).uniqueResult();
+		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, Program.class, uuid);
 	}
 	
 	/**
@@ -327,7 +357,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	 */
 	@Override
 	public ProgramWorkflowState getState(Integer stateId) {
-		return (ProgramWorkflowState) sessionFactory.getCurrentSession().get(ProgramWorkflowState.class, stateId);
+		return sessionFactory.getCurrentSession().get(ProgramWorkflowState.class, stateId);
 	}
 	
 	/**
@@ -335,14 +365,12 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	 */
 	@Override
 	public ProgramWorkflowState getStateByUuid(String uuid) {
-		return (ProgramWorkflowState) sessionFactory.getCurrentSession().createQuery(
-		    "from ProgramWorkflowState pws where pws.uuid = :uuid").setString("uuid", uuid).uniqueResult();
+		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, ProgramWorkflowState.class, uuid);
 	}
 	
 	@Override
 	public PatientState getPatientStateByUuid(String uuid) {
-		return (PatientState) sessionFactory.getCurrentSession().createQuery("from PatientState pws where pws.uuid = :uuid")
-		        .setString("uuid", uuid).uniqueResult();
+		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, PatientState.class, uuid);
 	}
 	
 	/**
@@ -350,7 +378,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	 */
 	@Override
 	public ProgramWorkflow getWorkflow(Integer workflowId) {
-		return (ProgramWorkflow) sessionFactory.getCurrentSession().get(ProgramWorkflow.class, workflowId);
+		return sessionFactory.getCurrentSession().get(ProgramWorkflow.class, workflowId);
 	}
 	
 	/**
@@ -358,8 +386,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	 */
 	@Override
 	public ProgramWorkflow getWorkflowByUuid(String uuid) {
-		return (ProgramWorkflow) sessionFactory.getCurrentSession().createQuery(
-		    "from ProgramWorkflow pw where pw.uuid = :uuid").setString("uuid", uuid).uniqueResult();
+		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, ProgramWorkflow.class, uuid);
 	}
 	
 	/**
@@ -369,8 +396,8 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	public List<Program> getProgramsByConcept(Concept concept) {
 		String pq = "select distinct p from Program p where p.concept = :concept";
 		Query pquery = sessionFactory.getCurrentSession().createQuery(pq);
-		pquery.setEntity("concept", concept);
-		return pquery.list();
+		pquery.setParameter("concept", concept);
+		return pquery.getResultList();
 	}
 	
 	/**
@@ -380,8 +407,8 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	public List<ProgramWorkflow> getProgramWorkflowsByConcept(Concept concept) {
 		String wq = "select distinct w from ProgramWorkflow w where w.concept = :concept";
 		Query wquery = sessionFactory.getCurrentSession().createQuery(wq);
-		wquery.setEntity("concept", concept);
-		return wquery.list();
+		wquery.setParameter("concept", concept);
+		return wquery.getResultList();
 	}
 	
 	/**
@@ -391,89 +418,93 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	public List<ProgramWorkflowState> getProgramWorkflowStatesByConcept(Concept concept) {
 		String sq = "select distinct s from ProgramWorkflowState s where s.concept = :concept";
 		Query squery = sessionFactory.getCurrentSession().createQuery(sq);
-		squery.setEntity("concept", concept);
-		return squery.list();
+		squery.setParameter("concept", concept);
+		return squery.getResultList();
 	}
         
-        @Override
-        public List<ProgramAttributeType> getAllProgramAttributeTypes() {
-            return sessionFactory.getCurrentSession().createCriteria(ProgramAttributeType.class).list();
-        }
+	@Override
+	public List<ProgramAttributeType> getAllProgramAttributeTypes() {
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<ProgramAttributeType> cq = cb.createQuery(ProgramAttributeType.class);
+		cq.from(ProgramAttributeType.class);
 
-        @Override
-        public ProgramAttributeType getProgramAttributeType(Integer id) {
-            return (ProgramAttributeType) sessionFactory.getCurrentSession().get(ProgramAttributeType.class, id);
-        }
+		return session.createQuery(cq).getResultList();
+	}
 
-        @Override
-        public ProgramAttributeType getProgramAttributeTypeByUuid(String uuid) {
-            return (ProgramAttributeType) sessionFactory.getCurrentSession().createCriteria(ProgramAttributeType.class).add(
-                    Restrictions.eq("uuid", uuid)).uniqueResult();
-        }
+	@Override
+	public ProgramAttributeType getProgramAttributeType(Integer id) {
+		return sessionFactory.getCurrentSession().get(ProgramAttributeType.class, id);
+	}
 
-        @Override
-        public ProgramAttributeType saveProgramAttributeType(ProgramAttributeType programAttributeType) {
-            sessionFactory.getCurrentSession().saveOrUpdate(programAttributeType);
-            return programAttributeType;
-        }
+	@Override
+	public ProgramAttributeType getProgramAttributeTypeByUuid(String uuid) {
+		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, ProgramAttributeType.class, uuid);
+	}
 
-        @Override
-        public PatientProgramAttribute getPatientProgramAttributeByUuid(String uuid) {
-            return (PatientProgramAttribute) sessionFactory.getCurrentSession().createCriteria(PatientProgramAttribute.class).add(Restrictions.eq("uuid", uuid)).uniqueResult();
-        }
+	@Override
+	public ProgramAttributeType saveProgramAttributeType(ProgramAttributeType programAttributeType) {
+		sessionFactory.getCurrentSession().saveOrUpdate(programAttributeType);
+		return programAttributeType;
+	}
 
-        @Override
-        public void purgeProgramAttributeType(ProgramAttributeType type) {
-            sessionFactory.getCurrentSession().delete(type);
-        }
+	@Override
+	public PatientProgramAttribute getPatientProgramAttributeByUuid(String uuid) {
+		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, PatientProgramAttribute.class, uuid);
+	}
 
-        @Override
-        public List<PatientProgram> getPatientProgramByAttributeNameAndValue(String attributeName, String attributeValue) {
-            FlushMode flushMode = sessionFactory.getCurrentSession().getHibernateFlushMode();
-            sessionFactory.getCurrentSession().setHibernateFlushMode(FlushMode.MANUAL);
-            Query query;
-            try {
-                query = sessionFactory.getCurrentSession().createQuery(
-                        "SELECT pp FROM patient_program pp " +
-                                "INNER JOIN pp.attributes attr " +
-                                "INNER JOIN attr.attributeType attr_type " +
-                                "WHERE attr.valueReference = :attributeValue " +
-                                "AND attr_type.name = :attributeName " +
-                                "AND pp.voided = 0")
-                        .setParameter("attributeName", attributeName)
-                        .setParameter("attributeValue", attributeValue);
-                return query.list();
-            } finally {
-                sessionFactory.getCurrentSession().setHibernateFlushMode(flushMode);
-            }
-        }
+	@Override
+	public void purgeProgramAttributeType(ProgramAttributeType type) {
+		sessionFactory.getCurrentSession().delete(type);
+	}
 
-        @Override
-        public Map<Object, Object> getPatientProgramAttributeByAttributeName(List<Integer> patientIds, String attributeName) {
-            Map<Object, Object> patientProgramAttributes = new HashMap<>();
-            if (patientIds.isEmpty() || attributeName == null) {
-                return patientProgramAttributes;
-            }
-            String commaSeperatedPatientIds = StringUtils.join(patientIds, ",");
-            List<Object> list = sessionFactory.getCurrentSession().createSQLQuery(
-                    "SELECT p.patient_id as person_id, " +
-                            " concat('{',group_concat(DISTINCT (coalesce(concat('\"',ppt.name,'\":\"', COALESCE (cn.name, ppa.value_reference),'\"'))) SEPARATOR ','),'}') AS patientProgramAttributeValue  " +
-                            " from patient p " +
-                            " join patient_program pp on p.patient_id = pp.patient_id and p.patient_id in (" + commaSeperatedPatientIds + ")" +
-                            " join patient_program_attribute ppa on pp.patient_program_id = ppa.patient_program_id and ppa.voided=0" +
-                            " join program_attribute_type ppt on ppa.attribute_type_id = ppt.program_attribute_type_id and ppt.name ='" + attributeName + "' "+
-                            " LEFT OUTER JOIN concept_name cn on ppa.value_reference = cn.concept_id and cn.concept_name_type= 'FULLY_SPECIFIED' and cn.voided=0 and ppt.datatype like '%ConceptDataType%'" +
-                            " group by p.patient_id")
-                    .addScalar("person_id", StandardBasicTypes.INTEGER)
-                    .addScalar("patientProgramAttributeValue", StandardBasicTypes.STRING)
-                    .list();
+	@Override
+	public List<PatientProgram> getPatientProgramByAttributeNameAndValue(String attributeName, String attributeValue) {
+		FlushMode flushMode = sessionFactory.getCurrentSession().getHibernateFlushMode();
+		sessionFactory.getCurrentSession().setHibernateFlushMode(FlushMode.MANUAL);
+		Query query;
+		try {
+			query = sessionFactory.getCurrentSession().createQuery(
+					"SELECT pp FROM patient_program pp " +
+							"INNER JOIN pp.attributes attr " +
+							"INNER JOIN attr.attributeType attr_type " +
+							"WHERE attr.valueReference = :attributeValue " +
+							"AND attr_type.name = :attributeName " +
+							"AND pp.voided = 0")
+					.setParameter("attributeName", attributeName)
+					.setParameter("attributeValue", attributeValue);
+			return query.getResultList();
+		} finally {
+			sessionFactory.getCurrentSession().setHibernateFlushMode(flushMode);
+		}
+	}
 
-            for (Object o : list) {
-                Object[] arr = (Object[]) o;
-                patientProgramAttributes.put(arr[0], arr[1]);
-            }
+	@Override
+	public Map<Object, Object> getPatientProgramAttributeByAttributeName(List<Integer> patientIds, String attributeName) {
+		Map<Object, Object> patientProgramAttributes = new HashMap<>();
+		if (patientIds.isEmpty() || attributeName == null) {
+			return patientProgramAttributes;
+		}
+		String commaSeperatedPatientIds = StringUtils.join(patientIds, ",");
+		List<Object> list = sessionFactory.getCurrentSession().createSQLQuery(
+				"SELECT p.patient_id as person_id, " +
+						" concat('{',group_concat(DISTINCT (coalesce(concat('\"',ppt.name,'\":\"', COALESCE (cn.name, ppa.value_reference),'\"'))) SEPARATOR ','),'}') AS patientProgramAttributeValue  " +
+						" from patient p " +
+						" join patient_program pp on p.patient_id = pp.patient_id and p.patient_id in (" + commaSeperatedPatientIds + ")" +
+						" join patient_program_attribute ppa on pp.patient_program_id = ppa.patient_program_id and ppa.voided=0" +
+						" join program_attribute_type ppt on ppa.attribute_type_id = ppt.program_attribute_type_id and ppt.name ='" + attributeName + "' "+
+						" LEFT OUTER JOIN concept_name cn on ppa.value_reference = cn.concept_id and cn.concept_name_type= 'FULLY_SPECIFIED' and cn.voided=0 and ppt.datatype like '%ConceptDataType%'" +
+						" group by p.patient_id")
+				.addScalar("person_id", StandardBasicTypes.INTEGER)
+				.addScalar("patientProgramAttributeValue", StandardBasicTypes.STRING)
+				.list();
 
-            return patientProgramAttributes;
+		for (Object o : list) {
+			Object[] arr = (Object[]) o;
+			patientProgramAttributes.put(arr[0], arr[1]);
+		}
 
-        }
+		return patientProgramAttributes;
+
+	}
 }
