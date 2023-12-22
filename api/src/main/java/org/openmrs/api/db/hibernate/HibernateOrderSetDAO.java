@@ -9,9 +9,11 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
 
-import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
@@ -68,20 +70,25 @@ public class HibernateOrderSetDAO implements OrderSetDAO {
 	 */
 	@Override
 	public List<OrderSet> getOrderSets(boolean includeRetired) throws DAOException {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(OrderSet.class, "orderSet");
-		
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<OrderSet> cq = cb.createQuery(OrderSet.class);
+		Root<OrderSet> root = cq.from(OrderSet.class);
+
 		if (!includeRetired) {
-			crit.add(Restrictions.eq("retired", Boolean.FALSE));
+			cq.where(cb.isFalse(root.get("retired")));
 		}
-		return crit.list();
+
+		return session.createQuery(cq).getResultList();
 	}
-	
+
+
 	/**
 	 * @see org.openmrs.api.db.OrderSetDAO#getOrderSetById(Integer)
 	 */
 	@Override
 	public OrderSet getOrderSetById(Integer orderSetId) throws DAOException {
-		return (OrderSet) sessionFactory.getCurrentSession().get(OrderSet.class, orderSetId);
+		return sessionFactory.getCurrentSession().get(OrderSet.class, orderSetId);
 	}
 	
 	/**
@@ -89,27 +96,29 @@ public class HibernateOrderSetDAO implements OrderSetDAO {
 	 */
 	@Override
 	public OrderSet getOrderSetByUniqueUuid(String orderSetUuid) throws DAOException {
-		return (OrderSet) sessionFactory.getCurrentSession().createQuery("from OrderSet o where o.uuid = :uuid").setString(
-		    "uuid", orderSetUuid).uniqueResult();
+		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, OrderSet.class, orderSetUuid);
 	}
 	
-
 	/**
 	 * @see org.openmrs.api.db.OrderSetDAO#getOrderSetMemberByUuid(String)
 	 */
 	@Override
 	public OrderSetMember getOrderSetMemberByUuid(String uuid) throws DAOException {
-		return (OrderSetMember) sessionFactory.getCurrentSession().createQuery("from OrderSetMember osm where osm.uuid = :uuid").setString(
-				"uuid", uuid).uniqueResult();
+		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, OrderSetMember.class, uuid);
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.OrderSetDAO#getAllOrderSetAttributeTypes()
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<OrderSetAttributeType> getAllOrderSetAttributeTypes() {
-		return sessionFactory.getCurrentSession().createCriteria(OrderSetAttributeType.class).list();
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<OrderSetAttributeType> cq = cb.createQuery(OrderSetAttributeType.class);
+		cq.from(OrderSetAttributeType.class);
+		
+		return session.createQuery(cq).getResultList();
+
 	}
 
 	/**
@@ -125,8 +134,7 @@ public class HibernateOrderSetDAO implements OrderSetDAO {
 	 */
 	@Override
 	public OrderSetAttributeType getOrderSetAttributeTypeByUuid(String uuid) {
-		return (OrderSetAttributeType) sessionFactory.getCurrentSession().createCriteria(OrderSetAttributeType.class).add(
-		    Restrictions.eq("uuid", uuid)).uniqueResult();
+		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, OrderSetAttributeType.class, uuid);
 	}
 
 	/**
@@ -151,8 +159,7 @@ public class HibernateOrderSetDAO implements OrderSetDAO {
 	 */
 	@Override
 	public OrderSetAttribute getOrderSetAttributeByUuid(String uuid) {
-		return (OrderSetAttribute) sessionFactory.getCurrentSession().createCriteria(OrderSetAttribute.class).add(
-		    Restrictions.eq("uuid", uuid)).uniqueResult();
+		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, OrderSetAttribute.class, uuid);
 	}
 
 	/**
@@ -160,8 +167,13 @@ public class HibernateOrderSetDAO implements OrderSetDAO {
 	 */
 	@Override
 	public OrderSetAttributeType getOrderSetAttributeTypeByName(String name) {
-		return (OrderSetAttributeType) sessionFactory.getCurrentSession().createCriteria(OrderSetAttributeType.class).add(
-		    Restrictions.eq("name", name)).uniqueResult();
-	}
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<OrderSetAttributeType> cq = cb.createQuery(OrderSetAttributeType.class);
+		Root<OrderSetAttributeType> root = cq.from(OrderSetAttributeType.class);
 
+		cq.where(cb.equal(root.get("name"), name));
+
+		return session.createQuery(cq).uniqueResult();
+	}
 }
