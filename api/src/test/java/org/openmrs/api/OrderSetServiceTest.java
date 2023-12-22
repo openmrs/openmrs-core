@@ -42,6 +42,9 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	
 	protected ConceptService conceptService;
 	
+	protected static final String AUDIT_DATE = "Audit Date";
+	protected static final String INVALID_AUDIT_DATE = "Non existent name";
+	
 	protected static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
 	
 	protected static final String ORDER_SET_ATTRIBUTES = "org/openmrs/api/include/OrderSetServiceTest-attributes.xml";
@@ -383,7 +386,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getOrderSetAttributeTypeByUuid_shouldReturnTheOrderSetAttributeTypeWithTheGivenUuid() {
 		executeDataSet(ORDER_SET_ATTRIBUTES);
-		assertEquals("Audit Date", Context.getOrderSetService().getOrderSetAttributeTypeByUuid(
+		assertEquals(AUDIT_DATE, Context.getOrderSetService().getOrderSetAttributeTypeByUuid(
 		    "8516cc50-6f9f-33e0-8414-001e648eb67e").getName());
 	}
 
@@ -475,5 +478,28 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 		assertNull(orderSetAttributeType.getRetireReason());
 	}
 
+	/**
+	 * @see OrderSetService#getOrderSetAttributeTypeByName(String) 
+	 */
+	@Test
+	public void getOrderSetAttributeTypeByName_shouldGetMatchingOrderSetAttributeType() {
+		executeDataSet(ORDER_SET_ATTRIBUTES);
+		
+		OrderSetAttributeType attributeType = orderSetService.getOrderSetAttributeTypeByName(AUDIT_DATE);
 
+		assertNotNull(attributeType, "The fetched OrderSetAttributeType should not be null");
+		assertEquals(AUDIT_DATE, attributeType.getName(), "The name of the fetched attribute type should match the requested name");
+	}
+
+	/**
+	 * @see OrderSetService#getOrderSetAttributeTypeByName(String)
+	 */
+	@Test
+	public void getOrderSetAttributeTypeByName_shouldReturnNullForNonExistentName() {
+		executeDataSet(ORDER_SET_ATTRIBUTES);
+
+		OrderSetAttributeType attributeType = orderSetService.getOrderSetAttributeTypeByName(INVALID_AUDIT_DATE);
+
+		assertNull(attributeType, "The fetched OrderSetAttributeType should be null");
+	}
 }
