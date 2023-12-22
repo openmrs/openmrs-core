@@ -9,18 +9,19 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
 import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.Patient;
@@ -28,7 +29,6 @@ import org.openmrs.Visit;
 import org.openmrs.VisitAttribute;
 import org.openmrs.VisitAttributeType;
 import org.openmrs.VisitType;
-import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.VisitDAO;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,19 +55,31 @@ public class HibernateVisitDAO implements VisitDAO {
 	 * @see org.openmrs.api.db.VisitDAO#getAllVisitTypes()
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
-	public List<VisitType> getAllVisitTypes() throws APIException {
-		return getCurrentSession().createCriteria(VisitType.class).list();
+	public List<VisitType> getAllVisitTypes() {
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<VisitType> cq = cb.createQuery(VisitType.class);
+		cq.from(VisitType.class);
+		
+		return session.createQuery(cq).getResultList();
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#getAllVisitTypes(boolean)
 	 */
 	@Override
-	public List<VisitType> getAllVisitTypes(boolean includeRetired) throws DAOException {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(VisitType.class);
-		return includeRetired ? criteria.list() : criteria.add(Restrictions.eq("retired", includeRetired)).list();
+	public List<VisitType> getAllVisitTypes(boolean includeRetired) {
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<VisitType> cq = cb.createQuery(VisitType.class);
+		Root<VisitType> root = cq.from(VisitType.class);
+
+		if (!includeRetired) {
+			cq.where(cb.equal(root.get("retired"), includeRetired));
+		}
+
+		return session.createQuery(cq).getResultList();
 	}
 	
 	/**
@@ -76,7 +88,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	@Override
 	@Transactional(readOnly = true)
 	public VisitType getVisitType(Integer visitTypeId) {
-		return (VisitType) sessionFactory.getCurrentSession().get(VisitType.class, visitTypeId);
+		return sessionFactory.getCurrentSession().get(VisitType.class, visitTypeId);
 	}
 	
 	/**
@@ -85,21 +97,24 @@ public class HibernateVisitDAO implements VisitDAO {
 	@Override
 	@Transactional(readOnly = true)
 	public VisitType getVisitTypeByUuid(String uuid) {
-		return (VisitType) sessionFactory.getCurrentSession().createQuery("from VisitType vt where vt.uuid = :uuid")
-		        .setString("uuid", uuid).uniqueResult();
+		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, VisitType.class, uuid);
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#getVisitTypes(java.lang.String)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
 	public List<VisitType> getVisitTypes(String fuzzySearchPhrase) {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(VisitType.class);
-		criteria.add(Restrictions.ilike("name", fuzzySearchPhrase, MatchMode.ANYWHERE));
-		criteria.addOrder(Order.asc("name"));
-		return criteria.list();
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<VisitType> cq = cb.createQuery(VisitType.class);
+		Root<VisitType> root = cq.from(VisitType.class);
+		
+		cq.where(cb.like(cb.lower(root.get("name")), MatchMode.ANYWHERE.toLowerCasePattern(fuzzySearchPhrase)));
+		cq.orderBy(cb.asc(root.get("name")));
+		
+		return session.createQuery(cq).getResultList();
 	}
 	
 	/**
@@ -127,7 +142,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	@Override
 	@Transactional(readOnly = true)
 	public Visit getVisit(Integer visitId) throws DAOException {
-		return (Visit) getCurrentSession().get(Visit.class, visitId);
+		return getCurrentSession().get(Visit.class, visitId);
 	}
 	
 	/**
@@ -136,8 +151,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	@Override
 	@Transactional(readOnly = true)
 	public Visit getVisitByUuid(String uuid) throws DAOException {
-		return (Visit) getCurrentSession().createQuery("from Visit v where v.uuid = :uuid").setString("uuid", uuid)
-		        .uniqueResult();
+		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, Visit.class, uuid);
 	}
 	
 	/**
@@ -164,75 +178,81 @@ public class HibernateVisitDAO implements VisitDAO {
 	 *      java.util.Collection, java.util.Collection, java.util.Date, java.util.Date,
 	 *      java.util.Date, java.util.Date, java.util.Map, boolean, boolean)
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional(readOnly = true)
 	public List<Visit> getVisits(Collection<VisitType> visitTypes, Collection<Patient> patients,
 	        Collection<Location> locations, Collection<Concept> indications, Date minStartDatetime, Date maxStartDatetime,
 	        Date minEndDatetime, Date maxEndDatetime, final Map<VisitAttributeType, String> serializedAttributeValues,
-	        boolean includeInactive, boolean includeVoided) throws DAOException {
-		
-		Criteria criteria = getCurrentSession().createCriteria(Visit.class);
-		
-		if (visitTypes != null) {
-			criteria.add(Restrictions.in("visitType", visitTypes));
+	        boolean includeInactive, boolean includeVoided) {
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Visit> cq = cb.createQuery(Visit.class);
+		Root<Visit> root = cq.from(Visit.class);
+
+		List<Predicate> predicates = new ArrayList<>();
+
+		if (visitTypes != null && !visitTypes.isEmpty()) {
+			predicates.add(root.get("visitType").in(visitTypes));
 		}
-		if (patients != null) {
-			criteria.add(Restrictions.in("patient", patients));
+		if (patients != null && !patients.isEmpty()) {
+			predicates.add(root.get("patient").in(patients));
 		}
-		if (locations != null) {
-			criteria.add(Restrictions.in("location", locations));
+		if (locations != null && !locations.isEmpty()) {
+			predicates.add(root.get("location").in(locations));
 		}
-		if (indications != null) {
-			criteria.add(Restrictions.in("indication", indications));
+		if (indications != null && !indications.isEmpty()) {
+			predicates.add(root.get("indication").in(indications));
 		}
-		
 		if (minStartDatetime != null) {
-			criteria.add(Restrictions.ge("startDatetime", minStartDatetime));
+			predicates.add(cb.greaterThanOrEqualTo(root.get("startDatetime"), minStartDatetime));
 		}
 		if (maxStartDatetime != null) {
-			criteria.add(Restrictions.le("startDatetime", maxStartDatetime));
+			predicates.add(cb.lessThanOrEqualTo(root.get("startDatetime"), maxStartDatetime));
 		}
-		
+
 		// active visits have null end date, so it doesn't make sense to search against it if include inactive is set to false
 		if (!includeInactive) {
 			// the user only asked for currently active visits, so stop time needs to be null or after right now
-			criteria.add(Restrictions.or(Restrictions.isNull("stopDatetime"), Restrictions.gt("stopDatetime", new Date())));
+			predicates.add(cb.or(cb.isNull(root.get("stopDatetime")), cb.greaterThan(root.get("stopDatetime"), new Date())));
 		} else {
 			if (minEndDatetime != null) {
-				criteria.add(Restrictions.or(Restrictions.isNull("stopDatetime"), Restrictions.ge("stopDatetime",
-				    minEndDatetime)));
+				predicates.add(cb.or(cb.isNull(root.get("stopDatetime")), cb.greaterThanOrEqualTo(root.get("stopDatetime"),
+					minEndDatetime)));
 			}
 			if (maxEndDatetime != null) {
-				criteria.add(Restrictions.le("stopDatetime", maxEndDatetime));
+				predicates.add(cb.lessThanOrEqualTo(root.get("stopDatetime"), maxEndDatetime));
 			}
 		}
-		
+
 		if (!includeVoided) {
-			criteria.add(Restrictions.eq("voided", false));
+			predicates.add(cb.isFalse(root.get("voided")));
 		}
-		
-		criteria.addOrder(Order.desc("startDatetime"));
-		criteria.addOrder(Order.desc("visitId"));
-		
-		List<Visit> visits = criteria.list();
-		
+
+		cq.where(predicates.toArray(new Predicate[]{}))
+			.orderBy(cb.desc(root.get("startDatetime")), cb.desc(root.get("visitId")));
+
+		List<Visit> visits = session.createQuery(cq).getResultList();
+
 		if (serializedAttributeValues != null) {
 			CollectionUtils.filter(visits, new AttributeMatcherPredicate<Visit, VisitAttributeType>(
-			        serializedAttributeValues));
+				serializedAttributeValues));
 		}
-		
+
 		return visits;
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#getAllVisitAttributeTypes()
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional(readOnly = true)
 	public List<VisitAttributeType> getAllVisitAttributeTypes() {
-		return getCurrentSession().createCriteria(VisitAttributeType.class).list();
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<VisitAttributeType> cq = cb.createQuery(VisitAttributeType.class);
+		cq.from(VisitAttributeType.class);
+		
+		return session.createQuery(cq).getResultList();
 	}
 	
 	/**
@@ -241,7 +261,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	@Override
 	@Transactional(readOnly = true)
 	public VisitAttributeType getVisitAttributeType(Integer id) {
-		return (VisitAttributeType) getCurrentSession().get(VisitAttributeType.class, id);
+		return getCurrentSession().get(VisitAttributeType.class, id);
 	}
 	
 	/**
@@ -250,8 +270,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	@Override
 	@Transactional(readOnly = true)
 	public VisitAttributeType getVisitAttributeTypeByUuid(String uuid) {
-		return (VisitAttributeType) getCurrentSession().createCriteria(VisitAttributeType.class).add(
-		    Restrictions.eq("uuid", uuid)).uniqueResult();
+		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, VisitAttributeType.class, uuid);
 	}
 	
 	/**
@@ -279,8 +298,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	@Override
 	@Transactional(readOnly = true)
 	public VisitAttribute getVisitAttributeByUuid(String uuid) {
-		return (VisitAttribute) getCurrentSession().createCriteria(VisitAttribute.class).add(Restrictions.eq("uuid", uuid))
-		        .uniqueResult();
+		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, VisitAttribute.class, uuid);
 	}
 	
 	/**
@@ -288,18 +306,28 @@ public class HibernateVisitDAO implements VisitDAO {
 	 */
 	@Override
 	public Visit getNextVisit(Visit previousVisit, Collection<VisitType> visitTypes, Date maximumStartDate) {
-		Criteria criteria = getCurrentSession().createCriteria(Visit.class);
-		criteria.add(Restrictions.eq("voided", false)).add(
-		    Restrictions.gt("visitId", (previousVisit != null) ? previousVisit.getVisitId() : 0)).addOrder(
-		    Order.asc("visitId")).add(Restrictions.isNull("stopDatetime")).setMaxResults(1);
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Visit> cq = cb.createQuery(Visit.class);
+		Root<Visit> root = cq.from(Visit.class);
+
+		List<Predicate> predicates = new ArrayList<>();
+
+		predicates.add(cb.isFalse(root.get("voided")));
+		predicates.add(cb.greaterThan(root.get("visitId"), (previousVisit != null) ? previousVisit.getVisitId() : 0));
+		predicates.add(cb.isNull(root.get("stopDatetime")));
+
 		if (maximumStartDate != null) {
-			criteria.add(Restrictions.le("startDatetime", maximumStartDate));
+			predicates.add(cb.lessThanOrEqualTo(root.get("startDatetime"), maximumStartDate));
 		}
-		
+
 		if (CollectionUtils.isNotEmpty(visitTypes)) {
-			criteria.add(Restrictions.in("visitType", visitTypes));
+			predicates.add(root.get("visitType").in(visitTypes));
 		}
-		
-		return (Visit) criteria.uniqueResult();
+
+		cq.where(predicates.toArray(new Predicate[]{}))
+			.orderBy(cb.asc(root.get("visitId")));
+
+		return session.createQuery(cq).setMaxResults(1).uniqueResult();
 	}
 }
