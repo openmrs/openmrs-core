@@ -774,6 +774,19 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		assertEquals(malPrograms.size(), 1);
 		assertEquals(prPrograms.size(), 3);
 	}
+
+	@Test
+	public void findPrograms_shouldReturnProgramsOrderedByName() {
+		List<Program> programs = pws.getPrograms("PR"); // Replace "Test" with a relevant name fragment
+
+		assertTrue(programs.size() > 1, "Should return more than one program for a valid test");
+		for (int i = 0; i < programs.size() - 1; i++) {
+			Program current = programs.get(i);
+			Program next = programs.get(i + 1);
+			assertTrue(current.getName().compareToIgnoreCase(next.getName()) <= 0,
+				"Programs should be ordered by name");
+		}
+	}
 	
 	@Test
 	public void retireProgram_shouldSetRetiredStateToFalseAndSetAReason() {
