@@ -9,16 +9,35 @@
  */
 package org.openmrs;
 
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.openmrs.attribute.AttributeType;
 import org.openmrs.attribute.BaseAttributeType;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * A user-defined extension to the {@link Location} class.
  * @see AttributeType
  * @since 1.9
  */
+@Entity
+@Table(name = "location_attribute_type")
 public class LocationAttributeType extends BaseAttributeType<Location> implements AttributeType<Location> {
-	
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "location_attribute_type_id_seq")
+	@GenericGenerator(
+		name = "location_attribute_type_id_seq",
+		strategy = "native",
+		parameters = @Parameter(name = "sequence", value = "location_attribute_type_location_attribute_type_id_seq")
+	)
+	@Column(name = "location_attribute_type_id")
 	private Integer locationAttributeTypeId;
 	
 	/**
