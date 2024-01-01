@@ -15,6 +15,7 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.Set;
 
+import org.apache.commons.lang3.LocaleUtils;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.context.Context;
@@ -127,9 +128,21 @@ public class LocaleUtility implements GlobalPropertyListener {
 	 * <strong>Should</strong> get locale from language code country code and variant
 	 */
 	public static Locale fromSpecification(String localeSpecification) {
-		Locale createdLocale = null;
+		Locale createdLocale;
 		
 		localeSpecification = localeSpecification.trim();
+		
+		try {
+			createdLocale = LocaleUtils.toLocale(localeSpecification);
+		} catch (IllegalArgumentException e) {
+			createdLocale = generateLocaleFromLegacyFormat(localeSpecification);
+		}
+		
+		return createdLocale;
+	}
+	
+	private static Locale generateLocaleFromLegacyFormat(String localeSpecification) {
+		Locale createdLocale = null;
 		
 		String[] localeComponents = localeSpecification.split("_");
 		if (localeComponents.length == 1) {
@@ -137,8 +150,7 @@ public class LocaleUtility implements GlobalPropertyListener {
 		} else if (localeComponents.length == 2) {
 			createdLocale = new Locale(localeComponents[0], localeComponents[1]);
 		} else if (localeComponents.length > 2) {
-			String variant = localeSpecification.substring(localeSpecification.indexOf(localeComponents[2])); // gets everything after the
-			// second underscore
+			String variant = localeSpecification.substring(localeSpecification.indexOf(localeComponents[2]));
 			createdLocale = new Locale(localeComponents[0], localeComponents[1], variant);
 		}
 		
