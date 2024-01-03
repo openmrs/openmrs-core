@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections.ListUtils;
 import org.junit.jupiter.api.Test;
@@ -41,6 +42,7 @@ import org.openmrs.FormResource;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.DAOException;
 import org.openmrs.obs.SerializableComplexObsHandler;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.DateUtil;
@@ -238,7 +240,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Make sure that multiple forms are returned if a field is on a form more than once
 	 *
-	 * @see {@link FormService#getForms(String, Boolean, java.util.Collection, Boolean, java.util.Collection, java.util.Collection, java.util.Collection)
+	 * @see FormService#getForms(String, Boolean, java.util.Collection, Boolean, java.util.Collection, java.util.Collection, java.util.Collection)
 
 	 */
 	@Test
@@ -254,6 +256,144 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		List<Form> forms = formService.getForms(null, null, null, null, null, null, fields);
 
 		assertEquals(3, forms.size());
+	}
+
+	/**
+	 * Make sure form is returned when matching against any formFieldId in a list
+	 *
+	 * @see FormService#getForms(String, Boolean, java.util.Collection, Boolean, java.util.Collection, java.util.Collection, java.util.Collection)
+
+	 */
+	@Test
+	public void getFormCriteria_shouldReturnFormsWithAnyFormField() throws DAOException {
+		executeDataSet(INITIAL_FIELDS_XML);
+		executeDataSet("org/openmrs/api/include/FormServiceTest-formFields.xml");
+
+		FormService formService = Context.getFormService();
+
+		List<FormField> containingAnyFormField = new ArrayList<>();
+		FormField formField = new FormField();
+		formField.setFormFieldId(2); 
+		containingAnyFormField.add(formField);
+
+		List<Form> forms = formService.getForms(null, null, null, null, containingAnyFormField, null, null);
+
+		assertEquals(1, forms.size());
+
+		Set<Integer> expectedFormFieldIds = containingAnyFormField.stream()
+			.map(FormField::getFormFieldId)
+			.collect(Collectors.toSet());
+
+		for (Form form : forms) {
+			Collection<FormField> formFields = form.getFormFields();
+
+			assertTrue(formFields.stream().anyMatch(ff -> expectedFormFieldIds.contains(ff.getFormFieldId())));
+		}
+	}
+
+	/**
+	 * Make sure form is returned when matching against all formFieldIds in a list
+	 *
+	 * @see FormService#getForms(String, Boolean, java.util.Collection, Boolean, java.util.Collection, java.util.Collection, java.util.Collection)
+
+	 */
+	@Test
+	public void getFormCriteria_shouldReturnFormsWithAllFormFields() throws DAOException {
+		executeDataSet(INITIAL_FIELDS_XML);
+		executeDataSet("org/openmrs/api/include/FormServiceTest-formFields.xml");
+
+		FormService formService = Context.getFormService();
+
+		List<FormField> containingAllFormFields = new ArrayList<>();
+		FormField formField1 = new FormField();
+		formField1.setFormFieldId(2);
+		containingAllFormFields.add(formField1);
+
+		FormField formField2 = new FormField();
+		formField2.setFormFieldId(7);
+		containingAllFormFields.add(formField2);
+
+		List<Form> forms = formService.getForms(null, null, null, null, null, containingAllFormFields, null);
+
+		Set<Integer> expectedFormFieldIds = containingAllFormFields.stream()
+			.map(FormField::getFormFieldId)
+			.collect(Collectors.toSet());
+		
+		assertEquals(1, forms.size());
+		
+		Form form = forms.get(0);
+		Collection<FormField> formFields = form.getFormFields();
+		Set<Integer> formFieldIds = formFields.stream().map(FormField::getFormFieldId).collect(Collectors.toSet());
+
+   		assertTrue(formFieldIds.containsAll(expectedFormFieldIds));
+	}
+
+	/**
+	 * Make sure form is not returned when matching against all formFieldId in a list where a single formFieldId is not 
+	 * present
+	 *
+	 * @see FormService#getForms(String, Boolean, java.util.Collection, Boolean, java.util.Collection, java.util.Collection, java.util.Collection
+
+	 */
+	@Test
+	public void getFormCriteria_shouldNotReturnFormWithMissingFormFieldId() throws DAOException {
+		executeDataSet(INITIAL_FIELDS_XML);
+		executeDataSet("org/openmrs/api/include/FormServiceTest-formFields.xml");
+
+		FormService formService = Context.getFormService();
+
+		List<FormField> containingAllFormFields = new ArrayList<>();
+		FormField formField1 = new FormField();
+		formField1.setFormFieldId(2);
+		containingAllFormFields.add(formField1);
+
+		FormField formField2 = new FormField();
+		formField2.setFormFieldId(7);
+		containingAllFormFields.add(formField2);
+
+		// the containingAllFormFields list includes a FormField that is not in any of the forms.
+		FormField formField3 = new FormField();
+		formField3.setFormFieldId(8);
+		containingAllFormFields.add(formField3);
+		
+		List<Form> forms = formService.getForms(null, null, null, null, null, containingAllFormFields, null);
+
+		assertEquals(0, forms.size());
+	}
+
+	/**
+	 * Make sure form is returned with the name starting with the partial name.
+	 *
+	 * @see FormService#getForms(String, Boolean, java.util.Collection, Boolean, java.util.Collection, java.util.Collection, java.util.Collection)
+	 */
+	@Test
+	public void getFormCriteria_shouldReturnFormsWithNameStartingWithPartialName() throws DAOException {
+		executeDataSet(INITIAL_FIELDS_XML);
+		executeDataSet("org/openmrs/api/include/FormServiceTest-formFields.xml");
+
+		FormService formService = Context.getFormService();
+
+		List<Form> forms = formService.getForms("Basic", null, null, null, null, null, null);
+
+		assertTrue(forms.stream().anyMatch(form -> form.getName().startsWith("Basic")));
+	}
+
+	/**
+	 * Make sure form is returned with the name containing the partial name
+	 * after a space character.
+	 *
+	 * @see FormService#getForms(String, Boolean, java.util.Collection, Boolean, java.util.Collection, java.util.Collection, java.util.Collection)
+	 */
+	@Test
+	public void getFormCriteria_shouldReturnFormsWithNameContainingPartialName() throws DAOException {
+		executeDataSet(INITIAL_FIELDS_XML);
+		executeDataSet("org/openmrs/api/include/FormServiceTest-formFields.xml");
+
+		FormService formService = Context.getFormService();
+
+		List<Form> forms = formService.getForms("Form", null, null, null, null, null, null);
+
+		assertTrue(forms.stream().anyMatch(form -> form.getName().contains(" Form")));
 	}
 
 	/**
