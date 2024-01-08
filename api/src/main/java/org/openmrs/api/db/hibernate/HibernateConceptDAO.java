@@ -361,9 +361,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 
 		if (drugName != null) {
 			if (Context.getAdministrationService().isDatabaseStringComparisonCaseSensitive()) {
-				predicates.add(cb.equal(drugRoot.get("name"), MatchMode.EXACT.toCaseSensitivePattern(drugName)));
-			} else {
 				predicates.add(cb.equal(cb.lower(drugRoot.get("name")), MatchMode.EXACT.toLowerCasePattern(drugName)));
+			} else {
+				predicates.add(cb.equal(drugRoot.get("name"), MatchMode.EXACT.toCaseSensitivePattern(drugName)));
 			}
 		}
 
@@ -1964,9 +1964,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 
 		predicates.add(cb.or(cb.equal(root.get("locale"), locale), cb.like(root.get("locale").as(String.class), language.toString())));
 		if (Context.getAdministrationService().isDatabaseStringComparisonCaseSensitive()) {
-			predicates.add(cb.equal(root.get("name"), name));
-		} else {
 			predicates.add(cb.like(cb.lower(root.get("name")), name.toLowerCase()));
+		} else {
+			predicates.add(cb.equal(root.get("name"), name));
 		}
 		predicates.add(cb.isFalse(root.get("voided")));
 		predicates.add(cb.isFalse(conceptJoin.get("retired")));
@@ -2062,9 +2062,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 			cb.equal(root.get("locale"), new Locale(name.getLocale().getLanguage()))));
 
 		if (Context.getAdministrationService().isDatabaseStringComparisonCaseSensitive()) {
-			predicates.add(cb.equal(root.get("name"), name.getName()));
-		} else {
 			predicates.add(cb.equal(cb.lower(root.get("name")), name.getName().toLowerCase()));
+		} else {
+			predicates.add(cb.equal(root.get("name"), name.getName()));
 		}
 
 		cq.where(predicates.toArray(new Predicate[0]));
@@ -2318,11 +2318,11 @@ public class HibernateConceptDAO implements ConceptDAO {
 		Join<ConceptReferenceTerm, ConceptSource> sourceJoin = termJoin.join("conceptSource");
 		
 		Predicate namePredicate = Context.getAdministrationService().isDatabaseStringComparisonCaseSensitive() ?
-			cb.equal(sourceJoin.get("name"), sourceName) :
-			cb.equal(cb.lower(sourceJoin.get("name")), sourceName.toLowerCase());
+				cb.equal(cb.lower(sourceJoin.get("name")), sourceName.toLowerCase()) :
+					cb.equal(sourceJoin.get("name"), sourceName);
 		Predicate hl7CodePredicate = Context.getAdministrationService().isDatabaseStringComparisonCaseSensitive() ?
-			cb.equal(sourceJoin.get("hl7Code"), sourceName) :
-			cb.equal(cb.lower(sourceJoin.get("hl7Code")), sourceName.toLowerCase());
+				cb.equal(cb.lower(sourceJoin.get("hl7Code")), sourceName.toLowerCase()) :
+					cb.equal(sourceJoin.get("hl7Code"), sourceName);
 		
 		predicates.add(cb.or(namePredicate, hl7CodePredicate));
 
