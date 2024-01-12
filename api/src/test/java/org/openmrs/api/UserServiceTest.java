@@ -1155,7 +1155,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Privilege myPrivilege = new Privilege("custom privilege");
 		role.addPrivilege(myPrivilege);
 		
-		User currentUser = new User();
+		User currentUser = createTestUser();
 		currentUser.addRole(new Role(RoleConstants.SUPERUSER));
 		
 		withCurrentUserAs(currentUser, () -> {

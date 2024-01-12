@@ -11,12 +11,10 @@ package org.openmrs;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.search.annotations.Field;
 import org.openmrs.util.RoleConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -24,9 +22,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,7 +40,7 @@ import java.util.Set;
 
 @Entity
 @Table(name="role")
-public class Role extends BaseOpenmrsObject {
+public class Role extends BaseOpenmrsObject implements Auditable, Retireable {
 	
 	public static final long serialVersionUID = 1234233L;
 	
@@ -50,10 +49,6 @@ public class Role extends BaseOpenmrsObject {
 	@Id
 	@Column(name = "role")
 	private String role;
-	
-	@Transient
-	@Field
-	private String name;
 	
 	@Column(name = "description", length = 255)
 	private String description;
@@ -84,6 +79,33 @@ public class Role extends BaseOpenmrsObject {
 	)
 	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	private Set<Role> childRoles;
+	
+	@ManyToOne
+	@JoinColumn(name = "creator", nullable = false)
+	private User creator;
+	
+	@Column(name = "date_created", nullable = false, length = 19)
+	private Date dateCreated;
+	
+	@ManyToOne
+	@JoinColumn(name = "changed_by")
+	private User changedBy;
+	
+	@Column(name = "date_changed", length = 19)
+	private Date dateChanged;
+	
+	@Column(name = "retired", nullable = false, length = 1)
+	private boolean retired;
+	
+	@ManyToOne
+	@JoinColumn(name = "retired_by")
+	private User retiredBy;
+	
+	@Column(name = "date_retired", length = 19)
+	private Date dateRetired;
+	
+	@Column(name = "retire_reason", length = 255)
+	private String retireReason;
 	
 	// Constructors
 	
@@ -384,5 +406,155 @@ public class Role extends BaseOpenmrsObject {
 		log.debug("Total roles: {}", allRoles);
 		
 		return allRoles;
+	}
+	
+	/**
+	 * @since 2.7.0
+	 * @return User - the user who last changed the Role
+	 */
+	@Override
+	public User getChangedBy() {
+		return changedBy;
+	}
+	
+	/**
+	 * @since 2.7.0
+	 * @param changedBy - the user who last changed the Role
+	 */
+	@Override
+	public void setChangedBy(User changedBy) {
+		this.changedBy = changedBy;
+	}
+	
+	/**
+	 * @since 2.7.0
+	 * @return Date - the date the Role was last changed
+	 */
+	@Override
+	public Date getDateChanged() {
+		return dateChanged;
+	}
+	
+	/**
+	 * @since 2.7.0
+	 * @param dateChanged - the date the Role was last changed
+	 */
+	@Override
+	public void setDateChanged(Date dateChanged) {
+		this.dateChanged = dateChanged;
+	}
+	
+	/**
+	 * @since 2.7.0
+	 * @return User - the user who created the Role
+	 */
+	@Override
+	public User getCreator() {
+		return creator;
+	}
+	
+	/**
+	 * @since 2.7.0
+	 * @param creator - the user who created the Role
+	 */
+	@Override
+	public void setCreator(User creator) {
+		this.creator = creator;
+	}
+	
+	/**
+	 * @since 2.7.0
+	 * @return Date - the date the Role was created
+	 */
+	@Override
+	public Date getDateCreated() {
+		return dateCreated;
+	}
+	
+	/**
+	 * @since 2.7.0
+	 * @param dateCreated - the date the Role was created
+	 */
+	@Override
+	public void setDateCreated(Date dateCreated) {
+		this.dateCreated = dateCreated;
+	}
+	
+	/**
+	 * @since 2.7.0
+	 * @return Boolean - whether of not this object is retired
+	 * @deprecated as of 2.0, use {@link #getRetired()}
+	 */
+	@Override
+	public Boolean isRetired() {
+		return retired;
+	}
+	
+	@Override
+	public Boolean getRetired() {
+		return retired;
+	}
+	
+	/**
+	 * @since 2.7.0
+	 * @param retired - whether of not this Role is retired
+	 */
+	@Override
+	public void setRetired(Boolean retired) {
+		this.retired = retired;
+	}
+	
+	/**
+	 * @since 2.7.0
+	 * @return User - the user who retired the Role
+	 */
+	@Override
+	public User getRetiredBy() {
+		return retiredBy;
+	}
+	
+	/**
+	 * @since 2.7.0
+	 * @param retiredBy - the user who retired the Role
+	 */
+	@Override
+	public void setRetiredBy(User retiredBy) {
+		this.retiredBy = retiredBy;
+	}
+	
+	/**
+	 * @since 2.7.0
+	 * @return Date - the date the Role was retired
+	 */
+	@Override
+	public Date getDateRetired() {
+		return dateRetired;
+	}
+	
+	/**
+	 * @since 2.7.0
+	 * @param dateRetired - the date the Role was retired
+	 */
+	@Override
+	public void setDateRetired(Date dateRetired) {
+		this.dateRetired = dateRetired;
+	}
+	
+	/**
+	 * @since 2.7.0
+	 * @return String - the reason the Role was retired
+	 */
+	@Override
+	public String getRetireReason() {
+		return retireReason;
+	}
+	
+	/**
+	 * @since 2.7.0
+	 * @param retireReason - the reason the Role was retired
+	 */
+	@Override
+	public void setRetireReason(String retireReason) {
+		this.retireReason = retireReason;
 	}
 }
