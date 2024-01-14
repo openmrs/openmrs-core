@@ -11,6 +11,7 @@ package org.openmrs.api.db.hibernate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -22,6 +23,8 @@ import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Person;
+import org.openmrs.RelationshipType;
+import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.GlobalPropertiesTestHelper;
@@ -639,6 +642,28 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 
 		Person savedPerson = hibernatePersonDAO.getPerson(345);
 		assertEquals(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2012-05-29 15:23:56"), savedPerson.getBirthDateTime());
+	}
+
+	/**
+	 * @see HibernatePersonDAO#getRelationshipTypes(String, Boolean)
+	 */
+	@Test
+	public void getRelationshipTypes_shouldReturnEmptyListForNullRelationshipTypeName() {
+		executeDataSet("org/openmrs/api/include/PersonServiceTest-createRetiredRelationship.xml");
+		List<RelationshipType> relationshipTypes = hibernatePersonDAO.getRelationshipTypes(null, true);
+		assertNotNull(relationshipTypes);
+		assertTrue(relationshipTypes.isEmpty(), "Should return an empty list for null relationshipTypeName");
+	}
+
+	/**
+	 * @see HibernatePersonDAO#getRelationshipTypes(String, Boolean)
+	 */
+	@Test
+	public void getRelationshipTypes_shouldReturnEmptyListForEmptyRelationshipTypeName() {
+		executeDataSet("org/openmrs/api/include/PersonServiceTest-createRetiredRelationship.xml");
+		List<RelationshipType> relationshipTypes = hibernatePersonDAO.getRelationshipTypes("", true);
+		assertNotNull(relationshipTypes);
+		assertTrue(relationshipTypes.isEmpty(), "Should return an empty list for empty relationshipTypeName");
 	}
 
 }
