@@ -100,4 +100,99 @@
         </sql>
     </changeSet>
 	
+	<changeSet id="TRUNK-5903-20240114-0" author="mherman22">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="role" columnName="creator"/>
+			</not>
+		</preConditions>
+		<comment>Adding "creator" column to role table</comment>
+		<addColumn tableName="role">
+			<column name="creator" type="INT"/>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="TRUNK-5903-20240114-1" author="mherman22">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="role" columnName="date_created"/>
+			</not>
+		</preConditions>
+		<comment>Adding "date_created" column to role table</comment>
+		<addColumn tableName="role">
+			<column name="date_created" type="DATETIME"/>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="TRUNK-5903-20240114-2" author="mherman22">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="role" columnName="changed_by"/>
+			</not>
+		</preConditions>
+		<comment>Adding "changed_by" column to role table</comment>
+		<addColumn tableName="role">
+			<column name="changed_by" type="INT"/>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="TRUNK-5903-20240114-3" author="mherman22">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="role" columnName="date_changed"/>
+			</not>
+		</preConditions>
+		<comment>Adding "date_changed" column to role table</comment>
+		<addColumn tableName="role">
+			<column name="date_changed" type="DATETIME"/>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="TRUNK-5903-20240114-4" author="mherman22">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="role" columnName="retired"/>
+			</not>
+		</preConditions>
+		<comment>Adding "retired" column to role table</comment>
+		<addColumn tableName="role">
+			<column name="retired" type="BOOLEAN"/>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="TRUNK-5903-20240114-5" author="mherman22">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="role" columnName="retired_by"/>
+			</not>
+		</preConditions>
+		<comment>Adding "retired_by" column to role table</comment>
+		<addColumn tableName="role">
+			<column name="retired_by" type="INT"/>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="TRUNK-5903-20240114-6" author="mherman22">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="role" columnName="date_retired"/>
+			</not>
+		</preConditions>
+		<comment>Adding "date_retired" column to role table</comment>
+		<addColumn tableName="role">
+			<column name="date_retired" type="DATETIME"/>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="TRUNK-5903-20240114-7" author="mherman22">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="role" columnName="retire_reason"/>
+			</not>
+		</preConditions>
+		<comment>Adding "retire_reason" column to role table</comment>
+		<addColumn tableName="role">
+			<column name="retire_reason" type="VARCHAR(255)"/>
+		</addColumn>
+	</changeSet>
 </databaseChangeLog>
