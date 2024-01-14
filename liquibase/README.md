@@ -194,6 +194,20 @@ Alternatively, the corrections can be applied by running these commands:
 	
 Please note that the jar file needs to be created *before* generating the Liquibase snapshots as the build process will detect that the generated files do not (yet) contain the OpenMRS license header.
 
+#### Step 5 - Add the two PostgreSQL changesets to the liquibase-update-to-latest-version.xml file
+<changeSet id="20200604-soundex_extension" author="aman" dbms="postgresql">
+    <comment> Soundex extension for PostgreSQL</comment>
+    <sql> CREATE EXTENSION IF NOT EXISTS fuzzystrmatch SCHEMA public;</sql>
+</changeSet>
+    
+<changeSet id="20200715-uuid_ossp_extension" author="aman" dbms="postgresql">
+    <comment> Extension to use UUID functions with PostgreSQL and creating an alias similar to MySQL</comment>
+    <sql>
+        CREATE EXTENSION IF NOT EXISTS "uuid-ossp" SCHEMA public;
+        CREATE FUNCTION UUID() RETURNS UUID LANGUAGE SQL AS $$ SELECT uuid_generate_v1() $$;
+    </sql>
+</changeSet>
+
 ### How to test Liquibase snapshots
 
 Testing the (corrected) Liquibase snapshots comprises three steps:
