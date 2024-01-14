@@ -16,7 +16,6 @@ import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
 import org.openmrs.OrderSet;
 import org.openmrs.OrderSetAttribute;
 import org.openmrs.OrderSetAttributeType;

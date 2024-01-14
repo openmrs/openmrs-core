@@ -9,6 +9,11 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashSet;
@@ -16,13 +21,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.SQLQuery;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.type.StringType;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
@@ -240,17 +241,23 @@ public class HibernatePersonDAO implements PersonDAO {
 		boolean includeVoided = (voided != null) ? voided : false;
 
 		if (StringUtils.isBlank(searchString)) {
-			Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Person.class);
+			Session session = sessionFactory.getCurrentSession();
+			CriteriaBuilder cb = session.getCriteriaBuilder();
+			CriteriaQuery<Person> cq = cb.createQuery(Person.class);
+			Root<Person> root = cq.from(Person.class);
+
+			List<Predicate> predicates = new ArrayList<>();
 			if (dead != null) {
-				criteria.add(Restrictions.eq("dead", dead));
+				predicates.add(cb.equal(root.get("dead"), dead));
 			}
 
 			if (!includeVoided) {
-				criteria.add(Restrictions.eq("personVoided", false));
+				predicates.add(cb.isFalse(root.get("personVoided")));
 			}
 
-			criteria.setMaxResults(maxResults);
-			return criteria.list();
+			cq.where(predicates.toArray(new Predicate[]{}));
+
+			return session.createQuery(cq).setMaxResults(maxResults).getResultList();
 		}
 
 		String query = LuceneQuery.escapeQuery(searchString);
@@ -304,7 +311,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public Person getPerson(Integer personId) {
-		return (Person) sessionFactory.getCurrentSession().get(Person.class, personId);
+		return sessionFactory.getCurrentSession().get(Person.class, personId);
 	}
 	
 	/**
@@ -332,7 +339,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public PersonAttributeType getPersonAttributeType(Integer typeId) {
-		return (PersonAttributeType) sessionFactory.getCurrentSession().get(PersonAttributeType.class, typeId);
+		return sessionFactory.getCurrentSession().get(PersonAttributeType.class, typeId);
 	}
 	
 	/**
@@ -341,7 +348,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public PersonAttribute getPersonAttribute(Integer id) {
-		return (PersonAttribute) sessionFactory.getCurrentSession().get(PersonAttribute.class, id);
+		return sessionFactory.getCurrentSession().get(PersonAttribute.class, id);
 	}
 	
 	/**
@@ -349,49 +356,55 @@ public class HibernatePersonDAO implements PersonDAO {
 	 * @see org.openmrs.api.db.PersonDAO#getAllPersonAttributeTypes(boolean)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<PersonAttributeType> getAllPersonAttributeTypes(boolean includeRetired) throws DAOException {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PersonAttributeType.class, "r");
-		
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<PersonAttributeType> cq = cb.createQuery(PersonAttributeType.class);
+		Root<PersonAttributeType> root = cq.from(PersonAttributeType.class);
+
 		if (!includeRetired) {
-			criteria.add(Restrictions.eq("retired", false));
+			cq.where(cb.isFalse(root.get("retired")));
 		}
-		
-		criteria.addOrder(Order.asc("sortWeight"));
-		
-		return criteria.list();
+
+		cq.orderBy(cb.asc(root.get("sortWeight")));
+
+		return session.createQuery(cq).getResultList();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.PersonDAO#getPersonAttributeTypes(java.lang.String, java.lang.String,
 	 *      java.lang.Integer, java.lang.Boolean)
 	 */
 	@Override
 	// TODO - PersonServiceTest fails here
-	@SuppressWarnings("unchecked")
-	public List<PersonAttributeType> getPersonAttributeTypes(String exactName, String format, Integer foreignKey,
-	        Boolean searchable) throws DAOException {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PersonAttributeType.class, "r");
-		
+	public List<PersonAttributeType> getPersonAttributeTypes(String exactName, String format, Integer foreignKey, Boolean searchable) throws DAOException {
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<PersonAttributeType> cq = cb.createQuery(PersonAttributeType.class);
+		Root<PersonAttributeType> root = cq.from(PersonAttributeType.class);
+
+		List<Predicate> predicates = new ArrayList<>();
 		if (exactName != null) {
-			criteria.add(Restrictions.eq("name", exactName));
+			predicates.add(cb.equal(root.get("name"), exactName));
 		}
-		
+
 		if (format != null) {
-			criteria.add(Restrictions.eq("format", format));
+			predicates.add(cb.equal(root.get("format"), format));
 		}
-		
+
 		if (foreignKey != null) {
-			criteria.add(Restrictions.eq("foreignKey", foreignKey));
+			predicates.add(cb.equal(root.get("foreignKey"), foreignKey));
 		}
-		
+
 		if (searchable != null) {
-			criteria.add(Restrictions.eq("searchable", searchable));
+			predicates.add(cb.equal(root.get("searchable"), searchable));
 		}
-		
-		return criteria.list();
+
+		cq.where(predicates.toArray(new Predicate[]{}));
+
+		return session.createQuery(cq).getResultList();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.PersonService#getRelationship(java.lang.Integer)
 	 * @see org.openmrs.api.db.PersonDAO#getRelationship(java.lang.Integer)
@@ -399,7 +412,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	@Override
 	public Relationship getRelationship(Integer relationshipId) throws DAOException {
 
-		return (Relationship) sessionFactory.getCurrentSession()
+		return sessionFactory.getCurrentSession()
 		        .get(Relationship.class, relationshipId);
 	}
 	
@@ -408,17 +421,20 @@ public class HibernatePersonDAO implements PersonDAO {
 	 * @see org.openmrs.api.db.PersonDAO#getAllRelationships(boolean)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<Relationship> getAllRelationships(boolean includeVoided) throws DAOException {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Relationship.class, "r");
-		
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Relationship> cq = cb.createQuery(Relationship.class);
+		Root<Relationship> root = cq.from(Relationship.class);
+
 		if (!includeVoided) {
-			criteria.add(Restrictions.eq("voided", false));
+			cq.where(cb.isFalse(root.get("voided")));
 		}
-		
-		return criteria.list();
+
+		return session.createQuery(cq).getResultList();
 	}
-	
+
+
 	/**
 	 * @see org.openmrs.api.PersonService#getRelationships(org.openmrs.Person, org.openmrs.Person,
 	 *      org.openmrs.RelationshipType)
@@ -426,25 +442,30 @@ public class HibernatePersonDAO implements PersonDAO {
 	 *      org.openmrs.RelationshipType)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<Relationship> getRelationships(Person fromPerson, Person toPerson, RelationshipType relType) {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Relationship.class, "r");
-		
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Relationship> cq = cb.createQuery(Relationship.class);
+		Root<Relationship> root = cq.from(Relationship.class);
+
+		List<Predicate> predicates = new ArrayList<>();
 		if (fromPerson != null) {
-			criteria.add(Restrictions.eq("personA", fromPerson));
+			predicates.add(cb.equal(root.get("personA"), fromPerson));
 		}
 		if (toPerson != null) {
-			criteria.add(Restrictions.eq("personB", toPerson));
+			predicates.add(cb.equal(root.get("personB"), toPerson));
 		}
 		if (relType != null) {
-			criteria.add(Restrictions.eq("relationshipType", relType));
+			predicates.add(cb.equal(root.get("relationshipType"), relType));
 		}
-		
-		criteria.add(Restrictions.eq("voided", false));
-		
-		return criteria.list();
+
+		predicates.add(cb.isFalse(root.get("voided")));
+
+		cq.where(predicates.toArray(new Predicate[]{}));
+
+		return session.createQuery(cq).getResultList();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.PersonService#getRelationships(org.openmrs.Person, org.openmrs.Person,
 	 *      org.openmrs.RelationshipType, java.util.Date, java.util.Date)
@@ -452,49 +473,63 @@ public class HibernatePersonDAO implements PersonDAO {
 	 *      org.openmrs.RelationshipType, java.util.Date, java.util.Date)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	public List<Relationship> getRelationships(Person fromPerson, Person toPerson, RelationshipType relType,
-	        Date startEffectiveDate, Date endEffectiveDate) {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Relationship.class, "r");
-		
+	public List<Relationship> getRelationships(Person fromPerson, Person toPerson, RelationshipType relType, Date startEffectiveDate, Date endEffectiveDate) {
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Relationship> cq = cb.createQuery(Relationship.class);
+		Root<Relationship> root = cq.from(Relationship.class);
+
+		List<Predicate> predicates = new ArrayList<>();
 		if (fromPerson != null) {
-			criteria.add(Restrictions.eq("personA", fromPerson));
+			predicates.add(cb.equal(root.get("personA"), fromPerson));
 		}
 		if (toPerson != null) {
-			criteria.add(Restrictions.eq("personB", toPerson));
+			predicates.add(cb.equal(root.get("personB"), toPerson));
 		}
 		if (relType != null) {
-			criteria.add(Restrictions.eq("relationshipType", relType));
+			predicates.add(cb.equal(root.get("relationshipType"), relType));
 		}
 		if (startEffectiveDate != null) {
-			criteria.add(Restrictions.disjunction().add(
-			    Restrictions.and(Restrictions.le("startDate", startEffectiveDate), Restrictions.ge("endDate",
-			        startEffectiveDate))).add(
-			    Restrictions.and(Restrictions.le("startDate", startEffectiveDate), Restrictions.isNull("endDate"))).add(
-			    Restrictions.and(Restrictions.isNull("startDate"), Restrictions.ge("endDate", startEffectiveDate))).add(
-			    Restrictions.and(Restrictions.isNull("startDate"), Restrictions.isNull("endDate"))));
+			Predicate startDatePredicate = cb.or(
+				cb.and(cb.lessThanOrEqualTo(root.get("startDate"), startEffectiveDate),
+					cb.greaterThanOrEqualTo(root.get("endDate"), startEffectiveDate)),
+				cb.and(cb.lessThanOrEqualTo(root.get("startDate"), startEffectiveDate),
+					cb.isNull(root.get("endDate"))),
+				cb.and(cb.isNull(root.get("startDate")),
+					cb.greaterThanOrEqualTo(root.get("endDate"), startEffectiveDate)),
+				cb.and(cb.isNull(root.get("startDate")),
+					cb.isNull(root.get("endDate")))
+			);
+			predicates.add(startDatePredicate);
 		}
 		if (endEffectiveDate != null) {
-			criteria.add(Restrictions.disjunction().add(
-			    Restrictions.and(Restrictions.le("startDate", endEffectiveDate), Restrictions
-			            .ge("endDate", endEffectiveDate))).add(
-			    Restrictions.and(Restrictions.le("startDate", endEffectiveDate), Restrictions.isNull("endDate"))).add(
-			    Restrictions.and(Restrictions.isNull("startDate"), Restrictions.ge("endDate", endEffectiveDate))).add(
-			    Restrictions.and(Restrictions.isNull("startDate"), Restrictions.isNull("endDate"))));
+			Predicate endDatePredicate = cb.or(
+				cb.and(cb.lessThanOrEqualTo(root.get("startDate"), endEffectiveDate),
+					cb.greaterThanOrEqualTo(root.get("endDate"), endEffectiveDate)),
+				cb.and(cb.lessThanOrEqualTo(root.get("startDate"), endEffectiveDate),
+					cb.isNull(root.get("endDate"))),
+				cb.and(cb.isNull(root.get("startDate")),
+					cb.greaterThanOrEqualTo(root.get("endDate"), endEffectiveDate)),
+				cb.and(cb.isNull(root.get("startDate")),
+					cb.isNull(root.get("endDate")))
+			);
+			predicates.add(endDatePredicate);
 		}
-		criteria.add(Restrictions.eq("voided", false));
-		
-		return criteria.list();
+
+		predicates.add(cb.isFalse(root.get("voided")));
+
+		cq.where(predicates.toArray(new Predicate[]{}));
+
+		return session.createQuery(cq).getResultList();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.PersonService#getRelationshipType(java.lang.Integer)
 	 * @see org.openmrs.api.db.PersonDAO#getRelationshipType(java.lang.Integer)
 	 */
 	@Override
 	public RelationshipType getRelationshipType(Integer relationshipTypeId) throws DAOException {
-
-		return (RelationshipType) sessionFactory.getCurrentSession().get(
+		return sessionFactory.getCurrentSession().get(
 		    RelationshipType.class, relationshipTypeId);
 	}
 	
@@ -503,20 +538,30 @@ public class HibernatePersonDAO implements PersonDAO {
 	 * @see org.openmrs.api.db.PersonDAO#getRelationshipTypes(java.lang.String, java.lang.Boolean)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<RelationshipType> getRelationshipTypes(String relationshipTypeName, Boolean preferred) throws DAOException {
-		
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(RelationshipType.class);
-		criteria.add(Restrictions.sqlRestriction("CONCAT(a_Is_To_B, CONCAT('/', b_Is_To_A)) like (?)", relationshipTypeName,
-		    new StringType()));
-		
-		if (preferred != null) {
-			criteria.add(Restrictions.eq("preferred", preferred));
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<RelationshipType> cq = cb.createQuery(RelationshipType.class);
+		Root<RelationshipType> root = cq.from(RelationshipType.class);
+
+		List<Predicate> predicates = new ArrayList<>();
+		if (StringUtils.isNotEmpty(relationshipTypeName)) {
+			Expression<String> concatenatedFields = cb.concat(root.get("aIsToB"),
+				cb.concat("/", root.get("bIsToA")));
+			predicates.add(cb.like(concatenatedFields, relationshipTypeName));
+		} else {
+			// Add a predicate that is always false
+			predicates.add(cb.or());
 		}
-		
-		return criteria.list();
+
+		if (preferred != null) {
+			predicates.add(cb.equal(root.get("preferred"), preferred));
+		}
+
+		cq.where(predicates.toArray(new Predicate[]{}));
+		return session.createQuery(cq).getResultList();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.PersonService#saveRelationshipType(org.openmrs.RelationshipType)
 	 * @see org.openmrs.api.db.PersonDAO#saveRelationshipType(org.openmrs.RelationshipType)
@@ -619,8 +664,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public PersonAttributeType getPersonAttributeTypeByUuid(String uuid) {
-		return (PersonAttributeType) sessionFactory.getCurrentSession().createQuery(
-		    "from PersonAttributeType pat where pat.uuid = :uuid").setString("uuid", uuid).uniqueResult();
+		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, PersonAttributeType.class, uuid);
 	}
 	
 	/**
@@ -630,7 +674,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	public String getSavedPersonAttributeTypeName(PersonAttributeType personAttributeType) {
 		SQLQuery sql = sessionFactory.getCurrentSession().createSQLQuery(
 		    "select name from person_attribute_type where person_attribute_type_id = :personAttributeTypeId");
-		sql.setInteger("personAttributeTypeId", personAttributeType.getId());
+		sql.setParameter("personAttributeTypeId", personAttributeType.getId());
 		return (String) sql.uniqueResult();
 	}
 
@@ -638,7 +682,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	public Boolean getSavedPersonAttributeTypeSearchable(PersonAttributeType personAttributeType) {
 		SQLQuery sql = sessionFactory.getCurrentSession().createSQLQuery(
 			"select searchable from person_attribute_type where person_attribute_type_id = :personAttributeTypeId");
-		sql.setInteger("personAttributeTypeId", personAttributeType.getId());
+		sql.setParameter("personAttributeTypeId", personAttributeType.getId());
 		return (Boolean) sql.uniqueResult();
 	}
 
@@ -647,14 +691,12 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public Person getPersonByUuid(String uuid) {
-		return (Person) sessionFactory.getCurrentSession().createQuery("from Person p where p.uuid = :uuid").setString(
-		    "uuid", uuid).uniqueResult();
+		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, Person.class, uuid);
 	}
 	
 	@Override
 	public PersonAddress getPersonAddressByUuid(String uuid) {
-		return (PersonAddress) sessionFactory.getCurrentSession().createQuery("from PersonAddress p where p.uuid = :uuid")
-		        .setString("uuid", uuid).uniqueResult();
+		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, PersonAddress.class, uuid);
 	}
 	
 	/**
@@ -671,7 +713,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public PersonMergeLog getPersonMergeLog(Integer id) throws DAOException {
-		return (PersonMergeLog) sessionFactory.getCurrentSession().get(PersonMergeLog.class, id);
+		return sessionFactory.getCurrentSession().get(PersonMergeLog.class, id);
 	}
 	
 	/**
@@ -679,8 +721,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public PersonMergeLog getPersonMergeLogByUuid(String uuid) throws DAOException {
-		return (PersonMergeLog) sessionFactory.getCurrentSession().createQuery("from PersonMergeLog p where p.uuid = :uuid")
-		        .setString("uuid", uuid).uniqueResult();
+		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, PersonMergeLog.class, uuid);
 	}
 	
 	/**
@@ -690,7 +731,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	@SuppressWarnings("unchecked")
 	public List<PersonMergeLog> getWinningPersonMergeLogs(Person person) throws DAOException {
 		return (List<PersonMergeLog>) sessionFactory.getCurrentSession().createQuery(
-		    "from PersonMergeLog p where p.winner.id = :winnerId").setInteger("winnerId", person.getId()).list();
+		    "from PersonMergeLog p where p.winner.id = :winnerId").setParameter("winnerId", person.getId()).list();
 	}
 	
 	/**
@@ -699,7 +740,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	@Override
 	public PersonMergeLog getLosingPersonMergeLogs(Person person) throws DAOException {
 		return (PersonMergeLog) sessionFactory.getCurrentSession().createQuery(
-		    "from PersonMergeLog p where p.loser.id = :loserId").setInteger("loserId", person.getId()).uniqueResult();
+		    "from PersonMergeLog p where p.loser.id = :loserId").setParameter("loserId", person.getId()).uniqueResult();
 	}
 	
 	/**
@@ -713,8 +754,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	
 	@Override
 	public PersonAttribute getPersonAttributeByUuid(String uuid) {
-		return (PersonAttribute) sessionFactory.getCurrentSession().createQuery(
-		    "from PersonAttribute p where p.uuid = :uuid").setString("uuid", uuid).uniqueResult();
+		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, PersonAttribute.class, uuid);
 	}
 	
 	/**
@@ -722,7 +762,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public PersonName getPersonName(Integer personNameId) {
-		return (PersonName) sessionFactory.getCurrentSession().get(PersonName.class, personNameId);
+		return sessionFactory.getCurrentSession().get(PersonName.class, personNameId);
 	}
 	
 	/**
@@ -730,8 +770,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public PersonName getPersonNameByUuid(String uuid) {
-		return (PersonName) sessionFactory.getCurrentSession().createQuery("from PersonName p where p.uuid = :uuid")
-		        .setString("uuid", uuid).uniqueResult();
+		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, PersonName.class, uuid);
 	}
 	
 	/**
@@ -739,8 +778,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public Relationship getRelationshipByUuid(String uuid) {
-		return (Relationship) sessionFactory.getCurrentSession().createQuery("from Relationship r where r.uuid = :uuid")
-		        .setString("uuid", uuid).uniqueResult();
+		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, Relationship.class, uuid);
 	}
 	
 	/**
@@ -748,26 +786,28 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public RelationshipType getRelationshipTypeByUuid(String uuid) {
-		return (RelationshipType) sessionFactory.getCurrentSession().createQuery(
-		    "from RelationshipType rt where rt.uuid = :uuid").setString("uuid", uuid).uniqueResult();
+		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, RelationshipType.class, uuid);
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.PersonDAO#getAllRelationshipTypes(boolean)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<RelationshipType> getAllRelationshipTypes(boolean includeRetired) {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(RelationshipType.class);
-		criteria.addOrder(Order.asc("weight"));
-		
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<RelationshipType> cq = cb.createQuery(RelationshipType.class);
+		Root<RelationshipType> root = cq.from(RelationshipType.class);
+
 		if (!includeRetired) {
-			criteria.add(Restrictions.eq("retired", false));
+			cq.where(cb.isFalse(root.get("retired")));
 		}
-		
-		return criteria.list();
+
+		cq.orderBy(cb.asc(root.get("weight")));
+
+		return session.createQuery(cq).getResultList();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.PersonService#savePersonName(org.openmrs.PersonName)
 	 * @see org.openmrs.api.db.PersonDAO#savePersonName(org.openmrs.PersonName)
