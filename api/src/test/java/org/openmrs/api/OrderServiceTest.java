@@ -63,6 +63,7 @@ import org.openmrs.VisitAttributeType;
 import org.openmrs.api.builder.DrugOrderBuilder;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.SerializedObject;
 import org.openmrs.api.db.hibernate.HibernateAdministrationDAO;
 import org.openmrs.api.db.hibernate.HibernateSessionFactoryBean;
 import org.openmrs.api.impl.OrderServiceImpl;
@@ -2660,6 +2661,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.addAnnotatedClass(PersonAttributeType.class)
 			.addAnnotatedClass(User.class)
 			.addAnnotatedClass(LocationAttributeType.class)
+			.addAnnotatedClass(SerializedObject.class)
 			.getMetadataBuilder().build();
 
 
