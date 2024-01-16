@@ -9,6 +9,19 @@
  */
 package org.openmrs;
 
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
+
+import javax.persistence.AttributeOverride;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 /**
  * The frequency at which an Order's action should be repeated, e.g. TWICE DAILY or EVERY 6 HOURS.
  * This class is backed by a Concept for i18n, synonyms, mappings, etc, but it contains additional
@@ -16,16 +29,31 @@ package org.openmrs;
  * 
  * @since 1.10
  */
+@Entity
+@Table(name = "order_frequency")
+@AttributeOverride(name = "name", column = @Column(name = "name", nullable = true))
 public class OrderFrequency extends BaseChangeableOpenmrsMetadata {
 	
 	private static final long serialVersionUID = 1L;
-	
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_frequency_id_seq")
+	@GenericGenerator(
+		name = "order_frequency_id_seq",
+		strategy = "native",
+		parameters = @Parameter(name = "sequence", value = "order_frequency_order_frequency_id_seq")
+	)
+	@Column(name = "order_frequency_id")
 	private Integer orderFrequencyId;
-	
+
+	@Column(name = "frequency_per_day", length = 22)
 	private Double frequencyPerDay;
-	
+
+	@Column(name = "uuid", length = 38, unique = true)
 	private String uuid;
 	
+	@ManyToOne
+	@JoinColumn(name = "concept_id", nullable = false, unique = true)
 	private Concept concept;
 	
 	/**

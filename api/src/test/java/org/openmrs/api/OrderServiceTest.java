@@ -2653,6 +2653,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.addAnnotatedClass(MedicationDispense.class)
 			.addAnnotatedClass(ProviderAttributeType.class)
 			.addAnnotatedClass(ConceptMapType.class)
+			.addAnnotatedClass(OrderFrequency.class)
 			.addAnnotatedClass(Location.class)
 			.addAnnotatedClass(PersonAddress.class)
 			.addAnnotatedClass(PersonAttributeType.class)
