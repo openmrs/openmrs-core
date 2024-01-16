@@ -674,14 +674,6 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		}
 	}
 	
-	/**
-	 * @see org.openmrs.api.GlobalPropertyListener#globalPropertyDeleted(java.lang.String)
-	 */
-	@Override
-	public void globalPropertyDeleted(String propertyName) {
-		// TODO Auto-generated method stub
-		
-	}
 	
 	/**
 	 * @see org.openmrs.api.GlobalPropertyListener#supportsPropertyName(java.lang.String)
