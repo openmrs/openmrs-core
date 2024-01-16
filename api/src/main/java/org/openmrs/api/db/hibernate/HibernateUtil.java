@@ -9,30 +9,25 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
+
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Conjunction;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Property;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.HSQLDialect;
 import org.hibernate.dialect.PostgreSQL82Dialect;
@@ -153,32 +148,6 @@ public class HibernateUtil {
 		} else {
 			return oldString;
 		}
-	}
-	
-	/**
-	 * Adds attribute value criteria to the given criteria query
-	 * 
-	 * @param criteria the criteria
-	 * @param serializedAttributeValues the serialized attribute values
-	 * @param <AT> the attribute type
-	 */
-	public static <AT extends AttributeType> void addAttributeCriteria(Criteria criteria,
-	        Map<AT, String> serializedAttributeValues) {
-		Conjunction conjunction = Restrictions.conjunction();
-		int a = 0;
-		
-		for (Map.Entry<AT, String> entry : serializedAttributeValues.entrySet()) {
-			String alias = "attributes" + (a++);
-			DetachedCriteria detachedCriteria = DetachedCriteria.forClass(Location.class).setProjection(Projections.id());
-			detachedCriteria.createAlias("attributes", alias);
-			detachedCriteria.add(Restrictions.eq(alias + ".attributeType", entry.getKey()));
-			detachedCriteria.add(Restrictions.eq(alias + ".valueReference", entry.getValue()));
-			detachedCriteria.add(Restrictions.eq(alias + ".voided", false));
-			
-			conjunction.add(Property.forName("id").in(detachedCriteria));
-		}
-		
-		criteria.add(conjunction);
 	}
 
 	/**

@@ -13,11 +13,11 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 
-import org.hibernate.criterion.Distinct;
 import org.openmrs.logic.op.And;
 import org.openmrs.logic.op.AsOf;
 import org.openmrs.logic.op.Average;
 import org.openmrs.logic.op.Count;
+import org.openmrs.logic.op.Distinct;
 import org.openmrs.logic.op.First;
 import org.openmrs.logic.op.GreaterThan;
 import org.openmrs.logic.op.GreaterThanEquals;
