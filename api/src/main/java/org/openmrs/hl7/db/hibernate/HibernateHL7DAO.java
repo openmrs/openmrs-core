@@ -9,19 +9,24 @@
  */
 package org.openmrs.hl7.db.hibernate;
 
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import org.hibernate.Criteria;
-import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.StandardBasicTypes;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
+import org.openmrs.api.db.hibernate.HibernateUtil;
+import org.openmrs.api.db.hibernate.JpaUtils;
+import org.openmrs.api.db.hibernate.MatchMode;
 import org.openmrs.hl7.HL7Constants;
 import org.openmrs.hl7.HL7InArchive;
 import org.openmrs.hl7.HL7InError;
@@ -70,7 +75,7 @@ public class HibernateHL7DAO implements HL7DAO {
 	 */
 	@Override
 	public HL7Source getHL7Source(Integer hl7SourceId) throws DAOException {
-		return (HL7Source) sessionFactory.getCurrentSession().get(HL7Source.class, hl7SourceId);
+		return sessionFactory.getCurrentSession().get(HL7Source.class, hl7SourceId);
 	}
 	
 	/**
@@ -78,11 +83,16 @@ public class HibernateHL7DAO implements HL7DAO {
 	 */
 	@Override
 	public HL7Source getHL7SourceByName(String name) throws DAOException {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(HL7Source.class);
-		crit.add(Restrictions.eq("name", name));
-		return (HL7Source) crit.uniqueResult();
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<HL7Source> cq = cb.createQuery(HL7Source.class);
+		Root<HL7Source> root = cq.from(HL7Source.class);
+
+		cq.where(cb.equal(root.get("name"), name));
+
+		return session.createQuery(cq).uniqueResult();
 	}
-	
+
 	/**
 	 * @see org.openmrs.hl7.db.HL7DAO#getAllHL7Sources()
 	 */
@@ -114,13 +124,12 @@ public class HibernateHL7DAO implements HL7DAO {
 	 */
 	@Override
 	public HL7InQueue getHL7InQueue(Integer hl7InQueueId) throws DAOException {
-		return (HL7InQueue) sessionFactory.getCurrentSession().get(HL7InQueue.class, hl7InQueueId);
+		return sessionFactory.getCurrentSession().get(HL7InQueue.class, hl7InQueueId);
 	}
 	
 	@Override
 	public HL7InQueue getHL7InQueueByUuid(String uuid) throws DAOException {
-		return (HL7InQueue) sessionFactory.getCurrentSession().createCriteria(HL7InQueue.class).add(
-		    Restrictions.eq("uuid", uuid)).uniqueResult();
+		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, HL7InQueue.class, uuid);
 	}
 	
 	/**
@@ -142,30 +151,34 @@ public class HibernateHL7DAO implements HL7DAO {
 	 * @return a Criteria object
 	 */
 	@SuppressWarnings("rawtypes")
-	private Criteria getHL7SearchCriteria(Class clazz, Integer messageState, String query) throws DAOException {
+	private List<Predicate> getHL7SearchCriteria(CriteriaBuilder cb, Root<?> root, Class<?> clazz, Integer messageState, String query) throws DAOException {
 		if (clazz == null) {
 			throw new DAOException("no class defined for HL7 search");
 		}
-		
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(clazz);
-		
+
+		List<Predicate> predicates = new ArrayList<>();
+
 		if (query != null && !query.isEmpty()) {
+			String pattern = MatchMode.ANYWHERE.toCaseSensitivePattern(query);
+
 			if (clazz == HL7InError.class) {
-				crit.add(Restrictions.or(Restrictions.like("HL7Data", query, MatchMode.ANYWHERE), Restrictions.or(
-				    Restrictions.like("errorDetails", query, MatchMode.ANYWHERE), Restrictions.like("error", query,
-				        MatchMode.ANYWHERE))));
+				Predicate hl7DataPredicate = cb.like(root.get("HL7Data"), pattern);
+				Predicate errorDetailsPredicate = cb.like(root.get("errorDetails"), pattern);
+				Predicate errorPredicate = cb.like(root.get("error"), pattern);
+
+				predicates.add(cb.or(hl7DataPredicate, errorDetailsPredicate, errorPredicate));
 			} else {
-				crit.add(Restrictions.like("HL7Data", query, MatchMode.ANYWHERE));
+				predicates.add(cb.like(root.get("HL7Data"), pattern));
 			}
 		}
-		
+
 		if (messageState != null) {
-			crit.add(Restrictions.eq("messageState", messageState));
+			predicates.add(cb.equal(root.get("messageState"), messageState));
 		}
-		
-		return crit;
+
+		return predicates;
 	}
-	
+
 	/**
 	 * @see org.openmrs.hl7.db.HL7DAO#getHL7Batch(Class, int, int, Integer, String)
 	 */
@@ -173,11 +186,21 @@ public class HibernateHL7DAO implements HL7DAO {
 	@SuppressWarnings( { "rawtypes", "unchecked" })
 	public <T> List<T> getHL7Batch(Class clazz, int start, int length, Integer messageState, String query)
 	        throws DAOException {
-		Criteria crit = getHL7SearchCriteria(clazz, messageState, query);
-		crit.setFirstResult(start);
-		crit.setMaxResults(length);
-		crit.addOrder(Order.asc("dateCreated"));
-		return crit.list();
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<T> cq = cb.createQuery(clazz);
+		Root<T> root = cq.from(clazz);
+		
+		List<Predicate> predicates = getHL7SearchCriteria(cb, root, clazz, messageState, query);
+
+		cq.where(predicates.toArray(new Predicate[]{}))
+			.orderBy(cb.asc(root.get("dateCreated")));
+
+		TypedQuery<T> typedQuery = session.createQuery(cq);
+		typedQuery.setFirstResult(start);
+		typedQuery.setMaxResults(length);
+
+		return typedQuery.getResultList();
 	}
 	
 	/**
@@ -186,9 +209,16 @@ public class HibernateHL7DAO implements HL7DAO {
 	@Override
 	@SuppressWarnings("rawtypes")
 	public Long countHL7s(Class clazz, Integer messageState, String query) {
-		Criteria crit = getHL7SearchCriteria(clazz, messageState, query);
-		crit.setProjection(Projections.rowCount());
-		return (Long) crit.uniqueResult();
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<?> root = cq.from(clazz);
+
+		List<Predicate> predicates = getHL7SearchCriteria(cb, root, clazz, messageState, query);
+		cq.select(cb.count(root))
+			.where(predicates.toArray(new Predicate[]{}));
+
+		return session.createQuery(cq).getSingleResult();
 	}
 	
 	/**
@@ -202,7 +232,7 @@ public class HibernateHL7DAO implements HL7DAO {
 		if (query == null) {
 			return null;
 		}
-		return (HL7InQueue) query.uniqueResult();
+		return JpaUtils.getSingleResultOrNull(query);
 	}
 	
 	/**
@@ -227,7 +257,7 @@ public class HibernateHL7DAO implements HL7DAO {
 	 */
 	@Override
 	public HL7InArchive getHL7InArchive(Integer hl7InArchiveId) throws DAOException {
-		return (HL7InArchive) sessionFactory.getCurrentSession().get(HL7InArchive.class, hl7InArchiveId);
+		return sessionFactory.getCurrentSession().get(HL7InArchive.class, hl7InArchiveId);
 	}
 	
 	/**
@@ -248,7 +278,7 @@ public class HibernateHL7DAO implements HL7DAO {
 		if (maxResults != null) {
 			q.setMaxResults(maxResults);
 		}
-		return q.list();
+		return q.getResultList();
 	}
 	
 	/**
@@ -279,7 +309,7 @@ public class HibernateHL7DAO implements HL7DAO {
 		if (maxResults != null) {
 			q.setMaxResults(maxResults);
 		}
-		return q.list();
+		return q.getResultList();
 	}
 	
 	/**
@@ -304,13 +334,12 @@ public class HibernateHL7DAO implements HL7DAO {
 	 */
 	@Override
 	public HL7InError getHL7InError(Integer hl7InErrorId) throws DAOException {
-		return (HL7InError) sessionFactory.getCurrentSession().get(HL7InError.class, hl7InErrorId);
+		return sessionFactory.getCurrentSession().get(HL7InError.class, hl7InErrorId);
 	}
 	
 	@Override
 	public HL7InError getHL7InErrorByUuid(String uuid) throws DAOException {
-		return (HL7InError) sessionFactory.getCurrentSession().createCriteria(HL7InError.class).add(
-		    Restrictions.eq("uuid", uuid)).uniqueResult();
+		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, HL7InError.class, uuid);
 	}
 	
 	/**
@@ -345,7 +374,7 @@ public class HibernateHL7DAO implements HL7DAO {
 	public HL7InArchive getHL7InArchiveByUuid(String uuid) throws DAOException {
 		Query query = sessionFactory.getCurrentSession().createQuery("from HL7InArchive where uuid = ?0").setParameter(0,
 		    uuid, StandardBasicTypes.STRING);
-		Object record = query.uniqueResult();
+		Object record = JpaUtils.getSingleResultOrNull(query);
 		if (record == null) {
 			return null;
 		}
@@ -356,17 +385,25 @@ public class HibernateHL7DAO implements HL7DAO {
 	 * @see org.openmrs.hl7.db.HL7DAO#getHL7InArchivesToMigrate()
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<HL7InArchive> getHL7InArchivesToMigrate() {
 		Integer daysToKeep = Hl7InArchivesMigrateThread.getDaysKept();
-		Criteria crit = getHL7SearchCriteria(HL7InArchive.class, HL7Constants.HL7_STATUS_PROCESSED, null);
-		crit.setMaxResults(HL7Constants.MIGRATION_MAX_BATCH_SIZE);
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<HL7InArchive> cq = cb.createQuery(HL7InArchive.class);
+		Root<HL7InArchive> root = cq.from(HL7InArchive.class);
+
+		List<Predicate> predicates = getHL7SearchCriteria(cb, root, HL7InArchive.class, HL7Constants.HL7_STATUS_PROCESSED, null);
+
 		if (daysToKeep != null) {
 			Calendar cal = Calendar.getInstance();
 			cal.add(Calendar.DATE, -1 * daysToKeep);
-			crit.add(Restrictions.lt("dateCreated", cal.getTime()));
+			predicates.add(cb.lessThan(root.get("dateCreated"), cal.getTime()));
 		}
-		return crit.list();
+
+		cq.where(predicates.toArray(new Predicate[]{}));
+		return session.createQuery(cq)
+			.setMaxResults(HL7Constants.MIGRATION_MAX_BATCH_SIZE)
+			.getResultList();
 	}
 	
 }
