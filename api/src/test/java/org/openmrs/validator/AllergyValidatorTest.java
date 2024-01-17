@@ -198,6 +198,6 @@ public class AllergyValidatorTest extends BaseContextMockTest {
 		Errors errors = new BindException(allergy,"allergy");
 		validator.validate(allergy, errors);
 		assertTrue(errors.hasErrors());
-		assertThat(errors.getFieldError("allergen").getCode(), is("your_expected_error_code_here"));
+		assertThat(errors.getFieldError("allergen").getCode(), is("Allergen cannot be numeric value"));
 	}
 }
