@@ -545,9 +545,14 @@ public class Result extends ArrayList<Result> {
 					// Handle the exception appropriately
 				}
 			}
-			return valueDatetime;
+			
+		} else {
+
+			return this.get(0).toDatetime();
 		}
-		return this.get(0).toDatetime();
+		    // Return a default value or handle the case where no valid Date is found
+
+		return null;
 	}
 	
 	/**
