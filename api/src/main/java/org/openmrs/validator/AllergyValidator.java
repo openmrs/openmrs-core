@@ -63,6 +63,11 @@ public class AllergyValidator implements Validator {
 		ValidationUtils.rejectIfEmpty(errors, "patient", "allergyapi.patient.required");
 		
 		Allergy allergy = (Allergy) target;
+
+		    // Additional validation: Ensure allergen does not contain numeric values
+			if (allergy.getAllergen() != null && StringUtils.isNumeric(allergy.getAllergen().getNonCodedAllergen())) {
+				errors.rejectValue("allergen", "error.allergyapi.allergy.Allergen.cannotContainNumeric");
+			}
 		
 		if (allergy.getReactionNonCoded() != null) {
 			if (NumberUtils.isParsable(allergy.getReactionNonCoded())) {
