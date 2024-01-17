@@ -63,11 +63,6 @@ public class AllergyValidator implements Validator {
 		ValidationUtils.rejectIfEmpty(errors, "patient", "allergyapi.patient.required");
 		
 		Allergy allergy = (Allergy) target;
-
-		    // Additional validation: Ensure allergen does not contain numeric values
-			if (allergy.getAllergen() != null && StringUtils.isNumeric(allergy.getAllergen().getNonCodedAllergen())) {
-				errors.rejectValue("allergen", "error.allergyapi.allergy.Allergen.cannotContainNumeric");
-			}
 		
 		if (allergy.getReactionNonCoded() != null) {
 			if (NumberUtils.isParsable(allergy.getReactionNonCoded())) {
@@ -87,6 +82,11 @@ public class AllergyValidator implements Validator {
 			} else if (!allergen.isCoded() && StringUtils.isBlank(allergen.getNonCodedAllergen())) {
 				errors.rejectValue("allergen", "allergyapi.allergen.nonCodedAllergen.required");
 			}
+
+			    // Additional validation: Ensure allergen does not contain numeric values
+				if (allergy.getAllergen() != null && StringUtils.isNumeric(allergy.getAllergen().getNonCodedAllergen())) {
+					errors.rejectValue("allergen", "error.allergyapi.allergy.Allergen.cannotContainNumeric");
+				}
 			
 			if (allergy.getAllergyId() == null && allergy.getPatient() != null) {
 				Allergies existingAllergies = patientService.getAllergies(allergy.getPatient());
