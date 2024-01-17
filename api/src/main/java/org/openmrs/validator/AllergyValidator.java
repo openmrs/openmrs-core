@@ -83,7 +83,6 @@ public class AllergyValidator implements Validator {
 				errors.rejectValue("allergen", "allergyapi.allergen.nonCodedAllergen.required");
 			}
 
-			    // Additional validation: Ensure allergen does not contain numeric values
 				if (StringUtils.isNumeric(allergy.getAllergen().getNonCodedAllergen())) {
 					errors.rejectValue("allergen", "error.allergyapi.allergy.Allergen.cannotContainNumeric");
 				}
