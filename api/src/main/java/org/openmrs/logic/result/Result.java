@@ -8,8 +8,8 @@
  * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.logic.result;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -21,8 +21,6 @@ import org.openmrs.ConceptDatatype;
 import org.openmrs.Obs;
 import org.openmrs.api.context.Context;
 import org.openmrs.logic.LogicException;
-import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  * A result from the logic service. A result can be 0-to-n date-values pairs. You can treat the
@@ -543,20 +541,17 @@ public class Result extends ArrayList<Result> {
 				try {
 					return Context.getDateFormat().parse(valueText);
 				}
-				catch (Exception e) {
-					// Handle the exception appropriately
-				}
+				catch (Exception e) {}
 			}
-			
-		} else {
+			else {
 
-			return this.get(0).toDatetime();
+				return this.get(0).toDatetime();
+			}
 		}
-		    // Return a default value or handle the case where no valid Date is found
-
+		
 		return null;
 	}
-
+	
 	/**
 	 * @return numeric representation of the result. For non-numeric results, this will either be
 	 *         the overridden numeric value (if specifically defined) or a numeric representation of
