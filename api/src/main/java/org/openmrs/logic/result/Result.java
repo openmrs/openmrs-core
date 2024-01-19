@@ -544,7 +544,6 @@ public class Result extends ArrayList<Result> {
 				catch (Exception e) {}
 			}
 			else {
-
 				return this.get(0).toDatetime();
 			}
 		}
