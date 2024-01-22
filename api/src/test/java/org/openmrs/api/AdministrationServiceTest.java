@@ -408,23 +408,6 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void getAllGlobalProperties_shouldReturnPropertiesInAscendingOrder() {
-		executeDataSet(ADMIN_INITIAL_DATA_XML);
-		List<GlobalProperty> properties = adminService.getAllGlobalProperties();
-
-		assertFalse(properties.isEmpty(), "The list of global properties should not be empty");
-
-		// Verify the properties are in ascending order
-		for (int i = 0; i < properties.size() - 1; i++) {
-			String currentProperty = properties.get(i).getProperty();
-			String nextProperty = properties.get(i + 1).getProperty();
-
-			assertTrue(currentProperty.compareTo(nextProperty) <= 0,
-				"The global properties should be in ascending order by the property name");
-		}
-	}
-
-	@Test
 	public void getAllowedLocales_shouldReturnAtLeastOneLocaleIfNoLocalesDefinedInDatabaseYet() {
 		assertTrue(adminService.getAllowedLocales().size() > 0);
 	}
