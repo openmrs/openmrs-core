@@ -17,6 +17,9 @@
 #  The updated snapshots are written to the openmrs-core/liquibase/snapshots folder.
 #
 
-openmrs_version=2.6.0-SNAPSHOT
+pom_path="/mnt/c/Users/Admin/Desktop/development/openmrs-dev/openmrs-core/liquibase/pom.xml" 
+
+version_line=$(grep '<version>' "$pom_path")
+openmrs_version=$(echo "$version_line" | awk -F'[<>]' '{print $3}')
 
 java -jar ./target/openmrs-liquibase-${openmrs_version}-jar-with-dependencies.jar
