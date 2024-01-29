@@ -31,7 +31,6 @@ import org.springframework.validation.Errors;
  * Contains methods pertaining to doing some administrative tasks in OpenMRS
  * <p>
  * Use:<br>
- * 
  * <pre>
  * 
  * List&lt;GlobalProperty&gt; globalProperties = Context.getAdministrationService().getGlobalProperties();
@@ -47,22 +46,21 @@ public interface AdministrationService extends OpenmrsService {
 	 * @param dao The dao implementation to use
 	 */
 	public void setAdministrationDAO(AdministrationDAO dao);
-										
+	
 	/**
-	 * Get a global property by its uuid. There should be only one of these in the database (well,
-	 * in the world actually). If multiple are found, an error is thrown.
+	 * Get a global property by its uuid. There should be only one of these in the database (well, in
+	 * the world actually). If multiple are found, an error is thrown.
 	 * 
-	 * @return the global property matching the given uuid
-	 * <strong>Should</strong> find object given valid uuid
-	 * <strong>Should</strong> return null if no object found with given uuid
+	 * @return the global property matching the given uuid <strong>Should</strong> find object given
+	 *         valid uuid <strong>Should</strong> return null if no object found with given uuid
 	 */
 	public GlobalProperty getGlobalPropertyByUuid(String uuid);
 	
 	/**
 	 * Get a listing or important variables used in openmrs
 	 * 
-	 * @return a map from variable name to variable value
-	 * <strong>Should</strong> return all registered system variables
+	 * @return a map from variable name to variable value <strong>Should</strong> return all registered
+	 *         system variables
 	 */
 	
 	@Authorized(PrivilegeConstants.VIEW_ADMIN_FUNCTIONS)
@@ -71,8 +69,8 @@ public interface AdministrationService extends OpenmrsService {
 	/**
 	 * Get a map of all the System Information. Java, user, time, runtime properties, etc
 	 * 
-	 * @return a map from variable name to a map of the information
-	 * <strong>Should</strong> return all system information
+	 * @return a map from variable name to a map of the information <strong>Should</strong> return all
+	 *         system information
 	 */
 	@Authorized(PrivilegeConstants.VIEW_ADMIN_FUNCTIONS)
 	public Map<String, Map<String, String>> getSystemInformation();
@@ -85,11 +83,11 @@ public interface AdministrationService extends OpenmrsService {
 	 * 
 	 * @param propertyName property key to look for
 	 * @return value of property returned or null if none
-	 * @see #getGlobalProperty(String, String)
-	 * <strong>Should</strong> not fail with null propertyName
-	 * <strong>Should</strong> get property value given valid property name
-	 * <strong>Should</strong> get property in case insensitive way
+	 * @see #getGlobalProperty(String, String) <strong>Should</strong> not fail with null propertyName
+	 *      <strong>Should</strong> get property value given valid property name <strong>Should</strong>
+	 *      get property in case insensitive way
 	 */
+	@Authorized(PrivilegeConstants.GET_GLOBAL_PROPERTIES)
 	public String getGlobalProperty(String propertyName);
 	
 	/**
@@ -102,9 +100,9 @@ public interface AdministrationService extends OpenmrsService {
 	 * 
 	 * @param propertyName property key to look for
 	 * @param defaultValue value to return if propertyName is not found
-	 * @return value of propertyName property or defaultValue if none
-	 * <strong>Should</strong> return default value if property name does not exist
-	 * <strong>Should</strong> not fail with null default value
+	 * @return value of propertyName property or defaultValue if none <strong>Should</strong> return
+	 *         default value if property name does not exist <strong>Should</strong> not fail with null
+	 *         default value
 	 */
 	public String getGlobalProperty(String propertyName, String defaultValue);
 	
@@ -113,7 +111,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * 
 	 * @param propertyName property key to look for
 	 * @return the global property that matches the given <code>propertyName</code>
-	 * <strong>Should</strong> return null when no global property match given property name
+	 *         <strong>Should</strong> return null when no global property match given property name
 	 */
 	public GlobalProperty getGlobalPropertyObject(String propertyName);
 	
@@ -122,8 +120,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * 
 	 * @param prefix The beginning of the property name to match.
 	 * @return a <code>List</code> of <code>GlobalProperty</code>s that match <code>prefix</code>
-	 * @since 1.5
-	 * <strong>Should</strong> return all relevant global properties in the database
+	 * @since 1.5 <strong>Should</strong> return all relevant global properties in the database
 	 */
 	public List<GlobalProperty> getGlobalPropertiesByPrefix(String prefix);
 	
@@ -132,16 +129,15 @@ public interface AdministrationService extends OpenmrsService {
 	 * 
 	 * @param suffix The end of the property name to match.
 	 * @return a <code>List</code> of <code>GlobalProperty</code>s that match <code>.*suffix</code>
-	 * @since 1.6
-	 * <strong>Should</strong> return all relevant global properties in the database
+	 * @since 1.6 <strong>Should</strong> return all relevant global properties in the database
 	 */
 	public List<GlobalProperty> getGlobalPropertiesBySuffix(String suffix);
 	
 	/**
 	 * Get a list of all global properties in the system
 	 * 
-	 * @return list of global properties
-	 * <strong>Should</strong> return all global properties in the database
+	 * @return list of global properties <strong>Should</strong> return all global properties in the
+	 *         database
 	 */
 	@Authorized(PrivilegeConstants.GET_GLOBAL_PROPERTIES)
 	public List<GlobalProperty> getAllGlobalProperties();
@@ -150,11 +146,10 @@ public interface AdministrationService extends OpenmrsService {
 	 * Save the given list of global properties to the database.
 	 * 
 	 * @param props list of GlobalProperty objects to save
-	 * @return the saved global properties
-	 * <strong>Should</strong> save all global properties to the database
-	 * <strong>Should</strong> not fail with empty list
-	 * <strong>Should</strong> assign uuid to all new properties
-	 * <strong>Should</strong> save properties with case difference only
+	 * @return the saved global properties <strong>Should</strong> save all global properties to the
+	 *         database <strong>Should</strong> not fail with empty list <strong>Should</strong> assign
+	 *         uuid to all new properties <strong>Should</strong> save properties with case difference
+	 *         only
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES)
 	public List<GlobalProperty> saveGlobalProperties(List<GlobalProperty> props);
@@ -163,8 +158,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * Completely remove the given global property from the database
 	 * 
 	 * @param globalProperty the global property to delete/remove from the database
-	 * @throws APIException
-	 * <strong>Should</strong> delete global property from database
+	 * @throws APIException <strong>Should</strong> delete global property from database
 	 */
 	@Authorized(PrivilegeConstants.PURGE_GLOBAL_PROPERTIES)
 	public void purgeGlobalProperty(GlobalProperty globalProperty);
@@ -173,34 +167,34 @@ public interface AdministrationService extends OpenmrsService {
 	 * Completely remove the given global properties from the database
 	 * 
 	 * @param globalProperties the global properties to delete/remove from the database
-	 * @throws APIException
-	 * <strong>Should</strong> delete global properties from database
+	 * @throws APIException <strong>Should</strong> delete global properties from database
 	 */
 	@Authorized(PrivilegeConstants.PURGE_GLOBAL_PROPERTIES)
 	public void purgeGlobalProperties(List<GlobalProperty> globalProperties);
 	
 	/**
-	 * Save the given global property to the database. If the global property already exists,
-	 * then it will be overwritten
+	 * Save the given global property to the database. If the global property already exists, then it
+	 * will be overwritten
 	 * 
 	 * @param propertyName the name of the global property to save
-	 * @param propertyValue the value of the global property to save
-	 * <strong>Should</strong> create global property in database
-	 * <strong>Should</strong> overwrite global property if exists
-	 * <strong>Should</strong> save a global property whose typed value is handled by a custom datatype
+	 * @param propertyValue the value of the global property to save <strong>Should</strong> create
+	 *            global property in database <strong>Should</strong> overwrite global property if
+	 *            exists <strong>Should</strong> save a global property whose typed value is handled by
+	 *            a custom datatype
 	 */
 	public void setGlobalProperty(String propertyName, String propertyValue);
 	
 	/**
-	 * Overwrites the value of the global property if it already exists. If the global property does
-	 * not exist, an exception will be thrown
+	 * Overwrites the value of the global property if it already exists. If the global property does not
+	 * exist, an exception will be thrown
+	 * 
 	 * @since 1.10
-	 * @param propertyName  the name of the global property to overwrite
-	 * @param propertyValue  the value of the global property to overwrite
-	 * @throws IllegalStateException
-	 * <strong>Should</strong> update global property in database
-	 * <strong>Should</strong> fail if global property being updated does not already exist
-	 * <strong>Should</strong> update a global property whose typed value is handled by a custom datatype
+	 * @param propertyName the name of the global property to overwrite
+	 * @param propertyValue the value of the global property to overwrite
+	 * @throws IllegalStateException <strong>Should</strong> update global property in database
+	 *             <strong>Should</strong> fail if global property being updated does not already exist
+	 *             <strong>Should</strong> update a global property whose typed value is handled by a
+	 *             custom datatype
 	 */
 	public void updateGlobalProperty(String propertyName, String propertyValue);
 	
@@ -209,12 +203,11 @@ public interface AdministrationService extends OpenmrsService {
 	 * 
 	 * @param gp global property to save
 	 * @return the saved global property
-	 * @throws APIException
-	 * <strong>Should</strong> create global property in database
-	 * <strong>Should</strong> overwrite global property if exists
-	 * <strong>Should</strong> not allow different properties to have the same string with different case
-	 * <strong>Should</strong> save a global property whose typed value is handled by a custom datatype
-	 * <strong>Should</strong> evict all entries of search locale cache
+	 * @throws APIException <strong>Should</strong> create global property in database
+	 *             <strong>Should</strong> overwrite global property if exists <strong>Should</strong>
+	 *             not allow different properties to have the same string with different case
+	 *             <strong>Should</strong> save a global property whose typed value is handled by a
+	 *             custom datatype <strong>Should</strong> evict all entries of search locale cache
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES)
 	public GlobalProperty saveGlobalProperty(GlobalProperty gp);
@@ -242,18 +235,17 @@ public interface AdministrationService extends OpenmrsService {
 	 * @param sql
 	 * @param selectOnly
 	 * @return ResultSet
-	 * @throws APIException
-	 * <strong>Should</strong> execute sql containing group by
+	 * @throws APIException <strong>Should</strong> execute sql containing group by
 	 */
 	@Authorized(PrivilegeConstants.SQL_LEVEL_ACCESS)
 	public List<List<Object>> executeSQL(String sql, boolean selectOnly);
 	
 	/**
-	 * Get the implementation id stored for this server Returns null if no implementation id has
-	 * been successfully set yet
+	 * Get the implementation id stored for this server Returns null if no implementation id has been
+	 * successfully set yet
 	 * 
-	 * @return ImplementationId object that is this implementation's unique id
-	 * <strong>Should</strong> return null if no implementation id is defined yet
+	 * @return ImplementationId object that is this implementation's unique id <strong>Should</strong>
+	 *         return null if no implementation id is defined yet
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_IMPLEMENTATION_ID)
 	public ImplementationId getImplementationId();
@@ -262,15 +254,14 @@ public interface AdministrationService extends OpenmrsService {
 	 * Set the given <code>implementationId</code> as this implementation's unique id
 	 * 
 	 * @param implementationId the ImplementationId to save
-	 * @throws APIException if implementationId is empty or is invalid according to central id
-	 *             server
-	 * <strong>Should</strong> create implementation id in database
-	 * <strong>Should</strong> overwrite implementation id in database if exists
-	 * <strong>Should</strong> not fail if given implementationId is null
-	 * <strong>Should</strong> throw APIException if given empty implementationId object
-	 * <strong>Should</strong> throw APIException if given a caret in the implementationId code
-	 * <strong>Should</strong> throw APIException if given a pipe in the implementationId code
-	 * <strong>Should</strong> set uuid on implementation id global property
+	 * @throws APIException if implementationId is empty or is invalid according to central id server
+	 *             <strong>Should</strong> create implementation id in database <strong>Should</strong>
+	 *             overwrite implementation id in database if exists <strong>Should</strong> not fail if
+	 *             given implementationId is null <strong>Should</strong> throw APIException if given
+	 *             empty implementationId object <strong>Should</strong> throw APIException if given a
+	 *             caret in the implementationId code <strong>Should</strong> throw APIException if
+	 *             given a pipe in the implementationId code <strong>Should</strong> set uuid on
+	 *             implementation id global property
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_IMPLEMENTATION_ID)
 	public void setImplementationId(ImplementationId implementationId);
@@ -280,10 +271,10 @@ public interface AdministrationService extends OpenmrsService {
 	 * specified with a global property named
 	 * {@link OpenmrsConstants#GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST}.
 	 * 
-	 * @return list of allowed locales
-	 * <strong>Should</strong> return at least one locale if no locales defined in database yet
-	 * <strong>Should</strong> not fail if not global property for locales allowed defined yet
-	 * <strong>Should</strong> not return duplicates even if the global property has them
+	 * @return list of allowed locales <strong>Should</strong> return at least one locale if no locales
+	 *         defined in database yet <strong>Should</strong> not fail if not global property for
+	 *         locales allowed defined yet <strong>Should</strong> not return duplicates even if the
+	 *         global property has them
 	 */
 	public List<Locale> getAllowedLocales();
 	
@@ -293,13 +284,15 @@ public interface AdministrationService extends OpenmrsService {
 	 * MessageSourceService) filtered by the allowed locales (as indicated by this
 	 * AdministrationService).
 	 * 
-	 * @return list of allowed presentation locales
-	 * <strong>Should</strong> return at least one locale if no locales defined in database yet
-	 * <strong>Should</strong> not return more locales than message source service locales
-	 * <strong>Should</strong> return only country locale if both country locale and language locale are specified in allowed list
-	 * <strong>Should</strong> return all country locales if language locale and no country locales are specified in allowed list
-	 * <strong>Should</strong> return language locale if country locale is specified in allowed list but country locale message file is missing
-	 * <strong>Should</strong> return language locale if it is specified in allowed list and there are no country locale message files available
+	 * @return list of allowed presentation locales <strong>Should</strong> return at least one locale
+	 *         if no locales defined in database yet <strong>Should</strong> not return more locales
+	 *         than message source service locales <strong>Should</strong> return only country locale if
+	 *         both country locale and language locale are specified in allowed list
+	 *         <strong>Should</strong> return all country locales if language locale and no country
+	 *         locales are specified in allowed list <strong>Should</strong> return language locale if
+	 *         country locale is specified in allowed list but country locale message file is missing
+	 *         <strong>Should</strong> return language locale if it is specified in allowed list and
+	 *         there are no country locale message files available
 	 */
 	public Set<Locale> getPresentationLocales();
 	
@@ -307,9 +300,8 @@ public interface AdministrationService extends OpenmrsService {
 	 * Returns a global property according to the type specified
 	 * 
 	 * @param <T>
-	 * @param propertyName
-	 * <strong>Should</strong> get property value in the proper type specified
-	 * <strong>Should</strong> return default value if property name does not exist
+	 * @param propertyName <strong>Should</strong> get property value in the proper type specified
+	 *            <strong>Should</strong> return default value if property name does not exist
 	 * @return property value in the type of the default value
 	 * @since 1.7
 	 */
@@ -329,13 +321,11 @@ public interface AdministrationService extends OpenmrsService {
 	 * 
 	 * @since 1.9
 	 * @param object
-	 * @param errors
-	 * <strong>Should</strong> pass for a valid object
-	 * <strong>Should</strong> fail for an invalid object
-	 * <strong>Should</strong> throw throw APIException if the input is null
+	 * @param errors <strong>Should</strong> pass for a valid object <strong>Should</strong> fail for an
+	 *            invalid object <strong>Should</strong> throw throw APIException if the input is null
 	 */
 	public void validate(Object object, Errors errors);
-
+	
 	/**
 	 * Returns a list of locales used by the user when searching.
 	 *
@@ -343,9 +333,9 @@ public interface AdministrationService extends OpenmrsService {
 	 * @param user authenticated user
 	 * @return
 	 * @throws APIException
-     */
+	 */
 	public List<Locale> getSearchLocales(Locale currentLocale, User user);
-
+	
 	/**
 	 * Returns a list of locales used by the user when searching.
 	 * <p>
@@ -353,11 +343,9 @@ public interface AdministrationService extends OpenmrsService {
 	 * 
 	 * @return locales
 	 * @throws APIException
-	 * @since 1.8.4, 1.9.1, 1.10
-	 * <strong>Should</strong> include currently selected full locale and language
-	 * <strong>Should</strong> include users proficient locales
-	 * <strong>Should</strong> exclude not allowed locales
-	 * <strong>Should</strong> cache results for a user
+	 * @since 1.8.4, 1.9.1, 1.10 <strong>Should</strong> include currently selected full locale and
+	 *        language <strong>Should</strong> include users proficient locales <strong>Should</strong>
+	 *        exclude not allowed locales <strong>Should</strong> cache results for a user
 	 */
 	public List<Locale> getSearchLocales();
 	
@@ -385,8 +373,8 @@ public interface AdministrationService extends OpenmrsService {
 	 * <ul>
 	 * <li>Unlike MySQL which uses identifier strategy, PostgreSQL follows sequence strategy</li>
 	 * <li>So as to bridge the gap between these two strategies, this method has been created.</li>
-	 * <li>It will perform task of updating the sequence values after insertions are done from core
-	 * data or concepts are inserted (present in Reference Metadata Module)</li>
+	 * <li>It will perform task of updating the sequence values after insertions are done from core data
+	 * or concepts are inserted (present in Reference Metadata Module)</li>
 	 * </ul>
 	 * 
 	 * @since 2.4
