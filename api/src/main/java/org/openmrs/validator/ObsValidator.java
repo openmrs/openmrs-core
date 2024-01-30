@@ -102,7 +102,7 @@ public class ObsValidator implements Validator {
 		}
 		
 		// if this is an obs group (i.e., parent) make sure that it has no values (other than valueGroupId) set
-		if (obs.hasGroupMembers()) {
+		if (obs.hasGroupMembers(true)) {
 			if (obs.getValueCoded() != null) {
 				errors.rejectValue("valueCoded", "error.not.null");
 			}
@@ -150,7 +150,7 @@ public class ObsValidator implements Validator {
 			errors.rejectValue("concept", "error.null");
 		}
 		// if there is a concept, and this isn't a group, perform validation tests specific to the concept datatype
-		else if (!obs.hasGroupMembers()) {
+		else if (!obs.hasGroupMembers(true)) {
 			ConceptDatatype dt = c.getDatatype();
 			if (dt != null) {
 				if (dt.isBoolean() && obs.getValueBoolean() == null) {
