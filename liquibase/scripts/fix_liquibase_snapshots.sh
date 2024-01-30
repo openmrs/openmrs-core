@@ -17,33 +17,6 @@
 #  The updated snapshots are written to the openmrs-core/liquibase/snapshots folder.
 
 
-# Get the directory of the script
-script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+openmrs_version=$(grep -m 1 '<version>' ../pom.xml | sed -n 's/.*<version>\(.*\)<\/version>.*/\1/p' | awk '{$1=$1;print}')
 
-# Search for the openmrs-core directory
-project_dir="$script_dir"
-while [[ "$project_dir" != "/" ]]; do
-    if [[ -d "$project_dir/openmrs-core" ]]; then
-        break
-    fi
-    project_dir="$(dirname "$project_dir")"
-done
-
-if [[ ! -d "$project_dir/openmrs-core" ]]; then
-    echo "Error: 'openmrs-core' directory not found"
-    exit 1
-fi
-
-# Construct the path to pom.xml and Check if the provided path exists
-pom_path="$project_dir/openmrs-core/liquibase/pom.xml"
-
-if [ ! -f "$pom_path" ]; then
-    echo "Error: $pom_path not found."
-    exit 1
-fi
-
-version_line=$(grep '<version>' "$pom_path")
-
-openmrs_version=$(echo "$version_line" | awk -F'[<>]' '{print $3}')
-
-java -jar ./target/openmrs-liquibase-${openmrs_version}-jar-with-dependencies.jar
+java -jar ./target/openmrs-liquibase-"${openmrs_version}"-jar-with-dependencies.jar
