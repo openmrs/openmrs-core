@@ -11,6 +11,7 @@ package org.openmrs.api;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,7 +39,9 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.HashSet;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -913,7 +916,24 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		List<Encounter> encounters = encounterService.getEncountersByPatientId(3);
 		assertEquals(2, encounters.size());
 	}
-	
+
+	/**
+	 * @see EncounterService#getEncountersByPatientId(Integer)
+	 */
+	@Test
+	public void getEncountersByPatientId_shouldReturnEncountersInDescendingOrder() {
+		EncounterService encounterService = Context.getEncounterService();
+
+		List<Encounter> encounters = encounterService.getEncountersByPatientId(3);
+		assertEquals(2, encounters.size());
+
+		// Ensure list is ordered by encounterDatetime in descending order
+		for (int i = 0; i < encounters.size() - 1; i++) {
+			assertTrue(encounters.get(i).getEncounterDatetime()
+				.compareTo(encounters.get(i + 1).getEncounterDatetime()) >= 0);
+		}
+	}
+
 	/**
 	 * @see EncounterService#getEncountersByPatientId(Integer)
 	 */
@@ -3234,5 +3254,90 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertEquals(1, allergies.size());
 		assertTrue(allergies.contains(allergy));
 		assertEquals(NAMESPACE + "^" + FORMFIELD_PATH, allergies.iterator().next().getFormNamespaceAndPath());
+	}
+
+	@Test
+	public void getEncountersByVisitsAndPatient_shouldReturnCorrectEncounters() {
+		Patient patient = Context.getPatientService().getPatient(3);
+
+		List<Encounter> encounters = Context.getEncounterService()
+			.getEncountersByVisitsAndPatient(patient, false, null, 0, 5);
+
+		assertEquals(2, encounters.size());
+		for(Encounter encounter: encounters) {
+			assertEquals(patient, encounter.getPatient());
+		}
+	}
+
+	@Test
+	public void getEncountersByVisitsAndPatient_shouldReturnEncountersWithSpecificVisitType() {
+		executeDataSet(TRANSFER_ENC_DATA_XML);
+
+		Patient patient = Context.getPatientService().getPatient(200);
+
+		final String QUERY = "Return TB Clinic Visit";
+		List<Encounter> encounters =
+			Context.getEncounterService().getEncountersByVisitsAndPatient(patient, false, QUERY, 0, 5);
+
+		assertEquals(2, encounters.size());
+
+		for (Encounter encounter : encounters) {
+			assertEquals(patient, encounter.getPatient());
+			assertEquals(QUERY, encounter.getVisit().getVisitType().getName());
+		}
+	}
+
+	@Test
+	public void getEncountersByVisitsAndPatient_shouldReturnEncountersWithSpecificLocation() {
+		executeDataSet(TRANSFER_ENC_DATA_XML);
+
+		Patient patient = Context.getPatientService().getPatient(200);
+
+		final String QUERY = "Test Location";
+		List<Encounter> encounters =
+			Context.getEncounterService().getEncountersByVisitsAndPatient(patient, false, QUERY, 0, 5);
+
+		assertEquals(2, encounters.size());
+
+		for (Encounter encounter : encounters) {
+			assertEquals(patient, encounter.getPatient());
+			assertEquals(QUERY, encounter.getVisit().getLocation().getName());
+		}
+	}
+
+	@Test
+	public void getEncountersByVisitsAndPatientCount_shouldReturnCorrectEncountersCount() {
+		Patient patient = Context.getPatientService().getPatient(3);
+
+		Integer count = Context.getEncounterService()
+			.getEncountersByVisitsAndPatientCount(patient, false, null);
+
+		assertEquals(Integer.valueOf(2), count);
+	}
+
+	@Test
+	public void getEncountersByVisitsAndPatientCount_shouldReturnEncountersCountWithSpecificVisitType() {
+		executeDataSet(TRANSFER_ENC_DATA_XML);
+
+		Patient patient = Context.getPatientService().getPatient(200);
+
+		final String QUERY = "Return TB Clinic Visit";
+		Integer count = Context.getEncounterService()
+			.getEncountersByVisitsAndPatientCount(patient, false, QUERY);
+
+		assertEquals(Integer.valueOf(2), count);
+	}
+
+	@Test
+	public void getEncountersByVisitsAndPatientCount_shouldReturnEncountersCountWithSpecificLocation() {
+		executeDataSet(TRANSFER_ENC_DATA_XML);
+
+		Patient patient = Context.getPatientService().getPatient(200);
+
+		final String QUERY = "Test Location";
+		Integer count = Context.getEncounterService()
+			.getEncountersByVisitsAndPatientCount(patient, false, QUERY);
+
+		assertEquals(Integer.valueOf(2), count);
 	}
 }

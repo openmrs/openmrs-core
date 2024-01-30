@@ -462,7 +462,7 @@ public class HibernateFormDAO implements FormDAO {
 	}
 	
 	/**
-	 * Convenience method to create the same hibernate criteria object for both getForms and
+	 * Convenience method to create the same predicates for both getForms and
 	 * getFormCount
 	 *
 	 * @param cb
