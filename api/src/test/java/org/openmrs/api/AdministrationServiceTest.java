@@ -625,6 +625,8 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Context.logout();
 	}
 	
+	// **** end of my test cases ***//
+	
 	/**
 	 * @see org.openmrs.api.AdministrationService#getGlobalPropertyObject(java.lang.String)
 	 */
