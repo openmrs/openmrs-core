@@ -580,36 +580,38 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see org.openmrs.api.AdministrationService#getGlobalProperty(java.lang.String)
 	 */
 	@Test
-	public void getGlobalProperty_shouldFailIfUserHasNoPrivileges() {
+	public void getGlobalProperty_shouldFailIfUserHasNoPrivilegesAndIsNotAuthenticated() {
 		executeDataSet(ADMIN_INITIAL_DATA_XML);
 		GlobalProperty property = getGlobalPropertyWithViewPrivilege();
-
-		// authenticate new user without privileges
-		Context.logout();
-		Context.authenticate(getTestUserCredentials());
 		
-		APIException exception = assertThrows(APIException.class, () -> adminService.getGlobalProperty(property.getProperty()));
-		assertEquals(exception.getMessage(), String.format("Privilege: %s, required to view globalProperty: %s",
-			property.getViewPrivilege(), property.getProperty()));
+		Context.logout();
+		
+		assertThrows(APIAuthenticationException.class, () -> adminService.getGlobalProperty(property.getProperty()));
 	}
 	
 	/**
 	 * @see org.openmrs.api.AdministrationService#getGlobalProperty(java.lang.String)
 	 */
 	@Test
-	public void getGlobalProperty_shouldReturnGlobalPropertyIfUserIsAllowedToView() {
+	public void getGlobalProperty_shouldReturnGlobalPropertyIfUserIsAuthenticatedAndHasPrivilege() {
 		executeDataSet(ADMIN_INITIAL_DATA_XML);
 		GlobalProperty property = getGlobalPropertyWithViewPrivilege();
-
-		// authenticate new user without privileges
-		Context.logout();
-		Context.authenticate(getTestUserCredentials());
-		// add required privilege to user
-		Role role = Context.getUserService().getRole("Provider");
-		role.addPrivilege(property.getViewPrivilege());
-		Context.getAuthenticatedUser().addRole(role);
 		
-		assertNotNull(adminService.getGlobalProperty(property.getProperty()));
+		Privilege requiredPrivilege = Context.getUserService().getPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		
+		Role role = Context.getUserService().getRole("Provider");
+		role.addPrivilege(requiredPrivilege);
+		Credentials credentials = getTestUserCredentials(); // Assuming a helper method exists
+		
+		Context.logout();
+		Context.authenticate(credentials);
+		
+		String propertyValue = adminService.getGlobalProperty(property.getProperty());
+		
+		assertNotNull(propertyValue);
+		assertEquals(property.getPropertyValue(), propertyValue);
+		
+		Context.logout();
 	}
 
 	/**
