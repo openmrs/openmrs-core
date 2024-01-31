@@ -14,6 +14,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
@@ -36,6 +37,7 @@ import org.openmrs.ImplementationId;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Privilege;
 import org.openmrs.User;
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.EventListeners;
@@ -151,18 +153,25 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		if (propertyName == null) {
 			return null;
 		}
-		
 		GlobalProperty gp = dao.getGlobalPropertyObject(propertyName);
 		if (gp != null) {
-			if (canViewGlobalProperty(gp)) {
+			if (Context.isAuthenticated() || isAnonymouslyAccessible(propertyName) || canViewGlobalProperty(gp)) {
 				return gp.getPropertyValue();
 			} else {
-				throw new APIException("GlobalProperty.error.privilege.required.view", new Object[] {
-					gp.getViewPrivilege().getPrivilege(), propertyName });
+				log.error("User is not authenticated and property is not on the list of anonymously-accessible properties: "
+						+ propertyName,
+					new APIAuthenticationException());
+				throw new APIAuthenticationException("You are not authorized to view the global property: " + propertyName);
 			}
 		} else {
 			return null;
 		}
+	}
+	
+	private boolean isAnonymouslyAccessible(String propertyName) {
+		List<String> anonymouslyAccessibleProperties = Arrays.asList("locale.allowed.list", "concept.true", "concept.false",
+			"validation.disable");
+		return anonymouslyAccessibleProperties.contains(propertyName);
 	}
 	
 	private boolean canViewGlobalProperty(GlobalProperty property) {

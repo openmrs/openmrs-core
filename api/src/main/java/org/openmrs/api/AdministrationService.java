@@ -90,6 +90,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * <strong>Should</strong> get property value given valid property name
 	 * <strong>Should</strong> get property in case insensitive way
 	 */
+	@Authorized(PrivilegeConstants.GET_GLOBAL_PROPERTIES)
 	public String getGlobalProperty(String propertyName);
 	
 	/**

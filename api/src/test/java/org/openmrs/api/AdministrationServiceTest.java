@@ -580,27 +580,24 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see org.openmrs.api.AdministrationService#getGlobalProperty(java.lang.String)
 	 */
 	@Test
-	public void getGlobalProperty_shouldFailIfUserHasNoPrivileges() {
+	public void getGlobalProperty_shouldFailIfUserHasNoPrivilegesAndIsNotAuthenticated() {
+		
 		executeDataSet(ADMIN_INITIAL_DATA_XML);
 		GlobalProperty property = getGlobalPropertyWithViewPrivilege();
-
-		// authenticate new user without privileges
-		Context.logout();
-		Context.authenticate(getTestUserCredentials());
 		
-		APIException exception = assertThrows(APIException.class, () -> adminService.getGlobalProperty(property.getProperty()));
-		assertEquals(exception.getMessage(), String.format("Privilege: %s, required to view globalProperty: %s",
-			property.getViewPrivilege(), property.getProperty()));
+		Context.logout();
+		
+		assertThrows(APIAuthenticationException.class, () -> adminService.getGlobalProperty(property.getProperty()));
 	}
 	
 	/**
 	 * @see org.openmrs.api.AdministrationService#getGlobalProperty(java.lang.String)
 	 */
 	@Test
-	public void getGlobalProperty_shouldReturnGlobalPropertyIfUserIsAllowedToView() {
+	public void getGlobalProperty_shouldReturnGlobalPropertyIfUserIsAuthenticatedAndHasPrivilege() {
+		// Set up test data
 		executeDataSet(ADMIN_INITIAL_DATA_XML);
 		GlobalProperty property = getGlobalPropertyWithViewPrivilege();
-
 		
 		// Retrieve required privilege
 		Privilege requiredPrivilege = Context.getUserService().getPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
