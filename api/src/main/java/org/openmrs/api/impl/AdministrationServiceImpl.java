@@ -149,19 +149,23 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Override
 	@Transactional(readOnly = true)
 	public String getGlobalProperty(String propertyName) throws APIException {
-		// This method should not have any authorization check
 		if (propertyName == null) {
 			return null;
 		}
+		
 		GlobalProperty gp = dao.getGlobalPropertyObject(propertyName);
 		if (gp != null) {
-			if (Context.isAuthenticated() || isAnonymouslyAccessible(propertyName) || canViewGlobalProperty(gp)) {
+			User user = Context.getAuthenticatedUser();
+			if (user == null) {
+				if (!isAnonymouslyAccessible(propertyName)) {
+					throw new APIAuthenticationException("You are not authorized to view the global property: " + propertyName);
+				}
+			}
+			
+			if (canViewGlobalProperty(gp)) {
 				return gp.getPropertyValue();
 			} else {
-				log.error("User is not authenticated and property is not on the list of anonymously-accessible properties: "
-				        + propertyName,
-				    new APIAuthenticationException());
-				throw new APIAuthenticationException("You are not authorized to view the global property: " + propertyName);
+				throw new APIException("GlobalProperty.error.privilege.required.view", new Object[] { gp.getViewPrivilege().getPrivilege(), propertyName });
 			}
 		} else {
 			return null;
@@ -232,6 +236,12 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	public GlobalProperty getGlobalPropertyObject(String propertyName) {
 		GlobalProperty gp = dao.getGlobalPropertyObject(propertyName);
 		if (gp != null) {
+			User user = Context.getAuthenticatedUser();
+			if (user == null) {
+				if (!isAnonymouslyAccessible(propertyName)) {
+					throw new APIAuthenticationException("You are not authorized to view the global property: " + propertyName);
+				}
+			}
 			if (canViewGlobalProperty(gp)) {
 				return gp;
 			} else {

@@ -104,6 +104,7 @@ public interface AdministrationService extends OpenmrsService {
 	 *         default value if property name does not exist <strong>Should</strong> not fail with null
 	 *         default value
 	 */
+	@Authorized(PrivilegeConstants.GET_GLOBAL_PROPERTIES)
 	public String getGlobalProperty(String propertyName, String defaultValue);
 	
 	/**
@@ -113,6 +114,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @return the global property that matches the given <code>propertyName</code>
 	 *         <strong>Should</strong> return null when no global property match given property name
 	 */
+	@Authorized(PrivilegeConstants.GET_GLOBAL_PROPERTIES)
 	public GlobalProperty getGlobalPropertyObject(String propertyName);
 	
 	/**
