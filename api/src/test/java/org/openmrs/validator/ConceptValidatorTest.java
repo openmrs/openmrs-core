@@ -32,6 +32,7 @@ import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptMap;
+import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.api.ConceptNameType;
@@ -533,5 +534,30 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		validator.validate(concept, errors);
 		
 		assertThat(errors, not(hasFieldErrors("description")));
+	}
+
+	@Test
+	public void validate_shouldSkipConceptNameValidationForRetiredConcepts() {
+		concept.setRetired(true);
+		concept.addName(new ConceptName("", Context.getLocale()));
+		concept.setDatatype(new ConceptDatatype());
+		concept.setConceptClass(new ConceptClass());
+
+		validator.validate(concept, errors);
+
+		assertFalse(errors.hasErrors(), "Expected no validation errors for a retired concept");
+	}
+
+	@Test
+	public void validate_shouldSkipConceptMapValidationForRetiredConcepts() {
+		concept.setRetired(true);
+		concept.addName(new ConceptName("some name", Context.getLocale()));
+		concept.setConceptClass(new ConceptClass());
+		concept.setDatatype(new ConceptDatatype());
+		concept.addConceptMapping(new ConceptMap(null, new ConceptMapType()));
+
+		validator.validate(concept, errors);
+
+		assertFalse(errors.hasErrors(), "Expected no validation errors for a retired concept");
 	}
 }
