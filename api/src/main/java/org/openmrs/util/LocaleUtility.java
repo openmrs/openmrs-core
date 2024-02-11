@@ -21,6 +21,7 @@ import org.openmrs.api.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.LocaleUtils;
 
 /**
  * A utility class for working with Locales.
@@ -131,15 +132,20 @@ public class LocaleUtility implements GlobalPropertyListener {
 		
 		localeSpecification = localeSpecification.trim();
 		
-		String[] localeComponents = localeSpecification.split("_");
-		if (localeComponents.length == 1) {
-			createdLocale = new Locale(localeComponents[0]);
-		} else if (localeComponents.length == 2) {
-			createdLocale = new Locale(localeComponents[0], localeComponents[1]);
-		} else if (localeComponents.length > 2) {
-			String variant = localeSpecification.substring(localeSpecification.indexOf(localeComponents[2])); // gets everything after the
-			// second underscore
-			createdLocale = new Locale(localeComponents[0], localeComponents[1], variant);
+		try {
+			createdLocale = LocaleUtils.toLocale(localeSpecification);
+		}
+		catch (IllegalArgumentException e) {
+			String[] localeComponents = localeSpecification.split("[-_]");
+			if (localeComponents.length == 1) {
+				createdLocale = new Locale(localeComponents[0]);
+			} else if (localeComponents.length == 2) {
+				createdLocale = new Locale(localeComponents[0], localeComponents[1]);
+			} else if (localeComponents.length > 2) {
+				String variant = localeSpecification.substring(localeSpecification.indexOf(localeComponents[2])); // gets everything after the
+				// second underscore
+				createdLocale = new Locale(localeComponents[0], localeComponents[1], variant);
+			}
 		}
 		
 		return createdLocale;
