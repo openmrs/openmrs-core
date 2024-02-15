@@ -161,6 +161,20 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 		
 		assertEquals(Locale.JAPANESE, LocaleUtility.getDefaultLocale());
 	}
+
+	/**
+	 * @see LocaleUtility#getDefaultLocale()
+	 */
+	@Test
+    public void getDefaultLocale_shouldNotReturnInvalidLocaleFromInvalidGlobalProperty() {
+		Context.getAdministrationService().saveGlobalProperty(
+			new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB, invalid"));
+
+		Context.getAdministrationService().saveGlobalProperty(
+			new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE, "invalid"));
+		
+		assertEquals(Locale.UK, LocaleUtility.getDefaultLocale());
+	}
 	
 	/**
 	 * @see LocaleUtility#fromSpecification(String)

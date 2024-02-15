@@ -59,13 +59,8 @@ public class LocaleUtility implements GlobalPropertyListener {
 					String locale = Context.getAdministrationService().getGlobalProperty(
 					    OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE);
 					
-					if (StringUtils.hasLength(locale)) {
-						try {
-							defaultLocaleCache = fromSpecification(locale);
-						}
-						catch (Exception t) {
-							log.warn("Unable to parse default locale global property value: " + locale, t);
-						}
+					if (StringUtils.hasLength(locale) && isValid(fromSpecification(locale))) {
+						defaultLocaleCache = fromSpecification(locale);
 					}
 				}
 				catch (Exception e) {
