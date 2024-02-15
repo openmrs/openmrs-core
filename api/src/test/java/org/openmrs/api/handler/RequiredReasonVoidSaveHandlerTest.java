@@ -9,19 +9,19 @@
  */
 package org.openmrs.api.handler;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.util.Date;
-
 import org.junit.jupiter.api.Test;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
-import org.openmrs.Person;
+import org.openmrs.PersonAddress;
 import org.openmrs.User;
 import org.openmrs.Voidable;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+
+import java.util.Date;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Tests for the {@link RequireVoidReasonSaveHandler} class.
@@ -77,10 +77,9 @@ public class RequiredReasonVoidSaveHandlerTest extends BaseContextSensitiveTest 
 	 */
 	@Test
 	public void handle_shouldNotThrowExceptionIfVoidReasonIsNullForUnsupportedTypes() {
-		Person p = Context.getPersonService().getPerson(1);
-		p.setVoided(true);
-		p.setVoidReason(null);
-		p.setVoidReason("voidReason");
-		Context.getPersonService().savePerson(p);
+		PersonAddress pa = Context.getPersonService().getPersonAddressByUuid("3350d0b5-821c-4e5e-ad1d-a9bce331e118");
+		pa.setVoided(true);
+		pa.setVoidReason(null);
+		Context.getPersonService().savePersonAddress(pa);
 	}
 }
