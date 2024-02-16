@@ -56,6 +56,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * <strong>Should</strong> find object given valid uuid
 	 * <strong>Should</strong> return null if no object found with given uuid
 	 */
+	@Authorized(PrivilegeConstants.GET_GLOBAL_PROPERTIES)
 	public GlobalProperty getGlobalPropertyByUuid(String uuid);
 	
 	/**
@@ -90,6 +91,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * <strong>Should</strong> get property value given valid property name
 	 * <strong>Should</strong> get property in case insensitive way
 	 */
+	@Authorized(PrivilegeConstants.GET_GLOBAL_PROPERTIES)
 	public String getGlobalProperty(String propertyName);
 	
 	/**
@@ -106,6 +108,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * <strong>Should</strong> return default value if property name does not exist
 	 * <strong>Should</strong> not fail with null default value
 	 */
+	
 	public String getGlobalProperty(String propertyName, String defaultValue);
 	
 	/**
@@ -115,6 +118,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @return the global property that matches the given <code>propertyName</code>
 	 * <strong>Should</strong> return null when no global property match given property name
 	 */
+	@Authorized(PrivilegeConstants.GET_GLOBAL_PROPERTIES)
 	public GlobalProperty getGlobalPropertyObject(String propertyName);
 	
 	/**

@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
@@ -40,7 +39,6 @@ import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Credentials;
-import org.openmrs.api.context.UserContext;
 import org.openmrs.api.context.UsernamePasswordCredentials;
 import org.openmrs.customdatatype.datatype.BooleanDatatype;
 import org.openmrs.customdatatype.datatype.DateDatatype;
@@ -278,7 +276,9 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void getGlobalProperty_shouldReturnDefaultValueIfPropertyNameDoesNotExist() {
+		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
 		String invalidKey = "asdfasdf";
+		
 		String propertyValue = adminService.getGlobalProperty(invalidKey);
 		assertNull(propertyValue); // make sure there isn't a gp
 		
@@ -587,6 +587,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		// authenticate new user without privileges
 		Context.logout();
 		Context.authenticate(getTestUserCredentials());
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		
 		APIException exception = assertThrows(APIException.class, () -> adminService.getGlobalProperty(property.getProperty()));
 		assertEquals(exception.getMessage(), String.format("Privilege: %s, required to view globalProperty: %s",
@@ -604,6 +605,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		// authenticate new user without privileges
 		Context.logout();
 		Context.authenticate(getTestUserCredentials());
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		// add required privilege to user
 		Role role = Context.getUserService().getRole("Provider");
 		role.addPrivilege(property.getViewPrivilege());
@@ -611,7 +613,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		
 		assertNotNull(adminService.getGlobalProperty(property.getProperty()));
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.AdministrationService#getGlobalPropertyObject(java.lang.String)
 	 */
@@ -623,6 +625,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		// authenticate new user without privileges
 		Context.logout();
 		Context.authenticate(getTestUserCredentials());
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 
 		APIException exception = assertThrows(APIException.class, () -> adminService.getGlobalPropertyObject(property.getProperty()));
 		assertEquals(exception.getMessage(), String.format("Privilege: %s, required to view globalProperty: %s",
@@ -640,6 +643,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		// authenticate new user without privileges
 		Context.logout();
 		Context.authenticate(getTestUserCredentials());
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		// add required privilege to user
 		Role role = Context.getUserService().getRole("Provider");
 		role.addPrivilege(property.getViewPrivilege());
@@ -660,6 +664,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		// authenticate new user without privileges
 		Context.logout();
 		Context.authenticate(getTestUserCredentials());
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		
 		APIException exception = assertThrows(APIException.class, () -> adminService.updateGlobalProperty(property.getProperty(), "new-value"));
 		assertEquals(exception.getMessage(), String.format("Privilege: %s, required to edit globalProperty: %s",
@@ -678,6 +683,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		// authenticate new user without privileges
 		Context.logout();
 		Context.authenticate(getTestUserCredentials());
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		// add required privilege to user
 		Role role = Context.getUserService().getRole("Provider");
 		role.addPrivilege(property.getEditPrivilege());

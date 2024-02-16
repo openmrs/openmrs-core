@@ -14,8 +14,10 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -36,6 +38,7 @@ import org.openmrs.ImplementationId;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Privilege;
 import org.openmrs.User;
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.EventListeners;
@@ -49,6 +52,7 @@ import org.openmrs.module.ModuleUtil;
 import org.openmrs.util.HttpClient;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
@@ -67,6 +71,16 @@ import org.springframework.validation.Errors;
 public class AdministrationServiceImpl extends BaseOpenmrsService implements AdministrationService, GlobalPropertyListener {
 	
 	private static final Logger log = LoggerFactory.getLogger(AdministrationServiceImpl.class);
+	
+	/**
+	 * Anonymously-accessed global properties
+	 */
+	private final static Set<String> anonymouslyAccessibleProperties = new HashSet<>();
+	static {
+		Collections.addAll(anonymouslyAccessibleProperties, "owa.appBaseUrl", "login.url", "spa.baseUrl",
+		    "timezone.conversions", "default_theme", "gzip.enabled", "default_locale",
+		    "addresshierarchy.initializeAddressHierarchyCacheOnStartup");
+	}
 
 	protected AdministrationDAO dao;
 	
@@ -144,34 +158,55 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * @see org.openmrs.api.AdministrationService#getGlobalProperty(java.lang.String)
 	 */
+	
 	@Override
 	@Transactional(readOnly = true)
 	public String getGlobalProperty(String propertyName) throws APIException {
-		// This method should not have any authorization check
 		if (propertyName == null) {
 			return null;
 		}
 		
+		User user = Context.getAuthenticatedUser();
 		GlobalProperty gp = dao.getGlobalPropertyObject(propertyName);
+		
+		try {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			if (user == null && !isAnonymouslyAccessible(gp)) {
+				log.warn("Property '{}' is not accessible anonymously.", propertyName);
+				throw new APIAuthenticationException("GlobalProperty.property.notAnonymous");
+			}
+		}
+		finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		}
+		
 		if (gp != null) {
 			if (canViewGlobalProperty(gp)) {
 				return gp.getPropertyValue();
 			} else {
 				throw new APIException("GlobalProperty.error.privilege.required.view", new Object[] {
-					gp.getViewPrivilege().getPrivilege(), propertyName });
+				        gp.getViewPrivilege().getPrivilege(), propertyName });
+
 			}
 		} else {
 			return null;
 		}
+	}
+	private boolean isAnonymouslyAccessible(GlobalProperty property) {
+		if (property == null) {
+			return true;
+		}
+		String prop = property.getProperty();
+		return anonymouslyAccessibleProperties.contains(prop);
 	}
 	
 	private boolean canViewGlobalProperty(GlobalProperty property) {
 		if (property.getViewPrivilege() == null) {
 			return true;
 		}
-		
 		return Context.getAuthenticatedUser().hasPrivilege(property.getViewPrivilege().getPrivilege());
 	}
+
 	
 	private boolean canDeleteGlobalProperty(GlobalProperty property) {
 		if (property.getDeletePrivilege() == null) {
@@ -209,10 +244,12 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Override
 	@Transactional(readOnly = true)
 	public String getGlobalProperty(String propertyName, String defaultValue) throws APIException {
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		String s = Context.getAdministrationService().getGlobalProperty(propertyName);
 		if (s == null) {
 			return defaultValue;
 		}
+		
 		return s;
 	}
 	
