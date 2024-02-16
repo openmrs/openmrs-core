@@ -783,7 +783,10 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 			try {
 				String preferredLocale = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE);
 				if (StringUtils.isNotBlank(preferredLocale)) {
-					locale = LocaleUtility.fromSpecification(preferredLocale);
+					Locale locale1 = LocaleUtility.fromSpecification(preferredLocale);
+					if (LocaleUtility.isValid(locale1)) {
+						locale = locale1;
+					}
 				}
 			}
 			catch (Exception e) {

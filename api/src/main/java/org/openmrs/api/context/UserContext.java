@@ -463,7 +463,10 @@ public class UserContext implements Serializable {
 		// intended to be when the user initially authenticates
 		if (user.getUserProperties().containsKey("defaultLocale")) {
 			String localeString = user.getUserProperty("defaultLocale");
-			locale = LocaleUtility.fromSpecification(localeString);
+			Locale locale1 = LocaleUtility.fromSpecification(localeString);
+			if (LocaleUtility.isValid(locale1)) {
+				locale = locale1;
+			}
 		}
 
 		if (locale == null && useDefault) {

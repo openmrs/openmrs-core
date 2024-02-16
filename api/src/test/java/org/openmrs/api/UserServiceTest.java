@@ -1672,6 +1672,24 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertEquals(Locale.FRENCH, locale);
 	}
 
+	@Test
+	public void getDefaultLocaleForUser_shouldNotReturnInvalidLocaleFromInvalidProperty() {
+		User createdUser = createTestUser();
+		createdUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE, "invalid");
+		Context.getUserService().saveUser(createdUser);
+		
+		assertEquals(Context.getLocale(), Context.getUserService().getDefaultLocaleForUser(createdUser));
+	}
+
+	@Test
+	public void getDefaultLocaleForUser_shouldNotReturnInvalidLocaleIfAnInvalidPropertyIsAlreadySet() {
+		executeDataSet(XML_FILENAME);
+		Context.authenticate("test_user", "test");
+		
+		Locale locale = Context.getLocale();
+		assertEquals(Locale.UK, locale);
+	}
+
 	private User createTestUser() {
 		User u = new User();
 		u.setPerson(new Person());
