@@ -762,6 +762,50 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see org.openmrs.api.OrderService#discontinueOrder(Order, Concept, Date, Provider, Encounter)
+	 */
+	@Test
+	public void discontinueOrder_shouldSetCorrectValuesForTheExistingOrderDiscontinueReason() {
+		executeDataSet("org/openmrs/include/standardTestDataset.xml");
+		
+		Order order = orderService.getOrderByOrderNumber("111");
+		assertTrue(OrderUtilTest.isActiveOrder(order, null));
+		Date discontinueDate = new Date();
+		Concept discontinueReason = conceptService.getConcept(3);
+
+		Order discontinueOrder = orderService.discontinueOrder(order, discontinueReason, discontinueDate, order.getOrderer(), order.getEncounter());
+
+		assertEquals(order.getDateStopped(), discontinueDate);
+		assertNotNull(order.getDiscontinueReason());
+		assertEquals(order.getDiscontinueReason(), discontinueReason);
+		
+		assertNotNull(discontinueOrder);
+		assertEquals(discontinueOrder.getOrderReason(), discontinueReason);
+	}
+
+	/**
+	 * @see org.openmrs.api.OrderService#discontinueOrder(Order, String, Date, Provider, Encounter)
+	 */
+	@Test
+	public void discontinueOrder_shouldSetCorrectValuesForTheExistingOrderDiscontinueReasonNonCoded() {
+		executeDataSet("org/openmrs/include/standardTestDataset.xml");
+
+		Order order = orderService.getOrderByOrderNumber("111");
+		assertTrue(OrderUtilTest.isActiveOrder(order, null));
+		Date discontinueDate = new Date();
+		String discontinueReasonNonCoded = "Test if I can discontinue this";
+
+		Order discontinueOrder = orderService.discontinueOrder(order, discontinueReasonNonCoded, discontinueDate, order.getOrderer(), order.getEncounter());
+
+		assertEquals(order.getDateStopped(), discontinueDate);
+		assertNotNull(order.getDiscontinueReasonNonCoded());
+		assertEquals(order.getDiscontinueReasonNonCoded(), discontinueReasonNonCoded);
+
+		assertNotNull(discontinueOrder);
+		assertEquals(discontinueOrder.getOrderReasonNonCoded(), discontinueReasonNonCoded);
+	}
+
+	/**
 	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
 	 */
 	@Test

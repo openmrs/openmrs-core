@@ -99,5 +99,32 @@
         	CREATE FUNCTION UUID() RETURNS UUID LANGUAGE SQL AS $$ SELECT uuid_generate_v1() $$;
         </sql>
     </changeSet>
+
+	<changeSet id="TRUNK-6149-2024-02-20-1001" author="mujuzi">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="orders" columnName="discontinue_reason" />
+			</not>
+		</preConditions>
+		<comment>Adding property 'discontinue_reason' to 'orders' table</comment>
+		<addColumn tableName="orders">
+			<column name="discontinue_reason" type="INT" />
+		</addColumn>
+		<addForeignKeyConstraint constraintName="order_discontinue_reason_fk"
+								 baseTableName="orders" baseColumnNames="discontinue_reason"
+								 referencedTableName="concept" referencedColumnNames="concept_id" />
+	</changeSet>
+
+	<changeSet id="TRUNK-6149-2024-02-20-1002" author="mujuzi">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="orders" columnName="discontinue_reason_non_coded" />
+			</not>
+		</preConditions>
+		<comment>Adding property 'discontinue_reason_non_coded' to 'orders' table</comment>
+		<addColumn tableName="orders">
+			<column name="discontinue_reason_non_coded" type="VARCHAR(255)" />
+		</addColumn>
+	</changeSet>
 	
 </databaseChangeLog>

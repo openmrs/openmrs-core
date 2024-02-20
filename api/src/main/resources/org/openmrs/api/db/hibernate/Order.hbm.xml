@@ -44,6 +44,7 @@
         <property name="sortWeight" type="java.lang.Double" column="sort_weight"/>
         <property name="fulfillerComment" type="java.lang.String" column="fulfiller_comment" length="1024"/>
         <property name="formNamespaceAndPath" type="java.lang.String" column="form_namespace_and_path" length="255" />
+		<property name="discontinueReasonNonCoded" column="discontinue_reason_non_coded" type="java.lang.String" length="255"/>
 
 		<property name="urgency" column="urgency" length="50" not-null="true">
             <type name="org.hibernate.type.EnumType">
@@ -94,6 +95,8 @@
 
 		<!-- bi-directional many-to-one association to User -->
 		<many-to-one name="creator" class="org.openmrs.User" not-null="true" />
+
+		<many-to-one name="discontinueReason" column="discontinue_reason" class="org.openmrs.Concept" not-null="false" />
 
 		<set name="attributes" lazy="true" inverse="true" batch-size="100" cascade="all-delete-orphan" order-by="voided asc">
 			<key column="order_id" />

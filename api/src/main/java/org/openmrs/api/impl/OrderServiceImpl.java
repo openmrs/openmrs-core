@@ -787,6 +787,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (discontinueDate == null) {
 			discontinueDate = aMomentBefore(new Date());
 		}
+		setProperty(orderToDiscontinue, "discontinueReason", reasonCoded);
 		stopOrder(orderToDiscontinue, discontinueDate, false);
 		Order newOrder = orderToDiscontinue.cloneForDiscontinuing();
 		newOrder.setOrderReason(reasonCoded);
@@ -806,6 +807,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (discontinueDate == null) {
 			discontinueDate = aMomentBefore(new Date());
 		}
+		setProperty(orderToDiscontinue, "discontinueReasonNonCoded", reasonNonCoded);
 		stopOrder(orderToDiscontinue, discontinueDate, false);
 		Order newOrder = orderToDiscontinue.cloneForDiscontinuing();
 		newOrder.setOrderReasonNonCoded(reasonNonCoded);
