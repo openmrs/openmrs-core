@@ -185,6 +185,17 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	public void fromSpecification_shouldGetLocaleFromBCP47Format() {
 		assertEquals(Locale.UK, LocaleUtility.fromSpecification("en-GB"));
 	}
+
+	/**
+	 * @see LocaleUtility#fromSpecification(String)
+	 */
+	@Test
+	public void fromSpecification_shouldReturnNullWhenLocaleFormatIsIncorrectLocaleFromBCP47Format() {
+		LocaleUtility.fromSpecification("en-USA");
+		LocaleUtility.fromSpecification("en_USA");
+		assertEquals(LocaleUtility.fromSpecification("en-USA"), null);
+		assertEquals(LocaleUtility.fromSpecification("en_USA"), null);
+	}
 	
 	/**
 	 * @see LocaleUtility#fromSpecification(String)

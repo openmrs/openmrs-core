@@ -135,7 +135,11 @@ public class LocaleUtility implements GlobalPropertyListener {
 		try {
 			createdLocale = LocaleUtils.toLocale(localeSpecification);
 		} catch (IllegalArgumentException e) {
-			createdLocale = generateLocaleFromLegacyFormat(localeSpecification);
+			if (localeSpecification.matches("[a-zA-Z]{2}[-_][a-zA-Z]{2,}")) {
+				return null;
+			} else {
+				createdLocale = generateLocaleFromLegacyFormat(localeSpecification);
+			}
 		}
 		
 		return createdLocale;
