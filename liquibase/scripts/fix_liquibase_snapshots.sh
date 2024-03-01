@@ -17,6 +17,7 @@
 #  The updated snapshots are written to the openmrs-core/liquibase/snapshots folder.
 
 
-openmrs_version=$(grep -m 1 '<version>' ../pom.xml | sed -n 's/.*<version>\(.*\)<\/version>.*/\1/p' | awk '{$1=$1;print}')
+openmrs_version=$(cd ../ && mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+
 
 java -jar ./target/openmrs-liquibase-"${openmrs_version}"-jar-with-dependencies.jar
