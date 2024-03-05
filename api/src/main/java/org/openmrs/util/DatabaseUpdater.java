@@ -93,6 +93,8 @@ public class DatabaseUpdater {
 	
 	private static final ChangeLogVersionFinder changeLogVersionFinder;
 	
+	private static final Map<String, List<OpenMRSChangeSet>> cachedUnrunChanges = new HashMap<>();
+	
 	private static LiquibaseProvider liquibaseProvider;
 	
 	static {
@@ -645,7 +647,7 @@ public class DatabaseUpdater {
 			return getUnrunDatabaseChanges(liquibaseUpdateFilenames.toArray(new String[0]));
 		}
 		
-		return new ArrayList<OpenMRSChangeSet>();
+		return new ArrayList<>();
 	}
 	
 	/**
@@ -669,15 +671,22 @@ public class DatabaseUpdater {
 			List<OpenMRSChangeSet> results = new ArrayList<>();
 			
 			for (String changelogFile : changeLogFilenames) {
+				if(cachedUnrunChanges.containsKey(changelogFile)) {
+					results.addAll(cachedUnrunChanges.get(changelogFile));
+					continue;
+				}
 				Liquibase liquibase = getLiquibase(changelogFile, null);
 				database = liquibase.getDatabase();
 				
 				List<ChangeSet> changeSets = liquibase.listUnrunChangeSets(new Contexts(CONTEXT), new LabelExpression());
-				
+
+				List<OpenMRSChangeSet> changeSetList = new ArrayList<>();
 				for (ChangeSet changeSet : changeSets) {
 					OpenMRSChangeSet omrschangeset = new OpenMRSChangeSet(changeSet, database);
-					results.add(omrschangeset);
+					changeSetList.add(omrschangeset);
 				}
+				cachedUnrunChanges.put(changelogFile, changeSetList);
+				results.addAll(changeSetList);
 			}
 			
 			return results;
