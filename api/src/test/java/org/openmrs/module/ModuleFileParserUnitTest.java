@@ -14,6 +14,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.StringStartsWith.startsWith;
@@ -530,6 +531,107 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 		assertThat(module.getAwareOfModules().size(), is(2));
 		assertThat(module.getAwareOfModules(),
 			hasItems("org.openmrs.module.serialization.xstream", "org.openmrs.module.legacyui"));
+	}
+
+	@Test
+	public void parse_shouldParseStartBeforeModulesWithoutChildren() throws IOException {
+		Document config = buildOnValidConfigXml()
+			.withStartBeforeModules()
+			.build();
+
+		Module module = parser.parse(writeConfigXmlToFile(config));
+
+		assertThat(module.getStartBeforeModules(), is(equalTo(Collections.EMPTY_LIST)));
+	}
+
+	@Test
+	public void parse_shouldParseStartBeforeModulesOnlyContainingText() throws IOException {
+		Document config = buildOnValidConfigXml()
+			.withTextNode("start_before_modules", "will be ignored")
+			.build();
+
+		Module module = parser.parse(writeConfigXmlToFile(config));
+
+		assertThat(module.getStartBeforeModules(), is(equalTo(Collections.EMPTY_LIST)));
+	}
+
+	@Test
+	public void parse_shouldParseStartBeforeModulesContainingDuplicatesAndKeepOnlyOneModule()
+		throws IOException {
+
+		Document config = buildOnValidConfigXml()
+			.withStartBeforeModules(
+				"org.openmrs.module.serialization.xstream",
+				"org.openmrs.module.serialization.xstream"
+			)
+			.build();
+
+		Module module = parser.parse(writeConfigXmlToFile(config));
+
+		assertThat(module.getStartBeforeModules(), hasSize(1));
+		assertThat(module.getStartBeforeModules(), hasItems("org.openmrs.module.serialization.xstream"));
+	}
+
+	@Test
+	public void parse_shouldParseStartBeforeModulesContainingMultipleChildren() throws IOException {
+		Document config = buildOnValidConfigXml()
+			.withStartBeforeModules(
+				"org.openmrs.module.serialization.xstream",
+				"org.openmrs.module.legacyui"
+			)
+			.build();
+
+		Module module = parser.parse(writeConfigXmlToFile(config));
+
+		assertThat(module.getStartBeforeModules(), hasSize(2));
+		assertThat(module.getStartBeforeModules(),
+			hasItems("org.openmrs.module.serialization.xstream", "org.openmrs.module.legacyui"));
+	}
+
+	@Test
+	public void parse_shouldParseStartBeforeModulesContainingModuleChildren() throws IOException {
+		Document config = buildOnValidConfigXml().build();
+
+		Element startBeforeModules = config.createElement("start_before_modules");
+		for (String module : new String[] { "org.openmrs.module.serialization.xstream", "org.openmrs.module.legacyui" }) {
+			Element startBeforeModule = config.createElement("module");
+			startBeforeModule.setTextContent(module);
+			startBeforeModules.appendChild(startBeforeModule);
+		}
+		config.getDocumentElement().appendChild(startBeforeModules);
+
+		Module module = parser.parse(writeConfigXmlToFile(config));
+
+		assertThat(module.getStartBeforeModules(), hasSize(2));
+		assertThat(module.getStartBeforeModules(),
+			hasItems("org.openmrs.module.serialization.xstream", "org.openmrs.module.legacyui"));
+	}
+
+	@Test
+	public void parse_shouldParseStartBeforeModulesContainingMixedChildren() throws IOException {
+		Document config = buildOnValidConfigXml().build();
+
+		Element startBeforeModules = config.createElement("start_before_modules");
+		for (String module : new String[] { "org.openmrs.module.xforms", "org.openmrs.module.idgen" }) {
+			Element startBeforeModule = config.createElement("start_before_module");
+			startBeforeModule.setTextContent(module);
+			startBeforeModules.appendChild(startBeforeModule);
+		}
+
+		for (String module : new String[] { "org.openmrs.module.serialization.xstream", "org.openmrs.module.legacyui" }) {
+			Element startBeforeModule = config.createElement("module");
+			startBeforeModule.setTextContent(module);
+			startBeforeModules.appendChild(startBeforeModule);
+		}
+		
+		config.getDocumentElement().appendChild(startBeforeModules);
+
+		Module module = parser.parse(writeConfigXmlToFile(config));
+
+		assertThat(module.getStartBeforeModules(), hasSize(4));
+		assertThat(module.getStartBeforeModules(),
+			hasItems("org.openmrs.module.serialization.xstream", "org.openmrs.module.legacyui", 
+				"org.openmrs.module.xforms", "org.openmrs.module.idgen"));
 	}
 
 	@Test
@@ -1175,12 +1277,10 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 	}
 
 	private ModuleConfigXmlBuilder buildOnValidConfigXml() {
-
 		return buildOnValidConfigXml("1.6");
 	}
 
 	private ModuleConfigXmlBuilder buildOnValidConfigXml(String version) {
-
 		return new ModuleConfigXmlBuilder(documentBuilder)
 			.withModuleRoot()
 			.withConfigVersion(version)
@@ -1263,6 +1363,17 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 				awareOfModules.appendChild(awareOfModule);
 			}
 			configXml.getDocumentElement().appendChild(awareOfModules);
+			return this;
+		}
+
+		public ModuleConfigXmlBuilder withStartBeforeModules(String... modules) {
+			Element startBeforeModules = configXml.createElement("start_before_modules");
+			for (String module : modules) {
+				Element startBeforeModule = configXml.createElement("start_before_module");
+				startBeforeModule.setTextContent(module);
+				startBeforeModules.appendChild(startBeforeModule);
+			}
+			configXml.getDocumentElement().appendChild(startBeforeModules);
 			return this;
 		}
 

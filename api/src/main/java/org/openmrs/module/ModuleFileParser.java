@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.jar.JarFile;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 
 import org.apache.commons.lang3.StringUtils;
@@ -37,6 +39,7 @@ import org.openmrs.Privilege;
 import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.messagesource.MessageSourceService;
+import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +66,9 @@ public class ModuleFileParser {
 	private static final String MODULE_CONFIG_XML_FILENAME = "config.xml";
 
 	private static final String OPENMRS_MODULE_FILE_EXTENSION = ".omod";
+	
+	//https://resources.openmrs.org/doctype/config-1.5.dtd
+	private static final Pattern OPENMRS_DTD_SYSTEM_ID_PATTERN = Pattern.compile("https?://resources.openmrs.org/doctype/(?<config>config-[0-9.]+\\.dtd)");
 	
 	/**
 	 * List out all of the possible version numbers for config files that openmrs has DTDs for.
@@ -286,7 +292,15 @@ public class ModuleFileParser {
 		// DTD) we return an InputSource
 		// with no data at the end, causing the parser to ignore
 		// the DTD.
-		db.setEntityResolver((publicId, systemId) -> new InputSource(new StringReader("")));
+		db.setEntityResolver((publicId, systemId) -> {
+			Matcher dtdMatcher = OPENMRS_DTD_SYSTEM_ID_PATTERN.matcher(systemId);
+			if (dtdMatcher.matches()) {
+				String dtdFile = dtdMatcher.group("config");
+				return new InputSource(OpenmrsClassLoader.getInstance().getResourceAsStream("org/openmrs/module/dtd/" + dtdFile));
+			}
+			return new InputSource(new StringReader(""));
+		});
+		
 		return db;
 	}
 
@@ -375,7 +389,9 @@ public class ModuleFileParser {
 	}
 	
 	private Map<String, String> extractStartBeforeModules(Element configRoot) {
-		return extractModulesWithVersionAttribute(configRoot, "module", "start_before_modules");
+		Map<String, String> result = extractModulesWithVersionAttribute(configRoot, "module", "start_before_modules");
+		result.putAll(extractModulesWithVersionAttribute(configRoot, "start_before_module", "start_before_modules"));
+		return result;
 	}
 
 	private Map<String, String> extractModulesWithVersionAttribute(Element configRoot, String elementName,
