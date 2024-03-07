@@ -27,8 +27,8 @@
 		(filter*),
 		(filter-mapping*),
 		(messages*),
-		(mappingFiles?)
-		(packagesWithMappedClasses?)
+		(mappingFiles?),
+		(packagesWithMappedClasses?),
 		(conditionalResources?)
 		)>
 	<!ATTLIST module configVersion CDATA #FIXED "1.6">
