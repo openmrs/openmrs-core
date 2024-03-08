@@ -9,7 +9,10 @@
  */
 package org.openmrs.validator;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.ConceptSource;
+import org.openmrs.annotation.Handler;
+import org.openmrs.api.context.Context;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -18,6 +21,7 @@ import org.springframework.validation.Validator;
  * Validates attributes on the {@link org.openmrs.ConceptSource} object.
  *
  */
+@Handler(supports = {ConceptSource.class}, order = 50)
 public class ConceptSourceValidator implements Validator {
 	
 	/**
@@ -36,6 +40,7 @@ public class ConceptSourceValidator implements Validator {
 	 * 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 * <strong>Should</strong> fail validation if name is null or empty or whitespace
+	 * <strong>Should</strong> fail validation if name is already in use
 	 * <strong>Should</strong> fail validation if description is null or empty or whitespace
 	 * <strong>Should</strong> pass validation if HL7 Code is null or empty or whitespace
 	 * <strong>Should</strong> pass validation if all required fields have proper values
@@ -48,6 +53,14 @@ public class ConceptSourceValidator implements Validator {
 			throw new IllegalArgumentException("The parameter obj should not be null and must be of type "
 			        + ConceptSource.class);
 		} else {
+			ConceptSource conceptSource = (ConceptSource) obj;
+			if (StringUtils.isNotBlank(conceptSource.getName())) {
+				ConceptSource existingConceptSource = Context.getConceptService().getConceptSourceByName(conceptSource.getName());
+				if (existingConceptSource != null && !existingConceptSource.getUuid().equals(conceptSource.getUuid())) {
+					errors.rejectValue("name", "general.error.nameAlreadyInUse");
+					return;
+				}
+			}
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.null");
 			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "hl7Code", "uniqueId", "description",

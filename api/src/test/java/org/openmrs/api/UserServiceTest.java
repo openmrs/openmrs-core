@@ -10,6 +10,7 @@
 package org.openmrs.api;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -1059,6 +1060,24 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(savedPrivilege);
 		
 	}
+
+	/**
+	 * @see org.openmrs.api.UserService#savePrivilege(Privilege)
+	 */
+	@Test
+	public void savePrivilege_shouldFailToCreateNewPrivilegeIfOneAlreadyExistsWithSameName() {
+		executeDataSet(XML_FILENAME);
+		List<Privilege> allPrivileges = userService.getAllPrivileges();
+		assertNotNull(allPrivileges);
+		assertEquals("Some Privilege", allPrivileges.get(0).getName());
+
+		Privilege newPrivilege = new Privilege();
+		newPrivilege.setPrivilege("SOME PRIVILEGE");
+		newPrivilege.setDescription("a new Privilege to add for testing");
+		Exception exception = assertThrows(ValidationException.class, () -> userService.savePrivilege(newPrivilege));
+		assertThat(exception.getMessage(), containsString("failed to validate with reason:"));
+
+	}
 	
 	/**
 	 * @see UserService#setUserProperty(User,String,String)
@@ -1124,6 +1143,23 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		userService.saveRole(role);
 		
 		assertNotNull(userService.getRole("new role"));
+		
+	}
+	
+	/**
+	 * @see org.openmrs.api.UserService#saveRole(Role)
+	 */
+	@Test
+	public void saveRole_shouldFailToCreateNewRoleIfOneAlreadyExistsWithSameName() {
+		List<Role> allRoles = userService.getAllRoles();
+		assertNotNull(allRoles);
+		assertEquals("Authenticated", allRoles.get(1).getName());
+
+		Role newRole = new Role();
+		newRole.setRole("AUTHENTICATED");
+		newRole.setDescription("a new Role to add for testing");
+		Exception exception = assertThrows(ValidationException.class, () -> userService.saveRole(newRole));
+		assertThat(exception.getMessage(), containsString("failed to validate with reason:"));
 		
 	}
 	

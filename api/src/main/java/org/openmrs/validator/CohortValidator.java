@@ -12,6 +12,7 @@ package org.openmrs.validator;
 import java.util.Collection;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
 import org.openmrs.Patient;
@@ -33,6 +34,13 @@ public class CohortValidator implements Validator {
 		return Cohort.class.isAssignableFrom(c);
 	}
 
+	/**
+	 * Checks the form object for any inconsistencies/errors
+	 *
+	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
+	 *      org.springframework.validation.Errors)
+	 * <strong>Should</strong> fail validation if name is already in use
+	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
 		if (obj == null || !(obj instanceof Cohort)) {
@@ -43,6 +51,13 @@ public class CohortValidator implements Validator {
 
 
 		Cohort cohort = (Cohort) obj;
+		if (StringUtils.isNotBlank(cohort.getName())) {
+			Cohort existingCohort = Context.getCohortService().getCohortByName(cohort.getName());
+			if (existingCohort != null && !existingCohort.getUuid().equals(cohort.getUuid())) {
+				errors.rejectValue("name", "general.error.nameAlreadyInUse");
+				return;
+			}
+		}
 		if (!cohort.getVoided()) {
 			Collection<CohortMembership> members = cohort.getMemberships();
 			if (!CollectionUtils.isEmpty(members)) {

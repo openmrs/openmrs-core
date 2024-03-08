@@ -12,6 +12,7 @@ package org.openmrs.api;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
@@ -1546,6 +1547,22 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		
 		assertThrows(Exception.class, () -> conceptService.saveConceptSource(source));
 		
+	}
+
+	/**
+	 * @see org.openmrs.api.ConceptService#saveConceptSource(ConceptSource)
+	 */
+	@Test
+	public void saveConceptSource_shouldFailToCreateNewConceptSourceIfOneAlreadyExistsWithSameName() {
+		List<ConceptSource> allSources = conceptService.getAllConceptSources(false);
+		assertNotNull(allSources);
+		assertEquals("SNOMED CT", allSources.get(1).getName());
+
+		ConceptSource newConceptSource = new ConceptSource();
+		newConceptSource.setName("snomed ct");
+		newConceptSource.setDescription("a concept source to add for testing");
+		Exception exception = assertThrows(ValidationException.class, () -> conceptService.saveConceptSource(newConceptSource));
+		assertThat(exception.getMessage(), containsString("failed to validate with reason:"));
 	}
 	
 	@Test

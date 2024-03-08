@@ -9,8 +9,10 @@
  */
 package org.openmrs.validator;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.annotation.Handler;
+import org.openmrs.api.context.Context;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -40,6 +42,7 @@ public class ConceptDatatypeValidator implements Validator {
 	 *      org.springframework.validation.Errors)
 	 * <strong>Should</strong> pass validation if description is null or empty or whitespace	 *      
 	 * <strong>Should</strong> fail validation if name is null or empty or whitespace
+	 * <strong>Should</strong> fail validation if name is already in use
 	 * <strong>Should</strong> pass validation if all required fields have proper values
 	 * <strong>Should</strong> pass validation if field lengths are correct
 	 * <strong>Should</strong> fail validation if field lengths are not correct
@@ -50,6 +53,14 @@ public class ConceptDatatypeValidator implements Validator {
 		if (cd == null) {
 			errors.rejectValue("conceptDatatype", "error.general");
 		} else {
+			ConceptDatatype conceptDatatype = (ConceptDatatype) obj;
+			if (StringUtils.isNotBlank(conceptDatatype.getName())) {
+				ConceptDatatype existingDatatype = Context.getConceptService().getConceptDatatypeByName(conceptDatatype.getName());
+				if (existingDatatype != null && !existingDatatype.getUuid().equals(conceptDatatype.getUuid())) {
+					errors.rejectValue("name", "general.error.nameAlreadyInUse");
+					return;
+				}
+			}
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
 			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "hl7Abbreviation", "description",
 			    "retireReason");
