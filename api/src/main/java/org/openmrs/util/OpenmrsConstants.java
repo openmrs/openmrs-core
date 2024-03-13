@@ -233,6 +233,10 @@ public final class OpenmrsConstants {
 		return roles;
 	}
 	
+	public static final String DRUG_ORDER_TYPE_NAME = "Drug order";
+	
+	public static final String TEST_ORDER_TYPE_NAME = "Test order";
+	
 	public static final String GLOBAL_PROPERTY_DRUG_FREQUENCIES = "dashboard.regimen.displayFrequencies";
 	
 	public static final String GLOBAL_PROPERTY_CONCEPTS_LOCKED = "concepts.locked";
