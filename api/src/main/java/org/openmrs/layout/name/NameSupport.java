@@ -56,6 +56,10 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 		if (initialized) {
 			return;
 		}
+		
+		// Hack to avoid multiple additions of the same same listener when called.
+		Context.getAdministrationService().removeGlobalPropertyListener(singleton);
+
 		Context.getAdministrationService().addGlobalPropertyListener(singleton);
 		// Get configured name template to override the existing one if any
 		String layoutTemplateXml = Context.getAdministrationService().getGlobalProperty(
