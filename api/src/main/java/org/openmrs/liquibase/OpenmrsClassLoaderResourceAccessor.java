@@ -9,28 +9,31 @@
  */
 package org.openmrs.liquibase;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.util.List;
+
 import liquibase.resource.ClassLoaderResourceAccessor;
 import liquibase.resource.InputStreamList;
+import liquibase.resource.Resource;
 import org.openmrs.util.OpenmrsClassLoader;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-
 /**
- * A customization of Liquibase's {@link ClassLoaderResourceAccessor} which defaults to the OpenMRS ClassLoader and has
- * special handling for our liquibase.xml files, which occur multiple times on the classpath.
+ * A customization of Liquibase's {@link ClassLoaderResourceAccessor} which defaults to the OpenMRS
+ * ClassLoader and has special handling for our liquibase.xml files, which occur multiple times on
+ * the classpath.
  */
 public class OpenmrsClassLoaderResourceAccessor extends ClassLoaderResourceAccessor {
-
+	
 	public OpenmrsClassLoaderResourceAccessor() {
 		super(OpenmrsClassLoader.getInstance());
 	}
-
+	
 	public OpenmrsClassLoaderResourceAccessor(ClassLoader classLoader) {
 		super(classLoader);
 	}
-
+	
 	@Override
 	public InputStreamList openStreams(String relativeTo, String streamPath) throws IOException {
 		InputStreamList result = super.openStreams(relativeTo, streamPath);
