@@ -15,6 +15,7 @@
 		(require_database_version?),
 		(require_modules?),
 		(aware_of_modules?),
+		(start_before_modules?),
 		(mandatory?),
 		(library*),
 		(extension*),
@@ -50,6 +51,10 @@
 	<!ELEMENT aware_of_modules (aware_of_module+)>
 	<!ELEMENT aware_of_module (#PCDATA)>
 	<!ATTLIST aware_of_module version CDATA #IMPLIED>
+
+	<!ELEMENT start_before_modules (module+)>
+	<!ELEMENT start_before_module (#PCDATA)>
+	<!ATTLIST start_before_module version CDATA #IMPLIED>
 
 	<!ELEMENT mandatory (#PCDATA)>
 

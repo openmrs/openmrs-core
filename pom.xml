@@ -400,7 +400,7 @@
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>42.7.2</version>
+				<version>42.7.3</version>
 				<scope>runtime</scope>
 			</dependency>
 			<dependency>
@@ -558,12 +558,12 @@
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
-				<version>33.0.0-jre</version>
+				<version>33.1.0-jre</version>
 			</dependency>
 			<dependency>
 			    <groupId>jakarta.xml.bind</groupId>
 			    <artifactId>jakarta.xml.bind-api</artifactId>
-			    <version>4.0.0</version>
+			    <version>4.0.2</version>
 			</dependency>
 			<dependency>
 				<groupId>com.sun.mail</groupId>
@@ -580,13 +580,13 @@
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>mysql</artifactId>
-				<version>1.19.6</version>
+				<version>1.19.7</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>1.19.6</version>
+				<version>1.19.7</version>
 				<scope>test</scope>
 			</dependency>
 		</dependencies>
@@ -815,7 +815,7 @@
 				<plugin>
 					<groupId>org.sonarsource.scanner.maven</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
-					<version>3.10.0.2594</version>
+					<version>3.11.0.3922</version>
 				</plugin>
 				<plugin>
 					<groupId>org.jacoco</groupId>
@@ -920,7 +920,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.6.0</version>
+				<version>3.7.0</version>
 				<configuration>
 					<descriptorRefs>
 						<descriptorRef>project</descriptorRef>
@@ -1210,8 +1210,8 @@
 		<hibernateVersion>5.6.15.Final</hibernateVersion>
 		<hibernateSearchVersion>5.11.12.Final</hibernateSearchVersion>
 		<luceneVersion>5.5.5</luceneVersion>
-		<aspectjVersion>1.9.21.1</aspectjVersion>
-		<jacksonVersion>2.16.1</jacksonVersion>
+		<aspectjVersion>1.9.21.2</aspectjVersion>
+		<jacksonVersion>2.17.0</jacksonVersion>
 		<junitVersion>5.10.2</junitVersion>
 		<mockitoVersion>3.12.4</mockitoVersion>
 		<hamcrestVersion>2.2</hamcrestVersion>

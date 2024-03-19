@@ -40,6 +40,7 @@ import org.openmrs.liquibase.ChangeLogDetective;
 import org.openmrs.liquibase.ChangeLogVersionFinder;
 import org.openmrs.liquibase.ChangeSetExecutorCallback;
 import org.openmrs.liquibase.LiquibaseProvider;
+import org.openmrs.liquibase.OpenmrsClassLoaderResourceAccessor;
 import org.openmrs.module.ModuleClassLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -879,7 +880,7 @@ public class DatabaseUpdater {
 			}
 		}
 		
-		ResourceAccessor openmrsFO = new ClassLoaderFileOpener(classLoader);
+		ResourceAccessor openmrsFO = new OpenmrsClassLoaderResourceAccessor(classLoader);
 		ResourceAccessor fsFO = new FileSystemResourceAccessor(OpenmrsUtil.getApplicationDataDirectoryAsFile());
 		return new CompositeResourceAccessor(openmrsFO, fsFO);
 	}

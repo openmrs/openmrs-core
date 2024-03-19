@@ -13,7 +13,7 @@ your config. Like so
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE module PUBLIC "-//OpenMRS//DTD OpenMRS Config 1.0//EN"
-                         "http://resources.openmrs.org/doctype/config-1.5.dtd">
+                         "https://resources.openmrs.org/doctype/config-1.5.dtd">
 <module configVersion="1.5">
 ...
 </module>
