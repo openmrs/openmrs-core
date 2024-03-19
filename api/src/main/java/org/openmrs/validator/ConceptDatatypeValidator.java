@@ -9,10 +9,8 @@
  */
 package org.openmrs.validator;
 
-import org.apache.commons.lang3.StringUtils;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.annotation.Handler;
-import org.openmrs.api.context.Context;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -53,14 +51,7 @@ public class ConceptDatatypeValidator implements Validator {
 		if (cd == null) {
 			errors.rejectValue("conceptDatatype", "error.general");
 		} else {
-			ConceptDatatype conceptDatatype = (ConceptDatatype) obj;
-			if (StringUtils.isNotBlank(conceptDatatype.getName())) {
-				ConceptDatatype existingDatatype = Context.getConceptService().getConceptDatatypeByName(conceptDatatype.getName());
-				if (existingDatatype != null && !existingDatatype.getUuid().equals(conceptDatatype.getUuid())) {
-					errors.rejectValue("name", "general.error.nameAlreadyInUse");
-					return;
-				}
-			}
+			ValidateUtil.rejectDuplicateName(cd, "name", cd.getName(), errors);
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
 			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "hl7Abbreviation", "description",
 			    "retireReason");

@@ -9,10 +9,8 @@
  */
 package org.openmrs.validator;
 
-import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Privilege;
 import org.openmrs.annotation.Handler;
-import org.openmrs.api.context.Context;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -53,13 +51,7 @@ public class PrivilegeValidator implements Validator {
 		if (privilege == null) {
 			errors.rejectValue("privilege", "error.general");
 		} else {
-			if (StringUtils.isNotBlank(privilege.getPrivilege())) {
-				Privilege existingPrivilege = Context.getUserService().getPrivilege(privilege.getPrivilege());
-				if (existingPrivilege != null && !existingPrivilege.getUuid().equals(privilege.getUuid())) {
-					errors.rejectValue("privilege", "error.privilege.privilegeAlreadyInUse");
-					return;
-				}
-			}
+			ValidateUtil.rejectDuplicateName(privilege, "privilege", privilege.getPrivilege(), errors);
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "privilege", "error.privilege");
 			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "privilege", "description");
 		}

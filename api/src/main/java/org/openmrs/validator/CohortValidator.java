@@ -12,7 +12,6 @@ package org.openmrs.validator;
 import java.util.Collection;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
 import org.openmrs.Patient;
@@ -51,13 +50,7 @@ public class CohortValidator implements Validator {
 
 
 		Cohort cohort = (Cohort) obj;
-		if (StringUtils.isNotBlank(cohort.getName())) {
-			Cohort existingCohort = Context.getCohortService().getCohortByName(cohort.getName());
-			if (existingCohort != null && !existingCohort.getUuid().equals(cohort.getUuid())) {
-				errors.rejectValue("name", "general.error.nameAlreadyInUse");
-				return;
-			}
-		}
+		ValidateUtil.rejectDuplicateName(cohort, "name", cohort.getName(), errors);
 		if (!cohort.getVoided()) {
 			Collection<CohortMembership> members = cohort.getMemberships();
 			if (!CollectionUtils.isEmpty(members)) {

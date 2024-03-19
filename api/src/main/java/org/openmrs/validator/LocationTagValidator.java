@@ -9,10 +9,8 @@
  */
 package org.openmrs.validator;
 
-import org.apache.commons.lang3.StringUtils;
 import org.openmrs.LocationTag;
 import org.openmrs.annotation.Handler;
-import org.openmrs.api.context.Context;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -44,13 +42,7 @@ public class LocationTagValidator implements Validator {
 	public void validate(Object target, Errors errors) {
 		if (target != null) {
 			LocationTag locationTag = (LocationTag) target;
-			if (StringUtils.isNotBlank(locationTag.getName())) {
-				LocationTag existingLocationTag = Context.getLocationService().getLocationTagByName(locationTag.getName());
-				if (existingLocationTag != null && !existingLocationTag.getUuid().equals(locationTag.getUuid())) {
-					errors.rejectValue("name", "general.error.nameAlreadyInUse");
-					return;
-				}
-			}
+			ValidateUtil.rejectDuplicateName(locationTag, "name", locationTag.getName(), errors);
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "LocationTag.error.name.required");
 			ValidateUtil.validateFieldLengths(errors, target.getClass(), "name", "description", "retireReason");
 		}

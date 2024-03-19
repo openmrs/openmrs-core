@@ -33,6 +33,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.openmrs.ConceptSource;
 import org.openmrs.GlobalProperty;
 import org.openmrs.ImplementationId;
 import org.openmrs.Privilege;
@@ -1105,5 +1106,19 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 
 	private List<Locale> getCachedSearchLocalesForCurrentUser() {
 		return (List<Locale>) getCacheForCurrentUser().get();
+	}
+
+	/**
+	 * @see org.openmrs.api.AdministrationService#getObjectByFieldValue(Class, String, String)
+	 */
+	@Test
+	public void getObjectByFieldValue_shouldReturnObjectOfGivenClassThatMatchesGivenFieldValue() {
+		List<ConceptSource> allSources = Context.getConceptService().getAllConceptSources(false);
+		assertNotNull(allSources);
+		assertEquals("SNOMED CT", allSources.get(1).getName());
+		
+		ConceptSource conceptSource = adminService.getObjectByFieldValue(ConceptSource.class, "name", "snomed ct");
+		assertNotNull(conceptSource);
+		assertEquals("SNOMED CT", conceptSource.getName());
 	}
 }

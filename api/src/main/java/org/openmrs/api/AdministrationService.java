@@ -392,4 +392,21 @@ public interface AdministrationService extends OpenmrsService {
 	 * @since 2.4
 	 */
 	public void updatePostgresSequence();
+
+	/**
+	 * Returns an object of a given class that matches a given field value
+	 *
+	 * @param aClass The class to which the objects belong
+	 * @param field the field of the object to retrieve
+	 * @param value  the field value of the object to retrieve
+	 * @return object of a given class that matches a given field value
+	 * @throws APIException 
+	 * <ul>
+	 * <li><strong>Should</strong> return an object of a given class that matches the exact name</li>
+	 * </ul>
+	 * 
+	 * @since 2.7.0
+	 */
+	@Authorized(PrivilegeConstants.GET_OPENMRS_OBJECTS)
+	public <T> T getObjectByFieldValue(Class<T> aClass, String field, String value) throws APIException;
 }

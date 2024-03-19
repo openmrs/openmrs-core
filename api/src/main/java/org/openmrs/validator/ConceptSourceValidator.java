@@ -9,10 +9,8 @@
  */
 package org.openmrs.validator;
 
-import org.apache.commons.lang3.StringUtils;
 import org.openmrs.ConceptSource;
 import org.openmrs.annotation.Handler;
-import org.openmrs.api.context.Context;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -54,13 +52,7 @@ public class ConceptSourceValidator implements Validator {
 			        + ConceptSource.class);
 		} else {
 			ConceptSource conceptSource = (ConceptSource) obj;
-			if (StringUtils.isNotBlank(conceptSource.getName())) {
-				ConceptSource existingConceptSource = Context.getConceptService().getConceptSourceByName(conceptSource.getName());
-				if (existingConceptSource != null && !existingConceptSource.getUuid().equals(conceptSource.getUuid())) {
-					errors.rejectValue("name", "general.error.nameAlreadyInUse");
-					return;
-				}
-			}
+			ValidateUtil.rejectDuplicateName(conceptSource, "name", conceptSource.getName(), errors);
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.null");
 			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "hl7Code", "uniqueId", "description",

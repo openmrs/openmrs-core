@@ -1017,7 +1017,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Override
 	public ConceptSource retireConceptSource(ConceptSource cs, String reason) throws APIException {
 		// retireReason is automatically set in BaseRetireHandler
-		return dao.saveConceptSource(cs);
+		return Context.getConceptService().saveConceptSource(cs);
 	}
 	
 	/**

@@ -1210,7 +1210,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		currentUser.addRole(adminRole);
 
 		Privilege myPrivilege = new Privilege("custom privilege");
-		
+		Context.addProxyPrivilege(PrivilegeConstants.GET_OPENMRS_OBJECTS);
 		APIException exception = assertThrows(APIException.class, () ->  withCurrentUserAs(currentUser, () -> {
 			Role newRole = new Role("another role");
 			newRole.addPrivilege(myPrivilege);
@@ -1230,7 +1230,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 
 		User currentUser = new User();
 		currentUser.addRole(adminRole);
-
+		Context.addProxyPrivilege(PrivilegeConstants.GET_OPENMRS_OBJECTS);
 		APIException exception = assertThrows(APIException.class, () -> withCurrentUserAs(currentUser, () -> {
 			Role newRole = new Role("another role");
 			newRole.addPrivilege(myFirstPrivilege);

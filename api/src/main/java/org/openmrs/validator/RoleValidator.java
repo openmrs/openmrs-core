@@ -9,10 +9,8 @@
  */
 package org.openmrs.validator;
 
-import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Role;
 import org.openmrs.annotation.Handler;
-import org.openmrs.api.context.Context;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -55,13 +53,7 @@ public class RoleValidator implements Validator {
 		if (role == null) {
 			errors.rejectValue("role", "error.general");
 		} else {
-			if (StringUtils.isNotBlank(role.getRole())) {
-				Role existingRole = Context.getUserService().getRole(role.getRole());
-				if (existingRole != null && !existingRole.getUuid().equals(role.getUuid())) {
-					errors.rejectValue("role", "error.role.roleAlreadyInUse");
-					return;
-				}
-			}
+			ValidateUtil.rejectDuplicateName(role, "role", role.getRole(), errors);
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "role", "error.role");
 			
 			// reject any role that has a leading or trailing space
