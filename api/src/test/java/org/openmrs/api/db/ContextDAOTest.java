@@ -32,6 +32,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.db.hibernate.HibernateContextDAO;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.stereotype.Component;
 
 /**
@@ -277,6 +278,8 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	public void authenticate_shouldPassRegressionTestFor1580() {
 		// logout after the base setup
 		Context.logout();
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		
 		
 		// first we fail a login attempt
 		try {
@@ -309,7 +312,10 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		
 		// those were the first eight, now the ninth request 
 		// (with the same user and right pw) should fail
-		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "test"));
+		assertThrows(ContextAuthenticationException.class, () -> {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			dao.authenticate("admin", "test");
+		});
 	}
 	
 	@Test

@@ -9,6 +9,9 @@
  */
 package org.openmrs.module.web.filter;
 
+import org.openmrs.api.context.Context;
+import org.openmrs.util.PrivilegeConstants;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -66,11 +69,15 @@ public class ModuleFilterChain implements FilterChain {
 	 */
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response) throws ServletException, IOException {
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
 		if (filterIterator.hasNext()) {
 			Filter f = filterIterator.next();
 			f.doFilter(request, response, this);
 		} else {
 			initialFilterChain.doFilter(request, response);
 		}
+		Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
 	}
 }

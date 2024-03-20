@@ -261,6 +261,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		userRole.setRole(RoleConstants.AUTHENTICATED);
 		userRole.addPrivilege(new Privilege("Add Users"));
 		currentUser.addRole(userRole);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		// setup our expected exception
 		// we expect this to fail because the currently logged-in user lacks a privilege to be
 		// assigned to the new user
@@ -294,6 +295,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		userRole.setRole(RoleConstants.AUTHENTICATED);
 		userRole.addPrivilege(new Privilege("Add Users"));
 		currentUser.addRole(userRole);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		// setup our expected exception
 		// we expect this to fail because the currently logged-in user lacks a privilege to be
 		// assigned to the new user
@@ -328,7 +330,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		userRole.setRole(RoleConstants.AUTHENTICATED);
 		userRole.addPrivilege(new Privilege("Add Users"));
 		currentUser.addRole(userRole);
-
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		// setup our expected exception
 		// we expect this to fail because the currently logged-in user lacks a privilege to be
 		// assigned to the new user
@@ -473,7 +475,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(XML_FILENAME);
 		Context.logout();
 		Context.authenticate("incorrectlyhashedSha1", "test");
-
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		userService.changePassword("test", "Tester12");
 
 		Context.logout(); // so that the next test reauthenticates
@@ -515,6 +517,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(XML_FILENAME);
 		Context.logout();
 		Context.authenticate("correctlyhashedSha1", "test");
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 
 		userService.changePassword("test", "Tester12");
 
@@ -543,6 +546,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(XML_FILENAME);
 		Context.logout();
 		Context.authenticate("userWithSha512Hash", "test");
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 
 		userService.changePassword("test", "Tester12");
 
@@ -1491,6 +1495,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User user = userService.getUser(6001);
 		assertFalse(user.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS));
 		Context.authenticate(user.getUsername(), "userServiceTest");
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		
 		userService.changePasswordUsingSecretAnswer("answer", "userServiceTest2");
 		
@@ -1585,6 +1590,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		
 		final String PASSWORD = "Admin123";
 		Context.authenticate(createdUser.getUsername(), "Openmr5xy");
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		userService.changePasswordUsingActivationKey(key, PASSWORD);
 		Context.authenticate(createdUser.getUsername(), PASSWORD);
 		
