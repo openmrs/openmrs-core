@@ -32,6 +32,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.db.hibernate.HibernateContextDAO;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.stereotype.Component;
 
 /**
@@ -278,38 +279,58 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		// logout after the base setup
 		Context.logout();
 		
+		
 		// first we fail a login attempt
 		try {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 			dao.authenticate("admin", "not the right password");
 			fail("Not sure why this username/password combo worked");
 		}
 		catch (ContextAuthenticationException authException) {
 			// pass
 		}
+		finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		}
 		
 		// next we log in correctly
 		try {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 			dao.authenticate("admin", "test");
 		}
 		catch (ContextAuthenticationException authException) {
 			fail("There must be an admin:test user for this test to run properly");
+		}
+		finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		}
 		Context.logout();
 		
 		for (int x = 1; x <= 8; x++) {
 			// now we fail several login attempts 
 			try {
+				Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 				dao.authenticate("admin", "not the right password");
 				fail("Not sure why this username/password combo worked");
 			}
 			catch (ContextAuthenticationException authException) {
 				// pass
 			}
+			finally {
+				Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			}
 		}
 		
 		// those were the first eight, now the ninth request 
 		// (with the same user and right pw) should fail
-		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "test"));
+		assertThrows(ContextAuthenticationException.class, () -> {
+			try {
+				Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+				dao.authenticate("admin", "test");
+			} finally {
+				Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			}
+		});
 	}
 	
 	@Test

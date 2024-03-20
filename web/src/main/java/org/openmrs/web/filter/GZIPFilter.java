@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -124,9 +125,9 @@ public class GZIPFilter extends OncePerRequestFilter {
 		}
 		
 		try {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 			String gzipEnabled = Context.getAdministrationService().getGlobalProperty(
 			    OpenmrsConstants.GLOBAL_PROPERTY_GZIP_ENABLED, "");
-
 			cachedGZipEnabledFlag = Boolean.valueOf(gzipEnabled);
 			return cachedGZipEnabledFlag;
 		}
@@ -137,6 +138,9 @@ public class GZIPFilter extends OncePerRequestFilter {
 			
 			return false;
 		}
+		finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		}
 	}
 	
 	/**
@@ -144,6 +148,7 @@ public class GZIPFilter extends OncePerRequestFilter {
 	 */
 	private boolean isCompressedRequestForPathAccepted(String path) {
 		try {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 			if (cachedGZipCompressedRequestForPathAccepted == null) {
 				cachedGZipCompressedRequestForPathAccepted = Context.getAdministrationService().getGlobalProperty(
 				    OpenmrsConstants.GLOBAL_PROPERTY_GZIP_ACCEPT_COMPRESSED_REQUESTS_FOR_PATHS, "");
@@ -161,6 +166,9 @@ public class GZIPFilter extends OncePerRequestFilter {
 			log.warn("Unable to process the global property: "
 			        + OpenmrsConstants.GLOBAL_PROPERTY_GZIP_ACCEPT_COMPRESSED_REQUESTS_FOR_PATHS, e);
 			return false;
+		}
+		finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		}
 	}
 }
