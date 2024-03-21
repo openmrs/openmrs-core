@@ -9,6 +9,8 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -52,16 +54,19 @@ public class LocationAttributeTypeValidatorTest extends BaseContextSensitiveTest
 		Errors errors = new BindException(type, "type");
 		new LocationAttributeTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), is("error.name"));
 		
 		type.setName("");
 		errors = new BindException(type, "type");
 		new LocationAttributeTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), is("error.name"));
 		
 		type.setName(" ");
 		errors = new BindException(type, "type");
 		new LocationAttributeTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), is("error.name"));
 	}
 	
 	/**
@@ -93,6 +98,7 @@ public class LocationAttributeTypeValidatorTest extends BaseContextSensitiveTest
 		Errors errors = new BindException(type, "locationAttributeType");
 		new LocationAttributeTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), is("LocationAttributeType.error.nameAlreadyInUse"));
 		
 	}
 	
@@ -148,9 +154,18 @@ public class LocationAttributeTypeValidatorTest extends BaseContextSensitiveTest
 		new LocationAttributeTypeValidator().validate(type, errors);
 		
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), is("error.exceededMaxLengthOfField"));
+		
 		assertTrue(errors.hasFieldErrors("datatypeClassname"));
+		assertThat(errors.getFieldErrors("datatypeClassname").get(0).getCode(), is("error.exceededMaxLengthOfField"));
+		
 		assertTrue(errors.hasFieldErrors("description"));
+		assertThat(errors.getFieldErrors("description").get(0).getCode(), is("error.exceededMaxLengthOfField"));
+		
 		assertTrue(errors.hasFieldErrors("preferredHandlerClassname"));
+		assertThat(errors.getFieldErrors("preferredHandlerClassname").get(0).getCode(), is("error.exceededMaxLengthOfField"));
+		
 		assertTrue(errors.hasFieldErrors("retireReason"));
+		assertThat(errors.getFieldErrors("retireReason").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 	}
 }

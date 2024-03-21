@@ -11,6 +11,7 @@ package org.openmrs.validator;
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -145,6 +146,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(visit, "visit");
 		new VisitValidator().validate(visit, errors);
 		assertTrue(errors.hasFieldErrors("patient"));
+		assertThat(errors.getFieldErrors("patient").get(0).getCode(), is("Visit.error.patient.required"));
 	}
 	
 	/**
@@ -159,6 +161,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(visit, "visit");
 		new VisitValidator().validate(visit, errors);
 		assertTrue(errors.hasFieldErrors("startDatetime"));
+		assertThat(errors.getFieldErrors("startDatetime").get(0).getCode(), is("Visit.error.startDate.required"));
 	}
 	
 	/**
@@ -172,6 +175,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(visit, "visit");
 		new VisitValidator().validate(visit, errors);
 		assertTrue(errors.hasFieldErrors("visitType"));
+		assertThat(errors.getFieldErrors("visitType").get(0).getCode(), is("Visit.error.visitType.required"));
 	}
 	
 	/**
@@ -187,6 +191,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(visit, "visit");
 		new VisitValidator().validate(visit, errors);
 		assertTrue(errors.hasFieldErrors("stopDatetime"));
+		assertThat(errors.getFieldErrors("stopDatetime").get(0).getCode(), is("Visit.error.endDateBeforeStartDate"));
 	}
 	
 	/**
@@ -210,6 +215,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(visit, "visit");
 		new VisitValidator().validate(visit, errors);
 		assertTrue(errors.hasFieldErrors("startDatetime"));
+		assertThat(errors.getFieldErrors("startDatetime").get(0).getCode(), is("Visit.encountersCannotBeBeforeStartDate"));
 	}
 	
 	/**
@@ -233,6 +239,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(visit, "visit");
 		new VisitValidator().validate(visit, errors);
 		assertTrue(errors.hasFieldErrors("stopDatetime"));
+		assertThat(errors.getFieldErrors("stopDatetime").get(0).getCode(), is("Visit.error.endDateBeforeStartDate"));
 	}
 	
 	/**
@@ -269,6 +276,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		new VisitValidator().validate(visit, errors);
 		
 		assertTrue(errors.hasFieldErrors("startDatetime"));
+		assertThat(errors.getFieldErrors("startDatetime").get(0).getCode(), is("Visit.startCannotBeTheSameAsOtherStartDateOfTheSamePatient"));
 	}
 	
 	/**
@@ -286,6 +294,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		new VisitValidator().validate(visit, errors);
 		
 		assertTrue(errors.hasFieldErrors("startDatetime"));
+		assertThat(errors.getFieldErrors("startDatetime").get(0).getCode(), is("Visit.startDateCannotFallIntoAnotherVisitOfTheSamePatient"));
 	}
 	
 	/**
@@ -306,6 +315,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		new VisitValidator().validate(visit, errors);
 		
 		assertTrue(errors.hasFieldErrors("stopDatetime"));
+		assertThat(errors.getFieldErrors("stopDatetime").get(0).getCode(), is("Visit.stopDateCannotFallIntoAnotherVisitOfTheSamePatient"));
 	}
 	
 	/**
@@ -326,6 +336,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		new VisitValidator().validate(visit, errors);
 		
 		assertTrue(errors.hasFieldErrors("stopDatetime"));
+		assertThat(errors.getFieldErrors("stopDatetime").get(0).getCode(), is("Visit.visitCannotContainAnotherVisitOfTheSamePatient"));
 	}
 	
 	/**
@@ -456,6 +467,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(visit, "visit");
 		new VisitValidator().validate(visit, errors);
 		assertTrue(errors.hasFieldErrors("voidReason"));
+		assertThat(errors.getFieldErrors("voidReason").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 	}
 	
 	@Test

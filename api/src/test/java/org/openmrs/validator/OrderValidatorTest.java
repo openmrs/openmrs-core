@@ -9,6 +9,7 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -18,6 +19,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.commons.lang3.time.DateUtils;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.CareSetting;
@@ -77,6 +79,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		new OrderValidator().validate(order, errors);
 		
 		assertTrue(errors.hasFieldErrors("encounter"));
+		assertThat(errors.getFieldErrors("encounter").get(0).getCode(), Matchers.is("Order.error.encounterPatientMismatch"));
 	}
 	
 	/**
@@ -98,6 +101,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		new OrderValidator().validate(order, errors);
 		
 		assertTrue(errors.hasFieldErrors("dateActivated"));
+		assertThat(errors.getFieldErrors("dateActivated").get(0).getCode(), Matchers.is("Order.error.encounterDatetimeAfterDateActivated"));
 	}
 	
 	/**
@@ -116,6 +120,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		
 		assertFalse(errors.hasFieldErrors("discontinued"));
 		assertTrue(errors.hasFieldErrors("voided"));
+		assertThat(errors.getFieldErrors("voided").get(0).getCode(), Matchers.is("error.null"));
 		assertFalse(errors.hasFieldErrors("concept"));
 		assertFalse(errors.hasFieldErrors("patient"));
 		assertFalse(errors.hasFieldErrors("orderer"));
@@ -135,6 +140,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		
 		assertFalse(errors.hasFieldErrors("discontinued"));
 		assertTrue(errors.hasFieldErrors("concept"));
+		assertThat(errors.getFieldErrors("concept").get(0).getCode(), Matchers.is("Concept.noConceptSelected"));
 		assertFalse(errors.hasFieldErrors("patient"));
 		assertFalse(errors.hasFieldErrors("orderer"));
 	}
@@ -154,6 +160,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		assertFalse(errors.hasFieldErrors("discontinued"));
 		assertFalse(errors.hasFieldErrors("concept"));
 		assertTrue(errors.hasFieldErrors("patient"));
+		assertThat(errors.getFieldErrors("patient").get(0).getCode(), Matchers.is("error.null"));
 		assertFalse(errors.hasFieldErrors("orderer"));
 	}
 	
@@ -172,6 +179,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		assertFalse(errors.hasFieldErrors("discontinued"));
 		assertFalse(errors.hasFieldErrors("concept"));
 		assertTrue(errors.hasFieldErrors("orderer"));
+		assertThat(errors.getFieldErrors("orderer").get(0).getCode(), Matchers.is("error.null"));
 		assertFalse(errors.hasFieldErrors("patient"));
 	}
 	
@@ -189,6 +197,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		new OrderValidator().validate(order, errors);
 		
 		assertTrue(errors.hasFieldErrors("encounter"));
+		assertThat(errors.getFieldErrors("encounter").get(0).getCode(), Matchers.is("error.null"));
 	}
 	
 	/**
@@ -205,6 +214,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		new OrderValidator().validate(order, errors);
 		
 		assertTrue(errors.hasFieldErrors("urgency"));
+		assertThat(errors.getFieldErrors("urgency").get(0).getCode(), Matchers.is("error.null"));
 	}
 	
 	/**
@@ -221,6 +231,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		new OrderValidator().validate(order, errors);
 		
 		assertTrue(errors.hasFieldErrors("action"));
+		assertThat(errors.getFieldErrors("action").get(0).getCode(), Matchers.is("error.null"));
 	}
 	
 	/**
@@ -242,7 +253,10 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		new OrderValidator().validate(order, errors);
 		
 		assertTrue(errors.hasFieldErrors("dateActivated"));
+		assertThat(errors.getFieldErrors("dateActivated").get(0).getCode(), Matchers.is("Order.error.dateActivatedAfterDiscontinuedDate"));
+		
 		assertTrue(errors.hasFieldErrors("dateStopped"));
+		assertThat(errors.getFieldErrors("dateStopped").get(0).getCode(), Matchers.is("Order.error.dateActivatedAfterDiscontinuedDate"));
 	}
 	
 	/**
@@ -263,7 +277,10 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		new OrderValidator().validate(order, errors);
 		
 		assertTrue(errors.hasFieldErrors("dateActivated"));
+		assertThat(errors.getFieldErrors("dateActivated").get(0).getCode(), Matchers.is("Order.error.dateActivatedAfterAutoExpireDate"));
+		
 		assertTrue(errors.hasFieldErrors("autoExpireDate"));
+		assertThat(errors.getFieldErrors("autoExpireDate").get(0).getCode(), Matchers.is("Order.error.dateActivatedAfterAutoExpireDate"));
 	}
 	
 	/**
@@ -445,6 +462,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		new OrderValidator().validate(order, errors);
 		
 		assertTrue(errors.hasErrors());
+		assertThat(errors.getAllErrors().get(0).getCode(), Matchers.is("Order.error.orderEncounterAndOrderGroupEncounterMismatch"));
 	}
 	
 	/**
@@ -481,9 +499,16 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		new OrderValidator().validate(order, errors);
 
 		assertTrue(errors.hasFieldErrors("accessionNumber"));
+		assertThat(errors.getFieldErrors("accessionNumber").get(0).getCode(), Matchers.is("error.exceededMaxLengthOfField"));
+		
 		assertTrue(errors.hasFieldErrors("orderReasonNonCoded"));
+		assertThat(errors.getFieldErrors("orderReasonNonCoded").get(0).getCode(), Matchers.is("error.exceededMaxLengthOfField"));
+		
 		assertTrue(errors.hasFieldErrors("commentToFulfiller"));
+		assertThat(errors.getFieldErrors("commentToFulfiller").get(0).getCode(), Matchers.is("error.exceededMaxLengthOfField"));
+		
 		assertTrue(errors.hasFieldErrors("voidReason"));
+		assertThat(errors.getFieldErrors("voidReason").get(0).getCode(), Matchers.is("error.exceededMaxLengthOfField"));
 	}
 	
 	@Test

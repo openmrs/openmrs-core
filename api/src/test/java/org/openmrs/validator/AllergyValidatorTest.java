@@ -18,6 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -190,5 +191,6 @@ public class AllergyValidatorTest extends BaseContextMockTest {
 		Errors errors = new BindException(allergy, "allergy");
 		validator.validate(allergy, errors);
 		assertTrue(errors.hasErrors());
+		assertThat(errors.getAllErrors().get(0).getCode(), Matchers.is("allergyapi.patient.required"));
 	}
 }

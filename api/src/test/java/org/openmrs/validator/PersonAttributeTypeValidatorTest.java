@@ -9,6 +9,8 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -34,6 +36,7 @@ public class PersonAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		new PersonAttributeTypeValidator().validate(type, errors);
 		
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), is("PersonAttributeType.error.nameEmpty"));
 	}
 	
 	/**
@@ -48,6 +51,7 @@ public class PersonAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		new PersonAttributeTypeValidator().validate(type, errors);
 		
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), is("PersonAttributeType.error.nameAlreadyInUse"));
 	}
 	
 	/**
@@ -79,6 +83,7 @@ public class PersonAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		new PersonAttributeTypeValidator().validate(type, errors);
 		
 		assertTrue(errors.hasFieldErrors("format"));
+		assertThat(errors.getFieldErrors("format").get(0).getCode(), is("PersonAttributeType.error.formatEmpty"));
 	}
 	
 	/**
@@ -138,7 +143,12 @@ public class PersonAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		new PersonAttributeTypeValidator().validate(type, errors);
 		
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), is("error.exceededMaxLengthOfField"));
+		
 		assertTrue(errors.hasFieldErrors("format"));
+		assertThat(errors.getFieldErrors("format").get(0).getCode(), is("error.exceededMaxLengthOfField"));
+		
 		assertTrue(errors.hasFieldErrors("retireReason"));
+		assertThat(errors.getFieldErrors("retireReason").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 	}
 }

@@ -9,6 +9,8 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -18,6 +20,8 @@ import org.openmrs.Role;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+
+import java.util.Objects;
 
 /**
  * Tests methods on the {@link RoleValidator} class.
@@ -41,11 +45,13 @@ public class RoleValidatorTest extends BaseContextSensitiveTest {
 		errors = new BindException(role, "role");
 		new RoleValidator().validate(role, errors);
 		assertTrue(errors.hasFieldErrors("role"));
+		assertThat(errors.getFieldErrors("role").get(0).getCode(), is("error.role"));
 		
 		role.setRole(" ");
 		errors = new BindException(role, "role");
 		new RoleValidator().validate(role, errors);
 		assertTrue(errors.hasFieldErrors("role"));
+		assertThat(errors.getFieldErrors("role").get(0).getCode(), is("error.role"));
 	}
 	
 	/**
@@ -84,13 +90,13 @@ public class RoleValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(role, "type");
 		new RoleValidator().validate(role, errors);
 		assertTrue(errors.hasFieldErrors("role"));
-		assertEquals("error.trailingSpaces", errors.getFieldError("role").getCode());
+		assertThat(errors.getFieldErrors("role").get(0).getCode(), is("error.trailingSpaces"));
 		
 		role.setRole("Bowling race car driver ");
 		errors = new BindException(role, "role");
 		new RoleValidator().validate(role, errors);
 		assertTrue(errors.hasFieldErrors("role"));
-		assertEquals("error.trailingSpaces", errors.getFieldError("role").getCode());
+		assertThat(errors.getFieldErrors("role").get(0).getCode(), is("error.trailingSpaces"));
 	}
 	
 	/**
@@ -138,5 +144,6 @@ public class RoleValidatorTest extends BaseContextSensitiveTest {
 		new RoleValidator().validate(role, errors);
 		
 		assertTrue(errors.hasFieldErrors("role"));
+		assertThat(errors.getFieldErrors("role").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 	}
 }

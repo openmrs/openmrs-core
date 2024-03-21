@@ -9,9 +9,11 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Form;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
@@ -35,6 +37,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 		new FormValidator().validate(form, errors);
 		
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), Matchers.is("error.name"));
 		assertFalse(errors.hasFieldErrors("version"));
 	}
 	
@@ -51,6 +54,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 		
 		assertFalse(errors.hasFieldErrors("name"));
 		assertTrue(errors.hasFieldErrors("version"));
+		assertThat(errors.getFieldErrors("version").get(0).getCode(), Matchers.is("error.null"));
 	}
 	
 	/**
@@ -67,6 +71,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 		
 		assertFalse(errors.hasFieldErrors("name"));
 		assertTrue(errors.hasFieldErrors("version"));
+		assertThat(errors.getFieldErrors("version").get(0).getCode(), Matchers.is("Form.version.invalid"));
 	}
 	
 	/**
@@ -85,6 +90,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 		assertFalse(errors.hasFieldErrors("name"));
 		assertFalse(errors.hasFieldErrors("version"));
 		assertTrue(errors.hasFieldErrors("retireReason"));
+		assertThat(errors.getFieldErrors("retireReason").get(0).getCode(), Matchers.is("general.retiredReason.empty"));
 	}
 	
 	/**
@@ -117,6 +123,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 		new FormValidator().validate(form, errors);
 		
 		assertTrue(errors.hasFieldErrors("retireReason"));
+		assertThat(errors.getFieldErrors("retireReason").get(0).getCode(), Matchers.is("general.retiredReason.empty"));
 	}
 	
 	/**
@@ -154,8 +161,15 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 		new FormValidator().validate(form, errors);
 		
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), Matchers.is("error.exceededMaxLengthOfField"));
+		
 		assertTrue(errors.hasFieldErrors("version"));
+		assertThat(errors.getFieldErrors("version").get(0).getCode(), Matchers.is("error.exceededMaxLengthOfField"));
+		
 		assertTrue(errors.hasFieldErrors("description"));
+		assertThat(errors.getFieldErrors("description").get(0).getCode(), Matchers.is("error.exceededMaxLengthOfField"));
+		
 		assertTrue(errors.hasFieldErrors("retireReason"));
+		assertThat(errors.getFieldErrors("retireReason").get(0).getCode(), Matchers.is("error.exceededMaxLengthOfField"));
 	}
 }

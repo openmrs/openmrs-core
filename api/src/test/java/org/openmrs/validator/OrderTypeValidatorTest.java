@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.openmrs.ConceptClass;
 import org.openmrs.OrderType;
@@ -58,6 +59,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), Matchers.is("error.name"));
 	}
 	
 	/**
@@ -70,6 +72,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), Matchers.is("error.name"));
 	}
 	
 	/**
@@ -82,6 +85,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), Matchers.is("error.name"));
 	}
 	
 	/**
@@ -94,6 +98,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), Matchers.is("error.name"));
 	}
 	
 	/**
@@ -106,6 +111,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), Matchers.is("OrderType.duplicate.name"));
 	}
 	
 	/**
@@ -121,6 +127,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
 		assertTrue(errors.hasFieldErrors("conceptClasses[0]"));
+		assertThat(errors.getFieldErrors("conceptClasses[0]").get(0).getCode(), Matchers.is("OrderType.duplicate"));
 	}
 	
 	/**
@@ -135,6 +142,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
 		assertTrue(errors.hasFieldErrors("parent"));
+		assertThat(errors.getFieldErrors("parent").get(0).getCode(), Matchers.is("OrderType.parent.amongDescendants"));
 	}
 	
 	/**
@@ -149,6 +157,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
 		assertTrue(errors.hasFieldErrors("parent"));
+		assertThat(errors.getFieldErrors("parent").get(0).getCode(), Matchers.is("OrderType.parent.amongDescendants"));
 	}
 	
 	/**
@@ -237,8 +246,15 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		new OrderTypeValidator().validate(orderType, errors);
 		
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), Matchers.is("error.exceededMaxLengthOfField"));
+		
 		assertTrue(errors.hasFieldErrors("javaClassName"));
+		assertThat(errors.getFieldErrors("javaClassName").get(0).getCode(), Matchers.is("error.exceededMaxLengthOfField"));
+		
 		assertTrue(errors.hasFieldErrors("description"));
+		assertThat(errors.getFieldErrors("description").get(0).getCode(), Matchers.is("error.exceededMaxLengthOfField"));
+		
 		assertTrue(errors.hasFieldErrors("retireReason"));
+		assertThat(errors.getFieldErrors("retireReason").get(0).getCode(), Matchers.is("error.exceededMaxLengthOfField"));
 	}
 }

@@ -9,6 +9,8 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -239,7 +241,10 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 		new PatientIdentifierValidator().validate(pi, errors);
 		
 		assertTrue(errors.hasFieldErrors("identifier"));
+		assertThat(errors.getFieldErrors("identifier").get(0).getCode(), is("error.exceededMaxLengthOfField"));
+		
 		assertTrue(errors.hasFieldErrors("voidReason"));
+		assertThat(errors.getFieldErrors("voidReason").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 	}
 	
 	/**

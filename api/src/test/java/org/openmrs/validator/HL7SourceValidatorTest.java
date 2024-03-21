@@ -9,6 +9,8 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -48,5 +50,6 @@ public class HL7SourceValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(hl7Source, "hl7Source");
 		new HL7SourceValidator().validate(hl7Source, errors);
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 	}
 }

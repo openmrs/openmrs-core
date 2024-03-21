@@ -9,6 +9,8 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -34,16 +36,19 @@ public class RequireNameValidatorTest {
 		Errors errors = new BindException(role, "type");
 		new RequireNameValidator().validate(role, errors);
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), is("error.name"));
 		
 		role.setName("");
 		errors = new BindException(role, "type");
 		new RequireNameValidator().validate(role, errors);
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), is("error.name"));
 		
 		role.setName(" ");
 		errors = new BindException(role, "type");
 		new RequireNameValidator().validate(role, errors);
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), is("error.name"));
 	}
 	
 	/**

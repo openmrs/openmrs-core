@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Locale;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.CodedOrFreeText;
@@ -66,7 +67,10 @@ public class ConditionValidatorTest {
 		Condition condition = new Condition();
 		validator.validate(condition, errors);
 		assertTrue(errors.hasFieldErrors("condition"));
+		assertThat(errors.getFieldErrors("condition").get(0).getCode(), Matchers.is("Condition.conditionShouldNotBeNull"));
+		
 		assertTrue(errors.hasFieldErrors("clinicalStatus"));
+		assertThat(errors.getFieldErrors("clinicalStatus").get(0).getCode(), Matchers.is("Condition.clinicalStatusShouldNotBeNull"));
 	}
 
 	@Test

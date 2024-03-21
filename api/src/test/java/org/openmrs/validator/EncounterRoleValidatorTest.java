@@ -9,10 +9,12 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.openmrs.EncounterRole;
 import org.openmrs.api.context.Context;
@@ -36,18 +38,21 @@ public class EncounterRoleValidatorTest extends BaseContextSensitiveTest {
 		Errors errorsNo1 = new BindException(encounterRoleNo1, "encounterRole");
 		new EncounterRoleValidator().validate(encounterRoleNo1, errorsNo1);
 		assertTrue(errorsNo1.hasFieldErrors("name"));
+		assertThat(errorsNo1.getFieldErrors("name").get(0).getCode(), Matchers.is("error.name"));
 		
 		EncounterRole encounterRoleNo2 = new EncounterRole();
 		encounterRoleNo2.setName("");
 		Errors errorsNo2 = new BindException(encounterRoleNo2, "encounterRole");
 		new EncounterRoleValidator().validate(encounterRoleNo2, errorsNo2);
 		assertTrue(errorsNo2.hasFieldErrors("name"));
+		assertThat(errorsNo2.getFieldErrors("name").get(0).getCode(), Matchers.is("error.name"));
 		
 		EncounterRole encounterRoleNo3 = new EncounterRole();
 		encounterRoleNo3.setName("  ");
 		Errors errorsNo3 = new BindException(encounterRoleNo3, "encounterRole");
 		new EncounterRoleValidator().validate(encounterRoleNo3, errorsNo3);
 		assertTrue(errorsNo3.hasFieldErrors("name"));
+		assertThat(errorsNo3.getFieldErrors("name").get(0).getCode(), Matchers.is("error.name"));
 	}
 	
 	/**
@@ -63,6 +68,7 @@ public class EncounterRoleValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(newEncounterRole, "encounterRole");
 		new EncounterRoleValidator().validate(newEncounterRole, errors);
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), Matchers.is("encounterRole.duplicate.name"));
 		
 	}
 	
@@ -114,7 +120,12 @@ public class EncounterRoleValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(encounterRole, "encounterRole");
 		new EncounterRoleValidator().validate(encounterRole, errors);
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), Matchers.is("error.exceededMaxLengthOfField"));
+		
 		assertTrue(errors.hasFieldErrors("description"));
+		assertThat(errors.getFieldErrors("description").get(0).getCode(), Matchers.is("error.exceededMaxLengthOfField"));
+		
 		assertTrue(errors.hasFieldErrors("retireReason"));
+		assertThat(errors.getFieldErrors("retireReason").get(0).getCode(), Matchers.is("error.exceededMaxLengthOfField"));
 	}
 }

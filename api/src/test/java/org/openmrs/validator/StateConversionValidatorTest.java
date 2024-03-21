@@ -9,6 +9,8 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -39,6 +41,7 @@ public class StateConversionValidatorTest extends BaseContextSensitiveTest {
 		new StateConversionValidator().validate(csc, errors);
 		
 		assertTrue(errors.hasFieldErrors("concept"));
+		assertThat(errors.getFieldErrors("concept").get(0).getCode(), is("error.concept"));
 	}
 	
 	/**
@@ -57,6 +60,7 @@ public class StateConversionValidatorTest extends BaseContextSensitiveTest {
 		new StateConversionValidator().validate(csc, errors);
 		
 		assertTrue(errors.hasFieldErrors("programWorkflow"));
+		assertThat(errors.getFieldErrors("programWorkflow").get(0).getCode(), is("error.programWorkflow"));
 	}
 	
 	/**
@@ -75,6 +79,7 @@ public class StateConversionValidatorTest extends BaseContextSensitiveTest {
 		new StateConversionValidator().validate(csc, errors);
 		
 		assertTrue(errors.hasFieldErrors("programWorkflowState"));
+		assertThat(errors.getFieldErrors("programWorkflowState").get(0).getCode(), is("error.programWorkflowState"));
 	}
 	
 	/**

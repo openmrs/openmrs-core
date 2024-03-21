@@ -9,9 +9,11 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.openmrs.FieldType;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
@@ -36,16 +38,19 @@ public class FieldTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(type, "type");
 		new FieldTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), Matchers.is("error.name"));
 		
 		type.setName("");
 		errors = new BindException(type, "type");
 		new FieldTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), Matchers.is("error.name"));
 		
 		type.setName(" ");
 		errors = new BindException(type, "type");
 		new FieldTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), Matchers.is("error.name"));
 	}
 	
 	/**
@@ -75,6 +80,7 @@ public class FieldTypeValidatorTest extends BaseContextSensitiveTest {
 		new FieldTypeValidator().validate(type, errors);
 		
 		assertTrue(errors.hasErrors());
+		assertThat(errors.getAllErrors().get(0).getCode(), Matchers.is("fieldtype.duplicate.name"));
 	}
 	
 	/**
@@ -105,5 +111,6 @@ public class FieldTypeValidatorTest extends BaseContextSensitiveTest {
 		new FieldTypeValidator().validate(type, errors);
 		
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), Matchers.is("error.exceededMaxLengthOfField"));
 	}
 }

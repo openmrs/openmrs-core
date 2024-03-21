@@ -9,6 +9,8 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -37,16 +39,19 @@ public class PatientIdentifierTypeValidatorTest extends BaseContextSensitiveTest
 		Errors errors = new BindException(type, "type");
 		new PatientIdentifierTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), is("error.name"));
 		
 		type.setName("");
 		errors = new BindException(type, "type");
 		new PatientIdentifierTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), is("error.name"));
 		
 		type.setName(" ");
 		errors = new BindException(type, "type");
 		new PatientIdentifierTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), is("error.name"));
 	}
 	
 	/**
@@ -122,6 +127,7 @@ public class PatientIdentifierTypeValidatorTest extends BaseContextSensitiveTest
 		new PatientIdentifierTypeValidator().validate(type, errors);
 		
 		assertTrue(errors.hasErrors());
+		assertThat(errors.getAllErrors().get(0).getCode(), is("error.exceededMaxLengthOfField"));
 		assertEquals(1, errors.getFieldErrorCount("format"));
 	}
 	
@@ -140,6 +146,7 @@ public class PatientIdentifierTypeValidatorTest extends BaseContextSensitiveTest
 		new PatientIdentifierTypeValidator().validate(type, errors);
 		
 		assertTrue(errors.hasErrors());
+		assertThat(errors.getAllErrors().get(0).getCode(), is("error.exceededMaxLengthOfField"));
 		assertEquals(1, errors.getFieldErrorCount("name"));
 	}
 	
@@ -158,6 +165,7 @@ public class PatientIdentifierTypeValidatorTest extends BaseContextSensitiveTest
 		new PatientIdentifierTypeValidator().validate(type, errors);
 		
 		assertTrue(errors.hasErrors());
+		assertThat(errors.getAllErrors().get(0).getCode(), is("identifierType.duplicate.name"));
 	}
 	
 	/**
@@ -201,9 +209,18 @@ public class PatientIdentifierTypeValidatorTest extends BaseContextSensitiveTest
 		new PatientIdentifierTypeValidator().validate(type, errors);
 		
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), is("error.exceededMaxLengthOfField"));
+		
 		assertTrue(errors.hasFieldErrors("format"));
+		assertThat(errors.getFieldErrors("format").get(0).getCode(), is("error.exceededMaxLengthOfField"));
+		
 		assertTrue(errors.hasFieldErrors("formatDescription"));
+		assertThat(errors.getFieldErrors("formatDescription").get(0).getCode(), is("error.exceededMaxLengthOfField"));
+		
 		assertTrue(errors.hasFieldErrors("validator"));
+		assertThat(errors.getFieldErrors("validator").get(0).getCode(), is("error.exceededMaxLengthOfField"));
+		
 		assertTrue(errors.hasFieldErrors("retireReason"));
+		assertThat(errors.getFieldErrors("retireReason").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 	}
 }

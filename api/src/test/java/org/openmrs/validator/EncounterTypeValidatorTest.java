@@ -9,11 +9,13 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.openmrs.EncounterType;
 import org.openmrs.api.context.Context;
@@ -38,16 +40,19 @@ public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(type, "type");
 		new EncounterTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), Matchers.is("error.name"));
 		
 		type.setName("");
 		errors = new BindException(type, "type");
 		new EncounterTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), Matchers.is("error.name"));
 		
 		type.setName(" ");
 		errors = new BindException(type, "type");
 		new EncounterTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), Matchers.is("error.name"));
 	}
 	
 	/**
@@ -116,6 +121,7 @@ public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(newEncounterType, "encounterType");
 		new EncounterTypeValidator().validate(newEncounterType, errors);
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), Matchers.is("EncounterType.error.duplicateEncounterTypeNameSpecified"));
 		
 	}
 	
@@ -149,7 +155,12 @@ public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 		new EncounterTypeValidator().validate(type, errors);
 		
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), Matchers.is("error.exceededMaxLengthOfField"));
+		
 		assertTrue(errors.hasFieldErrors("description"));
+		assertThat(errors.getFieldErrors("description").get(0).getCode(), Matchers.is("error.exceededMaxLengthOfField"));
+		
 		assertTrue(errors.hasFieldErrors("retireReason"));
+		assertThat(errors.getFieldErrors("retireReason").get(0).getCode(), Matchers.is("error.exceededMaxLengthOfField"));
 	}
 }
