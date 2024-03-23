@@ -9,6 +9,29 @@
  */
 package org.openmrs.util;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
 import liquibase.Contexts;
 import liquibase.LabelExpression;
 import liquibase.Liquibase;
@@ -32,8 +55,8 @@ import liquibase.lockservice.LockService;
 import liquibase.lockservice.LockServiceFactory;
 import liquibase.resource.CompositeResourceAccessor;
 import liquibase.resource.DirectoryResourceAccessor;
-import liquibase.resource.FileSystemResourceAccessor;
 import liquibase.resource.ResourceAccessor;
+import liquibase.resource.SearchPathResourceAccessor;
 import org.apache.commons.io.IOUtils;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.context.Context;
@@ -45,30 +68,6 @@ import org.openmrs.liquibase.OpenmrsClassLoaderResourceAccessor;
 import org.openmrs.module.ModuleClassLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
 
 /**
  * This class uses Liquibase to update the database. <br>
@@ -230,8 +229,7 @@ public class DatabaseUpdater {
 			        new ContextChangeSetFilter(contexts), new DbmsChangeSetFilter(database));
 			
 			// ensure that the change log history service is initialised
-			//
-			// ChangeLogHistoryServiceFactory.getInstance().getChangeLogService(database).init();
+			
 			Scope.getCurrentScope().getSingleton(ChangeLogHistoryServiceFactory.class).getChangeLogService(database).init();
 			logIterator.run(new OpenmrsUpdateVisitor(database, callback, numChangeSetsToRun),
 			    new RuntimeEnvironment(database, contexts, new LabelExpression()));
@@ -425,7 +423,7 @@ public class DatabaseUpdater {
 			}
 			
 			// ensure that the change log history service is initialised
-			ChangeLogHistoryServiceFactory.getInstance().getChangeLogService(database).init();
+			Scope.getCurrentScope().getSingleton(ChangeLogHistoryServiceFactory.class).getChangeLogService(database).init();
 			return new Liquibase(changeLogFile, getCompositeResourceAccessor(cl), database);
 		}
 		catch (Exception e) {
@@ -758,9 +756,6 @@ public class DatabaseUpdater {
 		catch (FileNotFoundException e) {
 			log.warn("Failed to find the database update log file", e);
 		}
-		catch (IOException e) {
-			log.warn("Failed to write to the database update log file", e);
-		}
 		finally {
 			IOUtils.closeQuietly(streamWriter);
 			IOUtils.closeQuietly(writer);
@@ -847,7 +842,12 @@ public class DatabaseUpdater {
 				callback.executing(changeSet, numChangeSetsToRun);
 			}
 			Map<String, Object> scopeValues = new HashMap<>();
-			scopeValues.put(Scope.Attr.resourceAccessor.name(), getCompositeResourceAccessor(null));
+			try {
+				scopeValues.put(Scope.Attr.resourceAccessor.name(), getCompositeResourceAccessor(null));
+			}
+			catch (FileNotFoundException e) {
+				throw new RuntimeException(e);
+			}
 			String scopeId = null;
 			try {
 				scopeId = Scope.enter(scopeValues);
@@ -871,7 +871,8 @@ public class DatabaseUpdater {
 	 * @return a resourceAccessor that includes both classpath and filesystem at the application data
 	 *         directory
 	 */
-	private static CompositeResourceAccessor getCompositeResourceAccessor(ClassLoader classLoader) {
+	private static CompositeResourceAccessor getCompositeResourceAccessor(ClassLoader classLoader)
+	        throws FileNotFoundException {
 		if (classLoader == null) {
 			classLoader = Thread.currentThread().getContextClassLoader();
 			if (!(classLoader instanceof OpenmrsClassLoader) && !(classLoader instanceof ModuleClassLoader)) {
@@ -880,11 +881,9 @@ public class DatabaseUpdater {
 		}
 		
 		ResourceAccessor openmrsFO = new OpenmrsClassLoaderResourceAccessor(classLoader);
-		try (ResourceAccessor fsFO = new DirectoryResourceAccessor(OpenmrsUtil.getApplicationDataDirectoryAsFile())) {
-			return new CompositeResourceAccessor(openmrsFO, fsFO);
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		ResourceAccessor fsFO = new SearchPathResourceAccessor(
+		        new DirectoryResourceAccessor(OpenmrsUtil.getApplicationDataDirectoryAsFile()));
+		return new CompositeResourceAccessor(openmrsFO, fsFO);
+		
 	}
 }

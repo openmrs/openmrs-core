@@ -9,13 +9,15 @@
  */
 package org.openmrs.liquibase;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
 
 import liquibase.resource.ClassLoaderResourceAccessor;
-import liquibase.resource.InputStreamList;
+import liquibase.resource.PathResource;
 import liquibase.resource.Resource;
 import org.openmrs.util.OpenmrsClassLoader;
 
@@ -35,16 +37,16 @@ public class OpenmrsClassLoaderResourceAccessor extends ClassLoaderResourceAcces
 	}
 	
 	@Override
-	public InputStreamList openStreams(String relativeTo, String streamPath) throws IOException {
-		InputStreamList result = super.openStreams(relativeTo, streamPath);
-		if (result != null && !result.isEmpty() && result.size() > 1) {
-			try (InputStreamList oldResult = result) {
-				URI uri = oldResult.getURIs().get(0);
-				result = new InputStreamList(uri, uri.toURL().openStream());
-			}
-			
+	public List<Resource> getAll(String path) throws IOException {
+		List<Resource> result = super.getAll(path);
+		if (result != null && result.size() > 1) {
+			Resource firstResource = result.get(0);
+			URI uri = firstResource.getUri();
+			Path filePath = Paths.get(uri);
+			Resource openedResource = new PathResource(uri.getPath(), filePath);
+			return Collections.singletonList(openedResource);
 		}
-		
 		return result;
 	}
+	
 }

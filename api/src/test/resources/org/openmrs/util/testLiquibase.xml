@@ -11,9 +11,9 @@
     
 -->
 <databaseChangeLog
-	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
-	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
 	<changeSet id="testSql" author="OpenMRS" runAlways="true">
 		<comment>
@@ -23,9 +23,10 @@
 			select 1;
 		</sql>
 	</changeSet>
-	
+
 	<changeSet id="testSqlFile" author="OpenMRS" runAlways="true">
-		<sqlFile endDelimiter=";" path="sql/testSqlFile.sql" relativeToChangelogFile="true" stripComments="true" />
+		<sqlFile endDelimiter=";" path="org/openmrs/util/sql/testSqlFile.sql" stripComments="true"
+		         relativeToChangelogFile="false"/>
 	</changeSet>
-	
+
 </databaseChangeLog>

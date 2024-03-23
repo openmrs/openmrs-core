@@ -10,22 +10,21 @@
 package org.openmrs.liquibase;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
+import java.io.BufferedInputStream;
+import java.io.InputStream;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import liquibase.resource.InputStreamList;
+import liquibase.resource.Resource;
 import org.junit.jupiter.api.Test;
-import org.openmrs.liquibase.OpenmrsClassLoaderResourceAccessor;
 import org.openmrs.util.OpenmrsClassLoader;
 
 public class OpenmrsClassLoaderResourceAccessorTest {
@@ -36,12 +35,16 @@ public class OpenmrsClassLoaderResourceAccessorTest {
 
 		when(classLoader.getResources(any()))
 			.thenReturn(OpenmrsClassLoader.getSystemClassLoader().getResources("TestingApplicationContext.xml"));
-
 		
-		OpenmrsClassLoaderResourceAccessor classLoaderFileOpener = new OpenmrsClassLoaderResourceAccessor(classLoader);
-        try (InputStreamList inputStreamSet = classLoaderFileOpener.openStreams(null, "some path")) {
-            assertEquals(1, inputStreamSet.size());
-        }
+		OpenmrsClassLoaderResourceAccessor classLoaderFileOpener2 = new OpenmrsClassLoaderResourceAccessor(classLoader);
+		List<Resource> resources = classLoaderFileOpener2.getAll("some path");
+		Set<InputStream> inputStreamSet = new HashSet<>();
+		for (Resource resource : resources) {
+			InputStream in = resource.openInputStream();
+			BufferedInputStream bufferedIn = new BufferedInputStream(in);
+			inputStreamSet.add(bufferedIn);
+		}
+		assertEquals(1, inputStreamSet.size());
 	}
 	
 	@Test
@@ -51,9 +54,17 @@ public class OpenmrsClassLoaderResourceAccessorTest {
 		when(classLoader.getResources(any()))
 			.thenReturn(Collections.emptyEnumeration());
 		
-		
-		try (OpenmrsClassLoaderResourceAccessor classLoaderFileOpener = new OpenmrsClassLoaderResourceAccessor(classLoader);
-			 InputStreamList inputStreamSet = classLoaderFileOpener.openStreams(null, "")){
+		OpenmrsClassLoaderResourceAccessor classLoaderFileOpener2 = new OpenmrsClassLoaderResourceAccessor(classLoader);
+		List<Resource> resources = classLoaderFileOpener2.getAll("");
+		if (resources != null) {
+			Set<InputStream> inputStreamSet = new HashSet<>();
+			for (Resource resource : resources) {
+				if (resource != null) {
+					InputStream in = resource.openInputStream();
+					BufferedInputStream bufferedIn = new BufferedInputStream(in);
+					inputStreamSet.add(bufferedIn);
+				}
+			}
 			assertThat(inputStreamSet.size(), is(0));
 		}
 	}

@@ -9,6 +9,23 @@
  */
 package org.openmrs.util.databasechange;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
+
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
 import liquibase.database.DatabaseConnection;
@@ -16,7 +33,7 @@ import liquibase.exception.CustomChangeException;
 import liquibase.exception.DatabaseException;
 import liquibase.exception.SetupException;
 import liquibase.exception.ValidationErrors;
-import liquibase.resource.InputStreamList;
+import liquibase.resource.Resource;
 import liquibase.resource.ResourceAccessor;
 import org.openmrs.api.context.Context;
 import org.openmrs.liquibase.OpenmrsClassLoaderResourceAccessor;
@@ -25,20 +42,6 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
 
 /**
  * Executes (aka "source"s) the given file on the current database. <br>
@@ -93,12 +96,14 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 			tmpOutputFile = File.createTempFile(sqlFile, "tmp");
 			
 			fileOpener = new OpenmrsClassLoaderResourceAccessor(OpenmrsClassLoader.getInstance());
-			try (InputStreamList sqlFileInputStream = fileOpener.openStreams(null, sqlFile);
-			     OutputStream outputStream = new FileOutputStream(tmpOutputFile)) {
-				if (sqlFileInputStream != null && !sqlFileInputStream.isEmpty()) {
-					OpenmrsUtil.copyFile(sqlFileInputStream.iterator().next(), outputStream);
+			for (Resource resource : fileOpener.getAll(sqlFile)) {
+				try (InputStream sqlFileInputStream = resource.openInputStream()) {
+					BufferedInputStream bufferedSqlFileInputStream = new BufferedInputStream(sqlFileInputStream);
+					OutputStream outputStream = Files.newOutputStream(Paths.get(String.valueOf(bufferedSqlFileInputStream)));
+					OpenmrsUtil.copyFile(sqlFileInputStream, outputStream);
 				}
 			}
+			
 		}
 		catch (IOException e) {
 			if (tmpOutputFile != null) {
