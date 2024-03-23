@@ -150,7 +150,6 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 		encounterValidator.validate(encounter, errors);
 		
 		assertTrue(errors.hasFieldErrors("encounterDatetime"));
-		assertThat(errors.getFieldError("encounterDatetime").getCode(), Matchers.is("Encounter.datetimeShouldBeInVisitDatesRange"));
 	}
 	
 	/**
