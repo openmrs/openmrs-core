@@ -54,16 +54,19 @@ public class LocationAttributeTypeValidatorTest extends BaseContextSensitiveTest
 		Errors errors = new BindException(type, "type");
 		new LocationAttributeTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), is("error.name"));
 		
 		type.setName("");
 		errors = new BindException(type, "type");
 		new LocationAttributeTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), is("error.name"));
 		
 		type.setName(" ");
 		errors = new BindException(type, "type");
 		new LocationAttributeTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), is("error.name"));
 	}
 	
 	/**
