@@ -9,6 +9,8 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -165,6 +167,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(provider, "provider");
 		new ProviderValidator().validate(provider, errors);
 		assertTrue(errors.hasFieldErrors("activeAttributes"));
+		assertThat(errors.getFieldErrors("activeAttributes").get(0).getCode(), is("attribute.error.minOccurs"));
 	}
 	
 	/**
@@ -181,6 +184,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 		provider.addAttribute(makeAttribute("four"));
 		new ProviderValidator().validate(provider, errors);
 		assertTrue(errors.hasFieldErrors("activeAttributes"));
+		assertThat(errors.getFieldErrors("activeAttributes").get(0).getCode(), is("attribute.error.maxOccurs"));
 	}
 	
 	private ProviderAttribute makeAttribute(String serializedValue) {
@@ -289,6 +293,9 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 		providerValidator.validate(provider, errors);
 		
 		assertTrue(errors.hasFieldErrors("identifier"));
+		assertThat(errors.getFieldErrors("identifier").get(0).getCode(), is("error.exceededMaxLengthOfField"));
+		
 		assertTrue(errors.hasFieldErrors("retireReason"));
+		assertThat(errors.getFieldErrors("retireReason").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 	}
 }

@@ -9,6 +9,8 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -60,6 +62,7 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 		validator.validate(pa, errors);
 		
 		assertTrue(errors.hasFieldErrors("birthdate"));
+		assertThat(errors.getFieldErrors("birthdate").get(0).getCode(), is("error.date.future"));
 	}
 	
 	/**
@@ -77,6 +80,7 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 		validator.validate(pa, errors);
 		
 		assertTrue(errors.hasFieldErrors("deathDate"));
+		assertThat(errors.getFieldErrors("deathDate").get(0).getCode(), is("error.date.future"));
 	}
 	
 	/**
@@ -93,6 +97,7 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 		validator.validate(pa, errors);
 		
 		assertTrue(errors.hasFieldErrors("birthdate"));
+		assertThat(errors.getFieldErrors("birthdate").get(0).getCode(), is("error.date.nonsensical"));
 	}
 	
 	/**
@@ -121,6 +126,7 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(pa, "patient");
 		validator.validate(pa, errors);
 		assertTrue(errors.hasFieldErrors("voidReason"));
+		assertThat(errors.getFieldErrors("voidReason").get(0).getCode(), is("error.null"));
 	}
 	
 	/**
@@ -133,6 +139,7 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(pa, "patient");
 		validator.validate(pa, errors);
 		assertTrue(errors.hasFieldErrors("names"));
+		assertThat(errors.getFieldErrors("names").get(0).getCode(), is("Person.shouldHaveAtleastOneNonVoidedName"));
 	}
 	
 	/**
@@ -183,7 +190,9 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 		personValidator.validate(person, errors);
 		
 		assertTrue(errors.hasFieldErrors("gender"));
+		assertThat(errors.getFieldErrors("gender").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 		assertTrue(errors.hasFieldErrors("personVoidReason"));
+		assertThat(errors.getFieldErrors("personVoidReason").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 	}
 
 
