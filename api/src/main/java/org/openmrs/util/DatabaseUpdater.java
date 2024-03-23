@@ -13,6 +13,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -755,6 +756,9 @@ public class DatabaseUpdater {
 		}
 		catch (FileNotFoundException e) {
 			log.warn("Failed to find the database update log file", e);
+		}
+		catch (IOException e) {
+			log.warn("Failed to write to the database update log file", e);
 		}
 		finally {
 			IOUtils.closeQuietly(streamWriter);
