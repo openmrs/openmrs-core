@@ -36,8 +36,8 @@ public class OpenmrsClassLoaderResourceAccessorTest {
 		when(classLoader.getResources(any()))
 			.thenReturn(OpenmrsClassLoader.getSystemClassLoader().getResources("TestingApplicationContext.xml"));
 		
-		OpenmrsClassLoaderResourceAccessor classLoaderFileOpener2 = new OpenmrsClassLoaderResourceAccessor(classLoader);
-		List<Resource> resources = classLoaderFileOpener2.getAll("some path");
+		OpenmrsClassLoaderResourceAccessor classLoaderFileOpener = new OpenmrsClassLoaderResourceAccessor(classLoader);
+		List<Resource> resources = classLoaderFileOpener.getAll("some path");
 		Set<InputStream> inputStreamSet = new HashSet<>();
 		for (Resource resource : resources) {
 			InputStream in = resource.openInputStream();
@@ -54,8 +54,8 @@ public class OpenmrsClassLoaderResourceAccessorTest {
 		when(classLoader.getResources(any()))
 			.thenReturn(Collections.emptyEnumeration());
 		
-		OpenmrsClassLoaderResourceAccessor classLoaderFileOpener2 = new OpenmrsClassLoaderResourceAccessor(classLoader);
-		List<Resource> resources = classLoaderFileOpener2.getAll("");
+		OpenmrsClassLoaderResourceAccessor classLoaderFileOpener = new OpenmrsClassLoaderResourceAccessor(classLoader);
+		List<Resource> resources = classLoaderFileOpener.getAll("");
 		if (resources != null) {
 			Set<InputStream> inputStreamSet = new HashSet<>();
 			for (Resource resource : resources) {
