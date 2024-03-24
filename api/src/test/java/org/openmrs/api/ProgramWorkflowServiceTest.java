@@ -1099,6 +1099,17 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(patientProgramAttribute);
 		assertEquals(2, patientProgramAttribute.getId());
 	}
+
+	/**
+	 * Test to check the number of Patient Program attributes by given name
+	 * @see ProgramWorkflowService#getPatientProgramAttributeByAttributeName(List, String) 
+	 */
+	@Test
+	public void getProgramAttributeByAttributeNameShouldPass(){
+		Map<Object, Object> results = pws.getPatientProgramAttributeByAttributeName(
+			Collections.singletonList(2),"programName");
+		assertEquals(1,results.size());
+	}
 	
 	//	/**
 	//	 * This method should be uncommented when you want to examine the actual hibernate
