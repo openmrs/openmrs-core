@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- THIS FILE WAS CREATED TO HANDLE PATIENT PROGRAM ATTRIBUTE SCENARIOS FOR PROGRAM WORKFLOW SERVICE TESTS-->
+<dataset>
+	<person person_id="2"
+			gender="M"
+			birthdate="1998-12-25"
+			birthdate_estimated="false"
+			dead="false"
+			creator="1"
+			date_created="2006-02-15 00:00:00.0"
+			voided="false"
+			uuid="6013a8cd-c6a0-4140-bfac-0af565704420"/>
+	
+	<patient patient_id="2" 
+			 creator="1" 
+			 date_created="2016-05-15 00:00:00.0" 
+			 voided="false"/>
+	
+	<patient_program patient_program_id="1" 
+					 patient_id="2" 
+					 program_id="1" 
+					 date_enrolled="2006-10-14 00:00:00.0" 
+					 creator="1" 
+					 date_created="2007-09-20 00:00:00.0" 
+					 voided="false" 
+					 uuid="9119b9f8-af3d-4ad8-9e2e-2317c3de91c6"/>
+	
+	<patient_program_attribute
+		patient_program_attribute_id = "2"
+		patient_program_id = "1"
+		attribute_type_id = "1"
+		uuid = "dd8793dc-e9d2-11ee-9b67-333dbdea27a2"
+		creator="1" 
+		date_created="2021-09-20 00:00:00.0"
+		voided="false"/>
+	
+</dataset>

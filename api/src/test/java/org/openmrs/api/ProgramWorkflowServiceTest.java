@@ -29,19 +29,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openmrs.Cohort;
-import org.openmrs.Concept;
-import org.openmrs.ConceptName;
-import org.openmrs.ConceptStateConversion;
-import org.openmrs.Encounter;
-import org.openmrs.Patient;
-import org.openmrs.PatientProgram;
-import org.openmrs.PatientState;
-import org.openmrs.Program;
-import org.openmrs.ProgramAttributeType;
-import org.openmrs.ProgramWorkflow;
-import org.openmrs.ProgramWorkflowState;
-import org.openmrs.User;
+import org.openmrs.*;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ProgramWorkflowDAO;
 import org.openmrs.api.impl.ProgramWorkflowServiceImpl;
@@ -62,7 +50,9 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	protected static final String PROGRAM_ATTRIBUTES_XML = "org/openmrs/api/include/ProgramAttributesDataset.xml";
 
 	protected static final String OTHER_PROGRAM_WORKFLOWS = "org/openmrs/api/include/ProgramWorkflowServiceTest-otherProgramWorkflows.xml";
-        
+	
+	protected static final String PATIENT_PROGRAM_ATTRIBUTE_DATASET = "org/openmrs/api/include/PatientProgramAttributeTestDataset.xml";
+	
 	protected ProgramWorkflowService pws = null;
 	
 	@Autowired
@@ -82,6 +72,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(CREATE_PATIENT_PROGRAMS_XML);
 		executeDataSet(PROGRAM_ATTRIBUTES_XML);
 		executeDataSet(OTHER_PROGRAM_WORKFLOWS);
+		executeDataSet(PATIENT_PROGRAM_ATTRIBUTE_DATASET);
                 
 		if (pws == null) {
 			pws = Context.getProgramWorkflowService();
@@ -1094,6 +1085,19 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		int patientStatesSize = patientProgram.getStates().size();
 		pwsi.triggerStateConversion(patient, trigger, dateConverted);
 		assertEquals(patientProgram.getStates().size(), (patientStatesSize + 1));
+	}
+
+	/**
+	 * Test to check the implementation of Patient Program Attribute Type by Uuid
+	 * from Program Workflow Service
+	 * @see ProgramWorkflowService#getPatientProgramAttributeByUuid(String) 
+	 */
+	@Test
+	public void getProgramAttributeTypeShouldPass(){
+
+		PatientProgramAttribute patientProgramAttribute = pws.getPatientProgramAttributeByUuid("dd8793dc-e9d2-11ee-9b67-333dbdea27a2");
+		assertNotNull(patientProgramAttribute);
+		assertEquals(2, patientProgramAttribute.getId());
 	}
 	
 	//	/**
