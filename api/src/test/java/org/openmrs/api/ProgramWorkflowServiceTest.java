@@ -26,6 +26,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Collections;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -1109,6 +1111,17 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		Map<Object, Object> results = pws.getPatientProgramAttributeByAttributeName(
 			Collections.singletonList(2),"programName");
 		assertEquals(1,results.size());
+	}
+
+	/**
+	 * Test to get a patient Program by its Attribute Name and Value Reference 
+	 */
+	@Test
+	public void getPatientProgramByAttributeNameAndValue_shouldPass(){
+
+		List<PatientProgram> patientPrograms = 
+			pws.getPatientProgramByAttributeNameAndValue("programName", "programReference");
+		assertEquals(1, patientPrograms.size());
 	}
 	
 	//	/**

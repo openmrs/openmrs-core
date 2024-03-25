@@ -48,6 +48,7 @@
 		patient_program_attribute_id = "3"
 		patient_program_id = "1"
 		attribute_type_id = "2"
+		value_reference = "programReference"
 		uuid = "da88c81a-e9da-11ee-8b19-6f54994ac15c"
 		creator="1"
 		date_created="2021-12-20 00:00:00.0"

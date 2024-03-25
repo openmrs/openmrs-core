@@ -465,7 +465,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 		Query query;
 		try {
 			query = sessionFactory.getCurrentSession().createQuery(
-					"SELECT pp FROM patient_program pp " +
+					"SELECT pp FROM PatientProgram pp " +
 							"INNER JOIN pp.attributes attr " +
 							"INNER JOIN attr.attributeType attr_type " +
 							"WHERE attr.valueReference = :attributeValue " +
