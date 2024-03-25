@@ -1095,7 +1095,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * @see ProgramWorkflowService#getPatientProgramAttributeByUuid(String) 
 	 */
 	@Test
-	public void getProgramAttributeTypeShouldPass(){
+	public void getProgramAttributeType_shouldPass(){
 
 		PatientProgramAttribute patientProgramAttribute = pws.getPatientProgramAttributeByUuid("dd8793dc-e9d2-11ee-9b67-333dbdea27a2");
 		assertNotNull(patientProgramAttribute);
@@ -1107,7 +1107,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * @see ProgramWorkflowService#getPatientProgramAttributeByAttributeName(List, String) 
 	 */
 	@Test
-	public void getProgramAttributeByAttributeNameShouldPass(){
+	public void getProgramAttributeByAttributeName_shouldPass(){
 		Map<Object, Object> results = pws.getPatientProgramAttributeByAttributeName(
 			Collections.singletonList(2),"programName");
 		assertEquals(1,results.size());
@@ -1115,6 +1115,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 
 	/**
 	 * Test to get a patient Program by its Attribute Name and Value Reference 
+	 * @see ProgramWorkflowService#getPatientProgramByAttributeNameAndValue(String, String) 
 	 */
 	@Test
 	public void getPatientProgramByAttributeNameAndValue_shouldPass(){
