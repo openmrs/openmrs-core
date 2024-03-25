@@ -38,7 +38,7 @@
 	<patient_program_attribute
 		patient_program_attribute_id = "2"
 		patient_program_id = "1"
-		attribute_type_id = "1"
+		attribute_type_id = "3"
 		uuid = "dd8793dc-e9d2-11ee-9b67-333dbdea27a2"
 		creator="1" 
 		date_created="2021-09-20 00:00:00.0"
