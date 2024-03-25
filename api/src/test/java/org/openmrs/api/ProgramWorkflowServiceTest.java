@@ -726,7 +726,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	}
 	@Test
 	public void shouldTestGetAllProgramAttributeTypes() throws Exception {
-                assertEquals(2, pws.getAllProgramAttributeTypes().size());
+                assertEquals(3, pws.getAllProgramAttributeTypes().size());
 	}
 
 	@Test
@@ -744,11 +744,11 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void shouldTestSaveProgramAttributeType() throws Exception {
-		assertEquals(2,pws.getAllProgramAttributeTypes().size());
+		assertEquals(3,pws.getAllProgramAttributeTypes().size());
 		ProgramAttributeType programAttributeType = new ProgramAttributeType();
 		programAttributeType.setName("test");
 		pws.saveProgramAttributeType(programAttributeType);
-		assertEquals(3,pws.getAllProgramAttributeTypes().size());
+		assertEquals(4,pws.getAllProgramAttributeTypes().size());
 	}
 
 	@Test
