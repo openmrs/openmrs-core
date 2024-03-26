@@ -10,14 +10,10 @@
 package org.openmrs.liquibase;
 
 import java.io.IOException;
-import java.net.URI;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 
 import liquibase.resource.ClassLoaderResourceAccessor;
-import liquibase.resource.PathResource;
 import liquibase.resource.Resource;
 import org.openmrs.util.OpenmrsClassLoader;
 
@@ -38,15 +34,14 @@ public class OpenmrsClassLoaderResourceAccessor extends ClassLoaderResourceAcces
 	
 	@Override
 	public List<Resource> getAll(String path) throws IOException {
-		List<Resource> result = super.getAll(path);
-		if (result != null && result.size() > 1) {
-			Resource firstResource = result.get(0);
-			URI uri = firstResource.getUri();
-			Path filePath = Paths.get(uri);
-			Resource openedResource = new PathResource(uri.getPath(), filePath);
-			return Collections.singletonList(openedResource);
+		List<Resource> resources = super.getAll(path);
+		if (resources == null || resources.isEmpty()) {
+			return Collections.emptyList();
 		}
-		return result;
+		
+		Resource resource = resources.get(0);
+		return Collections.singletonList(resource);
 	}
+
 	
 }
