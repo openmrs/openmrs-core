@@ -9,6 +9,8 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -62,9 +64,18 @@ public class VisitAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		new VisitAttributeTypeValidator().validate(visitAttributeType, errors);
 		
 		assertTrue(errors.hasFieldErrors("name"));
-		assertTrue(errors.hasFieldErrors("description"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), is("error.exceededMaxLengthOfField"));
+
 		assertTrue(errors.hasFieldErrors("datatypeClassname"));
+		assertThat(errors.getFieldErrors("datatypeClassname").get(0).getCode(), is("error.exceededMaxLengthOfField"));
+
+		assertTrue(errors.hasFieldErrors("description"));
+		assertThat(errors.getFieldErrors("description").get(0).getCode(), is("error.exceededMaxLengthOfField"));
+
 		assertTrue(errors.hasFieldErrors("preferredHandlerClassname"));
+		assertThat(errors.getFieldErrors("preferredHandlerClassname").get(0).getCode(), is("error.exceededMaxLengthOfField"));
+
 		assertTrue(errors.hasFieldErrors("retireReason"));
+		assertThat(errors.getFieldErrors("retireReason").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 	}
 }

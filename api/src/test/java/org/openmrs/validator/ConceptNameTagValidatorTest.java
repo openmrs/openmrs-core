@@ -9,11 +9,13 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.api.context.Context;
@@ -44,16 +46,19 @@ public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(cnt, "cnt");
 		new ConceptNameTagValidator().validate(cnt, errors);
 		assertTrue(errors.hasFieldErrors("tag"));
+		assertThat(errors.getFieldErrors("tag").get(0).getCode(), Matchers.is("error.name"));
 		
 		cnt.setTag("");
 		errors = new BindException(cnt, "cnt");
 		new ConceptNameTagValidator().validate(cnt, errors);
 		assertTrue(errors.hasFieldErrors("tag"));
+		assertThat(errors.getFieldErrors("tag").get(0).getCode(), Matchers.is("error.name"));
 		
 		cnt.setTag(" ");
 		errors = new BindException(cnt, "cnt");
 		new ConceptNameTagValidator().validate(cnt, errors);
 		assertTrue(errors.hasFieldErrors("tag"));
+		assertThat(errors.getFieldErrors("tag").get(0).getCode(), Matchers.is("error.name"));
 	}
 	
 	/**
@@ -86,6 +91,7 @@ public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 		new ConceptNameTagValidator().validate(cnt, errors);
 		assertTrue(errors.hasErrors());
 		assertTrue(errors.hasFieldErrors("tag"));
+		assertThat(errors.getFieldErrors("tag").get(0).getCode(), Matchers.is("Concept.name.tag.duplicate"));
 	}
 	
 	/**
@@ -118,7 +124,10 @@ public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(cnt, "cnt");
 		new ConceptNameTagValidator().validate(cnt, errors);
 		assertTrue(errors.hasFieldErrors("tag"));
+		assertThat(errors.getFieldErrors("tag").get(0).getCode(), Matchers.is("error.exceededMaxLengthOfField"));
+		
 		assertTrue(errors.hasFieldErrors("voidReason"));
+		assertThat(errors.getFieldErrors("voidReason").get(0).getCode(), Matchers.is("error.exceededMaxLengthOfField"));
 	}
 	
 	@Test

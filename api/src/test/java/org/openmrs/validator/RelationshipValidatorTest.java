@@ -9,6 +9,9 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -17,6 +20,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.junit.jupiter.api.Test;
 import org.openmrs.Relationship;
@@ -44,6 +48,7 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 		MapBindingResult errors = new MapBindingResult(map, Relationship.class.getName());
 		new RelationshipValidator().validate(relationship, errors);
 		assertTrue(errors.hasErrors());
+		assertThat(errors.getAllErrors().get(0).getCode(), is("Relationship.InvalidEndDate.error"));
 	}
 	
 	/**
@@ -87,6 +92,7 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(relationship, "relationship");
 		new RelationshipValidator().validate(relationship, errors);
 		assertTrue(errors.hasFieldErrors("voidReason"));
+		assertThat(errors.getFieldErrors("voidReason").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 	}
 	
 	/**
@@ -103,6 +109,7 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 		relationship.setStartDate(nextYear);
 		new RelationshipValidator().validate(relationship, errors);
 		assertTrue(errors.hasErrors());
+		assertThat(errors.getAllErrors().get(0).getCode(), is("error.date.future"));
 	}
 	
 	/**

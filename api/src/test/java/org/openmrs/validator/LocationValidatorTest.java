@@ -9,6 +9,8 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -35,6 +37,7 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 		new LocationValidator().validate(location, errors);
 		
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), is("error.name"));
 		assertFalse(errors.hasFieldErrors("description"));
 	}
 	
@@ -51,6 +54,7 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 		new LocationValidator().validate(location, errors);
 		
 		assertTrue(errors.hasFieldErrors("retireReason"));
+		assertThat(errors.getFieldErrors("retireReason").get(0).getCode(), is("error.null"));
 	}
 	
 	/**
@@ -119,6 +123,7 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 		new LocationValidator().validate(location1, errors);
 		
 		assertTrue(errors.hasFieldErrors("parentLocation"));
+		assertThat(errors.getFieldErrors("parentLocation").get(0).getCode(), is("Location.parentLocation.error"));
 	}
 	
 	/**
@@ -134,6 +139,7 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 		new LocationValidator().validate(location, errors);
 		
 		assertTrue(errors.hasErrors());
+		assertThat(errors.getAllErrors().get(0).getCode(), is("location.duplicate.name"));
 	}
 	
 	/**
@@ -202,29 +208,54 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 		new LocationValidator().validate(location, errors);
 		
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 		assertTrue(errors.hasFieldErrors("description"));
+		assertThat(errors.getFieldErrors("description").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 		assertTrue(errors.hasFieldErrors("address1"));
+		assertThat(errors.getFieldErrors("address1").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 		assertTrue(errors.hasFieldErrors("address2"));
+		assertThat(errors.getFieldErrors("address2").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 		assertTrue(errors.hasFieldErrors("address3"));
+		assertThat(errors.getFieldErrors("address3").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 		assertTrue(errors.hasFieldErrors("address4"));
+		assertThat(errors.getFieldErrors("address4").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 		assertTrue(errors.hasFieldErrors("address5"));
+		assertThat(errors.getFieldErrors("address5").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 		assertTrue(errors.hasFieldErrors("address6"));
+		assertThat(errors.getFieldErrors("address6").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 		assertTrue(errors.hasFieldErrors("address7"));
+		assertThat(errors.getFieldErrors("address7").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 		assertTrue(errors.hasFieldErrors("address8"));
+		assertThat(errors.getFieldErrors("address8").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 		assertTrue(errors.hasFieldErrors("address9"));
+		assertThat(errors.getFieldErrors("address9").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 		assertTrue(errors.hasFieldErrors("address10"));
+		assertThat(errors.getFieldErrors("address10").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 		assertTrue(errors.hasFieldErrors("address11"));
+		assertThat(errors.getFieldErrors("address11").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 		assertTrue(errors.hasFieldErrors("address12"));
+		assertThat(errors.getFieldErrors("address12").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 		assertTrue(errors.hasFieldErrors("address13"));
+		assertThat(errors.getFieldErrors("address13").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 		assertTrue(errors.hasFieldErrors("address14"));
+		assertThat(errors.getFieldErrors("address14").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 		assertTrue(errors.hasFieldErrors("address15"));
+		assertThat(errors.getFieldErrors("address15").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 		assertTrue(errors.hasFieldErrors("cityVillage"));
+		assertThat(errors.getFieldErrors("cityVillage").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 		assertTrue(errors.hasFieldErrors("stateProvince"));
+		assertThat(errors.getFieldErrors("stateProvince").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 		assertTrue(errors.hasFieldErrors("country"));
+		assertThat(errors.getFieldErrors("country").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 		assertTrue(errors.hasFieldErrors("postalCode"));
+		assertThat(errors.getFieldErrors("postalCode").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 		assertTrue(errors.hasFieldErrors("latitude"));
+		assertThat(errors.getFieldErrors("latitude").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 		assertTrue(errors.hasFieldErrors("longitude"));
+		assertThat(errors.getFieldErrors("longitude").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 		assertTrue(errors.hasFieldErrors("countyDistrict"));
+		assertThat(errors.getFieldErrors("countyDistrict").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 		assertTrue(errors.hasFieldErrors("retireReason"));
+		assertThat(errors.getFieldErrors("retireReason").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 	}
 }

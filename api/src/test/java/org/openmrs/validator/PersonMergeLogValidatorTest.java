@@ -9,6 +9,8 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -34,6 +36,7 @@ public class PersonMergeLogValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(personMergeLog, "personMergeLog");
 		validator.validate(personMergeLog, errors);
 		assertTrue(errors.hasFieldErrors("personMergeLogData"));
+		assertThat(errors.getFieldErrors("personMergeLogData").get(0).getCode(), is("error.null"));
 	}
 	
 	/**
@@ -48,6 +51,7 @@ public class PersonMergeLogValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(personMergeLog, "personMergeLog");
 		validator.validate(personMergeLog, errors);
 		assertTrue(errors.hasFieldErrors("winner"));
+		assertThat(errors.getFieldErrors("winner").get(0).getCode(), is("error.null"));
 	}
 	
 	/**
@@ -62,6 +66,7 @@ public class PersonMergeLogValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(personMergeLog, "personMergeLog");
 		validator.validate(personMergeLog, errors);
 		assertTrue(errors.hasFieldErrors("loser"));
+		assertThat(errors.getFieldErrors("loser").get(0).getCode(), is("error.null"));
 	}
 	
 	/**
@@ -115,5 +120,6 @@ public class PersonMergeLogValidatorTest extends BaseContextSensitiveTest {
 		validator.validate(personMergeLog, errors);
 		
 		assertTrue(errors.hasFieldErrors("voidReason"));
+		assertThat(errors.getFieldErrors("voidReason").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 	}
 }
