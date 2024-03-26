@@ -9,6 +9,16 @@
  */
 package org.openmrs.util;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import java.io.File;
+import java.io.InputStream;
+
 import liquibase.exception.LockException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -18,16 +28,6 @@ import org.openmrs.liquibase.LiquibaseProvider;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.InputStream;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests methods on the {@link DatabaseUpdater} class. This class expects /metadata/model to be on
@@ -99,6 +99,7 @@ public class DatabaseUpdaterTest extends BaseContextSensitiveTest {
 	private void copyResourcesToApplicationDataDirectory() throws Exception {
 		File appDataDir = OpenmrsUtil.getApplicationDataDirectoryAsFile();
 		String[] files = {"testLiquibase.xml", "sql/testSqlFile.sql"};
+		
 		for (String fileName : files) {
 			String inputResource = "org/openmrs/util/" + fileName;
 			InputStream in = getClass().getClassLoader().getResourceAsStream(inputResource);

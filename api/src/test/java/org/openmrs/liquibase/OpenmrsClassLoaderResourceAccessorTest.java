@@ -9,23 +9,17 @@
  */
 package org.openmrs.liquibase;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 
-import liquibase.resource.InputStreamList;
+import liquibase.resource.Resource;
 import org.junit.jupiter.api.Test;
-import org.openmrs.liquibase.OpenmrsClassLoaderResourceAccessor;
 import org.openmrs.util.OpenmrsClassLoader;
 
 public class OpenmrsClassLoaderResourceAccessorTest {
@@ -36,12 +30,11 @@ public class OpenmrsClassLoaderResourceAccessorTest {
 
 		when(classLoader.getResources(any()))
 			.thenReturn(OpenmrsClassLoader.getSystemClassLoader().getResources("TestingApplicationContext.xml"));
-
 		
 		OpenmrsClassLoaderResourceAccessor classLoaderFileOpener = new OpenmrsClassLoaderResourceAccessor(classLoader);
-        try (InputStreamList inputStreamSet = classLoaderFileOpener.openStreams(null, "some path")) {
-            assertEquals(1, inputStreamSet.size());
-        }
+		List<Resource> resources = classLoaderFileOpener.getAll("some path");
+		assertEquals(1, resources.size());
+		assertTrue(resources.get(0).openInputStream() != null);
 	}
 	
 	@Test
@@ -51,10 +44,8 @@ public class OpenmrsClassLoaderResourceAccessorTest {
 		when(classLoader.getResources(any()))
 			.thenReturn(Collections.emptyEnumeration());
 		
-		
-		try (OpenmrsClassLoaderResourceAccessor classLoaderFileOpener = new OpenmrsClassLoaderResourceAccessor(classLoader);
-			 InputStreamList inputStreamSet = classLoaderFileOpener.openStreams(null, "")){
-			assertThat(inputStreamSet.size(), is(0));
-		}
+		OpenmrsClassLoaderResourceAccessor classLoaderFileOpener = new OpenmrsClassLoaderResourceAccessor(classLoader);
+		List<Resource> resources = classLoaderFileOpener.getAll("");
+		assertEquals(0, resources.size());
 	}
 }

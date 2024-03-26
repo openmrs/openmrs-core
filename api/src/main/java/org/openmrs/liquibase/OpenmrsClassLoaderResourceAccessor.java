@@ -9,39 +9,39 @@
  */
 package org.openmrs.liquibase;
 
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+
 import liquibase.resource.ClassLoaderResourceAccessor;
-import liquibase.resource.InputStreamList;
+import liquibase.resource.Resource;
 import org.openmrs.util.OpenmrsClassLoader;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-
 /**
- * A customization of Liquibase's {@link ClassLoaderResourceAccessor} which defaults to the OpenMRS ClassLoader and has
- * special handling for our liquibase.xml files, which occur multiple times on the classpath.
+ * A customization of Liquibase's {@link ClassLoaderResourceAccessor} which defaults to the OpenMRS
+ * ClassLoader and has special handling for our liquibase.xml files, which occur multiple times on
+ * the classpath.
  */
 public class OpenmrsClassLoaderResourceAccessor extends ClassLoaderResourceAccessor {
-
+	
 	public OpenmrsClassLoaderResourceAccessor() {
 		super(OpenmrsClassLoader.getInstance());
 	}
-
+	
 	public OpenmrsClassLoaderResourceAccessor(ClassLoader classLoader) {
 		super(classLoader);
 	}
-
+	
 	@Override
-	public InputStreamList openStreams(String relativeTo, String streamPath) throws IOException {
-		InputStreamList result = super.openStreams(relativeTo, streamPath);
-		if (result != null && !result.isEmpty() && result.size() > 1) {
-			try (InputStreamList oldResult = result) {
-				URI uri = oldResult.getURIs().get(0);
-				result = new InputStreamList(uri, uri.toURL().openStream());
-			}
-			
+	public List<Resource> getAll(String path) throws IOException {
+		List<Resource> resources = super.getAll(path);
+		if (resources == null || resources.isEmpty()) {
+			return Collections.emptyList();
 		}
 		
-		return result;
+		Resource resource = resources.get(0);
+		return Collections.singletonList(resource);
 	}
+
+	
 }
