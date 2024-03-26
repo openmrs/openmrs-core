@@ -112,6 +112,9 @@ public class PrivilegeConstants {
 	@AddOnStartup(description = "Able to get provider attribute types")
 	public static final String GET_PROVIDER_ATTRIBUTE_TYPES = "Get Provider Attribute Types";
 	
+	@AddOnStartup(description = "Able to get openmrs objects")
+	public static final String GET_OPENMRS_OBJECTS = "Get Openmrs Objects";
+	
 	@AddOnStartup(description = "Able to get person objects")
 	public static final String GET_PERSONS = "Get People";
 	

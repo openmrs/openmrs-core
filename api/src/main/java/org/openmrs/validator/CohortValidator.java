@@ -33,6 +33,13 @@ public class CohortValidator implements Validator {
 		return Cohort.class.isAssignableFrom(c);
 	}
 
+	/**
+	 * Checks the form object for any inconsistencies/errors
+	 *
+	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
+	 *      org.springframework.validation.Errors)
+	 * <strong>Should</strong> fail validation if name is already in use
+	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
 		if (obj == null || !(obj instanceof Cohort)) {
@@ -43,6 +50,7 @@ public class CohortValidator implements Validator {
 
 
 		Cohort cohort = (Cohort) obj;
+		ValidateUtil.rejectDuplicateName(cohort, "name", cohort.getName(), errors);
 		if (!cohort.getVoided()) {
 			Collection<CohortMembership> members = cohort.getMemberships();
 			if (!CollectionUtils.isEmpty(members)) {

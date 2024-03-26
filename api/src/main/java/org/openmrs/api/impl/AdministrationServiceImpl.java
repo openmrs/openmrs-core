@@ -942,4 +942,13 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		dao.updatePostgresSequence();
 	}
 	
+	/**
+	 * @see org.openmrs.api.AdministrationService#getObjectByFieldValue(Class, String, String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public <T> T getObjectByFieldValue(Class<T> aClass, String field, String value) throws APIException {
+		return dao.getObjectByFieldValue(aClass, field, value);
+	}
+	
 }

@@ -39,6 +39,7 @@ public class PrivilegeValidator implements Validator {
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 * <strong>Should</strong> fail validation if privilege is null or empty or whitespace
+	 * <strong>Should</strong> fail validation if privilege name is already in use
 	 * <strong>Should</strong> pass validation if description is null or empty or whitespace
 	 * <strong>Should</strong> pass validation if all required fields have proper values
 	 * <strong>Should</strong> pass validation if field lengths are correct
@@ -50,6 +51,7 @@ public class PrivilegeValidator implements Validator {
 		if (privilege == null) {
 			errors.rejectValue("privilege", "error.general");
 		} else {
+			ValidateUtil.rejectDuplicateName(privilege, "privilege", privilege.getPrivilege(), errors);
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "privilege", "error.privilege");
 			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "privilege", "description");
 		}

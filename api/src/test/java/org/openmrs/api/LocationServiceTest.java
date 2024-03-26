@@ -9,6 +9,8 @@
  */
 package org.openmrs.api;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -902,6 +904,24 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		location.setDescription("Some description");
 		location.addTag(tagWithoutName);
 		assertThrows(APIException.class, () -> Context.getLocationService().saveLocation(location));
+	}
+
+	/**
+	 * @see org.openmrs.api.LocationService#saveLocationTag(LocationTag)
+	 */
+	@Test
+	public void saveLocationTag_shouldFailToCreateNewLocationTagIfOneAlreadyExistsWithSameName() {
+		LocationService service = Context.getLocationService();
+		List<LocationTag> allTags = service.getAllLocationTags(false);
+		assertNotNull(allTags);
+		assertEquals("Department", allTags.get(0).getName());
+
+		LocationTag newTag = new LocationTag();
+		newTag.setName("DEPARTMENT");
+		newTag.setDescription("a new LocationTag to add for testing");
+
+		Exception exception = assertThrows(ValidationException.class, () -> service.saveLocationTag(newTag));
+		assertThat(exception.getMessage(), containsString("failed to validate with reason:"));
 	}
 	
 	/**
