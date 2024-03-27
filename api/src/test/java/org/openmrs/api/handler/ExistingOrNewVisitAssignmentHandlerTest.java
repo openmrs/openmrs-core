@@ -155,4 +155,77 @@ public class ExistingOrNewVisitAssignmentHandlerTest extends BaseContextSensitiv
 		assertEquals(Context.getVisitService().getVisitTypeByUuid(visitTypeUuid), encounter.getVisit()
 		                .getVisitType());
 	}
+
+	/**
+	 * @see org.openmrs.api.handler.ExistingOrNewVisitAssignmentHandler#beforeCreateEncounter(Encounter)
+	 */
+	@Test
+	public void beforeCreateEncounter_shouldResolveDefaultWildCardEncounterTypeAndVisitTypeIdMappingGlobalPropertyValues() {
+		Encounter encounter = Context.getEncounterService().getEncounter(1);
+		assertNull(encounter.getVisit());
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(encounter.getEncounterDatetime());
+		calendar.set(Calendar.YEAR, 1900);
+
+		encounter.setEncounterDatetime(calendar.getTime());
+
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GP_ENCOUNTER_TYPE_TO_VISIT_TYPE_MAPPING, "default:2");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+
+		new ExistingOrNewVisitAssignmentHandler().beforeCreateEncounter(encounter);
+
+		assertNotNull(encounter.getVisit());
+		assertEquals(Context.getVisitService().getVisitType(2), encounter.getVisit().getVisitType());
+	}
+	
+	/**
+	 * @see org.openmrs.api.handler.ExistingOrNewVisitAssignmentHandler#beforeCreateEncounter(Encounter)
+	 */
+	@Test
+	public void beforeCreateEncounter_shouldResolveDefaultWildCardEncounterTypeAndVisitTypeUuidMappingGlobalPropertyValues() {
+		Encounter encounter = Context.getEncounterService().getEncounter(1);
+		assertNull(encounter.getVisit());
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(encounter.getEncounterDatetime());
+		calendar.set(Calendar.YEAR, 1900);
+
+		encounter.setEncounterDatetime(calendar.getTime());
+		
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GP_ENCOUNTER_TYPE_TO_VISIT_TYPE_MAPPING,
+			"default:c0c579b0-8e59-401d-8a4a-976a0b183519");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+
+		new ExistingOrNewVisitAssignmentHandler().beforeCreateEncounter(encounter);
+
+		assertNotNull(encounter.getVisit());
+		assertEquals(Context.getVisitService().getVisitTypeByUuid("c0c579b0-8e59-401d-8a4a-976a0b183519"), 
+			encounter.getVisit().getVisitType());
+	}
+	
+	/**
+	 * @see org.openmrs.api.handler.ExistingOrNewVisitAssignmentHandler#beforeCreateEncounter(Encounter)
+	 */
+	@Test
+	public void beforeCreateEncounter_shouldResolveDefaultWildCardEncounterTypeMappingsOverrideGlobalPropertyValues() {
+		Encounter encounter = Context.getEncounterService().getEncounter(1);
+		assertNull(encounter.getVisit());
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(encounter.getEncounterDatetime());
+		calendar.set(Calendar.YEAR, 1900);
+
+		encounter.setEncounterDatetime(calendar.getTime());
+		
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GP_ENCOUNTER_TYPE_TO_VISIT_TYPE_MAPPING,
+			"3:4, 5:2, default:c0c579b0-8e59-401d-8a4a-976a0b183519, 2:2");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+
+		new ExistingOrNewVisitAssignmentHandler().beforeCreateEncounter(encounter);
+
+		assertNotNull(encounter.getVisit());
+		assertEquals(Context.getVisitService().getVisitTypeByUuid("c0c579b0-8e59-401d-8a4a-976a0b183519"), 
+			encounter.getVisit().getVisitType());
+	}
 }
