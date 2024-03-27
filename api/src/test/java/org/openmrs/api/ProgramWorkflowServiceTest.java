@@ -1102,11 +1102,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		assertEquals(patientProgram.getStates().size(), (patientStatesSize + 1));
 	}
 
-	/**
-	 * Test to check the implementation of Patient Program Attribute Type by Uuid
-	 * from Program Workflow Service
-	 * @see ProgramWorkflowService#getPatientProgramAttributeByUuid(String) 
-	 */
+
 	@Test
 	public void getProgramAttributeType_shouldReturnAttributeThatMatchesGivenUuid(){
 
@@ -1115,21 +1111,14 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		assertEquals(2, patientProgramAttribute.getId());
 	}
 
-	/**
-	 * Test to check the number of Patient Program attributes by given name
-	 * @see ProgramWorkflowService#getPatientProgramAttributeByAttributeName(List, String) 
-	 */
+
 	@Test
 	public void getProgramAttributeByAttributeName_shouldReturnAttributeThatMatchesGivenName(){
 		Map<Object, Object> results = pws.getPatientProgramAttributeByAttributeName(
 			Collections.singletonList(2),"programName");
 		assertEquals(1,results.size());
 	}
-
-	/**
-	 * Test to get a patient Program by its Attribute Name and Value Reference 
-	 * @see ProgramWorkflowService#getPatientProgramByAttributeNameAndValue(String, String) 
-	 */
+	
 	@Test
 	public void getPatientProgramByAttributeNameAndValue_shouldReturnProgramsThatMatchesParameters(){
 
