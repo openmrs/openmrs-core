@@ -87,6 +87,8 @@ public class ConceptValidator extends BaseCustomizableValidator implements Valid
 	 * <strong>Should</strong> pass if different concepts have the same short name
 	 * <strong>Should</strong> fail if the concept datatype is null
 	 * <strong>Should</strong> fail if the concept class is null
+	 * <strong>Should</strong> pass if the concept is retired and the only validation failures would be in ConceptName 
+	 * or ConceptMap, as a retired Concept bypasses ConceptName and ConceptMap validation.
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) throws APIException, DuplicateConceptNameException {
@@ -104,7 +106,7 @@ public class ConceptValidator extends BaseCustomizableValidator implements Valid
 
 		ValidationUtils.rejectIfEmpty(errors, "datatype", "Concept.datatype.empty");
 		ValidationUtils.rejectIfEmpty(errors, "conceptClass", "Concept.conceptClass.empty");
-
+		
 		boolean hasFullySpecifiedName = false;
 		for (Locale conceptNameLocale : conceptToValidate.getAllConceptNameLocales()) {
 			boolean fullySpecifiedNameForLocaleFound = false;
@@ -113,6 +115,9 @@ public class ConceptValidator extends BaseCustomizableValidator implements Valid
 			Set<String> validNamesFoundInLocale = new HashSet<>();
 			Collection<ConceptName> namesInLocale = conceptToValidate.getNames(conceptNameLocale);
 			for (ConceptName nameInLocale : namesInLocale) {
+				if (conceptToValidate.getRetired()) {
+                    continue;
+                }
 				if (StringUtils.isBlank(nameInLocale.getName())) {
 					log.debug("Name in locale '" + conceptNameLocale.toString()
 					        + "' cannot be an empty string or white space");
@@ -199,7 +204,7 @@ public class ConceptValidator extends BaseCustomizableValidator implements Valid
 		}
 		
 		//Ensure that each concept has at least a fully specified name
-		if (!hasFullySpecifiedName) {
+		if (!hasFullySpecifiedName && !conceptToValidate.getRetired()) {
 			log.debug("Concept has no fully specified name");
 			errors.reject("Concept.error.no.FullySpecifiedName");
 		}
@@ -209,6 +214,9 @@ public class ConceptValidator extends BaseCustomizableValidator implements Valid
 			int index = 0;
 			Set<Integer> mappedTermIds = null;
 			for (ConceptMap map : conceptToValidate.getConceptMappings()) {
+				if (conceptToValidate.getRetired()) {
+					continue;
+				}
 				if (map.getConceptReferenceTerm().getConceptReferenceTermId() == null) {
 					//if this term is getting created on the fly e.g. from old legacy code, validate it
 					try {
