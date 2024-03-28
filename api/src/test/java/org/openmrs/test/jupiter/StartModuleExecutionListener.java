@@ -28,6 +28,7 @@ import org.openmrs.module.ModuleInteroperabilityTest;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.test.StartModule;
 import org.openmrs.util.OpenmrsClassLoader;
+import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -77,6 +78,8 @@ public class StartModuleExecutionListener extends AbstractTestExecutionListener 
 				
 				if (!Context.isSessionOpen())
 					Context.openSession();
+				
+				Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 				
 				ModuleUtil.shutdown();
 				

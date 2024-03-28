@@ -55,6 +55,7 @@ import org.openmrs.logging.MemoryAppender;
 import org.openmrs.logging.OpenmrsLoggingUtil;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.Listener;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.filter.initialization.InitializationFilter;

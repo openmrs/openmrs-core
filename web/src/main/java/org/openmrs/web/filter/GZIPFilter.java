@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -124,8 +125,10 @@ public class GZIPFilter extends OncePerRequestFilter {
 		}
 		
 		try {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 			String gzipEnabled = Context.getAdministrationService().getGlobalProperty(
 			    OpenmrsConstants.GLOBAL_PROPERTY_GZIP_ENABLED, "");
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 
 			cachedGZipEnabledFlag = Boolean.valueOf(gzipEnabled);
 			return cachedGZipEnabledFlag;
