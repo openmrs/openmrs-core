@@ -27,6 +27,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.User;
 import org.openmrs.UserSessionListener;
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
@@ -309,7 +310,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		
 		// those were the first eight, now the ninth request 
 		// (with the same user and right pw) should fail
-		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "test"));
+		assertThrows(APIAuthenticationException.class, () -> dao.authenticate("admin", "test"));
 	}
 	
 	@Test

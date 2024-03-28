@@ -269,6 +269,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 			// create a role to assign to the new user
 			Role role = new Role();
 			role.setRole(RoleConstants.AUTHENTICATED);
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 			// add a privilege to the role
 			role.addPrivilege(new Privilege("Custom Privilege"));
 
@@ -302,18 +303,21 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 			// create a role to assign to the new user
 			Role role = new Role();
 			role.setRole(RoleConstants.AUTHENTICATED);
+			
 			// add privileges to the role
 			role.addPrivilege(new Privilege("Custom Privilege"));
 			role.addPrivilege(new Privilege("Another Privilege"));
-
 			// create our new user object with the required fields
 			User u = new User();
 			u.setPerson(new Person());
+			
 			// assign the specified role to the user
 			u.addName(new PersonName("Benjamin", "A", "Wolfe"));
 			u.setUsername("bwolfe");
 			u.getPerson().setGender("M");
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 			u.addRole(role);
+			
 			// here we expect the exception to be thrown
 			userService.createUser(u, "Openmr5xy");
 		}));
@@ -326,6 +330,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User currentUser = new User();
 		Role userRole = new Role("User Adder");
 		userRole.setRole(RoleConstants.AUTHENTICATED);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		userRole.addPrivilege(new Privilege("Add Users"));
 		currentUser.addRole(userRole);
 
