@@ -107,6 +107,10 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	
 	private String formNamespaceAndPath;
 	
+	private Concept discontinueReason;
+	
+	private String discontinueReasonNonCoded;
+	
 	/**
 	 * Allows the orders if ordered as an orderGroup, to maintain a sequence of how members are
 	 * added in the group ex - for two orders of isoniazid and ampicillin, the sequence of 1 and 2
@@ -204,6 +208,8 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 		target.setFulfillerComment(getFulfillerComment());
 		target.setFulfillerStatus(getFulfillerStatus());
 		target.setFormNamespaceAndPath(getFormNamespaceAndPath());
+		target.setDiscontinueReason(getDiscontinueReason());
+		target.setDiscontinueReasonNonCoded(getDiscontinueReasonNonCoded());
 		return target;
 	}
 	
@@ -777,6 +783,8 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 		target.setFulfillerStatus(getFulfillerStatus());
 		target.setFulfillerComment(getFulfillerComment());
 		target.setFormNamespaceAndPath(getFormNamespaceAndPath());
+		target.setDiscontinueReason(getDiscontinueReason());
+		target.setDiscontinueReasonNonCoded(getDiscontinueReasonNonCoded());
 		
 		return target;
 	}
@@ -950,5 +958,41 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	@Override
 	public void setFormField(String namespace, String formFieldPath) {
 		formNamespaceAndPath = BaseFormRecordableOpenmrsData.getFormNamespaceAndPath(namespace, formFieldPath);
+	}
+
+	/**
+	 * @return Returns the discontinueReason
+	 * 
+	 * @since 2.7.0
+	 */
+	public Concept getDiscontinueReason() {
+		return discontinueReason;
+	}
+
+	/**
+	 * @param discontinueReason The discontinueReason to set
+	 *
+	 * @since 2.7.0   
+	 */
+	public void setDiscontinueReason(Concept discontinueReason) {
+		this.discontinueReason = discontinueReason;
+	}
+
+	/**
+	 * @return Returns the discontinueReasonNonCoded
+	 * 
+	 * @since 2.7.0
+	 */
+	public String getDiscontinueReasonNonCoded() {
+		return discontinueReasonNonCoded;
+	}
+
+	/**
+	 * @param discontinueReasonNonCoded the discontinueReasonNonCoded to set
+	 * 
+	 * @since 2.7.0                                 
+	 */
+	public void setDiscontinueReasonNonCoded(String discontinueReasonNonCoded) {
+		this.discontinueReasonNonCoded = discontinueReasonNonCoded;
 	}
 }
