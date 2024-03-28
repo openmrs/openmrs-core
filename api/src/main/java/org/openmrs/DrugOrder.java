@@ -12,6 +12,7 @@ package org.openmrs;
 import static org.openmrs.Order.Action.DISCONTINUE;
 
 import org.apache.commons.lang3.StringUtils;
+import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -545,6 +546,9 @@ public class DrugOrder extends Order {
 	 */
 	public void setDrugNonCoded(String drugNonCoded) {
 		this.drugNonCoded = StringUtils.isNotBlank(drugNonCoded) ? drugNonCoded.trim() : drugNonCoded;
+		if (StringUtils.isNotBlank(drugNonCoded) && getConcept() == null) {
+			setConcept(Context.getOrderService().getNonCodedDrugConcept());
+		}
 	}
 
 	/**
