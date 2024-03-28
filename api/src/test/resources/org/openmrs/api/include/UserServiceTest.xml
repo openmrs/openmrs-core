@@ -19,9 +19,9 @@
   <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false" uuid="9872ce12-59c1-47bd-b7ec-f5786e12830a"/>
   <patient_identifier patient_identifier_id="1" patient_id="2" identifier="1234" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="7eabecbb-9698-46e0-9abf-362a86d2dccd"/>
   <privilege privilege="Some Privilege" description="This is a test privilege" uuid="d979d066-15e6-467c-9d4b-cb575ef97f0f"/>
-  <role role="Some Role" description="This is a test role" uuid="94d62f4b-dd14-4597-be10-402def31094c"/>
-  <role role="Some Role To Delete" description="This is a test role" uuid="24v32d4b-dd14-4597-be10-402def31094c"/>
-  <role role="Parent" description="This is a test parent role" uuid="8de52b9e-e07d-4978-ba4a-a3828c13e482"/>
+  <role role="Some Role" description="This is a test role" creator="1" date_created="2008-08-15 15:46:47.0" changed_by="1" date_changed="2008-08-15 15:47:07.0" retired="false" retire_reason="Test purposes" uuid="94d62f4b-dd14-4597-be10-402def31094c"/>
+  <role role="Some Role To Delete" description="This is a test role" creator="1" date_created="2008-08-15 15:46:47.0" changed_by="1" date_changed="2008-08-15 15:47:07.0" retired="false" retire_reason="Test purposes" uuid="24v32d4b-dd14-4597-be10-402def31094c"/>
+  <role role="Parent" description="This is a test parent role" creator="1" date_created="2008-08-15 15:46:47.0" changed_by="1" date_changed="2008-08-15 15:47:07.0" retired="false" retire_reason="Test purposes" uuid="8de52b9e-e07d-4978-ba4a-a3828c13e482"/>
   <role_role parent_role="Parent" child_role="Some Role" />
   <role_role parent_role="Parent" child_role="Some Role To Delete" />
 
