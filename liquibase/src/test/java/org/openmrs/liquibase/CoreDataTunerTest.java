@@ -34,6 +34,7 @@ import org.dom4j.XPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.xml.sax.SAXException;
 
 public class CoreDataTunerTest {
 	
@@ -66,7 +67,7 @@ public class CoreDataTunerTest {
 	}
 	
 	@Test
-	public void shouldCreateUpdatedChangeLogFile(@TempDir Path tempDir) throws DocumentException, IOException {
+	public void shouldCreateUpdatedChangeLogFile(@TempDir Path tempDir) throws DocumentException, IOException, SAXException {
 		// given
 		String sourcePath = PATH_TO_TEST_RESOURCES + File.separator + LIQUIBASE_CORE_DATA_SNAPSHOT_XML;
 		String targetPath = tempDir.resolve("liquibase-core-data-UPDATED-SNAPSHOT.xml").toString();
