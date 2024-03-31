@@ -42,6 +42,5 @@ public class OpenmrsClassLoaderResourceAccessor extends ClassLoaderResourceAcces
 		Resource resource = resources.get(0);
 		return Collections.singletonList(resource);
 	}
-
 	
 }

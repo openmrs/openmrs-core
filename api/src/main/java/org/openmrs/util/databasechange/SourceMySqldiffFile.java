@@ -9,17 +9,15 @@
  */
 package org.openmrs.util.databasechange;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -96,14 +94,13 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 			tmpOutputFile = File.createTempFile(sqlFile, "tmp");
 			
 			fileOpener = new OpenmrsClassLoaderResourceAccessor(OpenmrsClassLoader.getInstance());
-			for (Resource resource : fileOpener.getAll(sqlFile)) {
-				try (InputStream sqlFileInputStream = resource.openInputStream()) {
-					BufferedInputStream bufferedSqlFileInputStream = new BufferedInputStream(sqlFileInputStream);
-					OutputStream outputStream = Files.newOutputStream(Paths.get(String.valueOf(bufferedSqlFileInputStream)));
+			List<Resource> resources = fileOpener.getAll(sqlFile);
+			if (resources != null && !resources.isEmpty()) {
+				try (InputStream sqlFileInputStream = resources.get(0).openInputStream()) {
+					OutputStream outputStream = new FileOutputStream(tmpOutputFile);
 					OpenmrsUtil.copyFile(sqlFileInputStream, outputStream);
 				}
 			}
-			
 		}
 		catch (IOException e) {
 			if (tmpOutputFile != null) {

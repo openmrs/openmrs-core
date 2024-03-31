@@ -44,8 +44,10 @@ public class OpenmrsClassLoaderResourceAccessorTest {
 		when(classLoader.getResources(any()))
 			.thenReturn(Collections.emptyEnumeration());
 		
-		OpenmrsClassLoaderResourceAccessor classLoaderFileOpener = new OpenmrsClassLoaderResourceAccessor(classLoader);
-		List<Resource> resources = classLoaderFileOpener.getAll("");
-		assertEquals(0, resources.size());
+		try (OpenmrsClassLoaderResourceAccessor classLoaderFileOpener = new OpenmrsClassLoaderResourceAccessor(
+		        classLoader)) {
+			List<Resource> resources = classLoaderFileOpener.getAll("");
+			assertEquals(0, resources.size());
+		}
 	}
 }
