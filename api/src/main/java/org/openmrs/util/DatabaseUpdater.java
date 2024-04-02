@@ -230,8 +230,7 @@ public class DatabaseUpdater {
 			        new ContextChangeSetFilter(contexts), new DbmsChangeSetFilter(database));
 			
 			// ensure that the change log history service is initialised
-			
-			Scope.getCurrentScope().getSingleton(ChangeLogHistoryServiceFactory.class).getChangeLogService(database).init();
+			ChangeLogHistoryServiceFactory.getInstance().getChangeLogService(database).init();
 			logIterator.run(new OpenmrsUpdateVisitor(database, callback, numChangeSetsToRun),
 			    new RuntimeEnvironment(database, contexts, new LabelExpression()));
 		}
@@ -424,7 +423,7 @@ public class DatabaseUpdater {
 			}
 			
 			// ensure that the change log history service is initialised
-			Scope.getCurrentScope().getSingleton(ChangeLogHistoryServiceFactory.class).getChangeLogService(database).init();
+			ChangeLogHistoryServiceFactory.getInstance().getChangeLogService(database).init();
 			return new Liquibase(changeLogFile, getCompositeResourceAccessor(cl), database);
 		}
 		catch (Exception e) {

@@ -12,6 +12,7 @@ package org.openmrs.liquibase;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import liquibase.resource.ClassLoaderResourceAccessor;
 import liquibase.resource.Resource;
@@ -35,12 +36,12 @@ public class OpenmrsClassLoaderResourceAccessor extends ClassLoaderResourceAcces
 	@Override
 	public List<Resource> getAll(String path) throws IOException {
 		List<Resource> resources = super.getAll(path);
+		
 		if (resources == null || resources.isEmpty()) {
 			return Collections.emptyList();
 		}
 		
-		Resource resource = resources.get(0);
-		return Collections.singletonList(resource);
+		return resources.stream().limit(1).collect(Collectors.toList());
 	}
 	
 }
