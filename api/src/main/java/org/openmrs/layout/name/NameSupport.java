@@ -29,6 +29,8 @@ import org.slf4j.LoggerFactory;
  */
 public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPropertyListener {
 
+	private NameTemplate cachedNameTemplate;
+	private String lastKnownLayoutNameTemplateValue;
 	private static final Logger log = LoggerFactory.getLogger(NameSupport.class);
 	private static NameSupport singleton;
 	private boolean initialized = false;
@@ -127,6 +129,8 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 		NameTemplate nameTemplate = deserializeXmlTemplate(newValue.getPropertyValue());
 		if (nameTemplate != null) {
 			updateLayoutTemplates(nameTemplate);
+			cachedNameTemplate = nameTemplate;
+			lastKnownLayoutNameTemplateValue = newValue.getPropertyValue();
 		}	
 	}
 
@@ -136,5 +140,16 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 	@Override
 	public void globalPropertyDeleted(String propertyName) {
 
+	}
+
+	@Override
+	public NameTemplate getDefaultLayoutTemplate() {
+		String currentPropertyValue = Context.getAdministrationService()
+			.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_TEMPLATE);
+		if (!currentPropertyValue.equals(lastKnownLayoutNameTemplateValue)) {
+			cachedNameTemplate = deserializeXmlTemplate(currentPropertyValue);
+			lastKnownLayoutNameTemplateValue = currentPropertyValue;
+		}
+		return cachedNameTemplate;
 	}
 }
