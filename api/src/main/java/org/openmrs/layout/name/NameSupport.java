@@ -28,12 +28,11 @@ import org.slf4j.LoggerFactory;
  * @since 1.12
  */
 public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPropertyListener {
-
-	private NameTemplate cachedNameTemplate;
-	private String lastKnownLayoutNameTemplateValue;
 	private static final Logger log = LoggerFactory.getLogger(NameSupport.class);
 	private static NameSupport singleton;
 	private boolean initialized = false;
+	private NameTemplate cachedNameTemplate;
+	private String lastKnownLayoutNameTemplateValue;
 	
 	public NameSupport() {
 		if (singleton == null) {
@@ -67,6 +66,8 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 		if (nameTemplate != null) {
 			updateLayoutTemplates(nameTemplate);
 			initialized = true;
+			cachedNameTemplate = nameTemplate;
+			lastKnownLayoutNameTemplateValue = layoutTemplateXml;
 		}
 	}
 	
@@ -144,11 +145,16 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 
 	@Override
 	public NameTemplate getDefaultLayoutTemplate() {
-		String currentPropertyValue = Context.getAdministrationService()
-			.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_TEMPLATE);
-		if (!currentPropertyValue.equals(lastKnownLayoutNameTemplateValue)) {
-			cachedNameTemplate = deserializeXmlTemplate(currentPropertyValue);
-			lastKnownLayoutNameTemplateValue = currentPropertyValue;
+		if (cachedNameTemplate == null) {
+			String defaultTemplateValue = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_TEMPLATE);
+			cachedNameTemplate = deserializeXmlTemplate(defaultTemplateValue);
+			lastKnownLayoutNameTemplateValue = defaultTemplateValue;
+		} else {
+			String currentPropertyValue = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_TEMPLATE);
+			if (!currentPropertyValue.equals(lastKnownLayoutNameTemplateValue)) {
+				cachedNameTemplate = deserializeXmlTemplate(currentPropertyValue);
+				lastKnownLayoutNameTemplateValue = currentPropertyValue;
+			}
 		}
 		return cachedNameTemplate;
 	}
