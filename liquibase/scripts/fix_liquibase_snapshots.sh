@@ -20,4 +20,4 @@
 openmrs_version=$(cd ../ && mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
 
 
-java -jar ./target/openmrs-liquibase-"${openmrs_version}"-jar-with-dependencies.jar
+java -jar ./target/openmrs-liquibase-${openmrs_version}-jar-with-dependencies.jar
