@@ -11,11 +11,24 @@ package org.openmrs;
 
 import java.util.Date;
 
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.openmrs.util.OpenmrsUtil;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  * PatientState
  */
+@Entity
+@Table(name = "patient_state")
 public class PatientState extends BaseFormRecordableOpenmrsData implements java.io.Serializable, Comparable<PatientState> {
 	
 	public static final long serialVersionUID = 0L;
@@ -23,17 +36,33 @@ public class PatientState extends BaseFormRecordableOpenmrsData implements java.
 	// ******************
 	// Properties
 	// ******************
-	
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "patient_state_id_seq")
+	@GenericGenerator(
+		name = "patient_state_id_seq",
+		strategy = "native",
+		parameters = @Parameter(name = "sequence", value = "patient_state_patient_state_id_seq")
+	)
+	@Column(name = "patient_state_id")
 	private Integer patientStateId;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "patient_program_id", nullable = false)
 	private PatientProgram patientProgram;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "state", nullable = false)
 	private ProgramWorkflowState state;
-	
+
+	@Column(name = "start_date", length = 19)
 	private Date startDate;
-	
+
+	@Column(name = "end_date", length = 19)
 	private Date endDate;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "encounter_id")
 	private Encounter encounter;
 	
 	// ******************

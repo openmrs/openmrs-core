@@ -18,12 +18,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.MatchMode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
@@ -39,9 +36,8 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	@BeforeEach
 	public void setUp() {
 		SessionFactory sessionFactory = (SessionFactory) applicationContext.getBean("sessionFactory");
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
 		
-		patientSearchCriteria = new PatientSearchCriteria(sessionFactory, criteria);
+		patientSearchCriteria = new PatientSearchCriteria(sessionFactory);
 		globalPropertiesTestHelper = new GlobalPropertiesTestHelper(Context.getAdministrationService());
 	}
 	

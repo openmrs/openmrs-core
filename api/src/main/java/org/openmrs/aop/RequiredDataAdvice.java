@@ -125,9 +125,8 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 					other = (String) args[1];
 				}
 				
-				ValidateUtil.validate(mainArgument);
-				
 				recursivelyHandle(SaveHandler.class, (OpenmrsObject) mainArgument, other);
+				ValidateUtil.validate(mainArgument);
 			}
 			// if the first argument is a list of openmrs objects, handle them all now
 			else if (Reflect.isCollection(mainArgument) && isOpenmrsObjectCollection(mainArgument)) {
@@ -145,9 +144,8 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 				Collection<OpenmrsObject> openmrsObjects = (Collection<OpenmrsObject>) mainArgument;
 				
 				for (OpenmrsObject object : openmrsObjects) {
-					ValidateUtil.validate(object);
-					
 					recursivelyHandle(SaveHandler.class, object, other);
+					ValidateUtil.validate(object);
 				}
 				
 			}
