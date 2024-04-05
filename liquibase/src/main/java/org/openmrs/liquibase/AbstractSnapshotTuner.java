@@ -31,6 +31,9 @@ import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * This is the base class for applying changes to generated Liquibase snapshots. This class provides
@@ -69,7 +72,7 @@ public abstract class AbstractSnapshotTuner {
 		log.info("The file '{}' already contains the OpenMRS license header.", path);
 	}
 	
-	public void createUpdatedChangeLogFile(String sourcePath, String targetPath) throws DocumentException, IOException {
+	public void createUpdatedChangeLogFile(String sourcePath, String targetPath) throws DocumentException, IOException, SAXException {
 		deleteFile(targetPath);
 		log.info("Updating generated Liquibase file:  '{}'...", sourcePath);
 		Document document = readChangeLogFile(sourcePath);
@@ -130,7 +133,7 @@ public abstract class AbstractSnapshotTuner {
 		return false;
 	}
 	
-	Document readChangeLogFile(String path) throws DocumentException {
+	static Document readChangeLogFile(String path) throws DocumentException, SAXException {
 		File file = Paths.get(path).toFile();
 		if (!file.exists()) {
 			log.error("The source file '{}' does not exist. Please generate both Liquibase changelog files and retry. "
@@ -139,6 +142,10 @@ public abstract class AbstractSnapshotTuner {
 			System.exit(0);
 		}
 		SAXReader reader = new SAXReader();
+		reader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+		reader.setFeature("http://xml.org/sax/features/external-general-entities", false);
+		reader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+		
 		Document document;
 		try {
 			document = reader.read(file);
@@ -147,9 +154,9 @@ public abstract class AbstractSnapshotTuner {
 			log.error("processing the file '{}' raised an exception", path, e);
 			throw e;
 		}
-		return document;
+        return document;
 	}
-	
+
 	Document readChangeLogResource(String resourceName) throws DocumentException, IOException {
 		Document document;
 		try (InputStream is = getResourceAsStream(resourceName)) {

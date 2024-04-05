@@ -13,6 +13,7 @@ import java.io.IOException;
 import org.dom4j.DocumentException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.xml.sax.SAXException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -20,7 +21,7 @@ import static org.mockito.Mockito.times;
 public class MainTest {
 	
 	@Test
-	public void shouldCreateUpdatedSnapshotFiles() throws DocumentException, IOException {
+	public void shouldCreateUpdatedSnapshotFiles() throws DocumentException, IOException, SAXException {
 		CoreDataTuner coreDataTuner = Mockito.mock(CoreDataTuner.class);
 		SchemaOnlyTuner schemaOnlyTuner = Mockito.mock(SchemaOnlyTuner.class);
 		
