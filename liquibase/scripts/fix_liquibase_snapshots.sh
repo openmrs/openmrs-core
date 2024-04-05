@@ -15,8 +15,9 @@
 #  Run this script from the openmrs-core/liquibase folder.
 #
 #  The updated snapshots are written to the openmrs-core/liquibase/snapshots folder.
-#
 
-openmrs_version=2.4.0-SNAPSHOT
+
+openmrs_version=$(cd ../ && mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+
 
 java -jar ./target/openmrs-liquibase-${openmrs_version}-jar-with-dependencies.jar
