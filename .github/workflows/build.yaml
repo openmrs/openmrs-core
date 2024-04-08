@@ -10,13 +10,14 @@ on:
       - 2.5.x
       - 2.6.x
   pull_request:
-    types:
     branches:
       - master
       - 2.4.x
       - 2.5.x
       - 2.6.x
   workflow_dispatch:
+
+permissions: read-all
 
 jobs:
   build:
@@ -51,14 +52,6 @@ jobs:
         run: |
           echo "::set-output name=branch_name::${BRANCH_NAME_OR_REF#refs/heads/}"
           echo "::set-output name=pr_number::$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")"
-      - name: Send data to Sonar
-        # only send sonar data for Java 11
-        if: ${{ matrix.java-version == '11' }}
-        continue-on-error: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=openmrs_openmrs-core --batch-mode --file pom.xml -P sonar-cloud
       - name: Update coverage data
         # only send coverage data for Java 8
         if: ${{ matrix.java-version == '8' && steps.refs.outcome == 'success' }}
