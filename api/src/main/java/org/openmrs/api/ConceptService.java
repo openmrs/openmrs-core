@@ -1596,7 +1596,22 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPT_REFERENCE_TERMS)
 	public ConceptReferenceTerm getConceptReferenceTermByCode(String code, ConceptSource conceptSource) throws APIException;
-	
+
+	/**
+	 * Gets a list of concept reference terms with the specified code from the specified concept source
+	 *
+	 * @param code the code to match against
+	 * @param conceptSource the concept source to match against
+	 * @param includeRetired specifies if retired concept reference terms should be included
+	 * @return concept reference term object
+	 * @since 2.7
+	 * @throws APIException
+	 * <strong>Should</strong> return a list of concept reference terms that matches the given code from the given source
+	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPT_REFERENCE_TERMS)
+	public List<ConceptReferenceTerm> getConceptReferenceTermByCode(String code, ConceptSource conceptSource, boolean includeRetired) throws APIException;
+
+
 	/**
 	 * Stores the specified concept reference term to the database
 	 * 
