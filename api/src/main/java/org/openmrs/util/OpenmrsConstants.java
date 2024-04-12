@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ArrayList;
@@ -1116,6 +1117,20 @@ public final class OpenmrsConstants {
 		
 		return props;
 	}
+	
+	public static final Map<String, GlobalProperty> PUBLIC_GLOBAL_PROPERTIES =new HashMap<String, GlobalProperty>() {{
+		put(GLOBAL_PROPERTY_GZIP_ENABLED, new GlobalProperty(GLOBAL_PROPERTY_GZIP_ENABLED,
+			"false", 
+			"Set to 'true' to turn on OpenMRS's gzip filter, and have the webapp compress data before sending it to any client that supports it. Generally use this if you are running Tomcat standalone. If you are running Tomcat behind Apache, then you'd want to use Apache to do gzip compression.",
+			BooleanDatatype.class,
+			null));
+		put(GLOBAL_PROPERTY_DEFAULT_LOCALE, new GlobalProperty(
+			OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE,
+			OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE,
+			"Specifies the default locale. You can specify both the language code(ISO-639) and the country code(ISO-3166), e.g. 'en_GB' or just country: e.g. 'en'"));
+		put(GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, new GlobalProperty(GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en, en_GB, es, fr, it, pt",
+			"Comma delimited list of locales allowed for use on system"));
+	}};
 	
 	// ConceptProposal proposed concept identifier keyword
 	public static final String PROPOSED_CONCEPT_IDENTIFIER = "PROPOSED";

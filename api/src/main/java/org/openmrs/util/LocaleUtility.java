@@ -57,7 +57,7 @@ public class LocaleUtility implements GlobalPropertyListener {
 		if (defaultLocaleCache == null) {
 			if (Context.isSessionOpen()) {
 				try {
-					String locale = Context.getAdministrationService().getGlobalProperty(
+					String locale = Context.getAdministrationService().getPublicGlobalProperty(
 					    OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE);
 					
 					if (StringUtils.hasLength(locale)) {

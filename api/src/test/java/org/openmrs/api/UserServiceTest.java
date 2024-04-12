@@ -281,7 +281,12 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 			u.getPerson().setGender("M");
 			u.addRole(role);
 			// here we expect the exception to be thrown
-			userService.createUser(u, "Openmr5xy");
+			try {
+				Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+				userService.createUser(u, "Openmr5xy");
+			} finally {
+				Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			}
 		}));
 		assertThat(exception.getMessage(), is("You must have privilege {0} in order to assign it."));
 	}
@@ -315,7 +320,12 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 			u.getPerson().setGender("M");
 			u.addRole(role);
 			// here we expect the exception to be thrown
-			userService.createUser(u, "Openmr5xy");
+			try {
+				Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+				userService.createUser(u, "Openmr5xy");
+			} finally {
+				Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			}
 		}));
 		assertThat(exception.getMessage(), is("You must have the following privileges in order to assign them: Another Privilege, Custom Privilege"));
 	}
@@ -351,7 +361,12 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 			u.isSuperUser();
 			u.addRole(role);
 			// here we expect the exception to be thrown
-			userService.createUser(u, "Openmr5xy");
+			try {
+				Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+				userService.createUser(u, "Openmr5xy");
+			} finally {
+				Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			}
 		}));
 		assertThat(exception.getMessage(), is("You must have the role {0} in order to assign it."));
 	}
@@ -472,9 +487,15 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void changePassword_shouldMatchOnIncorrectlyHashedSha1StoredPassword() {
 		executeDataSet(XML_FILENAME);
 		Context.logout();
-		Context.authenticate("incorrectlyhashedSha1", "test");
+		try {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			Context.authenticate("incorrectlyhashedSha1", "test");
+			userService.changePassword("test", "Tester12");
+			
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		}
 
-		userService.changePassword("test", "Tester12");
 
 		Context.logout(); // so that the next test reauthenticates
 	}
@@ -514,10 +535,13 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void changePassword_shouldMatchOnCorrectlyHashedSha1StoredPassword() {
 		executeDataSet(XML_FILENAME);
 		Context.logout();
-		Context.authenticate("correctlyhashedSha1", "test");
-
-		userService.changePassword("test", "Tester12");
-
+		try {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			Context.authenticate("correctlyhashedSha1", "test");
+			userService.changePassword("test", "Tester12");
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		}
 		Context.logout(); // so that the next test reauthenticates
 	}
 
@@ -542,10 +566,13 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void changePassword_shouldMatchOnSha512HashedPassword() {
 		executeDataSet(XML_FILENAME);
 		Context.logout();
-		Context.authenticate("userWithSha512Hash", "test");
-
-		userService.changePassword("test", "Tester12");
-
+		try {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			Context.authenticate("userWithSha512Hash", "test");
+			userService.changePassword("test", "Tester12");
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		}
 		Context.logout(); // so that the next test reauthenticates
 	}
 
@@ -1490,11 +1517,15 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
 		User user = userService.getUser(6001);
 		assertFalse(user.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS));
-		Context.authenticate(user.getUsername(), "userServiceTest");
+		try {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			Context.authenticate(user.getUsername(), "userServiceTest");
+			userService.changePasswordUsingSecretAnswer("answer", "userServiceTest2");
+			Context.authenticate(user.getUsername(), "userServiceTest2");
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		}
 		
-		userService.changePasswordUsingSecretAnswer("answer", "userServiceTest2");
-		
-		Context.authenticate(user.getUsername(), "userServiceTest2");
 	}
 
 	@Test
@@ -1584,9 +1615,15 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		dao.updateLoginCredential(credentials);
 		
 		final String PASSWORD = "Admin123";
-		Context.authenticate(createdUser.getUsername(), "Openmr5xy");
-		userService.changePasswordUsingActivationKey(key, PASSWORD);
-		Context.authenticate(createdUser.getUsername(), PASSWORD);
+		try {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			Context.authenticate(createdUser.getUsername(), "Openmr5xy");
+			userService.changePasswordUsingActivationKey(key, PASSWORD);
+			Context.authenticate(createdUser.getUsername(), PASSWORD);
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		}
+		
 		
 	}
 	

@@ -216,6 +216,38 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		return s;
 	}
 	
+	@Override
+	public String getPublicGlobalProperty(String propertyName, String defaultValue) {
+		String s = Context.getAdministrationService().getPublicGlobalProperty(propertyName);
+		if(s == null) {
+			return defaultValue;
+		}
+		return s;
+	}
+
+	@Override
+	public String getPublicGlobalProperty(String propertyName) {
+		if (propertyName == null) {
+			return null;
+		}
+		
+		if (!OpenmrsConstants.PUBLIC_GLOBAL_PROPERTIES.containsKey(propertyName)) {
+			throw new APIException( propertyName + " is not a public global property.");
+		}
+
+		GlobalProperty gp = dao.getGlobalPropertyObject(propertyName);
+		if (gp != null) {
+			if (canViewGlobalProperty(gp)) {
+				return gp.getPropertyValue();
+			} else {
+				throw new APIException("GlobalProperty.error.privilege.required.view", new Object[] {
+					gp.getViewPrivilege().getPrivilege(), propertyName });
+			}
+		} else {
+			return null;
+		}
+	}
+
 	/**
 	 * @see org.openmrs.api.AdministrationService#getGlobalPropertyObject(java.lang.String)
 	 */
@@ -589,7 +621,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		// update the GlobalLocaleList.allowedLocales by faking a global property change
 		if (allowedLocales == null) {
 			// use a default language of "english" if they have cleared this GP for some reason
-			String currentPropertyValue = Context.getAdministrationService().getGlobalProperty(
+			String currentPropertyValue = Context.getAdministrationService().getPublicGlobalProperty(
 			    OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, LocaleUtility.getDefaultLocale().toString());
 			GlobalProperty allowedLocalesProperty = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST,
 			        currentPropertyValue);

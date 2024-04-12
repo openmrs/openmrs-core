@@ -56,6 +56,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * <strong>Should</strong> find object given valid uuid
 	 * <strong>Should</strong> return null if no object found with given uuid
 	 */
+	@Authorized(PrivilegeConstants.GET_GLOBAL_PROPERTIES)
 	public GlobalProperty getGlobalPropertyByUuid(String uuid);
 	
 	/**
@@ -90,7 +91,10 @@ public interface AdministrationService extends OpenmrsService {
 	 * <strong>Should</strong> get property value given valid property name
 	 * <strong>Should</strong> get property in case insensitive way
 	 */
+	@Authorized(PrivilegeConstants.GET_GLOBAL_PROPERTIES)
 	public String getGlobalProperty(String propertyName);
+	
+	public String getPublicGlobalProperty(String propertyName);
 	
 	/**
 	 * Gets the global property that has the given <code>propertyName</code>
@@ -106,7 +110,10 @@ public interface AdministrationService extends OpenmrsService {
 	 * <strong>Should</strong> return default value if property name does not exist
 	 * <strong>Should</strong> not fail with null default value
 	 */
+	@Authorized(PrivilegeConstants.GET_GLOBAL_PROPERTIES)
 	public String getGlobalProperty(String propertyName, String defaultValue);
+	
+	String getPublicGlobalProperty(String propertyName, String defaultValue);
 	
 	/**
 	 * Gets the global property that has the given <code>propertyName</code>
@@ -115,6 +122,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @return the global property that matches the given <code>propertyName</code>
 	 * <strong>Should</strong> return null when no global property match given property name
 	 */
+	@Authorized(PrivilegeConstants.GET_GLOBAL_PROPERTIES)
 	public GlobalProperty getGlobalPropertyObject(String propertyName);
 	
 	/**
@@ -125,6 +133,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @since 1.5
 	 * <strong>Should</strong> return all relevant global properties in the database
 	 */
+	@Authorized(PrivilegeConstants.GET_GLOBAL_PROPERTIES)
 	public List<GlobalProperty> getGlobalPropertiesByPrefix(String prefix);
 	
 	/**
@@ -135,6 +144,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @since 1.6
 	 * <strong>Should</strong> return all relevant global properties in the database
 	 */
+	@Authorized(PrivilegeConstants.GET_GLOBAL_PROPERTIES)
 	public List<GlobalProperty> getGlobalPropertiesBySuffix(String suffix);
 	
 	/**
@@ -313,6 +323,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @return property value in the type of the default value
 	 * @since 1.7
 	 */
+	@Authorized(PrivilegeConstants.GET_GLOBAL_PROPERTIES)
 	public <T> T getGlobalPropertyValue(String propertyName, T defaultValue);
 	
 	/**
