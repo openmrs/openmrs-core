@@ -19,6 +19,7 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.OrderServiceTest;
+import org.openmrs.api.db.hibernate.envers.OpenMRSRevisionEntity;
 import org.openmrs.liquibase.ChangeLogVersionFinder;
 import org.openmrs.util.H2DatabaseIT;
 import org.openmrs.util.OpenmrsClassScanner;
@@ -81,9 +82,8 @@ public class ValidateHibernateMappingsDatabaseIT extends H2DatabaseIT {
 		Configuration configuration = new Configuration().configure();
 		
 		Set<Class<?>> entityClasses = OpenmrsClassScanner.getInstance().getClassesWithAnnotation(Entity.class);
-		if (entityClasses.contains(OrderServiceTest.SomeTestOrder.class)) {
-			entityClasses.remove(OrderServiceTest.SomeTestOrder.class);
-		}
+		entityClasses.remove(OrderServiceTest.SomeTestOrder.class);
+		entityClasses.remove(OpenMRSRevisionEntity.class);
 		for (Class<?> clazz : entityClasses) {
 			configuration.addAnnotatedClass(clazz);
 		}
@@ -94,7 +94,7 @@ public class ValidateHibernateMappingsDatabaseIT extends H2DatabaseIT {
 		configuration.setProperty(Environment.PASS, PASSWORD);
 		configuration.setProperty(Environment.USE_SECOND_LEVEL_CACHE, "false");
 		configuration.setProperty(Environment.USE_QUERY_CACHE, "false");
-		
+		configuration.setProperty("hibernate.integration.envers.enabled", "false");
 		// Validate HBMs against the actual schema
 		configuration.setProperty(Environment.HBM2DDL_AUTO, "validate");
 		

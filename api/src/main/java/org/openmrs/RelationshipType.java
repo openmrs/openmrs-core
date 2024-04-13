@@ -10,6 +10,7 @@
 package org.openmrs;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.envers.Audited;
 
 /**
  * Defines a type of relationship between two people in the database. <br>
@@ -32,6 +33,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
  * In English, we run into a tricky RelationshipType with aunts and uncles. We have chosen to define
  * them as aunt/uncle-niece/nephew.
  */
+@Audited
 public class RelationshipType extends BaseChangeableOpenmrsMetadata{
 	
 	public static final long serialVersionUID = 4223L;

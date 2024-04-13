@@ -37,6 +37,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.envers.Audited;
 import org.openmrs.annotation.AllowDirectAccess;
 import org.openmrs.annotation.DisableHandlers;
 import org.openmrs.api.context.Context;
@@ -54,6 +55,7 @@ import org.openmrs.api.handler.VoidHandler;
 @Entity
 @Table(name = "encounter")
 @BatchSize(size = 25)
+@Audited
 public class Encounter extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 2L;

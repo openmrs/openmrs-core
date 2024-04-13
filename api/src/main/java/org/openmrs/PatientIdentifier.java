@@ -15,6 +15,7 @@ import java.lang.reflect.Method;
 import java.util.Comparator;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.envers.Audited;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Boost;
 import org.hibernate.search.annotations.DocumentId;
@@ -37,6 +38,7 @@ import org.slf4j.LoggerFactory;
  * @see org.openmrs.PatientIdentifierType
  */
 @Indexed
+@Audited
 public class PatientIdentifier extends BaseChangeableOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PatientIdentifier> {
 	
 	public static final long serialVersionUID = 1123121L;

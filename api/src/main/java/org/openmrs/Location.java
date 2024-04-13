@@ -12,6 +12,7 @@ package org.openmrs;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.envers.Audited;
 import org.openmrs.annotation.Independent;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -47,6 +48,7 @@ import java.util.Set;
 @Table(name = "location")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @AttributeOverride(name = "attributes", column = @Column(name = "location_id"))
+@Audited
 public class Location extends BaseCustomizableMetadata<LocationAttribute> implements java.io.Serializable, Attributable<Location>, Address {
 	
 	public static final long serialVersionUID = 455634L;

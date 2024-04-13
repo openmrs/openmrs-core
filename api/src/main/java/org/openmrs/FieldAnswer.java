@@ -12,6 +12,7 @@ package org.openmrs;
 import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,6 +29,7 @@ import javax.persistence.Transient;
  */
 @Entity
 @Table(name = "field_answer")
+@Audited
 public class FieldAnswer extends BaseOpenmrsObject {
 	
 	public static final long serialVersionUID = 5656L;

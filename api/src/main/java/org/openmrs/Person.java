@@ -22,6 +22,8 @@ import java.util.TreeSet;
 
 import javax.persistence.Transient;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.DateBridge;
@@ -42,6 +44,7 @@ import org.springframework.util.StringUtils;
  * 
  * @see org.openmrs.Patient
  */
+@Audited
 public class Person extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 2L;
@@ -81,17 +84,17 @@ public class Person extends BaseChangeableOpenmrsData {
 	private Concept causeOfDeath;
 	
 	private String causeOfDeathNonCoded;
-	
+
 	private User personCreator;
 	
 	private Date personDateCreated;
-	
+
 	private User personChangedBy;
 	
 	private Date personDateChanged;
 	
 	private Boolean personVoided = false;
-	
+
 	private User personVoidedBy;
 	
 	private Date personDateVoided;
@@ -99,6 +102,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	private String personVoidReason;
 	
 	@Field
+	@NotAudited
 	private boolean isPatient;
 	
 	/**
@@ -1049,10 +1053,12 @@ public class Person extends BaseChangeableOpenmrsData {
 	 */
 	@Deprecated
 	@JsonIgnore
+	@NotAudited
 	public boolean isPatient() {
 		return getIsPatient();
 	}
 	
+	@NotAudited
 	public boolean getIsPatient() {
 		return isPatient;
 	}

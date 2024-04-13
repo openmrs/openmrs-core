@@ -12,6 +12,7 @@ package org.openmrs;
 import static org.openmrs.Order.Action.DISCONTINUE;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.envers.Audited;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -19,6 +20,7 @@ import org.openmrs.util.OpenmrsUtil;
  *
  * @version 1.0
  */
+@Audited
 public class DrugOrder extends Order {
 
 	public static final long serialVersionUID = 72232L;
