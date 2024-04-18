@@ -242,11 +242,15 @@ public class ModuleUtil {
 	 * <li>1.2.*</li>
 	 * <li>1.2.2 - 1.2.3</li>
 	 * <li>1.2.* - 1.3.*</li>
+	 * <li>1.4+ - 1.8.3</li>
+	 * <li>1.4+ - 1.8.3+</li>
+	 * <li>1.4.2 - 1.8.3+</li>
 	 * </ul>
 	 * <p>
 	 * Again the possible require version number formats with their interpretation:
 	 * <ul>
 	 * <li>1.2.3 means 1.2.3 and above</li>
+	 * <li>1.4+ means 1.4.0 and above. Supported only for versions 2.7+</li>
 	 * <li>1.2.* means any version of the 1.2.x branch. That is 1.2.0, 1.2.1, 1.2.2,... but not 1.3.0, 1.4.0</li>
 	 * <li>1.2.2 - 1.2.3 means 1.2.2 and 1.2.3 (inclusive)</li>
 	 * <li>1.2.* - 1.3.* means any version of the 1.2.x and 1.3.x branch</li>
@@ -287,8 +291,8 @@ public class ModuleUtil {
 			for (String range : ranges) {
 				// need to externalize this string
 				String separator = "-";
-				if (range.indexOf("*") > 0 || range.indexOf(separator) > 0 && (!isVersionWithQualifier(range))) {
-					// if it contains "*" or "-" then we must separate those two
+				if (range.indexOf("*") > 0 || range.indexOf("+") > 0 || range.indexOf(separator) > 0 && (!isVersionWithQualifier(range))) {
+					// if it contains "*" or "-" or "+" then we must separate those two
 					// assume it's always going to be two part
 					// assign the upper and lower bound
 					// if there's no "-" to split lower and upper bound
@@ -309,17 +313,22 @@ public class ModuleUtil {
 					// only preserve part of the string that match the following format:
 					// - xx.yy.*
 					// - xx.yy.zz*
-					lowerBound = StringUtils.remove(lowerBound, lowerBound.replaceAll("^\\s?\\d+[\\.\\d+\\*?|\\.\\*]+", ""));
-					upperBound = StringUtils.remove(upperBound, upperBound.replaceAll("^\\s?\\d+[\\.\\d+\\*?|\\.\\*]+", ""));
+					// - aa.bb+
+					// - aa.b+
+					lowerBound = StringUtils.remove(lowerBound, lowerBound.replaceAll("^\\s?\\d+[\\.\\d+\\*?|\\.\\*|\\.\\d+\\+?|\\.\\+]+", ""));
+					upperBound = StringUtils.remove(upperBound, upperBound.replaceAll("^\\s?\\d+[\\.\\d+\\*?|\\.\\*|\\.\\d+\\+?|\\.\\+]+", ""));
 					
-					// if the lower contains "*" then change it to zero
+					// if the lower contains "*" or "+" then change it to zero
 					if (lowerBound.indexOf("*") > 0) {
 						lowerBound = lowerBound.replaceAll("\\*", "0");
+					}else if (lowerBound.indexOf("+") > 0) {
+						lowerBound = lowerBound.replaceAll("\\+", ".0");
 					}
 					
-					// if the upper contains "*" then change it to maxRevisionNumber
+					// if the upper contains "*" or "+" then change it to maxRevisionNumber
+					String maxRevisionNumber = Integer.toString(Integer.MAX_VALUE);
 					if (upperBound.indexOf("*") > 0) {
-						upperBound = upperBound.replaceAll("\\*", Integer.toString(Integer.MAX_VALUE));
+						upperBound = upperBound.replaceAll("\\*", maxRevisionNumber);
 					}
 					
 					int lowerReturn = compareVersion(version, lowerBound);
@@ -597,15 +606,18 @@ public class ModuleUtil {
 	 * @return File the file created by the expansion.
 	 * @throws IOException if an error occurred while copying
 	 */
-	private static File expand(InputStream input, String fileDir, String name) throws IOException {
+	private static void expand(InputStream input, String fileDir, String name) throws IOException {
 		log.debug("expanding: {}", name);
-		
+
 		File file = new File(fileDir, name);
+
+		if (!file.toPath().normalize().startsWith(fileDir)) {
+			throw new UnsupportedOperationException("Attempted to write file '" + name + "' rejected as it attempts to write outside the chosen directory. This may be the result of a zip-slip style attack.");
+		}
+		
 		try (FileOutputStream outStream = new FileOutputStream(file)) {
 			OpenmrsUtil.copyFile(input, outStream);
 		}
-		
-		return file;
 	}
 	
 	/**
