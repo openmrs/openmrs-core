@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.APIException;
 import org.openmrs.api.GlobalPropertyListener;
@@ -31,7 +33,6 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 
 	private static final Logger log = LoggerFactory.getLogger(NameSupport.class);
 	private static NameSupport singleton;
-	private boolean initialized = false;
 	
 	public NameSupport() {
 		if (singleton == null) {
@@ -43,7 +44,6 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 		if (singleton == null) {
 			throw new APIException("Not Yet Instantiated");
 		} else {
-			singleton.init();
 			return singleton;
 		}
 	}
@@ -52,22 +52,16 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 	 * Initializes layout templates with a custom template configured
 	 * via the "layout.name.template" GP.
 	 */
+	@PostConstruct
 	private void init() {
-		if (initialized) {
-			return;
-		}
-		// Hack to avoid multiple additions of the same same listener when called.
-		Context.getAdministrationService().removeGlobalPropertyListener(singleton);
-				
 		Context.getAdministrationService().addGlobalPropertyListener(singleton);
+		
 		// Get configured name template to override the existing one if any
 		String layoutTemplateXml = Context.getAdministrationService().getGlobalProperty(
 			OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_TEMPLATE);
 		NameTemplate nameTemplate = deserializeXmlTemplate(layoutTemplateXml);
-		
 		if (nameTemplate != null) {
 			updateLayoutTemplates(nameTemplate);
-			initialized = true;
 		}
 	}
 	
@@ -124,7 +118,7 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 	 */
 	@Override
 	public void globalPropertyChanged(GlobalProperty newValue) {
-		if (!OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_TEMPLATE.equals(newValue.getPropertyValue())) {
+		if (!OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_TEMPLATE.equals(newValue.getProperty())) {
 			return;
 		}
 		NameTemplate nameTemplate = deserializeXmlTemplate(newValue.getPropertyValue());

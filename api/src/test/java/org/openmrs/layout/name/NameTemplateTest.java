@@ -106,6 +106,7 @@ public class NameTemplateTest extends BaseContextSensitiveTest {
 	public void shouldUseNameTemplateConfiguredViaGlobalProperties() {
 		// setup
 		executeDataSet(NAME_TEMPLATE_GP_DATASET_PATH);
+		
 		Context.getAdministrationService().saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT, "customXmlTemplate"));
 		
 		PersonName personName = new PersonName();
@@ -114,6 +115,9 @@ public class NameTemplateTest extends BaseContextSensitiveTest {
 		personName.setFamilyName("Mujuzi");
 		
 		// replay
+		// simulating GP Changed Listener event.
+		Context.getAdministrationService().saveGlobalProperty(Context.getAdministrationService().getGlobalPropertyObject(OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_TEMPLATE));
+		
 		NameTemplate nameTemplate = NameSupport.getInstance().getDefaultLayoutTemplate();
 
 		// verify
