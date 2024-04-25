@@ -407,7 +407,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertThat("admin", is(Context.getAuthenticatedUser().getUsername()));
 		User u = userService.getUserByUsername(ADMIN_USERNAME);
 		
-		assertThat(u.isSuperUser(), is(true));
+		assertThat(u.getSystemId(), is("admin"));
 
 		Properties props = Context.getRuntimeProperties();
 		props.setProperty(UserService.ADMIN_PASSWORD_LOCKED_PROPERTY, "true");
