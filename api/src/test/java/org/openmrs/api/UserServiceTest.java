@@ -397,9 +397,11 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void changePassword_shouldRespectLockingViaRuntimeProperty() {
 		assertThat("admin", is(Context.getAuthenticatedUser().getUsername()));
+		assertTrue(Context.getAuthenticatedUser().isSuperUser());
+		
 		User u = userService.getUserByUsername(ADMIN_USERNAME);
 		
-		assertThat(u.getSystemId(), is("admin"));
+		assertThat(u.getUsername(), is("admin"));
 
 		Properties props = Context.getRuntimeProperties();
 		props.setProperty(UserService.ADMIN_PASSWORD_LOCKED_PROPERTY, "true");
@@ -419,6 +421,25 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Context.setRuntimeProperties(props);
 
 		userService.changePassword(u,"test", "SuperAdmin123");
+	}
+
+	@Test
+	public void changePassword_shouldRespectLockingViaRuntimePropertyForSystemIdAdminAndNoUsername() {
+		assertThat("admin", is(Context.getAuthenticatedUser().getUsername()));
+		assertTrue(Context.getAuthenticatedUser().isSuperUser());
+		
+		User u = userService.getUserByUsername(ADMIN_USERNAME);
+		
+		u.setSystemId("admin");
+		u.setUsername(null);
+
+		Properties props = Context.getRuntimeProperties();
+		props.setProperty(UserService.ADMIN_PASSWORD_LOCKED_PROPERTY, "true");
+		Context.setRuntimeProperties(props);
+
+		APIException apiException = assertThrows(APIException.class, () -> userService.changePassword(u, "test", "SuperAdmin123"));
+
+		assertThat(apiException.getMessage(), is("admin.password.is.locked"));
 	}
 
 	@Test
