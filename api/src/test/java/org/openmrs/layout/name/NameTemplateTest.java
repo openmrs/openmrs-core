@@ -113,6 +113,8 @@ public class NameTemplateTest extends BaseContextSensitiveTest {
 		personName.setMiddleName("Tusha");
 		personName.setFamilyName("Mujuzi");
 		
+		Context.getAdministrationService().saveGlobalProperty(Context.getAdministrationService().getGlobalPropertyObject(OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_TEMPLATE));
+		
 		// replay
 		NameTemplate nameTemplate = NameSupport.getInstance().getDefaultLayoutTemplate();
 
