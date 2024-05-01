@@ -42,6 +42,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import net.sf.ehcache.Ehcache;
 import org.apache.commons.collections.CollectionUtils;
@@ -2173,6 +2174,49 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(term);
 		assertEquals("2332523", term.getCode());
 	}
+
+	/**
+	 * @see ConceptService#getConceptReferenceTermByCode(String,ConceptSource)
+	 */
+	@Test
+	public void getConceptReferenceTermByCode_shouldReturnUnretiredTermIfRetiredAlsoExists()
+	{
+		ConceptReferenceTerm term = Context.getConceptService().getConceptReferenceTermByCode("898989",
+			new ConceptSource(1));
+		assertNotNull(term);
+		assertEquals("898989", term.getCode());
+		assertFalse(term.getRetired());
+	}
+
+	/**
+	 * @see ConceptService#getConceptReferenceTermByCode(String,ConceptSource, boolean)
+	 */
+	@Test
+	public void getConceptReferenceTermByCode_shouldReturnBothRetiredAndUnretiredTerms() {
+		List<ConceptReferenceTerm> terms = Context.getConceptService().getConceptReferenceTermByCode(
+			"898989", new ConceptSource(1), true);
+
+		assertEquals(2, terms.size());
+
+		List<Boolean> termStates = terms.stream().map(ConceptReferenceTerm::getRetired)
+			.sorted().collect(Collectors.toList());
+
+        List<Boolean> expectedStates = Arrays.asList(false, true);
+
+		assertEquals(expectedStates, termStates);
+	}
+
+	/**
+	 * @see ConceptService#getConceptReferenceTermByCode(String,ConceptSource, boolean)
+	 */
+	@Test
+	public void getConceptReferenceTermByCode_shouldExcludeRetiredConcepts() {
+		List<ConceptReferenceTerm> terms = Context.getConceptService().getConceptReferenceTermByCode(
+			"898989", new ConceptSource(1), false);
+
+		assertEquals(1, terms.size());
+		assertFalse(terms.get(0).getRetired());
+	}
 	
 	/**
 	 * @see ConceptService#getConceptMapTypes(null,null)
@@ -2332,7 +2376,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getConceptReferenceTerms_shouldReturnAllTheConceptReferenceTermsIfIncludeRetiredIsSetToTrue()
 	{
-		assertEquals(11, Context.getConceptService().getConceptReferenceTerms(true).size());
+		assertEquals(13, Context.getConceptService().getConceptReferenceTerms(true).size());
 	}
 	
 	/**
@@ -2341,7 +2385,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getConceptReferenceTerms_shouldReturnOnlyUnRetiredConceptReferenceTermsIfIncludeRetiredIsSetToFalse()
 	{
-		assertEquals(10, Context.getConceptService().getConceptReferenceTerms(false).size());
+		assertEquals(11, Context.getConceptService().getConceptReferenceTerms(false).size());
 	}
 	
 	/**
@@ -2359,7 +2403,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getConceptReferenceTerms_shouldReturnOnlyTheConceptReferenceTermsFromTheGivenConceptSource()
 	{
-		assertEquals(9, conceptService.getConceptReferenceTerms(null, conceptService.getConceptSource(1), 0, null,
+		assertEquals(11, conceptService.getConceptReferenceTerms(null, conceptService.getConceptSource(1), 0, null,
 		    true).size());
 	}
 	
@@ -2475,7 +2519,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getAllConceptReferenceTerms_shouldReturnAllConceptReferenceTermsInTheDatabase() {
-		assertEquals(11, Context.getConceptService().getAllConceptReferenceTerms().size());
+		assertEquals(13, Context.getConceptService().getAllConceptReferenceTerms().size());
 	}
 	
 	/**
@@ -2591,7 +2635,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getCountOfConceptReferenceTerms_shouldIncludeRetiredTermsIfIncludeRetiredIsSetToTrue() {
-		assertEquals(11, conceptService.getCountOfConceptReferenceTerms("", null, true).intValue());
+		assertEquals(13, conceptService.getCountOfConceptReferenceTerms("", null, true).intValue());
 	}
 	
 	/**
@@ -2599,7 +2643,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getCountOfConceptReferenceTerms_shouldNotIncludeRetiredTermsIfIncludeRetiredIsSetToFalse() {
-		assertEquals(10, conceptService.getCountOfConceptReferenceTerms("", null, false).intValue());
+		assertEquals(11, conceptService.getCountOfConceptReferenceTerms("", null, false).intValue());
 	}
 	
 	/**

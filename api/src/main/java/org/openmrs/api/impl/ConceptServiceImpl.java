@@ -1785,7 +1785,13 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	public ConceptReferenceTerm getConceptReferenceTermByCode(String code, ConceptSource conceptSource) throws APIException {
 		return dao.getConceptReferenceTermByCode(code, conceptSource);
 	}
-	
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<ConceptReferenceTerm> getConceptReferenceTermByCode(String code, ConceptSource conceptSource, boolean includeRetired) throws APIException {
+		return dao.getConceptReferenceTermByCode(code, conceptSource, includeRetired);
+	}
+
 	/**
 	 * @see org.openmrs.api.ConceptService#saveConceptReferenceTerm(org.openmrs.ConceptReferenceTerm)
 	 */

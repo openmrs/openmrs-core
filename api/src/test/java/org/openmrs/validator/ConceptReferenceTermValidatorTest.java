@@ -310,4 +310,24 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		assertTrue(errors.hasFieldErrors("description"));
 		assertTrue(errors.hasFieldErrors("retireReason"));
 	}
+
+	@Test
+	public void validate_shouldPassIfTheConceptReferenceTermCodeIsDuplicateButRetired() {
+		ConceptReferenceTerm term = new ConceptReferenceTerm();
+		term.setName("name");
+		term.setCode("WGT234");
+		term.setConceptSource(Context.getConceptService().getConceptSource(1));
+		Errors errors = new BindException(term, "term");
+
+		ConceptReferenceTerm termWithDuplicateCode = Context.getConceptService()
+			.getConceptReferenceTermByCode(term.getCode(), term.getConceptSource());
+
+		if (termWithDuplicateCode != null) {
+			termWithDuplicateCode.setRetired(true);
+		}
+
+		new ConceptReferenceTermValidator().validate(term, errors);
+
+		assertFalse(errors.hasFieldErrors("code"));
+	}
 }
