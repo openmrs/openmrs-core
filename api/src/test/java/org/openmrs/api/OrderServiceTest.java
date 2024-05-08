@@ -31,6 +31,7 @@ import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.Condition;
 import org.openmrs.Diagnosis;
 import org.openmrs.Drug;
+import org.openmrs.DrugIngredient;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.FreeTextDosingInstructions;
@@ -70,6 +71,7 @@ import org.openmrs.api.db.hibernate.HibernateSessionFactoryBean;
 import org.openmrs.api.impl.OrderServiceImpl;
 import org.openmrs.customdatatype.datatype.FreeTextDatatype;
 import org.openmrs.messagesource.MessageSourceService;
+import org.openmrs.notification.AlertRecipient;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.order.OrderUtilTest;
 import org.openmrs.orders.TimestampOrderNumberGenerator;
@@ -2664,6 +2666,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.addAnnotatedClass(LocationAttributeType.class)
 			.addAnnotatedClass(SerializedObject.class)
 			.addAnnotatedClass(PatientState.class)
+			.addAnnotatedClass(DrugIngredient.class)
+			.addAnnotatedClass(AlertRecipient.class)
 			.getMetadataBuilder().build();
 
 

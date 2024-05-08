@@ -14,22 +14,39 @@ import java.util.Date;
 import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.User;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 /**
  * This class is essentially a wrapper for the user object. The alert is assigned to each recipient.
  * A recipient then has either "read" the alert or has not.
  * 
  * @see org.openmrs.notification.Alert
  */
+@Entity
+@Table(name = "notification_alert_recipient")
 public class AlertRecipient extends BaseOpenmrsObject {
 	
 	private static final long serialVersionUID = -507111109155L;
 	
+	@JoinColumn(name = "alert_id")
+	@Id
+	@ManyToOne
 	private Alert alert;
-	
+
+	@JoinColumn(name = "user_id", updatable = false, insertable = false)
+	@Id
+	@ManyToOne
 	private User recipient;
 	
+	@Column(name = "alert_read", length = 1)
 	private Boolean alertRead = false;
 	
+	@Column(name = "date_changed", length = 19, updatable = false, insertable = false)
 	private Date dateChanged;
 	
 	// necessary for hql queries
@@ -163,5 +180,7 @@ public class AlertRecipient extends BaseOpenmrsObject {
 	public void setId(Integer id) {
 		throw new UnsupportedOperationException();
 	}
-	
+
 }
+
+

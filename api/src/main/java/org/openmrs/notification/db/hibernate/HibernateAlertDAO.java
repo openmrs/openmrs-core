@@ -112,7 +112,7 @@ public class HibernateAlertDAO implements AlertDAO {
 		List<Predicate> predicates = new ArrayList<>();
 
 		if (user != null && user.getUserId() != null) {
-			predicates.add(cb.equal(root.join("recipients").get("recipientId"), user.getUserId()));
+			predicates.add(cb.equal(root.join("recipients").get("recipient"), user.getUserId()));
 		} else {
 			// getting here means we passed in no user or a blank user.
 			// a null recipient column means get stuff for the anonymous user
