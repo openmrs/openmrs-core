@@ -155,7 +155,7 @@ Deploy to docker:
               description: Deploy to docker
     artifact-subscriptions: []
 Deploy to docker JDK 11:
-    key: DTD
+    key: DTD11
     tasks:
         - checkout:
               force-clean-build: 'false'
@@ -182,7 +182,7 @@ Deploy to docker JDK 11:
               description: Deploy to docker
     artifact-subscriptions: []
 Deploy to docker JDK 17:
-    key: DTD
+    key: DTD17
     tasks:
         - checkout:
               force-clean-build: 'false'
