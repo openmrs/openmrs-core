@@ -9,7 +9,8 @@
 #	graphic logo is a trademark of OpenMRS Inc.
 
 ### Compile Stage (platform-agnostic)
-FROM --platform=$BUILDPLATFORM maven:3.8-amazoncorretto-8 as compile
+ARG DEV_JDK=amazoncorretto-8
+FROM --platform=$BUILDPLATFORM maven:3.8-$DEV_JDK as compile
 
 RUN yum -y update && yum -y install git && yum clean all
 
@@ -46,7 +47,7 @@ ARG MVN_ARGS='clean install -DskipTests'
 RUN mvn $MVN_SETTINGS $MVN_ARGS
 
 ### Development Stage
-FROM maven:3.8-amazoncorretto-8 as dev
+FROM maven:3.8-$DEV_JDK as dev
 
 RUN yum -y update && yum -y install tar gzip git && yum clean all
 
@@ -92,7 +93,8 @@ ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/mvn-entrypoint.sh"]
 CMD ["/openmrs/startup-dev.sh"]
 
 ### Production Stage
-FROM tomcat:8.5-jdk8-corretto
+ARG RUNTIME_JDK=jdk8-corretto
+FROM tomcat:8.5-$RUNTIME_JDK
 
 RUN yum -y update && yum clean all && rm -rf /usr/local/tomcat/webapps/*
 
