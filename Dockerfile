@@ -8,8 +8,10 @@
 #	Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS 
 #	graphic logo is a trademark of OpenMRS Inc.
 
-### Compile Stage (platform-agnostic)
 ARG DEV_JDK=amazoncorretto-8
+ARG RUNTIME_JDK=jdk8-corretto
+
+### Compile Stage (platform-agnostic)
 FROM --platform=$BUILDPLATFORM maven:3.8-$DEV_JDK as compile
 
 RUN yum -y update && yum -y install git && yum clean all
@@ -93,7 +95,6 @@ ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/mvn-entrypoint.sh"]
 CMD ["/openmrs/startup-dev.sh"]
 
 ### Production Stage
-ARG RUNTIME_JDK=jdk8-corretto
 FROM tomcat:8.5-$RUNTIME_JDK
 
 RUN yum -y update && yum clean all && rm -rf /usr/local/tomcat/webapps/*
