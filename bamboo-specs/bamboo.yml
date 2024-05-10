@@ -23,6 +23,8 @@ stages:
           jobs:
               - Deploy to maven
               - Deploy to docker
+              - Deploy to docker JDK 11
+              - Deploy to docker JDK 17
     - Release:
           manual: true
           final: false
@@ -150,6 +152,60 @@ Deploy to docker:
                           --cache-to=type=registry,mode=max,ref=${IMAGE_NIGHTLY}-cache \
                           --cache-from=${IMAGE},${IMAGE_DEV}-cache,${IMAGE_NIGHTLY}-cache \
                           --build-arg MVN_ARGS="clean install -DskipTests" -t ${IMAGE_NIGHTLY}  .
+              description: Deploy to docker
+    artifact-subscriptions: []
+Deploy to docker JDK 11:
+    key: DTD
+    tasks:
+        - checkout:
+              force-clean-build: 'false'
+              description: Checkout source
+        - script:
+              interpreter: SHELL
+              scripts:
+                  - |-
+                      #!/bin/bash -eux
+                      
+                      set +x
+                      
+                      export IMAGE_NIGHTLY=${bamboo.docker.image.name}:${bamboo.docker.image.tag}-amazoncorretto-11
+                      export IMAGE_DEV=${bamboo.docker.image.name}:dev-amazoncorretto-11
+                      
+                      docker login -u ${bamboo.dockerhub.username} -p ${bamboo.dockerhub.password}
+                      
+                      docker buildx build --pull --push --platform ${bamboo.docker.image.platforms} \
+                          --cache-to=type=registry,mode=max,ref=${IMAGE_NIGHTLY}-cache \
+                          --cache-from=${IMAGE_NIGHTLY}-cache \
+                          --build-arg MVN_ARGS="clean install -DskipTests" \
+                          --build-arg DEV_JDK="amazoncorretto-11" \
+                          -t ${IMAGE_NIGHTLY} -t ${IMAGE_DEV} .
+              description: Deploy to docker
+    artifact-subscriptions: []
+Deploy to docker JDK 17:
+    key: DTD
+    tasks:
+        - checkout:
+              force-clean-build: 'false'
+              description: Checkout source
+        - script:
+              interpreter: SHELL
+              scripts:
+                  - |-
+                      #!/bin/bash -eux
+                      
+                      set +x
+                      
+                      export IMAGE_NIGHTLY=${bamboo.docker.image.name}:${bamboo.docker.image.tag}-amazoncorretto-17
+                      export IMAGE_DEV=${bamboo.docker.image.name}:dev-amazoncorretto-17
+                      
+                      docker login -u ${bamboo.dockerhub.username} -p ${bamboo.dockerhub.password}
+                      
+                      docker buildx build --pull --push --platform ${bamboo.docker.image.platforms} \
+                          --cache-to=type=registry,mode=max,ref=${IMAGE_NIGHTLY}-cache \
+                          --cache-from=${IMAGE_NIGHTLY}-cache \
+                          --build-arg MVN_ARGS="clean install -DskipTests" \
+                          --build-arg DEV_JDK="amazoncorretto-17" \
+                          -t ${IMAGE_NIGHTLY} -t ${IMAGE_DEV} .
               description: Deploy to docker
     artifact-subscriptions: []
 Release:
