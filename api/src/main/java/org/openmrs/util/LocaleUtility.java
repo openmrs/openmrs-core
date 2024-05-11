@@ -57,7 +57,6 @@ public class LocaleUtility implements GlobalPropertyListener {
 		if (defaultLocaleCache == null) {
 			if (Context.isSessionOpen()) {
 				try {
-					Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 					String locale = Context.getAdministrationService().getGlobalProperty(
 					    OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE);
 					
@@ -74,9 +73,6 @@ public class LocaleUtility implements GlobalPropertyListener {
 					// swallow most of the stack trace for most users
 					log.warn("Unable to get locale global property value. " + e.getMessage());
 					log.trace("Unable to get locale global property value", e);
-				}
-				finally {
-					Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 				}
 				
 				// if we weren't able to load the locale from the global property,
