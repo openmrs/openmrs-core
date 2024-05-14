@@ -306,20 +306,23 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		}
 		Context.logout();
 		
-		for (int x = 1; x <= 8; x++) {
-			// now we fail several login attempts 
-			try {
-				Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-				dao.authenticate("admin", "not the right password");
-				fail("Not sure why this username/password combo worked");
-			}
-			catch (ContextAuthenticationException authException) {
-				// pass
-			}
-			finally {
-				Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-			}
+		try {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			for (int x = 1; x <= 8; x++) {
+				// now we fail several login attempts 
+				try {
+					dao.authenticate("admin", "not the right password");
+					fail("Not sure why this username/password combo worked");
+				}
+				catch (ContextAuthenticationException authException) {
+					// pass
+				}
+			}	
 		}
+		finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		}
+		
 		
 		// those were the first eight, now the ninth request 
 		// (with the same user and right pw) should fail
