@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
@@ -40,7 +39,6 @@ import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Credentials;
-import org.openmrs.api.context.UserContext;
 import org.openmrs.api.context.UsernamePasswordCredentials;
 import org.openmrs.customdatatype.datatype.BooleanDatatype;
 import org.openmrs.customdatatype.datatype.DateDatatype;
@@ -564,19 +562,16 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Context.logout();
 		Context.authenticate(getTestUserCredentials());
 		// have to add privilege in order to be able to call getAllGlobalProperties() method for new user
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		
-		try {
-			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-			properties = adminService.getAllGlobalProperties();
-			int actualSize = properties.size();
-			Context.logout();
-			assertEquals(actualSize, originalSize);
-			assertTrue(!properties.contains(property));
-		}
-		finally {
-			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-		}
+		properties = adminService.getAllGlobalProperties();
+		int actualSize = properties.size();
 		
+		Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		Context.logout();
+		
+		assertEquals(actualSize, originalSize);
+		assertTrue(!properties.contains(property));
 	}
 	
 	/**
