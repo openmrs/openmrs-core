@@ -10,11 +10,9 @@
 package org.openmrs.annotation;
 
 import org.junit.jupiter.api.Test;
-import org.openmrs.Role;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.StartModule;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
-import org.openmrs.util.RoleConstants;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
