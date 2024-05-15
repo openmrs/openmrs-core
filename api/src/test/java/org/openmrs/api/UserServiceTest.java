@@ -498,7 +498,6 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Context.authenticate("incorrectlyhashedSha1", "test");
 		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		userService.changePassword("test", "Tester12");
-		Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		Context.logout(); // so that the next test reauthenticates
 	}
 
@@ -540,7 +539,6 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Context.authenticate("correctlyhashedSha1", "test");
 		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		userService.changePassword("test", "Tester12");
-		Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		Context.logout(); // so that the next test reauthenticates
 	}
 
