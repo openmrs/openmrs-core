@@ -165,7 +165,6 @@ public class StartModuleExecutionListener extends AbstractTestExecutionListener 
 			if (!Context.isSessionOpen()) {
 				Context.openSession();
 			}
-//			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 			
 			// re-registering the bean definitions that we may have removed
 			for (String beanName : filteredDefinitions.keySet()) {
