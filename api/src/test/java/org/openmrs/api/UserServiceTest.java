@@ -1514,15 +1514,9 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User user = userService.getUser(6001);
 		assertFalse(user.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS));
 		Context.authenticate(user.getUsername(), "userServiceTest");
-		try {
-			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-			userService.changePasswordUsingSecretAnswer("answer", "userServiceTest2");
-		}
-		finally {
-			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-		}
-		
-		
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		userService.changePasswordUsingSecretAnswer("answer", "userServiceTest2");
+		Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		Context.authenticate(user.getUsername(), "userServiceTest2");
 	}
 
