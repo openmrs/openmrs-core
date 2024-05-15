@@ -669,6 +669,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	public void updateGlobalProperty_shouldUpdateIfUserIsAllowedToEditGlobalProperty() {
 		executeDataSet(ADMIN_INITIAL_DATA_XML);
 		GlobalProperty property = getGlobalPropertyWithEditPrivilege();
+		GlobalProperty globalPropertyWithViewPrivilege = getGlobalPropertyWithViewPrivilege();
 		assertEquals("anothervalue", property.getPropertyValue());
 
 		// authenticate new user without privileges
@@ -678,7 +679,6 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Role role = Context.getUserService().getRole("Provider");
 		role.addPrivilege(property.getEditPrivilege());
 
-		GlobalProperty globalPropertyWithViewPrivilege = getGlobalPropertyWithViewPrivilege();
 		role.addPrivilege(globalPropertyWithViewPrivilege.getViewPrivilege());
 		
 		Context.getAuthenticatedUser().addRole(role);
