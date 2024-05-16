@@ -100,7 +100,7 @@
          <plugin>
              <groupId>org.eclipse.jetty</groupId>
              <artifactId>jetty-maven-plugin</artifactId>
-             <version>9.4.35.v20201120</version>
+             <version>11.0.21</version>
              <configuration>
                <webApp>
                	  <descriptor>${project.build.directory}/jetty/WEB-INF/web.xml</descriptor>
