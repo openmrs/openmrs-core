@@ -95,7 +95,7 @@ ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/mvn-entrypoint.sh"]
 CMD ["/openmrs/startup-dev.sh"]
 
 ### Production Stage
-FROM tomcat:8.5-$RUNTIME_JDK
+FROM tomcat:9-$RUNTIME_JDK
 
 RUN yum -y update && yum clean all && rm -rf /usr/local/tomcat/webapps/*
 
