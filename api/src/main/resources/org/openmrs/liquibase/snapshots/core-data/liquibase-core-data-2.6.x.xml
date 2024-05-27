@@ -5218,4 +5218,23 @@
       <column name="role" value="System Developer"/> 
     </insert> 
   </changeSet>
+	<changeSet author="isaiah (generated)" id="202405201900-1">
+		<insert tableName="scheduler_task_config">
+			<column name="task_config_id" valueNumeric="3"/>
+			<column name="name" value="Auto Retire users"/>
+			<column name="description" value="Retires all active users that are inactive for XX number of days specified by the value of the global property 'users.numberOfDaysToRetire'"/>
+			<column name="schedulable_class" value="org.openmrs.scheduler.tasks.AutoRetireUsersTask"/>
+			<column name="start_time" value="20124-05-22T23:59:59"/>
+			<column name="start_time_pattern" value="MM/dd/yyyy HH:mm:ss"/>
+			<column name="repeat_interval" valueNumeric="86400"/>
+			<column name="start_on_startup" valueBoolean="true"/>
+			<column name="started" valueBoolean="false"/>
+			<column name="created_by" valueNumeric="1"/>
+			<column name="date_created" value="2024-05-20T10:00:00"/>
+			<column name="changed_by"/>
+			<column name="date_changed"/>
+			<column name="last_execution_time"/>
+			<column name="uuid" value="02f598d9-e3bb-4f6f-94b6-182c6856413a"/>
+		</insert>
+	</changeSet>	
 </databaseChangeLog>

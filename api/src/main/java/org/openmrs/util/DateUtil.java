@@ -30,5 +30,13 @@ public class DateUtil {
 		Instant instant = date.toInstant().truncatedTo(ChronoUnit.SECONDS);
 		return Date.from(instant);
 	}
-	
+
+	/**
+	 * This method converts days to milliseconds
+	 * @param days No. of days
+	 * @return
+	 */
+	public static long daysToMilliseconds(int days) {
+		return days * 24L * 60 * 60 * 1000;
+	}
 }
