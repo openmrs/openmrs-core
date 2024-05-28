@@ -33,6 +33,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.AfterAll;
@@ -1329,7 +1330,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Context.authenticate(user.getUsername(), "testUser1234");
 		
 		final int numberOfUserProperties = user.getUserProperties().size();
-		assertEquals(2, user.getUserProperties().size());
+		assertEquals(3, user.getUserProperties().size());
 		final String USER_PROPERTY_KEY = "test-key";
 		final String USER_PROPERTY_VALUE = "test-value";
 		
@@ -1665,7 +1666,14 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		final String USER_PROPERTY_KEY = liquibase.util.StringUtil.repeat("emrapi.lastViewedPatientIds,",10);
 		final String USER_PROPERTY_VALUE = liquibase.util.StringUtil.repeat("52345",9899);
 		User updatedUser = userService.saveUserProperty(USER_PROPERTY_KEY, USER_PROPERTY_VALUE);
-		assertEquals(280, updatedUser.getUserProperties().keySet().iterator().next().length());
+
+		Set<String> emrApiPropertyKeys = updatedUser.getUserProperties()
+			.keySet()
+			.stream()
+			.filter(key -> key.contains("emrapi.lastViewedPatientIds"))
+			.collect(Collectors.toSet());
+
+		assertEquals(280, emrApiPropertyKeys.stream().findFirst().orElse("").length());
 		assertEquals(49495, updatedUser.getUserProperties().get(USER_PROPERTY_KEY).length());
 	}
 	

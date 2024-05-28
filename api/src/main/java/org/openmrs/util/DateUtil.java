@@ -30,7 +30,7 @@ public class DateUtil {
 		Instant instant = date.toInstant().truncatedTo(ChronoUnit.SECONDS);
 		return Date.from(instant);
 	}
-
+	
 	/**
 	 * This method converts days to milliseconds
 	 * @param days No. of days
