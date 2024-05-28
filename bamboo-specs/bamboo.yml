@@ -175,7 +175,7 @@ Deploy to docker JDK 11:
                       set +x
                       
                       export JDK_IMAGE="amazoncorretto-11"
-                      export RUNTIME_JDK="jdk8-corretto"
+                      export RUNTIME_JDK="jdk11-corretto"
                       
                       export IMAGE_NIGHTLY=${bamboo.docker.image.name}:${bamboo.docker.image.tag}-${JDK_IMAGE}
                       export IMAGE_DEV=${bamboo.docker.image.name}:dev-${JDK_IMAGE}
