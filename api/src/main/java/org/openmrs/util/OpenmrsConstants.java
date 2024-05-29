@@ -22,7 +22,6 @@ import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
 import org.openmrs.GlobalProperty;
-import org.openmrs.api.context.Context;
 import org.openmrs.api.handler.ExistingVisitAssignmentHandler;
 import org.openmrs.customdatatype.datatype.BooleanDatatype;
 import org.openmrs.customdatatype.datatype.FreeTextDatatype;
@@ -635,6 +634,11 @@ public final class OpenmrsConstants {
 	 * Global property that stores the base url for the password reset.
 	 */
 	public static final String GP_PASSWORD_RESET_URL = "security.passwordResetUrl";
+
+	/**
+	 * Global property that stores the number of days for users to be deactivated.
+	 */
+	public static final String GP_NUMBER_OF_DAYS_FOR_AUTO_RETIRING_USER = "users.numberOfDaysToRetire";
 	
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
@@ -1184,6 +1188,11 @@ public final class OpenmrsConstants {
 	 * <code>proficientLocales = en_US, en_GB, en, fr_RW</code>
 	 */
 	public static final String USER_PROPERTY_PROFICIENT_LOCALES = "proficientLocales";
+
+	/**
+	 * Name of the user_property that stores user's last login time
+	 */
+	public static final String USER_PROPERTY_LAST_LOGIN_TIMESTAMP = "lastLoginTimestamp";
 	
 	// Used for differences between windows/linux upload capabilities)
 	// Used for determining where to find runtime properties
@@ -1313,6 +1322,9 @@ public final class OpenmrsConstants {
 	
 	/** Value for the long person name format */
 	public static final String PERSON_NAME_FORMAT_LONG = "long";
+	
+	/** Value for zero login attempts */
+	public static final String ZERO_LOGIN_ATTEMPTS_VALUE = "0";
 	
 	private OpenmrsConstants() {
 	}

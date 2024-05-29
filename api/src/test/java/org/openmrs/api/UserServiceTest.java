@@ -9,6 +9,7 @@
  */
 package org.openmrs.api;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -32,6 +33,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.AfterAll;
@@ -45,7 +47,9 @@ import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.Credentials;
 import org.openmrs.api.context.UserContext;
+import org.openmrs.api.context.UsernamePasswordCredentials;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.UserDAO;
@@ -1326,7 +1330,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Context.authenticate(user.getUsername(), "testUser1234");
 		
 		final int numberOfUserProperties = user.getUserProperties().size();
-		assertEquals(2, user.getUserProperties().size());
+		assertEquals(3, user.getUserProperties().size());
 		final String USER_PROPERTY_KEY = "test-key";
 		final String USER_PROPERTY_VALUE = "test-value";
 		
@@ -1662,7 +1666,14 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		final String USER_PROPERTY_KEY = liquibase.util.StringUtil.repeat("emrapi.lastViewedPatientIds,",10);
 		final String USER_PROPERTY_VALUE = liquibase.util.StringUtil.repeat("52345",9899);
 		User updatedUser = userService.saveUserProperty(USER_PROPERTY_KEY, USER_PROPERTY_VALUE);
-		assertEquals(280, updatedUser.getUserProperties().keySet().iterator().next().length());
+
+		Set<String> emrApiPropertyKeys = updatedUser.getUserProperties()
+			.keySet()
+			.stream()
+			.filter(key -> key.contains("emrapi.lastViewedPatientIds"))
+			.collect(Collectors.toSet());
+
+		assertEquals(280, emrApiPropertyKeys.stream().findFirst().orElse("").length());
 		assertEquals(49495, updatedUser.getUserProperties().get(USER_PROPERTY_KEY).length());
 	}
 	
@@ -1691,6 +1702,40 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 
 		Locale locale = Context.getLocale();
 		assertEquals(Locale.FRENCH, locale);
+	}
+
+	@Test
+	public void getLastLoginTimeForUser_shouldReturnEmptyStringOnLastLoginTimeIfPropertyNotSet() {
+		User createdUser = createTestUser();
+		assertEquals("", createdUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP));
+		assertEquals("", Context.getUserService().getLastLoginTime(createdUser));
+	}
+
+	@Test
+	public void getLastLoginTimeForUser_shouldReturnEmptyStringOnLastLoginTimeIfADifferentUserIsLoggedIn() {
+		executeDataSet(XML_FILENAME);
+		User createdUser = createTestUser();
+		Context.authenticate(getTestUserCredentials());
+		
+		assertEquals("", createdUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP));
+		assertEquals("", Context.getUserService().getLastLoginTime(createdUser));
+	}
+	
+	@Test
+	public void getLastLoginTimeForUser_shouldReturnLastLoginTimeStampIfPropertyIsSet() {
+		executeDataSet(XML_FILENAME);
+		User createdUser = createTestUser();
+		Context.authenticate(new UsernamePasswordCredentials("bwolfe", "Openmr5xy"));
+		
+		assertThat(createdUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP))
+			.isNotNull()
+			.isNotEmpty();
+		assertThat(Long.parseLong(Context.getUserService().getLastLoginTime(createdUser)))
+			.isLessThan(System.currentTimeMillis());
+	}
+
+	private Credentials getTestUserCredentials() {
+		return new UsernamePasswordCredentials("test", "testUser1234");
 	}
 
 	private User createTestUser() {

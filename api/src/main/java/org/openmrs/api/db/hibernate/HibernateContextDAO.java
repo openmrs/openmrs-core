@@ -93,126 +93,135 @@ public class HibernateContextDAO implements ContextDAO {
 	@Override
 	@Transactional(noRollbackFor = ContextAuthenticationException.class)
 	public User authenticate(String login, String password) throws ContextAuthenticationException {
-		String errorMsg = "Invalid username and/or password: " + login;
+		if (StringUtils.isBlank(login) || password == null) {
+			throw new ContextAuthenticationException("Invalid username and/or password.");
+		}
 
+		String errorMsg = "Invalid username and/or password: " + login;
 		Session session = sessionFactory.getCurrentSession();
 
-		User candidateUser = null;
+		User candidateUser = getCandidateUser(session, login);
+		if (candidateUser == null) {
+			log.info("Failed login attempt (login={}) - {}", login, errorMsg);
+			throw new ContextAuthenticationException(errorMsg);
+		}
 
-		if (StringUtils.isNotBlank(login)) {
-			// loginWithoutDash is used to compare to the system id
-			String loginWithDash = login;
-			if (login.matches("\\d{2,}")) {
-				loginWithDash = login.substring(0, login.length() - 1) + "-" + login.charAt(login.length() - 1);
-			}
+		if (isUserLockedOut(candidateUser)) {
+			throw new ContextAuthenticationException("Invalid number of connection attempts. Please try again later.");
+		}
 
-			try {
-				candidateUser = session.createQuery(
+		if (isPasswordValid(session, candidateUser, password)) {
+			resetFailedLoginAttempts(candidateUser);
+			setLastLoginTime(candidateUser);
+			saveUserProperties(candidateUser);
+			
+			candidateUser.getAllRoles().size();
+			candidateUser.getUserProperties().size();
+			candidateUser.getPrivileges().size();
+			return candidateUser;
+		} else {
+			handleFailedLogin(candidateUser);
+			log.info("Failed login attempt (login={}) - {}", login, errorMsg);
+			throw new ContextAuthenticationException(errorMsg);
+		}
+	}
+
+	private User getCandidateUser(Session session, String login) {
+		String loginWithDash = login;
+		if (login.matches("\\d{2,}")) {
+			loginWithDash = login.substring(0, login.length() - 1) + "-" + login.charAt(login.length() - 1);
+		}
+
+		try {
+			return session.createQuery(
 					"from User u where (u.username = ?1 or u.systemId = ?2 or u.systemId = ?3) and u.retired = false",
 					User.class)
-					.setParameter(1, login).setParameter(2, login).setParameter(3, loginWithDash).uniqueResult();
-			}
-			catch (HibernateException he) {
-				log.error("Got hibernate exception while logging in: '{}'", login, he);
-			}
-			catch (Exception e) {
-				log.error("Got regular exception while logging in: '{}'", login, e);
-			}
+				.setParameter(1, login)
+				.setParameter(2, login)
+				.setParameter(3, loginWithDash)
+				.uniqueResult();
+		} catch (HibernateException he) {
+			log.error("Got hibernate exception while logging in: '{}'", login, he);
+		} catch (Exception e) {
+			log.error("Got regular exception while logging in: '{}'", login, e);
 		}
+		return null;
+	}
 
-		// only continue if this is a valid username and a nonempty password
-		if (candidateUser != null && password != null) {
-			log.debug("Candidate user id: {}", candidateUser.getUserId());
-
-			String lockoutTimeString = candidateUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, null);
-			long lockoutTime = -1;
-			if (StringUtils.isNotBlank(lockoutTimeString) && !"0".equals(lockoutTimeString)) {
-				try {
-					// putting this in a try/catch in case the admin decided to put junk into the property
-					lockoutTime = Long.parseLong(lockoutTimeString);
-				}
-				catch (NumberFormatException e) {
-					log.warn("bad value stored in {} user property: {}", OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP,
-						lockoutTimeString);
-				}
-			}
-
-			// if they've been locked out, don't continue with the authentication
-			if (lockoutTime > 0) {
-				// unlock them after x mins, otherwise reset the timestamp
-				// to now and make them wait another x mins
-				final Long unlockTime = getUnlockTimeMs();
-				if (System.currentTimeMillis() - lockoutTime > unlockTime) {
-					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "0");
-					candidateUser.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP);
-					saveUserProperties(candidateUser);
+	private boolean isUserLockedOut(User candidateUser) {
+		String lockoutTimeString = candidateUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, null);
+		
+		if (StringUtils.isNotBlank(lockoutTimeString) && !OpenmrsConstants.ZERO_LOGIN_ATTEMPTS_VALUE.equals(lockoutTimeString)) {
+			try {
+				long lockoutTime = Long.parseLong(lockoutTimeString);
+				if (System.currentTimeMillis() - lockoutTime <= getUnlockTimeMs()) {
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String.valueOf(System.currentTimeMillis()));
+					return true;
 				} else {
-					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String.valueOf(System
-						.currentTimeMillis()));
-					throw new ContextAuthenticationException(
-						"Invalid number of connection attempts. Please try again later.");
-				}
-			}
-
-			Object[] passwordAndSalt = (Object[]) session
-				.createNativeQuery("select password, salt from users where user_id = ?1")
-				.addScalar("password", StandardBasicTypes.STRING).addScalar("salt", StandardBasicTypes.STRING)
-				.setParameter(1, candidateUser.getUserId()).uniqueResult();
-
-			String passwordOnRecord = (String) passwordAndSalt[0];
-			String saltOnRecord = (String) passwordAndSalt[1];
-
-			// if the username and password match, hydrate the user and return it
-			if (passwordOnRecord != null && Security.hashMatches(passwordOnRecord, password + saltOnRecord)) {
-				// hydrate the user object
-				candidateUser.getAllRoles().size();
-				candidateUser.getUserProperties().size();
-				candidateUser.getPrivileges().size();
-
-				// only clean up if the were some login failures, otherwise all should be clean
-				int attempts = getUsersLoginAttempts(candidateUser);
-				if (attempts > 0) {
-					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "0");
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, OpenmrsConstants.ZERO_LOGIN_ATTEMPTS_VALUE);
 					candidateUser.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP);
 					saveUserProperties(candidateUser);
 				}
-
-				// skip out of the method early (instead of throwing the exception)
-				// to indicate that this is the valid user
-				return candidateUser;
-			} else {
-				// the user failed the username/password, increment their
-				// attempts here and set the "lockout" timestamp if necessary
-				int attempts = getUsersLoginAttempts(candidateUser);
-
-				attempts++;
-
-				int allowedFailedLoginCount = 7;
-				try {
-					allowedFailedLoginCount = Integer.parseInt(Context.getAdministrationService().getGlobalProperty(
-						OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT).trim());
-				}
-				catch (Exception ex) {
-					log.error("Unable to convert the global property {} to a valid integer. Using default value of 7.",
-						OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT);
-				}
-
-				if (attempts > allowedFailedLoginCount) {
-					// set the user as locked out at this exact time
-					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String.valueOf(System
-						.currentTimeMillis()));
-				} else {
-					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, String.valueOf(attempts));
-				}
-
-				saveUserProperties(candidateUser);
+			} catch (NumberFormatException e) {
+				log.warn("bad value stored in {} user property: {}", OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, lockoutTimeString);
 			}
 		}
+		return false;
+	}
 
-		// throw this exception only once in the same place with the same
-		// message regardless of username/pw combo entered
-		log.info("Failed login attempt (login={}) - {}", login, errorMsg);
-		throw new ContextAuthenticationException(errorMsg);
+	private boolean isPasswordValid(Session session, User candidateUser, String password) {
+		Object[] passwordAndSalt = (Object[]) session
+			.createNativeQuery("select password, salt from users where user_id = ?1")
+			.addScalar("password", StandardBasicTypes.STRING)
+			.addScalar("salt", StandardBasicTypes.STRING)
+			.setParameter(1, candidateUser.getUserId())
+			.uniqueResult();
+
+		String passwordOnRecord = (String) passwordAndSalt[0];
+		String saltOnRecord = (String) passwordAndSalt[1];
+
+		return passwordOnRecord != null && Security.hashMatches(passwordOnRecord, password + saltOnRecord);
+	}
+
+	private void resetFailedLoginAttempts(User candidateUser) {
+		int attempts = getUsersLoginAttempts(candidateUser);
+		if (attempts > 0) {
+			candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, OpenmrsConstants.ZERO_LOGIN_ATTEMPTS_VALUE);
+			candidateUser.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP);
+		}
+	}
+	
+	private void setLastLoginTime(User candidateUser) {
+		candidateUser.setUserProperty(
+			OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP,
+			String.valueOf(System.currentTimeMillis())
+		);
+	}
+
+	private void handleFailedLogin(User candidateUser) {
+		int attempts = getUsersLoginAttempts(candidateUser);
+		attempts++;
+
+		int allowedFailedLoginCount = getAllowedFailedLoginCount();
+
+		if (attempts > allowedFailedLoginCount) {
+			candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String.valueOf(System.currentTimeMillis()));
+		} else {
+			candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, String.valueOf(attempts));
+		}
+
+		saveUserProperties(candidateUser);
+	}
+
+	private int getAllowedFailedLoginCount() {
+		try {
+			return Integer.parseInt(Context.getAdministrationService().getGlobalProperty(
+				OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT).trim());
+		} catch (Exception ex) {
+			log.error("Unable to convert the global property {} to a valid integer. Using default value of 7.",
+				OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT);
+			return 7;
+		}
 	}
 	
 	private Long getUnlockTimeMs() {
