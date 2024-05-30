@@ -638,7 +638,7 @@ public final class OpenmrsConstants {
 	/**
 	 * Global property that stores the number of days for users to be deactivated.
 	 */
-	public static final String GP_NUMBER_OF_DAYS_FOR_AUTO_RETIRING_USER = "users.numberOfDaysToRetire";
+	public static final String GP_NUMBER_OF_DAYS_TO_AUTO_RETIRE_USERS = "users.numberOfDaysToRetire";
 	
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
