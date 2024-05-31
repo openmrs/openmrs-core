@@ -13,25 +13,45 @@ import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 /**
  * FieldAnswer
  * 
  * @version 1.0
  */
+@Entity
+@Table(name = "field_answer")
 public class FieldAnswer extends BaseOpenmrsObject {
 	
 	public static final long serialVersionUID = 5656L;
 	
 	// Fields
-	
+	@Column(name = "date_created", length = 19)
 	private Date dateCreated;
 	
+	@ManyToOne
+	@JoinColumn(name = "answer_id")
+	@Id
 	private Concept concept;
 	
+	@ManyToOne
+	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
 	
+	
+	@ManyToOne
+	@JoinColumn(name = "field_id")
+	@Id
 	private Field field;
 	
+	@Transient
 	private boolean dirty;
 	
 	// Constructors
@@ -63,7 +83,6 @@ public class FieldAnswer extends BaseOpenmrsObject {
 	}
 	
 	// Property accessors
-	
 	/**
 	 * @return Returns the concept.
 	 */

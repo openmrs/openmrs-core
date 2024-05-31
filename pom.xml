@@ -528,7 +528,7 @@
 			<dependency>
 			    <groupId>commons-validator</groupId>
 			    <artifactId>commons-validator</artifactId>
-			    <version>1.8.0</version>
+			    <version>1.9.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.aspectj</groupId>
@@ -1124,12 +1124,12 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.14.16</version>
+						<version>1.14.17</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.14.16</version>
+						<version>1.14.17</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
