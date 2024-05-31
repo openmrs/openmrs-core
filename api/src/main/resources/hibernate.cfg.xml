@@ -97,7 +97,6 @@
 		<!-- Notification -->
 		<mapping resource="org/openmrs/notification/db/hibernate/Template.hbm.xml" />
 		<mapping resource="org/openmrs/notification/db/hibernate/Alert.hbm.xml" />
-		<mapping resource="org/openmrs/notification/db/hibernate/AlertRecipient.hbm.xml" />
 		
 		<!-- Scheduler -->
 		<mapping resource="org/openmrs/scheduler/db/hibernate/TaskDefinition.hbm.xml" />
