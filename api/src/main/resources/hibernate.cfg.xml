@@ -40,7 +40,6 @@
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptMapType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptReferenceTermMap.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Drug.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/DrugIngredient.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/DrugReferenceMap.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Field.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/FieldAnswer.hbm.xml" />
