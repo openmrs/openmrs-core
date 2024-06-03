@@ -18,6 +18,7 @@ import org.hibernate.cfg.Configuration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
 import org.openmrs.Allergy;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
@@ -31,6 +32,7 @@ import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.Condition;
 import org.openmrs.Diagnosis;
 import org.openmrs.Drug;
+import org.openmrs.DrugIngredient;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.FreeTextDosingInstructions;
@@ -2665,6 +2667,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.addAnnotatedClass(LocationAttributeType.class)
 			.addAnnotatedClass(SerializedObject.class)
 			.addAnnotatedClass(PatientState.class)
+			.addAnnotatedClass(DrugIngredient.class)
 			.addAnnotatedClass(AlertRecipient.class)
 			.getMetadataBuilder().build();
 
