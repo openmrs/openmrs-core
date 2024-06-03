@@ -1118,6 +1118,8 @@ public final class OpenmrsConstants {
 			"Responsible for defining the Authentication URL "));
 		props.addAll(ModuleFactory.getGlobalProperties());
 		
+		props.add(new GlobalProperty(USER_PROPERTY_LAST_LOGIN_TIMESTAMP, "", "Stores user's last login time"));
+		
 		return props;
 	}
 	
@@ -1190,7 +1192,7 @@ public final class OpenmrsConstants {
 	public static final String USER_PROPERTY_PROFICIENT_LOCALES = "proficientLocales";
 
 	/**
-	 * Name of the user_property that stores user's last login time
+//	 * Name of the user_property that stores user's last login time
 	 */
 	public static final String USER_PROPERTY_LAST_LOGIN_TIMESTAMP = "lastLoginTimestamp";
 	

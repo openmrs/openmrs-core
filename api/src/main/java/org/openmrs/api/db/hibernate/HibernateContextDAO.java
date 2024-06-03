@@ -108,8 +108,8 @@ public class HibernateContextDAO implements ContextDAO {
 
 			try {
 				candidateUser = session.createQuery(
-						"from User u where (u.username = ?1 or u.systemId = ?2 or u.systemId = ?3) and u.retired = false",
-						User.class)
+					"from User u where (u.username = ?1 or u.systemId = ?2 or u.systemId = ?3) and u.retired = false",
+					User.class)
 					.setParameter(1, login).setParameter(2, login).setParameter(3, loginWithDash).uniqueResult();
 			}
 			catch (HibernateException he) {

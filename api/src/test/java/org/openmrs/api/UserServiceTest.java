@@ -32,6 +32,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -1714,8 +1715,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User createdUser = createTestUser();
 		Context.authenticate(getTestUserCredentials());
 		
-		assertEquals("", createdUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP));
-		assertEquals("", Context.getUserService().getLastLoginTime(createdUser));
+		assertThat(createdUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP), emptyString());
+		assertThat(Context.getUserService().getLastLoginTime(createdUser), emptyString());
 	}
 	
 	@Test
