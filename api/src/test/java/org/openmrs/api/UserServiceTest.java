@@ -9,11 +9,8 @@
  */
 package org.openmrs.api;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -1726,12 +1723,10 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(XML_FILENAME);
 		User createdUser = createTestUser();
 		Context.authenticate(new UsernamePasswordCredentials("bwolfe", "Openmr5xy"));
-		
-		assertThat(createdUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP))
-			.isNotNull()
-			.isNotEmpty();
-		assertThat(Long.parseLong(Context.getUserService().getLastLoginTime(createdUser)))
-			.isLessThan(System.currentTimeMillis());
+
+		assertThat(createdUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP), notNullValue());
+		assertThat(createdUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP), not(emptyString()));
+		assertThat(Long.parseLong(Context.getUserService().getLastLoginTime(createdUser)), lessThan(System.currentTimeMillis()));
 	}
 
 	private Credentials getTestUserCredentials() {

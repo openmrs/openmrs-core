@@ -714,7 +714,7 @@ public class HibernateUserDAO implements UserDAO {
 	}
 
 	/**
-	 * @see 
+	 * @see org.openmrs.api.db.UserDAO#getLastLoginTime(org.openmrs.User)
 	 */
 	@Override
 	public String getLastLoginTime(User user) {

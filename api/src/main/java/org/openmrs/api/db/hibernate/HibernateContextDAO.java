@@ -174,9 +174,9 @@ public class HibernateContextDAO implements ContextDAO {
 				if (attempts > 0) {
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, OpenmrsConstants.ZERO_LOGIN_ATTEMPTS_VALUE);
 					candidateUser.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP);
-					setLastLoginTime(candidateUser);
-					saveUserProperties(candidateUser);
 				}
+				setLastLoginTime(candidateUser);
+				saveUserProperties(candidateUser);
 
 				// skip out of the method early (instead of throwing the exception)
 				// to indicate that this is the valid user
