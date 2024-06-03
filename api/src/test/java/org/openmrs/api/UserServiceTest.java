@@ -1705,8 +1705,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getLastLoginTimeForUser_shouldReturnEmptyStringOnLastLoginTimeIfPropertyNotSet() {
 		User createdUser = createTestUser();
-		assertEquals("", createdUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP));
-		assertEquals("", Context.getUserService().getLastLoginTime(createdUser));
+		assertThat(createdUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP), emptyString());
+		assertThat(Context.getUserService().getLastLoginTime(createdUser), emptyString());
 	}
 
 	@Test
