@@ -1727,7 +1727,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 
 		assertThat(createdUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP), notNullValue());
 		assertThat(createdUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP), not(emptyString()));
-		assertThat(Long.parseLong(Context.getUserService().getLastLoginTime(createdUser)), lessThan(System.currentTimeMillis()));
+		assertThat(Long.parseLong(Context.getUserService().getLastLoginTime(createdUser)), lessThanOrEqualTo(System.currentTimeMillis()));
 	}
 
 	private Credentials getTestUserCredentials() {
