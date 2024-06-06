@@ -17,6 +17,7 @@ import liquibase.Contexts;
 import liquibase.LabelExpression;
 import liquibase.Liquibase;
 import liquibase.changelog.ChangeSet;
+import liquibase.command.core.StatusCommandStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,9 +86,16 @@ public class ChangeLogDetective {
 			Liquibase liquibase = null;
 			try {
 				for (String filename : changeSets) {
+					String scopeId = LiquibaseScopeHandling.enterLiquibaseUILoggingService();
+					
 					liquibase = liquibaseProvider.getLiquibase(filename);
-					List<ChangeSet> rawUnrunChangeSets = liquibase.listUnrunChangeSets(new Contexts(context),
-					    new LabelExpression());
+					
+					List<ChangeSet> rawUnrunChangeSets = new StatusCommandStep()
+						.listUnrunChangeSets(new Contexts(context), 
+							new LabelExpression(), liquibase.getDatabaseChangeLog(), liquibase.getDatabase());
+
+					
+					LiquibaseScopeHandling.exitLiquibaseScope(scopeId);
 					liquibase.close();
 					
 					List<ChangeSet> refinedUnrunChangeSets = excludeVintageChangeSets(filename, rawUnrunChangeSets);
@@ -141,9 +149,14 @@ public class ChangeLogDetective {
 		Liquibase liquibase = null;
 		try {
 			for (String filename : updateFileNames) {
+				String scopeId = LiquibaseScopeHandling.enterLiquibaseUILoggingService();
 				liquibase = liquibaseProvider.getLiquibase(filename);
-				List<ChangeSet> unrunChangeSets = liquibase.listUnrunChangeSets(new Contexts(context),
-				    new LabelExpression());
+
+				List<ChangeSet> unrunChangeSets = new StatusCommandStep()
+					.listUnrunChangeSets(new Contexts(context),
+						new LabelExpression(), liquibase.getDatabaseChangeLog(), liquibase.getDatabase());
+
+				LiquibaseScopeHandling.exitLiquibaseScope(scopeId);
 				liquibase.close();
 				
 				log.info("file '{}' contains {} un-run change sets", filename, unrunChangeSets.size());
