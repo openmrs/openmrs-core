@@ -34,9 +34,9 @@ public class DateUtil {
 	/**
 	 * This method converts days to milliseconds
 	 * @param days No. of days
-	 * @return
+	 * @return Equivalent time in milliseconds, e.g., 172,800,000 milliseconds for 2 days
 	 */
-	public static long daysToMilliseconds(int days) {
-		return days * 24L * 60 * 60 * 1000;
+	public static long daysToMilliseconds(double days) {
+		return (long) days * 24 * 60 * 60 * 1000;
 	}
 }

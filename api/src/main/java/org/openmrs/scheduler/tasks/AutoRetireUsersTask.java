@@ -18,6 +18,7 @@ import org.openmrs.util.OpenmrsConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -27,12 +28,13 @@ import static org.openmrs.util.OpenmrsConstants.GP_NUMBER_OF_DAYS_TO_AUTO_RETIRE
 /**
  * A scheduled task that automatically retires user after the set number-of-days of inactivity. 
  * The inactivity duration is set as a global property 
- * Documentation: https://openmrs.atlassian.net/wiki/spaces/docs/pages/25520634/Administering+Scheduled+Tasks
- * {@link org.openmrs.util.OpenmrsConstants#GP_NUMBER_OF_DAYS_TO_AUTO_RETIRE_USERS}
+ * <a href="https://openmrs.atlassian.net/wiki/spaces/docs/pages/25520634/Administering+Scheduled+Tasks">Documentation</a>
+ * {@link OpenmrsConstants#GP_NUMBER_OF_DAYS_TO_AUTO_RETIRE_USERS}
  */
 public class AutoRetireUsersTask extends AbstractTask {
 	
 	private static final Logger log = LoggerFactory.getLogger(AutoRetireUsersTask.class);
+	private final String AUTO_RETIRE_REASON = "User retired due to inactivity";
 
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#execute()
@@ -48,7 +50,7 @@ public class AutoRetireUsersTask extends AbstractTask {
 				UserService userService = Context.getUserService();
 				Set<User> usersToRetire = getUsersToRetire(userService);
 				
-				usersToRetire.forEach(user -> userService.retireUser(user, "Retire reason"));
+				usersToRetire.forEach(user -> userService.retireUser(user, AUTO_RETIRE_REASON));
 			} catch (Exception e) {
 				log.error("Error occurred while auto-retiring users: ", e);
 			} finally {
@@ -58,17 +60,22 @@ public class AutoRetireUsersTask extends AbstractTask {
 		}
 	}
 
-	private Set<User> getUsersToRetire(UserService userService) {
+	Set<User> getUsersToRetire(UserService userService) {
 		List<User> allUsers = userService.getAllUsers();
 		String numberOfDaysToRetire = Context.getAdministrationService().getGlobalProperty(GP_NUMBER_OF_DAYS_TO_AUTO_RETIRE_USERS);
-		long numberOfMillisecondsToRetire = DateUtil.daysToMilliseconds(Integer.parseInt(numberOfDaysToRetire));
+		
+		if (numberOfDaysToRetire == null) {
+			return Collections.emptySet();
+		}
+		
+		long numberOfMillisecondsToRetire = DateUtil.daysToMilliseconds(Double.parseDouble(numberOfDaysToRetire));
 
 		return allUsers.stream()
 			.filter(user -> !user.isRetired() && userInactivityExceedsDaysToRetire(user, numberOfMillisecondsToRetire))
 			.collect(Collectors.toSet());
 	}
 
-	private boolean userInactivityExceedsDaysToRetire(User user, long numberOfMillisecondsToRetire) {
+	boolean userInactivityExceedsDaysToRetire(User user, long numberOfMillisecondsToRetire) {
 		String lastLoginTimeString = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP);
 
 		if (StringUtils.isNotBlank(lastLoginTimeString)) {
