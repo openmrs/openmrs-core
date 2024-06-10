@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
-	protected static final String XML_FILENAME = "org/openmrs/api/include/UserServiceTest.xml";
+	private static final String XML_FILENAME = "org/openmrs/api/include/UserServiceTest.xml";
 	private static final long ONE_DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
 
 	private UserService userService;
