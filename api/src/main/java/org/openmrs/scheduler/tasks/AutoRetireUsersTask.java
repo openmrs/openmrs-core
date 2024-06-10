@@ -26,15 +26,17 @@ import java.util.stream.Collectors;
 import static org.openmrs.util.OpenmrsConstants.GP_NUMBER_OF_DAYS_TO_AUTO_RETIRE_USERS;
 
 /**
- * A scheduled task that automatically retires user after the set number-of-days of inactivity. 
- * The inactivity duration is set as a global property 
- * <a href="https://openmrs.atlassian.net/wiki/spaces/docs/pages/25520634/Administering+Scheduled+Tasks">Documentation</a>
+ * A scheduled task that automatically retires users after the set number of days of inactivity. 
+ * The inactivity duration is set as a global property. 
+ * <a href="https://openmrs.atlassian.net/wiki/spaces/docs/pages/101318663/Creating+Auto-Deactivating+User+Task">Documentation</a>
  * {@link OpenmrsConstants#GP_NUMBER_OF_DAYS_TO_AUTO_RETIRE_USERS}
+ * 
+ * @since 2.7.0
  */
 public class AutoRetireUsersTask extends AbstractTask {
 	
 	private static final Logger log = LoggerFactory.getLogger(AutoRetireUsersTask.class);
-	private final String AUTO_RETIRE_REASON = "User retired due to inactivity";
+	private static final String AUTO_RETIRE_REASON = "User retired due to inactivity";
 
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#execute()
@@ -61,10 +63,10 @@ public class AutoRetireUsersTask extends AbstractTask {
 	}
 
 	Set<User> getUsersToRetire(UserService userService) {
-		List<User> allUsers = userService.getAllUsers();
+		final List<User> allUsers = userService.getAllUsers();
 		String numberOfDaysToRetire = Context.getAdministrationService().getGlobalProperty(GP_NUMBER_OF_DAYS_TO_AUTO_RETIRE_USERS);
 		
-		if (numberOfDaysToRetire == null) {
+		if (numberOfDaysToRetire == null || numberOfDaysToRetire.isEmpty()) {
 			return Collections.emptySet();
 		}
 		
