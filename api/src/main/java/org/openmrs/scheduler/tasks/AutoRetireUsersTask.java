@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.openmrs.util.OpenmrsConstants.GP_NUMBER_OF_DAYS_TO_AUTO_RETIRE_USERS;
-
 /**
  * A scheduled task that automatically retires users after the set number of days of inactivity. 
  * The inactivity duration is set as a global property. 
@@ -64,7 +62,7 @@ public class AutoRetireUsersTask extends AbstractTask {
 
 	Set<User> getUsersToRetire(UserService userService) {
 		final List<User> allUsers = userService.getAllUsers();
-		String numberOfDaysToRetire = Context.getAdministrationService().getGlobalProperty(GP_NUMBER_OF_DAYS_TO_AUTO_RETIRE_USERS);
+		String numberOfDaysToRetire = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_NUMBER_OF_DAYS_TO_AUTO_RETIRE_USERS);
 		
 		if (numberOfDaysToRetire == null || numberOfDaysToRetire.isEmpty()) {
 			return Collections.emptySet();
@@ -78,7 +76,7 @@ public class AutoRetireUsersTask extends AbstractTask {
 	}
 
 	boolean userInactivityExceedsDaysToRetire(User user, long numberOfMillisecondsToRetire) {
-		String lastLoginTimeString = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP);
+		String lastLoginTimeString = Context.getUserService().getLastLoginTime(user);
 
 		if (StringUtils.isNotBlank(lastLoginTimeString)) {
 			long lastLoginTime = Long.parseLong(lastLoginTimeString);

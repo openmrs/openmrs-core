@@ -30,6 +30,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 	private static final String XML_FILENAME = "org/openmrs/api/include/UserServiceTest.xml";
 	private static final long ONE_DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
+	private static final long TWENTY_THREE_HOURS_IN_MILLISECONDS = 23 * 60 * 60 * 1000;
+	private static final long ONE_DAY_AND_TWO_SECONDS_IN_MILLISECONDS = ONE_DAY_IN_MILLISECONDS + 2000;
+	private static final long TWO_DAYS_IN_MILLISECONDS = 2 * ONE_DAY_IN_MILLISECONDS;
+	private static final String ONE_DAY_PROPERTY_VALUE = "1";
+	private static final String TWO_DAYS_PROPERTY_VALUE = "2";
 
 	private UserService userService;
 	private AdministrationService administrationService;
@@ -46,13 +51,13 @@ class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 	@Test
 	public void getUsersToRetire_shouldReturnUsersThatExceedInactivityThreshold() {
 		// Global property for number of days to retire
-		administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_NUMBER_OF_DAYS_TO_AUTO_RETIRE_USERS, "1")); // 1 day
+		administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_NUMBER_OF_DAYS_TO_AUTO_RETIRE_USERS, ONE_DAY_PROPERTY_VALUE));
 
-		User inactiveUser = userService.getUser(1);
+		User inactiveUser = getDefaultUser();
 		inactiveUser.setUserProperty(
 			OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP, 
-			String.valueOf(System.currentTimeMillis() - (2 * ONE_DAY_IN_MILLISECONDS))
-		); // 2 days ago
+			String.valueOf(System.currentTimeMillis() - TWO_DAYS_IN_MILLISECONDS)
+		);
 
 		userService.saveUser(inactiveUser);
 
@@ -64,13 +69,13 @@ class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 	@Test
 	public void getUsersToRetire_shouldNotReturnUsersThatDoNotExceedInactivityThreshold() {
 		// Global property for number of days to retire
-		administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_NUMBER_OF_DAYS_TO_AUTO_RETIRE_USERS, "2")); // 1 day
+		administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_NUMBER_OF_DAYS_TO_AUTO_RETIRE_USERS, TWO_DAYS_PROPERTY_VALUE));
 
-		User inactiveUser = userService.getUser(1);
+		User inactiveUser = getDefaultUser();
 		inactiveUser.setUserProperty(
 			OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP, 
-			String.valueOf(System.currentTimeMillis() - (ONE_DAY_IN_MILLISECONDS))
-		); // 1 day ago
+			String.valueOf(System.currentTimeMillis() - ONE_DAY_IN_MILLISECONDS)
+		);
 
 		userService.saveUser(inactiveUser);
 
@@ -82,13 +87,13 @@ class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 	@Test
 	public void getUsersToRetire_shouldNotReturnAlreadyRetiredUsers() {
 		// Global property for number of days to retire
-		administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_NUMBER_OF_DAYS_TO_AUTO_RETIRE_USERS, "1")); // 1 day
+		administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_NUMBER_OF_DAYS_TO_AUTO_RETIRE_USERS, ONE_DAY_PROPERTY_VALUE));
 
-		User retiredUser = userService.getUser(1);
+		User retiredUser = getDefaultUser();
 		retiredUser.setUserProperty(
 			OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP, 
-			String.valueOf(System.currentTimeMillis() - (2 * ONE_DAY_IN_MILLISECONDS))
-		); // 2 days ago
+			String.valueOf(System.currentTimeMillis() - TWO_DAYS_IN_MILLISECONDS)
+		); 
 		
 		retiredUser.setRetired(true);
 		retiredUser.setRetireReason("User retired due to inactivity");
@@ -102,11 +107,11 @@ class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void userInactivityExceedsThreshold_shouldReturnTrueIfInactivityExceedsThreshold() {
-		User user = userService.getUser(1);
+		User user = getDefaultUser();
 		user.setUserProperty(
 			OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP, 
-			String.valueOf(System.currentTimeMillis() - ONE_DAY_IN_MILLISECONDS - 2000)
-		); // 1 day and 2 secs ago
+			String.valueOf(System.currentTimeMillis() - ONE_DAY_AND_TWO_SECONDS_IN_MILLISECONDS)
+		);
 
 		userService.saveUser(user);
 
@@ -116,15 +121,19 @@ class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void userInactivityExceedsThreshold_shouldReturnFalseIfInactivityDoesNotExceedThreshold() {
-		User user = userService.getUser(1);
+		User user = getDefaultUser();
 		user.setUserProperty(
 			OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP, 
-			String.valueOf(System.currentTimeMillis() - (23 * 60 * 60 * 1000))
-		); // 23 hours ago
+			String.valueOf(System.currentTimeMillis() - TWENTY_THREE_HOURS_IN_MILLISECONDS)
+		);
 
 		userService.saveUser(user);
 
 		boolean result = autoRetireUsersTask.userInactivityExceedsDaysToRetire(user, ONE_DAY_IN_MILLISECONDS);
 		assertFalse(result);
+	}
+
+	private User getDefaultUser() {
+		return userService.getUser(1);
 	}
 }
