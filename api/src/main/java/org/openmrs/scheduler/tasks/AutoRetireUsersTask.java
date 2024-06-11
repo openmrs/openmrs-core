@@ -72,25 +72,26 @@ public class AutoRetireUsersTask extends AbstractTask {
 		long numberOfMillisecondsToRetire = DateUtil.daysToMilliseconds(Double.parseDouble(numberOfDaysToRetire));
 
 		return allUsers.stream()
-			.filter(user -> !user.isRetired() && userInactivityExceedsDaysToRetire(user, numberOfMillisecondsToRetire))
+			.filter(user -> !user.isSuperUser() 
+				&& !user.isRetired() 
+				&& userInactivityExceedsDaysToRetire(user, numberOfMillisecondsToRetire)
+			)
 			.collect(Collectors.toSet());
 	}
 
 	boolean userInactivityExceedsDaysToRetire(User user, long numberOfMillisecondsToRetire) {
-		if (!user.isSuperUser()) {
-			String lastLoginTimeString = Context.getUserService().getLastLoginTime(user);
+		String lastLoginTimeString = Context.getUserService().getLastLoginTime(user);
 
-			if (StringUtils.isNotBlank(lastLoginTimeString)) {
-				long lastLoginTime = Long.parseLong(lastLoginTimeString);
+		if (StringUtils.isNotBlank(lastLoginTimeString)) {
+			long lastLoginTime = Long.parseLong(lastLoginTimeString);
 
-				boolean b = System.currentTimeMillis() - lastLoginTime >= numberOfMillisecondsToRetire;
-				return b;
-			} else {
-				Date dateCreated = user.getDateCreated();
-				if (dateCreated != null) {
-					long creationTime = dateCreated.getTime();
-					return System.currentTimeMillis() - creationTime >= numberOfMillisecondsToRetire;
-				}
+			boolean b = System.currentTimeMillis() - lastLoginTime >= numberOfMillisecondsToRetire;
+			return b;
+		} else {
+			Date dateCreated = user.getDateCreated();
+			if (dateCreated != null) {
+				long creationTime = dateCreated.getTime();
+				return System.currentTimeMillis() - creationTime >= numberOfMillisecondsToRetire;
 			}
 		}
 		
