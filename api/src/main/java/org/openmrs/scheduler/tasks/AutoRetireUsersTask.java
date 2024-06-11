@@ -65,7 +65,7 @@ public class AutoRetireUsersTask extends AbstractTask {
 		final List<User> allUsers = userService.getAllUsers();
 		String numberOfDaysToRetire = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_NUMBER_OF_DAYS_TO_AUTO_RETIRE_USERS);
 		
-		if (numberOfDaysToRetire == null || numberOfDaysToRetire.isEmpty()) {
+		if (StringUtils.isBlank(numberOfDaysToRetire)) {
 			return Collections.emptySet();
 		}
 		

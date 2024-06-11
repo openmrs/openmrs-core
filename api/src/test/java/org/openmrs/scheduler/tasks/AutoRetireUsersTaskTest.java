@@ -119,7 +119,7 @@ class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void userInactivityExceedsThreshold_shouldReturnTrueIfInactivityExceedsThreshold() {
+	public void userInactivityExceedsDaysToRetire_shouldReturnTrueIfUserInactivityExceedsNumberOfDaysToRetire() {
 		User user = getDefaultUser();
 		user.setUserProperty(
 			OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP, 
@@ -140,7 +140,7 @@ class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void userInactivityExceedsThreshold_shouldReturnFalseIfInactivityDoesNotExceedThreshold() {
+	public void userInactivityExceedsDaysToRetire_shouldReturnFalseIfUserInactivityDoesNotExceedNumberOfDaysToRetire() {
 		User user = getDefaultUser();
 		user.setUserProperty(
 			OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP, 
