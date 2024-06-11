@@ -154,17 +154,22 @@ class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void userInactivityExceedsDaysToRetire_shouldReturnTrueIfUserInactiveSinceCreation() {
+	public void userInactivityExceedsDaysToRetire_shouldReturnTrueIfUserIsInactiveSinceCreation() {
 		User user = mock(User.class);
 
 		when(user.getDateCreated()).thenReturn(new Date(System.currentTimeMillis() - THREE_DAYS_IN_MILLISECONDS));
 		
 		boolean inactivityExceedsDaysToRetire = autoRetireUsersTask.userInactivityExceedsDaysToRetire(user, TWO_DAYS_IN_MILLISECONDS);
 		assertTrue(inactivityExceedsDaysToRetire);
+	}
+
+	@Test
+	public void userInactivity_shouldReturnFalseIfUserInactivePeriodSinceCreationIsLessThanDaysToRetire() {
+		User user = mock(User.class);
 
 		when(user.getDateCreated()).thenReturn(new Date(System.currentTimeMillis() - ONE_DAY_IN_MILLISECONDS));
 
-		inactivityExceedsDaysToRetire = autoRetireUsersTask.userInactivityExceedsDaysToRetire(user, TWO_DAYS_IN_MILLISECONDS);
+		boolean inactivityExceedsDaysToRetire = autoRetireUsersTask.userInactivityExceedsDaysToRetire(user, TWO_DAYS_IN_MILLISECONDS);
 		assertFalse(inactivityExceedsDaysToRetire);
 	}
 
