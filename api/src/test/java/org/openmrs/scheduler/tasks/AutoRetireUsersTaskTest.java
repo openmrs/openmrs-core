@@ -12,20 +12,28 @@ package org.openmrs.scheduler.tasks;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.GlobalProperty;
+import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.RoleConstants;
 
+import java.util.Date;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 	private static final String XML_FILENAME = "org/openmrs/api/include/UserServiceTest.xml";
@@ -33,6 +41,7 @@ class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 	private static final long TWENTY_THREE_HOURS_IN_MILLISECONDS = 23 * 60 * 60 * 1000;
 	private static final long ONE_DAY_AND_TWO_SECONDS_IN_MILLISECONDS = ONE_DAY_IN_MILLISECONDS + 2000;
 	private static final long TWO_DAYS_IN_MILLISECONDS = 2 * ONE_DAY_IN_MILLISECONDS;
+	private static final long THREE_DAYS_IN_MILLISECONDS = 3 * ONE_DAY_IN_MILLISECONDS;
 	private static final String ONE_DAY_PROPERTY_VALUE = "1";
 	private static final String TWO_DAYS_PROPERTY_VALUE = "2";
 
@@ -58,12 +67,19 @@ class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 			OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP, 
 			String.valueOf(System.currentTimeMillis() - TWO_DAYS_IN_MILLISECONDS)
 		);
+		
+		Optional<Role> adminRole = inactiveUser.getAllRoles()
+			.stream()
+			.filter(role -> Objects.equals(role.getRole(), RoleConstants.SUPERUSER))
+			.findFirst();
+
+		adminRole.ifPresent(inactiveUser::removeRole);
 
 		userService.saveUser(inactiveUser);
 
 		Set<User> usersToRetire = autoRetireUsersTask.getUsersToRetire(userService);
 
-		assertThat(usersToRetire, contains(inactiveUser));
+		assertThat(usersToRetire, hasItem(inactiveUser));
 	}
 
 	@Test
@@ -113,6 +129,13 @@ class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 			String.valueOf(System.currentTimeMillis() - ONE_DAY_AND_TWO_SECONDS_IN_MILLISECONDS)
 		);
 
+		Optional<Role> adminRole = user.getAllRoles()
+			.stream()
+			.filter(role -> Objects.equals(role.getRole(), RoleConstants.SUPERUSER))
+			.findFirst();
+
+		adminRole.ifPresent(user::removeRole);
+
 		userService.saveUser(user);
 
 		boolean result = autoRetireUsersTask.userInactivityExceedsDaysToRetire(user, ONE_DAY_IN_MILLISECONDS);
@@ -131,6 +154,33 @@ class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 
 		boolean result = autoRetireUsersTask.userInactivityExceedsDaysToRetire(user, ONE_DAY_IN_MILLISECONDS);
 		assertFalse(result);
+	}
+
+	@Test
+	public void userInactivityExceedsDaysToRetire_shouldReturnTrueIfUserInactiveSinceCreation() {
+		User user = mock(User.class);
+
+		when(user.getDateCreated()).thenReturn(new Date(System.currentTimeMillis() - THREE_DAYS_IN_MILLISECONDS));
+
+		when(user.isSuperUser()).thenReturn(false);
+		
+		boolean inactivityExceedsDaysToRetire = autoRetireUsersTask.userInactivityExceedsDaysToRetire(user, TWO_DAYS_IN_MILLISECONDS);
+		assertTrue(inactivityExceedsDaysToRetire);
+
+		when(user.getDateCreated()).thenReturn(new Date(System.currentTimeMillis() - ONE_DAY_IN_MILLISECONDS));
+
+		inactivityExceedsDaysToRetire = autoRetireUsersTask.userInactivityExceedsDaysToRetire(user, TWO_DAYS_IN_MILLISECONDS);
+		assertFalse(inactivityExceedsDaysToRetire);
+	}
+
+	@Test
+	public void userInactivityExceedsDaysToRetire_shouldReturnFalseIfUserIsASuperUser() {
+		User user = mock(User.class);
+		
+		when(user.isSuperUser()).thenReturn(true);
+
+		boolean inactivityExceedsDaysToRetire = autoRetireUsersTask.userInactivityExceedsDaysToRetire(user, TWO_DAYS_IN_MILLISECONDS);
+		assertFalse(inactivityExceedsDaysToRetire);
 	}
 
 	private User getDefaultUser() {

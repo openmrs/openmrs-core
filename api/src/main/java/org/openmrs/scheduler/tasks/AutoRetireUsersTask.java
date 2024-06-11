@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -76,13 +77,23 @@ public class AutoRetireUsersTask extends AbstractTask {
 	}
 
 	boolean userInactivityExceedsDaysToRetire(User user, long numberOfMillisecondsToRetire) {
-		String lastLoginTimeString = Context.getUserService().getLastLoginTime(user);
+		if (!user.isSuperUser()) {
+			String lastLoginTimeString = Context.getUserService().getLastLoginTime(user);
 
-		if (StringUtils.isNotBlank(lastLoginTimeString)) {
-			long lastLoginTime = Long.parseLong(lastLoginTimeString);
+			if (StringUtils.isNotBlank(lastLoginTimeString)) {
+				long lastLoginTime = Long.parseLong(lastLoginTimeString);
 
-			return System.currentTimeMillis() - lastLoginTime >= numberOfMillisecondsToRetire;
+				boolean b = System.currentTimeMillis() - lastLoginTime >= numberOfMillisecondsToRetire;
+				return b;
+			} else {
+				Date dateCreated = user.getDateCreated();
+				if (dateCreated != null) {
+					long creationTime = dateCreated.getTime();
+					return System.currentTimeMillis() - creationTime >= numberOfMillisecondsToRetire;
+				}
+			}
 		}
+		
 		return false;
 	}
 }
