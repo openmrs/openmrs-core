@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -69,7 +70,7 @@ public class AutoRetireUsersTask extends AbstractTask {
 			return Collections.emptySet();
 		}
 		
-		long numberOfMillisecondsToRetire = DateUtil.daysToMilliseconds(Double.parseDouble(numberOfDaysToRetire));
+		long numberOfMillisecondsToRetire = TimeUnit.DAYS.toMillis(Long.parseLong(numberOfDaysToRetire));
 
 		return allUsers.stream()
 			.filter(user -> !user.isSuperUser() 
