@@ -85,13 +85,12 @@ public class AutoRetireUsersTask extends AbstractTask {
 		if (StringUtils.isNotBlank(lastLoginTimeString)) {
 			long lastLoginTime = Long.parseLong(lastLoginTimeString);
 
-			boolean b = System.currentTimeMillis() - lastLoginTime >= numberOfMillisecondsToRetire;
-			return b;
+			return System.currentTimeMillis() - lastLoginTime >= numberOfMillisecondsToRetire;
 		} else {
 			Date dateCreated = user.getDateCreated();
+			
 			if (dateCreated != null) {
-				long creationTime = dateCreated.getTime();
-				return System.currentTimeMillis() - creationTime >= numberOfMillisecondsToRetire;
+				return System.currentTimeMillis() - dateCreated.getTime() >= numberOfMillisecondsToRetire;
 			}
 		}
 		
