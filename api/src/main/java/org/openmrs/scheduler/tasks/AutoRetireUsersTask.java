@@ -13,7 +13,6 @@ import org.apache.commons.lang.StringUtils;
 import org.openmrs.User;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.DateUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +35,7 @@ import java.util.stream.Collectors;
 public class AutoRetireUsersTask extends AbstractTask {
 	
 	private static final Logger log = LoggerFactory.getLogger(AutoRetireUsersTask.class);
-	private static final String AUTO_RETIRE_REASON = "User retired due to inactivity";
+	static final String AUTO_RETIRE_REASON = "User retired due to inactivity";
 
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#execute()
@@ -44,7 +43,7 @@ public class AutoRetireUsersTask extends AbstractTask {
 	@Override
 	public void execute() {
 		if (!isExecuting) {
-			log.debug("Starting auto-retiring users");
+			log.debug("Auto-retiring users task Started");
 			
 			startExecuting();
 			
@@ -62,7 +61,7 @@ public class AutoRetireUsersTask extends AbstractTask {
 		}
 	}
 
-	Set<User> getUsersToRetire(UserService userService) {
+	private Set<User> getUsersToRetire(UserService userService) {
 		final List<User> allUsers = userService.getAllUsers();
 		String numberOfDaysToRetire = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_NUMBER_OF_DAYS_TO_AUTO_RETIRE_USERS);
 		
@@ -80,7 +79,7 @@ public class AutoRetireUsersTask extends AbstractTask {
 			.collect(Collectors.toSet());
 	}
 
-	boolean userInactivityExceedsDaysToRetire(User user, long numberOfMillisecondsToRetire) {
+	private boolean userInactivityExceedsDaysToRetire(User user, long numberOfMillisecondsToRetire) {
 		String lastLoginTimeString = Context.getUserService().getLastLoginTime(user);
 
 		if (StringUtils.isNotBlank(lastLoginTimeString)) {
