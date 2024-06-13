@@ -133,5 +133,20 @@
 		<comment>Adding not null constraint to encounter_diagnosis.dx_rank. TRUNK-6081</comment>
 		<addNotNullConstraint tableName="encounter_diagnosis" columnName="dx_rank" columnDataType="int"/>
 	</changeSet>
+
+	<changeSet id="TRUNK-6190-2023-08-29" author="slubwama">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="orders" columnName="fulfuller_location"/>
+			</not>
+		</preConditions>
+		<comment>Adding 'fulfiller_location' column to 'order' table</comment>
+		<addColumn tableName="orders">
+			<column name="fulfuller_location" type="int">
+				<constraints nullable="true" />
+			</column>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="fulfuller_location_location_id_fk" baseTableName="orders" baseColumnNames="fulfuller_location" referencedTableName="location" referencedColumnNames="location_id" />
+	</changeSet>
 	
 </databaseChangeLog>

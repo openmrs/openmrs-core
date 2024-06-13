@@ -84,7 +84,7 @@ public class DrugOrderTest {
 		drugOrder.setDrug(drug);
 		OrderTest.assertThatAllFieldsAreCopied(drugOrder, "cloneForRevision", "creator", "dateCreated", "action",
 		    "changedBy", "dateChanged", "voided", "dateVoided", "voidedBy", "voidReason", "encounter", "orderNumber",
-		    "orderer", "previousOrder", "dateActivated", "dateStopped", "accessionNumber");
+		    "orderer", "previousOrder", "dateActivated", "dateStopped", "accessionNumber", "fulfillerLocation");
 	}
 	
 	/**
