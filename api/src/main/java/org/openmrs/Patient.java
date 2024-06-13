@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.hibernate.envers.Audited;
 import org.hibernate.search.annotations.ContainedIn;
 
 /**
@@ -24,6 +25,7 @@ import org.hibernate.search.annotations.ContainedIn;
  * 
  * @version 2.0
  */
+@Audited
 public class Patient extends Person {
 	
 	public static final long serialVersionUID = 93123L;

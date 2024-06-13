@@ -43,6 +43,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Parameter;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
@@ -62,6 +64,7 @@ import org.slf4j.LoggerFactory;
 @Entity
 @Table(name = "users")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@Audited
 public class User extends BaseOpenmrsObject implements java.io.Serializable, Attributable<User>, Auditable, Retireable {
 	
 	public static final long serialVersionUID = 2L ;
@@ -106,6 +109,7 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 	@MapKeyColumn(name = "property", length = 255)
 	@Column(name = "property_value", length = Integer.MAX_VALUE)
 	@Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.EVICT })
+	@NotAudited
 	private Map<String, String> userProperties;
 
 	@Transient

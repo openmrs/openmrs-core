@@ -31,7 +31,7 @@
 		<property name="name" type="java.lang.String"
 			length="255" not-null="true"/>
 		
-		<property name="description" type="java.lang.String" length="65535" />
+		<property name="description" type="text" length="65535" />
 
 		<many-to-one name="fieldType" class="FieldType" not-null="true">
 			<column name="field_type" />
@@ -45,7 +45,7 @@
 		<property name="attributeName" type="java.lang.String"
 			column="attribute_name" length="50" />
 		
-		<property name="defaultValue" type="java.lang.String"
+		<property name="defaultValue" type="text"
 			column="default_value" length="65535" />
 
 		<property name="selectMultiple" type="boolean"

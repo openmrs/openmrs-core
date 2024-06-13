@@ -21,6 +21,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.envers.Audited;
 import org.openmrs.annotation.AllowDirectAccess;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -61,6 +62,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @see Encounter
  */
+@Audited
 public class Obs extends BaseFormRecordableOpenmrsData {
 	
 	/**
@@ -675,6 +677,7 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	/**
 	 * @return Returns the valueCoded.
 	 */
+	
 	public Concept getValueCoded() {
 		return valueCoded;
 	}

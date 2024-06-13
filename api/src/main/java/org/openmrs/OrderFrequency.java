@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
+
 /**
  * The frequency at which an Order's action should be repeated, e.g. TWICE DAILY or EVERY 6 HOURS.
  * This class is backed by a Concept for i18n, synonyms, mappings, etc, but it contains additional
@@ -16,6 +18,7 @@ package org.openmrs;
  * 
  * @since 1.10
  */
+@Audited
 public class OrderFrequency extends BaseChangeableOpenmrsMetadata {
 	
 	private static final long serialVersionUID = 1L;

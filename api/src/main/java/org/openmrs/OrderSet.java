@@ -12,6 +12,7 @@ package org.openmrs;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.envers.Audited;
 import org.openmrs.api.APIException;
 
 /**
@@ -20,6 +21,7 @@ import org.openmrs.api.APIException;
  * 
  * @since 1.12
  */
+@Audited
 public class OrderSet extends BaseCustomizableMetadata<OrderSetAttribute> {
 	
 	public static final long serialVersionUID = 72232L;

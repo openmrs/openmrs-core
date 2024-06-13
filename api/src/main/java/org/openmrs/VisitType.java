@@ -9,12 +9,15 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
+
 /**
  * Represents the assortment of visit types available to an implementation. These could include
  * items like "Initial HIV Clinic Visit", "Return TB Clinic Visit", and "Hospitalization".
  * 
  * @since 1.9
  */
+@Audited
 public class VisitType extends BaseChangeableOpenmrsMetadata{
 	
 	private static final long serialVersionUID = 1L;

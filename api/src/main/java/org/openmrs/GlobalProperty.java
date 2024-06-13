@@ -12,6 +12,7 @@ package org.openmrs;
 import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.envers.Audited;
 import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.CustomValueDescriptor;
@@ -21,6 +22,7 @@ import org.openmrs.customdatatype.SingleCustomValue;
  * Global properties are simple key-value pairs persisted in the database GPs can be thought of as
  * something similar to environment variables used in operating systems.
  */
+@Audited
 public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDescriptor, SingleCustomValue<GlobalProperty> {
 	
 	private static final long serialVersionUID = 1L;

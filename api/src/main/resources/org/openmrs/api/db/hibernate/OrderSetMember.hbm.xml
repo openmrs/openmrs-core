@@ -33,7 +33,7 @@
             <column name="order_set_id"/>
         </many-to-one>
 
-        <property name="orderTemplate" type="java.lang.String"
+        <property name="orderTemplate" type="text"
                   column="order_template" length="65535"/>
         <property name="orderTemplateType" type="java.lang.String"
                   column="order_template_type" length="1024"/>

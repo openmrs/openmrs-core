@@ -10,6 +10,7 @@
 package org.openmrs;
 
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -44,6 +45,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "encounter_diagnosis")
+@Audited
 public class Diagnosis extends BaseCustomizableData<DiagnosisAttribute> implements FormRecordable {
 	
 	private static final long serialVersionUID = 1L;

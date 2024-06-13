@@ -10,6 +10,8 @@
 package org.openmrs;
 
 
+import org.hibernate.envers.Audited;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -23,6 +25,7 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name = "drug_ingredient")
+@Audited
 public class DrugIngredient extends BaseOpenmrsObject implements Serializable, OpenmrsObject {
 	
 	public static final long serialVersionUID = 94023L;

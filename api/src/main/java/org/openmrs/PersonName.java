@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.envers.Audited;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Boost;
 import org.hibernate.search.annotations.DocumentId;
@@ -40,6 +41,7 @@ import org.springframework.util.StringUtils;
  * A Person can have zero to n PersonName(s).
  */
 @Indexed
+@Audited
 public class PersonName extends BaseChangeableOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PersonName> {
 	
 	public static final long serialVersionUID = 4353L;

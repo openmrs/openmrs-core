@@ -10,6 +10,7 @@
 package org.openmrs;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -26,6 +27,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "concept_map_type")
+@Audited
 public class ConceptMapType extends BaseChangeableOpenmrsMetadata {
 
 	private static final long serialVersionUID = 1L;

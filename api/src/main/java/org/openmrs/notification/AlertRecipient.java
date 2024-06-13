@@ -11,6 +11,7 @@ package org.openmrs.notification;
 
 import java.util.Date;
 
+import org.hibernate.envers.Audited;
 import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.User;
 
@@ -30,6 +31,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "notification_alert_recipient")
+@Audited
 public class AlertRecipient extends BaseOpenmrsObject {
 	
 	private static final long serialVersionUID = -507111109155L;

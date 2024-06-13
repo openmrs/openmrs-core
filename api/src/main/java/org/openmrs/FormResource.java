@@ -12,6 +12,7 @@ package org.openmrs;
 import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.envers.Audited;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.NotYetPersistedException;
@@ -29,6 +30,7 @@ import org.openmrs.customdatatype.SingleCustomValue;
  *
  * @since 1.9
  */
+@Audited
 public class FormResource extends BaseOpenmrsObject implements CustomValueDescriptor, SingleCustomValue<FormResource> {
 
 	private static final long serialVersionUID = 1L;
