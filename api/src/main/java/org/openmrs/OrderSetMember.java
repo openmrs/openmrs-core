@@ -9,12 +9,15 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
+
 import java.io.Serializable;
 
 /**
  * @since 1.12
  * OrderSetMember
  */
+@Audited
 public class OrderSetMember extends BaseOpenmrsMetadata implements Serializable {
 	
 	public static final long serialVersionUID = 72232L;

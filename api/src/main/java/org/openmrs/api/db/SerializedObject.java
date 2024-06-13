@@ -9,12 +9,14 @@
  */
 package org.openmrs.api.db;
 
+import org.hibernate.envers.Audited;
 import org.openmrs.BaseOpenmrsMetadata;
 import org.openmrs.serialization.OpenmrsSerializer;
 
 /**
  * Object representation of a Serialized Object as stored in the database.
  */
+@Audited
 public class SerializedObject extends BaseOpenmrsMetadata {
 	
 	private Integer id;

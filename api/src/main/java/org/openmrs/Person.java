@@ -23,6 +23,8 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.util.StringUtils;
 
@@ -34,6 +36,7 @@ import org.springframework.util.StringUtils;
  * 
  * @see org.openmrs.Patient
  */
+@Audited
 public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 2L;
@@ -79,7 +82,8 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	private Date personDateVoided;
 	
 	private String personVoidReason;
-	
+
+	@NotAudited
 	private boolean isPatient;
 	
 	/**
@@ -1004,10 +1008,12 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	@Deprecated
 	@JsonIgnore
+	@NotAudited
 	public boolean isPatient() {
 		return getIsPatient();
 	}
-	
+
+	@NotAudited
 	public boolean getIsPatient() {
 		return isPatient;
 	}

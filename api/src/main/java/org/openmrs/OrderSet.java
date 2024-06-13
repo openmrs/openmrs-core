@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
 import org.openmrs.api.APIException;
 
 import java.io.Serializable;
@@ -21,6 +22,7 @@ import java.util.List;
  * 
  * @since 1.12
  */
+@Audited
 public class OrderSet extends BaseOpenmrsMetadata implements Serializable {
 	
 	public static final long serialVersionUID = 72232L;

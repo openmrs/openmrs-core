@@ -10,6 +10,7 @@
 package org.openmrs;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.envers.Audited;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.InvalidCustomValueException;
@@ -28,6 +29,7 @@ import org.openmrs.customdatatype.SingleCustomValue;
  *
  * @since 1.9
  */
+@Audited
 public class FormResource extends BaseOpenmrsObject implements CustomValueDescriptor, SingleCustomValue<FormResource> {
 	
 	private Integer formResourceId;

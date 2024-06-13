@@ -12,10 +12,12 @@ package org.openmrs;
 import java.io.Serializable;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.envers.Audited;
 
 /**
  * PatientIdentifierType
  */
+@Audited
 public class PatientIdentifierType extends BaseOpenmrsMetadata implements Serializable {
 	
 	public static final long serialVersionUID = 211231L;

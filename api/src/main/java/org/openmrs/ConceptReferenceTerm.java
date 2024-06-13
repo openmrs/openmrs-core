@@ -12,6 +12,7 @@ package org.openmrs;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.hibernate.envers.Audited;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Field;
@@ -23,6 +24,7 @@ import org.hibernate.search.annotations.Field;
  *
  * @since 1.9
  */
+@Audited
 public class ConceptReferenceTerm extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	private static final long serialVersionUID = 1L;

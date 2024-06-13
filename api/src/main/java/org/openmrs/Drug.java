@@ -16,6 +16,8 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
@@ -25,6 +27,7 @@ import org.openmrs.api.context.Context;
  * Drug
  */
 @Indexed
+@Audited
 public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 285L;
@@ -48,7 +51,8 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	private Set<DrugReferenceMap> drugReferenceMaps;
-	
+
+	@NotAudited
 	private Collection<DrugIngredient> ingredients;
 	
 	// Constructors
@@ -189,6 +193,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @return Returns the ingredients
 	 * @since 1.10
 	 */
+	@NotAudited
 	public Collection<DrugIngredient> getIngredients() {
 		return ingredients;
 	}

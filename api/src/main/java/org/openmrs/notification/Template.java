@@ -12,8 +12,10 @@ package org.openmrs.notification;
 import java.io.Serializable;
 import java.util.Map;
 
+import org.hibernate.envers.Audited;
 import org.openmrs.BaseOpenmrsObject;
 
+@Audited
 public class Template extends BaseOpenmrsObject implements Serializable {
 	
 	/**

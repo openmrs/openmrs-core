@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
+import org.hibernate.envers.Audited;
 import org.openmrs.api.APIException;
 
 /**
@@ -24,6 +25,7 @@ import org.openmrs.api.APIException;
  * 
  * @version 2.0
  */
+@Audited
 public class Patient extends Person implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 93123L;

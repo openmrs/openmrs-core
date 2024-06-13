@@ -13,6 +13,7 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.envers.Audited;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.order.OrderUtil;
@@ -32,6 +33,7 @@ import org.openmrs.util.OpenmrsUtil;
  * 
  * @version 1.0
  */
+@Audited
 public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	

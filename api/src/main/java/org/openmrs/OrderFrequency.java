@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
+
 import java.io.Serializable;
 
 /**
@@ -18,6 +20,7 @@ import java.io.Serializable;
  * 
  * @since 1.10
  */
+@Audited
 public class OrderFrequency extends BaseOpenmrsMetadata implements Serializable {
 	
 	private static final long serialVersionUID = 1L;

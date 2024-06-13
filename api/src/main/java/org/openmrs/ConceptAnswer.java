@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
+
 import java.util.Date;
 
 /**
@@ -18,6 +20,7 @@ import java.util.Date;
  *
  * @see Concept#getAnswers()
  */
+@Audited
 public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.io.Serializable, Comparable<ConceptAnswer> {
 	
 	public static final long serialVersionUID = 3744L;

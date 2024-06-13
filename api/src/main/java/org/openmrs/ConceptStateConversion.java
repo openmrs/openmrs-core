@@ -11,10 +11,12 @@ package org.openmrs;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.envers.Audited;
 
 /**
  * ConceptStateConversion
  */
+@Audited
 public class ConceptStateConversion extends BaseOpenmrsObject implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 3214511L;

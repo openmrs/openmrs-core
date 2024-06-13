@@ -11,11 +11,13 @@ package org.openmrs;
 
 import java.util.Date;
 
+import org.hibernate.envers.Audited;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
  * PatientState
  */
+@Audited
 public class PatientState extends BaseOpenmrsData implements java.io.Serializable, Comparable<PatientState> {
 	
 	public static final long serialVersionUID = 0L;

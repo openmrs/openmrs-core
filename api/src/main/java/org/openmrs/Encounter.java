@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.hibernate.envers.Audited;
 import org.openmrs.annotation.AllowDirectAccess;
 import org.openmrs.annotation.DisableHandlers;
 import org.openmrs.api.context.Context;
@@ -35,6 +36,7 @@ import org.openmrs.api.handler.VoidHandler;
  * @see Obs
  * @see Order
  */
+@Audited
 public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 2L;

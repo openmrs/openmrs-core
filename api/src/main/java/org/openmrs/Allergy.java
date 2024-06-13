@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.envers.Audited;
 import org.openmrs.BaseOpenmrsData;
 import org.openmrs.Concept;
 import org.openmrs.Patient;
@@ -24,6 +25,7 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  * Represent allergy
  */
+@Audited
 public class Allergy extends BaseOpenmrsData implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 1;

@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.envers.Audited;
 import org.openmrs.customdatatype.Customizable;
 
 /**
@@ -24,6 +25,7 @@ import org.openmrs.customdatatype.Customizable;
  * @since 1.9
  */
 
+@Audited
 public class Visit extends BaseCustomizableData<VisitAttribute> implements Auditable, Customizable<VisitAttribute> {
 	
 	private Integer visitId;

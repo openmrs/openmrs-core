@@ -9,6 +9,8 @@
  */
 package org.openmrs.hl7;
 
+import org.hibernate.envers.Audited;
+
 import java.io.Serializable;
 
 /**
@@ -16,6 +18,7 @@ import java.io.Serializable;
  * 
  * @see HL7Service
  */
+@Audited
 public class HL7InQueue extends HL7QueueItem implements Serializable {
 	
 	private static final long serialVersionUID = 8882704913734764446L;

@@ -13,12 +13,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 /**
  * Field
  *
  * @version 1.0
  */
+@Audited
 public class Field extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 4454L;
@@ -38,7 +41,8 @@ public class Field extends BaseOpenmrsMetadata implements java.io.Serializable {
 	private String defaultValue;
 	
 	private Boolean selectMultiple = false;
-	
+
+	@NotAudited
 	private Set<FieldAnswer> answers;
 	
 	// Constructors
@@ -165,6 +169,7 @@ public class Field extends BaseOpenmrsMetadata implements java.io.Serializable {
 	/**
 	 * @return Returns the fieldAnswers.
 	 */
+	@NotAudited
 	public Set<FieldAnswer> getAnswers() {
 		return answers;
 	}

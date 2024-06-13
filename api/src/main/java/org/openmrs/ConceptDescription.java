@@ -9,12 +9,15 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
+
 import java.util.Date;
 import java.util.Locale;
 
 /**
  * ConceptDescription is the localized description of a concept.
  */
+@Audited
 public class ConceptDescription extends BaseOpenmrsObject implements Auditable, java.io.Serializable {
 	
 	private static final long serialVersionUID = -7223075113369136584L;

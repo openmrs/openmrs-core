@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
+
 import java.io.Serializable;
 
 /**
@@ -16,6 +18,7 @@ import java.io.Serializable;
  * 
  * @since 1.9
  */
+@Audited
 public class EncounterProvider extends BaseOpenmrsData implements Serializable {
 	
 	public static final long serialVersionUID = 1L;

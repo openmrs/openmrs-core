@@ -10,6 +10,7 @@
 package org.openmrs;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.envers.Audited;
 
 /**
  * ConceptMapType are used to define relationships between concepts and concept reference terms e.g
@@ -17,6 +18,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
  *
  * @since 1.9
  */
+@Audited
 public class ConceptMapType extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	private static final long serialVersionUID = 1L;

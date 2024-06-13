@@ -15,12 +15,14 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.envers.Audited;
 import org.openmrs.BaseOpenmrsMetadata;
 import org.openmrs.User;
 
 /**
  * Represents the metadata for a task that can be scheduled.
  */
+@Audited
 public class TaskDefinition extends BaseOpenmrsMetadata {
 	
 	private Log log = LogFactory.getLog(this.getClass());
