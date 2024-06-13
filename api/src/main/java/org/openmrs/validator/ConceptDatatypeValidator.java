@@ -40,6 +40,7 @@ public class ConceptDatatypeValidator implements Validator {
 	 *      org.springframework.validation.Errors)
 	 * <strong>Should</strong> pass validation if description is null or empty or whitespace	 *      
 	 * <strong>Should</strong> fail validation if name is null or empty or whitespace
+	 * <strong>Should</strong> fail validation if name is already in use
 	 * <strong>Should</strong> pass validation if all required fields have proper values
 	 * <strong>Should</strong> pass validation if field lengths are correct
 	 * <strong>Should</strong> fail validation if field lengths are not correct
@@ -50,6 +51,7 @@ public class ConceptDatatypeValidator implements Validator {
 		if (cd == null) {
 			errors.rejectValue("conceptDatatype", "error.general");
 		} else {
+			ValidateUtil.rejectDuplicateName(cd, "name", cd.getName(), errors);
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
 			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "hl7Abbreviation", "description",
 			    "retireReason");

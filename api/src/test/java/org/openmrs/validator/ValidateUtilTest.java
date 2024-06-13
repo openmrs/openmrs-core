@@ -9,6 +9,7 @@
  */
 package org.openmrs.validator;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -16,13 +17,18 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
+import org.openmrs.ConceptSource;
 import org.openmrs.Drug;
 import org.openmrs.Location;
+import org.openmrs.OpenmrsObject;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.ValidationException;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -207,5 +213,24 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 		
 		ValidationException exception = assertThrows(ValidationException.class, () -> ValidateUtil.validate(drug));
 		assertTrue(exception.getMessage().contains("failed to validate with reason: name: This value exceeds the maximum length of 255 permitted for this field."));
+	}
+
+	/**
+	 * @see org.openmrs.validator.ValidateUtil#rejectDuplicateName(OpenmrsObject, String, String, Errors)
+	 */
+	@Test
+	public void rejectDuplicateName_shouldRejectNameIfItsAlreadyInUse() {
+		List<ConceptSource> allSources = Context.getConceptService().getAllConceptSources(false);
+		assertNotNull(allSources);
+		assertEquals("SNOMED CT", allSources.get(1).getName());
+
+		ConceptSource conceptSource = new ConceptSource();
+		conceptSource.setName("snomed ct");
+		conceptSource.setDescription("a concept source to add for testing");
+
+		BindException errors = new BindException(conceptSource, "conceptSource");
+		assertFalse(errors.hasErrors());
+		ValidateUtil.rejectDuplicateName(conceptSource, "name", conceptSource.getName(), errors);
+		assertTrue(errors.hasErrors());
 	}
 }

@@ -429,4 +429,19 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 			});
 		}
 	}
+
+	/**
+	 * @see org.openmrs.api.AdministrationService#getObjectByFieldValue(Class, String, String)
+	 */
+	@Override
+	public <T> T getObjectByFieldValue(Class<T> aClass, String field, String value) throws DAOException {
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<T> cq = cb.createQuery(aClass);
+		Root<T> root = cq.from(aClass);
+
+		cq.where(cb.equal(root.get(field), value));
+		
+		return session.createQuery(cq).uniqueResult();
+	}
 }

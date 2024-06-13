@@ -40,6 +40,7 @@ public class RoleValidator implements Validator {
 	 *      org.springframework.validation.Errors)
 	 * <strong>Should</strong> throw NullPointerException if role is null
 	 * <strong>Should</strong> fail validation if role is empty or whitespace
+	 * <strong>Should</strong> fail validation if role name is already in use
 	 * <strong>Should</strong> pass validation if description is null or empty or whitespace
 	 * <strong>Should</strong> fail validation if role has leading or trailing space
 	 * <strong>Should</strong> pass validation if all required fields have proper values
@@ -52,6 +53,7 @@ public class RoleValidator implements Validator {
 		if (role == null) {
 			errors.rejectValue("role", "error.general");
 		} else {
+			ValidateUtil.rejectDuplicateName(role, "role", role.getRole(), errors);
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "role", "error.role");
 			
 			// reject any role that has a leading or trailing space

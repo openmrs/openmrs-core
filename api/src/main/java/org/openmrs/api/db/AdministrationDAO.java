@@ -85,4 +85,9 @@ public interface AdministrationDAO {
 	 * @see AdministrationService#updatePostgresSequence()
 	 */
 	public void updatePostgresSequence() throws DAOException;
+
+	/**
+	 * @see AdministrationService#getObjectByFieldValue(Class, String, String)
+	 */
+	public <T> T getObjectByFieldValue(Class<T> aClass, String field, String value) throws DAOException;
 }

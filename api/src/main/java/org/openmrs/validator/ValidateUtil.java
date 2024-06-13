@@ -174,4 +174,31 @@ public class ValidateUtil {
 	public static void resumeValidationForThread() {
 		disableValidationForThread.remove();
 	}
+
+	/**
+	 * Tests if given field value is already in use by another object of the same class
+	 *
+	 * @param obj the object being tested
+	 * @param field the field of the object to be tested  
+	 * @param value the field value of the object being tested
+	 * @param errors
+	 * <ul>
+	 * <li><strong>Should</strong> fail validation if name is already in use.</li>
+	 * <li><strong>Should</strong> return immediately if validation is disabled and have no errors.</li>
+	 * </ul>
+	 * 
+	 * @since 2.7.0
+	 */
+	public static void rejectDuplicateName(OpenmrsObject obj, String field, String value, Errors errors) {
+		if (disableValidation) {
+			return;
+		}
+		
+		if (StringUtils.isNotBlank(value)) {
+			OpenmrsObject existingObject = Context.getAdministrationService().getObjectByFieldValue(obj.getClass(), field, value);
+			if (existingObject != null && !existingObject.getUuid().equals(obj.getUuid())) {
+				errors.rejectValue(field, "general.error.nameAlreadyInUse");
+			}
+		}
+	}
 }

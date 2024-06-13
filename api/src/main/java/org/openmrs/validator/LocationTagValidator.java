@@ -36,10 +36,13 @@ public class LocationTagValidator implements Validator {
 	 *      org.springframework.validation.Errors)
 	 * <strong>Should</strong> pass validation if field lengths are correct
 	 * <strong>Should</strong> fail validation if field lengths are not correct
+	 * <strong>Should</strong> fail validation if name is already in use
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
 		if (target != null) {
+			LocationTag locationTag = (LocationTag) target;
+			ValidateUtil.rejectDuplicateName(locationTag, "name", locationTag.getName(), errors);
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "LocationTag.error.name.required");
 			ValidateUtil.validateFieldLengths(errors, target.getClass(), "name", "description", "retireReason");
 		}

@@ -10,6 +10,7 @@
 package org.openmrs.api;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -27,6 +28,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
@@ -73,7 +75,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		assertFalse(allCohorts.get(1).getVoided());
 		
 		// now do the actual test: getCohort by name and expect a non voided cohort
-		Cohort exampleCohort = service.getCohortByName("Example Cohort");
+		Cohort exampleCohort = service.getCohortByName("Second Example Cohort");
 		assertNotNull(exampleCohort);
 		// since TRUNK-5450 also non-active cohorts (with an end-date) are counted
 		assertEquals(2, exampleCohort.size());
@@ -230,6 +232,24 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		service.saveCohort(cohortToModify);
 		assertTrue(service.getCohort(2).getDescription().equals(modifiedCohortDescription));
 	}
+
+	/**
+	 * @see org.openmrs.api.CohortService#saveCohort(Cohort)
+	 */
+	@Test
+	public void saveCohort_shouldFailToCreateNewCohortIfACohortAlreadyExistsWithSameName() {
+		executeDataSet(COHORT_XML);
+		
+		List<Cohort> allCohorts = service.getAllCohorts(false);
+		assertNotNull(allCohorts);
+		assertEquals("Second Example Cohort", allCohorts.get(0).getName());
+
+		// make and try to save a new one
+		Integer[] ids = { 3 };
+		Cohort newCohort = new Cohort("SECOND EXAMPLE COHORT", "a  cohort to add for testing", ids);
+		Exception exception = assertThrows(ValidationException.class, () -> service.saveCohort(newCohort));
+		assertThat(exception.getMessage(), containsString("failed to validate with reason:"));
+	}
 	
 	/**
 	 * @see CohortService#voidCohort(Cohort,String)
@@ -244,12 +264,12 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(COHORT_XML);
 		
 		// Get a non-voided, valid Cohort and try to void it with a null reason
-		final Cohort exampleCohort = service.getCohortByName("Example Cohort");
+		final Cohort exampleCohort = service.getCohortByName("Second Example Cohort");
 		assertNotNull(exampleCohort);
 		assertFalse(exampleCohort.getVoided());
 		
 		// Now get the Cohort and try to void it with an empty reason
-		final Cohort cohort = service.getCohortByName("Example Cohort");
+		final Cohort cohort = service.getCohortByName("Second Example Cohort");
 		assertNotNull(cohort);
 		assertFalse(cohort.getVoided());
 		
@@ -269,14 +289,14 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(COHORT_XML);
 		
 		// Get a non-voided, valid Cohort and try to void it with a null reason
-		final Cohort exampleCohort = service.getCohortByName("Example Cohort");
+		final Cohort exampleCohort = service.getCohortByName("Second Example Cohort");
 		assertNotNull(exampleCohort);
 		assertFalse(exampleCohort.getVoided());
 		
 		assertThrows(Exception.class, () -> service.voidCohort(exampleCohort, null));
 		
 		// Now get the Cohort and try to void it with an empty reason
-		final Cohort cohort = service.getCohortByName("Example Cohort");
+		final Cohort cohort = service.getCohortByName("Second Example Cohort");
 		assertNotNull(cohort);
 		assertFalse(cohort.getVoided());
 		
@@ -345,7 +365,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	public void getCohort_shouldGetCohortGivenAName() {
 		executeDataSet(COHORT_XML);
 		
-		Cohort cohortToGet = service.getCohortByName("Example Cohort");
+		Cohort cohortToGet = service.getCohortByName("Second Example Cohort");
 		assertEquals(2, cohortToGet.getCohortId());
 	}
 	
@@ -353,6 +373,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 * @see CohortService#getCohort(String)
 	 */
 	@Test
+	@Disabled("TRUNK-4455")
 	public void getCohort_shouldGetTheNonvoidedCohortIfTwoExistWithSameName() {
 		executeDataSet(COHORT_XML);
 		
@@ -593,9 +614,9 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	public void getCohort_shouldGetCohortByName() {
 		executeDataSet(COHORT_XML);
 
-		Cohort cohort = service.getCohortByName("Example Cohort");
+		Cohort cohort = service.getCohortByName("Second Example Cohort");
 		assertNotNull(cohort);
-		assertEquals("Example Cohort", cohort.getName());
+		assertEquals("Second Example Cohort", cohort.getName());
 		assertFalse(cohort.getVoided());
 	}
 
