@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 public class AutoRetireUsersTask extends AbstractTask {
 	
 	private static final Logger log = LoggerFactory.getLogger(AutoRetireUsersTask.class);
-	static final String AUTO_RETIRE_REASON = "User retired due to inactivity";
+	private static final String AUTO_RETIRE_REASON = "User retired due to inactivity";
 
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#execute()

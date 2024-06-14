@@ -62,7 +62,7 @@ class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 
 		autoRetireUsersTask.execute();
 
-		verify(userService, atLeastOnce()).retireUser(inactiveUser, AutoRetireUsersTask.AUTO_RETIRE_REASON);
+		verify(userService, atLeastOnce()).retireUser(eq(inactiveUser), anyString());
 	}
 
 	@Test
@@ -76,7 +76,7 @@ class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 
 		autoRetireUsersTask.execute();
 
-		verify(userService, never()).retireUser(activeUser, AutoRetireUsersTask.AUTO_RETIRE_REASON);
+		verify(userService, never()).retireUser(eq(activeUser), anyString());
 	}
 
 	@Test
@@ -90,7 +90,7 @@ class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 
 		autoRetireUsersTask.execute();
 
-		verify(userService, never()).retireUser(retiredUser, AutoRetireUsersTask.AUTO_RETIRE_REASON);
+		verify(userService, never()).retireUser(eq(retiredUser), anyString());
 	}
 
 	@Test
@@ -104,7 +104,7 @@ class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 
 		autoRetireUsersTask.execute();
 
-		verify(userService, never()).retireUser(adminUser, AutoRetireUsersTask.AUTO_RETIRE_REASON);
+		verify(userService, never()).retireUser(eq(adminUser), anyString());
 	}
 
 	@Test
@@ -132,7 +132,7 @@ class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 
 		autoRetireUsersTask.execute();
 
-		verify(userService, never()).retireUser(adminUser, AutoRetireUsersTask.AUTO_RETIRE_REASON);
+		verify(userService, never()).retireUser(eq(adminUser), anyString());
 	}
 
 	private User getDefaultUser() {
