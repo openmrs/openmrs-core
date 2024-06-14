@@ -323,6 +323,26 @@ public class ObsTest {
 		Obs obs = new Obs();
 		assertThrows(RuntimeException.class, () -> obs.setValueAsString(null));
 	}
+
+	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test
+	public void setValueAsString_shouldPassForAllTheDates() throws Exception {
+		Obs obs = new Obs();
+		ConceptDatatype cd = new ConceptDatatype();
+		cd.setName("Datetime");
+		cd.setHl7Abbreviation("TS");
+		Concept c = new Concept();
+		c.setDatatype(cd);
+		obs.setConcept(c);
+
+		String[] dateFormats = {"2011-05-01 00:00:00", "2011-05-01T00:00:00.000", "2011-05-01T00:00:00.000",
+			"2016-01-12T06:00:00+05:30", "2016-01-12T06:00:00+0530", "2014-02-20T11:00:00.000-05:00", "2014-02-20T11:00:00.000-05" };
+		for (String dateFormat : dateFormats) {
+			obs.setValueAsString(dateFormat);
+		}
+	}
 	
 	/**
 	 * @see Obs#getValueAsBoolean()

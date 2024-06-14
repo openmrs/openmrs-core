@@ -79,8 +79,8 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 		PRELIMINARY, FINAL, AMENDED
 	}
 	
-	private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm";
-	
+	private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
+
 	private static final String TIME_PATTERN = "HH:mm";
 	
 	private static final String DATE_PATTERN = "yyyy-MM-dd";
@@ -1082,9 +1082,30 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 			} else if ("TM".equals(abbrev)) {
 				DateFormat timeFormat = new SimpleDateFormat(TIME_PATTERN);
 				setValueDatetime(timeFormat.parse(s));
-			} else if ("TS".equals(abbrev)) {
-				DateFormat datetimeFormat = new SimpleDateFormat(DATE_TIME_PATTERN);
-				setValueDatetime(datetimeFormat.parse(s));
+			} else if ("TS".equals(abbrev)) { 
+				DateFormat datetimeFormat;
+				try {
+					datetimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+					setValueDatetime(datetimeFormat.parse(s));
+				} catch (ParseException p) {
+					try {
+						datetimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+						setValueDatetime(datetimeFormat.parse(s));
+					} catch (ParseException pe) {
+						try {
+							datetimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+							setValueDatetime(datetimeFormat.parse(s));
+						} catch (ParseException pe2) {
+							try {
+								datetimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+								setValueDatetime(datetimeFormat.parse(s));
+							} catch (ParseException pe3) {
+								datetimeFormat = new SimpleDateFormat(DATE_TIME_PATTERN);
+								setValueDatetime(datetimeFormat.parse(s));
+							}
+						}
+					}
+				}
 			} else if ("ST".equals(abbrev)) {
 				setValueText(s);
 			} else {
