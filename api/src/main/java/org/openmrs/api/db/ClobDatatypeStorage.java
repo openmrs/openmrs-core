@@ -9,6 +9,7 @@
  */
 package org.openmrs.api.db;
 
+import org.hibernate.envers.Audited;
 import org.openmrs.BaseOpenmrsObject;
 
 /**
@@ -16,6 +17,7 @@ import org.openmrs.BaseOpenmrsObject;
  * 
  * @since 1.9
  */
+@Audited
 public class ClobDatatypeStorage extends BaseOpenmrsObject {
 	
 	private Integer id;

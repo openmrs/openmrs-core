@@ -9,9 +9,12 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
+
 /**
  * ConceptStateConversion
  */
+@Audited
 public class ConceptStateConversion extends BaseOpenmrsObject {
 	
 	public static final long serialVersionUID = 3214511L;
