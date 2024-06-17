@@ -25,6 +25,7 @@ import org.hibernate.envers.Audited;
 import org.openmrs.annotation.AllowDirectAccess;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.Format;
@@ -980,8 +981,9 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 				if (getValueNumeric() == null) {
 					return "";
 				} else {
-					if (getConcept() instanceof ConceptNumeric) {
-						ConceptNumeric cn = (ConceptNumeric) getConcept();
+					Concept deproxiedConcept = HibernateUtil.getRealObjectFromProxy(getConcept());
+					if (deproxiedConcept instanceof ConceptNumeric) {
+						ConceptNumeric cn = (ConceptNumeric) deproxiedConcept;
 						if (!cn.getAllowDecimal()) {
 							double d = getValueNumeric();
 							int i = (int) d;
