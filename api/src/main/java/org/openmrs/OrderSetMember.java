@@ -9,10 +9,13 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
+
 /**
  * @since 1.12
  * OrderSetMember
  */
+@Audited
 public class OrderSetMember extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 72232L;

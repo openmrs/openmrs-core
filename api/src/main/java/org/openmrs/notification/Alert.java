@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.hibernate.envers.Audited;
 import org.openmrs.Auditable;
 import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.User;
@@ -25,6 +26,7 @@ import org.openmrs.api.context.Context;
  * to attribute the alert to. Alerts are not intended to be sent from user to user and a user cannot
  * send a "reply alert"
  */
+@Audited
 public class Alert extends BaseOpenmrsObject implements Auditable, Serializable {
 	
 	private static final long serialVersionUID = -507111111109152L;

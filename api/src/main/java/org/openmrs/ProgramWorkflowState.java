@@ -9,9 +9,12 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
+
 /**
  * ProgramWorkflowState
  */
+@Audited
 public class ProgramWorkflowState extends BaseChangeableOpenmrsMetadata {
 	
 	private static final long serialVersionUID = 1L;

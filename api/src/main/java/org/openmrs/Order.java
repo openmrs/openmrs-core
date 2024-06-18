@@ -9,14 +9,13 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.util.OpenmrsUtil;
 
 import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 /**
  * Encapsulates information about the clinical action of a provider requesting something for a
@@ -32,6 +31,7 @@ import java.util.Set;
  * 
  * @version 1.0
  */
+@Audited
 public class Order extends BaseCustomizableData<OrderAttribute> implements FormRecordable {
 
 	public static final long serialVersionUID = 4334343L;

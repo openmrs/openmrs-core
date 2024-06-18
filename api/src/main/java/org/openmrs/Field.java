@@ -13,12 +13,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.envers.Audited;
 
 /**
  * Field
  *
  * @version 1.0
  */
+@Audited
 public class Field extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 4454L;

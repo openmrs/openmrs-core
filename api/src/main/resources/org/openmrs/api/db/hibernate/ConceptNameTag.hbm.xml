@@ -24,7 +24,7 @@
 		</id>
 		
 		<property name="tag" type="java.lang.String" length="50" not-null="true" />
-		<property name="description" type="java.lang.String" length="65535"/>
+		<property name="description" type="text" length="65535"/>
 		
 		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true"/>
 		<many-to-one name="creator" class="User" column="creator" not-null="true"/>

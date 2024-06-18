@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
+
 /**
  * The concept Reference Term map object represents a mapping between two Concept Reference Terms. A
  * concept reference term can have 0 to N concept reference term mappings to any or all Concept
@@ -16,6 +18,7 @@ package org.openmrs;
  *
  * @since 1.9
  */
+@Audited
 public class ConceptReferenceTermMap extends BaseConceptMap {
 	
 	private static final long serialVersionUID = 1L;

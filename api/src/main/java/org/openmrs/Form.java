@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -19,6 +21,7 @@ import java.util.Set;
  *
  * @version 1.0
  */
+@Audited
 public class Form extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 845634L;

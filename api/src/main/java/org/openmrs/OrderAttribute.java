@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
 import org.openmrs.attribute.Attribute;
 import org.openmrs.attribute.BaseAttribute;
 
@@ -17,6 +18,7 @@ import org.openmrs.attribute.BaseAttribute;
  * @see Attribute
  * @since 2.5.0
  */
+@Audited
 public class OrderAttribute extends BaseAttribute<OrderAttributeType, Order>
 		implements Attribute<OrderAttributeType, Order> {
 

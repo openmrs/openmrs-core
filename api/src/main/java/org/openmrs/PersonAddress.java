@@ -12,6 +12,7 @@ package org.openmrs;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.envers.Audited;
 import org.openmrs.util.OpenmrsUtil;
 
 import javax.persistence.Column;
@@ -33,6 +34,7 @@ import static org.apache.commons.lang3.StringUtils.defaultString;
  */
 @Entity
 @Table(name = "person_address")
+@Audited
 public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PersonAddress>, Address {
 	
 	public static final long serialVersionUID = 343333L;

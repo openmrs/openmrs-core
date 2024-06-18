@@ -9,11 +9,13 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
 import org.hibernate.search.annotations.DocumentId;
 
 /**
  * ConceptClass
  */
+@Audited
 public class ConceptClass extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 33473L;

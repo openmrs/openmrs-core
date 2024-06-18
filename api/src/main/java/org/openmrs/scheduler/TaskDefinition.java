@@ -13,6 +13,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.openmrs.BaseChangeableOpenmrsMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +22,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Represents the metadata for a task that can be scheduled.
  */
+@Audited
 public class TaskDefinition extends BaseChangeableOpenmrsMetadata {
 	
 	private static final Logger log = LoggerFactory.getLogger(TaskDefinition.class);
@@ -49,6 +52,7 @@ public class TaskDefinition extends BaseChangeableOpenmrsMetadata {
 	private Boolean started;
 	
 	// Relationships
+	@NotAudited
 	private Map<String, String> properties;
 	
 	/**
@@ -98,6 +102,7 @@ public class TaskDefinition extends BaseChangeableOpenmrsMetadata {
 	 * 
 	 * @return the data map
 	 */
+	@NotAudited
 	public Map<String, String> getProperties() {
 		return this.properties;
 	}
