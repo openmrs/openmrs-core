@@ -11,6 +11,7 @@ package org.openmrs;
 
 import java.util.Date;
 
+import org.hibernate.envers.Audited;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -20,6 +21,7 @@ import org.openmrs.util.OpenmrsConstants;
  * encounter that prompted this proposal is updated with a new observation pointing at the new (or
  * edited) concept.
  */
+@Audited
 public class ConceptProposal extends BaseOpenmrsObject {
 	
 	public static final long serialVersionUID = 57344L;
