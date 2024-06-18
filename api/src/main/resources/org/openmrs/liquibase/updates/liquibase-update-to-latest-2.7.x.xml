@@ -99,14 +99,5 @@
         	CREATE FUNCTION UUID() RETURNS UUID LANGUAGE SQL AS $$ SELECT uuid_generate_v1() $$;
         </sql>
     </changeSet>
-
-	<changeSet id="TRUNK-6208-2024-05-18-1004" author="k4pran" dbms="h2">
-		<!-- 
-		Changing the column type to int(10) due to Liquibase change where integer precision
-		greater than 10 is now interpreted as BIGINT in H2 databases. 
-		See: https://github.com/liquibase/liquibase/pull/4008/files 
-		-->
-		<modifyDataType tableName="program_attribute_type" columnName="retired_by" newDataType="int(10)"/>
-	</changeSet>
 	
 </databaseChangeLog>
