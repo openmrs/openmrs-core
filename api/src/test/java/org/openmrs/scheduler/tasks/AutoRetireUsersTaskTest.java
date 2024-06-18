@@ -39,6 +39,7 @@ class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 	private static final long TWO_DAYS_IN_MILLISECONDS = 2 * ONE_DAY_IN_MILLISECONDS;
 	private static final String ONE_DAY_PROPERTY_VALUE = "1";
 	private static final String TWO_DAYS_PROPERTY_VALUE = "2";
+	private static final String AUTO_RETIRE_REASON = "User retired due to inactivity";
 
 	@Mock
 	private UserService userService;
@@ -62,7 +63,7 @@ class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 
 		autoRetireUsersTask.execute();
 
-		verify(userService, atLeastOnce()).retireUser(eq(inactiveUser), anyString());
+		verify(userService, atLeastOnce()).retireUser(inactiveUser, AUTO_RETIRE_REASON);
 	}
 
 	@Test
@@ -76,7 +77,7 @@ class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 
 		autoRetireUsersTask.execute();
 
-		verify(userService, never()).retireUser(eq(activeUser), anyString());
+		verify(userService, never()).retireUser(activeUser, AUTO_RETIRE_REASON);
 	}
 
 	@Test
@@ -90,7 +91,7 @@ class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 
 		autoRetireUsersTask.execute();
 
-		verify(userService, never()).retireUser(eq(retiredUser), anyString());
+		verify(userService, never()).retireUser(retiredUser, AUTO_RETIRE_REASON);
 	}
 
 	@Test
@@ -104,7 +105,7 @@ class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 
 		autoRetireUsersTask.execute();
 
-		verify(userService, never()).retireUser(eq(adminUser), anyString());
+		verify(userService, never()).retireUser(adminUser, AUTO_RETIRE_REASON);
 	}
 
 	@Test
@@ -118,7 +119,7 @@ class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 
 		autoRetireUsersTask.execute();
 
-		verify(userService, atLeastOnce()).retireUser(eq(adminUser), anyString());
+		verify(userService, atLeastOnce()).retireUser(adminUser, AUTO_RETIRE_REASON);
 	}
 
 	@Test
@@ -132,7 +133,7 @@ class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 
 		autoRetireUsersTask.execute();
 
-		verify(userService, never()).retireUser(eq(adminUser), anyString());
+		verify(userService, never()).retireUser(adminUser, AUTO_RETIRE_REASON);
 	}
 
 	private User getDefaultUser() {
