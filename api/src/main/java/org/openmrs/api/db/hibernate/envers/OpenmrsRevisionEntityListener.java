@@ -16,10 +16,10 @@ import org.openmrs.api.context.Daemon;
 
 import java.util.Date;
 
-public class OpenMRSRevisionEntityListener implements RevisionListener {
+public class OpenmrsRevisionEntityListener implements RevisionListener {
 	@Override
 	public void newRevision(Object o) {
-		OpenMRSRevisionEntity customRevisionEntity = (OpenMRSRevisionEntity) o;
+		OpenmrsRevisionEntity customRevisionEntity = (OpenmrsRevisionEntity) o;
 		if(Context.getUserContext().isAuthenticated()) {
 			customRevisionEntity.setChangedBy(Context.getUserContext().getAuthenticatedUser().getUserId());
 		}

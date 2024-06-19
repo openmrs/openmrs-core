@@ -14,15 +14,17 @@ import org.hibernate.envers.DefaultRevisionEntity;
 import org.hibernate.envers.RevisionEntity;
 
 import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.util.Date;
 
 /**
  * Custom revision entity for OpenMRS application
  * Can be used to store revision metadata 
  */
-@RevisionEntity(OpenMRSRevisionEntityListener.class)
+@RevisionEntity(OpenmrsRevisionEntityListener.class)
 @Entity
-public class OpenMRSRevisionEntity extends DefaultRevisionEntity {
+@Table(name = "revision_entity")
+public class OpenmrsRevisionEntity extends DefaultRevisionEntity {
 
 	private Integer changedBy;
 	
