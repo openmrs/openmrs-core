@@ -12,7 +12,6 @@ package org.openmrs.scheduler.db;
 import java.util.List;
 
 import org.openmrs.api.db.DAOException;
-import org.openmrs.scheduler.Schedule;
 import org.openmrs.scheduler.TaskDefinition;
 
 /**
@@ -77,14 +76,6 @@ public interface SchedulerDAO {
 	 */
 	public void deleteTask(Integer taskId) throws DAOException;
 	
-	/**
-	 * Get schedule by internal identifier
-	 * 
-	 * @param scheduleId internal schedule identifier
-	 * @return schedule with given internal identifier
-	 * @throws DAOException
-	 */
-	public Schedule getSchedule(Integer scheduleId) throws DAOException;
 	
 	/**
 	 * Get task by public name.
