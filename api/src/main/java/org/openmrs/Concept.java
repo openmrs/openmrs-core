@@ -1436,9 +1436,9 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @see org.openmrs.Attributable#hydrate(java.lang.String)
 	 */
 	@Override
-	public Concept hydrate(String reference) {
+	public Concept hydrate(String s) {
 		try {
-			return Context.getConceptService().getConceptByReference(reference);
+			return Context.getConceptService().getConcept(Integer.valueOf(s));
 		}
 		catch (Exception e) {
 			// pass
