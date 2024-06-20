@@ -11,27 +11,19 @@ package org.openmrs.scheduler.tasks;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.openmrs.GlobalProperty;
-import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.RoleConstants;
 
-import java.util.Collections;
 import java.util.Date;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 	private static final long ONE_DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
@@ -41,7 +33,6 @@ class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 	private static final String TWO_DAYS_PROPERTY_VALUE = "2";
 	private static final String AUTO_RETIRE_REASON = "User retired due to inactivity";
 
-	@Mock
 	private UserService userService;
 	private AdministrationService administrationService;
 	private AutoRetireUsersTask autoRetireUsersTask;
@@ -50,98 +41,121 @@ class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 	public void setup() {
 		administrationService = Context.getAdministrationService();
 		autoRetireUsersTask = new AutoRetireUsersTask();
+		userService = Context.getUserService();
 	}
 
 	@Test
 	public void shouldRetireUsersWhoseInactivityExceedNumberOfDaysToRetire() {
 		administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_NUMBER_OF_DAYS_TO_AUTO_RETIRE_USERS, ONE_DAY_PROPERTY_VALUE));
 
-		User inactiveUser = getDefaultUser();
+		User user = getDefaultUser();
+		userService.setUserProperty(
+			user,
+			OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP,
+			String.valueOf((System.currentTimeMillis() - TWO_DAYS_IN_MILLISECONDS))
+		);
 
-		when(userService.getLastLoginTime(any())).thenReturn(String.valueOf(System.currentTimeMillis() - TWO_DAYS_IN_MILLISECONDS));
-		when(userService.getAllUsers()).thenReturn(Collections.singletonList(inactiveUser));
+		user.getAllRoles().forEach(user::removeRole);
 
 		autoRetireUsersTask.execute();
 
-		verify(userService, atLeastOnce()).retireUser(inactiveUser, AUTO_RETIRE_REASON);
+		assertTrue(user.isRetired());
+		assertEquals(user.getRetireReason(), AUTO_RETIRE_REASON);
 	}
 
 	@Test
 	public void shouldNotRetireUsersWhoseInactivityDoNotExceedNumberOfDaysToRetire() {
 		administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_NUMBER_OF_DAYS_TO_AUTO_RETIRE_USERS, TWO_DAYS_PROPERTY_VALUE));
 
-		User activeUser = getDefaultUser();
+		User user = getDefaultUser();
+		userService.setUserProperty(
+			user,
+			OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP,
+			String.valueOf((System.currentTimeMillis() - ONE_DAY_IN_MILLISECONDS))
+		);
 
-		when(userService.getLastLoginTime(any())).thenReturn(String.valueOf(System.currentTimeMillis() - ONE_DAY_IN_MILLISECONDS));
-		when(userService.getAllUsers()).thenReturn(Collections.singletonList(activeUser));
+		user.getAllRoles().forEach(user::removeRole);
 
 		autoRetireUsersTask.execute();
 
-		verify(userService, never()).retireUser(activeUser, AUTO_RETIRE_REASON);
+		assertFalse(user.isRetired());
 	}
 
 	@Test
 	public void shouldNotRetireAlreadyRetiredUsers() {
 		administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_NUMBER_OF_DAYS_TO_AUTO_RETIRE_USERS, ONE_DAY_PROPERTY_VALUE));
 
-		User retiredUser = getDefaultUser();
-		retiredUser.setRetired(true);
+		String retireReason = "Retire Test users";
 
-		when(userService.getAllUsers()).thenReturn(Collections.singletonList(retiredUser));
+		User retiredUser = userService.getUser(1);
+		userService.setUserProperty(
+			retiredUser,
+			OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP,
+			String.valueOf((System.currentTimeMillis() - TWO_DAYS_IN_MILLISECONDS))
+		);
+
+		retiredUser.getAllRoles().forEach(retiredUser::removeRole);
+
+		retiredUser.setRetired(true);
+		retiredUser.setRetireReason(retireReason);
+		
+		userService.saveUser(retiredUser);
 
 		autoRetireUsersTask.execute();
 
-		verify(userService, never()).retireUser(retiredUser, AUTO_RETIRE_REASON);
+		User fetchedUser = userService.getUser(retiredUser.getUserId());
+		assertTrue(fetchedUser.isRetired(), "User should remain retired after the task runs");
+		assertEquals(fetchedUser.getRetireReason(), retireReason);
 	}
 
 	@Test
 	public void shouldNotRetireUsersThatAreInactiveSinceCreationAndInactivityDoesNotExceedNumberOfDaysToRetire() {
 		administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_NUMBER_OF_DAYS_TO_AUTO_RETIRE_USERS, ONE_DAY_PROPERTY_VALUE));
 
-		User adminUser = getDefaultUser();
-		adminUser.setDateCreated(new Date(System.currentTimeMillis() - TWENTY_THREE_HOURS_IN_MILLISECONDS));
+		User user = getDefaultUser();
 
-		when(userService.getAllUsers()).thenReturn(Collections.singletonList(adminUser));
+		user.getAllRoles().forEach(user::removeRole);
+
+		user.setDateCreated(new Date(System.currentTimeMillis() - TWENTY_THREE_HOURS_IN_MILLISECONDS));
 
 		autoRetireUsersTask.execute();
 
-		verify(userService, never()).retireUser(adminUser, AUTO_RETIRE_REASON);
+		assertFalse(user.isRetired());
 	}
 
 	@Test
 	public void shouldRetireUsersThatAreInactiveSinceCreationAndInactivityExceedsNumberOfDaysToRetire() {
 		administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_NUMBER_OF_DAYS_TO_AUTO_RETIRE_USERS, ONE_DAY_PROPERTY_VALUE));
 
-		User adminUser = getDefaultUser();
-		adminUser.setDateCreated(new Date(System.currentTimeMillis() - TWO_DAYS_IN_MILLISECONDS));
+		User user = getDefaultUser();
 
-		when(userService.getAllUsers()).thenReturn(Collections.singletonList(adminUser));
+		user.getAllRoles().forEach(user::removeRole);
+
+		user.setDateCreated(new Date(System.currentTimeMillis() - TWO_DAYS_IN_MILLISECONDS));
 
 		autoRetireUsersTask.execute();
 
-		verify(userService, atLeastOnce()).retireUser(adminUser, AUTO_RETIRE_REASON);
+		assertTrue(user.isRetired());
+		assertEquals(user.getRetireReason(), AUTO_RETIRE_REASON);
 	}
 
 	@Test
 	public void shouldNotRetireSuperUsers() {
 		administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_NUMBER_OF_DAYS_TO_AUTO_RETIRE_USERS, ONE_DAY_PROPERTY_VALUE));
-
-		User adminUser = getDefaultUser();
-		adminUser.addRole(new Role(RoleConstants.SUPERUSER));
 		
-		when(userService.getAllUsers()).thenReturn(Collections.singletonList(adminUser));
+		User adminUser = userService.getUser(1);
+		userService.setUserProperty(
+			adminUser, 
+			OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP,
+			String.valueOf((System.currentTimeMillis() - TWO_DAYS_IN_MILLISECONDS))
+		);
 
 		autoRetireUsersTask.execute();
-
-		verify(userService, never()).retireUser(adminUser, AUTO_RETIRE_REASON);
+		
+		assertFalse(adminUser.isRetired());
 	}
 
 	private User getDefaultUser() {
-		User user = new User();
-		user.setUserId(1);
-		user.setSystemId("admin");
-		user.setUsername("admin");
-		user.setDateCreated(new Date());
-		return user;
+		return userService.getUser(1);
 	}
 }
