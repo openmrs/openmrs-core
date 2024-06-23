@@ -30,6 +30,7 @@
 	-->
 
 	<changeSet id="TRUNK-4755" author="Rahul,Swathi">
+			<validCheckSum><comment>Account for changing retired_by from int(11) to int</comment>8:b962b54a962ca69892c933c7fb863a91</validCheckSum>
             <preConditions onFail="MARK_RAN">
                 <not>
                     <tableExists tableName="program_attribute_type" />
