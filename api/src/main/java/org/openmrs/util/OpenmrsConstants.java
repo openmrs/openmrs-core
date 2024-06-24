@@ -20,6 +20,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
+import liquibase.GlobalConfiguration;
 import org.apache.commons.io.IOUtils;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.handler.ExistingVisitAssignmentHandler;
@@ -1322,7 +1323,10 @@ public final class OpenmrsConstants {
 	
 	/** Value for the long person name format */
 	public static final String PERSON_NAME_FORMAT_LONG = "long";
-	
+
+	// Liquibase Constants
+	public static final String LIQUIBASE_DUPLICATE_FILE_MODE_DEFAULT = GlobalConfiguration.DuplicateFileMode.WARN.name();
+
 	/** Value for zero login attempts */
 	public static final String ZERO_LOGIN_ATTEMPTS_VALUE = "0";
 	
