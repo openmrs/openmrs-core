@@ -9,11 +9,14 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
+
 import java.util.Date;
 
 /**
  * Relationship
  */
+@Audited
 public class Relationship extends BaseOpenmrsData implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 323423L;

@@ -19,10 +19,12 @@ import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.envers.Audited;
 
 /**
  * This class represents a list of patientIds.
  */
+@Audited
 public class Cohort extends BaseOpenmrsData implements Serializable {
 	
 	public static final long serialVersionUID = 0L;

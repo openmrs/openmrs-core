@@ -12,6 +12,7 @@ package org.openmrs;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.hibernate.envers.Audited;
 import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.IndexedEmbedded;
@@ -22,6 +23,7 @@ import org.hibernate.search.annotations.IndexedEmbedded;
  * 
  * @since 1.10
  */
+@Audited
 public class DrugReferenceMap extends BaseOpenmrsObject implements Auditable, Serializable {
 	
 	public static final long serialVersionUID = 1L;

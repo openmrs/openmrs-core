@@ -12,6 +12,7 @@ package org.openmrs;
 import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.envers.Audited;
 
 /**
  * FieldAnswer

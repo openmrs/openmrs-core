@@ -9,12 +9,15 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
+
 /**
  * This is a type of order that adds tests specific attributes like: laterality, clinical history,
  * etc.
  * 
  * @since 1.9.2, 1.10
  */
+@Audited
 public class TestOrder extends Order {
 	
 	public enum Laterality {

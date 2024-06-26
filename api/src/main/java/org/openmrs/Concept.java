@@ -29,6 +29,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.envers.Audited;
 import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Field;
@@ -70,6 +71,7 @@ import org.springframework.util.ObjectUtils;
  * @see ConceptService
  */
 @FullTextFilterDefs( { @FullTextFilterDef(name = "termsFilterFactory", impl = TermsFilterFactory.class) })
+@Audited
 public class Concept extends BaseOpenmrsObject implements Auditable, Retireable, Serializable, Attributable<Concept>,Customizable<ConceptAttribute> {
 	
 	public static final long serialVersionUID = 57332L;

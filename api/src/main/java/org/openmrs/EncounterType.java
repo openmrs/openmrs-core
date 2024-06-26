@@ -9,11 +9,14 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
+
 /**
  * An EncounterType defines how a certain kind of {@link Encounter}.
  * 
  * @see Encounter
  */
+@Audited
 public class EncounterType extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 789L;

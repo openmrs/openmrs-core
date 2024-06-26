@@ -23,6 +23,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.envers.Audited;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
@@ -36,6 +37,7 @@ import org.openmrs.util.RoleConstants;
  * key-value pairs for either quick info or display specific info that needs to be persisted (like
  * locale preferences, search options, etc)
  */
+@Audited
 public class User extends BaseOpenmrsMetadata implements java.io.Serializable, Attributable<User> {
 	
 	public static final long serialVersionUID = 2L;

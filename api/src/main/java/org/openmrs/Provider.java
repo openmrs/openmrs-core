@@ -11,12 +11,14 @@ package org.openmrs;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.envers.Audited;
 
 /**
  * Represents a person who may provide care to a patient during an encounter
  *
  * @since 1.9
  */
+@Audited
 public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 	
 	private final Log log = LogFactory.getLog(getClass());

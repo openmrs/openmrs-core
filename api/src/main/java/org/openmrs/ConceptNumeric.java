@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.TreeSet;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.envers.Audited;
 import org.hibernate.search.annotations.Indexed;
 
 /**
@@ -21,6 +22,7 @@ import org.hibernate.search.annotations.Indexed;
  * @see Concept
  */
 @Indexed
+@Audited
 public class ConceptNumeric extends Concept implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 47323L;

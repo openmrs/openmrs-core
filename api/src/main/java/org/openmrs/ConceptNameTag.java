@@ -12,10 +12,12 @@ package org.openmrs;
 import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.envers.Audited;
 
 /**
  * ConceptNameTag is a textual tag which can be applied to a ConceptName.
  */
+@Audited
 public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Voidable, java.io.Serializable {
 	
 	public static final long serialVersionUID = 33226787L;

@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.envers.Audited;
 import org.openmrs.annotation.Independent;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -25,6 +26,7 @@ import org.openmrs.api.context.Context;
  * and should be modeled using {@link LocationTag}s.
  * Note: Prior to version 1.9 this class extended BaseMetadata
  */
+@Audited
 public class Location extends BaseCustomizableMetadata<LocationAttribute> implements java.io.Serializable, Attributable<Location>, Address {
 	
 	public static final long serialVersionUID = 455634L;

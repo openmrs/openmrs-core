@@ -16,11 +16,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.envers.Audited;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
  * PatientProgram
  */
+@Audited
 public class PatientProgram extends BaseOpenmrsData implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 0L;

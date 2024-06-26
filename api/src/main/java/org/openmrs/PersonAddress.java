@@ -19,12 +19,14 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.envers.Audited;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
  * This class is the representation of a person's address. This class is many-to-one to the Person
  * class, so a Person/Patient/User can have zero to n addresses
  */
+@Audited
 public class PersonAddress extends BaseOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PersonAddress>, Address {
 	
 	public static final long serialVersionUID = 343333L;

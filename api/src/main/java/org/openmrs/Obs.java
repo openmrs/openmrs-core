@@ -12,6 +12,7 @@ package org.openmrs;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.envers.Audited;
 import org.openmrs.annotation.AllowDirectAccess;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -62,6 +63,7 @@ import java.util.Set;
  * 
  * @see Encounter
  */
+@Audited
 public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm";

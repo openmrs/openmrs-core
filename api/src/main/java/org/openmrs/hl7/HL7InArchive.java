@@ -9,12 +9,15 @@
  */
 package org.openmrs.hl7;
 
+import org.hibernate.envers.Audited;
+
 /**
  * Represents a successfully processed hl7 message.
  * 
  * @see HL7InQueue
  * @see HL7Service
  */
+@Audited
 public class HL7InArchive extends HL7QueueItem {
 	
 	private int hl7InArchiveId;

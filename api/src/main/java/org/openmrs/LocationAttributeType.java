@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
 import org.openmrs.attribute.AttributeType;
 import org.openmrs.attribute.BaseAttributeType;
 
@@ -17,6 +18,7 @@ import org.openmrs.attribute.BaseAttributeType;
  * @see AttributeType
  * @since 1.9
  */
+@Audited
 public class LocationAttributeType extends BaseAttributeType<Location> implements AttributeType<Location> {
 	
 	private Integer locationAttributeTypeId;

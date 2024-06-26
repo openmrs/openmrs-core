@@ -11,11 +11,13 @@ package org.openmrs.hl7;
 
 import java.io.Serializable;
 
+import org.hibernate.envers.Audited;
 import org.openmrs.BaseOpenmrsMetadata;
 
 /**
  * Names a unique location that hl7 messages could be coming from.
  */
+@Audited
 public class HL7Source extends BaseOpenmrsMetadata implements Serializable {
 	
 	private static final long serialVersionUID = 3062136520728193223L;

@@ -12,6 +12,7 @@ package org.openmrs;
 import java.util.Comparator;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.envers.Audited;
 
 /**
  * The FormField object relates/orders the <code>fields</code> on a <code>form</code> A form can
@@ -21,6 +22,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
  * @see org.openmrs.Form
  * @see org.openmrs.Field
  */
+@Audited
 public class FormField extends BaseOpenmrsMetadata implements java.io.Serializable, Comparable<FormField> {
 	
 	public static final long serialVersionUID = 3456L;

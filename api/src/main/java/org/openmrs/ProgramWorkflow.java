@@ -17,11 +17,13 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.hibernate.envers.Audited;
 import org.openmrs.util.NaturalStrings;
 
 /**
  * ProgramWorkflow
  */
+@Audited
 public class ProgramWorkflow extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	private static final long serialVersionUID = 1L;

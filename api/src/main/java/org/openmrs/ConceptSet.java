@@ -11,11 +11,13 @@ package org.openmrs;
 
 import java.util.Date;
 
+import org.hibernate.envers.Audited;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
  * This represents a single concept within a concept set.
  */
+@Audited
 public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.Serializable, Comparable<ConceptSet> {
 	
 	public static final long serialVersionUID = 3787L;

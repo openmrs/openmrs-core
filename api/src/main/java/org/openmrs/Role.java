@@ -15,6 +15,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.envers.Audited;
 import org.openmrs.util.RoleConstants;
 
 /**
@@ -25,6 +26,7 @@ import org.openmrs.util.RoleConstants;
  *
  * @see Privilege
  */
+@Audited
 public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 1234233L;

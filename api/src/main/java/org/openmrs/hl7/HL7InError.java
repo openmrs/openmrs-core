@@ -9,6 +9,7 @@
  */
 package org.openmrs.hl7;
 
+import org.hibernate.envers.Audited;
 import org.openmrs.api.APIException;
 
 /**
@@ -17,6 +18,7 @@ import org.openmrs.api.APIException;
  * @see HL7InQueue
  * @see HL7Service
  */
+@Audited
 public class HL7InError extends HL7QueueItem {
 	
 	private static final int MAX_ERROR_DETAILS_LENGTH = 16777215;

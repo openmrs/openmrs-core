@@ -9,11 +9,14 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
+
 import java.io.Serializable;
 
 /**
  * ProgramWorkflowState
  */
+@Audited
 public class ProgramWorkflowState extends BaseOpenmrsMetadata implements Serializable {
 	
 	private static final long serialVersionUID = 1L;

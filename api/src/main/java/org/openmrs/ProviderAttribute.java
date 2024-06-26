@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
 import org.openmrs.attribute.Attribute;
 import org.openmrs.attribute.BaseAttribute;
 
@@ -18,6 +19,7 @@ import org.openmrs.attribute.BaseAttribute;
  * @see Attribute
  * @since 1.9
  */
+@Audited
 public class ProviderAttribute extends BaseAttribute<ProviderAttributeType, Provider> implements Attribute<ProviderAttributeType, Provider> {
 	
 	private Integer providerAttributeId;
