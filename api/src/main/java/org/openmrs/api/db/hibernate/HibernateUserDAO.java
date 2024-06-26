@@ -43,8 +43,6 @@ import org.openmrs.util.UserByNameComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.openmrs.util.OpenmrsConstants.ZERO_LOGIN_ATTEMPTS_VALUE;
-
 /**
  * Hibernate specific database methods for the UserService
  * 
@@ -370,7 +368,7 @@ public class HibernateUserDAO implements UserDAO {
 		
 		// reset lockout 
 		changeForUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, "");
-		changeForUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, ZERO_LOGIN_ATTEMPTS_VALUE);
+		changeForUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, OpenmrsConstants.ZERO_LOGIN_ATTEMPTS_VALUE);
 		saveUser(changeForUser, null);
 	}
 	
