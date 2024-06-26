@@ -368,7 +368,7 @@ public class HibernateUserDAO implements UserDAO {
 		
 		// reset lockout 
 		changeForUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, "");
-		changeForUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "0");
+		changeForUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, OpenmrsConstants.ZERO_LOGIN_ATTEMPTS_VALUE);
 		saveUser(changeForUser, null);
 	}
 	
@@ -709,5 +709,13 @@ public class HibernateUserDAO implements UserDAO {
 	@Override
 	public void setUserActivationKey(LoginCredential credentials) {		
 			sessionFactory.getCurrentSession().merge(credentials);	
+	}
+
+	/**
+	 * @see org.openmrs.api.db.UserDAO#getLastLoginTime(org.openmrs.User)
+	 */
+	@Override
+	public String getLastLoginTime(User user) {
+		return user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP);
 	}
 }

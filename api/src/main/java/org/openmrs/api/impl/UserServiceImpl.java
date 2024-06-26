@@ -808,4 +808,11 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		
 		updatePassword(user, newPassword);
 	}
+
+	/**
+	 * @see org.openmrs.api.UserService#getLastLoginTime(User)
+	 */
+	public String getLastLoginTime(User user) {
+		return dao.getLastLoginTime(user);
+	}
 }
