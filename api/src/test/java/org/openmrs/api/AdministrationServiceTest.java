@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
@@ -40,7 +39,6 @@ import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Credentials;
-import org.openmrs.api.context.UserContext;
 import org.openmrs.api.context.UsernamePasswordCredentials;
 import org.openmrs.customdatatype.datatype.BooleanDatatype;
 import org.openmrs.customdatatype.datatype.DateDatatype;
@@ -554,7 +552,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		GlobalProperty property = new GlobalProperty();
 		property.setProperty("test_property");
 		property.setPropertyValue("test_property_value");
-		property.setViewPrivilege(Context.getUserService().getPrivilege("Some Privilege For View Global Properties"));
+		property.setViewPrivilege(Context.getUserService().getPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES));
 		adminService.saveGlobalProperty(property);
 		// assert new test global property is saved properly
 		List<GlobalProperty> properties = adminService.getAllGlobalProperties();
@@ -588,9 +586,8 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Context.logout();
 		Context.authenticate(getTestUserCredentials());
 		
-		APIException exception = assertThrows(APIException.class, () -> adminService.getGlobalProperty(property.getProperty()));
-		assertEquals(exception.getMessage(), String.format("Privilege: %s, required to view globalProperty: %s",
-			property.getViewPrivilege(), property.getProperty()));
+		APIAuthenticationException exception = assertThrows(APIAuthenticationException.class, () -> adminService.getGlobalProperty(property.getProperty()));
+		assertEquals(exception.getMessage(), String.format("Privileges required: %s", property.getViewPrivilege()));
 	}
 	
 	/**
@@ -608,7 +605,6 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Role role = Context.getUserService().getRole("Provider");
 		role.addPrivilege(property.getViewPrivilege());
 		Context.getAuthenticatedUser().addRole(role);
-		
 		assertNotNull(adminService.getGlobalProperty(property.getProperty()));
 	}
 
@@ -625,8 +621,8 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Context.authenticate(getTestUserCredentials());
 
 		APIException exception = assertThrows(APIException.class, () -> adminService.getGlobalPropertyObject(property.getProperty()));
-		assertEquals(exception.getMessage(), String.format("Privilege: %s, required to view globalProperty: %s",
-			property.getViewPrivilege(), property.getProperty()));
+		assertEquals(exception.getMessage(), String.format("Privileges required: %s",
+			property.getViewPrivilege()));
 	}
 
 	/**
@@ -662,8 +658,8 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Context.authenticate(getTestUserCredentials());
 		
 		APIException exception = assertThrows(APIException.class, () -> adminService.updateGlobalProperty(property.getProperty(), "new-value"));
-		assertEquals(exception.getMessage(), String.format("Privilege: %s, required to edit globalProperty: %s",
-			property.getEditPrivilege(), property.getProperty()));
+		assertEquals(exception.getMessage(), String.format("Privileges required: %s",
+			property.getEditPrivilege()));
 	}
 	
 	/**
@@ -673,6 +669,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	public void updateGlobalProperty_shouldUpdateIfUserIsAllowedToEditGlobalProperty() {
 		executeDataSet(ADMIN_INITIAL_DATA_XML);
 		GlobalProperty property = getGlobalPropertyWithEditPrivilege();
+		GlobalProperty globalPropertyWithViewPrivilege = getGlobalPropertyWithViewPrivilege();
 		assertEquals("anothervalue", property.getPropertyValue());
 
 		// authenticate new user without privileges
@@ -681,6 +678,9 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		// add required privilege to user
 		Role role = Context.getUserService().getRole("Provider");
 		role.addPrivilege(property.getEditPrivilege());
+
+		role.addPrivilege(globalPropertyWithViewPrivilege.getViewPrivilege());
+		
 		Context.getAuthenticatedUser().addRole(role);
 		
 		adminService.updateGlobalProperty(property.getProperty(), "new-value");
@@ -735,7 +735,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		GlobalProperty property = adminService.getGlobalPropertyObject("another-global-property");
 		assertNotNull(property);
 		
-		Privilege viewPrivilege = Context.getUserService().getPrivilege("Some Privilege For View Global Properties");
+		Privilege viewPrivilege = Context.getUserService().getPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		property.setViewPrivilege(viewPrivilege);
 		property = adminService.saveGlobalProperty(property);
 		assertNotNull(property.getViewPrivilege());
@@ -752,7 +752,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		GlobalProperty property = adminService.getGlobalPropertyObject("another-global-property");
 		assertNotNull(property);
 		
-		Privilege editPrivilege = Context.getUserService().getPrivilege("Some Privilege For Edit Global Properties");
+		Privilege editPrivilege = Context.getUserService().getPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
 		property.setEditPrivilege(editPrivilege);
 		property = adminService.saveGlobalProperty(property);
 		assertNotNull(property.getEditPrivilege());
