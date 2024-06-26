@@ -60,7 +60,7 @@ class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 		autoRetireUsersTask.execute();
 
 		assertTrue(user.isRetired());
-		assertEquals(user.getRetireReason(), AUTO_RETIRE_REASON);
+		assertEquals(AUTO_RETIRE_REASON, user.getRetireReason());
 	}
 
 	@Test
@@ -85,7 +85,7 @@ class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 	public void shouldNotRetireAlreadyRetiredUsers() {
 		administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_NUMBER_OF_DAYS_TO_AUTO_RETIRE_USERS, ONE_DAY_PROPERTY_VALUE));
 
-		String retireReason = "Retire Test users";
+		final String RETIRE_REASON = "Retire Test users";
 
 		User retiredUser = userService.getUser(1);
 		userService.setUserProperty(
@@ -97,7 +97,7 @@ class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 		retiredUser.getAllRoles().forEach(retiredUser::removeRole);
 
 		retiredUser.setRetired(true);
-		retiredUser.setRetireReason(retireReason);
+		retiredUser.setRetireReason(RETIRE_REASON);
 		
 		userService.saveUser(retiredUser);
 
@@ -105,7 +105,7 @@ class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 
 		User fetchedUser = userService.getUser(retiredUser.getUserId());
 		assertTrue(fetchedUser.isRetired(), "User should remain retired after the task runs");
-		assertEquals(fetchedUser.getRetireReason(), retireReason);
+		assertEquals(RETIRE_REASON, fetchedUser.getRetireReason());
 	}
 
 	@Test
@@ -136,7 +136,7 @@ class AutoRetireUsersTaskTest extends BaseContextSensitiveTest {
 		autoRetireUsersTask.execute();
 
 		assertTrue(user.isRetired());
-		assertEquals(user.getRetireReason(), AUTO_RETIRE_REASON);
+		assertEquals(AUTO_RETIRE_REASON, user.getRetireReason());
 	}
 
 	@Test
