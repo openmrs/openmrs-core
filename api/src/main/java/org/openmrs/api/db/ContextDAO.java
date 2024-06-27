@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Future;
 
+import org.hibernate.SessionFactory;
+import org.openmrs.OpenmrsObject;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
@@ -119,6 +121,29 @@ public interface ContextDAO {
 	 * @see org.openmrs.api.context.Context#evictFromSession(Object)
 	 */
 	public void evictFromSession(Object obj);
+
+	/**
+	 * Evicts the entity data for a particular entity instance.
+	 *
+	 * @param object entity instance to evict from the DB cache
+	 * @see org.openmrs.api.context.Context#evictEntity(OpenmrsObject)   
+	 */
+	public void evictEntity(OpenmrsObject object);
+
+	/**
+	 * Evicts all entity data of a particular class from the given region.
+	
+	 * @param entityClass entity class to evict from the DB cache
+	 * @see org.openmrs.api.context.Context#evictAllEntities(Class)
+	 */
+	public void evictAllEntities(Class<?> entityClass);
+
+	/**
+	 * Evicts data from all cache regions.
+	 *
+	 * @see org.openmrs.api.context.Context#clearEntireCache()
+	 */
+	public void clearEntireCache();
 
 	/**
 	 * Used to re-read the state of the given instance from the underlying database.
