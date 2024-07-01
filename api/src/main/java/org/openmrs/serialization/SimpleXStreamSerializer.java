@@ -19,6 +19,14 @@ import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.converters.extended.DynamicProxyConverter;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.impl.AdministrationServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * This serializer uses the xstream library to serialize and deserialize objects.
@@ -40,10 +48,16 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
  * </code>
  *
  */
+@Component("simpleXStreamSerializer")
 public class SimpleXStreamSerializer implements OpenmrsSerializer {
+
+	protected static final Logger log = LoggerFactory.getLogger(SimpleXStreamSerializer.class);
 	
-	// cached xstream object
-	public XStream xstream = null;
+	private volatile XStream xstream;
+	
+	private final XStream customXStream;
+	
+	private AdministrationService adminService;
 	
 	/**
 	 * Default Constructor
@@ -51,28 +65,83 @@ public class SimpleXStreamSerializer implements OpenmrsSerializer {
 	 * @throws SerializationException
 	 */
 	public SimpleXStreamSerializer() throws SerializationException {
-		this(null);
+		this(null, null);
 	}
-	
+
 	/**
-	 * Constructor that takes a custom XStream object
-	 * @param customXstream
+	 * Constructor that takes a custom XStream object. 
+	 * 
+	 * Please note that it is deprecated since it now requires AdministrationService to fully configure
+	 * whitelists defined via GPs.
+	 * 
+	 * @deprecated since 2.7.0, 2.6.2, 2.5.13 use SimpleXStreamSerializer(XStream, AdministrationService)
+	 * @param customXStream
 	 * @throws SerializationException
 	 */
-	public SimpleXStreamSerializer(XStream customXstream) throws SerializationException {
-		if (customXstream == null) {
-			
-			xstream = new XStream();
-			
+	public SimpleXStreamSerializer(XStream customXStream) throws SerializationException {
+		this(customXStream, null);
+	}
+	
+	public SimpleXStreamSerializer(XStream customXStream, AdministrationService adminService) throws SerializationException {
+		this.customXStream = customXStream;
+		this.adminService = adminService;
+	}
+	
+	@Autowired
+	public SimpleXStreamSerializer(AdministrationService adminService) {
+		this.customXStream = null;
+		this.adminService = adminService;
+	}
+
+	/**
+	 * Setups XStream security using AdministrationService.getSerializerWhitelistTypes()
+	 * 
+	 * @since 2.7.0, 2.6.2, 2.5.13 
+	 * @param newXStream
+	 * @param adminService
+	 */
+	public static void setupXStreamSecurity(XStream newXStream, AdministrationService adminService) {
+		if (adminService != null) {
+			List<String> serializerWhitelistTypes = adminService.getSerializerWhitelistTypes();
+			int prefixLength = AdministrationService.GP_SERIALIZER_WHITELIST_HIERARCHY_TYPES_PREFIX.length();
+			for (String type: serializerWhitelistTypes) {
+				if (type.startsWith(AdministrationService.GP_SERIALIZER_WHITELIST_HIERARCHY_TYPES_PREFIX)) {
+					try {
+						Class<?> aClass = Class.forName(type.substring(prefixLength));
+						newXStream.allowTypeHierarchy(aClass);
+					} catch (ClassNotFoundException e) {
+						log.warn("XStream serializer not configured to whitelist hierarchy of " + type, e);
+					}
+				} else if (type.contains("*")) {
+					newXStream.allowTypesByWildcard(new String[] {type});
+				} else {
+					newXStream.allowTypes(new String[] {type});
+				}
+			}
 		} else {
-			this.xstream = customXstream;
+			log.warn("XStream serializer not configured with whitelists defined in GPs suffixed " +
+				"with '.serializer.whitelist.types' due to adminService not being set.");
+			List<Class<?>> types = AdministrationServiceImpl.getSerializerDefaultWhitelistHierarchyTypes();
+			for (Class<?> type: types) {
+				newXStream.allowTypeHierarchy(type);
+			}
 		}
-		xstream.registerConverter(new OpenmrsDynamicProxyConverter(), XStream.PRIORITY_VERY_HIGH);
+	}
+
+	/**
+	 * Setups permissions and default attributes.
+	 *
+	 * @since 2.7.0, 2.6.2, 2.5.13 
+	 * @param newXStream
+	 */
+	public void initXStream(XStream newXStream) {
+		setupXStreamSecurity(newXStream, adminService);
 		
-		//this is added to read the prior simpleframework-serialized values.
-		// TODO find a better way to do this.
-		this.xstream.useAttributeFor(ImplementationId.class, "implementationId");
-		
+		newXStream.registerConverter(new OpenmrsDynamicProxyConverter(), XStream.PRIORITY_VERY_HIGH);
+
+		//This is added to read the prior simpleframework-serialized values.
+		//TODO: find a better way to do this.
+		newXStream.useAttributeFor(ImplementationId.class, "implementationId");
 	}
 	
 	/**
@@ -81,6 +150,15 @@ public class SimpleXStreamSerializer implements OpenmrsSerializer {
 	 * @return xstream can be configured by module
 	 */
 	public XStream getXstream() {
+		if (xstream == null) {
+			//Lazy-init so that GPs are completely populated for initXStream
+			XStream newXStream = customXStream;
+			if (newXStream == null) {	
+				newXStream = new XStream();
+			}
+			initXStream(newXStream);
+			xstream = newXStream;
+		}
 		return xstream;
 	}
 	
@@ -90,21 +168,23 @@ public class SimpleXStreamSerializer implements OpenmrsSerializer {
 	 */
 	@Override
 	public String serialize(Object o) throws SerializationException {
-		
-		return xstream.toXML(o);
+		return getXstream().toXML(o);
 	}
 	
 	/**
 	 * @see OpenmrsSerializer#deserialize(String, Class)
 	 * <strong>Should</strong> not deserialize proxies
 	 * <strong>Should</strong> ignore entities
+	 * <strong>Should</strong> not deserialize classes that are not whitelisted
+	 * <strong>Should</strong> deserialize whitelisted packages
+	 * <strong>Should</strong> deserialize whitelisted classes and packages
+	 * <strong>Should</strong> deserialize whitelisted hierarchies
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T deserialize(String serializedObject, Class<? extends T> clazz) throws SerializationException {
-		
 		try {
-			return (T) xstream.fromXML(serializedObject);
+			return (T) getXstream().fromXML(serializedObject);
 		}
 		catch (XStreamException e) {
 			throw new SerializationException("Unable to deserialize class: " + clazz.getName(), e);
