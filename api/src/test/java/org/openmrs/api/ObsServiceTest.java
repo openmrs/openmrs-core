@@ -55,6 +55,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.ObsServiceImpl;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
+import org.openmrs.obs.handler.AbstractHandler;
 import org.openmrs.obs.handler.BinaryDataHandler;
 import org.openmrs.obs.handler.ImageHandler;
 import org.openmrs.obs.handler.TextHandler;
@@ -810,6 +811,46 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Obs obs = obsService.getObs(7);
 		
 		assertEquals(5089, obs.getConcept().getId().intValue());
+	}
+	
+	/**
+	 * This is a test to verify the behavior reported in TRUNK-5721.
+	 * The test name and the content will be refactored once the expected behavior is known
+	 *
+	 * @see ObsService#saveObs(Obs,String)
+	 * @see ObsService#getObs(Integer)
+	 * @see ComplexObsHandler#saveObs(Obs)
+	 */
+	@Test
+	public void getObs_shouldGetObsWithComplexDataNull() throws IOException {
+		// load and retrieve a complex concept from COMPLEX_OBS_XML
+		executeDataSet(COMPLEX_OBS_XML);
+		Concept complexConcept = Context.getConceptService().getConcept(8474);
+		
+		// construct complex observation, but with complex data field set to null
+		Obs complexObs = new Obs(new Person(1), complexConcept, new Date(), new Location(1));
+		ComplexData complexData = new ComplexData("title", null);
+		complexObs.setComplexData(complexData);
+		assertTrue(complexObs.isComplex());
+		
+		// delete the complex data file if already exists
+		File complexDataFile = new AbstractHandler().getOutputFileToWrite(complexObs);
+		if (complexDataFile.exists()) {
+			complexDataFile.delete();
+		}
+		
+		try {
+			Context.getObsService().saveObs(complexObs, null);
+			
+			// Verify that data file not exist
+			assertFalse(complexDataFile.exists());
+			
+			// Assert that ObsService.getObs fails if data file not exist
+			assertThrows(NullPointerException.class, () -> obsService.getObs(complexObs.getObsId()));
+		}
+		finally {
+			complexDataFile.delete();
+		}
 	}
 	
 	/**
