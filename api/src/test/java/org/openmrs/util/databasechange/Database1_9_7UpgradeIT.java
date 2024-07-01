@@ -157,7 +157,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 	public void shouldFailMigratingDrugOrdersIfUnitsToConceptsMappingsIsNotSet() throws IOException, SQLException {
 		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
 		createOrderEntryUpgradeFileWithTestData("");
-		String errorMsgSubString1 = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201401101647-TRUNK-4187::wyclif";
+		String errorMsgSubString1 = "liquibase.exception.CommandExecutionException: liquibase.exception.LiquibaseException: liquibase.exception.MigrationFailedException: Migration failed for changeset liquibase-update-to-latest.xml::201401101647-TRUNK-4187::wyclif";
 		String errorMsgSubString2 = Context.getMessageSourceService().getMessage("upgrade.settings.file.not.have.mapping",
 		    new Object[] { "mg" }, null);
 		IOException exception = assertThrows(IOException.class, () -> upgradeTestUtil.upgrade());
@@ -174,7 +174,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		    "mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=invalid");
 		
-		String errorMsgSubString1 = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201401101647-TRUNK-4187::wyclif";
+		String errorMsgSubString1 = "liquibase.exception.CommandExecutionException: liquibase.exception.LiquibaseException: liquibase.exception.MigrationFailedException: Migration failed for changeset liquibase-update-to-latest.xml::201401101647-TRUNK-4187::wyclif";
 		IOException exception = assertThrows(IOException.class, () -> upgradeTestUtil.upgrade());
 		assertThat(exception.getMessage(), containsString(errorMsgSubString1));
 		assertThat(exception.getMessage(), containsString("For input string: \"invalid\""));
@@ -224,7 +224,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		//map the frequencies only
 		createOrderEntryUpgradeFileWithTestData("1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
-		String errorMsgSubString1 = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201401101647-TRUNK-4187::wyclif";
+		String errorMsgSubString1 = "liquibase.exception.CommandExecutionException: liquibase.exception.LiquibaseException: liquibase.exception.MigrationFailedException: Migration failed for changeset liquibase-update-to-latest.xml::201401101647-TRUNK-4187::wyclif";
 		IOException exception = assertThrows(IOException.class, () -> upgradeTestUtil.upgrade());
 		assertThat(exception.getMessage(), containsString(errorMsgSubString1));
 	}
@@ -240,7 +240,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		//map the dose units only
 		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112");
 		
-		String errorMsgSubString1 = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201401101647-TRUNK-4187::wyclif";
+		String errorMsgSubString1 = "liquibase.exception.CommandExecutionException: liquibase.exception.LiquibaseException: liquibase.exception.MigrationFailedException: Migration failed for changeset liquibase-update-to-latest.xml::201401101647-TRUNK-4187::wyclif";
 		
 		IOException exception = assertThrows(IOException.class, () -> upgradeTestUtil.upgrade());
 		assertThat(exception.getMessage(), containsString(errorMsgSubString1));
@@ -344,7 +344,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		createOrderEntryUpgradeFileWithTestData(
 		    "mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
-		String errorMsgSubString = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201403262140-TRUNK-4265::wyclif";
+		String errorMsgSubString = "liquibase.exception.CommandExecutionException: liquibase.exception.LiquibaseException: liquibase.exception.MigrationFailedException: Migration failed for changeset liquibase-update-to-latest.xml::201403262140-TRUNK-4265::wyclif";
 		IOException exception = assertThrows(IOException.class, () -> upgradeTestUtil.upgrade());
 		assertThat(exception.getMessage(), containsString(errorMsgSubString));
 	}
@@ -357,7 +357,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		createOrderEntryUpgradeFileWithTestData(
 		    "mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
-		String errorMsgSubString = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201403262140-TRUNK-4265::wyclif";
+		String errorMsgSubString = "liquibase.exception.CommandExecutionException: liquibase.exception.LiquibaseException: liquibase.exception.MigrationFailedException: Migration failed for changeset liquibase-update-to-latest.xml::201403262140-TRUNK-4265::wyclif";
 		IOException exception = assertThrows(IOException.class, () -> upgradeTestUtil.upgrade());
 		assertThat(exception.getMessage(), containsString(errorMsgSubString));
 	}
@@ -371,7 +371,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		createOrderEntryUpgradeFileWithTestData(
 		    "mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
-		String errorMsgSubString = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201404091110::wyclif";
+		String errorMsgSubString = "liquibase.exception.CommandExecutionException: liquibase.exception.LiquibaseException: liquibase.exception.MigrationFailedException: Migration failed for changeset liquibase-update-to-latest.xml::201404091110::wyclif";
 		IOException exception = assertThrows(IOException.class, () -> upgradeTestUtil.upgrade());
 		assertThat(exception.getLocalizedMessage(), containsString(errorMsgSubString));
 	}
@@ -428,7 +428,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		createOrderEntryUpgradeFileWithTestData(
 		    "mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
-		String errorMsgSubString = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201406262016::wyclif";
+		String errorMsgSubString = "liquibase.exception.CommandExecutionException: liquibase.exception.LiquibaseException: liquibase.exception.MigrationFailedException: Migration failed for changeset liquibase-update-to-latest.xml::201406262016::wyclif";
 		IOException exception = assertThrows(IOException.class, () -> upgradeTestUtil.upgrade());
 		assertThat(exception.getMessage(), containsString(errorMsgSubString));
 	}

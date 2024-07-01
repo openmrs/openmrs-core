@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.envers.Audited;
 import org.openmrs.annotation.Independent;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -22,6 +23,7 @@ import org.openmrs.api.context.Context;
  * Radiology TestOrders
  *
  */
+@Audited
 public class OrderType extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 23232L;

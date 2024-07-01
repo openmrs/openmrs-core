@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.Customizable;
 import org.openmrs.util.OpenmrsUtil;
@@ -27,6 +28,7 @@ import java.util.Set;
 /**
  * PatientProgram
  */
+@Audited
 public class PatientProgram extends BaseChangeableOpenmrsData implements Customizable<PatientProgramAttribute>{
 	
 	public static final long serialVersionUID = 0L;

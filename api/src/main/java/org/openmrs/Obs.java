@@ -21,9 +21,11 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.envers.Audited;
 import org.openmrs.annotation.AllowDirectAccess;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.Format;
@@ -61,6 +63,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @see Encounter
  */
+@Audited
 public class Obs extends BaseFormRecordableOpenmrsData {
 	
 	/**
@@ -675,6 +678,7 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	/**
 	 * @return Returns the valueCoded.
 	 */
+	
 	public Concept getValueCoded() {
 		return valueCoded;
 	}
@@ -977,8 +981,9 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 				if (getValueNumeric() == null) {
 					return "";
 				} else {
-					if (getConcept() instanceof ConceptNumeric) {
-						ConceptNumeric cn = (ConceptNumeric) getConcept();
+					Concept deproxiedConcept = HibernateUtil.getRealObjectFromProxy(getConcept());
+					if (deproxiedConcept instanceof ConceptNumeric) {
+						ConceptNumeric cn = (ConceptNumeric) deproxiedConcept;
 						if (!cn.getAllowDecimal()) {
 							double d = getValueNumeric();
 							int i = (int) d;

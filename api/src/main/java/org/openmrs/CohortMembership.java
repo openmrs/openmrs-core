@@ -12,11 +12,13 @@ package org.openmrs;
 import java.util.Date;
 import java.util.Objects;
 
+import org.hibernate.envers.Audited;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
  * @since 2.1.0
  */
+@Audited
 public class CohortMembership extends BaseChangeableOpenmrsData implements Comparable<CohortMembership> {
 	
 	public static final long serialVersionUID = 0L;

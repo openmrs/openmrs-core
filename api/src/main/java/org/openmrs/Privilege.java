@@ -9,11 +9,14 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
+
 /**
  * Privilege
  * 
  * @version 1.0
  */
+@Audited
 public class Privilege extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 312L;

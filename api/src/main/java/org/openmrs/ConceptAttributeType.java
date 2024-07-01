@@ -9,9 +9,11 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
 import org.openmrs.attribute.AttributeType;
 import org.openmrs.attribute.BaseAttributeType;
 
+@Audited
 public class ConceptAttributeType extends BaseAttributeType<Concept> implements AttributeType<Concept> {
 	
 	private Integer conceptAttributeTypeId;

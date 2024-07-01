@@ -1790,6 +1790,7 @@
 		<validCheckSum>1b6141be59a8a243b9e56d0aad952af</validCheckSum> <!-- checksum from before idExceptions added -->
 		<validCheckSum>89cc7a14b0582f157ea2dbb9de092fd</validCheckSum> <!-- current checksum with idExceptions param added -->
 		<validCheckSum><comment>Changes to new concept_reference tables</comment>3:4edd135921eb263d4811cf1c22ef4846</validCheckSum>
+		<validCheckSum><comment>Account for trailing whitespace</comment>9:5d41399f930d6de5c0030986b78f35e5</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<or>
@@ -3521,6 +3522,7 @@
 		<validCheckSum><comment>After changing to boolean</comment>3:b57c0f651ed477457fd16e503eaf51a4</validCheckSum>
 		<validCheckSum>3:002108aacdf55731f4fd472d5308c5c8</validCheckSum>
         <validCheckSum>3:6a72bbb390155596e52da4e8d065d1a2</validCheckSum>
+        <validCheckSum><comment>Account for trailing whitespace</comment>9:f41906e41efde3f7473abaa52fa161dc</validCheckSum>
         <validCheckSum><comment>Fixing TRUNK-4040</comment>3:74026cd4543ebbf561999a81c276224d</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<not>

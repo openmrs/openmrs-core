@@ -18,7 +18,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.hibernate.HibernateUtil;
-import org.openmrs.scheduler.Schedule;
 import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.scheduler.db.SchedulerDAO;
 import org.slf4j.Logger;
@@ -159,24 +158,6 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 		sessionFactory.getCurrentSession().delete(taskConfig);
 	}
 	
-	/**
-	 * Get schedule by internal identifier
-	 * 
-	 * @param scheduleId internal schedule identifier
-	 * @return schedule with given internal identifier
-	 * @throws DAOException
-	 */
-	@Override
-	public Schedule getSchedule(Integer scheduleId) throws DAOException {
-		Schedule schedule = sessionFactory.getCurrentSession().get(Schedule.class, scheduleId);
-		
-		if (schedule == null) {
-			log.error("Schedule '" + scheduleId + "' not found");
-			throw new ObjectRetrievalFailureException(Schedule.class, scheduleId);
-		}
-		return schedule;
-	}
-
 	/**
 	 * 
 	 * @see org.openmrs.scheduler.db.SchedulerDAO#getTaskByUuid(java.lang.String)

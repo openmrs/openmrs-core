@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +18,7 @@ import org.slf4j.LoggerFactory;
  *
  * @since 1.9
  */
+@Audited
 public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 	
 	private static final Logger log = LoggerFactory.getLogger(Provider.class);

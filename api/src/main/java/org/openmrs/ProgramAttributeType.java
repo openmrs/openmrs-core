@@ -10,9 +10,11 @@
 
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
 import org.openmrs.attribute.AttributeType;
 import org.openmrs.attribute.BaseAttributeType;
 
+@Audited
 public class ProgramAttributeType extends BaseAttributeType<PatientProgram> implements AttributeType<PatientProgram> {
     private Integer programAttributeTypeId;
 

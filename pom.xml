@@ -247,6 +247,11 @@
 				<version>${hibernateSearchVersion}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-envers</artifactId>
+				<version>${hibernateVersion}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.apache.lucene</groupId>
 				<artifactId>lucene-queryparser</artifactId>
 				<version>${luceneVersion}</version>
@@ -269,7 +274,7 @@
 			<dependency>
 				<groupId>org.liquibase</groupId>
 				<artifactId>liquibase-core</artifactId>
-				<version>4.8.0</version>
+				<version>4.27.0</version>
 				<exclusions>
 					<exclusion>
 						<groupId>ch.qos.logback</groupId>
@@ -598,7 +603,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>3.2.5</version>
+					<version>3.3.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -618,7 +623,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
-					<version>3.4.1</version>
+					<version>3.4.2</version>
 					<configuration>
 						<archive>
 							<manifestEntries>
@@ -700,7 +705,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-release-plugin</artifactId>
-					<version>3.0.1</version>
+					<version>3.1.0</version>
 					<configuration>
 						<preparationGoals>clean install</preparationGoals>
 						<autoVersionSubmodules>true</autoVersionSubmodules>
@@ -930,7 +935,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.2.5</version>
+				<version>3.3.0</version>
 				<configuration>
 					<failIfNoTests>false</failIfNoTests>
 					<useSystemClassLoader>false</useSystemClassLoader>
@@ -942,7 +947,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<version>3.7.0</version>
+				<version>3.7.1</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -1212,7 +1217,7 @@
 		<luceneVersion>5.5.5</luceneVersion>
 		<aspectjVersion>1.9.22.1</aspectjVersion>
 		<jacksonVersion>2.17.1</jacksonVersion>
-		<junitVersion>5.10.2</junitVersion>
+		<junitVersion>5.10.3</junitVersion>
 		<mockitoVersion>3.12.4</mockitoVersion>
 		<hamcrestVersion>2.2</hamcrestVersion>
 

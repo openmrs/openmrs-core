@@ -28,7 +28,7 @@
 		<property name="uuid" type="java.lang.String"
 			column="uuid" length="38" unique="true" />
 
-		<property name="instructions" type="java.lang.String" column="instructions" length="65535"/>
+		<property name="instructions" type="text" column="instructions" length="65535"/>
 		<property name="dateActivated" type="java.util.Date" column="date_activated" length="19" not-null="true"/>
 		<property name="autoExpireDate" type="java.util.Date" column="auto_expire_date" length="19"/>
 		<property name="dateStopped" type="java.util.Date" column="date_stopped" length="19" access="field"/>
@@ -116,7 +116,7 @@
 			<many-to-one name="drug" class="org.openmrs.Drug" not-null="false" column="drug_inventory_id" access="field"/>
             <property name="dosingType" type="java.lang.Class" column="dosing_type"  length="255"/>
             <property name="numRefills" type="int" column="num_refills" />
-            <property name="dosingInstructions" type="java.lang.String" column="dosing_instructions" length="65535"/>
+            <property name="dosingInstructions" type="text" column="dosing_instructions" length="65535"/>
             <property name="duration" type="int" column="duration"/>
             <many-to-one name="durationUnits" class="org.openmrs.Concept" column="duration_units" />
             <many-to-one name="route" class="org.openmrs.Concept" />
@@ -137,7 +137,7 @@
                     <param name="useNamed">true</param>
                 </type>
             </property>
-            <property name="clinicalHistory" type="java.lang.String" column="clinical_history" length="65535" />
+            <property name="clinicalHistory" type="text" column="clinical_history" length="65535" />
             <property name="numberOfRepeats" type="int" column="number_of_repeats"/>
             <many-to-one name="frequency" class="org.openmrs.OrderFrequency" />
             <many-to-one name="location" class="org.openmrs.Concept" />
@@ -156,7 +156,7 @@
                     <param name="useNamed">true</param>
                 </type>
             </property>
-            <property name="clinicalHistory" type="java.lang.String" column="clinical_history" length="65535" />
+            <property name="clinicalHistory" type="text" column="clinical_history" length="65535" />
             <property name="numberOfRepeats" type="int" column="number_of_repeats"/>
             <many-to-one name="frequency" class="org.openmrs.OrderFrequency" />
 			<many-to-one name="location" class="org.openmrs.Concept" />

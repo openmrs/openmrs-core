@@ -9,9 +9,12 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
+
 /**
  * FieldType
  */
+@Audited
 public class FieldType extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 35467L;

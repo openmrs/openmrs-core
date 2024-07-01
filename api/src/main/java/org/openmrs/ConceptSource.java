@@ -9,12 +9,15 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
+
 import java.util.Date;
 
 /**
  * A concept source is defined as any institution that keeps a concept dictionary. Examples are
  * ICD9, ICD10, SNOMED, or any other OpenMRS implementation
  */
+@Audited
 public class ConceptSource extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 375L;

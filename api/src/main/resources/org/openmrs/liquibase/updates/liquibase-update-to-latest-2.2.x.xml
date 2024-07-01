@@ -30,6 +30,7 @@
 	-->
 
 	<changeSet id="TRUNK-4755" author="Rahul,Swathi">
+			<validCheckSum><comment>Account for changing retired_by from int(11) to int</comment>8:b962b54a962ca69892c933c7fb863a91</validCheckSum>
             <preConditions onFail="MARK_RAN">
                 <not>
                     <tableExists tableName="program_attribute_type" />
@@ -63,7 +64,7 @@
                 <column name="retired" type="boolean" defaultValueBoolean="false">
                     <constraints nullable="false" />
                 </column>
-                <column name="retired_by" type="int(11)" />
+                <column name="retired_by" type="int" />
                 <column name="date_retired" type="datetime" />
                 <column name="retire_reason" type="varchar(255)" defaultValue="null" />
                 <column name="uuid" type="char(38)">

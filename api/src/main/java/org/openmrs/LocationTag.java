@@ -9,12 +9,15 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
+
 /**
  * An LocationTag allows categorization of {@link Location}s
  * 
  * @see Location
  * @since 1.5
  */
+@Audited
 public class LocationTag extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 7654L;
