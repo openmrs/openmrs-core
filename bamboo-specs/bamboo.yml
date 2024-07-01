@@ -337,14 +337,14 @@ Release JDK 11 image:
                       #!/bin/bash -eux
                       
                       set +x
-                      
-                      export OMRS_VERSION=${bamboo.maven.release.version}
-                      export IMAGE_NIGHTLY=${bamboo.docker.image.name}:${bamboo.docker.image.tag}-${JDK_IMAGE}
-                      
-                      export IMAGE=${bamboo.docker.image.name}:${OMRS_VERSION}
-                      export DEV_IMAGE=${bamboo.docker.image.name}:${OMRS_VERSION}-dev
+
                       export JDK_IMAGE="amazoncorretto-11"
                       export RUNTIME_JDK="jdk11-corretto"
+                      
+                      export OMRS_VERSION=${bamboo.maven.release.version}
+					  export IMAGE_NIGHTLY=${bamboo.docker.image.name}:${bamboo.docker.image.tag}
+                      export IMAGE=${bamboo.docker.image.name}:${OMRS_VERSION}
+                      export DEV_IMAGE=${bamboo.docker.image.name}:${OMRS_VERSION}-dev
                       
                       docker login -u ${bamboo.dockerhub.username} -p ${bamboo.dockerhub.password}
                       
@@ -380,14 +380,14 @@ Release JDK 17 image:
                       #!/bin/bash -eux
                       
                       set +x
+
+	                  export JDK_IMAGE="amazoncorretto-17"
+                      export RUNTIME_JDK="jdk17-corretto"
                       
                       export OMRS_VERSION=${bamboo.maven.release.version}
-                      export IMAGE_NIGHTLY=${bamboo.docker.image.name}:${bamboo.docker.image.tag}-${JDK_IMAGE}
-                      
+                      export IMAGE_NIGHTLY=${bamboo.docker.image.name}:${bamboo.docker.image.tag}
                       export IMAGE=${bamboo.docker.image.name}:${OMRS_VERSION}
-                      export DEV_IMAGE=${bamboo.docker.image.name}:${OMRS_VERSION}-dev
-                      export JDK_IMAGE="amazoncorretto-17"
-                      export RUNTIME_JDK="jdk17-corretto"
+                      export DEV_IMAGE=${bamboo.docker.image.name}:${OMRS_VERSION}
                       
                       docker login -u ${bamboo.dockerhub.username} -p ${bamboo.dockerhub.password}
                       
