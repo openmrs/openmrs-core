@@ -30,13 +30,17 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptNameType;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+
 
 /**
  * Behavior-driven tests of the Concept class.
  */
 public class ConceptTest extends BaseContextSensitiveTest {
+
+	protected ConceptService conceptService = null;
 	
 	/**
 	 * When asked for a collection of compatible names, the returned collection should not include
@@ -1209,4 +1213,28 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		assertThat(concept.getSetMembers(), hasItem(setMember3));
 		assertThat(concept.getSetMembers().size(), is(3));
 	}
+
+	@Test
+    public void testHydrate_shouldReturnConceptById() {
+        String conceptId = "5";
+        Concept concept = new Concept();
+        Concept result = concept.hydrate(conceptId);
+        ConceptName conceptName2 = result.getName();
+
+		assertNotNull(result);
+		assertEquals("SINGLE", conceptName2.toString());
+		
+    }
+
+	@Test
+    public void testHydrate_shouldReturnConceptByUuid() {
+        String conceptUuid = "f923524a-b90c-4870-a948-4125638606fd";
+        Concept concept = new Concept();
+        Concept result = concept.hydrate(conceptUuid);
+        ConceptName conceptName2 = result.getName();
+		
+		assertNotNull(result);
+		assertEquals("MALARIA PROGRAM", conceptName2.toString());
+		
+    }
 }
