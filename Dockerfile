@@ -19,7 +19,7 @@ RUN yum -y update && yum -y install git && yum clean all
 WORKDIR /openmrs_core
 
 ENV OMRS_SDK_PLUGIN="org.openmrs.maven.plugins:openmrs-sdk-maven-plugin"
-ENV OMRS_SDK_PLUGIN_VERSION="4.5.0"
+ENV OMRS_SDK_PLUGIN_VERSION="5.11.0"
 
 COPY docker-pom.xml .
 
