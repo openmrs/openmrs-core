@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDescription;
@@ -43,6 +44,7 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 		new OrderFrequencyValidator().validate(null, errors);
 		
 		assertTrue(errors.hasErrors());
+		assertThat(errors.getAllErrors().get(0).getCode(), Matchers.is("error.general"));
 	}
 	
 	/**
@@ -56,6 +58,7 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 		new OrderFrequencyValidator().validate(orderFrequency, errors);
 		
 		assertTrue(errors.hasFieldErrors("concept"));
+		assertThat(errors.getFieldErrors("concept").get(0).getCode(), Matchers.is("Concept.noConceptSelected"));
 	}
 	
 	/**
@@ -69,6 +72,7 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 		new OrderFrequencyValidator().validate(orderFrequency, errors);
 		
 		assertTrue(errors.hasFieldErrors("concept"));
+		assertThat(errors.getFieldErrors("concept").get(0).getCode(), Matchers.is("OrderFrequency.concept.shouldBeClassFrequency"));
 	}
 	
 	/**
@@ -82,6 +86,7 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 		new OrderFrequencyValidator().validate(orderFrequency, errors);
 		
 		assertTrue(errors.hasFieldErrors("concept"));
+		assertThat(errors.getFieldErrors("concept").get(0).getCode(), Matchers.is("OrderFrequency.concept.shouldNotBeShared"));
 	}
 	
 	/**
@@ -180,5 +185,6 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 		new OrderFrequencyValidator().validate(orderFrequency, errors);
 		
 		assertTrue(errors.hasFieldErrors("retireReason"));
+		assertThat(errors.getFieldErrors("retireReason").get(0).getCode(), Matchers.is("error.exceededMaxLengthOfField"));
 	}
 }

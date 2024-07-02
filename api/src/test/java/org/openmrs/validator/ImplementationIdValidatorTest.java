@@ -9,6 +9,8 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -55,6 +57,7 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 		new ImplementationIdValidator().validate(implementationId, errors);
 		
 		assertTrue(errors.hasFieldErrors("implementationId"));
+		assertThat(errors.getFieldErrors("implementationId").get(0).getCode(), is("ImplementationId.implementationId.empty"));
 		assertFalse(errors.hasFieldErrors("passphrase"));
 		assertFalse(errors.hasFieldErrors("description"));
 	}
@@ -89,6 +92,7 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 		new ImplementationIdValidator().validate(implementationId, errors);
 		
 		assertTrue(errors.hasFieldErrors("passphrase"));
+		assertThat(errors.getFieldErrors("passphrase").get(0).getCode(), is("ImplementationId.passphrase.empty"));
 		assertFalse(errors.hasFieldErrors("implementationId"));
 		assertFalse(errors.hasFieldErrors("description"));
 	}
@@ -102,9 +106,11 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 		ImplementationId implementationId = new ImplementationId();
 		Errors errors = new BindException(implementationId, "implementationId");
 		new ImplementationIdValidator().validate(implementationId, errors);
-		
+
 		assertTrue(errors.hasFieldErrors("passphrase"));
+		assertThat(errors.getFieldErrors("passphrase").get(0).getCode(), is("ImplementationId.passphrase.empty"));
 		assertTrue(errors.hasFieldErrors("implementationId"));
+		assertThat(errors.getFieldErrors("implementationId").get(0).getCode(), is("ImplementationId.implementationId.empty"));
 		assertFalse(errors.hasFieldErrors("description"));
 	}
 	
@@ -157,8 +163,9 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 		
 		Errors errors = new BindException(implementationId, "implementationId");
 		new ImplementationIdValidator().validate(implementationId, errors);
-		
+
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), is("ImplementationId.name.empty"));
 		assertFalse(errors.hasFieldErrors("implementationId"));
 		assertFalse(errors.hasFieldErrors("passphrase"));
 		assertFalse(errors.hasFieldErrors("description"));

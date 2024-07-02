@@ -9,9 +9,11 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.CodedOrFreeText;
@@ -44,13 +46,16 @@ public class DiagnosisValidatorTest extends BaseContextSensitiveTest {
 		diagnosis.setEncounter(null);
 		new DiagnosisValidator().validate(diagnosis, errors);
 		assertTrue(errors.hasFieldErrors("encounter"));
+		assertThat(errors.getFieldErrors("encounter").get(0).getCode(), Matchers.is("error.null"));
 	}
+	
 	@Test
 	public void validate_shouldFailValidationIfDiagnosisIsNull(){
 		diagnosis.setDiagnosis(null);
 		
 		new DiagnosisValidator().validate(diagnosis, errors);
 		assertTrue(errors.hasFieldErrors("diagnosis"));
+		assertThat(errors.getFieldErrors("diagnosis").get(0).getCode(), Matchers.is("error.null"));
 	}
 
 	@Test
@@ -59,6 +64,7 @@ public class DiagnosisValidatorTest extends BaseContextSensitiveTest {
 
 		new DiagnosisValidator().validate(diagnosis, errors);
 		assertTrue(errors.hasFieldErrors("certainty"));
+		assertThat(errors.getFieldErrors("certainty").get(0).getCode(), Matchers.is("error.null"));
 	}
 
 	@Test
@@ -67,6 +73,7 @@ public class DiagnosisValidatorTest extends BaseContextSensitiveTest {
 
 		new DiagnosisValidator().validate(diagnosis, errors);
 		assertTrue(errors.hasFieldErrors("rank"));
+		assertThat(errors.getFieldErrors("rank").get(0).getCode(), Matchers.is("error.null"));
 	}
 	
 	@Test
@@ -75,6 +82,7 @@ public class DiagnosisValidatorTest extends BaseContextSensitiveTest {
 		
 		new DiagnosisValidator().validate(diagnosis, errors);
 		assertTrue(errors.hasFieldErrors("rank"));
+		assertThat(errors.getFieldErrors("rank").get(0).getCode(), Matchers.is("error.rank.notPositiveInteger"));
 	}
 	
 	@Test

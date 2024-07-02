@@ -9,6 +9,8 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -35,16 +37,19 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("aIsToB"));
+		assertThat(errors.getFieldErrors("aIsToB").get(0).getCode(), is("RelationshipType.aIsToB.required"));
 		
 		type.setaIsToB("");
 		errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("aIsToB"));
+		assertThat(errors.getFieldErrors("aIsToB").get(0).getCode(), is("RelationshipType.aIsToB.required"));
 		
 		type.setaIsToB(" ");
 		errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("aIsToB"));
+		assertThat(errors.getFieldErrors("aIsToB").get(0).getCode(), is("RelationshipType.aIsToB.required"));
 	}
 	
 	/**
@@ -57,16 +62,19 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("bIsToA"));
+		assertThat(errors.getFieldErrors("bIsToA").get(0).getCode(), is("RelationshipType.bIsToA.required"));
 		
 		type.setbIsToA("");
 		errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("bIsToA"));
+		assertThat(errors.getFieldErrors("bIsToA").get(0).getCode(), is("RelationshipType.bIsToA.required"));
 		
 		type.setbIsToA(" ");
 		errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("bIsToA"));
+		assertThat(errors.getFieldErrors("bIsToA").get(0).getCode(), is("RelationshipType.bIsToA.required"));
 	}
 	
 	/**
@@ -79,16 +87,19 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("description"));
+		assertThat(errors.getFieldErrors("description").get(0).getCode(), is("RelationshipType.description.required"));
 		
 		type.setDescription("");
 		errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("description"));
+		assertThat(errors.getFieldErrors("description").get(0).getCode(), is("RelationshipType.description.required"));
 		
 		type.setDescription(" ");
 		errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("description"));
+		assertThat(errors.getFieldErrors("description").get(0).getCode(), is("RelationshipType.description.required"));
 	}
 	
 	/**
@@ -154,8 +165,15 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("aIsToB"));
+		assertThat(errors.getFieldErrors("aIsToB").get(0).getCode(), is("error.exceededMaxLengthOfField"));
+		
 		assertTrue(errors.hasFieldErrors("bIsToA"));
+		assertThat(errors.getFieldErrors("bIsToA").get(0).getCode(), is("error.exceededMaxLengthOfField"));
+		
 		assertTrue(errors.hasFieldErrors("description"));
+		assertThat(errors.getFieldErrors("description").get(0).getCode(), is("error.exceededMaxLengthOfField"));
+		
 		assertTrue(errors.hasFieldErrors("retireReason"));
+		assertThat(errors.getFieldErrors("retireReason").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 	}
 }
