@@ -214,6 +214,9 @@
 	<bean id="medicationDispenseDAO" class="org.openmrs.api.db.hibernate.HibernateMedicationDispenseDAO">
 		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
+	<bean id="readAuditDAO" class="org.openmrs.api.db.hibernate.HibernateReadAuditDAO">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
 
 	<!--  **************************  SCHEDULER SERVICE  *************************  -->
 	<!-- 

@@ -19,6 +19,7 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.OrderServiceTest;
+import org.openmrs.api.db.hibernate.envers.OpenmrsReadAuditEntity;
 import org.openmrs.api.db.hibernate.envers.OpenmrsRevisionEntity;
 import org.openmrs.liquibase.ChangeLogVersionFinder;
 import org.openmrs.util.H2DatabaseIT;
@@ -84,6 +85,7 @@ public class ValidateHibernateMappingsDatabaseIT extends H2DatabaseIT {
 		Set<Class<?>> entityClasses = OpenmrsClassScanner.getInstance().getClassesWithAnnotation(Entity.class);
 		entityClasses.remove(OrderServiceTest.SomeTestOrder.class);
 		entityClasses.remove(OpenmrsRevisionEntity.class);
+		entityClasses.remove(OpenmrsReadAuditEntity.class);
 		for (Class<?> clazz : entityClasses) {
 			configuration.addAnnotatedClass(clazz);
 		}
