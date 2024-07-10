@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+
+	<changeSet author="Isaiah (generated)" id="202407021024-1">
+		<insert tableName="concept_reference_range">
+			<column name="concept_reference_range_id" valueNumeric="1"/>
+			<column name="concept_id" valueNumeric="1"/>
+			<column name="criteria" value="fn(getAge(1-3))"/>
+			<column name="hi_critical" valueNumeric="180"/>
+			<column name="hi_normal" valueNumeric="120"/>
+			<column name="hi_absolute" valueNumeric="140"/>
+			<column name="low_critical" valueNumeric="60"/>
+			<column name="low_normal" valueNumeric="80"/>
+			<column name="low_absolute" valueNumeric="90"/>
+		</insert>
+
+		<insert tableName="concept_reference_range">
+			<column name="concept_reference_range_id" valueNumeric="2"/>
+			<column name="concept_id" valueNumeric="1"/>
+			<column name="criteria" value="fn(getAge(6-8))"/>
+			<column name="hi_critical" valueNumeric="160"/>
+			<column name="hi_normal" valueNumeric="120"/>
+			<column name="hi_absolute" valueNumeric="140"/>
+			<column name="low_critical" valueNumeric="60"/>
+			<column name="low_normal" valueNumeric="80"/>
+			<column name="low_absolute" valueNumeric="90"/>
+		</insert>
+	</changeSet>
+
+</databaseChangeLog>

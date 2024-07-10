@@ -29,6 +29,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
+import org.openmrs.ConceptReferenceRange;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.ConceptSearchResult;
@@ -40,6 +41,7 @@ import org.openmrs.DrugIngredient;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Contains methods pertaining to creating/updating/deleting/retiring Concepts, Drugs, Concept
@@ -1970,5 +1972,29 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	boolean hasAnyConceptAttribute(ConceptAttributeType conceptAttributeType);
+
+	/**
+	 * @param id conceptReferenceRange id
+	 * @return {@link ConceptReferenceRange} 
+	 * 
+	 * @since 2.7.0
+	 * 
+	 * <strong>Should</strong> get the conceptReferenceRange with the given id
+	 * <strong>Should</strong> return null if no conceptReferenceRange has the given id
+	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	ConceptReferenceRange getConceptReferenceRange(Integer id);
+
+	/**
+	 * @param id conceptId 
+	 * @return list of {@link ConceptReferenceRange}
+	 *
+	 * @since 2.7.0
+	 *
+	 * <strong>Should</strong> get a list of conceptReferenceRanges with the given conceptId
+	 * <strong>Should</strong> return empty list if no conceptReferenceRange has the given conceptId
+	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	List<ConceptReferenceRange> getConceptReferenceRangesByConceptId(Integer id);
 	
 }

@@ -43,6 +43,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
+import org.openmrs.ConceptReferenceRange;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.ConceptSearchResult;
@@ -2059,6 +2060,24 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Transactional(readOnly = true)
 	public boolean hasAnyConceptAttribute(ConceptAttributeType conceptAttributeType) {
 		return dao.getConceptAttributeCount(conceptAttributeType) > 0;
+	}
+
+	/**
+	 * @see ConceptService#getConceptReferenceRange(Integer)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public ConceptReferenceRange getConceptReferenceRange(Integer id) {
+		return dao.getConceptReferenceRange(id);
+	}
+
+	/**
+	 * @see ConceptService#getConceptReferenceRangesByConceptId(Integer)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<ConceptReferenceRange> getConceptReferenceRangesByConceptId(Integer conceptId) {
+		return dao.getConceptReferenceRangesByConceptId(conceptId);
 	}
 
 	/***

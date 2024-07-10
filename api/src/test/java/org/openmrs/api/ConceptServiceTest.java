@@ -41,6 +41,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -64,6 +65,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
+import org.openmrs.ConceptReferenceRange;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptSearchResult;
 import org.openmrs.ConceptSet;
@@ -110,6 +112,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	protected static final String GET_DRUG_MAPPINGS = "org/openmrs/api/include/ConceptServiceTest-getDrugMappings.xml";
 
 	protected static final String CONCEPT_ATTRIBUTE_TYPE_XML = "org/openmrs/api/include/ConceptServiceTest-conceptAttributeType.xml";
+	
+	protected static final String CONCEPT_WITH_CONCEPT_REFERENCE_RANGES_XML = "org/openmrs/api/include/ConceptServiceTest-conceptReferenceRange.xml";
 
 	@Autowired
 	CacheManager cacheManager;
@@ -3953,5 +3957,34 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		assertNull(conceptService.getConceptByReference(""));  //with empty string
 		assertNull(conceptService.getConceptByReference("id, name or map which does not match to any concept"));
 		assertNull(conceptService.getConceptByReference("1000")); //invalid uuid but exists in standardTestDataset
+	}
+
+	/**
+	 * @see ConceptService#getConceptReferenceRange(Integer)
+	 */
+	@Test
+	public void getConceptReferenceRangeById_shouldReturnConceptReferenceRange() {
+		executeDataSet(CONCEPT_WITH_CONCEPT_REFERENCE_RANGES_XML);
+		
+		final String expectedConceptReferenceRangeCriteria = "${fn.getAge(1-3)}";
+		ConceptReferenceRange conceptReferenceRange = conceptService.getConceptReferenceRange(3);
+		assertEquals(expectedConceptReferenceRangeCriteria, conceptReferenceRange.getCriteria());
+	}
+
+	/**
+	 * @see ConceptService#getConceptReferenceRangesByConceptId(Integer) 
+	 */
+	@Test
+	public void getConceptReferenceRangeByConceptId_shouldReturnConceptReferenceRange() {
+		executeDataSet(CONCEPT_WITH_CONCEPT_REFERENCE_RANGES_XML);
+
+		final Integer expectedConceptReferenceRangeId = 3;
+		List<ConceptReferenceRange> conceptReferenceRanges = conceptService.getConceptReferenceRangesByConceptId(2);
+		
+		assertFalse(conceptReferenceRanges.isEmpty());
+
+		Optional<ConceptReferenceRange> conceptReferenceRange = conceptReferenceRanges.stream().findFirst();
+
+		assertEquals(expectedConceptReferenceRangeId, conceptReferenceRange.get().getId());
 	}
 }
