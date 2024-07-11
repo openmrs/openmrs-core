@@ -100,4 +100,61 @@
         </sql>
     </changeSet>
 	
+	<changeSet author="Isaiah" id="202407102345-1">
+		<preConditions onError="HALT" onFail="MARK_RAN">
+			<tableExists tableName="concept_reference_range"/>
+		</preConditions>
+		<createTable tableName="concept_reference_range" >
+			<column name="concept_reference_range_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="concept_id" type="INT">
+				<constraints nullable="false"/>
+			</column>
+			<column name="criteria" type="VARCHAR(255)">
+				<constraints nullable="true"/>
+			</column>
+			<column name="hi_absolute" type="DOUBLE"/>
+			<column name="hi_critical" type="DOUBLE"/>
+			<column name="hi_normal" type="DOUBLE"/>
+			<column name="low_absolute" type="DOUBLE"/>
+			<column name="low_critical" type="DOUBLE"/>
+			<column name="low_normal" type="DOUBLE"/>
+			<column name="date_changed" type="TIMESTAMP"/>
+			<column name="date_created" type="TIMESTAMP"/>
+			<column name="retired" type="BOOLEAN" defaultValue="false"/>
+			<column name="date_retired" type="TIMESTAMP"/>
+			<column name="retire_reason" type="VARCHAR(255)"/>
+		</createTable>
+
+		<!-- foreign key constraints -->
+		<addForeignKeyConstraint
+			baseTableName="concept_reference_range"
+			baseColumnNames="concept_id"
+			constraintName="fk_concept_reference_range_concept"
+			referencedTableName="concept"
+			referencedColumnNames="concept_id"/>
+
+		<addForeignKeyConstraint
+			baseTableName="concept_reference_range"
+			baseColumnNames="creator"
+			constraintName="fk_concept_reference_range_creator"
+			referencedTableName="users"
+			referencedColumnNames="user_id"/>
+
+		<addForeignKeyConstraint
+			baseTableName="concept_reference_range"
+			baseColumnNames="changed_by"
+			constraintName="fk_concept_reference_range_changed_by"
+			referencedTableName="users"
+			referencedColumnNames="user_id"/>
+
+		<addForeignKeyConstraint
+			baseTableName="concept_reference_range"
+			baseColumnNames="retired_by"
+			constraintName="fk_concept_reference_range_retired_by"
+			referencedTableName="users"
+			referencedColumnNames="user_id"/>
+	</changeSet>
+	
 </databaseChangeLog>
