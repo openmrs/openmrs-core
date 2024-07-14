@@ -135,6 +135,7 @@ public class PersonAttributeType extends BaseChangeableOpenmrsMetadata implement
 		return getSearchable();
 	}
 	
+	
 	/**
 	 * @return the searchable status
 	 */

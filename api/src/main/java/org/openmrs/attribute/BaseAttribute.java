@@ -14,6 +14,7 @@ import javax.persistence.MappedSuperclass;
 
 import org.hibernate.search.annotations.Field;
 import org.openmrs.BaseChangeableOpenmrsData;
+import org.openmrs.PersonAttributeType;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.Customizable;
 import org.openmrs.customdatatype.InvalidCustomValueException;
@@ -72,7 +73,7 @@ public abstract class BaseAttribute<AT extends AttributeType, OwningType extends
 	 * @see org.openmrs.attribute.Attribute#getAttributeType()
 	 */
 	@Override
-	public AT getAttributeType() {
+	public PersonAttributeType getAttributeType() {
 		return attributeType;
 	}
 	
