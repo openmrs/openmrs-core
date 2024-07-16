@@ -41,7 +41,6 @@ import org.openmrs.DrugIngredient;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.util.PrivilegeConstants;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Contains methods pertaining to creating/updating/deleting/retiring Concepts, Drugs, Concept
@@ -1974,6 +1973,20 @@ public interface ConceptService extends OpenmrsService {
 	boolean hasAnyConceptAttribute(ConceptAttributeType conceptAttributeType);
 
 	/**
+	 * Creates or updates the given {@link ConceptReferenceRange} in the database
+	 *
+	 * @param conceptReferenceRange ConceptReferenceRange to save
+	 * @return the created ConceptReferenceRange
+	 * 
+	 * @since 2.7.0
+	 * 
+	 * <strong>Should</strong> create a new concept attribute type
+	 * <strong>Should</strong> edit an existing concept attribute type
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_CONCEPT_REFERENCE_RANGES)
+	ConceptReferenceRange saveConceptReferenceRange(ConceptReferenceRange conceptReferenceRange);
+	
+	/**
 	 * @param id conceptReferenceRange id
 	 * @return {@link ConceptReferenceRange} 
 	 * 
@@ -1983,10 +1996,10 @@ public interface ConceptService extends OpenmrsService {
 	 * <strong>Should</strong> return null if no conceptReferenceRange has the given id
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
-	ConceptReferenceRange getConceptReferenceRange(Integer id);
+	ConceptReferenceRange getConceptReferenceRangeById(Integer id);
 
 	/**
-	 * @param id conceptId 
+	 * @param conceptId conceptId 
 	 * @return list of {@link ConceptReferenceRange}
 	 *
 	 * @since 2.7.0
@@ -1995,6 +2008,6 @@ public interface ConceptService extends OpenmrsService {
 	 * <strong>Should</strong> return empty list if no conceptReferenceRange has the given conceptId
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
-	List<ConceptReferenceRange> getConceptReferenceRangesByConceptId(Integer id);
+	List<ConceptReferenceRange> getConceptReferenceRangesByConceptId(Integer conceptId);
 	
 }

@@ -88,7 +88,7 @@ public class ConceptReferenceRange extends BaseOpenmrsObject implements Auditabl
 	private Boolean retired = false;
 
 	@ManyToOne
-	@JoinColumn(name = "user_id")
+	@JoinColumn(name = "retired_by")
 	private User retiredBy;
 
 	@Column(name = "date_retired")
@@ -221,10 +221,10 @@ public class ConceptReferenceRange extends BaseOpenmrsObject implements Auditabl
 	}
 
 	/**
-	 * @param conceptRangeId The conceptRangeId to set.
+	 * @param conceptReferenceRangeId The conceptReferenceRangeId to set.
 	 */
-	public void setConceptId(Integer conceptRangeId) {
-		this.conceptReferenceRangeId = conceptRangeId;
+	public void setConceptReferenceRangeId(Integer conceptReferenceRangeId) {
+		this.conceptReferenceRangeId = conceptReferenceRangeId;
 	}
 
 	/**
@@ -339,7 +339,7 @@ public class ConceptReferenceRange extends BaseOpenmrsObject implements Auditabl
 	 */
 	@Override
 	public void setId(Integer id) {
-		setConceptId(id);
+		setConceptReferenceRangeId(id);
 	}
 
 	/**

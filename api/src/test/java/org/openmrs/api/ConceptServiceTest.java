@@ -3960,14 +3960,14 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see ConceptService#getConceptReferenceRange(Integer)
+	 * @see ConceptService#getConceptReferenceRangeById(Integer)
 	 */
 	@Test
-	public void getConceptReferenceRangeById_shouldReturnConceptReferenceRange() {
+	public void getConceptReferenceRangeById_shouldReturnConceptReferenceRangeById() {
 		executeDataSet(CONCEPT_WITH_CONCEPT_REFERENCE_RANGES_XML);
 		
 		final String expectedConceptReferenceRangeCriteria = "${fn.getAge(1-3)}";
-		ConceptReferenceRange conceptReferenceRange = conceptService.getConceptReferenceRange(3);
+		ConceptReferenceRange conceptReferenceRange = conceptService.getConceptReferenceRangeById(3);
 		assertEquals(expectedConceptReferenceRangeCriteria, conceptReferenceRange.getCriteria());
 	}
 
@@ -3975,7 +3975,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see ConceptService#getConceptReferenceRangesByConceptId(Integer) 
 	 */
 	@Test
-	public void getConceptReferenceRangeByConceptId_shouldReturnConceptReferenceRange() {
+	public void getConceptReferenceRangeByConceptId_shouldReturnConceptReferenceRangeById() {
 		executeDataSet(CONCEPT_WITH_CONCEPT_REFERENCE_RANGES_XML);
 
 		final Integer expectedConceptReferenceRangeId = 3;

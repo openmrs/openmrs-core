@@ -36,12 +36,14 @@ import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptProposal;
+import org.openmrs.ConceptReferenceRange;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptSearchResult;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSource;
 import org.openmrs.Drug;
 import org.openmrs.DrugReferenceMap;
+import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
@@ -924,5 +926,95 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		ConceptNameTag conceptNameTag = conceptService.getConceptNameTag(1);
 		assertNotNull(conceptNameTag);
 		assertEquals(conceptNameTag, conceptService.getConceptNameTagByName(conceptNameTag.getTag()));
+	}
+
+	/**
+	 * @see ConceptServiceImpl#saveConceptProposal(ConceptProposal)
+	 */
+	@Test
+	public void saveConceptReferenceRange_shouldReturnSavedConceptReferenceRangeObject() {
+		final Double HIGH_ABSOLUTE = 120.0;
+		
+		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
+		conceptReferenceRange.setHiAbsolute(HIGH_ABSOLUTE);
+		conceptReferenceRange.setConcept(createConcept());
+		ConceptReferenceRange savedConceptReferenceRange = conceptService.saveConceptReferenceRange(conceptReferenceRange);
+		assertEquals(HIGH_ABSOLUTE, savedConceptReferenceRange.getHiAbsolute());
+
+		// Update
+		final Double NEW_HIGH_ABSOLUTE = 200.0;
+		savedConceptReferenceRange.setHiAbsolute(NEW_HIGH_ABSOLUTE);
+
+		ConceptReferenceRange updatedConceptReferenceRange = conceptService.saveConceptReferenceRange(savedConceptReferenceRange);
+		assertEquals(NEW_HIGH_ABSOLUTE, updatedConceptReferenceRange.getHiAbsolute());
+	}
+
+	/**
+	 * @see ConceptServiceImpl#saveConceptProposal(ConceptProposal)
+	 */
+	@Test
+	public void saveConceptReferenceRange_shouldFailGivenNull() {
+		assertThrows(IllegalArgumentException.class, () -> conceptService.saveConceptReferenceRange(null));
+	}
+
+	/**
+	 * @see ConceptServiceImpl#getConceptReferenceRangeById(Integer)
+	 */
+	@Test
+	public void getConceptReferenceRangeById_shouldReturnConceptReferenceRangeObjectIfFound() {
+		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
+		conceptReferenceRange.setCreator(new User(1));
+		conceptReferenceRange.setHiAbsolute(120.0);
+		conceptReferenceRange.setLowAbsolute(100.0);
+		conceptReferenceRange.setConcept(createConcept());
+		conceptService.saveConceptReferenceRange(conceptReferenceRange);
+
+		ConceptReferenceRange savedConceptReferenceRange = conceptService.getConceptReferenceRangeById(1);
+		assertNotNull(savedConceptReferenceRange);
+		assertNotNull(savedConceptReferenceRange.getHiAbsolute());
+		assertEquals(120.0, savedConceptReferenceRange.getHiAbsolute());
+	}
+
+	/**
+	 * @see ConceptServiceImpl#getConceptReferenceRangeById(Integer)
+	 */
+	@Test
+	public void getConceptReferenceRangeById_shouldReturnNullIfConceptReferenceRangeObjectNotFound() {
+		ConceptReferenceRange savedConceptReferenceRange = conceptService.getConceptReferenceRangeById(10);
+		assertNull(savedConceptReferenceRange);
+	}
+
+	/**
+	 * @see ConceptServiceImpl#getConceptReferenceRangesByConceptId(Integer) 
+	 */
+	@Test
+	public void getConceptReferenceRangesByConceptId_shouldReturnAListOfConceptReferenceRangesIfFound() {
+		Concept concept = createConcept();
+		
+		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
+		conceptReferenceRange.setCreator(new User(1));
+		conceptReferenceRange.setHiAbsolute(120.0);
+		conceptReferenceRange.setConcept(concept);
+		conceptService.saveConceptReferenceRange(conceptReferenceRange);
+
+		ConceptReferenceRange secondConceptReferenceRange = new ConceptReferenceRange();
+		secondConceptReferenceRange.setCreator(new User(1));
+		secondConceptReferenceRange.setHiAbsolute(200.0);
+		secondConceptReferenceRange.setConcept(concept);
+		conceptService.saveConceptReferenceRange(secondConceptReferenceRange);
+
+		List<ConceptReferenceRange> savedConceptReferenceRanges = conceptService.getConceptReferenceRangesByConceptId(concept.getId());
+		assertNotNull(savedConceptReferenceRanges);
+		assertEquals(2, savedConceptReferenceRanges.size());
+	}
+	
+	private Concept createConcept() {
+		Concept c = new Concept();
+		ConceptName fullySpecifiedName = new ConceptName("concept name", new Locale("fr", "CA"));
+		c.addName(fullySpecifiedName);
+		c.addDescription(new ConceptDescription("some description", null));
+		c.setDatatype(new ConceptDatatype(1));
+		c.setConceptClass(new ConceptClass(1));
+		return Context.getConceptService().saveConcept(c);
 	}
 }

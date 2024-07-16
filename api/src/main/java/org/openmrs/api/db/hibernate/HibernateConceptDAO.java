@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -2361,10 +2360,19 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 
 	/**
-	 * @see org.openmrs.api.db.ConceptDAO#getConceptReferenceRange(Integer)
+	 * @see org.openmrs.api.db.ConceptDAO#saveConceptReferenceRange(ConceptReferenceRange)
 	 */
 	@Override
-	public ConceptReferenceRange getConceptReferenceRange(Integer id) {
+	public ConceptReferenceRange saveConceptReferenceRange(final ConceptReferenceRange conceptReferenceRange) {
+		sessionFactory.getCurrentSession().saveOrUpdate(conceptReferenceRange);
+		return conceptReferenceRange;
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptReferenceRangeById(Integer)
+	 */
+	@Override
+	public ConceptReferenceRange getConceptReferenceRangeById(final Integer id) {
 		return sessionFactory.getCurrentSession().get(ConceptReferenceRange.class, id);
 	}
 

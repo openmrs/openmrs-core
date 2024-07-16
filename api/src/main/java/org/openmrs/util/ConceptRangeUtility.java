@@ -22,13 +22,33 @@ public class ConceptRangeUtility {
 	private static final String AGE_CRITERIA_EXPRESSION = "\\$\\{fn\\.getAge\\((\\d+)-(\\d+)\\)}";
 	
 	/**
-	 * This method evaluates if person attributes fits a concept range.
+	 * This method evaluates if person's age fits the criteria in concept range.
 	 * 
 	 * @param criteria ConceptReferenceRange criteria
 	 * @param person person to evaluate
 	 * @return true if the person's age fits the criteria and false otherwise
 	 */
-	public boolean isAgeInRange(String criteria, Person person) {
+	/**
+	 * <h3>
+	 *     This method evaluates whether a person's age matches any of the age ranges specified in the criteria.
+	 * </h3>
+	 * <p>
+	 * This method checks the given criteria for one or more age range patterns and determines
+	 * if the person's age falls within any of the specified ranges.
+	 * 
+	 * Example of criteria with a single range: "${fn.getAge(1-10)}"
+	 * Example of criteria with multiple ranges: "${fn.getAge(1-10)} and ${fn.getAge(15-20)}"
+	 *</p>
+	 * 
+	 * @param criteria the criteria string containing one or more age range patterns.
+	 * @param person the person whose age is to be evaluated against the criteria.
+	 * @return true if the person's age fits within any of the specified age ranges, false otherwise.
+	 */
+	public static boolean isAgeInRange(String criteria, Person person) {
+		if (person == null || person.getAge() == null) {
+			return false;
+		}
+		
 		int age = person.getAge();
 		boolean ageMatch = false;
 		
@@ -37,7 +57,6 @@ public class ConceptRangeUtility {
 		
 		while (ageMatcher.find()) {
 			if (ageMatcher.group(1) != null && ageMatcher.group(2) != null) {
-				// Age range
 				int minAge = Integer.parseInt(ageMatcher.group(1));
 				int maxAge = Integer.parseInt(ageMatcher.group(2));
 				ageMatch = age >= minAge && age <= maxAge;

@@ -12,6 +12,7 @@ package org.openmrs.api.db.hibernate;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -27,6 +28,7 @@ import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptReferenceRange;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptSource;
 import org.openmrs.Drug;
@@ -240,5 +242,75 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 		List<ConceptDatatype> datatypes = dao.getConceptDatatypes(nonExistentPrefix);
 
 		assertTrue(datatypes.isEmpty());
+	}
+
+	/**
+	 * @see HibernateConceptDAO#getConceptReferenceRangeById(Integer)
+	 */
+	@Test
+	public void getConceptReferenceRangeById_shouldReturnConceptReferenceRange() {
+		//Given
+		ConceptDatatype conceptDatatype = dao.getConceptDatatypeByName("N/A");
+		
+		Concept tuberculosis = new Concept();
+		tuberculosis.addName(new ConceptName("Tuberculosis", Locale.US));
+		tuberculosis.setDatatype(conceptDatatype);
+		dao.saveConcept(tuberculosis);
+
+		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
+		conceptReferenceRange.setId(1);
+		conceptReferenceRange.setConcept(tuberculosis);
+		dao.saveConceptReferenceRange(conceptReferenceRange);
+
+		//When
+		ConceptReferenceRange savedConceptReferenceRange = dao.getConceptReferenceRangeById(1);
+
+		// Then
+		assertNotNull(savedConceptReferenceRange);
+	}
+
+	/**
+	 * @see HibernateConceptDAO#getConceptReferenceRangesByConceptId(Integer) 
+	 */
+	@Test
+	public void getConceptReferenceRangesByConceptId_shouldReturnConceptReferenceRange() {
+		//Given
+		ConceptDatatype conceptDatatype = dao.getConceptDatatypeByName("N/A");
+
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("Tuberculosis", Locale.US));
+		concept.setDatatype(conceptDatatype);
+		dao.saveConcept(concept);
+
+		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
+		conceptReferenceRange.setConcept(concept);
+		dao.saveConceptReferenceRange(conceptReferenceRange);
+
+		//When
+		List<ConceptReferenceRange> conceptReferenceRanges = dao.getConceptReferenceRangesByConceptId(concept.getId());
+
+		// Then
+		assertNotNull(conceptReferenceRanges);
+		assertFalse(conceptReferenceRanges.isEmpty());
+	}
+	
+	/**
+	 * @see HibernateConceptDAO#getConceptReferenceRangeById(Integer)
+	 */
+	@Test
+	public void getConceptReferenceRangesByConceptId_shouldReturnEmptyListForIfNoConceptReferenceRangeIsLinkedToConcept() {
+		//Given
+		ConceptDatatype conceptDatatype = dao.getConceptDatatypeByName("N/A");
+
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("Tuberculosis", Locale.US));
+		concept.setDatatype(conceptDatatype);
+		dao.saveConcept(concept);
+
+		//When
+		List<ConceptReferenceRange> conceptReferenceRanges = dao.getConceptReferenceRangesByConceptId(concept.getId());
+
+		// Then
+		assertTrue(conceptReferenceRanges.isEmpty());
 	}
 }

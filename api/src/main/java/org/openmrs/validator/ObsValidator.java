@@ -15,10 +15,12 @@ import java.util.List;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptNumeric;
+import org.openmrs.ConceptReferenceRange;
 import org.openmrs.Obs;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.ConceptRangeUtility;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -81,6 +83,7 @@ public class ObsValidator implements Validator {
 		validateHelper(obs, errors, ancestors, true);
 		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "accessionNumber", "valueModifier", "valueComplex",
 		    "comment", "voidReason");
+		validateConceptRange(obs, errors);
 	}
 	
 	/**
@@ -250,6 +253,38 @@ public class ObsValidator implements Validator {
 			        && !obs.getValueDrug().getConcept().equals(obs.getValueCoded())) {
 				errors.rejectValue("valueDrug", "Obs.error.invalidDrug");
 			}
+		}
+	}
+
+	/**
+	 * Checks whether patient's concept is within the valid range specified
+	 * in the {@link ConceptReferenceRange}.
+	 *
+	 * @param obs Observation to validate
+	 * @param errors Errors to record validation issues
+	 */
+	private void validateConceptRange(Obs obs, Errors errors) {
+		Concept concept = obs.getConcept();
+
+		// if there is a concept perform validation tests specific to the concept datatype
+		if (concept != null && concept.getDatatype() != null) {
+			List<ConceptReferenceRange> conceptReferenceRanges = Context.getConceptService()
+				.getConceptReferenceRangesByConceptId(concept.getConceptId());
+
+			conceptReferenceRanges.forEach(crr -> {
+				// If the number is higher than the absolute range, raise an error 
+				if (crr.getHiAbsolute() != null && crr.getHiAbsolute() < obs.getValueNumeric()) {
+					errors.rejectValue("valueNumeric", "error.outOfRange.high");
+				}
+				// If the number is lower than the absolute range, raise an error as well 
+				if (crr.getLowAbsolute() != null && crr.getLowAbsolute() > obs.getValueNumeric()) {
+					errors.rejectValue("valueNumeric", "error.outOfRange.low");
+				}
+				
+				if (!ConceptRangeUtility.isAgeInRange(crr.getCriteria(), obs.getPerson())) {
+					errors.rejectValue("valueNumeric", "error.outOfRange.for.ageGroup");
+				}
+			});
 		}
 	}
 	

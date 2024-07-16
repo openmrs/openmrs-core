@@ -672,9 +672,14 @@ public interface ConceptDAO {
 	List<Concept> getConceptsByClass(ConceptClass conceptClass);
 
 	/**
-	 * @see ConceptService#getConceptReferenceRange(Integer)
+	 * @see ConceptService#saveConceptReferenceRange(ConceptReferenceRange)
 	 */
-	ConceptReferenceRange getConceptReferenceRange(Integer id);
+	ConceptReferenceRange saveConceptReferenceRange(ConceptReferenceRange conceptReferenceRange);
+	
+	/**
+	 * @see ConceptService#getConceptReferenceRangeById(Integer)
+	 */
+	ConceptReferenceRange getConceptReferenceRangeById(Integer id);
 
 	/**
 	 * @see ConceptService#getConceptReferenceRangesByConceptId(Integer)
