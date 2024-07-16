@@ -963,13 +963,14 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	@Test
 	public void getConceptReferenceRangeById_shouldReturnConceptReferenceRangeObjectIfFound() {
 		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
+		conceptReferenceRange.setId(10000);
 		conceptReferenceRange.setCreator(new User(1));
 		conceptReferenceRange.setHiAbsolute(120.0);
 		conceptReferenceRange.setLowAbsolute(100.0);
 		conceptReferenceRange.setConcept(createConcept());
 		conceptService.saveConceptReferenceRange(conceptReferenceRange);
 
-		ConceptReferenceRange savedConceptReferenceRange = conceptService.getConceptReferenceRangeById(1);
+		ConceptReferenceRange savedConceptReferenceRange = conceptService.getConceptReferenceRangeById(10000);
 		assertNotNull(savedConceptReferenceRange);
 		assertNotNull(savedConceptReferenceRange.getHiAbsolute());
 		assertEquals(120.0, savedConceptReferenceRange.getHiAbsolute());

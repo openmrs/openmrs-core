@@ -83,7 +83,7 @@ public class ObsValidator implements Validator {
 		validateHelper(obs, errors, ancestors, true);
 		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "accessionNumber", "valueModifier", "valueComplex",
 		    "comment", "voidReason");
-		validateConceptRange(obs, errors);
+		validateConceptReferenceRange(obs, errors);
 	}
 	
 	/**
@@ -257,13 +257,17 @@ public class ObsValidator implements Validator {
 	}
 
 	/**
-	 * Checks whether patient's concept is within the valid range specified
+	 * This method validates Obs' concept values.
+	 * <ol>
+	 *     <li>Validates if high absolute and low absolute are within the valid range</li>
+	 *     <li>Validates if patient's age is within the valid range</li>
+	 * <ol/>
 	 * in the {@link ConceptReferenceRange}.
 	 *
 	 * @param obs Observation to validate
 	 * @param errors Errors to record validation issues
 	 */
-	private void validateConceptRange(Obs obs, Errors errors) {
+	private void validateConceptReferenceRange(Obs obs, Errors errors) {
 		Concept concept = obs.getConcept();
 
 		// if there is a concept perform validation tests specific to the concept datatype
