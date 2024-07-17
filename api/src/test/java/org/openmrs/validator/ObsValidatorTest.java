@@ -533,7 +533,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		Obs obs = new Obs();
 		obs.setId(1);
 		obs.setPerson(new Person(10));
-		obs.setConcept(Context.getConceptService().getConcept(10));
+		obs.setConcept(Context.getConceptService().getConcept(25));
 		obs.setValueNumeric(200.0);
 		obs.setObsDatetime(new Date());
 		
@@ -550,7 +550,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailValidationIfObsValueBelowLowAbsolute() {
 		Obs obs = new Obs();
 		obs.setPerson(new Person(10));
-		obs.setConcept(Context.getConceptService().getConcept(11));
+		obs.setConcept(Context.getConceptService().getConcept(26));
 		obs.setValueNumeric(50.0);
 		obs.setObsDatetime(new Date());
 		
@@ -572,7 +572,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		Obs obs = new Obs();
 		obs.setId(1);
 		obs.setPerson(person);
-		obs.setConcept(Context.getConceptService().getConcept(10));
+		obs.setConcept(Context.getConceptService().getConcept(25));
 		obs.setValueNumeric(140.0);
 		obs.setObsDatetime(new Date());
 
@@ -595,7 +595,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		
 		person.setBirthdate(calendar.getTime());
 		obs.setPerson(person);
-		obs.setConcept(Context.getConceptService().getConcept(12));
+		obs.setConcept(Context.getConceptService().getConcept(27));
 		obs.setValueNumeric(80.0);
 		obs.setObsDatetime(new Date());
 

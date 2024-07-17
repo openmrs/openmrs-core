@@ -39,7 +39,7 @@
 		<property name="retireReason" type="java.lang.String" column="retire_reason" length="255"/>
 
 		<many-to-one name="concept" class="Concept" fetch="select">
-			<column name="concept" not-null="true"/>
+			<column name="concept_id" not-null="true"/>
 		</many-to-one>
 
 		<many-to-one name="creator" class="User" fetch="select">
