@@ -26,9 +26,12 @@ import javax.persistence.Table;
 import java.util.Date;
 
 /**
- * A concept reference range is typically a range of a concept with a certain criteria. The criteria is used to evaluate
- * if certain attributes of a patient meet the specified criteria before applying the range. 
- * For example, if criteria is of factor age(say age between 1-5), then the ranges only apply for this age group.
+ * A concept reference range is typically a range of a concept for certain factor(s) e.g. age, gender e.t.c. 
+ * 
+ * <p>
+ * The criteria is used to evaluate if certain attributes of a patient meet a certain factor range. 
+ * For example, if criteria is of factor age(say age between 1-5), then the ranges only apply for this age group. 
+ * </p>
  *
  * @since 2.7.0
  */
@@ -36,7 +39,7 @@ import java.util.Date;
 @Table(name = "concept_reference_range")
 @Audited
 public class ConceptReferenceRange extends BaseOpenmrsObject implements Auditable, Retireable {
-	public static final long serialVersionUID = 47329L;
+	private static final long serialVersionUID = 47329L;
 
 	// Fields
 	@DocumentId

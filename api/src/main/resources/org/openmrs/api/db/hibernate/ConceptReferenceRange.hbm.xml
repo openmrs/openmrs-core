@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<!--
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+-->
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.1//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="org.openmrs">
+
+	<class name="ConceptReferenceRange" table="concept_reference_range" batch-size="25">
+
+		<cache usage="read-write"/>
+
+		<id name="conceptReferenceRangeId" type="java.lang.Integer" column="concept_reference_range_id" unsaved-value="undefined">
+			<generator class="identity"/>
+		</id>
+
+		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true"/>
+
+		<property name="hiAbsolute" type="java.lang.Double" column="hi_absolute"/>
+		<property name="hiCritical" type="java.lang.Double" column="hi_critical"/>
+		<property name="hiNormal" type="java.lang.Double" column="hi_normal"/>
+		<property name="lowAbsolute" type="java.lang.Double" column="low_absolute"/>
+		<property name="lowCritical" type="java.lang.Double" column="low_critical"/>
+		<property name="lowNormal" type="java.lang.Double" column="low_normal"/>
+		<property name="criteria" type="java.lang.String" column="criteria" length="255"/>
+		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true"/>
+		<property name="dateChanged" type="java.util.Date" column="date_changed"/>
+		<property name="retired" type="java.lang.Boolean" column="retired" not-null="true"/>
+		<property name="dateRetired" type="java.util.Date" column="date_retired"/>
+		<property name="retireReason" type="java.lang.String" column="retire_reason" length="255"/>
+
+		<many-to-one name="concept" class="Concept" fetch="select">
+			<column name="concept" not-null="true"/>
+		</many-to-one>
+
+		<many-to-one name="creator" class="User" fetch="select">
+			<column name="creator"/>
+		</many-to-one>
+
+		<many-to-one name="changedBy" class="User" fetch="select">
+			<column name="changed_by"/>
+		</many-to-one>
+
+		<many-to-one name="retiredBy" class="User" fetch="select">
+			<column name="retired_by"/>
+		</many-to-one>
+	</class>
+
+</hibernate-mapping>

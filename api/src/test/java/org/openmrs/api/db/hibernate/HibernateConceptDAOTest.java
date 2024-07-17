@@ -258,12 +258,11 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 		dao.saveConcept(tuberculosis);
 
 		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
-		conceptReferenceRange.setId(1);
 		conceptReferenceRange.setConcept(tuberculosis);
 		dao.saveConceptReferenceRange(conceptReferenceRange);
 
 		//When
-		ConceptReferenceRange savedConceptReferenceRange = dao.getConceptReferenceRangeById(1);
+		ConceptReferenceRange savedConceptReferenceRange = dao.getConceptReferenceRangeById(conceptReferenceRange.getId());
 
 		// Then
 		assertNotNull(savedConceptReferenceRange);

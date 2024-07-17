@@ -16,14 +16,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.when;
 
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -52,9 +48,6 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	
 	@Autowired
 	private ObsValidator obsValidator;
-
-	@Mock
-	private ConceptService conceptService;
 
 	Calendar calendar = Calendar.getInstance();
 
@@ -537,24 +530,13 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void validate_shouldFailValidationIfObsValueExceedsHiAbsolute() {
-		Concept concept = new Concept(10);
-		concept.setDatatype(new ConceptDatatype(1));
-
-		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
-		conceptReferenceRange.setConcept(concept);
-		conceptReferenceRange.setHiAbsolute(150.0);
-		conceptReferenceRange.setCriteria("${fn.getAge(1-10)}");
-		
 		Obs obs = new Obs();
 		obs.setId(1);
 		obs.setPerson(new Person(10));
-		obs.setConcept(concept);
+		obs.setConcept(Context.getConceptService().getConcept(10));
 		obs.setValueNumeric(200.0);
 		obs.setObsDatetime(new Date());
-
-		List<ConceptReferenceRange> conceptReferenceRanges = Collections.singletonList(conceptReferenceRange);
-		when(conceptService.getConceptReferenceRangesByConceptId(anyInt())).thenReturn(conceptReferenceRanges);
-
+		
 		Errors errors = new BindException(obs, "obs");
 		obsValidator.validate(obs, errors);
 
@@ -568,17 +550,10 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailValidationIfObsValueBelowLowAbsolute() {
 		Obs obs = new Obs();
 		obs.setPerson(new Person(10));
-		obs.setConcept(getTestConcept());
+		obs.setConcept(Context.getConceptService().getConcept(11));
 		obs.setValueNumeric(50.0);
 		obs.setObsDatetime(new Date());
-
-		ConceptReferenceRange range = new ConceptReferenceRange();
-		range.setLowAbsolute(60.0);
-		range.setCriteria("${fn.getAge(1-10)}");
-
-		List<ConceptReferenceRange> conceptReferenceRanges = Collections.singletonList(range);
-		when(conceptService.getConceptReferenceRangesByConceptId(anyInt())).thenReturn(conceptReferenceRanges);
-
+		
 		Errors errors = new BindException(obs, "obs");
 		obsValidator.validate(obs, errors);
 
@@ -590,11 +565,6 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void validate_shouldFailValidationIfObsAgeNotInRange() {
-		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
-		conceptReferenceRange.setConcept(getTestConcept());
-		conceptReferenceRange.setHiAbsolute(150.0);
-		conceptReferenceRange.setCriteria("${fn.getAge(1-10)}");
-		
 		Person person = new Person();
 		calendar.set(2000, Calendar.JANUARY, 1);
 		person.setBirthdate(calendar.getTime());
@@ -602,17 +572,12 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		Obs obs = new Obs();
 		obs.setId(1);
 		obs.setPerson(person);
-		obs.setConcept(getTestConcept());
+		obs.setConcept(Context.getConceptService().getConcept(10));
 		obs.setValueNumeric(140.0);
 		obs.setObsDatetime(new Date());
 
-		List<ConceptReferenceRange> conceptReferenceRanges = Collections.singletonList(conceptReferenceRange);
-		when(conceptService.getConceptReferenceRangesByConceptId(anyInt())).thenReturn(conceptReferenceRanges);
-
 		Errors errors = new BindException(obs, "obs");
 		obsValidator.validate(obs, errors);
-
-		assertTrue(errors.hasFieldErrors("valueNumeric"));
 
 		assertTrue(errors.hasFieldErrors("valueNumeric"));
 		assertNotNull(errors.getFieldError("valueNumeric"));
@@ -630,28 +595,13 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		
 		person.setBirthdate(calendar.getTime());
 		obs.setPerson(person);
-		obs.setConcept(getTestConcept());
+		obs.setConcept(Context.getConceptService().getConcept(12));
 		obs.setValueNumeric(80.0);
 		obs.setObsDatetime(new Date());
-
-		ConceptReferenceRange range = new ConceptReferenceRange();
-		range.setHiAbsolute(150.0);
-		range.setLowAbsolute(60.0);
-		range.setCriteria("${fn.getAge(1-10)}");
-
-		List<ConceptReferenceRange> conceptReferenceRanges = Collections.singletonList(range);
-		when(conceptService.getConceptReferenceRangesByConceptId(anyInt())).thenReturn(conceptReferenceRanges);
 
 		Errors errors = new BindException(obs, "obs");
 		obsValidator.validate(obs, errors);
 
 		assertFalse(errors.hasErrors());
-	}
-	
-	private Concept getTestConcept() {
-		Concept concept = new Concept(10);
-		concept.setDatatype(new ConceptDatatype(1));
-		
-		return concept;
 	}
 }
