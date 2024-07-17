@@ -20,7 +20,7 @@ import org.openmrs.Obs;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.ConceptRangeUtility;
+import org.openmrs.util.ConceptReferenceRangeUtility;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -285,7 +285,7 @@ public class ObsValidator implements Validator {
 					errors.rejectValue("valueNumeric", "error.outOfRange.low");
 				}
 				
-				if (!ConceptRangeUtility.isAgeInRange(crr.getCriteria(), obs.getPerson())) {
+				if (!ConceptReferenceRangeUtility.isAgeInRange(crr.getCriteria(), obs.getPerson())) {
 					errors.rejectValue("valueNumeric", "error.outOfRange.for.ageGroup");
 				}
 			});

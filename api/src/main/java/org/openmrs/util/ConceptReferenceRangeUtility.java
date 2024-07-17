@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 /**
  * A utility class that evaluates the concept ranges 
  */
-public class ConceptRangeUtility {
+public class ConceptReferenceRangeUtility {
 	
 	private static final String AGE_CRITERIA_EXPRESSION = "\\$\\{fn\\.getAge\\((\\d+)-(\\d+)\\)}";
 	

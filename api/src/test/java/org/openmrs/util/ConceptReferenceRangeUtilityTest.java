@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
-class ConceptRangeUtilityTest {
+class ConceptReferenceRangeUtilityTest {
 	Calendar calendar;
 	Person person;
 		
@@ -35,7 +35,7 @@ class ConceptRangeUtilityTest {
 		person.setBirthdate(calendar.getTime());
 		String criteria = "${fn.getAge(1-10)}";
 
-		assertTrue(ConceptRangeUtility.isAgeInRange(criteria, person));
+		assertTrue(ConceptReferenceRangeUtility.isAgeInRange(criteria, person));
 	}
 
 	@Test
@@ -44,7 +44,7 @@ class ConceptRangeUtilityTest {
 		person.setBirthdate(calendar.getTime());
 		String criteria = "${fn.getAge(1-10)}";
 
-		assertFalse(ConceptRangeUtility.isAgeInRange(criteria, person));
+		assertFalse(ConceptReferenceRangeUtility.isAgeInRange(criteria, person));
 	}
 
 	@Test
@@ -53,7 +53,7 @@ class ConceptRangeUtilityTest {
 		person.setBirthdate(calendar.getTime());
 		String criteria = "${fn.getAge(1-10)}";
 
-		assertTrue(ConceptRangeUtility.isAgeInRange(criteria, person));
+		assertTrue(ConceptReferenceRangeUtility.isAgeInRange(criteria, person));
 	}
 
 	@Test
@@ -62,7 +62,7 @@ class ConceptRangeUtilityTest {
 		person.setBirthdate(calendar.getTime());
 		String criteria = "${fn.getAge(15-50)}";
 
-		assertFalse(ConceptRangeUtility.isAgeInRange(criteria, person));
+		assertFalse(ConceptReferenceRangeUtility.isAgeInRange(criteria, person));
 	}
 
 	@Test
@@ -71,7 +71,7 @@ class ConceptRangeUtilityTest {
 		person.setBirthdate(calendar.getTime());
 		String criteria = "invalidCriteria";
 
-		assertFalse(ConceptRangeUtility.isAgeInRange(criteria, person));
+		assertFalse(ConceptReferenceRangeUtility.isAgeInRange(criteria, person));
 	}
 
 	@Test
@@ -80,20 +80,20 @@ class ConceptRangeUtilityTest {
 		person.setBirthdate(calendar.getTime());
 		String criteria = "";
 
-		assertFalse(ConceptRangeUtility.isAgeInRange(criteria, person));
+		assertFalse(ConceptReferenceRangeUtility.isAgeInRange(criteria, person));
 	}
 
 	@Test
 	public void testAgeInRange_shouldReturnFalseIfPersonIsNull() {
 		String criteria = "${fn.getAge(15-50)}";
 
-		assertFalse(ConceptRangeUtility.isAgeInRange(criteria, null));
+		assertFalse(ConceptReferenceRangeUtility.isAgeInRange(criteria, null));
 	}
 
 	@Test
 	public void testAgeInRange_shouldReturnFalseIfAgeOfAPersonIsNull() {
 		String criteria = "${fn.getAge(15-50)}";
 
-		assertFalse(ConceptRangeUtility.isAgeInRange(criteria, person));
+		assertFalse(ConceptReferenceRangeUtility.isAgeInRange(criteria, person));
 	}
 }
