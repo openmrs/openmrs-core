@@ -157,6 +157,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Autowired
 	private MessageSourceService messageSourceService;
 	
+	@Autowired
+	private VisitService visitService;
+	
 	@BeforeEach
 	public void setUp(){
 		executeDataSet(ORDER_ATTRIBUTES);
@@ -2090,6 +2093,18 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		List<Order> orders = orderService.getOrders(orderSearchCriteria);
 		assertEquals(11, orders.size());
 	}
+	
+	/**
+	 * @see OrderService#(OrderSearchCriteria)
+	 */
+	@Test
+	public void getOrders_shouldGetOrdersByVisit() {
+		Visit visit = visitService.getVisit(6);
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setVisit(visit).build();
+		List<Order> orders = orderService.getOrders(orderSearchCriteria);
+		assertEquals(11, orders.size());
+	}
+
 
 	/**
 	 * @see OrderService#(OrderSearchCriteria)

@@ -29,6 +29,8 @@ public class OrderSearchCriteriaBuilder {
 
 	private Collection<OrderType> orderTypes;
 	
+	private Visit visit;
+	
 	private String accessionNumber;
 	
 	private String orderNumber;
@@ -61,6 +63,16 @@ public class OrderSearchCriteriaBuilder {
 	 */
 	public OrderSearchCriteriaBuilder setPatient(Patient patient) {
 		this.patient = patient;
+		return (this);
+	}
+	
+	/**
+	 * @param visit the visit the order is for
+	 * @return this builder instance
+	 * @since 2.7.0
+	 */
+	public OrderSearchCriteriaBuilder setVisit(Visit visit) {
+		this.visit = visit;
 		return (this);
 	}
 
@@ -213,7 +225,7 @@ public class OrderSearchCriteriaBuilder {
 	public OrderSearchCriteria build() {
 		return new OrderSearchCriteria(patient, careSetting, concepts, orderTypes, accessionNumber, orderNumber, activatedOnOrBeforeDate,  
 			activatedOnOrAfterDate, isStopped, autoExpireOnOrBeforeDate, canceledOrExpiredOnOrBeforeDate,
-				action, fulfillerStatus, includeNullFulfillerStatus, excludeCanceledAndExpired, excludeDiscontinueOrders, includeVoided);
+				action, fulfillerStatus, includeNullFulfillerStatus, excludeCanceledAndExpired, excludeDiscontinueOrders, includeVoided, visit);
 	}
 }
 

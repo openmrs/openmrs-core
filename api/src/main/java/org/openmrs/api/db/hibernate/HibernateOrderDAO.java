@@ -190,6 +190,9 @@ public class HibernateOrderDAO implements OrderDAO {
 		if (searchCriteria.getAccessionNumber() != null) {
 			predicates.add(cb.equal(cb.lower(root.get("accessionNumber")), searchCriteria.getAccessionNumber().toLowerCase()));
 		}
+		if (searchCriteria.getVisit() != null && searchCriteria.getVisit().getVisitId() != null) {
+			predicates.add(cb.equal(root.get("encounter").get("visit"), searchCriteria.getVisit()));
+		}
 		if (searchCriteria.getActivatedOnOrBeforeDate() != null) {
 			// set the date's time to the last millisecond of the date
 			Calendar cal = Calendar.getInstance();
