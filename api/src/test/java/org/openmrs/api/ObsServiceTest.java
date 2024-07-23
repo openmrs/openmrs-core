@@ -51,6 +51,7 @@ import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.Person;
+import org.openmrs.Visit;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.ObsServiceImpl;
 import org.openmrs.obs.ComplexData;
@@ -838,6 +839,34 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		    null, null, null, null, false, null);
 		
 		assertEquals(6, count.intValue());
+	}
+	
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean,String)
+	 */
+	@Test
+	public void getObservations_shouldGetAllObsInGivenVisits() {
+		ObsService obsService = Context.getObsService();
+		
+		List<Obs> obss = obsService.getObservations(null, null, null, null, null,
+		    null, null, Collections.singletonList(new Visit(8)), null, null, null, null, false, null);
+		
+		assertEquals(2, obss.size());
+	}
+	
+	/**
+	 * @see ObsService#getObservationCount(List,List,List,List,List,List,Integer,Date,Date,boolean)
+	 * @see ObsService#getObservationCount(List,List,List,List,List,List,List,Integer,Date,Date,boolean,String)
+	 */
+	@Test
+	public void getObservationCount_shouldGetCountOfObsInGivenVisits() {
+		ObsService obsService = Context.getObsService();
+		
+		Integer count = obsService.getObservationCount(null, null, null, null, null,
+		    null, Collections.singletonList(new Visit(8)), null, null, null, false, null);
+		
+		assertEquals(2, count.intValue());
 	}
 	
 	/**

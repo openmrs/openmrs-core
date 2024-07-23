@@ -221,7 +221,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getAllVisits_shouldReturnAllUnvoidedVisits() {
-		assertEquals(5, visitService.getAllVisits().size());
+		assertEquals(6, visitService.getAllVisits().size());
 	}
 	
 	/**
@@ -488,7 +488,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	public void getVisits_shouldGetVisitsByVisitType() {
 		List<VisitType> visitTypes = new ArrayList<>();
 		visitTypes.add(new VisitType(1));
-		assertEquals(4, visitService.getVisits(visitTypes, null, null, null, null, null, null, null, null,
+		assertEquals(5, visitService.getVisits(visitTypes, null, null, null, null, null, null, null, null,
 		    true, false).size());
 	}
 	
@@ -518,12 +518,13 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		// this should get all open non-voided visits (which are ids 1, 2, 3, 4, 5 in standardTestDataset)
 		List<Visit> visits = visitService.getVisits(null, null, null, null, null, null, minEndDatetime, null,
 		    null, true, false);
-		assertEquals(5, visits.size());
+		assertEquals(6, visits.size());
 		assertTrue(TestUtil.containsId(visits, 1));
 		assertTrue(TestUtil.containsId(visits, 2));
 		assertTrue(TestUtil.containsId(visits, 3));
 		assertTrue(TestUtil.containsId(visits, 4));
 		assertTrue(TestUtil.containsId(visits, 5));
+		assertTrue(TestUtil.containsId(visits, 8));
 	}
 	
 	@Test
@@ -542,7 +543,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void getVisits_shouldReturnAllVisitsIfIncludeVoidedIsSetToTrue() {
-		assertEquals(6, getNumberOfAllVisitsIncludingVoided());
+		assertEquals(7, getNumberOfAllVisitsIncludingVoided());
 	}
 	
 	@Test
