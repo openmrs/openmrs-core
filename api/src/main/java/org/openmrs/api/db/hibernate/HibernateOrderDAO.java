@@ -33,6 +33,7 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.parameter.OrderSearchCriteria;
 import org.openmrs.User;
+import org.openmrs.Visit;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
@@ -282,12 +283,23 @@ public class HibernateOrderDAO implements OrderDAO {
 	@Override
 	public List<Order> getOrders(Patient patient, CareSetting careSetting, List<OrderType> orderTypes, boolean includeVoided,
 	        boolean includeDiscontinuationOrders) {
+		
+		return this.getOrders(patient, null, careSetting, orderTypes, includeVoided, includeDiscontinuationOrders);
+	}
+	
+	/**
+	 * @see OrderDAO#getOrders(org.openmrs.Patient, org.openmrs.Visit, org.openmrs.CareSetting, java.util.List,
+	 *      boolean, boolean)
+	 */
+	@Override
+	public List<Order> getOrders(Patient patient, Visit visit, CareSetting careSetting, List<OrderType> orderTypes, boolean includeVoided,
+	        boolean includeDiscontinuationOrders) {
 		Session session = sessionFactory.getCurrentSession();
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<Order> cq = cb.createQuery(Order.class);
 		Root<Order> root = cq.from(Order.class);
 
-		List<Predicate> predicates = createOrderCriteria(cb, root, patient, careSetting, orderTypes, includeVoided, includeDiscontinuationOrders);
+		List<Predicate> predicates = createOrderCriteria(cb, root, patient, visit, careSetting, orderTypes, includeVoided, includeDiscontinuationOrders);
 
 		cq.where(predicates.toArray(new Predicate[]{}));
 
@@ -447,12 +459,21 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public List<Order> getActiveOrders(Patient patient, List<OrderType> orderTypes, CareSetting careSetting, Date asOfDate) {
+		return this.getActiveOrders(patient, null, orderTypes, careSetting, asOfDate);
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#getActiveOrders(org.openmrs.Patient, org.openmrs.Visit, java.util.List,
+	 *      org.openmrs.CareSetting, java.util.Date)
+	 */
+	@Override
+	public List<Order> getActiveOrders(Patient patient, Visit visit, List<OrderType> orderTypes, CareSetting careSetting, Date asOfDate) {
 		Session session = sessionFactory.getCurrentSession();
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<Order> cq = cb.createQuery(Order.class);
 		Root<Order> root = cq.from(Order.class);
 
-		List<Predicate> predicates = createOrderCriteria(cb, root, patient, careSetting, orderTypes, false, false);
+		List<Predicate> predicates = createOrderCriteria(cb, root, patient, visit, careSetting, orderTypes, false, false);
 
 		predicates.add(cb.lessThanOrEqualTo(root.get("dateActivated"), asOfDate));
 
@@ -481,13 +502,16 @@ public class HibernateOrderDAO implements OrderDAO {
 	 * @param includeDiscontinuationOrders
 	 * @return
 	 */
-	private List<Predicate> createOrderCriteria(CriteriaBuilder cb, Root<Order> root, Patient patient,
+	private List<Predicate> createOrderCriteria(CriteriaBuilder cb, Root<Order> root, Patient patient, Visit visit,
 	        CareSetting careSetting, List<OrderType> orderTypes, boolean includeVoided,
 	        boolean includeDiscontinuationOrders) {
 		List<Predicate> predicates = new ArrayList<>();
 
 		if (patient != null) {
 			predicates.add(cb.equal(root.get("patient"), patient));
+		}
+		if (visit != null) {
+			predicates.add(cb.equal(root.get("encounter").get("visit"), visit));
 		}
 		if (careSetting != null) {
 			predicates.add(cb.equal(root.get("careSetting"), careSetting));

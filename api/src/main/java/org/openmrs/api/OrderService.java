@@ -12,6 +12,7 @@ package org.openmrs.api;
 import org.openmrs.OrderAttribute;
 import org.openmrs.OrderAttributeType;
 import org.openmrs.Provider;
+import org.openmrs.Visit;
 import org.openmrs.OrderGroup;
 import org.openmrs.OrderGroupAttribute;
 import org.openmrs.OrderGroupAttributeType;
@@ -1064,4 +1065,36 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_ORDERS)
 	OrderAttribute getOrderAttributeByUuid(String uuid) throws APIException;
+
+	/**
+	 * @see org.openmrs.api.OrderService#getActiveOrders(org.openmrs.Patient, org.openmrs.OrderType,
+	 *      org.openmrs.CareSetting, java.util.Date)
+	 *      
+	 * This method works exactly the same; it only adds visit to the search criteria.
+	 * It effectively surpasses the above method; the old one is however kept for backward
+	 * compatibility reasons.
+	 * 
+	 * @param visit the {@link Visit} to restrict active orders (optional)
+	 *      
+	 * @since 2.7.0
+	 */
+	@Authorized(PrivilegeConstants.GET_ORDERS)
+	public List<Order> getActiveOrders(Patient patient, Visit visit, OrderType orderType, CareSetting careSetting,
+			Date asOfDate);
+
+	/**
+	 * @see OrderService#getOrders(org.openmrs.Patient, org.openmrs.CareSetting,
+	 *      org.openmrs.OrderType, boolean)
+	 *      
+	 * This method works exactly the same; it only adds visit to the search criteria.
+	 * It effectively surpasses the above method; the old one is however kept for backward
+	 * compatibility reasons.
+	 * 
+	 * @param visit the {@link Visit} to restrict orders (optional)
+	 *      
+	 * @since 2.7.0
+	 */
+	@Authorized(PrivilegeConstants.GET_ORDERS)
+	public List<Order> getOrders(Patient patient, Visit visit, CareSetting careSetting, OrderType orderType,
+			boolean includeVoided);
 }
