@@ -3966,7 +3966,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getConceptReferenceRangeById_shouldReturnConceptReferenceRangeById() {
 		executeDataSet(CONCEPT_WITH_CONCEPT_REFERENCE_RANGES_XML);
 		
-		final String expectedConceptReferenceRangeCriteria = "${fn.getAge(1-3)}";
+		final String expectedConceptReferenceRangeCriteria = "#set( $criteria = $patient.getAge() >= 1 && $patient.getAge() <= 3 )$criteria";
 		ConceptReferenceRange conceptReferenceRange = conceptService.getConceptReferenceRangeById(3);
 		assertEquals(expectedConceptReferenceRangeCriteria, conceptReferenceRange.getCriteria());
 	}

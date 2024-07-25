@@ -17,6 +17,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
+import org.openmrs.ObsReferenceRange;
 import org.openmrs.Person;
 import org.openmrs.api.ObsService;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
@@ -86,5 +87,24 @@ public interface ObsDAO {
 	 * @since 2.1.0
 	 */
 	public Obs.Status getSavedStatus(Obs obs);
-	
+
+	/**
+	 * @see ObsService#saveObsReferenceRange(ObsReferenceRange)
+	 */
+	ObsReferenceRange saveObsReferenceRange(ObsReferenceRange obsReferenceRange);
+
+	/**
+	 * @see ObsService#getObsReferenceRangeById(Integer)
+	 */
+	ObsReferenceRange getObsReferenceRangeById(Integer id);
+
+	/**
+	 * @see ObsService#getObsReferenceRangesByObsId(Integer)
+	 */
+	List<ObsReferenceRange> getObsReferenceRangesByObsId(Integer obsId);
+
+	/**
+	 * @see ObsService#getLatestObsByConceptId(String)
+	 */
+	Obs getLatestObsByConceptId(String conceptId);
 }

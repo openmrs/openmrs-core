@@ -48,6 +48,7 @@ import org.openmrs.ConceptProposal;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
+import org.openmrs.ObsReferenceRange;
 import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.Person;
@@ -1968,5 +1969,112 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		assertThat(existing.getStatus(), is(Obs.Status.FINAL));
 		assertThat(existing.getVoided(), is(true));
 		assertThat(newObs.getStatus(), is(Obs.Status.FINAL));
+	}
+
+	/**
+	 * @see ObsService#saveObsReferenceRange(ObsReferenceRange)
+	 */
+	@Test
+	public void saveObsReferenceRange_shouldSaveAndReturnObsReferenceRange() {
+		ObsReferenceRange referenceRange = new ObsReferenceRange();
+		referenceRange.setHiAbsolute(100.0);
+		referenceRange.setUuid("6e49d53c-b048-4e0e-a7cf-f41fdc6f1ea1");
+		referenceRange.setObs(Context.getObsService().getObs(7));
+
+		ObsService obsService = Context.getObsService();
+		ObsReferenceRange savedReferenceRange = obsService.saveObsReferenceRange(referenceRange);
+
+		assertNotNull(savedReferenceRange.getId());
+		assertEquals(referenceRange.getHiAbsolute(), savedReferenceRange.getHiAbsolute());
+	}
+
+	/**
+	 * @see ObsService#getObsReferenceRangeById(Integer)
+	 */
+	@Test
+	public void getObsReferenceRangeById_shouldReturnObsReferenceRange() {
+		ObsReferenceRange referenceRange = new ObsReferenceRange();
+		referenceRange.setHiAbsolute(100.0);
+		referenceRange.setUuid("2a097f82-b3f6-49ed-9cd1-0cb29f03bf08");
+		referenceRange.setObs(Context.getObsService().getObs(7));
+
+		ObsService obsService = Context.getObsService();
+		ObsReferenceRange savedReferenceRange = obsService.saveObsReferenceRange(referenceRange);
+		ObsReferenceRange fetchedReferenceRange = obsService.getObsReferenceRangeById(savedReferenceRange.getId());
+
+		assertEquals(savedReferenceRange.getId(), fetchedReferenceRange.getId());
+	}
+
+	/**
+	 * @see ObsService#getObsReferenceRangesByObsId(Integer)
+	 */
+	@Test
+	public void getObsReferenceRangesByObsId_shouldReturnListOfObsReferenceRanges() {
+		Obs obs = Context.getObsService().getObs(9);
+		ObsReferenceRange referenceRange1 = new ObsReferenceRange();
+		referenceRange1.setObs(obs);
+
+		ObsReferenceRange referenceRange2 = new ObsReferenceRange();
+		referenceRange2.setObs(obs);
+
+		ObsService obsService = Context.getObsService();
+		obsService.saveObsReferenceRange(referenceRange1);
+		obsService.saveObsReferenceRange(referenceRange2);
+
+		List<ObsReferenceRange> fetchedReferenceRanges = obsService.getObsReferenceRangesByObsId(obs.getId());
+		assertEquals(2, fetchedReferenceRanges.size());
+	}
+
+	/**
+	 * @see ObsService#getLatestObsByConceptId(String)
+	 */
+	@Test
+	public void getLatestObsByConceptId_shouldReturnLatestObs() throws InterruptedException {
+		ObsService obsService = Context.getObsService();
+		
+		Obs obs1 = buildObservation();
+		obs1.setComment("First Obs");
+		obsService.saveObs(obs1, null);
+
+		// Introduce a delay to ensure a different timestamp for the second obs
+		Thread.sleep(1000);
+		
+		Obs obs2 = buildObservation();
+		obs2.setComment("Second Obs");
+		obsService.saveObs(obs2, null);
+		
+		Obs latestObs = obsService.getLatestObsByConceptId("5089");
+		assertNotNull(latestObs);
+		assertEquals("Second Obs", latestObs.getComment());
+	}
+	
+	private Obs buildObservation() {
+		Concept concept = Context.getConceptService().getConcept(5089);
+		Patient patient = new Patient(2);
+		Encounter encounter = new Encounter(3);
+		Date datetime = new Date();
+		Location location = new Location(1);
+		Integer valueGroupId = 7;
+		Date valueDatetime = new Date();
+		Concept valueCoded = new Concept(3);
+		Double valueNumeric = 2.0;
+		String valueModifier = "cc";
+		String valueText = "value text2";
+
+		Obs obs = new Obs();
+		obs.setOrder(null);
+		obs.setConcept(concept);
+		obs.setPerson(patient);
+		obs.setEncounter(encounter);
+		obs.setObsDatetime(datetime);
+		obs.setLocation(location);
+		obs.setValueGroupId(valueGroupId);
+		obs.setValueDatetime(valueDatetime);
+		obs.setValueCoded(valueCoded);
+		obs.setValueNumeric(valueNumeric);
+		obs.setValueModifier(valueModifier);
+		obs.setValueText(valueText);
+		
+		return obs;
 	}
 }

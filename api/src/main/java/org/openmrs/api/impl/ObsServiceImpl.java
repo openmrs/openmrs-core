@@ -21,6 +21,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
+import org.openmrs.ObsReferenceRange;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.aop.RequiredDataAdvice;
@@ -642,5 +643,39 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	public void removeHandler(String key) {
 		handlers.remove(key);
 	}
-	
+
+	/**
+	 * @see ObsService#saveObsReferenceRange(ObsReferenceRange)
+	 */
+	@Override
+	public ObsReferenceRange saveObsReferenceRange(final ObsReferenceRange obsReferenceRange) {
+		return dao.saveObsReferenceRange(obsReferenceRange);
+	}
+
+	/**
+	 * @see ObsService#getObsReferenceRangeById(Integer)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public ObsReferenceRange getObsReferenceRangeById(final Integer id) {
+		return dao.getObsReferenceRangeById(id);
+	}
+
+	/**
+	 * @see ObsService#getObsReferenceRangesByObsId(Integer)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<ObsReferenceRange> getObsReferenceRangesByObsId(final Integer obsId) {
+		return dao.getObsReferenceRangesByObsId(obsId);
+	}
+
+	/**
+	 * @see ObsService#getLatestObsByConceptId(Integer)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public Obs getLatestObsByConceptId(String conceptId) {
+		return dao.getLatestObsByConceptId(conceptId);
+	}
 }

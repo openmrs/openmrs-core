@@ -32,6 +32,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
+import org.openmrs.ObsReferenceRange;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.User;
@@ -319,5 +320,61 @@ public class HibernateObsDAO implements ObsDAO {
 			session.setHibernateFlushMode(flushMode);
 		}
 	}
-	
+
+	/**
+	 * @see org.openmrs.api.db.ObsDAO#saveObsReferenceRange(ObsReferenceRange)
+	 */
+	@Override
+	public ObsReferenceRange saveObsReferenceRange(ObsReferenceRange obsReferenceRange) {
+		sessionFactory.getCurrentSession().saveOrUpdate(obsReferenceRange);
+		return obsReferenceRange;
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ObsDAO#getObsReferenceRangeById(Integer)
+	 */
+	@Override
+	public ObsReferenceRange getObsReferenceRangeById(Integer id) {
+		return sessionFactory.getCurrentSession().get(ObsReferenceRange.class, id);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ObsDAO#getObsReferenceRangesByObsId(Integer)
+	 */
+	@Override
+	public List<ObsReferenceRange> getObsReferenceRangesByObsId(Integer obsId) {
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<ObsReferenceRange> query = cb.createQuery(ObsReferenceRange.class);
+		Root<ObsReferenceRange> root = query.from(ObsReferenceRange.class);
+		
+		query.where(cb.equal(root.get("obs"), obsId));
+		
+		return session.createQuery(query).getResultList();
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ObsDAO#getLatestObsByConceptId(String)
+	 */
+	@Override
+	public Obs getLatestObsByConceptId(String conceptId) {
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Obs> cq = cb.createQuery(Obs.class);
+		Root<Obs> root = cq.from(Obs.class);
+
+		Predicate conceptPredicate = cb.equal(root.get("concept").get("conceptId"), conceptId);
+		cq.where(conceptPredicate);
+
+		cq.orderBy(cb.desc(root.get("dateCreated")));
+
+		TypedQuery<Obs> query = session.createQuery(cq);
+		query.setMaxResults(1); // We only need the latest observation
+
+		try {
+			return query.getSingleResult();
+		} catch (javax.persistence.NoResultException e) {
+			return null;
+		}
+	}
 }

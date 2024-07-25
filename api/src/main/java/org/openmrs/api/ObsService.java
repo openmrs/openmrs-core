@@ -15,9 +15,11 @@ import java.util.Map;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptReferenceRange;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
+import org.openmrs.ObsReferenceRange;
 import org.openmrs.Person;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.ObsDAO;
@@ -497,5 +499,51 @@ public interface ObsService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_OBS)
 	public Integer getObservationCount(List<ConceptName> conceptNames, boolean includeVoided);
-	
+
+	/**
+	 * Creates or updates the given {@link ObsReferenceRange} in the database
+	 *
+	 * @param obsReferenceRange the obsReferenceRange to save
+	 *                             
+	 * @since 2.7.0
+	 * 
+	 * <strong>Should</strong> create a new obs reference range
+	 * 	 * <strong>Should</strong> edit an existing obs reference range
+	 */
+	ObsReferenceRange saveObsReferenceRange(final ObsReferenceRange obsReferenceRange);
+
+	/**
+	 * @param id ObsReferenceRange id
+	 * @return {@link ObsReferenceRange}
+	 *
+	 * @since 2.7.0
+	 *
+	 * <strong>Should</strong> get the ObsReferenceRange with the given id
+	 * <strong>Should</strong> return null if ObsReferenceRange is not found
+	 */
+	@Authorized(PrivilegeConstants.GET_OBS)
+	ObsReferenceRange getObsReferenceRangeById(final Integer id);
+
+	/**
+	 * @param obsId observation id 
+	 * @return list of {@link ObsReferenceRange}
+	 *
+	 * @since 2.7.0
+	 *
+	 * <strong>Should</strong> get a list of ObsReferenceRange with the given obsId
+	 * <strong>Should</strong> return empty list if none of ObsReferenceRanges has the given obsId
+	 */
+	@Authorized(PrivilegeConstants.GET_OBS)
+	List<ObsReferenceRange> getObsReferenceRangesByObsId(final Integer obsId);
+
+	/**
+	 * @param conceptId conceptId
+	 * @return {@link ObsReferenceRange}
+	 *
+	 * @since 2.7.0
+	 *
+	 * <strong>Should</strong> get the latest Obs with the given conceptId
+	 * <strong>Should</strong> return null if Obs is not found
+	 */
+	Obs getLatestObsByConceptId(String conceptId);
 }

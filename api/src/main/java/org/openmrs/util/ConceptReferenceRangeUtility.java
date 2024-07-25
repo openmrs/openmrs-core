@@ -9,60 +9,87 @@
  */
 package org.openmrs.util;
 
-import org.openmrs.Person;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
+import org.openmrs.Obs;
+import org.openmrs.api.ObsService;
+import org.openmrs.api.context.Context;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import java.io.StringWriter;
+import java.time.LocalTime;
 
 /**
  * A utility class that evaluates the concept ranges 
  */
 public class ConceptReferenceRangeUtility {
 	
-	private static final String AGE_CRITERIA_EXPRESSION = "\\$\\{fn\\.getAge\\((\\d+)-(\\d+)\\)}";
+	private static final Logger logger = LoggerFactory.getLogger(ConceptReferenceRangeUtility.class);
+	
+	public ConceptReferenceRangeUtility() {
+	}
 	
 	/**
-	 * This method evaluates if person's age fits the criteria in concept range.
-	 * 
-	 * @param criteria ConceptReferenceRange criteria
-	 * @param person person to evaluate
-	 * @return true if the person's age fits the criteria and false otherwise
+	 * This method evaluates the given criteria against the provided context.
+	 *
+	 * @param criteria the criteria string to evaluate
+	 * @param obs observation object containing variables to be used in the criteria
+	 * @return true if the criteria evaluates to true, false otherwise
 	 */
-	/**
-	 * <h3>
-	 *     This method evaluates whether a person's age matches any of the age ranges specified in the criteria.
-	 * </h3>
-	 * <p>
-	 * This method checks the given criteria for one or more age range patterns and determines
-	 * if the person's age falls within any of the specified ranges.
-	 * 
-	 * Example of criteria with a single range: "${fn.getAge(1-10)}"
-	 * Example of criteria with multiple ranges: "${fn.getAge(1-10)} and ${fn.getAge(15-20)}"
-	 *</p>
-	 * 
-	 * @param criteria the criteria string containing one or more age range patterns.
-	 * @param person the person whose age is to be evaluated against the criteria.
-	 * @return true if the person's age fits within any of the specified age ranges, false otherwise.
-	 */
-	public static boolean isAgeInRange(String criteria, Person person) {
-		if (person == null || person.getAge() == null) {
+	public static boolean evaluateCriteria(String criteria, Obs obs) {
+		if (criteria.isEmpty() || obs == null) {
 			return false;
 		}
 		
-		int age = person.getAge();
-		boolean ageMatch = false;
+		VelocityContext velocityContext = new VelocityContext();
+		velocityContext.put("fn", new ConceptReferenceRangeUtility());
 		
-		Pattern agePattern = Pattern.compile(AGE_CRITERIA_EXPRESSION);
-		Matcher ageMatcher = agePattern.matcher(criteria);
-		
-		while (ageMatcher.find()) {
-			if (ageMatcher.group(1) != null && ageMatcher.group(2) != null) {
-				int minAge = Integer.parseInt(ageMatcher.group(1));
-				int maxAge = Integer.parseInt(ageMatcher.group(2));
-				ageMatch = age >= minAge && age <= maxAge;
-			}
+		if (obs.getPerson() != null) {
+			velocityContext.put("patient", obs.getPerson());
+			velocityContext.put("person", obs.getPerson());
 		}
 		
-		return ageMatch;
+		VelocityEngine velocityEngine = new VelocityEngine();
+		
+		StringWriter writer = new StringWriter();
+		velocityEngine.evaluate(velocityContext, writer, ConceptReferenceRangeUtility.class.getName(), criteria);
+		
+		String evaluatedCriteria = writer.toString();
+		
+		try {
+			// Evaluate the resulting criteria using a simple boolean evaluation
+			return Boolean.parseBoolean(evaluatedCriteria);
+		}
+		catch (Exception e) {
+			System.err.println("Error evaluating criteria: " + e.getMessage());
+			return false;
+		}
+	}
+	
+	/**
+	 * Gets the latest Obs by concept.
+	 *
+	 * @param conceptId the concept
+	 * @return Obs
+	 */
+	public Obs getLatestObsByConceptId(String conceptId) {
+		ObsService obsService = Context.getObsService();
+		
+		return obsService.getLatestObsByConceptId(conceptId);
+	}
+	
+	/**
+	 * Gets the time of the day in hours.
+	 *
+	 * @return the hour of the day (e.g. 14 to mean 2pm)
+	 */
+	public static int getTimeOfTheDay() {
+		return LocalTime.now().getHour();
 	}
 }

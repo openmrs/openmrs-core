@@ -164,5 +164,67 @@
 			referencedTableName="users"
 			referencedColumnNames="user_id"/>
 	</changeSet>
+
+	<changeSet author="Isaiah (generated)" id="202407231820-1">
+		<preConditions onError="HALT" onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="obs_reference_range"/>
+			</not>
+		</preConditions>
+		<createTable tableName="obs_reference_range" >
+			<column name="obs_reference_range_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="obs_id" type="INT">
+				<constraints nullable="false"/>
+			</column>
+			<column name="hi_absolute" type="DOUBLE"/>
+			<column name="hi_critical" type="DOUBLE"/>
+			<column name="hi_normal" type="DOUBLE"/>
+			<column name="low_absolute" type="DOUBLE"/>
+			<column name="low_critical" type="DOUBLE"/>
+			<column name="low_normal" type="DOUBLE"/>
+			<column name="date_changed" type="TIMESTAMP"/>
+			<column name="date_created" type="TIMESTAMP"/>
+			<column name="creator" type="INT"/>
+			<column name="retired" type="BOOLEAN" defaultValue="false"/>
+			<column name="retired_by" type="INT"/>
+			<column name="retire_reason" type="VARCHAR(255)"/>
+			<column name="date_retired" type="TIMESTAMP"/>
+			<column name="changed_by" type="INT"/>
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false" unique="true" />
+			</column>
+		</createTable>
+
+		<!-- foreign key constraints -->
+		<addForeignKeyConstraint
+			baseTableName="obs_reference_range"
+			baseColumnNames="concept_id"
+			constraintName="fk_obs_reference_range_concept"
+			referencedTableName="concept"
+			referencedColumnNames="concept_id"/>
+
+		<addForeignKeyConstraint
+			baseTableName="obs_reference_range"
+			baseColumnNames="creator"
+			constraintName="fk_obs_reference_range_creator"
+			referencedTableName="users"
+			referencedColumnNames="user_id"/>
+
+		<addForeignKeyConstraint
+			baseTableName="obs_reference_range"
+			baseColumnNames="changed_by"
+			constraintName="fk_obs_reference_range_changed_by"
+			referencedTableName="users"
+			referencedColumnNames="user_id"/>
+
+		<addForeignKeyConstraint
+			baseTableName="obs_reference_range"
+			baseColumnNames="retired_by"
+			constraintName="fk_obs_reference_range_retired_by"
+			referencedTableName="users"
+			referencedColumnNames="user_id"/>
+	</changeSet>
 	
 </databaseChangeLog>

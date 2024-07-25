@@ -34,6 +34,9 @@ import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.CascadeType;
+import javax.persistence.OneToOne;
+
 /**
  * An observation is a single unit of clinical information. <br>
  * <br>
@@ -153,6 +156,9 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	private Interpretation interpretation;
 	
 	private Status status = Status.FINAL;
+
+	@OneToOne(mappedBy = "obs", cascade = CascadeType.ALL)
+	private ObsReferenceRange obsReferenceRange;
 	
 	/** default constructor */
 	public Obs() {
@@ -1243,5 +1249,24 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	public void setStatus(Status status) {
 		markAsDirty(this.status, status);
 		this.status = status;
+	}
+
+	/**
+	 * Gets ObsReferenceRange 
+	 * 
+	 * @since 2.7.0
+	 */
+	public ObsReferenceRange getObsReferenceRange() {
+		return obsReferenceRange;
+	}
+
+	/**
+	 * Sets obsReferenceRange
+	 * @param obsReferenceRange the obs reference range to set
+	 * @since 2.7.0
+	 *
+	 */
+	public void setObsReferenceRange(ObsReferenceRange obsReferenceRange) {
+		this.obsReferenceRange = obsReferenceRange;
 	}
 }

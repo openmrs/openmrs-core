@@ -1980,8 +1980,8 @@ public interface ConceptService extends OpenmrsService {
 	 * 
 	 * @since 2.7.0
 	 * 
-	 * <strong>Should</strong> create a new concept attribute type
-	 * <strong>Should</strong> edit an existing concept attribute type
+	 * <strong>Should</strong> create a new concept reference range
+	 * <strong>Should</strong> edit an existing concept reference range
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_CONCEPT_REFERENCE_RANGES)
 	ConceptReferenceRange saveConceptReferenceRange(ConceptReferenceRange conceptReferenceRange);
@@ -2005,7 +2005,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @since 2.7.0
 	 *
 	 * <strong>Should</strong> get a list of conceptReferenceRanges with the given conceptId
-	 * <strong>Should</strong> return empty list if no conceptReferenceRange has the given conceptId
+	 * <strong>Should</strong> return empty list if none of conceptReferenceRanges has the given conceptId
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	List<ConceptReferenceRange> getConceptReferenceRangesByConceptId(Integer conceptId);

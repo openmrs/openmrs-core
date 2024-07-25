@@ -581,7 +581,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 
 		assertTrue(errors.hasFieldErrors("valueNumeric"));
 		assertNotNull(errors.getFieldError("valueNumeric"));
-		assertEquals("error.outOfRange.for.ageGroup", errors.getFieldError("valueNumeric").getCode());
+		assertEquals("error.outOfRange.not.match", errors.getFieldError("valueNumeric").getCode());
 	}
 	
 	/**

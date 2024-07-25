@@ -285,8 +285,8 @@ public class ObsValidator implements Validator {
 					errors.rejectValue("valueNumeric", "error.outOfRange.low");
 				}
 				
-				if (!ConceptReferenceRangeUtility.isAgeInRange(crr.getCriteria(), obs.getPerson())) {
-					errors.rejectValue("valueNumeric", "error.outOfRange.for.ageGroup");
+				if (!ConceptReferenceRangeUtility.evaluateCriteria(crr.getCriteria(), obs)) {
+					errors.rejectValue("valueNumeric", "error.outOfRange.criteria.not.match");
 				}
 			});
 		}
