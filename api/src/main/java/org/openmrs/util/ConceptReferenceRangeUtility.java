@@ -43,7 +43,11 @@ public class ConceptReferenceRangeUtility {
 	 * @return true if the criteria evaluates to true, false otherwise
 	 */
 	public static boolean evaluateCriteria(String criteria, Obs obs) {
-		if (criteria.isEmpty() || obs == null) {
+		if (criteria == null || criteria.isEmpty()) {
+			return true;
+		}
+
+		if (obs == null) {
 			return false;
 		}
 		

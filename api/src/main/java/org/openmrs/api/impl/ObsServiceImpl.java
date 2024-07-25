@@ -18,6 +18,7 @@ import java.util.Map;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptReferenceRange;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
@@ -26,6 +27,7 @@ import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.api.APIException;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.PatientService;
@@ -213,7 +215,33 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	private Obs saveNewOrVoidedObs(Obs obs, String changeMessage) {
 		Obs ret = dao.saveObs(obs);
 		saveObsGroup(ret,changeMessage);
+		saveObsReferenceRange(obs);
 		return ret;
+	}
+
+	private void saveObsReferenceRange(Obs obs) {
+		Concept concept = obs.getConcept();
+		ConceptService conceptService = Context.getConceptService();
+		ObsService obsService = Context.getObsService();
+
+		if (concept != null) {
+
+			List<ConceptReferenceRange> conceptReferenceRanges = conceptService.getConceptReferenceRangesByConceptId(concept.getId());
+			
+			ObsReferenceRange obsRefRange = new ObsReferenceRange();
+			obsRefRange.setObs(obs);
+			
+			if (!conceptReferenceRanges.isEmpty()) {
+				ConceptReferenceRange conceptReferenceRange = conceptReferenceRanges.get(0);
+				obsRefRange.setHiAbsolute(conceptReferenceRange.getHiAbsolute());
+				obsRefRange.setHiCritical(conceptReferenceRange.getHiCritical());
+				obsRefRange.setHiNormal(conceptReferenceRange.getHiNormal());
+				obsRefRange.setLowAbsolute(conceptReferenceRange.getLowAbsolute());
+				obsRefRange.setLowCritical(conceptReferenceRange.getLowCritical());
+				obsRefRange.setLowNormal(conceptReferenceRange.getLowNormal());
+			}
+			obsService.saveObsReferenceRange(obsRefRange);
+		}
 	}
 
 	private void evictObsAndChildren(Obs obs) {

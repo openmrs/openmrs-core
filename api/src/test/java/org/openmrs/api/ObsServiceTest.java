@@ -42,9 +42,11 @@ import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptProposal;
+import org.openmrs.ConceptReferenceRange;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
@@ -2046,6 +2048,48 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Obs latestObs = obsService.getLatestObsByConceptId("5089");
 		assertNotNull(latestObs);
 		assertEquals("Second Obs", latestObs.getComment());
+	}
+
+	@Test
+	public void saveObsReferenceRange_shouldNotSaveReferenceRangeAfterSavingObs() {
+		Obs obs = buildObservation();
+		
+		Context.getConceptService().saveConceptReferenceRange(buildConceptReferenceRange(obs.getConcept()));
+
+		obsService.saveObs(obs, null);
+		
+		List<ConceptReferenceRange> conceptReferenceRanges = Context.getConceptService().getConceptReferenceRangesByConceptId(obs.getConcept().getId());
+
+		ConceptReferenceRange conceptReferenceRange = conceptReferenceRanges.get(0);
+		Double expectedHiAbsolute = conceptReferenceRange.getHiAbsolute();
+
+		List<ObsReferenceRange> obsReferenceRanges = obsService.getObsReferenceRangesByObsId(obs.getObsId());
+
+		assertFalse(obsReferenceRanges.isEmpty());
+		ObsReferenceRange obsReferenceRange = obsReferenceRanges.get(0);
+		assertEquals(expectedHiAbsolute, obsReferenceRange.getHiAbsolute());
+	}
+
+	@Test
+	public void saveObsReferenceRange_shouldNotSaveReferenceRangeIfConceptIsNull() {
+		Obs obs = buildObservation();
+
+		Context.getConceptService().saveConceptReferenceRange(buildConceptReferenceRange(Context.getConceptService().getConcept(17)));
+
+		obsService.saveObs(obs, null);
+
+		List<ConceptReferenceRange> conceptReferenceRanges = Context.getConceptService().getConceptReferenceRangesByConceptId(obs.getConcept().getId());
+
+		assertTrue(conceptReferenceRanges.isEmpty());
+	}
+	
+	private ConceptReferenceRange buildConceptReferenceRange(Concept concept) {
+		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
+		conceptReferenceRange.setHiAbsolute(10.0);
+		conceptReferenceRange.setLowAbsolute(1.0);
+		conceptReferenceRange.setConcept(concept);
+		
+		return conceptReferenceRange;
 	}
 	
 	private Obs buildObservation() {

@@ -11,11 +11,16 @@ package org.openmrs.util;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.openmrs.Concept;
+import org.openmrs.ConceptDatatype;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Person;
+import org.openmrs.api.ObsService;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 import java.time.LocalTime;
 import java.util.Calendar;
@@ -25,10 +30,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
-class ConceptReferenceRangeUtilityTest {
+class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 	private Calendar calendar;
 	private Person person;
 	private Obs obs;
+	
+	@Mock
+	private ObsService obsService;
 	
 	@BeforeEach
 	public void setUp() {
@@ -88,13 +96,13 @@ class ConceptReferenceRangeUtilityTest {
 	}
 
 	@Test
-	public void testAgeInRange_shouldReturnFalseIfCriteriaIsEmpty() {
+	public void testAgeInRange_shouldReturnTrueIfCriteriaIsEmpty() {
 		calendar.set(2019, Calendar.JUNE, 2);
 		person.setBirthdate(calendar.getTime());
 		obs.setPerson(person);
 		String criteria = "";
 
-		assertFalse(ConceptReferenceRangeUtility.evaluateCriteria(criteria, obs));
+		assertTrue(ConceptReferenceRangeUtility.evaluateCriteria(criteria, obs));
 	}
 
 	@Test
@@ -194,12 +202,14 @@ class ConceptReferenceRangeUtilityTest {
 	}
 
 	@Test
-	public void testObsValueMatch_shouldReturnTrueIfValueMatch() {
+	public void testObsValueMatch_shouldReturnTrueIfValueTextMatch() {
 		person.setGender("F");
 		obs.setPerson(person);
+		obs.setValueText("PREGNANT");
 
-		String criteria = "#set( $criteria = $patient.getGender().equals('F') && $fn.getLatestObsByConceptId('5089') == true )$criteria";
-		obs.setPerson(person);
+		Mockito.when(obsService.getLatestObsByConceptId("5089")).thenReturn(obs);
+
+		String criteria = "#set( $criteria = $patient.getGender().equals('F') && $fn.getLatestObsByConceptId('5089').getValueText().equals('PREGNANT') )$criteria";
 
 		assertTrue(ConceptReferenceRangeUtility.evaluateCriteria(criteria, obs));
 	}
@@ -227,6 +237,7 @@ class ConceptReferenceRangeUtilityTest {
 
 	private Obs buildObservation() {
 		Concept concept = new Concept(5089);
+		concept.setDatatype(new ConceptDatatype(3));
 		
 		Encounter encounter = new Encounter(3);
 		Date datetime = new Date();
@@ -236,7 +247,6 @@ class ConceptReferenceRangeUtilityTest {
 		Concept valueCoded = new Concept(3);
 		Double valueNumeric = 2.0;
 		String valueModifier = "cc";
-		String valueText = "value text2";
 
 		Obs obs = new Obs();
 		obs.setOrder(null);
@@ -249,7 +259,6 @@ class ConceptReferenceRangeUtilityTest {
 		obs.setValueCoded(valueCoded);
 		obs.setValueNumeric(valueNumeric);
 		obs.setValueModifier(valueModifier);
-		obs.setValueText(valueText);
 
 		return obs;
 	}

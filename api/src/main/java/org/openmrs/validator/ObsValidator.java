@@ -270,17 +270,14 @@ public class ObsValidator implements Validator {
 	private void validateConceptReferenceRange(Obs obs, Errors errors) {
 		Concept concept = obs.getConcept();
 
-		// if there is a concept perform validation tests specific to the concept datatype
 		if (concept != null && concept.getDatatype() != null) {
 			List<ConceptReferenceRange> conceptReferenceRanges = Context.getConceptService()
 				.getConceptReferenceRangesByConceptId(concept.getConceptId());
 
 			conceptReferenceRanges.forEach(crr -> {
-				// If the number is higher than the absolute range, raise an error 
 				if (crr.getHiAbsolute() != null && crr.getHiAbsolute() < obs.getValueNumeric()) {
 					errors.rejectValue("valueNumeric", "error.outOfRange.high");
 				}
-				// If the number is lower than the absolute range, raise an error as well 
 				if (crr.getLowAbsolute() != null && crr.getLowAbsolute() > obs.getValueNumeric()) {
 					errors.rejectValue("valueNumeric", "error.outOfRange.low");
 				}
