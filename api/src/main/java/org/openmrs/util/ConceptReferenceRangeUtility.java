@@ -19,9 +19,6 @@ import org.openmrs.api.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 import java.io.StringWriter;
 import java.time.LocalTime;
 
@@ -71,7 +68,7 @@ public class ConceptReferenceRangeUtility {
 			return Boolean.parseBoolean(evaluatedCriteria);
 		}
 		catch (Exception e) {
-			System.err.println("Error evaluating criteria: " + e.getMessage());
+			logger.error("Error evaluating criteria: {}", e.getMessage());
 			return false;
 		}
 	}
