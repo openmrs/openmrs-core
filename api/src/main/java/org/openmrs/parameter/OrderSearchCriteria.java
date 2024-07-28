@@ -14,6 +14,7 @@ import org.openmrs.Concept;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
+import org.openmrs.Visit;
 
 import java.util.Collection;
 import java.util.Date;
@@ -35,6 +36,8 @@ public class OrderSearchCriteria {
 
 	private final Collection<OrderType> orderTypes;
 
+	private final Visit visit;
+	
 	/**
 	 * Accession Number to match on; performs an exact match, case-insensitive
 	 */
@@ -93,7 +96,7 @@ public class OrderSearchCriteria {
 	private final boolean excludeCanceledAndExpired;
 
 	private final boolean excludeDiscontinueOrders;
-
+	
 	/**
 	 * Instead of calling this constructor directly, it is recommended to use {@link OrderSearchCriteriaBuilder}.
 	 * @param patient the patient the order is for
@@ -107,6 +110,23 @@ public class OrderSearchCriteria {
 	 * @param includeVoided whether to include the voided orders or not
 	 */
 	public OrderSearchCriteria(Patient patient, CareSetting careSetting, Collection<Concept> concepts,
+			   Collection<OrderType> orderTypes, String accessionNumber, String orderNumber,
+			   Date activatedOnOrBeforeDate, Date activatedOnOrAfterDate, boolean isStopped,
+			   Date autoExpireOnOrBeforeDate,
+			   Date canceledOrExpiredOnOrBeforeDate,
+			   Order.Action action,
+			   Order.FulfillerStatus fulfillerStatus,
+			   Boolean includeNullFulfillerStatus,
+			   boolean excludeCanceledAndExpired,
+			   boolean excludeDiscontinueOrders,
+			   boolean includeVoided) {
+		
+		this(patient, careSetting, concepts, orderTypes, null, null,
+				activatedOnOrBeforeDate, activatedOnOrAfterDate, isStopped, autoExpireOnOrBeforeDate, canceledOrExpiredOnOrBeforeDate,
+				action, fulfillerStatus, includeNullFulfillerStatus, excludeCanceledAndExpired, excludeDiscontinueOrders, includeVoided, null);
+	}
+
+	public OrderSearchCriteria(Patient patient, CareSetting careSetting, Collection<Concept> concepts,
 							   Collection<OrderType> orderTypes, String accessionNumber, String orderNumber,
 							   Date activatedOnOrBeforeDate, Date activatedOnOrAfterDate, boolean isStopped,
 							   Date autoExpireOnOrBeforeDate,
@@ -116,7 +136,8 @@ public class OrderSearchCriteria {
 							   Boolean includeNullFulfillerStatus,
 							   boolean excludeCanceledAndExpired,
 							   boolean excludeDiscontinueOrders,
-							   boolean includeVoided) {
+							   boolean includeVoided,
+							   Visit visit) {
 		this.patient = patient;
 		this.careSetting = careSetting;
 		this.concepts = concepts;
@@ -134,6 +155,7 @@ public class OrderSearchCriteria {
 		this.excludeCanceledAndExpired = excludeCanceledAndExpired;
 		this.excludeDiscontinueOrders = excludeDiscontinueOrders;
 		this.includeVoided = includeVoided;
+		this.visit = visit;
 	}
 
 	/**
@@ -185,6 +207,12 @@ public class OrderSearchCriteria {
 	 */
 	public Collection<OrderType> getOrderTypes() { return orderTypes; }
 
+	/**
+	 * @return the visit the order is for
+	 * @since 2.7.0
+	 */
+	public Visit getVisit() { return visit; }
+	
 	/**
 	 * @return the accession number to match on; must be case-insensitive exact-match
 	 * @since 2.3.1

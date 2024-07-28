@@ -19,6 +19,7 @@ import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.ObsReferenceRange;
 import org.openmrs.Person;
+import org.openmrs.Visit;
 import org.openmrs.api.ObsService;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 
@@ -87,6 +88,29 @@ public interface ObsDAO {
 	 * @since 2.1.0
 	 */
 	public Obs.Status getSavedStatus(Obs obs);
+
+	/**
+	 * @see org.openmrs.api.ObsService#getObservations(java.util.List, java.util.List,
+	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, java.util.List,
+	 *      java.lang.Integer, java.lang.Integer, java.util.Date, java.util.Date, boolean,
+	 *      java.lang.String)
+	 */
+	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+			List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sortList,
+			List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
+			boolean includeVoidedObs, String accessionNumber) throws DAOException;
+
+	/**
+	 * @see org.openmrs.api.ObsService#getObservationCount(java.util.List, java.util.List,
+	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.lang.Integer,
+	 *      java.util.Date, java.util.Date, java.util.List, java.util.List, boolean, java.lang.String)
+	 * @see ObsService#getObservationCount(List, boolean)
+	 */
+	public Long getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+			List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
+			Date fromDate, Date toDate, List<ConceptName> valueCodedNameAnswers, List<Visit> visits,
+			boolean includeVoidedObs, String accessionNumber) throws DAOException;
+	
 
 	/**
 	 * @see ObsService#saveObsReferenceRange(ObsReferenceRange)
