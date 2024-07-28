@@ -11,9 +11,8 @@ package org.openmrs.util;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.runtime.RuntimeConstants;
-import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.openmrs.Obs;
+import org.openmrs.Person;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.slf4j.Logger;
@@ -36,24 +35,20 @@ public class ConceptReferenceRangeUtility {
 	 * This method evaluates the given criteria against the provided context.
 	 *
 	 * @param criteria the criteria string to evaluate
-	 * @param obs observation object containing variables to be used in the criteria
+	 * @param person person object containing variables to be used in the criteria
 	 * @return true if the criteria evaluates to true, false otherwise
 	 */
-	public static boolean evaluateCriteria(String criteria, Obs obs) {
+	public static boolean evaluateCriteria(String criteria, Person person) {
 		if (criteria == null || criteria.isEmpty()) {
 			return true;
-		}
-
-		if (obs == null) {
-			return false;
 		}
 		
 		VelocityContext velocityContext = new VelocityContext();
 		velocityContext.put("fn", new ConceptReferenceRangeUtility());
 		
-		if (obs.getPerson() != null) {
-			velocityContext.put("patient", obs.getPerson());
-			velocityContext.put("person", obs.getPerson());
+		if (person != null) {
+			velocityContext.put("patient", person);
+			velocityContext.put("person", person);
 		}
 		
 		VelocityEngine velocityEngine = new VelocityEngine();

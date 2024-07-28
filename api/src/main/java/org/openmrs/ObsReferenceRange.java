@@ -9,29 +9,25 @@
  */
 package org.openmrs;
 
-import org.hibernate.envers.Audited;
 import org.hibernate.search.annotations.DocumentId;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 /**
- * ObsReferenceRange is typically a range of an Observation 
+ * ObsReferenceRange is typically a reference range of an Observation 
  * The reference range is created at the point of recording {@link Obs}
  *
  * @since 2.7.0
  */
 @Entity
 @Table(name = "obs_reference_range")
-@Audited
-public class ObsReferenceRange extends BaseReferenceRangeObject  {
+public class ObsReferenceRange extends BaseReferenceRange implements java.io.Serializable {
 	private static final long serialVersionUID = 473299L;
 
 	// Fields
@@ -41,7 +37,6 @@ public class ObsReferenceRange extends BaseReferenceRangeObject  {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer obsReferenceRangeId;
 
-	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "obs_id", nullable = false)
 	private Obs obs;
 

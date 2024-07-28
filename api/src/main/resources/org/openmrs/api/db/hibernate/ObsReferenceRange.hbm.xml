@@ -32,10 +32,6 @@
 		<property name="lowCritical" type="java.lang.Double" column="low_critical"/>
 		<property name="lowNormal" type="java.lang.Double" column="low_normal"/>
 		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true"/>
-		<property name="dateChanged" type="java.util.Date" column="date_changed"/>
-		<property name="retired" type="java.lang.Boolean" column="retired" not-null="true"/>
-		<property name="dateRetired" type="java.util.Date" column="date_retired"/>
-		<property name="retireReason" type="java.lang.String" column="retire_reason" length="255"/>
 
 		<many-to-one name="obs" class="Obs" fetch="select">
 			<column name="obs_id" not-null="true"/>
@@ -43,14 +39,6 @@
 
 		<many-to-one name="creator" class="User" fetch="select">
 			<column name="creator"/>
-		</many-to-one>
-
-		<many-to-one name="changedBy" class="User" fetch="select">
-			<column name="changed_by"/>
-		</many-to-one>
-
-		<many-to-one name="retiredBy" class="User" fetch="select">
-			<column name="retired_by"/>
 		</many-to-one>
 	</class>
 

@@ -2051,7 +2051,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void saveObsReferenceRange_shouldNotSaveReferenceRangeAfterSavingObs() {
+	public void saveObsReferenceRange_shouldSaveReferenceRangeAfterSavingObs() {
 		Obs obs = buildObservation();
 		
 		Context.getConceptService().saveConceptReferenceRange(buildConceptReferenceRange(obs.getConcept()));

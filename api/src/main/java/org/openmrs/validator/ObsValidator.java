@@ -282,7 +282,7 @@ public class ObsValidator implements Validator {
 					errors.rejectValue("valueNumeric", "error.outOfRange.low");
 				}
 				
-				if (!ConceptReferenceRangeUtility.evaluateCriteria(crr.getCriteria(), obs)) {
+				if (!ConceptReferenceRangeUtility.evaluateCriteria(crr.getCriteria(), obs.getPerson())) {
 					errors.rejectValue("valueNumeric", "error.outOfRange.criteria.not.match");
 				}
 			});

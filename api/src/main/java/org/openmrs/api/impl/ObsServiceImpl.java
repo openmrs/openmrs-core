@@ -699,7 +699,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
 
 	/**
-	 * @see ObsService#getLatestObsByConceptId(Integer)
+	 * @see ObsService#getLatestObsByConceptId(String)
 	 */
 	@Override
 	@Transactional(readOnly = true)
