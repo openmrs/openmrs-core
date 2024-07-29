@@ -17,7 +17,7 @@
   <concept concept_id="2" retired="false" datatype_id="1" class_id="7" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="92b910bd-298c-4ecf-a632-661ae2f446bf"/>
   <concept_description concept_description_id="1" concept_id="1" description="this is a description" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" uuid="0a6f34ea-043a-4e69-b418-1d7bb66b99b6"/>
   <concept_description concept_description_id="2" concept_id="2" description="this is another description" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" uuid="a72dac37-b593-46a1-a24b-e3da6dbcc521"/>
-  <concept_name concept_id="1" name="Some non numeric concept name" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="1" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="61618da6-7a3d-4ad4-829c-5ad64410c921"/>
+  <concept_name concept_id="1" name="Some non numeric concept name" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="1" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="8edfd54f-b189-43dd-86e0-913591978e48"/>
   <concept_name concept_id="2" name="Some numeric concept name" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="2" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="d8402dab-1e32-4f17-9654-a889a4eb9a89"/>
   <concept_name concept_id="2" name="Numeric name with en_GB locale" locale="en_GB" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="3" locale_preferred="0" voided="false" uuid="bbbb2dab-1e32-4f17-a654-0000a4eb9a8e"/>
   <concept_numeric concept_id="2" hi_absolute="123.0" allow_decimal="false"/>

@@ -1983,7 +1983,7 @@ public interface ConceptService extends OpenmrsService {
 	 * <strong>Should</strong> create a new concept reference range
 	 * <strong>Should</strong> edit an existing concept reference range
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_CONCEPT_REFERENCE_RANGES)
+	@Authorized(PrivilegeConstants.MANAGE_CONCEPTS)
 	ConceptReferenceRange saveConceptReferenceRange(ConceptReferenceRange conceptReferenceRange);
 	
 	/**

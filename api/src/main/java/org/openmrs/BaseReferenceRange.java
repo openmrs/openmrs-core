@@ -18,9 +18,12 @@ import java.util.Date;
 /**
  * This is the base class for reference ranges.
  * It contains all reference ranges.
+ * 
+ * @since 2.7.0
  */
 @MappedSuperclass
 public abstract class BaseReferenceRange extends BaseOpenmrsObject {
+	
 	@Column(name = "hi_absolute")
 	private Double hiAbsolute;
 

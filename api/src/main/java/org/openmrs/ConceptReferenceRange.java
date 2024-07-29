@@ -39,6 +39,7 @@ import java.util.Date;
 @Table(name = "concept_reference_range")
 @Audited
 public class ConceptReferenceRange extends BaseReferenceRange implements Auditable, Retireable {
+	
 	private static final long serialVersionUID = 47329L;
 
 	// Fields

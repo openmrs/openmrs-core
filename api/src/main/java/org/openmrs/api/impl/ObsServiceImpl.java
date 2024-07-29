@@ -225,7 +225,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		ConceptService conceptService = Context.getConceptService();
 		ObsService obsService = Context.getObsService();
 
-		if (concept != null) {
+		if (concept != null && concept.getDatatype().isNumeric()) {
 
 			List<ConceptReferenceRange> conceptReferenceRanges = conceptService.getConceptReferenceRangesByConceptId(concept.getId());
 			
@@ -735,7 +735,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public Obs getLatestObsByConceptId(String conceptId) {
+	public Obs getLatestObsByConceptId(final String conceptId) {
 		return dao.getLatestObsByConceptId(conceptId);
 	}
 }

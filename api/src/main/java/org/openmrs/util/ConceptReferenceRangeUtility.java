@@ -39,33 +39,23 @@ public class ConceptReferenceRangeUtility {
 	 * @return true if the criteria evaluates to true, false otherwise
 	 */
 	public static boolean evaluateCriteria(String criteria, Person person) {
-		if (criteria == null || criteria.isEmpty()) {
+		if (criteria == null || criteria.isEmpty() || person == null) {
 			return true;
 		}
 		
 		VelocityContext velocityContext = new VelocityContext();
 		velocityContext.put("fn", new ConceptReferenceRangeUtility());
 		
-		if (person != null) {
-			velocityContext.put("patient", person);
-			velocityContext.put("person", person);
-		}
+		velocityContext.put("patient", person);
 		
 		VelocityEngine velocityEngine = new VelocityEngine();
 		
 		StringWriter writer = new StringWriter();
 		velocityEngine.evaluate(velocityContext, writer, ConceptReferenceRangeUtility.class.getName(), criteria);
-		
+
 		String evaluatedCriteria = writer.toString();
 		
-		try {
-			// Evaluate the resulting criteria using a simple boolean evaluation
-			return Boolean.parseBoolean(evaluatedCriteria);
-		}
-		catch (Exception e) {
-			logger.error("Error evaluating criteria: {}", e.getMessage());
-			return false;
-		}
+		return Boolean.parseBoolean(evaluatedCriteria);
 	}
 	
 	/**

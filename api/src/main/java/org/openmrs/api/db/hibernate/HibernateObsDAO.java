@@ -403,10 +403,6 @@ public class HibernateObsDAO implements ObsDAO {
 		TypedQuery<Obs> query = session.createQuery(cq);
 		query.setMaxResults(1); // We only need the latest observation
 
-		try {
-			return query.getSingleResult();
-		} catch (javax.persistence.NoResultException e) {
-			return null;
-		}
+		return query.getSingleResult();
 	}
 }

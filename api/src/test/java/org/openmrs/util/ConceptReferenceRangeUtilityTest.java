@@ -122,7 +122,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 	@Test
 	public void testCriteriaWithPerson_shouldReturnTrueIfGenderMatches() {
 		person.setGender("M");
-		String criteria = "#set( $criteria = $person.getGender().equals('M') )$criteria";
+		String criteria = "#set( $criteria = $patient.getGender().equals('M') )$criteria";
 
 		assertTrue(ConceptReferenceRangeUtility.evaluateCriteria(criteria, person));
 	}
@@ -176,7 +176,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 	public void testAgeAndGenderMatch_shouldReturnFalseIfPersonIsNull() {
 		String criteria = "#set( $criteria = $patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M') )$criteria";
 
-		assertFalse(ConceptReferenceRangeUtility.evaluateCriteria(criteria, null));
+		assertTrue(ConceptReferenceRangeUtility.evaluateCriteria(criteria, null));
 	}
 
 	@Test

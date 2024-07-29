@@ -28,6 +28,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "obs_reference_range")
 public class ObsReferenceRange extends BaseReferenceRange implements java.io.Serializable {
+	
 	private static final long serialVersionUID = 473299L;
 
 	// Fields

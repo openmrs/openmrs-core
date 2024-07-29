@@ -591,7 +591,4 @@ public class PrivilegeConstants {
 
 	@AddOnStartup(description = "Able to delete Medication Dispenses")
 	public static final String DELETE_MEDICATION_DISPENSE = "Delete Medication Dispense";
-
-	@AddOnStartup(description = "Able to add/edit/retire concept reference ranges")
-	public static final String MANAGE_CONCEPT_REFERENCE_RANGES = "Manage Concept Reference Ranges";
 }

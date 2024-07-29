@@ -550,9 +550,11 @@ public interface ObsService extends OpenmrsService {
 	 * <strong>Should</strong> create a new obs reference range
 	 * 	 * <strong>Should</strong> edit an existing obs reference range
 	 */
-	ObsReferenceRange saveObsReferenceRange(final ObsReferenceRange obsReferenceRange);
+	ObsReferenceRange saveObsReferenceRange(ObsReferenceRange obsReferenceRange);
 
 	/**
+	 * This method gets ObsReferenceRange by id
+	 * 
 	 * @param id ObsReferenceRange id
 	 * @return {@link ObsReferenceRange}
 	 *
@@ -562,9 +564,11 @@ public interface ObsService extends OpenmrsService {
 	 * <strong>Should</strong> return null if ObsReferenceRange is not found
 	 */
 	@Authorized(PrivilegeConstants.GET_OBS)
-	ObsReferenceRange getObsReferenceRangeById(final Integer id);
+	ObsReferenceRange getObsReferenceRangeById(Integer id);
 
 	/**
+	 * This method gets ObsReferenceRanges by Obs id.
+	 * 
 	 * @param obsId observation id 
 	 * @return list of {@link ObsReferenceRange}
 	 *
@@ -574,9 +578,11 @@ public interface ObsService extends OpenmrsService {
 	 * <strong>Should</strong> return empty list if none of ObsReferenceRanges has the given obsId
 	 */
 	@Authorized(PrivilegeConstants.GET_OBS)
-	List<ObsReferenceRange> getObsReferenceRangesByObsId(final Integer obsId);
+	List<ObsReferenceRange> getObsReferenceRangesByObsId(Integer obsId);
 
 	/**
+	 * This method gets the latest Obs by conceptId. The latest obs is determined by the date created.
+	 * 
 	 * @param conceptId conceptId
 	 * @return {@link ObsReferenceRange}
 	 *
