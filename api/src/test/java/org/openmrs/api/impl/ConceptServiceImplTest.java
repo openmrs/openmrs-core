@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -963,7 +964,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	@Test
 	public void getConceptReferenceRangeById_shouldReturnConceptReferenceRangeObjectIfFound() {
 		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
-		conceptReferenceRange.setCreator(new User(1));
 		conceptReferenceRange.setHiAbsolute(120.0);
 		conceptReferenceRange.setLowAbsolute(100.0);
 		conceptReferenceRange.setConcept(createConcept());
@@ -985,27 +985,20 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see ConceptServiceImpl#getConceptReferenceRangesByConceptId(Integer) 
+	 * @see ConceptServiceImpl#getConceptReferenceRangeByConceptId(Integer) 
 	 */
 	@Test
-	public void getConceptReferenceRangesByConceptId_shouldReturnAListOfConceptReferenceRangesIfFound() {
+	public void getConceptReferenceRangesByConceptId_shouldReturnConceptReferenceRangeIfFound() {
 		Concept concept = createConcept();
 		
 		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
-		conceptReferenceRange.setCreator(new User(1));
 		conceptReferenceRange.setHiAbsolute(120.0);
 		conceptReferenceRange.setConcept(concept);
 		conceptService.saveConceptReferenceRange(conceptReferenceRange);
 
-		ConceptReferenceRange secondConceptReferenceRange = new ConceptReferenceRange();
-		secondConceptReferenceRange.setCreator(new User(1));
-		secondConceptReferenceRange.setHiAbsolute(200.0);
-		secondConceptReferenceRange.setConcept(concept);
-		conceptService.saveConceptReferenceRange(secondConceptReferenceRange);
-
-		List<ConceptReferenceRange> savedConceptReferenceRanges = conceptService.getConceptReferenceRangesByConceptId(concept.getId());
-		assertNotNull(savedConceptReferenceRanges);
-		assertEquals(2, savedConceptReferenceRanges.size());
+		Optional<ConceptReferenceRange> savedConceptReferenceRange = conceptService.getConceptReferenceRangeByConceptId(concept.getId());
+		assertTrue(savedConceptReferenceRange.isPresent());
+		assertEquals(conceptReferenceRange.getHiAbsolute(), savedConceptReferenceRange.get().getHiAbsolute());
 	}
 	
 	private Concept createConcept() {

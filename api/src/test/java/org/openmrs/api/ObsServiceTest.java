@@ -38,11 +38,11 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptProposal;
@@ -2087,10 +2087,11 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 
 		obsService.saveObs(obs, null);
 		
-		List<ConceptReferenceRange> conceptReferenceRanges = Context.getConceptService().getConceptReferenceRangesByConceptId(obs.getConcept().getId());
+		Optional<ConceptReferenceRange> conceptReferenceRange = Context.getConceptService().getConceptReferenceRangeByConceptId(obs.getConcept().getId());
 
-		ConceptReferenceRange conceptReferenceRange = conceptReferenceRanges.get(0);
-		Double expectedHiAbsolute = conceptReferenceRange.getHiAbsolute();
+		assertTrue(conceptReferenceRange.isPresent());
+		
+		Double expectedHiAbsolute = conceptReferenceRange.get().getHiAbsolute();
 
 		List<ObsReferenceRange> obsReferenceRanges = obsService.getObsReferenceRangesByObsId(obs.getObsId());
 
@@ -2107,9 +2108,9 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 
 		obsService.saveObs(obs, null);
 
-		List<ConceptReferenceRange> conceptReferenceRanges = Context.getConceptService().getConceptReferenceRangesByConceptId(obs.getConcept().getId());
+		Optional<ConceptReferenceRange> conceptReferenceRange = Context.getConceptService().getConceptReferenceRangeByConceptId(obs.getConcept().getId());
 
-		assertTrue(conceptReferenceRanges.isEmpty());
+		assertFalse(conceptReferenceRange.isPresent());
 	}
 	
 	private ConceptReferenceRange buildConceptReferenceRange(Concept concept) {
@@ -2117,6 +2118,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		conceptReferenceRange.setHiAbsolute(10.0);
 		conceptReferenceRange.setLowAbsolute(1.0);
 		conceptReferenceRange.setConcept(concept);
+		conceptReferenceRange.setCriteria("$patient.getAge() &gt;= 1");
 		
 		return conceptReferenceRange;
 	}

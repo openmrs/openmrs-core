@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 
 import org.openmrs.Concept;
@@ -1987,6 +1988,8 @@ public interface ConceptService extends OpenmrsService {
 	ConceptReferenceRange saveConceptReferenceRange(ConceptReferenceRange conceptReferenceRange);
 	
 	/**
+	 * This method gets Concept Reference Range by id
+	 * 
 	 * @param id conceptReferenceRange id
 	 * @return {@link ConceptReferenceRange} 
 	 * 
@@ -1999,6 +2002,8 @@ public interface ConceptService extends OpenmrsService {
 	ConceptReferenceRange getConceptReferenceRangeById(Integer id);
 
 	/**
+	 * This method gets ConceptReferenceRange by concept id
+	 * 
 	 * @param conceptId conceptId 
 	 * @return list of {@link ConceptReferenceRange}
 	 *
@@ -2008,6 +2013,6 @@ public interface ConceptService extends OpenmrsService {
 	 * <strong>Should</strong> return empty list if none of conceptReferenceRanges has the given conceptId
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
-	List<ConceptReferenceRange> getConceptReferenceRangesByConceptId(Integer conceptId);
+	Optional<ConceptReferenceRange> getConceptReferenceRangeByConceptId(Integer conceptId);
 	
 }

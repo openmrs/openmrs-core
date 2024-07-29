@@ -9,11 +9,13 @@
  */
 package org.openmrs.util;
 
+import javassist.compiler.NoFieldException;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.openmrs.Obs;
 import org.openmrs.Person;
 import org.openmrs.api.ObsService;
+import org.openmrs.api.ValidationException;
 import org.openmrs.api.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +41,14 @@ public class ConceptReferenceRangeUtility {
 	 * @return true if the criteria evaluates to true, false otherwise
 	 */
 	public static boolean evaluateCriteria(String criteria, Person person) {
-		if (criteria == null || criteria.isEmpty() || person == null) {
-			return true;
+		if (person == null) {
+			logger.error("Validation failed with reason: patient is null");
+			throw new ValidationException("Failed to validate with reason: patient is null");
+		}
+		
+		if (criteria == null || criteria.isEmpty()) {
+			logger.error("Validation failed with reason: patient is null");
+			throw new ValidationException("Failed to validate with reason: criteria required");
 		}
 		
 		VelocityContext velocityContext = new VelocityContext();

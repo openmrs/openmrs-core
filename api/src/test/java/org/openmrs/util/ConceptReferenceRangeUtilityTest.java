@@ -20,6 +20,7 @@ import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Person;
 import org.openmrs.api.ObsService;
+import org.openmrs.api.ValidationException;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 import java.time.LocalTime;
@@ -27,6 +28,8 @@ import java.util.Calendar;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
@@ -94,7 +97,11 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		person.setBirthdate(calendar.getTime());
 		String criteria = "";
 
-		assertTrue(ConceptReferenceRangeUtility.evaluateCriteria(criteria, person));
+		ValidationException exception = assertThrows(ValidationException.class, () -> {
+			ConceptReferenceRangeUtility.evaluateCriteria(criteria, person);
+		});
+
+		assertTrue(exception.getMessage().contains("criteria required"));
 	}
 
 	@Test
@@ -176,7 +183,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 	public void testAgeAndGenderMatch_shouldReturnFalseIfPersonIsNull() {
 		String criteria = "#set( $criteria = $patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M') )$criteria";
 
-		assertTrue(ConceptReferenceRangeUtility.evaluateCriteria(criteria, null));
+		assertFalse(ConceptReferenceRangeUtility.evaluateCriteria(criteria, null));
 	}
 
 	@Test

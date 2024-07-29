@@ -11,6 +11,7 @@ package org.openmrs.api.db.hibernate;
 
 import static java.util.stream.Collectors.toList;
 
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -29,6 +30,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -2377,17 +2379,21 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 
 	/**
-	 * @see org.openmrs.api.db.ConceptDAO#getConceptReferenceRangesByConceptId(Integer)
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptReferenceRangeByConceptId(Integer)
 	 */
 	@Override
-	public List<ConceptReferenceRange> getConceptReferenceRangesByConceptId(final Integer conceptId) {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaBuilder cb = session.getCriteriaBuilder();
-		CriteriaQuery<ConceptReferenceRange> cq = cb.createQuery(ConceptReferenceRange.class);
-		Root<ConceptReferenceRange> root = cq.from(ConceptReferenceRange.class);
+	public Optional<ConceptReferenceRange> getConceptReferenceRangeByConceptId(final Integer conceptId) {
+		try {
+			Session session = sessionFactory.getCurrentSession();
+			CriteriaBuilder cb = session.getCriteriaBuilder();
+			CriteriaQuery<ConceptReferenceRange> cq = cb.createQuery(ConceptReferenceRange.class);
+			Root<ConceptReferenceRange> root = cq.from(ConceptReferenceRange.class);
 
-		cq.where(cb.equal(root.get("concept"), conceptId));
+			cq.where(cb.equal(root.get("concept"), conceptId));
 
-		return session.createQuery(cq).getResultList();
+			return Optional.ofNullable(session.createQuery(cq).getSingleResult());
+		} catch (NoResultException e) {
+			return Optional.empty();
+		}
 	}
 }

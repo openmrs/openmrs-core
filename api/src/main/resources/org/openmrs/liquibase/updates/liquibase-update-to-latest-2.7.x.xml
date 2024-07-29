@@ -100,7 +100,7 @@
         </sql>
     </changeSet>
 	
-	<changeSet author="Isaiah (generated)" id="202407121820-1">
+	<changeSet author="Isaiah (generated)" id="202408021820-1">
 		<preConditions onError="HALT" onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="concept_reference_range"/>
@@ -122,14 +122,6 @@
 			<column name="low_absolute" type="DOUBLE"/>
 			<column name="low_critical" type="DOUBLE"/>
 			<column name="low_normal" type="DOUBLE"/>
-			<column name="date_changed" type="TIMESTAMP"/>
-			<column name="date_created" type="TIMESTAMP"/>
-			<column name="creator" type="INT"/>
-			<column name="retired" type="BOOLEAN" defaultValue="false"/>
-			<column name="retired_by" type="INT"/>
-			<column name="retire_reason" type="VARCHAR(255)"/>
-			<column name="date_retired" type="TIMESTAMP"/>
-			<column name="changed_by" type="INT"/>
 			<column name="uuid" type="char(38)">
 				<constraints nullable="false" unique="true" />
 			</column>
@@ -143,26 +135,6 @@
 			referencedTableName="concept"
 			referencedColumnNames="concept_id"/>
 
-		<addForeignKeyConstraint
-			baseTableName="concept_reference_range"
-			baseColumnNames="creator"
-			constraintName="concept_reference_range_creator_fk"
-			referencedTableName="users"
-			referencedColumnNames="user_id"/>
-
-		<addForeignKeyConstraint
-			baseTableName="concept_reference_range"
-			baseColumnNames="changed_by"
-			constraintName="concept_reference_range_changed_by_fk"
-			referencedTableName="users"
-			referencedColumnNames="user_id"/>
-
-		<addForeignKeyConstraint
-			baseTableName="concept_reference_range"
-			baseColumnNames="retired_by"
-			constraintName="concept_reference_range_retired_by_fk"
-			referencedTableName="users"
-			referencedColumnNames="user_id"/>
 	</changeSet>
 
 	<changeSet author="Isaiah (generated)" id="202407241820-1">
@@ -185,7 +157,6 @@
 			<column name="low_critical" type="DOUBLE"/>
 			<column name="low_normal" type="DOUBLE"/>
 			<column name="date_created" type="TIMESTAMP"/>
-			<column name="creator" type="INT"/>
 			<column name="uuid" type="char(38)">
 				<constraints nullable="false" unique="true" />
 			</column>
@@ -198,13 +169,6 @@
 			constraintName="fk_obs_reference_range_concept"
 			referencedTableName="concept"
 			referencedColumnNames="concept_id"/>
-
-		<addForeignKeyConstraint
-			baseTableName="obs_reference_range"
-			baseColumnNames="creator"
-			constraintName="fk_obs_reference_range_creator"
-			referencedTableName="users"
-			referencedColumnNames="user_id"/>
 		
 	</changeSet>
 	

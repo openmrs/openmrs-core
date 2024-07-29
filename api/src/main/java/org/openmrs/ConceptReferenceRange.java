@@ -9,7 +9,6 @@
  */
 package org.openmrs;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Field;
@@ -21,9 +20,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import java.util.Date;
 
 /**
  * A concept reference range is typically a range of a concept for certain factor(s) e.g. age, gender e.t.c. 
@@ -37,8 +35,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "concept_reference_range")
-@Audited
-public class ConceptReferenceRange extends BaseReferenceRange implements Auditable, Retireable {
+public class ConceptReferenceRange extends BaseReferenceRange {
 	
 	private static final long serialVersionUID = 47329L;
 
@@ -52,33 +49,9 @@ public class ConceptReferenceRange extends BaseReferenceRange implements Auditab
 	@Column(name = "criteria")
 	private String criteria;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "concept_id", nullable = false)
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "concept_id", nullable = false, unique = true)
 	private Concept concept;
-
-	@ManyToOne
-	@JoinColumn(name = "retired_by")
-	private User retiredBy;
-
-	@Column(name = "date_retired")
-	private Date dateRetired;
-
-	@Column(name = "retire_reason")
-	private String retireReason;
-
-	@Field
-	private Boolean retired = false;
-
-	@ManyToOne
-	@JoinColumn(name = "changed_by")
-	private User changedBy;
-
-	@Column(name = "date_changed")
-	private Date dateChanged;
-
-	@ManyToOne
-	@JoinColumn(name = "creator")
-	private User creator;
 	
 	// Constructors
 	
@@ -150,129 +123,5 @@ public class ConceptReferenceRange extends BaseReferenceRange implements Auditab
 	@Override
 	public void setId(Integer id) {
 		setConceptReferenceRangeId(id);
-	}
-
-	/**
-	 * @return Returns the retired.
-	 *
-	 * @deprecated as of 2.0, use {@link #getRetired()}
-	 */
-	@Override
-	@Deprecated
-	@JsonIgnore
-	public Boolean isRetired() {
-		return getRetired();
-	}
-
-	/**
-	 * This method delegates to {@link #isRetired()}.
-	 *
-	 * @see org.openmrs.Retireable#isRetired()
-	 */
-	@Override
-	public Boolean getRetired() {
-		return retired;
-	}
-
-	/**
-	 * @param retired The retired to set.
-	 */
-	@Override
-	public void setRetired(Boolean retired) {
-		this.retired = retired;
-	}
-
-	/**
-	 * @return the retiredBy
-	 */
-	@Override
-	public User getRetiredBy() {
-		return retiredBy;
-	}
-
-	/**
-	 * @param retiredBy the retiredBy to set
-	 */
-	@Override
-	public void setRetiredBy(User retiredBy) {
-		this.retiredBy = retiredBy;
-	}
-
-	/**
-	 * @return the dateRetired
-	 */
-	@Override
-	public Date getDateRetired() {
-		return dateRetired;
-	}
-
-	/**
-	 * @param dateRetired the dateRetired to set
-	 */
-	@Override
-	public void setDateRetired(Date dateRetired) {
-		this.dateRetired = dateRetired;
-	}
-
-	/**
-	 * @return the retireReason
-	 */
-	@Override
-	public String getRetireReason() {
-		return retireReason;
-	}
-
-	/**
-	 * @param retireReason the retireReason to set
-	 */
-	@Override
-	public void setRetireReason(String retireReason) {
-		this.retireReason = retireReason;
-	}
-
-	/**
-	 * @return Returns the changedBy.
-	 */
-	@Override
-	public User getChangedBy() {
-		return changedBy;
-	}
-
-	/**
-	 * @param changedBy The changedBy to set.
-	 */
-	@Override
-	public void setChangedBy(User changedBy) {
-		this.changedBy = changedBy;
-	}
-
-	/**
-	 * @return Returns the dateChanged.
-	 */
-	@Override
-	public Date getDateChanged() {
-		return dateChanged;
-	}
-
-	/**
-	 * @param dateChanged The dateChanged to set.
-	 */
-	@Override
-	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
-	}
-
-	/**
-	 * @return Returns the creator.
-	 */
-	public User getCreator() {
-		return creator;
-	}
-
-	/**
-	 * @param creator The creator to set.
-	 */
-	public void setCreator(User creator) {
-		this.creator = creator;
 	}
 }

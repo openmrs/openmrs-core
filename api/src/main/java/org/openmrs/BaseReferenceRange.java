@@ -10,10 +10,7 @@
 package org.openmrs;
 
 import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
-import java.util.Date;
 
 /**
  * This is the base class for reference ranges.
@@ -41,13 +38,6 @@ public abstract class BaseReferenceRange extends BaseOpenmrsObject {
 
 	@Column(name = "low_normal")
 	private Double lowNormal;
-
-	@ManyToOne
-	@JoinColumn(name = "creator")
-	private User creator;
-
-	@Column(name = "date_created")
-	private Date dateCreated;
 
 	// Property accessors
 
@@ -157,34 +147,5 @@ public abstract class BaseReferenceRange extends BaseOpenmrsObject {
 	 */
 	public void setLowNormal(Double lowNormal) {
 		this.lowNormal = lowNormal;
-	}
-
-	/**
-	 * @return Returns the creator.
-	 */
-	public User getCreator() {
-		return creator;
-	}
-
-	/**
-	 * @param creator The creator to set.
-	 */
-	public void setCreator(User creator) {
-		this.creator = creator;
-	}
-
-
-	/**
-	 * @return Returns the dateCreated.
-	 */
-	public Date getDateCreated() {
-		return dateCreated;
-	}
-
-	/**
-	 * @param dateCreated The dateCreated to set.
-	 */
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
 	}
 }

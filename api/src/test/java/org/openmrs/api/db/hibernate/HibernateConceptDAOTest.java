@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -286,11 +287,10 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 		dao.saveConceptReferenceRange(conceptReferenceRange);
 
 		//When
-		List<ConceptReferenceRange> conceptReferenceRanges = dao.getConceptReferenceRangesByConceptId(concept.getId());
+		Optional<ConceptReferenceRange> saveConceptReferenceRange = dao.getConceptReferenceRangeByConceptId(concept.getId());
 
 		// Then
-		assertNotNull(conceptReferenceRanges);
-		assertFalse(conceptReferenceRanges.isEmpty());
+		assertTrue(saveConceptReferenceRange.isPresent());
 	}
 	
 	/**
@@ -307,9 +307,9 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 		dao.saveConcept(concept);
 
 		//When
-		List<ConceptReferenceRange> conceptReferenceRanges = dao.getConceptReferenceRangesByConceptId(concept.getId());
+		Optional<ConceptReferenceRange> savedConceptReferenceRange = dao.getConceptReferenceRangeByConceptId(concept.getId());
 
 		// Then
-		assertTrue(conceptReferenceRanges.isEmpty());
+		assertFalse(savedConceptReferenceRange.isPresent());
 	}
 }

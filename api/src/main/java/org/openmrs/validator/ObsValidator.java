@@ -11,6 +11,7 @@ package org.openmrs.validator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
@@ -258,6 +259,7 @@ public class ObsValidator implements Validator {
 
 	/**
 	 * This method validates Obs' concept values.
+	 * 
 	 * <ol>
 	 *     <li>Validates if high absolute and low absolute are within the valid range</li>
 	 *     <li>Validates if patient's age is within the valid range</li>
@@ -271,21 +273,22 @@ public class ObsValidator implements Validator {
 		Concept concept = obs.getConcept();
 
 		if (concept != null && concept.getDatatype() != null && concept.getDatatype().isNumeric()) {
-			List<ConceptReferenceRange> conceptReferenceRanges = Context.getConceptService()
-				.getConceptReferenceRangesByConceptId(concept.getConceptId());
+			Optional<ConceptReferenceRange> crr = Context.getConceptService()
+				.getConceptReferenceRangeByConceptId(concept.getConceptId());
 
-			conceptReferenceRanges.forEach(crr -> {
-				if (crr.getHiAbsolute() != null && crr.getHiAbsolute() < obs.getValueNumeric()) {
+			if (crr.isPresent()) {
+				ConceptReferenceRange conceptReferenceRange = crr.get();
+				if (conceptReferenceRange.getHiAbsolute() != null && conceptReferenceRange.getHiAbsolute() < obs.getValueNumeric()) {
 					errors.rejectValue("valueNumeric", "error.outOfRange.high");
 				}
-				if (crr.getLowAbsolute() != null && crr.getLowAbsolute() > obs.getValueNumeric()) {
+				if (conceptReferenceRange.getLowAbsolute() != null && conceptReferenceRange.getLowAbsolute() > obs.getValueNumeric()) {
 					errors.rejectValue("valueNumeric", "error.outOfRange.low");
 				}
-				
-				if (!ConceptReferenceRangeUtility.evaluateCriteria(crr.getCriteria(), obs.getPerson())) {
+
+				if (!ConceptReferenceRangeUtility.evaluateCriteria(conceptReferenceRange.getCriteria(), obs.getPerson())) {
 					errors.rejectValue("valueNumeric", "error.outOfRange.criteria.not.match");
 				}
-			});
+			}
 		}
 	}
 	

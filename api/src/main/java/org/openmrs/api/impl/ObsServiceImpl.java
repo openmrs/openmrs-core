@@ -15,6 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Optional;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
@@ -227,19 +228,19 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 
 		if (concept != null && concept.getDatatype().isNumeric()) {
 
-			List<ConceptReferenceRange> conceptReferenceRanges = conceptService.getConceptReferenceRangesByConceptId(concept.getId());
+			Optional<ConceptReferenceRange> conceptReferenceRange = conceptService.getConceptReferenceRangeByConceptId(concept.getId());
 			
 			ObsReferenceRange obsRefRange = new ObsReferenceRange();
 			obsRefRange.setObs(obs);
 			
-			if (!conceptReferenceRanges.isEmpty()) {
-				ConceptReferenceRange conceptReferenceRange = conceptReferenceRanges.get(0);
-				obsRefRange.setHiAbsolute(conceptReferenceRange.getHiAbsolute());
-				obsRefRange.setHiCritical(conceptReferenceRange.getHiCritical());
-				obsRefRange.setHiNormal(conceptReferenceRange.getHiNormal());
-				obsRefRange.setLowAbsolute(conceptReferenceRange.getLowAbsolute());
-				obsRefRange.setLowCritical(conceptReferenceRange.getLowCritical());
-				obsRefRange.setLowNormal(conceptReferenceRange.getLowNormal());
+			if (conceptReferenceRange.isPresent()) {
+				ConceptReferenceRange crr = conceptReferenceRange.get();
+				obsRefRange.setHiAbsolute(crr.getHiAbsolute());
+				obsRefRange.setHiCritical(crr.getHiCritical());
+				obsRefRange.setHiNormal(crr.getHiNormal());
+				obsRefRange.setLowAbsolute(crr.getLowAbsolute());
+				obsRefRange.setLowCritical(crr.getLowCritical());
+				obsRefRange.setLowNormal(crr.getLowNormal());
 			}
 			obsService.saveObsReferenceRange(obsRefRange);
 		}

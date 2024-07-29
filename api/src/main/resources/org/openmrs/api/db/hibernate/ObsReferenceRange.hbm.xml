@@ -31,14 +31,9 @@
 		<property name="lowAbsolute" type="java.lang.Double" column="low_absolute"/>
 		<property name="lowCritical" type="java.lang.Double" column="low_critical"/>
 		<property name="lowNormal" type="java.lang.Double" column="low_normal"/>
-		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true"/>
 
 		<many-to-one name="obs" class="Obs" fetch="select">
 			<column name="obs_id" not-null="true"/>
-		</many-to-one>
-
-		<many-to-one name="creator" class="User" fetch="select">
-			<column name="creator"/>
 		</many-to-one>
 	</class>
 

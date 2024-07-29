@@ -3972,19 +3972,17 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see ConceptService#getConceptReferenceRangesByConceptId(Integer) 
+	 * @see ConceptService#getConceptReferenceRangeByConceptId(Integer) 
 	 */
 	@Test
 	public void getConceptReferenceRangeByConceptId_shouldReturnConceptReferenceRangeById() {
 		executeDataSet(CONCEPT_WITH_CONCEPT_REFERENCE_RANGES_XML);
 
 		final Integer expectedConceptReferenceRangeId = 3;
-		List<ConceptReferenceRange> conceptReferenceRanges = conceptService.getConceptReferenceRangesByConceptId(5089);
+		Optional<ConceptReferenceRange> conceptReferenceRange = conceptService.getConceptReferenceRangeByConceptId(5089);
 		
-		assertFalse(conceptReferenceRanges.isEmpty());
-
-		Optional<ConceptReferenceRange> conceptReferenceRange = conceptReferenceRanges.stream().findFirst();
-
+		assertTrue(conceptReferenceRange.isPresent());
+		
 		assertEquals(expectedConceptReferenceRangeId, conceptReferenceRange.get().getId());
 	}
 }
