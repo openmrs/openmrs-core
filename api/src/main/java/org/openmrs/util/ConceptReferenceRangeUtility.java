@@ -52,7 +52,7 @@ public class ConceptReferenceRangeUtility {
 		
 		StringWriter writer = new StringWriter();
 		velocityEngine.evaluate(velocityContext, writer, ConceptReferenceRangeUtility.class.getName(), criteria);
-
+		
 		String evaluatedCriteria = writer.toString();
 		
 		return Boolean.parseBoolean(evaluatedCriteria);

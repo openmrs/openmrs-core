@@ -17,5 +17,5 @@
 	<concept_description concept_description_id="2" concept_id="2" description="this is another description" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" uuid="a72dac37-b593-46a1-a24b-e3da6dbcc521"/>
 	<concept_name concept_id="1" name="Blood pressure" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="1" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="61618da6-7a3d-4ad4-829c-5ad64410c921"/>
 	<concept_numeric concept_id="2" hi_absolute="123.0" allow_decimal="false"/>
-	<concept_reference_range concept_reference_range_id="3" concept_id="2" criteria="#set( $criteria = $patient.getAge() &gt;= 1 &amp;&amp; $patient.getAge() &lt;= 3 )$criteria" hi_absolute="120.0" hi_normal="118.0" low_normal="80" creator="1" date_created="2024-01-01 00:00:00.0" retired="0" uuid="8a157cae-8ceb-4b15-b922-20cb553bfba4"/>
+	<concept_reference_range concept_reference_range_id="3" concept_id="5089" criteria="#set( $criteria = $patient.getAge() &gt;= 1 &amp;&amp; $patient.getAge() &lt;= 3 )$criteria" hi_absolute="120.0" hi_normal="118.0" low_normal="80" creator="1" date_created="2024-01-01 00:00:00.0" retired="0" uuid="8a157cae-8ceb-4b15-b922-20cb553bfba4"/>
 </dataset>
