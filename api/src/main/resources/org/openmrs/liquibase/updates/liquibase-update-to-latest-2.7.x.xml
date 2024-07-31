@@ -114,7 +114,7 @@
 				<constraints nullable="false"/>
 			</column>
 			<column name="criteria" type="VARCHAR(255)">
-				<constraints nullable="true"/>
+				<constraints nullable="false"/>
 			</column>
 			<column name="hi_absolute" type="DOUBLE"/>
 			<column name="hi_critical" type="DOUBLE"/>

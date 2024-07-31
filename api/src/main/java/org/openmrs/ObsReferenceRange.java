@@ -31,7 +31,6 @@ public class ObsReferenceRange extends BaseReferenceRange implements java.io.Ser
 	
 	private static final long serialVersionUID = 473299L;
 
-	// Fields
 	@DocumentId
 	@Id
 	@Column(name = "obs_reference_range_id")
@@ -41,7 +40,6 @@ public class ObsReferenceRange extends BaseReferenceRange implements java.io.Ser
 	@JoinColumn(name = "obs_id", nullable = false)
 	private Obs obs;
 
-	/** Default constructor */
 	public ObsReferenceRange() {
 	}
 	

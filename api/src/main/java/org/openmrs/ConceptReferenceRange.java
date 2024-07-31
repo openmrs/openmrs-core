@@ -39,7 +39,6 @@ public class ConceptReferenceRange extends BaseReferenceRange {
 	
 	private static final long serialVersionUID = 47329L;
 
-	// Fields
 	@DocumentId
 	@Id
 	@Column(name = "concept_reference_range_id")
@@ -53,9 +52,6 @@ public class ConceptReferenceRange extends BaseReferenceRange {
 	@JoinColumn(name = "concept_id", nullable = false, unique = true)
 	private Concept concept;
 	
-	// Constructors
-	
-	/** Default constructor */
 	public ConceptReferenceRange() {
 	}
 

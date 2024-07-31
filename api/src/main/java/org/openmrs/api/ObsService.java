@@ -548,8 +548,9 @@ public interface ObsService extends OpenmrsService {
 	 * @since 2.7.0
 	 * 
 	 * <strong>Should</strong> create a new obs reference range
-	 * 	 * <strong>Should</strong> edit an existing obs reference range
+	 * <strong>Should</strong> edit an existing obs reference range
 	 */
+	@Authorized( { PrivilegeConstants.ADD_OBS, PrivilegeConstants.EDIT_OBS })
 	ObsReferenceRange saveObsReferenceRange(ObsReferenceRange obsReferenceRange);
 
 	/**
@@ -591,5 +592,6 @@ public interface ObsService extends OpenmrsService {
 	 * <strong>Should</strong> get the latest Obs with the given conceptId
 	 * <strong>Should</strong> return null if Obs is not found
 	 */
+	@Authorized(PrivilegeConstants.GET_OBS)
 	Obs getLatestObsByConceptId(String conceptId);
 }

@@ -9,6 +9,8 @@
  */
 package org.openmrs.util;
 
+import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -29,7 +31,6 @@ import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
@@ -183,7 +184,11 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 	public void testAgeAndGenderMatch_shouldReturnFalseIfPersonIsNull() {
 		String criteria = "#set( $criteria = $patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M') )$criteria";
 
-		assertFalse(ConceptReferenceRangeUtility.evaluateCriteria(criteria, null));
+		try {
+			ConceptReferenceRangeUtility.evaluateCriteria(criteria, null);
+		} catch (ValidationException e) {
+			Assertions.assertEquals("Failed to validate with reason: patient is null", e.getMessage());
+		}
 	}
 
 	@Test

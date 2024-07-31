@@ -3966,9 +3966,10 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getConceptReferenceRangeById_shouldReturnConceptReferenceRangeById() {
 		executeDataSet(CONCEPT_WITH_CONCEPT_REFERENCE_RANGES_XML);
 		
-		final String expectedConceptReferenceRangeCriteria = "#set( $criteria = $patient.getAge() >= 1 && $patient.getAge() <= 3 )$criteria";
+		final String EXPECTED_CRITERIA = "$patient.getAge() >= 1 && $patient.getAge() <= 3";
+		
 		ConceptReferenceRange conceptReferenceRange = conceptService.getConceptReferenceRangeById(3);
-		assertEquals(expectedConceptReferenceRangeCriteria, conceptReferenceRange.getCriteria());
+		assertEquals(EXPECTED_CRITERIA, conceptReferenceRange.getCriteria());
 	}
 
 	/**
@@ -3978,11 +3979,11 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getConceptReferenceRangeByConceptId_shouldReturnConceptReferenceRangeById() {
 		executeDataSet(CONCEPT_WITH_CONCEPT_REFERENCE_RANGES_XML);
 
-		final Integer expectedConceptReferenceRangeId = 3;
+		final Integer EXPECTED_CONCEPT_REFERENCE_RANGE_ID = 3;
 		Optional<ConceptReferenceRange> conceptReferenceRange = conceptService.getConceptReferenceRangeByConceptId(5089);
 		
 		assertTrue(conceptReferenceRange.isPresent());
 		
-		assertEquals(expectedConceptReferenceRangeId, conceptReferenceRange.get().getId());
+		assertEquals(EXPECTED_CONCEPT_REFERENCE_RANGE_ID, conceptReferenceRange.get().getId());
 	}
 }

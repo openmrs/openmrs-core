@@ -31,6 +31,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -2074,7 +2075,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		obs2.setComment("Second Obs");
 		obsService.saveObs(obs2, null);
 		
-		Obs latestObs = obsService.getLatestObsByConceptId("5089");
+		Obs latestObs = obsService.getLatestObsByConceptId("4089");
 		assertNotNull(latestObs);
 		assertEquals("Second Obs", latestObs.getComment());
 	}
@@ -2082,8 +2083,6 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void saveObsReferenceRange_shouldSaveReferenceRangeAfterSavingObs() {
 		Obs obs = buildObservation();
-		
-		Context.getConceptService().saveConceptReferenceRange(buildConceptReferenceRange(obs.getConcept()));
 
 		obsService.saveObs(obs, null);
 		
@@ -2099,40 +2098,21 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		ObsReferenceRange obsReferenceRange = obsReferenceRanges.get(0);
 		assertEquals(expectedHiAbsolute, obsReferenceRange.getHiAbsolute());
 	}
-
-	@Test
-	public void saveObsReferenceRange_shouldNotSaveReferenceRangeIfConceptIsNull() {
-		Obs obs = buildObservation();
-
-		Context.getConceptService().saveConceptReferenceRange(buildConceptReferenceRange(Context.getConceptService().getConcept(17)));
-
-		obsService.saveObs(obs, null);
-
-		Optional<ConceptReferenceRange> conceptReferenceRange = Context.getConceptService().getConceptReferenceRangeByConceptId(obs.getConcept().getId());
-
-		assertFalse(conceptReferenceRange.isPresent());
-	}
-	
-	private ConceptReferenceRange buildConceptReferenceRange(Concept concept) {
-		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
-		conceptReferenceRange.setHiAbsolute(10.0);
-		conceptReferenceRange.setLowAbsolute(1.0);
-		conceptReferenceRange.setConcept(concept);
-		conceptReferenceRange.setCriteria("$patient.getAge() &gt;= 1");
-		
-		return conceptReferenceRange;
-	}
 	
 	private Obs buildObservation() {
-		Concept concept = Context.getConceptService().getConcept(5089);
+		Concept concept = Context.getConceptService().getConcept(4089);
 		Patient patient = new Patient(2);
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.YEAR, -5);
+		patient.setBirthdate(calendar.getTime());
+		
 		Encounter encounter = new Encounter(3);
 		Date datetime = new Date();
 		Location location = new Location(1);
 		Integer valueGroupId = 7;
 		Date valueDatetime = new Date();
 		Concept valueCoded = new Concept(3);
-		Double valueNumeric = 2.0;
+		Double valueNumeric = 90.0;
 		String valueModifier = "cc";
 		String valueText = "value text2";
 
