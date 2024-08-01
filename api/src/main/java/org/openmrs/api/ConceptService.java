@@ -789,6 +789,7 @@ public interface ConceptService extends OpenmrsService {
 	 * 
 	 * @throws ConceptsLockedException
 	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public void checkIfLocked() throws ConceptsLockedException;
 	
 	/**
@@ -856,6 +857,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @return set of used Locales
 	 * <strong>Should</strong> return a list of matching locales
 	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public Set<Locale> getLocalesOfConceptNames();
 	
 	/**
@@ -936,6 +938,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @return highest concept-id
 	 * <strong>Should</strong> give the maximum concept-id
 	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public Integer getMaxConceptId();
 	
 	/**
@@ -1066,6 +1069,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @return a list of the concept name tags stored in the dataset
 	 * <strong>Should</strong> return a list of all concept name tags
 	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public List<ConceptNameTag> getAllConceptNameTags();
 	
 	/**
@@ -1145,6 +1149,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @return true concept
 	 * <strong>Should</strong> return the true concept
 	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public Concept getTrueConcept();
 	
 	/**
@@ -1153,6 +1158,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @return false concept
 	 * <strong>Should</strong> return the false concept
 	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public Concept getFalseConcept();
 	
 	/**
@@ -1161,6 +1167,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @return unknown concept
 	 * <strong>Should</strong> return the unknown concept
 	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public Concept getUnknownConcept();
 	
 	/**
@@ -1341,6 +1348,7 @@ public interface ConceptService extends OpenmrsService {
 	 * <strong>Should</strong> return default Locale <code>ConceptStopWord</code> if Locale is null
 	 * @since 1.8
 	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public List<String> getConceptStopWords(Locale locale);
 	
 	/**
@@ -1383,6 +1391,7 @@ public interface ConceptService extends OpenmrsService {
 	 * <strong>Should</strong> return empty list if nothing found
 	 * @since 1.8
 	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public List<ConceptStopWord> getAllConceptStopWords();
 	
 	/**
@@ -1395,6 +1404,7 @@ public interface ConceptService extends OpenmrsService {
 	 * <strong>Should</strong> raise exception if no concept is given
 	 * @since 1.10
 	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public List<Drug> getDrugsByIngredient(Concept ingredient);
 	
 	/**
@@ -1747,6 +1757,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @return true if it is a duplicate name
 	 * @since 1.11
 	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public boolean isConceptNameDuplicate(ConceptName name);
 	
 	/**
@@ -1835,6 +1846,7 @@ public interface ConceptService extends OpenmrsService {
 	 * <strong>Should</strong> get orderable concepts
 	 * <strong>Should</strong> return an empty list if no concept search result is found
 	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public List<ConceptSearchResult> getOrderableConcepts(String phrase, List<Locale> locales, boolean includeRetired,
 	        Integer start, Integer length);
 			
