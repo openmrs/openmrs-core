@@ -65,7 +65,7 @@ public class AuthorizationAdviceTest extends BaseContextSensitiveTest {
 		Context.getConceptService().saveConcept(concept);
 		
 		String[] privileges = { PrivilegeConstants.MANAGE_CONCEPTS, PrivilegeConstants.GET_OBS,
-		        PrivilegeConstants.GET_CONCEPT_ATTRIBUTE_TYPES };
+		        PrivilegeConstants.GET_CONCEPT_ATTRIBUTE_TYPES, PrivilegeConstants.GET_CONCEPTS };
 		assertThat("listener1", listener1.hasPrivileges, containsInAnyOrder(privileges));
 		assertThat("listener2", listener2.hasPrivileges, containsInAnyOrder(privileges));
 		assertThat(listener1.lacksPrivileges, empty());
