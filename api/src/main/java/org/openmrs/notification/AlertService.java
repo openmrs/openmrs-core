@@ -57,6 +57,7 @@ public interface AlertService extends OpenmrsService {
 	 * @return alert with given internal identifier
 	 * @throws APIException
 	 */
+	@Authorized
 	public Alert getAlert(Integer alertId) throws APIException;
 	
 	/**
@@ -76,6 +77,7 @@ public interface AlertService extends OpenmrsService {
 	 * @see #getAlerts(User, boolean, boolean)
 	 * @throws APIException
 	 */
+	@Authorized
 	public List<Alert> getAllActiveAlerts(User user) throws APIException;
 	
 	/**
@@ -88,6 +90,7 @@ public interface AlertService extends OpenmrsService {
 	 * @return alerts that are unread and not expired
 	 * @throws APIException
 	 */
+	@Authorized
 	public List<Alert> getAlertsByUser(User user) throws APIException;
 	
 	/**
@@ -99,6 +102,7 @@ public interface AlertService extends OpenmrsService {
 	 * @return alerts for this user with these options
 	 * @throws APIException
 	 */
+	@Authorized
 	public List<Alert> getAlerts(User user, boolean includeRead, boolean includeExpired) throws APIException;
 	
 	/**
@@ -107,6 +111,7 @@ public interface AlertService extends OpenmrsService {
 	 * @return list of unexpired alerts
 	 * @throws APIException
 	 */
+	@Authorized
 	public List<Alert> getAllAlerts() throws APIException;
 	
 	/**
@@ -116,6 +121,7 @@ public interface AlertService extends OpenmrsService {
 	 * @return list of alerts
 	 * @throws APIException
 	 */
+	@Authorized
 	public List<Alert> getAllAlerts(boolean includeExpired) throws APIException;
 	
 	/**
