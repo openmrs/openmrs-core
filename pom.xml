@@ -1219,7 +1219,7 @@
 		<jacksonVersion>2.17.2</jacksonVersion>
 		<junitVersion>5.10.3</junitVersion>
 		<mockitoVersion>3.12.4</mockitoVersion>
-		<hamcrestVersion>2.2</hamcrestVersion>
+		<hamcrestVersion>3.0</hamcrestVersion>
 
 		<slf4jVersion>1.7.36</slf4jVersion>
 		<log4jVersion>2.22.1</log4jVersion>
