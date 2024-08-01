@@ -299,7 +299,7 @@ Release JDK 11 image:
                       export RUNTIME_JDK="jdk11-corretto"
                       
                       export OMRS_VERSION=${bamboo.maven.release.version}
-					  export IMAGE_NIGHTLY=${bamboo.docker.image.name}:${bamboo.docker.image.tag}
+                      export IMAGE_NIGHTLY=${bamboo.docker.image.name}:${bamboo.docker.image.tag}
                       export IMAGE=${bamboo.docker.image.name}:${OMRS_VERSION}
                       export DEV_IMAGE=${bamboo.docker.image.name}:${OMRS_VERSION}-dev
                       
