@@ -75,6 +75,7 @@ public interface FormService extends OpenmrsService {
 	 * <strong>Should</strong> find object given valid uuid
 	 * <strong>Should</strong> return null if no object found with given uuid
 	 */
+	@Authorized(PrivilegeConstants.GET_FORMS)
 	public Form getFormByUuid(String uuid) throws APIException;
 	
 	/**
