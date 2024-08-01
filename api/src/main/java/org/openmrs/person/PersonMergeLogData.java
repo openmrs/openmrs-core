@@ -38,9 +38,9 @@ public class PersonMergeLogData {
 	private List<String> movedEncounters;
 	
 	/**
-	 * List of UUIDs of patient programs copied from non-preferred to preferred
+	 * List of UUIDs of patient programs moved from non-preferred to preferred
 	 */
-	private List<String> createdPrograms;
+	private List<String> movedPrograms;
 	
 	/**
 	 * List of UUIDs of voided relationships
@@ -143,15 +143,15 @@ public class PersonMergeLogData {
 		movedEncounters.add(uuid);
 	}
 	
-	public List<String> getCreatedPrograms() {
-		return createdPrograms;
+	public List<String> getMovedPrograms() {
+		return movedPrograms;
 	}
 	
-	public void addCreatedProgram(String uuid) {
-		if (createdPrograms == null) {
-			createdPrograms = new ArrayList<>();
+	public void addMovedProgram(String uuid) {
+		if (movedPrograms == null) {
+			movedPrograms = new ArrayList<>();
 		}
-		createdPrograms.add(uuid);
+		movedPrograms.add(uuid);
 	}
 	
 	public List<String> getVoidedRelationships() {
@@ -323,8 +323,8 @@ public class PersonMergeLogData {
 		if (getCreatedOrders() != null) {
 			str += getCreatedOrders().toString();
 		}
-		if (getCreatedPrograms() != null) {
-			str += getCreatedPrograms().toString();
+		if (getMovedPrograms() != null) {
+			str += getMovedPrograms().toString();
 		}
 		if (getCreatedRelationships() != null) {
 			str += getCreatedRelationships().toString();
