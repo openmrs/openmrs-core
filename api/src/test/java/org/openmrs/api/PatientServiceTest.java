@@ -2350,32 +2350,44 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see PatientService#mergePatients(Patient,Patient)
 	 */
+
 	@Test
-	public void mergePatients_shouldAuditCreatedPatientPrograms() throws Exception {
+	public void mergePatients_shouldCopyProgramsFromNonPreferredPatient() throws Exception {
 		//retrieve preferred  and notPreferredPatient patient
 		Patient preferred = patientService.getPatient(999);
 		Patient notPreferred = patientService.getPatient(2);
 		voidOrders(Collections.singleton(notPreferred));
-		
+
 		//retrieve program for notProferred patient
-		PatientProgram program = Context.getProgramWorkflowService()
-		        .getPatientPrograms(notPreferred, null, null, null, null, null, false).get(0);
+		List<PatientProgram> nonPreferredPrograms = Context.getProgramWorkflowService()
+			.getPatientPrograms(notPreferred, null, null, null, null, null, false);
+
+		//retrieve program for preferred patient
+		List<PatientProgram> preferredPrograms = Context.getProgramWorkflowService()
+			.getPatientPrograms(preferred, null, null, null, null, null, false);
+
 		
-		//merge the two patients and retrieve the audit object
+		assertEquals(2, nonPreferredPrograms.size());  // sanity check, non preferred patient had 2 programs at time of writing test
+		assertEquals(0, preferredPrograms.size());  // sanity check, preferred patient had 0 programs at time of writing test
+		
+		List<String> programUuids =  nonPreferredPrograms.stream().map(PatientProgram::getUuid).collect(Collectors.toList());
+
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
+
+		//retrieve updated program for notProferred patient
+		List<PatientProgram> updatedNonPreferredPrograms = Context.getProgramWorkflowService()
+			.getPatientPrograms(notPreferred, null, null, null, null, null, false);
+
+		//retrieve program for preferred patient
+		List<PatientProgram> updatedPreferredPrograms = Context.getProgramWorkflowService()
+			.getPatientPrograms(preferred, null, null, null, null, null, false);
 		
-		//find the UUID of the program to which the preferred patient was enrolled as a result of the merge
-		String enrolledProgramUuid = null;
-		List<PatientProgram> programs = Context.getProgramWorkflowService().getPatientPrograms(preferred, null, null, null,
-		    null, null, false);
-		for (PatientProgram p : programs) {
-			if (p.getDateCreated().equals(program.getDateCreated())) {
-				enrolledProgramUuid = p.getUuid();
-			}
-		}
-		assertNotNull("expected enrolled program was not found for the preferred patient after the merge",
-			enrolledProgramUuid);
-		assertTrue(isValueInList(enrolledProgramUuid, audit.getPersonMergeLogData().getCreatedPrograms()), "program enrollment not audited");
+		// programs should be copied from nonPreferred to preferred
+		assertEquals(0, updatedNonPreferredPrograms.size());  
+		assertEquals(2, updatedPreferredPrograms.size()); 
+		
+		assertTrue(updatedPreferredPrograms.stream().map(PatientProgram::getUuid).allMatch(programUuids::contains));
+		assertTrue(audit.getPersonMergeLogData().getMovedPrograms().stream().allMatch(programUuids::contains));
 	}
 	
 	/**
