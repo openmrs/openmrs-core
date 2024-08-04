@@ -44,7 +44,6 @@ import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSource;
 import org.openmrs.Drug;
 import org.openmrs.DrugReferenceMap;
-import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
@@ -58,7 +57,7 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	protected ConceptService conceptService = null;
-	
+	private final String TEST_CRITERIA = "$patient.getAge() >= 1 && $patient.getAge() <= 70";
 	
 	/**
 	 * Run this before each unit test in this class. The "@Before" method in
@@ -939,6 +938,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
 		conceptReferenceRange.setHiAbsolute(HIGH_ABSOLUTE);
 		conceptReferenceRange.setConcept(createConcept());
+		conceptReferenceRange.setCriteria(TEST_CRITERIA);
 		ConceptReferenceRange savedConceptReferenceRange = conceptService.saveConceptReferenceRange(conceptReferenceRange);
 		assertEquals(HIGH_ABSOLUTE, savedConceptReferenceRange.getHiAbsolute());
 
@@ -967,6 +967,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		conceptReferenceRange.setHiAbsolute(120.0);
 		conceptReferenceRange.setLowAbsolute(100.0);
 		conceptReferenceRange.setConcept(createConcept());
+		conceptReferenceRange.setCriteria(TEST_CRITERIA);
 		conceptService.saveConceptReferenceRange(conceptReferenceRange);
 
 		ConceptReferenceRange savedConceptReferenceRange = conceptService.getConceptReferenceRangeById(conceptReferenceRange.getId());
@@ -994,6 +995,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
 		conceptReferenceRange.setHiAbsolute(120.0);
 		conceptReferenceRange.setConcept(concept);
+		conceptReferenceRange.setCriteria(TEST_CRITERIA);
 		conceptService.saveConceptReferenceRange(conceptReferenceRange);
 
 		Optional<ConceptReferenceRange> savedConceptReferenceRange = conceptService.getConceptReferenceRangeByConceptId(concept.getId());

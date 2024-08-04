@@ -185,7 +185,7 @@ public class ObsValidator implements Validator {
 				} else if (dt.isNumeric()) {
 					ConceptNumeric cn = Context.getConceptService().getConceptNumeric(c.getConceptId());
 					// If the concept numeric is not precise, the value cannot be a float, so raise an error 
-					if (cn != null && !cn.getAllowDecimal() && Math.ceil(obs.getValueNumeric()) != obs.getValueNumeric()) {
+					if (!cn.getAllowDecimal() && Math.ceil(obs.getValueNumeric()) != obs.getValueNumeric()) {
 						if (atRootNode) {
 							errors.rejectValue("valueNumeric", "Obs.error.precision");
 						} else {
@@ -193,7 +193,7 @@ public class ObsValidator implements Validator {
 						}
 					}
 					// If the number is higher than the absolute range, raise an error 
-					if (cn != null && cn.getHiAbsolute() != null && cn.getHiAbsolute() < obs.getValueNumeric()) {
+					if (cn.getHiAbsolute() != null && cn.getHiAbsolute() < obs.getValueNumeric()) {
 						if (atRootNode) {
 							errors.rejectValue("valueNumeric", "error.outOfRange.high");
 						} else {
@@ -201,7 +201,7 @@ public class ObsValidator implements Validator {
 						}
 					}
 					// If the number is lower than the absolute range, raise an error as well 
-					if (cn != null && cn.getLowAbsolute() != null && cn.getLowAbsolute() > obs.getValueNumeric()) {
+					if (cn.getLowAbsolute() != null && cn.getLowAbsolute() > obs.getValueNumeric()) {
 						if (atRootNode) {
 							errors.rejectValue("valueNumeric", "error.outOfRange.low");
 						} else {

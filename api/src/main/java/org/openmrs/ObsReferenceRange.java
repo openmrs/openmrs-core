@@ -17,6 +17,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 /**
@@ -37,6 +38,7 @@ public class ObsReferenceRange extends BaseReferenceRange implements java.io.Ser
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer obsReferenceRangeId;
 
+	@OneToOne
 	@JoinColumn(name = "obs_id", nullable = false)
 	private Obs obs;
 

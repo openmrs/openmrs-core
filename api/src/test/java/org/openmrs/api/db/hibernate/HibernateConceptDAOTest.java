@@ -42,6 +42,7 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	
 	private static final String PROVIDERS_INITIAL_XML = "org/openmrs/api/db/hibernate/include/HibernateConceptTestDataSet.xml";
 	protected static final String CONCEPT_ATTRIBUTE_TYPE_XML = "org/openmrs/api/include/ConceptServiceTest-conceptAttributeType.xml";
+	private final String TEST_CRITERIA = "$patient.getAge() >= 1 && $patient.getAge() <= 70";
 
 	@Autowired
 	private HibernateConceptDAO dao;
@@ -260,6 +261,7 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 
 		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
 		conceptReferenceRange.setConcept(tuberculosis);
+		conceptReferenceRange.setCriteria(TEST_CRITERIA);
 		dao.saveConceptReferenceRange(conceptReferenceRange);
 
 		//When
@@ -270,7 +272,7 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see HibernateConceptDAO#getConceptReferenceRangesByConceptId(Integer) 
+	 * @see HibernateConceptDAO#getConceptReferenceRangeByConceptId(Integer) 
 	 */
 	@Test
 	public void getConceptReferenceRangesByConceptId_shouldReturnConceptReferenceRange() {
@@ -284,6 +286,7 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 
 		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
 		conceptReferenceRange.setConcept(concept);
+		conceptReferenceRange.setCriteria(TEST_CRITERIA);
 		dao.saveConceptReferenceRange(conceptReferenceRange);
 
 		//When

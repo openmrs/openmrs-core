@@ -9,9 +9,7 @@
  */
 package org.openmrs;
 
-import org.hibernate.envers.Audited;
 import org.hibernate.search.annotations.DocumentId;
-import org.hibernate.search.annotations.Field;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -49,7 +47,7 @@ public class ConceptReferenceRange extends BaseReferenceRange {
 	private String criteria;
 
 	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "concept_id", nullable = false, unique = true)
+	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
 	
 	public ConceptReferenceRange() {

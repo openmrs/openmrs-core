@@ -99,6 +99,8 @@
 			<one-to-many class="Obs" />
 		</set> 
 		<many-to-one name="previousVersion" class="Obs" column="previous_version" unique="true" />
+
+		<one-to-one name="obsReferenceRange" class="org.openmrs.ObsReferenceRange" cascade="all" property-ref="obs" />
 	</class>
 	
 </hibernate-mapping>

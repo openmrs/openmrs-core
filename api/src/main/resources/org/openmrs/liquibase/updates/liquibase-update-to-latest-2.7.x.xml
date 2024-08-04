@@ -100,7 +100,7 @@
         </sql>
     </changeSet>
 	
-	<changeSet author="Isaiah (generated)" id="202408021820-1">
+	<changeSet author="Isaiah (generated)" id="202408021920-1">
 		<preConditions onError="HALT" onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="concept_reference_range"/>
@@ -111,6 +111,9 @@
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="concept_id" type="INT">
+				<constraints nullable="false"/>
+			</column>
+			<column name="concept_numeric_id" type="INT">
 				<constraints nullable="false"/>
 			</column>
 			<column name="criteria" type="VARCHAR(255)">
@@ -137,7 +140,7 @@
 
 	</changeSet>
 
-	<changeSet author="Isaiah (generated)" id="202407241820-1">
+	<changeSet author="Isaiah (generated)" id="202408021820-1">
 		<preConditions onError="HALT" onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="obs_reference_range"/>
@@ -162,13 +165,12 @@
 			</column>
 		</createTable>
 
-		<!-- foreign key constraints -->
 		<addForeignKeyConstraint
 			baseTableName="obs_reference_range"
-			baseColumnNames="concept_id"
-			constraintName="fk_obs_reference_range_concept"
-			referencedTableName="concept"
-			referencedColumnNames="concept_id"/>
+			baseColumnNames="obs_id"
+			constraintName="fk_obs_reference_range_obs"
+			referencedTableName="obs"
+			referencedColumnNames="obs_id"/>
 		
 	</changeSet>
 	
