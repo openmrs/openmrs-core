@@ -3986,4 +3986,36 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		
 		assertEquals(EXPECTED_CONCEPT_REFERENCE_RANGE_ID, conceptReferenceRange.get().getId());
 	}
+
+	/**
+	 * @see ConceptService#saveConcept(Concept)
+	 */
+	@Test
+	public void saveConcept_shouldSaveANewConceptReferenceRange() {
+		Context.setLocale(Locale.US);
+		ConceptNumeric conceptNumeric = new ConceptNumeric();
+		conceptNumeric.setDatatype(new ConceptDatatype(1));
+		conceptNumeric.setConceptClass(new ConceptClass(1));
+
+		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
+		conceptReferenceRange.setCriteria("$patient.getAge() &gt;= 1 &amp;&amp; $patient.getAge() &lt;= 70");
+		conceptReferenceRange.setConcept(conceptNumeric);
+		conceptReferenceRange.setHiAbsolute(conceptNumeric.getHiAbsolute());
+		conceptReferenceRange.setLowAbsolute(conceptNumeric.getLowAbsolute());
+		
+		ConceptName conceptName = new ConceptName("a new conceptnumeric", Locale.US);
+		conceptNumeric.addName(conceptName);
+		conceptNumeric.addDescription(new ConceptDescription("some description",null));
+		conceptNumeric.setHiAbsolute(50.0);
+		conceptNumeric.setConceptReferenceRanges(Collections.singletonList(conceptReferenceRange));
+		conceptService.saveConcept(conceptNumeric);
+
+		Concept savedConcept = conceptService.getConcept(conceptNumeric.getConceptId());
+		assertTrue(savedConcept instanceof ConceptNumeric);
+		ConceptNumeric savedConceptNumeric = (ConceptNumeric) savedConcept;
+		assertEquals("a new conceptnumeric", savedConceptNumeric.getName(Locale.US).getName());
+		assertEquals(50.0, savedConceptNumeric.getHiAbsolute(), 0);
+		assertFalse(savedConceptNumeric.getConceptReferenceRanges().isEmpty());
+		assertEquals(1, savedConceptNumeric.getConceptReferenceRanges().size());
+	}
 }

@@ -126,6 +126,11 @@
 			<property name="units" type="java.lang.String" column="units" length="50" />
 			<property name="allowDecimal" type="java.lang.Boolean" column="allow_decimal" length="1" not-null="true"/>
 			<property name="displayPrecision" type="java.lang.Integer" column="display_precision" not-null="false"/>
+			<list name="conceptReferenceRanges" cascade="all-delete-orphan">
+				<key column="concept_id" />
+				<index column="list_index"/>
+				<one-to-many class="org.openmrs.ConceptReferenceRange" />
+			</list>
 		</joined-subclass>
 	
 	   <joined-subclass name="org.openmrs.ConceptComplex" table="concept_complex" extends="org.openmrs.Concept" lazy="false">
