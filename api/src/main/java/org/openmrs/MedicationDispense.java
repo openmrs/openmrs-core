@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -30,6 +32,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "medication_dispense")
+@Audited
 public class MedicationDispense extends BaseFormRecordableOpenmrsData {
 	
 	private static final long serialVersionUID = 1L;
@@ -191,7 +194,7 @@ public class MedicationDispense extends BaseFormRecordableOpenmrsData {
 	 * FHIR:DosageInstructions.patientInstructions
 	 * Relates to drugOrder.dosingInstructions
 	 */
-	@Column(name = "dosing_instructions", length=65535)
+	@Column(name = "dosing_instructions", length = 65535, columnDefinition = "text")
 	private String dosingInstructions;
 
 	/**
