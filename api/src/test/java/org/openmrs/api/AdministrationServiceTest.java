@@ -10,10 +10,16 @@
 package org.openmrs.api;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.emptyIterable;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -23,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -1105,5 +1112,52 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 
 	private List<Locale> getCachedSearchLocalesForCurrentUser() {
 		return (List<Locale>) getCacheForCurrentUser().get();
+	}
+
+	@Test
+	public void getSerializerWhitelistTypes_shouldReturnPackagesAndIndividualClassesDefinedInGPS() {
+		//given
+		adminService.saveGlobalProperty(
+			new GlobalProperty("reporting.serializer.whitelist.types", 
+				"org.hibernate.*, org.hibernate.mapping.**"));
+		adminService.saveGlobalProperty(
+			new GlobalProperty("serialization.xstream.serializer.whitelist.types",
+				"org.hibernate.mapping.Column, org.hibernate.mapping.**"));
+
+		//when
+		List<String> serializerWhitelistTypes = adminService.getSerializerWhitelistTypes();
+
+		//then
+		assertThat(serializerWhitelistTypes, containsInAnyOrder("org.hibernate.*", "org.hibernate.mapping.**", 
+			"org.hibernate.mapping.Column", "org.hibernate.mapping.**", "hierarchyOf:org.openmrs.OpenmrsObject", 
+			"hierarchyOf:org.openmrs.OpenmrsMetadata", "hierarchyOf:org.openmrs.OpenmrsData", 
+			"hierarchyOf:org.openmrs.customdatatype.CustomDatatype", 
+			"hierarchyOf:org.openmrs.customdatatype.SingleCustomValue", 
+			"hierarchyOf:org.openmrs.customdatatype.CustomValueDescriptor", 
+			"hierarchyOf:org.openmrs.customdatatype.Customizable", "hierarchyOf:org.openmrs.layout.LayoutTemplate", 
+			"hierarchyOf:org.openmrs.layout.LayoutSupport", "hierarchyOf:org.openmrs.obs.ComplexData", 
+			"hierarchyOf:org.openmrs.messagesource.PresentationMessage", 
+			"hierarchyOf:org.openmrs.person.PersonMergeLogData"));
+	}
+
+	@Test
+	public void getSerializerWhitelistTypes_shouldReturnDefaultCommonClassesIfNoGPS() {
+		//given
+		List<GlobalProperty> gps = adminService.getGlobalPropertiesByPrefix(".serializer.whitelist.types");
+		assertThat(gps, is(emptyIterable()));
+		
+		//when
+		List<String> serializerWhitelistTypes = adminService.getSerializerWhitelistTypes();
+
+		//then
+		assertThat(serializerWhitelistTypes, containsInAnyOrder("hierarchyOf:org.openmrs.OpenmrsObject",
+			"hierarchyOf:org.openmrs.OpenmrsMetadata", "hierarchyOf:org.openmrs.OpenmrsData",
+			"hierarchyOf:org.openmrs.customdatatype.CustomDatatype",
+			"hierarchyOf:org.openmrs.customdatatype.SingleCustomValue",
+			"hierarchyOf:org.openmrs.customdatatype.CustomValueDescriptor",
+			"hierarchyOf:org.openmrs.customdatatype.Customizable", "hierarchyOf:org.openmrs.layout.LayoutTemplate",
+			"hierarchyOf:org.openmrs.layout.LayoutSupport", "hierarchyOf:org.openmrs.obs.ComplexData",
+			"hierarchyOf:org.openmrs.messagesource.PresentationMessage",
+			"hierarchyOf:org.openmrs.person.PersonMergeLogData"));
 	}
 }
