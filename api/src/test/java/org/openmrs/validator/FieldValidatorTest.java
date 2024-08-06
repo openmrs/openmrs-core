@@ -9,9 +9,11 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Field;
 import org.openmrs.FieldType;
@@ -43,6 +45,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 		new FieldValidator().validate(ff, errors);
 		
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), Matchers.is("error.null"));
 	}
 	
 	/**
@@ -64,6 +67,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 		new FieldValidator().validate(ff, errors);
 		
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), Matchers.is("error.null"));
 	}
 	
 	/**
@@ -85,6 +89,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 		new FieldValidator().validate(ff, errors);
 		
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), Matchers.is("error.null"));
 	}
 	
 	/**
@@ -107,6 +112,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 		new FieldValidator().validate(ff, errors);
 		
 		assertTrue(errors.hasFieldErrors("selectMultiple"));
+		assertThat(errors.getFieldErrors("selectMultiple").get(0).getCode(), Matchers.is("error.general"));
 	}
 	
 	/**
@@ -202,8 +208,15 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 		new FieldValidator().validate(ff, errors);
 		
 		assertTrue(errors.hasFieldErrors("name"));
+		assertThat(errors.getFieldErrors("name").get(0).getCode(), Matchers.is("error.exceededMaxLengthOfField"));
+		
 		assertTrue(errors.hasFieldErrors("tableName"));
+		assertThat(errors.getFieldErrors("tableName").get(0).getCode(), Matchers.is("error.exceededMaxLengthOfField"));
+		
 		assertTrue(errors.hasFieldErrors("attributeName"));
+		assertThat(errors.getFieldErrors("attributeName").get(0).getCode(), Matchers.is("error.exceededMaxLengthOfField"));
+		
 		assertTrue(errors.hasFieldErrors("retireReason"));
+		assertThat(errors.getFieldErrors("retireReason").get(0).getCode(), Matchers.is("error.exceededMaxLengthOfField"));
 	}
 }

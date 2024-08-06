@@ -20,6 +20,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Encounter;
@@ -106,6 +107,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 		encounterValidator.validate(encounter, errors);
 		
 		assertTrue(errors.hasFieldErrors("patient"));
+		assertThat(errors.getFieldErrors("patient").get(0).getCode(), Matchers.is("Encounter.error.patient.required"));
 	}
 	
 	/**
@@ -126,6 +128,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 		encounterValidator.validate(encounter, errors);
 		
 		assertTrue(errors.hasFieldErrors("encounterDatetime"));
+		assertThat(errors.getFieldErrors("encounterDatetime").get(0).getCode(), Matchers.is("Encounter.datetimeShouldBeInVisitDatesRange"));
 	}
 	
 	/**
@@ -166,6 +169,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 		encounterValidator.validate(encounter, errors);
 		
 		assertTrue(errors.hasFieldErrors("encounterDatetime"));
+		assertThat(errors.getFieldErrors("encounterDatetime").get(0).getCode(), Matchers.is("Encounter.datetimeShouldBeBeforeCurrent"));
 	}
 	
 	/**
@@ -177,6 +181,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 		encounterValidator.validate(encounter, errors);
 		
 		assertTrue(errors.hasFieldErrors("encounterDatetime"));
+		assertThat(errors.getFieldErrors("encounterDatetime").get(0).getCode(), Matchers.is("Encounter.datetime.required"));
 	}
 	
 	/**
@@ -188,6 +193,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 		encounterValidator.validate(encounter, errors);
 		
 		assertTrue(errors.hasFieldErrors("encounterType"));
+		assertThat(errors.getFieldErrors("encounterType").get(0).getCode(), Matchers.is("Encounter.error.encounterType.required"));
 	}
 	
 	/**
@@ -221,5 +227,6 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 		encounterValidator.validate(encounter, errors);
 		
 		assertTrue(errors.hasFieldErrors("voidReason"));
+		assertThat(errors.getFieldErrors("voidReason").get(0).getCode(), Matchers.is("error.exceededMaxLengthOfField"));
 	}
 }

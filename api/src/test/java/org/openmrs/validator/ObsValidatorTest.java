@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
@@ -57,6 +58,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obsValidator.validate(obs, errors);
 		
 		assertTrue(errors.hasFieldErrors("person"));
+		assertThat(errors.getFieldErrors("person").get(0).getCode(), Matchers.is("error.null"));
 		assertFalse(errors.hasFieldErrors("concept"));
 		assertFalse(errors.hasFieldErrors("obsDatetime"));
 		assertFalse(errors.hasFieldErrors("valueNumeric"));
@@ -78,6 +80,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		assertFalse(errors.hasFieldErrors("person"));
 		assertFalse(errors.hasFieldErrors("concept"));
 		assertTrue(errors.hasFieldErrors("obsDatetime"));
+		assertThat(errors.getFieldErrors("obsDatetime").get(0).getCode(), Matchers.is("error.null"));
 		assertFalse(errors.hasFieldErrors("valueNumeric"));
 	}
 	
@@ -111,14 +114,30 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		
 		assertFalse(errors.hasFieldErrors("person"));
 		assertFalse(errors.hasFieldErrors("concept"));
+		
 		assertTrue(errors.hasFieldErrors("valueCoded"));
+		assertThat(errors.getFieldErrors("valueCoded").get(0).getCode(), Matchers.is("error.not.null"));
+		
 		assertTrue(errors.hasFieldErrors("valueDrug"));
+		assertThat(errors.getFieldErrors("valueDrug").get(0).getCode(), Matchers.is("error.not.null"));
+		
 		assertTrue(errors.hasFieldErrors("valueDatetime"));
+		assertThat(errors.getFieldErrors("valueDatetime").get(0).getCode(), Matchers.is("error.not.null"));
+		
 		assertTrue(errors.hasFieldErrors("valueNumeric"));
+		assertThat(errors.getFieldErrors("valueNumeric").get(0).getCode(), Matchers.is("error.not.null"));
+		
 		assertTrue(errors.hasFieldErrors("valueModifier"));
+		assertThat(errors.getFieldErrors("valueModifier").get(0).getCode(), Matchers.is("error.not.null"));
+		
 		assertTrue(errors.hasFieldErrors("valueText"));
+		assertThat(errors.getFieldErrors("valueText").get(0).getCode(), Matchers.is("error.not.null"));
+		
 		assertTrue(errors.hasFieldErrors("valueBoolean"));
+		assertThat(errors.getFieldErrors("valueBoolean").get(0).getCode(), Matchers.is("error.not.null"));
+		
 		assertTrue(errors.hasFieldErrors("valueComplex"));
+		assertThat(errors.getFieldErrors("valueComplex").get(0).getCode(), Matchers.is("error.not.null"));
 	}
 	
 	/**
@@ -153,6 +172,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		
 		assertFalse(errors.hasFieldErrors("person"));
 		assertTrue(errors.hasFieldErrors("concept"));
+		assertThat(errors.getFieldErrors("concept").get(0).getCode(), Matchers.is("error.null"));
 		assertFalse(errors.hasFieldErrors("obsDatetime"));
 		assertFalse(errors.hasFieldErrors("valueNumeric"));
 	}
@@ -174,6 +194,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		assertFalse(errors.hasFieldErrors("concept"));
 		assertFalse(errors.hasFieldErrors("obsDatetime"));
 		assertTrue(errors.hasFieldErrors("valueBoolean"));
+		assertThat(errors.getFieldErrors("valueBoolean").get(0).getCode(), Matchers.is("error.null"));
 	}
 	
 	/**
@@ -193,6 +214,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		assertFalse(errors.hasFieldErrors("concept"));
 		assertFalse(errors.hasFieldErrors("obsDatetime"));
 		assertTrue(errors.hasFieldErrors("valueCoded"));
+		assertThat(errors.getFieldErrors("valueCoded").get(0).getCode(), Matchers.is("error.null"));
 	}
 	
 	/**
@@ -212,6 +234,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		assertFalse(errors.hasFieldErrors("concept"));
 		assertFalse(errors.hasFieldErrors("obsDatetime"));
 		assertTrue(errors.hasFieldErrors("valueDatetime"));
+		assertThat(errors.getFieldErrors("valueDatetime").get(0).getCode(), Matchers.is("error.null"));
 	}
 	
 	/**
@@ -231,6 +254,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		assertFalse(errors.hasFieldErrors("concept"));
 		assertFalse(errors.hasFieldErrors("obsDatetime"));
 		assertTrue(errors.hasFieldErrors("valueNumeric"));
+		assertThat(errors.getFieldErrors("valueNumeric").get(0).getCode(), Matchers.is("error.null"));
 	}
 	
 	/**
@@ -247,6 +271,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obsValidator.validate(obs, errors);
 		
 		assertTrue(errors.hasFieldErrors("valueText"));
+		assertThat(errors.getFieldErrors("valueText").get(0).getCode(), Matchers.is("error.null"));
 	}
 	
 	/**
@@ -270,6 +295,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		assertFalse(errors.hasFieldErrors("concept"));
 		assertFalse(errors.hasFieldErrors("obsDatetime"));
 		assertTrue(errors.hasFieldErrors("groupMembers"));
+		assertThat(errors.getFieldErrors("groupMembers").get(0).getCode(), Matchers.is("Obs.error.groupContainsItself"));
 	}
 	
 	/**
@@ -315,6 +341,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		assertFalse(errors.hasFieldErrors("concept"));
 		assertFalse(errors.hasFieldErrors("obsDatetime"));
 		assertTrue(errors.hasFieldErrors("valueText"));
+		assertThat(errors.getFieldErrors("valueText").get(0).getCode(), Matchers.is("error.exceededMaxLengthOfField"));
 	}
 	
 	/**
@@ -339,6 +366,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(obs, "obs");
 		obsValidator.validate(obs, errors);
 		assertTrue(errors.hasFieldErrors("valueDrug"));
+		assertThat(errors.getFieldErrors("valueDrug").get(0).getCode(), Matchers.is("Obs.error.invalidDrug"));
 	}
 	
 	/**
@@ -410,10 +438,15 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obsValidator.validate(obs, errors);
 		
 		assertTrue(errors.hasFieldErrors("accessionNumber"));
+		assertThat(errors.getFieldErrors("accessionNumber").get(0).getCode(), Matchers.is("error.exceededMaxLengthOfField"));
 		assertTrue(errors.hasFieldErrors("valueModifier"));
+		assertThat(errors.getFieldErrors("valueModifier").get(0).getCode(), Matchers.is("error.exceededMaxLengthOfField"));
 		assertTrue(errors.hasFieldErrors("valueComplex"));
+		assertThat(errors.getFieldErrors("valueComplex").get(0).getCode(), Matchers.is("error.exceededMaxLengthOfField"));
 		assertTrue(errors.hasFieldErrors("comment"));
+		assertThat(errors.getFieldErrors("comment").get(0).getCode(), Matchers.is("error.exceededMaxLengthOfField"));
 		assertTrue(errors.hasFieldErrors("voidReason"));
+		assertThat(errors.getFieldErrors("voidReason").get(0).getCode(), Matchers.is("error.exceededMaxLengthOfField"));
 	}
 	
 	/**
@@ -439,6 +472,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(obs, "obs");
 		obsValidator.validate(obs, errors);
 		assertTrue(errors.hasFieldErrors("valueNumeric"));
+		assertThat(errors.getFieldErrors("valueNumeric").get(0).getCode(), Matchers.is("error.null"));
 		
 		obs.setVoided(true);
 		errors = new BindException(obs, "obs");
@@ -468,6 +502,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(obs, "obs");
 		obsValidator.validate(obs, errors);
 		assertTrue(errors.hasErrors());
+		assertThat(errors.getAllErrors().get(0).getCode(), Matchers.is("error.null"));
 		
 		inValidChild.setVoided(true);
 		errors = new BindException(obs, "obs");

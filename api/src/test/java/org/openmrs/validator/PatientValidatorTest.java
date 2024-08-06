@@ -9,6 +9,8 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -56,6 +58,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		Errors errors = new BindException(pa, "patient");
 		validator.validate(pa, errors);
 		assertTrue(errors.hasErrors());
+		assertThat(errors.getAllErrors().get(0).getCode(), is("error.preferredIdentifier"));
 	}
 	
 	/**
@@ -73,6 +76,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		Errors errors = new BindException(pa, "patient");
 		validator.validate(pa, errors);
 		assertTrue(errors.hasErrors());
+		assertThat(errors.getAllErrors().get(0).getCode(), is("error.preferredIdentifier"));
 	}
 	
 	@Test
@@ -117,6 +121,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		validator.validate(pa, errors);
 		
 		assertTrue(errors.hasFieldErrors("gender"));
+		assertThat(errors.getFieldErrors("gender").get(0).getCode(), is("Person.gender.required"));
 	}
 	
 	/**
@@ -194,5 +199,6 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		validator.validate(patient, errors);
 		
 		assertTrue(errors.hasFieldErrors("voidReason"));
+		assertThat(errors.getFieldErrors("voidReason").get(0).getCode(), is("error.exceededMaxLengthOfField"));
 	}
 }
