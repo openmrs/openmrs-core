@@ -10,12 +10,14 @@
 package org.openmrs;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.envers.Audited;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Field;
 
 /**
  * PatientIdentifierType
  */
+@Audited
 public class PatientIdentifierType extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 211231L;

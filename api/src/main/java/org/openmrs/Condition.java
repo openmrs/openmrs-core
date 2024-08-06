@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
 import org.openmrs.util.OpenmrsUtil;
 
 import javax.persistence.AssociationOverride;
@@ -40,6 +41,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "conditions")
+@Audited
 public class Condition extends BaseFormRecordableOpenmrsData {
 	
 	private static final long serialVersionUID = 1L;

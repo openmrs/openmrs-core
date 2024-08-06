@@ -520,7 +520,12 @@ public interface ConceptDAO {
 	 * @see ConceptService#getConceptReferenceTermByCode(String, ConceptSource)
 	 */
 	public ConceptReferenceTerm getConceptReferenceTermByCode(String code, ConceptSource conceptSource) throws DAOException;
-	
+
+	/**
+	 * @see ConceptService#getConceptReferenceTermByCode(String, ConceptSource, boolean)
+	 */
+	public List<ConceptReferenceTerm> getConceptReferenceTermByCode(String code, ConceptSource conceptSource, boolean includeRetired) throws DAOException;
+
 	/**
 	 * @see ConceptService#saveConceptReferenceTerm(ConceptReferenceTerm)
 	 */

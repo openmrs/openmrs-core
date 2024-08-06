@@ -109,6 +109,9 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 		if (disallowOverlappingVisits()) {
 			List<Visit> otherVisitList = Context.getVisitService().getVisitsByPatient(visit.getPatient());
 			for (Visit otherVisit : otherVisitList) {
+				if (visit.equals(otherVisit)) {
+					continue;
+				}
 				validateStartDatetime(visit, otherVisit, errors);
 				validateStopDatetime(visit, otherVisit, errors);
 			}

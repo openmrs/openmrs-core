@@ -9,12 +9,15 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
+
 /**
  * An EncounterRole a role specific to the encounter. While these could match up to existing
  * organizational roles (e.g., "Nurse"), they don't have to (e.g., "Lead Surgeon")
  *
  * @since 1.9
  */
+@Audited
 public class EncounterRole extends BaseChangeableOpenmrsMetadata {
 	
 	public static final String UNKNOWN_ENCOUNTER_ROLE_UUID = "a0b03050-c99b-11e0-9572-0800200c9a66";

@@ -10,6 +10,7 @@
 package org.openmrs;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.envers.Audited;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 /**
  * This class represents a list of patientIds.
  */
+@Audited
 public class Cohort extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 0L;

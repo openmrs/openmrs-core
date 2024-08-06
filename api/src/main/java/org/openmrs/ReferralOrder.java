@@ -9,11 +9,14 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
+
 /**
  * This is a type of order that adds referral specific attributes.
  * 
  * @since 2.5.0
  */
+@Audited
 public class ReferralOrder extends ServiceOrder {
 
 	private static final long serialVersionUID = 1L;

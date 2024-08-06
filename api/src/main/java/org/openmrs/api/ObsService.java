@@ -19,6 +19,7 @@ import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Person;
+import org.openmrs.Visit;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.ObsDAO;
 import org.openmrs.obs.ComplexObsHandler;
@@ -497,5 +498,43 @@ public interface ObsService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_OBS)
 	public Integer getObservationCount(List<ConceptName> conceptNames, boolean includeVoided);
+
+	/**
+	 * @see org.openmrs.api.ObsService#getObservations(java.util.List, java.util.List,
+	 *      java.util.List, java.util.List, List, List, java.util.List, java.lang.Integer,
+	 *      java.lang.Integer, java.util.Date, java.util.Date, boolean, java.lang.String)
+	 *      
+	 * This method works exactly the same; it only adds visits to the search criteria.
+	 * It effectively surpasses the above method; the old one is however kept for backward
+	 * compatibility reasons.
+	 * 
+	 * @param visits List&lt;Visit&gt; to restrict obs to (optional)
+	 *      
+	 * @since 2.7.0
+	 */
+	@Authorized(PrivilegeConstants.GET_OBS)
+	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+			List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
+			List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
+			boolean includeVoidedObs, String accessionNumber) throws APIException;
+
+	/**
+	 * @see org.openmrs.api.ObsService#getObservationCount(java.util.List, java.util.List,
+	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.lang.Integer,
+	 *      java.util.Date, java.util.Date, boolean, java.lang.String)
+	 *      
+	 * This method works exactly the same; it only adds visits to the search criteria.
+	 * It effectively surpasses the above method; the old one is however kept for backward
+	 * compatibility reasons.
+	 * 
+	 * @param visits List&lt;Visit&gt; to restrict obs to (optional)
+	 *      
+	 * @since 2.7.0
+	 */
+	@Authorized(PrivilegeConstants.GET_OBS)
+	public Integer getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+			List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<Visit> visits,
+			Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs, String accessionNumber)
+			throws APIException;
 	
 }

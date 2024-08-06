@@ -597,15 +597,18 @@ public class ModuleUtil {
 	 * @return File the file created by the expansion.
 	 * @throws IOException if an error occurred while copying
 	 */
-	private static File expand(InputStream input, String fileDir, String name) throws IOException {
+	private static void expand(InputStream input, String fileDir, String name) throws IOException {
 		log.debug("expanding: {}", name);
-		
+
 		File file = new File(fileDir, name);
+
+		if (!file.toPath().normalize().startsWith(fileDir)) {
+			throw new UnsupportedOperationException("Attempted to write file '" + name + "' rejected as it attempts to write outside the chosen directory. This may be the result of a zip-slip style attack.");
+		}
+		
 		try (FileOutputStream outStream = new FileOutputStream(file)) {
 			OpenmrsUtil.copyFile(input, outStream);
 		}
-		
-		return file;
 	}
 	
 	/**

@@ -9,21 +9,43 @@
  */
 package org.openmrs;
 
+
+import org.hibernate.envers.Audited;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import java.io.Serializable;
+
 /**
  * DrugIngredient
  */
-public class DrugIngredient extends BaseOpenmrsObject implements java.io.Serializable, OpenmrsObject {
+@Entity
+@Table(name = "drug_ingredient")
+@Audited
+public class DrugIngredient extends BaseOpenmrsObject implements Serializable, OpenmrsObject {
 	
 	public static final long serialVersionUID = 94023L;
 	
 	// Fields
-	
+	@ManyToOne
+	@JoinColumn(name = "drug_id", updatable = false, insertable = false)
+	@Id
 	private Drug drug;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "ingredient_id", updatable = false, insertable = false)
+	@Id
 	private Concept ingredient;
-	
+
+	@Column(name = "strength")
 	private Double strength;
 	
+	@JoinColumn(name = "units", insertable = false, updatable = false)
+	@ManyToOne
 	private Concept units;
 	
 	// Constructors
@@ -33,7 +55,6 @@ public class DrugIngredient extends BaseOpenmrsObject implements java.io.Seriali
 	}
 	
 	// Property accessors
-	
 	/**
 	 * @return the drug
 	 */

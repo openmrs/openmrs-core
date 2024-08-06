@@ -13,6 +13,7 @@ import java.util.Date;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.hibernate.envers.Audited;
 import org.openmrs.util.OpenmrsUtil;
 
 import javax.persistence.Column;
@@ -29,6 +30,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "patient_state")
+@Audited
 public class PatientState extends BaseFormRecordableOpenmrsData implements java.io.Serializable, Comparable<PatientState> {
 	
 	public static final long serialVersionUID = 0L;

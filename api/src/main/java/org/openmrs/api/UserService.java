@@ -578,4 +578,13 @@ public interface UserService extends OpenmrsService {
 	 * @since 2.3.6, 2.4.6, 2.5.4, 2.6.0
 	 */
 	Locale getDefaultLocaleForUser(User user);
+
+	/**
+	 * Retrieves the last login time of the user in Unix Timestamp
+	 * 
+	 * @param user the subject user
+	 * @return timestamp representing last login time (e.g. 1717414410587)
+	 * @since 2.7.0
+	 */
+	String getLastLoginTime(User user);
 }

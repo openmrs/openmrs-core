@@ -64,8 +64,9 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 		
 		if (nameTemplate != null) {
 			updateLayoutTemplates(nameTemplate);
-			initialized = true;
 		}
+
+		initialized = true;
 	}
 	
 	/**
@@ -121,9 +122,6 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 	 */
 	@Override
 	public void globalPropertyChanged(GlobalProperty newValue) {
-		if (!OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_TEMPLATE.equals(newValue.getPropertyValue())) {
-			return;
-		}
 		NameTemplate nameTemplate = deserializeXmlTemplate(newValue.getPropertyValue());
 		if (nameTemplate != null) {
 			updateLayoutTemplates(nameTemplate);

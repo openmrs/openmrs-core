@@ -652,7 +652,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 			throw new APIException("new.password.equal.to.old", (Object[]) null);
 		}
 		
-		if ("admin".equals(user.getUsername()) && Boolean.parseBoolean(
+		if (("admin".equals(user.getSystemId()) || "admin".equals(user.getUsername())) && Boolean.parseBoolean(
 			Context.getRuntimeProperties().getProperty(ADMIN_PASSWORD_LOCKED_PROPERTY, "false"))) {
 			throw new APIException("admin.password.is.locked");
 		}
@@ -807,5 +807,12 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		}
 		
 		updatePassword(user, newPassword);
+	}
+
+	/**
+	 * @see org.openmrs.api.UserService#getLastLoginTime(User)
+	 */
+	public String getLastLoginTime(User user) {
+		return dao.getLastLoginTime(user);
 	}
 }

@@ -211,4 +211,9 @@ public interface UserDAO {
 	 * @see UserService#setUserActivationKey(LoginCredential)
 	 */
 	public void setUserActivationKey(LoginCredential credentials);
+
+	/**
+	 * @see UserService#getLastLoginTime(User)
+	 */
+	String getLastLoginTime(User user);
 }

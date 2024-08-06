@@ -11,6 +11,7 @@ package org.openmrs.api.db;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.hibernate.envers.Audited;
 import org.openmrs.BaseChangeableOpenmrsMetadata;
 import org.openmrs.serialization.OpenmrsSerializer;
 
@@ -26,6 +27,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "serialized_object")
+@Audited
 public class SerializedObject extends BaseChangeableOpenmrsMetadata {
 
 	@Id

@@ -30,6 +30,7 @@ import javax.persistence.Table;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.envers.Audited;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -37,6 +38,7 @@ import org.openmrs.util.OpenmrsUtil;
  */
 @Entity
 @Table(name = "allergy")
+@Audited
 public class Allergy extends BaseFormRecordableOpenmrsData {
 	
 	public static final long serialVersionUID = 1;

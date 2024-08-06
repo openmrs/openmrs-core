@@ -41,6 +41,10 @@ import org.springframework.validation.Errors;
  */
 public interface AdministrationService extends OpenmrsService {
 	
+	public static final String GP_SUFFIX_SERIALIZER_WHITELIST_TYPES = ".serializer.whitelist.types";
+	
+	public static final String GP_SERIALIZER_WHITELIST_HIERARCHY_TYPES_PREFIX = "hierarchyOf:";
+	
 	/**
 	 * Used by Spring to set the specific/chosen database access implementation
 	 * 
@@ -56,6 +60,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * <strong>Should</strong> find object given valid uuid
 	 * <strong>Should</strong> return null if no object found with given uuid
 	 */
+	@Authorized(PrivilegeConstants.GET_GLOBAL_PROPERTIES)
 	public GlobalProperty getGlobalPropertyByUuid(String uuid);
 	
 	/**
@@ -90,6 +95,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * <strong>Should</strong> get property value given valid property name
 	 * <strong>Should</strong> get property in case insensitive way
 	 */
+	@Authorized(PrivilegeConstants.GET_GLOBAL_PROPERTIES)
 	public String getGlobalProperty(String propertyName);
 	
 	/**
@@ -106,6 +112,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * <strong>Should</strong> return default value if property name does not exist
 	 * <strong>Should</strong> not fail with null default value
 	 */
+	@Authorized(PrivilegeConstants.GET_GLOBAL_PROPERTIES)
 	public String getGlobalProperty(String propertyName, String defaultValue);
 	
 	/**
@@ -115,6 +122,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @return the global property that matches the given <code>propertyName</code>
 	 * <strong>Should</strong> return null when no global property match given property name
 	 */
+	@Authorized(PrivilegeConstants.GET_GLOBAL_PROPERTIES)
 	public GlobalProperty getGlobalPropertyObject(String propertyName);
 	
 	/**
@@ -125,6 +133,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @since 1.5
 	 * <strong>Should</strong> return all relevant global properties in the database
 	 */
+	@Authorized(PrivilegeConstants.GET_GLOBAL_PROPERTIES)
 	public List<GlobalProperty> getGlobalPropertiesByPrefix(String prefix);
 	
 	/**
@@ -135,6 +144,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @since 1.6
 	 * <strong>Should</strong> return all relevant global properties in the database
 	 */
+	@Authorized(PrivilegeConstants.GET_GLOBAL_PROPERTIES)
 	public List<GlobalProperty> getGlobalPropertiesBySuffix(String suffix);
 	
 	/**
@@ -189,6 +199,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * <strong>Should</strong> overwrite global property if exists
 	 * <strong>Should</strong> save a global property whose typed value is handled by a custom datatype
 	 */
+	@Authorized(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES)
 	public void setGlobalProperty(String propertyName, String propertyValue);
 	
 	/**
@@ -202,6 +213,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * <strong>Should</strong> fail if global property being updated does not already exist
 	 * <strong>Should</strong> update a global property whose typed value is handled by a custom datatype
 	 */
+	@Authorized(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES)
 	public void updateGlobalProperty(String propertyName, String propertyValue);
 	
 	/**
@@ -313,6 +325,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @return property value in the type of the default value
 	 * @since 1.7
 	 */
+	@Authorized(PrivilegeConstants.GET_GLOBAL_PROPERTIES)
 	public <T> T getGlobalPropertyValue(String propertyName, T defaultValue);
 	
 	/**
@@ -392,4 +405,19 @@ public interface AdministrationService extends OpenmrsService {
 	 * @since 2.4
 	 */
 	public void updatePostgresSequence();
+	
+	/**
+	 * Returns a list of packages and/or individual classes including hierarchy of OpenmrsObject, OpenmmrsMetadata,
+	 * OpenmrsData and other common OpenMRS classes as well as any whitelists defined through GPs with the 
+	 * '.serializer.whitelist.types' suffix that are considered to be safe for deserializing.
+	 *
+	 * It is the responsibility of the serializer to block any unlisted classes from being deserialized and posing
+	 * security risk. It is especially important for serializers using XStream.
+	 *
+	 * @since 2.7.0, 2.6.2, 2.5.13 
+	 * @return a list of packages and/or classes
+	 * <strong>Should</strong> return packages and individual classes defined in GPs
+	 * <strong>Should</strong> return default common classes if no GPs defined
+	 */
+	List<String> getSerializerWhitelistTypes();
 }

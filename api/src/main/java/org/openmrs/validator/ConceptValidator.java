@@ -87,6 +87,8 @@ public class ConceptValidator extends BaseCustomizableValidator implements Valid
 	 * <strong>Should</strong> pass if different concepts have the same short name
 	 * <strong>Should</strong> fail if the concept datatype is null
 	 * <strong>Should</strong> fail if the concept class is null
+	 * <strong>Should</strong> pass if the concept is retired and the only validation failures would be in ConceptName 
+	 * or ConceptMap, as a retired Concept bypasses ConceptName and ConceptMap validation.
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) throws APIException, DuplicateConceptNameException {
@@ -104,9 +106,13 @@ public class ConceptValidator extends BaseCustomizableValidator implements Valid
 
 		ValidationUtils.rejectIfEmpty(errors, "datatype", "Concept.datatype.empty");
 		ValidationUtils.rejectIfEmpty(errors, "conceptClass", "Concept.conceptClass.empty");
-
+		
 		boolean hasFullySpecifiedName = false;
 		for (Locale conceptNameLocale : conceptToValidate.getAllConceptNameLocales()) {
+			if (conceptToValidate.getRetired()) {
+				continue;
+			}
+			
 			boolean fullySpecifiedNameForLocaleFound = false;
 			boolean preferredNameForLocaleFound = false;
 			boolean shortNameForLocaleFound = false;
@@ -199,12 +205,12 @@ public class ConceptValidator extends BaseCustomizableValidator implements Valid
 		}
 		
 		//Ensure that each concept has at least a fully specified name
-		if (!hasFullySpecifiedName) {
+		if (!hasFullySpecifiedName && !conceptToValidate.getRetired()) {
 			log.debug("Concept has no fully specified name");
 			errors.reject("Concept.error.no.FullySpecifiedName");
 		}
 		
-		if (CollectionUtils.isNotEmpty(conceptToValidate.getConceptMappings())) {
+		if (CollectionUtils.isNotEmpty(conceptToValidate.getConceptMappings()) && !conceptToValidate.getRetired()) {
 			//validate all the concept maps
 			int index = 0;
 			Set<Integer> mappedTermIds = null;

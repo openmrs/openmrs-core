@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import static java.util.stream.Collectors.toList;
+
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -1117,7 +1119,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		}
 
 		return session.createQuery(cq).getResultList()
-			.stream().distinct().collect(Collectors.toList());
+			.stream().distinct().collect(toList());
 	}
 
 	/**
@@ -1142,7 +1144,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		}
 
 		return session.createQuery(cq).getResultList()
-			.stream().distinct().collect(Collectors.toList());
+			.stream().distinct().collect(toList());
 	}
 	
 	/**
@@ -1741,32 +1743,55 @@ public class HibernateConceptDAO implements ConceptDAO {
 		}
 		return terms.get(0);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptReferenceTermByCode(java.lang.String,
 	 *      org.openmrs.ConceptSource)
 	 */
 	@Override
 	public ConceptReferenceTerm getConceptReferenceTermByCode(String code, ConceptSource conceptSource) throws DAOException {
+		List<ConceptReferenceTerm> conceptReferenceTerms = getConceptReferenceTermByCode(code, conceptSource, true);
+		
+		if (conceptReferenceTerms.isEmpty()) {
+			return null;
+		} else if (conceptReferenceTerms.size() > 1) {
+			List<ConceptReferenceTerm> unretiredConceptReferenceTerms = conceptReferenceTerms.stream()
+			        .filter(term -> !term.getRetired())
+					.collect(toList());
+			if (unretiredConceptReferenceTerms.size() == 1) {
+				return unretiredConceptReferenceTerms.get(0);
+			}
+			
+			// either more than one unretired concept term or more than one retired concept term
+			throw new APIException("ConceptReferenceTerm.foundMultipleTermsWithCodeInSource",
+			        new Object[] { code, conceptSource.getName() });
+		}
+		
+		return conceptReferenceTerms.get(0);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptReferenceTermByCode(java.lang.String,
+	 *      org.openmrs.ConceptSource, boolean)
+	 */
+	@Override
+	public List<ConceptReferenceTerm> getConceptReferenceTermByCode(String code, ConceptSource conceptSource,
+	        boolean includeRetired) throws DAOException {
 		Session session = sessionFactory.getCurrentSession();
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<ConceptReferenceTerm> cq = cb.createQuery(ConceptReferenceTerm.class);
 		Root<ConceptReferenceTerm> root = cq.from(ConceptReferenceTerm.class);
 
-		Predicate codePredicate = cb.equal(root.get("code"), code);
-		Predicate sourcePredicate = cb.equal(root.get("conceptSource"), conceptSource);
-
-		cq.where(cb.and(codePredicate, sourcePredicate));
-
-		List<ConceptReferenceTerm> terms = session.createQuery(cq).getResultList();
-
-		if (terms.isEmpty()) {
-			return null;
-		} else if (terms.size() > 1) {
-			throw new APIException("ConceptReferenceTerm.foundMultipleTermsWithCodeInSource",
-				new Object[] { code, conceptSource.getName() });
+		List<Predicate> predicates = new ArrayList<>();
+		predicates.add(cb.equal(root.get("code"), code));
+		predicates.add(cb.equal(root.get("conceptSource"), conceptSource));
+		
+		if (!includeRetired) {
+			predicates.add(cb.isFalse(root.get("retired")));
 		}
-		return terms.get(0);
+		cq.where(predicates.toArray(new Predicate[]{}));
+
+		return session.createQuery(cq).getResultList();
 	}
 	
 	/**
@@ -2121,7 +2146,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 
 		cq.where(basePredicates.toArray(new Predicate[]{}));
 
-		return session.createQuery(cq).getResultList().stream().distinct().collect(Collectors.toList());
+		return session.createQuery(cq).getResultList().stream().distinct().collect(toList());
 	}
 
 	/**

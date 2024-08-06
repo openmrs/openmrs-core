@@ -34,6 +34,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mockito;
+import org.xml.sax.SAXException;
 
 public class SchemaOnlyTunerTest {
 	
@@ -60,7 +61,7 @@ public class SchemaOnlyTunerTest {
 	}
 	
 	@Test
-	public void shouldCreateUpdatedChangeLogFile(@TempDir Path tempDir) throws DocumentException, IOException {
+	public void shouldCreateUpdatedChangeLogFile(@TempDir Path tempDir) throws DocumentException, IOException, SAXException {
 		// given
 		String sourcePath = PATH_TO_TEST_RESOURCES + File.separator + LIQUIBASE_SCHEMA_ONLY_SNAPSHOT_XML;
 		String targetPath = tempDir.resolve("liquibase-schema-only-UPDATED-SNAPSHOT.xml").toString();

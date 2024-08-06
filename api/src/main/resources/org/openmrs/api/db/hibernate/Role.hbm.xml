@@ -19,7 +19,7 @@
 
 		<cache usage="read-write"/>
 
-		<id name="role" type="java.lang.String" column="role">
+		<id name="role" type="java.lang.String" column="role" length="50">
 			<generator class="assigned" />
 		</id>
 

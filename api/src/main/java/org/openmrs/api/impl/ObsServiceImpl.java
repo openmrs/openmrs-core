@@ -23,6 +23,7 @@ import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.Person;
+import org.openmrs.Visit;
 import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
@@ -361,6 +362,22 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	                                 List<String> sort, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
 	                                 boolean includeVoidedObs, String accessionNumber) throws APIException {
 		
+		return this.getObservations(whom, encounters, questions, answers, personTypes, locations, sort, null,
+				mostRecentN, obsGroupId, fromDate, toDate, includeVoidedObs, accessionNumber);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ObsService#getObservations(java.util.List, java.util.List,
+	 *      java.util.List, java.util.List, List, List, java.util.List, java.util.List, java.lang.Integer,
+	 *      java.lang.Integer, java.util.Date, java.util.Date, boolean, java.lang.String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+	                                 List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations,
+	                                 List<String> sort, List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
+	                                 boolean includeVoidedObs, String accessionNumber) throws APIException {
+		
 		if (sort == null) {
 			sort = new ArrayList<>();
 		}
@@ -368,7 +385,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 			sort.add("obsDatetime");
 		}
 		
-		return dao.getObservations(whom, encounters, questions, answers, personTypes, locations, sort, mostRecentN,
+		return dao.getObservations(whom, encounters, questions, answers, personTypes, locations, sort, visits, mostRecentN,
 		    obsGroupId, fromDate, toDate, includeVoidedObs, accessionNumber);
 	}
 	
@@ -398,8 +415,23 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	                                   List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations,
 	                                   Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs,
 	                                   String accessionNumber) throws APIException {
+		return this.getObservationCount(whom, encounters, questions, answers, personTypes, locations, null, obsGroupId,
+				fromDate, toDate, includeVoidedObs, accessionNumber);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ObsService#getObservationCount(java.util.List, java.util.List,
+	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, java.lang.Integer,
+	 *      java.util.Date, java.util.Date, boolean, java.lang.String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public Integer getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+	                                   List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<Visit> visits,
+	                                   Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs,
+	                                   String accessionNumber) throws APIException {
 		return OpenmrsUtil.convertToInteger(dao.getObservationCount(whom, encounters, questions, answers, personTypes,
-		    locations, obsGroupId, fromDate, toDate, null, includeVoidedObs, accessionNumber));
+		    locations, obsGroupId, fromDate, toDate, null, visits, includeVoidedObs, accessionNumber));
 	}
 	
 	/**

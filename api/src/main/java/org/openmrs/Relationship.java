@@ -11,6 +11,7 @@ package org.openmrs;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -27,6 +28,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "relationship")
+@Audited
 public class Relationship extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 323423L;

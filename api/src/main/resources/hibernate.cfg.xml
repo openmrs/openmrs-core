@@ -43,10 +43,8 @@
 		<mapping resource="org/openmrs/api/db/hibernate/DiagnosisAttribute.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/DiagnosisAttributeType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Drug.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/DrugIngredient.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/DrugReferenceMap.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Field.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/FieldAnswer.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/FieldType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Form.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/FormField.hbm.xml" />
@@ -100,7 +98,6 @@
 		<!-- Notification -->
 		<mapping resource="org/openmrs/notification/db/hibernate/Template.hbm.xml" />
 		<mapping resource="org/openmrs/notification/db/hibernate/Alert.hbm.xml" />
-		<mapping resource="org/openmrs/notification/db/hibernate/AlertRecipient.hbm.xml" />
 		
 		<!-- Scheduler -->
 		<mapping resource="org/openmrs/scheduler/db/hibernate/TaskDefinition.hbm.xml" />

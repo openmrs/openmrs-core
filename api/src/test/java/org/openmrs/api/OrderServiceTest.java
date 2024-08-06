@@ -18,6 +18,7 @@ import org.hibernate.cfg.Configuration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
 import org.openmrs.Allergy;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
@@ -31,6 +32,7 @@ import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.Condition;
 import org.openmrs.Diagnosis;
 import org.openmrs.Drug;
+import org.openmrs.DrugIngredient;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.FreeTextDosingInstructions;
@@ -70,6 +72,7 @@ import org.openmrs.api.db.hibernate.HibernateSessionFactoryBean;
 import org.openmrs.api.impl.OrderServiceImpl;
 import org.openmrs.customdatatype.datatype.FreeTextDatatype;
 import org.openmrs.messagesource.MessageSourceService;
+import org.openmrs.notification.AlertRecipient;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.order.OrderUtilTest;
 import org.openmrs.orders.TimestampOrderNumberGenerator;
@@ -153,6 +156,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 	@Autowired
 	private MessageSourceService messageSourceService;
+	
+	@Autowired
+	private VisitService visitService;
 	
 	@BeforeEach
 	public void setUp(){
@@ -412,6 +418,26 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void getActiveOrders_shouldReturnAllActiveOrdersForTheSpecifiedPatient() {
 		Patient patient = Context.getPatientService().getPatient(2);
 		List<Order> orders = orderService.getActiveOrders(patient, null, null, null);
+		assertEquals(5, orders.size());
+		Order[] expectedOrders = {orderService.getOrder(222), orderService.getOrder(3), orderService.getOrder(444),
+			orderService.getOrder(5), orderService.getOrder(7)};
+		assertThat(orders, hasItems(expectedOrders));
+
+		assertTrue(OrderUtilTest.isActiveOrder(orders.get(0), null));
+		assertTrue(OrderUtilTest.isActiveOrder(orders.get(1), null));
+		assertTrue(OrderUtilTest.isActiveOrder(orders.get(2), null));
+		assertTrue(OrderUtilTest.isActiveOrder(orders.get(3), null));
+		assertTrue(OrderUtilTest.isActiveOrder(orders.get(4), null));
+	}
+	
+	/**
+	 * @see OrderService#getActiveOrders(org.openmrs.Patient, org.openmrs.Visit, org.openmrs.OrderType,
+	 * org.openmrs.CareSetting, java.util.Date)
+	 */
+	@Test
+	public void getActiveOrders_shouldReturnAllActiveOrdersForTheSpecifiedVisit() {
+		Patient patient = Context.getPatientService().getPatient(2);
+		List<Order> orders = orderService.getActiveOrders(patient, new Visit(6), null, null, null);
 		assertEquals(5, orders.size());
 		Order[] expectedOrders = {orderService.getOrder(222), orderService.getOrder(3), orderService.getOrder(444),
 			orderService.getOrder(5), orderService.getOrder(7)};
@@ -2028,6 +2054,35 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		List<Order> inPatientDrugOrders = orderService.getOrders(patient, inPatient, drugOrderType, false);
 		assertEquals(222, inPatientDrugOrders.get(0).getOrderId().intValue());
 	}
+	
+	/**
+	 * @see OrderService#getOrders(org.openmrs.Patient, org.openmrs.Visit, org.openmrs.CareSetting,
+	 * org.openmrs.OrderType, boolean)
+	 */
+	@Test
+	public void getOrders_shouldGetTheOrdersThatMatchAllTheArgumentsIncludingVisit() {
+		Patient patient = patientService.getPatient(2);
+		CareSetting outPatient = orderService.getCareSetting(1);
+		OrderType testOrderType = orderService.getOrderType(2);
+		List<Order> testOrders = orderService.getOrders(patient, new Visit(6), outPatient, testOrderType, false);
+		assertEquals(3, testOrders.size());
+		TestUtil.containsId(testOrders, 6);
+		TestUtil.containsId(testOrders, 7);
+		TestUtil.containsId(testOrders, 9);
+
+		OrderType drugOrderType = orderService.getOrderType(1);
+		List<Order> drugOrders = orderService.getOrders(patient, new Visit(6), outPatient, drugOrderType, false);
+		assertEquals(5, drugOrders.size());
+		TestUtil.containsId(drugOrders, 2);
+		TestUtil.containsId(drugOrders, 3);
+		TestUtil.containsId(drugOrders, 44);
+		TestUtil.containsId(drugOrders, 444);
+		TestUtil.containsId(drugOrders, 5);
+
+		CareSetting inPatient = orderService.getCareSetting(2);
+		List<Order> inPatientDrugOrders = orderService.getOrders(patient, new Visit(6), inPatient, drugOrderType, false);
+		assertEquals(222, inPatientDrugOrders.get(0).getOrderId().intValue());
+	}
 
 	/**
 	 * @see OrderService#getOrders(org.openmrs.Patient, org.openmrs.CareSetting,
@@ -2087,6 +2142,18 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		List<Order> orders = orderService.getOrders(orderSearchCriteria);
 		assertEquals(11, orders.size());
 	}
+	
+	/**
+	 * @see OrderService#(OrderSearchCriteria)
+	 */
+	@Test
+	public void getOrders_shouldGetOrdersByVisit() {
+		Visit visit = visitService.getVisit(6);
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setVisit(visit).build();
+		List<Order> orders = orderService.getOrders(orderSearchCriteria);
+		assertEquals(11, orders.size());
+	}
+
 
 	/**
 	 * @see OrderService#(OrderSearchCriteria)
@@ -2664,6 +2731,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.addAnnotatedClass(LocationAttributeType.class)
 			.addAnnotatedClass(SerializedObject.class)
 			.addAnnotatedClass(PatientState.class)
+			.addAnnotatedClass(DrugIngredient.class)
+			.addAnnotatedClass(AlertRecipient.class)
 			.getMetadataBuilder().build();
 
 

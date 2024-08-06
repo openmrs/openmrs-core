@@ -25,6 +25,7 @@ import org.openmrs.OrderGroupAttribute;
 import org.openmrs.OrderGroupAttributeType;
 import org.openmrs.Patient;
 import org.openmrs.User;
+import org.openmrs.Visit;
 import org.openmrs.OrderFrequency;
 import org.openmrs.api.APIException;
 import org.openmrs.parameter.OrderSearchCriteria;
@@ -342,4 +343,18 @@ public interface OrderDAO {
 	 * @see org.openmrs.api.OrderService#getOrderAttributeTypeByName(String)
 	 */
 	OrderAttributeType getOrderAttributeTypeByName(String name)throws DAOException;
+
+	/**
+	 * @see org.openmrs.api.OrderService#getActiveOrders(org.openmrs.Patient, org.openmrs.Visit, java.util.List,
+	 *      org.openmrs.CareSetting, java.util.Date)
+	 */
+	public List<Order> getActiveOrders(Patient patient, Visit visit, List<OrderType> orderTypes, CareSetting careSetting,
+			Date asOfDate);
+
+	/**
+	 * @see org.openmrs.api.OrderService#getOrders(org.openmrs.Patient, org.openmrs.Visit, org.openmrs.CareSetting, java.util.List,
+	 *      boolean, boolean)
+	 */
+	public List<Order> getOrders(Patient patient, Visit visit, CareSetting careSetting, List<OrderType> orderTypes,
+			boolean includeVoided, boolean includeDiscontinuationOrders);
 }

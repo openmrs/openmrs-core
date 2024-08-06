@@ -2515,6 +2515,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		cDate.setTime(new Date());
 		//milliseconds are not serialized into the database. they will be ignored in the test
 		cDate.set(Calendar.MILLISECOND, 0);
+		cDate.set(Calendar.YEAR, 2000);
 		Patient preferred = patientService.getPatient(999);
 		preferred.setBirthdate(cDate.getTime());
 		preferred.addName(new PersonName("givenName", "middleName", "familyName"));
@@ -2533,6 +2534,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		//retrieve preferred patient and set a date of birth
 		GregorianCalendar cDate = new GregorianCalendar();
 		cDate.setTime(new Date());
+		cDate.set(Calendar.YEAR, 2000);
 		Patient preferred = patientService.getPatient(999);
 		preferred.setBirthdate(cDate.getTime());
 		preferred.setBirthdateEstimated(true);

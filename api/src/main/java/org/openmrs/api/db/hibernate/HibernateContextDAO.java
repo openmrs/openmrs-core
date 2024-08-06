@@ -21,6 +21,7 @@ import org.hibernate.stat.QueryStatistics;
 import org.hibernate.stat.Statistics;
 import org.hibernate.type.StandardBasicTypes;
 import org.openmrs.GlobalProperty;
+import org.openmrs.OpenmrsObject;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
@@ -143,7 +144,7 @@ public class HibernateContextDAO implements ContextDAO {
 				// to now and make them wait another x mins
 				final Long unlockTime = getUnlockTimeMs();
 				if (System.currentTimeMillis() - lockoutTime > unlockTime) {
-					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "0");
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, OpenmrsConstants.ZERO_LOGIN_ATTEMPTS_VALUE);
 					candidateUser.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP);
 					saveUserProperties(candidateUser);
 				} else {
@@ -172,10 +173,11 @@ public class HibernateContextDAO implements ContextDAO {
 				// only clean up if the were some login failures, otherwise all should be clean
 				int attempts = getUsersLoginAttempts(candidateUser);
 				if (attempts > 0) {
-					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "0");
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, OpenmrsConstants.ZERO_LOGIN_ATTEMPTS_VALUE);
 					candidateUser.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP);
-					saveUserProperties(candidateUser);
 				}
+				setLastLoginTime(candidateUser);
+				saveUserProperties(candidateUser);
 
 				// skip out of the method early (instead of throwing the exception)
 				// to indicate that this is the valid user
@@ -213,6 +215,13 @@ public class HibernateContextDAO implements ContextDAO {
 		// message regardless of username/pw combo entered
 		log.info("Failed login attempt (login={}) - {}", login, errorMsg);
 		throw new ContextAuthenticationException(errorMsg);
+	}
+	
+	private void setLastLoginTime(User candidateUser) {
+		candidateUser.setUserProperty(
+			OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP,
+			String.valueOf(System.currentTimeMillis())
+		);
 	}
 	
 	private Long getUnlockTimeMs() {
@@ -362,6 +371,32 @@ public class HibernateContextDAO implements ContextDAO {
 	@Override
 	public void evictFromSession(Object obj) {
 		sessionFactory.getCurrentSession().evict(obj);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ContextDAO#evictEntity(OpenmrsObject)
+	 */
+	@Override
+	public void evictEntity(OpenmrsObject obj) {
+		sessionFactory.getCache().evictEntity(obj.getClass(), obj.getId());
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ContextDAO#evictAllEntities(Class)
+	 */
+	@Override
+	public void evictAllEntities(Class<?> entityClass) {
+		sessionFactory.getCache().evictEntityRegion(entityClass);
+		sessionFactory.getCache().evictCollectionRegions();
+		sessionFactory.getCache().evictQueryRegions();
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ContextDAO#clearEntireCache()
+	 */
+	@Override
+	public void clearEntireCache() {
+		sessionFactory.getCache().evictAllRegions();
 	}
 	
 	/**

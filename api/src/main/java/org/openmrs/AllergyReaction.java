@@ -10,11 +10,13 @@
 package org.openmrs;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.envers.Audited;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Represent allergy reactions
  */
+@Audited
 public class AllergyReaction extends BaseOpenmrsObject implements java.io.Serializable{
 	
 	public static final long serialVersionUID = 1;

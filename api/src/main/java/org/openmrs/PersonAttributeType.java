@@ -10,6 +10,7 @@
 package org.openmrs;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.envers.Audited;
 import org.hibernate.search.annotations.Field;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -29,6 +30,7 @@ import java.util.Comparator;
  */
 @Entity
 @Table(name = "person_attribute_type")
+@Audited
 public class PersonAttributeType extends BaseChangeableOpenmrsMetadata implements java.io.Serializable, Comparable<PersonAttributeType> {
 	
 	public static final long serialVersionUID = 2112313431211L;

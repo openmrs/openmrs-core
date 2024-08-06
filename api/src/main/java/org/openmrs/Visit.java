@@ -31,6 +31,7 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.envers.Audited;
 import org.openmrs.customdatatype.Customizable;
 
 /**
@@ -41,6 +42,7 @@ import org.openmrs.customdatatype.Customizable;
  */
 @Entity
 @Table(name = "visit")
+@Audited
 public class Visit extends BaseCustomizableData<VisitAttribute> implements Auditable, Customizable<VisitAttribute> {
 	
 	@Id

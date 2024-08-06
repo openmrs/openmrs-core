@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
 import org.openmrs.attribute.AttributeType;
 import org.openmrs.attribute.BaseAttributeType;
 
@@ -25,6 +26,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "visit_attribute_type")
+@Audited
 public class VisitAttributeType extends BaseAttributeType<Visit> implements AttributeType<Visit> {
 
 	@Id

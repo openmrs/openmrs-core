@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 
 import org.dom4j.DocumentException;
+import org.xml.sax.SAXException;
 
 public class Main {
 	
@@ -37,7 +38,7 @@ public class Main {
 		schemaOnlyTuner = new SchemaOnlyTuner();
 	}
 	
-	public static void main(String[] args) throws DocumentException, IOException {
+	public static void main(String[] args) throws DocumentException, IOException, SAXException {
 		coreDataTuner.addLicenseHeaderToFileIfNeeded(LIQUIBASE_CORE_DATA_SOURCE_PATH);
 		coreDataTuner.createUpdatedChangeLogFile(LIQUIBASE_CORE_DATA_SOURCE_PATH, LIQUIBASE_CORE_DATA_TARGET_PATH);
 		schemaOnlyTuner.addLicenseHeaderToFileIfNeeded(LIQUIBASE_SCHEMA_ONLY_SOURCE_PATH);
