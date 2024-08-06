@@ -82,6 +82,10 @@ public class AllergyValidator implements Validator {
 			} else if (!allergen.isCoded() && StringUtils.isBlank(allergen.getNonCodedAllergen())) {
 				errors.rejectValue("allergen", "allergyapi.allergen.nonCodedAllergen.required");
 			}
+
+			if (StringUtils.isNumeric(allergen.getNonCodedAllergen())) {
+				errors.rejectValue("allergen", "allergyapi.allergy.Allergen.cannotContainNumeric");
+			}
 			
 			if (allergy.getAllergyId() == null && allergy.getPatient() != null) {
 				Allergies existingAllergies = patientService.getAllergies(allergy.getPatient());
