@@ -14,6 +14,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.openmrs.Allergen;
 import org.openmrs.Allergies;
 import org.openmrs.Allergy;
+import java.util.Objects;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.PatientService;
 import org.openmrs.messagesource.MessageSourceService;
@@ -64,7 +65,12 @@ public class AllergyValidator implements Validator {
 		
 		Allergy allergy = (Allergy) target;
 		
-		if (allergy.getReactionNonCoded() != null) {
+		    // Additional validation: Ensure allergen does not contain numeric values
+			if (StringUtils.isNumeric(Objects.requireNonNull(allergy.getAllergen(), "Allergen must not be null").getNonCodedAllergen())) {
+				errors.rejectValue("allergen", "error.allergyapi.allergy.Allergen.cannotContainNumeric");
+			}
+			
+			if (Objects.nonNull(allergy.getReactionNonCoded())) {
 			if (NumberUtils.isParsable(allergy.getReactionNonCoded())) {
 				errors.rejectValue("reactionNonCoded", "error.allergyapi.allergy.ReactionNonCoded.cannotBeNumeric");
 			}
