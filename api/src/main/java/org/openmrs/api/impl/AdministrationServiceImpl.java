@@ -14,6 +14,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
@@ -32,6 +33,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.openmrs.ConceptSource;
 import org.openmrs.GlobalProperty;
 import org.openmrs.ImplementationId;
+import org.openmrs.OpenmrsData;
+import org.openmrs.OpenmrsMetadata;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
@@ -40,10 +43,19 @@ import org.openmrs.api.EventListeners;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.AdministrationDAO;
+import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
+import org.openmrs.customdatatype.CustomValueDescriptor;
+import org.openmrs.customdatatype.Customizable;
+import org.openmrs.customdatatype.SingleCustomValue;
+import org.openmrs.layout.LayoutSupport;
+import org.openmrs.layout.LayoutTemplate;
+import org.openmrs.messagesource.PresentationMessage;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleUtil;
+import org.openmrs.obs.ComplexData;
+import org.openmrs.person.PersonMergeLogData;
 import org.openmrs.util.HttpClient;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
@@ -857,5 +869,33 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	public void updatePostgresSequence() {
 		dao.updatePostgresSequence();
 	}
-	
+
+	@Override
+	public List<String> getSerializerWhitelistTypes() {
+		List<String> whitelistTypes = new ArrayList<>();
+		List<Class<?>> hierarchyTypes = getSerializerDefaultWhitelistHierarchyTypes();
+		for (Class<?> hierarchyType: hierarchyTypes) {
+			whitelistTypes.add(GP_SERIALIZER_WHITELIST_HIERARCHY_TYPES_PREFIX + hierarchyType.getName());
+		}
+
+		List<GlobalProperty> gpTypes = getGlobalPropertiesBySuffix(
+			AdministrationService.GP_SUFFIX_SERIALIZER_WHITELIST_TYPES);
+		for (GlobalProperty gpType: gpTypes) {
+			String[] types = gpType.getPropertyValue().split(",");
+			for (String type: types) {
+				if(!StringUtils.isBlank(type)) {
+					whitelistTypes.add(type.trim());
+				}
+			}
+		}
+
+		return whitelistTypes;
+	}
+	public static List<Class<?>> getSerializerDefaultWhitelistHierarchyTypes() {
+		List<Class<?>> types = Arrays.asList(OpenmrsObject.class, OpenmrsMetadata.class, OpenmrsData.class, 
+			CustomDatatype.class, SingleCustomValue.class, CustomValueDescriptor.class, Customizable.class,
+			LayoutTemplate.class, LayoutSupport.class, ComplexData.class, PresentationMessage.class,
+			PersonMergeLogData.class);
+		return types;
+	}
 }

@@ -12,20 +12,30 @@ package org.openmrs.serialization;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.beans.EventHandler;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.thoughtworks.xstream.XStreamException;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.collection.internal.PersistentList;
+import org.hibernate.loader.PropertyPath;
+import org.hibernate.mapping.Column;
+import org.hibernate.type.OrderedMapType;
 import org.junit.jupiter.api.Test;
+import org.openmrs.GlobalProperty;
 import org.openmrs.OpenmrsObject;
+import org.openmrs.api.AdministrationService;
 
 public class SimpleXStreamSerializerTest {
 	
@@ -77,7 +87,9 @@ public class SimpleXStreamSerializerTest {
 		        + "      <int>30</int>\n" + "      <string>bar</string>\n" + "    </entry>\n" + "  </attributeMap>\n"
 		        + "</org.openmrs.serialization.Foo>";
 		
-		OpenmrsSerializer serializer = new SimpleXStreamSerializer();
+		SimpleXStreamSerializer serializer = new SimpleXStreamSerializer();
+		
+		serializer.getXstream().allowTypeHierarchy(Foo.class);
 		
 		Foo foo = serializer.deserialize(serializedFoo, Foo.class);
 		
@@ -132,5 +144,80 @@ public class SimpleXStreamSerializerTest {
 		EventHandler h = new EventHandler(new ProcessBuilder("someApp"), "start", null, null);
 		Object proxy = Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class[] { OpenmrsObject.class }, h);
 		assertThrows(XStreamException.class, () -> new SimpleXStreamSerializer().serialize(proxy));
+	}
+
+	/**
+	 * @throws SerializationException
+	 * @see SimpleXStreamSerializer#deserialize(String,Class)
+	 */
+	@Test
+	public void deserialize_shouldNotDeserializeClassesThatAreNotWhitelisted() throws SerializationException {
+		//given
+		AdministrationService adminService = mock(AdministrationService.class);
+		when(adminService.getSerializerWhitelistTypes()).thenReturn(Arrays.asList("org.hibernate.*"));
+		SimpleXStreamSerializer serializer = new SimpleXStreamSerializer(adminService);
+		Column column = new Column();
+		String columnXml = serializer.serialize(column);
+		
+		//when/then
+		assertThrows(SerializationException.class, () -> serializer.deserialize(columnXml, Column.class));
+		assertThrows(SerializationException.class, () -> new SimpleXStreamSerializer().deserialize(columnXml, Column.class));
+	}
+
+	/**
+	 * @throws SerializationException
+	 * @see SimpleXStreamSerializer#deserialize(String,Class)
+	 */
+	@Test
+	public void deserialize_shouldDeserializeWhitelistedPackages() throws SerializationException {
+		//given
+		Column column = new Column();
+		AdministrationService adminService = mock(AdministrationService.class);
+		when(adminService.getSerializerWhitelistTypes()).thenReturn(Arrays.asList("org.hibernate.**"));
+		SimpleXStreamSerializer serializer = new SimpleXStreamSerializer(adminService);
+		
+		String columnXml = serializer.serialize(column);
+		String propertyPath = serializer.serialize(new PropertyPath());
+		
+		//when/then
+		assertNotNull(serializer.deserialize(columnXml, Column.class));
+		assertNotNull(serializer.deserialize(propertyPath, PropertyPath.class));
+	}
+
+	/**
+	 * @throws SerializationException
+	 * @see SimpleXStreamSerializer#deserialize(String,Class)
+	 */
+	@Test
+	public void deserialize_shouldDeserializeWhitelistedClassesAndPackages() throws SerializationException {
+		//given
+		Column column = new Column();
+		AdministrationService adminService = mock(AdministrationService.class);
+		when(adminService.getSerializerWhitelistTypes()).thenReturn(Arrays.asList("org.hibernate.loader.PropertyPath", 
+				"org.hibernate.mapping.*", "org.hibernate.collection.**"));
+		SimpleXStreamSerializer serializer = new SimpleXStreamSerializer(adminService);
+		String columnXml = serializer.serialize(column);
+		String propertyPath = serializer.serialize(new PropertyPath());
+		String persistentList = serializer.serialize(new PersistentList());
+		String orderedMapType = serializer.serialize(new OrderedMapType("role", "ref"));
+		
+		//when/then
+		assertNotNull(serializer.deserialize(columnXml, Column.class));
+		assertNotNull(serializer.deserialize(propertyPath, PropertyPath.class));
+		assertNotNull(serializer.deserialize(persistentList, PersistentList.class));
+		assertThrows(SerializationException.class, () -> serializer.deserialize(orderedMapType, OrderedMapType.class));
+	}
+
+	@Test
+	public void deserialize_shouldDeserializeWhitelistedHierarchies() throws SerializationException {
+		//given
+		AdministrationService adminService = mock(AdministrationService.class);
+		when(adminService.getSerializerWhitelistTypes()).thenReturn(Arrays.asList(
+			"hierarchyOf:org.hibernate.type.MapType"));
+		SimpleXStreamSerializer serializer = new SimpleXStreamSerializer(adminService);
+		String orderedMapType = serializer.serialize(new OrderedMapType("role", "ref"));
+
+		//when/then
+		assertNotNull(serializer.deserialize(orderedMapType, OrderedMapType.class));
 	}
 }
