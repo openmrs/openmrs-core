@@ -31,6 +31,7 @@ import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.EncodingType;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Resolution;
+import org.openmrs.customdatatype.Customizable;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +46,7 @@ import org.springframework.util.StringUtils;
  * @see org.openmrs.Patient
  */
 @Audited
-public class Person extends BaseChangeableOpenmrsData {
+public class Person extends BaseCustomizableData<PersonAttribute> implements Customizable<PersonAttribute>{
 	
 	public static final long serialVersionUID = 2L;
 	
@@ -970,6 +971,7 @@ public class Person extends BaseChangeableOpenmrsData {
 		return personChangedBy;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void setPersonChangedBy(User changedBy) {
 		this.personChangedBy = changedBy;
 		this.setChangedBy(changedBy);
@@ -979,6 +981,7 @@ public class Person extends BaseChangeableOpenmrsData {
 		return personDateChanged;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void setPersonDateChanged(Date dateChanged) {
 		this.personDateChanged = dateChanged;
 		this.setDateChanged(dateChanged);
@@ -1100,5 +1103,7 @@ public class Person extends BaseChangeableOpenmrsData {
 		setPersonId(id);
 		
 	}
+
+
 	
 }

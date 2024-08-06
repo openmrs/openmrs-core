@@ -26,6 +26,7 @@ import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.search.LuceneAnalyzers;
+import org.openmrs.attribute.BaseAttribute;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
@@ -44,7 +45,7 @@ import org.slf4j.LoggerFactory;
  */
 @Indexed
 @Audited
-public class PersonAttribute extends BaseChangeableOpenmrsData implements java.io.Serializable, Comparable<PersonAttribute> {
+public class PersonAttribute extends BaseAttribute implements java.io.Serializable{
 	
 	public static final long serialVersionUID = 11231211232111L;
 	
@@ -304,10 +305,9 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 	 * Note: this comparator imposes orderings that are inconsistent with equals
 	 */
 	@Override
-	public int compareTo(PersonAttribute other) {
-		DefaultComparator paDComparator = new DefaultComparator();
-		return paDComparator.compare(this, other);
-	}
+
+	
+	
 	
 	/**
 	 * @since 1.5
@@ -358,6 +358,7 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 			
 			return OpenmrsUtil.compareWithNullAsGreatest(pa1.getPersonAttributeId(), pa2.getPersonAttributeId());
 		}
+		
 	}
 	
 }
