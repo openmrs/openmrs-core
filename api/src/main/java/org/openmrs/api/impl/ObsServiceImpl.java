@@ -215,23 +215,21 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
 
 	private Obs saveNewOrVoidedObs(Obs obs, String changeMessage) {
+		setObsReferenceRange(obs);
 		Obs ret = dao.saveObs(obs);
 		saveObsGroup(ret,changeMessage);
-		saveObsReferenceRange(obs);
 		return ret;
 	}
 
-	private void saveObsReferenceRange(Obs obs) {
+	private void setObsReferenceRange(Obs obs) {
 		Concept concept = obs.getConcept();
 		ConceptService conceptService = Context.getConceptService();
-		ObsService obsService = Context.getObsService();
 
 		if (concept != null && concept.getDatatype().isNumeric()) {
 
 			Optional<ConceptReferenceRange> conceptReferenceRange = conceptService.getConceptReferenceRangeByConceptId(concept.getId());
 			
 			ObsReferenceRange obsRefRange = new ObsReferenceRange();
-			obsRefRange.setObs(obs);
 			
 			if (conceptReferenceRange.isPresent()) {
 				ConceptReferenceRange crr = conceptReferenceRange.get();
@@ -242,7 +240,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 				obsRefRange.setLowCritical(crr.getLowCritical());
 				obsRefRange.setLowNormal(crr.getLowNormal());
 			}
-			obsService.saveObsReferenceRange(obsRefRange);
+			obs.setObsReferenceRange(obsRefRange);
 		}
 	}
 
@@ -706,29 +704,12 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
 
 	/**
-	 * @see ObsService#saveObsReferenceRange(ObsReferenceRange)
-	 */
-	@Override
-	public ObsReferenceRange saveObsReferenceRange(final ObsReferenceRange obsReferenceRange) {
-		return dao.saveObsReferenceRange(obsReferenceRange);
-	}
-
-	/**
 	 * @see ObsService#getObsReferenceRangeById(Integer)
 	 */
 	@Override
 	@Transactional(readOnly = true)
 	public ObsReferenceRange getObsReferenceRangeById(final Integer id) {
 		return dao.getObsReferenceRangeById(id);
-	}
-
-	/**
-	 * @see ObsService#getObsReferenceRangesByObsId(Integer)
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public List<ObsReferenceRange> getObsReferenceRangesByObsId(final Integer obsId) {
-		return dao.getObsReferenceRangesByObsId(obsId);
 	}
 
 	/**

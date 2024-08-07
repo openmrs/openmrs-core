@@ -46,6 +46,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptReferenceRange;
 import org.openmrs.Encounter;
@@ -2004,57 +2005,18 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see ObsService#saveObsReferenceRange(ObsReferenceRange)
-	 */
-	@Test
-	public void saveObsReferenceRange_shouldSaveAndReturnObsReferenceRange() {
-		ObsReferenceRange referenceRange = new ObsReferenceRange();
-		referenceRange.setHiAbsolute(100.0);
-		referenceRange.setUuid("6e49d53c-b048-4e0e-a7cf-f41fdc6f1ea1");
-		referenceRange.setObs(Context.getObsService().getObs(7));
-
-		ObsService obsService = Context.getObsService();
-		ObsReferenceRange savedReferenceRange = obsService.saveObsReferenceRange(referenceRange);
-
-		assertNotNull(savedReferenceRange.getId());
-		assertEquals(referenceRange.getHiAbsolute(), savedReferenceRange.getHiAbsolute());
-	}
-
-	/**
 	 * @see ObsService#getObsReferenceRangeById(Integer)
 	 */
 	@Test
 	public void getObsReferenceRangeById_shouldReturnObsReferenceRange() {
-		ObsReferenceRange referenceRange = new ObsReferenceRange();
-		referenceRange.setHiAbsolute(100.0);
-		referenceRange.setUuid("2a097f82-b3f6-49ed-9cd1-0cb29f03bf08");
-		referenceRange.setObs(Context.getObsService().getObs(7));
+		Obs obs = buildObservation();
+
+		obsService.saveObs(obs, null);
 
 		ObsService obsService = Context.getObsService();
-		ObsReferenceRange savedReferenceRange = obsService.saveObsReferenceRange(referenceRange);
-		ObsReferenceRange fetchedReferenceRange = obsService.getObsReferenceRangeById(savedReferenceRange.getId());
+		ObsReferenceRange fetchedReferenceRange = obsService.getObsReferenceRangeById(obs.getObsReferenceRange().getId());
 
-		assertEquals(savedReferenceRange.getId(), fetchedReferenceRange.getId());
-	}
-
-	/**
-	 * @see ObsService#getObsReferenceRangesByObsId(Integer)
-	 */
-	@Test
-	public void getObsReferenceRangesByObsId_shouldReturnListOfObsReferenceRanges() {
-		Obs obs = Context.getObsService().getObs(9);
-		ObsReferenceRange referenceRange1 = new ObsReferenceRange();
-		referenceRange1.setObs(obs);
-
-		ObsReferenceRange referenceRange2 = new ObsReferenceRange();
-		referenceRange2.setObs(obs);
-
-		ObsService obsService = Context.getObsService();
-		obsService.saveObsReferenceRange(referenceRange1);
-		obsService.saveObsReferenceRange(referenceRange2);
-
-		List<ObsReferenceRange> fetchedReferenceRanges = obsService.getObsReferenceRangesByObsId(obs.getId());
-		assertEquals(2, fetchedReferenceRanges.size());
+		assertEquals(obs.getObsReferenceRange().getId(), fetchedReferenceRange.getId());
 	}
 
 	/**
@@ -2083,6 +2045,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void saveObsReferenceRange_shouldSaveReferenceRangeAfterSavingObs() {
 		Obs obs = buildObservation();
+		obs.setUuid("ace759d9-d126-4a3f-ae1a-cad4c132f38b");
 
 		obsService.saveObs(obs, null);
 		
@@ -2092,10 +2055,9 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		Double expectedHiAbsolute = conceptReferenceRange.get().getHiAbsolute();
 
-		List<ObsReferenceRange> obsReferenceRanges = obsService.getObsReferenceRangesByObsId(obs.getObsId());
+		Obs savedObs = obsService.getObsByUuid(obs.getUuid());
 
-		assertFalse(obsReferenceRanges.isEmpty());
-		ObsReferenceRange obsReferenceRange = obsReferenceRanges.get(0);
+		ObsReferenceRange obsReferenceRange = savedObs.getObsReferenceRange();
 		assertEquals(expectedHiAbsolute, obsReferenceRange.getHiAbsolute());
 	}
 	
@@ -2105,6 +2067,10 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Calendar calendar = Calendar.getInstance();
 		calendar.add(Calendar.YEAR, -5);
 		patient.setBirthdate(calendar.getTime());
+		
+		ObsReferenceRange obsReferenceRange = new ObsReferenceRange();
+		obsReferenceRange.setHiAbsolute(90.0);
+		obsReferenceRange.setLowAbsolute(88.0);
 		
 		Encounter encounter = new Encounter(3);
 		Date datetime = new Date();

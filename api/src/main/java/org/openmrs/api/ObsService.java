@@ -15,7 +15,6 @@ import java.util.Map;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
-import org.openmrs.ConceptReferenceRange;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
@@ -538,20 +537,6 @@ public interface ObsService extends OpenmrsService {
 			List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<Visit> visits,
 			Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs, String accessionNumber)
 			throws APIException;
-	
-
-	/**
-	 * Creates or updates the given {@link ObsReferenceRange} in the database
-	 *
-	 * @param obsReferenceRange the obsReferenceRange to save
-	 *                             
-	 * @since 2.7.0
-	 * 
-	 * <strong>Should</strong> create a new obs reference range
-	 * <strong>Should</strong> edit an existing obs reference range
-	 */
-	@Authorized( { PrivilegeConstants.ADD_OBS, PrivilegeConstants.EDIT_OBS })
-	ObsReferenceRange saveObsReferenceRange(ObsReferenceRange obsReferenceRange);
 
 	/**
 	 * This method gets ObsReferenceRange by id
@@ -566,20 +551,6 @@ public interface ObsService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_OBS)
 	ObsReferenceRange getObsReferenceRangeById(Integer id);
-
-	/**
-	 * This method gets ObsReferenceRanges by Obs id.
-	 * 
-	 * @param obsId observation id 
-	 * @return list of {@link ObsReferenceRange}
-	 *
-	 * @since 2.7.0
-	 *
-	 * <strong>Should</strong> get a list of ObsReferenceRange with the given obsId
-	 * <strong>Should</strong> return empty list if none of ObsReferenceRanges has the given obsId
-	 */
-	@Authorized(PrivilegeConstants.GET_OBS)
-	List<ObsReferenceRange> getObsReferenceRangesByObsId(Integer obsId);
 
 	/**
 	 * This method gets the latest Obs by conceptId. The latest obs is determined by the date created.

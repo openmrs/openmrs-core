@@ -354,35 +354,11 @@ public class HibernateObsDAO implements ObsDAO {
 	}
 
 	/**
-	 * @see org.openmrs.api.db.ObsDAO#saveObsReferenceRange(ObsReferenceRange)
-	 */
-	@Override
-	public ObsReferenceRange saveObsReferenceRange(ObsReferenceRange obsReferenceRange) {
-		sessionFactory.getCurrentSession().saveOrUpdate(obsReferenceRange);
-		return obsReferenceRange;
-	}
-
-	/**
 	 * @see org.openmrs.api.db.ObsDAO#getObsReferenceRangeById(Integer)
 	 */
 	@Override
 	public ObsReferenceRange getObsReferenceRangeById(Integer id) {
 		return sessionFactory.getCurrentSession().get(ObsReferenceRange.class, id);
-	}
-
-	/**
-	 * @see org.openmrs.api.db.ObsDAO#getObsReferenceRangesByObsId(Integer)
-	 */
-	@Override
-	public List<ObsReferenceRange> getObsReferenceRangesByObsId(Integer obsId) {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaBuilder cb = session.getCriteriaBuilder();
-		CriteriaQuery<ObsReferenceRange> query = cb.createQuery(ObsReferenceRange.class);
-		Root<ObsReferenceRange> root = query.from(ObsReferenceRange.class);
-		
-		query.where(cb.equal(root.get("obs"), obsId));
-		
-		return session.createQuery(query).getResultList();
 	}
 
 	/**

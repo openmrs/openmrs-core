@@ -131,12 +131,6 @@
 		</createTable>
 
 		<!-- foreign key constraints -->
-		<addForeignKeyConstraint
-			baseTableName="concept_reference_range"
-			baseColumnNames="concept_id"
-			constraintName="fk_concept_reference_range_concept"
-			referencedTableName="concept"
-			referencedColumnNames="concept_id"/>
 
 		<addForeignKeyConstraint
 			baseTableName="concept_reference_range"
@@ -147,7 +141,7 @@
 
 	</changeSet>
 
-	<changeSet author="Isaiah (generated)" id="202408021820-1">
+	<changeSet author="Isaiah (generated)" id="202408061820-1">
 		<preConditions onError="HALT" onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="obs_reference_range"/>
@@ -166,18 +160,27 @@
 			<column name="low_absolute" type="DOUBLE"/>
 			<column name="low_critical" type="DOUBLE"/>
 			<column name="low_normal" type="DOUBLE"/>
+			<column name="creator" type="INT"/>
 			<column name="date_created" type="TIMESTAMP"/>
+			<column name="voided" type="BOOLEAN"/>
+			<column name="voided_by" type="INT"/>
+			<column name="date_voided" type="TIMESTAMP"/>
+			<column name="void_reason" type="VARCHAR(255)"/>
 			<column name="uuid" type="char(38)">
 				<constraints nullable="false" unique="true" />
 			</column>
 		</createTable>
 
-		<addForeignKeyConstraint
-			baseTableName="obs_reference_range"
-			baseColumnNames="obs_id"
-			constraintName="fk_obs_reference_range_obs"
-			referencedTableName="obs"
-			referencedColumnNames="obs_id"/>
+		<addForeignKeyConstraint baseTableName="obs_reference_range"
+								 baseColumnNames="creator"
+								 referencedTableName="users"
+								 referencedColumnNames="user_id"
+								 constraintName="fk_obs_reference_range_creator"/>
+		<addForeignKeyConstraint baseTableName="obs_reference_range"
+								 baseColumnNames="voided_by"
+								 referencedTableName="users"
+								 referencedColumnNames="user_id"
+								 constraintName="fk_obs_reference_range_voided_by"/>
 		
 	</changeSet>
 	
