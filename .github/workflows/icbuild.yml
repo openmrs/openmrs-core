@@ -1,0 +1,19 @@
+name: Imaging Cloud Action
+env:
+  version: 1
+on:
+  push:
+    branches:
+      - master
+      - main
+  workflow_dispatch:
+jobs:
+  run-imaging-cloud-cli:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Run Imaging Cloud Action
+        run: |
+          cd ${{github.workspace}}
+          docker run -v $(pwd):/home/carl/extras/source -e IMAGING_CLOUD_API_KEY=${{secrets.IMAGING_CLOUD_API_KEY}} -e IMAGING_CLOUD_ACTION_FILE_VERSION=${{env.version}} -e IMAGING_CLOUD_URL="https://imaging-dev.castsoftware.io" castbuild/imaging-cloud-action:dev
