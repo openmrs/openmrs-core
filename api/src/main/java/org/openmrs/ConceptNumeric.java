@@ -46,7 +46,7 @@ public class ConceptNumeric extends Concept {
 	
 	private Boolean allowDecimal = false;
 	
-	private List<ConceptReferenceRange> conceptReferenceRanges;
+	private List<ConceptReferenceRange> referenceRanges;
 	
 	/**
 	 * displayPrecision, represents the number of significant digits
@@ -239,8 +239,8 @@ public class ConceptNumeric extends Concept {
 	 * 
 	 * @return list of conceptReferenceRange
 	 */
-	public List<ConceptReferenceRange> getConceptReferenceRanges() {
-		return conceptReferenceRanges;
+	public List<ConceptReferenceRange> getReferenceRanges() {
+		return referenceRanges;
 	}
 
 	/**
@@ -248,9 +248,9 @@ public class ConceptNumeric extends Concept {
 	 * 
 	 * @since 2.7.0
 	 * 
-	 * @param conceptReferenceRanges List<ConceptReferenceRange>
+	 * @param referenceRanges List<ConceptReferenceRange>
 	 */
-	public void setConceptReferenceRanges(List<ConceptReferenceRange> conceptReferenceRanges) {
-		this.conceptReferenceRanges = conceptReferenceRanges;
+	public void setReferenceRanges(List<ConceptReferenceRange> referenceRanges) {
+		this.referenceRanges = referenceRanges;
 	}
 }

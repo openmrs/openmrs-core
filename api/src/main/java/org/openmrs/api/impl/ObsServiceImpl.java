@@ -240,7 +240,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 				obsRefRange.setLowCritical(crr.getLowCritical());
 				obsRefRange.setLowNormal(crr.getLowNormal());
 			}
-			obs.setObsReferenceRange(obsRefRange);
+			obs.setReferenceRange(obsRefRange);
 		}
 	}
 
@@ -701,15 +701,6 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	@Override
 	public void removeHandler(String key) {
 		handlers.remove(key);
-	}
-
-	/**
-	 * @see ObsService#getObsReferenceRangeById(Integer)
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public ObsReferenceRange getObsReferenceRangeById(final Integer id) {
-		return dao.getObsReferenceRangeById(id);
 	}
 
 	/**

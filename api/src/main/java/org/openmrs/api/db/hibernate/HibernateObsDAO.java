@@ -354,14 +354,6 @@ public class HibernateObsDAO implements ObsDAO {
 	}
 
 	/**
-	 * @see org.openmrs.api.db.ObsDAO#getObsReferenceRangeById(Integer)
-	 */
-	@Override
-	public ObsReferenceRange getObsReferenceRangeById(Integer id) {
-		return sessionFactory.getCurrentSession().get(ObsReferenceRange.class, id);
-	}
-
-	/**
 	 * @see org.openmrs.api.db.ObsDAO#getLatestObsByConceptId(String)
 	 */
 	@Override

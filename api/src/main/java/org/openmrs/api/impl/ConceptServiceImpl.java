@@ -2067,7 +2067,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @see ConceptService#saveConceptReferenceRange(ConceptReferenceRange)
 	 */
 	@Override
-	public ConceptReferenceRange saveConceptReferenceRange(final ConceptReferenceRange conceptReferenceRange) {
+	public ConceptReferenceRange saveConceptReferenceRange(ConceptReferenceRange conceptReferenceRange) {
 		return dao.saveConceptReferenceRange(conceptReferenceRange);
 	}
 

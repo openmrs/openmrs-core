@@ -154,7 +154,7 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	
 	private Status status = Status.FINAL;
 
-	private ObsReferenceRange obsReferenceRange;
+	private ObsReferenceRange referenceRange;
 
 	/** default constructor */
 	public Obs() {
@@ -1252,16 +1252,16 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	 * 
 	 * @since 2.7.0
 	 */
-	public ObsReferenceRange getObsReferenceRange() {
-		return obsReferenceRange;
+	public ObsReferenceRange getReferenceRange() {
+		return referenceRange;
 	}
 	
 	/**
-	 * @param obsReferenceRange ObsReferenceRange to set.
+	 * @param referenceRange ObsReferenceRange to set.
 	 *               
 	 * @since 2.7.0
 	 */
-	public void setObsReferenceRange(ObsReferenceRange obsReferenceRange) {
-		this.obsReferenceRange = obsReferenceRange;
+	public void setReferenceRange(ObsReferenceRange referenceRange) {
+		this.referenceRange = referenceRange;
 	}
 }

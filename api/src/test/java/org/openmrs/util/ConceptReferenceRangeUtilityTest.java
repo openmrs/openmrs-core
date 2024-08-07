@@ -130,7 +130,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		person.setBirthdate(calendar.getTime());
 		String criteria = "";
 
-		ValidationException exception = assertThrows(ValidationException.class, () -> {
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
 			ConceptReferenceRangeUtility.evaluateCriteria(criteria, person);
 		});
 

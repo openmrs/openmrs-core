@@ -46,7 +46,6 @@ import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
-import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptReferenceRange;
 import org.openmrs.Encounter;
@@ -2005,21 +2004,6 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see ObsService#getObsReferenceRangeById(Integer)
-	 */
-	@Test
-	public void getObsReferenceRangeById_shouldReturnObsReferenceRange() {
-		Obs obs = buildObservation();
-
-		obsService.saveObs(obs, null);
-
-		ObsService obsService = Context.getObsService();
-		ObsReferenceRange fetchedReferenceRange = obsService.getObsReferenceRangeById(obs.getObsReferenceRange().getId());
-
-		assertEquals(obs.getObsReferenceRange().getId(), fetchedReferenceRange.getId());
-	}
-
-	/**
 	 * @see ObsService#getLatestObsByConceptId(String)
 	 */
 	@Test
@@ -2057,7 +2041,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 
 		Obs savedObs = obsService.getObsByUuid(obs.getUuid());
 
-		ObsReferenceRange obsReferenceRange = savedObs.getObsReferenceRange();
+		ObsReferenceRange obsReferenceRange = savedObs.getReferenceRange();
 		assertEquals(expectedHiAbsolute, obsReferenceRange.getHiAbsolute());
 	}
 	

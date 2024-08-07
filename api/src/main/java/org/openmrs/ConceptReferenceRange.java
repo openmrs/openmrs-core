@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
 import org.hibernate.search.annotations.DocumentId;
 
 import javax.persistence.Column;
@@ -31,6 +32,7 @@ import javax.persistence.Table;
  *
  * @since 2.7.0
  */
+@Audited
 @Entity
 @Table(name = "concept_reference_range")
 public class ConceptReferenceRange extends BaseReferenceRange {

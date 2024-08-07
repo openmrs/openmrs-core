@@ -539,20 +539,6 @@ public interface ObsService extends OpenmrsService {
 			throws APIException;
 
 	/**
-	 * This method gets ObsReferenceRange by id
-	 * 
-	 * @param id ObsReferenceRange id
-	 * @return {@link ObsReferenceRange}
-	 *
-	 * @since 2.7.0
-	 *
-	 * <strong>Should</strong> get the ObsReferenceRange with the given id
-	 * <strong>Should</strong> return null if ObsReferenceRange is not found
-	 */
-	@Authorized(PrivilegeConstants.GET_OBS)
-	ObsReferenceRange getObsReferenceRangeById(Integer id);
-
-	/**
 	 * This method gets the latest Obs by conceptId. The latest obs is determined by the date created.
 	 * 
 	 * @param conceptId conceptId

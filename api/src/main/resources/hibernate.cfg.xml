@@ -111,8 +111,6 @@
 		<mapping resource="org/openmrs/api/db/hibernate/ProviderAttribute.hbm.xml" />
 		
 		<mapping resource="org/openmrs/api/db/hibernate/ClobDatatypeStorage.hbm.xml" />
-
-		<mapping class="org.openmrs.ObsReferenceRange"/>
 		
   </session-factory>
 

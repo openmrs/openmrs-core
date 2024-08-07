@@ -4007,7 +4007,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		conceptNumeric.addName(conceptName);
 		conceptNumeric.addDescription(new ConceptDescription("some description",null));
 		conceptNumeric.setHiAbsolute(50.0);
-		conceptNumeric.setConceptReferenceRanges(Collections.singletonList(conceptReferenceRange));
+		conceptNumeric.setReferenceRanges(Collections.singletonList(conceptReferenceRange));
 		conceptService.saveConcept(conceptNumeric);
 
 		Concept savedConcept = conceptService.getConcept(conceptNumeric.getConceptId());
@@ -4015,7 +4015,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		ConceptNumeric savedConceptNumeric = (ConceptNumeric) savedConcept;
 		assertEquals("a new conceptnumeric", savedConceptNumeric.getName(Locale.US).getName());
 		assertEquals(50.0, savedConceptNumeric.getHiAbsolute(), 0);
-		assertFalse(savedConceptNumeric.getConceptReferenceRanges().isEmpty());
-		assertEquals(1, savedConceptNumeric.getConceptReferenceRanges().size());
+		assertFalse(savedConceptNumeric.getReferenceRanges().isEmpty());
+		assertEquals(1, savedConceptNumeric.getReferenceRanges().size());
 	}
 }

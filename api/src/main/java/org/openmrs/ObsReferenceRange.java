@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Field;
 
@@ -28,6 +29,7 @@ import java.util.Date;
  *
  * @since 2.7.0
  */
+@Audited
 @Entity
 @Table(name = "obs_reference_range")
 public class ObsReferenceRange extends BaseReferenceRange implements Creatable, Voidable, java.io.Serializable {

@@ -113,9 +113,6 @@
 			<column name="concept_id" type="INT">
 				<constraints nullable="false"/>
 			</column>
-			<column name="concept_numeric_id" type="INT">
-				<constraints nullable="false"/>
-			</column>
 			<column name="criteria" type="VARCHAR(255)">
 				<constraints nullable="false"/>
 			</column>

@@ -31,6 +31,8 @@ public class ConceptReferenceRangeUtility {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ConceptReferenceRangeUtility.class);
 	
+	private static final String YEARS_STRING = "YEARS";
+	
 	public ConceptReferenceRangeUtility() {
 	}
 	
@@ -43,13 +45,11 @@ public class ConceptReferenceRangeUtility {
 	 */
 	public static boolean evaluateCriteria(String criteria, Person person) {
 		if (person == null) {
-			logger.error("Validation failed with reason: patient is null");
 			throw new ValidationException("Failed to validate with reason: patient is null");
 		}
 		
 		if (criteria == null || criteria.isEmpty()) {
-			logger.error("Validation failed with reason: patient is null");
-			throw new ValidationException("Failed to validate with reason: criteria required");
+			throw new IllegalArgumentException("Failed to validate with reason: criteria required");
 		}
 		
 		VelocityContext velocityContext = new VelocityContext();
@@ -75,7 +75,7 @@ public class ConceptReferenceRangeUtility {
 	 * @return the age in years as an Integer
 	 */
 	public static Integer getAge(Person person) {
-		return getAge(person, "YEARS");
+		return getAge(person, YEARS_STRING);
 	}
 	
 	/**
@@ -149,9 +149,7 @@ public class ConceptReferenceRangeUtility {
 	 * @return Obs
 	 */
 	public Obs getLatestObsByConceptId(String conceptId) {
-		ObsService obsService = Context.getObsService();
-		
-		return obsService.getLatestObsByConceptId(conceptId);
+		return Context.getObsService().getLatestObsByConceptId(conceptId);
 	}
 	
 	/**

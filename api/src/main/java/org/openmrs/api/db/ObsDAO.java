@@ -112,11 +112,6 @@ public interface ObsDAO {
 			boolean includeVoidedObs, String accessionNumber) throws DAOException;
 
 	/**
-	 * @see ObsService#getObsReferenceRangeById(Integer)
-	 */
-	ObsReferenceRange getObsReferenceRangeById(Integer id);
-
-	/**
 	 * @see ObsService#getLatestObsByConceptId(String)
 	 */
 	Obs getLatestObsByConceptId(String conceptId);
