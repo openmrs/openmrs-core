@@ -276,6 +276,18 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		return dao.getVisits(null, Collections.singletonList(patient), null, null, null, null, null, null, null,
 		    includeInactive, includeVoided);
 	}
+
+	/**
+	 * @see org.openmrs.api.VisitService#getVisitsByPatient(org.openmrs.Patient, java.util.Date, java.util.Date)
+	 */
+	@Override
+	public List<Visit> getVisitsByPatient(Patient patient, Date maxStartDatetime, Date minEndDatetime) throws APIException {
+		if (patient == null || patient.getId() == null) {
+			return Collections.emptyList();
+		}
+		return dao.getVisits(null, Collections.singletonList(patient), null, null, null, maxStartDatetime, minEndDatetime,
+			null, null, true, false);
+	}
 	
 	/**
 	 * @see org.openmrs.api.VisitService#getAllVisitAttributeTypes()

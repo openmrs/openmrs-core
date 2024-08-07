@@ -296,6 +296,18 @@ public interface VisitService extends OpenmrsService {
 	        throws APIException;
 	
 	/**
+	 * Gets all visits for the specified patient that started on or after the given start date
+	 * @param patient
+	 * @param maxStartDatetime
+	 * @param minEndDatetime
+	 * @return a list of visits
+	 * @throws APIException
+	 */
+	@Authorized(PrivilegeConstants.GET_VISITS)
+	public List<Visit> getVisitsByPatient(Patient patient, Date maxStartDatetime, Date minEndDatetime)
+	        throws APIException;
+	
+	/**
 	 * @return all {@link VisitAttributeType}s
 	 * <strong>Should</strong> return all visit attribute types including retired ones
 	 */
