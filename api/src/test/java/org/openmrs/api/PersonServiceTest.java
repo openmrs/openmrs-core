@@ -1454,7 +1454,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		data.addCreatedIdentifier("3");
 		data.addCreatedName("4");
 		data.addCreatedOrder("5");
-		data.addCreatedProgram("6");
+		data.addMovedProgram("6");
 		data.addCreatedRelationship("7");
 		data.addMovedEncounter("8");
 		data.addMovedIndependentObservation("9");
