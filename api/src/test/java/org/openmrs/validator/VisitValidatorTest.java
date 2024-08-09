@@ -257,8 +257,8 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-		 * @see VisitValidator#validate(Object, org.springframework.validation.Errors)
-		 */
+	 * @see VisitValidator#validate(Object,Errors)
+	 */
 	@Test
 	public void validate_shouldRejectAVisitThatStartsBeforeAndEndsAfterAnExistingVisit() {
 		int patientId = 42;
@@ -275,6 +275,9 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		assertTrue(errors.hasFieldErrors("startDatetime"));
 	}
 	
+	/**
+	 * @see VisitValidator#validate(Object,Errors)
+	 */	
 	@Test
 	public void validate_shouldRejectAVisitThatStartsBeforeAndEndsDuringAnExistingVisit() {
 		int patientId = 42;
@@ -290,6 +293,9 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		assertTrue(errors.hasFieldErrors("startDatetime"));
 	}
 	
+	/**
+	 * @see VisitValidator#validate(Object,Errors)
+	 */
 	@Test
 	public void validate_shouldRejectAVisitThatStartsDuringAndEndsAfterAnExistingVisit() {
 		int patientId = 42;
@@ -305,6 +311,9 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		assertTrue(errors.hasFieldErrors("startDatetime"));
 	}
 	
+	/**
+	 * @see VisitValidator#validate(Object,Errors)
+	 */
 	@Test
 	public void validate_shouldRejectAVisitThatStartsAndEndsDuringAnExistingVisit() {
 		// Existing visit: starts on 2014-01-04 10:00:00 and ends on 2014-01-10 14:00:00 (see VisitValidatorTest.xml)
@@ -321,6 +330,9 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		assertTrue(errors.hasFieldErrors("startDatetime"));
 	}
 	
+	/**
+	 * @see VisitValidator#validate(Object,Errors)
+	 */
 	@Test
 	public void validate_shouldRejectAVisitThatStartsAtTheSameTimeAsAnExistingVisit() {
 		// Existing visit: starts on 2014-01-04 10:00:00 and ends on 2014-01-10 14:00:00 (see VisitValidatorTest.xml)
@@ -337,6 +349,9 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		assertTrue(errors.hasFieldErrors("startDatetime"));
 	}
 	
+	/**
+	 * @see VisitValidator#validate(Object,Errors)
+	 */
 	@Test
 	public void validate_ShouldRejectAVisitThatEndsAtTheSameTimeAsAnExistingEvent(){
 		// Existing visit: starts on 2014-01-04 10:00:00 and ends on 2014-01-10 14:00:00 (see VisitValidatorTest.xml)
@@ -376,7 +391,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldRejectNewOverlappingVisit() {
+	public void validate_shouldRejectOverlappingActiveVisits() {
 		int patientId = 43;
 		
 		// Existing visit: starts on 2014-01-04 10:00:00 and no end date (see VisitValidatorTest.xml)
@@ -391,6 +406,27 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		assertTrue(errors.hasFieldErrors("startDatetime"));
 	}
 	
+	/**
+	 * @see VisitValidator#validate(Object, org.springframework.validation.Errors)
+	 * This test verifies that updating an existing visit does not result in a rejection 
+	 * when there are no other overlapping visits.
+	 */
+	@Test
+	public void validate_shouldNotRejectOnVisitOverlapDuringUpdate() {
+		int patientId = 42;
+		
+		List<Visit> visits = Context.getVisitService()
+			.getVisitsByPatient(Context.getPatientService().getPatient(patientId), true, false);
+		
+		assertFalse(visits.isEmpty());
+		
+		// Existing visit: starts on 2014-01-04 10:00:00 and ends on 2014-01-10 14:00:00 (see VisitValidatorTest.xml)
+		Visit visit = visits.get(0);
+		
+		Errors errors = new BindException(visit, "visit");
+		new VisitValidator().validate(visit, errors);
+		assertFalse(errors.hasFieldErrors("startDatetime"));
+	}
 	
 	/**
 	 * @see VisitValidator#validate(Object, org.springframework.validation.Errors)
