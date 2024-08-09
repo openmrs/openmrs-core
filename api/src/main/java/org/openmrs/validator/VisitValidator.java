@@ -132,22 +132,6 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 		    OpenmrsConstants.GLOBAL_PROPERTY_ALLOW_OVERLAPPING_VISITS, "true"));
 	}
 	
-	private void validateVisitOverlaps(Visit visit, Visit otherVisit, Errors errors) {
-		if (visit.getStartDatetime() == null || otherVisit.getStartDatetime() == null) {
-			return;
-		}
-		
-		Date s1 = visit.getStartDatetime();
-		Date e1 = visit.getStopDatetime() == null ? new Date(Long.MAX_VALUE) : visit.getStopDatetime();
-		Date s2 = otherVisit.getStartDatetime();
-		Date e2 = otherVisit.getStopDatetime() == null ? new Date(Long.MAX_VALUE) : otherVisit.getStopDatetime();
-		
-		if (s1.before(e2) && s2.before(e1)) {
-			errors.rejectValue("startDatetime", "Visit.visitCannotOverlapAnotherVisitOfTheSamePatient",
-				"This visit overlaps with another visit of the same patient.");
-		}
-	}
-	
 	private void validateVisitStartedBeforePatientBirthdate(Visit visit, Errors errors) {
 		if (visit.getPatient() == null || visit.getPatient().getBirthdate() == null || visit.getStartDatetime() == null) {
 			return;
