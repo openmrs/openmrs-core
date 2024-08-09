@@ -162,6 +162,13 @@
 				<constraints nullable="false" unique="true" />
 			</column>
 		</createTable>
+
+		<addForeignKeyConstraint
+			baseTableName="obs_reference_range"
+			baseColumnNames="obs_id"
+			constraintName="fk_obs_obs_reference_range"
+			referencedTableName="obs"
+			referencedColumnNames="obs_id"/>
 		
 	</changeSet>
 	

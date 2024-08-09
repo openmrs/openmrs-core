@@ -42,26 +42,8 @@ public class ObsReferenceRange extends BaseReferenceRange {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer obsReferenceRangeId;
 
-	@OneToOne
-	@JoinColumn(name = "creator")
-	private User creator;
-
 	@Column(name = "date_created")
 	private Date dateCreated;
-
-	@Field
-	@Column
-	private Boolean voided = false;
-
-	@OneToOne
-	@JoinColumn(name = "voided_by")
-	private User voidedBy;
-
-	@Column(name = "date_voided")
-	private Date dateVoided;
-
-	@Column(name = "void_reason")
-	private String voidReason;
 
 	public ObsReferenceRange() {
 	}

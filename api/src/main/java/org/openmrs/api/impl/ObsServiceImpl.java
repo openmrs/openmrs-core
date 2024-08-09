@@ -15,21 +15,17 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Optional;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
-import org.openmrs.ConceptReferenceRange;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
-import org.openmrs.ObsReferenceRange;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.Visit;
 import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.api.APIException;
-import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.PatientService;
@@ -215,33 +211,9 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
 
 	private Obs saveNewOrVoidedObs(Obs obs, String changeMessage) {
-		setObsReferenceRange(obs);
 		Obs ret = dao.saveObs(obs);
 		saveObsGroup(ret,changeMessage);
 		return ret;
-	}
-
-	private void setObsReferenceRange(Obs obs) {
-		Concept concept = obs.getConcept();
-		ConceptService conceptService = Context.getConceptService();
-
-		if (concept != null && concept.getDatatype().isNumeric()) {
-
-			Optional<ConceptReferenceRange> conceptReferenceRange = conceptService.getConceptReferenceRangeByConceptId(concept.getId());
-			
-			ObsReferenceRange obsRefRange = new ObsReferenceRange();
-			
-			if (conceptReferenceRange.isPresent()) {
-				ConceptReferenceRange crr = conceptReferenceRange.get();
-				obsRefRange.setHiAbsolute(crr.getHiAbsolute());
-				obsRefRange.setHiCritical(crr.getHiCritical());
-				obsRefRange.setHiNormal(crr.getHiNormal());
-				obsRefRange.setLowAbsolute(crr.getLowAbsolute());
-				obsRefRange.setLowCritical(crr.getLowCritical());
-				obsRefRange.setLowNormal(crr.getLowNormal());
-			}
-			obs.setReferenceRange(obsRefRange);
-		}
 	}
 
 	private void evictObsAndChildren(Obs obs) {
@@ -701,14 +673,5 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	@Override
 	public void removeHandler(String key) {
 		handlers.remove(key);
-	}
-
-	/**
-	 * @see ObsService#getLatestObsByConceptId(String)
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public Obs getLatestObsByConceptId(final String conceptKey) {
-		return dao.getLatestObsByConceptId(conceptKey);
 	}
 }

@@ -2003,29 +2003,6 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		assertThat(newObs.getStatus(), is(Obs.Status.FINAL));
 	}
 
-	/**
-	 * @see ObsService#getLatestObsByConceptId(String)
-	 */
-	@Test
-	public void getLatestObsByConceptId_shouldReturnLatestObs() throws InterruptedException {
-		ObsService obsService = Context.getObsService();
-		
-		Obs obs1 = buildObservation();
-		obs1.setComment("First Obs");
-		obsService.saveObs(obs1, null);
-
-		// Introduce a delay to ensure a different timestamp for the second obs
-		Thread.sleep(1000);
-		
-		Obs obs2 = buildObservation();
-		obs2.setComment("Second Obs");
-		obsService.saveObs(obs2, null);
-		
-		Obs latestObs = obsService.getLatestObsByConceptId("4089");
-		assertNotNull(latestObs);
-		assertEquals("Second Obs", latestObs.getComment());
-	}
-
 	@Test
 	public void saveObsReferenceRange_shouldSaveReferenceRangeAfterSavingObs() {
 		Obs obs = buildObservation();
@@ -2033,11 +2010,11 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 
 		obsService.saveObs(obs, null);
 		
-		Optional<ConceptReferenceRange> conceptReferenceRange = Context.getConceptService().getConceptReferenceRangeByConceptId(obs.getConcept().getId());
+		List<ConceptReferenceRange> conceptReferenceRange = Context.getConceptService().getConceptReferenceRangesByConceptId(obs.getConcept().getId());
 
-		assertTrue(conceptReferenceRange.isPresent());
+		assertFalse(conceptReferenceRange.isEmpty());
 		
-		Double expectedHiAbsolute = conceptReferenceRange.get().getHiAbsolute();
+		Double expectedHiAbsolute = conceptReferenceRange.get(0).getHiAbsolute();
 
 		Obs savedObs = obsService.getObsByUuid(obs.getUuid());
 

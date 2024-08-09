@@ -998,9 +998,9 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		conceptReferenceRange.setCriteria(TEST_CRITERIA);
 		conceptService.saveConceptReferenceRange(conceptReferenceRange);
 
-		Optional<ConceptReferenceRange> savedConceptReferenceRange = conceptService.getConceptReferenceRangeByConceptId(concept.getId());
-		assertTrue(savedConceptReferenceRange.isPresent());
-		assertEquals(conceptReferenceRange.getHiAbsolute(), savedConceptReferenceRange.get().getHiAbsolute());
+		List<ConceptReferenceRange> savedConceptReferenceRange = conceptService.getConceptReferenceRangesByConceptId(concept.getId());
+		assertFalse(savedConceptReferenceRange.isEmpty());
+		assertEquals(conceptReferenceRange.getHiAbsolute(), savedConceptReferenceRange.get(0).getHiAbsolute());
 	}
 	
 	private Concept createConcept() {

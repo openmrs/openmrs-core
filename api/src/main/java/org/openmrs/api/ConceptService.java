@@ -2013,6 +2013,6 @@ public interface ConceptService extends OpenmrsService {
 	 * <strong>Should</strong> return empty list if none of conceptReferenceRanges has the given conceptId
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
-	Optional<ConceptReferenceRange> getConceptReferenceRangeByConceptId(Integer conceptId);
+	List<ConceptReferenceRange> getConceptReferenceRangesByConceptId(Integer conceptId);
 	
 }

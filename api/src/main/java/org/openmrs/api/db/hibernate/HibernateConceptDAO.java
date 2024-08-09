@@ -2374,26 +2374,24 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptReferenceRangeById(Integer)
 	 */
 	@Override
-	public ConceptReferenceRange getConceptReferenceRangeById(final Integer id) {
+	public ConceptReferenceRange getConceptReferenceRangeById(Integer id) {
 		return sessionFactory.getCurrentSession().get(ConceptReferenceRange.class, id);
 	}
 
 	/**
-	 * @see org.openmrs.api.db.ConceptDAO#getConceptReferenceRangeByConceptId(Integer)
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptReferenceRangesByConceptId(Integer)
 	 */
 	@Override
-	public Optional<ConceptReferenceRange> getConceptReferenceRangeByConceptId(final Integer conceptId) {
-		try {
-			Session session = sessionFactory.getCurrentSession();
-			CriteriaBuilder cb = session.getCriteriaBuilder();
-			CriteriaQuery<ConceptReferenceRange> cq = cb.createQuery(ConceptReferenceRange.class);
-			Root<ConceptReferenceRange> root = cq.from(ConceptReferenceRange.class);
+	public List<ConceptReferenceRange> getConceptReferenceRangesByConceptId(Integer conceptId) {
+	
 
-			cq.where(cb.equal(root.get("concept"), conceptId));
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<ConceptReferenceRange> cq = cb.createQuery(ConceptReferenceRange.class);
+		Root<ConceptReferenceRange> root = cq.from(ConceptReferenceRange.class);
 
-			return Optional.ofNullable(session.createQuery(cq).getSingleResult());
-		} catch (NoResultException e) {
-			return Optional.empty();
-		}
+		cq.where(cb.equal(root.get("concept"), conceptId));
+
+		return session.createQuery(cq).getResultList();
 	}
 }

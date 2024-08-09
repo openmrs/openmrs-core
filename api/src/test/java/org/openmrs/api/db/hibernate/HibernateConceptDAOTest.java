@@ -290,10 +290,10 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 		dao.saveConceptReferenceRange(conceptReferenceRange);
 
 		//When
-		Optional<ConceptReferenceRange> saveConceptReferenceRange = dao.getConceptReferenceRangeByConceptId(concept.getId());
+		List<ConceptReferenceRange> saveConceptReferenceRange = dao.getConceptReferenceRangesByConceptId(concept.getId());
 
 		// Then
-		assertTrue(saveConceptReferenceRange.isPresent());
+		assertFalse(saveConceptReferenceRange.isEmpty());
 	}
 	
 	/**
@@ -310,9 +310,9 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 		dao.saveConcept(concept);
 
 		//When
-		Optional<ConceptReferenceRange> savedConceptReferenceRange = dao.getConceptReferenceRangeByConceptId(concept.getId());
+		List<ConceptReferenceRange> savedConceptReferenceRange = dao.getConceptReferenceRangesByConceptId(concept.getId());
 
 		// Then
-		assertFalse(savedConceptReferenceRange.isPresent());
+		assertTrue(savedConceptReferenceRange.isEmpty());
 	}
 }

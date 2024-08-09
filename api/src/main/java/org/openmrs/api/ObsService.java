@@ -537,18 +537,4 @@ public interface ObsService extends OpenmrsService {
 			List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<Visit> visits,
 			Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs, String accessionNumber)
 			throws APIException;
-
-	/**
-	 * This method gets the latest Obs by conceptKey. The latest obs is determined by the date created.
-	 * 
-	 * @param conceptKey conceptKey
-	 * @return {@link ObsReferenceRange}
-	 *
-	 * @since 2.7.0
-	 *
-	 * <strong>Should</strong> get the latest Obs with the given conceptKey
-	 * <strong>Should</strong> return null if Obs is not found
-	 */
-	@Authorized(PrivilegeConstants.GET_OBS)
-	Obs getLatestObsByConceptId(String conceptKey);
 }

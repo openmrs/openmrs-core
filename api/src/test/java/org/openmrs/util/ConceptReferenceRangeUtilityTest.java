@@ -119,7 +119,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void testAgeInRange_shouldReturnFalseIfCriteriaIsInvalid() {
+	public void testAgeInRange_shouldThrowExceptionIfCriteriaIsInvalid() {
 		calendar = Calendar.getInstance();
 		calendar.add(Calendar.YEAR, -1);
 		person.setBirthdate(calendar.getTime());

@@ -683,7 +683,7 @@ public interface ConceptDAO {
 	ConceptReferenceRange getConceptReferenceRangeById(Integer id);
 
 	/**
-	 * @see ConceptService#getConceptReferenceRangeByConceptId(Integer)
+	 * @see ConceptService#getConceptReferenceRangesByConceptId(Integer)
 	 */
-	Optional<ConceptReferenceRange> getConceptReferenceRangeByConceptId(Integer conceptId);
+	List<ConceptReferenceRange> getConceptReferenceRangesByConceptId(Integer conceptId);
 }

@@ -18,6 +18,7 @@ import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptReferenceRange;
 import org.openmrs.Obs;
+import org.openmrs.ObsReferenceRange;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -268,29 +269,67 @@ public class ObsValidator implements Validator {
 	 *
 	 * @param obs Observation to validate
 	 * @param errors Errors to record validation issues
+	 *               
+	 * @since 2.7.0
 	 */
 	private void validateConceptReferenceRange(Obs obs, Errors errors) {
 		Concept concept = obs.getConcept();
 
 		if (concept != null && concept.getDatatype() != null && concept.getDatatype().isNumeric()) {
-			Optional<ConceptReferenceRange> crr = Context.getConceptService()
-				.getConceptReferenceRangeByConceptId(concept.getConceptId());
+			List<ConceptReferenceRange> crrList = Context.getConceptService()
+				.getConceptReferenceRangesByConceptId(concept.getConceptId());
 
-			if (crr.isPresent()) {
-				ConceptReferenceRange conceptReferenceRange = crr.get();
+			if (!crrList.isEmpty()) {
 				ConceptReferenceRangeUtility utility = new ConceptReferenceRangeUtility();
-				if (conceptReferenceRange.getHiAbsolute() != null && conceptReferenceRange.getHiAbsolute() < obs.getValueNumeric()) {
-					errors.rejectValue("valueNumeric", "error.outOfRange.high");
-				}
-				if (conceptReferenceRange.getLowAbsolute() != null && conceptReferenceRange.getLowAbsolute() > obs.getValueNumeric()) {
-					errors.rejectValue("valueNumeric", "error.outOfRange.low");
-				}
 
-				if (!utility.evaluateCriteria(conceptReferenceRange.getCriteria(), obs.getPerson())) {
-					errors.rejectValue("valueNumeric", "error.outOfRange.criteria.not.match");
+				for (ConceptReferenceRange crr : crrList) {
+					if (utility.evaluateCriteria(crr.getCriteria(), obs.getPerson())) {
+						validateAbsoluteRanges(obs, crr, errors);
+						setObsReferenceRange(obs, crr);
+						break;
+					}
 				}
 			}
 		}
+	}
+
+	/**
+	 * Validates the high and low absolute values of the Obs.
+	 *
+	 * @param obs Observation to validate
+	 * @param crr ConceptReferenceRange containing the range values
+	 * @param errors Errors to record validation issues
+	 *
+	 * @since 2.7.0
+	 */
+	private void validateAbsoluteRanges(Obs obs, ConceptReferenceRange crr, Errors errors) {
+		if (crr.getHiAbsolute() != null && crr.getHiAbsolute() < obs.getValueNumeric()) {
+			errors.rejectValue("valueNumeric", "error.outOfRange.high");
+		}
+		if (crr.getLowAbsolute() != null && crr.getLowAbsolute() > obs.getValueNumeric()) {
+			errors.rejectValue("valueNumeric", "error.outOfRange.low");
+		}
+	}
+
+	/**
+	 * Builds and sets the ObsReferenceRange for the given Obs.
+	 *
+	 * @param obs Observation to set the reference range
+	 * @param crr ConceptReferenceRange used to build the ObsReferenceRange
+	 *
+	 * @since 2.7.0
+	 */
+	private void setObsReferenceRange(Obs obs, ConceptReferenceRange crr) {
+		ObsReferenceRange obsRefRange = new ObsReferenceRange();
+
+		obsRefRange.setHiAbsolute(crr.getHiAbsolute());
+		obsRefRange.setHiCritical(crr.getHiCritical());
+		obsRefRange.setHiNormal(crr.getHiNormal());
+		obsRefRange.setLowAbsolute(crr.getLowAbsolute());
+		obsRefRange.setLowCritical(crr.getLowCritical());
+		obsRefRange.setLowNormal(crr.getLowNormal());
+
+		obs.setReferenceRange(obsRefRange);
 	}
 	
 }
