@@ -32,6 +32,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
+import org.openmrs.ObsReferenceRange;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.User;
@@ -351,5 +352,25 @@ public class HibernateObsDAO implements ObsDAO {
 			session.setHibernateFlushMode(flushMode);
 		}
 	}
-	
+
+	/**
+	 * @see org.openmrs.api.db.ObsDAO#getLatestObsByConceptId(String)
+	 */
+	@Override
+	public Obs getLatestObsByConceptId(String conceptId) {
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Obs> cq = cb.createQuery(Obs.class);
+		Root<Obs> root = cq.from(Obs.class);
+
+		Predicate conceptPredicate = cb.equal(root.get("concept").get("conceptId"), conceptId);
+		cq.where(conceptPredicate);
+
+		cq.orderBy(cb.desc(root.get("dateCreated")));
+
+		TypedQuery<Obs> query = session.createQuery(cq);
+		query.setMaxResults(1); // We only need the latest observation
+
+		return query.getSingleResult();
+	}
 }

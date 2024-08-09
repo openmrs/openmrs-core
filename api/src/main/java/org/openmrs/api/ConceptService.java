@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 
 import org.openmrs.Concept;
@@ -29,6 +30,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
+import org.openmrs.ConceptReferenceRange;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.ConceptSearchResult;
@@ -1982,5 +1984,47 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	boolean hasAnyConceptAttribute(ConceptAttributeType conceptAttributeType);
+
+	/**
+	 * Creates or updates the given {@link ConceptReferenceRange} in the database
+	 *
+	 * @param conceptReferenceRange ConceptReferenceRange to save
+	 * @return the created ConceptReferenceRange
+	 * 
+	 * @since 2.7.0
+	 * 
+	 * <strong>Should</strong> create a new concept reference range
+	 * <strong>Should</strong> edit an existing concept reference range
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_CONCEPTS)
+	ConceptReferenceRange saveConceptReferenceRange(ConceptReferenceRange conceptReferenceRange);
+	
+	/**
+	 * This method gets Concept Reference Range by id
+	 * 
+	 * @param id conceptReferenceRange id
+	 * @return {@link ConceptReferenceRange} 
+	 * 
+	 * @since 2.7.0
+	 * 
+	 * <strong>Should</strong> get the conceptReferenceRange with the given id
+	 * <strong>Should</strong> return null if no conceptReferenceRange has the given id
+	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	ConceptReferenceRange getConceptReferenceRangeById(Integer id);
+
+	/**
+	 * This method gets ConceptReferenceRange by concept id
+	 * 
+	 * @param conceptId conceptId 
+	 * @return list of {@link ConceptReferenceRange}
+	 *
+	 * @since 2.7.0
+	 *
+	 * <strong>Should</strong> get a list of conceptReferenceRanges with the given conceptId
+	 * <strong>Should</strong> return empty list if none of conceptReferenceRanges has the given conceptId
+	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	List<ConceptReferenceRange> getConceptReferenceRangesByConceptId(Integer conceptId);
 	
 }

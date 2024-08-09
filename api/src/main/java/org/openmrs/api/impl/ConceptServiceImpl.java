@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -43,6 +44,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
+import org.openmrs.ConceptReferenceRange;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.ConceptSearchResult;
@@ -2059,6 +2061,32 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Transactional(readOnly = true)
 	public boolean hasAnyConceptAttribute(ConceptAttributeType conceptAttributeType) {
 		return dao.getConceptAttributeCount(conceptAttributeType) > 0;
+	}
+
+	/**
+	 * @see ConceptService#saveConceptReferenceRange(ConceptReferenceRange)
+	 */
+	@Override
+	public ConceptReferenceRange saveConceptReferenceRange(ConceptReferenceRange conceptReferenceRange) {
+		return dao.saveConceptReferenceRange(conceptReferenceRange);
+	}
+
+	/**
+	 * @see ConceptService#getConceptReferenceRangeById(Integer)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public ConceptReferenceRange getConceptReferenceRangeById(Integer id) {
+		return dao.getConceptReferenceRangeById(id);
+	}
+
+	/**
+	 * @see ConceptService#getConceptReferenceRangesByConceptId(Integer)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<ConceptReferenceRange> getConceptReferenceRangesByConceptId(Integer conceptId) {
+		return dao.getConceptReferenceRangesByConceptId(conceptId);
 	}
 
 	/***

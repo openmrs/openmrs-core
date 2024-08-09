@@ -1100,5 +1100,4 @@ public class Person extends BaseChangeableOpenmrsData {
 		setPersonId(id);
 		
 	}
-	
 }

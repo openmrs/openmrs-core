@@ -31,6 +31,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -38,6 +39,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
@@ -45,9 +47,11 @@ import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptProposal;
+import org.openmrs.ConceptReferenceRange;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
+import org.openmrs.ObsReferenceRange;
 import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.Person;
@@ -1997,5 +2001,50 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		assertThat(existing.getStatus(), is(Obs.Status.FINAL));
 		assertThat(existing.getVoided(), is(true));
 		assertThat(newObs.getStatus(), is(Obs.Status.FINAL));
+	}
+
+	@Test
+	public void saveObsReferenceRange_shouldSaveReferenceRangeAfterSavingObs() {
+		Obs obs = buildObservation();
+		obs.setUuid("ace759d9-d126-4a3f-ae1a-cad4c132f38b");
+
+		obsService.saveObs(obs, null);
+		
+		List<ConceptReferenceRange> conceptReferenceRange = Context.getConceptService().getConceptReferenceRangesByConceptId(obs.getConcept().getId());
+
+		assertFalse(conceptReferenceRange.isEmpty());
+		
+		Double expectedHiAbsolute = conceptReferenceRange.get(0).getHiAbsolute();
+
+		Obs savedObs = obsService.getObsByUuid(obs.getUuid());
+
+		ObsReferenceRange obsReferenceRange = savedObs.getReferenceRange();
+		assertEquals(expectedHiAbsolute, obsReferenceRange.getHiAbsolute());
+	}
+	
+	private Obs buildObservation() {
+		Concept concept = Context.getConceptService().getConcept(4089);
+		Patient patient = new Patient(2);
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.YEAR, -5);
+		patient.setBirthdate(calendar.getTime());
+		
+		Date newDate = new Date();
+
+		Obs obs = new Obs();
+		obs.setOrder(null);
+		obs.setConcept(concept);
+		obs.setPerson(patient);
+		obs.setEncounter(new Encounter(3));
+		obs.setObsDatetime(newDate);
+		obs.setLocation(new Location(1));
+		obs.setValueGroupId(7);
+		obs.setValueDatetime(newDate);
+		obs.setValueCoded(new Concept(3));
+		obs.setValueNumeric(90.0);
+		obs.setValueModifier("cc");
+		obs.setValueText("value text2");
+		
+		return obs;
 	}
 }

@@ -56,7 +56,7 @@ public class ObsTest {
 	private static final List<String> IGNORED_FIELDS = Arrays.asList("dirty", "log", "serialVersionUID",
 	    "DATE_TIME_PATTERN", "TIME_PATTERN", "DATE_PATTERN", "FORM_NAMESPACE_PATH_SEPARATOR",
 	    "FORM_NAMESPACE_PATH_MAX_LENGTH", "obsId", "groupMembers", "uuid", "changedBy", "dateChanged", "voided", "voidedBy",
-	    "voidReason", "dateVoided", "formNamespaceAndPath", "$jacocoData");
+	    "voidReason", "dateVoided", "formNamespaceAndPath", "$jacocoData", "obsReferenceRange");
 	
 	private void resetObs(Obs obs) throws Exception {
 		Field field = Obs.class.getDeclaredField("dirty");

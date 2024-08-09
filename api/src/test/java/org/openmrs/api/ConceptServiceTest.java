@@ -41,6 +41,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -64,6 +65,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
+import org.openmrs.ConceptReferenceRange;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptSearchResult;
 import org.openmrs.ConceptSet;
@@ -110,6 +112,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	protected static final String GET_DRUG_MAPPINGS = "org/openmrs/api/include/ConceptServiceTest-getDrugMappings.xml";
 
 	protected static final String CONCEPT_ATTRIBUTE_TYPE_XML = "org/openmrs/api/include/ConceptServiceTest-conceptAttributeType.xml";
+	
+	protected static final String CONCEPT_WITH_CONCEPT_REFERENCE_RANGES_XML = "org/openmrs/api/include/ConceptServiceTest-conceptReferenceRange.xml";
 
 	@Autowired
 	CacheManager cacheManager;
@@ -2527,7 +2531,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getConceptMappingsToSource_shouldReturnAListOfConceptMapsFromTheGivenSource() {
-		assertEquals(8, Context.getConceptService().getConceptMappingsToSource(
+		assertEquals(11, Context.getConceptService().getConceptMappingsToSource(
 		    Context.getConceptService().getConceptSource(1)).size());
 	}
 	
@@ -3143,7 +3147,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getAllConcepts_shouldExcludeRetiredConceptsWhenSetIncludeRetiredToFalse() {
 		final List<Concept> allConcepts = conceptService.getAllConcepts(null, true, false);
 		
-		assertEquals(36, allConcepts.size());
+		assertEquals(39, allConcepts.size());
 		assertEquals(3, allConcepts.get(0).getConceptId().intValue());
 	}
 	
@@ -3154,14 +3158,14 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getAllConcepts_shouldOrderByAConceptField() {
 		List<Concept> allConcepts = conceptService.getAllConcepts("dateCreated", true, true);
 		
-		assertEquals(38, allConcepts.size());
+		assertEquals(41, allConcepts.size());
 		assertEquals(88, allConcepts.get(0).getConceptId().intValue());
 		assertEquals(27, allConcepts.get(allConcepts.size() - 1).getConceptId().intValue());
 		
 		//check desc order
 		allConcepts = conceptService.getAllConcepts("dateCreated", false, true);
 		
-		assertEquals(38, allConcepts.size());
+		assertEquals(41, allConcepts.size());
 		assertEquals(27, allConcepts.get(0).getConceptId().intValue());
 		assertEquals(88, allConcepts.get(allConcepts.size() - 1).getConceptId().intValue());
 	}
@@ -3192,7 +3196,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getAllConcepts_shouldOrderByConceptIdAndIncludeRetiredWhenGivenNoParameters() {
 		final List<Concept> allConcepts = conceptService.getAllConcepts();
 		
-		assertEquals(38, allConcepts.size());
+		assertEquals(41, allConcepts.size());
 		assertEquals(3, allConcepts.get(0).getConceptId().intValue());
 	}
 	
@@ -3203,7 +3207,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getAllConcepts_shouldOrderByConceptIdDescendingWhenSetAscParameterToFalse() {
 		final List<Concept> allConcepts = conceptService.getAllConcepts(null, false, true);
 		
-		assertEquals(38, allConcepts.size());
+		assertEquals(41, allConcepts.size());
 		assertEquals(5497, allConcepts.get(0).getConceptId().intValue());
 	}
 	
@@ -3953,5 +3957,65 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		assertNull(conceptService.getConceptByReference(""));  //with empty string
 		assertNull(conceptService.getConceptByReference("id, name or map which does not match to any concept"));
 		assertNull(conceptService.getConceptByReference("1000")); //invalid uuid but exists in standardTestDataset
+	}
+
+	/**
+	 * @see ConceptService#getConceptReferenceRangeById(Integer)
+	 */
+	@Test
+	public void getConceptReferenceRangeById_shouldReturnConceptReferenceRangeById() {
+		executeDataSet(CONCEPT_WITH_CONCEPT_REFERENCE_RANGES_XML);
+		
+		final String EXPECTED_CRITERIA = "$patient.getAge() >= 1 && $patient.getAge() <= 3";
+		
+		ConceptReferenceRange conceptReferenceRange = conceptService.getConceptReferenceRangeById(3);
+		assertEquals(EXPECTED_CRITERIA, conceptReferenceRange.getCriteria());
+	}
+
+	/**
+	 * @see ConceptService#getConceptReferenceRangesByConceptId(Integer) 
+	 */
+	@Test
+	public void getConceptReferenceRangeByConceptId_shouldReturnConceptReferencesRangeById() {
+		executeDataSet(CONCEPT_WITH_CONCEPT_REFERENCE_RANGES_XML);
+
+		final Integer EXPECTED_CONCEPT_REFERENCE_RANGE_ID = 3;
+		List<ConceptReferenceRange> conceptReferenceRange = conceptService.getConceptReferenceRangesByConceptId(5089);
+		
+		assertFalse(conceptReferenceRange.isEmpty());
+		
+		assertEquals(EXPECTED_CONCEPT_REFERENCE_RANGE_ID, conceptReferenceRange.get(0).getId());
+	}
+
+	/**
+	 * @see ConceptService#saveConcept(Concept)
+	 */
+	@Test
+	public void saveConcept_shouldSaveANewConceptReferenceRange() {
+		Context.setLocale(Locale.US);
+		ConceptNumeric conceptNumeric = new ConceptNumeric();
+		conceptNumeric.setDatatype(new ConceptDatatype(1));
+		conceptNumeric.setConceptClass(new ConceptClass(1));
+
+		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
+		conceptReferenceRange.setCriteria("$patient.getAge() >= 1 && $patient.getAge() <= 70");
+		conceptReferenceRange.setConcept(conceptNumeric);
+		conceptReferenceRange.setHiAbsolute(conceptNumeric.getHiAbsolute());
+		conceptReferenceRange.setLowAbsolute(conceptNumeric.getLowAbsolute());
+		
+		ConceptName conceptName = new ConceptName("a new conceptnumeric", Locale.US);
+		conceptNumeric.addName(conceptName);
+		conceptNumeric.addDescription(new ConceptDescription("some description",null));
+		conceptNumeric.setHiAbsolute(50.0);
+		conceptNumeric.setReferenceRanges(Collections.singleton(conceptReferenceRange));
+		conceptService.saveConcept(conceptNumeric);
+
+		Concept savedConcept = conceptService.getConcept(conceptNumeric.getConceptId());
+		assertTrue(savedConcept instanceof ConceptNumeric);
+		ConceptNumeric savedConceptNumeric = (ConceptNumeric) savedConcept;
+		assertEquals("a new conceptnumeric", savedConceptNumeric.getName(Locale.US).getName());
+		assertEquals(50.0, savedConceptNumeric.getHiAbsolute(), 0);
+		assertFalse(savedConceptNumeric.getReferenceRanges().isEmpty());
+		assertEquals(1, savedConceptNumeric.getReferenceRanges().size());
 	}
 }

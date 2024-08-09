@@ -11,6 +11,7 @@ package org.openmrs.api.db.hibernate;
 
 import static java.util.stream.Collectors.toList;
 
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -29,8 +30,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -51,6 +52,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
+import org.openmrs.ConceptReferenceRange;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.ConceptSearchResult;
@@ -2357,5 +2359,39 @@ public class HibernateConceptDAO implements ConceptDAO {
 			predicates.add(cb.isFalse(conceptJoin.get("retired")));
 		}
 		return predicates;
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#saveConceptReferenceRange(ConceptReferenceRange)
+	 */
+	@Override
+	public ConceptReferenceRange saveConceptReferenceRange(ConceptReferenceRange conceptReferenceRange) {
+		sessionFactory.getCurrentSession().saveOrUpdate(conceptReferenceRange);
+		return conceptReferenceRange;
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptReferenceRangeById(Integer)
+	 */
+	@Override
+	public ConceptReferenceRange getConceptReferenceRangeById(Integer id) {
+		return sessionFactory.getCurrentSession().get(ConceptReferenceRange.class, id);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptReferenceRangesByConceptId(Integer)
+	 */
+	@Override
+	public List<ConceptReferenceRange> getConceptReferenceRangesByConceptId(Integer conceptId) {
+	
+
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<ConceptReferenceRange> cq = cb.createQuery(ConceptReferenceRange.class);
+		Root<ConceptReferenceRange> root = cq.from(ConceptReferenceRange.class);
+
+		cq.where(cb.equal(root.get("concept"), conceptId));
+
+		return session.createQuery(cq).getResultList();
 	}
 }
