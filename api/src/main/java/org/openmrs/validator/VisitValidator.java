@@ -105,15 +105,15 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 		// check attributes
 		super.validateAttributes(visit, errors, Context.getVisitService().getAllVisitAttributeTypes());
 		
-		// check start and end dates
+		// check for overlapping visits
 		if (disallowOverlappingVisits()) {
-			List<Visit> otherVisitList = Context.getVisitService().getVisitsByPatient(visit.getPatient());
-			for (Visit otherVisit : otherVisitList) {
-				if (visit.equals(otherVisit)) {
-					continue;
-				}
-				validateStartDatetime(visit, otherVisit, errors);
-				validateStopDatetime(visit, otherVisit, errors);
+			List<Visit> overLappingVisits = Context.getVisitService()
+				.getVisitsByPatient(visit.getPatient(), visit.getStopDatetime(), visit.getStartDatetime());
+			boolean overlappingSameVisit = overLappingVisits.size() == 1 && overLappingVisits.get(0).getId().equals(visit.getId());
+					
+			if (!overlappingSameVisit && !overLappingVisits.isEmpty()) {
+				errors.rejectValue("startDatetime", "Visit.visitCannotOverlapAnotherVisitOfTheSamePatient",
+					"This visit overlaps with another visit of the same patient.");
 			}
 		}
 		
@@ -130,45 +130,6 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 	private boolean allowOverlappingVisits() {
 		return Boolean.parseBoolean(Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_ALLOW_OVERLAPPING_VISITS, "true"));
-	}
-	
-	private void validateStartDatetime(Visit visit, Visit otherVisit, Errors errors) {
-		
-		if (visit.getStartDatetime() != null && otherVisit.getStartDatetime() != null
-		        && visit.getStartDatetime().equals(otherVisit.getStartDatetime())) {
-			errors.rejectValue("startDatetime", "Visit.startCannotBeTheSameAsOtherStartDateOfTheSamePatient",
-			    "This visit has the same start date and time as another visit of this patient.");
-		}
-		
-		if (visit.getStartDatetime() != null && otherVisit.getStartDatetime() != null
-		        && otherVisit.getStopDatetime() != null && visit.getStartDatetime().after(otherVisit.getStartDatetime())
-		        && visit.getStartDatetime().before(otherVisit.getStopDatetime())) {
-			errors.rejectValue("startDatetime", "Visit.startDateCannotFallIntoAnotherVisitOfTheSamePatient",
-			    "This visit has a start date that falls into another visit of the same patient.");
-		}
-	}
-	
-	private void validateStopDatetime(Visit visit, Visit otherVisit, Errors errors) {
-		
-		if (visit.getStopDatetime() != null && otherVisit.getStartDatetime() != null && otherVisit.getStopDatetime() != null
-		        && visit.getStopDatetime().after(otherVisit.getStartDatetime())
-		        && visit.getStopDatetime().before(otherVisit.getStopDatetime())) {
-			errors.rejectValue("stopDatetime", "Visit.stopDateCannotFallIntoAnotherVisitOfTheSamePatient",
-			    "This visit has a stop date that falls into another visit of the same patient.");
-			
-		}
-		
-		if (visit.getStartDatetime() != null && visit.getStopDatetime() != null && otherVisit.getStartDatetime() != null
-		        && otherVisit.getStopDatetime() != null && visit.getStartDatetime().before(otherVisit.getStartDatetime())
-		        && visit.getStopDatetime().after(otherVisit.getStopDatetime())) {
-
-			String message = "This visit contains another visit of the same patient, "
-					+ "i.e. its start date is before the start date of the other visit "
-					+ "and its stop date is after the stop date of the other visit.";
-
-			errors.rejectValue("stopDatetime", "Visit.visitCannotContainAnotherVisitOfTheSamePatient", message);
-		}
-		
 	}
 	
 	private void validateVisitStartedBeforePatientBirthdate(Visit visit, Errors errors) {

@@ -22,10 +22,11 @@
       Patient referring to people defined in HibernatePersonDAOTest-people.xml
   -->
   <patient patient_id="42" creator="1" date_created="2013-11-06 00:00:00.0" changed_by="1" voided="false" void_reason=""/>
+  <patient patient_id="43" creator="1" date_created="2013-11-06 00:00:00.0" changed_by="1" voided="false" void_reason=""/>
 
     <!-- Non-voided and voided visits for testing validation by visit start and end date -->
-  <visit visit_id="10" patient_id="42" visit_type_id="1" date_started="2014-01-04 00:00:00.0" date_stopped="2014-01-10 00:00:00.0" location_id="1" indication_concept_id="5497" creator="1" date_created="2014-01-04 00:00:00.0" voided="false" uuid="7EC61082-9C62-4BBB-9F1B-F4BEA9C2893E"/>
+  <visit visit_id="10" patient_id="42" visit_type_id="1" date_started="2014-01-04 10:00:00.0" date_stopped="2014-01-04 14:00:00.0" location_id="1" indication_concept_id="5497" creator="1" date_created="2014-01-04 10:00:00.0" voided="false" uuid="7EC61082-9C62-4BBB-9F1B-F4BEA9C2893E"/>
   <visit visit_id="11" patient_id="42" visit_type_id="1" date_started="2014-02-05 00:00:00.0" date_stopped="2014-02-11 00:00:00.0" location_id="1" indication_concept_id="5497" creator="1" date_created="2014-02-05 00:00:00.0" voided="true" uuid="3CBB36EA-654C-4C26-9B01-C2D2A1B0426D"/>
-
+  <visit visit_id="12" patient_id="43" visit_type_id="1" date_started="2014-01-04 10:00:00.0" location_id="1" indication_concept_id="5497" creator="1" date_created="2014-01-04 10:00:00.0" voided="false" uuid="47841268-0f09-4af9-9033-d547c6adec54"/>
 
 </dataset>
