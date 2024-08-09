@@ -708,7 +708,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public Obs getLatestObsByConceptId(final String conceptId) {
-		return dao.getLatestObsByConceptId(conceptId);
+	public Obs getLatestObsByConceptId(final String conceptKey) {
+		return dao.getLatestObsByConceptId(conceptKey);
 	}
 }

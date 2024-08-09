@@ -3998,7 +3998,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		conceptNumeric.setConceptClass(new ConceptClass(1));
 
 		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
-		conceptReferenceRange.setCriteria("$patient.getAge() &gt;= 1 &amp;&amp; $patient.getAge() &lt;= 70");
+		conceptReferenceRange.setCriteria("$patient.getAge() >= 1 && $patient.getAge() <= 70");
 		conceptReferenceRange.setConcept(conceptNumeric);
 		conceptReferenceRange.setHiAbsolute(conceptNumeric.getHiAbsolute());
 		conceptReferenceRange.setLowAbsolute(conceptNumeric.getLowAbsolute());
@@ -4007,7 +4007,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		conceptNumeric.addName(conceptName);
 		conceptNumeric.addDescription(new ConceptDescription("some description",null));
 		conceptNumeric.setHiAbsolute(50.0);
-		conceptNumeric.setReferenceRanges(Collections.singletonList(conceptReferenceRange));
+		conceptNumeric.setReferenceRanges(Collections.singleton(conceptReferenceRange));
 		conceptService.saveConcept(conceptNumeric);
 
 		Concept savedConcept = conceptService.getConcept(conceptNumeric.getConceptId());

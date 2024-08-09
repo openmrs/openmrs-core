@@ -2052,33 +2052,21 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		calendar.add(Calendar.YEAR, -5);
 		patient.setBirthdate(calendar.getTime());
 		
-		ObsReferenceRange obsReferenceRange = new ObsReferenceRange();
-		obsReferenceRange.setHiAbsolute(90.0);
-		obsReferenceRange.setLowAbsolute(88.0);
-		
-		Encounter encounter = new Encounter(3);
-		Date datetime = new Date();
-		Location location = new Location(1);
-		Integer valueGroupId = 7;
-		Date valueDatetime = new Date();
-		Concept valueCoded = new Concept(3);
-		Double valueNumeric = 90.0;
-		String valueModifier = "cc";
-		String valueText = "value text2";
+		Date newDate = new Date();
 
 		Obs obs = new Obs();
 		obs.setOrder(null);
 		obs.setConcept(concept);
 		obs.setPerson(patient);
-		obs.setEncounter(encounter);
-		obs.setObsDatetime(datetime);
-		obs.setLocation(location);
-		obs.setValueGroupId(valueGroupId);
-		obs.setValueDatetime(valueDatetime);
-		obs.setValueCoded(valueCoded);
-		obs.setValueNumeric(valueNumeric);
-		obs.setValueModifier(valueModifier);
-		obs.setValueText(valueText);
+		obs.setEncounter(new Encounter(3));
+		obs.setObsDatetime(newDate);
+		obs.setLocation(new Location(1));
+		obs.setValueGroupId(7);
+		obs.setValueDatetime(newDate);
+		obs.setValueCoded(new Concept(3));
+		obs.setValueNumeric(90.0);
+		obs.setValueModifier("cc");
+		obs.setValueText("value text2");
 		
 		return obs;
 	}

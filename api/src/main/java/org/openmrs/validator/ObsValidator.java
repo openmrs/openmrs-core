@@ -278,6 +278,7 @@ public class ObsValidator implements Validator {
 
 			if (crr.isPresent()) {
 				ConceptReferenceRange conceptReferenceRange = crr.get();
+				ConceptReferenceRangeUtility utility = new ConceptReferenceRangeUtility();
 				if (conceptReferenceRange.getHiAbsolute() != null && conceptReferenceRange.getHiAbsolute() < obs.getValueNumeric()) {
 					errors.rejectValue("valueNumeric", "error.outOfRange.high");
 				}
@@ -285,7 +286,7 @@ public class ObsValidator implements Validator {
 					errors.rejectValue("valueNumeric", "error.outOfRange.low");
 				}
 
-				if (!ConceptReferenceRangeUtility.evaluateCriteria(conceptReferenceRange.getCriteria(), obs.getPerson())) {
+				if (!utility.evaluateCriteria(conceptReferenceRange.getCriteria(), obs.getPerson())) {
 					errors.rejectValue("valueNumeric", "error.outOfRange.criteria.not.match");
 				}
 			}

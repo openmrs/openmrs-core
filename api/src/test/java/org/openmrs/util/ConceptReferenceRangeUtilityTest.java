@@ -21,12 +21,14 @@ import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Person;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.ValidationException;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 import java.time.LocalTime;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -37,101 +39,106 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 	private Calendar calendar;
 	private Person person;
+	private ConceptReferenceRangeUtility conceptReferenceRangeUtility;
 	
 	@Mock
 	private ObsService obsService;
 	
+	@Mock
+	private ConceptService conceptService;
+	
 	@BeforeEach
 	public void setUp() {
-		calendar = Calendar.getInstance();
 		person = new Person();
+		conceptReferenceRangeUtility = new ConceptReferenceRangeUtility();
 	}
 
 	@Test
 	public void testAgeInRange_shouldReturnTrueIfAgeIsWithinRange() {
+		calendar = Calendar.getInstance();
 		calendar.add(Calendar.YEAR, -5);
 		person.setBirthdate(calendar.getTime());
-		String criteria = "$patient.getAge() > 1 && $patient.getAge() < 10";
+		final String CRITERIA = "$patient.getAge() > 1 && $patient.getAge() < 10";
 
-		assertTrue(ConceptReferenceRangeUtility.evaluateCriteria(criteria, person));
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria(CRITERIA, person));
 	}
 
 	@Test
 	public void testAgeInRange_shouldReturnFalseIfAgeIsOutsideRange() {
+		calendar = Calendar.getInstance();
 		calendar.add(Calendar.YEAR, -11);
 		person.setBirthdate(calendar.getTime());
-		String criteria = "$patient.getAge() > 1 && $patient.getAge() < 10";
+		final String CRITERIA = "$patient.getAge() > 1 && $patient.getAge() < 10";
 
-		assertFalse(ConceptReferenceRangeUtility.evaluateCriteria(criteria, person));
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria(CRITERIA, person));
 	}
 
 	@Test
 	public void testAgeInRange_shouldReturnTrueIfAgeIsOnBoundary() {
+		calendar = Calendar.getInstance();
 		calendar.add(Calendar.YEAR, -10);
 		person.setBirthdate(calendar.getTime());
-		String criteria = "$patient.getAge() >= 1 && $patient.getAge() <= 10";
+		final String CRITERIA = "$patient.getAge() >= 1 && $patient.getAge() <= 10";
 
-		assertTrue(ConceptReferenceRangeUtility.evaluateCriteria(criteria, person));
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria(CRITERIA, person));
 	}
 
 	@Test
 	public void testAgeInRange_shouldReturnFalseIfAgeIsNoMatch() {
+		calendar = Calendar.getInstance();
 		calendar.add(Calendar.YEAR, -2);
 		person.setBirthdate(calendar.getTime());
-		String criteria = "$patient.getAge() >= 15 && $patient.getAge() <= 50";
+		final String CRITERIA = "$patient.getAge() >= 15 && $patient.getAge() <= 50";
 
-		assertFalse(ConceptReferenceRangeUtility.evaluateCriteria(criteria, person));
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria(CRITERIA, person));
 	}
 
 	@Test
 	public void testAgeInYears_shouldReturnTrueIfAgeIsWithinRange() {
-		Person person = new Person();
-
-		// Set birthdate to 5 years ago from today
-		Calendar calendar = Calendar.getInstance();
+		calendar = Calendar.getInstance();
 		calendar.add(Calendar.YEAR, -5);
 		Date birthDate = calendar.getTime();
 		person.setBirthdate(birthDate);
+		person.setId(1);
 
-		String criteria = "$fn.getAge($patient, 'YEARS') > 1 && $fn.getAge($patient, 'YEARS') < 10";
+		final String CRITERIA = "$fn.getAge() > 1 && $fn.getAge() < 10";
 
-		assertTrue(ConceptReferenceRangeUtility.evaluateCriteria(criteria, person));
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria(CRITERIA, person));
 	}
 
 	@Test
 	public void testAgeInMonths_shouldReturnTrueIfAgeIsWithinRange() {
-		Person person = new Person();
-
-		// Set birthdate to 5 months ago from today
-		Calendar calendar = Calendar.getInstance();
+		calendar = Calendar.getInstance();
 		calendar.add(Calendar.MONTH, -5);
 		Date birthDate = calendar.getTime();
 		person.setBirthdate(birthDate);
 
-		String criteria = "$fn.getAge($patient, 'MONTHS') > 1 && $fn.getAge($patient, 'MONTHS') < 12";
+		final String CRITERIA = "$fn.getAgeInMonths() > 1 && $fn.getAgeInMonths() < 12";
 
-		assertTrue(ConceptReferenceRangeUtility.evaluateCriteria(criteria, person));
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria(CRITERIA, person));
 	}
 
 	@Test
 	public void testAgeInRange_shouldReturnFalseIfCriteriaIsInvalid() {
+		calendar = Calendar.getInstance();
 		calendar.add(Calendar.YEAR, -1);
 		person.setBirthdate(calendar.getTime());
-		String criteria = "invalidCriteria";
+		final String CRITERIA = "invalidCriteria";
 
 		assertThrows(ParseErrorException.class, () -> {
-			ConceptReferenceRangeUtility.evaluateCriteria(criteria, person);
+			conceptReferenceRangeUtility.evaluateCriteria(CRITERIA, person);
 		});
 	}
 
 	@Test
-	public void testAgeInRange_shouldReturnTrueIfCriteriaIsEmpty() {
+	public void testAgeInRange_shouldThrowAnExceptionIfCriteriaIsEmpty() {
+		calendar = Calendar.getInstance();
 		calendar.set(2019, Calendar.JUNE, 2);
 		person.setBirthdate(calendar.getTime());
-		String criteria = "";
+		final String CRITERIA = "";
 
 		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-			ConceptReferenceRangeUtility.evaluateCriteria(criteria, person);
+			conceptReferenceRangeUtility.evaluateCriteria(CRITERIA, person);
 		});
 
 		assertTrue(exception.getMessage().contains("criteria required"));
@@ -139,85 +146,88 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void testAgeInRange_shouldReturnFalseIfPersonIsNull() {
-		String criteria = "$patient.getAge() >= 15 && $patient.getAge() <= 50";
+		final String CRITERIA = "$patient.getAge() >= 15 && $patient.getAge() <= 50";
 
-		assertFalse(ConceptReferenceRangeUtility.evaluateCriteria(criteria, person));
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria(CRITERIA, person));
 	}
 
 	@Test
 	public void testAgeInRange_shouldReturnFalseIfAgeOfAPersonIsNull() {
-		String criteria = "$patient.getAge() >= 15 && $patient.getAge() <= 50";
+		final String CRITERIA = "$patient.getAge() >= 15 && $patient.getAge() <= 50";
 
-		assertFalse(ConceptReferenceRangeUtility.evaluateCriteria(criteria, person));
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria(CRITERIA, person));
 	}
 
 	@Test
 	public void testGenderMatch_shouldReturnTrueIfGenderMatches() {
 		person.setGender("M");
-		String criteria = "$patient.getGender().equals('M')";
+		final String CRITERIA = "$patient.getGender().equals('M')";
 
-		assertTrue(ConceptReferenceRangeUtility.evaluateCriteria(criteria, person));
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria(CRITERIA, person));
 	}
 
 	@Test
 	public void testCriteriaWithPerson_shouldReturnTrueIfGenderMatches() {
 		person.setGender("M");
-		String criteria = "$patient.getGender().equals('M')";
+		final String CRITERIA = "$patient.getGender().equals('M')";
 
-		assertTrue(ConceptReferenceRangeUtility.evaluateCriteria(criteria, person));
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria(CRITERIA, person));
 	}
 
 	@Test
 	public void testGenderMatch_shouldReturnFalseIfGenderDoesNotMatch() {
 		person.setGender("F");
-		String criteria = "$patient.getGender().equals('M')";
+		final String CRITERIA = "$patient.getGender().equals('M')";
 
-		assertFalse(ConceptReferenceRangeUtility.evaluateCriteria(criteria, person));
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria(CRITERIA, person));
 	}
 
 	@Test
 	public void testGenderMatch_shouldReturnFalseIfGenderIsNull() {
-		String criteria = "$patient.getGender().equals('M')";
+		final String CRITERIA = "$patient.getGender().equals('M')";
 
-		assertFalse(ConceptReferenceRangeUtility.evaluateCriteria(criteria, person));
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria(CRITERIA, person));
 	}
 
 	@Test
 	public void testAgeAndGenderMatch_shouldReturnTrueIfAgeAndGenderMatch() {
+		calendar = Calendar.getInstance();
 		calendar.add(Calendar.YEAR, -5);
 		person.setBirthdate(calendar.getTime());
 		person.setGender("M");
-		String criteria = "$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M')";
+		final String CRITERIA = "$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M')";
 
-		assertTrue(ConceptReferenceRangeUtility.evaluateCriteria(criteria, person));
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria(CRITERIA, person));
 	}
 
 	@Test
 	public void testAgeAndGenderMatch_shouldReturnFalseIfAgeDoesNotMatch() {
+		calendar = Calendar.getInstance();
 		calendar.add(Calendar.YEAR, -11);
 		person.setBirthdate(calendar.getTime());
 		person.setGender("M");
-		String criteria = "$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M')";
+		final String CRITERIA = "$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M')";
 
-		assertFalse(ConceptReferenceRangeUtility.evaluateCriteria(criteria, person));
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria(CRITERIA, person));
 	}
 
 	@Test
 	public void testAgeAndGenderMatch_shouldReturnFalseIfGenderDoesNotMatch() {
+		calendar = Calendar.getInstance();
 		calendar.add(Calendar.YEAR, -5);
 		person.setBirthdate(calendar.getTime());
 		person.setGender("F");
-		String criteria = "$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M')";
+		final String CRITERIA = "$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M')";
 
-		assertFalse(ConceptReferenceRangeUtility.evaluateCriteria(criteria, person));
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria(CRITERIA, person));
 	}
 
 	@Test
-	public void testAgeAndGenderMatch_shouldReturnFalseIfPersonIsNull() {
-		String criteria = "$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M')";
+	public void testAgeAndGenderMatch_shouldThrowExceptionIfPersonIsNull() {
+		final String CRITERIA = "$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M')";
 
 		try {
-			ConceptReferenceRangeUtility.evaluateCriteria(criteria, null);
+			conceptReferenceRangeUtility.evaluateCriteria(CRITERIA, null);
 		} catch (ValidationException e) {
 			Assertions.assertEquals("Failed to validate with reason: patient is null", e.getMessage());
 		}
@@ -225,8 +235,8 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void testAgeAndGenderMatch_shouldReturnFalseIfAgeOrGenderIsNull() {
-		String criteria = "$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M')";
-		assertFalse(ConceptReferenceRangeUtility.evaluateCriteria(criteria, person));
+		final String CRITERIA = "$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M')";
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria(CRITERIA, person));
 	}
 
 	@Test
@@ -236,55 +246,64 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Obs obs = buildObservation();
 		obs.setPerson(person);
 		obs.setValueText("PREGNANT");
+		
+		Concept concept = new Concept(4900);
+		
+		Mockito.when(conceptService.getConceptByUuid(Mockito.anyString())).thenReturn(concept);
 
-		Mockito.when(obsService.getLatestObsByConceptId("5089")).thenReturn(obs);
+		Mockito.when(obsService.getObservations(null,
+				null,
+				Collections.singletonList(concept),
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				false))
+			.thenReturn(Collections.singletonList(obs));
 
-		String criteria = "$patient.getGender().equals('F') && $fn.getLatestObsByConceptId('5089').getValueText().equals('PREGNANT')";
+		final String CRITERIA = "$patient.getGender().equals('F') && $fn.getLatestObsByConcept('bac25fd5-c143-4e43-bffe-4eb1e7efb6ce').getValueText().equals('PREGNANT')";
 
-		assertTrue(ConceptReferenceRangeUtility.evaluateCriteria(criteria, person));
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria(CRITERIA, person));
 	}
 
 	@Test
 	public void testObsValueMatch_shouldReturnFalseIfValueMismatch() {
 		person.setGender("M");
 
-		String criteria = "$patient.getGender().equals('F') && $fn.getLatestObsByConceptId('5089') == true";
+		final String CRITERIA = "$patient.getGender().equals('F') && $fn.getLatestObsByConcept('CIEL:1234') == true";
 
-		assertFalse(ConceptReferenceRangeUtility.evaluateCriteria(criteria, person));
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria(CRITERIA, person));
 	}
 
 	@Test
 	public void testTimeOfDay_shouldReturnTrueIfTimeMatches() {
-		int hour = LocalTime.now().getHour();
-		String criteria = "$fn.getTimeOfTheDay() == " + hour + "";
+		int currentHour = LocalTime.now().getHour();
+		final String CRITERIA = "$fn.getTimeOfTheDay() >= " + currentHour;
 
-		assertTrue(ConceptReferenceRangeUtility.evaluateCriteria(criteria, person));
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria(CRITERIA, person));
 	}
 
 	private Obs buildObservation() {
 		Concept concept = new Concept(5089);
 		concept.setDatatype(new ConceptDatatype(3));
-		
-		Encounter encounter = new Encounter(3);
-		Date datetime = new Date();
-		Location location = new Location(1);
-		Integer valueGroupId = 7;
-		Date valueDatetime = new Date();
-		Concept valueCoded = new Concept(3);
-		Double valueNumeric = 2.0;
-		String valueModifier = "cc";
+
+		Date date = new Date();
 
 		Obs obs = new Obs();
 		obs.setOrder(null);
 		obs.setConcept(concept);
-		obs.setEncounter(encounter);
-		obs.setObsDatetime(datetime);
-		obs.setLocation(location);
-		obs.setValueGroupId(valueGroupId);
-		obs.setValueDatetime(valueDatetime);
-		obs.setValueCoded(valueCoded);
-		obs.setValueNumeric(valueNumeric);
-		obs.setValueModifier(valueModifier);
+		obs.setEncounter(new Encounter(3));
+		obs.setObsDatetime(date);
+		obs.setLocation(new Location(1));
+		obs.setValueGroupId(7);
+		obs.setValueDatetime(date);
+		obs.setValueCoded(new Concept(3));
+		obs.setValueNumeric(2.0);
+		obs.setValueModifier("cc");
 
 		return obs;
 	}

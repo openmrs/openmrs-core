@@ -14,7 +14,6 @@ import javax.persistence.MappedSuperclass;
 
 /**
  * This is the base class for reference ranges.
- * It contains all reference ranges.
  * 
  * @since 2.7.0
  */
@@ -38,8 +37,6 @@ public abstract class BaseReferenceRange extends BaseOpenmrsObject {
 
 	@Column(name = "low_normal")
 	private Double lowNormal;
-
-	// Property accessors
 
 	/**
 	 * Returns high absolute value of the referenceRange

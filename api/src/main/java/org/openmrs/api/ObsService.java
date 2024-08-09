@@ -539,16 +539,16 @@ public interface ObsService extends OpenmrsService {
 			throws APIException;
 
 	/**
-	 * This method gets the latest Obs by conceptId. The latest obs is determined by the date created.
+	 * This method gets the latest Obs by conceptKey. The latest obs is determined by the date created.
 	 * 
-	 * @param conceptId conceptId
+	 * @param conceptKey conceptKey
 	 * @return {@link ObsReferenceRange}
 	 *
 	 * @since 2.7.0
 	 *
-	 * <strong>Should</strong> get the latest Obs with the given conceptId
+	 * <strong>Should</strong> get the latest Obs with the given conceptKey
 	 * <strong>Should</strong> return null if Obs is not found
 	 */
 	@Authorized(PrivilegeConstants.GET_OBS)
-	Obs getLatestObsByConceptId(String conceptId);
+	Obs getLatestObsByConceptId(String conceptKey);
 }

@@ -24,15 +24,15 @@ import javax.persistence.Table;
 import java.util.Date;
 
 /**
- * ObsReferenceRange is typically a reference range of an Observation 
- * The reference range is created at the point of recording {@link Obs}
+ * ObsReferenceRange is typically a reference range of a numeric Observation 
+ * The reference range is created at the point of creating {@link Obs}
  *
  * @since 2.7.0
  */
 @Audited
 @Entity
 @Table(name = "obs_reference_range")
-public class ObsReferenceRange extends BaseReferenceRange implements Creatable, Voidable, java.io.Serializable {
+public class ObsReferenceRange extends BaseReferenceRange {
 	
 	private static final long serialVersionUID = 473299L;
 
@@ -106,161 +106,5 @@ public class ObsReferenceRange extends BaseReferenceRange implements Creatable, 
 	@Override
 	public void setId(Integer id) {
 		setObsReferenceRangeId(id);
-	}
-
-	/**
-	 * Gets the creator
-	 * 
-	 * @since 2.7.0
-	 * 
-	 * @return Returns the creator.
-	 */
-	@Override
-	public User getCreator() {
-		return creator;
-	}
-
-	/**
-	 * Sets the creator
-	 * 
-	 * @since 2.7.0
-	 * 
-	 * @param creator The creator to set.
-	 */
-	@Override
-	public void setCreator(User creator) {
-		this.creator = creator;
-	}
-
-	/**
-	 * Gets date created
-	 * 
-	 * @since 2.7.0
-	 * 
-	 * @return Returns the dateCreated.
-	 */
-	@Override
-	public Date getDateCreated() {
-		return dateCreated;
-	}
-
-	/**
-	 * Sets the date created 
-	 * 
-	 * @since 2.7.0
-	 * 
-	 * @param dateCreated The dateCreated to set.
-	 */
-	@Override
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-
-	/**
-	 * Returns whether the ObsReferenceRange has been voided.
-	 *
-	 * @since 2.7.0
-	 *
-	 * @return true if the ObsReferenceRange has been voided, false otherwise.
-	 */
-	@Override
-	public Boolean isVoided() {
-		return getVoided();
-	}
-
-	/**
-	 * Returns whether the ObsReferenceRange has been voided.
-	 * 
-	 * @since 2.7.0
-	 *
-	 * @return true if the ObsReferenceRange has been voided, false otherwise.
-	 */
-	@Override
-	public Boolean getVoided() {
-		return voided;
-	}
-
-	/**
-	 * Sets the voided status of this ObsReferenceRange.
-	 * 
-	 * @since 2.7.0
-	 *
-	 * @param voided the voided status to set.
-	 */
-	@Override
-	public void setVoided(Boolean voided) {
-		this.voided = voided;
-	}
-
-	/**
-	 * Returns the User who voided this ObsReferenceRange.
-	 * 
-	 * @since 2.7.0
-	 *
-	 * @return the User who voided this ObsReferenceRange, or null if not set
-	 */
-	@Override
-	public User getVoidedBy() {
-		return voidedBy;
-	}
-
-	/**
-	 * Sets the User who voided this ObsReferenceRange.
-	 * 
-	 * @since 2.7.0
-	 *
-	 * @param voidedBy the user who voided this ObsReferenceRange.
-	 */
-	@Override
-	public void setVoidedBy(User voidedBy) {
-		this.voidedBy = voidedBy;
-	}
-
-	/**
-	 * Returns the Date this ObsReferenceRange was voided.
-	 * 
-	 * @since 2.7.0
-	 *
-	 * @return the Date this ObsReferenceRange was voided.
-	 */
-	@Override
-	public Date getDateVoided() {
-		return dateVoided;
-	}
-
-	/**
-	 * Sets the Data this ObsReferenceRange was voided.
-	 * 
-	 * @since 2.7.0
-	 *
-	 * @param dateVoided the date the ObsReferenceRange was voided.
-	 */
-	@Override
-	public void setDateVoided(Date dateVoided) {
-		this.dateVoided = dateVoided;
-	}
-
-	/**
-	 * Returns the reason this ObsReferenceRange was voided.
-	 * 
-	 * @since 2.7.0
-	 *
-	 * @return the reason this ObsReferenceRange was voided
-	 */
-	@Override
-	public String getVoidReason() {
-		return voidReason;
-	}
-
-	/**
-	 * Sets the reason this ObsReferenceRange was voided.
-	 * 
-	 * @since 2.7.0
-	 *
-	 * @param voidReason the reason this ObsReferenceRange was voided
-	 */
-	@Override
-	public void setVoidReason(String voidReason) {
-		this.voidReason = voidReason;
 	}
 }

@@ -10,7 +10,7 @@
 package org.openmrs;
 
 import java.util.HashSet;
-import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -46,7 +46,7 @@ public class ConceptNumeric extends Concept {
 	
 	private Boolean allowDecimal = false;
 	
-	private List<ConceptReferenceRange> referenceRanges;
+	private Set<ConceptReferenceRange> referenceRanges;
 	
 	/**
 	 * displayPrecision, represents the number of significant digits
@@ -239,7 +239,7 @@ public class ConceptNumeric extends Concept {
 	 * 
 	 * @return list of conceptReferenceRange
 	 */
-	public List<ConceptReferenceRange> getReferenceRanges() {
+	public Set<ConceptReferenceRange> getReferenceRanges() {
 		return referenceRanges;
 	}
 
@@ -248,9 +248,9 @@ public class ConceptNumeric extends Concept {
 	 * 
 	 * @since 2.7.0
 	 * 
-	 * @param referenceRanges List<ConceptReferenceRange>
+	 * @param referenceRanges List of ConceptReferenceRange
 	 */
-	public void setReferenceRanges(List<ConceptReferenceRange> referenceRanges) {
+	public void setReferenceRanges(Set<ConceptReferenceRange> referenceRanges) {
 		this.referenceRanges = referenceRanges;
 	}
 }

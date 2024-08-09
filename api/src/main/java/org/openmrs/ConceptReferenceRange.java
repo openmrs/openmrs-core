@@ -23,7 +23,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 /**
- * A concept reference range is typically a range of a concept for certain factor(s) e.g. age, gender e.t.c. 
+ * A concept reference range is typically a range of a {@link ConceptNumeric} for certain factor(s) e.g. age, gender e.t.c. 
  * 
  * <p>
  * The criteria is used to evaluate if certain attributes of a patient meet a certain factor range. 
