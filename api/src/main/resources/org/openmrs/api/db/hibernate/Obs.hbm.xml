@@ -100,7 +100,7 @@
 		</set> 
 		<many-to-one name="previousVersion" class="Obs" column="previous_version" unique="true" />
 
-		<many-to-one name="referenceRange" class="org.openmrs.ObsReferenceRange" cascade="all"  />
+		<one-to-one name="referenceRange" class="org.openmrs.ObsReferenceRange" cascade="all"  />
 	</class>
 	
 </hibernate-mapping>

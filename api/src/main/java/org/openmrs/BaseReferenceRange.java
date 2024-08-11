@@ -11,6 +11,7 @@ package org.openmrs;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+import java.io.Serializable;
 
 /**
  * This is the base class for reference ranges.
@@ -18,7 +19,7 @@ import javax.persistence.MappedSuperclass;
  * @since 2.7.0
  */
 @MappedSuperclass
-public abstract class BaseReferenceRange extends BaseOpenmrsObject {
+public abstract class BaseReferenceRange implements Serializable {
 	
 	@Column(name = "hi_absolute")
 	private Double hiAbsolute;

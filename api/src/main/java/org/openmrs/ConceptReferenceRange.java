@@ -21,6 +21,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import java.util.UUID;
 
 /**
  * A concept reference range is typically a range of a {@link ConceptNumeric} for certain factor(s) e.g. age, gender e.t.c. 
@@ -35,7 +36,7 @@ import javax.persistence.Table;
 @Audited
 @Entity
 @Table(name = "concept_reference_range")
-public class ConceptReferenceRange extends BaseReferenceRange {
+public class ConceptReferenceRange extends BaseReferenceRange implements OpenmrsObject {
 	
 	private static final long serialVersionUID = 47329L;
 
@@ -51,6 +52,9 @@ public class ConceptReferenceRange extends BaseReferenceRange {
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "concept_id", nullable = false)
 	private ConceptNumeric conceptNumeric;
+
+	@Column(name = "uuid", unique = true, nullable = false, length = 38, updatable = false)
+	private String uuid = UUID.randomUUID().toString();
 	
 	public ConceptReferenceRange() {
 	}
@@ -119,5 +123,21 @@ public class ConceptReferenceRange extends BaseReferenceRange {
 	@Override
 	public void setId(Integer id) {
 		setConceptReferenceRangeId(id);
+	}
+
+	/**
+	 * @see org.openmrs.OpenmrsObject#getUuid()
+	 */
+	@Override
+	public String getUuid() {
+		return uuid;
+	}
+
+	/**
+	 * @see org.openmrs.OpenmrsObject#setUuid(java.lang.String)
+	 */
+	@Override
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
 }

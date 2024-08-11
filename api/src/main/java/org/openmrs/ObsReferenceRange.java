@@ -12,6 +12,7 @@ package org.openmrs;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.annotations.DocumentId;
 
+import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -28,6 +29,7 @@ import javax.persistence.Table;
 @Audited
 @Entity
 @Table(name = "obs_reference_range")
+@AttributeOverride(name = "uuid", column = @Column(name = "uuid", insertable = false, updatable = false))
 public class ObsReferenceRange extends BaseReferenceRange {
 	
 	private static final long serialVersionUID = 473299L;
@@ -68,7 +70,7 @@ public class ObsReferenceRange extends BaseReferenceRange {
 	 * 
 	 * @since 2.7.0
 	 */
-	@Override
+//	@Override
 	public Integer getId() {
 		return getObsReferenceRangeId();
 	}
@@ -78,7 +80,7 @@ public class ObsReferenceRange extends BaseReferenceRange {
 	 * 
 	 * @since 2.7.0
 	 */
-	@Override
+//	@Override
 	public void setId(Integer id) {
 		setObsReferenceRangeId(id);
 	}
