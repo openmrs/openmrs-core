@@ -676,11 +676,6 @@ public interface ConceptDAO {
 	 * @see ConceptService#saveConceptReferenceRange(ConceptReferenceRange)
 	 */
 	ConceptReferenceRange saveConceptReferenceRange(ConceptReferenceRange conceptReferenceRange);
-	
-	/**
-	 * @see ConceptService#getConceptReferenceRangeById(Integer)
-	 */
-	ConceptReferenceRange getConceptReferenceRangeById(Integer id);
 
 	/**
 	 * @see ConceptService#getConceptReferenceRangesByConceptId(Integer)

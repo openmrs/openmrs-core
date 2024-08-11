@@ -1986,20 +1986,6 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_CONCEPTS)
 	ConceptReferenceRange saveConceptReferenceRange(ConceptReferenceRange conceptReferenceRange);
-	
-	/**
-	 * This method gets Concept Reference Range by id
-	 * 
-	 * @param id conceptReferenceRange id
-	 * @return {@link ConceptReferenceRange} 
-	 * 
-	 * @since 2.7.0
-	 * 
-	 * <strong>Should</strong> get the conceptReferenceRange with the given id
-	 * <strong>Should</strong> return null if no conceptReferenceRange has the given id
-	 */
-	@Authorized(PrivilegeConstants.GET_CONCEPTS)
-	ConceptReferenceRange getConceptReferenceRangeById(Integer id);
 
 	/**
 	 * This method gets ConceptReferenceRange by concept id

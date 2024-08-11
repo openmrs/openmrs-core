@@ -2371,14 +2371,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 
 	/**
-	 * @see org.openmrs.api.db.ConceptDAO#getConceptReferenceRangeById(Integer)
-	 */
-	@Override
-	public ConceptReferenceRange getConceptReferenceRangeById(Integer id) {
-		return sessionFactory.getCurrentSession().get(ConceptReferenceRange.class, id);
-	}
-
-	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptReferenceRangesByConceptId(Integer)
 	 */
 	@Override
@@ -2390,7 +2382,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		CriteriaQuery<ConceptReferenceRange> cq = cb.createQuery(ConceptReferenceRange.class);
 		Root<ConceptReferenceRange> root = cq.from(ConceptReferenceRange.class);
 
-		cq.where(cb.equal(root.get("concept"), conceptId));
+		cq.where(cb.equal(root.get("conceptNumeric"), conceptId));
 
 		return session.createQuery(cq).getResultList();
 	}

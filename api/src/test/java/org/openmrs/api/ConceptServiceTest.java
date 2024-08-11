@@ -3960,19 +3960,6 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see ConceptService#getConceptReferenceRangeById(Integer)
-	 */
-	@Test
-	public void getConceptReferenceRangeById_shouldReturnConceptReferenceRangeById() {
-		executeDataSet(CONCEPT_WITH_CONCEPT_REFERENCE_RANGES_XML);
-		
-		final String EXPECTED_CRITERIA = "$patient.getAge() >= 1 && $patient.getAge() <= 3";
-		
-		ConceptReferenceRange conceptReferenceRange = conceptService.getConceptReferenceRangeById(3);
-		assertEquals(EXPECTED_CRITERIA, conceptReferenceRange.getCriteria());
-	}
-
-	/**
 	 * @see ConceptService#getConceptReferenceRangesByConceptId(Integer) 
 	 */
 	@Test
@@ -3999,7 +3986,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 
 		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
 		conceptReferenceRange.setCriteria("$patient.getAge() >= 1 && $patient.getAge() <= 70");
-		conceptReferenceRange.setConcept(conceptNumeric);
+		conceptReferenceRange.setConceptNumeric(conceptNumeric);
 		conceptReferenceRange.setHiAbsolute(conceptNumeric.getHiAbsolute());
 		conceptReferenceRange.setLowAbsolute(conceptNumeric.getLowAbsolute());
 		

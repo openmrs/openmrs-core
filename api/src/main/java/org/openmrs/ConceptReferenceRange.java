@@ -50,7 +50,7 @@ public class ConceptReferenceRange extends BaseReferenceRange {
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "concept_id", nullable = false)
-	private Concept concept;
+	private ConceptNumeric conceptNumeric;
 	
 	public ConceptReferenceRange() {
 	}
@@ -90,17 +90,17 @@ public class ConceptReferenceRange extends BaseReferenceRange {
 	}
 
 	/**
-	 * @return Returns the concept.
+	 * @return Returns the ConceptNumeric.
 	 */
-	public Concept getConcept() {
-		return concept;
+	public ConceptNumeric getConcept() {
+		return conceptNumeric;
 	}
 
 	/**
-	 * @param concept concept to set.
+	 * @param conceptNumeric concept to set.
 	 */
-	public void setConcept(Concept concept) {
-		this.concept = concept;
+	public void setConceptNumeric(ConceptNumeric conceptNumeric) {
+		this.conceptNumeric = conceptNumeric;
 	}
 
 	/**

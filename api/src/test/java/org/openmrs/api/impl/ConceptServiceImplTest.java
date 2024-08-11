@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -36,6 +35,7 @@ import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
+import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptReferenceRange;
 import org.openmrs.ConceptReferenceTerm;
@@ -937,7 +937,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		
 		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
 		conceptReferenceRange.setHiAbsolute(HIGH_ABSOLUTE);
-		conceptReferenceRange.setConcept(createConcept());
+		conceptReferenceRange.setConceptNumeric(createConceptNumeric());
 		conceptReferenceRange.setCriteria(TEST_CRITERIA);
 		ConceptReferenceRange savedConceptReferenceRange = conceptService.saveConceptReferenceRange(conceptReferenceRange);
 		assertEquals(HIGH_ABSOLUTE, savedConceptReferenceRange.getHiAbsolute());
@@ -959,57 +959,30 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see ConceptServiceImpl#getConceptReferenceRangeById(Integer)
-	 */
-	@Test
-	public void getConceptReferenceRangeById_shouldReturnConceptReferenceRangeObjectIfFound() {
-		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
-		conceptReferenceRange.setHiAbsolute(120.0);
-		conceptReferenceRange.setLowAbsolute(100.0);
-		conceptReferenceRange.setConcept(createConcept());
-		conceptReferenceRange.setCriteria(TEST_CRITERIA);
-		conceptService.saveConceptReferenceRange(conceptReferenceRange);
-
-		ConceptReferenceRange savedConceptReferenceRange = conceptService.getConceptReferenceRangeById(conceptReferenceRange.getId());
-		assertNotNull(savedConceptReferenceRange);
-		assertNotNull(savedConceptReferenceRange.getHiAbsolute());
-		assertEquals(120.0, savedConceptReferenceRange.getHiAbsolute());
-	}
-
-	/**
-	 * @see ConceptServiceImpl#getConceptReferenceRangeById(Integer)
-	 */
-	@Test
-	public void getConceptReferenceRangeById_shouldReturnNullIfConceptReferenceRangeObjectNotFound() {
-		ConceptReferenceRange savedConceptReferenceRange = conceptService.getConceptReferenceRangeById(10);
-		assertNull(savedConceptReferenceRange);
-	}
-
-	/**
-	 * @see ConceptServiceImpl#getConceptReferenceRangeByConceptId(Integer) 
+	 * @see ConceptServiceImpl#getConceptReferenceRangesByConceptId(Integer) 
 	 */
 	@Test
 	public void getConceptReferenceRangesByConceptId_shouldReturnConceptReferenceRangeIfFound() {
-		Concept concept = createConcept();
+		ConceptNumeric conceptNumeric = createConceptNumeric();
 		
 		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
 		conceptReferenceRange.setHiAbsolute(120.0);
-		conceptReferenceRange.setConcept(concept);
+		conceptReferenceRange.setConceptNumeric(conceptNumeric);
 		conceptReferenceRange.setCriteria(TEST_CRITERIA);
 		conceptService.saveConceptReferenceRange(conceptReferenceRange);
 
-		List<ConceptReferenceRange> savedConceptReferenceRange = conceptService.getConceptReferenceRangesByConceptId(concept.getId());
+		List<ConceptReferenceRange> savedConceptReferenceRange = conceptService.getConceptReferenceRangesByConceptId(conceptNumeric.getId());
 		assertFalse(savedConceptReferenceRange.isEmpty());
 		assertEquals(conceptReferenceRange.getHiAbsolute(), savedConceptReferenceRange.get(0).getHiAbsolute());
 	}
 	
-	private Concept createConcept() {
-		Concept c = new Concept();
+	private ConceptNumeric createConceptNumeric() {
+		ConceptNumeric conceptNumeric = new ConceptNumeric();
 		ConceptName fullySpecifiedName = new ConceptName("concept name", new Locale("fr", "CA"));
-		c.addName(fullySpecifiedName);
-		c.addDescription(new ConceptDescription("some description", null));
-		c.setDatatype(new ConceptDatatype(1));
-		c.setConceptClass(new ConceptClass(1));
-		return Context.getConceptService().saveConcept(c);
+		conceptNumeric.addName(fullySpecifiedName);
+		conceptNumeric.addDescription(new ConceptDescription("some description", null));
+		conceptNumeric.setDatatype(new ConceptDatatype(1));
+		conceptNumeric.setConceptClass(new ConceptClass(1));
+		return (ConceptNumeric) Context.getConceptService().saveConcept(conceptNumeric);
 	}
 }

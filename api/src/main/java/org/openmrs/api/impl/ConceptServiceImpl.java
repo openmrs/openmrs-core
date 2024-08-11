@@ -2072,15 +2072,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 
 	/**
-	 * @see ConceptService#getConceptReferenceRangeById(Integer)
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public ConceptReferenceRange getConceptReferenceRangeById(Integer id) {
-		return dao.getConceptReferenceRangeById(id);
-	}
-
-	/**
 	 * @see ConceptService#getConceptReferenceRangesByConceptId(Integer)
 	 */
 	@Override

@@ -455,6 +455,7 @@
 	<concept concept_id="4090" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="0.1" changed_by="1" date_changed="2006-06-09 14:57:33.0" uuid="a334a29c-0267-474e-8426-df0040b1da57"/>
 	<concept_numeric concept_id="4089" units="" allow_decimal="true"/>
 	<concept_numeric concept_id="4090" units="" allow_decimal="true"/>
+	<concept_numeric concept_id="4088" units="" allow_decimal="true"/>
 	<concept_reference_range concept_reference_range_id="30" concept_id="4090" criteria="$patient.getAge() &gt;= 1 &amp;&amp; $patient.getAge() &lt;= 70" hi_absolute="150.0" hi_normal="118.0" low_normal="80" low_absolute="80" uuid="239c1904-15ff-45e1-ac9d-d83afb637926"/>
 	<concept_reference_range concept_reference_range_id="31" concept_id="4088" criteria="$patient.getAge() &gt;= 1 &amp;&amp; $patient.getAge() &lt;= 3" hi_absolute="120.0" hi_normal="118.0" low_normal="80" low_absolute="60" uuid="5269e035-c8e6-44d7-af47-7a25a6cf6c60"/>
 	<concept_reference_range concept_reference_range_id="32" concept_id="4089" criteria="$patient.getAge() &gt;= 1 &amp;&amp; $patient.getAge() &lt;= 10" hi_absolute="120.0" hi_normal="118.0" low_normal="80" low_absolute="60" uuid="d8ad3ceb-00a4-4484-a1ff-700f7ac3d10d"/>

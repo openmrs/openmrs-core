@@ -10,6 +10,8 @@
 package org.openmrs.util;
 
 import org.apache.velocity.exception.ParseErrorException;
+import org.joda.time.DateTimeUtils;
+import org.joda.time.LocalTime;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +28,6 @@ import org.openmrs.api.ObsService;
 import org.openmrs.api.ValidationException;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
-import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -228,7 +229,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 
 		try {
 			conceptReferenceRangeUtility.evaluateCriteria(CRITERIA, null);
-		} catch (ValidationException e) {
+		} catch (IllegalArgumentException e) {
 			Assertions.assertEquals("Failed to validate with reason: patient is null", e.getMessage());
 		}
 	}
@@ -249,7 +250,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		
 		Concept concept = new Concept(4900);
 		
-		Mockito.when(conceptService.getConceptByUuid(Mockito.anyString())).thenReturn(concept);
+		Mockito.when(conceptService.getConceptByReference(Mockito.anyString())).thenReturn(concept);
 
 		Mockito.when(obsService.getObservations(null,
 				null,
@@ -281,10 +282,16 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void testTimeOfDay_shouldReturnTrueIfTimeMatches() {
-		int currentHour = LocalTime.now().getHour();
-		final String CRITERIA = "$fn.getTimeOfTheDay() >= " + currentHour;
+		// Freeze time at the current system time
+		DateTimeUtils.setCurrentMillisFixed(System.currentTimeMillis());
+
+		int currentHour = LocalTime.now().getHourOfDay();
+		final String CRITERIA = "$fn.getTimeOfTheDay() == " + currentHour;
 
 		assertTrue(conceptReferenceRangeUtility.evaluateCriteria(CRITERIA, person));
+
+		// Clean up: Reset time to system time
+		DateTimeUtils.setCurrentMillisSystem();
 	}
 
 	private Obs buildObservation() {

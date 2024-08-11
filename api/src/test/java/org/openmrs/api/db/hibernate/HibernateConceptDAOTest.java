@@ -245,59 +245,9 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 
 		assertTrue(datatypes.isEmpty());
 	}
-
-	/**
-	 * @see HibernateConceptDAO#getConceptReferenceRangeById(Integer)
-	 */
-	@Test
-	public void getConceptReferenceRangeById_shouldReturnConceptReferenceRange() {
-		//Given
-		ConceptDatatype conceptDatatype = dao.getConceptDatatypeByName("N/A");
-		
-		Concept tuberculosis = new Concept();
-		tuberculosis.addName(new ConceptName("Tuberculosis", Locale.US));
-		tuberculosis.setDatatype(conceptDatatype);
-		dao.saveConcept(tuberculosis);
-
-		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
-		conceptReferenceRange.setConcept(tuberculosis);
-		conceptReferenceRange.setCriteria(TEST_CRITERIA);
-		dao.saveConceptReferenceRange(conceptReferenceRange);
-
-		//When
-		ConceptReferenceRange savedConceptReferenceRange = dao.getConceptReferenceRangeById(conceptReferenceRange.getId());
-
-		// Then
-		assertNotNull(savedConceptReferenceRange);
-	}
-
-	/**
-	 * @see HibernateConceptDAO#getConceptReferenceRangeByConceptId(Integer) 
-	 */
-	@Test
-	public void getConceptReferenceRangesByConceptId_shouldReturnConceptReferenceRange() {
-		//Given
-		ConceptDatatype conceptDatatype = dao.getConceptDatatypeByName("N/A");
-
-		Concept concept = new Concept();
-		concept.addName(new ConceptName("Tuberculosis", Locale.US));
-		concept.setDatatype(conceptDatatype);
-		dao.saveConcept(concept);
-
-		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
-		conceptReferenceRange.setConcept(concept);
-		conceptReferenceRange.setCriteria(TEST_CRITERIA);
-		dao.saveConceptReferenceRange(conceptReferenceRange);
-
-		//When
-		List<ConceptReferenceRange> saveConceptReferenceRange = dao.getConceptReferenceRangesByConceptId(concept.getId());
-
-		// Then
-		assertFalse(saveConceptReferenceRange.isEmpty());
-	}
 	
 	/**
-	 * @see HibernateConceptDAO#getConceptReferenceRangeById(Integer)
+	 * @see HibernateConceptDAO#getConceptReferenceRangesByConceptId(Integer) 
 	 */
 	@Test
 	public void getConceptReferenceRangesByConceptId_shouldReturnEmptyListForIfNoConceptReferenceRangeIsLinkedToConcept() {

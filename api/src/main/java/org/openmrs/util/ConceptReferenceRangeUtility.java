@@ -9,19 +9,19 @@
  */
 package org.openmrs.util;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.joda.time.LocalTime;
 import org.openmrs.Concept;
 import org.openmrs.Obs;
 import org.openmrs.Person;
-import org.openmrs.api.ValidationException;
 import org.openmrs.api.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.StringWriter;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Comparator;
@@ -51,10 +51,10 @@ public class ConceptReferenceRangeUtility {
 	 */
 	public boolean evaluateCriteria(String criteria, Person person) {
 		if (person == null) {
-			throw new ValidationException("Failed to validate with reason: patient is null");
+			throw new IllegalArgumentException("Failed to validate with reason: patient is null");
 		}
 		
-		if (criteria == null || criteria.isEmpty()) {
+		if (StringUtils.isEmpty(criteria)) {
 			throw new IllegalArgumentException("Failed to validate with reason: criteria required");
 		}
 		
@@ -193,24 +193,15 @@ public class ConceptReferenceRangeUtility {
 	/**
 	 * Gets the latest Obs by concept.
 	 *
-	 * @param conceptKey can be either concept uuid or conceptMap's code and sourceName 
+	 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName 
 	 *                   e.g "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434"
 	 *                   
 	 * @return Obs
 	 * 
 	 * @since 2.7.0
 	 */
-	public Obs getLatestObsByConcept(String conceptKey) {
-		Concept concept;
-
-		if (conceptKey.contains(":")) {
-			String[] parts = conceptKey.split(":");
-			String sourceName = parts[0];
-			String code = parts[1];
-			concept = Context.getConceptService().getConceptByMapping(code, sourceName);
-		} else {
-			concept = Context.getConceptService().getConceptByUuid(conceptKey);
-		}
+	public Obs getLatestObsByConcept(String conceptRef) {
+		Concept concept = Context.getConceptService().getConceptByReference(conceptRef);
 
 		if (concept != null) {
 			List<Obs> observations = Context.getObsService().getObservations(
@@ -243,6 +234,6 @@ public class ConceptReferenceRangeUtility {
 	 * @return the hour of the day (e.g. 14 to mean 2pm)
 	 */
 	public int getTimeOfTheDay() {
-		return LocalTime.now().getHour();
+		return LocalTime.now().getHourOfDay();
 	}
 }

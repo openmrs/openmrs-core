@@ -112,6 +112,7 @@
 		
 		<mapping resource="org/openmrs/api/db/hibernate/ClobDatatypeStorage.hbm.xml" />
 
+		<!-- These mappings are required because of rerefences in Obs & Concept -->
 		<mapping class="org.openmrs.ObsReferenceRange"/>
 		<mapping class="org.openmrs.ConceptReferenceRange"/>
   </session-factory>

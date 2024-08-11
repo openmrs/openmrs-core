@@ -11,7 +11,6 @@ package org.openmrs.validator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
@@ -281,13 +280,19 @@ public class ObsValidator implements Validator {
 
 			if (!crrList.isEmpty()) {
 				ConceptReferenceRangeUtility utility = new ConceptReferenceRangeUtility();
+				boolean criteriaEvaluated = false;
 
-				for (ConceptReferenceRange crr : crrList) {
-					if (utility.evaluateCriteria(crr.getCriteria(), obs.getPerson())) {
-						validateAbsoluteRanges(obs, crr, errors);
-						setObsReferenceRange(obs, crr);
+				for (ConceptReferenceRange referenceRange : crrList) {
+					if (utility.evaluateCriteria(referenceRange.getCriteria(), obs.getPerson())) {
+						criteriaEvaluated = true;
+						validateAbsoluteRanges(obs, referenceRange, errors);
+						setObsReferenceRange(obs, referenceRange);
 						break;
 					}
+				}
+
+				if (!criteriaEvaluated) {
+					errors.rejectValue("valueNumeric", "error.outOfRange.criteria.not.match");
 				}
 			}
 		}

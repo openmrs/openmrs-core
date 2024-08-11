@@ -11,17 +11,13 @@ package org.openmrs;
 
 import org.hibernate.envers.Audited;
 import org.hibernate.search.annotations.DocumentId;
-import org.hibernate.search.annotations.Field;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import java.util.Date;
 
 /**
  * ObsReferenceRange is typically a reference range of a numeric Observation 
@@ -41,9 +37,6 @@ public class ObsReferenceRange extends BaseReferenceRange {
 	@Column(name = "obs_reference_range_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer obsReferenceRangeId;
-
-	@Column(name = "date_created")
-	private Date dateCreated;
 
 	public ObsReferenceRange() {
 	}
