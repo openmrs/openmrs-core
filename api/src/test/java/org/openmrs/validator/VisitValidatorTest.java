@@ -52,6 +52,8 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	
 	private Calendar calendar;
 	
+	private static long DATE_TIME_2014_01_04_00_00_00_0 = 1388790000000L;
+	
 	private static long DATE_TIME_2014_02_05_00_00_00_0 = 1391554800000L;
 	
 	private static long DATE_TIME_2014_02_11_00_00_00_0 = 1392073200000L;
