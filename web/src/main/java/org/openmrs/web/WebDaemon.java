@@ -12,8 +12,6 @@ package org.openmrs.web;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import org.openmrs.api.APIException;
-import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
 import org.openmrs.module.ModuleException;
 import org.openmrs.util.DatabaseUpdateException;
@@ -26,15 +24,17 @@ import java.util.concurrent.ExecutionException;
  * 
  * @since 1.9
  */
-public class WebDaemon {
+public final class WebDaemon {
+	
+	private WebDaemon() {
+	};
 	
 	/**
 	 * Start openmrs in a new thread that is authenticated as the daemon user.
 	 * 
 	 * @param servletContext the servlet context.
 	 */
-	public static void startOpenmrs(final ServletContext servletContext) throws DatabaseUpdateException,
-	        InputRequiredException {
+	public static void startOpenmrs(final ServletContext servletContext) throws DatabaseUpdateException, InputRequiredException {
 
 		try {
 			Daemon.runNewDaemonTask(() -> {
@@ -46,14 +46,15 @@ public class WebDaemon {
 			}).get();
 		} catch (InterruptedException  ignored) {
 		} catch (ExecutionException e) {
-			if (e.getCause() instanceof RuntimeException) {
-				throw (RuntimeException) e.getCause();
-			} else if (e.getCause() instanceof InputRequiredException) {
-				throw (InputRequiredException) e.getCause();
-			} else if (e.getCause() instanceof DatabaseUpdateException) {
-				throw (DatabaseUpdateException) e.getCause();
-			} else {
-				throw new APIException(e.getMessage(), e.getCause());
+			Throwable cause = e.getCause();
+			if (cause instanceof DatabaseUpdateException) {
+				throw (DatabaseUpdateException) cause;
+			} else if (cause instanceof InputRequiredException) {
+				throw (InputRequiredException) cause;
+			} else if (!(cause instanceof ModuleException)) {
+				throw new ModuleException("Unable to start OpenMRS. Error thrown was: " + cause.getMessage(), cause);
+			}  else {
+				throw (ModuleException) cause;
 			}
 		}
 	}

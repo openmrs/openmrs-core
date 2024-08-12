@@ -11,9 +11,8 @@ package org.openmrs.api.context;
 
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
@@ -38,16 +37,16 @@ import org.springframework.context.support.AbstractRefreshableApplicationContext
  * This class allows certain tasks to run with elevated privileges. Primary use is scheduling and
  * module startup when there is no user to authenticate as.
  */
-public class Daemon {
+public final class Daemon {
 	
 	/**
 	 * The uuid defined for the daemon user object
 	 */
-	protected static final String DAEMON_USER_UUID = "A4F30A1B-5EB9-11DF-A648-37A07F9C90FB";
+	static final String DAEMON_USER_UUID = "A4F30A1B-5EB9-11DF-A648-37A07F9C90FB";
 	
-	protected static final ThreadLocal<Boolean> isDaemonThread = new ThreadLocal<>();
+	private static final ThreadLocal<Boolean> isDaemonThread = new ThreadLocal<>();
 	
-	protected static final ThreadLocal<User> daemonThreadUser = new ThreadLocal<>();
+	private static final ThreadLocal<User> daemonThreadUser = new ThreadLocal<>();
 	
 	/**
 	 * private constructor to override the default constructor to prevent it from being instantiated.
@@ -169,7 +168,7 @@ public class Daemon {
 			throw new APIException("Scheduler.timer.task.only", new Object[] { callerClass.getName() });
 		}
 		
-		Future<Void> scheduleTaskFuture = runInDaemonThreadInternal(() -> TimerSchedulerTask.execute(task));
+		Future<?> scheduleTaskFuture = runInDaemonThreadInternal(() -> TimerSchedulerTask.execute(task));
 		
 		// wait for the "executeTaskThread" thread to finish
 		try {
@@ -202,6 +201,11 @@ public class Daemon {
 			throw new APIAuthenticationException("Only daemon threads can spawn new daemon threads");
 		}
 
+		// the previous implementation ensured that Thread.start() was called before this function returned
+		// since we cannot guarantee that the executor will run the thread when `execute()` is called, we need another
+		// mechanism to ensure the submitted Runnable was actually started.
+		final CountDownLatch countDownLatch = new CountDownLatch(1);
+		
 		// we should consider making DaemonThread public, so the caller can access returnedObject and exceptionThrown
 		DaemonThread thread = new DaemonThread() {
 			
@@ -210,6 +214,7 @@ public class Daemon {
 				isDaemonThread.set(true);
 				try {
 					Context.openSession();
+					countDownLatch.countDown();
 					//Suppressing sonar issue "squid:S1217"
 					//We intentionally do not start a new thread yet, rather wrap the run call in a session.
 					runnable.run();
@@ -225,6 +230,13 @@ public class Daemon {
 		};
 		
 		OpenmrsThreadPoolHolder.threadExecutor.execute(thread);
+
+		// do not return until the thread is actually started to emulate the previous behaviour
+		try {
+			countDownLatch.await();
+		} catch (InterruptedException ignored) {
+		}
+
 		return thread;
 	}
 
@@ -257,7 +269,7 @@ public class Daemon {
 	 * @since 2.7.0
 	 */
 	@SuppressWarnings({"squid:S1217", "unused"})
-	public static Future<Void> runNewDaemonTask(final Runnable runnable) {
+	public static Future<?> runNewDaemonTask(final Runnable runnable) {
 		// make sure we're already in a daemon thread
 		if (!isDaemonThread()) {
 			throw new APIAuthenticationException("Only daemon threads can spawn new daemon threads");
@@ -273,10 +285,12 @@ public class Daemon {
 	 */
 	public static boolean isDaemonThread() {
 		Boolean b = isDaemonThread.get();
-		if (b == null) {
-			return false;
+		if (b == null || !b) {
+			// Allow functions in Daemon and WebDaemon to be treated as a DaemonThread
+			Class<?> callerClass = new OpenmrsSecurityManager().getCallerClass(1);
+			return callerClass.equals(Daemon.class) || callerClass.getName().equals("org.openmrs.web.WebDaemon");
 		} else {
-			return b;
+			return true;
 		}
 	}
 	
@@ -293,7 +307,7 @@ public class Daemon {
 			throw new APIException("Service.context.only", new Object[] { callerClass.getName() });
 		}
 		
-		Future<Void> future = runInDaemonThreadInternal(service::onStartup);
+		Future<?> future = runInDaemonThreadInternal(service::onStartup);
 		
 		// wait for the "onStartup" thread to finish
 		try {
@@ -377,7 +391,7 @@ public class Daemon {
 	 * @since 2.7.0
 	 */
 	@SuppressWarnings("squid:S1217")
-	public static Future<Void> runInDaemonThreadWithoutResult(final Runnable runnable, DaemonToken token) {
+	public static Future<?> runInDaemonThreadWithoutResult(final Runnable runnable, DaemonToken token) {
 		if (!ModuleFactory.isTokenValid(token)) {
 			throw new ContextAuthenticationException("Invalid token");
 		}
@@ -394,7 +408,7 @@ public class Daemon {
 	 * @since 2.7.0
 	 */
 	public static void runInDaemonThreadAndWait(final Runnable runnable, DaemonToken token) {
-		Future<Void> daemonThread = runInDaemonThreadWithoutResult(runnable, token);
+		Future<?> daemonThread = runInDaemonThreadWithoutResult(runnable, token);
 		
 		try {
 			daemonThread.get();
@@ -421,10 +435,39 @@ public class Daemon {
 		});
 	}
 	
-	private static Future<Void> runInDaemonThreadInternal(Runnable runnable) {
-		return runInDaemonThreadInternal(() -> { runnable.run(); return null; });
+	private static Future<?> runInDaemonThreadInternal(Runnable runnable) {
+		// for Threads, we used to guarantee that Thread.start() was called before the function returned
+		// since we cannot guarantee that the executor actually started executing the thread, we use a CountDownLatch
+		// to emulate this behaviour when the user submits a Thread. Other runnables are unaffected.
+		CountDownLatch countDownLatch = getCountDownLatch(runnable instanceof Thread);
+
+		Future<?> result = OpenmrsThreadPoolHolder.threadExecutor.submit(() -> {
+			isDaemonThread.set(true);
+			try {
+				Context.openSession();
+				countDownLatch.countDown();
+				runnable.run();
+			}
+			finally {
+				try {
+					Context.closeSession();
+				} finally {
+					isDaemonThread.remove();
+				}
+			}
+		});
+		
+		try {
+			countDownLatch.await();
+		} catch (InterruptedException ignored) {}
+		
+		return result;
 	}
-	
+
+	private static CountDownLatch getCountDownLatch(boolean isThread) {
+		return isThread ? new CountDownLatch(1) : new CountDownLatch(0);
+	}
+
 	/**
 	 * Thread class used by the {@link Daemon#startModule(Module)} and
 	 * {@link Daemon#executeScheduledTask(Task)} methods so that the returned object and the

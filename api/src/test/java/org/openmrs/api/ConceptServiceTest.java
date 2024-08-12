@@ -2875,7 +2875,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see ConceptService#saveConcept(Concept)
 	 */
 	@Test
-	public void saveConcept_shouldSetAuditInfoIfAnItemIsRemovedFromAnyOfItsChildCollections() {
+	public void saveConcept_shouldSetAuditInfoIfAnItemIsRemovedFromAnyOfItsChildCollections() throws InterruptedException {
 		Concept concept = conceptService.getConcept(3);
 		assertNull(concept.getDateChanged());
 		assertNull(concept.getChangedBy());
@@ -2888,6 +2888,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Date date=concept.getDateChanged();
 
 		assertTrue(concept.removeAnswer(conceptanswer));
+		
+		Thread.sleep(1);
+		
 		conceptService.saveConcept(concept);
 		assertNotNull(concept.getDateChanged());
 		Date date1=concept.getDateChanged();

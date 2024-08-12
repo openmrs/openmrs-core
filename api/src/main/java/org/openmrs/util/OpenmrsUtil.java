@@ -271,7 +271,6 @@ public class OpenmrsUtil {
 	 * <strong>Should</strong> copy inputstream to outputstream and close the outputstream
 	 */
 	public static void copyFile(InputStream inputStream, OutputStream outputStream) throws IOException {
-		
 		if (inputStream == null || outputStream == null) {
 			if (outputStream != null) {
 				IOUtils.closeQuietly(outputStream);
@@ -285,7 +284,6 @@ public class OpenmrsUtil {
 		finally {
 			IOUtils.closeQuietly(outputStream);
 		}
-		
 	}
 	
 	/**
