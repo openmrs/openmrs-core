@@ -21,8 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.StringWriter;
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -58,8 +56,6 @@ public class ConceptReferenceRangeUtility {
 			throw new IllegalArgumentException("Failed to validate with reason: criteria required");
 		}
 		
-		criteria = improveCriteria(criteria);
-		
 		VelocityContext velocityContext = new VelocityContext();
 		velocityContext.put("fn", new ConceptReferenceRangeUtility());
 		
@@ -74,120 +70,6 @@ public class ConceptReferenceRangeUtility {
 		String evaluatedCriteria = writer.toString();
 		
 		return Boolean.parseBoolean(evaluatedCriteria);
-	}
-	
-	/**
-	 * Method is used to improve/build criteria so that a user won't have to add "patient" arg to the get age methods
-	 *
-	 * @return criteria
-	 *
-	 * @since 2.7.0
-	 */
-	private String improveCriteria(String criteria) {
-		if (criteria.contains("$fn.getAge()")) {
-			criteria = criteria.replace("$fn.getAge()", "$fn.getAge($patient)");
-		} else if (criteria.contains("$fn.getAgeInMonths()")) {
-			criteria = criteria.replace("$fn.getAgeInMonths()", "$fn.getAgeInMonths($patient)");
-		} else if (criteria.contains("$fn.getAgeInWeeks()")) {
-			criteria = criteria.replace("$fn.getAgeInWeeks()", "$fn.getAgeInWeeks($patient)");
-		} else if (criteria.contains("$fn.getAgeInDays()")) {
-			criteria = criteria.replace("$fn.getAgeInDays()", "$fn.getAgeInDays($patient)");
-		}
-		return criteria;
-	}
-	
-	/**
-	 * Method to get the age of a person in months.
-	 *
-	 * @param person patient in subject
-	 * @return the age in months as an Integer
-	 * 
-	 * @since 2.7.0
-	 */
-	public Integer getAgeInMonths(Person person) {
-		return getAge(ChronoUnit.MONTHS, person);
-	}
-	
-	/**
-	 * Method to get the age of a person in weeks.
-	 *
-	 * @param person patient in subject
-	 * @return the age in weeks as an Integer
-	 *
-	 * @since 2.7.0
-	 */
-	public Integer getAgeInWeeks(Person person) {
-		return getAge(ChronoUnit.WEEKS, person);
-	}
-	
-	/**
-	 * Method to get the age of a person in days.
-	 *
-	 * @param person patient in subject
-	 * @return the age in days as an Integer
-	 * 
-	 * @since 2.7.0
-	 */
-	public Integer getAgeInDays(Person person) {
-		return getAge(ChronoUnit.DAYS, person);
-	}
-	
-	/**
-	 * Method to get the age of a person in years.
-	 *
-	 * @param person patient in subject
-	 * @return the age in years as an Integer
-	 * 
-	 * @since 2.7.0
-	 */
-	public Integer getAge(Person person) {
-		return getAge(ChronoUnit.YEARS, person);
-	}
-	
-	/**
-	 * Gets the age of a person with a specified ChronoUnit.
-	 *
-	 * @param chronoUnit the unit of precision for the age calculation (e.g. WEEKS, MONTHS, YEARS)
-	 * @param person the person/patient to get age from   
-	 * @return the age in the specified unit as an Integer
-	 * 
-	 * @since 2.7.0
-	 */
-	public Integer getAge(ChronoUnit chronoUnit, Person person) {
-		if (person == null || person.getBirthdate() == null) {
-			return null;
-		}
-		
-		LocalDate birthDate = new java.sql.Date(person.getBirthdate().getTime()).toLocalDate();
-		LocalDate endDate = LocalDate.now();
-		
-		// If date given is after date of death then use date of death as end date
-		if (person.getDeathDate() != null) {
-			LocalDate deathDate = new java.sql.Date(person.getDeathDate().getTime()).toLocalDate();
-			if (endDate.isAfter(deathDate)) {
-				endDate = deathDate;
-			}
-		}
-		
-		long age;
-		
-		switch (chronoUnit) {
-			case DAYS:
-				age = ChronoUnit.DAYS.between(birthDate, endDate);
-			case WEEKS:
-				age = ChronoUnit.WEEKS.between(birthDate, endDate);
-				break;
-			case MONTHS:
-				age = ChronoUnit.MONTHS.between(birthDate, endDate);
-				break;
-			case YEARS:
-				age = ChronoUnit.YEARS.between(birthDate, endDate);
-				break;
-			default:
-				throw new IllegalArgumentException("Unsupported ChronoUnit: " + chronoUnit);
-		}
-		
-		return (int) age;
 	}
 	
 	/**

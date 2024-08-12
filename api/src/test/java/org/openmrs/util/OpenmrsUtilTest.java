@@ -756,19 +756,33 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#copyFile(InputStream, OutputStream)
 	 */
 	@Test
-	public void copyFile_shouldCopyInputstreamToOutputstreamAndCloseTheOutputstream() throws IOException {
-
+	public void copyFile_shouldCopyInputStreamToOutputStreamAndCloseTheOutputStream() throws IOException {
 		String exampleInputStreamString = "ExampleInputStream";
 		ByteArrayInputStream expectedByteArrayInputStream = new ByteArrayInputStream(exampleInputStreamString.getBytes());
 
-		ByteArrayOutputStream output = spy(new ByteArrayOutputStream());
+		// Custom OutputStream
+		class TrackingOutputStream extends ByteArrayOutputStream {
+			private boolean isClosed = false;
+
+			@Override
+			public void close() throws IOException {
+				super.close();
+				isClosed = true;
+			}
+
+			public boolean isClosed() {
+				return isClosed;
+			}
+		}
+
+		TrackingOutputStream output = new TrackingOutputStream();
 		OpenmrsUtil.copyFile(expectedByteArrayInputStream, output);
 
 		expectedByteArrayInputStream.reset();
 		ByteArrayInputStream byteArrayInputStreamFromOutputStream = new ByteArrayInputStream(output.toByteArray());
 
 		assertTrue(IOUtils.contentEquals(expectedByteArrayInputStream, byteArrayInputStreamFromOutputStream));
-		verify(output, times(1)).close();
+		assertTrue(output.isClosed());
 	}
 
 	/**

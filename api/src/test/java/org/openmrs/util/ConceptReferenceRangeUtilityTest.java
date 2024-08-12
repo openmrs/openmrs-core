@@ -25,7 +25,6 @@ import org.openmrs.Obs;
 import org.openmrs.Person;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.ObsService;
-import org.openmrs.api.ValidationException;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 import java.util.Calendar;
@@ -102,7 +101,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		person.setBirthdate(birthDate);
 		person.setId(1);
 
-		final String CRITERIA = "$fn.getAge() > 1 && $fn.getAge() < 10";
+		final String CRITERIA = "$patient.getAge() > 1 && $patient.getAge() < 10";
 
 		assertTrue(conceptReferenceRangeUtility.evaluateCriteria(CRITERIA, person));
 	}
@@ -114,7 +113,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Date birthDate = calendar.getTime();
 		person.setBirthdate(birthDate);
 
-		final String CRITERIA = "$fn.getAgeInMonths() > 1 && $fn.getAgeInMonths() < 12";
+		final String CRITERIA = "$patient.getAgeInMonths() > 1 && $patient.getAgeInMonths() < 12";
 
 		assertTrue(conceptReferenceRangeUtility.evaluateCriteria(CRITERIA, person));
 	}
