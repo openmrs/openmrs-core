@@ -110,9 +110,4 @@ public interface ObsDAO {
 			List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
 			Date fromDate, Date toDate, List<ConceptName> valueCodedNameAnswers, List<Visit> visits,
 			boolean includeVoidedObs, String accessionNumber) throws DAOException;
-
-	/**
-	 * @see ObsService#getLatestObsByConceptId(String)
-	 */
-	Obs getLatestObsByConceptId(String conceptId);
 }

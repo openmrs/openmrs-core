@@ -275,14 +275,14 @@ public class ObsValidator implements Validator {
 		Concept concept = obs.getConcept();
 
 		if (concept != null && concept.getDatatype() != null && concept.getDatatype().isNumeric()) {
-			List<ConceptReferenceRange> crrList = Context.getConceptService()
+			List<ConceptReferenceRange> referenceRanges = Context.getConceptService()
 				.getConceptReferenceRangesByConceptId(concept.getConceptId());
 
-			if (!crrList.isEmpty()) {
+			if (!referenceRanges.isEmpty()) {
 				ConceptReferenceRangeUtility utility = new ConceptReferenceRangeUtility();
 				boolean criteriaEvaluated = false;
 
-				for (ConceptReferenceRange referenceRange : crrList) {
+				for (ConceptReferenceRange referenceRange : referenceRanges) {
 					if (utility.evaluateCriteria(referenceRange.getCriteria(), obs.getPerson())) {
 						criteriaEvaluated = true;
 						validateAbsoluteRanges(obs, referenceRange, errors);
