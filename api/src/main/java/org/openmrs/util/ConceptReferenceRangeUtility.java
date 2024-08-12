@@ -17,6 +17,7 @@ import org.joda.time.LocalTime;
 import org.openmrs.Concept;
 import org.openmrs.Obs;
 import org.openmrs.Person;
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +59,7 @@ public class ConceptReferenceRangeUtility {
 		}
 		
 		VelocityContext velocityContext = new VelocityContext();
-		velocityContext.put("fn", new ConceptReferenceRangeUtility());
+		velocityContext.put("fn", this);
 		
 		velocityContext.put("patient", person);
 		
@@ -73,10 +74,10 @@ public class ConceptReferenceRangeUtility {
 			return Boolean.parseBoolean(evaluatedCriteria);
 		}
 		catch (ParseErrorException e) {
-			throw new RuntimeException("An error occurred while validating observation: Invalid criteria: " + criteria);
+			throw new APIException("An error occurred while evaluating criteria: Invalid criteria: " + criteria, e);
 		}
 		catch (Exception e) {
-			throw new RuntimeException("An error occurred while validating observation with criteria: " + criteria);
+			throw new APIException("An error occurred while evaluating criteria: ", e);
 		}
 	}
 	
@@ -100,9 +101,9 @@ public class ConceptReferenceRangeUtility {
 				Collections.singletonList(concept), 
 				null, 
 				null, 
-				null, 
-				null, 
-				null, 
+				null,
+				Collections.singletonList("dateCreated DESC"), 
+				1, 
 				null,
 				null, 
 				null, 
@@ -110,9 +111,7 @@ public class ConceptReferenceRangeUtility {
 			);
 
 			// Return the latest Obs by sorting the list by dateCreated
-			return observations.stream()
-				.max(Comparator.comparing(Obs::getDateCreated))
-				.orElse(null);
+			return observations.isEmpty() ? null : observations.get(0);
 		}
 
 		return null;
