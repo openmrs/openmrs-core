@@ -12,6 +12,7 @@ package org.openmrs.util;
 import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.exception.ParseErrorException;
 import org.joda.time.LocalTime;
 import org.openmrs.Concept;
 import org.openmrs.Obs;
@@ -65,11 +66,18 @@ public class ConceptReferenceRangeUtility {
 		
 		StringWriter writer = new StringWriter();
 		String wrappedCriteria = "#set( $criteria = " + criteria + " )$criteria";
-		velocityEngine.evaluate(velocityContext, writer, ConceptReferenceRangeUtility.class.getName(), wrappedCriteria);
 		
-		String evaluatedCriteria = writer.toString();
-		
-		return Boolean.parseBoolean(evaluatedCriteria);
+		try {
+			velocityEngine.evaluate(velocityContext, writer, ConceptReferenceRangeUtility.class.getName(), wrappedCriteria);
+			String evaluatedCriteria = writer.toString();
+			return Boolean.parseBoolean(evaluatedCriteria);
+		}
+		catch (ParseErrorException e) {
+			throw new RuntimeException("An error occurred while validating observation: Invalid criteria: " + criteria);
+		}
+		catch (Exception e) {
+			throw new RuntimeException("An error occurred while validating observation with criteria: " + criteria);
+		}
 	}
 	
 	/**

@@ -819,7 +819,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		Person person = new Person();
 		person.setBirthdate(calendar.getTime());
 		Integer ageInMonths = person.getAgeInMonths();
-		assertEquals(12, ageInMonths); // Adjust the expected value depending on the current date
+		assertEquals(12, ageInMonths);
 	}
 
 	@Test

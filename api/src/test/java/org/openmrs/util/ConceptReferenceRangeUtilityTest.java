@@ -125,9 +125,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		person.setBirthdate(calendar.getTime());
 		final String CRITERIA = "invalidCriteria";
 
-		assertThrows(ParseErrorException.class, () -> {
-			conceptReferenceRangeUtility.evaluateCriteria(CRITERIA, person);
-		});
+		assertThrows(RuntimeException.class, () -> conceptReferenceRangeUtility.evaluateCriteria(CRITERIA, person));
 	}
 
 	@Test
@@ -196,6 +194,17 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		person.setBirthdate(calendar.getTime());
 		person.setGender("M");
 		final String CRITERIA = "$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M')";
+
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria(CRITERIA, person));
+	}
+
+	@Test
+	public void testAgeAndGenderMatch_shouldReturnTrueIfAgeOrGenderMatch() {
+		calendar = Calendar.getInstance();
+		calendar.add(Calendar.YEAR, -5);
+		person.setBirthdate(calendar.getTime());
+		person.setGender("M");
+		final String CRITERIA = "($patient.getAge() > 1 && $patient.getAge() < 10) || $patient.getGender().equals('M')";
 
 		assertTrue(conceptReferenceRangeUtility.evaluateCriteria(CRITERIA, person));
 	}

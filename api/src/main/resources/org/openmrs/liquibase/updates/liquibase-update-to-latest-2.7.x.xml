@@ -159,26 +159,5 @@
 			<column name="low_normal" type="DOUBLE"/>
 		</createTable>
 	</changeSet>
-
-	<changeSet author="Isaiah (generated)" id="202408081230-1">
-		<preConditions onError="HALT" onFail="MARK_RAN">
-			<not>
-				<columnExists tableName="obs" columnName="reference_range_id"/>
-			</not>
-		</preConditions>
-
-		<addColumn tableName="obs">
-			<column name="reference_range_id" type="int">
-				<constraints nullable="true"/>
-			</column>
-		</addColumn>
-
-		<addForeignKeyConstraint
-			baseTableName="obs"
-			baseColumnNames="reference_range_id"
-			constraintName="fk_obs_reference_range"
-			referencedTableName="obs_reference_range"
-			referencedColumnNames="obs_reference_range_id"/>
-	</changeSet>
 	
 </databaseChangeLog>

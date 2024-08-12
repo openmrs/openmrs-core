@@ -10,6 +10,7 @@
 package org.openmrs.validator;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.openmrs.Concept;
@@ -280,18 +281,22 @@ public class ObsValidator implements Validator {
 
 			if (!referenceRanges.isEmpty()) {
 				ConceptReferenceRangeUtility utility = new ConceptReferenceRangeUtility();
-				boolean criteriaEvaluated = false;
+				List<ConceptReferenceRange> validRanges = new ArrayList<>();
 
 				for (ConceptReferenceRange referenceRange : referenceRanges) {
 					if (utility.evaluateCriteria(referenceRange.getCriteria(), obs.getPerson())) {
-						criteriaEvaluated = true;
-						validateAbsoluteRanges(obs, referenceRange, errors);
-						setObsReferenceRange(obs, referenceRange);
-						break;
+						validRanges.add(referenceRange);
 					}
 				}
 
-				if (!criteriaEvaluated) {
+				if (!validRanges.isEmpty()) {
+					ConceptReferenceRange strictestRange = validRanges.stream()
+						.max(Comparator.comparingInt(this::getStrictness))
+						.orElse(null);
+
+					validateAbsoluteRanges(obs, strictestRange, errors);
+					setObsReferenceRange(obs, strictestRange);
+				} else {
 					errors.rejectValue("valueNumeric", "error.outOfRange.criteria.not.match");
 				}
 			}
@@ -299,19 +304,33 @@ public class ObsValidator implements Validator {
 	}
 
 	/**
+	 * Calculates the strictness of a reference range based on its absolute values.
+	 * A higher strictness value indicates stricter ranges.
+	 *
+	 * @param referenceRange the ConceptReferenceRange to evaluate
+	 * @return an integer representing the strictness of the range
+	 */
+	private int getStrictness(ConceptReferenceRange referenceRange) {
+		double hiAbsolute = referenceRange.getHiAbsolute() != null ? referenceRange.getHiAbsolute() : Double.MAX_VALUE;
+		double lowAbsolute = referenceRange.getLowAbsolute() != null ? referenceRange.getLowAbsolute() : -Double.MAX_VALUE;
+
+		return (int) (hiAbsolute - lowAbsolute);
+	}
+
+	/**
 	 * Validates the high and low absolute values of the Obs.
 	 *
 	 * @param obs Observation to validate
-	 * @param crr ConceptReferenceRange containing the range values
+	 * @param conceptReferenceRange ConceptReferenceRange containing the range values
 	 * @param errors Errors to record validation issues
 	 *
 	 * @since 2.7.0
 	 */
-	private void validateAbsoluteRanges(Obs obs, ConceptReferenceRange crr, Errors errors) {
-		if (crr.getHiAbsolute() != null && crr.getHiAbsolute() < obs.getValueNumeric()) {
+	private void validateAbsoluteRanges(Obs obs, ConceptReferenceRange conceptReferenceRange, Errors errors) {
+		if (conceptReferenceRange.getHiAbsolute() != null && conceptReferenceRange.getHiAbsolute() < obs.getValueNumeric()) {
 			errors.rejectValue("valueNumeric", "error.outOfRange.high");
 		}
-		if (crr.getLowAbsolute() != null && crr.getLowAbsolute() > obs.getValueNumeric()) {
+		if (conceptReferenceRange.getLowAbsolute() != null && conceptReferenceRange.getLowAbsolute() > obs.getValueNumeric()) {
 			errors.rejectValue("valueNumeric", "error.outOfRange.low");
 		}
 	}
@@ -320,19 +339,20 @@ public class ObsValidator implements Validator {
 	 * Builds and sets the ObsReferenceRange for the given Obs.
 	 *
 	 * @param obs Observation to set the reference range
-	 * @param crr ConceptReferenceRange used to build the ObsReferenceRange
+	 * @param conceptReferenceRange ConceptReferenceRange used to build the ObsReferenceRange
 	 *
 	 * @since 2.7.0
 	 */
-	private void setObsReferenceRange(Obs obs, ConceptReferenceRange crr) {
+	private void setObsReferenceRange(Obs obs, ConceptReferenceRange conceptReferenceRange) {
 		ObsReferenceRange obsRefRange = new ObsReferenceRange();
 
-		obsRefRange.setHiAbsolute(crr.getHiAbsolute());
-		obsRefRange.setHiCritical(crr.getHiCritical());
-		obsRefRange.setHiNormal(crr.getHiNormal());
-		obsRefRange.setLowAbsolute(crr.getLowAbsolute());
-		obsRefRange.setLowCritical(crr.getLowCritical());
-		obsRefRange.setLowNormal(crr.getLowNormal());
+		obsRefRange.setHiAbsolute(conceptReferenceRange.getHiAbsolute());
+		obsRefRange.setHiCritical(conceptReferenceRange.getHiCritical());
+		obsRefRange.setHiNormal(conceptReferenceRange.getHiNormal());
+		obsRefRange.setLowAbsolute(conceptReferenceRange.getLowAbsolute());
+		obsRefRange.setLowCritical(conceptReferenceRange.getLowCritical());
+		obsRefRange.setLowNormal(conceptReferenceRange.getLowNormal());
+		obsRefRange.setObs(obs);
 
 		obs.setReferenceRange(obsRefRange);
 	}

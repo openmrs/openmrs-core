@@ -12,12 +12,13 @@ package org.openmrs;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.annotations.DocumentId;
 
-import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 /**
@@ -29,7 +30,6 @@ import javax.persistence.Table;
 @Audited
 @Entity
 @Table(name = "obs_reference_range")
-@AttributeOverride(name = "uuid", column = @Column(name = "uuid", insertable = false, updatable = false))
 public class ObsReferenceRange extends BaseReferenceRange {
 	
 	private static final long serialVersionUID = 473299L;
@@ -39,6 +39,10 @@ public class ObsReferenceRange extends BaseReferenceRange {
 	@Column(name = "obs_reference_range_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer obsReferenceRangeId;
+	
+	@OneToOne
+	@JoinColumn(name = "obs_id", referencedColumnName = "obs_id")
+	private Obs obs;
 
 	public ObsReferenceRange() {
 	}
@@ -70,7 +74,6 @@ public class ObsReferenceRange extends BaseReferenceRange {
 	 * 
 	 * @since 2.7.0
 	 */
-//	@Override
 	public Integer getId() {
 		return getObsReferenceRangeId();
 	}
@@ -80,8 +83,29 @@ public class ObsReferenceRange extends BaseReferenceRange {
 	 * 
 	 * @since 2.7.0
 	 */
-//	@Override
 	public void setId(Integer id) {
 		setObsReferenceRangeId(id);
+	}
+
+	/**
+	 * Gets Obs
+	 * 
+	 * @since 2.7.0
+	 * 
+	 * @return Obs
+	 */
+	public Obs getObs() {
+		return obs;
+	}
+
+	/**
+	 * Sets obs 
+	 * 
+	 * @param obs Obs to set
+	 *            
+	 * @since 2.7.0
+	 */
+	public void setObs(Obs obs) {
+		this.obs = obs;
 	}
 }
