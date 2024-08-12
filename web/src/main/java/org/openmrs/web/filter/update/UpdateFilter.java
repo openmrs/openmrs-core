@@ -20,6 +20,7 @@ import org.openmrs.liquibase.ChangeSetExecutorCallback;
 import org.openmrs.util.DatabaseUpdaterLiquibaseProvider;
 import org.openmrs.util.InputRequiredException;
 import org.openmrs.liquibase.ChangeLogVersionFinder;
+import org.openmrs.util.OpenmrsThreadPoolHolder;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
@@ -30,6 +31,7 @@ import org.openmrs.web.filter.initialization.InitializationFilter;
 import org.openmrs.web.filter.util.CustomResourceLoader;
 import org.openmrs.web.filter.util.ErrorMessageConstants;
 import org.openmrs.web.filter.util.FilterUtil;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.ContextLoader;
 
@@ -54,6 +56,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.Future;
 
 /**
  * This is the second filter that is processed. It is only active when OpenMRS has some liquibase
@@ -62,7 +65,7 @@ import java.util.Map;
  */
 public class UpdateFilter extends StartupFilter {
 	
-	protected final org.slf4j.Logger log = LoggerFactory.getLogger(UpdateFilter.class);
+	protected final Logger log = LoggerFactory.getLogger(UpdateFilter.class);
 	
 	/**
 	 * The velocity macro page to redirect to if an error occurs or on initial startup
@@ -587,7 +590,7 @@ public class UpdateFilter extends StartupFilter {
 	 */
 	private class UpdateFilterCompletion {
 		
-		private Thread thread;
+		private final Future<Void> future;
 		
 		private String executingChangesetId = null;
 		
@@ -627,7 +630,6 @@ public class UpdateFilter extends StartupFilter {
 		 */
 		public void start() {
 			setUpdatesRequired(true);
-			thread.start();
 		}
 		
 		public synchronized void setMessage(String message) {
@@ -786,8 +788,8 @@ public class UpdateFilter extends StartupFilter {
 					}
 				}
 			};
-			
-			thread = new Thread(r);
+
+			future = OpenmrsThreadPoolHolder.threadExecutor.submit(() -> { r.run(); return null; });
 		}
 	}
 }

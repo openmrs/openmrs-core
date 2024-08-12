@@ -10,6 +10,11 @@
 package org.openmrs.api.context;
 
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -26,8 +31,7 @@ import org.openmrs.module.ModuleFactory;
 import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.timer.TimerSchedulerTask;
 import org.openmrs.util.OpenmrsSecurityManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openmrs.util.OpenmrsThreadPoolHolder;
 import org.springframework.context.support.AbstractRefreshableApplicationContext;
 
 /**
@@ -35,8 +39,6 @@ import org.springframework.context.support.AbstractRefreshableApplicationContext
  * module startup when there is no user to authenticate as.
  */
 public class Daemon {
-
-	private static final Logger log = LoggerFactory.getLogger(Daemon.class);
 	
 	/**
 	 * The uuid defined for the daemon user object
@@ -48,9 +50,9 @@ public class Daemon {
 	protected static final ThreadLocal<User> daemonThreadUser = new ThreadLocal<>();
 	
 	/**
-	 * Protected constructor to override the default constructor to prevent it from being instantiated.
+	 * private constructor to override the default constructor to prevent it from being instantiated.
 	 */
-	protected Daemon() {
+	private Daemon() {
 	}
 	
 	/**
@@ -64,7 +66,7 @@ public class Daemon {
 	 * This method should not be called directly. The {@link ModuleFactory#startModule(Module)}
 	 * method uses this to start the given module in a new thread that is authenticated as the
 	 * daemon user. <br>
-	 * If a non null application context is passed in, it gets refreshed to make the module's
+	 * If a non-null application context is passed in, it gets refreshed to make the module's
 	 * services available
 	 *
 	 * @param module the module to start
@@ -75,53 +77,33 @@ public class Daemon {
 	 */
 	public static Module startModule(final Module module, final boolean isOpenmrsStartup,
 	        final AbstractRefreshableApplicationContext applicationContext) throws ModuleException {
-		// create a new thread and execute that task in it
-		DaemonThread startModuleThread = new DaemonThread() {
-			
-			@Override
-			public void run() {
-				isDaemonThread.set(true);
-				try {
-					Context.openSession();
-					returnedObject = ModuleFactory.startModuleInternal(module, isOpenmrsStartup, applicationContext);
-				}
-				catch (Exception e) {
-					exceptionThrown = e;
-				}
-				finally {
-					try {
-						Context.closeSession();
-					} finally {
-						isDaemonThread.remove();
-					}
-				}
-			}
-		};
+		Class<?> callerClass = new OpenmrsSecurityManager().getCallerClass(0);
+		if (callerClass != Daemon.class && callerClass != ModuleFactory.class) {
+			throw new APIException("Module.factory.only", new Object[] { callerClass.getName() });
+		}
 		
-		startModuleThread.start();
+		Future<Module> moduleStartFuture = runInDaemonThreadInternal(() -> ModuleFactory.startModuleInternal(module, isOpenmrsStartup, applicationContext));
 		
 		// wait for the "startModule" thread to finish
 		try {
-			startModuleThread.join();
+			return moduleStartFuture.get();
 		}
 		catch (InterruptedException e) {
 			// ignore
-		}
-		
-		if (startModuleThread.exceptionThrown != null) {
-			if (startModuleThread.exceptionThrown instanceof ModuleException) {
-				throw (ModuleException) startModuleThread.exceptionThrown;
+		} catch (ExecutionException e) {
+			if (e.getCause() instanceof ModuleException) {
+				throw (ModuleException) e.getCause();
 			} else {
-				throw new ModuleException("Unable to start module as Daemon", startModuleThread.exceptionThrown);
+				throw new ModuleException("Unable to start module " + module.getName(), e);
 			}
 		}
 
-		return (Module) startModuleThread.returnedObject;
+		return module;
 	}
 
 	/**
 	 * This method should not be called directly, only {@link ContextDAO#createUser(User, String, List)} can
-	 * legally invoke {@link #createUser(User, String, List)}.
+	 * legally invoke this method.
 	 * 
 	 * @param user A new user to be created.
 	 * @param password The password to set for the new user.
@@ -133,7 +115,6 @@ public class Daemon {
 	 * @since 2.3.0
 	 */
 	public static User createUser(User user, String password, List<String> roleNames) throws Exception {
-
 		// quick check to make sure we're only being called by ourselves
 		Class<?> callerClass = new OpenmrsSecurityManager().getCallerClass(0);
 		if (!ContextDAO.class.isAssignableFrom(callerClass)) {
@@ -141,53 +122,35 @@ public class Daemon {
 		}
 
 		// create a new thread and execute that task in it
-		DaemonThread createUserThread = new DaemonThread() {
-
-			@Override
-			public void run() {
-				isDaemonThread.set(true);
-				try {
-					Context.openSession();
-
-					if ( (user.getId() != null && Context.getUserService().getUser(user.getId()) != null) || Context.getUserService().getUserByUuid(user.getUuid()) != null || Context.getUserService().getUserByUsername(user.getUsername()) != null || (user.getEmail() != null && Context.getUserService().getUserByUsernameOrEmail(user.getEmail()) != null) ) {
-						throw new APIException("User.creating.already.exists", new Object[] { user.getDisplayString() });
-					}
-
-					if (!CollectionUtils.isEmpty(roleNames)) {
-						List<Role> roles = roleNames.stream().map(roleName -> Context.getUserService().getRole(roleName)).collect(Collectors.toList()); 
-						roles.forEach(user::addRole);
-					}
-
-					returnedObject = Context.getUserService().createUser(user, password);
-				}
-				catch (Exception e) {
-					exceptionThrown = e;
-				}
-				finally {
-					try {
-						Context.closeSession();
-					} finally {
-						isDaemonThread.remove();
-					}
-				}
+		Future<User> userFuture = runInDaemonThreadInternal(() -> {
+			if ((user.getId() != null && Context.getUserService().getUser(user.getId()) != null) || Context.getUserService().getUserByUuid(user.getUuid()) != null || Context.getUserService().getUserByUsername(user.getUsername()) != null || (user.getEmail() != null && Context.getUserService().getUserByUsernameOrEmail(user.getEmail()) != null) ) {
+				throw new APIException("User.creating.already.exists", new Object[] { user.getDisplayString() });
 			}
-		};
 
-		createUserThread.start();
+			if (!CollectionUtils.isEmpty(roleNames)) {
+				List<Role> roles = roleNames.stream().map(roleName -> Context.getUserService().getRole(roleName)).collect(Collectors.toList());
+				roles.forEach(user::addRole);
+			}
+
+			return Context.getUserService().createUser(user, password);
+		});
 
 		// wait for the 'create user' thread to finish
 		try {
-			createUserThread.join();
+			return userFuture.get();
 		}
 		catch (InterruptedException e) {
 			// ignore
 		}
-
-		if (createUserThread.exceptionThrown != null) {
-			throw createUserThread.exceptionThrown;
+		catch (ExecutionException e) {
+			if (e.getCause() instanceof Exception) {
+				throw (Exception) e.getCause();
+			} else {
+				throw new RuntimeException(e.getCause());
+			}
 		}
 
-		return (User) createUserThread.returnedObject;
+		return null;
 	}	
 	
 	/**
@@ -200,52 +163,27 @@ public class Daemon {
 	 * <strong>Should</strong> not throw error if called from a TimerSchedulerTask class
 	 */
 	public static void executeScheduledTask(final Task task) throws Exception {
-		
 		// quick check to make sure we're only being called by ourselves
 		Class<?> callerClass = new OpenmrsSecurityManager().getCallerClass(0);
 		if (!TimerSchedulerTask.class.isAssignableFrom(callerClass)) {
 			throw new APIException("Scheduler.timer.task.only", new Object[] { callerClass.getName() });
 		}
 		
-		// now create a new thread and execute that task in it
-		DaemonThread executeTaskThread = new DaemonThread() {
-			
-			@Override
-			public void run() {
-				isDaemonThread.set(true);
-				
-				try {
-					Context.openSession();
-					TimerSchedulerTask.execute(task);
-				}
-				catch (Exception e) {
-					exceptionThrown = e;
-				}
-				finally {
-					try {
-						Context.closeSession();
-					} finally {
-						isDaemonThread.remove();
-					}
-				}
-				
-			}
-		};
-		
-		executeTaskThread.start();
+		Future<Void> scheduleTaskFuture = runInDaemonThreadInternal(() -> TimerSchedulerTask.execute(task));
 		
 		// wait for the "executeTaskThread" thread to finish
 		try {
-			executeTaskThread.join();
+			scheduleTaskFuture.get();
 		}
 		catch (InterruptedException e) {
 			// ignore
+		} catch (ExecutionException e) {
+			if (e.getCause() instanceof Exception) {
+				throw (Exception) e.getCause();
+			} else {
+				throw new RuntimeException(e.getCause());
+			}
 		}
-		
-		if (executeTaskThread.exceptionThrown != null) {
-			throw executeTaskThread.exceptionThrown;
-		}
-		
 	}
 	
 	/**
@@ -255,16 +193,15 @@ public class Daemon {
 	 *
 	 * @param runnable what to run in a new thread
 	 * @return the newly spawned {@link Thread}
-	 * <strong>Should</strong> throw error if called from a non daemon thread
-	 * <strong>Should</strong> not throw error if called from a daemon thread
+	 * @deprecated As of 2.7.0, consider using {@link #runNewDaemonTask(Runnable)} instead
 	 */
-	@SuppressWarnings("squid:S1217")
+	@Deprecated
 	public static Thread runInNewDaemonThread(final Runnable runnable) {
 		// make sure we're already in a daemon thread
 		if (!isDaemonThread()) {
 			throw new APIAuthenticationException("Only daemon threads can spawn new daemon threads");
 		}
-		
+
 		// we should consider making DaemonThread public, so the caller can access returnedObject and exceptionThrown
 		DaemonThread thread = new DaemonThread() {
 			
@@ -287,8 +224,46 @@ public class Daemon {
 			}
 		};
 		
-		thread.start();
+		OpenmrsThreadPoolHolder.threadExecutor.execute(thread);
 		return thread;
+	}
+
+	/**
+	 * Call this method if you are inside a Daemon thread (for example in a Module activator or a
+	 * scheduled task) and you want to start up a new parallel Daemon thread. You may only call this
+	 * method from a Daemon thread.
+	 *
+	 * @param callable what to run in a new thread
+	 * @return a future that completes when the task is done;
+	 * @since 2.7.0
+	 */
+	@SuppressWarnings({"squid:S1217", "unused"})
+	public static <T> Future<T> runInNewDaemonThread(final Callable<T> callable) {
+		// make sure we're already in a daemon thread
+		if (!isDaemonThread()) {
+			throw new APIAuthenticationException("Only daemon threads can spawn new daemon threads");
+		}
+
+		return runInDaemonThreadInternal(callable);
+	}
+
+	/**
+	 * Call this method if you are inside a Daemon thread (for example in a Module activator or a
+	 * scheduled task) and you want to start up a new parallel Daemon thread. You may only call this
+	 * method from a Daemon thread.
+	 *
+	 * @param runnable what to run in a new thread
+	 * @return a future that completes when the task is done;
+	 * @since 2.7.0
+	 */
+	@SuppressWarnings({"squid:S1217", "unused"})
+	public static Future<Void> runNewDaemonTask(final Runnable runnable) {
+		// make sure we're already in a daemon thread
+		if (!isDaemonThread()) {
+			throw new APIAuthenticationException("Only daemon threads can spawn new daemon threads");
+		}
+		
+		return runInDaemonThreadInternal(runnable);
 	}
 	
 	/**
@@ -313,45 +288,25 @@ public class Daemon {
 	 * @since 1.9
 	 */
 	public static void runStartupForService(final OpenmrsService service) throws ModuleException {
+		Class<?> callerClass = new OpenmrsSecurityManager().getCallerClass(0);
+		if (callerClass != ServiceContext.class) {
+			throw new APIException("Service.context.only", new Object[] { callerClass.getName() });
+		}
 		
-		DaemonThread onStartupThread = new DaemonThread() {
-			
-			@Override
-			public void run() {
-				isDaemonThread.set(true);
-				try {
-					Context.openSession();
-					service.onStartup();
-				}
-				catch (Exception e) {
-					exceptionThrown = e;
-				}
-				finally {
-					try {
-						Context.closeSession();
-					} finally {
-						isDaemonThread.remove();
-					}
-				}
-			}
-		};
-		
-		onStartupThread.start();
+		Future<Void> future = runInDaemonThreadInternal(service::onStartup);
 		
 		// wait for the "onStartup" thread to finish
 		try {
-			onStartupThread.join();
+			future.get();
 		}
 		catch (InterruptedException e) {
 			// ignore
-			log.error("Thread was interrupted", e);
 		}
-		
-		if (onStartupThread.exceptionThrown != null) {
-			if (onStartupThread.exceptionThrown instanceof ModuleException) {
-				throw (ModuleException) onStartupThread.exceptionThrown;
+		catch (ExecutionException e) {
+			if (e.getCause() instanceof ModuleException) {
+				throw (ModuleException) e.getCause();
 			} else {
-				throw new ModuleException("Unable to run onStartup() method as Daemon", onStartupThread.exceptionThrown);
+				throw new ModuleException("Unable to run onStartup() method of service {}", service.getClass().getSimpleName(), e);
 			}
 		}
 	}
@@ -363,15 +318,16 @@ public class Daemon {
 	 * @param token the token required to run code as the daemon user
 	 * @return the newly spawned {@link Thread}
 	 * @since 1.9.2
+	 * @deprecated Since 2.7.0 use {@link #runInDaemonThreadWithoutResult(Runnable, DaemonToken)} instead
 	 */
-	@SuppressWarnings("squid:S1217")
+	@Deprecated
+	@SuppressWarnings({"squid:S1217", "unused"})
 	public static Thread runInDaemonThread(final Runnable runnable, DaemonToken token) {
 		if (!ModuleFactory.isTokenValid(token)) {
 			throw new ContextAuthenticationException("Invalid token " + token);
 		}
 		
 		DaemonThread thread = new DaemonThread() {
-			
 			@Override
 			public void run() {
 				isDaemonThread.set(true);
@@ -390,9 +346,43 @@ public class Daemon {
 				}
 			}
 		};
-		
-		thread.start();
+
+		OpenmrsThreadPoolHolder.threadExecutor.execute(thread);
 		return thread;
+	}
+
+	/**
+	 * Executes the given runnable in a new thread that is authenticated as the daemon user.
+	 *
+	 * @param callable an object implementing the {@link Callable<T>} interface to be run
+	 * @param token the token required to run code as the daemon user
+	 * @return the newly spawned {@link Thread}
+	 * @since 2.7.0
+	 */
+	@SuppressWarnings({"squid:S1217", "unused"})
+	public static <T> Future<T> runInDaemonThread(final Callable<T> callable, DaemonToken token) {
+		if (!ModuleFactory.isTokenValid(token)) {
+			throw new ContextAuthenticationException("Invalid token");
+		}
+		
+		return runInDaemonThreadInternal(callable);
+	}
+
+	/**
+	 * Executes the given runnable in a new thread that is authenticated as the daemon user.
+	 *
+	 * @param runnable an object implementing the {@link Runnable} interface to be run
+	 * @param token the token required to run code as the daemon user
+	 * @return the newly spawned {@link Thread}
+	 * @since 2.7.0
+	 */
+	@SuppressWarnings("squid:S1217")
+	public static Future<Void> runInDaemonThreadWithoutResult(final Runnable runnable, DaemonToken token) {
+		if (!ModuleFactory.isTokenValid(token)) {
+			throw new ContextAuthenticationException("Invalid token");
+		}
+
+		return runInDaemonThreadInternal(runnable);
 	}
 	
 	/**
@@ -401,17 +391,38 @@ public class Daemon {
 	 *
 	 * @param runnable an object implementing the {@link Runnable} interface.
 	 * @param token the token required to run code as the daemon user
-	 * @since 1.9.2
+	 * @since 2.7.0
 	 */
 	public static void runInDaemonThreadAndWait(final Runnable runnable, DaemonToken token) {
-		Thread daemonThread = runInDaemonThread(runnable, token);
+		Future<Void> daemonThread = runInDaemonThreadWithoutResult(runnable, token);
 		
 		try {
-			daemonThread.join();
+			daemonThread.get();
 		}
-		catch (InterruptedException e) {
-			//Ignore
+		catch (InterruptedException | ExecutionException e) {
+			// Ignored
 		}
+	}
+	
+	private static <T> Future<T> runInDaemonThreadInternal(Callable<T> callable) {
+		return OpenmrsThreadPoolHolder.threadExecutor.submit(() -> {
+			isDaemonThread.set(true);
+			try {
+				Context.openSession();
+				return callable.call();
+			}
+			finally {
+				try {
+					Context.closeSession();
+				} finally {
+					isDaemonThread.remove();
+				}
+			}
+		});
+	}
+	
+	private static Future<Void> runInDaemonThreadInternal(Runnable runnable) {
+		return runInDaemonThreadInternal(() -> { runnable.run(); return null; });
 	}
 	
 	/**
@@ -443,14 +454,12 @@ public class Daemon {
 	
 	/**
 	 * Checks whether user is Daemon.
-	 * However this is not the preferred method for checking to see if the current thread is a daemon thread,
-	 * 				rather use Daemon.isDeamonThread().
+	 * However, this is not the preferred method for checking to see if the current thread is a daemon thread,
+	 * 				rather use {@link #isDaemonThread()}.
 	 * isDaemonThread is preferred for checking to see if you are in that thread or if the current thread is daemon.
 	 *
 	 * @param user user whom we are checking if daemon
 	 * @return true if user is Daemon
-	 * <strong>Should</strong> return true for a daemon user
-	 * <strong>Should</strong> return false if the user is not a daemon
 	 */
 	public static boolean isDaemonUser(User user) {
 		return DAEMON_USER_UUID.equals(user.getUuid());
