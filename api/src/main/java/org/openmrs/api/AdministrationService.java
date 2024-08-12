@@ -41,6 +41,10 @@ import org.springframework.validation.Errors;
  */
 public interface AdministrationService extends OpenmrsService {
 	
+	public static final String GP_SUFFIX_SERIALIZER_WHITELIST_TYPES = ".serializer.whitelist.types";
+	
+	public static final String GP_SERIALIZER_WHITELIST_HIERARCHY_TYPES_PREFIX = "hierarchyOf:";
+	
 	/**
 	 * Used by Spring to set the specific/chosen database access implementation
 	 * 
@@ -401,4 +405,19 @@ public interface AdministrationService extends OpenmrsService {
 	 * @since 2.4
 	 */
 	public void updatePostgresSequence();
+	
+	/**
+	 * Returns a list of packages and/or individual classes including hierarchy of OpenmrsObject, OpenmmrsMetadata,
+	 * OpenmrsData and other common OpenMRS classes as well as any whitelists defined through GPs with the 
+	 * '.serializer.whitelist.types' suffix that are considered to be safe for deserializing.
+	 *
+	 * It is the responsibility of the serializer to block any unlisted classes from being deserialized and posing
+	 * security risk. It is especially important for serializers using XStream.
+	 *
+	 * @since 2.7.0, 2.6.2, 2.5.13 
+	 * @return a list of packages and/or classes
+	 * <strong>Should</strong> return packages and individual classes defined in GPs
+	 * <strong>Should</strong> return default common classes if no GPs defined
+	 */
+	List<String> getSerializerWhitelistTypes();
 }

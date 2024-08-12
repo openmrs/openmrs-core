@@ -151,7 +151,7 @@ if [[ -n "${EXTRA_VARS+x}" ]]; then
 	  var=$(echo "${i#OMRS_EXTRA_}" | tr [:upper:] [:lower:])
 	  var=${var//_/.}
 	  var=${var//../_}
-	  EXTRA_PROPERTIES+="${var}=${!i} \n"
+	  EXTRA_PROPERTIES+="${var}=${!i}\n"
 	done
 	
 	echo -e "$EXTRA_PROPERTIES" >> "$OMRS_SERVER_PROPERTIES_FILE"
