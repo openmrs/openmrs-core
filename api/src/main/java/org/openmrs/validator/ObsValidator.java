@@ -296,8 +296,6 @@ public class ObsValidator implements Validator {
 
 					validateAbsoluteRanges(obs, strictestRange, errors);
 					setObsReferenceRange(obs, strictestRange);
-				} else {
-					errors.rejectValue("valueNumeric", "error.outOfRange.criteria.not.match");
 				}
 			}
 		}

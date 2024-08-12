@@ -521,11 +521,16 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void validate_shouldFailValidationIfObsValueExceedsHiAbsolute() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.YEAR, -10);
+		Person person = new Person(10);
+		person.setBirthdate(calendar.getTime());
+		
 		Obs obs = new Obs();
 		obs.setId(1);
-		obs.setPerson(new Person(10));
+		obs.setPerson(person);
 		obs.setConcept(Context.getConceptService().getConcept(4090));
-		obs.setValueNumeric(200.0);
+		obs.setValueNumeric(201.0);
 		obs.setObsDatetime(new Date());
 		
 		Errors errors = new BindException(obs, "obs");
@@ -539,8 +544,13 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void validate_shouldFailValidationIfObsValueBelowLowAbsolute() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.YEAR, -10);
+		Person person = new Person(10);
+		person.setBirthdate(calendar.getTime());
+		
 		Obs obs = new Obs();
-		obs.setPerson(new Person(10));
+		obs.setPerson(person);
 		obs.setConcept(Context.getConceptService().getConcept(4089));
 		obs.setValueNumeric(50.0);
 		obs.setObsDatetime(new Date());
@@ -549,29 +559,6 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obsValidator.validate(obs, errors);
 
 		assertTrue(errors.hasFieldErrors("valueNumeric"));
-	}
-
-	/**
-	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
-	 */
-	@Test
-	public void validate_shouldFailValidationIfObsAgeNotInRange() {
-		Person person = new Person();
-		calendar.set(1900, Calendar.JANUARY, 1);
-		person.setBirthdate(calendar.getTime());
-		
-		Obs obs = new Obs();
-		obs.setId(1);
-		obs.setPerson(person);
-		obs.setConcept(Context.getConceptService().getConcept(4090));
-		obs.setValueNumeric(140.0);
-		obs.setObsDatetime(new Date());
-
-		Errors errors = new BindException(obs, "obs");
-		obsValidator.validate(obs, errors);
-
-		assertTrue(errors.hasFieldErrors("valueNumeric"));
-		assertNotNull(errors.getFieldError("valueNumeric"));
 	}
 	
 	/**
