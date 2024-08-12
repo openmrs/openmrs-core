@@ -102,7 +102,7 @@ public class ConceptReferenceRangeUtility {
 				null, 
 				null, 
 				null,
-				Collections.singletonList("dateCreated DESC"), 
+				Collections.singletonList("dateCreated"), 
 				1, 
 				null,
 				null, 
