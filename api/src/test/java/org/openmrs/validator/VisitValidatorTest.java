@@ -354,7 +354,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_ShouldRejectAVisitThatEndsAtTheSameTimeAsAnExistingEvent(){
+	public void validate_shouldRejectAVisitThatEndsAtTheSameTimeAsAnExistingEvent(){
 		// Existing visit: starts on 2014-01-04 10:00:00 and ends on 2014-01-10 14:00:00 (see VisitValidatorTest.xml)
 		int patientId = 42;
 		

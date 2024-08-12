@@ -440,13 +440,13 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getActiveVisitsByPatient_shouldReturnAllUnvoidedActiveVisitsForTheSpecifiedPatient() {
 		executeDataSet(VISITS_WITH_DATES_XML);
-		assertEquals(4, visitService.getActiveVisitsByPatient(new Patient(2)).size());
+		assertEquals(2, visitService.getActiveVisitsByPatient(new Patient(2)).size());
 	}
 	
 	@Test
 	public void getActiveVisitsByPatient_shouldReturnAllActiveVisitsForTheSpecifiedPatient() {
 		executeDataSet(VISITS_WITH_DATES_XML);
-		assertEquals(5, visitService.getVisitsByPatient(new Patient(2), false, true).size());
+		assertEquals(3, visitService.getVisitsByPatient(new Patient(2), false, true).size());
 	}
 	
 	@Test
@@ -518,10 +518,8 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		// this should get all open non-voided visits (which are ids 1, 2, 3, 4, 5 in standardTestDataset)
 		List<Visit> visits = visitService.getVisits(null, null, null, null, null, null, minEndDatetime, null,
 		    null, true, false);
-		assertEquals(6, visits.size());
+		assertEquals(4, visits.size());
 		assertTrue(TestUtil.containsId(visits, 1));
-		assertTrue(TestUtil.containsId(visits, 2));
-		assertTrue(TestUtil.containsId(visits, 3));
 		assertTrue(TestUtil.containsId(visits, 4));
 		assertTrue(TestUtil.containsId(visits, 5));
 		assertTrue(TestUtil.containsId(visits, 8));

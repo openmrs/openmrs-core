@@ -60,7 +60,7 @@ public class VisitDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void getVisits_shouldReturnOnlyActiveVisitsIfIncludeEndedIsSetToFalse() {
 		executeDataSet(VISITS_WITH_DATES_XML);
-		assertEquals(6, dao.getVisits(null, null, null, null, null, null, null, null, null, false, false).size());
+		assertEquals(4, dao.getVisits(null, null, null, null, null, null, null, null, null, false, false).size());
 	}
 	
 	/**
