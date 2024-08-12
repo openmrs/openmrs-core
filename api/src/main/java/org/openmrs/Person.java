@@ -1014,8 +1014,6 @@ public class Person extends BaseChangeableOpenmrsData {
 				return (int) ChronoUnit.WEEKS.between(birthDate, endDate);
 			case MONTHS:
 				return (int) ChronoUnit.MONTHS.between(birthDate, endDate);
-			case YEARS:
-				return (int) ChronoUnit.YEARS.between(birthDate, endDate);
 			default:
 				throw new IllegalArgumentException("Unsupported ChronoUnit: " + chronoUnit);
 		}
