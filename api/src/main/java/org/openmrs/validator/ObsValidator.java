@@ -12,6 +12,7 @@ package org.openmrs.validator;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
@@ -290,9 +291,7 @@ public class ObsValidator implements Validator {
 				}
 
 				if (!validRanges.isEmpty()) {
-					ConceptReferenceRange strictestRange = validRanges.stream()
-						.max(Comparator.comparingInt(this::getStrictness))
-						.orElse(null);
+					ConceptReferenceRange strictestRange = findStrictestRange(validRanges);
 
 					validateAbsoluteRanges(obs, strictestRange, errors);
 					setObsReferenceRange(obs, strictestRange);
@@ -302,17 +301,29 @@ public class ObsValidator implements Validator {
 	}
 
 	/**
-	 * Calculates the strictness of a reference range based on its absolute values.
-	 * A higher strictness value indicates stricter ranges.
+	 * Finds the strictest range based on the lower and upper bounds.
 	 *
-	 * @param referenceRange the ConceptReferenceRange to evaluate
-	 * @return an integer representing the strictness of the range
+	 * @param validRanges the list of valid ConceptReferenceRanges
+	 * @return the ConceptReferenceRange with the strictest bounds
 	 */
-	private int getStrictness(ConceptReferenceRange referenceRange) {
-		double hiAbsolute = referenceRange.getHiAbsolute() != null ? referenceRange.getHiAbsolute() : Double.MAX_VALUE;
-		double lowAbsolute = referenceRange.getLowAbsolute() != null ? referenceRange.getLowAbsolute() : -Double.MAX_VALUE;
+	private ConceptReferenceRange findStrictestRange(List<ConceptReferenceRange> validRanges) {
+		Double strictestLowAbsolute = validRanges.stream()
+			.map(ConceptReferenceRange::getLowAbsolute)
+			.filter(Objects::nonNull)
+			.max(Double::compareTo)
+			.orElse(null);
 
-		return (int) (hiAbsolute - lowAbsolute);
+		Double strictestHiAbsolute = validRanges.stream()
+			.map(ConceptReferenceRange::getHiAbsolute)
+			.filter(Objects::nonNull)
+			.min(Double::compareTo)
+			.orElse(null);
+
+		ConceptReferenceRange strictestRange = new ConceptReferenceRange();
+		strictestRange.setLowAbsolute(strictestLowAbsolute);
+		strictestRange.setHiAbsolute(strictestHiAbsolute);
+
+		return strictestRange;
 	}
 
 	/**
@@ -326,10 +337,10 @@ public class ObsValidator implements Validator {
 	 */
 	private void validateAbsoluteRanges(Obs obs, ConceptReferenceRange conceptReferenceRange, Errors errors) {
 		if (conceptReferenceRange.getHiAbsolute() != null && conceptReferenceRange.getHiAbsolute() < obs.getValueNumeric()) {
-			errors.rejectValue("valueNumeric", "error.outOfRange.high");
+			errors.rejectValue("valueNumeric", "error.value.outOfRange.high");
 		}
 		if (conceptReferenceRange.getLowAbsolute() != null && conceptReferenceRange.getLowAbsolute() > obs.getValueNumeric()) {
-			errors.rejectValue("valueNumeric", "error.outOfRange.low");
+			errors.rejectValue("valueNumeric", "error.value.outOfRange.low");
 		}
 	}
 

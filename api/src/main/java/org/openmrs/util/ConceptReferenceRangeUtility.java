@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.StringWriter;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -51,11 +50,11 @@ public class ConceptReferenceRangeUtility {
 	 */
 	public boolean evaluateCriteria(String criteria, Person person) {
 		if (person == null) {
-			throw new IllegalArgumentException("Failed to validate with reason: patient is null");
+			throw new IllegalArgumentException("Failed to evaluate criteria with reason: patient is null");
 		}
 		
-		if (StringUtils.isEmpty(criteria)) {
-			throw new IllegalArgumentException("Failed to validate with reason: criteria required");
+		if (StringUtils.isBlank(criteria)) {
+			throw new IllegalArgumentException("Failed to evaluate criteria with reason: criteria is empty");
 		}
 		
 		VelocityContext velocityContext = new VelocityContext();

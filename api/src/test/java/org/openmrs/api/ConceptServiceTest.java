@@ -2879,7 +2879,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see ConceptService#saveConcept(Concept)
 	 */
 	@Test
-	public void saveConcept_shouldSetAuditInfoIfAnItemIsRemovedFromAnyOfItsChildCollections() throws InterruptedException {
+	public void saveConcept_shouldSetAuditInfoIfAnItemIsRemovedFromAnyOfItsChildCollections() {
 		Concept concept = conceptService.getConcept(3);
 		assertNull(concept.getDateChanged());
 		assertNull(concept.getChangedBy());
@@ -2890,9 +2890,6 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		conceptService.saveConcept(concept);
 		assertNotNull(concept.getDateChanged());
 		Date date=concept.getDateChanged();
-
-		// A short delay to ensure a noticeable difference in dates
-		Thread.sleep(1000);
 
 		assertTrue(concept.removeAnswer(conceptanswer));
 		conceptService.saveConcept(concept);
@@ -3969,12 +3966,11 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getConceptReferenceRangeByConceptId_shouldReturnConceptReferencesRangeById() {
 		executeDataSet(CONCEPT_WITH_CONCEPT_REFERENCE_RANGES_XML);
 
-		final Integer EXPECTED_CONCEPT_REFERENCE_RANGE_ID = 3;
 		List<ConceptReferenceRange> conceptReferenceRange = conceptService.getConceptReferenceRangesByConceptId(5089);
 		
 		assertFalse(conceptReferenceRange.isEmpty());
 		
-		assertEquals(EXPECTED_CONCEPT_REFERENCE_RANGE_ID, conceptReferenceRange.get(0).getId());
+		assertEquals(3, conceptReferenceRange.get(0).getId());
 	}
 
 	/**
@@ -3986,6 +3982,12 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		ConceptNumeric conceptNumeric = new ConceptNumeric();
 		conceptNumeric.setDatatype(new ConceptDatatype(1));
 		conceptNumeric.setConceptClass(new ConceptClass(1));
+		
+		ConceptName conceptName = new ConceptName("a new conceptnumeric", Locale.US);
+		conceptNumeric.addName(conceptName);
+		conceptNumeric.addDescription(new ConceptDescription("some description",null));
+		conceptNumeric.setHiAbsolute(50.0);
+		conceptNumeric.setLowAbsolute(20.0);
 
 		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
 		conceptReferenceRange.setCriteria("$patient.getAge() >= 1 && $patient.getAge() <= 70");
@@ -3993,19 +3995,14 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		conceptReferenceRange.setHiAbsolute(conceptNumeric.getHiAbsolute());
 		conceptReferenceRange.setLowAbsolute(conceptNumeric.getLowAbsolute());
 		
-		ConceptName conceptName = new ConceptName("a new conceptnumeric", Locale.US);
-		conceptNumeric.addName(conceptName);
-		conceptNumeric.addDescription(new ConceptDescription("some description",null));
-		conceptNumeric.setHiAbsolute(50.0);
 		conceptNumeric.setReferenceRanges(Collections.singleton(conceptReferenceRange));
 		conceptService.saveConcept(conceptNumeric);
 
-		Concept savedConcept = conceptService.getConcept(conceptNumeric.getConceptId());
-		assertTrue(savedConcept instanceof ConceptNumeric);
-		ConceptNumeric savedConceptNumeric = (ConceptNumeric) savedConcept;
+		ConceptNumeric savedConceptNumeric = conceptService.getConceptNumeric(conceptNumeric.getConceptId());
+		
 		assertEquals("a new conceptnumeric", savedConceptNumeric.getName(Locale.US).getName());
 		assertEquals(50.0, savedConceptNumeric.getHiAbsolute(), 0);
-		assertFalse(savedConceptNumeric.getReferenceRanges().isEmpty());
 		assertEquals(1, savedConceptNumeric.getReferenceRanges().size());
+		assertEquals(50.0, savedConceptNumeric.getReferenceRanges().stream().findFirst().get().getHiAbsolute());
 	}
 }

@@ -29,6 +29,7 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.Drug;
 import org.openmrs.Obs;
+import org.openmrs.ObsReferenceRange;
 import org.openmrs.Person;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -603,6 +604,32 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 
 		assertFalse(errors.hasErrors());
 		assertNotNull(obs.getReferenceRange());
-		assertEquals(150.0, obs.getReferenceRange().getHiAbsolute());
+		assertEquals(140.0, obs.getReferenceRange().getHiAbsolute());
+	}
+
+	/**
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 * 
+	 * Fetching conceptReferenceRanges by concept id (4090) returns 2 items with absolute value bounds;- 80-150 and 60-140
+	 */
+	@Test
+	public void validate_shouldSetObsReferenceRangeToStrictBounds() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.YEAR, -10);
+		Person person = new Person(10);
+		person.setBirthdate(calendar.getTime());
+		
+		Obs obs = new Obs();
+		obs.setPerson(person);
+		obs.setConcept(Context.getConceptService().getConcept(4090));
+		obs.setValueNumeric(145.0);
+		obs.setObsDatetime(new Date());
+
+		Errors errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+
+		assertTrue(errors.hasErrors());
+		assertTrue(errors.hasFieldErrors("valueNumeric"));
+		assertEquals("error.value.outOfRange.high", errors.getAllErrors().get(0).getCode());
 	}
 }

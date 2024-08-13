@@ -2005,7 +2005,6 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void saveObsReferenceRange_shouldSaveReferenceRangeAfterSavingObs() {
 		Obs obs = buildObservation();
-		obs.setUuid("ace759d9-d126-4a3f-ae1a-cad4c132f38b");
 
 		obsService.saveObs(obs, null);
 		

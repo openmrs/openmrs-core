@@ -42,7 +42,6 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	
 	private static final String PROVIDERS_INITIAL_XML = "org/openmrs/api/db/hibernate/include/HibernateConceptTestDataSet.xml";
 	protected static final String CONCEPT_ATTRIBUTE_TYPE_XML = "org/openmrs/api/include/ConceptServiceTest-conceptAttributeType.xml";
-	private final String TEST_CRITERIA = "$patient.getAge() >= 1 && $patient.getAge() <= 70";
 
 	@Autowired
 	private HibernateConceptDAO dao;

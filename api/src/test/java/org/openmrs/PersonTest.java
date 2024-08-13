@@ -818,8 +818,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		calendar.add(Calendar.MONTH, -12);
 		Person person = new Person();
 		person.setBirthdate(calendar.getTime());
-		Integer ageInMonths = person.getAgeInMonths();
-		assertEquals(12, ageInMonths);
+		assertEquals(12, person.getAgeInMonths());
 	}
 
 	@Test
@@ -828,8 +827,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		calendar.add(Calendar.WEEK_OF_MONTH, -4);
 		Person person = new Person();
 		person.setBirthdate(calendar.getTime());
-		Integer ageInWeeks = person.getAgeInWeeks();
-		assertEquals(4, ageInWeeks); 
+		assertEquals(4, person.getAgeInWeeks()); 
 	}
 
 	@Test
@@ -838,8 +836,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		calendar.add(Calendar.DAY_OF_MONTH, -11);
 		Person person = new Person();
 		person.setBirthdate(calendar.getTime());
-		Integer ageInDays = person.getAgeInDays();
-		assertEquals(11, ageInDays);
+		assertEquals(11, person.getAgeInDays());
 	}
 
 	@Test
@@ -854,8 +851,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		Person person = new Person();
 		person.setBirthdate(Date.from(LocalDate.of(2022, Month.AUGUST, 12).atStartOfDay().toInstant(ZoneOffset.UTC)));
 		person.setDeathDate(Date.from(LocalDate.of(2023, Month.AUGUST, 12).atStartOfDay().toInstant(ZoneOffset.UTC)));
-		Integer ageInMonths = person.getAgeInMonths();
-		assertEquals(12, ageInMonths);
+		assertEquals(12, person.getAgeInMonths());
 	}
 
 	@Test
@@ -863,8 +859,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		Person person = new Person();
 		person.setBirthdate(Date.from(LocalDate.of(2024, Month.JUNE, 1).atStartOfDay().toInstant(ZoneOffset.UTC)));
 		person.setDeathDate(Date.from(LocalDate.of(2024, Month.JULY, 1).atStartOfDay().toInstant(ZoneOffset.UTC)));
-		Integer ageInWeeks = person.getAgeInWeeks();
-		assertEquals(4, ageInWeeks);
+		assertEquals(4, person.getAgeInWeeks());
 	}
 
 	@Test
@@ -872,8 +867,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		Person person = new Person();
 		person.setBirthdate(Date.from(LocalDate.of(2024, Month.AUGUST, 1).atStartOfDay().toInstant(ZoneOffset.UTC)));
 		person.setDeathDate(Date.from(LocalDate.of(2024, Month.AUGUST, 5).atStartOfDay().toInstant(ZoneOffset.UTC)));
-		Integer ageInDays = person.getAgeInDays();
-		assertEquals(4, ageInDays);
+		assertEquals(4, person.getAgeInDays());
 	}
 	
 	// helper class
