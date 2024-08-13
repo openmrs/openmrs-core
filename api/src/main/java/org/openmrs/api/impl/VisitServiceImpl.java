@@ -278,15 +278,15 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	}
 
 	/**
-	 * @see org.openmrs.api.VisitService#getVisitsByPatient(org.openmrs.Patient, java.util.Date, java.util.Date)
+	 * @see org.openmrs.api.VisitService#getOverlappingVisitsByPatient(org.openmrs.Patient, java.util.Date, java.util.Date, boolean)
 	 */
 	@Override
-	public List<Visit> getVisitsByPatient(Patient patient, Date maxStartDatetime, Date minEndDatetime) throws APIException {
+	public List<Visit> getOverlappingVisitsByPatient(Patient patient, Date fromDateTime, Date toDateTime, boolean includeVoided) throws APIException {
 		if (patient == null || patient.getId() == null) {
 			return Collections.emptyList();
 		}
-		return dao.getVisits(null, Collections.singletonList(patient), null, null, null, maxStartDatetime, minEndDatetime,
-			null, null, true, false);
+		return dao.getVisits(null, Collections.singletonList(patient), null, null, null, fromDateTime, toDateTime,
+			null, null, true, includeVoided);
 	}
 	
 	/**
