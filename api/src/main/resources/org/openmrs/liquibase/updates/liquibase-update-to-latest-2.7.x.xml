@@ -106,6 +106,7 @@
 				<tableExists tableName="concept_reference_range"/>
 			</not>
 		</preConditions>
+		<comment>Creating 'concept_reference_range' table</comment>
 		<createTable tableName="concept_reference_range" >
 			<column name="concept_reference_range_id" type="int" autoIncrement="true">
 				<constraints primaryKey="true" nullable="false"/>
@@ -144,6 +145,7 @@
 				<tableExists tableName="obs_reference_range"/>
 			</not>
 		</preConditions>
+		<comment>Creating 'obs_reference_range' table</comment>
 		<createTable tableName="obs_reference_range" >
 			<column name="obs_reference_range_id" type="int" autoIncrement="true">
 				<constraints primaryKey="true" nullable="false"/>
