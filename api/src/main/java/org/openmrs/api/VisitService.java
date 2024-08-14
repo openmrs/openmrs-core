@@ -306,20 +306,6 @@ public interface VisitService extends OpenmrsService {
 	        throws APIException;
 	
 	/**
-	 * Retrieves a list of visits for a given patient that fall within the specified date range.
-	 * This includes any visit that starts, ends, or overlaps with the provided date range.
-	 * @param patient
-	 * @param fromDateTime
-	 * @param toDateTime
-	 * @param includeVoided
-	 * @return a list of visits
-	 * @throws APIException
-	 */
-	@Authorized(PrivilegeConstants.GET_VISITS)
-	public List<Visit> getOverlappingVisitsByPatient(Patient patient, Date fromDateTime, Date toDateTime, boolean includeVoided)
-	        throws APIException;
-	
-	/**
 	 * @return all {@link VisitAttributeType}s
 	 * <strong>Should</strong> return all visit attribute types including retired ones
 	 */
