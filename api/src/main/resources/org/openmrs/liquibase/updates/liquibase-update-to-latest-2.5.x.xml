@@ -403,4 +403,102 @@
         </sql>
     </changeSet>
 
+	<changeSet id="20240813-form-resource-description" author="loliveira">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="form_resource" columnName="description"/>
+			</not>
+		</preConditions>
+		<comment>Adding "description" column to form_resource table</comment>
+		<addColumn tableName="form_resource">
+			<column name="description" type="varchar(255)">
+				<constraints nullable="true"/>
+			</column>
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="20240813-form-resource-creator" author="loliveira">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="form_resource" columnName="creator"/>
+			</not>
+		</preConditions>
+		<comment>Adding "creator" column to form_resource table</comment>
+		<addColumn tableName="form_resource">
+			<column name="creator" type="int">
+				<constraints nullable="true"/>
+			</column>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="20240813-form-resource-date-created" author="loliveira">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="form_resource" columnName="date_created"/>
+			</not>
+		</preConditions>
+		<comment>Adding "date created" column to form_resource table</comment>
+		<addColumn tableName="form_resource">
+			<column name="date_created" type="datetime">
+				<constraints nullable="true"/>
+			</column>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="20240813-form-resource-retired" author="loliveira">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="form_resource" columnName="retired"/>
+			</not>
+		</preConditions>
+		<comment>Adding "retired" column to form_resource table</comment>
+		<addColumn tableName="form_resource">
+			<column name="retired" type="tinyint(1)">
+				<constraints nullable="true"/>
+			</column>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="20240813-form-resource-date-retired" author="loliveira">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="form_resource" columnName="date_retired"/>
+			</not>
+		</preConditions>
+		<comment>Adding "date created" column to form_resource table</comment>
+		<addColumn tableName="form_resource">
+			<column name="date_retired" type="datetime">
+				<constraints nullable="true"/>
+			</column>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="20240813-form-resource-retired-by" author="loliveira">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="form_resource" columnName="retired_by"/>
+			</not>
+		</preConditions>
+		<comment>Adding "retired by" column to form_resource table</comment>
+		<addColumn tableName="form_resource">
+			<column name="retired_by" type="int">
+				<constraints nullable="true"/>
+			</column>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="20240813-form-resource-retired-reason" author="loliveira">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="form_resource" columnName="retired_reason"/>
+			</not>
+		</preConditions>
+		<comment>Adding "retired reason" column to form_resource table</comment>
+		<addColumn tableName="form_resource">
+			<column name="retired_reason" type="varchar(255)">
+				<constraints nullable="true"/>
+			</column>
+		</addColumn>
+	</changeSet>
+
 </databaseChangeLog>
