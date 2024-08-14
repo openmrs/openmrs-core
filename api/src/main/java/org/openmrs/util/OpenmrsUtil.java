@@ -72,10 +72,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptNumeric;
+import org.openmrs.ConceptReferenceRange;
 import org.openmrs.Drug;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
+import org.openmrs.Person;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflowState;
@@ -103,6 +105,7 @@ import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.PersonAttributeTypeEditor;
 import org.openmrs.propertyeditor.ProgramEditor;
 import org.openmrs.propertyeditor.ProgramWorkflowStateEditor;
+import org.openmrs.validator.ObsValidator;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -2148,6 +2151,35 @@ public class OpenmrsUtil {
 	 */
 	public static Set<String> getDeclaredFields(Class<?> clazz) {
 		return Arrays.stream(clazz.getDeclaredFields()).map(Field::getName).collect(Collectors.toSet());
+	}
+
+	/**
+	 * Checks if a given value is within the normal reference range for a concept and person.
+	 *
+	 * @param value The value to check
+	 * @param concept The concept associated with the value
+	 * @param person The person associated with the observation
+	 * @return A map where the `key` is a boolean indicating if the value is within range, and the `value` contains a message
+	 * 
+	 * @since 2.7.0
+	 */
+	public static Map<Boolean, String> isInNormalReferenceRange(Float value, Concept concept, Person person) {
+		Map<Boolean, String> result = new HashMap<>();
+		
+		ConceptReferenceRange conceptReferenceRange = ObsValidator.evaluateReferenceRange(concept, person);
+		
+		if (conceptReferenceRange != null) {
+			if ((conceptReferenceRange.getHiAbsolute() != null && conceptReferenceRange.getHiAbsolute() < value) ||
+				(conceptReferenceRange.getLowAbsolute() != null && conceptReferenceRange.getLowAbsolute() > value)) {
+				result.put(false,  "Expected value between " + conceptReferenceRange.getLowAbsolute() + " and " + conceptReferenceRange.getHiAbsolute());
+			} else {
+				result.put(true, "");
+			}
+		} else {
+			result.put(true, "");
+		}
+		
+		return result;
 	}
 	
 }

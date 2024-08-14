@@ -10,7 +10,6 @@
 package org.openmrs.validator;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -20,6 +19,7 @@ import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptReferenceRange;
 import org.openmrs.Obs;
 import org.openmrs.ObsReferenceRange;
+import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -260,13 +260,12 @@ public class ObsValidator implements Validator {
 	}
 
 	/**
-	 * This method validates Obs' concept values.
-	 * 
+	 * This method validates Obs' numeric values:
 	 * <ol>
-	 *     <li>Validates if high absolute and low absolute are within the valid range</li>
-	 *     <li>Validates if patient's age is within the valid range</li>
+	 *     <li>Validates Obs in relation to criteria e.g. checks patient's age is within the valid range</li>
+	 *     <li>Validates if Obs' numeric value is within the valid range; i.e. >= low absolute && <= high absolute.</li>
+	 *     <li>Sets field errors if numeric value is outside the valid range</li>
 	 * <ol/>
-	 * in the {@link ConceptReferenceRange}.
 	 *
 	 * @param obs Observation to validate
 	 * @param errors Errors to record validation issues
@@ -274,8 +273,25 @@ public class ObsValidator implements Validator {
 	 * @since 2.7.0
 	 */
 	private void validateConceptReferenceRange(Obs obs, Errors errors) {
-		Concept concept = obs.getConcept();
+		ConceptReferenceRange conceptReferenceRange = evaluateReferenceRange(obs.getConcept(), obs.getPerson());
 
+		if (conceptReferenceRange != null) {
+			validateAbsoluteRanges(obs, conceptReferenceRange, errors);
+			setObsReferenceRange(obs, conceptReferenceRange);
+		}
+	}
+
+	/**
+	 * Evaluates the criteria and return the most strict {@link ConceptReferenceRange} for a given concept.
+	 * It considers all valid ranges that match the criteria for the person.
+	 *
+	 * @param concept The concept to evaluate
+	 * @param person The person for whom the range is being evaluated
+	 * @return The strictest {@link ConceptReferenceRange}, or null if no valid range is found
+	 * 
+	 * @since 2.7.0
+	 */
+	public static ConceptReferenceRange evaluateReferenceRange(Concept concept, Person person) {
 		if (concept != null && concept.getDatatype() != null && concept.getDatatype().isNumeric()) {
 			List<ConceptReferenceRange> referenceRanges = Context.getConceptService()
 				.getConceptReferenceRangesByConceptId(concept.getConceptId());
@@ -285,35 +301,36 @@ public class ObsValidator implements Validator {
 				List<ConceptReferenceRange> validRanges = new ArrayList<>();
 
 				for (ConceptReferenceRange referenceRange : referenceRanges) {
-					if (utility.evaluateCriteria(referenceRange.getCriteria(), obs.getPerson())) {
+					if (utility.evaluateCriteria(referenceRange.getCriteria(), person)) {
 						validRanges.add(referenceRange);
 					}
 				}
 
 				if (!validRanges.isEmpty()) {
-					ConceptReferenceRange strictestRange = findStrictestRange(validRanges);
-
-					validateAbsoluteRanges(obs, strictestRange, errors);
-					setObsReferenceRange(obs, strictestRange);
+					return findStrictestReferenceRange(validRanges);
 				}
 			}
 		}
+		return null;
 	}
-
+	
 	/**
-	 * Finds the strictest range based on the lower and upper bounds.
+	 * Finds the strictest {@link ConceptReferenceRange} from a list of valid ranges.
+	 * The strictest range is determined by having the highest lower bound and the lowest upper bound.
 	 *
-	 * @param validRanges the list of valid ConceptReferenceRanges
-	 * @return the ConceptReferenceRange with the strictest bounds
+	 * @param conceptReferenceRanges A list of valid {@link ConceptReferenceRange} objects
+	 * @return The strictest {@link ConceptReferenceRange} constructed from the strictest bounds
+	 * 
+	 * @since 2.7.0
 	 */
-	private ConceptReferenceRange findStrictestRange(List<ConceptReferenceRange> validRanges) {
-		Double strictestLowAbsolute = validRanges.stream()
+	public static ConceptReferenceRange findStrictestReferenceRange(List<ConceptReferenceRange> conceptReferenceRanges) {
+		Double strictestLowAbsolute = conceptReferenceRanges.stream()
 			.map(ConceptReferenceRange::getLowAbsolute)
 			.filter(Objects::nonNull)
 			.max(Double::compareTo)
 			.orElse(null);
 
-		Double strictestHiAbsolute = validRanges.stream()
+		Double strictestHiAbsolute = conceptReferenceRanges.stream()
 			.map(ConceptReferenceRange::getHiAbsolute)
 			.filter(Objects::nonNull)
 			.min(Double::compareTo)

@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -38,10 +37,12 @@ import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -59,8 +60,8 @@ import org.openmrs.Concept;
 import org.openmrs.GlobalProperty;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.Person;
 import org.openmrs.User;
-import org.openmrs.api.ConceptService;
 import org.openmrs.api.InvalidCharactersPasswordException;
 import org.openmrs.api.ShortPasswordException;
 import org.openmrs.api.WeakPasswordException;
@@ -1022,5 +1023,72 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		descriptor = "set:30 | set:29";
 		ret = OpenmrsUtil.conceptListHelper(descriptor);
 		assertEquals(1, ret.size());
+	}
+
+	@Test
+	public void isInNormalReferenceRange_shouldReturnTrueWhenValueIsWithinRange() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.YEAR, -10);
+		Person person = new Person(10);
+		person.setBirthdate(calendar.getTime());
+
+		Map<Boolean, String> result = OpenmrsUtil.isInNormalReferenceRange(
+			90.0f,
+			Context.getConceptService().getConcept(4090),
+			person
+		);
+
+		assertTrue(result.containsKey(true));
+	}
+
+	@Test
+	public void isInNormalReferenceRange_shouldReturnFalseWhenValueIsBelowLowAbsolute() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.YEAR, -10);
+		Person person = new Person(10);
+		person.setBirthdate(calendar.getTime());
+		
+		Map<Boolean, String> result = OpenmrsUtil.isInNormalReferenceRange(
+			5.0f,
+			Context.getConceptService().getConcept(4090),
+			person
+		);
+
+		assertTrue(result.containsKey(false));
+		assertEquals("Expected value between 80.0 and 140.0", result.get(false));
+	}
+
+	@Test
+	public void isInNormalReferenceRange_shouldReturnFalseWhenValueIsAboveHiAbsolute() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.YEAR, -10);
+		Person person = new Person(10);
+		person.setBirthdate(calendar.getTime());
+		
+		Map<Boolean, String> result = OpenmrsUtil.isInNormalReferenceRange(
+			155.0f,
+			Context.getConceptService().getConcept(4090),
+			person
+		);
+		
+		assertTrue(result.containsKey(false));
+		assertEquals("Expected value between 80.0 and 140.0", result.get(false));
+	}
+
+	@Test
+	public void isInNormalReferenceRange_shouldReturnTrueWhenNoReferenceRangeIsAvailable() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.YEAR, -10);
+		Person person = new Person(10);
+		person.setBirthdate(calendar.getTime());
+
+		Map<Boolean, String> result = OpenmrsUtil.isInNormalReferenceRange(
+			120.0f,
+			new Concept(),
+			person
+		);
+
+		assertTrue(result.containsKey(true));
+		assertEquals("", result.get(true));
 	}
 }
