@@ -34,7 +34,6 @@ import liquibase.resource.CompositeResourceAccessor;
 import liquibase.resource.FileSystemResourceAccessor;
 import liquibase.resource.ResourceAccessor;
 import org.apache.commons.io.IOUtils;
-import org.openmrs.annotation.Authorized;
 import org.openmrs.api.context.Context;
 import org.openmrs.liquibase.ChangeLogDetective;
 import org.openmrs.liquibase.ChangeLogVersionFinder;
@@ -586,8 +585,8 @@ public class DatabaseUpdater {
 	 * 
 	 * @return list of change sets that both have and haven't been run
 	 */
-	@Authorized(PrivilegeConstants.GET_DATABASE_CHANGES)
 	public static List<OpenMRSChangeSet> getDatabaseChanges() throws Exception {
+		Context.requirePrivilege(PrivilegeConstants.GET_DATABASE_CHANGES);
 		List<OpenMRSChangeSet> result = new ArrayList<>();
 		
 		String initialSnapshotVersion = changeLogDetective.getInitialLiquibaseSnapshotVersion(CONTEXT,
@@ -633,8 +632,8 @@ public class DatabaseUpdater {
 	 * @param liquibaseProvider provides access to a Liquibase instance
 	 * @return list of change sets that were not run yet.
 	 */
-	@Authorized(PrivilegeConstants.GET_DATABASE_CHANGES)
 	public static List<OpenMRSChangeSet> getUnrunDatabaseChanges(LiquibaseProvider liquibaseProvider) throws Exception {
+		Context.requirePrivilege(PrivilegeConstants.GET_DATABASE_CHANGES);
 		String initialSnapshotVersion = changeLogDetective.getInitialLiquibaseSnapshotVersion(CONTEXT, liquibaseProvider);
 		log.debug("initial snapshot version is '{}'", initialSnapshotVersion);
 		
@@ -656,8 +655,8 @@ public class DatabaseUpdater {
 	 * @param changeLogFilenames the filenames of all files to search for unrun changesets
 	 * @return list of change sets
 	 */
-	@Authorized(PrivilegeConstants.GET_DATABASE_CHANGES)
 	public static List<OpenMRSChangeSet> getUnrunDatabaseChanges(String... changeLogFilenames) {
+		Context.requirePrivilege(PrivilegeConstants.GET_DATABASE_CHANGES);
 		log.debug("looking for un-run change sets in '{}'", Arrays.toString(changeLogFilenames));
 		
 		Database database = null;
