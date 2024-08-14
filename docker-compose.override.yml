@@ -35,6 +35,5 @@ services:
             OMRS_BUILD_GOALS: ${OMRS_BUILD_GOALS:-}
             OMRS_BUILD_ARGS: ${OMRS_BUILD_ARGS:-}
         volumes:
-            - ~/.m2:/root/.m2
             - ./:/openmrs_core
         restart: "no"
