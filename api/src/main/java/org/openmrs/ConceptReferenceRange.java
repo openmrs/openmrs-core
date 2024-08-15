@@ -58,8 +58,6 @@ public class ConceptReferenceRange extends BaseReferenceRange implements Openmrs
 	
 	public ConceptReferenceRange() {
 	}
-
-	// Setters and getters
 	
 	/**
 	 * @return Returns the conceptRangeId.
@@ -96,7 +94,7 @@ public class ConceptReferenceRange extends BaseReferenceRange implements Openmrs
 	/**
 	 * @return Returns the ConceptNumeric.
 	 */
-	public ConceptNumeric getConcept() {
+	public ConceptNumeric getConceptNumeric() {
 		return conceptNumeric;
 	}
 
@@ -109,7 +107,6 @@ public class ConceptReferenceRange extends BaseReferenceRange implements Openmrs
 
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
-	 * @since 2.7.0
 	 */
 	@Override
 	public Integer getId() {
@@ -118,7 +115,6 @@ public class ConceptReferenceRange extends BaseReferenceRange implements Openmrs
 
 	/**
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
-	 * @since 2.7.0
 	 */
 	@Override
 	public void setId(Integer id) {

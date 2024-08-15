@@ -2159,27 +2159,22 @@ public class OpenmrsUtil {
 	 * @param value The value to check
 	 * @param concept The concept associated with the value
 	 * @param person The person associated with the observation
-	 * @return A map where the `key` is a boolean indicating if the value is within range, and the `value` contains a message
+	 * @return Error message
 	 * 
 	 * @since 2.7.0
 	 */
-	public static Map<Boolean, String> isInNormalReferenceRange(Float value, Concept concept, Person person) {
-		Map<Boolean, String> result = new HashMap<>();
-		
-		ConceptReferenceRange conceptReferenceRange = ObsValidator.evaluateReferenceRange(concept, person);
-		
-		if (conceptReferenceRange != null) {
-			if ((conceptReferenceRange.getHiAbsolute() != null && conceptReferenceRange.getHiAbsolute() < value) ||
-				(conceptReferenceRange.getLowAbsolute() != null && conceptReferenceRange.getLowAbsolute() > value)) {
-				result.put(false,  "Expected value between " + conceptReferenceRange.getLowAbsolute() + " and " + conceptReferenceRange.getHiAbsolute());
-			} else {
-				result.put(true, "");
-			}
-		} else {
-			result.put(true, "");
+	public static String isValidNumericValue(Float value, Concept concept, Person person) {
+		ConceptReferenceRange conceptReferenceRange = ObsValidator.getReferenceRange(concept, person);
+		if (conceptReferenceRange == null) {
+			return "";
 		}
-		
-		return result;
+
+		if ((conceptReferenceRange.getHiAbsolute() != null && conceptReferenceRange.getHiAbsolute() < value) ||
+			(conceptReferenceRange.getLowAbsolute() != null && conceptReferenceRange.getLowAbsolute() > value)) {
+			return String.format("Expected value between %s and %s", conceptReferenceRange.getLowAbsolute(), conceptReferenceRange.getHiAbsolute());
+		} else {
+			return "";
+		}
 	}
 	
 }

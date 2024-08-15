@@ -139,7 +139,7 @@
 
 	</changeSet>
 
-	<changeSet author="Isaiah (generated)" id="202408071820-1">
+	<changeSet author="Isaiah (generated)" id="202408151820-1">
 		<preConditions onError="HALT" onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="obs_reference_range"/>
@@ -151,7 +151,7 @@
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="obs_id" type="INT">
-				<constraints nullable="false"/>
+				<constraints nullable="false" unique="true"/>
 			</column>
 			<column name="hi_absolute" type="DOUBLE"/>
 			<column name="hi_critical" type="DOUBLE"/>

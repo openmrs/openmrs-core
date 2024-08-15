@@ -273,7 +273,7 @@ public class ObsValidator implements Validator {
 	 * @since 2.7.0
 	 */
 	private void validateConceptReferenceRange(Obs obs, Errors errors) {
-		ConceptReferenceRange conceptReferenceRange = evaluateReferenceRange(obs.getConcept(), obs.getPerson());
+		ConceptReferenceRange conceptReferenceRange = getReferenceRange(obs.getConcept(), obs.getPerson());
 
 		if (conceptReferenceRange != null) {
 			validateAbsoluteRanges(obs, conceptReferenceRange, errors);
@@ -291,32 +291,40 @@ public class ObsValidator implements Validator {
 	 * 
 	 * @since 2.7.0
 	 */
-	public static ConceptReferenceRange evaluateReferenceRange(Concept concept, Person person) {
-		if (concept != null && concept.getDatatype() != null && concept.getDatatype().isNumeric()) {
-			List<ConceptReferenceRange> referenceRanges = Context.getConceptService()
-				.getConceptReferenceRangesByConceptId(concept.getConceptId());
+	public static ConceptReferenceRange getReferenceRange(Concept concept, Person person) {
+		if (concept == null || concept.getDatatype() == null || !concept.getDatatype().isNumeric()) {
+			return null;
+		}
 
-			if (!referenceRanges.isEmpty()) {
-				ConceptReferenceRangeUtility utility = new ConceptReferenceRangeUtility();
-				List<ConceptReferenceRange> validRanges = new ArrayList<>();
+		List<ConceptReferenceRange> referenceRanges = Context.getConceptService()
+			.getConceptReferenceRangesByConceptId(concept.getConceptId());
 
-				for (ConceptReferenceRange referenceRange : referenceRanges) {
-					if (utility.evaluateCriteria(referenceRange.getCriteria(), person)) {
-						validRanges.add(referenceRange);
-					}
-				}
+		if (referenceRanges.isEmpty()) {
+			return null;
+		}
 
-				if (!validRanges.isEmpty()) {
-					return findStrictestReferenceRange(validRanges);
-				}
+		ConceptReferenceRangeUtility referenceRangeUtility = new ConceptReferenceRangeUtility();
+		List<ConceptReferenceRange> validRanges = new ArrayList<>();
+
+		for (ConceptReferenceRange referenceRange : referenceRanges) {
+			if (referenceRangeUtility.evaluateCriteria(referenceRange.getCriteria(), person)) {
+				validRanges.add(referenceRange);
 			}
 		}
-		return null;
+
+		if (validRanges.isEmpty()) {
+			return null;
+		}
+		return findStrictestReferenceRange(validRanges);
 	}
 	
 	/**
 	 * Finds the strictest {@link ConceptReferenceRange} from a list of valid ranges.
 	 * The strictest range is determined by having the highest lower bound and the lowest upper bound.
+	 * e.g.
+	 * If ConceptReferenceRange one has a range of 80-150.
+	 * and ConceptReferenceRange two has a range of 60 - 140,
+	 * the "strictest" range will be 80-140. 
 	 *
 	 * @param conceptReferenceRanges A list of valid {@link ConceptReferenceRange} objects
 	 * @return The strictest {@link ConceptReferenceRange} constructed from the strictest bounds
@@ -354,10 +362,20 @@ public class ObsValidator implements Validator {
 	 */
 	private void validateAbsoluteRanges(Obs obs, ConceptReferenceRange conceptReferenceRange, Errors errors) {
 		if (conceptReferenceRange.getHiAbsolute() != null && conceptReferenceRange.getHiAbsolute() < obs.getValueNumeric()) {
-			errors.rejectValue("valueNumeric", "error.value.outOfRange.high");
+			errors.rejectValue(
+				"valueNumeric", 
+				"error.value.outOfRange.high", 
+				new Object[] { conceptReferenceRange.getLowAbsolute() },
+				null
+			);
 		}
 		if (conceptReferenceRange.getLowAbsolute() != null && conceptReferenceRange.getLowAbsolute() > obs.getValueNumeric()) {
-			errors.rejectValue("valueNumeric", "error.value.outOfRange.low");
+			errors.rejectValue(
+				"valueNumeric", 
+				"error.value.outOfRange.low", 
+				new Object[] { conceptReferenceRange.getLowAbsolute() },
+				null
+			);
 		}
 	}
 

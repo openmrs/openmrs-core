@@ -42,7 +42,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Properties;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -1026,69 +1025,50 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void isInNormalReferenceRange_shouldReturnTrueWhenValueIsWithinRange() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.YEAR, -10);
-		Person person = new Person(10);
-		person.setBirthdate(calendar.getTime());
-
-		Map<Boolean, String> result = OpenmrsUtil.isInNormalReferenceRange(
-			90.0f,
-			Context.getConceptService().getConcept(4090),
-			person
-		);
-
-		assertTrue(result.containsKey(true));
-	}
-
-	@Test
-	public void isInNormalReferenceRange_shouldReturnFalseWhenValueIsBelowLowAbsolute() {
+	public void isValidNumericValue_shouldReturnErrorMessageWhenValueIsBelowLowAbsolute() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.add(Calendar.YEAR, -10);
 		Person person = new Person(10);
 		person.setBirthdate(calendar.getTime());
 		
-		Map<Boolean, String> result = OpenmrsUtil.isInNormalReferenceRange(
+		String result = OpenmrsUtil.isValidNumericValue(
 			5.0f,
 			Context.getConceptService().getConcept(4090),
 			person
 		);
 
-		assertTrue(result.containsKey(false));
-		assertEquals("Expected value between 80.0 and 140.0", result.get(false));
+		assertEquals("Expected value between 80.0 and 140.0", result);
 	}
 
 	@Test
-	public void isInNormalReferenceRange_shouldReturnFalseWhenValueIsAboveHiAbsolute() {
+	public void isValidNumericValue_shouldReturnErrorMessageWhenValueIsAboveHiAbsolute() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.add(Calendar.YEAR, -10);
 		Person person = new Person(10);
 		person.setBirthdate(calendar.getTime());
 		
-		Map<Boolean, String> result = OpenmrsUtil.isInNormalReferenceRange(
+		String result = OpenmrsUtil.isValidNumericValue(
 			155.0f,
 			Context.getConceptService().getConcept(4090),
 			person
 		);
 		
-		assertTrue(result.containsKey(false));
-		assertEquals("Expected value between 80.0 and 140.0", result.get(false));
+		assertEquals("Expected value between 80.0 and 140.0", result);
 	}
 
 	@Test
-	public void isInNormalReferenceRange_shouldReturnTrueWhenNoReferenceRangeIsAvailable() {
+	public void isValidNumericValue_shouldNotReturnErrorMessageWhenNoReferenceRangeIsAvailable() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.add(Calendar.YEAR, -10);
 		Person person = new Person(10);
 		person.setBirthdate(calendar.getTime());
 
-		Map<Boolean, String> result = OpenmrsUtil.isInNormalReferenceRange(
+		String result = OpenmrsUtil.isValidNumericValue(
 			120.0f,
 			new Concept(),
 			person
 		);
 
-		assertTrue(result.containsKey(true));
-		assertEquals("", result.get(true));
+		assertEquals("", result);
 	}
 }

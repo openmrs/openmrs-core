@@ -11,6 +11,7 @@ package org.openmrs.validator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -565,10 +566,10 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfObsWithinRange() {
+	public void validate_shouldPassValidationIfObsValueWithinRange() {
 		Obs obs = new Obs();
-		Person person = new Person(1);
-		calendar.add(Calendar.YEAR, -5);
+		Person person = new Person(10);
+		calendar.add(Calendar.YEAR, -10);
 		
 		person.setBirthdate(calendar.getTime());
 		obs.setPerson(person);
@@ -608,11 +609,33 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void shouldNotSetObsReferenceRangeIfCriteriaDoesNotMatch() {
+		Person person = new Person(1);
+		calendar.add(Calendar.YEAR, -6);
+		person.setBirthdate(calendar.getTime());
+
+		Obs obs = new Obs();
+		obs.setPerson(person);
+		obs.setConcept(Context.getConceptService().getConcept(409000));
+		obs.setValueNumeric(8.0);
+		obs.setObsDatetime(new Date());
+
+		Errors errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+
+		assertTrue(errors.hasErrors());
+		assertNull(obs.getReferenceRange());
+	}
+
+	/**
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 * 
 	 * Fetching conceptReferenceRanges by concept id (4090) returns 2 items with absolute value bounds;- 80-150 and 60-140
 	 */
 	@Test
-	public void validate_shouldSetObsReferenceRangeToStrictBounds() {
+	public void shouldSetErrorIfObsValueIsHigherThanStrictHigherBound() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.add(Calendar.YEAR, -10);
 		Person person = new Person(10);

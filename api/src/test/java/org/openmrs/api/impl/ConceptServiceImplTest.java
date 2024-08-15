@@ -972,7 +972,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		conceptService.saveConceptReferenceRange(conceptReferenceRange);
 
 		List<ConceptReferenceRange> savedConceptReferenceRange = conceptService.getConceptReferenceRangesByConceptId(conceptNumeric.getId());
-		assertFalse(savedConceptReferenceRange.isEmpty());
+		assertEquals(1, savedConceptReferenceRange.size());
 		assertEquals(conceptReferenceRange.getHiAbsolute(), savedConceptReferenceRange.get(0).getHiAbsolute());
 	}
 	

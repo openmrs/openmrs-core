@@ -1248,7 +1248,8 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	}
 
 	/**
-	 * @return Returns the obsReferenceRange.
+	 * Returns the ObsReferenceRange
+	 * @return obsReferenceRange.
 	 * 
 	 * @since 2.7.0
 	 */
@@ -1257,6 +1258,8 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	}
 	
 	/**
+	 * Sets ObsReferenceRange
+	 * 
 	 * @param referenceRange ObsReferenceRange to set.
 	 *               
 	 * @since 2.7.0

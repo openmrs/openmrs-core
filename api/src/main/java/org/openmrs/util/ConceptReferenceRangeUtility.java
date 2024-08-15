@@ -19,8 +19,6 @@ import org.openmrs.Obs;
 import org.openmrs.Person;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.StringWriter;
 import java.util.Collections;
@@ -33,20 +31,16 @@ import java.util.List;
  */
 public class ConceptReferenceRangeUtility {
 	
-	private static final Logger logger = LoggerFactory.getLogger(ConceptReferenceRangeUtility.class);
-	
 	public ConceptReferenceRangeUtility() {
 	}
 	
 	/**
 	 * This method evaluates the given criteria against the provided person/patient.
 	 *
-	 * @param criteria the criteria string to evaluate e.g. "$fn.getAge($patient, 'YEARS') > 1 && $fn.getAge($patient, 'YEARS') < 10"
+	 * @param criteria the criteria string to evaluate e.g. "$patient.getAge() > 1"
 	 * @param person person object containing attributes to be used in the criteria
 	 *                  
 	 * @return true if the criteria evaluates to true, false otherwise
-	 * 
-	 * @since 2.7.0
 	 */
 	public boolean evaluateCriteria(String criteria, Person person) {
 		if (person == null) {
@@ -69,8 +63,7 @@ public class ConceptReferenceRangeUtility {
 		
 		try {
 			velocityEngine.evaluate(velocityContext, writer, ConceptReferenceRangeUtility.class.getName(), wrappedCriteria);
-			String evaluatedCriteria = writer.toString();
-			return Boolean.parseBoolean(evaluatedCriteria);
+			return Boolean.parseBoolean(writer.toString());
 		}
 		catch (ParseErrorException e) {
 			throw new APIException("An error occurred while evaluating criteria: Invalid criteria: " + criteria, e);
@@ -87,8 +80,6 @@ public class ConceptReferenceRangeUtility {
 	 *                   e.g "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434"
 	 *                   
 	 * @return Obs
-	 * 
-	 * @since 2.7.0
 	 */
 	public Obs getLatestObsByConcept(String conceptRef) {
 		Concept concept = Context.getConceptService().getConceptByReference(conceptRef);
@@ -109,7 +100,6 @@ public class ConceptReferenceRangeUtility {
 				false
 			);
 
-			// Return the latest Obs by sorting the list by dateCreated
 			return observations.isEmpty() ? null : observations.get(0);
 		}
 

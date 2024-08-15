@@ -41,7 +41,7 @@ public class ObsReferenceRange extends BaseReferenceRange {
 	private Integer obsReferenceRangeId;
 	
 	@OneToOne
-	@JoinColumn(name = "obs_id", referencedColumnName = "obs_id")
+	@JoinColumn(name = "obs_id", referencedColumnName = "obs_id", unique = true)
 	private Obs obs;
 
 	public ObsReferenceRange() {
@@ -49,8 +49,6 @@ public class ObsReferenceRange extends BaseReferenceRange {
 	
 	/**
 	 * Gets the obsReferenceRangeId
-	 * 
-	 * @since 2.7.0
 	 * 
 	 * @return Returns the obsReferenceRangeId.
 	 */
@@ -61,8 +59,6 @@ public class ObsReferenceRange extends BaseReferenceRange {
 	/**
 	 * Sets the obsReferenceRangeId
 	 * 
-	 * @since 2.7.0
-	 * 
 	 * @param obsReferenceRangeId The obsReferenceRangeId to set.
 	 */
 	public void setObsReferenceRangeId(Integer obsReferenceRangeId) {
@@ -71,8 +67,6 @@ public class ObsReferenceRange extends BaseReferenceRange {
 
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
-	 * 
-	 * @since 2.7.0
 	 */
 	public Integer getId() {
 		return getObsReferenceRangeId();
@@ -80,8 +74,6 @@ public class ObsReferenceRange extends BaseReferenceRange {
 
 	/**
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
-	 * 
-	 * @since 2.7.0
 	 */
 	public void setId(Integer id) {
 		setObsReferenceRangeId(id);
@@ -89,8 +81,6 @@ public class ObsReferenceRange extends BaseReferenceRange {
 
 	/**
 	 * Gets Obs
-	 * 
-	 * @since 2.7.0
 	 * 
 	 * @return Obs
 	 */
@@ -102,8 +92,6 @@ public class ObsReferenceRange extends BaseReferenceRange {
 	 * Sets obs 
 	 * 
 	 * @param obs Obs to set
-	 *            
-	 * @since 2.7.0
 	 */
 	public void setObs(Obs obs) {
 		this.obs = obs;

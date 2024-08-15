@@ -51,7 +51,7 @@ public abstract class BaseReferenceRange implements Serializable {
 	/**
 	 * Sets high absolute value of the referenceRange
 	 *
-	 *  @param hiAbsolute low critical value to set
+	 *  @param hiAbsolute high absolute value to set
 	 */
 	public void setHiAbsolute(Double hiAbsolute) {
 		this.hiAbsolute = hiAbsolute;
@@ -60,7 +60,7 @@ public abstract class BaseReferenceRange implements Serializable {
 	/**
 	 * Returns high critical value of the referenceRange
 	 *
-	 * @return hiCritical the high critical value
+	 * @return the high critical value
 	 */
 	public Double getHiCritical() {
 		return this.hiCritical;
@@ -69,7 +69,7 @@ public abstract class BaseReferenceRange implements Serializable {
 	/**
 	 * Sets high critical value of the referenceRange
 	 *
-	 *  @param hiCritical low critical value to set
+	 *  @param hiCritical high critical value to set
 	 */
 	public void setHiCritical(Double hiCritical) {
 		this.hiCritical = hiCritical;
@@ -78,7 +78,7 @@ public abstract class BaseReferenceRange implements Serializable {
 	/**
 	 * Returns high normal value of the referenceRange
 	 *
-	 * @return hiNormal the high normal value
+	 * @return the high normal value
 	 */
 	public Double getHiNormal() {
 		return this.hiNormal;
@@ -87,7 +87,7 @@ public abstract class BaseReferenceRange implements Serializable {
 	/**
 	 * Sets high normal value of the referenceRange
 	 *
-	 *  @param hiNormal low critical value to set
+	 *  @param hiNormal high normal value to set
 	 */
 	public void setHiNormal(Double hiNormal) {
 		this.hiNormal = hiNormal;
@@ -96,7 +96,7 @@ public abstract class BaseReferenceRange implements Serializable {
 	/**
 	 * Returns low absolute value of the referenceRange
 	 *
-	 * @return lowAbsolute the low absolute value
+	 * @return the low absolute value
 	 */
 	public Double getLowAbsolute() {
 		return this.lowAbsolute;
@@ -105,7 +105,7 @@ public abstract class BaseReferenceRange implements Serializable {
 	/**
 	 * Sets low absolute value of the referenceRange
 	 *
-	 * @param lowAbsolute low critical value to set
+	 * @param lowAbsolute low absolute value to set
 	 */
 	public void setLowAbsolute(Double lowAbsolute) {
 		this.lowAbsolute = lowAbsolute;
@@ -114,7 +114,7 @@ public abstract class BaseReferenceRange implements Serializable {
 	/**
 	 * Returns low critical value of the referenceRange
 	 *
-	 * @return lowCritical the low critical value
+	 * @return the low critical value
 	 */
 	public Double getLowCritical() {
 		return this.lowCritical;
@@ -130,9 +130,9 @@ public abstract class BaseReferenceRange implements Serializable {
 	}
 
 	/**
-	 * Returns low absolute value of the referenceRange
+	 * Returns low normal value of the referenceRange
 	 *
-	 * @return lowAbsolute the low absolute value
+	 * @return the low normal value
 	 */
 	public Double getLowNormal() {
 		return this.lowNormal;

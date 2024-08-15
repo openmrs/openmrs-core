@@ -2030,7 +2030,6 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Date newDate = new Date();
 
 		Obs obs = new Obs();
-		obs.setOrder(null);
 		obs.setConcept(concept);
 		obs.setPerson(patient);
 		obs.setEncounter(new Encounter(3));
