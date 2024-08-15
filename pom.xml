@@ -1217,7 +1217,7 @@
 		<luceneVersion>5.5.5</luceneVersion>
 		<aspectjVersion>1.9.22.1</aspectjVersion>
 		<jacksonVersion>2.17.2</jacksonVersion>
-		<junitVersion>5.10.3</junitVersion>
+		<junitVersion>5.11.0</junitVersion>
 		<mockitoVersion>3.12.4</mockitoVersion>
 		<hamcrestVersion>3.0</hamcrestVersion>
 
