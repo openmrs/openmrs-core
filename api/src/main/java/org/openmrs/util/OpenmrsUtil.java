@@ -2154,7 +2154,8 @@ public class OpenmrsUtil {
 	}
 
 	/**
-	 * Checks if a given value is within the normal reference range for a concept and person.
+	 * This method check if a given value is a valid numeric value for the subject person/patient in subject 
+	 * and for the concept. It checks if a given value is within the reference ranges.
 	 *
 	 * @param value The value to check
 	 * @param concept The concept associated with the value

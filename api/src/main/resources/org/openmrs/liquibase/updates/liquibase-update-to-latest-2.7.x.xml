@@ -100,7 +100,7 @@
         </sql>
     </changeSet>
 	
-	<changeSet author="Isaiah (generated)" id="202408021920-1">
+	<changeSet author="Isaiah (generated)" id="202408151920-1">
 		<preConditions onError="HALT" onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="concept_reference_range"/>
@@ -128,8 +128,6 @@
 			</column>
 		</createTable>
 
-		<!-- foreign key constraints -->
-
 		<addForeignKeyConstraint
 			baseTableName="concept_reference_range"
 			baseColumnNames="concept_id"
@@ -139,7 +137,7 @@
 
 	</changeSet>
 
-	<changeSet author="Isaiah (generated)" id="202408151820-1">
+	<changeSet author="Isaiah (generated)" id="202408152220-1">
 		<preConditions onError="HALT" onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="obs_reference_range"/>
@@ -160,6 +158,13 @@
 			<column name="low_critical" type="DOUBLE"/>
 			<column name="low_normal" type="DOUBLE"/>
 		</createTable>
+
+		<addForeignKeyConstraint
+			baseTableName="obs_reference_range"
+			baseColumnNames="obs_id"
+			constraintName="fk_obs_reference_range"
+			referencedTableName="obs"
+			referencedColumnNames="obs_id"/>
 	</changeSet>
 	
 </databaseChangeLog>
