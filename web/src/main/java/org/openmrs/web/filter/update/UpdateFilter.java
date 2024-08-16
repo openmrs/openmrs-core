@@ -589,9 +589,7 @@ public class UpdateFilter extends StartupFilter {
 	 * executed. TODO: Break this out into a separate (non-inner) class
 	 */
 	private class UpdateFilterCompletion {
-		
-		private final Future<Void> future;
-		
+
 		private String executingChangesetId = null;
 		
 		private List<String> changesetIds = new ArrayList<>();
@@ -789,7 +787,7 @@ public class UpdateFilter extends StartupFilter {
 				}
 			};
 
-			future = OpenmrsThreadPoolHolder.threadExecutor.submit(() -> { r.run(); return null; });
+			OpenmrsThreadPoolHolder.threadExecutor.submit(r);
 		}
 	}
 }
