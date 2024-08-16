@@ -16,6 +16,7 @@ import org.openmrs.VisitAttributeType;
 import org.openmrs.VisitType;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 
@@ -23,6 +24,8 @@ import java.util.Map;
  * A builder class for constructing instances of {@link VisitSearchCriteria}.
  * This builder allows for the flexible creation of {@link VisitSearchCriteria}
  * objects by providing a simple interface to set various fields.
+ * 
+ * @since 2.6.8
  */
 public class VisitSearchCriteriaBuilder {
 	
@@ -35,8 +38,8 @@ public class VisitSearchCriteriaBuilder {
 	private Date minEndDatetime;
 	private Date maxEndDatetime;
 	private Map<VisitAttributeType, String> serializedAttributeValues;
-	private boolean includeInactive = true;
-	private boolean includeVoided = true;
+	private boolean includeInactive = false;
+	private boolean includeVoided = false;
 	
 	/**
 	 * Constructs a new {@link VisitSearchCriteriaBuilder} instance.
@@ -49,7 +52,7 @@ public class VisitSearchCriteriaBuilder {
 	 * @param visitTypes the collection of {@link VisitType} to include.
 	 * @return the current instance of {@link VisitSearchCriteriaBuilder} for method chaining.
 	 */
-	public VisitSearchCriteriaBuilder setVisitTypes(Collection<VisitType> visitTypes) {
+	public VisitSearchCriteriaBuilder visitTypes(Collection<VisitType> visitTypes) {
 		this.visitTypes = visitTypes;
 		return this;
 	}
@@ -60,8 +63,19 @@ public class VisitSearchCriteriaBuilder {
 	 * @param patients the collection of {@link Patient} to include.
 	 * @return the current instance of {@link VisitSearchCriteriaBuilder} for method chaining.
 	 */
-	public VisitSearchCriteriaBuilder setPatients(Collection<Patient> patients) {
+	public VisitSearchCriteriaBuilder patients(Collection<Patient> patients) {
 		this.patients = patients;
+		return this;
+	}
+	
+	/**
+	 * Sets a single patient to include in the search criteria.
+	 * 
+	 * @param patient the {@link Patient} to include.
+	 * @return the current instance of {@link VisitSearchCriteriaBuilder} for method chaining.
+	 */
+	public VisitSearchCriteriaBuilder patient(Patient patient){
+		this.patients = Collections.singletonList(patient);
 		return this;
 	}
 	
@@ -71,7 +85,7 @@ public class VisitSearchCriteriaBuilder {
 	 * @param locations the collection of {@link Location} to include.
 	 * @return the current instance of {@link VisitSearchCriteriaBuilder} for method chaining.
 	 */
-	public VisitSearchCriteriaBuilder setLocations(Collection<Location> locations) {
+	public VisitSearchCriteriaBuilder locations(Collection<Location> locations) {
 		this.locations = locations;
 		return this;
 	}
@@ -82,7 +96,7 @@ public class VisitSearchCriteriaBuilder {
 	 * @param indications the collection of {@link Concept} to include.
 	 * @return the current instance of {@link VisitSearchCriteriaBuilder} for method chaining.
 	 */
-	public VisitSearchCriteriaBuilder setIndications(Collection<Concept> indications) {
+	public VisitSearchCriteriaBuilder indications(Collection<Concept> indications) {
 		this.indications = indications;
 		return this;
 	}
@@ -93,7 +107,7 @@ public class VisitSearchCriteriaBuilder {
 	 * @param minStartDatetime the minimum start {@link Date}.
 	 * @return the current instance of {@link VisitSearchCriteriaBuilder} for method chaining.
 	 */
-	public VisitSearchCriteriaBuilder setMinStartDatetime(Date minStartDatetime) {
+	public VisitSearchCriteriaBuilder minStartDatetime(Date minStartDatetime) {
 		this.minStartDatetime = minStartDatetime;
 		return this;
 	}
@@ -104,7 +118,7 @@ public class VisitSearchCriteriaBuilder {
 	 * @param maxStartDatetime the maximum start {@link Date}.
 	 * @return the current instance of {@link VisitSearchCriteriaBuilder} for method chaining.
 	 */
-	public VisitSearchCriteriaBuilder setMaxStartDatetime(Date maxStartDatetime) {
+	public VisitSearchCriteriaBuilder maxStartDatetime(Date maxStartDatetime) {
 		this.maxStartDatetime = maxStartDatetime;
 		return this;
 	}
@@ -115,7 +129,7 @@ public class VisitSearchCriteriaBuilder {
 	 * @param minEndDatetime the minimum end {@link Date}.
 	 * @return the current instance of {@link VisitSearchCriteriaBuilder} for method chaining.
 	 */
-	public VisitSearchCriteriaBuilder setMinEndDatetime(Date minEndDatetime) {
+	public VisitSearchCriteriaBuilder minEndDatetime(Date minEndDatetime) {
 		this.minEndDatetime = minEndDatetime;
 		return this;
 	}
@@ -126,7 +140,7 @@ public class VisitSearchCriteriaBuilder {
 	 * @param maxEndDatetime the maximum end {@link Date}.
 	 * @return the current instance of {@link VisitSearchCriteriaBuilder} for method chaining.
 	 */
-	public VisitSearchCriteriaBuilder setMaxEndDatetime(Date maxEndDatetime) {
+	public VisitSearchCriteriaBuilder maxEndDatetime(Date maxEndDatetime) {
 		this.maxEndDatetime = maxEndDatetime;
 		return this;
 	}
@@ -137,7 +151,7 @@ public class VisitSearchCriteriaBuilder {
 	 * @param serializedAttributeValues a map of {@link VisitAttributeType} to their corresponding serialized values.
 	 * @return the current instance of {@link VisitSearchCriteriaBuilder} for method chaining.
 	 */
-	public VisitSearchCriteriaBuilder setSerializedAttributeValues(Map<VisitAttributeType, String> serializedAttributeValues) {
+	public VisitSearchCriteriaBuilder serializedAttributeValues(Map<VisitAttributeType, String> serializedAttributeValues) {
 		this.serializedAttributeValues = serializedAttributeValues;
 		return this;
 	}
@@ -148,7 +162,7 @@ public class VisitSearchCriteriaBuilder {
 	 * @param includeInactive true to include inactive visits, false otherwise.
 	 * @return the current instance of {@link VisitSearchCriteriaBuilder} for method chaining.
 	 */
-	public VisitSearchCriteriaBuilder setIncludeInactive(boolean includeInactive) {
+	public VisitSearchCriteriaBuilder includeInactive(boolean includeInactive) {
 		this.includeInactive = includeInactive;
 		return this;
 	}
@@ -159,7 +173,7 @@ public class VisitSearchCriteriaBuilder {
 	 * @param includeVoided true to include voided visits, false otherwise.
 	 * @return the current instance of {@link VisitSearchCriteriaBuilder} for method chaining.
 	 */
-	public VisitSearchCriteriaBuilder setIncludeVoided(boolean includeVoided) {
+	public VisitSearchCriteriaBuilder includeVoided(boolean includeVoided) {
 		this.includeVoided = includeVoided;
 		return this;
 	}

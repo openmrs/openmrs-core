@@ -268,6 +268,7 @@ public interface VisitService extends OpenmrsService {
 	 */	
 	@Authorized(PrivilegeConstants.GET_VISITS)
 	public List<Visit> getVisits(VisitSearchCriteria visitSearchCriteria) throws APIException;
+	
 	/**
 	 * Gets all unvoided visits for the specified patient
 	 * 

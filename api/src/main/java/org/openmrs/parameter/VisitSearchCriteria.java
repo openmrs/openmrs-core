@@ -23,6 +23,8 @@ import java.util.Map;
  * The VisitSearchCriteria class encapsulates the criteria used for searching visits in the system.
  * It includes various fields that allow filtering visits based on different parameters such as visit type,
  * patient, location, and date ranges. It also provides options to include or exclude inactive and voided visits.
+ * 
+ * @since 2.6.8
  */
 public class VisitSearchCriteria {
 	

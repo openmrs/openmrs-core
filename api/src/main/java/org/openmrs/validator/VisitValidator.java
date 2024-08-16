@@ -10,7 +10,6 @@
 package org.openmrs.validator;
 
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -109,16 +108,16 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 		// check attributes
 		super.validateAttributes(visit, errors, Context.getVisitService().getAllVisitAttributeTypes());
 		
-		// Some tests are using non-existing patients. Skipping overlapping validation for such cases.
+		// Skipping validation if the patient is not set or not yet persisted
 		boolean nonExistingPatient = visit.getPatient() == null || visit.getPatient().getId() == null;
 		
 		// check for overlapping visits
-		if (disallowOverlappingVisits() && !nonExistingPatient) {
+		if (!nonExistingPatient && disallowOverlappingVisits()) {
 			VisitSearchCriteria visitSearchCriteria = new VisitSearchCriteriaBuilder()
-				.setPatients(Collections.singletonList(visit.getPatient()))
-				.setMaxStartDatetime(visit.getStopDatetime())
-				.setMinEndDatetime(visit.getStartDatetime())
-				.setIncludeVoided(false)
+				.patient(visit.getPatient())
+				.maxStartDatetime(visit.getStopDatetime())
+				.minEndDatetime(visit.getStartDatetime())
+				.includeVoided(false)
 				.build();
 			
 			List<Visit> overLappingVisits = Context.getVisitService().getVisits(visitSearchCriteria);
