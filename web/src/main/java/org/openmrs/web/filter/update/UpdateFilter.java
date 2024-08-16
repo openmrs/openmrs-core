@@ -590,6 +590,8 @@ public class UpdateFilter extends StartupFilter {
 	 */
 	private class UpdateFilterCompletion {
 
+		private Runnable r;
+
 		private String executingChangesetId = null;
 		
 		private List<String> changesetIds = new ArrayList<>();
@@ -628,6 +630,7 @@ public class UpdateFilter extends StartupFilter {
 		 */
 		public void start() {
 			setUpdatesRequired(true);
+			OpenmrsThreadPoolHolder.threadExecutor.submit(r);
 		}
 		
 		public synchronized void setMessage(String message) {
@@ -671,7 +674,7 @@ public class UpdateFilter extends StartupFilter {
 		 * This class does all the work of creating the desired database, user, updates, etc
 		 */
 		public UpdateFilterCompletion() {
-			Runnable r = new Runnable() {
+			 r = new Runnable() {
 				
 				/**
 				 * TODO split this up into multiple testable methods
@@ -786,8 +789,6 @@ public class UpdateFilter extends StartupFilter {
 					}
 				}
 			};
-
-			OpenmrsThreadPoolHolder.threadExecutor.submit(r);
 		}
 	}
 }
