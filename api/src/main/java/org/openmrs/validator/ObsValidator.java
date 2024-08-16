@@ -278,6 +278,8 @@ public class ObsValidator implements Validator {
 		if (conceptReferenceRange != null) {
 			validateAbsoluteRanges(obs, conceptReferenceRange, errors);
 			setObsReferenceRange(obs, conceptReferenceRange);
+		} else {
+			setObsReferenceRange(obs);
 		}
 	}
 
@@ -399,6 +401,35 @@ public class ObsValidator implements Validator {
 		obsRefRange.setObs(obs);
 
 		obs.setReferenceRange(obsRefRange);
+	}
+
+	/**
+	 * Builds and sets the ObsReferenceRange from concept numeric values.
+	 *
+	 * @param obs Observation to set the reference range
+	 *
+	 * @since 2.7.0
+	 */
+	private void setObsReferenceRange(Obs obs) {
+		if (obs.getConcept() == null) {
+			return;
+		}
+		
+		ConceptNumeric conceptNumeric = Context.getConceptService().getConceptNumeric(obs.getConcept().getId());
+
+		if (conceptNumeric != null) {
+			ObsReferenceRange obsRefRange = new ObsReferenceRange();
+
+			obsRefRange.setHiAbsolute(conceptNumeric.getHiAbsolute());
+			obsRefRange.setHiCritical(conceptNumeric.getHiCritical());
+			obsRefRange.setHiNormal(conceptNumeric.getHiNormal());
+			obsRefRange.setLowAbsolute(conceptNumeric.getLowAbsolute());
+			obsRefRange.setLowCritical(conceptNumeric.getLowCritical());
+			obsRefRange.setLowNormal(conceptNumeric.getLowNormal());
+			obsRefRange.setObs(obs);
+			
+			obs.setReferenceRange(obsRefRange);
+		}
 	}
 	
 }

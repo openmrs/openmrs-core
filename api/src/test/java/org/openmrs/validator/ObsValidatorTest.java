@@ -588,7 +588,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldSetObsReferenceRangeIfCriteriaMatches() {
+	public void shouldSetObsReferenceRangeIfCriteriaMatches() {
 		Person person = new Person(1);
 		calendar.add(Calendar.YEAR, -6);
 		person.setBirthdate(calendar.getTime());
@@ -611,7 +611,31 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void shouldNotSetObsReferenceRangeIfCriteriaDoesNotMatch() {
+	public void shouldSetObsReferenceRangeValuesIfConceptReferenceRangeIsNullAndConceptNumericIsNotNull() {
+		Person person = new Person(1);
+		calendar.add(Calendar.YEAR, -600);
+		person.setBirthdate(calendar.getTime());
+
+		Obs obs = new Obs();
+		obs.setPerson(person);
+		obs.setConcept(Context.getConceptService().getConcept(4090));
+		obs.setValueNumeric(88.0);
+		obs.setObsDatetime(new Date());
+
+		Errors errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+
+		assertFalse(errors.hasErrors());
+		assertNotNull(obs.getReferenceRange());
+		assertEquals(145.0, obs.getReferenceRange().getHiAbsolute());
+		assertEquals(70.0, obs.getReferenceRange().getLowAbsolute());
+	}
+
+	/**
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void shouldNotSetObsReferenceRangeValueIfConceptIsNotFound() {
 		Person person = new Person(1);
 		calendar.add(Calendar.YEAR, -6);
 		person.setBirthdate(calendar.getTime());
