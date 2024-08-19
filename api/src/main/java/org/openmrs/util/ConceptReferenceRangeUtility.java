@@ -109,7 +109,7 @@ public class ConceptReferenceRangeUtility {
 	/**
 	 * Gets the time of the day in hours.
 	 *
-	 * @return the hour of the day (e.g. 14 to mean 2pm)
+	 * @return the hour of the day in 24hr format (e.g. 14 to mean 2pm)
 	 */
 	public int getTimeOfTheDay() {
 		return LocalTime.now().getHourOfDay();
