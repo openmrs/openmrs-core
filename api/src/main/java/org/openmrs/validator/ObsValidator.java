@@ -417,7 +417,7 @@ public class ObsValidator implements Validator {
 		
 		ConceptNumeric conceptNumeric = Context.getConceptService().getConceptNumeric(obs.getConcept().getId());
 
-		if (conceptNumeric != null) {
+		if (conceptNumeric != null && obs.getId() == null) {
 			ObsReferenceRange obsRefRange = new ObsReferenceRange();
 
 			obsRefRange.setHiAbsolute(conceptNumeric.getHiAbsolute());
