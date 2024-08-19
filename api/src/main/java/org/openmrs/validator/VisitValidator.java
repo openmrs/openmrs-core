@@ -118,6 +118,7 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 				.maxStartDatetime(visit.getStopDatetime())
 				.minEndDatetime(visit.getStartDatetime())
 				.includeVoided(false)
+				.includeInactive(true)
 				.build();
 			
 			List<Visit> overLappingVisits = Context.getVisitService().getVisits(visitSearchCriteria);
