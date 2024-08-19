@@ -83,10 +83,10 @@ public class ObsValidator implements Validator {
 			return;
 		}
 		List<Obs> ancestors = new ArrayList<>();
+		validateConceptReferenceRange(obs, errors);
 		validateHelper(obs, errors, ancestors, true);
 		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "accessionNumber", "valueModifier", "valueComplex",
 		    "comment", "voidReason");
-		validateConceptReferenceRange(obs, errors);
 	}
 	
 	/**

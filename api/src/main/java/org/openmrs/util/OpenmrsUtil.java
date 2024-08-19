@@ -2154,13 +2154,13 @@ public class OpenmrsUtil {
 	}
 
 	/**
-	 * This method check if a given value is a valid numeric value for the subject person/patient in subject 
-	 * and for the concept. It checks if a given value is within the reference ranges.
+	 * This method checks if a given value is a valid numeric value for the person/patient in subject 
+	 * given the concept. It checks if a given value is within the valid reference range.
 	 *
 	 * @param value The value to check
 	 * @param concept The concept associated with the value
 	 * @param person The person associated with the observation
-	 * @return Error message
+	 * @return Error message containing expected range if there was a range mismatch, else returns empty string.
 	 * 
 	 * @since 2.7.0
 	 */
