@@ -277,8 +277,11 @@ public class ObsValidator implements Validator {
 
 		if (conceptReferenceRange != null) {
 			validateAbsoluteRanges(obs, conceptReferenceRange, errors);
-			setObsReferenceRange(obs, conceptReferenceRange);
-		} else {
+			
+			if (obs.getId() == null) {
+				setObsReferenceRange(obs, conceptReferenceRange);
+			}
+		} else if (obs.getId() == null) {
 			setObsReferenceRange(obs);
 		}
 	}
@@ -417,7 +420,7 @@ public class ObsValidator implements Validator {
 		
 		ConceptNumeric conceptNumeric = Context.getConceptService().getConceptNumeric(obs.getConcept().getId());
 
-		if (conceptNumeric != null && obs.getId() == null) {
+		if (conceptNumeric != null) {
 			ObsReferenceRange obsRefRange = new ObsReferenceRange();
 
 			obsRefRange.setHiAbsolute(conceptNumeric.getHiAbsolute());
