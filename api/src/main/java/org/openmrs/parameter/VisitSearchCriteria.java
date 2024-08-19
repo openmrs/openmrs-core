@@ -38,7 +38,7 @@ public class VisitSearchCriteria {
 	private Date maxEndDatetime;
 	private Map<VisitAttributeType, String> serializedAttributeValues;
 	private boolean includeInactive = true;
-	private boolean includeVoided = true;
+	private boolean includeVoided = false;
 	
 	/**
 	 * Constructs a VisitSearchCriteria with the specified parameters. 

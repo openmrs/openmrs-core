@@ -38,7 +38,7 @@ public class VisitSearchCriteriaBuilder {
 	private Date minEndDatetime;
 	private Date maxEndDatetime;
 	private Map<VisitAttributeType, String> serializedAttributeValues;
-	private boolean includeInactive = false;
+	private boolean includeInactive = true;
 	private boolean includeVoided = false;
 	
 	/**
