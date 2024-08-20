@@ -325,7 +325,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		
 		assertTrue(
 			conceptReferenceRangeUtility.evaluateCriteria(
-				"$fn.getTimeOfTheDay() == " + LocalTime.now().getHourOfDay(), 
+				"$fn.getCurrentHour() == " + LocalTime.now().getHourOfDay(), 
 				person)
 		);
 
@@ -340,7 +340,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 
 		assertFalse(
 			conceptReferenceRangeUtility.evaluateCriteria(
-				"$fn.getTimeOfTheDay() == " + LocalTime.now().plusHours(1).getHourOfDay(),
+				"$fn.getCurrentHour() == " + LocalTime.now().plusHours(1).getHourOfDay(),
 				person)
 		);
 
