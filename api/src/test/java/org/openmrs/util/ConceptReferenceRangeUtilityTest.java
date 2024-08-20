@@ -21,6 +21,8 @@ import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Person;
+import org.openmrs.PersonAttribute;
+import org.openmrs.PersonAttributeType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.ObsService;
@@ -258,7 +260,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		
 		Mockito.when(conceptService.getConceptByReference(Mockito.anyString())).thenReturn(concept);
 
-		Mockito.when(obsService.getObservations(null,
+		Mockito.when(obsService.getObservations(Collections.singletonList(person),
 				null,
 				Collections.singletonList(concept),
 				null,
@@ -274,18 +276,44 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		
 		assertTrue(
 			conceptReferenceRangeUtility.evaluateCriteria(
-				"$patient.getGender().equals('F') && $fn.getLatestObsByConcept('bac25fd5-c143-4e43-bffe-4eb1e7efb6ce').getValueText().equals('PREGNANT')", 
+				"$patient.getGender().equals('F') " +
+					"&& $fn.getLatestObsByConceptAndPatient('bac25fd5-c143-4e43-bffe-4eb1e7efb6ce', $patient).getValueText().equals('PREGNANT')", 
+				person)
+		);
+	}
+	
+	@Test
+	public void testObsValueMatch_shouldReturnTrueIfPersonAttributeMatch() {
+		PersonAttributeType personAttributeType = new PersonAttributeType();
+		personAttributeType.setName("Race");
+		personAttributeType.setSearchable(true);
+		
+		PersonAttribute personAttribute = new PersonAttribute();
+		personAttribute.setAttributeType(personAttributeType);
+		personAttribute.setValue("Maasai");
+		
+		person.setAttributes(Collections.singleton(personAttribute));
+		
+		Obs obs = buildObservation();
+		obs.setPerson(person);
+		obs.setValueText("PREGNANT");
+		
+		Concept concept = new Concept(4900);
+		
+		assertTrue(
+			conceptReferenceRangeUtility.evaluateCriteria(
+				"$patient.getAttribute('Race').getValue() == 'Maasai'", 
 				person)
 		);
 	}
 
 	@Test
 	public void testObsValueMatch_shouldReturnFalseIfValueMismatch() {
-		person.setGender("M");
+		person.setId(1);
 		
 		assertFalse(
 			conceptReferenceRangeUtility.evaluateCriteria(
-				"$fn.getLatestObsByConcept('CIEL:1234') == true",
+				"$fn.getLatestObsByConceptAndPatient('CIEL:1234', $patient).getValueBoolean() == true",
 				person)
 		);
 	}

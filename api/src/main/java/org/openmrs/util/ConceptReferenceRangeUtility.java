@@ -81,12 +81,12 @@ public class ConceptReferenceRangeUtility {
 	 *                   
 	 * @return Obs
 	 */
-	public Obs getLatestObsByConcept(String conceptRef) {
+	public Obs getLatestObsByConceptAndPatient(String conceptRef, Person person) {
 		Concept concept = Context.getConceptService().getConceptByReference(conceptRef);
 
 		if (concept != null) {
 			List<Obs> observations = Context.getObsService().getObservations(
-				null, 
+				Collections.singletonList(person), 
 				null, 
 				Collections.singletonList(concept), 
 				null, 
