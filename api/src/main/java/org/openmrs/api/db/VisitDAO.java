@@ -120,6 +120,8 @@ public interface VisitDAO {
 	 * @param criteria the search criteria
 	 * @return a list of visits
 	 * @throws DAOException
+	 * 
+	 * @since 2.6.8
 	 */
 	public List<Visit> getVisits(VisitSearchCriteria criteria) throws DAOException;
 	
