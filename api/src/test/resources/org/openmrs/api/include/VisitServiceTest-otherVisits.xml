@@ -11,7 +11,16 @@
 
 -->
 <dataset>
-  <visit visit_id="7" patient_id="2" visit_type_id="1" date_started="2005-01-01 02:00:00.0" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="a2c3868a-6b90-11e0-93c3-18a905e044dc" />
+	<person person_id="3" uuid="6631b434-78aa-102b-91a0-001e378eb67e" gender="F" birthdate="1980-05-15" birthdate_estimated="0" dead="false" creator="1" date_created="2024-08-16 00:00:00.0" voided="false"/>
+	<patient patient_id="3" creator="1" date_created="2024-08-16 00:00:00.0" voided="false"/>
+	<patient_identifier patient_identifier_id="2" patient_id="3" identifier="5678" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2024-08-16 00:00:00.0" voided="false" uuid="3ac98ec8-e9d9-4626-998c-c795c2f0aa9f"/>
+	<person_name person_name_id="3" preferred="true" person_id="3" given_name="Jane" middle_name="A" family_name="Smith" creator="1" date_created="2024-08-16 00:00:00.0" voided="false" uuid="1f1f7d08-076b-4fc6-acac-4bb91515141e"/>
+	
+	<visit visit_id="20" patient_id="3" visit_type_id="1" date_started="2024-08-01 09:00:00.0" date_stopped="2024-08-01 12:00:00.0" creator="1" date_created="2024-08-01 09:00:00.0" voided="0" uuid="d1e2f1c4-78b1-11e0-93c3-18a905e044dc" />
+	<visit visit_id="21" patient_id="3" visit_type_id="1" date_started="2024-08-03 10:00:00.0" date_stopped="2024-08-03 14:00:00.0" creator="1" date_created="2024-08-03 10:00:00.0" voided="0" uuid="e1f3e4f5-79b2-11e0-93c3-18a905e044dc" />
+	<visit visit_id="22" patient_id="3" visit_type_id="1" date_started="2024-08-05 08:00:00.0" creator="1" date_created="2024-08-05 08:00:00.0" voided="0" uuid="f1f4e5d6-80b3-11e0-93c3-18a905e044dc" />
+
+	<visit visit_id="7" patient_id="2" visit_type_id="1" date_started="2005-01-01 02:00:00.0" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="a2c3868a-6b90-11e0-93c3-18a905e044dc" />
   <visit visit_id="8" patient_id="2" visit_type_id="1" date_started="2005-01-01 04:00:00.0" date_stopped="2005-02-01 16:00:00.0" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="a3a5913e-6b94-11e0-93c3-18a905e044dc" />
   <visit visit_id="9" patient_id="2" visit_type_id="1" date_started="2005-01-02 00:00:00.0" date_stopped="2005-02-02 11:00:00.0" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="ae401f88-6b94-11e0-93c3-18a905e044dc" />
   <visit visit_id="10" patient_id="2" visit_type_id="1" date_started="2005-01-03 00:00:00.0" date_stopped="2005-02-03 14:00:00.0" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="ba4781f4-6b94-11e0-93c3-18a905e044dc" />
@@ -25,7 +34,7 @@
   <patient patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
   <patient_identifier patient_identifier_id="1" patient_id="2" identifier="1234" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="1ac98ec8-e9d9-4626-998c-c795c2f0aa9f"/>
   <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false" uuid="0cbecb62-7249-4f91-8edf-d0206ecceb63"/>
-  <person person_id="2" uuid="5631b434-78aa-102b-91a0-001e378eb67e" gender="M" birthdate="1950-04-01" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <person person_id="2" uuid="5631b434-78aa-102b-91a0-001e378eb67e" gender="M" birthdate="1950-04-01" birthdate_estimated="0" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
   <person_name person_name_id="2" preferred="true" person_id="2" given_name="John" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="0f1f7d08-076b-4fc6-acac-4bb91515141e"/>
   
   <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="c36006e5-9fbb-4f20-866b-0ece245615a1"/>
