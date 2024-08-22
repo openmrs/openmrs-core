@@ -122,6 +122,7 @@ public interface VisitDAO {
 	 * @throws DAOException
 	 * 
 	 * @since 2.6.8
+	 * @since 2.7.0
 	 */
 	public List<Visit> getVisits(VisitSearchCriteria criteria) throws DAOException;
 	

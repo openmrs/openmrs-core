@@ -26,6 +26,7 @@ import java.util.Map;
  * objects by providing a simple interface to set various fields.
  * 
  * @since 2.6.8
+ * @since 2.7.0
  */
 public class VisitSearchCriteriaBuilder {
 	

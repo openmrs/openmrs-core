@@ -267,6 +267,7 @@ public interface VisitService extends OpenmrsService {
 	 * @throws APIException
 	 * 
 	 * @since 2.6.8
+	 * @since 2.7.0
 	 */	
 	@Authorized(PrivilegeConstants.GET_VISITS)
 	public List<Visit> getVisits(VisitSearchCriteria visitSearchCriteria) throws APIException;

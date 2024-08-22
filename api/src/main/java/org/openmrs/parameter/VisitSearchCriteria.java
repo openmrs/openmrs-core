@@ -25,6 +25,7 @@ import java.util.Map;
  * patient, location, and date ranges. It also provides options to include or exclude inactive and voided visits.
  * 
  * @since 2.6.8
+ * @since 2.7.0
  */
 public class VisitSearchCriteria {
 	
