@@ -587,9 +587,7 @@ public class DatabaseUpdater {
 	 * @return list of change sets that both have and haven't been run
 	 */
 	public static List<OpenMRSChangeSet> getDatabaseChanges() throws Exception {
-		if (Context.isSessionOpen()) { // Do not check privileges if not run in webapp context (e.g. in tests)
-			Context.requirePrivilege(PrivilegeConstants.GET_DATABASE_CHANGES);
-		}
+		Context.requirePrivilege(PrivilegeConstants.GET_DATABASE_CHANGES);
 		List<OpenMRSChangeSet> result = new ArrayList<>();
 		
 		String initialSnapshotVersion = changeLogDetective.getInitialLiquibaseSnapshotVersion(CONTEXT,
@@ -636,9 +634,7 @@ public class DatabaseUpdater {
 	 * @return list of change sets that were not run yet.
 	 */
 	public static List<OpenMRSChangeSet> getUnrunDatabaseChanges(LiquibaseProvider liquibaseProvider) throws Exception {
-		if (Context.isSessionOpen()) { // Do not check privileges if not run in webapp context (e.g. in tests)
-			Context.requirePrivilege(PrivilegeConstants.GET_DATABASE_CHANGES);
-		}
+		Context.requirePrivilege(PrivilegeConstants.GET_DATABASE_CHANGES);
 		String initialSnapshotVersion = changeLogDetective.getInitialLiquibaseSnapshotVersion(CONTEXT, liquibaseProvider);
 		log.debug("initial snapshot version is '{}'", initialSnapshotVersion);
 		
@@ -661,9 +657,7 @@ public class DatabaseUpdater {
 	 * @return list of change sets
 	 */
 	public static List<OpenMRSChangeSet> getUnrunDatabaseChanges(String... changeLogFilenames) {
-		if (Context.isSessionOpen()) { // Do not check privileges if not run in webapp context (e.g. in tests)
-			Context.requirePrivilege(PrivilegeConstants.GET_DATABASE_CHANGES);
-		}
+		Context.requirePrivilege(PrivilegeConstants.GET_DATABASE_CHANGES);
 		log.debug("looking for un-run change sets in '{}'", Arrays.toString(changeLogFilenames));
 		
 		Database database = null;

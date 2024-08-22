@@ -46,7 +46,6 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	 */
 	@Override
 	public void before(Method method, Object[] args, Object target) throws Throwable {
-		
 		log.debug("Calling authorization advice before {}", method.getName());
 		
 		if (log.isDebugEnabled()) {
@@ -78,6 +77,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 					}
 					boolean hasPrivilege  = Context.hasPrivilege(privilege);
 					log.debug("User has privilege {}? {}", privilege, hasPrivilege);
+
 					if (hasPrivilege) {
 						if (!requireAll) {
 							// if not all required, the first one that they have

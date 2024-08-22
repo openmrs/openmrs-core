@@ -389,6 +389,7 @@ public interface UserService extends OpenmrsService {
 	 * <strong>Should</strong> match on correctly hashed stored password
 	 * <strong>Should</strong> match on incorrectly hashed stored password
 	 */
+	@Authorized
 	@Logging(ignoreAllArgumentValues = true)
 	public void changeQuestionAnswer(String pw, String q, String a) throws APIException;
 	
