@@ -31,6 +31,7 @@ import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.VisitDAO;
+import org.openmrs.parameter.VisitSearchCriteria;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -220,6 +221,66 @@ public class HibernateVisitDAO implements VisitDAO {
 		if (serializedAttributeValues != null) {
 			CollectionUtils.filter(visits, new AttributeMatcherPredicate<Visit, VisitAttributeType>(
 			        serializedAttributeValues));
+		}
+		
+		return visits;
+	}
+
+	/**
+	 * @see org.openmrs.api.db.VisitDAO#getVisits(org.openmrs.parameter.VisitSearchCriteria)
+	 */
+	@Override
+	public List<Visit> getVisits(VisitSearchCriteria criteria) throws DAOException {
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Visit> cq = cb.createQuery(Visit.class);
+		Root<Visit> root = cq.from(Visit.class);
+		
+		List<Predicate> predicates = new ArrayList<>();
+		
+		if (criteria.getVisitTypes() != null && !criteria.getVisitTypes().isEmpty()) {
+			predicates.add(root.get("visitType").in(criteria.getVisitTypes()));
+		}
+		if (criteria.getPatients() != null && !criteria.getPatients().isEmpty()) {
+			predicates.add(root.get("patient").in(criteria.getPatients()));
+		}
+		if (criteria.getLocations() != null && !criteria.getLocations().isEmpty()) {
+			predicates.add(root.get("location").in(criteria.getLocations()));
+		}
+		if (criteria.getIndications() != null && !criteria.getIndications().isEmpty()) {
+			predicates.add(root.get("indication").in(criteria.getIndications()));
+		}
+		if (criteria.getMinStartDatetime() != null) {
+			predicates.add(cb.greaterThanOrEqualTo(root.get("startDatetime"), criteria.getMinStartDatetime()));
+		}
+		if (criteria.getMaxStartDatetime() != null) {
+			predicates.add(cb.lessThanOrEqualTo(root.get("startDatetime"), criteria.getMaxStartDatetime()));
+		}
+		
+		if (!criteria.isIncludeInactive()) {
+			predicates.add(cb.or(cb.isNull(root.get("stopDatetime")), cb.greaterThan(root.get("stopDatetime"), new Date())));
+		} else {
+			if (criteria.getMinEndDatetime() != null) {
+				predicates.add(cb.or(cb.isNull(root.get("stopDatetime")), cb.greaterThanOrEqualTo(root.get("stopDatetime"),
+					criteria.getMinEndDatetime())));
+			}
+			if (criteria.getMaxEndDatetime() != null) {
+				predicates.add(cb.lessThanOrEqualTo(root.get("stopDatetime"), criteria.getMaxEndDatetime()));
+			}
+		}
+		
+		if (!criteria.isIncludeVoided()) {
+			predicates.add(cb.isFalse(root.get("voided")));
+		}
+		
+		cq.where(predicates.toArray(new Predicate[]{}))
+			.orderBy(cb.desc(root.get("startDatetime")), cb.desc(root.get("visitId")));
+		
+		List<Visit> visits = session.createQuery(cq).getResultList();
+		
+		if (criteria.getSerializedAttributeValues() != null) {
+			CollectionUtils.filter(visits, new AttributeMatcherPredicate<Visit, VisitAttributeType>(
+				criteria.getSerializedAttributeValues()));
 		}
 		
 		return visits;
