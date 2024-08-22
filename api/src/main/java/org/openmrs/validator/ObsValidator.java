@@ -273,7 +273,7 @@ public class ObsValidator implements Validator {
 	 * @since 2.7.0
 	 */
 	private void validateConceptReferenceRange(Obs obs, Errors errors) {
-		ConceptReferenceRange conceptReferenceRange = getReferenceRange(obs.getConcept(), obs.getPerson());
+		ConceptReferenceRange conceptReferenceRange = getReferenceRange(obs.getConcept(), obs);
 
 		if (conceptReferenceRange != null) {
 			validateAbsoluteRanges(obs, conceptReferenceRange, errors);
@@ -291,12 +291,12 @@ public class ObsValidator implements Validator {
 	 * It considers all valid ranges that match the criteria for the person.
 	 *
 	 * @param concept The concept to evaluate
-	 * @param person The person for whom the range is being evaluated
+	 * @param obs containing The patient for whom the range is being evaluated
 	 * @return The strictest {@link ConceptReferenceRange}, or null if no valid range is found
 	 * 
 	 * @since 2.7.0
 	 */
-	public static ConceptReferenceRange getReferenceRange(Concept concept, Person person) {
+	public static ConceptReferenceRange getReferenceRange(Concept concept, Obs obs) {
 		if (concept == null || concept.getDatatype() == null || !concept.getDatatype().isNumeric()) {
 			return null;
 		}
@@ -312,7 +312,7 @@ public class ObsValidator implements Validator {
 		List<ConceptReferenceRange> validRanges = new ArrayList<>();
 
 		for (ConceptReferenceRange referenceRange : referenceRanges) {
-			if (referenceRangeUtility.evaluateCriteria(referenceRange.getCriteria(), person)) {
+			if (referenceRangeUtility.evaluateCriteria(referenceRange.getCriteria(), obs)) {
 				validRanges.add(referenceRange);
 			}
 		}

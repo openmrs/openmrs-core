@@ -62,10 +62,13 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		calendar.add(Calendar.YEAR, -5);
 		person.setBirthdate(calendar.getTime());
 
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
 		assertTrue(
 			conceptReferenceRangeUtility.evaluateCriteria(
-				"$patient.getAge() > 1 && $patient.getAge() < 10", 
-				person)
+				"$patient.getAge() > 1 && $patient.getAge() < 10",
+				obs)
 		);
 	}
 
@@ -75,10 +78,13 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		calendar.add(Calendar.YEAR, -11);
 		person.setBirthdate(calendar.getTime());
 
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
 		assertFalse(
 			conceptReferenceRangeUtility.evaluateCriteria(
 				"$patient.getAge() > 1 && $patient.getAge() < 10", 
-				person)
+				obs)
 		);
 	}
 
@@ -87,11 +93,14 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		calendar = Calendar.getInstance();
 		calendar.add(Calendar.YEAR, -10);
 		person.setBirthdate(calendar.getTime());
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
 		
 		assertTrue(
 			conceptReferenceRangeUtility.evaluateCriteria(
-				"$patient.getAge() >= 1 && $patient.getAge() <" +
-					"= 10", person)
+				"$patient.getAge() >= 1 && $patient.getAge() <" + "= 10", 
+				obs)
 		);
 	}
 
@@ -101,11 +110,14 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		calendar.add(Calendar.MONTH, -5);
 		Date birthDate = calendar.getTime();
 		person.setBirthdate(birthDate);
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
 		
 		assertTrue(
 			conceptReferenceRangeUtility.evaluateCriteria(
 				"$patient.getAgeInMonths() > 1 && $patient.getAgeInMonths() < 12",
-				person)
+				obs)
 		);
 	}
 
@@ -115,8 +127,11 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		calendar.add(Calendar.YEAR, -1);
 		person.setBirthdate(calendar.getTime());
 
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
 		assertThrows(APIException.class, () -> 
-			conceptReferenceRangeUtility.evaluateCriteria("invalidCriteria", person));
+			conceptReferenceRangeUtility.evaluateCriteria("invalidCriteria", obs));
 	}
 
 	@Test
@@ -125,8 +140,11 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		calendar.set(2019, Calendar.JUNE, 2);
 		person.setBirthdate(calendar.getTime());
 
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
 		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-			conceptReferenceRangeUtility.evaluateCriteria("", person);
+			conceptReferenceRangeUtility.evaluateCriteria("", obs);
 		});
 
 		assertTrue(exception.getMessage().contains("criteria is empty"));
@@ -134,10 +152,13 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void testAgeInRange_shouldReturnFalseIfPersonAgeIsNotSet() {
+		Obs obs = buildObs();
+		obs.setPerson(person);
+		
 		assertFalse(
 			conceptReferenceRangeUtility.evaluateCriteria(
 				"$patient.getAge() >= 15 && $patient.getAge() <= 50",
-				person)
+				obs)
 		);
 	}
 
@@ -145,10 +166,13 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 	public void testGenderMatch_shouldReturnTrueIfGenderMatches() {
 		person.setGender("M");
 
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
 		assertTrue(
 			conceptReferenceRangeUtility.evaluateCriteria(
 				"$patient.getGender().equals('M')",
-				person)
+				obs)
 		);
 	}
 
@@ -156,18 +180,24 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 	public void testGenderMatch_shouldReturnFalseIfGenderDoesNotMatch() {
 		person.setGender("F");
 
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
 		assertFalse(
 			conceptReferenceRangeUtility.evaluateCriteria(
 				"$patient.getGender().equals('M')",
-				person)
+				obs)
 		);
 	}
 
 	@Test
 	public void testGenderMatch_shouldReturnFalseIfGenderIsNull() {
+		Obs obs = buildObs();
+		obs.setPerson(person);
+		
 		assertFalse(conceptReferenceRangeUtility.evaluateCriteria(
 			"$patient.getGender().equals('M')",
-			person)
+			obs)
 		);
 	}
 
@@ -178,10 +208,13 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		person.setBirthdate(calendar.getTime());
 		person.setGender("M");
 
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
 		assertTrue(
 			conceptReferenceRangeUtility.evaluateCriteria(
 				"$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M')", 
-				person)
+				obs)
 		);
 	}
 
@@ -192,10 +225,13 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		person.setBirthdate(calendar.getTime());
 		person.setGender("M");
 
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
 		assertTrue(
 			conceptReferenceRangeUtility.evaluateCriteria(
 				"($patient.getAge() > 1 && $patient.getAge() < 3) || $patient.getGender().equals('M')",
-				person)
+				obs)
 		);
 	}
 
@@ -206,10 +242,13 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		person.setBirthdate(calendar.getTime());
 		person.setGender("M");
 
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
 		assertFalse(
 			conceptReferenceRangeUtility.evaluateCriteria(
 				"$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M')", 
-				person)
+				obs)
 		);
 	}
 
@@ -220,10 +259,13 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		person.setBirthdate(calendar.getTime());
 		person.setGender("F");
 
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
 		assertFalse(
 			conceptReferenceRangeUtility.evaluateCriteria(
 				"$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M')", 
-				person)
+				obs)
 		);
 	}
 
@@ -236,15 +278,18 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 				null)
 		);
 
-		assertEquals("Failed to evaluate criteria with reason: patient is null", thrown.getMessage());
+		assertEquals("Failed to evaluate criteria with reason: Obs is null", thrown.getMessage());
 	}
 
 	@Test
 	public void testAgeAndGenderMatch_shouldReturnFalseIfAgeIsNull() {
+		Obs obs = buildObs();
+		obs.setPerson(person);
+		
 		assertFalse(
 			conceptReferenceRangeUtility.evaluateCriteria(
 				"$patient.getAge() > 1 && $patient.getAge() < 10",
-				person)
+				obs)
 		);
 	}
 
@@ -252,7 +297,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 	public void testObsValueMatch_shouldReturnTrueIfValueTextMatch() {
 		person.setGender("F");
 		
-		Obs obs = buildObservation();
+		Obs obs = buildObs();
 		obs.setPerson(person);
 		obs.setValueText("PREGNANT");
 		
@@ -277,8 +322,8 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		assertTrue(
 			conceptReferenceRangeUtility.evaluateCriteria(
 				"$patient.getGender().equals('F') " +
-					"&& $fn.getLatestObsByConceptAndPatient('bac25fd5-c143-4e43-bffe-4eb1e7efb6ce', $patient).getValueText().equals('PREGNANT')", 
-				person)
+					"&& $fn.getLatestObs('bac25fd5-c143-4e43-bffe-4eb1e7efb6ce', $patient).getValueText().equals('PREGNANT')", 
+				obs)
 		);
 	}
 	
@@ -294,27 +339,28 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		
 		person.setAttributes(Collections.singleton(personAttribute));
 		
-		Obs obs = buildObservation();
+		Obs obs = buildObs();
 		obs.setPerson(person);
 		obs.setValueText("PREGNANT");
-		
-		Concept concept = new Concept(4900);
 		
 		assertTrue(
 			conceptReferenceRangeUtility.evaluateCriteria(
 				"$patient.getAttribute('Race').getValue() == 'Maasai'", 
-				person)
+				obs)
 		);
 	}
 
 	@Test
 	public void testObsValueMatch_shouldReturnFalseIfValueMismatch() {
 		person.setId(1);
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
 		
 		assertFalse(
 			conceptReferenceRangeUtility.evaluateCriteria(
-				"$fn.getLatestObsByConceptAndPatient('CIEL:1234', $patient).getValueBoolean() == true",
-				person)
+				"$fn.getLatestObs('CIEL:1234', $patient).getValueBoolean() == true",
+				obs)
 		);
 	}
 
@@ -322,11 +368,14 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 	public void testTimeOfDay_shouldReturnTrueIfTimeOfDayMatches() {
 		// Freeze time at the current system time
 		DateTimeUtils.setCurrentMillisFixed(System.currentTimeMillis());
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
 		
 		assertTrue(
 			conceptReferenceRangeUtility.evaluateCriteria(
-				"$fn.getCurrentHour() == " + LocalTime.now().getHourOfDay(), 
-				person)
+				"$fn.getCurrentHour() == " + LocalTime.now().getHourOfDay(),
+				obs)
 		);
 
 		// Clean up: Reset time to system time
@@ -338,17 +387,108 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		// Freeze time at the current system time
 		DateTimeUtils.setCurrentMillisFixed(System.currentTimeMillis());
 
+		Obs obs = buildObs();
+		obs.setPerson(person);
+		
 		assertFalse(
 			conceptReferenceRangeUtility.evaluateCriteria(
 				"$fn.getCurrentHour() == " + LocalTime.now().plusHours(1).getHourOfDay(),
-				person)
+				obs)
 		);
 
 		// Clean up: Reset time to system time
 		DateTimeUtils.setCurrentMillisSystem();
 	}
 
-	private Obs buildObservation() {
+	@Test
+	public void testRelevantObs_shouldReturnTrueIfCurrentObsHasValidNumericValue() {
+		Obs obs = buildObs();
+		obs.setPerson(person);
+		obs.setValueNumeric(20.0);
+
+		Concept concept = new Concept(4900);
+
+		Mockito.when(conceptService.getConceptByReference(Mockito.anyString())).thenReturn(concept);
+
+		Mockito.when(obsService.getObservations(Collections.singletonList(person),
+				null,
+				Collections.singletonList(concept),
+				null,
+				null,
+				null,
+				Collections.singletonList("dateCreated"),
+				1,
+				null,
+				null,
+				null,
+				false))
+			.thenReturn(Collections.singletonList(obs));
+
+		assertTrue(
+			conceptReferenceRangeUtility.evaluateCriteria(
+				"$fn.getCurrentObs('bac25fd5-c143-4e43-bffe-4eb1e7efb6ce', $obs).getValueNumeric() >= 20",
+				obs)
+		);
+	}
+
+	@Test
+	public void testRelevantObs_shouldReturnTrueIfBMIIsInTheExpectedRange() {
+		Obs obs = buildObs();
+		obs.setPerson(person);
+		
+		Obs heightObservation = buildObs();
+		heightObservation.setValueNumeric(170.0);
+
+		Obs weightObservation = buildObs();
+		weightObservation.setValueNumeric(70.0);
+
+		Concept heightConcept = new Concept(5497);
+		Concept weightConcept = new Concept(5089);
+
+		Mockito.when(conceptService.getConceptByReference("a09ab2c5-878e-4905-b25d-5784167d0216")).thenReturn(heightConcept);
+		Mockito.when(conceptService.getConceptByReference("c607c80f-1ea9-4da3-bb88-6276ce8868dd")).thenReturn(weightConcept);
+
+		Mockito.when(obsService.getObservations(Collections.singletonList(person),
+				null,
+				Collections.singletonList(heightConcept),
+				null,
+				null,
+				null,
+				Collections.singletonList("dateCreated"),
+				1,
+				null,
+				null,
+				null,
+				false))
+			.thenReturn(Collections.singletonList(heightObservation));
+
+		Mockito.when(obsService.getObservations(Collections.singletonList(person),
+				null,
+				Collections.singletonList(weightConcept),
+				null,
+				null,
+				null,
+				Collections.singletonList("dateCreated"),
+				1,
+				null,
+				null,
+				null,
+				false))
+			.thenReturn(Collections.singletonList(weightObservation));
+
+		assertTrue(
+			conceptReferenceRangeUtility.evaluateCriteria(
+				"($fn.getCurrentObs('c607c80f-1ea9-4da3-bb88-6276ce8868dd', $obs).getValueNumeric() " +
+					"/ ( ($fn.getCurrentObs('a09ab2c5-878e-4905-b25d-5784167d0216', $obs).getValueNumeric() / 100) * " +
+					"($fn.getCurrentObs('a09ab2c5-878e-4905-b25d-5784167d0216', $obs).getValueNumeric() / 100))) >= 18.5 && " +
+					"($fn.getCurrentObs('c607c80f-1ea9-4da3-bb88-6276ce8868dd', $obs).getValueNumeric() / " +
+					"( ($fn.getCurrentObs('a09ab2c5-878e-4905-b25d-5784167d0216', $obs).getValueNumeric() / 100) * " +
+					"($fn.getCurrentObs('a09ab2c5-878e-4905-b25d-5784167d0216', $obs).getValueNumeric() / 100))) < 25",
+				obs)
+		);
+	}
+	
+	private Obs buildObs() {
 		Concept concept = new Concept(5089);
 		concept.setDatatype(new ConceptDatatype(3));
 

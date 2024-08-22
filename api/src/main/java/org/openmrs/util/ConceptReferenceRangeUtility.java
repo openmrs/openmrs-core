@@ -38,12 +38,16 @@ public class ConceptReferenceRangeUtility {
 	 * This method evaluates the given criteria against the provided person/patient.
 	 *
 	 * @param criteria the criteria string to evaluate e.g. "$patient.getAge() > 1"
-	 * @param person person object containing attributes to be used in the criteria
+	 * @param obs The observation (Obs) object containing the values to be used in the criteria.
 	 *                  
 	 * @return true if the criteria evaluates to true, false otherwise
 	 */
-	public boolean evaluateCriteria(String criteria, Person person) {
-		if (person == null) {
+	public boolean evaluateCriteria(String criteria, Obs obs) {
+		if (obs == null) {
+			throw new IllegalArgumentException("Failed to evaluate criteria with reason: Obs is null");
+		}
+		
+		if (obs.getPerson() == null) {
 			throw new IllegalArgumentException("Failed to evaluate criteria with reason: patient is null");
 		}
 		
@@ -53,8 +57,9 @@ public class ConceptReferenceRangeUtility {
 		
 		VelocityContext velocityContext = new VelocityContext();
 		velocityContext.put("fn", this);
+		velocityContext.put("obs", obs);
 		
-		velocityContext.put("patient", person);
+		velocityContext.put("patient", obs.getPerson());
 		
 		VelocityEngine velocityEngine = new VelocityEngine();
 		
@@ -78,10 +83,11 @@ public class ConceptReferenceRangeUtility {
 	 *
 	 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName 
 	 *                   e.g "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434"
+	 * @param person person to get obs for
 	 *                   
 	 * @return Obs
 	 */
-	public Obs getLatestObsByConceptAndPatient(String conceptRef, Person person) {
+	public Obs getLatestObs(String conceptRef, Person person) {
 		Concept concept = Context.getConceptService().getConceptByReference(conceptRef);
 
 		if (concept != null) {
@@ -113,5 +119,25 @@ public class ConceptReferenceRangeUtility {
 	 */
 	public int getCurrentHour() {
 		return LocalTime.now().getHourOfDay();
+	}
+	
+	/**
+	 * Retrieves the most relevant Obs for the given current Obs and conceptRef. If the current Obs contains a valid value 
+	 * (coded, numeric, date, or text) and the concept in Obs is the same as the supplied concept,
+	 * the method returns the current Obs. Otherwise, it fetches the latest Obs for the supplied concept and patient.
+	 *
+	 * @param currentObs the current Obs being evaluated
+	 * @return the most relevant Obs based on the current Obs, or the latest Obs if the current one has no valid value
+	 */
+	public Obs getCurrentObs(String conceptRef, Obs currentObs) {
+		Concept concept = Context.getConceptService().getConceptByReference(conceptRef);
+		
+		if ((currentObs.getValueCoded() != null || currentObs.getValueNumeric() != null || currentObs.getValueDate() != null || currentObs
+		        .getValueText() != null)
+		        && (concept != null && concept == currentObs.getConcept())) {
+			return currentObs;
+		} else {
+			return getLatestObs(conceptRef, currentObs.getPerson());
+		}
 	}
 }

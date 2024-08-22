@@ -77,7 +77,7 @@ import org.openmrs.Drug;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
-import org.openmrs.Person;
+import org.openmrs.Obs;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflowState;
@@ -2159,13 +2159,13 @@ public class OpenmrsUtil {
 	 *
 	 * @param value The value to check
 	 * @param concept The concept associated with the value
-	 * @param person The person associated with the observation
+	 * @param obs The observation to be verified
 	 * @return Error message containing expected range if there was a range mismatch, else returns empty string.
 	 * 
 	 * @since 2.7.0
 	 */
-	public static String isValidNumericValue(Float value, Concept concept, Person person) {
-		ConceptReferenceRange conceptReferenceRange = ObsValidator.getReferenceRange(concept, person);
+	public static String isValidNumericValue(Float value, Concept concept, Obs obs) {
+		ConceptReferenceRange conceptReferenceRange = ObsValidator.getReferenceRange(concept, obs);
 		if (conceptReferenceRange == null) {
 			return "";
 		}

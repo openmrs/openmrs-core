@@ -53,10 +53,13 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void validate_shouldFailValidationIfPersonIdIsNull() {
+		Person person = new Person();
+		
 		Obs obs = new Obs();
 		obs.setConcept(Context.getConceptService().getConcept(5089));
 		obs.setObsDatetime(new Date());
 		obs.setValueNumeric(1.0);
+		obs.setPerson(person);
 		
 		Errors errors = new BindException(obs, "obs");
 		obsValidator.validate(obs, errors);
@@ -668,6 +671,32 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		Obs obs = new Obs();
 		obs.setPerson(person);
 		obs.setConcept(Context.getConceptService().getConcept(4090));
+		obs.setValueNumeric(145.0);
+		obs.setObsDatetime(new Date());
+
+		Errors errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+
+		assertTrue(errors.hasErrors());
+		assertTrue(errors.hasFieldErrors("valueNumeric"));
+		assertEquals("error.value.outOfRange.high", errors.getAllErrors().get(0).getCode());
+	}
+
+	/**
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 *
+	 * Existing Obs associated with concept id 5089 are more than 1. In this test, we want to make sure we are getting right obs by person.
+	 * With the right obs, the criteria should evaluate to true, then validate ranges. 
+	 * The valid range in accordance to conceptReferenceRange = 60-140
+	 */
+	@Test
+	public void shouldPickTheRightObsGivenTwoObsWithTheSameConcept() {
+		Person person = new Person(1);
+		person.setGender("M");
+
+		Obs obs = new Obs();
+		obs.setPerson(person);
+		obs.setConcept(Context.getConceptService().getConcept(5089));
 		obs.setValueNumeric(145.0);
 		obs.setObsDatetime(new Date());
 

@@ -57,6 +57,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.GlobalProperty;
+import org.openmrs.Obs;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
@@ -1031,10 +1032,13 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		Person person = new Person(10);
 		person.setBirthdate(calendar.getTime());
 		
+		Obs obs = new Obs();
+		obs.setPerson(person);
+		
 		String result = OpenmrsUtil.isValidNumericValue(
 			5.0f,
 			Context.getConceptService().getConcept(4090),
-			person
+			obs
 		);
 
 		assertEquals("Expected value between 80.0 and 140.0", result);
@@ -1046,11 +1050,14 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		calendar.add(Calendar.YEAR, -10);
 		Person person = new Person(10);
 		person.setBirthdate(calendar.getTime());
+
+		Obs obs = new Obs();
+		obs.setPerson(person);
 		
 		String result = OpenmrsUtil.isValidNumericValue(
 			155.0f,
 			Context.getConceptService().getConcept(4090),
-			person
+			obs
 		);
 		
 		assertEquals("Expected value between 80.0 and 140.0", result);
@@ -1063,10 +1070,13 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		Person person = new Person(10);
 		person.setBirthdate(calendar.getTime());
 
+		Obs obs = new Obs();
+		obs.setPerson(person);
+
 		String result = OpenmrsUtil.isValidNumericValue(
 			120.0f,
 			new Concept(),
-			person
+			obs
 		);
 
 		assertEquals("", result);

@@ -1104,7 +1104,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		List<Obs> obss = obsService.getObservations(null, null, null, null, Collections.singletonList(PERSON_TYPE.PERSON),
 		    null, null, null, null, null, null, false, null);
 		
-		assertEquals(17, obss.size());
+		assertEquals(18, obss.size());
 	}
 	
 	/**
@@ -1120,7 +1120,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Integer count = obsService.getObservationCount(null, null, null, null,
 		    Collections.singletonList(PERSON_TYPE.PERSON), null, null, null, null, false, null);
 		
-		assertEquals(17, count.intValue());
+		assertEquals(18, count.intValue());
 	}
 	
 	/**
@@ -1136,7 +1136,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		List<Obs> obss = obsService.getObservations(null, null, null, null, Collections.singletonList(PERSON_TYPE.USER),
 		    null, null, null, null, null, null, false, null);
 		
-		assertEquals(1, obss.size());
+		assertEquals(2, obss.size());
 	}
 	
 	/**
@@ -1152,7 +1152,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Integer count = obsService.getObservationCount(null, null, null, null, Collections.singletonList(PERSON_TYPE.USER),
 		    null, null, null, null, false, null);
 		
-		assertEquals(1, count.intValue());
+		assertEquals(2, count.intValue());
 	}
 	
 	/**
@@ -1281,7 +1281,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		List<Obs> obss = obsService.getObservations("5");
 		
-		assertEquals(1, obss.size());
+		assertEquals(2, obss.size());
 		assertEquals(16, obss.get(0).getObsId().intValue());
 	}
 	
