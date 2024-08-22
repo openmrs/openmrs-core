@@ -598,7 +598,11 @@ public interface UserService extends OpenmrsService {
 	 * @param user the subject user
 	 * @return timestamp representing last login time (e.g. 1717414410587)
 	 * @since 2.7.0
+	 * 
+	 * @should return empty string on last login time if a different user is logged in
+	 * @should not be empty if user is authenticated
+	 * @should return empty string on last login time if property not set
 	 */
-	@Authorized(PrivilegeConstants.GET_USERS)
+	@Authorized
 	String getLastLoginTime(User user);
 }
