@@ -10,6 +10,7 @@
 package org.openmrs.validator;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,7 +20,6 @@ import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptReferenceRange;
 import org.openmrs.Obs;
 import org.openmrs.ObsReferenceRange;
-import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -284,6 +284,7 @@ public class ObsValidator implements Validator {
 		} else if (obs.getId() == null) {
 			setObsReferenceRange(obs);
 		}
+		setObsInterpretation(obs);
 	}
 
 	/**
@@ -337,21 +338,29 @@ public class ObsValidator implements Validator {
 	 * @since 2.7.0
 	 */
 	public static ConceptReferenceRange findStrictestReferenceRange(List<ConceptReferenceRange> conceptReferenceRanges) {
-		Double strictestLowAbsolute = conceptReferenceRanges.stream()
-			.map(ConceptReferenceRange::getLowAbsolute)
-			.filter(Objects::nonNull)
-			.max(Double::compareTo)
+		ConceptReferenceRange strictestLowRange = conceptReferenceRanges.stream()
+			.filter(range -> range.getLowAbsolute() != null)
+			.max(Comparator.comparing(ConceptReferenceRange::getLowAbsolute))
 			.orElse(null);
 
-		Double strictestHiAbsolute = conceptReferenceRanges.stream()
-			.map(ConceptReferenceRange::getHiAbsolute)
-			.filter(Objects::nonNull)
-			.min(Double::compareTo)
+		ConceptReferenceRange strictestHiRange = conceptReferenceRanges.stream()
+			.filter(range -> range.getHiAbsolute() != null)
+			.min(Comparator.comparing(ConceptReferenceRange::getHiAbsolute))
 			.orElse(null);
 
 		ConceptReferenceRange strictestRange = new ConceptReferenceRange();
-		strictestRange.setLowAbsolute(strictestLowAbsolute);
-		strictestRange.setHiAbsolute(strictestHiAbsolute);
+
+		if (strictestLowRange != null) {
+			strictestRange.setLowAbsolute(strictestLowRange.getLowAbsolute());
+			strictestRange.setLowNormal(strictestLowRange.getLowNormal());
+			strictestRange.setLowCritical(strictestLowRange.getLowCritical());
+		}
+
+		if (strictestHiRange != null) {
+			strictestRange.setHiAbsolute(strictestHiRange.getHiAbsolute());
+			strictestRange.setHiNormal(strictestHiRange.getHiNormal());
+			strictestRange.setHiCritical(strictestHiRange.getHiCritical());
+		}
 
 		return strictestRange;
 	}
@@ -432,6 +441,45 @@ public class ObsValidator implements Validator {
 			obsRefRange.setObs(obs);
 			
 			obs.setReferenceRange(obsRefRange);
+		}
+	}
+
+	/**
+	 * This method sets Obs interpretation based on the current obs' numeric value.
+	 *
+	 * @param obs Observation to set the interpretation
+	 *
+	 * @since 2.7.0
+	 */
+	private void setObsInterpretation(Obs obs) {
+		ObsReferenceRange referenceRange = obs.getReferenceRange();
+		if (referenceRange == null || obs.getValueNumeric() == null) {
+			return;
+		}
+		
+		if (referenceRange.getHiNormal() != null 
+			&& referenceRange.getHiCritical() != null
+			&& obs.getValueNumeric() > referenceRange.getHiNormal() 
+			&& obs.getValueNumeric() <= referenceRange.getHiCritical()) {
+			obs.setInterpretation(Obs.Interpretation.CRITICALLY_HIGH);
+		} else if (referenceRange.getHiCritical() != null 
+			&& obs.getValueNumeric() >= referenceRange.getHiCritical()) {
+			obs.setInterpretation(Obs.Interpretation.ABNORMAL);
+		} else if (referenceRange.getLowNormal() != null 
+			&& referenceRange.getLowCritical() != null
+			&& obs.getValueNumeric() < referenceRange.getLowNormal() 
+			&& obs.getValueNumeric() >= referenceRange.getLowCritical()) {
+			obs.setInterpretation(Obs.Interpretation.LOW);
+		} else if (Objects.equals(obs.getValueNumeric(), referenceRange.getLowCritical())) {
+			obs.setInterpretation(Obs.Interpretation.CRITICALLY_LOW);
+		} else if (referenceRange.getLowNormal() != null 
+			&& referenceRange.getHiNormal() != null
+			&& obs.getValueNumeric() >= referenceRange.getLowNormal() 
+			&& obs.getValueNumeric() <= referenceRange.getHiNormal()) {
+			obs.setInterpretation(Obs.Interpretation.NORMAL);
+		} else if (referenceRange.getLowCritical() != null 
+			&& obs.getValueNumeric() < referenceRange.getLowCritical()) {
+			obs.setInterpretation(Obs.Interpretation.CRITICALLY_ABNORMAL);
 		}
 	}
 	

@@ -1041,7 +1041,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 			obs
 		);
 
-		assertEquals("Expected value between 80.0 and 140.0", result);
+		assertEquals("Expected value between 70.0 and 140.0", result);
 	}
 
 	@Test
@@ -1060,7 +1060,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 			obs
 		);
 		
-		assertEquals("Expected value between 80.0 and 140.0", result);
+		assertEquals("Expected value between 70.0 and 140.0", result);
 	}
 
 	@Test
