@@ -37,7 +37,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-
 class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 	
 	private Calendar calendar;
@@ -99,7 +98,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		
 		assertTrue(
 			conceptReferenceRangeUtility.evaluateCriteria(
-				"$patient.getAge() >= 1 && $patient.getAge() <" + "= 10", 
+				"$patient.getAge() >= 1 && $patient.getAge() <= 10", 
 				obs)
 		);
 	}

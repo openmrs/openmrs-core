@@ -269,8 +269,6 @@ public class ObsValidator implements Validator {
 	 *
 	 * @param obs Observation to validate
 	 * @param errors Errors to record validation issues
-	 *               
-	 * @since 2.7.0
 	 */
 	private void validateConceptReferenceRange(Obs obs, Errors errors) {
 		ConceptReferenceRange conceptReferenceRange = getReferenceRange(obs.getConcept(), obs);
@@ -371,8 +369,6 @@ public class ObsValidator implements Validator {
 	 * @param obs Observation to validate
 	 * @param conceptReferenceRange ConceptReferenceRange containing the range values
 	 * @param errors Errors to record validation issues
-	 *
-	 * @since 2.7.0
 	 */
 	private void validateAbsoluteRanges(Obs obs, ConceptReferenceRange conceptReferenceRange, Errors errors) {
 		if (conceptReferenceRange.getHiAbsolute() != null && conceptReferenceRange.getHiAbsolute() < obs.getValueNumeric()) {
@@ -398,8 +394,6 @@ public class ObsValidator implements Validator {
 	 *
 	 * @param obs Observation to set the reference range
 	 * @param conceptReferenceRange ConceptReferenceRange used to build the ObsReferenceRange
-	 *
-	 * @since 2.7.0
 	 */
 	private void setObsReferenceRange(Obs obs, ConceptReferenceRange conceptReferenceRange) {
 		ObsReferenceRange obsRefRange = new ObsReferenceRange();
@@ -419,8 +413,6 @@ public class ObsValidator implements Validator {
 	 * Builds and sets the ObsReferenceRange from concept numeric values.
 	 *
 	 * @param obs Observation to set the reference range
-	 *
-	 * @since 2.7.0
 	 */
 	private void setObsReferenceRange(Obs obs) {
 		if (obs.getConcept() == null) {
@@ -448,8 +440,6 @@ public class ObsValidator implements Validator {
 	 * This method sets Obs interpretation based on the current obs' numeric value.
 	 *
 	 * @param obs Observation to set the interpretation
-	 *
-	 * @since 2.7.0
 	 */
 	private void setObsInterpretation(Obs obs) {
 		ObsReferenceRange referenceRange = obs.getReferenceRange();

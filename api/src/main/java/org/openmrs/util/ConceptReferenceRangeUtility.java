@@ -23,6 +23,7 @@ import org.openmrs.api.context.Context;
 import java.io.StringWriter;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * A utility class that evaluates the concept ranges 
@@ -123,7 +124,7 @@ public class ConceptReferenceRangeUtility {
 	
 	/**
 	 * Retrieves the most relevant Obs for the given current Obs and conceptRef. If the current Obs contains a valid value 
-	 * (coded, numeric, date, or text) and the concept in Obs is the same as the supplied concept,
+	 * (coded, numeric, date, text e.t.c) and the concept in Obs is the same as the supplied concept,
 	 * the method returns the current Obs. Otherwise, it fetches the latest Obs for the supplied concept and patient.
 	 *
 	 * @param currentObs the current Obs being evaluated
@@ -132,9 +133,8 @@ public class ConceptReferenceRangeUtility {
 	public Obs getCurrentObs(String conceptRef, Obs currentObs) {
 		Concept concept = Context.getConceptService().getConceptByReference(conceptRef);
 		
-		if ((currentObs.getValueCoded() != null || currentObs.getValueNumeric() != null || currentObs.getValueDate() != null || currentObs
-		        .getValueText() != null)
-		        && (concept != null && concept == currentObs.getConcept())) {
+		if (currentObs.getValueAsString(Locale.ENGLISH).isEmpty() 
+			&& (concept != null && concept == currentObs.getConcept())) {
 			return currentObs;
 		} else {
 			return getLatestObs(conceptRef, currentObs.getPerson());
