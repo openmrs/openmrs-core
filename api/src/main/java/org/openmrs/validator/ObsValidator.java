@@ -295,7 +295,7 @@ public class ObsValidator implements Validator {
 	 * 
 	 * @since 2.7.0
 	 */
-	public static ConceptReferenceRange getReferenceRange(Concept concept, Obs obs) {
+	public ConceptReferenceRange getReferenceRange(Concept concept, Obs obs) {
 		if (concept == null || concept.getDatatype() == null || !concept.getDatatype().isNumeric()) {
 			return null;
 		}
@@ -332,10 +332,8 @@ public class ObsValidator implements Validator {
 	 *
 	 * @param conceptReferenceRanges A list of valid {@link ConceptReferenceRange} objects
 	 * @return The strictest {@link ConceptReferenceRange} constructed from the strictest bounds
-	 * 
-	 * @since 2.7.0
 	 */
-	public static ConceptReferenceRange findStrictestReferenceRange(List<ConceptReferenceRange> conceptReferenceRanges) {
+	private ConceptReferenceRange findStrictestReferenceRange(List<ConceptReferenceRange> conceptReferenceRanges) {
 		ConceptReferenceRange strictestLowRange = conceptReferenceRanges.stream()
 			.filter(range -> range.getLowAbsolute() != null)
 			.max(Comparator.comparing(ConceptReferenceRange::getLowAbsolute))

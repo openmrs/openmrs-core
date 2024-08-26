@@ -2165,7 +2165,8 @@ public class OpenmrsUtil {
 	 * @since 2.7.0
 	 */
 	public static String isValidNumericValue(Float value, Concept concept, Obs obs) {
-		ConceptReferenceRange conceptReferenceRange = ObsValidator.getReferenceRange(concept, obs);
+		ObsValidator obsValidator = new ObsValidator();
+		ConceptReferenceRange conceptReferenceRange = obsValidator.getReferenceRange(concept, obs);
 		if (conceptReferenceRange == null) {
 			return "";
 		}
