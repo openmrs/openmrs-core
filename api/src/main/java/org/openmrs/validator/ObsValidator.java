@@ -447,27 +447,25 @@ public class ObsValidator implements Validator {
 		
 		if (referenceRange.getHiNormal() != null 
 			&& referenceRange.getHiCritical() != null
-			&& obs.getValueNumeric() > referenceRange.getHiNormal() 
-			&& obs.getValueNumeric() <= referenceRange.getHiCritical()) {
-			obs.setInterpretation(Obs.Interpretation.CRITICALLY_HIGH);
+			&& obs.getValueNumeric() > referenceRange.getHiNormal()
+			&& obs.getValueNumeric() < referenceRange.getHiCritical()) {
+			obs.setInterpretation(Obs.Interpretation.HIGH);
 		} else if (referenceRange.getHiCritical() != null 
 			&& obs.getValueNumeric() >= referenceRange.getHiCritical()) {
-			obs.setInterpretation(Obs.Interpretation.ABNORMAL);
+			obs.setInterpretation(Obs.Interpretation.CRITICALLY_HIGH);
 		} else if (referenceRange.getLowNormal() != null 
 			&& referenceRange.getLowCritical() != null
 			&& obs.getValueNumeric() < referenceRange.getLowNormal() 
-			&& obs.getValueNumeric() >= referenceRange.getLowCritical()) {
+			&& obs.getValueNumeric() > referenceRange.getLowCritical()) {
 			obs.setInterpretation(Obs.Interpretation.LOW);
-		} else if (Objects.equals(obs.getValueNumeric(), referenceRange.getLowCritical())) {
-			obs.setInterpretation(Obs.Interpretation.CRITICALLY_LOW);
 		} else if (referenceRange.getLowNormal() != null 
 			&& referenceRange.getHiNormal() != null
 			&& obs.getValueNumeric() >= referenceRange.getLowNormal() 
 			&& obs.getValueNumeric() <= referenceRange.getHiNormal()) {
 			obs.setInterpretation(Obs.Interpretation.NORMAL);
 		} else if (referenceRange.getLowCritical() != null 
-			&& obs.getValueNumeric() < referenceRange.getLowCritical()) {
-			obs.setInterpretation(Obs.Interpretation.CRITICALLY_ABNORMAL);
+			&& obs.getValueNumeric() <= referenceRange.getLowCritical()) {
+			obs.setInterpretation(Obs.Interpretation.CRITICALLY_LOW);
 		}
 	}
 	
