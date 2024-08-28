@@ -712,13 +712,61 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void shouldSetInterpretationToCriticallyHighIfValueIsAboveHiCritical() {
+	public void shouldSetInterpretationToHighIfObsValueIsAboveHiNormalAndLessThanHighCritical() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.add(Calendar.YEAR, -60);
-		
+
 		Person person = new Person(10);
 		person.setBirthdate(calendar.getTime());
 		
+		Obs obs = new Obs();
+		obs.setPerson(person);
+		obs.setConcept(Context.getConceptService().getConcept(4090));
+		obs.setValueNumeric(121.0);
+		obs.setObsDatetime(new Date());
+
+		Errors errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+
+		assertFalse(errors.hasErrors());
+		assertEquals(Obs.Interpretation.HIGH, obs.getInterpretation());
+	}
+
+	/**
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void shouldSetInterpretationToCriticallyHighIfObsValueIsAboveHighCritical() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.YEAR, -60);
+
+		Person person = new Person(10);
+		person.setBirthdate(calendar.getTime());
+		
+		Obs obs = new Obs();
+		obs.setPerson(person);
+		obs.setConcept(Context.getConceptService().getConcept(4090));
+		obs.setValueNumeric(131.0);
+		obs.setObsDatetime(new Date());
+
+		Errors errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+
+		assertFalse(errors.hasErrors());
+		assertEquals(Obs.Interpretation.CRITICALLY_HIGH, obs.getInterpretation());
+	}
+
+	/**
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void shouldSetInterpretationToCriticallyHighIfObsValueIsEqualToHighCritical() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.YEAR, -60);
+
+		Person person = new Person(10);
+		person.setBirthdate(calendar.getTime());
+
 		Obs obs = new Obs();
 		obs.setPerson(person);
 		obs.setConcept(Context.getConceptService().getConcept(4090));
@@ -736,31 +784,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void shouldSetInterpretationToAbnormalIfValueIsAboveHiNormal() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.YEAR, -60);
-
-		Person person = new Person(10);
-		person.setBirthdate(calendar.getTime());
-		
-		Obs obs = new Obs();
-		obs.setPerson(person);
-		obs.setConcept(Context.getConceptService().getConcept(4090));
-		obs.setValueNumeric(140.0);
-		obs.setObsDatetime(new Date());
-
-		Errors errors = new BindException(obs, "obs");
-		obsValidator.validate(obs, errors);
-
-		assertFalse(errors.hasErrors());
-		assertEquals(Obs.Interpretation.ABNORMAL, obs.getInterpretation());
-	}
-
-	/**
-	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
-	 */
-	@Test
-	public void shouldSetInterpretationToCriticallyLowIfValueIsBelowLowCritical() {
+	public void shouldSetInterpretationToCriticallyLowIfObsValueIsEqualToLowNormal() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.add(Calendar.YEAR, -60);
 
@@ -777,38 +801,14 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obsValidator.validate(obs, errors);
 
 		assertFalse(errors.hasErrors());
-		assertEquals(Obs.Interpretation.LOW, obs.getInterpretation());
+		assertEquals(Obs.Interpretation.CRITICALLY_LOW, obs.getInterpretation());
 	}
 
 	/**
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void shouldSetInterpretationToLowIfValueIsBelowLowNormal() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.YEAR, -60);
-
-		Person person = new Person(10);
-		person.setBirthdate(calendar.getTime());
-		
-		Obs obs = new Obs();
-		obs.setPerson(person);
-		obs.setConcept(Context.getConceptService().getConcept(4090));
-		obs.setValueNumeric(76.0);
-		obs.setObsDatetime(new Date());
-
-		Errors errors = new BindException(obs, "obs");
-		obsValidator.validate(obs, errors);
-
-		assertFalse(errors.hasErrors());
-		assertEquals(Obs.Interpretation.LOW, obs.getInterpretation());
-	}
-
-	/**
-	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
-	 */
-	@Test
-	public void shouldSetInterpretationToNormalIfValueIsWithinNormalRange() {
+	public void shouldSetInterpretationToNormalIfObsValueIsWithinNormalRange() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.add(Calendar.YEAR, -60);
 
@@ -826,6 +826,30 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 
 		assertFalse(errors.hasErrors());
 		assertEquals(Obs.Interpretation.NORMAL, obs.getInterpretation());
+	}
+
+	/**
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void shouldSetInterpretationToCriticalLowIfObsValueIsBelowLowCritical() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.YEAR, -60);
+
+		Person person = new Person(10);
+		person.setBirthdate(calendar.getTime());
+
+		Obs obs = new Obs();
+		obs.setPerson(person);
+		obs.setConcept(Context.getConceptService().getConcept(4090));
+		obs.setValueNumeric(74.0);
+		obs.setObsDatetime(new Date());
+
+		Errors errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+
+		assertFalse(errors.hasErrors());
+		assertEquals(Obs.Interpretation.CRITICALLY_LOW, obs.getInterpretation());
 	}
 
 }
