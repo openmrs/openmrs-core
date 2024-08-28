@@ -133,8 +133,7 @@ public class ConceptReferenceRangeUtility {
 	public Obs getCurrentObs(String conceptRef, Obs currentObs) {
 		Concept concept = Context.getConceptService().getConceptByReference(conceptRef);
 		
-		if (currentObs.getValueAsString(Locale.ENGLISH).isEmpty() && 
-			(concept != null && concept == currentObs.getConcept())) {
+		if (currentObs.getValueAsString(Locale.ENGLISH).isEmpty() && (concept != null && concept == currentObs.getConcept())) {
 			return currentObs;
 		} else {
 			return getLatestObs(conceptRef, currentObs.getPerson());
