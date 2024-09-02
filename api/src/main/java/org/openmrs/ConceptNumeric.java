@@ -253,4 +253,15 @@ public class ConceptNumeric extends Concept {
 	public void setReferenceRanges(Set<ConceptReferenceRange> referenceRanges) {
 		this.referenceRanges = referenceRanges;
 	}
+
+	/**
+	 * Helper method used to add conceptReferenceRange to the list of conceptReferenceRanges
+	 *
+	 * @since 2.7.0
+	 *
+	 * @param referenceRange to add
+	 */
+	public void addReferenceRange(ConceptReferenceRange referenceRange) {
+		getReferenceRanges().add(referenceRange);
+	}
 }
