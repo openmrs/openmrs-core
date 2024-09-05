@@ -30,7 +30,6 @@ import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.VisitDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
-import org.openmrs.parameter.VisitSearchCriteria;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.ValidateUtil;
@@ -237,14 +236,6 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		Map<VisitAttributeType, String> serializedAttributeValues = CustomDatatypeUtil.getValueReferences(attributeValues);
 		return dao.getVisits(visitTypes, patients, locations, indications, minStartDatetime, maxStartDatetime,
 		    minEndDatetime, maxEndDatetime, serializedAttributeValues, includeInactive, includeVoided);
-	}
-	
-	/**
-	 * @see org.openmrs.api.VisitService#getVisits(VisitSearchCriteria)
-	 */
-	@Override
-	public List<Visit> getVisits(VisitSearchCriteria visitSearchCriteria) throws APIException {
-		return dao.getVisits(visitSearchCriteria);
 	}
 	
 	/**

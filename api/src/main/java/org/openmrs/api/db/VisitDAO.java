@@ -23,7 +23,6 @@ import org.openmrs.VisitAttributeType;
 import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.VisitService;
-import org.openmrs.parameter.VisitSearchCriteria;
 
 /**
  * Database access functions for visits.
@@ -113,18 +112,6 @@ public interface VisitDAO {
 	        Collection<Location> locations, Collection<Concept> indications, Date minStartDatetime, Date maxStartDatetime,
 	        Date minEndDatetime, Date maxEndDatetime, Map<VisitAttributeType, String> serializedAttributeValues,
 	        boolean includeInactive, boolean includeVoided) throws DAOException;
-	
-	/**
-	 * Gets the visits matching the specified search criteria
-	 * 
-	 * @param criteria the search criteria
-	 * @return a list of visits
-	 * @throws DAOException
-	 * 
-	 * @since 2.6.8
-	 * @since 2.7.0
-	 */
-	public List<Visit> getVisits(VisitSearchCriteria criteria) throws DAOException;
 	
 	/**
 	 * @see VisitService#getAllVisitAttributeTypes()
