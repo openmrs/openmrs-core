@@ -17,6 +17,7 @@ import org.openmrs.User;
 import org.openmrs.annotation.AuthorizedAnnotationAttributes;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.Daemon;
 import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +55,10 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 			if (user != null) {
 				log.debug("has roles {}", user.getAllRoles());
 			}
+		}
+		
+		if (Daemon.isDaemonThread()) {
+			return;
 		}
 		
 		AuthorizedAnnotationAttributes attributes = new AuthorizedAnnotationAttributes();
