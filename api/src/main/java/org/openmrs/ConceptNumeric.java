@@ -58,6 +58,7 @@ public class ConceptNumeric extends Concept {
 	
 	/** default constructor */
 	public ConceptNumeric() {
+		referenceRanges = new HashSet<>();
 	}
 	
 	/**

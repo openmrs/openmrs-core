@@ -548,17 +548,8 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void validate_shouldFailValidationIfObsValueBelowLowAbsolute() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.YEAR, -10);
-		Person person = new Person(10);
-		person.setBirthdate(calendar.getTime());
-		
-		Obs obs = new Obs();
-		obs.setPerson(person);
-		obs.setConcept(Context.getConceptService().getConcept(4089));
-		obs.setValueNumeric(50.0);
-		obs.setObsDatetime(new Date());
-		
+		Obs obs = getObs(10, 4089, 50.0);
+
 		Errors errors = new BindException(obs, "obs");
 		obsValidator.validate(obs, errors);
 
@@ -663,16 +654,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void shouldSetErrorIfObsValueIsHigherThanStrictHigherBound() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.YEAR, -10);
-		Person person = new Person(10);
-		person.setBirthdate(calendar.getTime());
-		
-		Obs obs = new Obs();
-		obs.setPerson(person);
-		obs.setConcept(Context.getConceptService().getConcept(4090));
-		obs.setValueNumeric(145.0);
-		obs.setObsDatetime(new Date());
+		Obs obs = getObs(10, 4090, 145.0);
 
 		Errors errors = new BindException(obs, "obs");
 		obsValidator.validate(obs, errors);
@@ -713,17 +695,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void shouldSetInterpretationToHighIfObsValueIsAboveHiNormalAndLessThanHighCritical() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.YEAR, -60);
-
-		Person person = new Person(10);
-		person.setBirthdate(calendar.getTime());
-		
-		Obs obs = new Obs();
-		obs.setPerson(person);
-		obs.setConcept(Context.getConceptService().getConcept(4090));
-		obs.setValueNumeric(121.0);
-		obs.setObsDatetime(new Date());
+		Obs obs = getObs(60, 4090, 121.0);
 
 		Errors errors = new BindException(obs, "obs");
 		obsValidator.validate(obs, errors);
@@ -737,17 +709,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void shouldSetInterpretationToCriticallyHighIfObsValueIsAboveHighCritical() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.YEAR, -60);
-
-		Person person = new Person(10);
-		person.setBirthdate(calendar.getTime());
-		
-		Obs obs = new Obs();
-		obs.setPerson(person);
-		obs.setConcept(Context.getConceptService().getConcept(4090));
-		obs.setValueNumeric(131.0);
-		obs.setObsDatetime(new Date());
+		Obs obs = getObs(60, 4090, 131.0);
 
 		Errors errors = new BindException(obs, "obs");
 		obsValidator.validate(obs, errors);
@@ -761,17 +723,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void shouldSetInterpretationToCriticallyHighIfObsValueIsEqualToHighCritical() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.YEAR, -60);
-
-		Person person = new Person(10);
-		person.setBirthdate(calendar.getTime());
-
-		Obs obs = new Obs();
-		obs.setPerson(person);
-		obs.setConcept(Context.getConceptService().getConcept(4090));
-		obs.setValueNumeric(130.0);
-		obs.setObsDatetime(new Date());
+		Obs obs = getObs(60, 4090, 130.0);
 
 		Errors errors = new BindException(obs, "obs");
 		obsValidator.validate(obs, errors);
@@ -784,18 +736,8 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void shouldSetInterpretationToCriticallyLowIfObsValueIsEqualToLowNormal() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.YEAR, -60);
-
-		Person person = new Person(10);
-		person.setBirthdate(calendar.getTime());
-		
-		Obs obs = new Obs();
-		obs.setPerson(person);
-		obs.setConcept(Context.getConceptService().getConcept(4090));
-		obs.setValueNumeric(75.0);
-		obs.setObsDatetime(new Date());
+	public void shouldSetInterpretationToCriticallyLowIfObsValueIsEqualToLowCritical() {
+		Obs obs = getObs(60, 4090, 75.0);
 
 		Errors errors = new BindException(obs, "obs");
 		obsValidator.validate(obs, errors);
@@ -809,17 +751,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void shouldSetInterpretationToNormalIfObsValueIsWithinNormalRange() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.YEAR, -60);
-
-		Person person = new Person(10);
-		person.setBirthdate(calendar.getTime());
-		
-		Obs obs = new Obs();
-		obs.setPerson(person);
-		obs.setConcept(Context.getConceptService().getConcept(4090));
-		obs.setValueNumeric(100.0);
-		obs.setObsDatetime(new Date());
+		Obs obs = getObs(60, 4090, 100.0);
 
 		Errors errors = new BindException(obs, "obs");
 		obsValidator.validate(obs, errors);
@@ -833,17 +765,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void shouldSetInterpretationToCriticalLowIfObsValueIsBelowLowCritical() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.YEAR, -60);
-
-		Person person = new Person(10);
-		person.setBirthdate(calendar.getTime());
-
-		Obs obs = new Obs();
-		obs.setPerson(person);
-		obs.setConcept(Context.getConceptService().getConcept(4090));
-		obs.setValueNumeric(74.0);
-		obs.setObsDatetime(new Date());
+		Obs obs = getObs(60, 4090, 74.0);
 
 		Errors errors = new BindException(obs, "obs");
 		obsValidator.validate(obs, errors);
@@ -852,4 +774,18 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		assertEquals(Obs.Interpretation.CRITICALLY_LOW, obs.getInterpretation());
 	}
 
+	private static Obs getObs(int numberOfYears, int conceptId, double valueNumeric) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.YEAR, -numberOfYears);
+
+		Person person = new Person(10);
+		person.setBirthdate(calendar.getTime());
+
+		Obs obs = new Obs();
+		obs.setPerson(person);
+		obs.setConcept(Context.getConceptService().getConcept(conceptId));
+		obs.setValueNumeric(valueNumeric);
+		obs.setObsDatetime(new Date());
+		return obs;
+	}
 }
