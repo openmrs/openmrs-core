@@ -19,7 +19,7 @@ import java.io.Serializable;
  * @since 2.7.0
  */
 @MappedSuperclass
-public abstract class BaseReferenceRange implements Serializable {
+public abstract class BaseReferenceRange extends BaseOpenmrsObject implements Serializable {
 	
 	@Column(name = "hi_absolute")
 	private Double hiAbsolute;
