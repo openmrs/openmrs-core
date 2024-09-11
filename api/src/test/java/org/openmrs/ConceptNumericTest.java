@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -125,5 +126,26 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 		cn.setAllowDecimal(true);
 		Context.getConceptService().saveConcept(cn);
 		assertTrue(Context.getConceptService().getConceptNumeric(22).getAllowDecimal());
+	}
+
+	@Test
+	public void shouldRemoveReferenceRangeFromConceptNumeric() {
+		Concept c = Context.getConceptService().getConcept(22);
+		ConceptNumeric cn = new ConceptNumeric(c);
+		ConceptReferenceRange referenceRange1 = new ConceptReferenceRange();
+		referenceRange1.setId(1);
+		referenceRange1.setConceptNumeric(cn);
+		ConceptReferenceRange referenceRange2 = new ConceptReferenceRange();
+		referenceRange2.setId(2);
+		referenceRange2.setConceptNumeric(cn);
+		cn.addReferenceRange(referenceRange1);
+		cn.addReferenceRange(referenceRange2);
+
+		Context.getConceptService().saveConcept(cn);
+		assertEquals(2, Context.getConceptService().getConceptNumeric(22).getReferenceRanges().size());
+
+		cn.removeReferenceRange(referenceRange1);
+		Context.getConceptService().saveConcept(cn);
+		assertEquals(1, Context.getConceptService().getConceptNumeric(22).getReferenceRanges().size());
 	}
 }

@@ -131,6 +131,8 @@ public class ConceptNumeric extends Concept {
 		this.lowNormal = null;
 		this.units = "";
 		this.allowDecimal = false;
+
+		referenceRanges = new HashSet<>();
 	}
 	
 	// Property accessors
@@ -264,5 +266,16 @@ public class ConceptNumeric extends Concept {
 	 */
 	public void addReferenceRange(ConceptReferenceRange referenceRange) {
 		getReferenceRanges().add(referenceRange);
+	}
+
+	/**
+	 * Helper method used to remove conceptReferenceRange from a list of conceptReferenceRanges
+	 *
+	 * @param referenceRange reference range to remove
+	 *                          
+	 * @since 2.7.0
+	 */
+	public void removeReferenceRange(ConceptReferenceRange referenceRange) {
+		getReferenceRanges().remove(referenceRange);
 	}
 }
