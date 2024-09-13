@@ -34,6 +34,16 @@
 		<addForeignKeyConstraint constraintName="patient_identifier_program_id_fk" baseTableName="patient_identifier" baseColumnNames="patient_program_id" referencedTableName="patient_program" referencedColumnNames="patient_program_id" />
 	</changeSet>
 
+	<!-- Change datatype of onset_date from datetime to date -->
+	<changeSet id="TRUNK-6236" author="Njidda Salifu">
+		<comment>Change datatype of onset_date from datetime to date</comment>
+		<alterTable tableName="conditions">
+			<column name="onset_date" type="date">
+				<constraints nullable="true"/>
+			</column>
+    </alterTable>
+	</changeSet>
+
 	<!-- Create the medication_dispense table.  See TRUNK-6071 -->
 	
 	<changeSet id="TRUNK-6071-20220406" author="PIH">
