@@ -157,6 +157,9 @@
 			<column name="low_absolute" type="DOUBLE"/>
 			<column name="low_critical" type="DOUBLE"/>
 			<column name="low_normal" type="DOUBLE"/>
+			<column name="uuid" type="char(38)">
+				<constraints unique="true" />
+			</column>
 		</createTable>
 
 		<addForeignKeyConstraint
