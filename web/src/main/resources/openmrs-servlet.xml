@@ -89,8 +89,8 @@
  		 
  	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver"> 
  		<property name="exceptionMappings"> 
- 			<map> 
- 				<entry key="org.openmrs.api.APIException" value="uncaughtException"/> 
+ 			<map>
+				<entry key="java.lang.Exception" value="uncaughtException"/>
  			</map> 
  		</property> 
  		<property name="order" value="100" /> 
