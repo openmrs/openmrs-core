@@ -30,6 +30,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.zip.ZipInputStream;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -61,6 +63,7 @@ import org.openmrs.util.DatabaseUpdaterLiquibaseProvider;
 import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.InputRequiredException;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsThreadPoolHolder;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.Security;
@@ -1245,7 +1248,7 @@ public class InitializationFilter extends StartupFilter {
 	 */
 	private class InitializationCompletion {
 		
-		private Thread thread;
+		private final Future<Void> future;
 		
 		private int steps = 0;
 		
@@ -1287,15 +1290,13 @@ public class InitializationFilter extends StartupFilter {
 		public void start() {
 			setStepsComplete(0);
 			setInitializationComplete(false);
-			thread.start();
 		}
 		
 		public void waitForCompletion() {
 			try {
-				thread.join();
-			}
-			catch (InterruptedException e) {
-				log.error("Error generated", e);
+				future.get();
+			} catch (InterruptedException | ExecutionException e) {
+				throw new RuntimeException(e);
 			}
 		}
 		
@@ -1886,7 +1887,7 @@ public class InitializationFilter extends StartupFilter {
 				}
 			};
 			
-			thread = new Thread(r);
+			future = OpenmrsThreadPoolHolder.threadExecutor.submit(() -> { r.run(); return null; });
 		}
 	}
 	

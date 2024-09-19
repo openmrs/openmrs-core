@@ -786,9 +786,6 @@ public class DatabaseUpdater {
 		catch (FileNotFoundException e) {
 			log.warn("Failed to find the database update log file", e);
 		}
-		catch (IOException e) {
-			log.warn("Failed to write to the database update log file", e);
-		}
 		finally {
 			IOUtils.closeQuietly(streamWriter);
 			IOUtils.closeQuietly(writer);

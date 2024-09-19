@@ -50,6 +50,7 @@ import org.openmrs.notification.AlertService;
 import org.openmrs.notification.MessageService;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.util.OpenmrsClassLoader;
+import org.openmrs.util.OpenmrsThreadPoolHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.Advisor;
@@ -703,9 +704,8 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @param cls Interface to proxy
 	 * @param classInstance the actual instance of the <code>cls</code> interface
 	 */
-	public void setService(Class cls, Object classInstance) {
-		
-		log.debug("Setting service: " + cls);
+	public void setService(Class<?> cls, Object classInstance) {
+		log.debug("Setting service: {}", cls);
 		
 		if (cls != null && classInstance != null) {
 			try {
@@ -734,7 +734,7 @@ public class ServiceContext implements ApplicationContextAware {
 					
 					services.put(cls, advisedService);
 				}
-				log.debug("Service: " + cls + " set successfully");
+				log.debug("Service: {} set successfully", cls);
 			}
 			catch (Exception e) {
 				throw new APIException("service.unable.create.proxy.factory", new Object[] { classInstance.getClass()
@@ -886,9 +886,7 @@ public class ServiceContext implements ApplicationContextAware {
 	
 	public <T> List<T> getRegisteredComponents(Class<T> type) {
 		Map<String, T> m = getRegisteredComponents(applicationContext, type);
-		if (log.isTraceEnabled()) {
-			log.trace("getRegisteredComponents(" + type + ") = " + m);
-		}
+		log.trace("getRegisteredComponents({}) = {}", type, m);
 		return new ArrayList<>(m.values());
 	}
 	
@@ -918,16 +916,10 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @param type - The type of component to retrieve
 	 * @return all components registered in a Spring applicationContext of a given type
 	 */
-	@SuppressWarnings("unchecked")
 	private <T> Map<String, T> getRegisteredComponents(ApplicationContext context, Class<T> type) {
-		Map<String, T> components = new HashMap<>();
 		Map<String, T> registeredComponents = context.getBeansOfType(type);
-		if (log.isTraceEnabled()) {
-			log.trace("getRegisteredComponents(" + context + ", " + type + ") = " + registeredComponents);
-		}
-		if (registeredComponents != null) {
-			components.putAll(registeredComponents);
-		}
+		log.trace("getRegisteredComponents({}, {}) = {}", context, type, registeredComponents);
+		Map<String, T> components = new HashMap<>(registeredComponents);
 		if (context.getParent() != null) {
 			components.putAll(getRegisteredComponents(context.getParent(), type));
 		}
@@ -955,26 +947,26 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @since 1.9
 	 */
 	private void runOpenmrsServiceOnStartup(final OpenmrsService openmrsService, final String classString) {
-		new Thread(() -> {
+		OpenmrsThreadPoolHolder.threadExecutor.execute(() -> {
 			try {
 				synchronized (refreshingContextLock) {
 					//Need to wait for application context to finish refreshing otherwise we get into trouble.
 					while (refreshingContext) {
 						log.debug("Waiting to get service: {} while the context is being refreshed", classString);
-
+	
 						refreshingContextLock.wait();
-
+	
 						log.debug("Finished waiting to get service {} while the context was being refreshed", classString);
 					}
 				}
-
+	
 				Daemon.runStartupForService(openmrsService);
 			}
-			catch (InterruptedException e) {
+				catch (InterruptedException e) {
 				log.warn("Refresh lock was interrupted while waiting to run OpenmrsService.onStartup() for "
-				        + classString, e);
+					+ classString, e);
 			}
-		}).start();
+		});
 	}
 	
 	/**

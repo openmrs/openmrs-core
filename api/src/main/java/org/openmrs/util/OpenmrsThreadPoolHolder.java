@@ -7,18 +7,12 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.web;
+package org.openmrs.util;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import org.junit.jupiter.api.Test;
-import org.openmrs.module.ModuleException;
-
-public class WebDaemonTest {
+public class OpenmrsThreadPoolHolder {
 	
-	@Test
-	public void startOpenmrs_shouldThrowExceptionGivenNull() {
-		assertThrows(ModuleException.class, () -> WebDaemon.startOpenmrs(null));
-	}
-
+	public static final ExecutorService threadExecutor = Executors.newCachedThreadPool();
 }

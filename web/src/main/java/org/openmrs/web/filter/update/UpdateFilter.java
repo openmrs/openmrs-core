@@ -20,6 +20,7 @@ import org.openmrs.liquibase.ChangeSetExecutorCallback;
 import org.openmrs.util.DatabaseUpdaterLiquibaseProvider;
 import org.openmrs.util.InputRequiredException;
 import org.openmrs.liquibase.ChangeLogVersionFinder;
+import org.openmrs.util.OpenmrsThreadPoolHolder;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
@@ -30,6 +31,7 @@ import org.openmrs.web.filter.initialization.InitializationFilter;
 import org.openmrs.web.filter.util.CustomResourceLoader;
 import org.openmrs.web.filter.util.ErrorMessageConstants;
 import org.openmrs.web.filter.util.FilterUtil;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.ContextLoader;
 
@@ -54,6 +56,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.Future;
 
 /**
  * This is the second filter that is processed. It is only active when OpenMRS has some liquibase
@@ -62,7 +65,7 @@ import java.util.Map;
  */
 public class UpdateFilter extends StartupFilter {
 	
-	protected final org.slf4j.Logger log = LoggerFactory.getLogger(UpdateFilter.class);
+	protected final Logger log = LoggerFactory.getLogger(UpdateFilter.class);
 	
 	/**
 	 * The velocity macro page to redirect to if an error occurs or on initial startup
@@ -586,9 +589,9 @@ public class UpdateFilter extends StartupFilter {
 	 * executed. TODO: Break this out into a separate (non-inner) class
 	 */
 	private class UpdateFilterCompletion {
-		
-		private Thread thread;
-		
+
+		private Runnable r;
+
 		private String executingChangesetId = null;
 		
 		private List<String> changesetIds = new ArrayList<>();
@@ -627,7 +630,7 @@ public class UpdateFilter extends StartupFilter {
 		 */
 		public void start() {
 			setUpdatesRequired(true);
-			thread.start();
+			OpenmrsThreadPoolHolder.threadExecutor.submit(r);
 		}
 		
 		public synchronized void setMessage(String message) {
@@ -671,7 +674,7 @@ public class UpdateFilter extends StartupFilter {
 		 * This class does all the work of creating the desired database, user, updates, etc
 		 */
 		public UpdateFilterCompletion() {
-			Runnable r = new Runnable() {
+			 r = new Runnable() {
 				
 				/**
 				 * TODO split this up into multiple testable methods
@@ -786,8 +789,6 @@ public class UpdateFilter extends StartupFilter {
 					}
 				}
 			};
-			
-			thread = new Thread(r);
 		}
 	}
 }

@@ -10,63 +10,52 @@
 package org.openmrs.web;
 
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 
-import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
 import org.openmrs.module.ModuleException;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.InputRequiredException;
+
+import java.util.concurrent.ExecutionException;
 
 /**
  * This class provides {@link Daemon} functionality in a web context.
  * 
  * @since 1.9
  */
-public class WebDaemon extends Daemon {
+public final class WebDaemon {
+	
+	private WebDaemon() {
+	};
 	
 	/**
 	 * Start openmrs in a new thread that is authenticated as the daemon user.
 	 * 
 	 * @param servletContext the servlet context.
 	 */
-	public static void startOpenmrs(final ServletContext servletContext) throws DatabaseUpdateException,
-	        InputRequiredException {
-		
-		// create a new thread and start openmrs in it.
-		DaemonThread startOpenmrsThread = new DaemonThread() {
-			
-			@Override
-			public void run() {
-				isDaemonThread.set(true);
+	public static void startOpenmrs(final ServletContext servletContext) throws DatabaseUpdateException, InputRequiredException {
+
+		try {
+			Daemon.runNewDaemonTask(() -> {
 				try {
 					Listener.startOpenmrs(servletContext);
+				} catch (ServletException e) {
+					throw new ModuleException("Unable to start OpenMRS. Error thrown was: " + e.getMessage(), e);
 				}
-				catch (Exception e) {
-					exceptionThrown = e;
-				}
-				finally {
-					try {
-						Context.closeSession();
-					} finally {
-						isDaemonThread.remove();
-					}
-				}
+			}).get();
+		} catch (InterruptedException  ignored) {
+		} catch (ExecutionException e) {
+			Throwable cause = e.getCause();
+			if (cause instanceof DatabaseUpdateException) {
+				throw (DatabaseUpdateException) cause;
+			} else if (cause instanceof InputRequiredException) {
+				throw (InputRequiredException) cause;
+			} else if (!(cause instanceof ModuleException)) {
+				throw new ModuleException("Unable to start OpenMRS. Error thrown was: " + cause.getMessage(), cause);
+			}  else {
+				throw (ModuleException) cause;
 			}
-		};
-		
-		startOpenmrsThread.start();
-		
-		// wait for the "startOpenmrs" thread to finish
-		try {
-			startOpenmrsThread.join();
-		}
-		catch (InterruptedException e) {
-			// ignore
-		}
-		
-		if (startOpenmrsThread.getExceptionThrown() != null) {
-			throw new ModuleException("Unable to start OpenMRS. Error thrown was: "
-			        + startOpenmrsThread.getExceptionThrown().getMessage(), startOpenmrsThread.getExceptionThrown());
 		}
 	}
 }

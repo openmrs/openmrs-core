@@ -92,6 +92,10 @@ public class MemoryAppender extends AbstractAppender {
 			appender = new MemoryAppender(name, filter, layout, ignoreExceptions, null, theBufferSize);
 			APPENDERS.put(name, new SoftReference<>(appender));
 		}
+		
+		if (!appender.isStarted()) {
+			appender.start();
+		}
 
 		return appender;
 	}
