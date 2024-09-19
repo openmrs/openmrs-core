@@ -14,7 +14,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import org.openmrs.Concept;
@@ -681,4 +680,9 @@ public interface ConceptDAO {
 	 * @see ConceptService#getConceptReferenceRangesByConceptId(Integer)
 	 */
 	List<ConceptReferenceRange> getConceptReferenceRangesByConceptId(Integer conceptId);
+
+	/**
+	 * @see ConceptService#getConceptReferenceRangeByUuid(String) 
+	 */
+	ConceptReferenceRange getConceptReferenceRangeByUuid(String uuid);
 }

@@ -41,7 +41,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -4004,5 +4003,14 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		assertEquals(50.0, savedConceptNumeric.getHiAbsolute(), 0);
 		assertEquals(1, savedConceptNumeric.getReferenceRanges().size());
 		assertEquals(50.0, savedConceptNumeric.getReferenceRanges().stream().findFirst().get().getHiAbsolute());
+	}
+
+	@Test
+	public void getConceptReferenceRangeByUuid_shouldReturnAConceptReferenceRange() {
+		ConceptReferenceRange conceptReferenceRange = conceptService.getConceptReferenceRangeByUuid("2c5972e8-aee5-468c-8216-369a1b60723d");
+
+		assertNotNull(conceptReferenceRange);
+
+		assertEquals(34, conceptReferenceRange.getId());
 	}
 }

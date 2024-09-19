@@ -21,7 +21,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -2078,6 +2077,11 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Transactional(readOnly = true)
 	public List<ConceptReferenceRange> getConceptReferenceRangesByConceptId(Integer conceptId) {
 		return dao.getConceptReferenceRangesByConceptId(conceptId);
+	}
+
+	@Override
+	public ConceptReferenceRange getConceptReferenceRangeByUuid(String uuid) {
+		return dao.getConceptReferenceRangeByUuid(uuid);
 	}
 
 	/***

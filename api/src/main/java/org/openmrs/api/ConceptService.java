@@ -13,7 +13,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.Set;
 
 import org.openmrs.Concept;
@@ -2012,5 +2011,19 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	List<ConceptReferenceRange> getConceptReferenceRangesByConceptId(Integer conceptId);
+
+	/**
+	 * This method gets ConceptReferenceRange by uuid
+	 *
+	 * @param uuid uuid 
+	 * @return {@link ConceptReferenceRange}
+	 *
+	 * @since 2.7.0
+	 *
+	 * <strong>Should</strong> get a conceptReferenceRange if found
+	 * <strong>Should</strong> return null if no conceptReferenceRange was found with the given uuid
+	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	ConceptReferenceRange getConceptReferenceRangeByUuid(String uuid);
 	
 }
