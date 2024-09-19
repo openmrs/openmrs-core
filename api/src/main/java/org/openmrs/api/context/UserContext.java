@@ -325,7 +325,7 @@ public class UserContext implements Serializable {
 	public boolean hasPrivilege(String privilege) {
 		log.debug("Checking '{}' against proxies: {}", privilege, proxies);
 		// check proxied privileges
-		for (String s : proxies) {
+		for (String s : new ArrayList<>(proxies)) {
 			if (s.equals(privilege)) {
 				notifyPrivilegeListeners(getAuthenticatedUser(), privilege, true);
 				return true;
