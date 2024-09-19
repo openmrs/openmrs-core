@@ -9,10 +9,7 @@
  */
 package org.openmrs;
 
-import java.util.Date;
-
 import org.codehaus.jackson.annotate.JsonIgnore;
-import org.hibernate.envers.Audited;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.NotYetPersistedException;
@@ -30,8 +27,7 @@ import org.openmrs.customdatatype.SingleCustomValue;
  *
  * @since 1.9
  */
-@Audited
-public class FormResource extends BaseOpenmrsObject implements CustomValueDescriptor, SingleCustomValue<FormResource> {
+public class FormResource extends BaseChangeableOpenmrsMetadata implements CustomValueDescriptor, SingleCustomValue<FormResource> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -54,10 +50,6 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	private transient boolean dirty = false;
 	
 	private transient Object typedValue;
-	
-	private User changedBy;
-	
-	private Date dateChanged;
 	
 	public FormResource() {
 		// generic constructor
@@ -272,31 +264,4 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 		return dirty;
 	}
 	
-	/**
-	 * @return Returns the changedBy.
-	 */
-	public User getChangedBy() {
-		return changedBy;
-	}
-	
-	/**
-	 * @param changedBy The user that changed this object
-	 */
-	public void setChangedBy(User changedBy) {
-		this.changedBy = changedBy;
-	}
-	
-	/**
-	 * @return Returns the date this object was changed
-	 */
-	public Date getDateChanged() {
-		return dateChanged;
-	}
-	
-	/**
-	 * @param dateChanged The date this object was changed
-	 */
-	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
-	}
 }
