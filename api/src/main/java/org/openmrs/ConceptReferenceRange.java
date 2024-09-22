@@ -23,7 +23,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
- * A concept reference range is typically a range of a {@link ConceptNumeric} for certain factor(s) e.g. age, gender e.t.c. 
+ * A concept reference range defines the acceptable numeric values/ranges of a {@link ConceptNumeric} for specific factors
+ * such as age, gender, e.t.c.
  * 
  * <p>
  * The criteria is used to evaluate if certain attributes of a patient meet a certain factor range. 
@@ -54,15 +55,19 @@ public class ConceptReferenceRange extends BaseReferenceRange implements Openmrs
 	
 	public ConceptReferenceRange() {
 	}
-	
+
 	/**
-	 * @return Returns the conceptRangeId.
+	 * Gets id of conceptReferenceRange
+	 *
+	 * @return Returns the ConceptReferenceRangeId.
 	 */
 	public Integer getConceptReferenceRangeId() {
 		return conceptReferenceRangeId;
 	}
 
 	/**
+	 * Sets conceptReferenceRangeId
+	 *
 	 * @param conceptReferenceRangeId The conceptReferenceRangeId to set.
 	 */
 	public void setConceptReferenceRangeId(Integer conceptReferenceRangeId) {
@@ -70,16 +75,16 @@ public class ConceptReferenceRange extends BaseReferenceRange implements Openmrs
 	}
 
 	/**
-	 * Returns the criteria of the conceptReferenceRange
+	 * Gets the criteria of conceptReferenceRange
 	 *
-	 * @return criteria the criteria
+	 * @return criteria
 	 */
 	public String getCriteria() {
 		return this.criteria;
 	}
 
 	/**
-	 * Sets the criteria of the conceptReferenceRange
+	 * Sets the criteria of conceptReferenceRange
 	 *
 	 * @param criteria the criteria to set
 	 */
@@ -88,6 +93,8 @@ public class ConceptReferenceRange extends BaseReferenceRange implements Openmrs
 	}
 
 	/**
+	 * Gets conceptNumeric of conceptReferenceRange
+	 *
 	 * @return Returns the ConceptNumeric.
 	 */
 	public ConceptNumeric getConceptNumeric() {
@@ -95,6 +102,8 @@ public class ConceptReferenceRange extends BaseReferenceRange implements Openmrs
 	}
 
 	/**
+	 * Sets conceptNumeric
+	 *
 	 * @param conceptNumeric concept to set.
 	 */
 	public void setConceptNumeric(ConceptNumeric conceptNumeric) {

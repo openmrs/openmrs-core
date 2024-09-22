@@ -40,7 +40,7 @@ public abstract class BaseReferenceRange extends BaseOpenmrsObject implements Se
 	private Double lowNormal;
 
 	/**
-	 * Returns high absolute value of the referenceRange
+	 * Gets high absolute value of the referenceRange
 	 *
 	 * @return hiAbsolute the high absolute value
 	 */
@@ -51,14 +51,14 @@ public abstract class BaseReferenceRange extends BaseOpenmrsObject implements Se
 	/**
 	 * Sets high absolute value of the referenceRange
 	 *
-	 *  @param hiAbsolute high absolute value to set
+	 * @param hiAbsolute high absolute value to set
 	 */
 	public void setHiAbsolute(Double hiAbsolute) {
 		this.hiAbsolute = hiAbsolute;
 	}
 
 	/**
-	 * Returns high critical value of the referenceRange
+	 * Gets high critical value of the referenceRange
 	 *
 	 * @return the high critical value
 	 */
@@ -69,7 +69,7 @@ public abstract class BaseReferenceRange extends BaseOpenmrsObject implements Se
 	/**
 	 * Sets high critical value of the referenceRange
 	 *
-	 *  @param hiCritical high critical value to set
+	 * @param hiCritical high critical value to set
 	 */
 	public void setHiCritical(Double hiCritical) {
 		this.hiCritical = hiCritical;
@@ -87,14 +87,14 @@ public abstract class BaseReferenceRange extends BaseOpenmrsObject implements Se
 	/**
 	 * Sets high normal value of the referenceRange
 	 *
-	 *  @param hiNormal high normal value to set
+	 * @param hiNormal high normal value to set
 	 */
 	public void setHiNormal(Double hiNormal) {
 		this.hiNormal = hiNormal;
 	}
 
 	/**
-	 * Returns low absolute value of the referenceRange
+	 * Gets low absolute value of the referenceRange
 	 *
 	 * @return the low absolute value
 	 */
@@ -112,7 +112,7 @@ public abstract class BaseReferenceRange extends BaseOpenmrsObject implements Se
 	}
 
 	/**
-	 * Returns low critical value of the referenceRange
+	 * Gets low critical value of the referenceRange
 	 *
 	 * @return the low critical value
 	 */
@@ -130,7 +130,7 @@ public abstract class BaseReferenceRange extends BaseOpenmrsObject implements Se
 	}
 
 	/**
-	 * Returns low normal value of the referenceRange
+	 * Gets low normal value of the referenceRange
 	 *
 	 * @return the low normal value
 	 */

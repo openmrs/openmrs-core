@@ -326,8 +326,8 @@ public class ObsValidator implements Validator {
 	 * Finds the strictest {@link ConceptReferenceRange} from a list of valid ranges.
 	 * The strictest range is determined by having the highest lower bound and the lowest upper bound.
 	 * e.g.
-	 * If ConceptReferenceRange one has a range of 80-150.
-	 * and ConceptReferenceRange two has a range of 60 - 140,
+	 * If ConceptReferenceRange-1 has a range of 80-150.
+	 * and ConceptReferenceRange-2 has a range of 60-140,
 	 * the "strictest" range will be 80-140. 
 	 *
 	 * @param conceptReferenceRanges A list of valid {@link ConceptReferenceRange} objects

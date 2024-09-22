@@ -36,10 +36,10 @@ public class ConceptReferenceRangeUtility {
 	}
 	
 	/**
-	 * This method evaluates the given criteria against the provided person/patient.
+	 * This method evaluates the given criteria against the provided {@link Obs}.
 	 *
 	 * @param criteria the criteria string to evaluate e.g. "$patient.getAge() > 1"
-	 * @param obs The observation (Obs) object containing the values to be used in the criteria.
+	 * @param obs The observation (Obs) object containing the values to be used in the criteria evaluation.
 	 *                  
 	 * @return true if the criteria evaluates to true, false otherwise
 	 */
@@ -72,7 +72,7 @@ public class ConceptReferenceRangeUtility {
 			return Boolean.parseBoolean(writer.toString());
 		}
 		catch (ParseErrorException e) {
-			throw new APIException("An error occurred while evaluating criteria: Invalid criteria: " + criteria, e);
+			throw new APIException("An error occurred while evaluating criteria. Invalid criteria: " + criteria, e);
 		}
 		catch (Exception e) {
 			throw new APIException("An error occurred while evaluating criteria: ", e);
@@ -86,7 +86,7 @@ public class ConceptReferenceRangeUtility {
 	 *                   e.g "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434"
 	 * @param person person to get obs for
 	 *                   
-	 * @return Obs
+	 * @return Obs latest Obs
 	 */
 	public Obs getLatestObs(String conceptRef, Person person) {
 		Concept concept = Context.getConceptService().getConceptByReference(conceptRef);
