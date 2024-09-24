@@ -785,16 +785,14 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	 * @see VisitService#endVisit(Visit,Date)
 	 */
 	@Test
-	public void endVisit_shouldNotFailIfAllowOverlappingVisitsIsFalse() {
+	public void startVisit_shouldFailIfActiveVisitExists() {
 		
 		Context.getAdministrationService().setGlobalProperty("visits.allowOverlappingVisits", "false");
+		Patient patient = Context.getPatientService().getPatient(3);
 		
-		Visit visit = visitService.getVisit(1);
-		assertNull(visit.getStopDatetime());
+		Visit visit = new Visit(patient, new VisitType(1), new Date());
 		
-		visitService.endVisit(visit, null);
-		
-		assertNotNull(visit.getStopDatetime());
+		assertThrows(APIException.class, () ->visitService.saveVisit(visit));
 	}
 	
 	/**
