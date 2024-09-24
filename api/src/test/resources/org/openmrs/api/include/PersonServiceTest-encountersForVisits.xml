@@ -11,11 +11,11 @@
 
 -->
 <dataset>
-    <encounter encounter_id="100" encounter_type="2" patient_id="2" visit_id="2" location_id="1" form_id="1" encounter_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" uuid="c8146fac-2f80-11e2-b338-adb892b5d200"/>
-    <encounter_provider encounter_provider_id="100" encounter_id="100" provider_id="1" encounter_role_id="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" uuid="c8146fac-2f80-11e2-b338-adb892b5d201" />
-    <obs obs_id="100" status="FINAL" person_id="2" concept_id="5497" encounter_id="100" obs_datetime="2008-08-01 00:00:00.0" location_id="1" value_numeric="150.0" comments="" creator="1" date_created="2008-08-18 14:11:13.0" voided="false" uuid="c8146fac-2f80-11e2-b338-adb892b5d202"/>
-    <obs obs_id="101" status="FINAL" person_id="2" concept_id="5497" encounter_id="100" obs_datetime="2008-08-01 00:00:00.0" location_id="1" value_numeric="510.0" comments="" creator="1" date_created="2008-08-18 14:11:13.0" voided="true" void_reason="testing" uuid="c8146fac-2f80-11e2-b338-adb892b5d203"/>
+	<encounter encounter_id="100" encounter_type="2" patient_id="2" visit_id="2" location_id="1" form_id="1" encounter_datetime="2005-01-02 08:00:00.0" creator="1" date_created="2005-01-02 08:00:00.0" voided="false" uuid="c8146fac-2f80-11e2-b338-adb892b5d200"/>
+	<encounter_provider encounter_provider_id="100" encounter_id="100" provider_id="1" encounter_role_id="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" uuid="c8146fac-2f80-11e2-b338-adb892b5d201" />
+	<obs obs_id="100" status="FINAL" person_id="2" concept_id="5497" encounter_id="100" obs_datetime="2008-08-01 00:00:00.0" location_id="1" value_numeric="150.0" comments="" creator="1" date_created="2008-08-18 14:11:13.0" voided="false" uuid="c8146fac-2f80-11e2-b338-adb892b5d202"/>
+	<obs obs_id="101" status="FINAL" person_id="2" concept_id="5497" encounter_id="100" obs_datetime="2008-08-01 00:00:00.0" location_id="1" value_numeric="510.0" comments="" creator="1" date_created="2008-08-18 14:11:13.0" voided="true" void_reason="testing" uuid="c8146fac-2f80-11e2-b338-adb892b5d203"/>
 
-    <encounter encounter_id="101" encounter_type="2" patient_id="2" visit_id="2" location_id="1" form_id="1" encounter_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="true" void_reason="testing" uuid="c8146fac-2f80-11e2-b338-adb892b5d204"/>
-    <encounter_provider encounter_provider_id="101" encounter_id="100" provider_id="1" encounter_role_id="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" uuid="c8146fac-2f80-11e2-b338-adb892b5d205" />
+	<encounter encounter_id="101" encounter_type="2" patient_id="2" visit_id="2" location_id="1" form_id="1" encounter_datetime="2005-01-02 08:00:00.0" creator="1" date_created="2005-01-02 08:00:00.0" voided="true" void_reason="testing" uuid="c8146fac-2f80-11e2-b338-adb892b5d204"/>
+	<encounter_provider encounter_provider_id="101" encounter_id="100" provider_id="1" encounter_role_id="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" uuid="c8146fac-2f80-11e2-b338-adb892b5d205" />
 </dataset>

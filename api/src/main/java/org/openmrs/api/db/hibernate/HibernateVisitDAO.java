@@ -31,6 +31,7 @@ import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.VisitDAO;
+import org.openmrs.parameter.VisitSearchCriteria;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -220,6 +221,64 @@ public class HibernateVisitDAO implements VisitDAO {
 		if (serializedAttributeValues != null) {
 			CollectionUtils.filter(visits, new AttributeMatcherPredicate<Visit, VisitAttributeType>(
 			        serializedAttributeValues));
+		}
+		
+		return visits;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.VisitDAO#getVisits(org.openmrs.parameter.VisitSearchCriteria)
+	 */
+	@Override
+	public List<Visit> getVisits(VisitSearchCriteria criteria) throws DAOException {
+		Criteria ccc = getCurrentSession().createCriteria(Visit.class);
+		
+		if (criteria.getVisitTypes() != null && !criteria.getVisitTypes().isEmpty()) {
+			ccc.add(Restrictions.in("visitType", criteria.getVisitTypes()));
+		}
+		if (criteria.getPatients() != null && !criteria.getPatients().isEmpty()) {
+			ccc.add(Restrictions.in("patient", criteria.getPatients()));
+		}
+		if (criteria.getLocations() != null && !criteria.getLocations().isEmpty()) {
+			ccc.add(Restrictions.in("location", criteria.getLocations()));
+		}
+		if (criteria.getIndications() != null && !criteria.getIndications().isEmpty()) {
+			ccc.add(Restrictions.in("indication", criteria.getIndications()));
+		}
+		
+		if (criteria.getMinStartDatetime() != null) {
+			ccc.add(Restrictions.ge("startDatetime", criteria.getMinStartDatetime()));
+		}
+		if (criteria.getMaxStartDatetime() != null) {
+			ccc.add(Restrictions.le("startDatetime", criteria.getMaxStartDatetime()));
+		}
+		
+		// active visits have null end date, so it doesn't make sense to search against it if include inactive is set to false
+		if (!criteria.isIncludeInactive()) {
+			// the user only asked for currently active visits, so stop time needs to be null or after right now
+			ccc.add(Restrictions.or(Restrictions.isNull("stopDatetime"), Restrictions.gt("stopDatetime", new Date())));
+		} else {
+			if (criteria.getMinEndDatetime() != null) {
+				ccc.add(Restrictions.or(Restrictions.isNull("stopDatetime"), Restrictions.ge("stopDatetime",
+					criteria.getMinEndDatetime())));
+			}
+			if (criteria.getMaxEndDatetime() != null) {
+				ccc.add(Restrictions.le("stopDatetime", criteria.getMaxEndDatetime()));
+			}
+		}
+		
+		if (!criteria.isIncludeVoided()) {
+			ccc.add(Restrictions.eq("voided", false));
+		}
+		
+		ccc.addOrder(Order.desc("startDatetime"));
+		ccc.addOrder(Order.desc("visitId"));
+		
+		List<Visit> visits = ccc.list();
+		
+		if (criteria.getSerializedAttributeValues() != null) {
+			CollectionUtils.filter(visits, new AttributeMatcherPredicate<Visit, VisitAttributeType>(
+				criteria.getSerializedAttributeValues()));
 		}
 		
 		return visits;

@@ -11,7 +11,6 @@ package org.openmrs.validator;
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -19,6 +18,9 @@ import static org.openmrs.test.matchers.HasFieldErrors.hasFieldErrors;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -86,7 +88,8 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void validate_shouldAcceptAVisitThatHasTheRightNumberOfAttributeOccurrences() {
-		Visit visit = makeVisit();
+		int patientId = 42;
+		Visit visit = makeVisit(patientId);
 		visit.addAttribute(makeAttribute("one"));
 		visit.addAttribute(makeAttribute("two"));
 		ValidateUtil.validate(visit);
@@ -201,6 +204,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		visit.setPatient(encounter.getPatient());
 		encounter.setVisit(visit);
 		encounter.setEncounterDatetime(visit.getStartDatetime());
+		Context.flushSession();
 		Context.getEncounterService().saveEncounter(encounter);
 		
 		//Set visit start date to after the encounter date.
@@ -223,6 +227,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		visit.setPatient(encounter.getPatient());
 		encounter.setVisit(visit);
 		encounter.setEncounterDatetime(visit.getStartDatetime());
+		Context.flushSession();
 		Context.getEncounterService().saveEncounter(encounter);
 		
 		//Set visit stop date to before the encounter date.
@@ -253,20 +258,114 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see VisitValidator#validate(Object, org.springframework.validation.Errors)
+	 * @see VisitValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldRejectAVisitIfStartDateTimeIsEqualToStartDateTimeOfAnotherVisitOfTheSamePatient()
-	        {
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTimeInMillis(DATE_TIME_2014_01_04_00_00_00_0);
+	public void validate_shouldRejectAVisitThatStartsBeforeAndEndsAfterAnExistingVisit() {
+		int patientId = 42;
 		
-		Visit visit = makeVisit(42);
-		visit.setStartDatetime(calendar.getTime());
+		// Existing visit: starts on 2014-01-04 10:00:00 and ends on 2014-01-10 14:00:00 (see VisitValidatorTest.xml)
+		// New visit starts before and ends after the existing visit
+		String startDateTime = "2014-01-04T08:00:00";
+		String endDateTime = "2014-01-10T16:00:00";
 		
-		Errors errors = new BindException(visit, "visit");
-		new VisitValidator().validate(visit, errors);
+		//	Existing visit:  		|---------|
+		//	New visit:       |----------------------|
 		
+		Errors errors = validateVisitOverlap(startDateTime, endDateTime, patientId);
+		assertTrue(errors.hasFieldErrors("startDatetime"));
+	}
+	
+	/**
+	 * @see VisitValidator#validate(Object,Errors)
+	 */
+	@Test
+	public void validate_shouldRejectAVisitThatStartsBeforeAndEndsDuringAnExistingVisit() {
+		int patientId = 42;
+		// Existing visit: starts on 2014-01-04 10:00:00 and ends on 2014-01-10 14:00:00 (see VisitValidatorTest.xml)
+		// New visit starts before and ends during the existing visit
+		String startDateTime = "2014-01-04T08:00:00";
+		String endDateTime = "2014-01-04T12:00:00";
+		
+		//	Existing event:  	   |----------------------|
+		//	New event:       |------------|
+		
+		Errors errors = validateVisitOverlap(startDateTime, endDateTime, patientId);
+		assertTrue(errors.hasFieldErrors("startDatetime"));
+	}
+	
+	/**
+	 * @see VisitValidator#validate(Object,Errors)
+	 */
+	@Test
+	public void validate_shouldRejectAVisitThatStartsDuringAndEndsAfterAnExistingVisit() {
+		int patientId = 42;
+		// Existing visit: starts on 2014-01-04 10:00:00 and ends on 2014-01-10 14:00:00 (see VisitValidatorTest.xml)
+		// New visit starts during and ends after the existing visit
+		String startDateTime = "2014-01-04T12:00:00";
+		String endDateTime = "2014-01-04T16:00:00";
+		
+		//	Existing visit:  	|------------|
+		//	New visit:                  |----------|
+		
+		Errors errors = validateVisitOverlap(startDateTime, endDateTime, patientId);
+		assertTrue(errors.hasFieldErrors("startDatetime"));
+	}
+	
+	/**
+	 * @see VisitValidator#validate(Object,Errors)
+	 */
+	@Test
+	public void validate_shouldRejectAVisitThatStartsAndEndsDuringAnExistingVisit() {
+		// Existing visit: starts on 2014-01-04 10:00:00 and ends on 2014-01-10 14:00:00 (see VisitValidatorTest.xml)
+		int patientId = 42;
+		
+		// New visit starts and ends during the existing visit
+		String startDateTime = "2014-01-04T12:00:00";
+		String endDateTime = "2014-01-04T13:00:00";
+		
+		// Existing visit:  	|----------------------|
+		// New visit:                  |------|
+		
+		Errors errors = validateVisitOverlap(startDateTime, endDateTime, patientId);
+		assertTrue(errors.hasFieldErrors("startDatetime"));
+	}
+	
+	/**
+	 * @see VisitValidator#validate(Object,Errors)
+	 */
+	@Test
+	public void validate_shouldRejectAVisitThatStartsAtTheSameTimeAsAnExistingVisit() {
+		// Existing visit: starts on 2014-01-04 10:00:00 and ends on 2014-01-10 14:00:00 (see VisitValidatorTest.xml)
+		int patientId = 42;
+		
+		// New visit starts at the same time as the existing visit and ends before the existing visit
+		String startDateTime = "2014-01-04T10:00:00";
+		String endDateTime = "2014-01-04T12:00:00";
+		
+		// Existing visit:  |----------------------|
+		// New visit:       |------|
+		
+		Errors errors = validateVisitOverlap(startDateTime, endDateTime, patientId);
+		assertTrue(errors.hasFieldErrors("startDatetime"));
+	}
+	
+	/**
+	 * @see VisitValidator#validate(Object,Errors)
+	 */
+	@Test
+	public void validate_shouldRejectAVisitThatEndsAtTheSameTimeAsAnExistingEvent(){
+		// Existing visit: starts on 2014-01-04 10:00:00 and ends on 2014-01-10 14:00:00 (see VisitValidatorTest.xml)
+		int patientId = 42;
+		
+		// New visit starts before the existing visit and ends at the same time as the existing visit
+		String startDateTime = "2014-01-04T08:00:00";
+		String endDateTime = "2014-01-10T14:00:00";
+		
+		// Existing visit:  |----------------------|
+		// New visit:           |------------------|
+		
+		Errors errors = validateVisitOverlap(startDateTime, endDateTime, patientId);
 		assertTrue(errors.hasFieldErrors("startDatetime"));
 	}
 	
@@ -274,16 +373,18 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldRejectAVisitIfStartDateTimeFallsIntoAnotherVisitOfTheSamePatient() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.set(2014, Calendar.JANUARY, 6);
+	public void validate_shouldRejectOverlappingNewActiveVisit() {
+		int patientId = 42;
 		
-		Visit visit = makeVisit(42);
-		visit.setStartDatetime(calendar.getTime());
+		// Existing visit: starts on 2014-01-04 10:00:00 and ends on 2014-01-10 14:00:00 (see VisitValidatorTest.xml)
+		// New visit starts before and ends after the existing visit
+		String startDateTime = "2014-01-04T12:00:00";
+		String endDateTime = null;
 		
-		Errors errors = new BindException(visit, "visit");
-		new VisitValidator().validate(visit, errors);
+		//	Existing visit:  |---------|
+		//	New visit:            |----------->
 		
+		Errors errors = validateVisitOverlap(startDateTime, endDateTime, patientId);
 		assertTrue(errors.hasFieldErrors("startDatetime"));
 	}
 	
@@ -291,40 +392,41 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldRejectAVisitIfStopDateTimeFallsIntoAnotherVisitOfTheSamePatient() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.set(2014, Calendar.JANUARY, 2);
+	public void validate_shouldRejectOverlappingActiveVisits() {
+		int patientId = 43;
 		
-		Visit visit = makeVisit(42);
-		visit.setStartDatetime(calendar.getTime());
+		// Existing visit: starts on 2014-01-04 10:00:00 and no end date (see VisitValidatorTest.xml)
+		// New visit starts before and ends after the existing visit
+		String startDateTime = "2014-01-04T12:00:00";
+		String endDateTime = "2014-01-04T14:00:00";
 		
-		calendar.set(2014, Calendar.JANUARY, 8);
-		visit.setStopDatetime(calendar.getTime());
+		//	Existing visit:  |---------------->
+		//	New visit:            |--------|
 		
-		Errors errors = new BindException(visit, "visit");
-		new VisitValidator().validate(visit, errors);
-		
-		assertTrue(errors.hasFieldErrors("stopDatetime"));
+		Errors errors = validateVisitOverlap(startDateTime, endDateTime, patientId);
+		assertTrue(errors.hasFieldErrors("startDatetime"));
 	}
 	
 	/**
 	 * @see VisitValidator#validate(Object, org.springframework.validation.Errors)
+	 * This test verifies that updating an existing visit does not result in a rejection 
+	 * when there are no other overlapping visits.
 	 */
 	@Test
-	public void validate_shouldRejectAVisitIfItContainsAnotherVisitOfTheSamePatient() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.set(2014, Calendar.JANUARY, 2);
+	public void validate_shouldNotRejectOnVisitOverlapDuringUpdate() {
+		int patientId = 42;
 		
-		Visit visit = makeVisit(42);
-		visit.setStartDatetime(calendar.getTime());
+		List<Visit> visits = Context.getVisitService()
+			.getVisitsByPatient(Context.getPatientService().getPatient(patientId), true, false);
 		
-		calendar.set(2014, Calendar.JANUARY, 12);
-		visit.setStopDatetime(calendar.getTime());
+		assertFalse(visits.isEmpty());
+		
+		// Existing visit: starts on 2014-01-04 10:00:00 and ends on 2014-01-10 14:00:00 (see VisitValidatorTest.xml)
+		Visit visit = visits.get(0);
 		
 		Errors errors = new BindException(visit, "visit");
 		new VisitValidator().validate(visit, errors);
-		
-		assertTrue(errors.hasFieldErrors("stopDatetime"));
+		assertFalse(errors.hasFieldErrors("startDatetime"));
 	}
 	
 	/**
@@ -332,7 +434,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void validate_shouldAcceptAVisitIfStartDateTimeIsEqualToStartDateTimeOfAnotherVoidedVisitOfTheSamePatient()
-	        {
+	{
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeInMillis(DATE_TIME_2014_02_05_00_00_00_0);
 		
@@ -340,7 +442,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		visit.setStartDatetime(calendar.getTime());
 		
 		assertTrue(patientHasVoidedVisit(visit.getPatient(), DATE_TIME_2014_02_05_00_00_00_0,
-		    DATE_TIME_2014_02_11_00_00_00_0));
+			DATE_TIME_2014_02_11_00_00_00_0));
 		
 		Errors errors = new BindException(visit, "visit");
 		new VisitValidator().validate(visit, errors);
@@ -360,7 +462,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		visit.setStartDatetime(calendar.getTime());
 		
 		assertTrue(patientHasVoidedVisit(visit.getPatient(), DATE_TIME_2014_02_05_00_00_00_0,
-		    DATE_TIME_2014_02_11_00_00_00_0));
+			DATE_TIME_2014_02_11_00_00_00_0));
 		
 		Errors errors = new BindException(visit, "visit");
 		new VisitValidator().validate(visit, errors);
@@ -383,7 +485,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		visit.setStopDatetime(calendar.getTime());
 		
 		assertTrue(patientHasVoidedVisit(visit.getPatient(), DATE_TIME_2014_02_05_00_00_00_0,
-		    DATE_TIME_2014_02_11_00_00_00_0));
+			DATE_TIME_2014_02_11_00_00_00_0));
 		
 		Errors errors = new BindException(visit, "visit");
 		new VisitValidator().validate(visit, errors);
@@ -407,7 +509,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		visit.setStopDatetime(calendar.getTime());
 		
 		assertTrue(patientHasVoidedVisit(visit.getPatient(), DATE_TIME_2014_02_05_00_00_00_0,
-		    DATE_TIME_2014_02_11_00_00_00_0));
+			DATE_TIME_2014_02_11_00_00_00_0));
 		
 		Errors errors = new BindException(visit, "visit");
 		new VisitValidator().validate(visit, errors);
@@ -422,8 +524,8 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		List<Visit> visitList = Context.getVisitService().getVisitsByPatient(patient, true, true);
 		for (Visit visit : visitList) {
 			if (visit.getStartDatetime() != null && visit.getStartDatetime().getTime() == startInMillis
-			        && visit.getStopDatetime() != null && visit.getStopDatetime().getTime() == stopInMillis
-			        && visit.getVoided()) {
+				&& visit.getStopDatetime() != null && visit.getStopDatetime().getTime() == stopInMillis
+				&& visit.getVoided()) {
 				return true;
 			}
 		}
@@ -450,7 +552,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		Visit visit = makeVisit(42);
 		visit
-		        .setVoidReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+			.setVoidReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 		
 		Errors errors = new BindException(visit, "visit");
 		new VisitValidator().validate(visit, errors);
@@ -467,6 +569,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		visit.setPatient(patient);
 		calendar.set(1974, 4, 7);
 		visit.setStartDatetime(calendar.getTime());
+		visit.setVisitType(visitService.getVisitType(1));
 		Errors errors = new BindException(visit, "visit");
 		
 		new VisitValidator().validate(visit, errors);
@@ -582,5 +685,24 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		new VisitValidator().validate(visit, errors);
 		
 		assertThat(errors, hasFieldErrors("startDatetime", "Visit.startDateCannotFallBeforeTheBirthDateOfTheSamePatient"));
+	}
+	
+	private Date parseIsoDate(String isoDate) {
+		LocalDateTime localDateTime = LocalDateTime.parse(isoDate, DateTimeFormatter.ISO_DATE_TIME);
+		return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+	}
+	
+	private Errors validateVisitOverlap(String startDateTime, String endDateTime, int patientId) {
+		globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ALLOW_OVERLAPPING_VISITS, "false");
+		Visit visit = makeVisit(patientId);
+		visit.setStartDatetime(parseIsoDate(startDateTime));
+		if(endDateTime != null) {
+			visit.setStopDatetime(parseIsoDate(endDateTime));
+		}
+		
+		Errors errors = new BindException(visit, "visit");
+		new VisitValidator().validate(visit, errors);
+		
+		return errors;
 	}
 }

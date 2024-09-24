@@ -22,6 +22,7 @@ import org.openmrs.VisitAttribute;
 import org.openmrs.VisitAttributeType;
 import org.openmrs.VisitType;
 import org.openmrs.annotation.Authorized;
+import org.openmrs.parameter.VisitSearchCriteria;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 
@@ -257,6 +258,19 @@ public interface VisitService extends OpenmrsService {
 	        Collection<Location> locations, Collection<Concept> indications, Date minStartDatetime, Date maxStartDatetime,
 	        Date minEndDatetime, Date maxEndDatetime, Map<VisitAttributeType, Object> attributeValues,
 	        boolean includeInactive, boolean includeVoided) throws APIException;
+	
+	/**
+	 * Gets the visits matching the specified search criteria
+	 *
+	 * @param visitSearchCriteria
+	 * @return
+	 * @throws APIException
+	 *
+	 * @since 2.6.8
+	 * @since 2.7.0
+	 */
+	@Authorized(PrivilegeConstants.GET_VISITS)
+	public List<Visit> getVisits(VisitSearchCriteria visitSearchCriteria) throws APIException;
 	
 	/**
 	 * Gets all unvoided visits for the specified patient
