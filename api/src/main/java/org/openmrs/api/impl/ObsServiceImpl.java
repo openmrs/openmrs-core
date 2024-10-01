@@ -674,5 +674,4 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	public void removeHandler(String key) {
 		handlers.remove(key);
 	}
-	
 }

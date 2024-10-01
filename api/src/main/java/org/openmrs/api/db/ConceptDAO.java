@@ -30,6 +30,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
+import org.openmrs.ConceptReferenceRange;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.ConceptSearchResult;
@@ -669,4 +670,19 @@ public interface ConceptDAO {
 	public long getConceptAttributeCount(ConceptAttributeType conceptAttributeType);
 
 	List<Concept> getConceptsByClass(ConceptClass conceptClass);
+
+	/**
+	 * @see ConceptService#saveConceptReferenceRange(ConceptReferenceRange)
+	 */
+	ConceptReferenceRange saveConceptReferenceRange(ConceptReferenceRange conceptReferenceRange);
+
+	/**
+	 * @see ConceptService#getConceptReferenceRangesByConceptId(Integer)
+	 */
+	List<ConceptReferenceRange> getConceptReferenceRangesByConceptId(Integer conceptId);
+
+	/**
+	 * @see ConceptService#getConceptReferenceRangeByUuid(String) 
+	 */
+	ConceptReferenceRange getConceptReferenceRangeByUuid(String uuid);
 }

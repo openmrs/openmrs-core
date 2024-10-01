@@ -354,6 +354,7 @@
   <obs obs_id="14" person_id="7" status="FINAL" concept_id="20" encounter_id="4" obs_datetime="2008-08-15 00:00:00.0" location_id="1" value_datetime="2008-08-14 00:00:00.0" comments="" creator="1" date_created="2008-08-19 12:32:38.0" voided="false" uuid="99b92980-db62-40cd-8bca-733357c48126"/>
   <obs obs_id="15" person_id="7" status="FINAL" concept_id="21" encounter_id="4" obs_datetime="2008-08-15 00:00:00.0" location_id="1" value_coded="22" comments="" creator="1" date_created="2008-08-19 12:32:59.0" voided="false" uuid="1ce473c8-3fac-440d-9f92-e10facab194f"/>
   <obs obs_id="16" person_id="7" status="FINAL" concept_id="5089" encounter_id="5" obs_datetime="2008-08-19 00:00:00.0" location_id="2" value_numeric="61.0" comments="" creator="1" date_created="2008-08-19 12:35:30.0" voided="false" uuid="2ed1e57d-9f18-41d3-b067-2eeaf4b30fb0"/>
+  <obs obs_id="77" person_id="1" status="FINAL" concept_id="5089" encounter_id="5" obs_datetime="2008-08-19 00:00:00.0" location_id="2" value_numeric="65.0" comments="" creator="1" date_created="2024-08-19 12:35:30.0" voided="false" uuid="dd5b7ba9-ba83-45e4-8960-e4232964a0ce"/>
   <order_frequency order_frequency_id="1" concept_id="113" creator="1" date_created="2008-08-15 13:52:53.0" retired="false" uuid="28090760-7c38-11e3-baa7-0800200c9a66" />
   <order_frequency order_frequency_id="2" concept_id="3" creator="1" date_created="2008-08-15 13:52:53.0" retired="false" uuid="38090760-7c38-11e3-baa7-0800200c9a66" />
   <order_frequency order_frequency_id="3" concept_id="4" creator="1" date_created="2008-08-15 13:52:53.0" retired="true" retire_reason="Some Retire Reason" retired_by="1" date_retired="2009-08-15 13:52:53.0" uuid="48090760-7c38-11e3-baa7-0800200c9a66" />
@@ -447,4 +448,18 @@
   <test_order order_id="7" number_of_repeats="2" />
   <test_order order_id="8" />
   <test_order order_id="9" />
+	<concept_reference_map concept_map_id="19" concept_id="4088" concept_reference_term_id="13" concept_map_type_id="2" creator="1" date_created="2004-08-12 00:00:00.0" uuid="2f1a6a81-5c8b-40da-9266-d3d5013d9150"/>
+	<concept_reference_map concept_map_id="20" concept_id="4089" concept_reference_term_id="13" concept_map_type_id="2" creator="1" date_created="2004-08-12 00:00:00.0" uuid="e0eded3f-6c30-47ce-a324-1b63e710e075"/>
+	<concept_reference_map concept_map_id="21" concept_id="4090" concept_reference_term_id="13" concept_map_type_id="2" creator="1" date_created="2004-08-12 00:00:00.0" uuid="ed90a959-6a74-43b7-a01a-4de280421aa6"/>
+	<concept concept_id="4088" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="0.1" changed_by="1" date_changed="2006-06-09 14:57:33.0" uuid="bb951f1d-efa9-45f4-969a-f05b6a944dd7"/>
+	<concept concept_id="4089" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="0.1" changed_by="1" date_changed="2006-06-09 14:57:33.0" uuid="a0da2417-59be-47e4-81e7-d89fd5fcb892"/>
+	<concept concept_id="4090" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="0.1" changed_by="1" date_changed="2006-06-09 14:57:33.0" uuid="a334a29c-0267-474e-8426-df0040b1da57"/>
+	<concept_numeric concept_id="4089" units="" allow_decimal="true"/>
+	<concept_numeric concept_id="4090" units="" allow_decimal="true" hi_absolute="145" low_absolute="70"/>
+	<concept_numeric concept_id="4088" units="" allow_decimal="true"/>
+	<concept_reference_range concept_reference_range_id="30" concept_id="4090" criteria="$patient.getAge() &gt;= 1 &amp;&amp; $patient.getAge() &lt;= 70" hi_absolute="150.0" hi_normal="118.0" hi_critical="130.0" low_normal="80" low_critical="75" low_absolute="70" uuid="239c1904-15ff-45e1-ac9d-d83afb637926"/>
+	<concept_reference_range concept_reference_range_id="31" concept_id="4088" criteria="$patient.getAge() &gt;= 1 &amp;&amp; $patient.getAge() &lt;= 3" hi_absolute="120.0" hi_normal="118.0" low_normal="80" low_absolute="60" uuid="5269e035-c8e6-44d7-af47-7a25a6cf6c60"/>
+	<concept_reference_range concept_reference_range_id="32" concept_id="4089" criteria="$patient.getAge() &gt;= 1 &amp;&amp; $patient.getAge() &lt;= 10" hi_absolute="120.0" hi_normal="118.0" low_normal="80" low_absolute="60" uuid="d8ad3ceb-00a4-4484-a1ff-700f7ac3d10d"/>
+	<concept_reference_range concept_reference_range_id="33" concept_id="4090" criteria="$patient.getAge() &gt;= 1 &amp;&amp; $patient.getAge() &lt;= 50" hi_absolute="140.0" hi_normal="118.0" low_normal="60" low_absolute="60" uuid="3e610133-0105-47db-b32e-a7c4a9838fbe"/>
+	<concept_reference_range concept_reference_range_id="34" concept_id="5089" criteria="$patient.getGender().equals('M') &amp;&amp; $fn.getLatestObs('c607c80f-1ea9-4da3-bb88-6276ce8868dd', $patient).getValueNumeric() == 65.0" hi_absolute="140.0" hi_normal="118.0" low_normal="60.0" low_absolute="60.0" uuid="2c5972e8-aee5-468c-8216-369a1b60723d"/>
 </dataset>

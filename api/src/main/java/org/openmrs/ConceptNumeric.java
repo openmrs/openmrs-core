@@ -10,6 +10,7 @@
 package org.openmrs;
 
 import java.util.HashSet;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -45,6 +46,8 @@ public class ConceptNumeric extends Concept {
 	
 	private Boolean allowDecimal = false;
 	
+	private Set<ConceptReferenceRange> referenceRanges;
+	
 	/**
 	 * displayPrecision, represents the number of significant digits
 	 * to be used for display of a numeric value
@@ -55,6 +58,7 @@ public class ConceptNumeric extends Concept {
 	
 	/** default constructor */
 	public ConceptNumeric() {
+		referenceRanges = new HashSet<>();
 	}
 	
 	/**
@@ -127,6 +131,8 @@ public class ConceptNumeric extends Concept {
 		this.lowNormal = null;
 		this.units = "";
 		this.allowDecimal = false;
+
+		referenceRanges = new HashSet<>();
 	}
 	
 	// Property accessors
@@ -227,5 +233,49 @@ public class ConceptNumeric extends Concept {
 	@JsonIgnore
 	public Boolean isAllowDecimal() {
 		return getAllowDecimal();
+	}
+
+	/**
+	 * Gets conceptReferenceRanges
+	 * 
+	 * @since 2.7.0
+	 * 
+	 * @return list of conceptReferenceRange
+	 */
+	public Set<ConceptReferenceRange> getReferenceRanges() {
+		return referenceRanges;
+	}
+
+	/**
+	 * Sets conceptReferenceRanges
+	 * 
+	 * @since 2.7.0
+	 * 
+	 * @param referenceRanges List of ConceptReferenceRange
+	 */
+	public void setReferenceRanges(Set<ConceptReferenceRange> referenceRanges) {
+		this.referenceRanges = referenceRanges;
+	}
+
+	/**
+	 * Helper method used to add conceptReferenceRange to the list of conceptReferenceRanges
+	 *
+	 * @since 2.7.0
+	 *
+	 * @param referenceRange to add
+	 */
+	public void addReferenceRange(ConceptReferenceRange referenceRange) {
+		getReferenceRanges().add(referenceRange);
+	}
+
+	/**
+	 * Helper method used to remove conceptReferenceRange from a list of conceptReferenceRanges
+	 *
+	 * @param referenceRange reference range to remove
+	 *                          
+	 * @since 2.7.0
+	 */
+	public void removeReferenceRange(ConceptReferenceRange referenceRange) {
+		getReferenceRanges().remove(referenceRange);
 	}
 }

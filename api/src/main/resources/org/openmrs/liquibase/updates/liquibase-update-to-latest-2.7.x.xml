@@ -100,4 +100,74 @@
         </sql>
     </changeSet>
 	
+	<changeSet author="Isaiah (generated)" id="202408151920-1">
+		<preConditions onError="HALT" onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="concept_reference_range"/>
+			</not>
+		</preConditions>
+		<comment>Creating 'concept_reference_range' table</comment>
+		<createTable tableName="concept_reference_range" >
+			<column name="concept_reference_range_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="concept_id" type="INT">
+				<constraints nullable="false"/>
+			</column>
+			<column name="criteria" type="VARCHAR(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="hi_absolute" type="DOUBLE"/>
+			<column name="hi_critical" type="DOUBLE"/>
+			<column name="hi_normal" type="DOUBLE"/>
+			<column name="low_absolute" type="DOUBLE"/>
+			<column name="low_critical" type="DOUBLE"/>
+			<column name="low_normal" type="DOUBLE"/>
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false" unique="true" />
+			</column>
+		</createTable>
+
+		<addForeignKeyConstraint
+			baseTableName="concept_reference_range"
+			baseColumnNames="concept_id"
+			constraintName="fk_concept_numeric_reference_range"
+			referencedTableName="concept_numeric"
+			referencedColumnNames="concept_id"/>
+
+	</changeSet>
+
+	<changeSet author="Isaiah (generated)" id="202408152220-1">
+		<preConditions onError="HALT" onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="obs_reference_range"/>
+			</not>
+		</preConditions>
+		<comment>Creating 'obs_reference_range' table</comment>
+		<createTable tableName="obs_reference_range" >
+			<column name="obs_reference_range_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="obs_id" type="INT">
+				<constraints nullable="false" unique="true"/>
+			</column>
+			<column name="hi_absolute" type="DOUBLE"/>
+			<column name="hi_critical" type="DOUBLE"/>
+			<column name="hi_normal" type="DOUBLE"/>
+			<column name="low_absolute" type="DOUBLE"/>
+			<column name="low_critical" type="DOUBLE"/>
+			<column name="low_normal" type="DOUBLE"/>
+			<column name="uuid" type="char(38)">
+				<constraints unique="true" />
+			</column>
+		</createTable>
+
+		<addForeignKeyConstraint
+			baseTableName="obs_reference_range"
+			baseColumnNames="obs_id"
+			constraintName="fk_obs_reference_range"
+			referencedTableName="obs"
+			referencedColumnNames="obs_id"/>
+	</changeSet>
+	
 </databaseChangeLog>

@@ -64,6 +64,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
+import org.openmrs.ConceptReferenceRange;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptSearchResult;
 import org.openmrs.ConceptSet;
@@ -110,6 +111,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	protected static final String GET_DRUG_MAPPINGS = "org/openmrs/api/include/ConceptServiceTest-getDrugMappings.xml";
 
 	protected static final String CONCEPT_ATTRIBUTE_TYPE_XML = "org/openmrs/api/include/ConceptServiceTest-conceptAttributeType.xml";
+	
+	protected static final String CONCEPT_WITH_CONCEPT_REFERENCE_RANGES_XML = "org/openmrs/api/include/ConceptServiceTest-conceptReferenceRange.xml";
 
 	@Autowired
 	CacheManager cacheManager;
@@ -2527,7 +2530,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getConceptMappingsToSource_shouldReturnAListOfConceptMapsFromTheGivenSource() {
-		assertEquals(8, Context.getConceptService().getConceptMappingsToSource(
+		assertEquals(11, Context.getConceptService().getConceptMappingsToSource(
 		    Context.getConceptService().getConceptSource(1)).size());
 	}
 	
@@ -3146,7 +3149,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getAllConcepts_shouldExcludeRetiredConceptsWhenSetIncludeRetiredToFalse() {
 		final List<Concept> allConcepts = conceptService.getAllConcepts(null, true, false);
 		
-		assertEquals(36, allConcepts.size());
+		assertEquals(39, allConcepts.size());
 		assertEquals(3, allConcepts.get(0).getConceptId().intValue());
 	}
 	
@@ -3157,14 +3160,14 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getAllConcepts_shouldOrderByAConceptField() {
 		List<Concept> allConcepts = conceptService.getAllConcepts("dateCreated", true, true);
 		
-		assertEquals(38, allConcepts.size());
+		assertEquals(41, allConcepts.size());
 		assertEquals(88, allConcepts.get(0).getConceptId().intValue());
 		assertEquals(27, allConcepts.get(allConcepts.size() - 1).getConceptId().intValue());
 		
 		//check desc order
 		allConcepts = conceptService.getAllConcepts("dateCreated", false, true);
 		
-		assertEquals(38, allConcepts.size());
+		assertEquals(41, allConcepts.size());
 		assertEquals(27, allConcepts.get(0).getConceptId().intValue());
 		assertEquals(88, allConcepts.get(allConcepts.size() - 1).getConceptId().intValue());
 	}
@@ -3195,7 +3198,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getAllConcepts_shouldOrderByConceptIdAndIncludeRetiredWhenGivenNoParameters() {
 		final List<Concept> allConcepts = conceptService.getAllConcepts();
 		
-		assertEquals(38, allConcepts.size());
+		assertEquals(41, allConcepts.size());
 		assertEquals(3, allConcepts.get(0).getConceptId().intValue());
 	}
 	
@@ -3206,7 +3209,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getAllConcepts_shouldOrderByConceptIdDescendingWhenSetAscParameterToFalse() {
 		final List<Concept> allConcepts = conceptService.getAllConcepts(null, false, true);
 		
-		assertEquals(38, allConcepts.size());
+		assertEquals(41, allConcepts.size());
 		assertEquals(5497, allConcepts.get(0).getConceptId().intValue());
 	}
 	
@@ -3956,5 +3959,61 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		assertNull(conceptService.getConceptByReference(""));  //with empty string
 		assertNull(conceptService.getConceptByReference("id, name or map which does not match to any concept"));
 		assertNull(conceptService.getConceptByReference("1000")); //invalid uuid but exists in standardTestDataset
+	}
+
+	/**
+	 * @see ConceptService#getConceptReferenceRangesByConceptId(Integer) 
+	 */
+	@Test
+	public void getConceptReferenceRangeByConceptId_shouldReturnConceptReferencesRanges() {
+		executeDataSet(CONCEPT_WITH_CONCEPT_REFERENCE_RANGES_XML);
+
+		List<ConceptReferenceRange> conceptReferenceRanges = conceptService.getConceptReferenceRangesByConceptId(5089);
+		
+		assertFalse(conceptReferenceRanges.isEmpty());
+		
+		assertEquals(3, conceptReferenceRanges.get(0).getId());
+	}
+
+	/**
+	 * @see ConceptService#saveConcept(Concept)
+	 */
+	@Test
+	public void saveConcept_shouldSaveANewConceptReferenceRange() {
+		Context.setLocale(Locale.US);
+		ConceptNumeric conceptNumeric = new ConceptNumeric();
+		conceptNumeric.setDatatype(new ConceptDatatype(1));
+		conceptNumeric.setConceptClass(new ConceptClass(1));
+		
+		ConceptName conceptName = new ConceptName("a new conceptnumeric", Locale.US);
+		conceptNumeric.addName(conceptName);
+		conceptNumeric.addDescription(new ConceptDescription("some description",null));
+		conceptNumeric.setHiAbsolute(50.0);
+		conceptNumeric.setLowAbsolute(20.0);
+
+		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
+		conceptReferenceRange.setCriteria("$patient.getAge() >= 1 && $patient.getAge() <= 70");
+		conceptReferenceRange.setConceptNumeric(conceptNumeric);
+		conceptReferenceRange.setHiAbsolute(conceptNumeric.getHiAbsolute());
+		conceptReferenceRange.setLowAbsolute(conceptNumeric.getLowAbsolute());
+		
+		conceptNumeric.setReferenceRanges(Collections.singleton(conceptReferenceRange));
+		conceptService.saveConcept(conceptNumeric);
+
+		ConceptNumeric savedConceptNumeric = conceptService.getConceptNumeric(conceptNumeric.getConceptId());
+		
+		assertEquals("a new conceptnumeric", savedConceptNumeric.getName(Locale.US).getName());
+		assertEquals(50.0, savedConceptNumeric.getHiAbsolute(), 0);
+		assertEquals(1, savedConceptNumeric.getReferenceRanges().size());
+		assertEquals(50.0, savedConceptNumeric.getReferenceRanges().stream().findFirst().get().getHiAbsolute());
+	}
+
+	@Test
+	public void getConceptReferenceRangeByUuid_shouldReturnAConceptReferenceRange() {
+		ConceptReferenceRange conceptReferenceRange = conceptService.getConceptReferenceRangeByUuid("2c5972e8-aee5-468c-8216-369a1b60723d");
+
+		assertNotNull(conceptReferenceRange);
+
+		assertEquals(34, conceptReferenceRange.getId());
 	}
 }

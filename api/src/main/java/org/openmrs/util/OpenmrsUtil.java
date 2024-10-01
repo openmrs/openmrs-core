@@ -72,10 +72,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptNumeric;
+import org.openmrs.ConceptReferenceRange;
 import org.openmrs.Drug;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
+import org.openmrs.Obs;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflowState;
@@ -103,6 +105,7 @@ import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.PersonAttributeTypeEditor;
 import org.openmrs.propertyeditor.ProgramEditor;
 import org.openmrs.propertyeditor.ProgramWorkflowStateEditor;
+import org.openmrs.validator.ObsValidator;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -2146,6 +2149,31 @@ public class OpenmrsUtil {
 	 */
 	public static Set<String> getDeclaredFields(Class<?> clazz) {
 		return Arrays.stream(clazz.getDeclaredFields()).map(Field::getName).collect(Collectors.toSet());
+	}
+
+	/**
+	 * This method checks if a given value is a valid numeric value for the person/patient in subject 
+	 * given the concept. It checks if a given value is within the valid reference range.
+	 *
+	 * @param value The value to check
+	 * @param concept The concept associated with the value
+	 * @param obs The observation to be verified
+	 * @return Error message containing expected range if there was a range mismatch, else returns empty string.
+	 * 
+	 * @since 2.7.0
+	 */
+	public static String isValidNumericValue(Float value, Concept concept, Obs obs) {
+		ConceptReferenceRange conceptReferenceRange = new ObsValidator().getReferenceRange(concept, obs);
+		if (conceptReferenceRange == null) {
+			return "";
+		}
+
+		if ((conceptReferenceRange.getHiAbsolute() != null && conceptReferenceRange.getHiAbsolute() < value) ||
+			(conceptReferenceRange.getLowAbsolute() != null && conceptReferenceRange.getLowAbsolute() > value)) {
+			return String.format("Expected value between %s and %s", conceptReferenceRange.getLowAbsolute(), conceptReferenceRange.getHiAbsolute());
+		} else {
+			return "";
+		}
 	}
 	
 }

@@ -10,15 +10,20 @@
 package org.openmrs.validator;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptNumeric;
+import org.openmrs.ConceptReferenceRange;
 import org.openmrs.Obs;
+import org.openmrs.ObsReferenceRange;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.ConceptReferenceRangeUtility;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -78,6 +83,7 @@ public class ObsValidator implements Validator {
 			return;
 		}
 		List<Obs> ancestors = new ArrayList<>();
+		validateConceptReferenceRange(obs, errors);
 		validateHelper(obs, errors, ancestors, true);
 		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "accessionNumber", "valueModifier", "valueComplex",
 		    "comment", "voidReason");
@@ -250,6 +256,216 @@ public class ObsValidator implements Validator {
 			        && !obs.getValueDrug().getConcept().equals(obs.getValueCoded())) {
 				errors.rejectValue("valueDrug", "Obs.error.invalidDrug");
 			}
+		}
+	}
+
+	/**
+	 * This method validates Obs' numeric values:
+	 * <ol>
+	 *     <li>Validates Obs in relation to criteria e.g. checks patient's age is within the valid range</li>
+	 *     <li>Validates if Obs' numeric value is within the valid range; i.e. >= low absolute && <= high absolute.</li>
+	 *     <li>Sets field errors if numeric value is outside the valid range</li>
+	 * <ol/>
+	 *
+	 * @param obs Observation to validate
+	 * @param errors Errors to record validation issues
+	 */
+	private void validateConceptReferenceRange(Obs obs, Errors errors) {
+		ConceptReferenceRange conceptReferenceRange = getReferenceRange(obs.getConcept(), obs);
+
+		if (conceptReferenceRange != null) {
+			validateAbsoluteRanges(obs, conceptReferenceRange, errors);
+			
+			if (obs.getId() == null) {
+				setObsReferenceRange(obs, conceptReferenceRange);
+			}
+		} else if (obs.getId() == null) {
+			setObsReferenceRange(obs);
+		}
+		setObsInterpretation(obs);
+	}
+
+	/**
+	 * Evaluates the criteria and return the most strict {@link ConceptReferenceRange} for a given concept.
+	 * It considers all valid ranges that match the criteria for the person.
+	 *
+	 * @param concept The concept to evaluate
+	 * @param obs containing The patient for whom the range is being evaluated
+	 * @return The strictest {@link ConceptReferenceRange}, or null if no valid range is found
+	 * 
+	 * @since 2.7.0
+	 */
+	public ConceptReferenceRange getReferenceRange(Concept concept, Obs obs) {
+		if (concept == null || concept.getDatatype() == null || !concept.getDatatype().isNumeric()) {
+			return null;
+		}
+
+		List<ConceptReferenceRange> referenceRanges = Context.getConceptService()
+			.getConceptReferenceRangesByConceptId(concept.getConceptId());
+
+		if (referenceRanges.isEmpty()) {
+			return null;
+		}
+
+		ConceptReferenceRangeUtility referenceRangeUtility = new ConceptReferenceRangeUtility();
+		List<ConceptReferenceRange> validRanges = new ArrayList<>();
+
+		for (ConceptReferenceRange referenceRange : referenceRanges) {
+			if (referenceRangeUtility.evaluateCriteria(referenceRange.getCriteria(), obs)) {
+				validRanges.add(referenceRange);
+			}
+		}
+
+		if (validRanges.isEmpty()) {
+			return null;
+		}
+		return findStrictestReferenceRange(validRanges);
+	}
+	
+	/**
+	 * Finds the strictest {@link ConceptReferenceRange} from a list of valid ranges.
+	 * The strictest range is determined by having the highest lower bound and the lowest upper bound.
+	 * e.g.
+	 * If ConceptReferenceRange-1 has a range of 80-150.
+	 * and ConceptReferenceRange-2 has a range of 60-140,
+	 * the "strictest" range will be 80-140. 
+	 *
+	 * @param conceptReferenceRanges A list of valid {@link ConceptReferenceRange} objects
+	 * @return The strictest {@link ConceptReferenceRange} constructed from the strictest bounds
+	 */
+	private ConceptReferenceRange findStrictestReferenceRange(List<ConceptReferenceRange> conceptReferenceRanges) {
+		ConceptReferenceRange strictestLowRange = conceptReferenceRanges.stream()
+			.filter(range -> range.getLowAbsolute() != null)
+			.max(Comparator.comparing(ConceptReferenceRange::getLowAbsolute))
+			.orElse(null);
+
+		ConceptReferenceRange strictestHiRange = conceptReferenceRanges.stream()
+			.filter(range -> range.getHiAbsolute() != null)
+			.min(Comparator.comparing(ConceptReferenceRange::getHiAbsolute))
+			.orElse(null);
+
+		ConceptReferenceRange strictestRange = new ConceptReferenceRange();
+
+		if (strictestLowRange != null) {
+			strictestRange.setLowAbsolute(strictestLowRange.getLowAbsolute());
+			strictestRange.setLowNormal(strictestLowRange.getLowNormal());
+			strictestRange.setLowCritical(strictestLowRange.getLowCritical());
+		}
+
+		if (strictestHiRange != null) {
+			strictestRange.setHiAbsolute(strictestHiRange.getHiAbsolute());
+			strictestRange.setHiNormal(strictestHiRange.getHiNormal());
+			strictestRange.setHiCritical(strictestHiRange.getHiCritical());
+		}
+
+		return strictestRange;
+	}
+
+	/**
+	 * Validates the high and low absolute values of the Obs.
+	 *
+	 * @param obs Observation to validate
+	 * @param conceptReferenceRange ConceptReferenceRange containing the range values
+	 * @param errors Errors to record validation issues
+	 */
+	private void validateAbsoluteRanges(Obs obs, ConceptReferenceRange conceptReferenceRange, Errors errors) {
+		if (conceptReferenceRange.getHiAbsolute() != null && conceptReferenceRange.getHiAbsolute() < obs.getValueNumeric()) {
+			errors.rejectValue(
+				"valueNumeric", 
+				"error.value.outOfRange.high", 
+				new Object[] { conceptReferenceRange.getLowAbsolute() },
+				null
+			);
+		}
+		if (conceptReferenceRange.getLowAbsolute() != null && conceptReferenceRange.getLowAbsolute() > obs.getValueNumeric()) {
+			errors.rejectValue(
+				"valueNumeric", 
+				"error.value.outOfRange.low", 
+				new Object[] { conceptReferenceRange.getLowAbsolute() },
+				null
+			);
+		}
+	}
+
+	/**
+	 * Builds and sets the ObsReferenceRange for the given Obs.
+	 *
+	 * @param obs Observation to set the reference range
+	 * @param conceptReferenceRange ConceptReferenceRange used to build the ObsReferenceRange
+	 */
+	private void setObsReferenceRange(Obs obs, ConceptReferenceRange conceptReferenceRange) {
+		ObsReferenceRange obsRefRange = new ObsReferenceRange();
+
+		obsRefRange.setHiAbsolute(conceptReferenceRange.getHiAbsolute());
+		obsRefRange.setHiCritical(conceptReferenceRange.getHiCritical());
+		obsRefRange.setHiNormal(conceptReferenceRange.getHiNormal());
+		obsRefRange.setLowAbsolute(conceptReferenceRange.getLowAbsolute());
+		obsRefRange.setLowCritical(conceptReferenceRange.getLowCritical());
+		obsRefRange.setLowNormal(conceptReferenceRange.getLowNormal());
+		obsRefRange.setObs(obs);
+
+		obs.setReferenceRange(obsRefRange);
+	}
+
+	/**
+	 * Builds and sets the ObsReferenceRange from concept numeric values.
+	 *
+	 * @param obs Observation to set the reference range
+	 */
+	private void setObsReferenceRange(Obs obs) {
+		if (obs.getConcept() == null) {
+			return;
+		}
+		
+		ConceptNumeric conceptNumeric = Context.getConceptService().getConceptNumeric(obs.getConcept().getId());
+
+		if (conceptNumeric != null) {
+			ObsReferenceRange obsRefRange = new ObsReferenceRange();
+
+			obsRefRange.setHiAbsolute(conceptNumeric.getHiAbsolute());
+			obsRefRange.setHiCritical(conceptNumeric.getHiCritical());
+			obsRefRange.setHiNormal(conceptNumeric.getHiNormal());
+			obsRefRange.setLowAbsolute(conceptNumeric.getLowAbsolute());
+			obsRefRange.setLowCritical(conceptNumeric.getLowCritical());
+			obsRefRange.setLowNormal(conceptNumeric.getLowNormal());
+			obsRefRange.setObs(obs);
+			
+			obs.setReferenceRange(obsRefRange);
+		}
+	}
+
+	/**
+	 * This method sets Obs interpretation based on the current obs' numeric value.
+	 *
+	 * @param obs Observation to set the interpretation
+	 */
+	private void setObsInterpretation(Obs obs) {
+		ObsReferenceRange referenceRange = obs.getReferenceRange();
+		if (referenceRange == null || obs.getValueNumeric() == null) {
+			return;
+		}
+		
+		if (referenceRange.getHiNormal() != null 
+			&& referenceRange.getHiCritical() != null
+			&& obs.getValueNumeric() > referenceRange.getHiNormal()
+			&& obs.getValueNumeric() < referenceRange.getHiCritical()) {
+			obs.setInterpretation(Obs.Interpretation.HIGH);
+		} else if (referenceRange.getHiCritical() != null 
+			&& obs.getValueNumeric() >= referenceRange.getHiCritical()) {
+			obs.setInterpretation(Obs.Interpretation.CRITICALLY_HIGH);
+		} else if (referenceRange.getLowNormal() != null 
+			&& referenceRange.getLowCritical() != null
+			&& obs.getValueNumeric() < referenceRange.getLowNormal() 
+			&& obs.getValueNumeric() > referenceRange.getLowCritical()) {
+			obs.setInterpretation(Obs.Interpretation.LOW);
+		} else if (referenceRange.getLowNormal() != null 
+			&& referenceRange.getHiNormal() != null
+			&& obs.getValueNumeric() >= referenceRange.getLowNormal() 
+			&& obs.getValueNumeric() <= referenceRange.getHiNormal()) {
+			obs.setInterpretation(Obs.Interpretation.NORMAL);
+		} else if (referenceRange.getLowCritical() != null 
+			&& obs.getValueNumeric() <= referenceRange.getLowCritical()) {
+			obs.setInterpretation(Obs.Interpretation.CRITICALLY_LOW);
 		}
 	}
 	

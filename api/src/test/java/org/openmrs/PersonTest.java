@@ -20,6 +20,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
@@ -807,6 +810,64 @@ public class PersonTest extends BaseContextSensitiveTest {
 		Date deathDate = new Date();
 		p.setDeathDate(deathDate);
 		assertTrue(p.getDead(), "Person must be dead(setDead(true)) inorder have a deathDate set for him");
+	}
+
+	@Test
+	public void getAgeInMonths_shouldReturnCorrectAgeInMonths() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.MONTH, -12);
+		Person person = new Person();
+		person.setBirthdate(calendar.getTime());
+		assertEquals(12, person.getAgeInMonths());
+	}
+
+	@Test
+	public void getAgeInWeeks_shouldReturnCorrectAgeInWeeks() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.WEEK_OF_MONTH, -4);
+		Person person = new Person();
+		person.setBirthdate(calendar.getTime());
+		assertEquals(4, person.getAgeInWeeks()); 
+	}
+
+	@Test
+	public void getAgeInDays_shouldReturnCorrectAgeInDays() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.DAY_OF_MONTH, -11);
+		Person person = new Person();
+		person.setBirthdate(calendar.getTime());
+		assertEquals(11, person.getAgeInDays());
+	}
+
+	@Test
+	public void getAgeInMonths_shouldReturnNullIfBirthdateIsNull() {
+		Person person = new Person();
+		person.setBirthdate(null);
+		assertNull(person.getAgeInMonths());
+	}
+
+	@Test
+	public void getAgeInMonths_shouldReturnCorrectAgeIfDeathDateIsBeforeCurrentDate() {
+		Person person = new Person();
+		person.setBirthdate(Date.from(LocalDate.of(2022, Month.AUGUST, 12).atStartOfDay().toInstant(ZoneOffset.UTC)));
+		person.setDeathDate(Date.from(LocalDate.of(2023, Month.AUGUST, 12).atStartOfDay().toInstant(ZoneOffset.UTC)));
+		assertEquals(12, person.getAgeInMonths());
+	}
+
+	@Test
+	public void getAgeInWeeks_shouldReturnCorrectAgeIfDeathDateIsBeforeCurrentDate() {
+		Person person = new Person();
+		person.setBirthdate(Date.from(LocalDate.of(2024, Month.JUNE, 1).atStartOfDay().toInstant(ZoneOffset.UTC)));
+		person.setDeathDate(Date.from(LocalDate.of(2024, Month.JULY, 1).atStartOfDay().toInstant(ZoneOffset.UTC)));
+		assertEquals(4, person.getAgeInWeeks());
+	}
+
+	@Test
+	public void getAgeInDays_shouldReturnCorrectAgeIfDeathDateIsBeforeCurrentDate() {
+		Person person = new Person();
+		person.setBirthdate(Date.from(LocalDate.of(2024, Month.AUGUST, 1).atStartOfDay().toInstant(ZoneOffset.UTC)));
+		person.setDeathDate(Date.from(LocalDate.of(2024, Month.AUGUST, 5).atStartOfDay().toInstant(ZoneOffset.UTC)));
+		assertEquals(4, person.getAgeInDays());
 	}
 	
 	// helper class
