@@ -591,7 +591,7 @@
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>1.20.1</version>
+				<version>1.20.2</version>
 				<scope>test</scope>
 			</dependency>
 		</dependencies>
