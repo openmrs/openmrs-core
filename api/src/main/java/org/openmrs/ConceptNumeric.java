@@ -10,6 +10,7 @@
 package org.openmrs;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -58,7 +59,7 @@ public class ConceptNumeric extends Concept {
 	
 	/** default constructor */
 	public ConceptNumeric() {
-		referenceRanges = new HashSet<>();
+		referenceRanges = new LinkedHashSet<>();
 	}
 	
 	/**
@@ -132,7 +133,7 @@ public class ConceptNumeric extends Concept {
 		this.units = "";
 		this.allowDecimal = false;
 
-		referenceRanges = new HashSet<>();
+		referenceRanges = new LinkedHashSet<>();
 	}
 	
 	// Property accessors
