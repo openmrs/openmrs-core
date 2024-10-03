@@ -19,6 +19,9 @@ import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Tests the {@link ConceptNumeric} object
  */
@@ -147,5 +150,34 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 		cn.removeReferenceRange(referenceRange1);
 		Context.getConceptService().saveConcept(cn);
 		assertEquals(1, Context.getConceptService().getConceptNumeric(22).getReferenceRanges().size());
+	}
+
+	@Test
+	public void shouldMaintainInsertionOrderOfReferenceRangesWithConstructor() {
+		Concept concept = new Concept();
+		concept.setConceptId(1);
+
+		ConceptNumeric conceptNumeric = new ConceptNumeric(concept);
+
+		ConceptReferenceRange referenceRange1 = new ConceptReferenceRange();
+		referenceRange1.setId(1);
+		ConceptReferenceRange referenceRange2 = new ConceptReferenceRange();
+		referenceRange2.setId(2);
+		ConceptReferenceRange referenceRange3 = new ConceptReferenceRange();
+		referenceRange3.setId(3);
+		ConceptReferenceRange referenceRange4 = new ConceptReferenceRange();
+		referenceRange4.setId(4);
+
+		conceptNumeric.addReferenceRange(referenceRange1);
+		conceptNumeric.addReferenceRange(referenceRange2);
+		conceptNumeric.addReferenceRange(referenceRange3);
+		conceptNumeric.addReferenceRange(referenceRange4);
+
+		List<ConceptReferenceRange> referenceRangeList = new ArrayList<>(conceptNumeric.getReferenceRanges());
+
+		assertEquals(1, referenceRangeList.get(0).getId().intValue());
+		assertEquals(2, referenceRangeList.get(1).getId().intValue());
+		assertEquals(3, referenceRangeList.get(2).getId().intValue());
+		assertEquals(4, referenceRangeList.get(3).getId().intValue());
 	}
 }
