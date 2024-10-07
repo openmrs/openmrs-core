@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import org.hibernate.envers.Audited;
+
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
@@ -19,6 +21,7 @@ import java.io.Serializable;
  * @since 2.7.0
  */
 @MappedSuperclass
+@Audited
 public abstract class BaseReferenceRange extends BaseOpenmrsObject implements Serializable {
 	
 	@Column(name = "hi_absolute")
