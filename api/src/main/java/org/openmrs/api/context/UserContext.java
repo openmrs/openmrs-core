@@ -11,6 +11,7 @@ package org.openmrs.api.context;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -58,7 +59,7 @@ public class UserContext implements Serializable {
 	/**
 	 * User's permission proxies
 	 */
-	private List<String> proxies = new ArrayList<>();
+	private List<String> proxies = Collections.synchronizedList(new ArrayList<>());
 	
 	/**
 	 * User's locale
