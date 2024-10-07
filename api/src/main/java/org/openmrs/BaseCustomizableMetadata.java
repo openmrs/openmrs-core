@@ -10,6 +10,7 @@
 package org.openmrs;
 
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.envers.Audited;
 import org.openmrs.attribute.Attribute;
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.Customizable;
@@ -32,6 +33,7 @@ import java.util.Set;
  * @since 1.9
  */
 @MappedSuperclass
+@Audited
 public abstract class BaseCustomizableMetadata<A extends Attribute> extends BaseChangeableOpenmrsMetadata implements Customizable<A> {
 	
 	@OrderBy("voided asc")

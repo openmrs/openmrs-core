@@ -10,6 +10,7 @@
 package org.openmrs;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.envers.Audited;
 import org.openmrs.api.APIException;
 
 import javax.persistence.Column;
@@ -21,6 +22,7 @@ import javax.persistence.MappedSuperclass;
  * @since 2.4.0
  */
 @MappedSuperclass
+@Audited
 public abstract class BaseFormRecordableOpenmrsData extends BaseChangeableOpenmrsData implements FormRecordable {
 
 	private static final long serialVersionUID = 1L;

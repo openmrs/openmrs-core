@@ -12,6 +12,7 @@ package org.openmrs.attribute;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
+import org.hibernate.envers.Audited;
 import org.hibernate.search.annotations.Field;
 import org.openmrs.BaseChangeableOpenmrsData;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
@@ -29,6 +30,7 @@ import org.openmrs.util.OpenmrsUtil;
  */
 @SuppressWarnings("rawtypes")
 @MappedSuperclass
+@Audited
 public abstract class BaseAttribute<AT extends AttributeType, OwningType extends Customizable<?>> extends BaseChangeableOpenmrsData implements Attribute<AT, OwningType>, Comparable<Attribute> {
 	
 	private OwningType owner;

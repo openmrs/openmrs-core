@@ -17,6 +17,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.envers.Audited;
 import org.hibernate.search.annotations.Field;
 
 /**
@@ -28,6 +29,7 @@ import org.hibernate.search.annotations.Field;
  * @see OpenmrsData
  */
 @MappedSuperclass
+@Audited
 public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements OpenmrsData {
 	
 	//***** Properties *****
