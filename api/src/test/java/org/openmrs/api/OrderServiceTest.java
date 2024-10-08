@@ -2734,9 +2734,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.addAnnotatedClass(SerializedObject.class)
 			.addAnnotatedClass(PatientState.class)
 			.addAnnotatedClass(DrugIngredient.class)
-			.addAnnotatedClass(AlertRecipient.class)    
-			.addAnnotatedClass(ProgramAttributeType.class)
+			.addAnnotatedClass(AlertRecipient.class)
 			.addAnnotatedClass(PatientIdentifierType.class)
+			.addAnnotatedClass(ProgramAttributeType.class)
 			.getMetadataBuilder().build();
 
 
