@@ -34,7 +34,7 @@ public class LocaleUtility implements GlobalPropertyListener {
 	 * Cached version of the default locale. This is cached so that we don't have to look it up in
 	 * the global property table every page load
 	 */
-	private static Locale defaultLocaleCache = null;
+	private static volatile Locale defaultLocaleCache = null;
 	
 	/**
 	 * Cached version of the localeAllowedList. This is cached so that we don't have to look it up
@@ -55,36 +55,40 @@ public class LocaleUtility implements GlobalPropertyListener {
 	 */
 	public static Locale getDefaultLocale() {
 		if (defaultLocaleCache == null) {
-			if (Context.isSessionOpen()) {
-				try {
-					String locale = Context.getAdministrationService().getGlobalProperty(
-					    OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE);
-					
-					if (StringUtils.hasLength(locale)) {
+			synchronized (LocaleUtility.class) {
+				if (defaultLocaleCache == null) {
+					if (Context.isSessionOpen()) {
 						try {
-							defaultLocaleCache = fromSpecification(locale);
+							Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+							String locale = Context.getAdministrationService().getGlobalProperty(
+								OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE);
+
+							if (StringUtils.hasLength(locale)) {
+								try {
+									defaultLocaleCache = fromSpecification(locale);
+								} catch (Exception t) {
+									log.warn("Unable to parse default locale global property value: {}", locale, t);
+								}
+							}
+						} catch (Exception e) {
+							// don't print the full stack-trace by default
+							log.warn("Unable to get locale global property value. {}", e.getMessage());
+							log.debug("Exception caught while capturing locale global property value.", e);
+						} finally {
+							Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 						}
-						catch (Exception t) {
-							log.warn("Unable to parse default locale global property value: " + locale, t);
+
+						// if we weren't able to load the locale from the global property,
+						// use the default one
+						if (defaultLocaleCache == null) {
+							defaultLocaleCache = fromSpecification(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE);
 						}
+					} else {
+						// if session is not open, return the default locale without caching
+						return fromSpecification(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE);
 					}
 				}
-				catch (Exception e) {
-					// swallow most of the stack trace for most users
-					log.warn("Unable to get locale global property value. " + e.getMessage());
-					log.trace("Unable to get locale global property value", e);
-				}
-				
-				// if we weren't able to load the locale from the global property,
-				// use the default one
-				if (defaultLocaleCache == null) {
-					defaultLocaleCache = fromSpecification(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE);
-				}
-			} else {
-				// if session is not open, return the default locale without caching
-				return fromSpecification(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE);
 			}
-			
 		}
 		
 		return defaultLocaleCache;

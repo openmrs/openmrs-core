@@ -83,38 +83,16 @@ public class ChangeLogDetective {
 			log.info("looking for un-run change sets in snapshot version '{}'", version);
 			List<String> changeSets = snapshotCombinations.get(version);
 			
-			Liquibase liquibase = null;
-			try {
-				for (String filename : changeSets) {
-					String scopeId = LiquibaseScopeHandling.enterLiquibaseUILoggingService();
-					
-					liquibase = liquibaseProvider.getLiquibase(filename);
-					
-					List<ChangeSet> rawUnrunChangeSets = new StatusCommandStep()
-						.listUnrunChangeSets(new Contexts(context), 
-							new LabelExpression(), liquibase.getDatabaseChangeLog(), liquibase.getDatabase());
-
-					
-					LiquibaseScopeHandling.exitLiquibaseScope(scopeId);
-					liquibase.close();
-					
-					List<ChangeSet> refinedUnrunChangeSets = excludeVintageChangeSets(filename, rawUnrunChangeSets);
-					
-					log.info("file '{}' contains {} un-run change sets", filename, refinedUnrunChangeSets.size());
-					logUnRunChangeSetDetails(filename, refinedUnrunChangeSets);
-					
-					unrunChangeSetsCount += refinedUnrunChangeSets.size();
-				}
-			}
-			finally {
-				if (liquibase != null) {
-					try {
-						liquibase.close();
-					}
-					catch (Exception e) {
-						// ignore exceptions triggered by closing liquibase a second time 
-					}
-				}
+			Contexts contexts = new Contexts(context);
+			for (String filename : changeSets) {
+				List<ChangeSet> rawUnrunChangeSets = getUnrunChangeSets(filename, contexts, liquibaseProvider);
+				
+				List<ChangeSet> refinedUnrunChangeSets = excludeVintageChangeSets(filename, rawUnrunChangeSets);
+				
+				log.info("file '{}' contains {} un-run change sets", filename, refinedUnrunChangeSets.size());
+				logUnRunChangeSetDetails(filename, refinedUnrunChangeSets);
+				
+				unrunChangeSetsCount += refinedUnrunChangeSets.size();
 			}
 			
 			if (unrunChangeSetsCount == 0) {
@@ -146,35 +124,15 @@ public class ChangeLogDetective {
 		List<String> updateVersions = changeLogVersionFinder.getUpdateVersionsGreaterThan(snapshotVersion);
 		List<String> updateFileNames = changeLogVersionFinder.getUpdateFileNames(updateVersions);
 		
-		Liquibase liquibase = null;
-		try {
-			for (String filename : updateFileNames) {
-				String scopeId = LiquibaseScopeHandling.enterLiquibaseUILoggingService();
-				liquibase = liquibaseProvider.getLiquibase(filename);
+		Contexts contexts = new Contexts(context);
+		for (String filename : updateFileNames) {
+			List<ChangeSet> unrunChangeSets = getUnrunChangeSets(filename, contexts, liquibaseProvider);
 
-				List<ChangeSet> unrunChangeSets = new StatusCommandStep()
-					.listUnrunChangeSets(new Contexts(context),
-						new LabelExpression(), liquibase.getDatabaseChangeLog(), liquibase.getDatabase());
-
-				LiquibaseScopeHandling.exitLiquibaseScope(scopeId);
-				liquibase.close();
-				
-				log.info("file '{}' contains {} un-run change sets", filename, unrunChangeSets.size());
-				logUnRunChangeSetDetails(filename, unrunChangeSets);
-				
-				if (!unrunChangeSets.isEmpty()) {
-					unrunLiquibaseUpdates.add(filename);
-				}
-			}
-		}
-		finally {
-			if (liquibase != null) {
-				try {
-					liquibase.close();
-				}
-				catch (Exception e) {
-					// ignore exceptions triggered by closing liquibase a second time 
-				}
+			log.info("file '{}' contains {} un-run change sets", filename, unrunChangeSets.size());
+			logUnRunChangeSetDetails(filename, unrunChangeSets);
+			
+			if (!unrunChangeSets.isEmpty()) {
+				unrunLiquibaseUpdates.add(filename);
 			}
 		}
 		
@@ -183,7 +141,7 @@ public class ChangeLogDetective {
 	
 	List<String> getSnapshotVersionsInDescendingOrder(Map<String, List<String>> snapshotCombinations) {
 		List<String> versions = new ArrayList<>(snapshotCombinations.keySet());
-		Collections.sort(versions, Collections.reverseOrder());
+		versions.sort(Collections.reverseOrder());
 		return versions;
 	}
 	
@@ -197,15 +155,29 @@ public class ChangeLogDetective {
 		return result;
 	}
 	
+	List<ChangeSet> getUnrunChangeSets(String filename, Contexts context, LiquibaseProvider liquibaseProvider) throws Exception {
+		String scopeId = LiquibaseScopeHandling.enterLiquibaseUILoggingService();
+		Liquibase liquibase = liquibaseProvider.getLiquibase(filename);
+
+		List<ChangeSet> unrunChangeSets;
+		try {
+			unrunChangeSets = new StatusCommandStep()
+				.listUnrunChangeSets(context,
+					new LabelExpression(), liquibase.getDatabaseChangeLog(), liquibase.getDatabase());
+
+		} finally {
+			LiquibaseScopeHandling.exitLiquibaseScope(scopeId);
+			liquibase.close();
+		}
+		
+		return unrunChangeSets;
+	}
+	
 	boolean isVintageChangeSet(String filename, ChangeSet changeSet) {
-		if (filename != null && filename.contains(LIQUIBASE_CORE_DATA_1_9_X_FILENAME)
-		        && changeSet.getId().equals(DISABLE_FOREIGN_KEY_CHECKS) && changeSet.getAuthor().equals(BEN)) {
-			return true;
+		if (filename != null && filename.contains(LIQUIBASE_CORE_DATA_1_9_X_FILENAME) && changeSet.getAuthor().equals(BEN)) {
+			return changeSet.getId().equals(DISABLE_FOREIGN_KEY_CHECKS) || changeSet.getId().equals(ENABLE_FOREIGN_KEY_CHECKS);
 		}
-		if (filename != null && filename.contains(LIQUIBASE_CORE_DATA_1_9_X_FILENAME)
-		        && changeSet.getId().equals(ENABLE_FOREIGN_KEY_CHECKS) && changeSet.getAuthor().equals(BEN)) {
-			return true;
-		}
+		
 		return false;
 	}
 	
@@ -218,10 +190,13 @@ public class ChangeLogDetective {
 	boolean logUnRunChangeSetDetails(String filename, List<ChangeSet> changeSets) {
 		if (changeSets.size() < MAX_NUMBER_OF_CHANGE_SETS_TO_LOG && (filename.contains(LIQUIBASE_CORE_DATA_1_9_X_FILENAME)
 		        || filename.contains(LIQUIBASE_SCHEMA_ONLY_1_9_X_FILENAME))) {
-			for (ChangeSet changeSet : changeSets) {
-				log.info("file '{}' contains un-run change set with id '{}' by author '{}'", filename, changeSet.getId(),
-				    changeSet.getAuthor());
+			if (log.isInfoEnabled()) {
+				for (ChangeSet changeSet : changeSets) {
+					log.info("file '{}' contains un-run change set with id '{}' by author '{}'", filename, changeSet.getId(),
+						changeSet.getAuthor());
+				}
 			}
+			
 			return true;
 		}
 		return false;
