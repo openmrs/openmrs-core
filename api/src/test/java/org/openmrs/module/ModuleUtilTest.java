@@ -773,4 +773,17 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 		}
 		return destinationFolder;
 	}
+
+	@Test
+	public void matchRequiredVersions_shouldAllowRangedUsingPlusSignVersion() {
+		assertTrue(ModuleUtil.matchRequiredVersions("1.4.3","1+ - 1.8.3"));
+		assertTrue(ModuleUtil.matchRequiredVersions("1.4.3","1.4+ - 1.8.3"));
+		assertTrue(ModuleUtil.matchRequiredVersions("1.3.3","1.3.2+ - 1.5.2"));
+	}
+
+	@Test
+	public void matchRequiredVersions_shouldRefuseRangedOutOfBoundUsingPlusSignVersion() {
+		assertFalse(ModuleUtil.matchRequiredVersions("2.0.4","2.2.5+ - 3.19.*"));
+		assertFalse(ModuleUtil.matchRequiredVersions("5.0.0","2.2.5+ - 3.19.2"));
+	}
 }
