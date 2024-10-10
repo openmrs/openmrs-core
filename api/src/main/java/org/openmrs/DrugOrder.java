@@ -547,6 +547,9 @@ public class DrugOrder extends Order {
 	 */
 	public void setDrugNonCoded(String drugNonCoded) {
 		this.drugNonCoded = StringUtils.isNotBlank(drugNonCoded) ? drugNonCoded.trim() : drugNonCoded;
+		if (StringUtils.isNotBlank(drugNonCoded) && getConcept() == null) {
+			setConcept(Context.getOrderService().getNonCodedDrugConcept());
+		}
 	}
 
 	/**
