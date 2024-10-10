@@ -46,6 +46,7 @@ class Log4JCompatibilityTest {
 			compatibilityLogger.setAdditive(false);
 
 			Logger logger = Logger.getLogger("Log4JCompatibility");
+			logger.setLevel(org.apache.log4j.Level.ALL);
 			logger.error("This message should be logged.");
 
 			List<String> logLines = ma.getLogLines();
