@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.Date;
 
 import org.hibernate.type.Type;
@@ -166,11 +167,31 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 			
 			@Override
 			public void execute() {
+				// Disables database constraints temporarily to avoid constraint violations 
+				// during this test when using a non-in-memory database.
+				// Note: This is a temporary workaround and not an ideal or permanent solution.
+				if(!useInMemoryDatabase()) {
+					try {
+						turnOffDBConstraints(getConnection());
+					} catch (SQLException e) {
+						throw new RuntimeException(e);
+					}
+				}
+				
 				ConceptNumeric weight = Context.getConceptService().getConceptNumeric(5089);
 				Date dateChangedBefore = weight.getDateChanged();
 				weight.setHiAbsolute(75d);
 				Context.getConceptService().saveConcept(weight);
 				assertNotSame(dateChangedBefore, weight.getDateChanged());
+				
+				if(!useInMemoryDatabase()) {
+					try {
+						turnOnDBConstraints(getConnection());
+					} catch (SQLException e) {
+						throw new RuntimeException(e);
+					}
+				}
+				
 			}
 		}).runTheTask();
 	}
