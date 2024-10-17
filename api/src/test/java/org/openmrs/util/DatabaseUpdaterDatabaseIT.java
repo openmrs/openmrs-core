@@ -19,7 +19,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DatabaseUpdaterDatabaseIT extends H2DatabaseIT {
+public class DatabaseUpdaterDatabaseIT extends DatabaseIT {
 	
 	private static final String VERSION_2_1_X = "2.1.x";
 	
