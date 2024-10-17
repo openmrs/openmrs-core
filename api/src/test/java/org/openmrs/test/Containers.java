@@ -42,6 +42,7 @@ public class Containers {
 		}
 	}
 	
+	
     private static void ensureMySQLRunning() {
     	
         if (mysql == null) {
@@ -69,6 +70,7 @@ public class Containers {
     		System.setProperty("databasePassword", PASSWORD);
     		System.setProperty("databaseDriver", mysql.getDriverClassName());
     		System.setProperty("databaseDialect", MySQLDialect.class.getName());
+			System.setProperty("database", "mysql");
     		
     		createSchema();
         }
@@ -95,7 +97,7 @@ public class Containers {
     		System.setProperty("databasePassword", PASSWORD);
     		System.setProperty("databaseDriver", postgres.getDriverClassName());
     		System.setProperty("databaseDialect", PostgreSQL82Dialect.class.getName());
-    		
+			
     		createSchema();
         }
     }

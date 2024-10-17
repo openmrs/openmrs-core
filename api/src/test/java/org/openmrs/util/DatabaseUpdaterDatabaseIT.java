@@ -19,7 +19,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DatabaseUpdaterDatabaseIT extends H2DatabaseIT {
+public class DatabaseUpdaterDatabaseIT extends DatabaseIT {
 	
 	private static final String VERSION_2_1_X = "2.1.x";
 	
@@ -35,7 +35,7 @@ public class DatabaseUpdaterDatabaseIT extends H2DatabaseIT {
 	private static final int CHANGE_SET_COUNT_FOR_2_1_X = 870;
 
 	@BeforeEach
-	public void setup() {
+	public void setup() throws ClassNotFoundException {
 		DatabaseUpdater.setLiquibaseProvider(this);
 	}
 	
