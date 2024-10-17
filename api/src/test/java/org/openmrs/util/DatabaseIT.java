@@ -23,23 +23,26 @@ import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import org.h2.jdbc.JdbcSQLNonTransientException;
+import org.hibernate.dialect.MySQLDialect;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.openmrs.liquibase.LiquibaseProvider;
+import org.openmrs.test.Containers;
+import org.openmrs.util.databasechange.H2LessStrictDialect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class H2DatabaseIT implements LiquibaseProvider {
+public class DatabaseIT implements LiquibaseProvider {
 	
-	private static final Logger log = LoggerFactory.getLogger(H2DatabaseIT.class);
-	
-	public static final String CONNECTION_URL = "jdbc:h2:mem:openmrs;DB_CLOSE_DELAY=-1";
+	private static final Logger log = LoggerFactory.getLogger(DatabaseIT.class);
+
+	public static String CONNECTION_URL;
 	
 	private static final String CONTEXT = "some context";
 	
-	protected static final String USER_NAME = "another_user";
+	protected static final String USER_NAME = "test";
 	
-	protected static final String PASSWORD = "another_password";
+	protected static final String PASSWORD = "test";
 	
 	@BeforeEach
 	public void setup() throws SQLException, ClassNotFoundException {
@@ -55,36 +58,61 @@ public class H2DatabaseIT implements LiquibaseProvider {
 		Database liquibaseConnection = DatabaseFactory.getInstance()
 		        .findCorrectDatabaseImplementation(new JdbcConnection(getConnection()));
 		
-		liquibaseConnection.setDatabaseChangeLogTableName("LIQUIBASECHANGELOG");
-		liquibaseConnection.setDatabaseChangeLogLockTableName("LIQUIBASECHANGELOGLOCK");
+		liquibaseConnection.setDatabaseChangeLogTableName("liquibasechangelog");
+		liquibaseConnection.setDatabaseChangeLogLockTableName("liquibasechangeloglock");
 		
 		return new Liquibase(filename, new ClassLoaderResourceAccessor(getClass().getClassLoader()), liquibaseConnection);
 	}
 	
-	protected void initializeDatabase() throws SQLException, ClassNotFoundException {
-		String driver = "org.h2.Driver";
-		Class.forName(driver);
+	protected void initializeDatabase() throws ClassNotFoundException {
+		if(useInMemoryDatabase()) {
+			String driver = "org.h2.Driver";
+			Class.forName(driver);
+			CONNECTION_URL = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1";
+		} else {
+			setupContainerDB();
+		}
 	}
-	
+
+	private void setupContainerDB() throws ClassNotFoundException {
+		Containers.ensureDatabaseRunning();
+		Class.forName(Containers.getDatabaseDriverClassName());
+		CONNECTION_URL = Containers.getDatabaseURL();
+	}
+
 	protected void updateDatabase(String filename) throws Exception {
 		Liquibase liquibase = getLiquibase(filename);
 		liquibase.update(new Contexts(CONTEXT));
 		liquibase.getDatabase().getConnection().commit();
 	}
-	
+
 	protected void dropAllDatabaseObjects() throws SQLException {
-		Connection connection = getConnection();
-		Statement statement = null;
-		try {
-			statement = connection.createStatement();
-			String query = "DROP ALL OBJECTS";
-			statement.execute(query);
-		}
-		catch (JdbcSQLNonTransientException e) {
+		try (Connection connection = getConnection()) {
+			Statement statement = connection.createStatement();
+			if (useInMemoryDatabase()) {
+				String query = "DROP ALL OBJECTS";
+				statement.execute(query);
+			} else {
+				if ("postgres".equals(System.getProperty("database"))) {
+					connection.setAutoCommit(true);
+					String dropTables =
+						"DO $$ DECLARE " +
+							"    r RECORD; " +
+							"BEGIN " +
+							"    FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') " +
+							"    LOOP " +
+							"        EXECUTE 'DROP TABLE IF EXISTS ' || quote_ident(r.tablename) || ' CASCADE'; " +
+							"    END LOOP; " +
+							"END $$;";
+					statement.execute(dropTables);
+					connection.setAutoCommit(false);
+				} else if ("mysql".equals(System.getProperty("database"))) {
+					statement.execute("DROP DATABASE " + Containers.getDatabaseName() + ";");
+					statement.execute("CREATE DATABASE " + Containers.getDatabaseName() + ";");
+				}
+			}
+		} catch (JdbcSQLNonTransientException e) {
 			log.error("connection is already closed, most likely a test method already dropped all database objects");
-		}
-		finally {
-			connection.close();
 		}
 	}
 
@@ -101,5 +129,17 @@ public class H2DatabaseIT implements LiquibaseProvider {
 		Connection connection = DriverManager.getConnection(CONNECTION_URL, USER_NAME, PASSWORD);
 		connection.setAutoCommit( false );
 		return connection;
+	}
+	
+	protected String getDatabaseDialectName() {
+		if (useInMemoryDatabase()) {
+			return H2LessStrictDialect.class.getName();
+		} else {
+			return MySQLDialect.class.getName();
+		}
+	}
+	
+	private Boolean useInMemoryDatabase() {
+		return !"false".equals(System.getProperty("useInMemoryDatabase"));
 	}
 }
