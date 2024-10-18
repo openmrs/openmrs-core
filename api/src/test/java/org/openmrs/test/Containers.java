@@ -41,6 +41,26 @@ public class Containers {
 			ensureMySQLRunning();
 		}
 	}
+
+	public static String getDatabaseURL() {
+		if ("postgres".equals(System.getProperty("database"))) {
+			return postgres.getJdbcUrl();
+		} else {
+			return mysql.getJdbcUrl();
+		}
+	}
+	
+	public static String getDatabaseDriverClassName() {
+		if ("postgres".equals(System.getProperty("database"))) {
+			return postgres.getDriverClassName();
+		} else {
+			return mysql.getDriverClassName();
+		}
+	}
+	
+	public static String getDatabaseName() {
+		return DATABASE;
+	}
 	
     private static void ensureMySQLRunning() {
     	
@@ -69,6 +89,7 @@ public class Containers {
     		System.setProperty("databasePassword", PASSWORD);
     		System.setProperty("databaseDriver", mysql.getDriverClassName());
     		System.setProperty("databaseDialect", MySQLDialect.class.getName());
+			System.setProperty("database", "mysql");
     		
     		createSchema();
         }
@@ -95,7 +116,8 @@ public class Containers {
     		System.setProperty("databasePassword", PASSWORD);
     		System.setProperty("databaseDriver", postgres.getDriverClassName());
     		System.setProperty("databaseDialect", PostgreSQL82Dialect.class.getName());
-    		
+			System.setProperty("database", "postgres");
+			
     		createSchema();
         }
     }
