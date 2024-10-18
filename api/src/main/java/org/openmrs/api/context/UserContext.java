@@ -29,6 +29,7 @@ import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.LocationService;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +60,7 @@ public class UserContext implements Serializable {
 	/**
 	 * User's permission proxies
 	 */
-	private List<String> proxies = Collections.synchronizedList(new ArrayList<>());
+	private List<String> proxies = new ArrayList<>();
 	
 	/**
 	 * User's locale
@@ -329,11 +330,8 @@ public class UserContext implements Serializable {
 	 * <strong>Should</strong> not authorize if anonymous user does not have specified privilege
 	 */
 	public boolean hasPrivilege(String privilege) {
-		log.debug("Checking '{}' against proxies: {}", privilege, proxies);
-		// check proxied privileges
-		for (String s : new ArrayList<>(proxies)) {
-			if (s.equals(privilege)) {
-				notifyPrivilegeListeners(getAuthenticatedUser(), privilege, true);
+		if (StringUtils.equals(privilege, PrivilegeConstants.GET_ROLES)) {
+			if (proxies.contains(privilege)) {
 				return true;
 			}
 		}
@@ -341,11 +339,18 @@ public class UserContext implements Serializable {
 		// if a user has logged in, check their privileges
 		if (isAuthenticated()
 			&& (getAuthenticatedUser().hasPrivilege(privilege) || getAuthenticatedRole().hasPrivilege(privilege))) {
-			
 			// check user's privileges
 			notifyPrivilegeListeners(getAuthenticatedUser(), privilege, true);
 			return true;
-			
+		}
+		
+		log.debug("Checking '{}' against proxies: {}", privilege, proxies);
+		// check proxied privileges
+		for (String s : new ArrayList<>(proxies)) {
+			if (s.equals(privilege)) {
+				notifyPrivilegeListeners(getAuthenticatedUser(), privilege, true);
+				return true;
+			}
 		}
 		
 		if (getAnonymousRole().hasPrivilege(privilege)) {
