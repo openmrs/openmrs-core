@@ -39,14 +39,14 @@ class Log4JCompatibilityTest {
 			.build();
 		
 		try {
+			Logger logger = Logger.getLogger("Log4JCompatibility");
+			
 			// start the appender
 			ma.start();
 			compatibilityLogger.addAppender(ma);
 			compatibilityLogger.setLevel(Level.ALL);
 			compatibilityLogger.setAdditive(false);
-
-			Logger logger = Logger.getLogger("Log4JCompatibility");
-			logger.setLevel(org.apache.log4j.Level.ALL);
+			
 			logger.error("This message should be logged.");
 
 			List<String> logLines = ma.getLogLines();
