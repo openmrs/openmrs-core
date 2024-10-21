@@ -224,6 +224,7 @@ public final class Daemon {
 						Context.closeSession();
 					} finally {
 						isDaemonThread.remove();
+						daemonThreadUser.remove();
 					}
 				}
 			}
@@ -356,6 +357,7 @@ public final class Daemon {
 						Context.closeSession();
 					} finally {
 						isDaemonThread.remove();
+						daemonThreadUser.remove();
 					}
 				}
 			}
@@ -430,6 +432,7 @@ public final class Daemon {
 					Context.closeSession();
 				} finally {
 					isDaemonThread.remove();
+					daemonThreadUser.remove();
 				}
 			}
 		});
@@ -453,6 +456,7 @@ public final class Daemon {
 					Context.closeSession();
 				} finally {
 					isDaemonThread.remove();
+					daemonThreadUser.remove();
 				}
 			}
 		});
