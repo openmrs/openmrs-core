@@ -71,7 +71,7 @@ public class ModuleUtil {
 		
 		String moduleListString = props.getProperty(ModuleConstants.RUNTIMEPROPERTY_MODULE_LIST_TO_LOAD);
 		
-		if (moduleListString == null || moduleListString.length() == 0) {
+		if (moduleListString == null || moduleListString.isEmpty()) {
 			// Attempt to get all of the modules from the modules folder
 			// and store them in the modules list
 			log.debug("Starting all modules");

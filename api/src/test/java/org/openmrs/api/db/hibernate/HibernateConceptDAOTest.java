@@ -256,6 +256,7 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("Tuberculosis", Locale.US));
 		concept.setDatatype(conceptDatatype);
+		concept.setConceptClass(new ConceptClass(1));
 		dao.saveConcept(concept);
 
 		//When

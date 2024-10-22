@@ -22,7 +22,7 @@ public class LiquibaseScopeHandling {
 		// Temp workaround to silence liquibase writing to stdout - https://github.com/liquibase/liquibase/issues/2396,
 		// https://github.com/liquibase/liquibase/issues/3651
 		LoggerUIService loggerUIService = new LoggerUIService();
-		loggerUIService.setStandardLogLevel(Level.FINE);
+		loggerUIService.setStandardLogLevel(Level.INFO);
 		Map<String, Object> m = Collections.singletonMap(Scope.Attr.ui.name(), loggerUIService);
 		return Scope.enter(m);
 	}
