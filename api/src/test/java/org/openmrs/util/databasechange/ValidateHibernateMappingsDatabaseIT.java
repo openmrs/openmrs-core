@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.openmrs.api.OrderServiceTest;
 import org.openmrs.api.db.hibernate.envers.OpenmrsRevisionEntity;
 import org.openmrs.liquibase.ChangeLogVersionFinder;
-import org.openmrs.util.H2DatabaseIT;
+import org.openmrs.util.DatabaseIT;
 import org.openmrs.util.OpenmrsClassScanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Validates Hibernate mapping files.
  */
-public class ValidateHibernateMappingsDatabaseIT extends H2DatabaseIT {
+public class ValidateHibernateMappingsDatabaseIT extends DatabaseIT {
 	
 	private static final Logger log = LoggerFactory.getLogger(ValidateHibernateMappingsDatabaseIT.class);
 	
@@ -87,9 +87,8 @@ public class ValidateHibernateMappingsDatabaseIT extends H2DatabaseIT {
 		for (Class<?> clazz : entityClasses) {
 			configuration.addAnnotatedClass(clazz);
 		}
-		configuration.setProperty(Environment.DIALECT, H2LessStrictDialect.class.getName());
-		configuration.setProperty(Environment.URL, "jdbc:h2:mem:openmrs;AUTO_RECONNECT=TRUE;DB_CLOSE_DELAY=-1");
-		configuration.setProperty(Environment.DRIVER, "com.mysql.cj.jdbc.Driver");
+		configuration.setProperty(Environment.DIALECT, System.getProperty("databaseDialect"));
+		configuration.setProperty(Environment.URL, CONNECTION_URL);
 		configuration.setProperty(Environment.USER, USER_NAME);
 		configuration.setProperty(Environment.PASS, PASSWORD);
 		configuration.setProperty(Environment.USE_SECOND_LEVEL_CACHE, "false");

@@ -12,13 +12,13 @@ package org.openmrs.liquibase;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import org.openmrs.util.H2DatabaseIT;
+import org.openmrs.util.DatabaseIT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ChangeLogDetectiveDatabaseIT extends H2DatabaseIT {
+public class ChangeLogDetectiveDatabaseIT extends DatabaseIT {
 	
 	private static final Logger log = LoggerFactory.getLogger(ChangeLogDetectiveDatabaseIT.class);
 

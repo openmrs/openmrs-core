@@ -22,9 +22,9 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
-import org.openmrs.util.H2DatabaseIT;
+import org.openmrs.util.DatabaseIT;
 
-public class InsertWithUuidDataChangeDatabaseIT extends H2DatabaseIT {
+public class InsertWithUuidDataChangeDatabaseIT extends DatabaseIT {
 	
 	@Test
 	public void shouldInsertUuids() throws Exception {

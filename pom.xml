@@ -1129,12 +1129,12 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.15.3</version>
+						<version>1.15.5</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.15.3</version>
+						<version>1.15.5</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
@@ -1217,12 +1217,12 @@
 		<luceneVersion>5.5.5</luceneVersion>
 		<aspectjVersion>1.9.22.1</aspectjVersion>
 		<jacksonVersion>2.18.0</jacksonVersion>
-		<junitVersion>5.11.2</junitVersion>
+		<junitVersion>5.11.3</junitVersion>
 		<mockitoVersion>3.12.4</mockitoVersion>
 		<hamcrestVersion>3.0</hamcrestVersion>
 
 		<slf4jVersion>1.7.36</slf4jVersion>
-		<log4jVersion>2.24.1</log4jVersion>
+		<log4jVersion>2.22.1</log4jVersion>
 		<owaspCsrfGuardVersion>4.2.1</owaspCsrfGuardVersion>
 
 		<customArgLineForTesting />
