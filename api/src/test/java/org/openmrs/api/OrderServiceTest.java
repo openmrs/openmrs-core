@@ -72,6 +72,7 @@ import org.openmrs.api.db.hibernate.HibernateAdministrationDAO;
 import org.openmrs.api.db.hibernate.HibernateSessionFactoryBean;
 import org.openmrs.api.impl.OrderServiceImpl;
 import org.openmrs.customdatatype.datatype.FreeTextDatatype;
+import org.openmrs.hl7.HL7InError;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.notification.AlertRecipient;
 import org.openmrs.order.OrderUtil;
@@ -2735,6 +2736,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.addAnnotatedClass(DrugIngredient.class)
 			.addAnnotatedClass(AlertRecipient.class)
 			.addAnnotatedClass(PatientIdentifierType.class)
+			.addAnnotatedClass(HL7InError.class)
 			.getMetadataBuilder().build();
 
 
