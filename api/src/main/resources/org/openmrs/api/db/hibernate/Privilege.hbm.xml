@@ -23,11 +23,12 @@
 			<generator class="assigned" />
 		</id>
 
-		<property name="uuid" type="java.lang.String"
-			column="uuid" length="38" unique="true" />
+		<property name="uuid" type="java.lang.String" unique="true">
+			<column name="uuid" sql-type="char(38)" />
+		</property>
 
-		<property name="description" type="java.lang.String"
-			column="description" length="250" />
+		<property name="description" type="java.lang.String" length="250"
+			column="description" />
 
 	</class>
 </hibernate-mapping>

@@ -36,10 +36,11 @@
 		<property name="dateCreated" type="java.util.Date" column="date_created"
 			not-null="true" length="19" />
 
-		<property name="uuid" type="java.lang.String" column="uuid"
-			length="38" unique="true" not-null="true" />
+		<property name="uuid" type="java.lang.String" unique="true" not-null="true" >
+			<column name="uuid" sql-type="char(38)" />
+		</property>
 
-		<property name="serializedMergedData" type="materialized_clob" column="merged_data"
+		<property name="serializedMergedData" type="text" column="merged_data"
 			not-null="true" />
 			
 		<many-to-one name="changedBy" class="User" column="changed_by" />

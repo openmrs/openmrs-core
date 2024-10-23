@@ -26,9 +26,10 @@
 			not-null="true" length="255" />
 		<property name="description" type="java.lang.String" 
 			not-null="true" length="1000" />
-		
-		<property name="uuid" type="java.lang.String"
-			column="uuid" length="38" unique="true" />
+
+		<property name="uuid" type="java.lang.String" unique="true">
+			<column name="uuid" sql-type="char(38)" />
+		</property>
 
 		<set name="memberships" cascade="all-delete-orphan,evict" lazy="true" inverse="true">
 			<key column="cohort_id" not-null="true"/>

@@ -15,11 +15,14 @@ import org.hibernate.envers.Audited;
 import org.openmrs.BaseChangeableOpenmrsMetadata;
 import org.openmrs.serialization.OpenmrsSerializer;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 
 /**
@@ -28,6 +31,9 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "serialized_object")
 @Audited
+@AttributeOverrides(value = {
+	@AttributeOverride(name = "description", column = @Column(name = "description", length = 5000))
+})
 public class SerializedObject extends BaseChangeableOpenmrsMetadata {
 
 	@Id
@@ -49,7 +55,8 @@ public class SerializedObject extends BaseChangeableOpenmrsMetadata {
 	@Column(name = "serialization_class", nullable = false, length = 255)
 	private Class<? extends OpenmrsSerializer> serializationClass;
 
-	@Column(name = "serialized_data", length = 16777215)
+	@Column(name = "serialized_data", columnDefinition = "mediumtext")
+	@Lob
 	private String serializedData;
 	
 	/**

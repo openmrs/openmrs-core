@@ -22,11 +22,12 @@
 				<param name="sequence">concept_state_conversion_concept_state_conversion_id_seq</param>
 			</generator>
 		</id>
-		
-		
-		
-		<property name="uuid" type="java.lang.String"
-			column="uuid" length="38" unique="true" />
+
+
+
+		<property name="uuid" type="java.lang.String" unique="true">
+			<column name="uuid" sql-type="char(38)" />
+		</property>
 
 		<many-to-one name="concept" class="Concept" column="concept_id" not-null="true" />
 

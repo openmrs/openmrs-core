@@ -23,8 +23,10 @@
 				<param name="sequence">concept_reference_term_map_concept_reference_term_map_id_seq</param>
 			</generator>
 		</id>
-		
-		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" not-null="true"/>
+
+		<property name="uuid" type="java.lang.String" unique="true" not-null="true">
+			<column name="uuid" sql-type="char(38)" />
+		</property>
 
 		<many-to-one name="termA" class="ConceptReferenceTerm" column="term_a_id" not-null="true" />
 		

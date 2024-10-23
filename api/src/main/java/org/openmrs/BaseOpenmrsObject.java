@@ -28,7 +28,7 @@ import org.hibernate.envers.Audited;
 @Audited
 public abstract class BaseOpenmrsObject implements Serializable, OpenmrsObject {
 	
-	@Column(name = "uuid", unique = true, nullable = false, length = 38, updatable = false)
+	@Column(name = "uuid", unique = true, nullable = false, length = 38, updatable = false, columnDefinition = "char")
 	private String uuid = UUID.randomUUID().toString();
 	
 	/**

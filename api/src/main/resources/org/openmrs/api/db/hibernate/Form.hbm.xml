@@ -23,8 +23,9 @@
 			</generator>
 		</id>
 
-		<property name="uuid" type="java.lang.String"
-			column="uuid" length="38" unique="true" />
+		<property name="uuid" type="java.lang.String" unique="true">
+			<column name="uuid" sql-type="char(38)" />
+		</property>
 
 		<property name="name" type="java.lang.String" 
 			column="name" not-null="true" length="255" />
@@ -38,8 +39,8 @@
 		<property name="published" type="boolean" column="published"
 			length="1" not-null="false" />
 
-		<property name="description" type="java.lang.String" 
-			column="description" length="1024" />
+		<property name="description" type="java.lang.String" length="1024" 
+			column="description" />
 
 		<many-to-one name="encounterType" class="EncounterType">
 			<column name="encounter_type" />

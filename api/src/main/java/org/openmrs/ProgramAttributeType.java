@@ -16,6 +16,8 @@ import org.hibernate.envers.Audited;
 import org.openmrs.attribute.AttributeType;
 import org.openmrs.attribute.BaseAttributeType;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -26,6 +28,9 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "program_attribute_type")
 @Audited
+@AttributeOverrides(value = {
+	@AttributeOverride(name = "description", column = @Column(name = "description", length = 1024))
+})
 public class ProgramAttributeType extends BaseAttributeType<PatientProgram> implements AttributeType<PatientProgram> {
 
 	@Id

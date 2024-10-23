@@ -33,7 +33,9 @@
 		<property name="dateRetired" type="java.util.Date" column="date_retired" length="19" />
 		<property name="retireReason" type="java.lang.String" column="retire_reason" length="255" />
 		<property name="retired" type="boolean" length="1" not-null="true" />
-		<property name="uuid" type="java.lang.String" length="38" unique="true" />
+		<property name="uuid" type="java.lang.String" unique="true">
+			<column name="uuid" sql-type="char(38)" />
+		</property>
 		<property name="dateChanged" type="java.util.Date" column="date_changed" length="19" />
 		
 		<many-to-one name="changedBy" class="User">

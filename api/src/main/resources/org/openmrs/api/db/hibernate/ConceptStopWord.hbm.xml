@@ -27,7 +27,9 @@
 
 		<property name="value" column="word" type="java.lang.String" length="50" not-null="true"/>
 		<property name="locale" type="java.util.Locale" length="20" not-null="true"/>
-		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true"/>
+		<property name="uuid" type="java.lang.String" unique="true">
+			<column name="uuid" sql-type="char(38)" />
+		</property>
 	</class>
 
 </hibernate-mapping>

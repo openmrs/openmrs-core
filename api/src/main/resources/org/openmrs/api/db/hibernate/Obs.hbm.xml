@@ -23,10 +23,11 @@
 			</generator>
 		</id>
 
-		
 
-		<property name="uuid" type="java.lang.String"
-			column="uuid" length="38" unique="true" />
+
+		<property name="uuid" type="java.lang.String" unique="true">
+			<column name="uuid" sql-type="char(38)" />
+		</property>
 
 		<property name="personId" type="java.lang.Integer" length="11" 
 			column="person_id" not-null="true" insert="false" update="false" />

@@ -31,7 +31,7 @@ import javax.persistence.Table;
 @Table(name = "provider_attribute_type")
 @Audited
 @AttributeOverrides(value = {
-	@AttributeOverride(name = "description", column = @Column(name = "description", length = 1024))
+	@AttributeOverride(name = "description", column = @Column(name = "description", length = 1024 ))
 })
 public class ProviderAttributeType extends BaseAttributeType<Provider> implements AttributeType<Provider> {
 

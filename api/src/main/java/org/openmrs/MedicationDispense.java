@@ -15,6 +15,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.util.Date;
@@ -191,7 +192,8 @@ public class MedicationDispense extends BaseFormRecordableOpenmrsData {
 	 * FHIR:DosageInstructions.patientInstructions
 	 * Relates to drugOrder.dosingInstructions
 	 */
-	@Column(name = "dosing_instructions", length=65535)
+	@Column(name = "dosing_instructions", columnDefinition = "text")
+	@Lob
 	private String dosingInstructions;
 
 	/**

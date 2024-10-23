@@ -22,15 +22,16 @@
 				<param name="sequence">program_program_id_seq</param>
 			</generator>
 		</id>
-		
-		<property name="uuid" type="java.lang.String"
-			column="uuid" length="38" unique="true" />
+
+		<property name="uuid" type="java.lang.String" unique="true">
+			<column name="uuid" sql-type="char(38)" />
+		</property>
 
 		<property name="name" type="java.lang.String"
 			column="name" not-null="true" length="100" />
 		
-		<property name="description" type="java.lang.String"
-			column="description" length="500" />
+		<property name="description" type="java.lang.String" length="1024"
+			column="description" />
 
 		<property name="dateCreated" type="java.util.Date"
 			column="date_created" not-null="true" length="19" />

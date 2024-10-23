@@ -24,9 +24,10 @@
 			</generator>
 		</id>
 		<discriminator column="task_config_id" insert="false" />
-		
-		<property name="uuid" type="java.lang.String"
-			column="uuid" length="38" unique="true" />
+
+		<property name="uuid" type="java.lang.String" unique="true">
+			<column name="uuid" sql-type="char(38)" />
+		</property>
 			
 		<!-- Properties -->
 		<property name="name" 
@@ -40,13 +41,12 @@
 				length="1024" />
 		
 		<property name="taskClass" 
-				type="java.lang.String" 
-				column="schedulable_class" 
-				length="1024" />
+				type="text" 
+				column="schedulable_class" />
 		
-		<property name="repeatInterval" 
-				type="java.lang.Long" 
-				column="repeat_interval" />
+		<property name="repeatInterval" type= "java.lang.Long">
+			<column name="repeat_interval" sql-type="integer" />
+		</property>
 		
 		<property name="startTime" 
 				type="java.util.Date" 
@@ -92,7 +92,7 @@
 				cascade="save-update,merge,evict">
 			<key column="task_config_id" not-null="true" />
 			<map-key column="name" type="java.lang.String" length="100" />
-			<element column="value" type="java.lang.String" length="1024" />
+			<element column="value" type="text" />
 		</map>
 
 

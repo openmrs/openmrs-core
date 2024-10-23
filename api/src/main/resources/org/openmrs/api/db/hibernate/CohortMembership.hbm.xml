@@ -38,8 +38,9 @@
 				  column="date_voided" length="19" />
 		<property name="voidReason" type="java.lang.String"
 				  column="void_reason" length="255" />
-		<property name="uuid" type="java.lang.String"
-				  column="uuid" length="38" unique="true" />
+		<property name="uuid" type="java.lang.String" unique="true">
+			<column name="uuid" sql-type="char(38)" />
+		</property>
 
 		<many-to-one name="creator" class="User" not-null="true" />
 		<many-to-one name="voidedBy" class="User" column="voided_by" />

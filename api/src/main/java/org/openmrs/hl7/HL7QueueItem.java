@@ -36,7 +36,8 @@ public abstract class HL7QueueItem extends BaseOpenmrsObject {
 	@JoinColumn(name = "hl7_source")
 	private HL7Source hl7Source;
 	
-	@Column(name = "hl7_source_key", length = 1024)
+	@Column(name = "hl7_source_key", columnDefinition = "text")
+	@Lob
 	private String hl7SourceKey;
 	
 	@Column(name = "hl7_data", nullable = false,  columnDefinition = "text")

@@ -3,63 +3,84 @@ name: Build with Maven
 
 # trigger build on branches that *should* support both Java 8 and Java 11
 on:
-  push:
-    branches:
-      - master
-      - 2.4.x
-      - 2.5.x
-      - 2.6.x
-  pull_request:
-    branches:
-      - master
-      - 2.4.x
-      - 2.5.x
-      - 2.6.x
-  workflow_dispatch:
+    push:
+        branches:
+            - master
+            - 2.4.x
+            - 2.5.x
+            - 2.6.x
+    pull_request:
+        branches:
+            - master
+            - 2.4.x
+            - 2.5.x
+            - 2.6.x
+    workflow_dispatch:
 
 permissions: read-all
 
 jobs:
-  build:
-    strategy:
-      matrix:
-        platform:
-          - ubuntu-latest
-        java-version:
-          - 8
-          - 11
-          - 17
-    runs-on: ${{ matrix.platform }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: ${{ matrix.java-version }}
-          cache: 'maven'
-      - name: Install dependencies
-        run: mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --show-version --file pom.xml
-      - name: Build with Maven
-        run: mvn clean install --batch-mode && mvn test -Pskip-default-test -Pintegration-test --batch-mode --file pom.xml
-      # this is necessary to populate the environment variables for Coveralls properly
-      - name: Set branch name and PR number
-        id: refs
-        if: ${{ matrix.java-version == '8' }}
-        continue-on-error: true
-        env:
-          BRANCH_NAME_OR_REF: ${{ github.head_ref || github.ref }}
-        run: |
-          echo "::set-output name=branch_name::${BRANCH_NAME_OR_REF#refs/heads/}"
-          echo "::set-output name=pr_number::$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")"
-      - name: Update coverage data
-        # only send coverage data for Java 8
-        if: ${{ matrix.java-version == '8' && steps.refs.outcome == 'success' }}
-        continue-on-error: true
-        env:
-          CI_NAME: Github
-          CI_BUILD_NUMBER: ${{ github.run_id }}
-          CI_BUILD_URL: https://github.com/${{ github.repository }}/commit/${{ github.event.after }}/checks
-          CI_BRANCH: ${{ steps.refs.outputs.branch_name }}
-          CI_PULL_REQUEST: ${{ steps.refs.outputs.pr_number }}
-        run: mvn jacoco:report coveralls:report --batch-mode --file pom.xml --no-transfer-progress -DrepoToken=${{ secrets.COVERALLS_TOKEN }}
+    build:
+        strategy:
+            matrix:
+                platform:
+                    - ubuntu-latest
+                java-version:
+                    - 8
+                    - 11
+                    - 17
+        runs-on: ${{ matrix.platform }}
+        steps:
+            - uses: actions/checkout@v4
+            - name: Setup JDK
+              uses: actions/setup-java@v4
+              with:
+                  distribution: 'temurin'
+                  java-version: ${{ matrix.java-version }}
+                  cache: 'maven'
+            - name: Install dependencies
+              run: mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --show-version --file pom.xml
+            - name: Build with Maven
+              run: mvn clean install --batch-mode && mvn test -Pskip-default-test -Pintegration-test --batch-mode --file pom.xml
+            # this is necessary to populate the environment variables for Coveralls properly
+            - name: Set branch name and PR number
+              id: refs
+              if: ${{ matrix.java-version == '8' }}
+              continue-on-error: true
+              env:
+                  BRANCH_NAME_OR_REF: ${{ github.head_ref || github.ref }}
+              run: |
+                  echo "::set-output name=branch_name::${BRANCH_NAME_OR_REF#refs/heads/}"
+                  echo "::set-output name=pr_number::$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")"
+            - name: Update coverage data
+                # only send coverage data for Java 8
+              if: ${{ matrix.java-version == '8' && steps.refs.outcome == 'success' }}
+              continue-on-error: true
+              env:
+                  CI_NAME: Github
+                  CI_BUILD_NUMBER: ${{ github.run_id }}
+                  CI_BUILD_URL: https://github.com/${{ github.repository }}/commit/${{ github.event.after }}/checks
+                  CI_BRANCH: ${{ steps.refs.outputs.branch_name }}
+                  CI_PULL_REQUEST: ${{ steps.refs.outputs.pr_number }}
+              run: mvn jacoco:report coveralls:report --batch-mode --file pom.xml --no-transfer-progress -DrepoToken=${{ secrets.COVERALLS_TOKEN }}
+    
+    build_with_mysql:
+        strategy:
+            matrix:
+                platform:
+                    - ubuntu-latest
+                java-version:
+                    - 8
+        runs-on: ${{ matrix.platform }}
+        steps:
+            - uses: actions/checkout@v4
+            - name: Setup JDK
+              uses: actions/setup-java@v4
+              with:
+                  distribution: 'temurin'
+                  java-version: ${{ matrix.java-version }}
+                  cache: 'maven'
+            - name: Install dependencies
+              run: mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --show-version --file pom.xml
+            - name: Build with Maven with external database
+              run: mvn clean install --batch-mode && mvn test -DuseInMemoryDatabase=false -Pskip-default-test -Pintegration-test --batch-mode --file pom.xml
