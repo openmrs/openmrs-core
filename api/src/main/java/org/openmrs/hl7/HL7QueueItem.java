@@ -11,7 +11,14 @@ package org.openmrs.hl7;
 
 import java.util.Date;
 
+import org.hibernate.envers.Audited;
 import org.openmrs.BaseOpenmrsObject;
+
+import javax.persistence.Column;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
 
 /**
  * Common representation of {@link HL7InQueue}, {@link HL7InArchive} and {@link HL7InError}.
@@ -21,14 +28,22 @@ import org.openmrs.BaseOpenmrsObject;
  * @see HL7InArchive
  * @see HL7InError
  */
+@MappedSuperclass
+@Audited
 public abstract class HL7QueueItem extends BaseOpenmrsObject {
-	
+
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "hl7_source")
 	private HL7Source hl7Source;
 	
+	@Column(name = "hl7_source_key", length = 1024)
 	private String hl7SourceKey;
 	
+	@Column(name = "hl7_data", nullable = false,  columnDefinition = "text")
+	@Lob
 	private String hl7Data;
-	
+
+	@Column(name = "date_created", nullable = false, length = 19)
 	private Date dateCreated;
 	
 	/**
