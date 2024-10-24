@@ -10,6 +10,8 @@
 
 package org.openmrs;
 
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.openmrs.attribute.AttributeType;
 import org.openmrs.attribute.BaseAttributeType;
@@ -27,8 +29,13 @@ import javax.persistence.Table;
 public class ProgramAttributeType extends BaseAttributeType<PatientProgram> implements AttributeType<PatientProgram> {
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "program_attribute_type_id_seq")
+	@GenericGenerator(
+		name = "program_attribute_type_id_seq",
+		strategy = "native",
+		parameters = @Parameter(name = "sequence", value = "program_attribute_type_program_attribute_type_id_seq")
+	)
 	@Column(name = "program_attribute_type_id")
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer programAttributeTypeId;
 
     @Override
