@@ -348,7 +348,7 @@ public class HibernateHL7DAO implements HL7DAO {
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<HL7InError> getAllHL7InErrors() throws DAOException {
-		return sessionFactory.getCurrentSession().createQuery("from HL7InError order by HL7InErrorId").list();
+		return sessionFactory.getCurrentSession().createQuery("from HL7InError order by hl7InErrorId").list();
 	}
 	
 	/**
