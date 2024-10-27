@@ -45,32 +45,31 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	@Column(name = "property", nullable = false, length = 255)
 	private String property = "";
 	
-	@Column(name = "property_value", columnDefinition = "TEXT", length = 65535)
+	@Column(name = "property_value", columnDefinition = "TEXT")
 	@Lob
 	private String propertyValue = "";
 	
-	@Transient
 	private transient Object typedValue;
 	
 	// if true, indicates that setValue has been called, and we need to invoke CustomDatatype's save
 	@Transient
 	private boolean dirty = false;
 	
-	@Column(name = "description", columnDefinition = "TEXT", length = 65535)
+	@Column(name = "description", columnDefinition = "TEXT")
 	@Lob
 	private String description = "";
 	
 	@Column(name = "datatype", length = 255)
 	private String datatypeClassname;
 	
-	@Column(name = "datatype_config", columnDefinition = "TEXT", length = 65535)
+	@Column(name = "datatype_config", columnDefinition = "TEXT")
 	@Lob
 	private String datatypeConfig;
 	
 	@Column(name = "preferred_handler", length = 255)
 	private String preferredHandlerClassname;
 	
-	@Column(name = "handler_config", columnDefinition = "TEXT", length = 65535)
+	@Column(name = "handler_config", columnDefinition = "TEXT")
 	@Lob
 	private String handlerConfig;
 	
@@ -78,7 +77,7 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	@JoinColumn(name = "changed_by")
 	private User changedBy;
 	
-	@Column(name = "date_changed")
+	@Column(name = "date_changed", length=19)
 	private Date dateChanged;
 	
 	@ManyToOne
