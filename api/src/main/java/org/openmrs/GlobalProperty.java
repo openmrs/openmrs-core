@@ -77,7 +77,7 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	@JoinColumn(name = "changed_by")
 	private User changedBy;
 	
-	@Column(name = "date_changed", length=19)
+	@Column(name = "date_changed")
 	private Date dateChanged;
 	
 	@ManyToOne
