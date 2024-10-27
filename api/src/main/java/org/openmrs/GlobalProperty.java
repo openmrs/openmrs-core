@@ -24,6 +24,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -45,8 +46,10 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	private String property = "";
 	
 	@Column(name = "property_value", columnDefinition = "TEXT", length = 65535)
+	@Lob
 	private String propertyValue = "";
 	
+	@Transient
 	private transient Object typedValue;
 	
 	// if true, indicates that setValue has been called, and we need to invoke CustomDatatype's save
@@ -54,18 +57,21 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	private boolean dirty = false;
 	
 	@Column(name = "description", columnDefinition = "TEXT", length = 65535)
+	@Lob
 	private String description = "";
 	
 	@Column(name = "datatype", length = 255)
 	private String datatypeClassname;
 	
 	@Column(name = "datatype_config", columnDefinition = "TEXT", length = 65535)
+	@Lob
 	private String datatypeConfig;
 	
 	@Column(name = "preferred_handler", length = 255)
 	private String preferredHandlerClassname;
 	
 	@Column(name = "handler_config", columnDefinition = "TEXT", length = 65535)
+	@Lob
 	private String handlerConfig;
 	
 	@ManyToOne
