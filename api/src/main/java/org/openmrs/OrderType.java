@@ -9,20 +9,38 @@
  */
 package org.openmrs;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
-
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.openmrs.annotation.Independent;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * OrderTypes are used to classify different types of Orders e.g to distinguish between Serology and
  * Radiology TestOrders
  *
  */
+@Entity
+@Table(name = "order_type")
 @Audited
 public class OrderType extends BaseChangeableOpenmrsMetadata {
 	
@@ -33,15 +51,33 @@ public class OrderType extends BaseChangeableOpenmrsMetadata {
 	public static final String TEST_ORDER_TYPE_UUID = "52a447d3-a64a-11e3-9aeb-50e549534c5e";
 	
 	public static final String REFERRAL_ORDER_TYPE_UUID = "f1b63696-2b6c-11ec-8d3d-0242ac130003";
-	
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_type_id_seq")
+	@GenericGenerator(
+		name = "order_type_id_seq",
+		strategy = "native",
+		parameters = @Parameter(name = "sequence", value = "order_type_order_type_id_seq")
+	)
+	@Column(name = "order_type_id", nullable = false)
 	private Integer orderTypeId;
 	
+	@Column(name = "java_class_name", nullable = false)
 	private String javaClassName;
 	
+	@ManyToOne
+	@JoinColumn(name = "parent")
 	private OrderType parent;
 	
 	@Independent
-	private Collection<ConceptClass> conceptClasses;
+	@ManyToMany
+	@JoinTable(
+		name = "order_type_class_map", 
+		joinColumns = @JoinColumn(name = "order_type_id"), 
+		inverseJoinColumns = @JoinColumn(name = "concept_class_id"), 
+		uniqueConstraints = @UniqueConstraint(columnNames = {"order_type_id", "concept_class_id"})
+	)
+	private Set<ConceptClass> conceptClasses;
 	
 	/**
 	 * default constructor
@@ -52,7 +88,7 @@ public class OrderType extends BaseChangeableOpenmrsMetadata {
 	/**
 	 * Constructor with ID
 	 * 
-	 * @param orderTypeId the ID of the {@link org.openmrs.OrderType}
+	 * @param orderTypeId the ID of the {@link OrderType}
 	 */
 	public OrderType(Integer orderTypeId) {
 		this.orderTypeId = orderTypeId;
@@ -87,7 +123,7 @@ public class OrderType extends BaseChangeableOpenmrsMetadata {
 	}
 	
 	/**
-	 * @see org.openmrs.OpenmrsObject#getId()
+	 * @see OpenmrsObject#getId()
 	 */
 	@Override
 	public Integer getId() {
@@ -95,7 +131,7 @@ public class OrderType extends BaseChangeableOpenmrsMetadata {
 	}
 	
 	/**
-	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 * @see OpenmrsObject#setId(Integer)
 	 */
 	@Override
 	public void setId(Integer id) {
@@ -118,23 +154,23 @@ public class OrderType extends BaseChangeableOpenmrsMetadata {
 	}
 	
 	/**
-	 * @return Returns the {@link org.openmrs.OrderType}
+	 * @return Returns the {@link OrderType}
 	 */
 	public OrderType getParent() {
 		return parent;
 	}
 	
 	/**
-	 * @param parent The {@link org.openmrs.OrderType} to set
+	 * @param parent The {@link OrderType} to set
 	 */
 	public void setParent(OrderType parent) {
 		this.parent = parent;
 	}
 	
 	/**
-	 * @return Get the {@link org.openmrs.ConceptClass}es
+	 * @return Get the {@link ConceptClass}es
 	 */
-	public Collection<ConceptClass> getConceptClasses() {
+	public Set<ConceptClass> getConceptClasses() {
 		if (conceptClasses == null) {
 			conceptClasses = new LinkedHashSet<>();
 		}
@@ -142,17 +178,17 @@ public class OrderType extends BaseChangeableOpenmrsMetadata {
 	}
 	
 	/**
-	 * @param conceptClasses the collection containing the {@link org.openmrs.ConceptClass}es
+	 * @param conceptClasses the collection containing the {@link ConceptClass}es
 	 */
-	public void setConceptClasses(Collection<ConceptClass> conceptClasses) {
+	public void setConceptClasses(Set<ConceptClass> conceptClasses) {
 		this.conceptClasses = conceptClasses;
 	}
 	
 	/**
-	 * Convenience method that returns a {@link java.lang.Class} object for the associated
+	 * Convenience method that returns a {@link Class} object for the associated
 	 * javaClassName
 	 * 
-	 * @return The Java class as {@link java.lang.Class}
+	 * @return The Java class as {@link Class}
 	 * @throws APIException
 	 */
 	public Class getJavaClass() {
@@ -177,7 +213,7 @@ public class OrderType extends BaseChangeableOpenmrsMetadata {
 	}
 	
 	/**
-	 * @see org.openmrs.BaseOpenmrsObject#toString()
+	 * @see BaseOpenmrsObject#toString()
 	 */
 	@Override
 	public String toString() {
