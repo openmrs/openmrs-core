@@ -199,5 +199,101 @@
 			<column name="date_retired" type="datetime" />
 		</addColumn>
 	</changeSet>
+
+	<changeSet id="TRUNK-5830-2024-10-28-3" author="manojll">
+		<preConditions onFail="MARK_RAN">
+			<tableExists tableName="field_type"/>
+			<and>
+				<not>
+					<columnExists tableName="field_type" columnName="retired_by"/>
+				</not>
+			</and>
+		</preConditions>
+		<comment>adding retired_by column</comment>
+		<addColumn tableName="field_type">
+			<column name="retired_by" type="int" />
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="TRUNK-5830-2024-10-28-4" author="manojll">
+		<preConditions onFail="MARK_RAN">
+			<tableExists tableName="field_type"/>
+			<and>
+				<not>
+					<columnExists tableName="field_type" columnName="retire_reason"/>
+				</not>
+			</and>
+		</preConditions>
+		<comment>adding retire_reason column</comment>
+		<addColumn tableName="field_type">
+			<column name="retire_reason" type="varchar(255)" />
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="TRUNK-5830-2024-10-28-5" author="manojll">
+		<preConditions onFail="MARK_RAN">
+			<tableExists tableName="field_type"/>
+			<and>
+				<not>
+					<columnExists tableName="field_type" columnName="creator"/>
+				</not>
+			</and>
+		</preConditions>
+		<comment>adding creator column</comment>
+		<addColumn tableName="field_type">
+			<column name="creator" type="int">
+				<constraints nullable="false" />
+			</column>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="TRUNK-5830-2024-10-28-6" author="manojll">
+		<preConditions onFail="MARK_RAN">
+			<tableExists tableName="field_type"/>
+			<and>
+				<not>
+					<columnExists tableName="field_type" columnName="date_created"/>
+				</not>
+			</and>
+		</preConditions>
+		<comment>adding date_created column</comment>
+		<addColumn tableName="field_type">
+			<column name="date_created" type="datetime">
+				<constraints nullable="false" />
+			</column>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="TRUNK-5830-2024-10-28-7" author="manojll">
+		<preConditions onFail="MARK_RAN">
+			<tableExists tableName="field_type"/>
+			<and>
+				<not>
+					<columnExists tableName="field_type" columnName="changed_by"/>
+				</not>
+			</and>
+		</preConditions>
+		<comment>adding changed_by column</comment>
+		<addColumn tableName="field_type">
+			<column name="changed_by" type="int" />
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="TRUNK-5830-2024-10-28-8" author="manojll">
+		<preConditions onFail="MARK_RAN">
+			<tableExists tableName="field_type"/>
+			<and>
+				<not>
+					<columnExists tableName="field_type" columnName="retired"/>
+				</not>
+			</and>
+		</preConditions>
+		<comment>adding retired column</comment>
+		<addColumn tableName="field_type">
+			<column name="retired" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</addColumn>
+	</changeSet>
 	
 </databaseChangeLog>
