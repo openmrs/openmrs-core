@@ -170,7 +170,7 @@
 			referencedColumnNames="obs_id"/>
 	</changeSet>
 
-	<changeSet id="TRUNK-5830-2024-10-28" author="manojll">
+	<changeSet id="TRUNK-5830-2024-10-28-1" author="manojll">
 		<preConditions onFail="MARK_RAN">
 			<tableExists tableName="field_type"/>
 			<and>
@@ -181,7 +181,22 @@
 		</preConditions>
 		<comment>adding date change column</comment>
 		<addColumn tableName="field_type">
-			<column name="date_changed" type="datetime"/>
+			<column name="date_changed" type="datetime" />
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="TRUNK-5830-2024-10-28-2" author="manojll">
+		<preConditions onFail="MARK_RAN">
+			<tableExists tableName="field_type"/>
+			<and>
+				<not>
+					<columnExists tableName="field_type" columnName="date_retired"/>
+				</not>
+			</and>
+		</preConditions>
+		<comment>adding retired_by column</comment>
+		<addColumn tableName="field_type">
+			<column name="date_retired" type="datetime" />
 		</addColumn>
 	</changeSet>
 	
