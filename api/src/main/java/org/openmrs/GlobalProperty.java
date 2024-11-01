@@ -55,8 +55,7 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	@Transient
 	private boolean dirty = false;
 	
-	@Column(name = "description", columnDefinition = "TEXT")
-	@Lob
+	@Column(name = "description", length = 1024)
 	private String description = "";
 	
 	@Column(name = "datatype", length = 255)
