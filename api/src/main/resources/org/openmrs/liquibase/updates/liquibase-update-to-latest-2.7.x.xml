@@ -174,7 +174,7 @@
 		<preConditions  onFail="MARK_RAN">
 			<columnExists tableName="global_property" columnName="description"/>
 		</preConditions>
-		<comment>change description type TEXT to VARCHAR(255)</comment>
+		<comment>change description type TEXT to VARCHAR(1024) in 'global_property' table</comment>
 		<modifyDataType tableName="global_property" columnName="description" newDataType="VARCHAR(1024)"/>
 	</changeSet>
 	
