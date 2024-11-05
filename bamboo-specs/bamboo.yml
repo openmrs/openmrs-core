@@ -414,8 +414,6 @@ variables:
     docker.image.name: openmrs/openmrs-core
     docker.image.tag: nightly
     maven.release.version: 2.7.0
-    maven.development.version: 2.8.0-SNAPSHOT
-    build.release.type: release
 repositories:
     - openmrs-core:
           scope: global
