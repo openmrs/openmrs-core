@@ -169,13 +169,5 @@
 			referencedTableName="obs"
 			referencedColumnNames="obs_id"/>
 	</changeSet>
-
-	<changeSet id="TRUNK-6280-2024-11-01" author="manojll">
-		<preConditions  onFail="MARK_RAN">
-			<columnExists tableName="global_property" columnName="description"/>
-		</preConditions>
-		<comment>change description type TEXT to VARCHAR(1024) in 'global_property' table</comment>
-		<modifyDataType tableName="global_property" columnName="description" newDataType="VARCHAR(1024)"/>
-	</changeSet>
 	
 </databaseChangeLog>
