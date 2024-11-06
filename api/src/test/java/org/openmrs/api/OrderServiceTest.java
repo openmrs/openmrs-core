@@ -2740,6 +2740,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.addAnnotatedClass(ProgramAttributeType.class)
 			.addAnnotatedClass(HL7InError.class)
 			.addAnnotatedClass(GlobalProperty.class)
+			.addAnnotatedClass(OrderType.class)
 			.getMetadataBuilder().build();
 
 
