@@ -252,62 +252,62 @@ Release:
               interpreter: SHELL
               scripts:
                   - |-
-                        #!/bin/bash -eux
-    
-                        set +x
-                        
-                        export OMRS_VERSION=${bamboo.maven.release.version}
-                        export IMAGE=${bamboo.docker.image.name}:${OMRS_VERSION}
-                        export DEV_IMAGE=${bamboo.docker.image.name}:${OMRS_VERSION}-dev
-                        export BUILD_IMAGE=${bamboo.docker.image.id}
+                      #!/bin/bash -eux
                       
-                        # Set to be able to push
-                        git remote set-url origin git@github.com:openmrs/openmrs-core.git
-                        
-                        docker login -u ${bamboo.dockerhub.username} -p ${bamboo.dockerhub.password}
-                        
-                        echo "Setting the release version"
-                        docker pull ${BUILD_IMAGE}
-                        docker run --rm -v m2-repo:/root/.m2/repository -v $(pwd):/openmrs_core \
-                        ${BUILD_IMAGE} mvn versions:set -DnewVersion=${OMRS_VERSION} -DgenerateBackupPoms=false
-                        git commit -am "[skip-ci] Releasing ${OMRS_VERSION}"
-                        
-                        echo "Building the dev image"
-                        docker buildx build --pull --push --platform ${bamboo.docker.image.platforms} \
-                        --cache-from ${BUILD_IMAGE} --target dev \
-                        --build-arg MVN_ARGS="clean install -DskipTests" -t ${DEV_IMAGE} .
-                        
-                        echo "Building the production image"
-                        docker buildx build --pull --push --platform ${bamboo.docker.image.platforms} \
-                        --cache-from ${BUILD_IMAGE}-cache \
-                        --build-arg MVN_ARGS="clean install -DskipTests" -t ${IMAGE} .
-                        
-                        echo "Inspecting the image for id"
-                        sleep 10
-                        docker pull ${IMAGE}
-                        docker image inspect --format='{{index .RepoDigests 0}}' ${IMAGE} > docker-image.txt
-                        
-                        echo "Releasing to maven"
-                        docker pull ${DEV_IMAGE}
-                        docker run -v m2-repo:/root/.m2/repository -v ~/.m2/settings.xml:/.m2/settings.xml:ro \
-                        --rm ${DEV_IMAGE} mvn deploy -DskipTests --settings /.m2/settings.xml
-                        
-                        echo "Tagging the release in git"
-                        git tag ${OMRS_VERSION}
-                        git push origin ${OMRS_VERSION}
-                        
-                        (
-                        echo "Updating the main branch to a new SNAPSHOT version"
-                        git push
-                        docker run --rm -v m2-repo:/root/.m2/repository -v $(pwd):/openmrs_core \
-                        ${DEV_IMAGE} mvn versions:set -DnextSnapshot=true -DgenerateBackupPoms=false
-                        
-                        git commit -am "Setting new SNAPSHOT version"
-                        git push
-                        ) || (
-                        echo "Unable to update the main branch to a new SNAPSHOT version. Please update it manually if needed."
-                        exit 0
-                        )
+                      set +x
+                      
+                      export OMRS_VERSION=${bamboo.maven.release.version}
+                      export IMAGE=${bamboo.docker.image.name}:${OMRS_VERSION}
+                      export DEV_IMAGE=${bamboo.docker.image.name}:${OMRS_VERSION}-dev
+                      export BUILD_IMAGE=${bamboo.docker.image.id}
+                      
+                      # Set to be able to push
+                      git remote set-url origin git@github.com:openmrs/openmrs-core.git
+                      
+                      docker login -u ${bamboo.dockerhub.username} -p ${bamboo.dockerhub.password}
+                      
+                      echo "Setting the release version"
+                      docker pull ${BUILD_IMAGE}
+                      docker run --rm -v m2-repo:/root/.m2/repository -v $(pwd):/openmrs_core \
+                      ${BUILD_IMAGE} mvn versions:set -DnewVersion=${OMRS_VERSION} -DgenerateBackupPoms=false
+                      git commit -am "[skip-ci] Releasing ${OMRS_VERSION}"
+                      
+                      echo "Building the dev image"
+                      docker buildx build --pull --push --platform ${bamboo.docker.image.platforms} \
+                      --cache-from ${BUILD_IMAGE} --target dev \
+                      --build-arg MVN_ARGS="clean install -DskipTests" -t ${DEV_IMAGE} .
+                      
+                      echo "Building the production image"
+                      docker buildx build --pull --push --platform ${bamboo.docker.image.platforms} \
+                      --cache-from ${BUILD_IMAGE}-cache \
+                      --build-arg MVN_ARGS="clean install -DskipTests" -t ${IMAGE} .
+                      
+                      echo "Inspecting the image for id"
+                      sleep 10
+                      docker pull ${IMAGE}
+                      docker image inspect --format='{{index .RepoDigests 0}}' ${IMAGE} > docker-image.txt
+                      
+                      echo "Releasing to maven"
+                      docker pull ${DEV_IMAGE}
+                      docker run -v m2-repo:/root/.m2/repository -v ~/.m2/settings.xml:/.m2/settings.xml:ro \
+                      --rm ${DEV_IMAGE} mvn deploy -DskipTests --settings /.m2/settings.xml
+                      
+                      echo "Tagging the release in git"
+                      git tag ${OMRS_VERSION}
+                      git push origin ${OMRS_VERSION}
+                      
+                      (
+                      echo "Updating the main branch to a new SNAPSHOT version"
+                      git push
+                      docker run --rm -v m2-repo:/root/.m2/repository -v $(pwd):/openmrs_core \
+                      ${DEV_IMAGE} mvn versions:set -DnextSnapshot=true -DgenerateBackupPoms=false
+                      
+                      git commit -am "Setting new SNAPSHOT version"
+                      git push
+                      ) || (
+                      echo "Unable to update the main branch to a new SNAPSHOT version. Please update it manually if needed."
+                      exit 0
+                      )
               description: Build and push images
         - any-task:
               plugin-key: com.atlassian.bamboo.plugins.variable.updater.variable-updater-generic:variable-file-reader
@@ -342,7 +342,7 @@ Release JDK 11 image:
                       export RUNTIME_JDK="jdk11-corretto"
                       
                       export OMRS_VERSION=${bamboo.maven.release.version}
-					  export IMAGE_NIGHTLY=${bamboo.docker.image.name}:${bamboo.docker.image.tag}
+                      export IMAGE_NIGHTLY=${bamboo.docker.image.name}:${bamboo.docker.image.tag}
                       export IMAGE=${bamboo.docker.image.name}:${OMRS_VERSION}
                       export DEV_IMAGE=${bamboo.docker.image.name}:${OMRS_VERSION}-dev
                       
@@ -364,7 +364,7 @@ Release JDK 11 image:
                       --build-arg DEV_JDK="${JDK_IMAGE}" \
                       --build-arg RUNTIME_JDK="${RUNTIME_JDK}" \
                       --build-arg MVN_ARGS="clean install -DskipTests" -t ${IMAGE}-${JDK_IMAGE} .
-                      
+              
               description: Build and push JDK 11 images
     artifact-subscriptions: []
 Release JDK 17 image:
@@ -380,8 +380,7 @@ Release JDK 17 image:
                       #!/bin/bash -eux
                       
                       set +x
-
-	                  export JDK_IMAGE="amazoncorretto-17"
+                      export JDK_IMAGE="amazoncorretto-17"
                       export RUNTIME_JDK="jdk17-corretto"
                       
                       export OMRS_VERSION=${bamboo.maven.release.version}
@@ -414,6 +413,8 @@ variables:
     docker.image.name: openmrs/openmrs-core
     docker.image.tag: nightly
     maven.release.version: 2.7.0
+    maven.development.version: 2.8.0-SNAPSHOT
+    build.release.type: release
 repositories:
     - openmrs-core:
           scope: global
