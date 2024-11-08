@@ -56,7 +56,7 @@ public class Field extends BaseChangeableOpenmrsMetadata {
 	private FieldType fieldType;
 
 	@ManyToOne
-	@JoinColumn(name = "concept")
+	@JoinColumn(name = "concept_id")
 	private Concept concept;
 
 	@Column(name = "table_name", length = 50)
