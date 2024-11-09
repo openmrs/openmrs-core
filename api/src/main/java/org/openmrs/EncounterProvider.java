@@ -9,24 +9,53 @@
  */
 package org.openmrs;
 
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  * Mapping Class between Encounters and Providers which allows many to many relationship.
  * 
  * @since 1.9
  */
+@Entity
+@Table(name = "encounter_provider")
+@BatchSize(size = 25)
 @Audited
 public class EncounterProvider extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 1L;
-	
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "encounter_provider_id_seq")
+	@GenericGenerator(
+		name = "encounter_provider_id_seq",
+		strategy = "native",
+		parameters = @Parameter(name = "sequence", value = "encounter_provider_encounter_provider_id_seq")
+	)
+	@Column(name = "encounter_provider_id")
 	private Integer encounterProviderId;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "encounter_id", nullable = false)
 	private Encounter encounter;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "provider_id", nullable = false)
 	private Provider provider;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "encounter_role_id", nullable = false)
 	private EncounterRole encounterRole;
 	
 	public void setEncounterProviderId(Integer encounterProviderId) {
