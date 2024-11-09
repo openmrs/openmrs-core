@@ -2740,7 +2740,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.addAnnotatedClass(ProgramAttributeType.class)
 			.addAnnotatedClass(HL7InError.class)
 			.addAnnotatedClass(OrderType.class)
-			.addAnnotatedClass(Field.class)
+			.addAnnotatedClass(org.openmrs.Field.class)
 			.getMetadataBuilder().build();
 
 
