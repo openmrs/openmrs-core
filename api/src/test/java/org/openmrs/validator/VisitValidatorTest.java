@@ -415,8 +415,8 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldNotRejectOnVisitOverlapDuringEndVisit() {
 		
 		//	active visit:               |---------------->
-		//  visit #3:		                |--|
-		//  Ended active visit:           |----------|
+		//  overlapping visit:		          |--|
+		//  ended active visit:           |----------|
 		
 		String activeVisitUuid = "c2639863-cbbe-44bb-986d-8a4820f8ae14";
 		Visit activeVisit = Context.getVisitService().getVisitByUuid(activeVisitUuid);
@@ -445,8 +445,8 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldRejectOnVisitOverlapDuringEndVisitWithStartDateUpdated() {
 		//	active visit:               |---------------->
-		//  visit #3:		               |--|
-		//  Ended active visit:         |----------|
+		//  overlapping visit:		        |--|
+		//  ended active visit:         |----------|
 		
 		String activeVisitUuid = "c2639863-cbbe-44bb-986d-8a4820f8ae14";
 		Visit activeVisit = Context.getVisitService().getVisitByUuid(activeVisitUuid);
