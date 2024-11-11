@@ -257,6 +257,7 @@ Release:
                       set +x
                       
                       export OMRS_VERSION=${bamboo.maven.release.version}
+                      export OMRS_DEV_VERSION=${maven.development.version}
                       export IMAGE=${bamboo.docker.image.name}:${OMRS_VERSION}
                       export DEV_IMAGE=${bamboo.docker.image.name}:${OMRS_VERSION}-dev
                       export BUILD_IMAGE=${bamboo.docker.image.id}
@@ -299,8 +300,15 @@ Release:
                       (
                       echo "Updating the main branch to a new SNAPSHOT version"
                       git push
+                      
+                      echo "Setting the next development version"
+                      
                       docker run --rm -v m2-repo:/root/.m2/repository -v $(pwd):/openmrs_core \
-                      ${DEV_IMAGE} mvn versions:set -DnextSnapshot=true -DgenerateBackupPoms=false
+                      if [ -z "$OMRS_DEV_VERSION" ]; then
+                          ${DEV_IMAGE} mvn versions:set -DnextSnapshot=true -DgenerateBackupPoms=false
+                      else
+                          ${DEV_IMAGE} mvn versions:set -DnewVersion=${OMRS_DEV_VERSION} -DgenerateBackupPoms=false
+                      fi
                       
                       git commit -am "Setting new SNAPSHOT version"
                       git push
