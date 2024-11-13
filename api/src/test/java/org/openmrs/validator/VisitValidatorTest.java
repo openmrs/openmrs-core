@@ -409,6 +409,68 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see VisitValidator#validate(Object, org.springframework.validation.Errors)
+	 * Should skip validation if it is an end visit call and start date is not changed
+	 */
+	@Test
+	public void validate_shouldNotRejectOnVisitOverlapDuringEndVisit() {
+		
+		//	active visit:               |---------------->
+		//  overlapping visit:		          |--|
+		//  ended active visit:           |----------|
+		
+		String activeVisitUuid = "c2639863-cbbe-44bb-986d-8a4820f8ae14";
+		Visit activeVisit = Context.getVisitService().getVisitByUuid(activeVisitUuid);
+		
+		String newStopDateTime = "2014-02-06T00:00:00";
+		
+		// make a clone and update the visit with an end date
+		Visit updatedVisit = new Visit();
+		updatedVisit.setVisitId(activeVisit.getVisitId());
+		updatedVisit.setUuid(activeVisit.getUuid());
+		updatedVisit.setPatient(activeVisit.getPatient());
+		updatedVisit.setStartDatetime(activeVisit.getStartDatetime());
+		updatedVisit.setVisitType(activeVisit.getVisitType());
+		updatedVisit.setStopDatetime(parseIsoDate(newStopDateTime));
+		
+		Errors errors = new BindException(updatedVisit, "visit");
+		new VisitValidator().validate(updatedVisit, errors);
+		
+		assertFalse(errors.hasFieldErrors("startDatetime"));
+	}
+	
+	/**
+	 * @see VisitValidator#validate(Object, org.springframework.validation.Errors)
+	 * Should skip validation if it is an end visit call and start date is not changed
+	 */
+	@Test
+	public void validate_shouldRejectOnVisitOverlapDuringEndVisitWithStartDateUpdated() {
+		//	active visit:               |---------------->
+		//  overlapping visit:		        |--|
+		//  ended active visit:         |----------|
+		
+		String activeVisitUuid = "c2639863-cbbe-44bb-986d-8a4820f8ae14";
+		Visit activeVisit = Context.getVisitService().getVisitByUuid(activeVisitUuid);
+		
+		String newStartDateTime = "2014-02-04T00:00:00";
+		String newStopDateTime = "2014-02-06T00:00:00";
+		
+		// make a clone and update the visit with an end date
+		Visit updatedVisit = new Visit();
+		updatedVisit.setVisitId(activeVisit.getVisitId());
+		updatedVisit.setUuid(activeVisit.getUuid());
+		updatedVisit.setPatient(activeVisit.getPatient());
+		updatedVisit.setVisitType(activeVisit.getVisitType());
+		updatedVisit.setStartDatetime(parseIsoDate(newStartDateTime));
+		updatedVisit.setStopDatetime(parseIsoDate(newStopDateTime));
+		
+		Errors errors = new BindException(updatedVisit, "visit");
+		new VisitValidator().validate(updatedVisit, errors);
+		
+		assertTrue(errors.hasFieldErrors("startDatetime"));
+	}
+	
+	/**
+	 * @see VisitValidator#validate(Object, org.springframework.validation.Errors)
 	 * This test verifies that updating an existing visit does not result in a rejection 
 	 * when there are no other overlapping visits.
 	 */
