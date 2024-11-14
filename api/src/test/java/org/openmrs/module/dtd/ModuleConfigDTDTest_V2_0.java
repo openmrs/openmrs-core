@@ -18,10 +18,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -32,33 +28,16 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.w3c.dom.Document;
 
-public class ModuleConfigDTDTest_V1_7 {
+public class ModuleConfigDTDTest_V2_0 {
 	
-	private static final String[] compatibleVersions = new String[] { "1.7", "2.0" };
+	private static final String[] compatibleVersions = new String[] { "2.0" };
 	
 	@ParameterizedTest
 	@MethodSource("getCompatibleVersions")
-	public void configXmlServletWithInitParams(String version) throws ParserConfigurationException, TransformerException, IOException, URISyntaxException {
-		Map<String, String> initParams = new HashMap<>();
-		initParams.put("param1", "value1");
-		initParams.put("param2", "value2");
-
+	public void configXmlServletWithMinimalTags(String version) throws ParserConfigurationException, TransformerException, IOException, URISyntaxException {
 		Document configXml = withMinimalTags(version)
-			.withServlet(Optional.of("ServletName"), Optional.of("ServletClass"), initParams)
 			.build();
 
-		try (InputStream inputStream = writeToInputStream(configXml)) {
-			assertTrue(isValidConfigXml(inputStream));
-		}
-	}
-
-	@ParameterizedTest
-	@MethodSource("getCompatibleVersions")
-	public void configXmlServletMissingInitParamsIsValid(String version) throws ParserConfigurationException, TransformerException, IOException, URISyntaxException {
-		Document configXml = withMinimalTags(version)
-			.withServlet(Optional.of("ServletName"), Optional.of("ServletClass"), Collections.emptyMap())
-			.build();
-		
 		try (InputStream inputStream = writeToInputStream(configXml)) {
 			assertTrue(isValidConfigXml(inputStream));
 		}
