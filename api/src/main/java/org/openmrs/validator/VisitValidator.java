@@ -111,8 +111,15 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 		// Skipping validation if the patient is not set or not yet persisted
 		boolean nonExistingPatient = visit.getPatient() == null || visit.getPatient().getId() == null;
 		
+		Visit existingVisit = Context.getVisitService().getVisitByUuid(visit.getUuid());
+		
+		boolean endingVisit = existingVisit != null &&
+			existingVisit.getStopDatetime() == null &&
+			visit.getStopDatetime() != null
+			&& existingVisit.getStartDatetime().equals(visit.getStartDatetime());
+		
 		// check for overlapping visits
-		if (!nonExistingPatient && disallowOverlappingVisits()) {
+		if (!nonExistingPatient && disallowOverlappingVisits() && !endingVisit) {
 			VisitSearchCriteria visitSearchCriteria = new VisitSearchCriteriaBuilder()
 				.patient(visit.getPatient())
 				.maxStartDatetime(visit.getStopDatetime())
