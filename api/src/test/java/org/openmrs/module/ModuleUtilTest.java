@@ -36,6 +36,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
@@ -747,6 +749,45 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 			assertFalse(string.contains("META-INF"));
 			assertFalse(string.contains("web/module"));
 		}
+	}
+
+	/**
+	 * @see ModuleUtil#matchRequiredVersions(String, String) 
+	 */
+	@ParameterizedTest(name = "configVersion={0}, versionRange={1} => expected={2}")
+	@CsvSource({
+		// Exact version matches
+		"2.0, 2.0, true",
+		"2.1, 2.0, true",
+		"1.9, 2.0, false",
+
+		// Wildcard major version matches
+		"1.5, 1.*, true",
+		"1.0, 1.*, true",
+		"2.0, 1.*, false",
+
+		// Wildcard minor version matches
+		"2.0.1, 2.0.*, true",
+		"2.0.0, 2.0.*, true",
+		"2.1.0, 2.0.*, false",
+
+		// Version range matches
+		"1.5, 1.0 - 2.0, true",
+		"2.0, 1.0 - 2.0, true",
+		"2.1, 1.0 - 2.0, false",
+		"0.9, 1.0 - 2.0, false",
+
+		// No version range (null or empty)
+		"2.0, , true",
+		"1.5, , true",
+
+		// Edge cases
+		"1.0.0, 1.0, true",
+		"1.0.1, 1.0, true",
+		"0.9.9, 1.0, false"
+	})
+	void testMatchConfigVersions(String configVersion, String versionRange, boolean expected) {
+		assertEquals(expected, ModuleUtil.matchRequiredVersions(configVersion, versionRange));
 	}
 	
 	/**

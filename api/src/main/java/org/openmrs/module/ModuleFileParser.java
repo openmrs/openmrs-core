@@ -85,6 +85,7 @@ public class ModuleFileParser {
 		validConfigVersions.add("1.5");
 		validConfigVersions.add("1.6");
 		validConfigVersions.add("1.7");
+		validConfigVersions.add("2.0");
 	}
 	
 	// TODO - remove this field once ModuleFileParser(File), ModuleFileParser(InputStream) are removed.
@@ -318,7 +319,7 @@ public class ModuleFileParser {
 		String desc = getElementTrimmed(configRoot, "description");
 		String version = getElementTrimmed(configRoot, "version");
 
-		Module module = new Module(name, moduleId, packageName, author, desc, version);
+		Module module = new Module(name, moduleId, packageName, author, desc, version, configVersion);
 
 		module.setActivatorName(getElementTrimmed(configRoot, "activator"));
 		module.setRequireDatabaseVersion(getElementTrimmed(configRoot, "require_database_version"));
