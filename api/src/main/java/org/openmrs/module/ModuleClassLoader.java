@@ -22,6 +22,9 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLStreamHandlerFactory;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
@@ -362,7 +365,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		boolean include = true;
 		
 		for (ModuleConditionalResource conditionalResource : module.getConditionalResources()) {
-			if (fileUrl.getPath().matches(".*" + conditionalResource.getPath() + "$")) {
+			if (isMatchingConditionalResource(module, fileUrl, conditionalResource)) {
 				//if a resource matches a path of contidionalResource then it must meet all conditions
 				include = false;
 				
@@ -404,6 +407,41 @@ public class ModuleClassLoader extends URLClassLoader {
 		
 		return include;
 	}
+	
+	static boolean isMatchingConditionalResource(Module module, URL fileUrl, ModuleConditionalResource conditionalResource) {
+		FileSystem fileSystem = FileSystems.getDefault();
+		if (ModuleUtil.matchRequiredVersions(module.getConfigVersion(), "2.0")) {
+			return fileSystem.getPathMatcher(String.format("glob:**/%s", preprocessGlobPattern(conditionalResource.getPath())))
+				.matches(Paths.get(fileUrl.getPath()));
+		}
+		return fileUrl.getPath().matches(".*" + conditionalResource.getPath() + "$");
+	}
+
+	private static String preprocessGlobPattern(String globPattern) {
+		if (globPattern == null || globPattern.isEmpty()) {
+			return "";
+		}
+
+		globPattern = globPattern.replace("\\", "/");
+		globPattern = globPattern.replaceAll("//+", "/");
+
+		// Remove "file:" prefix if present
+		if (globPattern.startsWith("file:/")) {
+			globPattern = globPattern.substring(5);
+		}
+		
+		// Remove drive letter if present (e.g., C:/)
+		if (globPattern.matches("^[a-zA-Z]:/.*")) {
+			globPattern = globPattern.substring(2);
+		}
+		
+		if (globPattern.startsWith("/")) {
+			globPattern = globPattern.substring(1);
+		}
+
+		return globPattern;
+	}
+
 	
 	/**
 	 * Get the library cache folder for the given module. Each module has a different cache folder

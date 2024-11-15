@@ -36,7 +36,7 @@ import static org.openmrs.module.dtd.DtdTestValidator.isValidConfigXml;
 
 public class ModuleConfigDTDTest_V1_6 {
 	
-	private static final String[] compatibleVersions = new String[] { "1.6", "1.7" };
+	private static final String[] compatibleVersions = new String[] { "1.6", "1.7", "2.0" };
 	
 	@ParameterizedTest
 	@MethodSource("getCompatibleVersions")
