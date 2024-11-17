@@ -1,0 +1,138 @@
+{
+  "author": {
+    "name": "Jeremy Stashewsky",
+    "email": "jstash@gmail.com",
+    "website": "https://github.com/stash"
+  },
+  "contributors": [
+    {
+      "name": "Ivan Nikulin",
+      "website": "https://github.com/inikulin"
+    },
+    {
+      "name": "Shivan Kaul Sahib",
+      "website": "https://github.com/ShivanKaul"
+    },
+    {
+      "name": "Clint Ruoho",
+      "website": "https://github.com/ruoho"
+    },
+    {
+      "name": "Ian Livingstone",
+      "website": "https://github.com/ianlivingstone"
+    },
+    {
+      "name": "Andrew Waterman",
+      "website": "https://github.com/awaterma"
+    },
+    {
+      "name": "Michael de Libero ",
+      "website": "https://github.com/medelibero-sfdc"
+    },
+    {
+      "name": "Jonathan Stewmon",
+      "website": "https://github.com/jstewmon"
+    },
+    {
+      "name": "Miguel Roncancio",
+      "website": "https://github.com/miggs125"
+    },
+    {
+      "name": "Sebastian Mayr",
+      "website": "https://github.com/Sebmaster"
+    },
+    {
+      "name": "Alexander Savin",
+      "website": "https://github.com/apsavin"
+    },
+    {
+      "name": "Lalit Kapoor",
+      "website": "https://github.com/lalitkapoor"
+    },
+    {
+      "name": "Sam Thompson",
+      "website": "https://github.com/sambthompson"
+    },
+    {
+      "name": "Colin Casey",
+      "website": "https://github.com/colincasey"
+    },
+    {
+      "name": "Will Harney",
+      "website": "https://github.com/wjhsf"
+    }
+  ],
+  "license": "BSD-3-Clause",
+  "name": "tough-cookie",
+  "description": "RFC6265 Cookies and Cookie Jar for node.js",
+  "keywords": [
+    "HTTP",
+    "cookie",
+    "cookies",
+    "set-cookie",
+    "cookiejar",
+    "jar",
+    "RFC6265",
+    "RFC2965"
+  ],
+  "version": "5.0.0",
+  "homepage": "https://github.com/salesforce/tough-cookie",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/salesforce/tough-cookie.git"
+  },
+  "bugs": {
+    "url": "https://github.com/salesforce/tough-cookie/issues"
+  },
+  "main": "./dist/cookie/index.js",
+  "types": "./dist/cookie/index.d.ts",
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.d.ts",
+    "!__tests__"
+  ],
+  "scripts": {
+    "api:dev": "npm run build && npm run api:extract -- --local && npm run api:docs",
+    "api:docs": "api-documenter markdown --input-folder ./tmp --output-folder ./api/docs",
+    "api:extract": "api-extractor run --verbose",
+    "build": "npm run clean && tsc",
+    "clean": "rm -rf dist",
+    "version": "genversion --template version-template.ejs --force lib/version.ts && git add lib/version.ts",
+    "test": "npm run test:ts && npm run test:legacy",
+    "test:ts": "jest",
+    "test:legacy": "npm run build -- --declaration false && ./test/scripts/vows.js test/*_test.js",
+    "typecheck": "tsc --noEmit",
+    "cover": "jest --coverage",
+    "lint": "eslint .",
+    "eslint": "eslint .",
+    "prettier": "prettier '**/*.{json,ts,yaml,md}'",
+    "format": "npm run eslint -- --fix"
+  },
+  "//": "We only support node 18+, but v16 still works. We won't block v16 until it becomes a burden.",
+  "engines": {
+    "node": ">=16"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.7.0",
+    "@microsoft/api-documenter": "^7.25.7",
+    "@microsoft/api-extractor": "^7.47.2",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^16.18.101",
+    "async": "3.2.6",
+    "eslint": "^9.9.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "genversion": "^3.2.0",
+    "globals": "^15.8.0",
+    "jest": "^29.7.0",
+    "prettier": "^3.3.3",
+    "ts-jest": "^29.2.2",
+    "ts-node": "^10.9.2",
+    "typescript": "5.5.3",
+    "typescript-eslint": "^8.0.1",
+    "vows": "^0.8.3"
+  },
+  "dependencies": {
+    "tldts": "^6.1.32"
+  }
+}
