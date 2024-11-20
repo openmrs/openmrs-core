@@ -416,7 +416,7 @@ variables:
     maven.development.version: 2.8.0-SNAPSHOT
     build.release.type: release
 repositories:
-    - openmrs-core:
+    - openmrs-core-2.7.x:
           scope: global
     - Release scripts:
           scope: global
