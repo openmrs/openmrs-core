@@ -424,7 +424,7 @@ triggers:
     - polling:
           period: '180'
           repositories:
-              - openmrs-core
+              - openmrs-core-2.7.x
 branches:
     create: manually
     delete: never
