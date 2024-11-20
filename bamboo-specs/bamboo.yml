@@ -2,7 +2,7 @@
 version: 2
 plan:
     project-key: TRUNK
-    key: OC-27
+    key: OC27
     name: OpenMRS Core 2.7.x
     description: OpenMRS Core 2.7
 stages:
