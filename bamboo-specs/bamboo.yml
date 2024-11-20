@@ -2,9 +2,9 @@
 version: 2
 plan:
     project-key: TRUNK
-    key: MASTER
-    name: OpenMRS Core Master
-    description: OpenMRS Core Master
+    key: OC-27
+    name: OpenMRS Core 2.7.x
+    description: OpenMRS Core 2.7
 stages:
     - Build:
           manual: false
