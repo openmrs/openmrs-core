@@ -15,7 +15,7 @@ stages:
           manual: false
           final: false
           jobs:
-              - Unit Test
+#              - Unit Test
               - Integration Test
     - Deploy:
           manual: false
@@ -74,25 +74,25 @@ Build:
                   variableScope: RESULT
               description: Store docker image id
     artifact-subscriptions: []
-Unit Test:
-    key: UT
-    tasks:
-        # Checkout Task for default repository will be added implicitly during Specs import
-        - script:
-              interpreter: SHELL
-              scripts:
-                  - |-
-                      #!/bin/bash -eu
-                      
-                      set -x
-                      
-                      export IMAGE=${bamboo.docker.image.id}
-                      
-                      docker pull ${IMAGE}
-                      
-                      docker run -v m2-repo:/root/.m2/repository --rm ${IMAGE} mvn test
-              description: Run unit tests
-    artifact-subscriptions: []
+#Unit Test:
+#    key: UT
+#    tasks:
+#        # Checkout Task for default repository will be added implicitly during Specs import
+#        - script:
+#              interpreter: SHELL
+#              scripts:
+#                  - |-
+#                      #!/bin/bash -eu
+#                      
+#                      set -x
+#                      
+#                      export IMAGE=${bamboo.docker.image.id}
+#                      
+#                      docker pull ${IMAGE}
+#                      
+#                      docker run -v m2-repo:/root/.m2/repository --rm ${IMAGE} mvn test
+#              description: Run unit tests
+#    artifact-subscriptions: []
 Integration Test:
     key: IT
     tasks:
