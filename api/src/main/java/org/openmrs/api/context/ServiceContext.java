@@ -906,7 +906,7 @@ public class ServiceContext implements ApplicationContextAware {
 			return applicationContext.getBean(beanName, type);
 		}
 		catch (BeansException beanException) {
-			throw new APIException("service.error.during.getting.component", null, beanException);
+			throw new APIException("Error during getting registered component", beanException);
 		}
 	}
 	
