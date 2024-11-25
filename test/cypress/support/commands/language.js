@@ -9,8 +9,12 @@ Cypress.Commands.add('language', (
   cy.get('[data-extension-id="change-language"] > .cds--switcher__item > .cds--switcher__item-link > .cds--btn').click({ force: true })
   cy.contains(language).click({ force: true })
   cy.get('.-esm-primary-navigation__change-language__submitButton___a1yfJ').then(($btn) => {
-    if ($btn.is(':enabled')) {
-      cy.wrap($btn).click({ force: true, multiple: true })
+    if ($btn.length > 0) {
+      if ($btn.is(':enabled')) {
+        cy.wrap($btn).click({ force: true, multiple: true })
+      }
+    } else {
+      cy.get('.cds--modal-close').click()
     }
   })
 })
