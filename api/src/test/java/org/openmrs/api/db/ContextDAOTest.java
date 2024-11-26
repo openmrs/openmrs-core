@@ -17,10 +17,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import javax.annotation.Resource;
 import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
+
+import javax.annotation.Resource;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,6 +33,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.db.hibernate.HibernateContextDAO;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.stereotype.Component;
 
 /**
@@ -280,6 +282,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		
 		// first we fail a login attempt
 		try {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 			dao.authenticate("admin", "not the right password");
 			fail("Not sure why this username/password combo worked");
 		}
@@ -309,7 +312,12 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		
 		// those were the first eight, now the ninth request 
 		// (with the same user and right pw) should fail
-		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "test"));
+		assertThrows(ContextAuthenticationException.class, () -> {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			dao.authenticate("admin", "test");
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		});
+		Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 	}
 	
 	@Test
