@@ -9,12 +9,23 @@
  */
 package org.openmrs;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 import org.hibernate.envers.Audited;
-import org.hibernate.search.annotations.DocumentId;
+
+import com.google.errorprone.annotations.Immutable;
+
 
 /**
  * ConceptDatatype
  */
+@Entity
+@Table(name="concept_datatype")
 @Audited
 public class ConceptDatatype extends BaseChangeableOpenmrsMetadata {
 	
@@ -65,9 +76,12 @@ public class ConceptDatatype extends BaseChangeableOpenmrsMetadata {
 	public static final String COMPLEX_UUID = "8d4a6242-c2cc-11de-8d13-0010c6dffd0f";
 	
 	// Fields
-	@DocumentId
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "concept_datatype_Id")
 	private Integer conceptDatatypeId;
 	
+	@Column(name = "hl7abbreviation")
 	private String hl7Abbreviation;
 	
 	// Constructors

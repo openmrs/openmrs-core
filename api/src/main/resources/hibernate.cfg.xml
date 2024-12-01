@@ -31,7 +31,6 @@
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptName.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptNameTag.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptClass.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/ConceptDatatype.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptProposal.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptStateConversion.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptSet.hbm.xml" />
@@ -60,8 +59,8 @@
 		<mapping resource="org/openmrs/api/db/hibernate/Role.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Patient.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PatientIdentifier.hbm.xml" />
-                <mapping resource="org/openmrs/api/db/hibernate/PatientProgram.hbm.xml" />
-                <mapping resource="org/openmrs/api/db/hibernate/PatientProgramAttribute.hbm.xml" />
+        <mapping resource="org/openmrs/api/db/hibernate/PatientProgram.hbm.xml" />
+        <mapping resource="org/openmrs/api/db/hibernate/PatientProgramAttribute.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/RelationshipType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Order.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/OrderAttribute.hbm.xml" />
