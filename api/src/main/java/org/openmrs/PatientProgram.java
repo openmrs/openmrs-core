@@ -36,6 +36,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -57,40 +58,44 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	@GenericGenerator(
 			name = "patient_program_id_seq",
 			strategy = "native",
-			parameters = @Parameter(name = "sequence", value = "_program_patient_program_id_seq")
+			parameters = @Parameter(name = "sequence", value = "patient_program_patient_program_id_seq")
 			)
+	@Column(name = "patient_program_id")
 	private Integer patientProgramId;
 	
 	@ManyToOne
-	@JoinColumn(name = "patient")
+	@JoinColumn(name = "patient_id", nullable = false)
 	private Patient patient;
 	
-	@JoinColumn(name = "program")
+	@ManyToOne
+	@JoinColumn(name = "program_id", nullable = false)
 	private Program program;
 	
-	@JoinColumn(name = "location")
+	@ManyToOne
+	@JoinColumn(name = "location_id")
 	private Location location;
 	
-	@Column(name = "date_enrolled")
+	@Column(name = "date_enrolled", nullable = true)
 	private Date dateEnrolled;
 	
-	@Column(name = "date_completed")
+	@Column(name = "date_completed", nullable = true)
 	private Date dateCompleted;
 	
-	@JoinColumn(name = "outcome")
+	@ManyToOne
+	@JoinColumn(name = "outcome_concept_id", nullable = true)
 	private Concept outcome;
 	
 	
-	@ManyToMany
+	@OneToMany
 	@JoinTable(
 			name = "patient_state_set",
-			joinColumns = @JoinColumn(name = "patient_program_id"),
+			joinColumns = @JoinColumn(name = "patient_program_id", nullable = false),
 			inverseJoinColumns = @JoinColumn(name = "patient_state_id"),
 			uniqueConstraints = @UniqueConstraint(columnNames = {"patient_program_id","patient_state_id"})
 	)
 	private Set<PatientState> states = new HashSet<>();
          
-	@ManyToMany
+	@OneToMany
 	@JoinTable(
 			name = "patient_attribute_set",
 			joinColumns = @JoinColumn(name = "patient_program_id"),
