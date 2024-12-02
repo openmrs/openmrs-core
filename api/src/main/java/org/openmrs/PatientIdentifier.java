@@ -21,7 +21,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
-
+import org.hibernate.annotations.Parameter;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.annotations.Analyzer;
@@ -34,7 +34,7 @@ import org.openmrs.api.db.hibernate.search.LuceneAnalyzers;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.hibernate.annotations.GenericGenerator;
 /**
  * A <code>Patient</code> can have zero to n identifying PatientIdentifier(s). PatientIdentifiers
  * are anything from medical record numbers, to social security numbers, to driver's licenses. The
@@ -59,6 +59,12 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	 */
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GenericGenerator(
+			name = "patient_identifier_id_seq",
+			strategy = "native",
+			parameters = @Parameter(name = "sequence", value = "_identifier_patient_identifier_id_seq")
+		)
+	@Column(name = "patient_identifier_id")
 	private Integer patientIdentifierId;
 
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
