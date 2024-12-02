@@ -12,6 +12,8 @@ package org.openmrs;
 import java.io.Serializable;
 import java.util.Comparator;
 import org.hibernate.annotations.Parameter;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -46,39 +48,42 @@ public class FormField extends BaseChangeableOpenmrsMetadata implements java.io.
 	@GenericGenerator(
 			name = "form_field_id_seq",
 			strategy = "native",
-			parameters = @Parameter(name = "sequence", value = "_field_form_field_id_seq")
+			parameters = @Parameter(name = "sequence", value = "form_field_form_field_id_seq")
 		)
+	@Column(name = "form_field_id")
 	protected Integer formFieldId;
 	
 	@ManyToOne
-	@JoinColumn(name = "parent")
+	@JoinColumn(name = "parent_form_field")
 	protected FormField parent;
 	
-	@JoinColumn(name = "form")
+	@ManyToOne
+	@JoinColumn(name = "form_id", nullable = false)
 	protected Form form;
 	
-	@JoinColumn(name = "field")
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "field_id", nullable = false)
 	protected Field field;
 	
-	@Column(name = "field_number")
+	@Column(name = "field_number", length = 11)
 	protected Integer fieldNumber;
 	
-	@Column(name = "field_part")
+	@Column(name = "field_part", length = 5)
 	protected String fieldPart;
 	
-	@Column(name = "page_number")
+	@Column(name = "page_number", length = 11)
 	protected Integer pageNumber;
 	
-	@Column(name = "min_occurs")
+	@Column(name = "min_occurs", length = 11)
 	protected Integer minOccurs;
 	
-	@Column(name = "max_occurs")
+	@Column(name = "max_occurs", length = 11)
 	protected Integer maxOccurs;
 	
-	@Column(name = "reguired", nullable = false)
+	@Column(name = "reguired", nullable = false, length = 1)
 	protected Boolean required = false;
 	
-	@Column(name = "sort_weight")
+	@Column(name = "sort_weight", length = 5, nullable = true)
 	protected Float sortWeight;
 	
 	// Constructors
