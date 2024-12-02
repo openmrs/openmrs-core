@@ -17,15 +17,18 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
-import com.google.errorprone.annotations.Immutable;
+import org.hibernate.search.annotations.DocumentId;
 
 
 /**
  * ConceptDatatype
  */
 @Entity
-@Table(name="concept_datatype")
+@Table(name = "concept_datatype")
+@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 @Audited
 public class ConceptDatatype extends BaseChangeableOpenmrsMetadata {
 	
@@ -76,17 +79,18 @@ public class ConceptDatatype extends BaseChangeableOpenmrsMetadata {
 	public static final String COMPLEX_UUID = "8d4a6242-c2cc-11de-8d13-0010c6dffd0f";
 	
 	// Fields
+	@DocumentId
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "concept_datatype_id_seq")
 	@GenericGenerator(
 			name = "concept_datatype_id_seq",
 			strategy = "native",
-			parameters = @Parameter(name = "sequence", value = "_datatype_concept_datatype_id_seq")
+			parameters = @Parameter(name = "sequence", value = "concept_datatype_concept_datatype_id_seq")
 		)
-	@Column(name = "concept_datatype_Id")
+	@Column(name = "concept_datatype_id")
 	private Integer conceptDatatypeId;
 	
-	@Column(name = "hl7abbreviation")
+	@Column(name = "hl7_abbreviation", length = 3, nullable = true)
 	private String hl7Abbreviation;
 	
 	// Constructors
