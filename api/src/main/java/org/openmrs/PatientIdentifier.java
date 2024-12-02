@@ -14,14 +14,20 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Comparator;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Table;
+
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Boost;
-import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
-import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.SortableField;
 import org.openmrs.api.db.hibernate.search.LuceneAnalyzers;
@@ -37,7 +43,8 @@ import org.slf4j.LoggerFactory;
  *
  * @see org.openmrs.PatientIdentifierType
  */
-@Indexed
+@Entity
+@Table(name = "patient_identifier")
 @Audited
 public class PatientIdentifier extends BaseChangeableOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PatientIdentifier> {
 	
@@ -50,10 +57,12 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	/**
 	 * @since 1.5
 	 */
-	@DocumentId
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer patientIdentifierId;
 
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
+	@JoinColumn(name = "patient_id")
 	private Patient patient;
 
 	@Fields({
@@ -63,17 +72,21 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 			@Field(name = "identifierAnywhere", analyzer = @Analyzer(definition = LuceneAnalyzers.ANYWHERE_ANALYZER))
 	})
 	@SortableField(forField = "identifierExact")
+	@Column(name = "identifier")
 	private String identifier;
 
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
+	@JoinColumn(name = "identifier_type")
 	private PatientIdentifierType identifierType;
 	
+	@JoinColumn(name = "location")
 	private Location location;
 
+	@JoinColumn(name = "patient_program")
 	private PatientProgram patientProgram;
 	
 
-	@Field
+	@Column(name = "preferred", nullable = false)
 	private Boolean preferred = false;
 	
 	/** default constructor */
