@@ -11,8 +11,18 @@ package org.openmrs;
 
 import java.io.Serializable;
 import java.util.Comparator;
+import org.hibernate.annotations.Parameter;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
 /**
@@ -23,33 +33,52 @@ import org.hibernate.envers.Audited;
  * @see org.openmrs.Form
  * @see org.openmrs.Field
  */
+@Entity
+@Table(name = "form_field")
 @Audited
 public class FormField extends BaseChangeableOpenmrsMetadata implements java.io.Serializable, Comparable<FormField> {
 	
 	public static final long serialVersionUID = 3456L;
 	
 	// Fields
-	
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "form_field_id_seq")
+	@GenericGenerator(
+			name = "form_field_id_seq",
+			strategy = "native",
+			parameters = @Parameter(name = "sequence", value = "_field_form_field_id_seq")
+		)
 	protected Integer formFieldId;
 	
+	@ManyToOne
+	@JoinColumn(name = "parent")
 	protected FormField parent;
 	
+	@JoinColumn(name = "form")
 	protected Form form;
 	
+	@JoinColumn(name = "field")
 	protected Field field;
 	
+	@Column(name = "field_number")
 	protected Integer fieldNumber;
 	
+	@Column(name = "field_part")
 	protected String fieldPart;
 	
+	@Column(name = "page_number")
 	protected Integer pageNumber;
 	
+	@Column(name = "min_occurs")
 	protected Integer minOccurs;
 	
+	@Column(name = "max_occurs")
 	protected Integer maxOccurs;
 	
+	@Column(name = "reguired", nullable = false)
 	protected Boolean required = false;
 	
+	@Column(name = "sort_weight")
 	protected Float sortWeight;
 	
 	// Constructors
