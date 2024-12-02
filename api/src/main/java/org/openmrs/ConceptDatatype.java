@@ -15,9 +15,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
-
+import org.hibernate.annotations.GenericGenerator;
 import com.google.errorprone.annotations.Immutable;
 
 
@@ -77,7 +77,12 @@ public class ConceptDatatype extends BaseChangeableOpenmrsMetadata {
 	
 	// Fields
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "concept_datatype_id_seq")
+	@GenericGenerator(
+			name = "concept_datatype_id_seq",
+			strategy = "native",
+			parameters = @Parameter(name = "sequence", value = "_datatype_concept_datatype_id_seq")
+		)
 	@Column(name = "concept_datatype_Id")
 	private Integer conceptDatatypeId;
 	
