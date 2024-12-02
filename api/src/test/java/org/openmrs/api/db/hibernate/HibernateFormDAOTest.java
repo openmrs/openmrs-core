@@ -12,12 +12,11 @@ package org.openmrs.api.db.hibernate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openmrs.EncounterType;
 import org.openmrs.Field;
 import org.openmrs.Form;
 import org.openmrs.FormField;
@@ -58,5 +57,35 @@ public class HibernateFormDAOTest extends BaseContextSensitiveTest {
 		for (FormField formField : formFields) {
 			assertEquals(form.getFormId(), formField.getForm().getFormId());
 		}
+	}
+
+	@Test
+	public void shouldGetFormFieldsByField() {
+		Field field = new Field(1);
+		FormField formField = new FormField(2);
+		formField.setField(field);
+		List<FormField> formFields = dao.getFormFieldsByField(field);
+		assertNotNull(formFields);
+		assertEquals(3, formFields.size());
+	}
+
+	@Test
+	public void shouldGetFormCount() {
+		String partialName = "Basic Form";
+		Boolean published = false;
+		Collection<EncounterType> encounterTypes = new ArrayList<>();
+		Boolean retired = false;
+		Collection<FormField> containingAnyFormField = new ArrayList<>();
+		Collection<FormField> containingAllFormFields = new ArrayList<>();
+		Collection<Field> fields = new ArrayList<>();
+		Integer formCount = dao.getFormCount(partialName, 
+			published, 
+			encounterTypes, 
+			retired, 
+			containingAnyFormField, 
+			containingAllFormFields, 
+			fields);
+		assertNotNull(formCount);
+		assertEquals(2, formCount);
 	}
 }
