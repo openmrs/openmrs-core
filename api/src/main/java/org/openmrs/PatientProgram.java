@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.Customizable;
@@ -25,9 +27,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+
 /**
  * PatientProgram
  */
+@Entity
+@Table(name = "patient_program")
 @Audited
 public class PatientProgram extends BaseChangeableOpenmrsData implements Customizable<PatientProgramAttribute>{
 	
@@ -36,23 +52,51 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	// ******************
 	// Properties
 	// ******************
-	
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "")
+	@GenericGenerator(
+			name = "patient_program_id_seq",
+			strategy = "native",
+			parameters = @Parameter(name = "sequence", value = "_program_patient_program_id_seq")
+			)
 	private Integer patientProgramId;
 	
+	@ManyToOne
+	@JoinColumn(name = "patient")
 	private Patient patient;
 	
+	@JoinColumn(name = "program")
 	private Program program;
 	
+	@JoinColumn(name = "location")
 	private Location location;
 	
+	@Column(name = "date_enrolled")
 	private Date dateEnrolled;
 	
+	@Column(name = "date_completed")
 	private Date dateCompleted;
 	
+	@JoinColumn(name = "outcome")
 	private Concept outcome;
 	
+	
+	@ManyToMany
+	@JoinTable(
+			name = "patient_state_set",
+			joinColumns = @JoinColumn(name = "patient_program_id"),
+			inverseJoinColumns = @JoinColumn(name = "patient_state_id"),
+			uniqueConstraints = @UniqueConstraint(columnNames = {"patient_program_id","patient_state_id"})
+	)
 	private Set<PatientState> states = new HashSet<>();
          
+	@ManyToMany
+	@JoinTable(
+			name = "patient_attribute_set",
+			joinColumns = @JoinColumn(name = "patient_program_id"),
+			inverseJoinColumns = @JoinColumn(name = "patient_program_attribute_id"),
+			uniqueConstraints = @UniqueConstraint(columnNames = {"patient_program_id","patient_program_attribute_id"})
+	)
 	private Set<PatientProgramAttribute> attributes = new LinkedHashSet<>();
 	
 	// ******************
