@@ -23,12 +23,13 @@
 		<discriminator column="template_id" insert="false" />
 		
 		<property name="name" type="string" column="name" not-null="true"/>
-		<property name="template" type="string" column="template" not-null="true"/>
+		<property name="template" type="text" column="template" not-null="true"/>
 		<property name="subject" type="string" column="subject" not-null="true"/>
 		<property name="sender" type="string" column="sender" not-null="true"/>
 		<property name="recipients" type="string" column="recipients" not-null="true"/>
 		<property name="ordinal" type="int" column="ordinal" not-null="true"/>
-		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
-		
+		<property name="uuid" type="java.lang.String" unique="true">
+			<column name="uuid" sql-type="char(38)" />
+		</property>		
 	</class>
 </hibernate-mapping>

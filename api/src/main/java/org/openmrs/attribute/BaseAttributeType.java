@@ -35,14 +35,14 @@ public abstract class BaseAttributeType<OwningType extends Customizable<?>> exte
 	@Column(name = "datatype", length = 255)
 	private String datatypeClassname;
 	
-	@Column(name = "datatype_config", length = 65535 )
+	@Column(name = "datatype_config", columnDefinition = "text")
 	@Lob
 	private String datatypeConfig;
 	
 	@Column(name = "preferred_handler", length = 255)
 	private String preferredHandlerClassname;
 	
-	@Column(name = "handler_config", length = 65535 )
+	@Column(name = "handler_config", columnDefinition = "text")
 	@Lob
 	private String handlerConfig;
 	
