@@ -13,13 +13,14 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Comparator;
-
+import org.hibernate.search.annotations.DocumentId;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import org.hibernate.annotations.Parameter;
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -27,6 +28,7 @@ import org.hibernate.envers.Audited;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Boost;
 import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.SortableField;
@@ -45,6 +47,7 @@ import org.hibernate.annotations.GenericGenerator;
  */
 @Entity
 @Table(name = "patient_identifier")
+@Indexed
 @Audited
 public class PatientIdentifier extends BaseChangeableOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PatientIdentifier> {
 	
@@ -57,16 +60,18 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	/**
 	 * @since 1.5
 	 */
+	@DocumentId
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@GenericGenerator(
 			name = "patient_identifier_id_seq",
 			strategy = "native",
-			parameters = @Parameter(name = "sequence", value = "_identifier_patient_identifier_id_seq")
+			parameters = @Parameter(name = "sequence", value = "patient_identifier_patient_identifier_id_seq")
 		)
 	@Column(name = "patient_identifier_id")
 	private Integer patientIdentifierId;
-
+	
+	@ManyToOne
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	@JoinColumn(name = "patient_id")
 	private Patient patient;
@@ -78,20 +83,23 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 			@Field(name = "identifierAnywhere", analyzer = @Analyzer(definition = LuceneAnalyzers.ANYWHERE_ANALYZER))
 	})
 	@SortableField(forField = "identifierExact")
-	@Column(name = "identifier")
+	@Column(name = "identifier", length = 50)
 	private String identifier;
 
+	@ManyToOne
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	@JoinColumn(name = "identifier_type")
 	private PatientIdentifierType identifierType;
 	
-	@JoinColumn(name = "location")
+	@ManyToOne
+	@JoinColumn(name = "location_id", nullable = true)
 	private Location location;
 
-	@JoinColumn(name = "patient_program")
+	@ManyToOne
+	@JoinColumn(name = "patient_program_id", nullable = true)
 	private PatientProgram patientProgram;
 	
-
+	@Field
 	@Column(name = "preferred", nullable = false)
 	private Boolean preferred = false;
 	
