@@ -9,13 +9,10 @@
  */
 package org.openmrs;
 
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.Customizable;
 import org.openmrs.util.OpenmrsUtil;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,7 +23,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -34,7 +30,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -54,12 +49,7 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	// Properties
 	// ******************
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "")
-	@GenericGenerator(
-			name = "patient_program_id_seq",
-			strategy = "native",
-			parameters = @Parameter(name = "sequence", value = "patient_program_patient_program_id_seq")
-			)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "patient_program_id")
 	private Integer patientProgramId;
 	
