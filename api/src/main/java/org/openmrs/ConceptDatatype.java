@@ -22,7 +22,6 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.search.annotations.DocumentId;
 
-
 /**
  * ConceptDatatype
  */
