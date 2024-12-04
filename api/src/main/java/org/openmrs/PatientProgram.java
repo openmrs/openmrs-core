@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.Customizable;
@@ -23,17 +24,18 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 
 /**
  * PatientProgram
@@ -61,7 +63,7 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	@JoinColumn(name = "program_id", nullable = false)
 	private Program program;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "location_id")
 	private Location location;
 	
@@ -76,22 +78,12 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	private Concept outcome;
 	
 	
-	@OneToMany
-	@JoinTable(
-			name = "patient_state_set",
-			joinColumns = @JoinColumn(name = "patient_program_id", nullable = false),
-			inverseJoinColumns = @JoinColumn(name = "patient_state_id"),
-			uniqueConstraints = @UniqueConstraint(columnNames = {"patient_program_id","patient_state_id"})
-	)
+	@OneToMany(mappedBy = "patientProgram", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<PatientState> states = new HashSet<>();
          
-	@OneToMany
-	@JoinTable(
-			name = "patient_attribute_set",
-			joinColumns = @JoinColumn(name = "patient_program_id"),
-			inverseJoinColumns = @JoinColumn(name = "patient_program_attribute_id"),
-			uniqueConstraints = @UniqueConstraint(columnNames = {"patient_program_id","patient_program_attribute_id"})
-	)
+	@OneToMany(mappedBy = "patientProgram", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@BatchSize(size = 100)
+	@OrderBy("voided ASC")
 	private Set<PatientProgramAttribute> attributes = new LinkedHashSet<>();
 	
 	// ******************
