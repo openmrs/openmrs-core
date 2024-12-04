@@ -16,6 +16,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
@@ -27,6 +28,7 @@ import org.hibernate.annotations.Parameter;
  */
 @Entity
 @Table(name = "encounter_role")
+@BatchSize(size = 25)
 @Audited
 public class EncounterRole extends BaseChangeableOpenmrsMetadata {
 	
