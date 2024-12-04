@@ -10,6 +10,14 @@
 package org.openmrs;
 
 import org.hibernate.envers.Audited;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 /**
  * An EncounterRole a role specific to the encounter. While these could match up to existing
@@ -17,12 +25,22 @@ import org.hibernate.envers.Audited;
  *
  * @since 1.9
  */
+@Entity
+@Table(name = "encounter_role")
 @Audited
 public class EncounterRole extends BaseChangeableOpenmrsMetadata {
 	
 	public static final String UNKNOWN_ENCOUNTER_ROLE_UUID = "a0b03050-c99b-11e0-9572-0800200c9a66";
 	
 	// Fields
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "encounter_role_id_seq")
+	@GenericGenerator(
+			name = "encounter_role_id_seq",
+			strategy = "native",
+			parameters = @Parameter(name = "sequence", value = "encounter_role_encounter_role_id_seq")
+	)
+	@Column(name = "encounter_role_id", nullable = false)
 	private Integer encounterRoleId;
 	
 	// Constructors
