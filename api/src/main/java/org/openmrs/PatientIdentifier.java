@@ -28,6 +28,16 @@ import org.openmrs.api.db.hibernate.search.LuceneAnalyzers;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.GenericGenerator;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  * A <code>Patient</code> can have zero to n identifying PatientIdentifier(s). PatientIdentifiers
@@ -37,6 +47,8 @@ import org.slf4j.LoggerFactory;
  *
  * @see org.openmrs.PatientIdentifierType
  */
+@Entity
+@Table(name = "patient_identifier")
 @Indexed
 @Audited
 public class PatientIdentifier extends BaseChangeableOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PatientIdentifier> {
@@ -51,9 +63,19 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	 * @since 1.5
 	 */
 	@DocumentId
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "patient_identifier_id_seq")
+	@GenericGenerator(
+			name = "patient_identifier_id_seq",
+			strategy = "native",
+			parameters = @Parameter(name = "sequence", value = "patient_identifier_patient_identifier_id_seq")
+		)
+	@Column(name = "patient_identifier_id")
 	private Integer patientIdentifierId;
-
+	
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
+	@ManyToOne
+	@JoinColumn(name = "patient_id")
 	private Patient patient;
 
 	@Fields({
@@ -63,17 +85,24 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 			@Field(name = "identifierAnywhere", analyzer = @Analyzer(definition = LuceneAnalyzers.ANYWHERE_ANALYZER))
 	})
 	@SortableField(forField = "identifierExact")
+	@Column(name = "identifier", length = 50)
 	private String identifier;
 
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
+	@ManyToOne
+	@JoinColumn(name = "identifier_type")
 	private PatientIdentifierType identifierType;
 	
+	@ManyToOne
+	@JoinColumn(name = "location_id", nullable = true)
 	private Location location;
 
+	@ManyToOne
+	@JoinColumn(name = "patient_program_id", nullable = true)
 	private PatientProgram patientProgram;
 	
-
 	@Field
+	@Column(name = "preferred", nullable = false)
 	private Boolean preferred = false;
 	
 	/** default constructor */
