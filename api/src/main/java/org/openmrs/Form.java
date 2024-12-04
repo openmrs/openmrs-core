@@ -16,28 +16,57 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
+
 /**
  * Form
  *
  * @version 1.0
  */
+@Entity
+@Table(name = "form")
 @Audited
 public class Form extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 845634L;
 	
 	// Fields
-	
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "form_form_id_seq")
+	@GenericGenerator(
+			name = "form_fomr_id_seq",
+			strategy = "native",
+			parameters = @Parameter(name = "sequence", value ="form_form_form_form_id_seq")
+	)
+	@Column(name = "form_id", nullable = false)
 	private Integer formId;
 	
+	@Column(name = "version", nullable = false, length = 50)
 	private String version;
 	
+	@Column(name = "build", nullable = true)
 	private Integer build;
 	
+	@Column(name = "published", nullable = true, length = 1)
 	private Boolean published = false;
 	
+	@ManyToOne
+	@JoinColumn(name = "encounter_type")
 	private EncounterType encounterType;
 	
+	@OneToMany(mappedBy = "form", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<FormField> formFields;
 	
 	// Constructors
