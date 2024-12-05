@@ -13,30 +13,62 @@ import org.hibernate.envers.Audited;
 
 import java.util.Date;
 import java.util.Locale;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 /**
  * ConceptDescription is the localized description of a concept.
  */
+@Entity
+@Table(name = "concept_description")
+@BatchSize(size = 10)
 @Audited
 public class ConceptDescription extends BaseOpenmrsObject implements Auditable, java.io.Serializable {
 	
 	private static final long serialVersionUID = -7223075113369136584L;
 	
 	// Fields
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "concept_description_id_seq")
+	@GenericGenerator(
+			name = "concept_description_id_seq",
+			strategy = "native",
+			parameters = @Parameter(name = "sequence", value = "concept_description_concept_description_id_seq")
+			)
+	@Column(name = "concept_description_id", nullable = false)
 	private Integer conceptDescriptionId;
 	
+	@ManyToOne
+	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
 	
+	@Column(name = "description", length = 65535, nullable = false)
 	private String description;
 	
+	@Column(name = "locale", length = 50, nullable = false)
 	private Locale locale;
 	
+	@ManyToOne
+	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
 	
+	@Column(name = "date_created", nullable = false)
 	private Date dateCreated;
 	
+	@ManyToOne
+	@JoinColumn(name = "changed_by", nullable = true)
 	private User changedBy;
 	
+	@Column(name = "date_changed", nullable = true)
 	private Date dateChanged;
 	
 	// Constructors
