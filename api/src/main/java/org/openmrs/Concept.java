@@ -46,6 +46,24 @@ import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ObjectUtils;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 /**
  * A Concept object can represent either a question or an answer to a data point. That data point is
@@ -70,6 +88,10 @@ import org.springframework.util.ObjectUtils;
  * @see ConceptService
  */
 @FullTextFilterDefs( { @FullTextFilterDef(name = "termsFilterFactory", impl = TermsFilterFactory.class) })
+@Entity
+@Table(name = "concept")
+@BatchSize(size = 25)
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Audited
 public class Concept extends BaseOpenmrsObject implements Auditable, Retireable, Serializable, Attributable<Concept>,Customizable<ConceptAttribute> {
 	
@@ -80,47 +102,95 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	
 	// Fields
 	@DocumentId
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "concept_id_seq")
+	@GenericGenerator(
+			name = "concept_id_seq",
+			strategy = "native",
+			parameters = @Parameter(name = "sequence", value = "concept_concept_id_seq")
+			)
+	@Column(name = "concept_id", nullable = false)
 	private Integer conceptId;
 	
 	@Field
+	@Column(name = "retired", length = 1, nullable = false)
 	private Boolean retired = false;
 	
+	@ManyToOne
+	@JoinColumn(name = "retired_by")
 	private User retiredBy;
 	
+	@Column(name = "date_retired", length = 19)
 	private Date dateRetired;
 	
+	@Column(name = "retire_reason", length = 255)
 	private String retireReason;
 	
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
+	@ManyToOne
+	@JoinColumn(name = "datatype_id", nullable = false)
 	private ConceptDatatype datatype;
 	
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
+	@ManyToOne
+	@JoinColumn(name = "class_id", nullable = false)
 	private ConceptClass conceptClass;
 	
+	@Column(name = "is_set", length = 1, nullable = false)
 	private Boolean set = false;
 	
+	@Column(name = "version", length = 50)
 	private String version;
 	
+	@ManyToOne
+	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
 	
+	@Column(name = "date_created", length = 19, nullable = false)
 	private Date dateCreated;
 	
+	@ManyToOne
+	@JoinColumn(name = "changed_by")
 	private User changedBy;
 	
+	@Column(name = "date_changed", length = 19)
 	private Date dateChanged;
 	
 	@AllowDirectAccess
 	@ContainedIn
+	@OneToMany(mappedBy = "concept", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@BatchSize(size = 25)
 	private Collection<ConceptName> names;
 	
 	@AllowDirectAccess
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinTable(
+			name = "concept_answer",
+			joinColumns = @JoinColumn(name = "concept_id", nullable = false),
+			inverseJoinColumns = @JoinColumn(name = "concept_answer_id", nullable = false)
+			)
+	@BatchSize(size = 25)
+	@OrderBy(value = "sort_weight ASC, concept_answer_id ASC")
 	private Collection<ConceptAnswer> answers;
 	
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinTable(
+			name = "concept_set",
+			joinColumns = @JoinColumn(name = "concept_set", nullable = false),
+			inverseJoinColumns = @JoinColumn(name = "concept_id", nullable = false)
+			)
+	@BatchSize(size = 25)
+	@OrderBy(value = "sort_weight ASC")
 	private Collection<ConceptSet> conceptSets;
 	
+	@OneToMany(mappedBy = "concept", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@BatchSize(size = 25)
+	@OrderBy(value = "concept_description_id")
 	private Collection<ConceptDescription> descriptions;
 	
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
+	@OneToMany(mappedBy = "concept", cascade = CascadeType.ALL, orphanRemoval = true)
+	@BatchSize(size = 25)
 	private Collection<ConceptMap> conceptMappings;
 	
 	/**
@@ -129,6 +199,9 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	private Map<Locale, List<ConceptName>> compatibleCache;
 
+	@OneToMany(mappedBy = "concept", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@BatchSize(size = 100)
+	@OrderBy("voided ASC")
 	private Set<ConceptAttribute> attributes = new LinkedHashSet<>();
 
 	/** default constructor */
