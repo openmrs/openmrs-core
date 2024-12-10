@@ -12,48 +12,83 @@ package org.openmrs;
 import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.SingleCustomValue;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 /**
  * Global properties are simple key-value pairs persisted in the database GPs can be thought of as
  * something similar to environment variables used in operating systems.
  */
+@Entity
+@Table(name = "global_property")
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Audited
 public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDescriptor, SingleCustomValue<GlobalProperty> {
 	
 	private static final long serialVersionUID = 1L;
 	
+	@Id
+	@Column(name = "property", nullable = false, length = 255)
 	private String property = "";
 	
+	@Column(name = "property_value", columnDefinition = "TEXT")
+	@Lob
 	private String propertyValue = "";
 	
 	private transient Object typedValue;
 	
 	// if true, indicates that setValue has been called, and we need to invoke CustomDatatype's save
+	@Transient
 	private boolean dirty = false;
 	
+	@Column(name = "description", length = 1024)
 	private String description = "";
 	
+	@Column(name = "datatype", length = 255)
 	private String datatypeClassname;
 	
+	@Column(name = "datatype_config", columnDefinition = "TEXT")
+	@Lob
 	private String datatypeConfig;
 	
+	@Column(name = "preferred_handler", length = 255)
 	private String preferredHandlerClassname;
 	
+	@Column(name = "handler_config", columnDefinition = "TEXT")
+	@Lob
 	private String handlerConfig;
 	
+	@ManyToOne
+	@JoinColumn(name = "changed_by")
 	private User changedBy;
 	
+	@Column(name = "date_changed")
 	private Date dateChanged;
 	
+	@ManyToOne
+	@JoinColumn(name = "view_privilege")
 	private Privilege viewPrivilege;
 	
+	@ManyToOne
+	@JoinColumn(name = "edit_privilege")
 	private Privilege editPrivilege;
 	
+	@ManyToOne
+	@JoinColumn(name = "delete_privilege")
 	private Privilege deletePrivilege;
 	
 	
