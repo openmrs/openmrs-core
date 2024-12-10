@@ -59,8 +59,9 @@
 			<one-to-many class="org.openmrs.DrugIngredient" />
 		</set>
 
-		<property name="uuid" type="java.lang.String"
-			column="uuid" length="38" unique="true" />
+		<property name="uuid" type="java.lang.String" unique="true">
+			<column name="uuid" sql-type="char(38)" />
+		</property>
 
 		<!-- bi-directional one-to-many association to DrugOrder -->
 		<!--

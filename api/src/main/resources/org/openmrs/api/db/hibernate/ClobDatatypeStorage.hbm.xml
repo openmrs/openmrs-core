@@ -22,8 +22,9 @@
 			<param name="sequence">clob_datatype_storage_id_seq</param>
 		</generator>
 	</id>
-    
-    <property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
+	<property name="uuid" type="java.lang.String" unique="true">
+		<column name="uuid" sql-type="char(38)" />
+	</property> 
 	<property name="value" type="materialized_clob" column="value" /> 
 
 </class>

@@ -32,7 +32,7 @@
 		<property name="HL7SourceKey" type="java.lang.String" 
 			column="hl7_source_key" not-null="false" length="1024" />
 			
-		<property name="HL7Data" type="java.lang.String" 
+		<property name="HL7Data" type="text" 
 			column="hl7_data" not-null="true" length="16777215" />
 			
 		<property name="messageState" type="java.lang.Integer" 
@@ -40,8 +40,9 @@
 		
 		<property name="dateCreated" type="java.util.Date" 
 			column="date_created" not-null="true" length="19" />
-		
-		<property name="uuid" type="java.lang.String"
-			column="uuid" length="38" unique="true" />
+
+		<property name="uuid" type="java.lang.String" unique="true">
+			<column name="uuid" sql-type="char(38)" />
+		</property>
 	</class>
 </hibernate-mapping>

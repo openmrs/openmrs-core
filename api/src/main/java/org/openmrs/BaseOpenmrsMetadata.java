@@ -38,7 +38,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	@Field
 	private String name;
 	
-	@Column(name = "description", length = 255)
+	@Column(name = "description")
 	private String description;
 	
 	@ManyToOne(optional = false)

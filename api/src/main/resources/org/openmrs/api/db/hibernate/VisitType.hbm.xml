@@ -26,8 +26,9 @@
 		
 		<property name="name" type="java.lang.String" not-null="true" length="255" />
 		<property name="description" type="java.lang.String" length="1024" />
-		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
-		
+		<property name="uuid" type="java.lang.String" unique="true">
+			<column name="uuid" sql-type="char(38)" />
+		</property>		
 		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
 		<property name="dateChanged" type="java.util.Date" column="date_changed" length="19"/>
 		<property name="dateRetired" type="java.util.Date" column="date_retired" length="19" />	

@@ -169,5 +169,117 @@
 			referencedTableName="obs"
 			referencedColumnNames="obs_id"/>
 	</changeSet>
-	
+
+	<changeSet id="TRUNK-6276-1730035003632-1" author="wikumChamith">
+		<preConditions>
+			<columnExists tableName="concept_name_tag" columnName="description" />
+		</preConditions>
+		<modifyDataType tableName="concept_name_tag" columnName="description" newDataType="varchar(1024)" />
+	</changeSet>
+
+	<changeSet id="TRUNK-6276-1730035003632-2" author="wikumChamith">
+		<preConditions>
+			<columnExists tableName="order_type" columnName="description" />
+		</preConditions>
+		<modifyDataType tableName="order_type" columnName="description" newDataType="varchar(1024)" />
+	</changeSet>
+
+	<changeSet id="TRUNK-6276-1730035003632-3" author="wikumChamith">
+		<preConditions>
+			<columnExists tableName="form" columnName="description" />
+		</preConditions>
+		<modifyDataType tableName="form" columnName="description" newDataType="varchar(1024)" />
+	</changeSet>
+
+	<changeSet id="TRUNK-6276-1730035003632-4" author="wikumChamith">
+		<preConditions>
+			<columnExists tableName="concept_reference_source" columnName="description" />
+		</preConditions>
+		<modifyDataType tableName="concept_reference_source" columnName="description" newDataType="varchar(1024)" />
+	</changeSet>
+
+	<changeSet id="TRUNK-6276-1730035003632-5" author="wikumChamith">
+		<preConditions>
+			<columnExists tableName="global_property" columnName="description" />
+		</preConditions>
+		<modifyDataType tableName="global_property" columnName="description" newDataType="varchar(1024)" />
+	</changeSet>
+
+	<changeSet id="TRUNK-6276-1730035003632-6" author="wikumChamith">
+		<preConditions>
+			<columnExists tableName="encounter_type" columnName="description" />
+		</preConditions>
+		<modifyDataType tableName="encounter_type" columnName="description" newDataType="varchar(1024)" />
+	</changeSet>
+
+	<changeSet id="TRUNK-6276-1730035003632-7" author="wikumChamith">
+		<preConditions>
+			<columnExists tableName="patient_identifier_type" columnName="description" />
+		</preConditions>
+		<modifyDataType tableName="patient_identifier_type" columnName="description" newDataType="varchar(1024)" />
+	</changeSet>
+
+	<changeSet id="TRUNK-6276-1730035003632-8" author="wikumChamith">
+		<preConditions>
+			<columnExists tableName="field" columnName="description" />
+		</preConditions>
+		<modifyDataType tableName="field" columnName="description" newDataType="varchar(1024)" />
+	</changeSet>
+
+	<changeSet id="TRUNK-6276-1730035003632-9" author="wikumChamith">
+		<preConditions>
+			<columnExists tableName="hl7_source" columnName="description" />
+		</preConditions>
+		<modifyDataType tableName="hl7_source" columnName="description" newDataType="varchar(1024)" />
+	</changeSet>
+
+	<changeSet id="TRUNK-6276-1730035003632-10" author="wikumChamith">
+		<preConditions>
+			<columnExists tableName="program" columnName="description" />
+		</preConditions>
+		<modifyDataType tableName="program" columnName="description" newDataType="varchar(1024)" />
+	</changeSet>
+
+	<changeSet id="TRUNK-6276-1730035003632-11" author="wikumChamith">
+		<preConditions>
+			<columnExists tableName="report_schema_xml" columnName="description" />
+		</preConditions>
+		<modifyDataType tableName="report_schema_xml" columnName="description" newDataType="varchar(1024)" />
+	</changeSet>
+
+	<changeSet id="TRUNK-6276-1730035003632-12" author="wikumChamith">
+		<preConditions>
+			<columnExists tableName="field_type" columnName="description" />
+		</preConditions>
+		<modifyDataType tableName="field_type" columnName="description" newDataType="varchar(1024)" />
+	</changeSet>
+
+	<changeSet id="TRUNK-6276-1730035003632-13" author="wikumChamith">
+		<preConditions>
+			<columnExists tableName="concept_description" columnName="description" />
+		</preConditions>
+		<modifyDataType tableName="concept_description" columnName="description" newDataType="varchar(1024)" />
+	</changeSet>
+
+	<changeSet id="TRUNK-6276-1730035003632-14" author="wikumChamith">
+		<preConditions>
+			<columnExists tableName="person_attribute_type" columnName="description" />
+		</preConditions>
+		<modifyDataType tableName="person_attribute_type" columnName="description" newDataType="varchar(1024)" />
+	</changeSet>
+
+	<changeSet id="TRUNK-6276-1730035003632-15" author="wikumChamith">
+		<preConditions>
+			<columnExists tableName="privilege" columnName="description" />
+		</preConditions>
+		<modifyDataType tableName="privilege" columnName="description" newDataType="varchar(1024)" />
+	</changeSet>
+
+	<changeSet id="TRUNK-6276-1730035003632-16" author="wikumChamith">
+		<preConditions>
+			<columnExists tableName="concept" columnName="description" />
+		</preConditions>
+		<modifyDataType tableName="concept" columnName="description" newDataType="varchar(1024)" />
+	</changeSet>
+
 </databaseChangeLog>
