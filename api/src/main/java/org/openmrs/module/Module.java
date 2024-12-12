@@ -83,8 +83,6 @@ public final class Module {
 	
 	private Set<String> packagesWithMappedClasses = new HashSet<>();
 	
-	private String configVersion;
-	
 	private Document config = null;
 	
 	private Document sqldiff = null;
@@ -118,15 +116,13 @@ public final class Module {
 	 * @param description
 	 * @param version
 	 */
-	public Module(String name, String moduleId, String packageName, String author, String description, String version,
-				  String configVersion) {
+	public Module(String name, String moduleId, String packageName, String author, String description, String version) {
 		this.name = name;
 		this.moduleId = moduleId;
 		this.packageName = packageName;
 		this.author = author;
 		this.description = description;
 		this.version = version;
-		this.configVersion = configVersion;
 		log.debug("Creating module " + name);
 	}
 	
@@ -648,21 +644,7 @@ public final class Module {
 	public void setConfig(Document config) {
 		this.config = config;
 	}
-
-	/**
-	 * @since 2.8.0
-	 */
-	public String getConfigVersion() {
-		return configVersion;
-	}
-
-	/**
-	 * @since 2.8.0
-	 */
-	public void setConfigVersion(String configVersion) {
-		this.configVersion = configVersion;
-	}
-
+	
 	public Document getSqldiff() {
 		return sqldiff;
 	}
