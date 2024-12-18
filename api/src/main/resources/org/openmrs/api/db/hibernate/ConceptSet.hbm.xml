@@ -22,9 +22,10 @@
 				<param name="sequence">concept_set_concept_set_id_seq</param>
 			</generator>
 		</id>
-		
-		<property name="uuid" type="java.lang.String"
-			column="uuid" length="38" unique="true"  />
+
+		<property name="uuid" type="java.lang.String" unique="true">
+			<column name="uuid" sql-type="char(38)" />
+		</property>
 
 		<property name="sortWeight" type="java.lang.Double"
 			column="sort_weight" length="22" not-null="true"/>

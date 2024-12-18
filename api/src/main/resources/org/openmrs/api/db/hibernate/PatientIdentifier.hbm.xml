@@ -23,8 +23,9 @@
 			</generator>
 		</id>
 
-		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
-
+		<property name="uuid" type="java.lang.String" unique="true">
+			<column name="uuid" sql-type="char(38)" />
+		</property>
 		<many-to-one name="patient" column="patient_id" class="org.openmrs.Patient"/>
 		<property name="identifier" type="java.lang.String" length="50"/>
 		<many-to-one name="identifierType" class="org.openmrs.PatientIdentifierType" column="identifier_type"/>

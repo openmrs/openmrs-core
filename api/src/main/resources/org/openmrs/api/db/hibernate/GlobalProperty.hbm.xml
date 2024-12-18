@@ -26,7 +26,7 @@
 		<property name="propertyValue" type="text" column="property_value"
 			not-null="false" length="65535"/>
 		
-		<property name="description" type="text" not-null="false" length="65535"/>
+		<property name="description" type="java.lang.String" not-null="false" length="1024"/>
 
         <property name="datatypeClassname" type="java.lang.String" column="datatype" length="255" />
         
@@ -41,9 +41,10 @@
 		<many-to-one name="viewPrivilege" column="view_privilege" class="org.openmrs.Privilege" not-null="false" />
 		
 		<many-to-one name="deletePrivilege" column="delete_privilege" class="org.openmrs.Privilege" not-null="false" />
-
-		<property name="uuid" type="java.lang.String" 
-			column="uuid" length="38" unique="true" />
+		
+		<property name="uuid" type="java.lang.String" unique="true" >
+			<column name="uuid" sql-type="char(38)" />
+		</property>
 
 		<many-to-one name="changedBy" class="org.openmrs.User" column="changed_by"/>
 		<property name="dateChanged" type="java.util.Date"
