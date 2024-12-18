@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -1272,8 +1273,21 @@ public class ORUR01Handler implements Application {
 				// save the patient and their new attribute
 				Context.getPatientService().savePatient(patient);
 			}
-			
 		}
 		log.debug("finished discharge to location method");
+	}
+	
+	private static class LazyConcept extends Concept {
+		public LazyConcept(Integer conceptId) {
+			super(conceptId);
+		}
+		
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) return true;
+			if (obj == null || getClass() != obj.getClass()) return false;
+			LazyConcept that = (LazyConcept) obj;
+			return this.getConceptId().equals(that.getConceptId());
+		}
 	}
 }
