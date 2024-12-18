@@ -9,7 +9,18 @@
  */
 package org.openmrs;
 
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * Care Setting defines the scope of care for any piece of data within the medical record. Clinical
@@ -26,6 +37,8 @@ import org.hibernate.envers.Audited;
  * 
  * @since 1.10
  */
+@Entity
+@Table(name = "care_setting")
 @Audited
 public class CareSetting extends BaseChangeableOpenmrsMetadata {
 	
@@ -33,9 +46,19 @@ public class CareSetting extends BaseChangeableOpenmrsMetadata {
 		OUTPATIENT,
 		INPATIENT
 	}
-	
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "care_setting_id_seq")
+	@GenericGenerator(
+		name = "care_setting_id_seq",
+		strategy = "native",
+		parameters = @Parameter(name = "sequence", value = "care_setting_care_setting_id_seq")
+	)
+	@Column(name = "care_setting_id")
 	private Integer careSettingId;
-	
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "care_setting_type", nullable = false, length = 50)
 	private CareSettingType careSettingType;
 	
 	public CareSetting() {
