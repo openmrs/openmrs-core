@@ -12,6 +12,7 @@ package org.openmrs.layout.address;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringEscapeUtils
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.context.Context;
@@ -56,7 +57,7 @@ public class AddressSupport extends LayoutSupport<AddressTemplate> implements Gl
 			
 			String layoutTemplateXml = Context.getAdministrationService().getGlobalProperty(
 			    OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE);
-			setAddressTemplate(layoutTemplateXml);
+			setAddressTemplate(StringEscapeUtils.unescapeXml(layoutTemplateXml));
 			
 			List<String> specialTokens = new ArrayList<>();
 			specialTokens.add("address1");
