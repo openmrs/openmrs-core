@@ -9,22 +9,50 @@
  */
 package org.openmrs;
 
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
+
+import javax.persistence.AttributeOverride;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  * An EncounterType defines how a certain kind of {@link Encounter}.
  * 
  * @see Encounter
  */
+@Entity
+@Table(name = "encounter_type")
+@AttributeOverride(name = "name", column = @Column(name = "name", length = 50, nullable = false, unique = true))
+@AttributeOverride(name = "description", column = @Column(name = "description", length = 1024))
 @Audited
 public class EncounterType extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 789L;
-	
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "encounter_type_id_seq")
+	@GenericGenerator(
+		name = "encounter_type_id_seq",
+		strategy = "native",
+		parameters = @Parameter(name = "sequence", value = "encounter_type_encounter_type_id_seq")
+	)
+	@Column(name = "encounter_type_id")
 	private Integer encounterTypeId;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "view_privilege")
 	private Privilege viewPrivilege;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "edit_privilege")
 	private Privilege editPrivilege;
 	
 	// Constructors
