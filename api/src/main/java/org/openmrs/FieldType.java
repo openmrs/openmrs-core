@@ -9,20 +9,49 @@
  */
 package org.openmrs;
 
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
+
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * FieldType
  */
+@Entity
+@Table(name = "field_type")
 @Audited
+@AttributeOverrides(value = {
+	@AttributeOverride(name = "name", column = @Column(name = "name", length = 50, nullable = false)),
+	@AttributeOverride(name = "retired", column = @Column(name = "retired", columnDefinition = "boolean default false"))
+})
 public class FieldType extends BaseChangeableOpenmrsMetadata {
-	
+
+	/**
+	 * The constant serialVersionUID.
+	 */
 	public static final long serialVersionUID = 35467L;
 	
 	// Fields
-	
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "field_type_id_seq")
+	@GenericGenerator(
+		name = "field_type_id_seq",
+		strategy = "native",
+		parameters = @Parameter(name = "sequence", value = "field_type_id_field_type_id_seq")
+	)
+	@Column(name = "field_type_id", nullable = false)
 	private Integer fieldTypeId;
 	
+	@Column(name = "is_set", length = 1, nullable = false)
 	private Boolean isSet = false;
 	
 	// Constructors
