@@ -29,8 +29,6 @@ import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.annotations.CascadeType;
 
-
-
 /**
  * The DrugReferenceMap map object represents a mapping between a drug and alternative drug
  * terminologies.
