@@ -9,6 +9,20 @@
  */
 package org.openmrs;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -20,6 +34,11 @@ import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilterFactory;
 import org.apache.lucene.analysis.standard.StandardFilterFactory;
 import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.Type;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
@@ -38,6 +57,9 @@ import org.openmrs.api.db.hibernate.search.bridge.LocaleFieldBridge;
  * ConceptName is the real world term used to express a Concept within the idiom of a particular
  * locale.
  */
+@Entity
+@Table(name = "concept_name")
+@BatchSize(size = 25)
 @Indexed
 @AnalyzerDef(
 	name = "ConceptNameAnalyzer", tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class), filters = {
@@ -46,48 +68,85 @@ import org.openmrs.api.db.hibernate.search.bridge.LocaleFieldBridge;
 		@TokenFilterDef(factory = ASCIIFoldingFilterFactory.class)
 	})
 @Analyzer(definition = "ConceptNameAnalyzer")
+@AttributeOverrides(value = {
+	@AttributeOverride(
+		name = "uuid",
+		column = @Column(name = "uuid", length = 38, unique = true)
+	)
+})
 @Audited
 public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidable, java.io.Serializable {
 	
 	public static final long serialVersionUID = 2L;
 	
+	@Id
+	@Column(name = "concept_name_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@DocumentId
 	private Integer conceptNameId;
-	
+	@ManyToOne
+	@JoinColumn(name = "concept_id",nullable = false)
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	private Concept concept;
 	
 	@Field
+	@Column(name = "name",nullable = false)
 	private String name;
 	
 	@Field(analyze = Analyze.NO)
 	@FieldBridge(impl = LocaleFieldBridge.class)
+	@Column(name = "locale", nullable = false, length = 50)
 	// ABK: upgraded from a plain string to a full locale object
 	private Locale locale; 
 	
+	@ManyToOne
+	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
 	
+	@Column(name="date_created", nullable = false)
 	private Date dateCreated;
 	
 	@Field
+	@Column(name="voided", nullable = false, length = 1)
 	private Boolean voided = false;
 	
+	@ManyToOne
+	@JoinColumn(name = "voided_by")
 	private User voidedBy;
 	
+	@Column(name = "date_voided", length = 19)
 	private Date dateVoided;
 	
+	@Column(name = "void_reason")
 	private String voidReason;
 	
+	@ManyToMany
+	@JoinTable(
+		name = "concept_name_tag_map",
+		joinColumns = @JoinColumn(name = "concept_name_id"),
+		inverseJoinColumns = @JoinColumn(name = "concept_name_tag_id")
+	)
+	@Cascade(CascadeType.SAVE_UPDATE)
 	private Collection<ConceptNameTag> tags;
 	
 	@Field
+	@Enumerated(EnumType.STRING)
+	@Column(name = "concept_name_type", length = 50)
+	@Type(type = "org.hibernate.type.EnumType", parameters = {
+		@Parameter(name = "enumClass", value = "org.openmrs.api.ConceptNameType"),
+		@Parameter(name = "useNamed", value = "true")
+	})
 	private ConceptNameType conceptNameType;
 	
 	@Field
+	@Column(name = "locale_preferred", nullable = false, length = 1)
 	private Boolean localePreferred = false;
 	
+	@ManyToOne
+	@JoinColumn(name = "changed_by")
 	private User changedBy;
 	
+	@Column(name = "date_changed", length = 19)
 	private Date dateChanged;
 	
 	// Constructors
