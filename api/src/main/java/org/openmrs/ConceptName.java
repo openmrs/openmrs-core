@@ -69,10 +69,7 @@ import org.openmrs.api.db.hibernate.search.bridge.LocaleFieldBridge;
 	})
 @Analyzer(definition = "ConceptNameAnalyzer")
 @AttributeOverrides(value = {
-	@AttributeOverride(
-		name = "uuid",
-		column = @Column(name = "uuid", length = 38, unique = true)
-	)
+	@AttributeOverride(name = "uuid", column = @Column(name = "uuid", length = 38, unique = true))
 })
 @Audited
 public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidable, java.io.Serializable {
@@ -84,6 +81,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@DocumentId
 	private Integer conceptNameId;
+	
 	@ManyToOne
 	@JoinColumn(name = "concept_id",nullable = false)
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
