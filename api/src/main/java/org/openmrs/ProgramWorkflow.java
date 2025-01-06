@@ -8,7 +8,7 @@
  * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs;
-
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -23,6 +23,8 @@ import org.openmrs.util.NaturalStrings;
 /**
  * ProgramWorkflow
  */
+@Entity
+@Table(name = "program_workflow")
 @Audited
 public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	
@@ -31,7 +33,9 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	// ******************
 	// Properties
 	// ******************
-	
+	@Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "program_workflow_program_workflow_id_seq")
+    @Column(name = "program_workflow_id")
 	private Integer programWorkflowId;
 	
 	private Program program;
