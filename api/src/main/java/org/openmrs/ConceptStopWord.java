@@ -9,8 +9,21 @@
  */
 package org.openmrs;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Locale;
 
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
@@ -22,16 +35,33 @@ import org.springframework.util.StringUtils;
  * 
  * @since 1.8
  */
+@Entity
+@Table(name = "concept_stop_word")
+@BatchSize(size = 25)
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@AttributeOverrides(value = {
+	@AttributeOverride(name = "uuid", column = @Column(name = "uuid", length = 38, unique = true))
+})
 @Audited
 public class ConceptStopWord extends BaseOpenmrsObject {
 	
 	private static final long serialVersionUID = 3671020002642184656L;
 	
 	// Fields
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "concept_stop_word_concept_stop_word_id_seq")
+	@GenericGenerator(
+		name = "concept_stop_word_concept_stop_word_id_seq",
+		strategy = "native",
+		parameters = @Parameter(name = "sequence", value = "concept_stop_word_concept_stop_word_id_seq")
+	)
+	@Column(name = "concept_stop_word_id")
 	private Integer conceptStopWordId;
 	
+	@Column(name = "word", length = 50, nullable = false)
 	private String value;
 	
+	@Column(name = "locale", length = 20, nullable = false)
 	private Locale locale;
 	
 	// Constructors
