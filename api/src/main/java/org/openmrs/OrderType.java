@@ -170,7 +170,7 @@ public class OrderType extends BaseChangeableOpenmrsMetadata {
 	/**
 	 * @return Get the {@link ConceptClass}es
 	 */
-	public Set<ConceptClass> getConceptClasses() {
+	public Collection<ConceptClass> getConceptClasses() {
 		if (conceptClasses == null) {
 			conceptClasses = new LinkedHashSet<>();
 		}
@@ -180,8 +180,8 @@ public class OrderType extends BaseChangeableOpenmrsMetadata {
 	/**
 	 * @param conceptClasses the collection containing the {@link ConceptClass}es
 	 */
-	public void setConceptClasses(Set<ConceptClass> conceptClasses) {
-		this.conceptClasses = conceptClasses;
+	public void setConceptClasses(Collection<ConceptClass> conceptClasses) {
+		this.conceptClasses = (Set<ConceptClass>)conceptClasses;
 	}
 	
 	/**
