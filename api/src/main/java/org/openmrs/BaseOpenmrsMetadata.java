@@ -34,7 +34,7 @@ import org.hibernate.search.annotations.Field;
 public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements OpenmrsMetadata {
 	
 	//***** Properties *****
-	@Column(name = "name", nullable = false, length = 255)
+	@Column(name = "name", length = 255)
 	@Field
 	private String name;
 	

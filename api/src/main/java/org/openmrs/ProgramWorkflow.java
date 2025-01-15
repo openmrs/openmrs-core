@@ -17,12 +17,28 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+
 import org.hibernate.envers.Audited;
 import org.openmrs.util.NaturalStrings;
 
 /**
  * ProgramWorkflow
  */
+@Entity
+@Table(name = "program_workflow")
 @Audited
 public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	
@@ -31,13 +47,23 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	// ******************
 	// Properties
 	// ******************
-	
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "program_workflow_program_workflow_id_seq")
+    @Column(name = "program_workflow_id")
 	private Integer programWorkflowId;
 	
-	private Program program;
-	
-	private Concept concept;
-	
+ @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "program_id", nullable = false)
+    @NotNull
+    private Program program;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "concept_id", nullable = false)
+    @NotNull
+    private Concept concept;
+
+	@OneToMany(mappedBy = "programWorkflow", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OrderBy("dateCreated ASC")
 	private Set<ProgramWorkflowState> states = new HashSet<>();
 	
 	// ******************
