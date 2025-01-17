@@ -13,7 +13,7 @@
 	<parent>
 		<groupId>org.openmrs</groupId>
 		<artifactId>openmrs</artifactId>
-		<version>2.5.14-SNAPSHOT</version>
+		<version>2.5.14</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openmrs.liquibase</groupId>
