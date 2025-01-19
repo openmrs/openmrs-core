@@ -12,8 +12,12 @@ package org.openmrs;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.openmrs.api.APIException;
+
+import javax.persistence.*;
 
 /**
  * Represents the grouping of orders into a set,
@@ -21,6 +25,8 @@ import org.openmrs.api.APIException;
  * 
  * @since 1.12
  */
+@Entity
+@Table(name = "order_set")
 @Audited
 public class OrderSet extends BaseCustomizableMetadata<OrderSetAttribute> {
 	
@@ -36,12 +42,30 @@ public class OrderSet extends BaseCustomizableMetadata<OrderSetAttribute> {
 		ALL, ONE, ANY
 	}
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_set_id_seq")
+	@GenericGenerator(
+		name = "order_set_id_seq",
+		strategy = "native",
+		parameters = @Parameter(name = "sequence", value = "order_set_order_set_id_seq")
+	)
+	@Column(name = "order_set_id", nullable = false)
 	private Integer orderSetId;
-	
+
+	@Column(name = "operator", nullable = false)
+	@Enumerated(EnumType.STRING)
 	private Operator operator;
-	
+
+	@OneToMany(
+		mappedBy = "orderSet",
+		cascade = CascadeType.ALL,
+		orphanRemoval = true
+	)
+	@OrderColumn(name = "sequence_number")
 	private List<OrderSetMember> orderSetMembers;
 	
+	@ManyToOne
+	@JoinColumn(name = "category")
 	private Concept category;
 
 	/**
