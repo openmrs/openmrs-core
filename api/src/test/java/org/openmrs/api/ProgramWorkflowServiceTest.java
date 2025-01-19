@@ -387,7 +387,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @see ProgramWorkflowService#saveProgram(Program)
 	 */
-	@SuppressWarnings("null")
 	@Test
 	public void saveProgram_shouldCreateProgramWorkflows() {
 		int numBefore = Context.getProgramWorkflowService().getAllPrograms().size();
@@ -399,19 +398,16 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		
 		ProgramWorkflow workflow = new ProgramWorkflow();
 		workflow.setConcept(cs.getConcept(4));
-		workflow.setName("CIVIL STATUS"); // Set a valid name
 		program.addWorkflow(workflow);
 		
 		ProgramWorkflowState state1 = new ProgramWorkflowState();
 		state1.setConcept(cs.getConcept(5));
-		state1.setName("SINGLE"); // Set a valid name
 		state1.setInitial(true);
 		state1.setTerminal(false);
 		workflow.addState(state1);
 		
 		ProgramWorkflowState state2 = new ProgramWorkflowState();
 		state2.setConcept(cs.getConcept(6));
-		state2.setName("MARRIED"); // Set a valid name
 		state2.setInitial(false);
 		state2.setTerminal(true);
 		workflow.addState(state2);
@@ -425,7 +421,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		assertEquals(1, p.getWorkflows().size(), "Wrong number of workflows");
 		
 		ProgramWorkflow wf = p.getWorkflowByName("CIVIL STATUS");
-		assertNotNull(wf, "Workflow 'CIVIL STATUS' not found");
+		assertNotNull(wf);
 		
 		List<String> names = new ArrayList<>();
 		for (ProgramWorkflowState s : wf.getStates()) {
@@ -433,7 +429,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		}
 		TestUtil.assertCollectionContentsEquals(Arrays.asList("SINGLE", "MARRIED"), names);
 	}
-	
 	
 	/**
 	 * @see ProgramWorkflowService#getConceptStateConversionByUuid(String)
@@ -589,6 +584,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	public void getSortedStates_shouldSortNamesContainingNumbersIntelligently() {
 		
 		ProgramWorkflow program = new ProgramWorkflow();
+		
 		ConceptName state1ConceptName = new ConceptName("Group 10", Context.getLocale());
 		Concept state1Concept = new Concept();
 		state1Concept.addName(state1ConceptName);

@@ -70,6 +70,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 * @see org.openmrs.api.ProgramWorkflowService#saveProgram(org.openmrs.Program)
 	 */
 	@Override
+	@Transactional
 	public Program saveProgram(Program program) throws APIException {
 		// Program
 		if (program.getConcept() == null) {
