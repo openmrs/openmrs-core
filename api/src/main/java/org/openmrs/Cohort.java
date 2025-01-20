@@ -15,6 +15,7 @@ import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.openmrs.annotation.Independent;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -26,9 +27,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
+import java.util.Collection;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
@@ -36,20 +37,20 @@ import java.util.stream.Collectors;
  * This class represents a list of patientIds.
  */
 @Entity
-@Table(name = "cohort_type")
+@Table(name = "cohort")
 @Audited
 public class Cohort extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 0L;
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "cohort_type_id_seq")
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "cohort_id_seq")
 	@GenericGenerator(
-		name = "cohort_type_id_seq",
+		name = "cohort_id_seq",
 		strategy = "native",
-		parameters = @Parameter(name = "sequence", value = "cohort_type_cohort_type_id_seq")
+		parameters = @Parameter(name = "sequence", value = "cohort_cohort_id_seq")
 	)
-	@Column(name = "cohort_type_id", nullable = false)
+	@Column(name = "cohort_id", nullable = false)
 	private Integer cohortId;
 	
 	@Column(name = "name", nullable = false)
@@ -58,14 +59,7 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	@Column(name = "description", nullable = false)
 	private String description;
 	
-	@Independent
-	@OneToMany
-	@JoinTable(
-		name = "cohort_type_class_map",
-		joinColumns = @JoinColumn(name = "cohort_type_id"),
-		inverseJoinColumns = @JoinColumn(name = "cohort_membership_id"),
-		uniqueConstraints = @UniqueConstraint(columnNames = {"cohort_type_id", "cohort_membership_id"})
-	)
+	@OneToMany(mappedBy = "cohort", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<CohortMembership> memberships;
 	
 	public Cohort() {
@@ -122,7 +116,7 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	 * @param patientsOrIds optional collection which may contain Patients, or patientIds which may
 	 *            be Integers, Strings, or anything whose toString() can be parsed to an Integer.
 	 */
-	public Cohort(Collection<?> patientsOrIds) {
+	public Cohort(Set<?> patientsOrIds) {
 		this(null, null, patientsOrIds);
 	}
 	
@@ -135,7 +129,7 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	 * @param patientsOrIds optional collection which may contain Patients, or patientIds which may
 	 *            be Integers, Strings, or anything whose toString() can be parsed to an Integer.
 	 */
-	public Cohort(String name, String description, Collection<?> patientsOrIds) {
+	public Cohort(String name, String description, Set<?> patientsOrIds) {
 		this(name, description, (Integer[]) null);
 		if (patientsOrIds != null) {
 			for (Object o : patientsOrIds) {
@@ -214,17 +208,17 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	 * @param includeVoided boolean true/false to include/exclude voided memberships
 	 * @return Collection of cohort memberships
 	 */
-	public Collection<CohortMembership> getMemberships(boolean includeVoided) {
+	public Set<CohortMembership> getMemberships(boolean includeVoided) {
 		if (includeVoided) {
 			return getMemberships();
 		}
-		return getMemberships().stream().filter(m -> m.getVoided() == includeVoided).collect(Collectors.toList());
+		return getMemberships().stream().filter(m -> m.getVoided() == includeVoided).collect(Collectors.toSet());
 	}
 	
 	/**
 	 * @since 2.1.0
 	 */
-	public Collection<CohortMembership> getMemberships() {
+	public Set<CohortMembership> getMemberships() {
 		if (memberships == null) {
 			memberships = new TreeSet<>();
 		}
@@ -236,11 +230,11 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	 * @param asOfDate date used to return active memberships
 	 * @return Collection of cohort memberships
 	 */
-	public Collection<CohortMembership> getActiveMemberships(Date asOfDate) {
-		return getMemberships().stream().filter(m -> m.isActive(asOfDate)).collect(Collectors.toList());
+	public Set<CohortMembership> getActiveMemberships(Date asOfDate) {
+		return getMemberships().stream().filter(m -> m.isActive(asOfDate)).collect(Collectors.toSet());
 	}
 	
-	public Collection<CohortMembership> getActiveMemberships() {
+	public Set<CohortMembership> getActiveMemberships() {
 		return getActiveMemberships(new Date());
 	}
 	
@@ -252,7 +246,7 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	}
 	
 	public int size() {
-		return getMemberships().stream().filter(m -> !m.getVoided()).collect(Collectors.toList())
+		return getMemberships().stream().filter(m -> !m.getVoided()).collect(Collectors.toSet())
 		        .size();
 	}
 	

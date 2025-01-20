@@ -21,9 +21,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
+//import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -677,7 +678,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		cohort.addMembership(newMember);
 		service.saveCohort(cohort);
 		
-		Collection<CohortMembership> membersAsOfDate = cohort.getActiveMemberships(dateToTest);
+		Set<CohortMembership> membersAsOfDate = cohort.getActiveMemberships(dateToTest);
 		assertFalse(membersAsOfDate.isEmpty());
 		assertTrue(membersAsOfDate.stream().anyMatch(m -> m.getStartDate().equals(dateToTest)));
 	}
@@ -700,7 +701,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		service.saveCohort(cohort);
 		
 		Date dateToTest = dateFormat.parse("2016-11-01 00:00:00");
-		Collection<CohortMembership> membersAsOfDate = cohort.getActiveMemberships(dateToTest);
+		Set<CohortMembership> membersAsOfDate = cohort.getActiveMemberships(dateToTest);
 		assertFalse(membersAsOfDate.stream().anyMatch(m -> m.getStartDate().equals(dateToTest)));
 	}
 	
@@ -724,7 +725,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		cohort.addMembership(voidedMembership);
 		
 		Context.getCohortService().saveCohort(cohort);
-		Collection<CohortMembership> allMemberships = cohort.getMemberships(true);
+		Set<CohortMembership> allMemberships = cohort.getMemberships(true);
 		assertEquals(3, allMemberships.size());
 	}
 	
@@ -749,7 +750,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		cohort.addMembership(voidedMembership);
 		
 		Context.getCohortService().saveCohort(cohort);
-		Collection<CohortMembership> unvoidedMemberships = cohort.getMemberships(false);
+		Set<CohortMembership> unvoidedMemberships = cohort.getMemberships(false);
 		assertEquals(2, unvoidedMemberships.size());
 	}
 	
