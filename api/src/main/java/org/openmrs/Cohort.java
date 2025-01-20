@@ -10,8 +10,21 @@
 package org.openmrs;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
+import org.openmrs.annotation.Independent;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -22,18 +35,38 @@ import java.util.stream.Collectors;
 /**
  * This class represents a list of patientIds.
  */
+@Entity
+@Table(name = "cohort_type")
 @Audited
 public class Cohort extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 0L;
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "cohort_type_id_seq")
+	@GenericGenerator(
+		name = "cohort_type_id_seq",
+		strategy = "native",
+		parameters = @Parameter(name = "sequence", value = "cohort_type_cohort_type_id_seq")
+	)
+	@Column(name = "cohort_type_id", nullable = false)
 	private Integer cohortId;
 	
+	@Column(name = "name", nullable = false)
 	private String name;
 	
+	@Column(name = "description", nullable = false)
 	private String description;
 	
-	private Collection<CohortMembership> memberships;
+	@Independent
+	@OneToMany
+	@JoinTable(
+		name = "cohort_type_class_map",
+		joinColumns = @JoinColumn(name = "cohort_type_id"),
+		inverseJoinColumns = @JoinColumn(name = "cohort_membership_id"),
+		uniqueConstraints = @UniqueConstraint(columnNames = {"cohort_type_id", "cohort_membership_id"})
+	)
+	private Set<CohortMembership> memberships;
 	
 	public Cohort() {
 		memberships = new TreeSet<>();
@@ -348,13 +381,13 @@ public class Cohort extends BaseChangeableOpenmrsData {
 		}
 	}
 	
-	public void setMemberships(Collection<CohortMembership> members) {
+	public void setMemberships(Set<CohortMembership> members) {
 		this.memberships = members;
 	}
 	
 	/**
 	 * @since 1.5
-	 * @see org.openmrs.OpenmrsObject#getId()
+	 * @see OpenmrsObject#getId()
 	 */
 	@Override
 	public Integer getId() {
@@ -364,7 +397,7 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	
 	/**
 	 * @since 1.5
-	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 * @see OpenmrsObject#setId(Integer)
 	 */
 	@Override
 	public void setId(Integer id) {
