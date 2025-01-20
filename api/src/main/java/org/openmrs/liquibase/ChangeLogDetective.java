@@ -156,7 +156,6 @@ public class ChangeLogDetective {
 	}
 	
 	List<ChangeSet> getUnrunChangeSets(String filename, Contexts context, LiquibaseProvider liquibaseProvider) throws Exception {
-		String scopeId = LiquibaseScopeHandling.enterLiquibaseUILoggingService();
 		Liquibase liquibase = liquibaseProvider.getLiquibase(filename);
 
 		List<ChangeSet> unrunChangeSets;
@@ -166,7 +165,6 @@ public class ChangeLogDetective {
 					new LabelExpression(), liquibase.getDatabaseChangeLog(), liquibase.getDatabase());
 
 		} finally {
-			LiquibaseScopeHandling.exitLiquibaseScope(scopeId);
 			liquibase.close();
 		}
 		

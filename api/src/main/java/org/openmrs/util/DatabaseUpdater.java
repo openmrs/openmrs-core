@@ -35,14 +35,12 @@ import liquibase.lockservice.LockServiceFactory;
 import liquibase.resource.CompositeResourceAccessor;
 import liquibase.resource.FileSystemResourceAccessor;
 import liquibase.resource.ResourceAccessor;
-import liquibase.ui.LoggerUIService;
 import org.apache.commons.io.IOUtils;
 import org.openmrs.api.context.Context;
 import org.openmrs.liquibase.ChangeLogDetective;
 import org.openmrs.liquibase.ChangeLogVersionFinder;
 import org.openmrs.liquibase.ChangeSetExecutorCallback;
 import org.openmrs.liquibase.LiquibaseProvider;
-import org.openmrs.liquibase.LiquibaseScopeHandling;
 import org.openmrs.liquibase.OpenmrsClassLoaderResourceAccessor;
 import org.openmrs.module.ModuleClassLoader;
 import org.slf4j.Logger;
@@ -52,7 +50,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -71,7 +68,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.logging.Level;
 
 /**
  * This class uses Liquibase to update the database. <br>
@@ -219,11 +215,9 @@ public class DatabaseUpdater {
 		log.debug("Setting up liquibase object to run changelog: {}", changeLogFile);
 		Liquibase liquibase = getLiquibase(changeLogFile, cl);
 
-		String scopeId = LiquibaseScopeHandling.enterLiquibaseUILoggingService();
 		int numChangeSetsToRun = new StatusCommandStep()
 			.listUnrunChangeSets(contexts,
 				new LabelExpression(), liquibase.getDatabaseChangeLog(), liquibase.getDatabase()).size();
-		LiquibaseScopeHandling.exitLiquibaseScope(scopeId);
 
 		Database database = null;
 		LockService lockHandler = null;
@@ -620,7 +614,6 @@ public class DatabaseUpdater {
 		Liquibase liquibase = null;
 		try {
 			for (String filename : changeLogFileNames) {
-				String scopeId = LiquibaseScopeHandling.enterLiquibaseUILoggingService();
 				liquibase = getLiquibase(filename);
 				List<ChangeSet> changeSets = liquibase.getDatabaseChangeLog().getChangeSets();
 				
@@ -628,7 +621,6 @@ public class DatabaseUpdater {
 					OpenMRSChangeSet openMRSChangeSet = new OpenMRSChangeSet(changeSet, liquibase.getDatabase());
 					result.add(openMRSChangeSet);
 				}
-				LiquibaseScopeHandling.exitLiquibaseScope(scopeId);
 				liquibase.close();
 			}
 		}
@@ -691,7 +683,6 @@ public class DatabaseUpdater {
 			
 			List<OpenMRSChangeSet> results = new ArrayList<>();
 			
-			String scopeId = LiquibaseScopeHandling.enterLiquibaseUILoggingService();
 			for (String changelogFile : changeLogFilenames) {
 				Liquibase liquibase = getLiquibase(changelogFile, null);
 				database = liquibase.getDatabase();
@@ -706,7 +697,6 @@ public class DatabaseUpdater {
 				}
 			}
 			
-			LiquibaseScopeHandling.exitLiquibaseScope(scopeId);
 			return results;
 			
 		}
