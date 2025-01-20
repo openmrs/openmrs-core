@@ -1325,7 +1325,7 @@ public final class OpenmrsConstants {
 	public static final String PERSON_NAME_FORMAT_LONG = "long";
 
 	// Liquibase Constants
-	public static final String LIQUIBASE_DUPLICATE_FILE_MODE_DEFAULT = GlobalConfiguration.DuplicateFileMode.WARN.name();
+	public static final String LIQUIBASE_DUPLICATE_FILE_MODE_DEFAULT = GlobalConfiguration.DuplicateFileMode.SILENT.name();
 
 	/** Value for zero login attempts */
 	public static final String ZERO_LOGIN_ATTEMPTS_VALUE = "0";
