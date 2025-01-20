@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.api.APIException;
@@ -149,7 +150,7 @@ public class CustomDatatypeUtil {
 			return Collections.emptyMap();
 		}
 		try {
-			return Context.getSerializationService().getDefaultSerializer().deserialize(serializedConfig, Map.class);
+			return Context.getSerializationService().getDefaultSerializer().deserialize(StringEscapeUtils.unescapeXml(serializedConfig), Map.class);
 		}
 		catch (SerializationException ex) {
 			throw new APIException(ex);
