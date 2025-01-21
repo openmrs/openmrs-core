@@ -23,6 +23,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 import java.util.TreeSet;
@@ -370,8 +371,8 @@ public class Cohort extends BaseChangeableOpenmrsData {
 		}
 	}
 	
-	public void setMemberships(Set<CohortMembership> members) {
-		this.memberships = members;
+	public void setMemberships(Collection<CohortMembership> members) {
+		this.memberships = (Set<CohortMembership>) members; 
 	}
 	
 	/**
