@@ -389,7 +389,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveProgram_shouldCreateProgramWorkflows() {
-		
 		int numBefore = Context.getProgramWorkflowService().getAllPrograms().size();
 		
 		Program program = new Program();

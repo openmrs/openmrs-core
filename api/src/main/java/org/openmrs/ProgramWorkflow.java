@@ -11,34 +11,85 @@ package org.openmrs;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
-
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
 import org.hibernate.envers.Audited;
 import org.openmrs.util.NaturalStrings;
 
 /**
  * ProgramWorkflow
  */
+@Entity
+@Table(name = "program_workflow")
 @Audited
-public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
+public class ProgramWorkflow extends BaseOpenmrsObject {
 	
 	private static final long serialVersionUID = 1L;
 	
 	// ******************
 	// Properties
 	// ******************
-	
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "program_workflow_program_workflow_id_seq")
+    @Column(name = "program_workflow_id")
 	private Integer programWorkflowId;
 	
-	private Program program;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "program_id", nullable = false)
+    private Program program;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "concept_id", nullable = false)
+    private Concept concept;
+
+	@OneToMany(mappedBy = "programWorkflow", cascade = CascadeType.ALL, orphanRemoval = true,  fetch = FetchType.EAGER)
+    @OrderBy("dateCreated ASC")
+    private Set<ProgramWorkflowState> states = new HashSet<>();
 	
-	private Concept concept;
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "creator")
+	private User creator;
 	
-	private Set<ProgramWorkflowState> states = new HashSet<>();
+	@Column(name = "date_created", nullable = false)
+	private Date dateCreated;
+	
+	@ManyToOne
+	@JoinColumn(name = "changed_by")
+	private User changedBy;
+	
+	@Column(name = "date_changed")
+	private Date dateChanged;
+
+	@Column(name = "retired", nullable = false)
+	@org.hibernate.search.annotations.Field
+	private Boolean retired = Boolean.FALSE;
+	
+	@Column(name = "date_retired")
+	private Date dateRetired;
+	
+	@ManyToOne
+	@JoinColumn(name = "retired_by")
+	private User retiredBy;
+	
+	@Column(name = "retire_reason", length = 255)
+	private String retireReason;
+	
 	
 	// ******************
 	// Constructors
@@ -292,6 +343,70 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 		
 	}
 	
+	public User getCreator() {
+		return creator;
+	}
+
+	public void setCreator(User creator) {
+		this.creator = creator;
+	}
+
+	public Date getDateCreated() {
+		return dateCreated;
+	}
+
+	public void setDateCreated(Date dateCreated) {
+		this.dateCreated = dateCreated;
+	}
+
+	public User getChangedBy() {
+		return changedBy;
+	}
+
+	public void setChangedBy(User changedBy) {
+		this.changedBy = changedBy;
+	}
+
+	public Date getDateChanged() {
+		return dateChanged;
+	}
+
+	public void setDateChanged(Date dateChanged) {
+		this.dateChanged = dateChanged;
+	}
+
+	public Boolean getRetired() {
+		return retired;
+	}
+
+	public void setRetired(Boolean retired) {
+		this.retired = retired;
+	}
+
+	public Date getDateRetired() {
+		return dateRetired;
+	}
+
+	public void setDateRetired(Date dateRetired) {
+		this.dateRetired = dateRetired;
+	}
+
+	public User getRetiredBy() {
+		return retiredBy;
+	}
+
+	public void setRetiredBy(User retiredBy) {
+		this.retiredBy = retiredBy;
+	}
+
+	public String getRetireReason() {
+		return retireReason;
+	}
+
+	public void setRetireReason(String retireReason) {
+		this.retireReason = retireReason;
+	}
+
 	/**
 	 * Gets the number of states which are not retired
 	 * 
