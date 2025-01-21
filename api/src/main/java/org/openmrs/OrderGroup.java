@@ -13,8 +13,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.openmrs.api.APIException;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 /**
  * Contains a group of {@link org.openmrs.Order}s that are ordered together within a single encounter,often driven by an {@link org.openmrs.OrderSet}. 
@@ -23,27 +37,54 @@ import org.openmrs.api.APIException;
  * 
  * @since 1.12
  */
+@Entity
+@Table(name = "order_group")
 @Audited
 public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	
 	public static final long serialVersionUID = 72232L;
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_group_id_seq")
+	@GenericGenerator(
+		name = "order_group_id_seq",
+		strategy = "native",
+		parameters = @Parameter(name = "sequence", value = "order_group_order_group_id_seq")
+	)
+	@Column(name = "order_group_id", nullable = false)
 	private Integer orderGroupId;
 	
+	@Id
+	@ManyToOne
+	@JoinColumn(name = "patient_id", nullable = false)
 	private Patient patient;
 	
+	@Id
+	@ManyToOne
+	@JoinColumn(name = "encounter_id", nullable = false)
 	private Encounter encounter;
 	
+	@OneToMany(mappedBy = "orderGroup", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Order> orders;
 	
+	@Id
+	@ManyToOne
+	@JoinColumn(name = "order_set_id")
 	private OrderSet orderSet;
 	
+	@ManyToOne
+	@JoinColumn(name = "parent_order_group", nullable = true)
 	private OrderGroup parentOrderGroup;
 
+	@ManyToOne
+	@JoinColumn(name = "order_group_reason", nullable = true)
 	private Concept orderGroupReason;
 
+	@ManyToOne
+	@JoinColumn(name = "previous_order_group", nullable = true)
 	private OrderGroup previousOrderGroup;
 	
+	@OneToMany(mappedBy = "parentOrderGroup", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
 	private Set<OrderGroup> nestedOrderGroups;
 
 	/**
