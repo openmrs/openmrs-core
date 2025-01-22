@@ -78,7 +78,7 @@ public class FormField extends BaseChangeableOpenmrsMetadata implements java.io.
 	@Column(name = "max_occurs", length = 11)
 	protected Integer maxOccurs;
 	
-	@Column(name = "reguired", nullable = false, length = 1)
+	@Column(name = "required", nullable = false, length = 1)
 	protected Boolean required = false;
 	
 	@Column(name = "sort_weight", length = 5, nullable = true)
