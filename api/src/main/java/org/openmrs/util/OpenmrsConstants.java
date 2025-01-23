@@ -1329,6 +1329,8 @@ public final class OpenmrsConstants {
 
 	/** Value for zero login attempts */
 	public static final String ZERO_LOGIN_ATTEMPTS_VALUE = "0";
+
+	public static final String MULTI_TENANT_STRATEGY_RUNTIME_PROPERTY = "openmrs.multitentant.strategy";
 	
 	private OpenmrsConstants() {
 	}

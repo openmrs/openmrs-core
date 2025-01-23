@@ -592,6 +592,7 @@
 
 	<bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
 		<property name="sessionFactory" ref="sessionFactory"/>
+		<property name="autodetectDataSource" value="false"/>
 	</bean>
 
 

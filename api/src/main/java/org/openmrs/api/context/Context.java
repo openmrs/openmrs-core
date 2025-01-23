@@ -1211,6 +1211,16 @@ public class Context {
 	}
 
 	/**
+	 * @return true if openmrs is running multi-tenant mode
+	 */
+	public static boolean isMultiTenant() {
+		String allowAutoUpdate = Context.getRuntimeProperties().getProperty(
+			OpenmrsConstants.MULTI_TENANT_STRATEGY_RUNTIME_PROPERTY, "none");
+
+		return !"none".equals(allowAutoUpdate);
+	}
+
+	/**
 	 * Runs any needed updates on the current database if the user has the allow_auto_update runtime
 	 * property set to true. If not set to true, then {@link #updateDatabase(Map)} must be called.<br>
 	 * <br>
@@ -1224,6 +1234,12 @@ public class Context {
 	 *      the required question/datatypes
 	 */
 	private static void checkForDatabaseUpdates(Properties props) throws DatabaseUpdateException, InputRequiredException {
+		//Don't update DB if multitenant
+		if (isMultiTenant()) {
+			log.info("checkForDatabaseUpdates not run in multi-tenantany");
+			return;
+		}
+		
 		boolean updatesRequired;
 		try {
 			updatesRequired = DatabaseUpdater.updatesRequired();

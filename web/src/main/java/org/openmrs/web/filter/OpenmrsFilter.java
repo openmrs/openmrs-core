@@ -20,6 +20,7 @@ import javax.servlet.http.HttpSession;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.UserContext;
+import org.openmrs.api.db.hibernate.multitenancy.TenantContext;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.web.WebConstants;
 import org.slf4j.Logger;
@@ -108,6 +109,22 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		
 		log.debug("before chain.Filter");
+
+		log.info("Inside DOFilter");
+		String tenantId = httpRequest.getHeader("X-TenantID");
+
+		log.info("TenantId:: {}", tenantId);
+
+		if (tenantId == null || tenantId.trim().isEmpty()) {
+			log.error("No tenant ID provided in the request");
+			tenantId = "public";
+//            res.setContentType("application/json");
+//            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//            res.getWriter().write("{\"error\": \"Unauthorized: No tenant ID provided\"}");
+//            return;
+		}
+
+		TenantContext.setCurrentTenant(tenantId);
 		
 		// continue the filter chain (going on to spring, authorization, etc)
 		try {

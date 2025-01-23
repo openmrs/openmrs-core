@@ -31,6 +31,7 @@ import org.hibernate.service.spi.SessionFactoryServiceRegistry;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -138,6 +139,25 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 				config.setProperty("hibernate." + prop, value);
 			}
 		}
+
+		// configure multi-tenant properties 
+		Properties runtimeProperties = Context.getRuntimeProperties();
+		String strategy = runtimeProperties.getProperty(
+			OpenmrsConstants.MULTI_TENANT_STRATEGY_RUNTIME_PROPERTY, "none");
+		log.error("strategy " + strategy);
+//		if ("none".equals(strategy)) {
+//			config.put("hibernate.multiTenancy", "NONE");
+//			String databaseConnectionFinalUrl = runtimeProperties.getProperty("connection.url");
+//			String connectionDatabase = runtimeProperties.getProperty("connection.database_name");
+//			if (connectionDatabase != null) {
+//				databaseConnectionFinalUrl = databaseConnectionFinalUrl.replace("@DBNAME@", connectionDatabase);
+//				config.put("hibernate.connection.url", databaseConnectionFinalUrl);
+//			}
+//		} else {
+			config.putIfAbsent("hibernate.multiTenancy", "SCHEMA");
+			config.putIfAbsent("hibernate.tenant_identifier_resolver", "org.openmrs.api.db.hibernate.multitenancy.TenantIdentifierResolver");
+			config.putIfAbsent("hibernate.multi_tenant_connection_provider", "org.openmrs.api.db.hibernate.multitenancy.CustomMultiTenantConnectionProvider");
+//		}
 		
 		// load in the default hibernate properties
 		try {

@@ -460,11 +460,23 @@ public class DatabaseUpdater {
 		String username = props.getProperty("hibernate.connection.username");
 		String password = props.getProperty("hibernate.connection.password");
 		String url = props.getProperty("hibernate.connection.url");
+		String schema = props.getProperty("hibernate.default_schema");
+		if (schema == null || schema.isEmpty()) {
+			schema = "public";
+		}
+
+		log.info("Schema::: {}", schema);
+		
+//		schema = "hospital1";
 		
 		// hack for mysql to make sure innodb tables are created
 		if (url.contains("mysql") && !url.contains("InnoDB")) {
 			url = url + "&sessionVariables=default_storage_engine=InnoDB";
+		} else if (url.contains("postgresql")) {
+			url = url + (url.contains("?") ? "&" : "?") + "currentSchema=" + schema;
 		}
+
+		log.info("url::: {}", url);
 		
 		Class.forName(driver);
 		return DriverManager.getConnection(url, username, password);

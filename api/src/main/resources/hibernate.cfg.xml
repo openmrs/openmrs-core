@@ -19,7 +19,25 @@
 	<session-factory>
         <property name="javax.persistence.validation.mode">none</property>
 		<property name="hibernate.search.model_mapping">org.openmrs.api.db.hibernate.search.LuceneAnalyzerFactory</property>
-		
+<!--		<property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>-->
+<!--		<property name="hibernate.multiTenancy">MultiTenancyStrategy.SCHEMA</property>-->
+<!--		<property name="hibernate.multi_tenant_connection_provider">org.openmrs.api.db.hibernate.multitenancy.CustomMultiTenantConnectionProvider</property>-->
+<!--		<property name="hibernate.tenant_identifier_resolver">org.openmrs.api.db.hibernate.multitenancy.TenantIdentifierResolver</property>-->
+
+		<!-- Database Connection Properties -->
+		<property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+		<property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+<!--		<property name="hibernate.default_schema">hospital1</property>-->
+
+		<!-- Enable Multi-Tenancy -->
+<!--		<property name="hibernate.multiTenancy">SCHEMA</property>-->
+<!--		<property name="hibernate.multi_tenant_connection_provider">-->
+<!--			org.openmrs.api.db.hibernate.multitenancy.CustomMultiTenantConnectionProvider-->
+<!--		</property>-->
+<!--		<property name="hibernate.tenant_identifier_resolver">-->
+<!--			org.openmrs.api.db.hibernate.multitenancy.TenantIdentifierResolver-->
+<!--		</property>-->
+
 		<!-- API -->
 
 		<mapping resource="org/openmrs/api/db/hibernate/AllergyReaction.hbm.xml" />
