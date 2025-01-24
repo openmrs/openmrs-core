@@ -650,14 +650,14 @@ public final class Module {
 	}
 
 	/**
-	 * @since 2.8.0
+	 * @since 2.7.0
 	 */
 	public String getConfigVersion() {
 		return configVersion;
 	}
 
 	/**
-	 * @since 2.8.0
+	 * @since 2.7.0
 	 */
 	public void setConfigVersion(String configVersion) {
 		this.configVersion = configVersion;

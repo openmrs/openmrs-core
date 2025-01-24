@@ -274,7 +274,7 @@
 			<dependency>
 				<groupId>org.liquibase</groupId>
 				<artifactId>liquibase-core</artifactId>
-				<version>4.28.0</version>
+				<version>4.31.0</version>
 				<exclusions>
 					<exclusion>
 						<groupId>ch.qos.logback</groupId>
@@ -378,7 +378,7 @@
 			<dependency>
 				<groupId>commons-beanutils</groupId>
 				<artifactId>commons-beanutils</artifactId>
-				<version>1.9.4</version>
+				<version>1.10.0</version>
 				<exclusions>
 					<exclusion>
 						<groupId>commons-logging</groupId>
@@ -405,7 +405,7 @@
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>42.7.4</version>
+				<version>42.7.5</version>
 				<scope>runtime</scope>
 			</dependency>
 			<dependency>
@@ -563,7 +563,7 @@
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
-				<version>33.3.1-jre</version>
+				<version>33.4.0-jre</version>
 			</dependency>
 			<dependency>
 			    <groupId>jakarta.xml.bind</groupId>
@@ -730,7 +730,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>3.11.1</version>
+					<version>3.11.2</version>
 					<configuration>
 						<!-- For some reason some packages from org.springframework are being
 						included and causing errors. -->
@@ -1129,12 +1129,12 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.15.10</version>
+						<version>1.16.1</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.15.10</version>
+						<version>1.16.1</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
@@ -1147,7 +1147,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.11.1</version>
+				<version>3.11.2</version>
 				<configuration>
 					<docfilessubdirs>true</docfilessubdirs>
 					<bottom>&lt;em&gt;&lt;small&gt; Generated ${TIMESTAMP} NOTE - these libraries are in active development and subject to change&lt;/small&gt;&lt;/em&gt;</bottom>
@@ -1217,7 +1217,7 @@
 		<luceneVersion>5.5.5</luceneVersion>
 		<aspectjVersion>1.9.22.1</aspectjVersion>
 		<jacksonVersion>2.18.2</jacksonVersion>
-		<junitVersion>5.11.3</junitVersion>
+		<junitVersion>5.11.4</junitVersion>
 		<mockitoVersion>3.12.4</mockitoVersion>
 		<hamcrestVersion>3.0</hamcrestVersion>
 
