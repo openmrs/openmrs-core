@@ -135,21 +135,6 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 	
-	<!--  Should be the second filter so that all requests are first wrapped by a 
-	      hibernate filter (to help with lazy loading) -->
-	<filter>
-        <filter-name>HibernateFilter</filter-name>
-        <filter-class>org.springframework.orm.hibernate5.support.OpenSessionInViewFilter</filter-class>
-    </filter>
-    <filter-mapping>
-		<filter-name>HibernateFilter</filter-name> 
-		<url-pattern>/*</url-pattern>
-		<dispatcher>ERROR</dispatcher>
-		<dispatcher>FORWARD</dispatcher>
-		<dispatcher>REQUEST</dispatcher>
-	</filter-mapping>
-	<!--  End second filter -->
-	
 	<!-- This filter should come before the OpenmrsFilter, i.e., before we've created
 	     a session. -->
 	<filter>
@@ -160,6 +145,32 @@
 		<filter-name>CookieClearingFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
+	
+	<!-- Add tenant Filter to set Tenant Context-->
+	<filter>
+		<filter-name>TenantFilter</filter-name>
+		<filter-class>org.openmrs.web.filter.multitenancy.TenantFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>TenantFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+	</filter-mapping>
+
+	<!--  Should be the second filter so that all requests are first wrapped by a 
+	      hibernate filter (to help with lazy loading) -->
+	<filter>
+		<filter-name>HibernateFilter</filter-name>
+		<filter-class>org.springframework.orm.hibernate5.support.OpenSessionInViewFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>HibernateFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+		<dispatcher>ERROR</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+		<dispatcher>REQUEST</dispatcher>
+	</filter-mapping>
+	<!--  End second filter -->
 	
 	<filter>
 		<filter-name>OpenmrsFilter</filter-name> 
@@ -174,15 +185,15 @@
 		<dispatcher>INCLUDE</dispatcher>
 	</filter-mapping>
 	
-	<filter>
-        <filter-name>CSRFGuard</filter-name>
-        <filter-class>org.owasp.csrfguard.CsrfGuardFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>CSRFGuard</filter-name>
-        <!-- Filter any URL using CSRFGuard -->
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
+<!--	<filter>-->
+<!--        <filter-name>CSRFGuard</filter-name>-->
+<!--        <filter-class>org.owasp.csrfguard.CsrfGuardFilter</filter-class>-->
+<!--    </filter>-->
+<!--    <filter-mapping>-->
+<!--        <filter-name>CSRFGuard</filter-name>-->
+<!--        &lt;!&ndash; Filter any URL using CSRFGuard &ndash;&gt;-->
+<!--        <url-pattern>/*</url-pattern>-->
+<!--    </filter-mapping>-->
 	
 	<filter>
 		<filter-name>ModuleFilter</filter-name> 

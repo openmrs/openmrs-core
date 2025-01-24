@@ -23,6 +23,32 @@ public class TenantIdentifierResolver implements CurrentTenantIdentifierResolver
 	@Override
     public String resolveCurrentTenantIdentifier() {
 		log.info("Inside resolveCurrentTenantIdentifier");
+
+		// Enhanced logging to track tenant resolution
+//		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+//
+//		log.info("=== Resolving Current Tenant ===");
+//		log.info("Thread ID: {}", Thread.currentThread().getId());
+//		log.info("Thread Name: {}", Thread.currentThread().getName());
+//
+//		// Get the current tenant from TenantContext
+//		String tenant = TenantContext.getCurrentTenant();
+//
+//		log.info("Tenant from TenantContext: {}", tenant);
+//
+//		// Log call stack to understand where this is being called from
+//		log.info("Caller Method Trace:");
+//		for (int i = 1; i < Math.min(stackTrace.length, 5); i++) {
+//			log.info("  {}.{}", stackTrace[i].getClassName(), stackTrace[i].getMethodName());
+//		}
+//
+//		// Fallback to "public" if no tenant is set
+//		String resolvedTenant = tenant != null ? tenant : "public";
+//
+//		log.info("Resolved Tenant: {}", resolvedTenant);
+//
+//		return resolvedTenant;
+		
         String tenant = TenantContext.getCurrentTenant();
 		log.info("tenant:: {}", tenant);
 		
