@@ -10,6 +10,16 @@
 package org.openmrs;
 
 import org.hibernate.envers.Audited;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  * The concept Reference Term map object represents a mapping between two Concept Reference Terms. A
@@ -19,14 +29,28 @@ import org.hibernate.envers.Audited;
  * @since 1.9
  */
 @Audited
+@Entity
+@Table(name = "concept_reference_term_map")
 public class ConceptReferenceTermMap extends BaseConceptMap {
 	
 	private static final long serialVersionUID = 1L;
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	@GenericGenerator(
+			name = "concept_reference_term_map_id_seq",
+			strategy = "native",
+			parameters = @Parameter(name = "sequence", value = "concept_reference_term_map_concept_reference_term_map_id_seq")
+	)
+	@Column(name = "concept_reference_term_map_id", nullable = false)
 	private Integer conceptReferenceTermMapId;
 	
+	@ManyToOne
+	@JoinColumn(name = "term_a_id", nullable = false)
 	private ConceptReferenceTerm termA;
 	
+	@ManyToOne
+	@JoinColumn(name = "term_b_id", nullable = false)
 	private ConceptReferenceTerm termB;
 	
 	// Constructors
