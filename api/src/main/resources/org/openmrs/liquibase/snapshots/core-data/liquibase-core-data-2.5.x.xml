@@ -2054,7 +2054,9 @@
       <column name="uuid" value="8d5e86fa-c2cc-11de-8d13-0010c6dffd0f"/> 
     </insert> 
   </changeSet>
-  <changeSet author="danielkayiwa (generated)" id="1644357753728-10"> 
+  <changeSet author="danielkayiwa (generated)" id="1644357753728-10">
+  	<validCheckSum>8:faafdcb2c1b2772a9e4b7d43b0eecbc6</validCheckSum>
+  	<validCheckSum>8:1a9b9c14f944b91e6c4364d73570ddcb</validCheckSum>
     <insert tableName="global_property"> 
       <column name="property" value="allergy.allergen.ConceptClasses"/>  
       <column name="property_value" value="Drug,MedSet"/>  
