@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.openmrs.util.DatabaseIT;
+import org.powermock.reflect.Whitebox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +47,8 @@ public class ChangeLogDetectiveDatabaseIT extends DatabaseIT {
 	@Test
 	public void shouldReturnDefaultSnapshotVersion() throws Exception {
 		ChangeLogDetective changeLogDetective = ChangeLogDetective.getInstance();
+		
+		Whitebox.setInternalState(changeLogDetective, "initialSnapshotVersion", (Object)null);
 
 		String expected = VERSION_1_9_X;
 		String actual = changeLogDetective.getInitialLiquibaseSnapshotVersion("some context", this);
