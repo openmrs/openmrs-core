@@ -709,7 +709,7 @@ public class UpdateFilter extends StartupFilter {
 						try {
 							setMessage("Updating the database to the latest version");
 							
-							ChangeLogDetective changeLogDetective = new ChangeLogDetective();
+							ChangeLogDetective changeLogDetective = ChangeLogDetective.getInstance();
 							ChangeLogVersionFinder changeLogVersionFinder = new ChangeLogVersionFinder();
 							
 							List<String> changelogs = new ArrayList<>();
