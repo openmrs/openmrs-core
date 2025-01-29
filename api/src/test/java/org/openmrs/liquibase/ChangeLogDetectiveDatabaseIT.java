@@ -29,7 +29,7 @@ public class ChangeLogDetectiveDatabaseIT extends DatabaseIT {
 	
 	@Test
 	public void shouldGetInitialLiquibaseSnapshotVersion() throws Exception {
-		ChangeLogDetective changeLogDetective = new ChangeLogDetective();
+		ChangeLogDetective changeLogDetective = ChangeLogDetective.getInstance();
 		ChangeLogVersionFinder changeLogVersionFinder = new ChangeLogVersionFinder();
 		Map<String, List<String>> changeSetCombinations = changeLogVersionFinder.getChangeLogCombinations();
 		updateDatabase(changeSetCombinations.get(VERSION_2_1_X));
@@ -45,7 +45,7 @@ public class ChangeLogDetectiveDatabaseIT extends DatabaseIT {
 	
 	@Test
 	public void shouldReturnDefaultSnapshotVersion() throws Exception {
-		ChangeLogDetective changeLogDetective = new ChangeLogDetective();
+		ChangeLogDetective changeLogDetective = ChangeLogDetective.getInstance();
 
 		String expected = VERSION_1_9_X;
 		String actual = changeLogDetective.getInitialLiquibaseSnapshotVersion("some context", this);
@@ -55,7 +55,7 @@ public class ChangeLogDetectiveDatabaseIT extends DatabaseIT {
 	
 	@Test
 	public void shouldGetUnrunLiquibaseUpdateFileNames() throws Exception {
-		ChangeLogDetective changeLogDetective = new ChangeLogDetective();
+		ChangeLogDetective changeLogDetective = ChangeLogDetective.getInstance();
 		ChangeLogVersionFinder changeLogVersionFinder = new ChangeLogVersionFinder();
 		Map<String, List<String>> snapshotCombinations = changeLogVersionFinder.getSnapshotCombinations();
 		updateDatabase(snapshotCombinations.get(VERSION_2_1_X));

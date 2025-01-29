@@ -97,7 +97,7 @@ public class DatabaseUpdater {
 	private static LiquibaseProvider liquibaseProvider;
 	
 	static {
-		changeLogDetective = new ChangeLogDetective();
+		changeLogDetective = ChangeLogDetective.getInstance();
 		changeLogVersionFinder = new ChangeLogVersionFinder();
 	}
 	
