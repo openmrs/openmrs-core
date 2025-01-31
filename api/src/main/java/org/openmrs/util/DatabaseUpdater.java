@@ -227,19 +227,32 @@ public class DatabaseUpdater {
 			lockHandler = LockServiceFactory.getInstance().getLockService(database);
 			lockHandler.waitForLock();
 			
-			DatabaseChangeLog changeLog = liquibase.getDatabaseChangeLog();
-			changeLog.setChangeLogParameters(liquibase.getChangeLogParameters());
-			changeLog.validate(database);
-			
-			ChangeLogIterator logIterator = new ChangeLogIterator(changeLog, new ShouldRunChangeSetFilter(database),
-			        new ContextChangeSetFilter(contexts), new DbmsChangeSetFilter(database));
-			
-			// ensure that the change log history service is initialised
-			//
-			Scope.getCurrentScope().getSingleton(ChangeLogHistoryServiceFactory.class).getChangeLogService(database).init();
-			
-			logIterator.run(new OpenmrsUpdateVisitor(database, callback, numChangeSetsToRun),
-			    new RuntimeEnvironment(database, contexts, new LabelExpression()));
+			Map<String, Object> scopeValues = new HashMap<>();
+			scopeValues.put(Scope.Attr.resourceAccessor.name(), getCompositeResourceAccessor(null));
+			String scopeId = null;
+			try {
+				scopeId = Scope.enter(scopeValues);
+				DatabaseChangeLog changeLog = liquibase.getDatabaseChangeLog();
+				changeLog.setChangeLogParameters(liquibase.getChangeLogParameters());
+				changeLog.validate(database);
+
+				ChangeLogIterator logIterator = new ChangeLogIterator(changeLog, new ShouldRunChangeSetFilter(database),
+					new ContextChangeSetFilter(contexts), new DbmsChangeSetFilter(database));
+
+				// ensure that the change log history service is initialised
+				Scope.getCurrentScope().getSingleton(ChangeLogHistoryServiceFactory.class).getChangeLogService(database).init();
+
+				logIterator.run(new OpenmrsUpdateVisitor(database, callback, numChangeSetsToRun),
+					new RuntimeEnvironment(database, contexts, new LabelExpression()));
+			}
+			finally {
+				try {
+					Scope.exit(scopeId);
+				}
+				catch (Exception e) {
+					log.warn("An error occurred trying to exit the liquibase scope", e);
+				}
+			}
 		}
 		finally {
 			try {
