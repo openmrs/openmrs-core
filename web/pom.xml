@@ -31,16 +31,6 @@
          <artifactId>openmrs-test</artifactId>
          <type>pom</type>
          <scope>test</scope>
-		  <exclusions>
-			  <exclusion>
-				  <groupId>org.powermock</groupId>
-				  <artifactId>powermock-module-junit4</artifactId>
-			  </exclusion>
-			  <exclusion>
-				  <groupId>org.powermock</groupId>
-				  <artifactId>powermock-api-mockito2</artifactId>
-			  </exclusion>
-		  </exclusions>
       </dependency>
       <!-- Test-jar for sharing api test resources in web tests -->
       <dependency>

@@ -480,16 +480,6 @@
 				<artifactId>mockito-core</artifactId>
 				<version>${mockitoVersion}</version>
 			</dependency>
-			<dependency>
-				<groupId>org.powermock</groupId>
-				<artifactId>powermock-module-junit4</artifactId>
-				<version>2.0.9</version>
-			</dependency>
-			<dependency>
-				<groupId>org.powermock</groupId>
-				<artifactId>powermock-api-mockito2</artifactId>
-				<version>2.0.9</version>
-			</dependency>
 			<!--hamcrest-core is needed to update JUnit 4 transitive dependency on hamcrest-core as explained in
 			 http://hamcrest.org/JavaHamcrest/distributables#upgrading-from-hamcrest-1x and
 			 https://github.com/hamcrest/JavaHamcrest/issues/224#issuecomment-449760045
