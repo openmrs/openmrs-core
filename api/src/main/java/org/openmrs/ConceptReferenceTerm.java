@@ -11,11 +11,20 @@ package org.openmrs;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
-
+import javax.persistence.Entity;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Field;
+import javax.persistence.Table;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import org.hibernate.annotations.GenericGenerator; 
+import org.hibernate.annotations.Parameter;
+import javax.persistence.OneToMany;
 
 /**
  * A concept reference term is typically name for a concept by which it is referred in another
@@ -25,21 +34,35 @@ import org.hibernate.search.annotations.Field;
  * @since 1.9
  */
 @Audited
+@Entity
+@Table(name = "concept_reference_term")
 public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 	
 	private static final long serialVersionUID = 1L;
 	
 	@DocumentId
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	@GenericGenerator(
+			name = "concept_reference_term_id_seq",
+			strategy = "native",
+			parameters = @Parameter(name = "sequence", value = "concept_reference_term_concept_reference_term_id_seq")
+	)
+	@Column(name = "concept_reference_term_id")
 	private Integer conceptReferenceTermId;
 	
+	@Column(name = "concept_source_id", nullable = false)
 	private ConceptSource conceptSource;
 	
 	//The unique code used to identify the reference term in it's reference terminology
 	@Field(analyze = Analyze.NO)
+	@Column(name = "code", length = 255, nullable = false)
 	private String code;
 	
+	@Column(name = "version", length = 50)
 	private String version;
 	
+	@OneToMany(mappedBy = "conceptReferenceTerm" ,cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<ConceptReferenceTermMap> conceptReferenceTermMaps;
 	
 	/** default constructor */
