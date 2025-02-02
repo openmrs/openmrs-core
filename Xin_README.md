@@ -56,7 +56,7 @@ To verify the installation, open Command Prompt as an administrator and run:
 java -version
 javac -version
 ```
-<img src="Xin_image/jdk8cmdcheck.JPG"/>
+<img src="Xin_image/jdk8cmdcheck.jpg"/>
 
 #### Maven
 
