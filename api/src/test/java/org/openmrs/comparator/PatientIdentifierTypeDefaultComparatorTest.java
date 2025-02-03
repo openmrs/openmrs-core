@@ -59,4 +59,31 @@ public class PatientIdentifierTypeDefaultComparatorTest {
 		assertEquals(Arrays.asList(requiredNotRetired, notRequiredNotRetiredA, notRequiredNotRetiredB,
 		    requiredRetired1A, requiredRetired2a, notRequiredRetired), list);
 	}
+
+	/*
+	 * author: Xin Tang
+	 * Date: 02/03/2025
+	 */
+	@Test
+	public void compare_retiredStatus(){
+		PatientIdentifierType requiredNotRetired1x = new PatientIdentifierType();
+        //requiredNotRetired1x.setId(1);
+        requiredNotRetired1x.setRequired(true);
+        requiredNotRetired1x.setRetired(false);
+		//requiredNotRetired1x.setName("x");
+        
+        PatientIdentifierType requiredNotRetiredB = new PatientIdentifierType();
+        requiredNotRetiredB.setRequired(true);
+        requiredNotRetiredB.setRetired(null);
+		//requiredNotRetiredB.setName("B");
+        
+        PatientIdentifierType requiredRetiredA = new PatientIdentifierType();
+        requiredNotRetiredB.setRequired(true);
+        requiredNotRetiredB.setRetired(true);
+		//requiredNotRetiredB.setName("A");
+        
+        List<PatientIdentifierType> list = Arrays.asList(requiredNotRetired1x, requiredNotRetiredB, requiredRetiredA);
+        list.sort(new PatientIdentifierTypeDefaultComparator());
+		assertEquals(Arrays.asList(requiredNotRetired1x, requiredRetiredA, requiredNotRetiredB), list);
+	}
 }
