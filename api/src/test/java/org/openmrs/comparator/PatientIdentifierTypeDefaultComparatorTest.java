@@ -113,8 +113,9 @@ public class PatientIdentifierTypeDefaultComparatorTest {
 	}
 	/*
 	 * author: Xin Tang
-	 * Partition 2: Required Status: true first, false second, null last
-	 * compare order: required > name
+	 * Description: if required compared first, the result should be (requiredNotRetiredA, notRequiredUnknownRetiredZ)
+	 * if required, the result should be (notRequiredUnknownRetiredZ, requiredNotRetiredA)
+	 * compare order: retired > required > name
 	 */
 	@Test
     public void compare_requiredAndRetiredOrder(){
@@ -130,5 +131,33 @@ public class PatientIdentifierTypeDefaultComparatorTest {
 		List<PatientIdentifierType> list = Arrays.asList(requiredNotRetiredA, notRequiredUnknownRetiredZ);
         list.sort(new PatientIdentifierTypeDefaultComparator());
 		assertEquals(Arrays.asList(notRequiredUnknownRetiredZ, requiredNotRetiredA), list);
+	}
+
+	/*
+	 * author: Xin Tang
+	 * Description: if required compared first, the result should be (requiredNotRetiredA, notRequiredUnknownRetiredZ)
+	 * if required, the result should be (notRequiredUnknownRetiredZ, requiredNotRetiredA)
+	 * compare order: retired > required > name
+	 */
+	@Test
+    public void compare_NameAndId(){
+		PatientIdentifierType requiredNotRetired2A = new PatientIdentifierType();
+        requiredNotRetired2A.setRequired(true);
+        requiredNotRetired2A.setRetired(false);
+        requiredNotRetired2A.setName("A");
+		requiredNotRetired2A.setId(2);
+		PatientIdentifierType requiredNotRetiredZ = new PatientIdentifierType();
+        requiredNotRetiredZ.setRequired(true);
+        requiredNotRetiredZ.setRetired(false);
+        requiredNotRetiredZ.setName("Z");
+		PatientIdentifierType requiredNotRetired1a = new PatientIdentifierType();
+        requiredNotRetired1a.setRequired(true);
+        requiredNotRetired1a.setRetired(false);
+        requiredNotRetired1a.setName("A");
+		requiredNotRetired1a.setId(1);
+
+		List<PatientIdentifierType> list = Arrays.asList(requiredNotRetired2A, requiredNotRetiredZ, requiredNotRetired1a);
+        list.sort(new PatientIdentifierTypeDefaultComparator());
+		assertEquals(Arrays.asList( requiredNotRetired1a, requiredNotRetired2A, requiredNotRetiredZ), list);
 	}
 }
