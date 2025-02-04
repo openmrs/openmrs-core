@@ -59,6 +59,15 @@ public class PatientIdentifierTypeDefaultComparatorTest {
 		assertEquals(Arrays.asList(requiredNotRetired, notRequiredNotRetiredA, notRequiredNotRetiredB,
 		    requiredRetired1A, requiredRetired2a, notRequiredRetired), list);
 	}
+	/*after following tests, the conclusions are:
+	Retired Status: null → false → true. 
+	Required Status: true → false → null. 
+	Name: Alphabetical order (lexicographical). 
+	ID: Numerical order (used as a tiebreaker when names match).
+	compare order is retired -> required -> name -> id
+	 * 
+	 **/
+	
 
 	/*
 	 * author: Xin Tang
@@ -135,9 +144,8 @@ public class PatientIdentifierTypeDefaultComparatorTest {
 
 	/*
 	 * author: Xin Tang
-	 * Description: if required compared first, the result should be (requiredNotRetiredA, notRequiredUnknownRetiredZ)
-	 * if required, the result should be (notRequiredUnknownRetiredZ, requiredNotRetiredA)
-	 * compare order: retired > required > name
+	 * Description: if name is case sensitive, the result should be (requiredNotRetired2A, requiredNotRetired1a)
+	 * conclusion: 1. name is case insensitive and alphabetical order. 2. if names are the same, ordered by Id.
 	 */
 	@Test
     public void compare_NameAndId(){
@@ -155,9 +163,12 @@ public class PatientIdentifierTypeDefaultComparatorTest {
         requiredNotRetired1a.setRetired(false);
         requiredNotRetired1a.setName("A");
 		requiredNotRetired1a.setId(1);
+		PatientIdentifierType requiredNotRetiredNotName = new PatientIdentifierType();
+        requiredNotRetiredNotName.setRequired(true);
+        requiredNotRetiredNotName.setRetired(false);
 
-		List<PatientIdentifierType> list = Arrays.asList(requiredNotRetired2A, requiredNotRetiredZ, requiredNotRetired1a);
+		List<PatientIdentifierType> list = Arrays.asList(requiredNotRetired2A, requiredNotRetiredZ, requiredNotRetired1a, requiredNotRetiredNotName);
         list.sort(new PatientIdentifierTypeDefaultComparator());
-		assertEquals(Arrays.asList( requiredNotRetired1a, requiredNotRetired2A, requiredNotRetiredZ), list);
+		assertEquals(Arrays.asList(requiredNotRetired1a, requiredNotRetired2A, requiredNotRetiredZ, requiredNotRetiredNotName), list);
 	}
 }
