@@ -144,8 +144,9 @@ public class PatientIdentifierTypeDefaultComparatorTest {
 
 	/*
 	 * author: Xin Tang
-	 * Description: if name is case sensitive, the result should be (requiredNotRetired2A, requiredNotRetired1a)
-	 * conclusion: 1. name is case insensitive and alphabetical order. 2. if names are the same, ordered by Id.
+	 * Description: if name is case-sensitive, the result should be (requiredNotRetired2A, requiredNotRetired1a)
+	 * conclusion: 1. name is case-insensitive and alphabetical order. 2. if names are the same, ordered by Id.
+	 * 3. name is null last 4. Id is null last
 	 */
 	@Test
     public void compare_NameAndId(){
@@ -161,14 +162,19 @@ public class PatientIdentifierTypeDefaultComparatorTest {
 		PatientIdentifierType requiredNotRetired1a = new PatientIdentifierType();
         requiredNotRetired1a.setRequired(true);
         requiredNotRetired1a.setRetired(false);
-        requiredNotRetired1a.setName("A");
+        requiredNotRetired1a.setName("a");
 		requiredNotRetired1a.setId(1);
+		PatientIdentifierType requiredNotRetiredANotId = new PatientIdentifierType();
+		requiredNotRetiredANotId.setRequired(true);
+		requiredNotRetiredANotId.setRetired(false);
+		requiredNotRetiredANotId.setName("A");
+		
 		PatientIdentifierType requiredNotRetiredNotName = new PatientIdentifierType();
         requiredNotRetiredNotName.setRequired(true);
         requiredNotRetiredNotName.setRetired(false);
 
-		List<PatientIdentifierType> list = Arrays.asList(requiredNotRetired2A, requiredNotRetiredZ, requiredNotRetired1a, requiredNotRetiredNotName);
+		List<PatientIdentifierType> list = Arrays.asList(requiredNotRetired2A, requiredNotRetiredZ, requiredNotRetired1a, requiredNotRetiredNotName, requiredNotRetiredANotId);
         list.sort(new PatientIdentifierTypeDefaultComparator());
-		assertEquals(Arrays.asList(requiredNotRetired1a, requiredNotRetired2A, requiredNotRetiredZ, requiredNotRetiredNotName), list);
+		assertEquals(Arrays.asList(requiredNotRetired1a, requiredNotRetired2A, requiredNotRetiredANotId, requiredNotRetiredZ, requiredNotRetiredNotName), list);
 	}
 }
