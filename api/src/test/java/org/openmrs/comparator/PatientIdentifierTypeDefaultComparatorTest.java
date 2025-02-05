@@ -149,32 +149,63 @@ public class PatientIdentifierTypeDefaultComparatorTest {
 	 * 3. name is null last 4. Id is null last
 	 */
 	@Test
-    public void compare_NameAndId(){
+	public void compare_NameCaseInsensitive(){
 		PatientIdentifierType requiredNotRetired2A = new PatientIdentifierType();
-        requiredNotRetired2A.setRequired(true);
-        requiredNotRetired2A.setRetired(false);
-        requiredNotRetired2A.setName("A");
+		requiredNotRetired2A.setRequired(true);
+		requiredNotRetired2A.setRetired(false);
+		requiredNotRetired2A.setName("A");
 		requiredNotRetired2A.setId(2);
-		PatientIdentifierType requiredNotRetiredZ = new PatientIdentifierType();
-        requiredNotRetiredZ.setRequired(true);
-        requiredNotRetiredZ.setRetired(false);
-        requiredNotRetiredZ.setName("Z");
 		PatientIdentifierType requiredNotRetired1a = new PatientIdentifierType();
-        requiredNotRetired1a.setRequired(true);
-        requiredNotRetired1a.setRetired(false);
-        requiredNotRetired1a.setName("a");
+		requiredNotRetired1a.setRequired(true);
+		requiredNotRetired1a.setRetired(false);
+		requiredNotRetired1a.setName("a");
+		requiredNotRetired1a.setId(1);
+		
+		List<PatientIdentifierType> list = Arrays.asList(requiredNotRetired2A, requiredNotRetired1a);
+		list.sort(new PatientIdentifierTypeDefaultComparator());
+		assertEquals(Arrays.asList(requiredNotRetired1a, requiredNotRetired2A), list);
+	}
+	@Test
+	public void compare_NameOrder(){
+		PatientIdentifierType requiredNotRetiredA = new PatientIdentifierType();
+		requiredNotRetiredA.setRequired(true);
+		requiredNotRetiredA.setRetired(false);
+		requiredNotRetiredA.setName("A");
+		PatientIdentifierType requiredNotRetiredZ = new PatientIdentifierType();
+		requiredNotRetiredZ.setRequired(true);
+		requiredNotRetiredZ.setRetired(false);
+		requiredNotRetiredZ.setName("Z");
+		PatientIdentifierType requiredNotRetiredNotName = new PatientIdentifierType();
+		requiredNotRetiredNotName.setRequired(true);
+		requiredNotRetiredNotName.setRetired(false);
+		
+		List<PatientIdentifierType> list = Arrays.asList(requiredNotRetiredA, requiredNotRetiredZ, requiredNotRetiredNotName);
+		list.sort(new PatientIdentifierTypeDefaultComparator());
+		assertEquals(Arrays.asList(requiredNotRetiredA, requiredNotRetiredZ, requiredNotRetiredNotName), list);
+	}
+	@Test
+	public void compare_IdOrder(){
+		PatientIdentifierType requiredNotRetired2A = new PatientIdentifierType();
+		requiredNotRetired2A.setRequired(true);
+		requiredNotRetired2A.setRetired(false);
+		requiredNotRetired2A.setName("A");
+		requiredNotRetired2A.setId(2);
+		PatientIdentifierType requiredNotRetired1a = new PatientIdentifierType();
+		requiredNotRetired1a.setRequired(true);
+		requiredNotRetired1a.setRetired(false);
+		requiredNotRetired1a.setName("a");
 		requiredNotRetired1a.setId(1);
 		PatientIdentifierType requiredNotRetiredANotId = new PatientIdentifierType();
 		requiredNotRetiredANotId.setRequired(true);
 		requiredNotRetiredANotId.setRetired(false);
 		requiredNotRetiredANotId.setName("A");
-		
-		PatientIdentifierType requiredNotRetiredNotName = new PatientIdentifierType();
-        requiredNotRetiredNotName.setRequired(true);
-        requiredNotRetiredNotName.setRetired(false);
 
-		List<PatientIdentifierType> list = Arrays.asList(requiredNotRetired2A, requiredNotRetiredZ, requiredNotRetired1a, requiredNotRetiredNotName, requiredNotRetiredANotId);
-        list.sort(new PatientIdentifierTypeDefaultComparator());
-		assertEquals(Arrays.asList(requiredNotRetired1a, requiredNotRetired2A, requiredNotRetiredANotId, requiredNotRetiredZ, requiredNotRetiredNotName), list);
+		PatientIdentifierType requiredNotRetiredNotName = new PatientIdentifierType();
+		requiredNotRetiredNotName.setRequired(true);
+		requiredNotRetiredNotName.setRetired(false);
+
+		List<PatientIdentifierType> list = Arrays.asList(requiredNotRetired2A, requiredNotRetired1a, requiredNotRetiredNotName, requiredNotRetiredANotId);
+		list.sort(new PatientIdentifierTypeDefaultComparator());
+		assertEquals(Arrays.asList(requiredNotRetired1a, requiredNotRetired2A, requiredNotRetiredANotId, requiredNotRetiredNotName), list);
 	}
 }
