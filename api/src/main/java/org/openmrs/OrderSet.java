@@ -10,7 +10,9 @@
 package org.openmrs;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.hibernate.envers.Audited;
 import org.openmrs.api.APIException;
@@ -43,6 +45,8 @@ public class OrderSet extends BaseCustomizableMetadata<OrderSetAttribute> {
 	private List<OrderSetMember> orderSetMembers;
 	
 	private Concept category;
+	
+	private Set<OrderSetAttribute> attributes= new LinkedHashSet<>();
 
 	/**
 	 * Gets the orderSetId
@@ -202,6 +206,16 @@ public class OrderSet extends BaseCustomizableMetadata<OrderSetAttribute> {
 	 */
 	public void retireOrderSetMember(OrderSetMember orderSetMember) {
 		orderSetMember.setRetired(true);
+	}
+	
+	@Override
+	public Set<OrderSetAttribute> getAttributes() {
+		return attributes;
+	}
+	
+	@Override
+	public void setAttributes(Set<OrderSetAttribute> attributes) {
+		this.attributes = attributes;
 	}
 	
 }

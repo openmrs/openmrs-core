@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -21,6 +22,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.hibernate.annotations.BatchSize;
@@ -40,8 +42,9 @@ import org.slf4j.LoggerFactory;
 @Entity
 @Table(name = "provider")
 @Audited
+@AttributeOverride(name = "name", column = @Column(name = "name"))
 public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(Provider.class);
 	
 	@Id
@@ -51,18 +54,13 @@ public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 		strategy = "native",
 		parameters = @Parameter(name = "sequence", value = "provider_provider_id_seq")
 	)
-	@Column(name = "provider_id", nullable = false)
+	@Column(name = "provider_id", nullable = false,insertable = false)
 	private Integer providerId;
 	
 	@ManyToOne
 	@JoinColumn(name="person_id")
 	@Cascade(CascadeType.SAVE_UPDATE)
 	private Person person;
-	
-	
-	
-	@Column(name="name",nullable = false)
-	private String name;
 	
 	@Column(name="identifier")
 	private String identifier;
@@ -79,7 +77,7 @@ public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 	@OneToMany(mappedBy = "provider",cascade = javax.persistence.CascadeType.ALL,fetch = FetchType.LAZY,orphanRemoval = true)
 	@BatchSize(size = 100)
 	@OrderBy("voided ASC")
-	private Set<ProviderAttribute> attributes;
+	private Set<ProviderAttribute> attributes= new LinkedHashSet<>();
 	public Provider() {
 	}
 	
@@ -189,20 +187,12 @@ public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 	public Set<ProviderAttribute> getAttributes() {
 		return attributes;
 	}
-	
+
 	@Override
 	public void setAttributes(Set<ProviderAttribute> attributes) {
 		this.attributes = attributes;
 	}
-	
 
-	
-	@Override
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	
 	@Override
 	public String toString() {
 		String provider = String.valueOf(providerId) + " providerName:" + ((person != null) ? person.getNames() : "");
@@ -216,12 +206,11 @@ public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 	
 	@Override
 	public String getName() {
-		return this.name;
-//		if (getPerson() != null && getPerson().getPersonName() != null) {
-//			return getPerson().getPersonName().getFullName();
-//		} else {
-//			log.warn("We no longer support providers who are not linked to person. Set the name on the linked person");
-//			return null;
-//		}
+		if (getPerson() != null && getPerson().getPersonName() != null) {
+			return getPerson().getPersonName().getFullName();
+		} else {
+			log.warn("We no longer support providers who are not linked to person. Set the name on the linked person");
+			return null;
+		}
 	}
 }

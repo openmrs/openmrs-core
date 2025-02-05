@@ -36,26 +36,16 @@ import java.util.Set;
 @Audited
 public abstract class BaseCustomizableMetadata<A extends Attribute> extends BaseChangeableOpenmrsMetadata implements Customizable<A> {
 	
-	@OrderBy("voided asc")
-	@BatchSize(size = 100)
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "location_id")
-	private Set<A> attributes = new LinkedHashSet<>();
-	
 	/**
 	 * @see org.openmrs.customdatatype.Customizable#getAttributes()
 	 */
 	@Override
-	public Set<A> getAttributes() {
-		return attributes;
-	}
-	
+	public  abstract Set<A> getAttributes();
 	/**
 	 * @param attributes the attributes to set
 	 */
-	public void setAttributes(Set<A> attributes) {
-		this.attributes = attributes;
-	}
+	public abstract void setAttributes(Set<A> attributes); 
+
 	
 	/**
 	 * @see org.openmrs.customdatatype.Customizable#getActiveAttributes()
