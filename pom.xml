@@ -341,7 +341,7 @@
 			<dependency>
 				<groupId>ca.uhn.hapi</groupId>
 				<artifactId>hapi-structures-v26</artifactId>
-				<version>2.1</version>
+				<version>2.6.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.dom4j</groupId>
