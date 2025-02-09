@@ -56,7 +56,7 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	private String description;
 	
 	@OneToMany(mappedBy = "cohort", cascade = CascadeType.ALL, orphanRemoval = true)
-	private Set<CohortMembership> memberships;
+	private Collection<CohortMembership> memberships;
 	
 	public Cohort() {
 		memberships = new TreeSet<>();
@@ -112,7 +112,7 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	 * @param patientsOrIds optional collection which may contain Patients, or patientIds which may
 	 *            be Integers, Strings, or anything whose toString() can be parsed to an Integer.
 	 */
-	public Cohort(Set<?> patientsOrIds) {
+	public Cohort(Collection<?> patientsOrIds) {
 		this(null, null, patientsOrIds);
 	}
 	
@@ -125,7 +125,7 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	 * @param patientsOrIds optional collection which may contain Patients, or patientIds which may
 	 *            be Integers, Strings, or anything whose toString() can be parsed to an Integer.
 	 */
-	public Cohort(String name, String description, Set<?> patientsOrIds) {
+	public Cohort(String name, String description, Collection<?> patientsOrIds) {
 		this(name, description, (Integer[]) null);
 		if (patientsOrIds != null) {
 			for (Object o : patientsOrIds) {
@@ -204,17 +204,17 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	 * @param includeVoided boolean true/false to include/exclude voided memberships
 	 * @return Collection of cohort memberships
 	 */
-	public Set<CohortMembership> getMemberships(boolean includeVoided) {
+	public Collection<CohortMembership> getMemberships(boolean includeVoided) {
 		if (includeVoided) {
 			return getMemberships();
 		}
-		return getMemberships().stream().filter(m -> m.getVoided() == includeVoided).collect(Collectors.toSet());
+		return getMemberships().stream().filter(m -> m.getVoided() == includeVoided).collect(Collectors.toList());
 	}
 	
 	/**
 	 * @since 2.1.0
 	 */
-	public Set<CohortMembership> getMemberships() {
+	public Collection<CohortMembership> getMemberships() {
 		if (memberships == null) {
 			memberships = new TreeSet<>();
 		}
@@ -226,11 +226,11 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	 * @param asOfDate date used to return active memberships
 	 * @return Collection of cohort memberships
 	 */
-	public Set<CohortMembership> getActiveMemberships(Date asOfDate) {
-		return getMemberships().stream().filter(m -> m.isActive(asOfDate)).collect(Collectors.toSet());
+	public Collection<CohortMembership> getActiveMemberships(Date asOfDate) {
+		return getMemberships().stream().filter(m -> m.isActive(asOfDate)).collect(Collectors.toList());
 	}
 	
-	public Set<CohortMembership> getActiveMemberships() {
+	public Collection<CohortMembership> getActiveMemberships() {
 		return getActiveMemberships(new Date());
 	}
 	
@@ -242,7 +242,7 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	}
 	
 	public int size() {
-		return getMemberships().stream().filter(m -> !m.getVoided()).collect(Collectors.toSet())
+		return getMemberships().stream().filter(m -> !m.getVoided()).collect(Collectors.toList())
 		        .size();
 	}
 	
@@ -372,7 +372,7 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	}
 	
 	public void setMemberships(Collection<CohortMembership> members) {
-		this.memberships = (Set<CohortMembership>) members; 
+		this.memberships = members; 
 	}
 	
 	/**
