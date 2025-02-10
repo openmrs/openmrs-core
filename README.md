@@ -75,7 +75,7 @@ Execute the following
 
 ```bash
 cd openmrs-core
-mvn clean package
+./mvnw clean package
 ```
 
 This will generate the OpenMRS application in `webapp/target/openmrs.war` which you will have to deploy into an application server like for example [tomcat](https://tomcat.apache.org/) or [jetty](http://www.eclipse.org/jetty/).
@@ -86,7 +86,7 @@ For development purposes you can simply deploy the `openmrs.war` into the applic
 
 ```bash
 cd openmrs-core/webapp
-mvn jetty:run
+../mvnw jetty:run
 ```
 
 If all goes well (check the console output) you can access the OpenMRS application at `localhost:8080/openmrs`.
