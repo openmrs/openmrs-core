@@ -79,7 +79,6 @@
         <mapping resource="org/openmrs/api/db/hibernate/EncounterProvider.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/EncounterRole.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Program.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/ProgramWorkflow.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ProgramWorkflowState.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Cohort.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/CohortMembership.hbm.xml"/>
@@ -108,6 +107,7 @@
 		<mapping resource="org/openmrs/api/db/hibernate/ClobDatatypeStorage.hbm.xml" />
 
 		<!-- These mappings are required because of rerefences in Obs & Concept -->
+		<mapping class="org.openmrs.ProgramWorkflow"/>
 		<mapping class="org.openmrs.ObsReferenceRange"/>
 		<mapping class="org.openmrs.ConceptReferenceRange"/>
   </session-factory>
