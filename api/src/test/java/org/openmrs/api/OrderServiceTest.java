@@ -58,6 +58,7 @@ import org.openmrs.PatientState;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.ProgramAttributeType;
+import org.openmrs.ProgramWorkflow;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttributeType;
 import org.openmrs.Relationship;
@@ -511,7 +512,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see OrderService#getActiveOrders(org.openmrs.Patient, org.openmrs.OrderType,
 	 * org.openmrs.CareSetting, java.util.Date)
 	 */
-	@Test
+	OrderServiceTest@Test
 	public void getActiveOrders_shouldReturnActiveOrdersAsOfTheSpecifiedDate() throws ParseException {
 		Patient patient = Context.getPatientService().getPatient(2);
 		List<Order> orders = orderService.getAllOrdersByPatient(patient);
@@ -2742,6 +2743,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.addAnnotatedClass(ProgramAttributeType.class)
 			.addAnnotatedClass(HL7InError.class)
 			.addAnnotatedClass(OrderType.class)
+			.addAnnotatedClass(ProgramWorkflow.class)
 			.getMetadataBuilder().build();
 
 

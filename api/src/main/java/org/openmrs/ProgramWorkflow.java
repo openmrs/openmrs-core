@@ -11,7 +11,6 @@ package org.openmrs;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -40,7 +39,7 @@ import org.openmrs.util.NaturalStrings;
 @Audited
 @Entity
 @Table(name = "program_workflow")
-public class ProgramWorkflow extends BaseOpenmrsObject {
+public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -60,35 +59,9 @@ public class ProgramWorkflow extends BaseOpenmrsObject {
 	@OneToMany(mappedBy = "programWorkflow", cascade = CascadeType.ALL, orphanRemoval = true ,fetch = FetchType.EAGER )
     @OrderBy("dateCreated ASC")
 	private Set<ProgramWorkflowState> states = new HashSet<>();
-	@Column(name = "description", length = 255)
-	private String description;
 	
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "creator")
-	private User creator;
 	
-	@Column(name = "date_created", nullable = false)
-	private Date dateCreated;
 	
-	@ManyToOne
-	@JoinColumn(name = "changed_by")
-	private User changedBy;
-	
-	@Column(name = "date_changed")
-	private Date dateChanged;
-	
-	@Column(name = "retired", nullable = false)
-	private Boolean retired = Boolean.FALSE;
-	
-	@Column(name = "date_retired")
-	private Date dateRetired;
-	
-	@ManyToOne
-	@JoinColumn(name = "retired_by")
-	private User retiredBy;
-	
-	@Column(name = "retire_reason", length = 255)
-	private String retireReason;
 
 	// ******************
 	// Constructors
@@ -322,79 +295,6 @@ public class ProgramWorkflow extends BaseOpenmrsObject {
 		this.programWorkflowId = programWorkflowId;
 	}
 
-	
-	
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public User getCreator() {
-		return creator;
-	}
-
-	public void setCreator(User creator) {
-		this.creator = creator;
-	}
-
-	public Date getDateCreated() {
-		return dateCreated;
-	}
-
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-
-	public User getChangedBy() {
-		return changedBy;
-	}
-
-	public void setChangedBy(User changedBy) {
-		this.changedBy = changedBy;
-	}
-
-	public Date getDateChanged() {
-		return dateChanged;
-	}
-
-	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
-	}
-
-	public Boolean getRetired() {
-		return retired;
-	}
-
-	public void setRetired(Boolean retired) {
-		this.retired = retired;
-	}
-
-	public Date getDateRetired() {
-		return dateRetired;
-	}
-
-	public void setDateRetired(Date dateRetired) {
-		this.dateRetired = dateRetired;
-	}
-
-	public User getRetiredBy() {
-		return retiredBy;
-	}
-
-	public void setRetiredBy(User retiredBy) {
-		this.retiredBy = retiredBy;
-	}
-
-	public String getRetireReason() {
-		return retireReason;
-	}
-
-	public void setRetireReason(String retireReason) {
-		this.retireReason = retireReason;
-	}
 
 	/**
 	 * @since 1.5
