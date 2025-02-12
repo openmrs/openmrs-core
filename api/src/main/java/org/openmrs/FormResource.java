@@ -14,6 +14,8 @@ import java.util.Date;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.CustomValueDescriptor;
@@ -53,21 +55,26 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "form_resource_form_resource_id_seq")
+	@GenericGenerator(
+		name = "form_resource_form_resource_id_seq",
+		strategy = "native",
+		parameters = @Parameter(name = "sequence", value = "form_resource_form_resource_id_seq")
+	)
 	@Column(name = "form_resource_id")
 	private Integer formResourceId;
 
 	@ManyToOne
-	@JoinColumn(name = "form_id")
+	@JoinColumn(name = "form_id", nullable = false)
 	private Form form;
 
 	@Column(name = "name")
 	private String name;
 
-	@Column(name = "value_reference")
+	@Column(name = "value_reference", length = 65535)
 	private String valueReference;
 
-	@Column(name = "datatype_classname")
+	@Column(name = "datatype")
 	private String datatypeClassname;
 
 	@Column(name = "datatype_config")
@@ -89,7 +96,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	@JoinColumn(name = "changed_by")
 	private User changedBy;
 	
-	@Column(name = "date_changed")
+	@Column(name = "date_changed", length = 19)
 	private Date dateChanged;
 	
 	public FormResource() {
