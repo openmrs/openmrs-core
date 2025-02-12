@@ -57,7 +57,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	@Column(name = "form_resource_id")
 	private Integer formResourceId;
 
-	@ManyToOne(optional = false)
+	@ManyToOne
 	@JoinColumn(name = "form_id")
 	private Form form;
 
@@ -88,9 +88,8 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	@ManyToOne
 	@JoinColumn(name = "changed_by")
 	private User changedBy;
-
-	@ManyToOne
-	@JoinColumn(name = "date_changed")
+	
+	@Column(name = "date_changed")
 	private Date dateChanged;
 	
 	public FormResource() {
