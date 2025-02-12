@@ -12,11 +12,24 @@ package org.openmrs;
 import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.NotYetPersistedException;
 import org.openmrs.customdatatype.SingleCustomValue;
+
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.AttributeOverride;
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.ManyToOne;
+import javax.persistence.JoinColumn;
+import javax.persistence.Transient;
 
 /**
  * A FormResource is meant as a way for modules to add arbitrary information to
@@ -30,33 +43,54 @@ import org.openmrs.customdatatype.SingleCustomValue;
  *
  * @since 1.9
  */
+@Entity
+@Table(name = "form_resource")
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@AttributeOverride(name = "uuid", column = @Column(name = "uuid", unique = true, nullable = false, length = 38))
 @Audited
 public class FormResource extends BaseOpenmrsObject implements CustomValueDescriptor, SingleCustomValue<FormResource> {
 
 	private static final long serialVersionUID = 1L;
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "form_resource_id")
 	private Integer formResourceId;
-	
+
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "form_id")
 	private Form form;
-	
+
+	@Column(name = "name")
 	private String name;
-	
+
+	@Column(name = "value_reference")
 	private String valueReference;
-	
+
+	@Column(name = "datatype_classname")
 	private String datatypeClassname;
-	
+
+	@Column(name = "datatype_config")
 	private String datatypeConfig;
-	
+
+	@Column(name = "preferred_handler")
 	private String preferredHandlerClassname;
-	
+
+	@Column(name = "handler_config")
 	private String handlerConfig;
-	
+
+	@Transient
 	private transient boolean dirty = false;
-	
+
+	@Transient
 	private transient Object typedValue;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "changed_by")
 	private User changedBy;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "date_changed")
 	private Date dateChanged;
 	
 	public FormResource() {
