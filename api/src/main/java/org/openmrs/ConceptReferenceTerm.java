@@ -25,6 +25,9 @@ import javax.persistence.GenerationType;
 import org.hibernate.annotations.GenericGenerator; 
 import org.hibernate.annotations.Parameter;
 import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import java.util.HashSet;
 
 /**
  * A concept reference term is typically name for a concept by which it is referred in another
@@ -42,7 +45,7 @@ public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 	
 	@DocumentId
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "concept_reference_term_id_seq")
 	@GenericGenerator(
 			name = "concept_reference_term_id_seq",
 			strategy = "native",
@@ -51,7 +54,8 @@ public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 	@Column(name = "concept_reference_term_id")
 	private Integer conceptReferenceTermId;
 	
-	@Column(name = "concept_source_id", nullable = false)
+	@ManyToOne
+	@JoinColumn(name = "concept_source_id", nullable = false)
 	private ConceptSource conceptSource;
 	
 	//The unique code used to identify the reference term in it's reference terminology
@@ -62,8 +66,8 @@ public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 	@Column(name = "version", length = 50)
 	private String version;
 	
-	@OneToMany(mappedBy = "conceptReferenceTerm" ,cascade = CascadeType.ALL, orphanRemoval = true)
-	private Set<ConceptReferenceTermMap> conceptReferenceTermMaps;
+	@OneToMany(mappedBy = "termA", cascade = CascadeType.ALL, orphanRemoval = true)
+	private Set<ConceptReferenceTermMap> conceptReferenceTermMaps = new HashSet<>();
 	
 	/** default constructor */
 	public ConceptReferenceTerm() {
