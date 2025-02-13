@@ -21,6 +21,7 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.search.annotations.DocumentId;
+import org.hibernate.annotations.Immutable;
 
 /**
  * ConceptDatatype
@@ -28,6 +29,7 @@ import org.hibernate.search.annotations.DocumentId;
 @Entity
 @Table(name = "concept_datatype")
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
+@Immutable
 @Audited
 public class ConceptDatatype extends BaseChangeableOpenmrsMetadata {
 	
