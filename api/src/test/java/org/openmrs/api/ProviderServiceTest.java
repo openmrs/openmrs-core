@@ -250,7 +250,22 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		assertEquals("retire reason", provider.getRetireReason());
 		assertEquals(6, service.getAllProviders(false).size());
 	}
-	
+	//Xin: unretired, retired, retired
+	@Test
+	public void retireProvider_shouldRetireAProviderIfRetireAgain() {
+		Provider provider = service.getProvider(1);
+		assertFalse(provider.getRetired());
+		assertNull(provider.getRetireReason());
+		service.retireProvider(provider, "retire reason");
+		assertTrue(provider.getRetired());
+		assertEquals("retire reason", provider.getRetireReason());
+		assertEquals(6, service.getAllProviders(false).size());
+		service.retireProvider(provider, "retire reason");
+		assertTrue(provider.getRetired());
+		assertEquals("retire reason", provider.getRetireReason());
+		assertEquals(6, service.getAllProviders(false).size());
+	}
+
 	/**
 	 * @see ProviderService#retireProviderAttributeType(ProviderAttributeType,String)
 	 */
@@ -334,7 +349,19 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		assertFalse(provider.getRetired());
 		assertNull(provider.getRetireReason());
 	}
-	
+	//Xin: Unretired, retired, unretired, unretired
+	@Test
+	public void unretireProvider_shouldUnretireAProviderIfUnretiredAgain() {
+		Provider provider = service.getProvider(2);
+		service.unretireProvider(provider);
+		assertFalse(provider.getRetired());
+		service.retireProvider(provider, "retired reason");
+		assertTrue(provider.getRetired());
+		service.unretireProvider(provider);
+		assertFalse(provider.getRetired());
+		service.unretireProvider(provider);
+		assertFalse(provider.getRetired());
+	}
 	/**
 	 * @see ProviderService#unretireProviderAttributeType(ProviderAttributeType)
 	 */
