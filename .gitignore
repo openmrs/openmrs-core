@@ -61,7 +61,6 @@ nb-configuration.xml
 ################
 
 ### Linux ###
-.*
 !.gitignore
 !.gitattributes
 !.tx
