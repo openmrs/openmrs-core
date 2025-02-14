@@ -16,7 +16,7 @@
 @REM under the License.
 
 @REM -----------------------------------------------------------------------------
-@REM Apache Maven Wrapper debug script, version @@project.version@@
+@REM Apache Maven Wrapper debug script, version version 3.3.2
 @REM
 @REM Environment Variable Prerequisites
 @REM
