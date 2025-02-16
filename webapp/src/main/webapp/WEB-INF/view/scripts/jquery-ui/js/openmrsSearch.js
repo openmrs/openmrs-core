@@ -22,7 +22,7 @@
  *			displayLength: 5,
  *			minLength: 3,
  *			columnWidths: ["15%","15%","15%","15%","15%", "25%"],
- *			columnRenderers: [null, null, null, null, null, null], 
+ *			columnRenderers: [null, null, null, null, null, null],
  *			columnVisibility: [true, true, true, true, true, true],
  *			searchHandler: doSearchHandler,
  *			selectionHandler: doSelectionHandler,
@@ -51,9 +51,9 @@
  *			{searchLabel: '<openmrs:message code="General.search"/>',
  *              searchPlaceholder:'<openmrs:message code="general.search" javaScriptEscape="true"/>',
  *              displayLength: 5,
- *				minLength: 3, 
+ *				minLength: 3,
  *				columnWidths: ["15%","15%","15%","15%","15%", "25%"],
- *				columnRenderers: [null, null, null, null, null, null], 
+ *				columnRenderers: [null, null, null, null, null, null],
  *				columnVisibility: [true, true, true, true, true, true]}
  *		);
  *	});
@@ -104,8 +104,8 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
  *   verboseHandler: function to be called to return the text to display as verbose output
  *   attributes: Array of names for attributes types to display in the list of results
  *   showSearchButton: Boolean, indicating whether to use search button for immediate search
- *   showVerbose: Boolean, indicates whether to check checkbox for verbose 
- *   includeVoided: Boolean, indicates whether to check checkbox for voided 
+ *   showVerbose: Boolean, indicates whether to check checkbox for verbose
+ *   includeVoided: Boolean, indicates whether to check checkbox for voided
  *
  * The styling on this table works like this:
  * <pre>
@@ -115,7 +115,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
  *</pre>
  */
 (function($j) {
-    var openmrsSearch_div = 
+    var openmrsSearch_div =
     '<span>'+
         '<span>'+
             '<table cellspacing="0" width="100%">'+
@@ -195,7 +195,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
             notification = div.find("#searchWidgetNotification");
             loadingMsgObj = div.find("#loadingMsg");
             showSearchButton = o.showSearchButton ? true : false;
-            
+
             this._div = div;
 
             lbl.text(o.searchLabel);
@@ -549,7 +549,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
             if(typeof(Storage) !== "undefined") {
             	//check to see if there are parameters to get from sessionStorage
             	//after setting the fields clear out session storage so it doesn't get used on other pages
-            	 
+
                 if(sessionStorage.includeVoided){
                 	self.options.includeVoided = true;
                 	sessionStorage.removeItem("includeVoided");
@@ -557,9 +557,9 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
                 if(sessionStorage.includeVerbose){
                 	self.options.showVerbose = true;
                 	sessionStorage.removeItem("includeVerbose");
-                }              
+                }
             }
-        
+
             //register an onchange event handler for the length dropdown so that we don't lose
             //the row highlight when the user makes changes to the length
             var selectElement = document.getElementById('openmrsSearchTable_length').getElementsByTagName('select')[0];
@@ -580,7 +580,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
             } else if(self.options.searchPhrase || self.options.doSearchWhenEmpty) {
             	if (self.options.searchPhrase == null) {
             		self.options.searchPhrase = "";
-            	}                
+            	}
             	//check to see if we need to select the checkbox for includeVerbose and/or includeVoided
             	//since there is a searchPhrase the page will reload using these values
             	if(self.options.showVerbose){
@@ -588,7 +588,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
             	}
             	if(self.options.includeVoided){
             		$j('#includeVoided').attr('checked','checked');
-            	}           	
+            	}
             }
             $j(input).val(self.options.searchPhrase).keyup();
         	//setting the cursor to the end of the searchPhrase
@@ -839,9 +839,10 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
             var cols = this.options.fieldsAndHeaders;
             rRowData = $j.map(cols, function(c) {
                 var data = rowData[c.fieldName];
-                if(data == null)
+                if(data == null || data === "null")
                     data = " ";
-
+                //Escape html
+                data = $j('<div/>').text(data).html();
                 return data;
             });
 
@@ -851,7 +852,8 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
                     attributeValue = rowData.attributes[a.name];
                     if(attributeValue == null)
                         attributeValue = '';
-
+                    //Escape html
+                    attributeValue = $j('<div/>').text(attributeValue).html();
                     rRowData.push(attributeValue);
                 });
             }
@@ -968,7 +970,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
         				sessionStorage.includeVerbose = "checked";
         			}
         			if($j(checkBox).is(':checked')) {
-        				sessionStorage.includeVoided = "checked";	
+        				sessionStorage.includeVoided = "checked";
         			}
         		}
                 this.options.selectionHandler(position, rowData);
@@ -1073,14 +1075,16 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
             return Math.ceil(this._table.fnSettings()._iDisplayStart / this._table.fnSettings()._iDisplayLength) + 1;
         },
         _updatePageInfo: function(searchText) {
-            textToDisplay = omsgs.viewingResultsFor.replace("_SEARCH_TEXT_", "'<b>"+searchText+"</b>'");
-            if($j.trim(searchText) == '')
-                textToDisplay = omsgs.viewingAll;
+            if ((/^[a-zA-Z0-9_\-]+$/.test(searchText))) {
+                textToDisplay = omsgs.viewingResultsFor.replace("_SEARCH_TEXT_", "'<b>"+sanitizeHtml(searchText)+"</b>'");
+                if($j.trim(searchText) == '')
+                    textToDisplay = omsgs.viewingAll;
 
-            $j('#pageInfo').html(sanitizeHtml(textToDisplay));
+                $j('#pageInfo').html(sanitizeHtml(textToDisplay));
 
-            if($j('#pageInfo').css("visibility") != 'visible')
-                $j('#pageInfo').css("visibility", "visible");
+                if($j('#pageInfo').css("visibility") != 'visible')
+                    $j('#pageInfo').css("visibility", "visible");
+            }
         },
 
         //This function adds the data returned by the second ajax call that fetches the remaining rows
