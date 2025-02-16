@@ -11,6 +11,15 @@ package org.openmrs;
 
 import static org.apache.commons.lang3.StringUtils.defaultString;
 
+import javax.persistence.Cacheable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -19,6 +28,9 @@ import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Boost;
@@ -40,8 +52,12 @@ import org.springframework.util.StringUtils;
 /**
  * A Person can have zero to n PersonName(s).
  */
+@Entity
+@Table(name = "person_name")
 @Indexed
 @Audited
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class PersonName extends BaseChangeableOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PersonName> {
 	
 	public static final long serialVersionUID = 4353L;
@@ -49,12 +65,23 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 	private static final Logger log = LoggerFactory.getLogger(PersonName.class);
 
 	// Fields
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "person_name_id_seq")
+	@GenericGenerator(
+		name = "person_name_id_seq",
+		strategy = "native",
+		parameters = @Parameter(name = "sequence", value = "person_name_person_name_id_seq")
+	)
+	@Column(name = "person_name_id", nullable = false)
 	@DocumentId
 	private Integer personNameId;
 
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
+	@ManyToOne
+	@JoinColumn(name = "person_id")
 	private Person person;
-
+	
+	@Column(name = "preferred")
 	private Boolean preferred = false;
 
 	@Fields({
@@ -63,7 +90,10 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 			@Field(name = "givenNameAnywhere", analyzer = @Analyzer(definition = LuceneAnalyzers.ANYWHERE_ANALYZER), boost = @Boost(2f)),
 			@Field(name = "givenNameSoundex", analyzer =  @Analyzer(definition = LuceneAnalyzers.SOUNDEX_ANALYZER), boost = @Boost(1f))
 	})
+	@Column(name = "given_name", length = 50)
 	private String givenName;
+	
+	@Column(name = "prefix", length = 50)
 	private String prefix;
 
 	@Fields({
@@ -72,8 +102,10 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 			@Field(name = "middleNameAnywhere", analyzer = @Analyzer(definition = LuceneAnalyzers.ANYWHERE_ANALYZER)),
 			@Field(name = "middleNameSoundex", analyzer =  @Analyzer(definition = LuceneAnalyzers.SOUNDEX_ANALYZER), boost = @Boost(1f))
 	})
+	@Column(name = "middle_name", length = 50)
 	private String middleName;
 	
+	@Column(name = "family_name_prefix", length = 50)
 	private String familyNamePrefix;
 
 	@Fields({
@@ -82,6 +114,7 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 			@Field(name = "familyNameAnywhere", analyzer = @Analyzer(definition = LuceneAnalyzers.ANYWHERE_ANALYZER), boost = @Boost(2f)),
 			@Field(name = "familyNameSoundex", analyzer =  @Analyzer(definition = LuceneAnalyzers.SOUNDEX_ANALYZER), boost = @Boost(1f))
 	})
+	@Column(name = "family_name", length = 50)
 	private String familyName;
 
 	@Fields({
@@ -90,10 +123,13 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 			@Field(name = "familyName2Anywhere", analyzer = @Analyzer(definition = LuceneAnalyzers.ANYWHERE_ANALYZER)),
 			@Field(name = "familyName2Soundex", analyzer =  @Analyzer(definition = LuceneAnalyzers.SOUNDEX_ANALYZER), boost = @Boost(1f))
 	})
+	@Column(name = "family_name2", length = 50)
 	private String familyName2;
 	
+	@Column(name = "family_name_suffix", length = 50)
 	private String familyNameSuffix;
 	
+	@Column(name = "degree", length = 50)
 	private String degree;
 	
 	private static String format = OpenmrsConstants.PERSON_NAME_FORMAT_SHORT;
