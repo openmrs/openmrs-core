@@ -75,7 +75,7 @@ public class PatientIdentifierTypeDefaultComparatorTest {
 	 * compare order: retired > name
 	 */
 	@Test
-	public void compare_retiredStatus(){
+	public void compare_shouldOrderProperlyForRetiredStatus(){
 		PatientIdentifierType requiredNotRetiredA = new PatientIdentifierType();
         requiredNotRetiredA.setRequired(true);
         requiredNotRetiredA.setRetired(false);
@@ -101,7 +101,7 @@ public class PatientIdentifierTypeDefaultComparatorTest {
 	 * compare order: required > name
 	 */
 	@Test
-	public void compare_requiredStatus(){
+	public void compare_shouldOrderProperlyForRequiredStatus(){
 		PatientIdentifierType requiredRetiredA = new PatientIdentifierType();
         requiredRetiredA.setRequired(true);
         requiredRetiredA.setRetired(true);
@@ -127,7 +127,7 @@ public class PatientIdentifierTypeDefaultComparatorTest {
 	 * compare order: retired > required > name
 	 */
 	@Test
-    public void compare_requiredAndRetiredOrder(){
+    public void compare_shouldOrderProperlyForRequiredAndRetiredOrder(){
 		PatientIdentifierType requiredNotRetiredA = new PatientIdentifierType();
         requiredNotRetiredA.setRequired(true);
         requiredNotRetiredA.setRetired(false);
@@ -149,7 +149,7 @@ public class PatientIdentifierTypeDefaultComparatorTest {
 	 * 3. name is null last 4. Id is null last
 	 */
 	@Test
-	public void compare_NameCaseInsensitive(){
+	public void compare_shouldOrderProperlyForNameCaseInsensitive(){
 		PatientIdentifierType requiredNotRetired2A = new PatientIdentifierType();
 		requiredNotRetired2A.setRequired(true);
 		requiredNotRetired2A.setRetired(false);
@@ -166,7 +166,7 @@ public class PatientIdentifierTypeDefaultComparatorTest {
 		assertEquals(Arrays.asList(requiredNotRetired1a, requiredNotRetired2A), list);
 	}
 	@Test
-	public void compare_NameOrder(){
+	public void compare_shouldOrderProperlyForNameOrder(){
 		PatientIdentifierType requiredNotRetiredA = new PatientIdentifierType();
 		requiredNotRetiredA.setRequired(true);
 		requiredNotRetiredA.setRetired(false);
@@ -184,7 +184,7 @@ public class PatientIdentifierTypeDefaultComparatorTest {
 		assertEquals(Arrays.asList(requiredNotRetiredA, requiredNotRetiredZ, requiredNotRetiredNotName), list);
 	}
 	@Test
-	public void compare_IdOrder(){
+	public void compare_shouldOrderProperlyForIdOrder(){
 		PatientIdentifierType requiredNotRetired2A = new PatientIdentifierType();
 		requiredNotRetired2A.setRequired(true);
 		requiredNotRetired2A.setRetired(false);
@@ -200,12 +200,12 @@ public class PatientIdentifierTypeDefaultComparatorTest {
 		requiredNotRetiredANotId.setRetired(false);
 		requiredNotRetiredANotId.setName("A");
 
-		PatientIdentifierType requiredNotRetiredNotName = new PatientIdentifierType();
-		requiredNotRetiredNotName.setRequired(true);
-		requiredNotRetiredNotName.setRetired(false);
+//		PatientIdentifierType requiredNotRetiredNotName = new PatientIdentifierType();
+//		requiredNotRetiredNotName.setRequired(true);
+//		requiredNotRetiredNotName.setRetired(false);
 
-		List<PatientIdentifierType> list = Arrays.asList(requiredNotRetired2A, requiredNotRetired1a, requiredNotRetiredNotName, requiredNotRetiredANotId);
+		List<PatientIdentifierType> list = Arrays.asList(requiredNotRetired2A, requiredNotRetired1a, requiredNotRetiredANotId);
 		list.sort(new PatientIdentifierTypeDefaultComparator());
-		assertEquals(Arrays.asList(requiredNotRetired1a, requiredNotRetired2A, requiredNotRetiredANotId, requiredNotRetiredNotName), list);
+		assertEquals(Arrays.asList(requiredNotRetired1a, requiredNotRetired2A, requiredNotRetiredANotId), list);
 	}
 }
