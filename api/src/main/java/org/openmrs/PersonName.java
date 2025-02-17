@@ -11,7 +11,6 @@ package org.openmrs;
 
 import static org.apache.commons.lang3.StringUtils.defaultString;
 
-import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -28,6 +27,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
@@ -56,8 +56,7 @@ import org.springframework.util.StringUtils;
 @Table(name = "person_name")
 @Indexed
 @Audited
-@Cacheable
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class PersonName extends BaseChangeableOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PersonName> {
 	
 	public static final long serialVersionUID = 4353L;
