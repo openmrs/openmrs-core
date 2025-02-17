@@ -313,6 +313,7 @@
 	<bean id="schedulerServiceTarget" class="org.openmrs.scheduler.timer.TimerSchedulerServiceImpl">
 		<property name="schedulerDAO" ref="schedulerDAO"/>
 	</bean>
+	<bean id="storageServiceTarget" class="org.openmrs.api.impl.LocalStorageService" />
 	<bean id="alertServiceTarget" class="org.openmrs.notification.impl.AlertServiceImpl">
 		<property name="alertDAO" ref="alertDAO"/>
 	</bean>
@@ -483,6 +484,12 @@
 	<bean id="schedulerService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="target" ref="schedulerServiceTarget"/>
+		<property name="preInterceptors" ref="serviceInterceptors"/>
+		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
+	</bean>
+	<bean id="storageService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="target" ref="storageServiceTarget"/>
 		<property name="preInterceptors" ref="serviceInterceptors"/>
 		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
 	</bean>
