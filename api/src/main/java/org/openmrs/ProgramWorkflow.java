@@ -46,10 +46,11 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	// ******************
 	// Properties
 	// *****************
-	@Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "program_workflow_program_workflow_id_seq")
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "program_workflow_id")
-	private Integer programWorkflowId;
+    private Integer programWorkflowId;
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "program_id", nullable = false)
 	private Program program;
