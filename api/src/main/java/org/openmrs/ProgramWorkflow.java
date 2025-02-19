@@ -48,7 +48,7 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	// *****************
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "program_workflow_program_workflow_id_seq")
     @Column(name = "program_workflow_id")
     private Integer programWorkflowId;
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -61,9 +61,6 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
     @OrderBy("dateCreated ASC")
 	private Set<ProgramWorkflowState> states = new HashSet<>();
 	
-	
-	
-
 	// ******************
 	// Constructors
 	// ******************
