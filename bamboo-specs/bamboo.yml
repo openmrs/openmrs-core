@@ -282,12 +282,8 @@ Release:
                       --cache-from ${BUILD_IMAGE}-cache \
                       --build-arg MVN_ARGS="clean install -DskipTests" -t ${IMAGE} .
                       
-                      echo "Inspecting the image for id"
-                      sleep 10
-                      docker pull ${IMAGE}
-                      docker image inspect --format='{{index .RepoDigests 0}}' ${IMAGE} > docker-image.txt
-                      
                       echo "Releasing to maven"
+                      sleep 10
                       docker pull ${DEV_IMAGE}
                       docker run -v m2-repo:/root/.m2/repository -v ~/.m2/settings.xml:/.m2/settings.xml:ro \
                       --rm ${DEV_IMAGE} mvn deploy -DskipTests --settings /.m2/settings.xml
@@ -308,6 +304,10 @@ Release:
                       echo "Unable to update the main branch to a new SNAPSHOT version. Please update it manually if needed."
                       exit 0
                       )
+
+                      echo "Inspecting the image for id"
+                      docker pull ${IMAGE}
+                      docker image inspect --format='{{index .RepoDigests 0}}' ${IMAGE} > docker-image.txt
               description: Build and push images
         - any-task:
               plugin-key: com.atlassian.bamboo.plugins.variable.updater.variable-updater-generic:variable-file-reader
@@ -412,8 +412,7 @@ Release JDK 17 image:
 variables:
     docker.image.name: openmrs/openmrs-core
     docker.image.tag: nightly
-    maven.release.version: 2.7.0
-    maven.development.version: 2.8.0-SNAPSHOT
+    maven.release.version: 2.8.0
     build.release.type: release
 repositories:
     - openmrs-core:
