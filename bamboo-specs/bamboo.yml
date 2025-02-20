@@ -283,7 +283,7 @@ Release:
                       --build-arg MVN_ARGS="clean install -DskipTests" -t ${IMAGE} .
                       
                       echo "Releasing to maven"
-					  sleep 10
+                      sleep 10
                       docker pull ${DEV_IMAGE}
                       docker run -v m2-repo:/root/.m2/repository -v ~/.m2/settings.xml:/.m2/settings.xml:ro \
                       --rm ${DEV_IMAGE} mvn deploy -DskipTests --settings /.m2/settings.xml
@@ -305,7 +305,7 @@ Release:
                       exit 0
                       )
 
-	   				  echo "Inspecting the image for id"
+                      echo "Inspecting the image for id"
                       docker pull ${IMAGE}
                       docker image inspect --format='{{index .RepoDigests 0}}' ${IMAGE} > docker-image.txt
               description: Build and push images
