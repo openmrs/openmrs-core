@@ -775,9 +775,7 @@ public class DatabaseUpdater {
 	}
 	
 	/**
-	 * This method releases the liquibase db lock after a crashed database update. First, it checks
-	 * whether "liquibasechangeloglock" table exists in db. If so, it will check whether the database is
-	 * locked. If that is also true, this means that last attempted db update crashed.<br>
+	 * This method releases the liquibase db lock, and is intended to be usd after a crashed database update.
 	 * <br>
 	 * This should only be called if the user is sure that no one else is currently running database
 	 * updates. This method should be used if there was a db crash while updates were being written and
@@ -787,12 +785,11 @@ public class DatabaseUpdater {
 	 */
 	public static synchronized void releaseDatabaseLock() throws LockException {
 		Database database = null;
-		
 		try {
 			Liquibase liquibase = getLiquibase(null, null);
 			database = liquibase.getDatabase();
 			LockService lockService = LockServiceFactory.getInstance().getLockService(database);
-			if (lockService.hasChangeLogLock() && isLocked()) {
+			if (isLocked()) {
 				lockService.forceReleaseLock();
 			}
 		}
