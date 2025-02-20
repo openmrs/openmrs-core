@@ -322,9 +322,9 @@ public class ModuleUtil {
 						upperBound = upperBound.replaceAll("\\*", Integer.toString(Integer.MAX_VALUE));
 					}
 					
-					int lowerReturn = compareVersionIgnoringSnapshotQualifier(version, lowerBound);
+					int lowerReturn = compareVersionIgnoringQualifier(version, lowerBound);
 					
-					int upperReturn = compareVersionIgnoringSnapshotQualifier(version, upperBound);
+					int upperReturn = compareVersionIgnoringQualifier(version, upperBound);
 					
 					if (lowerReturn < 0 || upperReturn > 0) {
 						log.debug("Version " + version + " is not between " + lowerBound + " and " + upperBound);
@@ -332,7 +332,7 @@ public class ModuleUtil {
 						return true;
 					}
 				} else {
-					if (compareVersionIgnoringSnapshotQualifier(version, range) < 0) {
+					if (compareVersionIgnoringQualifier(version, range) < 0) {
 						log.debug("Version " + version + " is below " + range);
 					} else {
 						return true;
@@ -413,11 +413,11 @@ public class ModuleUtil {
 	 * @return the value <code>0</code> if versions are equal; a value less than <code>0</code> if first version is
 	 * 		   before the second one; a value greater than <code>0</code> if first version is after the second one.
 	 */
-	public static int compareVersionIgnoringSnapshotQualifier(String versionA, String versionB) {
+	public static int compareVersionIgnoringQualifier(String versionA, String versionB) {
 		return compareVersion(versionA, versionB, true);
 	}
 
-	private static int compareVersion(String versionA, String versionB, boolean ignoreSnapshotQualifier) {
+	private static int compareVersion(String versionA, String versionB, boolean ignoreQualifier) {
 		try {
 			if (versionA == null || versionB == null) {
 				return 0;
@@ -463,7 +463,7 @@ public class ModuleUtil {
 			}
 			
 			// At this point the version numbers are equal.
-			if (!ignoreSnapshotQualifier) {
+			if (!ignoreQualifier) {
 				if (qualifierIndexA >= 0 && qualifierIndexB < 0) {
 					return -1;
 				} else if (qualifierIndexA < 0 && qualifierIndexB >= 0) {
