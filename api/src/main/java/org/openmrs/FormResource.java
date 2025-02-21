@@ -79,6 +79,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	@Column(name = "datatype", length = 255)
 	private String datatypeClassname;
 
+	@Lob
 	@Column(name = "datatype_config", length = 65535)
 	private String datatypeConfig;
 
