@@ -91,10 +91,10 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	private String handlerConfig;
 
 	@Transient
-	private transient boolean dirty = false;
+	private boolean dirty = false;
 
 	@Transient
-	private transient Object typedValue;
+	private Object typedValue;
 
 	@ManyToOne
 	@JoinColumn(name = "changed_by")
