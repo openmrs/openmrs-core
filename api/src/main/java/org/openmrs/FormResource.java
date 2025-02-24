@@ -31,7 +31,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.ManyToOne;
 import javax.persistence.JoinColumn;
-import javax.persistence.Transient;
 import javax.persistence.Lob;
 
 /**
@@ -89,12 +88,10 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	@Lob
 	@Column(name = "handler_config")
 	private String handlerConfig;
-
-	@Transient
-	private boolean dirty = false;
-
-	@Transient
-	private Object typedValue;
+	
+	private transient boolean dirty = false;
+	
+	private transient Object typedValue;
 
 	@ManyToOne
 	@JoinColumn(name = "changed_by")
