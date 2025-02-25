@@ -13,13 +13,10 @@
 <!--
 	This file is used by the org.openmrs.util.databasechange.Database1_9_7UpgradeIT integration test.
 -->
-<databaseChangeLog 
+<databaseChangeLog
 	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
-	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext 
-	    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
-		http://www.liquibase.org/xml/ns/dbchangelog 
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
 	<include file="org/openmrs/liquibase/updates/liquibase-update-to-latest-1.9.x.xml"/>
@@ -31,5 +28,6 @@
 	<include file="org/openmrs/liquibase/updates/liquibase-update-to-latest-2.5.x.xml"/>
 	<include file="org/openmrs/liquibase/updates/liquibase-update-to-latest-2.6.x.xml"/>
 	<include file="org/openmrs/liquibase/updates/liquibase-update-to-latest-2.7.x.xml"/>
+	<include file="org/openmrs/liquibase/updates/liquibase-update-to-latest-2.8.x.xml"/>
 
 </databaseChangeLog>
