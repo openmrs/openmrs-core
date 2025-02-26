@@ -191,14 +191,6 @@ public class ModuleTest {
 		assertEquals(module1.hashCode(), module2.hashCode());
 	}
 	//Xin: Test getModuleActivator Method
-//	@Test
-//	public void getModuleActivator_shouldReturnModuleActivatorInstance() {
-//		Module module1 = new Module("Module1", "org.openmrs.module1", "org.openmrs.module1", "Author1", "Description1", "1.0", "1.0");
-//		module1.setActivatorName("org.openmrs.module1.TestModuleActivator");
-//		ModuleActivator activator = module1.getModuleActivator();
-//		assertNotNull(activator);
-//	}
-
 	@Test
 	public void getModuleActivator_shouldThrowExceptionWhenActivatorClassNotFound() {
 		Module module = new Module("TestModule", "org.openmrs.testmodule", "org.openmrs.testmodule", "Author", "Description", "1.0", "1.0");
@@ -219,37 +211,14 @@ public class ModuleTest {
 		module.setExtensionNames(new IdentityHashMap<>());
 		assertTrue(module.getExtensions().isEmpty());
 	}
-
-//	@Test
-//	public void getExtensions_shouldExpandExtensionNamesIntoExtensions() {
-//		Module module = new Module("TestModule");
-//		IdentityHashMap<String, String> extensionNames = new IdentityHashMap<>();
-//		extensionNames.put("point1", "org.openmrs.module.TestExtension");
-//		module.setExtensionNames(extensionNames);
-//		List<Extension> extensions = module.getExtensions();
-//		assertTrue(extensions.isEmpty());
-//		assertEquals("point1", extensions.get(0).getPointId());
-//	}
+	
 // Xin: Test isCoreModule Method
-//	@Test
-//	public void isCoreModule_shouldReturnTrueForCoreModule() {
-//		Module module = new Module("CoreModule", ModuleConstants.CORE_MODULES.keySet().iterator().next(), "org.openmrs.core", "Author", "Description", "1.0", "1.0");
-//		assertTrue(module.isCoreModule());
-//	}
-
 	@Test
 	public void isCoreModule_shouldReturnFalseForNonCoreModule() {
 		Module module = new Module("NonCoreModule", "org.openmrs.noncore", "org.openmrs.noncore", "Author", "Description", "1.0", "1.0");
 		assertFalse(module.isCoreModule());
 	}
 	//Xin: Test isStarted Method
-//	@Test
-//	public void isStarted_shouldReturnTrueWhenModuleIsStarted() {
-//		Module module = new Module("StartedModule");
-//		ModuleFactory.startModule(module);
-//		assertTrue(module.isStarted());
-//	}
-
 	@Test
 	public void isStarted_shouldReturnFalseWhenModuleIsNotStarted() {
 		Module module = new Module("NotStartedModule");
