@@ -23,6 +23,7 @@ import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * Handler for storing audio and video for complex obs to the file system. The mime type used is
@@ -32,6 +33,7 @@ import org.slf4j.LoggerFactory;
  * @see org.openmrs.util.OpenmrsConstants#GLOBAL_PROPERTY_COMPLEX_OBS_DIR
  * @since 1.12
  */
+@Component
 public class MediaHandler extends AbstractHandler implements ComplexObsHandler {
 	
 	/** Views supported by this handler */
