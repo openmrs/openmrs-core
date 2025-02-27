@@ -9,6 +9,27 @@
  */
 package org.openmrs;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,21 +39,45 @@ import org.slf4j.LoggerFactory;
  *
  * @since 1.9
  */
+@Entity
+@Table(name = "provider")
 @Audited
+@AttributeOverride(name = "name", column = @Column(name = "name"))
 public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(Provider.class);
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "provider_id_seq")
+	@GenericGenerator(
+		name = "provider_id_seq",
+		strategy = "native",
+		parameters = @Parameter(name = "sequence", value = "provider_provider_id_seq")
+	)
+	@Column(name = "provider_id", nullable = false,insertable = false)
 	private Integer providerId;
 	
+	@ManyToOne
+	@JoinColumn(name="person_id")
+	@Cascade(CascadeType.SAVE_UPDATE)
 	private Person person;
 	
+	@Column(name="identifier")
 	private String identifier;
 	
+	@ManyToOne
+	@JoinColumn(name="role_id")
 	private Concept role;
 	
+	@ManyToOne
+	@JoinColumn(name="speciality_id")
 	private Concept speciality;
 	
+
+	@OneToMany(mappedBy = "provider",cascade = javax.persistence.CascadeType.ALL,fetch = FetchType.LAZY,orphanRemoval = true)
+	@BatchSize(size = 100)
+	@OrderBy("voided ASC")
+	private Set<ProviderAttribute> attributes= new LinkedHashSet<>();
 	public Provider() {
 	}
 	
@@ -138,6 +183,16 @@ public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 		return speciality;
 	}
 	
+	@Override
+	public Set<ProviderAttribute> getAttributes() {
+		return attributes;
+	}
+
+	@Override
+	public void setAttributes(Set<ProviderAttribute> attributes) {
+		this.attributes = attributes;
+	}
+
 	@Override
 	public String toString() {
 		String provider = String.valueOf(providerId) + " providerName:" + ((person != null) ? person.getNames() : "");
