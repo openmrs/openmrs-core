@@ -21,6 +21,7 @@ import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 /**
@@ -29,6 +30,7 @@ import org.springframework.util.Assert;
  * 
  * @since 1.5
  */
+@Component
 public class BinaryDataHandler extends AbstractHandler implements ComplexObsHandler {
 	
 	/** Views supported by this handler */
