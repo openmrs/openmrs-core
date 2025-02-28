@@ -11,18 +11,24 @@ package org.openmrs.obs.handler;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.NumberFormat;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.util.Arrays;
 
-import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Obs;
+import org.openmrs.api.APIException;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.StorageService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.storage.ObjectMetadata;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Abstract handler for some convenience methods Files are stored in the location specified by the
@@ -34,90 +40,67 @@ public class AbstractHandler {
 	
 	private static final Logger log = LoggerFactory.getLogger(AbstractHandler.class);
 	
-	protected NumberFormat nf;
+	@Autowired
+	StorageService storageService;
 	
-	/**
-	 * Constructor initializes formats for alternative file names to protect from unintentionally
-	 * overwriting existing files.
-	 */
+	@Autowired
+	AdministrationService adminService;
+	
 	public AbstractHandler() {
-		nf = NumberFormat.getInstance();
-		nf.setMaximumFractionDigits(0);
-		nf.setMinimumIntegerDigits(2);
 	}
 	
+	public AbstractHandler(AdministrationService adminService, StorageService storageService) {
+		this();
+		this.adminService = adminService;
+		this.storageService = storageService;
+	}
+
 	/**
-	 * Returns a {@link File} for the given obs complex data to be written to. The output file
-	 * location is determined off of the {@link OpenmrsConstants#GLOBAL_PROPERTY_COMPLEX_OBS_DIR}
-	 * and the file name is determined off the current obs.getComplexData().getTitle().
-	 * 
-	 * @param obs the Obs with a non-null complex data on it
-	 * @return File that the complex data should be written to
+	 * @return obs dir
+	 * @since 2.8.0
 	 */
-	public File getOutputFileToWrite(Obs obs) throws IOException {
-		String title = obs.getComplexData().getTitle();
-		String titleWithoutExtension = FilenameUtils.removeExtension(title);
-		String extension = "." + StringUtils.defaultIfEmpty(FilenameUtils.getExtension(title), "dat");
-		String uuid = obs.getUuid();
-		String filename;
-		
-		if (StringUtils.isNotBlank(titleWithoutExtension)) {
-			filename = titleWithoutExtension + "_" + uuid + extension;
-		} else {
-			filename = uuid + extension;
-		}
-		
-		File dir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(
-		    Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
-		return new File(dir, filename);
+	public String getObsDir() {
+		return adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR);
 	}
-	
-	/**
-	 * Get the extension for a given filename if it exists, else return the filename. If there is no
-	 * filename in the input string, "raw" is returned. 
-	 * 
-	 * If given "asdf.jpg", will return "jpg".
-	 * If given "asdf", will return "asdf". 
-	 * If given "" or "a/b/c/" will return "raw".
-	 * 
-	 * @param filename
-	 * @return the part after the period in the given filename, the filename, or "raw"
-	 * @deprecated since 2.1.3 use {@link org.apache.commons.io.FilenameUtils#getExtension(String)}
-	 *             instead.
-	 */
-	@Deprecated
-	public String getExtension(String filename) {
-		String result = FilenameUtils.getExtension(filename);
-		
-		if (StringUtils.isEmpty(result)) {
-			result = FilenameUtils.getBaseName(filename);
-			
-			if (StringUtils.isEmpty(result)) {
-				result = "raw";
-			}
-		}
-		
-		return result;
-	}
-	
+
 	/**
 	 * @see org.openmrs.obs.ComplexObsHandler#getObs(Obs, String)
 	 */
 	public Obs getObs(Obs obs, String view) {
-		File file = BinaryDataHandler.getComplexDataFile(obs);
-		log.debug("value complex: " + obs.getValueComplex());
-		log.debug("file path: " + file.getAbsolutePath());
-		ComplexData complexData = null;
-		try {
-			complexData = new ComplexData(file.getName(), OpenmrsUtil.getFileAsBytes(file));
+		String key = parseNewOrLegacyKey(obs);
+		
+		byte[] bytes;
+		try (InputStream is = storageService.getData(key)) {
+			bytes = IOUtils.toByteArray(is);
 		}
 		catch (IOException e) {
-			log.error("Trying to read file: " + file.getAbsolutePath(), e);
+			throw new UncheckedIOException(e);
 		}
-		String mimeType = OpenmrsUtil.getFileMimeType(file);
-		complexData.setMimeType(mimeType);
-		obs.setComplexData(complexData);
 		
+		ComplexData complexData = new ComplexData(parseDataTitle(obs), bytes);
+		injectMissingMetadata(key, complexData);
+		obs.setComplexData(complexData);
+		return obs;
+	}
+	
+	public Obs saveObs(Obs obs) throws APIException {
+		try {
+			byte[] data = (byte[]) obs.getComplexData().getData();
+			
+			String key = storageService.saveData(outputStream -> {
+				if (outputStream == null) System.out.println("outputStream is null");
+				if (obs == null) System.out.println("obs is null");
+				if (obs.getComplexData() == null) System.out.println("obs.complexData is null");
+				IOUtils.write( data, outputStream);
+			}, ObjectMetadata.builder().setLength((long) data.length).build(), getObsDir());
+			// Store the filename in the Obs
+			obs.setValueComplex(StringUtils.defaultIfBlank(obs.getComplexData().getTitle(), key) + "|" + key);
+			obs.setComplexData(null);
+		}
+		catch (Exception e) {
+			throw new APIException("Obs.error.writing.binary.data.complex", null, e);
+		}
+
 		return obs;
 	}
 	
@@ -125,33 +108,86 @@ public class AbstractHandler {
 	 * @see org.openmrs.obs.ComplexObsHandler#purgeComplexData(org.openmrs.Obs)
 	 */
 	public boolean purgeComplexData(Obs obs) {
-		File file = getComplexDataFile(obs);
-		if (!file.exists()) {
-			return true;
-		} else if (file.delete()) {
-			obs.setComplexData(null);
-			return true;
-		}
+		String key = parseNewOrLegacyKey(obs);
 		
-		log.warn(
-		    "Could not delete complex data object for obsId=" + obs.getObsId() + " located at " + file.getAbsolutePath());
-		return false;
+		try {
+			if (storageService.purgeData(key)) {
+				obs.setComplexData(null);
+				return true;
+			} else {
+				log.warn("Could not delete complex data object for obsId={} located at {}", obs.getObsId(), key);
+				return false;
+			}
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
 	}
-	
+
+	/**
+	 * Should be replaced with just parseDataKey once migration is over.
+	 * 
+	 * @param obs complex obs
+	 * @return key
+	 * @deprecated 2.8.0
+	 * @since 2.8.0
+	 */
+	@Deprecated
+	public String parseNewOrLegacyKey(Obs obs) {
+		String key = parseDataKey(obs);
+		if (!storageService.exists(key)) {
+			key = getObsDir() + File.separator + key;
+		}
+		return key;
+	}
+
 	/**
 	 * Convenience method to create and return a file for the stored ComplexData.data Object
 	 * 
 	 * @param obs
 	 * @return File object
+	 * @deprecated since 2.8.0
 	 */
 	public static File getComplexDataFile(Obs obs) {
-		String[] names = obs.getValueComplex().split("\\|");
-		String filename = names.length < 2 ? names[0] : names[names.length - 1];
+		log.warn("Deprecated getComplexDataFile() called. Accessing legacy storage.");
+		String filename = parseDataKey(obs);
 		File dir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(
 		    Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
 		return new File(dir, filename);
 	}
-	
+
+	/**
+	 * @param obs the obs
+	 * @return file key
+	 * @since 2.8.0
+	 */
+	public static String parseDataKey(Obs obs) {
+		String[] names = obs.getValueComplex().split("\\|");
+		return names.length < 2 ? names[0] : names[names.length - 1];
+	}
+
+	/**
+	 * @param obs the obs
+	 * @return file title
+	 * @since 2.8.0
+	 */
+	public static String parseDataTitle(Obs obs) {
+		String[] names = obs.getValueComplex().split("\\|");
+		return names[0];
+	}
+
+	protected void injectMissingMetadata(String key, ComplexData complexData) {
+		try {
+			ObjectMetadata metadata = storageService.getMetadata(key);
+			
+			if (complexData.getMimeType() == null) {
+				complexData.setMimeType(metadata.getMimeType());
+			}
+			complexData.setLength(metadata.getLength());
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
+	}
+
 	/**
 	 * @see org.openmrs.obs.ComplexObsHandler#getSupportedViews()
 	 */

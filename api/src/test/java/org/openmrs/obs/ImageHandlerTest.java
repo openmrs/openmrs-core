@@ -38,13 +38,9 @@ public class ImageHandlerTest extends BaseContextSensitiveTest {
 	
 	@Autowired
 	private AdministrationService adminService;
-	@TempDir
-	public Path complexObsTestFolder;
+	
+	@Autowired
 	ImageHandler handler;
-	@BeforeEach
-	public void setUp() {
-		handler = new ImageHandler();
-	}
 	
 	@Test
 	public void shouldReturnSupportedViews() {
@@ -90,7 +86,7 @@ public class ImageHandlerTest extends BaseContextSensitiveTest {
 		obs2.setComplexData(complexData);
 		
 		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR,
-		        complexObsTestFolder.toAbsolutePath().toString()));
+		        "obs"));
 		
 		handler.saveObs(obs1);
 		handler.saveObs(obs2);
@@ -112,7 +108,7 @@ public class ImageHandlerTest extends BaseContextSensitiveTest {
 		Obs obs = new Obs();
 		obs.setComplexData(complexData);
 		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR,
-		        complexObsTestFolder.toAbsolutePath().toString()));
+		        "obs"));
 		handler.saveObs(obs);
 	}
 }
