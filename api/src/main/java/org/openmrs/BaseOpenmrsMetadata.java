@@ -13,6 +13,7 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 
@@ -39,6 +40,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	private String name;
 	
 	@Column(name = "description", length = 255)
+	@Lob
 	private String description;
 	
 	@ManyToOne(optional = false)
