@@ -23,6 +23,7 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 /**
@@ -31,6 +32,7 @@ import org.springframework.util.Assert;
  * @see OpenmrsConstants#GLOBAL_PROPERTY_COMPLEX_OBS_DIR
  * @since 1.8
  */
+@Component
 public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHandler {
 	
 	/** Views supported by this handler */
