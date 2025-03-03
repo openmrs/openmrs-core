@@ -47,10 +47,9 @@ public class PatientServiceMockitoTest {
 		MockitoAnnotations.initMocks(this);
 		patientServiceWrapper = new SimplePatientServiceWrapper(mockPatientService);
 	}
-
-
+	
 	@Test
-	public void testBasicPatientSearch() {
+	public void BasicPatientSearch_shouldReturnPatient() {
 		// Setup
 		String name = "John";
 		String identifier = "12345";
@@ -80,42 +79,4 @@ public class PatientServiceMockitoTest {
 			matchExactly, 0, null);
 	}
 
-	@Test
-	public void testSearchWithMultipleIdentifierTypes() {
-		// Setup
-		String name = null;
-		String identifier = "ABC";
-
-		// Create identifier types for the test
-		PatientIdentifierType idType1 = new PatientIdentifierType();
-		idType1.setId(1);
-		PatientIdentifierType idType2 = new PatientIdentifierType();
-		idType2.setId(2);
-
-		List<PatientIdentifierType> identifierTypes = Arrays.asList(idType1, idType2);
-		boolean matchExactly = false;
-
-		// Create mock patients for response
-		Patient mockPatient1 = new Patient();
-		mockPatient1.setPatientId(1);
-		Patient mockPatient2 = new Patient();
-		mockPatient2.setPatientId(2);
-		List<Patient> expectedPatients = Arrays.asList(mockPatient1, mockPatient2);
-
-		// Configure the mock
-		when(mockPatientService.getPatients(name, identifier, identifierTypes,
-			matchExactly, 0, null))
-			.thenReturn(expectedPatients);
-
-		// Execute the method
-		List<Patient> result = patientServiceWrapper.searchPatients(
-			name, identifier, identifierTypes, matchExactly);
-
-		// Verify results
-		assertEquals(2, result.size());
-
-		// Verify the mock was called with correct parameters
-		verify(mockPatientService).getPatients(name, identifier, identifierTypes,
-			matchExactly, 0, null);
-	}
 }

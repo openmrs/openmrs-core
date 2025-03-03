@@ -1,6 +1,7 @@
 package org.openmrs;
 
 public class ConditionCopier {
+	
 	public Condition copy(Condition fromCondition, Condition toCondition) {
 		toCondition.setPreviousVersion(fromCondition.getPreviousVersion());
 		toCondition.setPatient(fromCondition.getPatient());

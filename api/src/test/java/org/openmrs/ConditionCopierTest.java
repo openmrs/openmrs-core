@@ -1,7 +1,8 @@
 package org.openmrs;
 
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 
@@ -45,7 +46,7 @@ public class ConditionCopierTest {
 	private Date mockOnsetDate;
 	private Date mockEndDate;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		// Initialize mocks
 		fromCondition = mock(Condition.class);
