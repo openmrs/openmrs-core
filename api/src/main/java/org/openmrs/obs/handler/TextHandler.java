@@ -27,6 +27,7 @@ import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 /**
@@ -35,6 +36,7 @@ import org.springframework.util.Assert;
  * The in coming data are either char[] or java.io.Reader
  *
  */
+@Component
 public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 	
 	/** Views supported by this handler */
