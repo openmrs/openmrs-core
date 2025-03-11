@@ -94,8 +94,8 @@ public class ValidateHibernateMappingsDatabaseIT extends DatabaseIT {
 		configuration.setProperty(Environment.USE_SECOND_LEVEL_CACHE, "false");
 		configuration.setProperty(Environment.USE_QUERY_CACHE, "false");
 		configuration.setProperty("hibernate.integration.envers.enabled", "false");
-		configuration.setProperty("hibernate.search.backend.analysis.configurer", 
-			"class:org.openmrs.api.db.hibernate.search.lucene.LuceneAnalysisConfigurer");
+		configuration.setProperty("hibernate.search.backend.type", "lucene");
+		configuration.setProperty("hibernate.search.backend.analysis.configurer", "class:org.openmrs.api.db.hibernate.search.lucene.LuceneConfig");
 		// Validate HBMs against the actual schema
 		configuration.setProperty(Environment.HBM2DDL_AUTO, "validate");
 		
