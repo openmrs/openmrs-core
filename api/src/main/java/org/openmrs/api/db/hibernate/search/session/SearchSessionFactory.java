@@ -7,27 +7,25 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.api.db;
+package org.openmrs.api.db.hibernate.search.session;
 
 import org.hibernate.Session;
-import org.hibernate.search.FullTextSession;
-import org.hibernate.search.Search;
+import org.hibernate.search.mapper.orm.session.SearchSession;
 
 /**
- * Interface to be implemented by objects that are factories of {@link FullTextSession} instances. A
+ * Interface to be implemented by objects that are factories of {@link SearchSession} instances. A
  * factory has to be registered as a spring, it is highly recommended to use a factory to create
- * instances of the {@link FullTextSession} rather than directly calling
- * {@link Search#getFullTextSession(Session)} for proper functionality.
+ * instances of the {@link SearchSession} rather than directly calling
+ * {@link org.hibernate.search.mapper.orm.Search#session(Session)} for proper functionality.
  *
- * @since 2.3.0
+ * @since 2.8.0
  */
-public interface FullTextSessionFactory {
+public interface SearchSessionFactory {
 	
 	/**
-	 * Obtains a {@link FullTextSession} instance.
+	 * Obtains a {@link SearchSession} instance.
 	 *
-	 * @return {@link FullTextSession} object
+	 * @return {@link SearchSession} object
 	 */
-	FullTextSession getFullTextSession();
-	
+	SearchSession getSearchSession();
 }

@@ -7,17 +7,20 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.api.db;
+package org.openmrs.api.db.hibernate.search.session;
 
 import org.hibernate.SessionFactory;
-import org.hibernate.search.FullTextSession;
-import org.hibernate.search.Search;
+import org.hibernate.search.mapper.orm.Search;
+import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
-@Component("fullTextSessionFactory")
-public class FullTextSessionFactoryImpl implements FullTextSessionFactory {
+/**
+ * @since 2.8.0
+ */
+@Component("searchSessionFactory")
+public class SearchSessionFactoryImpl implements SearchSessionFactory {
 	
 	@Autowired
 	private SessionFactory sessionFactory;
@@ -26,12 +29,11 @@ public class FullTextSessionFactoryImpl implements FullTextSessionFactory {
 	private ApplicationEventPublisher eventPublisher;
 	
 	/**
-	 * @see FullTextSessionFactory#getFullTextSession()
+	 * @see SearchSessionFactory#getSearchSession()
 	 */
 	@Override
-	public FullTextSession getFullTextSession() {
-		FullTextSession delegateSession = Search.getFullTextSession(sessionFactory.getCurrentSession());
-		return new DelegatingFullTextSession(delegateSession, eventPublisher);
+	public SearchSession getSearchSession() {
+		SearchSession delegateSession = Search.session(sessionFactory.getCurrentSession());
+		return new EventPublisherDelegatingSearchSession(delegateSession, eventPublisher);
 	}
-	
 }
