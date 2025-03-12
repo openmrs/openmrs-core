@@ -18,7 +18,7 @@ import javax.persistence.MappedSuperclass;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.envers.Audited;
-import org.hibernate.search.annotations.Field;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 
 /**
  * In OpenMRS, we distinguish between data and metadata within our data model. Data (as opposed to
@@ -48,7 +48,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	private Date dateChanged;
 	
 	@Column(name = "voided", nullable = false)
-	@Field
+	@GenericField
 	private Boolean voided = Boolean.FALSE;
 	
 	@Column(name = "date_voided")
