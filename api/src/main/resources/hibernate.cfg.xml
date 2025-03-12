@@ -18,7 +18,6 @@
 
 	<session-factory>
         <property name="javax.persistence.validation.mode">none</property>
-		<property name="hibernate.search.model_mapping">org.openmrs.api.db.hibernate.search.LuceneAnalyzerFactory</property>
 		
 		<!-- API -->
 

@@ -13,9 +13,8 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.hibernate.envers.Audited;
-import org.hibernate.search.annotations.Analyze;
-import org.hibernate.search.annotations.DocumentId;
-import org.hibernate.search.annotations.Field;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 
 /**
  * A concept reference term is typically name for a concept by which it is referred in another
@@ -35,7 +34,7 @@ public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 	private ConceptSource conceptSource;
 	
 	//The unique code used to identify the reference term in it's reference terminology
-	@Field(analyze = Analyze.NO)
+	@GenericField
 	private String code;
 	
 	private String version;

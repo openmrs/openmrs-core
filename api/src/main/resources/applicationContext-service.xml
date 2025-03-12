@@ -140,12 +140,15 @@
 
 	<bean id="patientDAO" class="org.openmrs.api.db.hibernate.HibernatePatientDAO">
 		<property name="sessionFactory" ref="sessionFactory"/>
+		<property name="searchSessionFactory" ref="searchSessionFactory"/>
 	</bean>
 	<bean id="personDAO" class="org.openmrs.api.db.hibernate.HibernatePersonDAO">
 		<property name="sessionFactory" ref="sessionFactory"/>
+		<property name="searchSessionFactory" ref="searchSessionFactory"/>
 	</bean>
 	<bean id="conceptDAO" class="org.openmrs.api.db.hibernate.HibernateConceptDAO">
 		<property name="sessionFactory" ref="sessionFactory"/>
+		<property name="searchSessionFactory" ref="searchSessionFactory"/>
 	</bean>
 	<bean id="userDAO" class="org.openmrs.api.db.hibernate.HibernateUserDAO">
 		<property name="sessionFactory" ref="sessionFactory"/>
