@@ -16,11 +16,12 @@
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
-	<!--
-		The empty change set is needed for integration tests. It can be removed if this file contains other change sets.
-	-->
-	<changeSet id="42ddb873-f064-4418-a6c0-6c09426c4832" author="wschlegel">
-		<comment>Empty change set for integration tests.</comment>
+	<changeSet author="mgoodrich" id="2025-03-20-TRUNK-6315">
+		<preConditions onFail="MARK_RAN">
+			<primaryKeyExists tableName="liquibasechangelog" />
+		</preConditions>
+		<comment>TRUNK-6315: Remove Primary Key on the liquibasechangelog table</comment>
+		<dropPrimaryKey tableName="liquibasechangelog"/>
 	</changeSet>
 	
 </databaseChangeLog>
