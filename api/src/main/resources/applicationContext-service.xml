@@ -246,18 +246,10 @@
 		<property name="obsDAO" ref="obsDAO"/>
 		<property name="handlers">
 			<map>
-				<entry key="ImageHandler">
-					<bean class="org.openmrs.obs.handler.ImageHandler"/>
-				</entry>
-				<entry key="TextHandler">
-					<bean class="org.openmrs.obs.handler.TextHandler"/>
-				</entry>
-				<entry key="BinaryDataHandler">
-					<bean class="org.openmrs.obs.handler.BinaryDataHandler"/>
-				</entry>
-				<entry key="BinaryStreamHandler">
-					<bean class="org.openmrs.obs.handler.BinaryStreamHandler"/>
-				</entry>
+				<entry key="ImageHandler" value-ref="imageHandler"/>
+				<entry key="TextHandler" value-ref="textHandler"/>
+				<entry key="BinaryDataHandler" value-ref="binaryDataHandler"/>
+				<entry key="BinaryStreamHandler" value-ref="binaryStreamHandler"/>
 			</map>
 		</property>
 	</bean>
@@ -449,7 +441,7 @@
 		<property name="preInterceptors" ref="serviceInterceptors"/>
 		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
 	</bean>
-	<bean id="adminService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+	<bean id="adminService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean" primary="true">
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="target" ref="adminServiceTarget"/>
 		<property name="preInterceptors" ref="serviceInterceptors"/>

@@ -30,17 +30,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class TextHandlerTest extends BaseContextSensitiveTest {
 	
 	@Autowired
-	private AdministrationService adminService;
-
-	@TempDir
-	public Path complexObsTestFolder;
-
+	AdministrationService adminService;
+	
+	@Autowired
 	TextHandler handler;
-
-	@BeforeEach
-	public void setUp() {
-		handler = new TextHandler();
-	}
 	
     @Test
     public void shouldReturnSupportedViews() {
@@ -81,8 +74,7 @@ public class TextHandlerTest extends BaseContextSensitiveTest {
 		obs2.setComplexData(complexData);
 
 		adminService.saveGlobalProperty(new GlobalProperty(
-			OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR, 
-			complexObsTestFolder.toAbsolutePath().toString()
+			OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR, "obs"
 		));
 
 		handler.saveObs(obs1);
