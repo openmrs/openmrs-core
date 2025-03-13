@@ -1875,6 +1875,38 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
 		assertEquals(++initialActiveOrderCount, activeOrders.size());
 	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#saveOrder(Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldNotSaveOrderWithNullFieldsForOrderContextOutPatientCareSettingType() {
+		final Encounter encounter = encounterService.getEncounter(3);
+		final Patient patient = (patientService.getPatient(7));
+		final CareSetting careSetting = orderService.getCareSetting(1);
+
+		DrugOrder drugOrder = new DrugOrder();
+		drugOrder.setEncounter(encounter);
+		drugOrder.setDateActivated(encounter.getEncounterDatetime());
+		drugOrder.setDrug(conceptService.getDrug(3));
+		drugOrder.setPatient(patient);
+		drugOrder.setOrderer(providerService.getProvider(1));
+		drugOrder.setDoseUnits(conceptService.getConcept(50));
+		drugOrder.setQuantityUnits(conceptService.getConcept(51));
+		drugOrder.setFrequency(orderService.getOrderFrequency(3));
+		drugOrder.setRoute(conceptService.getConcept(22));
+		drugOrder.setDosingType(SimpleDosingInstructions.class);
+		drugOrder.setDose(300.0);
+		drugOrder.setNumRefills(null);
+		drugOrder.setQuantity(null);
+		
+		OrderContext orderContext = new OrderContext();
+		orderContext.setCareSetting(careSetting);
+		
+		Exception exception = assertThrows(OrderEntryException.class, () -> orderService.saveOrder(drugOrder, orderContext));
+		assertThat(exception.getMessage(), containsString("required for out patient drug orders"));
+		
+	}
 
 	/**
 	 * @throws ParseException
