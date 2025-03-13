@@ -22,6 +22,14 @@
 		</preConditions>
 		<comment>change description type TEXT to VARCHAR(1024) in 'global_property' table</comment>
 		<modifyDataType tableName="global_property" columnName="description" newDataType="VARCHAR(1024)"/>
+  </changeSet>
+
+	<changeSet author="mgoodrich" id="2025-03-20-TRUNK-6315">
+		<preConditions onFail="MARK_RAN">
+			<primaryKeyExists tableName="liquibasechangelog" />
+		</preConditions>
+		<comment>TRUNK-6315: Remove Primary Key on the liquibasechangelog table</comment>
+		<dropPrimaryKey tableName="liquibasechangelog"/>
 	</changeSet>
 	
 </databaseChangeLog>
