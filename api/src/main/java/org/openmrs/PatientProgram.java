@@ -9,11 +9,11 @@
  */
 package org.openmrs;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.Customizable;
 import org.openmrs.util.OpenmrsUtil;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -24,10 +24,24 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
 
 /**
  * PatientProgram
  */
+@Entity
+@Table(name = "patient_program")
 @Audited
 public class PatientProgram extends BaseChangeableOpenmrsData implements Customizable<PatientProgramAttribute>{
 	
@@ -36,23 +50,40 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	// ******************
 	// Properties
 	// ******************
-	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "patient_program_id")
 	private Integer patientProgramId;
 	
+	@ManyToOne
+	@JoinColumn(name = "patient_id", nullable = false)
 	private Patient patient;
 	
+	@ManyToOne
+	@JoinColumn(name = "program_id", nullable = false)
 	private Program program;
 	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "location_id")
 	private Location location;
 	
+	@Column(name = "date_enrolled", nullable = true)
 	private Date dateEnrolled;
 	
+	@Column(name = "date_completed", nullable = true)
 	private Date dateCompleted;
 	
+	@ManyToOne
+	@JoinColumn(name = "outcome_concept_id", nullable = true)
 	private Concept outcome;
 	
+	
+	@OneToMany(mappedBy = "patientProgram", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<PatientState> states = new HashSet<>();
          
+	@OneToMany(mappedBy = "patientProgram", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@BatchSize(size = 100)
+	@OrderBy("voided ASC")
 	private Set<PatientProgramAttribute> attributes = new LinkedHashSet<>();
 	
 	// ******************
