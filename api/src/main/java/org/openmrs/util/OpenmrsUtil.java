@@ -2027,11 +2027,14 @@ public class OpenmrsUtil {
 		
 		// first look in the current directory (that java was started from)
 		String pathName = fileNameInTestMode != null ? fileNameInTestMode : defaultFileName;
+		
 		log.debug("Attempting to look for properties file in current directory: " + pathName);
+		
+		List<String> errorMessages = new ArrayList<>();
 		if (new File(pathName).exists()) {
 			return pathName;
 		} else {
-			log.warn("Unable to find a runtime properties file at " + new File(pathName).getAbsolutePath());
+			errorMessages.add("Unable to find a runtime properties file at " + new File(pathName).getAbsolutePath());
 		}
 		
 		// next look from environment variable
@@ -2042,7 +2045,7 @@ public class OpenmrsUtil {
 			if (new File(envFileName).exists()) {
 				return envFileName;
 			} else {
-				log.warn("Unable to find properties file with path: " + pathName + ". (derived from environment variable "
+				errorMessages.add("Unable to find properties file with path: " + pathName + ". (derived from environment variable "
 				        + envVarName + ")");
 			}
 		} else {
@@ -2059,9 +2062,11 @@ public class OpenmrsUtil {
 		if (file.exists()) {
 			return pathName;
 		} else {
-			log.warn("Unable to find properties file: " + pathName);
+			errorMessages.add("Unable to find properties file: " + pathName);
 		}
-		
+
+		errorMessages.forEach(log::warn);
+
 		return null;
 	}
 	
