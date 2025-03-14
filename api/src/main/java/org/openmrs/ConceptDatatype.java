@@ -9,12 +9,27 @@
  */
 package org.openmrs;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.search.annotations.DocumentId;
+import org.hibernate.annotations.Immutable;
 
 /**
  * ConceptDatatype
  */
+@Entity
+@Table(name = "concept_datatype")
+@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
+@Immutable
 @Audited
 public class ConceptDatatype extends BaseChangeableOpenmrsMetadata {
 	
@@ -66,8 +81,17 @@ public class ConceptDatatype extends BaseChangeableOpenmrsMetadata {
 	
 	// Fields
 	@DocumentId
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "concept_datatype_id_seq")
+	@GenericGenerator(
+			name = "concept_datatype_id_seq",
+			strategy = "native",
+			parameters = @Parameter(name = "sequence", value = "concept_datatype_concept_datatype_id_seq")
+		)
+	@Column(name = "concept_datatype_id")
 	private Integer conceptDatatypeId;
 	
+	@Column(name = "hl7_abbreviation", length = 3, nullable = true)
 	private String hl7Abbreviation;
 	
 	// Constructors
