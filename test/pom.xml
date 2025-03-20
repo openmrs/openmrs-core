@@ -58,14 +58,6 @@
 		   <groupId>org.mockito</groupId>
 		   <artifactId>mockito-junit-jupiter</artifactId>
 	   </dependency>
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-module-junit4</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-api-mockito2</artifactId>
-		</dependency>
 	   <!--hamcrest-core is needed to update JUnit 4 transitive dependency on hamcrest-core as explained in
 		http://hamcrest.org/JavaHamcrest/distributables#upgrading-from-hamcrest-1x and
 		https://github.com/hamcrest/JavaHamcrest/issues/224#issuecomment-449760045
