@@ -95,7 +95,6 @@ public class LocalStorageService extends BaseStorageService implements StorageSe
 	}
 
 	Path getPath(String key) {
-		key = key.replace('/', File.separatorChar); //MS Windows support
 		Path legacyStorageDir = getLegacyStorageDir();
 		Path legacyPath = legacyStorageDir.resolve(key);
 		if (Files.exists(legacyPath)) {
