@@ -81,7 +81,7 @@
 	<!-- Ensure translation files contain the same keys -->
 	<module name="Translation">
 		<property name="severity" value="warning" default="error"/>
-	</module>
+	</module>le>
 
 	<module name="TreeWalker">
 		<!-- Defines expected tab width for checks that require a tab width -->
@@ -338,7 +338,7 @@
 		<module name="AtclauseOrder">
 			<property name="tagOrder" value="@param, @return, @throws, @deprecated"/>
 			<property name="target" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, METHOD_DEF, CTOR_DEF, VARIABLE_DEF"/>
-		</module>
+		</module
 		<module name="JavadocMethod">
 			<property name="scope" value="public"/>
 			<property name="allowMissingParamTags" value="true"/>
