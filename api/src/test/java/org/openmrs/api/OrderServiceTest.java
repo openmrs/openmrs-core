@@ -2646,6 +2646,32 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see org.openmrs.api.OrderService#getOrderTypesByClassName(String)
+	 */
+	@Test
+	public void getOrderTypesByClassName_shouldReturnOrderTypesForTheGivenJavaClassName() {
+		List<OrderType> drugOrderTypes = orderService.getOrderTypesByClassName(DrugOrder.class.getName());
+
+		assertNotNull(drugOrderTypes);
+		assertEquals(1, drugOrderTypes.size());
+		assertEquals(drugOrderTypes.get(0).getName(), OpenmrsConstants.DRUG_ORDER_TYPE_NAME);
+
+		List<OrderType> testOrderTypes = orderService.getOrderTypesByClassName(TestOrder.class.getName());
+
+		assertNotNull(testOrderTypes);
+		assertEquals(2, testOrderTypes.size());
+		assertEquals(testOrderTypes.get(0).getName(), OpenmrsConstants.TEST_ORDER_TYPE_NAME);
+	}
+
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderTypesByClassName(String)
+	 */
+	@Test
+	public void getOrderTypesByClassName_shouldThrowAPIExceptionForNullJavaClassName() {
+		assertThrows(APIException.class, () -> orderService.getOrderTypesByClassName(null));
+	}
+
+	/**
 	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
 	 */
 	@Test
@@ -3179,7 +3205,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 		orderService.saveOrder(drugOrder, null);
 		assertNotNull(drugOrder.getOrderType());
-		assertEquals(orderService.getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID), drugOrder.getOrderType());
+		assertEquals(orderService.getOrderTypeByName(OpenmrsConstants.DRUG_ORDER_TYPE_NAME), drugOrder.getOrderType());
 	}
 
 	/**
@@ -3205,7 +3231,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 		orderService.saveOrder(testOrder, null);
 		assertNotNull(testOrder.getOrderType());
-		assertEquals(orderService.getOrderTypeByUuid(OrderType.TEST_ORDER_TYPE_UUID), testOrder.getOrderType());
+		assertEquals(orderService.getOrderTypeByName(OpenmrsConstants.TEST_ORDER_TYPE_NAME), testOrder.getOrderType());
 	}
 
 	@Test
