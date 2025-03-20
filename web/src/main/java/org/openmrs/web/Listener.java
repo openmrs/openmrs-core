@@ -230,10 +230,9 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				if (StringUtils.hasLength(appDataRuntimeProperty)) {
 					OpenmrsUtil.setApplicationDataDirectory(null);
 				}
-				
 				//ensure that we always log the runtime properties file that we are using
 				//since openmrs is just booting, the log levels are not yet set. TRUNK-4835
-				OpenmrsLoggingUtil.applyLogLevel(getClass().toString(), "INFO");
+				OpenmrsLoggingUtil.applyLogLevel(getClass().getName(), "INFO");
 				log.info("Using runtime properties file: {}",
 				         OpenmrsUtil.getRuntimePropertiesFilePathName(WebConstants.WEBAPP_NAME));
 			}
