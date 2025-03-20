@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.openmrs.api.context.Context;
+import org.openmrs.logging.OpenmrsLoggingUtil;
 import org.openmrs.module.MandatoryModuleException;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
@@ -233,7 +234,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				}
 				//ensure that we always log the runtime properties file that we are using
 				//since openmrs is just booting, the log levels are not yet set. TRUNK-4835
-				Configurator.setLevel(getClass(), Level.INFO);
+				OpenmrsLoggingUtil.applyLogLevel(getClass().getName(), "INFO");
 				log.info("Using runtime properties file: {}",
 				         OpenmrsUtil.getRuntimePropertiesFilePathName(WebConstants.WEBAPP_NAME));
 			}
