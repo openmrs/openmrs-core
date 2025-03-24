@@ -25,7 +25,7 @@
 	</changeSet>
 	
 	<changeSet id="testSqlFile" author="OpenMRS" runAlways="true">
-		<sqlFile endDelimiter=";" path="org/openmrs/util/sql/testSqlFile.sql" relativeToChangelogFile="false" stripComments="true" />
+		<sqlFile endDelimiter=";" path="sql/testSqlFile.sql" relativeToChangelogFile="true" stripComments="true" />
 	</changeSet>
 	
 </databaseChangeLog>

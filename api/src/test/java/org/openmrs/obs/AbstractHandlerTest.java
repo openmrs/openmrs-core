@@ -10,21 +10,10 @@
 package org.openmrs.obs;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.text.ParseException;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,6 +22,7 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
+import org.openmrs.api.StorageService;
 import org.openmrs.obs.handler.AbstractHandler;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
@@ -42,119 +32,75 @@ public class AbstractHandlerTest extends BaseContextSensitiveTest {
 	
 	private final String FILENAME = "mytxtfile.txt";
 	
-	private  AbstractHandler handler;
+	private AbstractHandler handler;
 	
 	@Autowired
 	private AdministrationService adminService;
-
-	@TempDir
-	public Path complexObsTestFolder;
+	
+	@Autowired
+	private StorageService storageService;
 	
 	@BeforeEach
-	public void initializeContext() throws APIException, IOException {
-		handler = new  AbstractHandler();
+	public void initializeContext() throws APIException {
+		handler = new  AbstractHandler(adminService, storageService);
+		
 		adminService.saveGlobalProperty(new GlobalProperty(
-			OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR,
-			complexObsTestFolder.toAbsolutePath().toString()
+			OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR, "obs"
 		));
 	}
 	
 	@Test
-	public void getOutputFileToWrite_shouldNeverOverwritePreviousFiles() throws IOException {
+	public void saveObs_shouldNeverOverwritePreviousFiles() {
 		String content1 = "A";
 		String content2 = "B";
-		
-		File previousFile = null;
-		File currentFile = null;
 		
 		for (int i = 0; i <= 101; i++) {
 			String currentData = (i % 2 == 0) ? content1 : content2;
 			
-			ComplexData complexData = new ComplexData(FILENAME, currentData);
+			ComplexData complexData = new ComplexData(FILENAME, currentData.getBytes(StandardCharsets.UTF_8));
 			
 			Obs obs = new Obs();
 			obs.setComplexData(complexData);
 			
-			currentFile = handler.getOutputFileToWrite(obs);
+			handler.saveObs(obs);
+
+			Obs fetchedObs = handler.getObs(obs, null);
 			
-			try (BufferedWriter fout = new BufferedWriter(
-			        new OutputStreamWriter(new FileOutputStream(currentFile), StandardCharsets.UTF_8))) {
-				fout.write(currentData);
-			}
-			
-			try (BufferedReader fin = new BufferedReader(
-			        new InputStreamReader(new FileInputStream(currentFile), StandardCharsets.UTF_8))) {
-				String readData = fin.readLine();
-				assertEquals(readData, currentData);
-			}
-			
-			if (i > 0) {
-				assertFalse(FileUtils.contentEquals(previousFile, currentFile));
-			}
-			
-			previousFile = currentFile;
+			assertEquals(currentData, new String((byte[]) fetchedObs.getComplexData().getData()));
 		}
 	}
 	
 	@Test
-	public void getOutputFileToWrite_shouldCorrectlyNameTitledFileWithExtension() throws IOException, ParseException {
-		ComplexData complexDataWithTitle = new ComplexData(FILENAME, null);
+	public void saveObs_shouldPreserveTitleWithoutExtension() {
+		ComplexData complexDataWithTitle = new ComplexData(FILENAME, "A".getBytes(StandardCharsets.UTF_8));
 		
 		Obs obsWithTitle = new Obs();
 		obsWithTitle.setComplexData(complexDataWithTitle);
 		
-		File titledFile = handler.getOutputFileToWrite(obsWithTitle);
-		titledFile.createNewFile();
+		handler.saveObs(obsWithTitle);
 		
-		String[] nameWithTitle = titledFile.getName().split("_|\\.");
+		String[] nameWithTitle = obsWithTitle.getValueComplex().split("_|\\.");
 		
 		String titlePart = nameWithTitle[0];
-		String uuidPartWithTitle = nameWithTitle[1];
-		String extensionPart = nameWithTitle[2];
 		
 		assertEquals(titlePart, FilenameUtils.removeExtension(FILENAME));
-		assertEquals(extensionPart, "txt");
-		assertEquals(uuidPartWithTitle, obsWithTitle.getUuid());
 	}
 	
 	@Test
-	public void getOutputFileToWrite_shouldCorrectlyNameTitledFileWithoutExtension() throws IOException, ParseException {
-		ComplexData complexDataWithoutExtension = new ComplexData(FilenameUtils.removeExtension(FILENAME), null);
-		
-		Obs obsWithoutExtension = new Obs();
-		obsWithoutExtension.setComplexData(complexDataWithoutExtension);
-		
-		File extensionlessFile = handler.getOutputFileToWrite(obsWithoutExtension);
-		extensionlessFile.createNewFile();
-		
-		String[] nameWithoutExtension = extensionlessFile.getName().split("_|\\.");
-		
-		String titlePartExtensionless = nameWithoutExtension[0];
-		String uuidPartExtensionless = nameWithoutExtension[1];
-		String extensionPartExtensionless = nameWithoutExtension[2];
-		
-		assertEquals(titlePartExtensionless, FilenameUtils.removeExtension(FILENAME));
-		assertEquals(extensionPartExtensionless, "dat");
-		assertEquals(uuidPartExtensionless, obsWithoutExtension.getUuid());
-	}
-	
-	@Test
-	public void getOutputFileToWrite_shouldCorrectlyNameNullTitledFile() throws IOException, ParseException {
-		ComplexData complexDataWithNullTitle = new ComplexData(null, null);
+	public void saveObs_shouldCorrectlySaveFileWithoutTitle() {
+		ComplexData complexDataWithNullTitle = new ComplexData(null, "test".getBytes(StandardCharsets.UTF_8));
 		
 		Obs obsWithNullTitle = new Obs();
 		obsWithNullTitle.setComplexData(complexDataWithNullTitle);
 		
-		File nullTitleFile = handler.getOutputFileToWrite(obsWithNullTitle);
-		nullTitleFile.createNewFile();
+		handler.saveObs(obsWithNullTitle);
 		
-		String[] nameWithNullTitle = nullTitleFile.getName().split("\\.");
+		String[] nameWithNullTitle = obsWithNullTitle.getValueComplex().split("\\|");
 		
-		String uuidPartWithNullTitle = nameWithNullTitle[0];
-		String extensionPartWithNullTitle = nameWithNullTitle[1];
+		String filename = nameWithNullTitle[0];
+		String key = nameWithNullTitle[1];
 		
-		assertEquals(extensionPartWithNullTitle, "dat");
-		assertEquals(uuidPartWithNullTitle, obsWithNullTitle.getUuid());
+		assertEquals(filename, key);
 	}
 	
 }

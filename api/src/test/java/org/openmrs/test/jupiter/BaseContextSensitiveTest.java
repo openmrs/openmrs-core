@@ -310,7 +310,7 @@ public abstract class BaseContextSensitiveTest {
 		// properties
 		if (useInMemoryDatabase()) {
 			runtimeProperties.setProperty(Environment.DIALECT, H2Dialect.class.getName());
-			String url = "jdbc:h2:mem:openmrs;DB_CLOSE_DELAY=30;LOCK_TIMEOUT=10000;IGNORECASE=TRUE";
+			String url = "jdbc:h2:mem:openmrs;DB_CLOSE_DELAY=-1;LOCK_TIMEOUT=10000;IGNORECASE=TRUE";
 			runtimeProperties.setProperty(Environment.URL, url);
 			runtimeProperties.setProperty(Environment.DRIVER, "org.h2.Driver");
 			runtimeProperties.setProperty(Environment.USER, "sa");

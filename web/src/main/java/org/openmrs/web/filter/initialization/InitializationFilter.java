@@ -1377,7 +1377,7 @@ public class InitializationFilter extends StartupFilter {
 					try {
 						String connectionUsername;
 						StringBuilder connectionPassword = new StringBuilder();
-						ChangeLogDetective changeLogDetective = new ChangeLogDetective();
+						ChangeLogDetective changeLogDetective = ChangeLogDetective.getInstance();
 						ChangeLogVersionFinder changeLogVersionFinder = new ChangeLogVersionFinder();
 						
 						if (!wizardModel.hasCurrentOpenmrsDatabase) {

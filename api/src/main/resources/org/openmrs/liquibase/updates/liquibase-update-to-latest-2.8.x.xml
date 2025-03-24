@@ -10,16 +10,18 @@
     graphic logo is a trademark of OpenMRS Inc.
 
 -->
-<!--
-	This file is provided to be backward compatible with build processes that continue to use 
-	api/src/main/resources/liquibase-schema-only.xml to initialise the OpenMRS database.
--->
 <databaseChangeLog
 	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
-	<include file="org/openmrs/liquibase/updates/liquibase-update-to-latest-2.8.x.xml"/>
-
+	<changeSet author="mgoodrich" id="2025-03-20-TRUNK-6315">
+		<preConditions onFail="MARK_RAN">
+			<primaryKeyExists tableName="liquibasechangelog" />
+		</preConditions>
+		<comment>TRUNK-6315: Remove Primary Key on the liquibasechangelog table</comment>
+		<dropPrimaryKey tableName="liquibasechangelog"/>
+	</changeSet>
+	
 </databaseChangeLog>
