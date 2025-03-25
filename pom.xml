@@ -1249,7 +1249,7 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>5.4.x.Final</version> <!-- Ensure compatibility with Hibernate Search -->
+			<version>6.2.4.Final</version> <!-- Ensure compatibility with Hibernate Search -->
 		</dependency>
 
 		<slf4jVersion>1.7.36</slf4jVersion>
