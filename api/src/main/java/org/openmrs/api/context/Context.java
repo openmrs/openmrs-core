@@ -565,23 +565,22 @@ public class Context {
 	 *
 	 * @return message service
 	 */
-	public static MessageService getMessageService() {
-		MessageService ms = getServiceContext().getMessageService();
-		try {
-			// Message service dependencies
-			if (ms.getMessagePreparator() == null) {
-				ms.setMessagePreparator(getMessagePreparator());
-			}
-
-			if (ms.getMessageSender() == null) {
-				ms.setMessageSender(getMessageSender());
-			}
-
+	public static MessageService getMessageService() throws APIException {
+		return getServiceContext().getMessageService();
+	}
+	
+	/**
+	 * Convenience method to configure the MessageService via dependency injection.
+	 *
+	 * @param sender      the MessageSender to set
+	 * @param preparator  the MessagePreparator to set
+	 */
+	public static void configureMessageService(MessageSender sender, MessagePreparator preparator) {
+		MessageService messageService = getServiceContext().getMessageService();
+		if (messageService != null) {
+			messageService.setMessageSender(sender);
+			messageService.setMessagePreparator(preparator);
 		}
-		catch (Exception e) {
-			log.error("Unable to create message service due", e);
-		}
-		return ms;
 	}
 
 	/**
