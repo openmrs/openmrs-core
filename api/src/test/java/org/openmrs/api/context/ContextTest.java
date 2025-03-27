@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 import java.util.List;
 import java.util.Locale;
@@ -34,6 +35,10 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.handler.EncounterVisitHandler;
 import org.openmrs.api.handler.ExistingOrNewVisitAssignmentHandler;
+import org.openmrs.notification.MessagePreparator;
+import org.openmrs.notification.MessageSender;
+import org.openmrs.notification.MessageService;
+import org.openmrs.notification.impl.MessageServiceImpl;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
@@ -353,4 +358,22 @@ public class ContextTest extends BaseContextSensitiveTest {
 		assertFalse(sf.getCache().containsEntity(PERSON_NAME_CLASS, PERSON_NAME_ID_8));
 		assertFalse(sf.getCache().containsEntity(Patient.class, PERSON_NAME_ID_2));
 	}
+	@Test
+	public void configureMessageService_shouldSetMessageSenderAndPreparator() {
+		// Given
+		MessageService messageService = new MessageServiceImpl();
+		MessageSender mockSender = mock(MessageSender.class);
+		MessagePreparator mockPreparator = mock(MessagePreparator.class);
+
+		// Inject test instance
+		Context.getServiceContext().setMessageService(messageService);
+
+		// When
+		Context.configureMessageService(mockSender, mockPreparator);
+
+		// Then
+		assertEquals(mockSender, messageService.getMessageSender());
+		assertEquals(mockPreparator, messageService.getMessagePreparator());
+	}
+
 }
