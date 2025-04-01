@@ -25,7 +25,7 @@ stages:
               - Deploy to docker
               - Deploy to docker JDK 11
               - Deploy to docker JDK 17
-			  - Deploy to docker JDK 21
+              - Deploy to docker JDK 21
     - Release:
           manual: true
           final: false
@@ -37,7 +37,7 @@ stages:
           jobs:
               - Release JDK 11 image
               - Release JDK 17 image
-			  - Release JDK 21 image
+              - Release JDK 21 image
 Build:
     key: BUIL
     tasks:
