@@ -26,6 +26,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Collections;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,6 +44,7 @@ import org.openmrs.ProgramAttributeType;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.User;
+import org.openmrs.PatientProgramAttribute;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ProgramWorkflowDAO;
 import org.openmrs.api.impl.ProgramWorkflowServiceImpl;
@@ -62,7 +65,9 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	protected static final String PROGRAM_ATTRIBUTES_XML = "org/openmrs/api/include/ProgramAttributesDataset.xml";
 
 	protected static final String OTHER_PROGRAM_WORKFLOWS = "org/openmrs/api/include/ProgramWorkflowServiceTest-otherProgramWorkflows.xml";
-        
+	
+	protected static final String PATIENT_PROGRAM_ATTRIBUTE_DATASET = "org/openmrs/api/include/PatientProgramAttributeTestDataset.xml";
+	
 	protected ProgramWorkflowService pws = null;
 	
 	@Autowired
@@ -82,6 +87,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(CREATE_PATIENT_PROGRAMS_XML);
 		executeDataSet(PROGRAM_ATTRIBUTES_XML);
 		executeDataSet(OTHER_PROGRAM_WORKFLOWS);
+		executeDataSet(PATIENT_PROGRAM_ATTRIBUTE_DATASET);
                 
 		if (pws == null) {
 			pws = Context.getProgramWorkflowService();
@@ -733,7 +739,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	}
 	@Test
 	public void shouldTestGetAllProgramAttributeTypes() throws Exception {
-                assertEquals(1, pws.getAllProgramAttributeTypes().size());
+                assertEquals(3, pws.getAllProgramAttributeTypes().size());
 	}
 
 	@Test
@@ -751,11 +757,11 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void shouldTestSaveProgramAttributeType() throws Exception {
-		assertEquals(1,pws.getAllProgramAttributeTypes().size());
+		assertEquals(3,pws.getAllProgramAttributeTypes().size());
 		ProgramAttributeType programAttributeType = new ProgramAttributeType();
 		programAttributeType.setName("test");
 		pws.saveProgramAttributeType(programAttributeType);
-		assertEquals(2,pws.getAllProgramAttributeTypes().size());
+		assertEquals(4,pws.getAllProgramAttributeTypes().size());
 	}
 
 	@Test
@@ -1094,6 +1100,31 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		int patientStatesSize = patientProgram.getStates().size();
 		pwsi.triggerStateConversion(patient, trigger, dateConverted);
 		assertEquals(patientProgram.getStates().size(), (patientStatesSize + 1));
+	}
+
+
+	@Test
+	public void getProgramAttributeType_shouldReturnAttributeThatMatchesGivenUuid(){
+
+		PatientProgramAttribute patientProgramAttribute = pws.getPatientProgramAttributeByUuid("dd8793dc-e9d2-11ee-9b67-333dbdea27a2");
+		assertNotNull(patientProgramAttribute);
+		assertEquals(2, patientProgramAttribute.getId());
+	}
+
+
+	@Test
+	public void getProgramAttributeByAttributeName_shouldReturnAttributeThatMatchesGivenName(){
+		Map<Object, Object> results = pws.getPatientProgramAttributeByAttributeName(
+			Collections.singletonList(2),"programName");
+		assertEquals(1,results.size());
+	}
+	
+	@Test
+	public void getPatientProgramByAttributeNameAndValue_shouldReturnProgramsThatMatchesParameters(){
+
+		List<PatientProgram> patientPrograms = 
+			pws.getPatientProgramByAttributeNameAndValue("programName", "programReference");
+		assertEquals(1, patientPrograms.size());
 	}
 	
 	//	/**
