@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -1487,10 +1488,12 @@ public class HibernateConceptDAO implements ConceptDAO {
 					Collections.singletonList(locale), exactLocale, includeRetired, null, null, null, null, null);
 			List<Object[]> conceptIds = conceptNameQuery.listProjection("concept.conceptId");
 			if (!conceptIds.isEmpty()) {
-				CollectionUtils.transform(conceptIds, input -> ((Object[]) input)[0].toString());
+				List<String> conceptIdStrings = conceptIds.stream()
+        .map(input -> ((Object[]) input)[0].toString())
+        .collect(Collectors.toList());
 				//The default Lucene clauses limit is 1024. We arbitrarily chose to use 512 here as it does not make sense to return more hits by concept name anyway.
-				int maxSize = (conceptIds.size() < 512) ? conceptIds.size() : 512;
-				query.append(" OR concept.conceptId:(").append(StringUtils.join(conceptIds.subList(0, maxSize), " OR "))
+				int maxSize = Math.min(conceptIdStrings.size(), 512);
+				query.append(" OR concept.conceptId:(").append(StringUtils.join(conceptIdStrings.subList(0, maxSize), " OR "))
 				        .append(")^0.1");
 			}
 		}

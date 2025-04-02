@@ -12,7 +12,7 @@ package org.openmrs.api.handler;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.Patient;
