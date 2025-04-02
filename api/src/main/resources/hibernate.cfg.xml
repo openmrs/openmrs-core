@@ -84,6 +84,8 @@
 		<mapping resource="org/openmrs/api/db/hibernate/Cohort.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/CohortMembership.hbm.xml"/>
 		<mapping resource="org/openmrs/api/db/hibernate/OrderFrequency.hbm.xml" />
+		<property name="hibernate.search.default.directory_provider">filesystem</property>
+		<property name="hibernate.search.default.indexbase">/path/to/index</property>
 
 		<!-- HL7 -->
 		<mapping resource="org/openmrs/hl7/db/hibernate/HL7Source.hbm.xml" />
