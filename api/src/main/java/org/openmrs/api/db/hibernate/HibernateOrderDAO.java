@@ -781,6 +781,26 @@ public class HibernateOrderDAO implements OrderDAO {
 		    "from OrderType where :conceptClass in elements(conceptClasses)").setParameter("conceptClass", conceptClass)
 		        .uniqueResult();
 	}
+
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderTypesByClassName(String)
+	 */
+	@Override
+	public List<OrderType> getOrderTypesByClassName(String javaClassName) throws DAOException {
+		if (StringUtils.isBlank(javaClassName)) {
+			throw new APIException("javaClassName cannot be null");
+		}
+		
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<OrderType> cq = cb.createQuery(OrderType.class);
+		Root<OrderType> root = cq.from(OrderType.class);
+		
+		cq.where(cb.equal(root.get("javaClassName"), javaClassName));
+		
+		return session.createQuery(cq).getResultList();
+		
+	}
 	
 	/**
 	 * @see org.openmrs.api.OrderService#saveOrderType(org.openmrs.OrderType)
