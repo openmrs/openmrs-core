@@ -11,7 +11,7 @@ package org.openmrs.web.filter.update;
 
 import liquibase.changelog.ChangeSet;
 import liquibase.exception.LockException;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.liquibase.ChangeLogDetective;
 import org.openmrs.util.DatabaseUpdateException;
