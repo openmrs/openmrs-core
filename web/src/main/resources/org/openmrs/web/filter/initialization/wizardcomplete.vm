@@ -1,108 +1,281 @@
 #parse($HEADER_TEMPLATE)
-	<form method="post">
-		<input type="hidden" name="page" value="wizardcomplete.vm" /> 
-		<div class="content">
-		<!-- TODO list off all collected properties here -->
-		 	<table cellpadding="9" align="center" cellspacing="5" >
-            	<tr>
-                    <td colspan="2"><h3>$l10n.get("install.complete.review")</h3></td>
-                </tr>
-                <tr>
-                    <td colspan="2">$l10n.get("install.complete.info")
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2" class="question">$l10n.get("install.complete.db")</td>
-                </tr>
-                <tr>
-                    <th class="label">$l10n.get("install.complete.db.connection")</th>
-                    <td>${databaseConnection}</td>
-                </tr>
-                <tr>
-                    <th class="label">$l10n.get("install.db.name")</th>
-                    <td>${databaseName}</td>
-                </tr>
-                #if($installMethod != $INSTALL_METHOD_TESTING)
-                <tr>
-                    <th class="label">$l10n.get("install.complete.db.create")</th>
-                    <td>#if( $hasCurrentOpenmrsDatabase == false ) $l10n.get("general.yes") #else $l10n.get("general.no") #end</td>
-                </tr>
-                <tr>
-                    <th class="label">$l10n.get("install.complete.db.userAccount")</th>
-                    <td>#if( $createDatabaseUser == true ) $l10n.get("general.yes") #else $l10n.get("general.no") #end</td>
-                </tr>
-                <tr>
-                    <th class="label">$l10n.get("install.complete.db.tables")</th>
-                    <td>#if( $createTables == true ) $l10n.get("general.yes") #else $l10n.get("general.no") #end</td>
-                </tr>
-                <tr>
-                    <th class="label">$l10n.get("install.complete.db.demo")</th>
-                    <td>#if( $addDemoData == true ) $l10n.get("general.yes") #else $l10n.get("general.no") #end</td>
-                </tr>
 
-                <tr>
-                    <td colspan="2" class="question">$l10n.get("install.complete.impl")</td>
-                </tr>
-                <tr>
-                    <th class="label">$l10n.get("install.complete.impl.name")</th>
-                    <td>${implementationIdName}</td>
-                </tr>
-                <tr>
-                    <th class="label">$l10n.get("install.complete.impl.id")</th>
-                    <td>${implementationId}</td>
-                </tr>
-                <tr>
-                    <th class="label">$l10n.get("install.complete.impl.pass")</th>
-                    <td>${implementationIdPassPhrase}</td>
-                </tr>
-                <tr>
-                    <th class="label">$l10n.get("install.complete.impl.desc")</th>
-                    <td>${implementationIdDescription}</td>
-                </tr>
-                <tr>
-                    <td colspan="2" class="question">$l10n.get("install.complete.rp")</td>
-                </tr>
-                <tr>
-                    <th class="label">$l10n.get("install.complete.rp.mod")</th>
-                    <td>#if( $moduleWebAdmin == true ) $l10n.get("general.yes") #else $l10n.get("general.no") #end</td>
-                </tr>
-                <tr>
-                    <th class="label">$l10n.get("install.complete.rp.up")</th>
-                    <td>#if( $autoUpdateDatabase == true ) $l10n.get("general.yes") #else $l10n.get("general.no") #end</td>
-                </tr>
+<div class="content-container">
+    <form method="post" class="setup-form">
+        <input type="hidden" name="page" value="wizardcomplete.vm" />
+        
+        <div class="form-container">
+            <h2 class="form-title">$l10n.get("install.complete.review")</h2>
+            <p class="form-description">$l10n.get("install.complete.info")</p>
+
+            <div class="summary-sections">
+                <!-- Database Section -->
+                <div class="summary-section">
+                    <h3 class="section-title">$l10n.get("install.complete.db")</h3>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <span class="summary-label">$l10n.get("install.complete.db.connection")</span>
+                            <span class="summary-value">${databaseConnection}</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">$l10n.get("install.db.name")</span>
+                            <span class="summary-value">${databaseName}</span>
+                        </div>
+                        #if($installMethod != $INSTALL_METHOD_TESTING)
+                        <div class="summary-item">
+                            <span class="summary-label">$l10n.get("install.complete.db.create")</span>
+                            <span class="summary-value">#if( $hasCurrentOpenmrsDatabase == false ) $l10n.get("general.yes") #else $l10n.get("general.no") #end</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">$l10n.get("install.complete.db.userAccount")</span>
+                            <span class="summary-value">#if( $createDatabaseUser == true ) $l10n.get("general.yes") #else $l10n.get("general.no") #end</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">$l10n.get("install.complete.db.tables")</span>
+                            <span class="summary-value">#if( $createTables == true ) $l10n.get("general.yes") #else $l10n.get("general.no") #end</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">$l10n.get("install.complete.db.demo")</span>
+                            <span class="summary-value">#if( $addDemoData == true ) $l10n.get("general.yes") #else $l10n.get("general.no") #end</span>
+                        </div>
+                        #end
+                    </div>
+                </div>
+
+                #if($installMethod != $INSTALL_METHOD_TESTING)
+                <!-- Implementation Section -->
+                <div class="summary-section">
+                    <h3 class="section-title">$l10n.get("install.complete.impl")</h3>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <span class="summary-label">$l10n.get("install.complete.impl.name")</span>
+                            <span class="summary-value">${implementationIdName}</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">$l10n.get("install.complete.impl.id")</span>
+                            <span class="summary-value">${implementationId}</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">$l10n.get("install.complete.impl.pass")</span>
+                            <span class="summary-value">${implementationIdPassPhrase}</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">$l10n.get("install.complete.impl.desc")</span>
+                            <span class="summary-value">${implementationIdDescription}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Runtime Properties Section -->
+                <div class="summary-section">
+                    <h3 class="section-title">$l10n.get("install.complete.rp")</h3>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <span class="summary-label">$l10n.get("install.complete.rp.mod")</span>
+                            <span class="summary-value">#if( $moduleWebAdmin == true ) $l10n.get("general.yes") #else $l10n.get("general.no") #end</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">$l10n.get("install.complete.rp.up")</span>
+                            <span class="summary-value">#if( $autoUpdateDatabase == true ) $l10n.get("general.yes") #else $l10n.get("general.no") #end</span>
+                        </div>
+                    </div>
+                </div>
                 #end
+
                 #if($localeToSave)
-                <tr>
-                    <th class="label">$l10n.get("LocalesAndThemes.locale")</th>
-                    <td>${localeToSave}</td>
-                </tr>
+                <div class="summary-item">
+                    <span class="summary-label">$l10n.get("LocalesAndThemes.locale")</span>
+                    <span class="summary-value">${localeToSave}</span>
+                </div>
                 #end
-                <tr>
-                    <th class="label">$l10n.get("install.complete.rp.path")</th>
-                    <td>${runtimePropertiesPath}</td>
-                </tr>
+
+                <div class="summary-item">
+                    <span class="summary-label">$l10n.get("install.complete.rp.path")</span>
+                    <span class="summary-value">${runtimePropertiesPath}</span>
+                </div>
+
                 #if($installMethod == $INSTALL_METHOD_TESTING)
-                <tr>
-                    <td colspan="2" class="question">$l10n.get("install.complete.settings")</td>
-                </tr>
-                <tr>
-                    <th class="label">$l10n.get("install.testing.remoteUrl")</th>
-                    <td>${remoteUrl}</td>
-                </tr>
-                <tr>
-                    <th class="label">$l10n.get("install.testing.remote.username")</th>
-                    <td>${remoteUsername}</td>
-                </tr>
+                <!-- Testing Settings Section -->
+                <div class="summary-section">
+                    <h3 class="section-title">$l10n.get("install.complete.settings")</h3>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <span class="summary-label">$l10n.get("install.testing.remoteUrl")</span>
+                            <span class="summary-value">${remoteUrl}</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">$l10n.get("install.testing.remote.username")</span>
+                            <span class="summary-value">${remoteUsername}</span>
+                        </div>
+                    </div>
+                </div>
                 #end
-                <tr>
-                	<td colspan="2" align="center">
-						<input type="image" src="images/back_button.png" value="Back" name="back" style="margin-right: 20px"/>
-						<input type="image" src="images/forward_button.png" name="continue" style="margin-left: 20px"/>
-					</td>
-                </tr>
-            </table>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" name="back" value="Back" class="button button-secondary">
+                    <span class="button-icon">←</span>
+                    <span class="button-text">Back</span>
+                </button>
+                <button type="submit" name="continue" class="button button-primary">
+                    <span class="button-text">Finish</span>
+                    <span class="button-icon">→</span>
+                </button>
+            </div>
         </div>
-	</form>
-	
-    <div id="progressbar"></div>
+    </form>
+</div>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    .content-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 1.5rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        height: calc(100vh - 180px);
+        overflow-y: auto;
+        position: relative;
+    }
+
+    .form-container {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .form-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+
+    .form-description {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .summary-sections {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .summary-section {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 1.5rem;
+    }
+
+    .section-title {
+        font-size: 1.2rem;
+        font-weight: 500;
+        color: var(--text-color);
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--primary-color);
+    }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1rem;
+    }
+
+    .summary-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        padding: 0.75rem;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .summary-label {
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .summary-value {
+        font-size: 1rem;
+        color: var(--text-color);
+    }
+
+    .button-group {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 1rem;
+        position: sticky;
+        bottom: 0;
+        background: white;
+        padding: 1rem 0;
+        border-top: 1px solid #eee;
+    }
+
+    .button {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 500;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .button-primary {
+        background: linear-gradient(to right, var(--openmrs-logo-color), var(--openmrs-logo-color));
+        color: white;
+    }
+
+    .button-secondary {
+        background: #f5f5f5;
+        color: var(--text-color);
+    }
+
+    .button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .button-icon {
+        font-size: 1.2rem;
+    }
+
+    @media (max-width: 768px) {
+        .content-container {
+            margin: 1rem;
+            padding: 1rem;
+        }
+
+        .summary-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .button-group {
+            flex-direction: column;
+        }
+
+        .button {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+<div id="progressbar"></div>
 #parse($FOOTER_TEMPLATE)

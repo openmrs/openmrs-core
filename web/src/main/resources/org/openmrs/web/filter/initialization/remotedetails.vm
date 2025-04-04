@@ -1,45 +1,202 @@
 #parse($HEADER_TEMPLATE)
 
-<form method="post" autocomplete="off">
-			
-	<div class="content" style="text-align:center">
-		<table align="center" cellspacing="5" cellpadding="9">
-			<tr>
-                <td colspan="2" align="center"><strong>$l10n.get("install.step").insert(${currentStepNumber}).insert(${numberOfSteps})</strong></td>
-			</tr>
-			<tr>
-				<th valign="top" align="right">$l10n.get("install.testing.remoteUrl"):</th>
-				<td>
-					<input type="text" name="remoteUrl" size="60" value="${remoteUrl}" onKeyPress="return submitenter(this,event);" /><br/>
-					<i><small>$l10n.get("install.testing.remoteUrl.example")</small></i>
-				</td>
-			</tr>
-			<tr>
-                <th align="right">$l10n.get("install.testing.username.remote"):</th>
-                <td><input type="text" name="username" value="${remoteUsername}" onKeyPress="return submitenter(this,event);" /></td>
-            </tr>
-            <tr>
-                <th align="right">$l10n.get("install.testing.password.remote"):</th>
-                <td><input type="password" name="password" onKeyPress="return submitenter(this,event);" />
-                     <br/>
-                     <i><small>$l10n.get("install.testing.passwordadvice.remote")</small></i>
-                </td></tr>
-			<tr><td colspan="2" height="40px"></td></tr>
-            <tr>
-                <td colspan="2" align="center">
-                	<input type="image" src="images/back_button.png" value="Back" name="back" style="margin-right: 20px"/>
-                	<input type="image" src="images/forward_button.png" name="continue"/>
-                </td>
-            </tr>
-		</table>
-	</div>
-	
-	<input type="hidden" name="page" value="remotedetails.vm" /> 
-	
-</form>
+<div class="content-container">
+    <form method="post" autocomplete="off" class="setup-form">
+        <input type="hidden" name="page" value="remotedetails.vm" />
+        
+        <div class="form-container">
+            <h2 class="form-title">$l10n.get("install.step").insert(${currentStepNumber}).insert(${numberOfSteps})</h2>
+
+            <div class="form-section">
+                <div class="form-group">
+                    <label class="form-label">$l10n.get("install.testing.remoteUrl")</label>
+                    <div class="input-container">
+                        <input type="text" 
+                               name="remoteUrl" 
+                               class="form-input" 
+                               value="${remoteUrl}" 
+                               onKeyPress="return submitenter(this,event);" />
+                        <span class="input-hint">$l10n.get("install.testing.remoteUrl.example")</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">$l10n.get("install.testing.username.remote")</label>
+                    <input type="text" 
+                           name="username" 
+                           class="form-input"
+                           value="${remoteUsername}" 
+                           onKeyPress="return submitenter(this,event);" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">$l10n.get("install.testing.password.remote")</label>
+                    <div class="input-container">
+                        <input type="password" 
+                               name="password" 
+                               class="form-input"
+                               onKeyPress="return submitenter(this,event);" />
+                        <span class="input-hint">$l10n.get("install.testing.passwordadvice.remote")</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" name="back" value="Back" class="button button-secondary">
+                    <span class="button-icon">←</span>
+                    <span class="button-text">Back</span>
+                </button>
+                <button type="submit" name="continue" class="button button-primary">
+                    <span class="button-text">Continue</span>
+                    <span class="button-icon">→</span>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    .content-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 1.5rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        height: calc(100vh - 180px);
+        overflow-y: auto;
+        position: relative;
+    }
+
+    .form-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .form-title {
+        font-size: 1.3rem;
+        font-weight: 500;
+        color: var(--text-color);
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .form-section {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .form-label {
+        font-size: 1rem;
+        font-weight: 500;
+        color: var(--text-color);
+    }
+
+    .input-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(242, 101, 34, 0.1);
+    }
+
+    .input-hint {
+        font-size: 0.85rem;
+        font-style: italic;
+    }
+
+    .button-group {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 1rem;
+        position: sticky;
+        bottom: 0;
+        background: white;
+        padding: 1rem 0;
+        border-top: 1px solid #eee;
+    }
+
+    .button {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 500;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .button-primary {
+        background: linear-gradient(to right, var(--openmrs-logo-color), var(--openmrs-logo-color));
+        color: white;
+    }
+
+    .button-secondary {
+        background: #f5f5f5;
+        color: var(--text-color);
+    }
+
+    .button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .button-icon {
+        font-size: 1.2rem;
+    }
+
+    @media (max-width: 768px) {
+        .content-container {
+            margin: 1rem;
+            padding: 1.5rem;
+        }
+
+        .button-group {
+            flex-direction: column;
+        }
+
+        .button {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
 
 <script type="text/javascript">
-	document.forms[0].elements[0].focus();
+    document.forms[0].elements[0].focus();
 </script>
 
 #parse($FOOTER_TEMPLATE)
