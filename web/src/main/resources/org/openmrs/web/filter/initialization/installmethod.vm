@@ -1,64 +1,257 @@
 #parse($HEADER_TEMPLATE)
 
-	#if( $canCreate != true )
-		<br/>
-		<span style="color: red">
-			<b>$l10n.get("install.error.unableCreateRtPropFile")</b> <br/>
-			$l10n.get("install.error.unableCreateRtPropFileNeeded")<br/>
-			$l10n.get("install.error.unableCreateRtPropFileName").insert(${runtimePropertiesPath})<br/>
-			$l10n.get("install.error.unableCreateRtPropFileCause").insert(${cannotCreateErrorMessage})
-			<br/><br/>
-			$l10n.get("install.error.correct")
-		</span>
-		<br/><br/>
-		<a href="retry">$l10n.get("install.error.retry")</a>
-	#{else}
-
-		#if( $canWrite != true )
-			<span style="color: red">
-				$l10n.get("install.error.unableEditRtPropFile").insert(${runtimePropertiesPath})
-				<br/><br/>
-				$l10n.get("install.error.correct")
-			</span>
-			<br/><br/>
-			<a href="retry">$l10n.get("install.error.retry")</a>
-		#{else}
-            <form method="post" autocomplete="off">
+<div class="content-container">
+    #if( $canCreate != true )
+        <div class="error-container">
+            <div class="error-message">
+                <strong>$l10n.get("install.error.unableCreateRtPropFile")</strong>
+                <p>$l10n.get("install.error.unableCreateRtPropFileNeeded")</p>
+                <p>$l10n.get("install.error.unableCreateRtPropFileName").insert(${runtimePropertiesPath})</p>
+                <p>$l10n.get("install.error.unableCreateRtPropFileCause").insert(${cannotCreateErrorMessage})</p>
+                <p>$l10n.get("install.error.correct")</p>
+            </div>
+            <a href="retry" class="button button-primary">$l10n.get("install.error.retry")</a>
+        </div>
+    #{else}
+        #if( $canWrite != true )
+            <div class="error-container">
+                <div class="error-message">
+                    <p>$l10n.get("install.error.unableEditRtPropFile").insert(${runtimePropertiesPath})</p>
+                    <p>$l10n.get("install.error.correct")</p>
+                </div>
+                <a href="retry" class="button button-primary">$l10n.get("install.error.retry")</a>
+            </div>
+        #{else}
+            <form method="post" autocomplete="off" class="setup-form">
                 <input type="hidden" name="page" value="installmethod.vm" />
+                
+                <div class="form-container">
+                    <h2 class="form-title">$l10n.get("install.method")</h2>
+                    
+                    <div class="install-options">
+                        <div class="install-option">
+                            <label class="option-container">
+                                <input type="radio" name="install_method" value="${INSTALL_METHOD_SIMPLE}" 
+                                    #if( $installMethod == $INSTALL_METHOD_SIMPLE )checked="checked"#end/>
+                                <div class="option-content">
+                                    <div class="option-header">$l10n.get("install.simple")</div>
+                                    <div class="option-description">$l10n.get("install.simple.content")</div>
+                                </div>
+                            </label>
+                        </div>
 
-                <div class="content">
-                    <table align="center" cellspacing="5" cellpadding="9">
-                        <tr>
-                            <td colspan="2"><strong>$l10n.get("install.method")</strong></td>
-                        </tr>
-                        <tr>
-                            <td valign="top" class="yes" style="white-space: nowrap"> <input type="radio" name="install_method" value="${INSTALL_METHOD_SIMPLE}" #if( $installMethod == $INSTALL_METHOD_SIMPLE )checked="checked"#end/>$l10n.get("install.simple")</td>
-                            <td class="question">$l10n.get("install.simple.content")</td>
-                        </tr>
-                        <tr>
-                            <td valign="top" class="yes" style="white-space: nowrap"> <input type="radio" name="install_method" value="${INSTALL_METHOD_ADVANCED}" #if( $installMethod == $INSTALL_METHOD_ADVANCED )checked="checked"#end/>$l10n.get("install.advanced")</td>
-                            <td class="question">$l10n.get("install.advanced.content")</td>
-                        </tr>
-                        <tr>
-                            <td valign="top" class="yes" style="white-space: nowrap"> <input type="radio" name="install_method" value="${INSTALL_METHOD_TESTING}" #if( $installMethod == $INSTALL_METHOD_TESTING )checked="checked"#end/>$l10n.get("install.testing")</td>
-                            <td class="question">
-                            	$l10n.get("install.testing.desc")
-                            	<br><b>$l10n.get("install.testing.note"):</b>
-                            	<ul>
-									<li>$l10n.get("install.testing.list.supportedServer")</li>
-                            		<li>$l10n.get("install.testing.list.ensureConnection")</li>
-                            	</ul>
-                            </td>
-                        </tr>
-                        <tr>
-					        <td colspan="2" align="center">
-							<input type="image" src="images/back_button.png" value="Back" name="back" style="margin-right: 20px"/>
-							<input type="image" src="images/forward_button.png" name="continue" style="margin-left: 20px"/>
-						</td>
-                        </tr>                          
-                    </table>
+                        <div class="install-option">
+                            <label class="option-container">
+                                <input type="radio" name="install_method" value="${INSTALL_METHOD_ADVANCED}"
+                                    #if( $installMethod == $INSTALL_METHOD_ADVANCED )checked="checked"#end/>
+                                <div class="option-content">
+                                    <div class="option-header">$l10n.get("install.advanced")</div>
+                                    <div class="option-description">$l10n.get("install.advanced.content")</div>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div class="install-option">
+                            <label class="option-container">
+                                <input type="radio" name="install_method" value="${INSTALL_METHOD_TESTING}"
+                                    #if( $installMethod == $INSTALL_METHOD_TESTING )checked="checked"#end/>
+                                <div class="option-content">
+                                    <div class="option-header">$l10n.get("install.testing")</div>
+                                    <div class="option-description">
+                                        <p>$l10n.get("install.testing.desc")</p>
+                                        <div class="note-box">
+                                            <strong>$l10n.get("install.testing.note"):</strong>
+                                            <ul>
+                                                <li>$l10n.get("install.testing.list.supportedServer")</li>
+                                                <li>$l10n.get("install.testing.list.ensureConnection")</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" name="back" value="Back" class="button button-secondary">
+                            <span class="button-icon">←</span>
+                            <span class="button-text">Back</span>
+                        </button>
+                        <button type="submit" name="continue" class="button button-primary">
+                            <span class="button-text">Continue</span>
+                            <span class="button-icon">→</span>
+                        </button>
+                    </div>
                 </div>
             </form>
-		#end
-	#end
+        #end
+    #end
+</div>
+
+<style>
+	    body {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    .content-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 1.5rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+		height: calc(100vh - 180px);
+        overflow-y: auto;
+        position: relative;
+    }
+
+    .error-container {
+        text-align: center;
+        padding: 2rem;
+        background-color: #ffebee;
+        border-radius: 8px;
+        border-left: 4px solid var(--error-color);
+    }
+
+    .error-message {
+        margin-bottom: 1.5rem;
+        color: #c62828;
+    }
+
+    .error-message p {
+        margin: 0.5rem 0;
+    }
+
+    .form-title {
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: var(--text-color);
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .install-options {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .install-option {
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .install-option:hover {
+        border-color: var(--openmrs-logo-color);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .option-container {
+        display: flex;
+        gap: 1rem;
+        padding: 1.5rem;
+        cursor: pointer;
+    }
+
+    .option-container input[type="radio"] {
+        width: 20px;
+        height: 20px;
+        margin-top: 4px;
+        accent-color: var(--openmrs-logo-color);
+        cursor: pointer;
+    }
+
+    .option-content {
+        flex: 1;
+    }
+
+    .option-header {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: var(--text-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .option-description {
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    .note-box {
+        background-color: #fff8e1;
+        border-left: 4px solid #ffc107;
+        padding: 1rem;
+        margin-top: 1rem;
+        border-radius: 4px;
+    }
+
+    .note-box ul {
+        margin: 0.5rem 0 0 1.5rem;
+        padding: 0;
+    }
+
+    .note-box li {
+        margin: 0.25rem 0;
+    }
+
+    .button-group {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .button {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 500;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .button-primary {
+        background: linear-gradient(to right, var(--openmrs-logo-color), var(--openmrs-logo-color));
+        color: white;
+    }
+
+    .button-secondary {
+        background: #f5f5f5;
+        color: var(--text-color);
+    }
+
+    .button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .button-icon {
+        font-size: 1.2rem;
+    }
+
+    @media (max-width: 768px) {
+        .content-container {
+            margin: 1rem;
+            padding: 1.5rem;
+        }
+
+        .button-group {
+            flex-direction: column;
+        }
+
+        .button {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
 #parse($FOOTER_TEMPLATE)
