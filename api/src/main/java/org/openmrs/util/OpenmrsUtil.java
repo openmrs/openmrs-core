@@ -1947,6 +1947,71 @@ public class OpenmrsUtil {
 	}
 	
 	/**
+	 * Convert a stack trace into a formatted message version for easier viewing In production mode, instead of a page 
+	 * with stack traces. In development mode, we should continue to have stack traces.
+	 * 
+	 * @param stackTrace original stack trace from an error
+	 * @return formatted stack trace message
+	 * <strong>Should</strong> return null if stackTrace is null
+	 * <strong>Should</strong> return the Error and the Cause
+	 * @since 2.8
+	 */
+	public static String formattedStackTrace(String stackTrace) {
+		if (stackTrace == null) {
+			return null;
+		}
+
+		// If not in dev mode, convert a stack trace into a formatted message version
+		String props = Context.getRuntimeProperties().getProperty(OpenmrsConstants.DEVELOPMENT_MODE_RUNTIME_PROPERTY);
+		if (StringUtils.equals(props, "false")) {
+			// Pattern to match the first exception and first "Caused by"
+			Pattern pattern = Pattern.compile("(?m)^(([\\w.$]+Exception|Error|Throwable): .*)|"
+				+ "(Caused by: [\\w.$]+(Exception|Error|Throwable): .*)");
+
+			Matcher matcher = pattern.matcher(stackTrace);
+			StringBuilder result = new StringBuilder();
+			boolean foundFirst = false;
+			boolean foundCause = false;
+
+			while (matcher.find()) {
+				String line = matcher.group().trim();
+				if (!foundFirst) {
+					if (isExceptionLine(line)) {
+						result.append(detectExceptionType(line)).append(": ").append(line);
+					}
+					foundFirst = true;
+				} else if (line.startsWith("Caused by:")) {
+					result.append("\n").append(line);
+					foundCause = true;
+				}
+
+				if (foundCause) {
+					break;
+				}
+			}
+
+			return result.toString();
+		} else {
+			return stackTrace;
+		}
+	}
+
+	private static boolean isExceptionLine(String line) {
+		return line.matches("([\\w$]+\\.)*[\\w$]+(Exception|Error|Throwable): .*");
+	}
+
+	private static String detectExceptionType(String line) {
+		if (line.contains(".hl7")) {
+			return "Error (HL7)";
+		} else if (line.contains("org.springframework.")) {
+			return "Error (Spring)";
+		} else if (line.contains("java.") || line.contains("javax.")) {
+			return "Error (Java)";
+		}
+		return "Error";
+	}
+	
+	/**
 	 * <pre>
 	 * Finds and loads the runtime properties file for a specific OpenMRS application.
 	 * Searches for the file in this order:

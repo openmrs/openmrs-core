@@ -558,6 +558,13 @@ public final class OpenmrsConstants {
 	public static final String ENCRYPTION_KEY_RUNTIME_PROPERTY = "encryption.key";
 	
 	public static final String ENCRYPTION_KEY_DEFAULT = "dTfyELRrAICGDwzjHDjuhw==";
+
+	/**
+	 * Runtime property that will tell the system if app is running in development or production mode. 
+	 */
+	public static final String DEVELOPMENT_MODE_RUNTIME_PROPERTY = "development.mode";
+	
+	public static final String DEVELOPMENT_MODE_DEFAULT = "true";
 	
 	/**
 	 * Global property name for the visit type(s) to automatically close
