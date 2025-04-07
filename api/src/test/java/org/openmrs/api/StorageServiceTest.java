@@ -580,14 +580,14 @@ class StorageServiceTest extends BaseContextSensitiveTest {
 
 		assertThat(localStorageService.exists("test"), is(false));
 	}
-	
+
 	@Test
 	void getDataShouldFailIfKeyTriesToAccessFilesOutsideStorageDir() throws IOException {
 		IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> {
 			localStorageService.getData("/test");
 		});
-		assertThat(e.getMessage(), is("Key must not point outside legacy storage dir. Wrong key: /test"));
-		
+		assertThat(e.getMessage(), is("Key must not point outside storage dir. Wrong key: /test"));
+
 		Path testFile = Paths.get(OpenmrsUtil.getApplicationDataDirectory(), "../test");
 		try {
 			testFile.toFile().createNewFile();
@@ -601,5 +601,4 @@ class StorageServiceTest extends BaseContextSensitiveTest {
 			}
 		}
 	}
-	
 }
