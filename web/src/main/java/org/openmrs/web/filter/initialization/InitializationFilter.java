@@ -50,7 +50,6 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.UsernamePasswordCredentials;
-import org.openmrs.api.impl.UserServiceImpl;
 import org.openmrs.liquibase.ChangeLogDetective;
 import org.openmrs.liquibase.ChangeLogVersionFinder;
 import org.openmrs.module.MandatoryModuleException;
@@ -78,6 +77,8 @@ import org.openmrs.web.filter.util.FilterUtil;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
+
+import static org.openmrs.util.PrivilegeConstants.GET_GLOBAL_PROPERTIES;
 
 /**
  * This is the first filter that is processed. It is only active when starting OpenMRS for the very
@@ -1789,6 +1790,7 @@ public class InitializationFilter extends StartupFilter {
 							// change the admin user password from "test" to what they input above
 							if (wizardModel.createTables) {
 								try {
+									Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
 									Context.authenticate(new UsernamePasswordCredentials("admin", "test"));
 									
 									Properties props = Context.getRuntimeProperties();
@@ -1808,6 +1810,9 @@ public class InitializationFilter extends StartupFilter {
 								}
 								catch (ContextAuthenticationException ex) {
 									log.info("No need to change admin password.", ex);
+								}
+								finally {
+									Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
 								}
 							}
 						}
