@@ -16,7 +16,6 @@ import org.openmrs.order.OrderUtil;
 import org.openmrs.util.OpenmrsUtil;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -204,7 +203,6 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	@Column(name = "fulfiller_comment", length = 1024)
 	private String fulfillerComment;
 
-	//Newly added
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("voided asc")
     private Set<OrderAttribute> attributes = new LinkedHashSet<>();
