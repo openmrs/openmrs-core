@@ -9,6 +9,17 @@
  */
 package org.openmrs.person;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.openmrs.BaseChangeableOpenmrsData;
 import org.openmrs.Person;
@@ -26,6 +37,8 @@ import org.openmrs.api.PersonService;
  * @see PersonService#savePersonMergeLog(PersonMergeLog)
  * @since 1.9
  */
+@Entity
+@Table(name = "person_merge_log")
 @Audited
 public class PersonMergeLog extends BaseChangeableOpenmrsData {
 	
@@ -34,21 +47,35 @@ public class PersonMergeLog extends BaseChangeableOpenmrsData {
 	/**
 	 * The unique identifier of the person merge log entity
 	 */
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "person_merge_log_id_seq")
+	@GenericGenerator(
+		name = "person_merge_log_id_seq",
+		strategy = "native",
+		parameters = @Parameter(name = "sequence", value = "person_merge_log_person_merge_log_id_seq")
+	)
+	@Column(name = "person_merge_log_id", nullable = false)
 	private Integer personMergeLogId;
 	
 	/**
 	 * The object representing the preferred person of the merge
 	 */
+	@ManyToOne
+	@JoinColumn(name = "winner_person_id", nullable = false)
 	private Person winner;
 	
 	/**
 	 * The object representing the non-preferred person of the merge
 	 */
+	@ManyToOne
+	@JoinColumn(name = "loser_person_id", nullable = false)
 	private Person loser;
 	
 	/**
 	 * serialized data representing the details of the merge
 	 */
+	@Column(name = "merged_data", nullable = false)
+	@Lob
 	private String serializedMergedData;
 	
 	/**
