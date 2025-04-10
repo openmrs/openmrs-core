@@ -9,6 +9,9 @@
  */
 package org.openmrs;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
 import org.hibernate.envers.Audited;
 
 /**
@@ -18,6 +21,8 @@ import org.hibernate.envers.Audited;
  * @since 1.9.2, 1.10
  */
 @Audited
+@Entity
+@Table(name = "test_order")
 public class TestOrder extends ServiceOrder {
 	
 	public static final long serialVersionUID = 1L;
