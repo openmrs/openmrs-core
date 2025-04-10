@@ -2720,10 +2720,14 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		StandardServiceRegistry standardRegistry = new StandardServiceRegistryBuilder()
 			.configure().applySettings(configuration.getProperties()).build();
 
-		Metadata metaData = new MetadataSources(standardRegistry).addAnnotatedClass(Allergy.class)
-			.addAnnotatedClass(Encounter.class).addAnnotatedClass(SomeTestOrder.class)
-			.addAnnotatedClass(Diagnosis.class).addAnnotatedClass(Condition.class)
-			.addAnnotatedClass(Visit.class).addAnnotatedClass(VisitAttributeType.class)
+		Metadata metaData = new MetadataSources(standardRegistry)
+				.addAnnotatedClass(Allergy.class)
+			.addAnnotatedClass(Encounter.class)
+			.addAnnotatedClass(SomeTestOrder.class)
+			.addAnnotatedClass(Diagnosis.class)
+			.addAnnotatedClass(Condition.class)
+			.addAnnotatedClass(Visit.class)
+			.addAnnotatedClass(VisitAttributeType.class)
 			.addAnnotatedClass(MedicationDispense.class)
 			.addAnnotatedClass(ProviderAttributeType.class)
 			.addAnnotatedClass(ConceptMapType.class)
@@ -2742,6 +2746,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.addAnnotatedClass(ProgramAttributeType.class)
 			.addAnnotatedClass(HL7InError.class)
 			.addAnnotatedClass(OrderType.class)
+			.addAnnotatedClass(ConceptDatatype.class)
 			.getMetadataBuilder().build();
 
 
