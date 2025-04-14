@@ -60,7 +60,6 @@ import org.openmrs.PersonAttributeType;
 import org.openmrs.ProgramAttributeType;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttributeType;
-import org.openmrs.ReferralOrder;
 import org.openmrs.Relationship;
 import org.openmrs.SimpleDosingInstructions;
 import org.openmrs.TestOrder;

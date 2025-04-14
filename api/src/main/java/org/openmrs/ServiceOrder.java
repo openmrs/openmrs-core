@@ -9,7 +9,6 @@
  */
 package org.openmrs;
 
-import javax.persistence.MappedSuperclass;
 
 /**
  * Provides properties for several order types like TestOrder , ReferralOrder
@@ -17,7 +16,6 @@ import javax.persistence.MappedSuperclass;
  * 
  * @since 2.5.0
  */
-@MappedSuperclass
 public abstract class ServiceOrder extends Order {
 
 	public enum Laterality {

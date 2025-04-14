@@ -58,7 +58,6 @@ public class OrderTest extends BaseContextSensitiveTest {
 		o = new Order();
 	}
 
-
 	protected static void assertThatAllFieldsAreCopied(Order original, String methodName, String... otherfieldsToExclude)
 	        throws Exception {
 		if (methodName == null) {
