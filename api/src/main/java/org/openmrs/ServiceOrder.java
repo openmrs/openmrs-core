@@ -9,7 +9,6 @@
  */
 package org.openmrs;
 
-
 /**
  * Provides properties for several order types like TestOrder , ReferralOrder
  * and others depending on the openmrs implementation use case as need arises
