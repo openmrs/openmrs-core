@@ -17,7 +17,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.hibernate.envers.Audited;
-import org.hibernate.search.annotations.ContainedIn;
 
 /**
  * Defines a Patient in the system. A patient is simply an extension of a person and all that that
@@ -34,7 +33,6 @@ public class Patient extends Person {
 	
 	private String allergyStatus = Allergies.UNKNOWN;
 	
-	@ContainedIn
 	private Set<PatientIdentifier> identifiers;
 
 	

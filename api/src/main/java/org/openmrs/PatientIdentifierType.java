@@ -9,12 +9,6 @@
  */
 package org.openmrs;
 
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.envers.Audited;
-import org.hibernate.search.annotations.DocumentId;
-import org.hibernate.search.annotations.Field;
-
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
@@ -24,6 +18,12 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.envers.Audited;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 
 /**
  * PatientIdentifierType
@@ -87,7 +87,7 @@ public class PatientIdentifierType extends BaseChangeableOpenmrsMetadata {
 	@Column(name = "format")
 	private String format;
 
-	@Field
+	@GenericField
 	@Column(name = "required", nullable = false)
 	private Boolean required = Boolean.FALSE;
 
