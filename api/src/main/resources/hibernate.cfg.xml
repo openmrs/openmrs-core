@@ -26,7 +26,6 @@
 		<mapping resource="org/openmrs/api/db/hibernate/Concept.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptAnswer.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptAttribute.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/ConceptAttributeType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptDescription.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptName.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptNameTag.hbm.xml" />
@@ -110,6 +109,7 @@
 		<!-- These mappings are required because of rerefences in Obs & Concept -->
 		<mapping class="org.openmrs.ObsReferenceRange"/>
 		<mapping class="org.openmrs.ConceptReferenceRange"/>
+		<mapping class="org.openmrs.ConceptAttributeType"/>
   </session-factory>
 
 </hibernate-configuration>
