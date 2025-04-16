@@ -40,6 +40,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import liquibase.changelog.ChangeSet;
 import org.apache.commons.io.IOUtils;
@@ -73,6 +74,7 @@ import org.openmrs.web.filter.update.UpdateFilter;
 import org.openmrs.web.filter.util.CustomResourceLoader;
 import org.openmrs.web.filter.util.ErrorMessageConstants;
 import org.openmrs.web.filter.util.FilterUtil;
+import org.openmrs.web.filter.util.SessionModelUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
@@ -203,7 +205,8 @@ public class InitializationFilter extends StartupFilter {
 	 */
 	@Override
 	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
-		throws IOException, ServletException {
+		throws IOException {
+		SessionModelUtils.loadFromSession(httpRequest.getSession(), wizardModel);
 		loadInstallationScriptIfPresent();
 		
 		// we need to save current user language in references map since it will be used when template
@@ -815,6 +818,7 @@ public class InitializationFilter extends StartupFilter {
 				}
 			}
 			
+			SessionModelUtils.saveToSession(httpRequest.getSession(), wizardModel);
 			renderTemplate(page, referenceMap, httpResponse);
 		}
 	}
@@ -1757,6 +1761,7 @@ public class InitializationFilter extends StartupFilter {
 						if (!"".equals(wizardModel.implementationId)) {
 							try {
 								Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
+								Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
 								Context.addProxyPrivilege(PrivilegeConstants.MANAGE_CONCEPT_SOURCES);
 								Context.addProxyPrivilege(PrivilegeConstants.GET_CONCEPT_SOURCES);
 								Context.addProxyPrivilege(PrivilegeConstants.MANAGE_IMPLEMENTATION_ID);
@@ -1779,6 +1784,7 @@ public class InitializationFilter extends StartupFilter {
 							}
 							finally {
 								Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
+								Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
 								Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_CONCEPT_SOURCES);
 								Context.removeProxyPrivilege(PrivilegeConstants.GET_CONCEPT_SOURCES);
 								Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_IMPLEMENTATION_ID);
