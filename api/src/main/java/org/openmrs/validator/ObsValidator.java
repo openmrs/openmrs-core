@@ -334,6 +334,11 @@ public class ObsValidator implements Validator {
 	 * @return The strictest {@link ConceptReferenceRange} constructed from the strictest bounds
 	 */
 	private ConceptReferenceRange findStrictestReferenceRange(List<ConceptReferenceRange> conceptReferenceRanges) {
+		
+		if (conceptReferenceRanges.size() == 1) {
+			return conceptReferenceRanges.get(0);
+		}
+		
 		ConceptReferenceRange strictestLowRange = conceptReferenceRanges.stream()
 			.filter(range -> range.getLowAbsolute() != null)
 			.max(Comparator.comparing(ConceptReferenceRange::getLowAbsolute))
