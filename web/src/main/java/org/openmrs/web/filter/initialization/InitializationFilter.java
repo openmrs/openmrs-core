@@ -430,9 +430,9 @@ public class InitializationFilter extends StartupFilter {
 				handleTestingRemoteDetailsSetupPage(httpRequest, httpResponse, referenceMap, page);
 				break;
 			default:
+				SessionModelUtils.saveToSession(httpRequest.getSession(), wizardModel);
 				renderTemplate(DEFAULT_PAGE, referenceMap, httpResponse);
 		}
-		SessionModelUtils.saveToSession(httpRequest.getSession(), wizardModel);
 	}
 	
 	private void startInstallation() {
@@ -1721,6 +1721,7 @@ public class InitializationFilter extends StartupFilter {
 			wizardModel.currentStepNumber = 1;
 			wizardModel.numberOfSteps = 5;
 		}
+		SessionModelUtils.saveToSession(httpRequest.getSession(), wizardModel);
 		renderTemplate(page, referenceMap, httpResponse);
 	}
 	
@@ -1775,6 +1776,7 @@ public class InitializationFilter extends StartupFilter {
 		if (errors.isEmpty()) {
 			page = WIZARD_COMPLETE;
 		}
+		SessionModelUtils.saveToSession(httpRequest.getSession(), wizardModel);
 		renderTemplate(page, referenceMap, httpResponse);
 	}
 	
@@ -1833,7 +1835,7 @@ public class InitializationFilter extends StartupFilter {
 				wizardModel.currentStepNumber = 2;
 			}
 		}
-
+		SessionModelUtils.saveToSession(httpRequest.getSession(), wizardModel);
 		renderTemplate(page, referenceMap, httpResponse);
 	}
 
@@ -1875,7 +1877,7 @@ public class InitializationFilter extends StartupFilter {
 		if (errors.isEmpty()) { // go to next page
 			page = InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod) ? WIZARD_COMPLETE : OTHER_RUNTIME_PROPS;
 		}
-
+		SessionModelUtils.saveToSession(httpRequest.getSession(), wizardModel);
 		renderTemplate(page, referenceMap, httpResponse);
 	}
 
@@ -1896,7 +1898,7 @@ public class InitializationFilter extends StartupFilter {
 		} else { // skip a page
 			page = IMPLEMENTATION_ID_SETUP;
 		}
-
+		SessionModelUtils.saveToSession(httpRequest.getSession(), wizardModel);
 		renderTemplate(page, referenceMap, httpResponse);
 	}
 
@@ -1938,7 +1940,7 @@ public class InitializationFilter extends StartupFilter {
 		if (errors.isEmpty()) { // go to next page
 			page = IMPLEMENTATION_ID_SETUP;
 		}
-
+		SessionModelUtils.saveToSession(httpRequest.getSession(), wizardModel);
 		renderTemplate(page, referenceMap, httpResponse);
 	}
 
@@ -2012,7 +2014,7 @@ public class InitializationFilter extends StartupFilter {
 				errors.put("install.testing.invalidProductionUrl", new Object[] { wizardModel.remoteUrl });
 			}
 		}
-
+		SessionModelUtils.saveToSession(httpRequest.getSession(), wizardModel);
 		renderTemplate(page, referenceMap, httpResponse);
 	}
 
@@ -2044,7 +2046,7 @@ public class InitializationFilter extends StartupFilter {
 		if (errors.isEmpty()) { // go to next page
 			page = WIZARD_COMPLETE;
 		}
-
+		SessionModelUtils.saveToSession(httpRequest.getSession(), wizardModel);
 		renderTemplate(page, referenceMap, httpResponse);
 	}
 
@@ -2065,6 +2067,7 @@ public class InitializationFilter extends StartupFilter {
 			} else {
 				page = IMPLEMENTATION_ID_SETUP;
 			}
+			SessionModelUtils.saveToSession(httpRequest.getSession(), wizardModel);
 			renderTemplate(page, referenceMap, httpResponse);
 			return;
 		}
