@@ -28,6 +28,7 @@ import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptReferenceRange;
 import org.openmrs.Drug;
 import org.openmrs.Obs;
 import org.openmrs.Person;
@@ -554,6 +555,20 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obsValidator.validate(obs, errors);
 
 		assertTrue(errors.hasFieldErrors("valueNumeric"));
+	}
+	
+	@Test
+	public void getReferenceRange_shouldReturnCorrectRangeWhenHiAbsoluteAndLowAbsoluteAreNull() {
+		Obs obs = getObs(10, 4091, 50.0);
+
+		ConceptReferenceRange referenceRange = obsValidator.getReferenceRange(Context.getConceptService().getConcept(4091), obs);
+		
+		assertNotNull(referenceRange.getHiCritical());
+		assertNotNull(referenceRange.getHiNormal());
+		assertNotNull(referenceRange.getLowCritical());
+		assertNotNull(referenceRange.getLowNormal());
+		assertNull(referenceRange.getHiAbsolute());
+		assertNull(referenceRange.getLowAbsolute());
 	}
 	
 	/**
