@@ -164,6 +164,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		ensureOrderTypeIsSet(order,orderContext);
 		ensureCareSettingIsSet(order,orderContext);
 		failOnOrderTypeMismatch(order);
+		validateFieldsForOrderContextOutPatientCareSettingType(order, orderContext);
 		
 		// If isRetrospective is false, but the dateActivated is prior to the current date, set isRetrospective to true
 		if (!isRetrospective) {
@@ -291,6 +292,28 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			throw new OrderEntryException("Order.care.cannot.determine");
 		}
 		order.setCareSetting(careSetting);
+	}
+
+	private void validateFieldsForOrderContextOutPatientCareSettingType(Order order, OrderContext orderContext) {
+		if (!isDrugOrder(order) || orderContext == null) {
+			return;
+		}
+
+		if (orderContext.getCareSetting() != null && orderContext.getCareSetting().getCareSettingType().equals(CareSetting.CareSettingType.OUTPATIENT)) {
+			DrugOrder drugOrder = (DrugOrder) order;
+			boolean requireQuantity = Context.getAdministrationService().getGlobalPropertyValue(
+				OpenmrsConstants.GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_OUTPATIENT_QUANTITY, true);
+			if (requireQuantity) {
+				if (drugOrder.getNumRefills() == null) {
+					throw new OrderEntryException(
+						Context.getMessageSourceService().getMessage("DrugOrder.error.numRefillsIsNullForOutPatient"));
+				}
+				if (drugOrder.getQuantity() == null) {
+					throw new OrderEntryException(
+						Context.getMessageSourceService().getMessage("DrugOrder.error.quantityIsNullForOutPatient"));
+				}
+			}
+		}
 	}
 
 	private void failOnOrderTypeMismatch(Order order) {
