@@ -14,6 +14,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptNumeric;
@@ -311,7 +312,7 @@ public class ObsValidator implements Validator {
 		List<ConceptReferenceRange> validRanges = new ArrayList<>();
 
 		for (ConceptReferenceRange referenceRange : referenceRanges) {
-			if (referenceRangeUtility.evaluateCriteria(referenceRange.getCriteria(), obs)) {
+			if (referenceRangeUtility.evaluateCriteria(StringEscapeUtils.unescapeHtml4(referenceRange.getCriteria()), obs)) {
 				validRanges.add(referenceRange);
 			}
 		}
