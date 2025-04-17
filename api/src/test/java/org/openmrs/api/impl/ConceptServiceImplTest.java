@@ -887,6 +887,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		assertEquals(ORIGINAL_TEXT, savedConceptProposal.getOriginalText());
 		assertEquals(conceptProposal, savedConceptProposal);
 	}
+	
 
 	/**
 	 * @see ConceptServiceImpl#saveConceptProposal(ConceptProposal)
@@ -895,12 +896,16 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	public void saveConceptProposal_shouldReturnUpdatedConceptProposalObject() {
 		ConceptProposal conceptProposal = new ConceptProposal();
 		conceptProposal.setOriginalText("OriginalText");
+		conceptProposal.setLocale("en"); // <-- Add this line
 		ConceptProposal savedConceptProposal = conceptService.saveConceptProposal(conceptProposal);
+
 		final String ANOTHER_ORIGINAL_TEXT = "AnotherOriginalText";
 		savedConceptProposal.setOriginalText(ANOTHER_ORIGINAL_TEXT);
 		ConceptProposal updatedConceptProposal = conceptService.saveConceptProposal(savedConceptProposal);
+
 		assertEquals(ANOTHER_ORIGINAL_TEXT, updatedConceptProposal.getOriginalText());
 	}
+
 
 	/**
 	 * @see ConceptServiceImpl#saveConceptProposal(ConceptProposal)
