@@ -789,12 +789,21 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	public List<Concept> getProposedConcepts(String text) {
 		return dao.getProposedConcepts(text);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.ConceptService#saveConceptProposal(org.openmrs.ConceptProposal)
 	 */
 	@Override
 	public ConceptProposal saveConceptProposal(ConceptProposal conceptProposal) throws APIException {
+		if (conceptProposal == null) {
+			throw new IllegalArgumentException("conceptProposal cannot be null");
+		}
+		if (conceptProposal.getLocale() == null) {
+			conceptProposal.setLocale(Locale.getDefault().toString()); // or "en"
+		}
+		if (conceptProposal.getUuid() == null) {
+			conceptProposal.setUuid(UUID.randomUUID().toString());
+		}
 		return dao.saveConceptProposal(conceptProposal);
 	}
 	

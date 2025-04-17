@@ -288,8 +288,8 @@
 	<drug_order order_id="3" drug_inventory_id="2" dose="2.0" units="tab(s)" frequency="2/day x 7 days/week" prn="false" complex="false"/>
 	<drug_order order_id="4" drug_inventory_id="3" dose="325.0" units="mg" frequency="1/day x 7 days/week" prn="false" complex="false"/>
 	<drug_order order_id="5" drug_inventory_id="3" dose="325.0" units="mg" frequency="2/day x 7 days/week" prn="false" complex="false"/>
-	<concept_proposal concept_proposal_id="1" original_text="I want this concept but I can't have it" state="REJECT" encounter_id="3" obs_concept_id="4" creator="1" date_created="2009-06-03 13:55:12.0" uuid="57a68666-5067-11de-80cb-001e378eb67e"/>
-	<concept_proposal concept_proposal_id="2" original_text="unmapped concept proposal" state="UNMAPPED" encounter_id="3" creator="1" date_created="2010-12-21 08:41:10.0" uuid="af4ae460-0e2b-11e0-a94b-469c3c5a0c2f"/>
+	<concept_proposal concept_proposal_id="1" original_text="I want this concept but I can't have it" state="REJECT" encounter_id="3" obs_concept_id="4" creator="1" date_created="2009-06-03 13:55:12.0" locale="en" uuid="57a68666-5067-11de-80cb-001e378eb67e"/>
+	<concept_proposal concept_proposal_id="2" original_text="unmapped concept proposal" state="UNMAPPED" encounter_id="3" creator="1" date_created="2010-12-21 08:41:10.0" locale="en" uuid="af4ae460-0e2b-11e0-a94b-469c3c5a0c2f"/>
 	<concept_state_conversion concept_state_conversion_id="1" concept_id="16" program_workflow_id="2" program_workflow_state_id="1" uuid="6c72b064-506d-11de-80cb-001e378eb67e"/>
 	<relationship relationship_id="1" person_a="502" relationship="1" person_b="2" creator="1" date_created="2008-08-18 11:50:15.0" voided="false" uuid="c18717dd-5d78-4a0e-84fc-ee62c5f0676a"/>
 	<relationship relationship_id="2" person_a="502" relationship="1" person_b="7" creator="1" date_created="2008-08-18 11:53:50.0" voided="false" uuid="8c0a3d9c-bf61-496b-95b0-72e6bc4a2b83"/>
