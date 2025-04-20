@@ -42,7 +42,7 @@ public abstract class AbstractTask implements Task {
 	 * @param taskDefinition the task definition
 	 */
 	protected AbstractTask(TaskDefinition taskDefinition) {
-		log.debug("Initializing " + taskDefinition.getName());
+		log.debug("Initializing {} ", taskDefinition.getName());
 		initialize(taskDefinition);
 	}
 	

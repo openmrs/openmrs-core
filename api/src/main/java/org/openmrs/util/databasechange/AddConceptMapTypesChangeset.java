@@ -100,8 +100,8 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 				
 				pStmt.setInt(1, mapTypeId);
 				pStmt.setString(2, mapType);
-				pStmt.setBoolean(3, false);
-				pStmt.setBoolean(4, false);
+				pStmt.setBoolean(3, Boolean.FALSE);
+				pStmt.setBoolean(4, Boolean.FALSE);
 				pStmt.setDate(5, new Date(Calendar.getInstance().getTimeInMillis()));
 				pStmt.setString(6, mapUuid);
 				pStmt.addBatch();
@@ -116,8 +116,8 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 				
 				pStmt.setInt(1, mapTypeId);
 				pStmt.setString(2, mapType);
-				pStmt.setBoolean(3, true);
-				pStmt.setBoolean(4, false);
+				pStmt.setBoolean(3, Boolean.TRUE);
+				pStmt.setBoolean(4, Boolean.FALSE);
 				pStmt.setDate(5, new Date(Calendar.getInstance().getTimeInMillis()));
 				pStmt.setString(6, mapUuid);
 				pStmt.addBatch();
@@ -129,7 +129,7 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 				int[] updateCounts = pStmt.executeBatch();
 				for (int updateCount : updateCounts) {
 					if (updateCount > -1) {
-						log.debug("Successfully executed: updateCount=" + updateCount);
+						log.debug("Successfully executed: updateCount = {}", updateCount);
 					} else if (updateCount == Statement.SUCCESS_NO_INFO) {
 						log.debug("Successfully executed; No Success info");
 					} else if (updateCount == Statement.EXECUTE_FAILED) {
@@ -146,7 +146,7 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 
 				for (int updateCount : updateCounts) {
 					if (updateCount > -1) {
-						log.warn("Executed with exception: insertCount=" + updateCount);
+						log.warn("Executed with exception: insertCount = {}", updateCount);
 					} else if (updateCount == Statement.SUCCESS_NO_INFO) {
 						log.warn("Executed with exception; No Success info");
 					} else if (updateCount == Statement.EXECUTE_FAILED) {
