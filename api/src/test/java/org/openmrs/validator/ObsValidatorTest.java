@@ -569,6 +569,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		assertNotNull(referenceRange.getLowNormal());
 		assertNull(referenceRange.getHiAbsolute());
 		assertNull(referenceRange.getLowAbsolute());
+		assertNotNull(referenceRange.getConceptNumeric());
 	}
 	
 	/**

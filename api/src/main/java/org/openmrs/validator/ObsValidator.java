@@ -351,6 +351,7 @@ public class ObsValidator implements Validator {
 			.orElse(null);
 
 		ConceptReferenceRange strictestRange = new ConceptReferenceRange();
+		strictestRange.setConceptNumeric(conceptReferenceRanges.get(0).getConceptNumeric());
 
 		if (strictestLowRange != null) {
 			strictestRange.setLowAbsolute(strictestLowRange.getLowAbsolute());
