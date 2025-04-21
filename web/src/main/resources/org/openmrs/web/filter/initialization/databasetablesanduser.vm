@@ -62,7 +62,8 @@
                         <input type="password" 
                                name="current_database_password" 
                                class="form-input" 
-                               value="${currentDatabasePassword}" 
+                               value="${currentDatabasePassword}"
+                               autocomplete="new-password" 
                                onfocus="clickRadio('current_database_user', 'yes')" 
                                onKeyPress="return submitenter(this,event);" />
                     </div>
@@ -90,7 +91,8 @@
                         <input type="password" 
                                name="create_user_password" 
                                class="form-input" 
-                               value="${createUserPassword}" 
+                               value="${createUserPassword}"
+                               autocomplete="new-password" 
                                onfocus="clickRadio('current_database_user', 'no')" 
                                onKeyPress="return submitenter(this,event);" />
                     </div>

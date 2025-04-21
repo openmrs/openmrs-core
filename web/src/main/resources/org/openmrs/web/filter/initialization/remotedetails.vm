@@ -35,6 +35,7 @@
                         <input type="password" 
                                name="password" 
                                class="form-input"
+                               autocomplete="new-password"
                                onKeyPress="return submitenter(this,event);" />
                         <span class="input-hint">$l10n.get("install.testing.passwordadvice.remote")</span>
                     </div>

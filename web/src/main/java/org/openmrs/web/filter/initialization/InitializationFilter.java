@@ -40,7 +40,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import liquibase.changelog.ChangeSet;
 import org.apache.commons.io.IOUtils;
@@ -469,8 +468,7 @@ public class InitializationFilter extends StartupFilter {
 				return;
 			}
 			wizardModel.databaseConnection = httpRequest.getParameter("database_connection");
-			;
-			
+
 			wizardModel.createDatabaseUsername = Context.getRuntimeProperties().getProperty("connection.username",
 				wizardModel.createDatabaseUsername);
 			
@@ -1230,20 +1228,18 @@ public class InitializationFilter extends StartupFilter {
 	}
 	
 	/**
-	 * Check if the given value is null or a zero-length String
+	 * Checks if the given string value is empty or contains only whitespace. 
+	 * If it is, an error is added to the provided errors map with the specified error message code.
 	 *
-	 * @param value the string to check
-	 * @param errors the list of errors to append the errorMessage to if value is empty
+	 * @param value            the string to check
+	 * @param errors           the list of errors to append the errorMessage to if value is empty
 	 * @param errorMessageCode the string with code of error message translation to append if value is
-	 *            empty
-	 * @return true if the value is non-empty
+	 *                         empty
 	 */
-	private boolean checkForEmptyValue(String value, Map<String, Object[]> errors, String errorMessageCode) {
-		if (!StringUtils.isEmpty(value)) {
-			return true;
+	private void checkForEmptyValue(String value, Map<String, Object[]> errors, String errorMessageCode) {
+		if (!StringUtils.hasText(value)) {
+			errors.put(errorMessageCode, null);
 		}
-		errors.put(errorMessageCode, null);
-		return false;
 	}
 	
 	/**

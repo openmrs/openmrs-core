@@ -17,6 +17,7 @@
                                name="database_root_password" 
                                value="${databaseRootPassword}" 
                                class="form-input"
+                               autocomplete="new-password"
                                onKeyPress="return submitenter(this,event);" />
                     </div>
                 </div>

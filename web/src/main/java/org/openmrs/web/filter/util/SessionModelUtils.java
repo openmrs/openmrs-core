@@ -18,15 +18,13 @@ import java.lang.reflect.Field;
 /**
  * Utility class for saving and loading the state of an {@link InitializationWizardModel}
  * to and from an {@link HttpSession}.
- * <p>
- * This helps to avoid repetitive boilerplate code and simplifies session persistence
- * of wizard step values.
  */
 public class SessionModelUtils {
-
+	
 	private static final org.slf4j.Logger log = LoggerFactory.getLogger(SessionModelUtils.class);
+	
 	private static final String PREFIX = "setup.";
-
+	
 	/**
 	 * Saves all non-null fields of the {@link InitializationWizardModel} to the HTTP session.
 	 * The field name is used as the session key, prefixed with "setup.".
@@ -36,9 +34,6 @@ public class SessionModelUtils {
 	 */
 	public static void saveToSession(HttpSession session, InitializationWizardModel model) {
 		if (session == null || model == null) return;
-
-		log.warn("Saving wizard model to session");
-
 		for (Field field : model.getClass().getDeclaredFields()) {
 			field.setAccessible(true);
 			String fieldName = field.getName().toLowerCase();
@@ -59,7 +54,7 @@ public class SessionModelUtils {
 			}
 		}
 	}
-
+	
 	/**
 	 * Loads all existing session attributes (with "setup." prefix) into the corresponding fields
 	 * of the given {@link InitializationWizardModel}, if present.
@@ -69,9 +64,6 @@ public class SessionModelUtils {
 	 */
 	public static void loadFromSession(HttpSession session, InitializationWizardModel model) {
 		if (session == null || model == null) return;
-
-		log.warn("Loading wizard model from session");
-
 		for (Field field : model.getClass().getDeclaredFields()) {
 			field.setAccessible(true);
 			String fieldName = field.getName().toLowerCase();
