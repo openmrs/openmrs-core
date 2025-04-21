@@ -19,8 +19,16 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.util.Date;
 
+/**
+ * A ConceptProposal is a temporary holder for concept that should be in the system. When defining
+ * an observation, a user can "propose" a new concept if one isn't found already. The proposal is a
+ * simple text entry that will be reviewed later. When a proposal is (edited and) accepted, the
+ * encounter that prompted this proposal is updated with a new observation pointing at the new (or
+ */
+
 @Entity
 @Table(name = "concept_proposal")
+@Audited
 public class ConceptProposal extends BaseOpenmrsObject implements java.io.Serializable {
 
 	@Id
