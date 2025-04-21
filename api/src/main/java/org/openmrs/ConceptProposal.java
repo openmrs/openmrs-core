@@ -18,6 +18,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.util.Date;
+import org.hibernate.envers.Audited;
 
 /**
  * A ConceptProposal is a temporary holder for concept that should be in the system. When defining
