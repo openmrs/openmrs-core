@@ -2143,4 +2143,13 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		}
 		return mappedClasses;
 	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#purgeConceptReferenceRange(ConceptReferenceRange)
+	 */
+	@Override
+	public void purgeConceptReferenceRange(ConceptReferenceRange conceptReferenceRange) {
+		checkIfLocked();
+		dao.purgeConceptReferenceRange(conceptReferenceRange);
+	}
 }
