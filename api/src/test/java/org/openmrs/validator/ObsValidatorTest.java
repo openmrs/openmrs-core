@@ -561,7 +561,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	public void getReferenceRange_shouldReturnCorrectRangeWhenHiAbsoluteAndLowAbsoluteAreNull() {
 		Obs obs = getObs(10, 4091, 50.0);
 
-		ConceptReferenceRange referenceRange = obsValidator.getReferenceRange(Context.getConceptService().getConcept(4091), obs);
+		ConceptReferenceRange referenceRange = obsValidator.getReferenceRange(obs);
 		
 		assertNotNull(referenceRange.getHiCritical());
 		assertNotNull(referenceRange.getHiNormal());
