@@ -53,6 +53,8 @@ import org.openmrs.ConceptStopWord;
 import org.openmrs.Drug;
 import org.openmrs.DrugIngredient;
 import org.openmrs.Obs;
+import org.openmrs.Patient;
+import org.openmrs.Person;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptInUseException;
@@ -66,6 +68,7 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.validator.ObsValidator;
 import org.openmrs.validator.ValidateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -2082,6 +2085,12 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Override
 	public ConceptReferenceRange getConceptReferenceRangeByUuid(String uuid) {
 		return dao.getConceptReferenceRangeByUuid(uuid);
+	}
+	
+	@Override
+	public ConceptReferenceRange getConceptReferenceRange(Person person, Concept concept) {
+		Obs obs = new Obs(person, concept, null, null);
+		return new ObsValidator().getReferenceRange(obs);
 	}
 
 	/***
