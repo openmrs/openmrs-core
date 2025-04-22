@@ -4016,4 +4016,17 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 
 		assertEquals(34, conceptReferenceRange.getId());
 	}
+	
+	@Test
+	public void purgeConceptReferenceRange_shouldPurgeAConceptReferenceRange() {
+		
+		final String CONCEPT_REFERENCE_RANGE_UUID = "2c5972e8-aee5-468c-8216-369a1b60723d";
+		ConceptReferenceRange conceptReferenceRange = conceptService.getConceptReferenceRangeByUuid(CONCEPT_REFERENCE_RANGE_UUID);
+		assertNotNull(conceptReferenceRange);
+		
+		conceptService.purgeConceptReferenceRange(conceptReferenceRange);
+
+		conceptReferenceRange = conceptService.getConceptReferenceRangeByUuid(CONCEPT_REFERENCE_RANGE_UUID);
+		assertNull(conceptReferenceRange);
+	}
 }
