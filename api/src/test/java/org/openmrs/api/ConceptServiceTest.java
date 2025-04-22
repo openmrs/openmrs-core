@@ -3186,7 +3186,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		//test the desc order
 		allConcepts = conceptService.getAllConcepts("name", false, false);
 		
-		assertEquals(34, allConcepts.size());
+		assertEquals(35, allConcepts.size());
 		assertEquals("YES", allConcepts.get(0).getName().getName());
 		assertEquals("ANTIRETROVIRAL TREATMENT GROUP", allConcepts.get(allConcepts.size() - 1).getName().getName());
 	}
