@@ -25,8 +25,8 @@
 
 		<property name="propertyValue" type="text" column="property_value"
 			not-null="false" length="65535"/>
-		
-		<property name="description" type="text" not-null="false" length="65535"/>
+
+		<property name="description" type="java.lang.String" not-null="false" length="1024"/>
 
         <property name="datatypeClassname" type="java.lang.String" column="datatype" length="255" />
         
