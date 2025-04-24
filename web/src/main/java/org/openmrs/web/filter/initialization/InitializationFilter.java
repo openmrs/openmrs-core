@@ -244,7 +244,8 @@ public class InitializationFilter extends StartupFilter {
 					result.put("executedTasks", initJob.getExecutedTasks());
 					result.put("completedPercentage", initJob.getCompletedPercentage());
 				}
-				
+
+				SessionModelUtils.clearWizardSessionAttributes(httpRequest.getSession());
 				addLogLinesToResponse(result);
 			}
 			

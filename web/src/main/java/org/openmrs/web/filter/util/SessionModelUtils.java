@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.Field;
+import java.util.Enumeration;
 
 /**
  * Utility class for saving and loading the state of an {@link InitializationWizardModel}
@@ -39,7 +40,6 @@ public class SessionModelUtils {
 			String fieldName = field.getName().toLowerCase();
 			// NOTE: Passwords should not be stored in session as this poses a risk of unintended exposure.
 			if (fieldName.contains("password")) {
-				log.warn("Skipping password related field: {}", field.getName());
 				continue;
 			}
 			try {
@@ -47,7 +47,6 @@ public class SessionModelUtils {
 				if (value != null) {
 					String key = PREFIX + field.getName();
 					session.setAttribute(key, value);
-					log.warn("Saved field '{}' with value: {}", key, value);
 				}
 			} catch (IllegalAccessException e) {
 				log.error("Could not access field during save: {}", field.getName(), e);
@@ -69,7 +68,6 @@ public class SessionModelUtils {
 			String fieldName = field.getName().toLowerCase();
 			// NOTE: Passwords should not be restored from session to avoid persisting sensitive credentials in memory.
 			if (fieldName.contains("password")) {
-				log.warn("Skipping password-related field during load: {}", field.getName());
 				continue;
 			}
 			try {
@@ -77,10 +75,27 @@ public class SessionModelUtils {
 				Object value = session.getAttribute(key);
 				if (value != null) {
 					field.set(model, value);
-					log.warn("Loaded field '{}' with value: {}", key, value);
 				}
 			} catch (IllegalAccessException e) {
 				log.error("Could not set field during load: {}", field.getName(), e);
+			}
+		}
+	}
+	
+	/**
+	 * Clears all session attributes previously saved by the wizard,
+	 * i.e., those with the "setup." prefix.
+	 *
+	 * @param session the current {@link HttpSession}, must not be null
+	 */
+	public static void clearWizardSessionAttributes(HttpSession session) {
+		if (session == null) return;
+
+		Enumeration<String> names = session.getAttributeNames();
+		while (names.hasMoreElements()) {
+			String name = names.nextElement();
+			if (name.startsWith(PREFIX)) {
+				session.removeAttribute(name);
 			}
 		}
 	}
