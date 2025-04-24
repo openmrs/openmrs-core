@@ -9,6 +9,7 @@
             </p>
             <p class="error-description">${errorAtStartup.message}</p>
             <button type="button" id="toggle-details" class="button-secondary">Show Details</button>
+            <button type="button" id="copy-stacktrace" class="button-secondary">Copy Stacktrace</button>
             <pre id="stacktrace" class="stacktrace-hidden">${stacktrace}</pre>
         </div>
     </div>
@@ -16,24 +17,36 @@
 
 <script>
     const toggleButton = document.getElementById('toggle-details');
+    const copyButton = document.getElementById('copy-stacktrace');
     const stacktrace = document.getElementById('stacktrace');
     const contentContainer = document.querySelector('.content-container');
 
-    toggleButton.addEventListener('click', function () {
-        stacktrace
-            .classList
-            .toggle('stacktrace-hidden');
-        toggleButton.textContent = stacktrace
-            .classList
-            .contains('stacktrace-hidden')
-                ? 'Show Details'
-                : 'Hide Details';
+    toggleButton.addEventListener('click', () => {
+        stacktrace.classList.toggle('stacktrace-hidden');
+        toggleButton.textContent = stacktrace.classList.contains('stacktrace-hidden') ? 'Show Details' : 'Hide Details';
 
-        contentContainer.style.transition = 'height 0.3s ease-in-out';
         contentContainer.style.height = 'auto';
+        requestAnimationFrame(() => {
+            contentContainer.style.height = contentContainer.scrollHeight + "px";
+        });
+    });
+
+    copyButton.addEventListener('click', () => {
+        const text = stacktrace.textContent;
+        navigator.clipboard.writeText(text).then(() => {
+            copyButton.textContent = 'Copied to clipboard!';
+            setTimeout(() => {
+                copyButton.textContent = 'Copy Stacktrace';
+            }, 1500);
+        }).catch(() => {
+            alert('Failed to copy stacktrace.');
+        });
+    });
+
+    window.addEventListener('load', () => {
+        contentContainer.style.height = contentContainer.scrollHeight + "px";
     });
 </script>
-
 <style>
     .content-container {
         width: 100%;
@@ -60,15 +73,15 @@
     }
 
     .button-secondary {
-        background-color: var(--openmrs-logo-color);
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 10px;
-        font-size: 1rem;
-        cursor: pointer;
-        margin-top: 1rem;
-    }
+		background-color: var(--openmrs-logo-color);
+		color: white;
+		padding: 10px 20px;
+		border: none;
+		border-radius: 10px;
+		font-size: 1rem;
+		cursor: pointer;
+		margin: 0.5rem 0.5rem 0 0;
+	}
 
     .error-box {
         background: #fff0f0;

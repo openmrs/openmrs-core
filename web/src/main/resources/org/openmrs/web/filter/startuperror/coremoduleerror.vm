@@ -1,136 +1,43 @@
 #parse($HEADER_TEMPLATE)
 
-<div class="content-container">
-    <div class="form-container">
-        #if ($success)
-            <div class="success-box">
-                Modules uploaded successfully. Restart OpenMRS or your server to continue.
-            </div>
-        #else
-            <div class="error-box">
-                <h3 class="form-subtitle">
-                    The following modules are core to OpenMRS but could not be found and/or started:
-                </h3>
-                <ul class="module-list">
-                    #foreach ($entry in ${errorAtStartup.modules.entrySet()})
-                        <li>${entry.key}</li>
-                    #end
-                </ul>
+#if ($success)
+<div style="color: green">
+Modules uploaded successfully.  Restart OpenMRS or your server to continue.
+</div>
+#else
 
-                <p>Please upload a new version of each of these modules and restart OpenMRS to continue.</p>
-                <p>Modules can usually be found at
-                    <a href="http://modules.openmrs.org" target="modules">http://modules.openmrs.org</a>.
-                </p>
+<b>The following modules are core to OpenMRS but could not be found and/or started:</b> #foreach ($entry in ${errorAtStartup.modules.entrySet()}) ${entry.key} #end
+<br/>
+<br/>
+Please upload a new version of each of these modules and restart OpenMRS to continue.
+<br/>
+Modules can usually be found at <a href="http://modules.openmrs.org" target="modules">http://modules.openmrs.org</a>.
+<br/><br/>
 
-                <form method="post" enctype="multipart/form-data" class="upload-form">
-                    #foreach ($entry in ${errorAtStartup.modules.entrySet()})
-                        <div class="form-field">
-                            <label>${entry.key} v${entry.value}:</label>
-                            <input type="file" name="module"/>
-                        </div>
-                    #end
-                    <button type="submit" class="button button-primary">Upload Modules</button>
-                </form>
+<form method="post" enctype="multipart/form-data">
+#foreach ($entry in ${errorAtStartup.modules.entrySet()}) 
+${entry.key} v${entry.value}: <input type="file" name="module"/>
+#end
+<br/>
+<input type="submit" value="Upload Modules"/>
+</form>
 
-                <div class="full-error-toggle">
-                    <a href="" id="toggle-full-error">Show/Hide Full Error Message</a>
-                </div>
+<br/>
+<a onclick="$('#fullerrormessage').toggle()" href="#">Show/hide full error message</a>
+<br/>
 
-                <div id="fullerrormessage" class="stacktrace-hidden">
-                    <div class="error-description">${errorAtStartup.message}</div>
-                    <pre class="stacktrace-box">${stacktrace}</pre>
-                    <p>See the server log for full output.</p>
-                </div>
-            </div>
-        #end
-    </div>
+<div id="fullerrormessage" style="display: none">
+${errorAtStartup.message}<br/>
+<pre>
+${stacktrace}
+</pre>
+
+<br/>
+See the server log for full output.	
+
 </div>
 
-<script>
-    const toggleFullError = document.getElementById('toggle-full-error');
-    const fullErrorMessage = document.getElementById('fullerrormessage');
+#end
 
-    toggleFullError.addEventListener('click', function (e) {
-        e.preventDefault();
-        fullErrorMessage
-            .classList
-            .toggle('stacktrace-hidden');
-    });
-</script>
-<style>
-    .success-box {
-        background: #e6ffed;
-        border: 1px solid #b7eb8f;
-        padding: 1rem;
-        border-radius: 8px;
-        color: green;
-        margin-bottom: 1.5rem;
-    }
-
-    .error-box {
-        background: #fff0f0;
-        border: 1px solid #f5c2c7;
-        padding: 1.5rem;
-        border-radius: 8px;
-        color: red;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .form-subtitle {
-        font-size: 1.2rem;
-        font-weight: bold;
-    }
-
-    .module-list {
-        list-style-type: disc;
-        padding-left: 1.5rem;
-    }
-
-    .upload-form {
-        margin-top: 1rem;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .form-field label {
-        font-weight: bold;
-        margin-right: 0.5rem;
-    }
-
-    .button-primary {
-			background-color: var(--openmrs-logo-color);
-			color: white;
-			padding: 10px 20px;
-			border: none;
-			border-radius: 25px;
-			font-size: 1rem;
-			cursor: pointer;
-    }
-
-    .button-primary:hover {
-        filter: brightness(90%);
-    }
-
-    .full-error-toggle {
-        margin-top: 1rem;
-    }
-
-    .stacktrace-hidden {
-        display: none;
-    }
-
-    .stacktrace-box {
-        background: #f8f9fa;
-        padding: 1rem;
-        border-radius: 8px;
-        overflow-x: auto;
-        font-size: 0.9rem;
-        max-height: 300px;
-        margin-top: 1rem;
-    }
-</style>
 
 #parse($FOOTER_TEMPLATE)
