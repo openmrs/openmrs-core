@@ -11,27 +11,57 @@ package org.openmrs;
 
 import org.hibernate.envers.Audited;
 
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+
 /**
  * @since 1.12
  * OrderSetMember
  */
+@Entity
+@Table(name = "order_set_member")
 @Audited
 public class OrderSetMember extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 72232L;
-	
+
+	@Id
+ 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_set_member_id_seq")
+ 	@GenericGenerator(
+ 		name = "order_set_member_id_seq",
+ 		strategy = "native",
+ 		parameters = @Parameter(name = "sequence", value = "order_set_member_order_set_member_id_seq")
+ 	)
+ 	@Column(name = "order_set_member_id", nullable = false)
 	private Integer orderSetMemberId;
 	
+	@ManyToOne
+	@JoinColumn(name = "order_type_id", nullable = false)
 	private OrderType orderType;
+	
 	
 	private OrderSet orderSet;
 	
+	@Column(name = "order_template")
 	private String orderTemplate;
 	
+	@Column(name = "order_template_type")
 	private String orderTemplateType;
 	
+	@ManyToOne
+	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
-	
+
 	/**
 	 * Gets the orderSetMemberId
 	 *
