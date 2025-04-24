@@ -1,15 +1,118 @@
 #parse($HEADER_TEMPLATE)
 
-<b>The following error occurred at startup:</b>
-<div>
-${errorAtStartup.message}<br/>
-<pre>
-${stacktrace}
-</pre>
+<div class="content-container">
+    <div class="form-container">
+        <h2 class="form-title">OpenMRS Application Startup Failed</h2>
+        <div class="error-box">
+            <p class="error-message">
+                <strong>$l10n.get("install.error.startupOccurred")</strong>
+            </p>
+            <p class="error-description">${errorAtStartup.message}</p>
+            <button type="button" id="toggle-details" class="button-secondary">Show Details</button>
+            <pre id="stacktrace" class="stacktrace-hidden">${stacktrace}</pre>
+        </div>
+    </div>
 </div>
 
-<br/>
+<script>
+    const toggleButton = document.getElementById('toggle-details');
+    const stacktrace = document.getElementById('stacktrace');
+    const contentContainer = document.querySelector('.content-container');
 
-See the server log for full output.			
+    toggleButton.addEventListener('click', function () {
+        stacktrace
+            .classList
+            .toggle('stacktrace-hidden');
+        toggleButton.textContent = stacktrace
+            .classList
+            .contains('stacktrace-hidden')
+                ? 'Show Details'
+                : 'Hide Details';
+
+        contentContainer.style.transition = 'height 0.3s ease-in-out';
+        contentContainer.style.height = 'auto';
+    });
+</script>
+
+<style>
+    .content-container {
+        width: 100%;
+        max-width: 650px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        overflow: hidden;
+    }
+
+    .form-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .form-title {
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: var(--text-color);
+        text-align: center;
+        margin: 0 0 1rem;
+    }
+
+    .button-secondary {
+        background-color: var(--openmrs-logo-color);
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        cursor: pointer;
+        margin-top: 1rem;
+    }
+
+    .error-box {
+        background: #fff0f0;
+        border: 1px solid #f5c2c7;
+        padding: 1rem;
+        border-radius: 8px;
+        color: red;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        overflow: hidden;
+    }
+
+    .error-message {
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+
+    .error-description {
+        font-size: 1rem;
+    }
+
+    .stacktrace-hidden {
+        display: none;
+        max-height: 0;
+        padding: 0;
+        margin: 0;
+        border: none;
+        overflow: hidden;
+    }
+
+    #stacktrace {
+        background: #f8f9fa;
+        color: var(--text-color);
+        padding: 1rem;
+        border-radius: 8px;
+        overflow-x: auto;
+        font-size: 0.9rem;
+        max-height: 300px;
+        margin-top: 1rem;
+        border: 1px solid #ddd;
+    }
+</style>
 
 #parse($FOOTER_TEMPLATE)

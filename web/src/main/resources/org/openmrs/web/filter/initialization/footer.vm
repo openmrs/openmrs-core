@@ -17,14 +17,13 @@
 </footer>
 
 <style>
-    /* Global styles to ensure proper layout with footer */
     body {
         margin: 0;
         padding: 0;
         min-height: 100vh;
         display: flex;
         flex-direction: column;
-        padding-bottom: 120px; /* Space for footer */
+        padding-bottom: 120px;
     }
 
     .app-footer {
@@ -35,7 +34,7 @@
         bottom: 0;
         width: 100%;
         z-index: 100;
-        height: 100px; /* Fixed height for footer */
+        height: 100px;
     }
 
     .footer-content {
@@ -82,23 +81,21 @@
         font-size: 0.8rem;
     }
 
-    /* Content container adjustments */
     .content-container {
-        flex: 1;
         max-width: 600px;
         margin: 0 auto;
         padding: 1.5rem;
         background: white;
         border-radius: 12px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        margin-bottom: 20px; /* Additional space before footer */
+        margin-bottom: 20px;
         overflow-y: auto;
-        max-height: calc(100vh - 180px); /* Account for footer height */
+        max-height: calc(100vh - 180px);
     }
 
     @media (max-width: 768px) {
         body {
-            padding-bottom: 140px; /* More space on mobile */
+            padding-bottom: 140px;
         }
 
         .footer-content {
