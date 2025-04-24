@@ -19,7 +19,6 @@ import org.openmrs.api.context.Context;
  * 
  * @see Context#startup(java.util.Properties)
  * @see MandatoryModuleException
- * @see OpenmrsCoreModuleException
  */
 public abstract class ModuleMustStartException extends RuntimeException {
 	

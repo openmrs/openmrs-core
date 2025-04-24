@@ -50,11 +50,9 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.UsernamePasswordCredentials;
-import org.openmrs.api.impl.UserServiceImpl;
 import org.openmrs.liquibase.ChangeLogDetective;
 import org.openmrs.liquibase.ChangeLogVersionFinder;
 import org.openmrs.module.MandatoryModuleException;
-import org.openmrs.module.OpenmrsCoreModuleException;
 import org.openmrs.module.web.WebModuleUtil;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
@@ -1858,13 +1856,6 @@ public class InitializationFilter extends StartupFilter {
 								mandatoryModEx);
 							reportError(ErrorMessageConstants.ERROR_MANDATORY_MOD_REQ, DEFAULT_PAGE,
 								mandatoryModEx.getMessage());
-							return;
-						}
-						catch (OpenmrsCoreModuleException coreModEx) {
-							log.warn(
-								"A core module failed to start. Make sure that all core modules (with the required minimum versions) are installed and starting properly.",
-								coreModEx);
-							reportError(ErrorMessageConstants.ERROR_CORE_MOD_REQ, DEFAULT_PAGE, coreModEx.getMessage());
 							return;
 						}
 						

@@ -74,7 +74,6 @@ import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.ContextMockHelper;
 import org.openmrs.api.context.Credentials;
 import org.openmrs.api.context.UsernamePasswordCredentials;
-import org.openmrs.module.ModuleConstants;
 import org.openmrs.test.Containers;
 import org.openmrs.test.OpenmrsMetadataHandler;
 import org.openmrs.test.SkipBaseSetup;
@@ -346,9 +345,6 @@ public abstract class BaseContextSensitiveTest {
 			//after that, just update, if there are any changes. This is for performance reasons.
 			runtimeProperties.setProperty(Environment.HBM2DDL_AUTO, "update");
 		}
-		
-		// we don't want to try to load core modules in tests
-		runtimeProperties.setProperty(ModuleConstants.IGNORE_CORE_MODULES_PROPERTY, "true");
 		
 		try {
 			File tempappdir = File.createTempFile("appdir-for-unit-tests-", "");
