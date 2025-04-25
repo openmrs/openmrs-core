@@ -25,10 +25,16 @@ jobs:
       matrix:
         platform:
           - ubuntu-latest
+          - windows-latest
         java-version:
           - 8
           - 11
           - 17
+        exclude:
+          - platform: windows-latest
+            java-version: 11
+          - platform: windows-latest
+            java-version: 17
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
@@ -39,7 +45,7 @@ jobs:
           java-version: ${{ matrix.java-version }}
           cache: 'maven'
       - name: Install dependencies
-        run: mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --show-version --file pom.xml
+        run: mvn clean install -DskipTests=true -D"maven.javadoc.skip"=true --batch-mode --show-version --file pom.xml
       - name: Build with Maven
         run: mvn clean install --batch-mode && mvn test -Pskip-default-test -Pintegration-test --batch-mode --file pom.xml
       # this is necessary to populate the environment variables for Coveralls properly
