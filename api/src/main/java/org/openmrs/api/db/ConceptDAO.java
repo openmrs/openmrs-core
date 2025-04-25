@@ -685,4 +685,9 @@ public interface ConceptDAO {
 	 * @see ConceptService#getConceptReferenceRangeByUuid(String) 
 	 */
 	ConceptReferenceRange getConceptReferenceRangeByUuid(String uuid);
+	
+	/**
+	 * @see ConceptService#purgeConceptReferenceRange(org.openmrs.ConceptReferenceRange)
+	 */
+	void purgeConceptReferenceRange(ConceptReferenceRange conceptReferenceRange);
 }

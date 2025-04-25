@@ -2397,4 +2397,12 @@ public class HibernateConceptDAO implements ConceptDAO {
 
 		return session.createQuery(cq).uniqueResult();
 	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#purgeConceptReferenceRange(org.openmrs.ConceptReferenceRange)
+	 */
+	@Override
+	public void purgeConceptReferenceRange(ConceptReferenceRange conceptReferenceRange) {
+		sessionFactory.getCurrentSession().delete(conceptReferenceRange);
+	}
 }

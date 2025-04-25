@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.openmrs.api.StorageService;
 import org.openmrs.api.stream.StreamDataService;
@@ -58,9 +59,9 @@ public class LocalStorageService extends BaseStorageService implements StorageSe
 	
 	private final MimetypesFileTypeMap mimetypes = new MimetypesFileTypeMap();
 	
-	public LocalStorageService(@Value("${storage_dir}") String storageDir, @Autowired StreamDataService streamService) {
+	public LocalStorageService(@Value("${storage_dir:}") String storageDir, @Autowired StreamDataService streamService) {
 		super(streamService);
-		this.storageDir = "${storage_dir}".equals(storageDir) ? Paths.get(OpenmrsUtil.getApplicationDataDirectory(), 
+		this.storageDir = StringUtils.isBlank(storageDir) ? Paths.get(OpenmrsUtil.getApplicationDataDirectory(), 
 			"storage").toAbsolutePath() : Paths.get(storageDir).toAbsolutePath();
 	}
 	
