@@ -169,12 +169,5 @@
 			referencedTableName="obs"
 			referencedColumnNames="obs_id"/>
 	</changeSet>
-	<changeSet author="mgoodrich" id="2025-03-20-TRUNK-6315">
-		<preConditions onFail="MARK_RAN">
-			<primaryKeyExists tableName="liquibasechangelog" />
-		</preConditions>
-	   <comment>TRUNK-6315: Remove Primary Key on the liquibasechangelog table</comment>
-		<dropPrimaryKey tableName="liquibasechangelog"/>
-	</changeSet>
 	
 </databaseChangeLog>
