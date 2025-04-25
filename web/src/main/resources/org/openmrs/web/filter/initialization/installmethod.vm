@@ -89,7 +89,7 @@
 </div>
 
 <style>
-	    body {
+	body {
         margin: 0;
         padding: 0;
         height: 100vh;
@@ -103,7 +103,7 @@
         background: white;
         border-radius: 12px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-		height: calc(100vh - 180px);
+        height: calc(100vh - 180px);
         overflow-y: auto;
         position: relative;
     }

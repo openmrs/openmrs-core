@@ -11,6 +11,7 @@ package org.openmrs.web.filter.util;
 
 import org.openmrs.web.filter.initialization.InitializationWizardModel;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.Field;
@@ -22,7 +23,7 @@ import java.util.Enumeration;
  */
 public class SessionModelUtils {
 	
-	private static final org.slf4j.Logger log = LoggerFactory.getLogger(SessionModelUtils.class);
+	private static final Logger log = LoggerFactory.getLogger(SessionModelUtils.class);
 	
 	private static final String PREFIX = "setup.";
 	
@@ -34,7 +35,10 @@ public class SessionModelUtils {
 	 * @param model the {@link InitializationWizardModel} to save
 	 */
 	public static void saveToSession(HttpSession session, InitializationWizardModel model) {
-		if (session == null || model == null) return;
+		if (session == null || model == null) {
+			return;
+		}
+		
 		for (Field field : model.getClass().getDeclaredFields()) {
 			field.setAccessible(true);
 			String fieldName = field.getName().toLowerCase();
@@ -62,7 +66,10 @@ public class SessionModelUtils {
 	 * @param model the {@link InitializationWizardModel} to populate with values
 	 */
 	public static void loadFromSession(HttpSession session, InitializationWizardModel model) {
-		if (session == null || model == null) return;
+		if (session == null || model == null) {
+			return;
+		}
+		
 		for (Field field : model.getClass().getDeclaredFields()) {
 			field.setAccessible(true);
 			String fieldName = field.getName().toLowerCase();
@@ -89,7 +96,9 @@ public class SessionModelUtils {
 	 * @param session the current {@link HttpSession}, must not be null
 	 */
 	public static void clearWizardSessionAttributes(HttpSession session) {
-		if (session == null) return;
+		if (session == null) {
+			return;
+		}
 
 		Enumeration<String> names = session.getAttributeNames();
 		while (names.hasMoreElements()) {

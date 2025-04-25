@@ -94,7 +94,7 @@
         <div class="logo-section">
             <img src="images/openmrs_logo_white.gif" alt="OpenMRS White Logo" />
             <div class="header-bar">
-                $l10n.get("general.error.header.title").insert(${OPENMRS_VERSION})
+                $l10n.get("general.error.header.title")
             </div>
         </div>
 
