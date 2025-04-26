@@ -210,6 +210,8 @@
     .summary-value {
         font-size: 1rem;
         color: var(--text-color);
+        word-break: break-all;
+        white-space: normal;
     }
 
     .button-group {

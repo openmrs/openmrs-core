@@ -47,6 +47,7 @@
 				color: var(--text-color);
 				line-height: 1.6;
 				padding: 20px;
+				overflow: hidden;
 			}
 
 			.header-container {
