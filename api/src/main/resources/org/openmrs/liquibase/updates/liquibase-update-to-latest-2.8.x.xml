@@ -10,16 +10,18 @@
     graphic logo is a trademark of OpenMRS Inc.
 
 -->
-<!--
-	This file is provided to be backward compatible with build processes that continue to use 
-	api/src/main/resources/liquibase-schema-only.xml to initialise the OpenMRS database.
--->
 <databaseChangeLog
 	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
-	<include file="org/openmrs/liquibase/updates/liquibase-update-to-latest-2.8.x.xml"/>
+	<!--
+	The empty change set is needed for integration tests. It can be removed if this file contains other change sets.
+-->
+	<changeSet id="42ddb873-f064-4418-a6c0-6c09426c4832" author="wschlegel">
+		<comment>Empty change set for integration tests.</comment>
 
+	</changeSet>
+	
 </databaseChangeLog>

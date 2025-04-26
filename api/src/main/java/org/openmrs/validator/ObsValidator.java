@@ -14,6 +14,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptNumeric;
@@ -271,7 +272,7 @@ public class ObsValidator implements Validator {
 	 * @param errors Errors to record validation issues
 	 */
 	private void validateConceptReferenceRange(Obs obs, Errors errors) {
-		ConceptReferenceRange conceptReferenceRange = getReferenceRange(obs.getConcept(), obs);
+		ConceptReferenceRange conceptReferenceRange = getReferenceRange(obs);
 
 		if (conceptReferenceRange != null) {
 			validateAbsoluteRanges(obs, conceptReferenceRange, errors);
@@ -286,16 +287,17 @@ public class ObsValidator implements Validator {
 	}
 
 	/**
-	 * Evaluates the criteria and return the most strict {@link ConceptReferenceRange} for a given concept.
+	 * Evaluates the criteria and return the most strict {@link ConceptReferenceRange} for a given concept
+	 * and patient contained in an observation.
 	 * It considers all valid ranges that match the criteria for the person.
 	 *
-	 * @param concept The concept to evaluate
-	 * @param obs containing The patient for whom the range is being evaluated
+	 * @param obs containing The concept and patient for whom the range is being evaluated
 	 * @return The strictest {@link ConceptReferenceRange}, or null if no valid range is found
 	 * 
 	 * @since 2.7.0
 	 */
-	public ConceptReferenceRange getReferenceRange(Concept concept, Obs obs) {
+	public ConceptReferenceRange getReferenceRange(Obs obs) {
+		Concept concept = obs.getConcept();
 		if (concept == null || concept.getDatatype() == null || !concept.getDatatype().isNumeric()) {
 			return null;
 		}
@@ -311,7 +313,7 @@ public class ObsValidator implements Validator {
 		List<ConceptReferenceRange> validRanges = new ArrayList<>();
 
 		for (ConceptReferenceRange referenceRange : referenceRanges) {
-			if (referenceRangeUtility.evaluateCriteria(referenceRange.getCriteria(), obs)) {
+			if (referenceRangeUtility.evaluateCriteria(StringEscapeUtils.unescapeHtml4(referenceRange.getCriteria()), obs)) {
 				validRanges.add(referenceRange);
 			}
 		}
@@ -334,6 +336,11 @@ public class ObsValidator implements Validator {
 	 * @return The strictest {@link ConceptReferenceRange} constructed from the strictest bounds
 	 */
 	private ConceptReferenceRange findStrictestReferenceRange(List<ConceptReferenceRange> conceptReferenceRanges) {
+		
+		if (conceptReferenceRanges.size() == 1) {
+			return conceptReferenceRanges.get(0);
+		}
+		
 		ConceptReferenceRange strictestLowRange = conceptReferenceRanges.stream()
 			.filter(range -> range.getLowAbsolute() != null)
 			.max(Comparator.comparing(ConceptReferenceRange::getLowAbsolute))
@@ -345,6 +352,7 @@ public class ObsValidator implements Validator {
 			.orElse(null);
 
 		ConceptReferenceRange strictestRange = new ConceptReferenceRange();
+		strictestRange.setConceptNumeric(conceptReferenceRanges.get(0).getConceptNumeric());
 
 		if (strictestLowRange != null) {
 			strictestRange.setLowAbsolute(strictestLowRange.getLowAbsolute());
