@@ -17,13 +17,35 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
+import org.hibernate.annotations.Parameter;
 import org.openmrs.util.NaturalStrings;
 
 /**
  * ProgramWorkflow
  */
 @Audited
+@Entity
+@Table(name = "program_workflow")
+@AttributeOverrides({
+    @AttributeOverride(name = "name", column = @Column(name = "name", insertable = false, updatable = false)),
+    @AttributeOverride(name = "description", column = @Column(name = "description", insertable = false, updatable = false))
+})
 public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	
 	private static final long serialVersionUID = 1L;
@@ -31,15 +53,27 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	// ******************
 	// Properties
 	// ******************
-	
+	@Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "program_workflow_id_seq")
+	@GenericGenerator(
+			name = "program_workflow_id_seq",
+			strategy = "native",
+			parameters = @Parameter(name = "sequence", value = "program_workflow_program_workflow_id_seq")
+	)
+    @Column(name = "program_workflow_id")
 	private Integer programWorkflowId;
-	
+
+	@ManyToOne(optional = false)
+    @JoinColumn(name = "program_id", nullable = false)
 	private Program program;
-	
+
+	    @ManyToOne(optional = false)
+    @JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
 	
+	@OneToMany(mappedBy = "programWorkflow", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
 	private Set<ProgramWorkflowState> states = new HashSet<>();
-	
+		
 	// ******************
 	// Constructors
 	// ******************
