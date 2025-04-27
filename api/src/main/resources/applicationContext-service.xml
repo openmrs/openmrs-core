@@ -678,4 +678,9 @@
 		<context:exclude-filter type="custom" expression="org.openmrs.annotation.OpenmrsProfileExcludeFilter"/>
 	</context:component-scan>
 
+	<context:property-placeholder
+		location="file:${OPENMRS_APPLICATION_DATA_DIRECTORY}/openmrs-runtime.properties"
+		system-properties-mode="OVERRIDE"
+		ignore-resource-not-found="true" />
+
 </beans>
