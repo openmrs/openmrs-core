@@ -22,14 +22,17 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.zip.ZipInputStream;
@@ -172,7 +175,7 @@ public class InitializationFilter extends StartupFilter {
 	 * this object are made available to all templates via reflection in the
 	 * {@link org.openmrs.web.filter.StartupFilter#renderTemplate(String, Map, HttpServletResponse)} method.
 	 */
-	private InitializationWizardModel wizardModel = null;
+	protected InitializationWizardModel wizardModel = null;
 	
 	private InitializationCompletion initJob;
 	
@@ -184,7 +187,10 @@ public class InitializationFilter extends StartupFilter {
 	
 	// the actual driver loaded by the DatabaseUpdater class
 	private String loadedDriverString;
-	
+
+	private static final Set<String> NON_NORMALIZED_KEYS = new HashSet<>(Arrays.asList(
+		"INSTALL_METHOD", "DATABASE_NAME", "HAS_CURRENT_OPENMRS_DATABASE", "CREATE_DATABASE_USER",
+		"CREATE_TABLES", "ADD_DEMO_DATA", "MODULE_WEB_ADMIN", "AUTO_UPDATE_DATABASE", "ADMIN_USER_PASSWORD"));
 	/**
 	 * Variable set at the end of the wizard when spring is being restarted
 	 */
@@ -204,7 +210,7 @@ public class InitializationFilter extends StartupFilter {
 	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
 		throws IOException {
 		SessionModelUtils.loadFromSession(httpRequest.getSession(), wizardModel);
-		loadInstallationScriptIfPresent();
+		initializeWizardFromResolvedPropertiesIfPresent();
 		
 		// we need to save current user language in references map since it will be used when template
 		// will be rendered
@@ -308,9 +314,24 @@ public class InitializationFilter extends StartupFilter {
 			renderTemplate(INSTALL_METHOD, referenceMap, httpResponse);
 		}
 	}
-	
-	private void loadInstallationScriptIfPresent() {
-		Properties script = getInstallationScript();
+
+	/**
+	 * Initializes the setup wizard model by resolving configuration properties from multiple sources.
+	 * <p>
+	 * Properties are loaded and prioritized from system properties, environment variables (normalized),
+	 * and the installation script file. Resolved values are then applied to the corresponding fields
+	 * of the {@link InitializationWizardModel}.
+	 */
+	protected void initializeWizardFromResolvedPropertiesIfPresent() {
+		Properties script = resolveInitializationProperties();
+
+		if (log.isDebugEnabled()) {
+			for (String key : script.stringPropertyNames()) {
+				String value = script.getProperty(key);
+				log.debug("{} = {}", key, key.toLowerCase().contains("password") ? "*******" : value);
+			}
+		}
+		
 		if (!script.isEmpty()) {
 			wizardModel.installMethod = script.getProperty("install_method", wizardModel.installMethod);
 			
@@ -1896,14 +1917,48 @@ public class InitializationFilter extends StartupFilter {
 		return "Back".equals(httpRequest.getParameter("back"))
 			|| (httpRequest.getParameter("back.x") != null && httpRequest.getParameter("back.y") != null);
 	}
+
+	/**
+	 * Resolves and merges initialization properties from multiple sources in the following order:
+	 * 1. install.properties (lowest priority)
+	 * 2. OS environment variables
+	 * 3. Java system properties (-Dkey=value) (highest priority)
+	 *
+	 * @return a merged {@link Properties} object with proper precedence.
+	 */
+	protected Properties resolveInitializationProperties() {
+		Properties merged = new Properties();
+
+		Properties installScript = getInstallationScript();
+		installScript.forEach((key, value) -> merged.setProperty(key.toString(), value.toString()));
+
+		getEnvironmentVariables().forEach((key, value) -> {
+			String normalizedKey = normalizeEnvVariableKey(key);
+			merged.setProperty(normalizedKey, value);
+		});
+
+		System.getProperties().forEach((key, value) -> merged.setProperty(key.toString(), value.toString()));
+		return merged;
+	}
 	
+	private String normalizeEnvVariableKey(String envVarKey) {
+		if (NON_NORMALIZED_KEYS.contains(envVarKey)) {
+			return envVarKey.toLowerCase();
+		}
+		return envVarKey.toLowerCase().replace('_', '.');
+	}
+
+	protected Map<String, String> getEnvironmentVariables() {
+		return System.getenv();
+	}
+
 	/**
 	 * Convenience method to get custom installation script
 	 *
 	 * @return Properties from custom installation script or empty if none specified
 	 * @throws RuntimeException if path to installation script is invalid
 	 */
-	private Properties getInstallationScript() {
+	protected Properties getInstallationScript() {
 		Properties prop = new Properties();
 		
 		String fileName = System.getProperty("OPENMRS_INSTALLATION_SCRIPT");
@@ -1915,13 +1970,16 @@ public class InitializationFilter extends StartupFilter {
 			InputStream input = null;
 			try {
 				input = getClass().getClassLoader().getResourceAsStream(fileName);
+				if (input == null) {
+					return null;
+				}
 				prop.load(input);
-				log.info("Using installation script from classpath: " + fileName);
+				log.info("Using installation script from classpath: {}", fileName);
 				
 				input.close();
 			}
 			catch (IOException ex) {
-				log.error("Failed to load installation script from classpath: " + fileName, ex);
+				log.error("Failed to load installation script from classpath: {}", fileName, ex);
 				throw new RuntimeException(ex);
 			}
 			finally {
@@ -1934,12 +1992,12 @@ public class InitializationFilter extends StartupFilter {
 				try {
 					input = new FileInputStream(fileName);
 					prop.load(input);
-					log.info("Using installation script from absolute path: " + file.getAbsolutePath());
+					log.info("Using installation script from absolute path: {}", file.getAbsolutePath());
 					
 					input.close();
 				}
 				catch (IOException ex) {
-					log.error("Failed to load installation script from absolute path: " + file.getAbsolutePath(), ex);
+					log.error("Failed to load installation script from absolute path: {}", file.getAbsolutePath(), ex);
 					throw new RuntimeException(ex);
 				}
 				finally {
