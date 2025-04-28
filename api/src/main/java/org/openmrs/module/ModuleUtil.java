@@ -24,11 +24,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.jar.JarEntry;
@@ -138,9 +136,6 @@ public class ModuleUtil {
 				log.debug("Found and loaded {} module(s)", modules.size());
 			}
 		}
-		
-		// make sure all openmrs required moduls are loaded and started
-		checkOpenmrsCoreModulesStarted();
 		
 		// make sure all mandatory modules are loaded and started
 		checkMandatoryModulesStarted();
@@ -956,57 +951,6 @@ public class ModuleUtil {
 		if (!mandatoryModuleIds.isEmpty()) {
 			throw new MandatoryModuleException(mandatoryModuleIds);
 		}
-	}
-	
-	/**
-	 * Looks at the list of modules in {@link ModuleConstants#CORE_MODULES} to make sure that all
-	 * modules that are core to OpenMRS are started and have at least a minimum version that OpenMRS
-	 * needs.
-	 *
-	 * @throws ModuleException if a module that is core to OpenMRS is not started
-	 * <strong>Should</strong> throw ModuleException if a core module is not started
-	 */
-	protected static void checkOpenmrsCoreModulesStarted() throws OpenmrsCoreModuleException {
-		
-		// if there is a property telling us to ignore required modules, drop out early
-		if (ignoreCoreModules()) {
-			return;
-		}
-		
-		// make a copy of the constant so we can modify the list
-		Map<String, String> coreModules = new HashMap<>(ModuleConstants.CORE_MODULES);
-		
-		Collection<Module> startedModules = ModuleFactory.getStartedModulesMap().values();
-		
-		// loop through the current modules and test them
-		for (Module mod : startedModules) {
-			String moduleId = mod.getModuleId();
-			if (coreModules.containsKey(moduleId)) {
-				String coreReqVersion = coreModules.get(moduleId);
-				if (compareVersion(mod.getVersion(), coreReqVersion) >= 0) {
-					coreModules.remove(moduleId);
-				} else {
-					log.debug("Module: " + moduleId + " is a core module and is started, but its version: "
-					        + mod.getVersion() + " is not within the required version: " + coreReqVersion);
-				}
-			}
-		}
-		
-		// any module ids left in the list are not started
-		if (coreModules.size() > 0) {
-			throw new OpenmrsCoreModuleException(coreModules);
-		}
-	}
-	
-	/**
-	 * Uses the runtime properties to determine if the core modules should be enforced or not.
-	 *
-	 * @return true if the core modules list can be ignored.
-	 */
-	public static boolean ignoreCoreModules() {
-		String ignoreCoreModules = Context.getRuntimeProperties().getProperty(ModuleConstants.IGNORE_CORE_MODULES_PROPERTY,
-		    "false");
-		return Boolean.parseBoolean(ignoreCoreModules);
 	}
 	
 	/**
