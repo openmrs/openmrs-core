@@ -134,9 +134,6 @@ public class UpdateFilter extends StartupFilter {
 	
 	/**
 	 * Called by {@link #doFilter(ServletRequest, ServletResponse, FilterChain)} on POST requests
-	 *
-	 * @see org.openmrs.web.filter.StartupFilter#doPost(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
 	protected synchronized void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
