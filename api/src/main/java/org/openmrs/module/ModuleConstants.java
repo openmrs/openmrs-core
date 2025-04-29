@@ -9,29 +9,13 @@
  */
 package org.openmrs.module;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Constants used by the module system in openmrs
  */
 public class ModuleConstants {
-
+	
 	private ModuleConstants() {
 	}
-	
-	/**
-	 * A map from "moduleid" to "required version" for all core modules that are required by
-	 * openmrs. A module with at least the given version is required to start before openmrs will
-	 * fully start.
-	 */
-	public static final Map<String, String> CORE_MODULES = new HashMap<>();
-	
-	/**
-	 * Used to determine if the {@link #CORE_MODULES} list should be used or not. For unit testing
-	 * this is set to true to allow for faster runs with less dependencies.
-	 */
-	public static final String IGNORE_CORE_MODULES_PROPERTY = "module.ignore_core_status";
 	
 	/**
 	 * Name of the file in the module repository to ping to question for updates to a module
