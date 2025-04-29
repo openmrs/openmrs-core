@@ -1954,7 +1954,7 @@ public class OpenmrsUtil {
 	 * @return formatted stack trace message
 	 * <strong>Should</strong> return null if stackTrace is null
 	 * <strong>Should</strong> return the Error and the Cause
-	 * @since 2.8
+	 * @since 2.8.0
 	 */
 	public static String formattedStackTrace(String stackTrace) {
 		if (stackTrace == null) {
@@ -1984,12 +1984,10 @@ public class OpenmrsUtil {
 					result.append("\n").append(line);
 					foundCause = true;
 				}
-
 				if (foundCause) {
 					break;
 				}
 			}
-
 			return result.toString();
 		} else {
 			return stackTrace;

@@ -564,7 +564,7 @@ public final class OpenmrsConstants {
 	 */
 	public static final String DEVELOPMENT_MODE_RUNTIME_PROPERTY = "development.mode";
 	
-	public static final String DEVELOPMENT_MODE_DEFAULT = "true";
+	public static final String DEVELOPMENT_MODE_DEFAULT = "false";
 	
 	/**
 	 * Global property name for the visit type(s) to automatically close
