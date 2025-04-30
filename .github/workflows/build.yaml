@@ -31,6 +31,11 @@ jobs:
           - 11
           - 17
           - 21
+          - 8
+          - 11
+          - 17
+          - 21
+          - 24
         exclude:
           - platform: windows-latest
             java-version: 11
@@ -38,7 +43,7 @@ jobs:
             java-version: 17
           - platform: windows-latest
             java-version: 21
-    runs-on: ${{ matrix.platform }}
+runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
       - name: Setup JDK
