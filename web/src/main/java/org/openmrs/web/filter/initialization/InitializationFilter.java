@@ -50,11 +50,9 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.UsernamePasswordCredentials;
-import org.openmrs.api.impl.UserServiceImpl;
 import org.openmrs.liquibase.ChangeLogDetective;
 import org.openmrs.liquibase.ChangeLogVersionFinder;
 import org.openmrs.module.MandatoryModuleException;
-import org.openmrs.module.OpenmrsCoreModuleException;
 import org.openmrs.module.web.WebModuleUtil;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
@@ -75,9 +73,12 @@ import org.openmrs.web.filter.update.UpdateFilter;
 import org.openmrs.web.filter.util.CustomResourceLoader;
 import org.openmrs.web.filter.util.ErrorMessageConstants;
 import org.openmrs.web.filter.util.FilterUtil;
+import org.openmrs.web.filter.util.SessionModelUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
+
+import static org.openmrs.util.PrivilegeConstants.GET_GLOBAL_PROPERTIES;
 
 /**
  * This is the first filter that is processed. It is only active when starting OpenMRS for the very
@@ -203,7 +204,8 @@ public class InitializationFilter extends StartupFilter {
 	 */
 	@Override
 	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
-		throws IOException, ServletException {
+		throws IOException {
+		SessionModelUtils.loadFromSession(httpRequest.getSession(), wizardModel);
 		loadInstallationScriptIfPresent();
 		
 		// we need to save current user language in references map since it will be used when template
@@ -242,7 +244,8 @@ public class InitializationFilter extends StartupFilter {
 					result.put("executedTasks", initJob.getExecutedTasks());
 					result.put("completedPercentage", initJob.getCompletedPercentage());
 				}
-				
+
+				SessionModelUtils.clearWizardSessionAttributes(httpRequest.getSession());
 				addLogLinesToResponse(result);
 			}
 			
@@ -466,8 +469,7 @@ public class InitializationFilter extends StartupFilter {
 				return;
 			}
 			wizardModel.databaseConnection = httpRequest.getParameter("database_connection");
-			;
-			
+
 			wizardModel.createDatabaseUsername = Context.getRuntimeProperties().getProperty("connection.username",
 				wizardModel.createDatabaseUsername);
 			
@@ -815,6 +817,7 @@ public class InitializationFilter extends StartupFilter {
 				}
 			}
 			
+			SessionModelUtils.saveToSession(httpRequest.getSession(), wizardModel);
 			renderTemplate(page, referenceMap, httpResponse);
 		}
 	}
@@ -1226,20 +1229,18 @@ public class InitializationFilter extends StartupFilter {
 	}
 	
 	/**
-	 * Check if the given value is null or a zero-length String
+	 * Checks if the given string value is empty or contains only whitespace. 
+	 * If it is, an error is added to the provided errors map with the specified error message code.
 	 *
-	 * @param value the string to check
-	 * @param errors the list of errors to append the errorMessage to if value is empty
+	 * @param value            the string to check
+	 * @param errors           the list of errors to append the errorMessage to if value is empty
 	 * @param errorMessageCode the string with code of error message translation to append if value is
-	 *            empty
-	 * @return true if the value is non-empty
+	 *                         empty
 	 */
-	private boolean checkForEmptyValue(String value, Map<String, Object[]> errors, String errorMessageCode) {
-		if (!StringUtils.isEmpty(value)) {
-			return true;
+	private void checkForEmptyValue(String value, Map<String, Object[]> errors, String errorMessageCode) {
+		if (!StringUtils.hasText(value)) {
+			errors.put(errorMessageCode, null);
 		}
-		errors.put(errorMessageCode, null);
-		return false;
 	}
 	
 	/**
@@ -1757,6 +1758,7 @@ public class InitializationFilter extends StartupFilter {
 						if (!"".equals(wizardModel.implementationId)) {
 							try {
 								Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
+								Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
 								Context.addProxyPrivilege(PrivilegeConstants.MANAGE_CONCEPT_SOURCES);
 								Context.addProxyPrivilege(PrivilegeConstants.GET_CONCEPT_SOURCES);
 								Context.addProxyPrivilege(PrivilegeConstants.MANAGE_IMPLEMENTATION_ID);
@@ -1779,6 +1781,7 @@ public class InitializationFilter extends StartupFilter {
 							}
 							finally {
 								Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
+								Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
 								Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_CONCEPT_SOURCES);
 								Context.removeProxyPrivilege(PrivilegeConstants.GET_CONCEPT_SOURCES);
 								Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_IMPLEMENTATION_ID);
@@ -1789,6 +1792,7 @@ public class InitializationFilter extends StartupFilter {
 							// change the admin user password from "test" to what they input above
 							if (wizardModel.createTables) {
 								try {
+									Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
 									Context.authenticate(new UsernamePasswordCredentials("admin", "test"));
 									
 									Properties props = Context.getRuntimeProperties();
@@ -1808,6 +1812,9 @@ public class InitializationFilter extends StartupFilter {
 								}
 								catch (ContextAuthenticationException ex) {
 									log.info("No need to change admin password.", ex);
+								}
+								finally {
+									Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
 								}
 							}
 						}
@@ -1858,13 +1865,6 @@ public class InitializationFilter extends StartupFilter {
 								mandatoryModEx);
 							reportError(ErrorMessageConstants.ERROR_MANDATORY_MOD_REQ, DEFAULT_PAGE,
 								mandatoryModEx.getMessage());
-							return;
-						}
-						catch (OpenmrsCoreModuleException coreModEx) {
-							log.warn(
-								"A core module failed to start. Make sure that all core modules (with the required minimum versions) are installed and starting properly.",
-								coreModEx);
-							reportError(ErrorMessageConstants.ERROR_CORE_MOD_REQ, DEFAULT_PAGE, coreModEx.getMessage());
 							return;
 						}
 						
