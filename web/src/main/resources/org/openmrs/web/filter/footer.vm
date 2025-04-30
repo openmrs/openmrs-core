@@ -1,10 +1,10 @@
 <footer class="app-footer">
     <div class="footer-content">
         <div class="footer-logo">
-            <img src="images/openmrs_logo_text.gif" alt="OpenMRS Logo" class="logo-image" />
+            <img src="images/openmrslogo.png" alt="OpenMRS Logo" class="logo-image" />
         </div>
         <div class="footer-links">
-            <a href="https://openmrs.org" target="_blank" class="footer-link">OpenMRS</a>
+            <a href="https://openmrs.org" target="_blank" class="footer-link">Website</a>
             <span class="footer-divider">|</span>
             <a href="https://wiki.openmrs.org" target="_blank" class="footer-link">Wiki</a>
             <span class="footer-divider">|</span>

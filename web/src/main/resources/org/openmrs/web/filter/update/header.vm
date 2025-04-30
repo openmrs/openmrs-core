@@ -5,6 +5,7 @@
 
         <script type="text/javascript" src="initfilter/scripts/jquery/jquery.min.js"></script>
         <script type="text/javascript" src="initfilter/scripts/initialsetup.js"></script>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
 
         <style type="text/css" media="all">
             :root {
@@ -22,7 +23,7 @@
                 margin: 0;
                 padding: 0;
                 box-sizing: border-box;
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+                font-family: "Roboto", sans-serif;
             }
 
             body {
@@ -93,9 +94,7 @@
         <div class="header-container">
             <div class="logo-section">
                 <img src="images/openmrs_logo_white.gif" alt="OpenMRS White Logo"/>
-                <div class="header-bar">
-                    $l10n.get("update.header.title").insert(${OPENMRS_VERSION})
-                </div>
+                <div class="header-bar">$l10n.get("update.header.title").insert(${OPENMRS_VERSION})</div>
             </div>
 
             #if( ! $errors.isEmpty() )
