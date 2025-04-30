@@ -1249,7 +1249,7 @@
 			 be compatible with our version of Spring. -->
 		<springVersion>5.3.30</springVersion>
 		<hibernateVersion>5.6.15.Final</hibernateVersion>
-		<hibernateSearchVersion>6.2.4.Final</hibernateSearchVersion>
+		<hibernateSearchVersion>7.2.3.Final</hibernateSearchVersion>
 		<luceneVersion>8.11.2</luceneVersion>
 		<aspectjVersion>1.9.24</aspectjVersion>
 		<jacksonVersion>2.19.0</jacksonVersion>
