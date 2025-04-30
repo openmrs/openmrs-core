@@ -23,7 +23,24 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.SortNatural;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
@@ -45,58 +62,102 @@ import org.springframework.util.StringUtils;
  * @see org.openmrs.Patient
  */
 @Audited
+@Entity
+@Table(name = "person")
 public class Person extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 2L;
 	
 	private static final Logger log = LoggerFactory.getLogger(Person.class);
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "person_id")
 	@DocumentId
 	protected Integer personId;
 	
+	@OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+ 	@LazyCollection(LazyCollectionOption.FALSE)
+ 	@SortNatural
+ 	@OrderBy("voided asc, preferred desc, date_created desc")
+ 	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+ 	@BatchSize(size = 1000)
 	private Set<PersonAddress> addresses = null;
 	
+	@OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+ 	@LazyCollection(LazyCollectionOption.FALSE)
+ 	@SortNatural
+ 	@OrderBy("voided asc, preferred desc, date_created desc")
+ 	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+ 	@BatchSize(size = 1000)
 	private Set<PersonName> names = null;
 	
+	@OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+ 	@LazyCollection(LazyCollectionOption.FALSE)
+ 	@SortNatural
+ 	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+ 	@BatchSize(size = 1000)
 	private Set<PersonAttribute> attributes = null;
 	
+	@Column(name = "gender", length = 50)
 	@GenericField
 	private String gender;
 	
+	@Column(name = "birthdate", length = 10)
 	@GenericField
 	private Date birthdate;
 	
+	@Column(name = "birthtime")
 	private Date birthtime;
 	
+	@Column(name = "birthdate_estimated")
 	private Boolean birthdateEstimated = false;
 	
+	@Column(name = "deathdate_estimated")
 	private Boolean deathdateEstimated = false;
 	
+	@Column(name = "dead", nullable = false, length = 1)
 	@GenericField
 	private Boolean dead = false;
 	
+	@Column(name = "death_date", length = 19)
 	private Date deathDate;
 	
+	@ManyToOne
+	@JoinColumn(name = "cause_of_death", nullable = true)
 	private Concept causeOfDeath;
 	
+	@Column(name = "cause_of_death_non_coded", length = 255)
 	private String causeOfDeathNonCoded;
 
+	@ManyToOne
+	@JoinColumn(name = "creator")
 	private User personCreator;
 	
+	@Column(name = "date_created", nullable = false, length = 19)
 	private Date personDateCreated;
 
+	@ManyToOne
+	@JoinColumn(name = "changed_by")
 	private User personChangedBy;
 	
+	@Column(name = "date_changed", length = 19)
 	private Date personDateChanged;
 	
+	@Column(name = "voided", nullable = false, length = 1)
 	private Boolean personVoided = false;
 
+	@ManyToOne
+	@JoinColumn(name = "voided_by")
 	private User personVoidedBy;
 	
+	@Column(name = "date_voided", length = 19)
 	private Date personDateVoided;
 	
+	@Column(name = "void_reason", length = 255)
 	private String personVoidReason;
 	
+	@Transient
 	@GenericField
 	@NotAudited
 	@IndexingDependency(derivedFrom = @ObjectPath(@PropertyValue(propertyName = "patient")))
