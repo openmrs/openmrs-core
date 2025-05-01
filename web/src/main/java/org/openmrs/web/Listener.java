@@ -11,12 +11,10 @@ package org.openmrs.web;
 
 import org.apache.logging.log4j.LogManager;
 import org.openmrs.api.context.Context;
-import org.openmrs.logging.OpenmrsLoggingUtil;
 import org.openmrs.module.MandatoryModuleException;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleMustStartException;
-import org.openmrs.module.OpenmrsCoreModuleException;
 import org.openmrs.module.web.OpenmrsJspServlet;
 import org.openmrs.module.web.WebModuleUtil;
 import org.openmrs.scheduler.SchedulerUtil;
@@ -230,10 +228,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				if (StringUtils.hasLength(appDataRuntimeProperty)) {
 					OpenmrsUtil.setApplicationDataDirectory(null);
 				}
-				//ensure that we always log the runtime properties file that we are using
-				//since openmrs is just booting, the log levels are not yet set. TRUNK-4835
-				OpenmrsLoggingUtil.applyLogLevel(getClass().getName(), "INFO");
-				log.info("Using runtime properties file: {}",
+				log.warn("Using runtime properties file: {}",
 				         OpenmrsUtil.getRuntimePropertiesFilePathName(WebConstants.WEBAPP_NAME));
 			}
 
@@ -353,11 +348,6 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		}
 		catch (MandatoryModuleException mandatoryModEx) {
 			throw new ServletException(mandatoryModEx);
-		}
-		catch (OpenmrsCoreModuleException coreModEx) {
-			// don't wrap this error in a ServletException because we want to deal with it differently
-			// in the StartupErrorFilter class
-			throw coreModEx;
 		}
 		
 		// TODO catch openmrs errors here and drop the user back out to the setup screen
@@ -695,7 +685,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 *
 	 * @param servletContext
 	 * @throws ModuleMustStartException if the context cannot restart due to a
-	 *             {@link MandatoryModuleException} or {@link OpenmrsCoreModuleException}
+	 *             {@link MandatoryModuleException}
 	 */
 	public static void performWebStartOfModules(ServletContext servletContext) throws ModuleMustStartException, Exception {
 		List<Module> startedModules = new ArrayList<>(ModuleFactory.getStartedModules());
@@ -738,7 +728,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				try {
 					WebModuleUtil.shutdownModules(servletContext);
 					for (Module mod : ModuleFactory.getLoadedModules()) {// use loadedModules to avoid a concurrentmodificationexception
-						if (!mod.isCoreModule() && !mod.isMandatory()) {
+						if (!mod.isMandatory()) {
 							try {
 								ModuleFactory.stopModule(mod, true, true);
 							}

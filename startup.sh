@@ -36,7 +36,14 @@ CATALINA_OPTS="${OMRS_JAVA_MEMORY_OPTS} -DOPENMRS_INSTALLATION_SCRIPT=${OMRS_SER
 
 if [ -n "${OMRS_DEV_DEBUG_PORT-}" ]; then
   echo "Enabling debugging on port ${OMRS_DEV_DEBUG_PORT}"
-  CATALINA_OPTS="$CATALINA_OPTS -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=${OMRS_DEV_DEBUG_PORT}"
+  
+  JAVA_VERSION=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '/.*/ {print $1}')
+  
+  if [[ "$JAVA_VERSION" -gt "8" ]]; then
+  	CATALINA_OPTS="$CATALINA_OPTS -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:${OMRS_DEV_DEBUG_PORT}"
+  else
+  	CATALINA_OPTS="$CATALINA_OPTS -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=${OMRS_DEV_DEBUG_PORT}"
+  fi
 fi
 
 cat > $TOMCAT_SETENV_FILE << EOF

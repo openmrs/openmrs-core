@@ -1975,6 +1975,9 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		assertFalse(conceptReferenceRange.isEmpty());
 		
 		Double expectedHiAbsolute = conceptReferenceRange.get(0).getHiAbsolute();
+		
+		Context.flushSession();
+		Context.clearSession();
 
 		Obs savedObs = obsService.getObsByUuid(obs.getUuid());
 
