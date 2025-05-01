@@ -976,13 +976,13 @@ public abstract class BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * It needs to be call if you want to do a concept search after you modify a concept in a test.
+	 * It needs to be called if you want to do a concept search after you modify a concept in a test.
 	 * It is because index is automatically updated only after transaction is committed, which
 	 * happens only at the end of a test in our transactional tests.
 	 */
 	public void updateSearchIndex() {
-		for (Class<?> indexType : getIndexedTypes()) {
-			Context.updateSearchIndexForType(indexType);
+		for (Class<?> type: getIndexedTypes()) {
+			Context.updateSearchIndexForType(type);
 		}
 	}
 	

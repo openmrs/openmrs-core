@@ -7,27 +7,27 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.api.db;
+package org.openmrs.api.db.hibernate.search;
 
 import org.springframework.context.ApplicationEvent;
 
 /**
- * Represents an event object raised whenever a {@link org.hibernate.search.FullTextQuery} object is
- * created. Events are fired via the spring application event mechanism, listeners have to implement
+ * Represents an event object raised whenever a {@link org.hibernate.search.mapper.orm.Search} object is created.
+ * Events are fired via the spring application event mechanism, listeners have to implement
  * {@link org.springframework.context.ApplicationListener} and set the Type parameter value to
- * FullTextQueryCreatedEvent, it also implies that listeners MUST be registered as spring beans in
- * order to be discovered.
+ * {@link SearchCreatedEvent}, it also implies that listeners MUST be registered as spring beans in order
+ * to be discovered.
  * 
- * @see FullTextQueryAndEntityClass
- * @since 2.3.0
+ * @see SearchAndEntityCollection
+ * @since 2.8.0
  */
-public class FullTextQueryCreatedEvent extends ApplicationEvent {
+public class SearchCreatedEvent extends ApplicationEvent {
 	
 	/**
 	 * @see ApplicationEvent#ApplicationEvent(java.lang.Object)
 	 */
-	public FullTextQueryCreatedEvent(FullTextQueryAndEntityClass queryAndClass) {
-		super(queryAndClass);
+	public SearchCreatedEvent(SearchAndEntityCollection searchAndEntityCollection) {
+		super(searchAndEntityCollection);
 	}
 	
 }

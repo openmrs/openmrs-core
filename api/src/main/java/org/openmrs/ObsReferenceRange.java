@@ -10,7 +10,7 @@
 package org.openmrs;
 
 import org.hibernate.envers.Audited;
-import org.hibernate.search.annotations.DocumentId;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
