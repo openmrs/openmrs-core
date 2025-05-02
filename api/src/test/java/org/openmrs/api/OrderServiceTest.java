@@ -3447,6 +3447,37 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(orderService.getOrder(saveOrder.getOrderId()));
 	}
 
+	/**
+	 * @see org.openmrs.api.OrderService#saveOrder(Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldSetNonCodedDrugOrderConcept() {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-nonCodedDrugs.xml");
+		final Encounter encounter = encounterService.getEncounter(3);
+
+		DrugOrder drugOrder = new DrugOrder();
+		drugOrder.setEncounter(encounter);
+
+		drugOrder.setDateActivated(encounter.getEncounterDatetime());
+		drugOrder.setDrugNonCoded("non coded paracetamol");
+		drugOrder.setPatient(patientService.getPatient(7));
+		drugOrder.setCareSetting(orderService.getCareSetting(1));
+		drugOrder.setOrderer(providerService.getProvider(1));
+		drugOrder.setDoseUnits(conceptService.getConcept(50));
+		drugOrder.setQuantityUnits(conceptService.getConcept(51));
+		drugOrder.setFrequency(orderService.getOrderFrequency(3));
+		drugOrder.setRoute(conceptService.getConcept(22));
+		drugOrder.setDosingType(SimpleDosingInstructions.class);
+		drugOrder.setNumRefills(10);
+		drugOrder.setDose(300.0);
+		drugOrder.setQuantity(20.0);
+		drugOrder.setOrderType(null);
+
+		orderService.saveOrder(drugOrder, null);
+		assertNotNull(drugOrder.getConcept());
+	}
+
+
 	@Test
 	public void saveRetrospectiveOrder_shouldDiscontinueOrderInRetrospectiveEntry() throws ParseException {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-ordersWithAutoExpireDate.xml");
