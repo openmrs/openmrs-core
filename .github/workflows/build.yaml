@@ -29,6 +29,8 @@ jobs:
           - 8
           - 11
           - 17
+          - 21
+          - 24
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4

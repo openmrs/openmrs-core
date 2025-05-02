@@ -34,7 +34,7 @@ public class ChangeLogDetectiveTest {
 		snapshotCombinations.put("2.2.x", null);
 		snapshotCombinations.put("2.3.x", null);
 		
-		ChangeLogDetective changeLogDetective = new ChangeLogDetective();
+		ChangeLogDetective changeLogDetective = ChangeLogDetective.getInstance();
 		List<String> actual = changeLogDetective.getSnapshotVersionsInDescendingOrder(snapshotCombinations);
 		List<String> expected = Arrays.asList("2.4.x", "2.3.x", "2.2.x", "2.1.x", "1.9.x");
 		
@@ -47,7 +47,7 @@ public class ChangeLogDetectiveTest {
 		when(changeSet.getAuthor()).thenReturn("ben");
 		when(changeSet.getId()).thenReturn("disable-foreign-key-checks");
 		
-		ChangeLogDetective changeLogDetective = new ChangeLogDetective();
+		ChangeLogDetective changeLogDetective = ChangeLogDetective.getInstance();
 		boolean actual = changeLogDetective
 		        .isVintageChangeSet("org/openmrs/liquibase/snapshots/core-data/liquibase-core-data-1.9.x.xml", changeSet);
 		assertTrue(actual);
@@ -59,7 +59,7 @@ public class ChangeLogDetectiveTest {
 		when(changeSet.getAuthor()).thenReturn("ben");
 		when(changeSet.getId()).thenReturn("enable-foreign-key-checks");
 		
-		ChangeLogDetective changeLogDetective = new ChangeLogDetective();
+		ChangeLogDetective changeLogDetective = ChangeLogDetective.getInstance();
 		boolean actual = changeLogDetective
 		        .isVintageChangeSet("org/openmrs/liquibase/snapshots/core-data/liquibase-core-data-1.9.x.xml", changeSet);
 		assertTrue(actual);
@@ -71,7 +71,7 @@ public class ChangeLogDetectiveTest {
 		when(changeSet.getAuthor()).thenReturn("ben");
 		when(changeSet.getId()).thenReturn("disable-foreign-key-checks");
 		
-		ChangeLogDetective changeLogDetective = new ChangeLogDetective();
+		ChangeLogDetective changeLogDetective = ChangeLogDetective.getInstance();
 		boolean actual = changeLogDetective.isVintageChangeSet("any_filename", changeSet);
 		assertFalse(actual);
 	}
@@ -82,7 +82,7 @@ public class ChangeLogDetectiveTest {
 		when(changeSet.getAuthor()).thenReturn("ben");
 		when(changeSet.getId()).thenReturn("enable-foreign-key-checks");
 		
-		ChangeLogDetective changeLogDetective = new ChangeLogDetective();
+		ChangeLogDetective changeLogDetective = ChangeLogDetective.getInstance();
 		boolean actual = changeLogDetective.isVintageChangeSet("any_filename", changeSet);
 		assertFalse(actual);
 	}
@@ -97,7 +97,7 @@ public class ChangeLogDetectiveTest {
 		when(changeSet.getAuthor()).thenReturn("ben");
 		when(changeSet.getId()).thenReturn("anything");
 		
-		ChangeLogDetective changeLogDetective = new ChangeLogDetective();
+		ChangeLogDetective changeLogDetective = ChangeLogDetective.getInstance();
 		boolean actual = changeLogDetective
 		        .isVintageChangeSet("org/openmrs/liquibase/snapshots/core-data/liquibase-core-data-1.9.x.xml", changeSet);
 		assertFalse(actual);
@@ -112,7 +112,7 @@ public class ChangeLogDetectiveTest {
 		        null, null);
 		List<ChangeSet> changeSets = Arrays.asList(anyChangeSet, changeSetToIgnore, anotherChangeSetToIgnore);
 		
-		ChangeLogDetective changeLogDetective = new ChangeLogDetective();
+		ChangeLogDetective changeLogDetective = ChangeLogDetective.getInstance();
 		List<ChangeSet> actual = changeLogDetective.excludeVintageChangeSets(
 		    "org/openmrs/liquibase/snapshots/core-data/liquibase-core-data-1.9.x.xml", changeSets);
 		List<ChangeSet> expected = Arrays.asList(anyChangeSet);
@@ -129,7 +129,7 @@ public class ChangeLogDetectiveTest {
 		        null, null);
 		List<ChangeSet> changeSets = Arrays.asList(anyChangeSet, changeSetToIgnore, anotherChangeSetToIgnore);
 		
-		ChangeLogDetective changeLogDetective = new ChangeLogDetective();
+		ChangeLogDetective changeLogDetective = ChangeLogDetective.getInstance();
 		List<ChangeSet> actual = changeLogDetective.excludeVintageChangeSets("any_filename", changeSets);
 		List<ChangeSet> expected = changeSets;
 		
@@ -138,7 +138,7 @@ public class ChangeLogDetectiveTest {
 	
 	@Test
 	public void shouldLogSmallNumberOfUnrunChangeSets() {
-		ChangeLogDetective changeLogDetective = new ChangeLogDetective();
+		ChangeLogDetective changeLogDetective = ChangeLogDetective.getInstance();
 		
 		// log up to 9 change sets
 		List<ChangeSet> changeSets = Arrays.asList(mock(ChangeSet.class), mock(ChangeSet.class), mock(ChangeSet.class),
@@ -151,7 +151,7 @@ public class ChangeLogDetectiveTest {
 	
 	@Test
 	public void shouldNotLogLargeNumberOfUnrunChangeSets() {
-		ChangeLogDetective changeLogDetective = new ChangeLogDetective();
+		ChangeLogDetective changeLogDetective = ChangeLogDetective.getInstance();
 		
 		// do not log 10 or more change sets
 		List<ChangeSet> changeSets = Arrays.asList(mock(ChangeSet.class), mock(ChangeSet.class), mock(ChangeSet.class),
@@ -164,7 +164,7 @@ public class ChangeLogDetectiveTest {
 	
 	@Test
 	public void shouldNotLogUnrunChangeSetsFromOtherChangeLogFile() {
-		ChangeLogDetective changeLogDetective = new ChangeLogDetective();
+		ChangeLogDetective changeLogDetective = ChangeLogDetective.getInstance();
 		
 		List<ChangeSet> changeSets = Arrays.asList(mock(ChangeSet.class), mock(ChangeSet.class));
 		

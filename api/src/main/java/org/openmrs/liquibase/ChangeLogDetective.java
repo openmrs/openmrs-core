@@ -51,8 +51,29 @@ public class ChangeLogDetective {
 	
 	private ChangeLogVersionFinder changeLogVersionFinder;
 	
-	public ChangeLogDetective() {
+	private String initialSnapshotVersion;
+	
+	private List<String> unrunLiquibaseUpdates;
+	
+	private ChangeLogDetective() {
 		changeLogVersionFinder = new ChangeLogVersionFinder();
+	}
+	
+	private static class ChangeLogDetectiveHolder {
+
+		private ChangeLogDetectiveHolder() {
+			
+		}
+		
+		private static ChangeLogDetective INSTANCE = null;	
+	}
+	
+	public static ChangeLogDetective getInstance() {
+		if (ChangeLogDetectiveHolder.INSTANCE == null) {
+			ChangeLogDetectiveHolder.INSTANCE = new ChangeLogDetective();
+		}
+		
+		return ChangeLogDetectiveHolder.INSTANCE;
 	}
 	
 	/**
@@ -67,6 +88,11 @@ public class ChangeLogDetective {
 	 * @throws Exception
 	 */
 	public String getInitialLiquibaseSnapshotVersion(String context, LiquibaseProvider liquibaseProvider) throws Exception {
+		
+		if (initialSnapshotVersion != null) {
+			return initialSnapshotVersion;
+		}
+		
 		log.info("identifying the Liquibase snapshot version that had been used to initialize the OpenMRS database...");
 		Map<String, List<String>> snapshotCombinations = changeLogVersionFinder.getSnapshotCombinations();
 		
@@ -98,7 +124,9 @@ public class ChangeLogDetective {
 			if (unrunChangeSetsCount == 0) {
 				log.info("the Liquibase snapshot version that had been used to initialize the OpenMRS database is '{}'",
 				    version);
-				return version;
+				
+				initialSnapshotVersion = version;
+				return initialSnapshotVersion;
 			}
 		}
 		
@@ -106,7 +134,8 @@ public class ChangeLogDetective {
 		    "the snapshot version that had been used to initialize the OpenMRS database could not be identified, falling back to the default version '{}'",
 		    DEFAULT_SNAPSHOT_VERSION);
 		
-		return DEFAULT_SNAPSHOT_VERSION;
+		initialSnapshotVersion = DEFAULT_SNAPSHOT_VERSION;
+		return initialSnapshotVersion;
 	}
 	
 	/**
@@ -119,7 +148,12 @@ public class ChangeLogDetective {
 	 */
 	public List<String> getUnrunLiquibaseUpdateFileNames(String snapshotVersion, String context,
 	        LiquibaseProvider liquibaseProvider) throws Exception {
-		List<String> unrunLiquibaseUpdates = new ArrayList<>();
+		
+		if (unrunLiquibaseUpdates != null && unrunLiquibaseUpdates.isEmpty()) {
+			return unrunLiquibaseUpdates;
+		}
+		
+		unrunLiquibaseUpdates = new ArrayList<>();
 		
 		List<String> updateVersions = changeLogVersionFinder.getUpdateVersionsGreaterThan(snapshotVersion);
 		List<String> updateFileNames = changeLogVersionFinder.getUpdateFileNames(updateVersions);
@@ -156,7 +190,6 @@ public class ChangeLogDetective {
 	}
 	
 	List<ChangeSet> getUnrunChangeSets(String filename, Contexts context, LiquibaseProvider liquibaseProvider) throws Exception {
-		String scopeId = LiquibaseScopeHandling.enterLiquibaseUILoggingService();
 		Liquibase liquibase = liquibaseProvider.getLiquibase(filename);
 
 		List<ChangeSet> unrunChangeSets;
@@ -166,7 +199,6 @@ public class ChangeLogDetective {
 					new LabelExpression(), liquibase.getDatabaseChangeLog(), liquibase.getDatabase());
 
 		} finally {
-			LiquibaseScopeHandling.exitLiquibaseScope(scopeId);
 			liquibase.close();
 		}
 		

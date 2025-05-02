@@ -172,7 +172,7 @@
 			<dependency>
 				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>
-				<version>2.18.0</version>
+				<version>2.19.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
@@ -242,19 +242,14 @@
 				<version>6.1.2.Final</version>
 			</dependency>
 			<dependency>
-				<groupId>org.hibernate</groupId>
-				<artifactId>hibernate-search-orm</artifactId>
+				<groupId>org.hibernate.search</groupId>
+				<artifactId>hibernate-search-mapper-orm</artifactId>
 				<version>${hibernateSearchVersion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.hibernate</groupId>
-				<artifactId>hibernate-envers</artifactId>
-				<version>${hibernateVersion}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.lucene</groupId>
-				<artifactId>lucene-queryparser</artifactId>
-				<version>${luceneVersion}</version>
+				<groupId>org.hibernate.search</groupId>
+				<artifactId>hibernate-search-backend-lucene</artifactId>
+				<version>${hibernateSearchVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.lucene</groupId>
@@ -262,19 +257,14 @@
 				<version>${luceneVersion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.apache.lucene</groupId>
-				<artifactId>lucene-queries</artifactId>
-				<version>${luceneVersion}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.lucene</groupId>
-				<artifactId>lucene-backward-codecs</artifactId>
-				<version>${luceneVersion}</version>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-envers</artifactId>
+				<version>${hibernateVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.liquibase</groupId>
 				<artifactId>liquibase-core</artifactId>
-				<version>4.28.0</version>
+				<version>4.31.1</version>
 				<exclusions>
 					<exclusion>
 						<groupId>ch.qos.logback</groupId>
@@ -378,7 +368,7 @@
 			<dependency>
 				<groupId>commons-beanutils</groupId>
 				<artifactId>commons-beanutils</artifactId>
-				<version>1.10.0</version>
+				<version>1.10.1</version>
 				<exclusions>
 					<exclusion>
 						<groupId>commons-logging</groupId>
@@ -405,7 +395,7 @@
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>42.7.4</version>
+				<version>42.7.5</version>
 				<scope>runtime</scope>
 			</dependency>
 			<dependency>
@@ -465,12 +455,6 @@
 				<version>${junitVersion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.junit.jupiter</groupId>
-				<artifactId>junit-jupiter-params</artifactId>
-				<version>${junitVersion}</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-junit-jupiter</artifactId>
 				<version>${mockitoVersion}</version>
@@ -513,7 +497,7 @@
 			<dependency>
 				<groupId>org.dbunit</groupId>
 				<artifactId>dbunit</artifactId>
-				<version>2.8.0</version>
+				<version>3.0.0</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.validation</groupId>
@@ -548,7 +532,7 @@
 			<dependency>
 			  <groupId>joda-time</groupId>
 			  <artifactId>joda-time</artifactId>
-			  <version>2.13.0</version>
+			  <version>2.14.0</version>
 			</dependency>
 			<dependency>
 			    <groupId>javax.annotation</groupId>
@@ -563,7 +547,7 @@
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
-				<version>33.4.0-jre</version>
+				<version>33.4.8-jre</version>
 			</dependency>
 			<dependency>
 			    <groupId>jakarta.xml.bind</groupId>
@@ -585,13 +569,13 @@
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>mysql</artifactId>
-				<version>1.20.4</version>
+				<version>1.21.0</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>1.20.4</version>
+				<version>1.21.0</version>
 				<scope>test</scope>
 			</dependency>
 		</dependencies>
@@ -603,7 +587,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>3.5.2</version>
+					<version>3.5.3</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -613,7 +597,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.13.0</version>
+					<version>3.14.0</version>
 					<configuration>
 						<target>${javaCompilerVersion}</target>
 						<source>${javaCompilerVersion}</source>
@@ -820,12 +804,12 @@
 				<plugin>
 					<groupId>org.sonarsource.scanner.maven</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
-					<version>5.0.0.4389</version>
+					<version>5.1.0.4751</version>
 				</plugin>
 				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>0.8.12</version>
+					<version>0.8.13</version>
 					<configuration>
 						<includes>
 							<include>org/openmrs/**</include>
@@ -935,7 +919,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.5.2</version>
+				<version>3.5.3</version>
 				<configuration>
 					<failIfNoTests>false</failIfNoTests>
 					<useSystemClassLoader>false</useSystemClassLoader>
@@ -1129,12 +1113,64 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.15.11</version>
+						<version>1.17.5</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.15.11</version>
+						<version>1.17.5</version>
+					</dependency>
+				</dependencies>
+			</dependencyManagement>
+		</profile>
+
+		<profile>
+			<id>java21</id>
+			<activation>
+				<jdk>21</jdk>
+			</activation>
+			<dependencyManagement>
+				<dependencies>
+					<dependency>
+						<groupId>org.mockito</groupId>
+						<artifactId>mockito-core</artifactId>
+						<version>5.6.0</version>
+					</dependency>
+					<dependency>
+						<groupId>net.bytebuddy</groupId>
+						<artifactId>byte-buddy</artifactId>
+						<version>1.17.5</version>
+					</dependency>
+					<dependency>
+						<groupId>net.bytebuddy</groupId>
+						<artifactId>byte-buddy-agent</artifactId>
+						<version>1.17.5</version>
+					</dependency>
+				</dependencies>
+			</dependencyManagement>
+		</profile>
+		
+		<profile>
+			<id>java24</id>
+			<activation>
+				<jdk>24</jdk>
+			</activation>
+			<dependencyManagement>
+				<dependencies>
+					<dependency>
+						<groupId>org.mockito</groupId>
+						<artifactId>mockito-core</artifactId>
+						<version>5.6.0</version>
+					</dependency>
+					<dependency>
+						<groupId>net.bytebuddy</groupId>
+						<artifactId>byte-buddy</artifactId>
+						<version>1.17.5</version>
+					</dependency>
+					<dependency>
+						<groupId>net.bytebuddy</groupId>
+						<artifactId>byte-buddy-agent</artifactId>
+						<version>1.17.5</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
@@ -1213,10 +1249,10 @@
 			 be compatible with our version of Spring. -->
 		<springVersion>5.3.30</springVersion>
 		<hibernateVersion>5.6.15.Final</hibernateVersion>
-		<hibernateSearchVersion>5.11.12.Final</hibernateSearchVersion>
-		<luceneVersion>5.5.5</luceneVersion>
-		<aspectjVersion>1.9.22.1</aspectjVersion>
-		<jacksonVersion>2.18.2</jacksonVersion>
+		<hibernateSearchVersion>6.2.4.Final</hibernateSearchVersion>
+		<luceneVersion>8.11.2</luceneVersion>
+		<aspectjVersion>1.9.24</aspectjVersion>
+		<jacksonVersion>2.19.0</jacksonVersion>
 		<junitVersion>5.11.4</junitVersion>
 		<mockitoVersion>3.12.4</mockitoVersion>
 		<hamcrestVersion>3.0</hamcrestVersion>

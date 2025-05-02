@@ -36,4 +36,5 @@ services:
             OMRS_BUILD_ARGS: ${OMRS_BUILD_ARGS:-}
         volumes:
             - ./:/openmrs_core
+            - ./target/data:/openmrs/data/
         restart: "no"

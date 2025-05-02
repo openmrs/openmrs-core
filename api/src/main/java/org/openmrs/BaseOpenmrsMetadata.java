@@ -9,16 +9,18 @@
  */
 package org.openmrs;
 
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
+import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.envers.Audited;
-import org.hibernate.search.annotations.Field;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
+import org.openmrs.api.db.hibernate.search.SearchAnalysis;
 
 /**
  * In OpenMRS, we distinguish between data and metadata within our data model. Metadata represent
@@ -35,10 +37,11 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	
 	//***** Properties *****
 	@Column(name = "name", nullable = false, length = 255)
-	@Field
+	@FullTextField(analyzer = SearchAnalysis.NAME_ANALYZER)
 	private String name;
 	
 	@Column(name = "description", length = 255)
+	@Lob
 	private String description;
 	
 	@ManyToOne(optional = false)
@@ -56,7 +59,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	private Date dateChanged;
 	
 	@Column(name = "retired", nullable = false)
-	@Field
+	@GenericField
 	private Boolean retired = Boolean.FALSE;
 	
 	@Column(name = "date_retired")

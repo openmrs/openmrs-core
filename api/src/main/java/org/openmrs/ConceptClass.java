@@ -23,7 +23,6 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
-import org.hibernate.search.annotations.DocumentId;
 
 /**
  * ConceptClass
@@ -89,6 +88,7 @@ public class ConceptClass extends BaseChangeableOpenmrsMetadata {
 	)
 	@Column(name = "concept_class_id")
 	@DocumentId
+
 	private Integer conceptClassId;
 	
 	// Constructors

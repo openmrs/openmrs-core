@@ -12,7 +12,9 @@ package org.openmrs.util;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openmrs.liquibase.ChangeLogDetective;
 import org.openmrs.liquibase.ChangeLogVersionFinder;
+import org.powermock.reflect.Whitebox;
 
 import java.util.List;
 import java.util.Map;
@@ -30,7 +32,7 @@ public class DatabaseUpdaterDatabaseIT extends DatabaseIT {
 	 * This constant needs to be updated when adding new Liquibase update files to openmrs-core.
 	 */
 	
-	private static final int CHANGE_SET_COUNT_FOR_GREATER_THAN_2_1_X = 899;
+	private static final int CHANGE_SET_COUNT_FOR_GREATER_THAN_2_1_X = 900;
 
 	private static final int CHANGE_SET_COUNT_FOR_2_1_X = 870;
 
@@ -46,6 +48,10 @@ public class DatabaseUpdaterDatabaseIT extends DatabaseIT {
 	
 	@Test
 	public void should() throws Exception {
+		
+		Whitebox.setInternalState(ChangeLogDetective.getInstance(), "initialSnapshotVersion", (Object)null);
+		Whitebox.setInternalState(ChangeLogDetective.getInstance(), "unrunLiquibaseUpdates", (Object)null);
+		
 		ChangeLogVersionFinder changeLogVersionFinder = new ChangeLogVersionFinder();
 		Map<String, List<String>> snapshotCombinations = changeLogVersionFinder.getSnapshotCombinations();
 		updateDatabase(snapshotCombinations.get(VERSION_2_1_X));

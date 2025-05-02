@@ -140,12 +140,15 @@
 
 	<bean id="patientDAO" class="org.openmrs.api.db.hibernate.HibernatePatientDAO">
 		<property name="sessionFactory" ref="sessionFactory"/>
+		<property name="searchSessionFactory" ref="searchSessionFactory"/>
 	</bean>
 	<bean id="personDAO" class="org.openmrs.api.db.hibernate.HibernatePersonDAO">
 		<property name="sessionFactory" ref="sessionFactory"/>
+		<property name="searchSessionFactory" ref="searchSessionFactory"/>
 	</bean>
 	<bean id="conceptDAO" class="org.openmrs.api.db.hibernate.HibernateConceptDAO">
 		<property name="sessionFactory" ref="sessionFactory"/>
+		<property name="searchSessionFactory" ref="searchSessionFactory"/>
 	</bean>
 	<bean id="userDAO" class="org.openmrs.api.db.hibernate.HibernateUserDAO">
 		<property name="sessionFactory" ref="sessionFactory"/>
@@ -246,18 +249,10 @@
 		<property name="obsDAO" ref="obsDAO"/>
 		<property name="handlers">
 			<map>
-				<entry key="ImageHandler">
-					<bean class="org.openmrs.obs.handler.ImageHandler"/>
-				</entry>
-				<entry key="TextHandler">
-					<bean class="org.openmrs.obs.handler.TextHandler"/>
-				</entry>
-				<entry key="BinaryDataHandler">
-					<bean class="org.openmrs.obs.handler.BinaryDataHandler"/>
-				</entry>
-				<entry key="BinaryStreamHandler">
-					<bean class="org.openmrs.obs.handler.BinaryStreamHandler"/>
-				</entry>
+				<entry key="ImageHandler" value-ref="imageHandler"/>
+				<entry key="TextHandler" value-ref="textHandler"/>
+				<entry key="BinaryDataHandler" value-ref="binaryDataHandler"/>
+				<entry key="BinaryStreamHandler" value-ref="binaryStreamHandler"/>
 			</map>
 		</property>
 	</bean>
@@ -449,7 +444,7 @@
 		<property name="preInterceptors" ref="serviceInterceptors"/>
 		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
 	</bean>
-	<bean id="adminService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+	<bean id="adminService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean" primary="true">
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="target" ref="adminServiceTarget"/>
 		<property name="preInterceptors" ref="serviceInterceptors"/>
@@ -664,6 +659,12 @@
 	<bean id="conceptAttributeTypeValidator" class="org.openmrs.validator.ConceptAttributeTypeValidator"/>
 	<bean id="implementationIdHttpClient" class="org.openmrs.util.HttpClient">
 		<constructor-arg name="url" value="https://implementation.openmrs.org"/>
+	</bean>
+
+	<bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor" >
+		<property name="corePoolSize" value="1" />
+		<property name="maxPoolSize" value="20" />
+		<property name="queueCapacity" value="1000" />
 	</bean>
 
 	<!--  ************************ END VALIDATOR CONFIGURATION  ************************  -->

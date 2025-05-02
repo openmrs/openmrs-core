@@ -1,82 +1,118 @@
 <html>
 <head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
 	<script type="text/javascript" src="initfilter/scripts/jquery/jquery.min.js"></script>
     <script type="text/javascript" src="initfilter/scripts/initialsetup.js"></script>
 
     <style type="text/css" media="all">
+		:root {
+			--primary-color: #F26522;
+			--secondary-color: #5B57A6;
+			--background-color: #ecf3f7;
+			--success-color: #4CAF50;
+			--error-color: #f44336;
+			--warning-color: #ff9800;
+			--text-color: #333333;
+			--openmrs-logo-color: #246B63;
+		}
+
         * {
-			font-family: Verdana, 'Lucida Grande', 'Trebuchet MS', Arial, Sans-Serif;
-		}
-		
-		.question {
-            text-align:left;
-            background-color: #E9E4CC;
-            -moz-border-radius: 5px;
-            -webkit-border-radius: 5px;
-				}
-        .yes {
-            background-color: #7fbaf5;
-            -moz-border-radius: 5px;
-            -webkit-border-radius: 5px;
-			}
-        .no {
-            background-color: #CCCCCC;
-            -moz-border-radius: 5px;
-            -webkit-border-radius: 5px;
-		}
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background: var(--background-color);
+            color: var(--text-color);
+            padding: 20px;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
         .logo {
-            background-image:url(images/openmrs_logo_white.gif);
-            background-repeat:no-repeat;
-            height:98px;
-            left: 3px;
+            width: 100px;
+            height: 98px;
+            background-image: url(images/openmrs_logo_white.gif);
+            background-repeat: no-repeat;
+            background-size: contain;
         }
-        .bar {
-            background-image:url(images/openmrs_barx.gif);
-            background-repeat:repeat-x;
-            height:45px;
-            width:100%;
-            margin-left: 15px;
+
+        .header-bar {
+            background: var(--openmrs-logo-color);
+            border-radius: 8px;
+            padding: 15px 25px;
+            text-align: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 500;
+            box-shadow: 0 3px 5px #246B63;
+            min-width: 930px;
+    		margin-right: 600px;
         }
-        .bar-round {
-            background-image:url(images/openmrs_bar.gif);
-            background-repeat:no-repeat;
-            height:45px;
-            width:100%;
-            font-size:24px;
+
+        .message-container {
+            margin: 20px 0;
         }
-        .content {
-            margin-top: 10px;
+
+        .openmrs_error {
+            padding: 15px;
+            background-color: #ffebee;
+            border-left: 4px solid var(--error-color);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            color: #c62828;
         }
-        .button{
-            height:30px;
-            font-size:18px;
-            -moz-border-radius: 15px;
-            -webkit-border-radius: 15px;
-            background-color: #E9E4CC;
+
+        ul {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
         }
     </style>
 </head>
-<body style="background:#ecf3f7">
-    <img style="margin-left:75px; padding-top:10px;" src="images/openmrs_logo_text.gif" />
-    <table style="text-align:center; line-height:40px; margin-top:-25px;" width="100%">
-        <tr>
-        	<td width="100px"><div class="logo"></div></td>
-        	<td>
-            	<div class="bar-round">
-        			<div class="bar">OpenMRS is not able to start.</div>
-        		</div>
-            </td>
-        </tr>
-    </table>
-	
-	#if( ! $errors.isEmpty() )
-	<div style="color: red">
-		<ul>
-		#foreach ($error in $errors)
-			<li>${error}</li>
-		#end
-		</ul>
-	</div>
-	<br/>
-	#end	
-	
+
+<body>
+    <div class="header-container">
+        <div class="logo-section">
+            <img src="images/openmrs_logo_white.gif" alt="OpenMRS White Logo" />
+            <div class="header-bar">
+                $l10n.get("general.error.header.title")
+            </div>
+        </div>
+
+        #if( ! $errors.isEmpty() )
+        <div class="message-container">
+            <div class="openmrs_error">
+                <ul>
+                    #foreach ($error in $errors.entrySet())
+                        #if (!$error.getValue()) 
+                            <li>$l10n.get($error.getKey())</li>
+                        #else
+                            <li>$l10n.get($error.getKey()).insert($error.getValue())</li>
+                        #end
+                    #end
+                </ul>
+            </div>
+        </div>
+        #end
+    </div>
+</body>
+</html>
