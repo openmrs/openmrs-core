@@ -242,19 +242,14 @@
 				<version>6.1.2.Final</version>
 			</dependency>
 			<dependency>
-				<groupId>org.hibernate</groupId>
-				<artifactId>hibernate-search-orm</artifactId>
+				<groupId>org.hibernate.search</groupId>
+				<artifactId>hibernate-search-mapper-orm</artifactId>
 				<version>${hibernateSearchVersion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.hibernate</groupId>
-				<artifactId>hibernate-envers</artifactId>
-				<version>${hibernateVersion}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.lucene</groupId>
-				<artifactId>lucene-queryparser</artifactId>
-				<version>${luceneVersion}</version>
+				<groupId>org.hibernate.search</groupId>
+				<artifactId>hibernate-search-backend-lucene</artifactId>
+				<version>${hibernateSearchVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.lucene</groupId>
@@ -262,14 +257,9 @@
 				<version>${luceneVersion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.apache.lucene</groupId>
-				<artifactId>lucene-queries</artifactId>
-				<version>${luceneVersion}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.lucene</groupId>
-				<artifactId>lucene-backward-codecs</artifactId>
-				<version>${luceneVersion}</version>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-envers</artifactId>
+				<version>${hibernateVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.liquibase</groupId>
@@ -579,13 +569,13 @@
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>mysql</artifactId>
-				<version>1.20.6</version>
+				<version>1.21.0</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>1.20.6</version>
+				<version>1.21.0</version>
 				<scope>test</scope>
 			</dependency>
 		</dependencies>
@@ -1159,6 +1149,32 @@
 				</dependencies>
 			</dependencyManagement>
 		</profile>
+		
+		<profile>
+			<id>java24</id>
+			<activation>
+				<jdk>24</jdk>
+			</activation>
+			<dependencyManagement>
+				<dependencies>
+					<dependency>
+						<groupId>org.mockito</groupId>
+						<artifactId>mockito-core</artifactId>
+						<version>5.6.0</version>
+					</dependency>
+					<dependency>
+						<groupId>net.bytebuddy</groupId>
+						<artifactId>byte-buddy</artifactId>
+						<version>1.17.5</version>
+					</dependency>
+					<dependency>
+						<groupId>net.bytebuddy</groupId>
+						<artifactId>byte-buddy-agent</artifactId>
+						<version>1.17.5</version>
+					</dependency>
+				</dependencies>
+			</dependencyManagement>
+		</profile>
 	</profiles>
 
 	<reporting>
@@ -1233,10 +1249,10 @@
 			 be compatible with our version of Spring. -->
 		<springVersion>5.3.30</springVersion>
 		<hibernateVersion>5.6.15.Final</hibernateVersion>
-		<hibernateSearchVersion>5.11.12.Final</hibernateSearchVersion>
-		<luceneVersion>5.5.5</luceneVersion>
+		<hibernateSearchVersion>6.2.4.Final</hibernateSearchVersion>
+		<luceneVersion>8.11.2</luceneVersion>
 		<aspectjVersion>1.9.24</aspectjVersion>
-		<jacksonVersion>2.18.3</jacksonVersion>
+		<jacksonVersion>2.19.0</jacksonVersion>
 		<junitVersion>5.11.4</junitVersion>
 		<mockitoVersion>3.12.4</mockitoVersion>
 		<hamcrestVersion>3.0</hamcrestVersion>

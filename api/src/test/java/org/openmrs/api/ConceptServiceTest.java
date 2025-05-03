@@ -3179,14 +3179,14 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getAllConcepts_shouldOrderByAConceptNameField() {
 		List<Concept> allConcepts = conceptService.getAllConcepts("name", true, false);
 		
-		assertEquals(34, allConcepts.size());
+		assertEquals(35, allConcepts.size());
 		assertEquals("ANTIRETROVIRAL TREATMENT GROUP", allConcepts.get(0).getName().getName());
 		assertEquals("YES", allConcepts.get(allConcepts.size() - 1).getName().getName());
 		
 		//test the desc order
 		allConcepts = conceptService.getAllConcepts("name", false, false);
 		
-		assertEquals(34, allConcepts.size());
+		assertEquals(35, allConcepts.size());
 		assertEquals("YES", allConcepts.get(0).getName().getName());
 		assertEquals("ANTIRETROVIRAL TREATMENT GROUP", allConcepts.get(allConcepts.size() - 1).getName().getName());
 	}
@@ -4015,5 +4015,18 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(conceptReferenceRange);
 
 		assertEquals(34, conceptReferenceRange.getId());
+	}
+	
+	@Test
+	public void purgeConceptReferenceRange_shouldPurgeAConceptReferenceRange() {
+		
+		final String CONCEPT_REFERENCE_RANGE_UUID = "2c5972e8-aee5-468c-8216-369a1b60723d";
+		ConceptReferenceRange conceptReferenceRange = conceptService.getConceptReferenceRangeByUuid(CONCEPT_REFERENCE_RANGE_UUID);
+		assertNotNull(conceptReferenceRange);
+		
+		conceptService.purgeConceptReferenceRange(conceptReferenceRange);
+
+		conceptReferenceRange = conceptService.getConceptReferenceRangeByUuid(CONCEPT_REFERENCE_RANGE_UUID);
+		assertNull(conceptReferenceRange);
 	}
 }

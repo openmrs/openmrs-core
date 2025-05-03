@@ -1,33 +1,203 @@
 #parse($HEADER_TEMPLATE)
-	<form method="post">
-		<input type="hidden" name="page" value="otherruntimeproperties.vm" /> 
-		<div class="content">
-            <table cellpadding="9" align="center" cellspacing="5" >
-		  <tr>
-                    <td colspan="2"><strong>$l10n.get("install.advanced.other")</strong></td>
-                </tr>
-                <tr>
-                    <td colspan="2" class="question" >$l10n.get("install.advanced.other.modules") <br/> <i style="font-size:12px;">  $l10n.get("install.advanced.other.modules.disclaimer") </i>
-		     </td>
-		  </tr>
-		  <tr>
-                    <td>$l10n.get("general.yes"): <input type="radio" name="module_web_admin" value="yes" #if( $moduleWebAdmin == true )checked="checked"#end /></td>
-                    <td>$l10n.get("general.no"): <input type="radio" name="module_web_admin" value="no" #if( $moduleWebAdmin == false )checked="checked"#end /></td>
-		  </tr>
-		  <tr>
-                    <td colspan="2" class="question" >$l10n.get("install.advanced.other.update")</td>
-		  </tr>
-		  <tr>
-                    <td>$l10n.get("general.yes"): <input type="radio" name="auto_update_database" value="yes" #if( $autoUpdateDatabase == true )checked="checked"#end/></td>
-                    <td>$l10n.get("general.no"): <input type="radio" name="auto_update_database" value="no" #if( $autoUpdateDatabase == false )checked="checked"#end/></td>
-		  </tr>
-                <tr>
-			<td colspan="2" align="center">
-				<input type="image" src="images/back_button.png" value="Back" name="back" style="margin-right: 20px"/>
-				<input type="image" src="images/forward_button.png" name="continue" style="margin-left: 20px"/>
-			</td>
-                </tr>
-		</table>
+
+<div class="content-container">
+    <form method="post" class="setup-form">
+        <input type="hidden" name="page" value="otherruntimeproperties.vm" />
+        
+        <div class="form-container">
+            <h2 class="form-title">$l10n.get("install.advanced.other")</h2>
+
+            <div class="form-section">
+                <div class="option-group">
+                    <h3 class="section-title">$l10n.get("install.advanced.other.modules")</h3>
+                    <p class="option-description"><i>$l10n.get("install.advanced.other.modules.disclaimer")</i></p>
+
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="module_web_admin" value="yes" #if( $moduleWebAdmin == true )checked="checked"#end />
+                            <span class="radio-text">$l10n.get("general.yes")</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="module_web_admin" value="no" #if( $moduleWebAdmin == false )checked="checked"#end />
+                            <span class="radio-text">$l10n.get("general.no")</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="option-group">
+                    <h3 class="section-title">$l10n.get("install.advanced.other.update")</h3>
+
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="auto_update_database" value="yes" #if( $autoUpdateDatabase == true )checked="checked"#end/>
+                            <span class="radio-text">$l10n.get("general.yes")</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="auto_update_database" value="no" #if( $autoUpdateDatabase == false )checked="checked"#end/>
+                            <span class="radio-text">$l10n.get("general.no")</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" name="back" value="Back" class="button button-secondary">
+                    <span class="button-icon">←</span>
+                    <span class="button-text">Back</span>
+                </button>
+                <button type="submit" name="continue" class="button button-primary">
+                    <span class="button-text">Continue</span>
+                    <span class="button-icon">→</span>
+                </button>
+            </div>
         </div>
-	</form>
+    </form>
+</div>
+
+<style>
+    .content-container {
+        flex: 1;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 1.5rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+        overflow-y: auto;
+        max-height: calc(100vh - 180px);
+        position: relative;
+    }
+
+    .form-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .form-title {
+        font-size: 1.3rem;
+        font-weight: 500;
+        color: var(--text-color);
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+
+    .form-section {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        padding: 1.5rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .option-group {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: var(--text-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .option-description {
+        font-size: 0.9rem;
+        margin: 0.5rem 0;
+    }
+
+    .radio-group {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin: 1rem 0;
+    }
+
+    .radio-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+    }
+
+    .radio-text {
+        font-weight: 500;
+        color: var(--text-color);
+    }
+
+    .button-group {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 1rem;
+        position: sticky;
+        bottom: 0;
+        background: white;
+        padding: 1rem 0;
+        border-top: 1px solid #eee;
+    }
+
+    .button {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 500;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .button-primary {
+        background: linear-gradient(to right, var(--openmrs-logo-color), var(--openmrs-logo-color));
+        color: white;
+    }
+
+    .button-secondary {
+        background: #f5f5f5;
+        color: var(--text-color);
+    }
+
+    .button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .button-icon {
+        font-size: 1.2rem;
+    }
+
+    @media (max-width: 768px) {
+        .content-container {
+            margin: 1rem;
+            padding: 1.5rem;
+            max-height: calc(100vh - 200px);
+        }
+
+        .radio-group {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .button-group {
+            flex-direction: column;
+        }
+
+        .button {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+<script type="text/javascript">
+    document.forms[0].elements[0].focus();
+</script>
+
 #parse($FOOTER_TEMPLATE)

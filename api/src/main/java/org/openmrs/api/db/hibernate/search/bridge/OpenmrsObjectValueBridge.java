@@ -9,21 +9,19 @@
  */
 package org.openmrs.api.db.hibernate.search.bridge;
 
-import org.hibernate.search.bridge.StringBridge;
+import org.hibernate.search.mapper.pojo.bridge.ValueBridge;
+import org.hibernate.search.mapper.pojo.bridge.runtime.ValueBridgeToIndexedValueContext;
 import org.openmrs.OpenmrsObject;
 
 /**
  * Indexes {@link OpenmrsObject} as ID.
- */
-public class OpenmrsObjectFieldBridge implements StringBridge {
-	
-	/**
-	 * @see org.hibernate.search.bridge.StringBridge#objectToString(java.lang.Object)
-	 */
+ * 
+ * @since 2.8.0
+*/
+public class OpenmrsObjectValueBridge implements ValueBridge<OpenmrsObject, String> {
+
 	@Override
-	public String objectToString(Object obj) {
-		OpenmrsObject openmrsObject = (OpenmrsObject) obj;
+	public String toIndexedValue(OpenmrsObject openmrsObject, ValueBridgeToIndexedValueContext valueBridgeToIndexedValueContext) {
 		return openmrsObject.getId().toString();
 	}
-	
 }

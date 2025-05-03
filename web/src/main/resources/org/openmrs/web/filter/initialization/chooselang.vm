@@ -1,30 +1,191 @@
 #parse($HEADER_TEMPLATE)
-            <form method="post" autocomplete="off">
-                <input type="hidden" name="page" value="chooselang.vm" />
-                <div class="content">
-                    <table align="center" cellspacing="5" cellpadding="9">
-                        <tr>
-                            <td colspan="2"><strong>$l10n.get("install.prefer")</strong></td>
-                        </tr>
-                        <tr>
-                        <td>
-	                        <select name="locale" id="locale">
-				  				<option value="en" #if( $locale == "en" ) selected #end >English</option>
-				  				<option value="en_GB" #if( $locale == "en_GB" ) selected #end >English (GB)</option>
-				  				<option value="es" #if( $locale == "es" ) selected #end >Español</option>
-				  				<option value="fr" #if( $locale == "fr" ) selected #end >Français</option>
-				  				<option value="it"  #if( $locale == "it" ) selected #end >Italiano</option>
-				  				<option value="pt" #if( $locale == "pt" ) selected #end >Português</option>
-							</select>
-						</td>
-                        </tr>
-							<tr>
-								<td colspan="2"><input type="checkbox" value="Remember" name="remember"  #if( $remember == true ) checked="checked" #end />$l10n.get("install.choice")</td>
-							</tr>
-                        <tr>
-                            <td colspan="2" align="center"><input type="image" src="images/forward_button.png" name="continue"/></td>
-                        </tr>                        
-                    </table>
+<div class="page-container">
+    <div class="content-container">
+        <form method="post" autocomplete="off" class="setup-form">
+            <input type="hidden" name="page" value="chooselang.vm" />
+            
+            <div class="form-container">
+                <h2 class="form-title">$l10n.get("install.prefer")</h2>
+                <div class="form-group">
+                    <select name="locale" id="locale" class="form-select">
+                        <option value="en" #if( $locale == "en" ) selected #end>English</option>
+                        <option value="en_GB" #if( $locale == "en_GB" ) selected #end>English (GB)</option>
+                        <option value="es" #if( $locale == "es" ) selected #end>Español</option>
+                        <option value="fr" #if( $locale == "fr" ) selected #end>Français</option>
+                        <option value="it" #if( $locale == "it" ) selected #end>Italiano</option>
+                        <option value="pt" #if( $locale == "pt" ) selected #end>Português</option>
+                    </select>
                 </div>
-            </form>
+
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-container">
+                        <input type="checkbox" value="Remember" name="remember" #if( $remember == true ) checked="checked" #end />
+                        <span class="checkbox-text">$l10n.get("install.choice")</span>
+                    </label>
+                </div>
+
+                <div class="form-group button-group">
+                    <button type="submit" class="button button-primary">
+                        <span class="button-text">Continue</span>
+                        <span class="button-icon">→</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .page-container {
+        min-height: calc(100vh - 100px);
+        justify-content: center;
+        margin-top: 2rem;
+    }
+
+    .content-container {
+        width: 100%;
+        max-width: 650px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+    }
+
+    .setup-form {
+        width: 100%;
+    }
+
+    .form-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .form-title {
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: var(--text-color);
+        text-align: center;
+        margin: 0 0 1rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .form-select {
+        padding: 0.75rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1rem;
+        color: var(--text-color);
+        background-color: white;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        width: 100%;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        padding-right: 2.5rem;
+    }
+
+    .form-select:hover {
+        border-color: var(--openmrs-logo-color);
+    }
+
+    .form-select:focus {
+        outline: none;
+        border-color: var(--openmrs-logo-color);
+        box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+    }
+
+    .checkbox-group {
+        margin: 0.5rem 0;
+    }
+
+    .checkbox-container {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 6px;
+        transition: background-color 0.2s ease;
+    }
+
+    .checkbox-container:hover {
+        background-color: rgba(var(--primary-rgb), 0.05);
+    }
+
+    .checkbox-text {
+        color: var(--text-color);
+        font-size: 0.95rem;
+    }
+
+    input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--openmrs-logo-color);
+        border-radius: 4px;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.2s ease;
+        appearance: none;
+        background-color: white;
+    }
+
+    input[type="checkbox"]:checked {
+        background-color: var(--openmrs-logo-color);
+        border-color: var(--primary-color);
+    }
+
+    input[type="checkbox"]:checked::after {
+        content: '';
+        position: absolute;
+        left: 6px;
+        top: 2px;
+        width: 4px;
+        height: 9px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+    }
+
+    .button-group {
+        margin-top: 1rem;
+        display: flex;
+        justify-content: center;
+    }
+
+    .button-primary {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 2rem;
+        font-size: 1rem;
+        font-weight: 500;
+        background: linear-gradient(to right, var(--openmrs-logo-color), var(--openmrs-logo-color));
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .button-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.2);
+    }
+
+    .button-text {
+        font-weight: 500;
+    }
+
+    .button-icon {
+        font-size: 1.2rem;
+    }
+</style>
 #parse($FOOTER_TEMPLATE)
