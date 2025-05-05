@@ -21,4 +21,6 @@
   <concept_name concept_id="2" name="Some numeric concept name" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="2" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="d8402dab-1e32-4f17-9654-a889a4eb9a89"/>
   <concept_name concept_id="2" name="Numeric name with en_GB locale" locale="en_GB" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="3" locale_preferred="0" voided="false" uuid="bbbb2dab-1e32-4f17-a654-0000a4eb9a8e"/>
   <concept_numeric concept_id="2" hi_absolute="123.0" allow_decimal="false"/>
+  <concept_proposal concept_proposal_id="1" original_text="mapped concept proposal" final_text="mapped concept proposal" obs_concept_id="1" mapped_concept_id="2" state="SOME_STATE" creator="1" date_created="2024-01-01 00:00:00.0" uuid="abcde12345-6789-0000-1111-222233334444"/>
+
 </dataset>

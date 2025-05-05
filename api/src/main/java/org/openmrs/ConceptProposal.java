@@ -57,7 +57,15 @@ public class ConceptProposal extends BaseOpenmrsObject {
 	@ManyToOne
 	@JoinColumn(name = "mapped_concept_id")
 	private Concept mappedConcept;
-	
+
+	/**
+	 * @deprecated Only kept for legacy dataset and Hibernate mapping compatibility. Avoid using this field directly.
+	 */
+	@Deprecated
+	@ManyToOne
+	@JoinColumn(name = "concept_id")
+	private Concept concept;
+
 	@Column(name = "original_text")
 	private String originalText;
 	
