@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
@@ -1538,6 +1539,10 @@ public class InitializationFilter extends StartupFilter {
 						Properties properties = Context.getRuntimeProperties();
 						properties.putAll(runtimeProperties);
 						runtimeProperties = properties;
+
+						Properties installationScript = getInstallationScript();
+						installationScript.forEach(runtimeProperties::putIfAbsent);
+
 						Context.setRuntimeProperties(runtimeProperties);
 						
 						/**

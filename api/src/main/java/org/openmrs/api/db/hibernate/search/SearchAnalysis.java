@@ -9,7 +9,7 @@
  */
 package org.openmrs.api.db.hibernate.search;
 
-import org.openmrs.api.db.hibernate.search.lucene.LuceneAnalysisConfigurer;
+import org.openmrs.api.db.hibernate.search.lucene.LuceneConfig;
 
 /**
  * Defines analyzers and normalizers to be used in Hibernate Search mappings.
@@ -21,7 +21,7 @@ import org.openmrs.api.db.hibernate.search.lucene.LuceneAnalysisConfigurer;
  * 	exactAnalyzer, which allows searching for tokens that are identical
  * 	anywhereAnalyzer, which allows searching for text within tokens
  *
- * @see LuceneAnalysisConfigurer
+ * @see LuceneConfig
  * @since 2.8.0
  */
 public class SearchAnalysis {
