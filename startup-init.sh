@@ -42,6 +42,10 @@ OMRS_JAVA_MEMORY_OPTS=${OMRS_JAVA_MEMORY_OPTS:-'-XX:NewSize=128m'}
 OMRS_MODULE_WEB_ADMIN=${OMRS_MODULE_WEB_ADMIN:-true}
 # This should match the name of the distribution supplied OpenMRS war file
 OMRS_WEBAPP_NAME=${OMRS_WEBAPP_NAME:-'openmrs'}
+# Can be set to lucene or elasticsearch
+OMRS_SEARCH=${OMRS_SEARCH:-'lucene'}
+OMRS_SEARCH_CONFIG=${OMRS_SEARCH_CONFIG:-"${OMRS_SEARCH}Config"}
+OMRS_SEARCH_ES_URIS=${OMRS_SEARCH_ES_URIS:-'http://es:9200'}
 # End of configurable environment variables
 # -----------------------------------------
 
@@ -140,6 +144,11 @@ has_current_openmrs_database=${OMRS_HAS_CURRENT_OPENMRS_DATABASE}
 install_method=${OMRS_INSTALL_METHOD}
 module_web_admin=${OMRS_MODULE_WEB_ADMIN}
 module.allow_web_admin=${OMRS_MODULE_WEB_ADMIN}
+
+hibernate.search.backend.type=${OMRS_SEARCH}
+hibernate.search.backend.analysis.configurer=${OMRS_SEARCH_CONFIG}
+
+hibernate.search.backend.uris=${OMRS_SEARCH_ES_URIS}
 
 EOF
 
