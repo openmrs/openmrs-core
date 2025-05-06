@@ -252,6 +252,11 @@
 				<version>${hibernateSearchVersion}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.hibernate.search</groupId>
+				<artifactId>hibernate-search-backend-elasticsearch</artifactId>
+				<version>${hibernateSearchVersion}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.apache.lucene</groupId>
 				<artifactId>lucene-analyzers-phonetic</artifactId>
 				<version>${luceneVersion}</version>
