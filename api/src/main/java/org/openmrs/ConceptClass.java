@@ -10,7 +10,6 @@
 package org.openmrs;
 
 import org.hibernate.envers.Audited;
-import org.hibernate.search.annotations.DocumentId;
 
 /**
  * ConceptClass
@@ -57,7 +56,6 @@ public class ConceptClass extends BaseChangeableOpenmrsMetadata {
 	public static final String FREQUENCY_UUID = "8e071bfe-520c-44c0-a89b-538e9129b42a";
 	
 	// Fields
-	@DocumentId
 	private Integer conceptClassId;
 	
 	// Constructors

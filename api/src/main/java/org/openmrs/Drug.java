@@ -17,10 +17,14 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
-import org.hibernate.search.annotations.DocumentId;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.AssociationInverseSide;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.ObjectPath;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.PropertyValue;
 import org.openmrs.api.context.Context;
 
 /**
@@ -48,10 +52,14 @@ public class Drug extends BaseChangeableOpenmrsMetadata {
 	
 	private Concept doseLimitUnits;
 	
-	@IndexedEmbedded(includeEmbeddedObjectId = true)
+	@IndexedEmbedded(includePaths = "conceptId", includeEmbeddedObjectId = true)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	private Concept concept;
 	
-	@IndexedEmbedded(includeEmbeddedObjectId = true)
+	@IndexedEmbedded
+	@AssociationInverseSide(inversePath = @ObjectPath({
+		@PropertyValue(propertyName = "drug")
+	}))
 	private Set<DrugReferenceMap> drugReferenceMaps;
 	
 	private Collection<DrugIngredient> ingredients;
