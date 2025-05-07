@@ -111,7 +111,7 @@ import org.xml.sax.InputSource;
  * The JUnit 5 version of the class is {@link org.openmrs.test.jupiter.BaseContextSensitiveTest}.<p>
  */
 @ContextConfiguration(locations = { "classpath:applicationContext-service.xml", "classpath*:openmrs-servlet.xml",
-        "classpath*:moduleApplicationContext.xml", "classpath*:TestingApplicationContext.xml" })
+        "classpath*:moduleApplicationContext.xml", "classpath*:TestingApplicationContext.xml" }, initializers = OpenmrsRuntimePropertiesInitializer.class)
 @TestExecutionListeners( { TransactionalTestExecutionListener.class, SkipBaseSetupAnnotationExecutionListener.class,
         StartModuleExecutionListener.class })
 @Transactional

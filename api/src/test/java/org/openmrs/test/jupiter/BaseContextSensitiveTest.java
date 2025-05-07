@@ -107,8 +107,7 @@ import org.xml.sax.InputSource;
  * @since 2.4.0
  */
 @ContextConfiguration(
-	locations = { "classpath:applicationContext-service.xml", "classpath*:openmrs-servlet.xml",
-        "classpath*:moduleApplicationContext.xml", "classpath*:TestingApplicationContext.xml" }, 
+	locations = { "classpath:applicationContext-service.xml", "classpath*:openmrs-servlet.xml", "classpath*:moduleApplicationContext.xml", "classpath*:TestingApplicationContext.xml" }, 
 	initializers = OpenmrsRuntimePropertiesInitializer.class)
 @TestExecutionListeners(
 	listeners = { SkipBaseSetupAnnotationExecutionListener.class,
