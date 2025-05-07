@@ -76,6 +76,7 @@ import org.openmrs.api.context.Credentials;
 import org.openmrs.api.context.UsernamePasswordCredentials;
 import org.openmrs.test.Containers;
 import org.openmrs.test.OpenmrsMetadataHandler;
+import org.openmrs.test.OpenmrsRuntimePropertiesInitializer;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.SkipBaseSetupAnnotationExecutionListener;
 import org.openmrs.test.TestUtil;
@@ -105,8 +106,10 @@ import org.xml.sax.InputSource;
  * 
  * @since 2.4.0
  */
-@ContextConfiguration(locations = { "classpath:applicationContext-service.xml", "classpath*:openmrs-servlet.xml",
-        "classpath*:moduleApplicationContext.xml", "classpath*:TestingApplicationContext.xml" })
+@ContextConfiguration(
+	locations = { "classpath:applicationContext-service.xml", "classpath*:openmrs-servlet.xml",
+        "classpath*:moduleApplicationContext.xml", "classpath*:TestingApplicationContext.xml" }, 
+	initializers = OpenmrsRuntimePropertiesInitializer.class)
 @TestExecutionListeners(
 	listeners = { SkipBaseSetupAnnotationExecutionListener.class,
 		StartModuleExecutionListener.class },

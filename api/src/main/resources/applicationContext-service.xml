@@ -667,6 +667,15 @@
 		<property name="queueCapacity" value="1000" />
 	</bean>
 
+	<bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:hibernate.default.properties</value>
+				<value>file:${OPENMRS_APPLICATION_DATA_DIRECTORY}/openmrs-runtime.properties</value>
+			</list>
+		</property>
+	</bean>
+
 	<!--  ************************ END VALIDATOR CONFIGURATION  ************************  -->
 
 	<context:component-scan base-package="org.openmrs">
@@ -677,10 +686,5 @@
 								expression="org.openmrs.util.TestTypeFilter"/>
 		<context:exclude-filter type="custom" expression="org.openmrs.annotation.OpenmrsProfileExcludeFilter"/>
 	</context:component-scan>
-
-	<context:property-placeholder
-		location="file:${OPENMRS_APPLICATION_DATA_DIRECTORY}/openmrs-runtime.properties"
-		system-properties-mode="OVERRIDE"
-		ignore-resource-not-found="true" />
 
 </beans>
