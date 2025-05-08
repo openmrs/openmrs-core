@@ -34,6 +34,7 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -147,6 +148,12 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 		inverseJoinColumns = @JoinColumn(name = "location_tag_id"))
 	@Independent
 	private Set<LocationTag> tags;
+	
+	@OrderBy("voided asc")
+	@BatchSize(size = 100)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "location_id") 
+	private Set<LocationAttribute> attributes = new LinkedHashSet<>();
 	
 	// Constructors
 	
@@ -851,5 +858,15 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	@Override
 	public void setAddress15(String address15) {
 		this.address15 = address15;
+	}
+	
+	@Override
+	public Set<LocationAttribute> getAttributes() {
+		return attributes;
+	}
+	
+	@Override
+	public void setAttributes(Set<LocationAttribute> attributes) {
+		this.attributes = attributes;
 	}
 }
