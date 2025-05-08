@@ -9,12 +9,15 @@
  */
 package org.openmrs;
 
+import javax.persistence.Cacheable;
+
 import org.hibernate.envers.Audited;
 
 /**
  * ConceptClass
  */
 @Audited
+@Cacheable
 public class ConceptClass extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 33473L;
