@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import javax.persistence.Cacheable;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -46,6 +47,7 @@ import org.slf4j.LoggerFactory;
  */
 @Indexed
 @Audited
+@Cacheable
 public class PersonAttribute extends BaseChangeableOpenmrsData implements java.io.Serializable, Comparable<PersonAttribute> {
 	
 	public static final long serialVersionUID = 11231211232111L;
