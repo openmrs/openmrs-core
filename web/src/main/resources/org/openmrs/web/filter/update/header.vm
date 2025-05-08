@@ -6,6 +6,8 @@
         <script type="text/javascript" src="initfilter/scripts/jquery/jquery.min.js"></script>
         <script type="text/javascript" src="initfilter/scripts/initialsetup.js"></script>
         <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+        <link rel="shortcut icon" type="image/ico" href="images/openmrs-favicon.ico"/>
+        <link rel="icon" type="image/png" href="images/openmrs-favicon.png"/>
 
         <style type="text/css" media="all">
             :root {

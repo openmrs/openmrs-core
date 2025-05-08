@@ -75,10 +75,10 @@
                     <div class="button-group">
                         <button type="submit" name="back" value="Back" class="button button-secondary">
                             <span class="button-icon">←</span>
-                            <span class="button-text">Back</span>
+                            <span class="button-text">$l10n.get("general.navigateBack")</span>
                         </button>
                         <button type="submit" name="continue" class="button button-primary">
-                            <span class="button-text">Continue</span>
+                            <span class="button-text">$l10n.get("general.continue")</span>
                             <span class="button-icon">→</span>
                         </button>
                     </div>
