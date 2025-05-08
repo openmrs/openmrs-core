@@ -12,6 +12,8 @@ package org.openmrs.web.filter.initialization;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,19 +24,29 @@ import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 
-public class InitializationFilterTest {
+public class InitializationFilterTest extends BaseContextSensitiveTest {
 	
 	private InitializationFilter filter;
+
+	@Value("${hibernate.connection.url}")
+	private String connectionUrl;
 
 	@BeforeEach
 	public void setup() {
 		filter = new InitializationFilter();
 		filter.wizardModel = new InitializationWizardModel();
+	}
+
+	@Test
+	public void shouldLoadConnectionUrlFromProperties() {
+		assertNotNull(connectionUrl);
+		assertEquals(connectionUrl, "jdbc:mysql://localhost:3306/openmrs?autoReconnect=true");
 	}
 
 	@AfterEach
