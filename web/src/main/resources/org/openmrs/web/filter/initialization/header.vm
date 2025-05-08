@@ -21,6 +21,8 @@
 		/>
 
 		<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+		<link rel="shortcut icon" type="image/ico" href="images/openmrs-favicon.ico"/>
+        <link rel="icon" type="image/png" href="images/openmrs-favicon.png"/>
 
 		<style type="text/css" media="all">
 			:root {

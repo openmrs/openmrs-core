@@ -16,17 +16,9 @@
                         <option value="pt" #if( $locale == "pt" ) selected #end>Português</option>
                     </select>
                 </div>
-
-                <div class="form-group checkbox-group">
-                    <label class="checkbox-container">
-                        <input type="checkbox" value="Remember" name="remember" #if( $remember == true ) checked="checked" #end />
-                        <span class="checkbox-text">$l10n.get("install.choice")</span>
-                    </label>
-                </div>
-
                 <div class="form-group button-group">
                     <button type="submit" class="button button-primary">
-                        <span class="button-text">Continue</span>
+                        <span class="button-text">$l10n.get("general.continue")</span>
                         <span class="button-icon">→</span>
                     </button>
                 </div>
