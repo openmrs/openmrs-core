@@ -65,6 +65,7 @@ import org.openmrs.SimpleDosingInstructions;
 import org.openmrs.TestOrder;
 import org.openmrs.User;
 import org.openmrs.Visit;
+import org.openmrs.VisitType;
 import org.openmrs.VisitAttributeType;
 import org.openmrs.api.builder.DrugOrderBuilder;
 import org.openmrs.api.builder.OrderBuilder;
@@ -2742,6 +2743,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.addAnnotatedClass(ProgramAttributeType.class)
 			.addAnnotatedClass(HL7InError.class)
 			.addAnnotatedClass(OrderType.class)
+			.addAnnotatedClass(VisitType.class)
 			.getMetadataBuilder().build();
 
 
