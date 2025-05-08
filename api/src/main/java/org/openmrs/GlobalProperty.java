@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import javax.persistence.Cacheable;
 import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -23,6 +24,7 @@ import org.openmrs.customdatatype.SingleCustomValue;
  * something similar to environment variables used in operating systems.
  */
 @Audited
+@Cacheable
 public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDescriptor, SingleCustomValue<GlobalProperty> {
 	
 	private static final long serialVersionUID = 1L;

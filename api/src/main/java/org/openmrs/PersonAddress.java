@@ -15,6 +15,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.envers.Audited;
 import org.openmrs.util.OpenmrsUtil;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -35,6 +36,7 @@ import static org.apache.commons.lang3.StringUtils.defaultString;
 @Entity
 @Table(name = "person_address")
 @Audited
+@Cacheable
 public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PersonAddress>, Address {
 	
 	public static final long serialVersionUID = 343333L;

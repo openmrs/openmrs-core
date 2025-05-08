@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import javax.persistence.Cacheable;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -73,6 +74,7 @@ import org.springframework.util.ObjectUtils;
  * @see ConceptMap
  * @see ConceptService
  */
+@Cacheable
 @Audited
 public class Concept extends BaseOpenmrsObject implements Auditable, Retireable, Serializable, Attributable<Concept>,Customizable<ConceptAttribute> {
 	
