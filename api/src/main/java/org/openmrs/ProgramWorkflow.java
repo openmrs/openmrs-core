@@ -44,7 +44,8 @@ import org.openmrs.util.NaturalStrings;
 @Table(name = "program_workflow")
 @AttributeOverrides({
     @AttributeOverride(name = "name", column = @Column(name = "name", insertable = false, updatable = false)),
-    @AttributeOverride(name = "description", column = @Column(name = "description", insertable = false, updatable = false))
+    @AttributeOverride(name = "description", column = @Column(name = "description", insertable = false, updatable = false)),
+	@AttributeOverride(name = "dateRetired", column = @Column(name = "date_retired", insertable = false, updatable = false))
 })
 public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	
