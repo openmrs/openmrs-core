@@ -19,7 +19,10 @@ import org.apache.lucene.analysis.phonetic.PhoneticFilterFactory;
 import org.apache.lucene.analysis.standard.ClassicFilterFactory;
 import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
 import org.hibernate.search.backend.lucene.analysis.LuceneAnalysisConfigurationContext;
+import org.hibernate.search.backend.lucene.analysis.LuceneAnalysisConfigurer;
 import org.openmrs.api.db.hibernate.search.SearchAnalysis;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 
 /**
  * Provides Lucene analyzers.
@@ -27,9 +30,10 @@ import org.openmrs.api.db.hibernate.search.SearchAnalysis;
  * @see SearchAnalysis
  * @since 2.8.0
  */
-public class LuceneAnalysisConfigurer implements org.hibernate.search.backend.lucene.analysis.LuceneAnalysisConfigurer {
+@Component("luceneConfig")
+public class LuceneConfig implements LuceneAnalysisConfigurer {
 	
-	public LuceneAnalysisConfigurer() {
+	public LuceneConfig() {
 	}
 
 	@Override
