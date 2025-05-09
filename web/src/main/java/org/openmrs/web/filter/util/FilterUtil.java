@@ -161,7 +161,7 @@ public class FilterUtil {
 		}
 		return systemDefaultLocale;
 	}
-	
+
 	/**
 	 * Stores selected by user locale into DB as admin's user property and as system default locale
 	 *
@@ -170,9 +170,11 @@ public class FilterUtil {
 	 */
 	public static boolean storeLocale(String locale) {
 		if (StringUtils.isNotBlank(locale)) {
-			
+
 			Connection connection = null;
 			Integer userId = null;
+			PreparedStatement statement = null;
+
 			try {
 				connection = DatabaseUpdater.getConnection();
 				
@@ -181,62 +183,53 @@ public class FilterUtil {
 				
 				// first we are saving locale as administrative user's property
 				if (userId != null) {
-					String insert = "insert into user_property (user_id, property, property_value) values (?, 'defaultLocale', ?)";
-					PreparedStatement statement = null;
-					try {
-						statement = connection.prepareStatement(insert);
+					// Try to update the property first
+					String updateUserProperty = "UPDATE user_property SET property_value = ? WHERE user_id = ? AND property = 'defaultLocale'";
+					statement = connection.prepareStatement(updateUserProperty);
+					statement.setString(1, locale);
+					statement.setInt(2, userId);
+					int rows = statement.executeUpdate();
+					statement.close();
+
+					// If no row was updated, try to insert
+					if (rows == 0) {
+						String insertUserProperty = "INSERT INTO user_property (user_id, property, property_value) VALUES (?, 'defaultLocale', ?)";
+						statement = connection.prepareStatement(insertUserProperty);
 						statement.setInt(1, userId);
 						statement.setString(2, locale);
-						if (statement.executeUpdate() != 1) {
-							log.warn("Unable to save user locale as admin property.");
-						}
+						statement.executeUpdate();
+						statement.close();
 					}
-					finally {
-						if (statement != null) {
-							try {
-								statement.close();
-							}
-							catch (Exception statementCloseEx) {
-								log.error("Failed to quietly close Statement", statementCloseEx);
-							}
-						}
-					}
-					
 				}
 				
 				// and the second step is to save locale as system default locale global property
-				String update = "update global_property set property_value = ? where property = ? ";
-				PreparedStatement statement = null;
-				try {
-					statement = connection.prepareStatement(update);
-					statement.setString(1, locale);
-					statement.setString(2, OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE);
-					if (statement.executeUpdate() != 1) {
-						log.warn("Unable to set system default locale property.");
-					}
-				}
-				finally {
-					if (statement != null) {
-						try {
-							statement.close();
-						}
-						catch (Exception statementCloseEx) {
-							log.error("Failed to quietly close Statement", statementCloseEx);
-						}
-					}
+				String updateGlobalProperty = "UPDATE global_property SET property_value = ? WHERE property = ?";
+				statement = connection.prepareStatement(updateGlobalProperty);
+				statement.setString(1, locale);
+				statement.setString(2, OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE);
+				if (statement.executeUpdate() != 1) {
+					log.warn("Unable to set system default locale property.");
 				}
 			}
 			catch (Exception e) {
-				log.warn("Locale " + locale + " could not be set for user with id " + userId + " .", e);
+				log.warn("Locale {} could not be set for user with id {} .", locale, userId, e);
 				return false;
 			}
 			finally {
+				if (statement != null) {
+					try {
+						statement.close();
+					}
+					catch (Exception statementCloseEx) {
+						log.error("Failed to quietly close Statement", statementCloseEx);
+					}
+				}
 				if (connection != null) {
 					try {
 						connection.close();
 					}
 					catch (SQLException e) {
-						log.debug(DATABASE_CLOSING_ERROR, e);
+						log.debug("Failed to close database connection", e);
 					}
 				}
 			}
