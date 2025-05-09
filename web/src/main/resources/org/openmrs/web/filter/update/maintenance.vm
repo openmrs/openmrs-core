@@ -3,14 +3,14 @@
 <div class="page-container">
   <div class="login-box">
     <h2 class="login-title">System Developer Login</h2>
-    <p class="login-subtext">Log in with a user account that has the <strong>System Developer</strong> role.</p>
+    <p class="login-subtext">$l10n.get("update.maintenance.login").insert($superuserrole)</p>
     <form method="post" autocomplete="off" class="login-form">
       <div class="form-group">
-        <label for="username">OpenMRS Username</label>
+        <label for="username">$l10n.get("update.maintenance.username")</label>
         <input type="text" id="username" name="username" class="input-field" />
       </div>
       <div class="form-group">
-        <label for="password">OpenMRS Password</label>
+        <label for="password">$l10n.get("update.maintenance.password")</label>
         <input type="password" id="password" name="password" class="input-field" autocomplete="new-password" />
       </div>
       <button type="submit" class="btn-login">
