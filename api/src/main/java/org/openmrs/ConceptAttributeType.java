@@ -9,30 +9,43 @@
  */
 package org.openmrs;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Id;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Column;
+
+
 import org.hibernate.envers.Audited;
 import org.openmrs.attribute.AttributeType;
 import org.openmrs.attribute.BaseAttributeType;
 
 @Audited
+@Entity
+@Table(name = "concept_attribute_type")
 public class ConceptAttributeType extends BaseAttributeType<Concept> implements AttributeType<Concept> {
-	
-	private Integer conceptAttributeTypeId;
-	
-	public Integer getConceptAttributeTypeId() {
-		return conceptAttributeTypeId;
-	}
-	
-	public void setConceptAttributeTypeId(Integer conceptAttributeTypeId) {
-		this.conceptAttributeTypeId = conceptAttributeTypeId;
-	}
-	
-	@Override
-	public Integer getId() {
-		return getConceptAttributeTypeId();
-	}
-	
-	@Override
-	public void setId(Integer id) {
-		setConceptAttributeTypeId(id);
-	}
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "concept_attribute_type_id")
+    private Integer conceptAttributeTypeId;
+
+    public Integer getConceptAttributeTypeId() {
+        return conceptAttributeTypeId;
+    }
+
+    public void setConceptAttributeTypeId(Integer conceptAttributeTypeId) {
+        this.conceptAttributeTypeId = conceptAttributeTypeId;
+    }
+
+    @Override
+    public Integer getId() {
+        return getConceptAttributeTypeId();
+    }
+
+    @Override
+    public void setId(Integer id) {
+        setConceptAttributeTypeId(id);
+    }
 }
