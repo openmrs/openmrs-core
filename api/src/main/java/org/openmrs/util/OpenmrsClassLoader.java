@@ -44,8 +44,6 @@ import org.openmrs.scheduler.SchedulerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.sf.ehcache.CacheManager;
-
 /**
  * This classloader knows about the current ModuleClassLoaders and will attempt to load classes from
  * them if needed
@@ -357,25 +355,6 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		}
 		
 		log.info("this classloader hashcode: {}", OpenmrsClassLoaderHolder.INSTANCE.hashCode());
-		
-		//Shut down and remove all cache managers.
-		List<CacheManager> knownCacheManagers = CacheManager.ALL_CACHE_MANAGERS;
-		while (!knownCacheManagers.isEmpty()) {
-			CacheManager cacheManager = CacheManager.ALL_CACHE_MANAGERS.get(0);
-			try {
-				//This shuts down and removes the cache manager.
-				cacheManager.shutdown();
-				
-				//Just in case the the timer does not stop, set the cacheManager 
-				//timer to null because it references this class loader.
-				Field field = cacheManager.getClass().getDeclaredField("cacheManagerTimer");
-				field.setAccessible(true);
-				field.set(cacheManager, null);
-			}
-			catch (Exception ex) {
-				log.error(ex.getMessage(), ex);
-			}
-		}
 		
 		OpenmrsClassScanner.destroyInstance();
 		

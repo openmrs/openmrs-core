@@ -18,6 +18,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 
 import javax.persistence.AttributeOverride;
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -46,6 +47,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "location")
+@Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @AttributeOverride(name = "attributes", column = @Column(name = "location_id"))
 @Audited

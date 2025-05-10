@@ -15,9 +15,9 @@
 "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 
 <hibernate-configuration>
-
 	<session-factory>
         <property name="javax.persistence.validation.mode">none</property>
+		<property name="javax.persistence.sharedCache.mode">ENABLE_SELECTIVE</property>
 		
 		<!-- API -->
 
@@ -106,7 +106,7 @@
 		
 		<mapping resource="org/openmrs/api/db/hibernate/ClobDatatypeStorage.hbm.xml" />
 
-		<!-- These mappings are required because of rerefences in Obs & Concept -->
+		<!-- These mappings are required because of references in Obs & Concept -->
 		<mapping class="org.openmrs.ObsReferenceRange"/>
 		<mapping class="org.openmrs.ConceptReferenceRange"/>
   </session-factory>

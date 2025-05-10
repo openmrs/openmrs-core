@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import javax.persistence.Cacheable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -26,6 +27,7 @@ import org.slf4j.LoggerFactory;
  *
  * @see Privilege
  */
+@Cacheable
 @Audited
 public class Role extends BaseChangeableOpenmrsMetadata {
 	

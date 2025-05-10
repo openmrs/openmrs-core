@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -63,6 +64,7 @@ import org.slf4j.LoggerFactory;
 
 @Entity
 @Table(name = "users")
+@Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Audited
 public class User extends BaseOpenmrsObject implements java.io.Serializable, Attributable<User>, Auditable, Retireable {

@@ -20,7 +20,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.hibernate.Cache;
+import org.hibernate.CacheMode;
 import org.hibernate.SessionFactory;
+import org.hibernate.cache.internal.EnabledCaching;
+import org.hibernate.stat.EntityStatistics;
+import org.infinispan.manager.EmbeddedCacheManager;
+import org.junit.Ignore;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Location;
@@ -38,6 +44,7 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.validation.Validator;
 
 /**
@@ -290,6 +297,9 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void evictEntity_shouldClearTheEntityFromCaches() {
+		// Entities are not put in cache until transaction is committed thus running non-transactional test
+		TestTransaction.end();
+		
 		// Load the person so that the names are also stored in the cache
 		PersonName name = Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
 		Context.getPersonService().getPersonName(PERSON_NAME_ID_8);
@@ -311,6 +321,9 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void evictAllEntities_shouldClearAllEntityFromCaches() {
+		// Entities are not put in cache until transaction is committed thus running non-transactional test
+		TestTransaction.end(); 
+		
 		// Load the person and patient so that they are stored in the cache
 		Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
 		Context.getPersonService().getPersonName(PERSON_NAME_ID_8);
@@ -335,6 +348,9 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void clearEntireCache_shouldClearEntireCache() {
+		// Entities are not put in cache until transaction is committed thus running non-transactional test
+		TestTransaction.end();
+		
 		// Load the person and patient so that they are stored in the cache
 		Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
 		Context.getPersonService().getPersonName(PERSON_NAME_ID_8);
