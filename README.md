@@ -154,7 +154,7 @@ OpenMRS can run with ElasticSearch backend instead of the in-built Lucene index.
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.es.yml up
 ```
-If you change backend, you need to rebuild the search index by going to LegacyU UI -> Administration -> Search Index.
+If you change backend, you need to rebuild the search index by going to Legacy UI -> Administration -> Search Index. Alternatively, you can rebuild the search index using the `searchindexupdate` REST endpoint.
 
 ## Navigating the repository
 
