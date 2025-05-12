@@ -1,7 +1,7 @@
 #parse($HEADER_TEMPLATE)
 
 <div class="content-container">
-    <form method="post" autocomplete="off" class="setup-form">
+    <form method="post" class="setup-form">
         <input type="hidden" name="page" value="adminusersetup.vm" />
         
         <div class="form-container">
@@ -22,7 +22,10 @@
                         <input type="password" 
                                name="new_admin_password" 
                                class="form-input"
-                               autocomplete="off" 
+                               autocomplete="new-password" 
+                               data-1p-ignore
+                               data-lpignore="true"
+                               data-protonpass-ignore="true"
                                onKeyPress="return submitenter(this,event);" />
                     </div>
                 </div>
@@ -33,7 +36,10 @@
                         <input type="password" 
                                name="new_admin_password_confirm" 
                                class="form-input"
-                               autocomplete="off" 
+                               autocomplete="new-password" 
+                               data-1p-ignore
+                               data-lpignore="true"
+                               data-protonpass-ignore="true"
                                onKeyPress="return submitenter(this,event);" />
                     </div>
                 </div>

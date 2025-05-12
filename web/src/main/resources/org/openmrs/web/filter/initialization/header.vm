@@ -14,6 +14,10 @@
 			type="text/javascript"
 			src="initfilter/scripts/jquery-ui/js/jquery-ui.custom.min.js"
 		></script>
+		<script
+			type="text/javascript"
+			src="initfilter/scripts/password-encryption.js"
+		></script>
 		<link
 			type="text/css"
 			rel="stylesheet"

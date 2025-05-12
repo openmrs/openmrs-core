@@ -1,7 +1,7 @@
 #parse($HEADER_TEMPLATE)
 
 <div class="content-container">
-    <form method="post" class="setup-form">
+    <form method="post" class="setup-form" id="completeForm" onsubmit="return handleCompleteSubmit(event)">
         <input type="hidden" name="page" value="wizardcomplete.vm" />
         
         <div class="form-container">
@@ -121,6 +121,61 @@
         </div>
     </form>
 </div>
+
+<script>
+    // Initialize the page
+    async function initialize() {
+        try {
+            if (typeof PasswordEncryption === 'undefined') {
+                throw new Error('PasswordEncryption module not loaded');
+            }
+        } catch (error) {
+            console.error('Failed to initialize:', error);
+            alert('Error loading required scripts. Please refresh the page.');
+        }
+    }
+
+    async function handleCompleteSubmit(event) {
+        event.preventDefault();
+        
+        try {
+            if (typeof PasswordEncryption === 'undefined') {
+                throw new Error('PasswordEncryption module not loaded');
+            }
+            const password = await PasswordEncryption.decrypt();
+            
+            const form = document.getElementById('completeForm');
+            const formData = new FormData(form);
+            formData.append('database_root_password', password);
+            
+            const hiddenForm = document.createElement('form');
+            hiddenForm.method = 'post';
+            hiddenForm.style.display = 'none';
+            
+            for (let [key, value] of formData.entries()) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = value;
+                hiddenForm.appendChild(input);
+            }
+            
+            document.body.appendChild(hiddenForm);
+            hiddenForm.submit();
+            
+            // Clear sensitive data
+            PasswordEncryption.clear();
+            return false;
+        } catch (error) {
+            console.error('Error retrieving password:', error);
+            alert('Error retrieving password. Please go back and enter it again.');
+            return false;
+        }
+    }
+
+    // Initialize when the page loads
+    window.onload = initialize;
+</script>
 
 <style>
     body {

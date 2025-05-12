@@ -1,7 +1,7 @@
 #parse($HEADER_TEMPLATE)
 
 <div class="content-container">
-    <form method="post" autocomplete="off" class="setup-form">
+    <form method="post" class="setup-form" id="setupForm" onsubmit="return handleSubmit(event)">
         <input type="hidden" name="page" value="simplesetup.vm" />
         <input type="hidden" name="database_connection" value="${databaseConnection}"/>
 
@@ -14,10 +14,12 @@
                     <p class="form-hint">$l10n.get("install.simple.empty")</p>
                     <div class="password-input-container">
                         <input type="password" 
-                               name="database_root_password" 
-                               value="${databaseRootPassword}" 
+                               id="databaseRootPassword"
                                class="form-input"
-                               autocomplete="new-password"
+                               autocomplete="off"
+                               data-1p-ignore="true"
+                               data-lpignore="true"
+                               data-protonpass-ignore="true"
                                onKeyPress="return submitenter(this,event);" />
                     </div>
                 </div>
@@ -43,6 +45,65 @@
         </div>
     </form>
 </div>
+
+<script>
+    async function initialize() {
+        try {
+            if (typeof PasswordEncryption === 'undefined') {
+                throw new Error('PasswordEncryption module not loaded');
+            }
+            PasswordEncryption.clear();
+            document.getElementById('databaseRootPassword').value = '';
+        } catch (error) {
+            console.error('Failed to initialize:', error);
+            alert('Error loading required scripts. Please refresh the page.');
+        }
+    }
+
+    async function handleSubmit(event) {
+        event.preventDefault();
+        const password = document.getElementById('databaseRootPassword').value;
+        
+        if (!password) {
+            alert('Please enter the database root password');
+            return false;
+        }
+
+        try {
+            if (typeof PasswordEncryption === 'undefined') {
+                throw new Error('PasswordEncryption module not loaded');
+            }
+            const encryptedPassword = await PasswordEncryption.encrypt(password);
+            sessionStorage.setItem('databaseRootPassword', encryptedPassword);
+            
+            const form = document.getElementById('setupForm');
+            const formData = new FormData(form);
+            formData.append('database_root_password', password);
+            
+            const hiddenForm = document.createElement('form');
+            hiddenForm.method = 'post';
+            hiddenForm.style.display = 'none';
+            
+            for (let [key, value] of formData.entries()) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = value;
+                hiddenForm.appendChild(input);
+            }
+            
+            document.body.appendChild(hiddenForm);
+            hiddenForm.submit();
+            return false;
+        } catch (error) {
+            console.error('Error processing password:', error);
+            alert('Error processing password. Please try again.');
+            return false;
+        }
+    }
+
+    window.onload = initialize;
+</script>
 
 <style>
     body {

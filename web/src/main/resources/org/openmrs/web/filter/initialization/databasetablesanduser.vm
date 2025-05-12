@@ -1,7 +1,7 @@
 #parse($HEADER_TEMPLATE)
 
 <div class="content-container">
-    <form method="post" autocomplete="off" class="setup-form">
+    <form method="post" class="setup-form">
         <input type="hidden" name="page" value="databasetablesanduser.vm" />
         
         <div class="form-container">
@@ -51,6 +51,9 @@
                                class="form-input" 
                                value="${currentDatabasePassword}"
                                autocomplete="new-password" 
+                               data-1p-ignore
+                               data-lpignore="true"
+                               data-protonpass-ignore="true"
                                onfocus="clickRadio('current_database_user', 'yes')" 
                                onKeyPress="return submitenter(this,event);" />
                     </div>
@@ -80,6 +83,9 @@
                                class="form-input" 
                                value="${createUserPassword}"
                                autocomplete="new-password" 
+                               data-1p-ignore
+                               data-lpignore="true"
+                               data-protonpass-ignore="true"
                                onfocus="clickRadio('current_database_user', 'no')" 
                                onKeyPress="return submitenter(this,event);" />
                     </div>

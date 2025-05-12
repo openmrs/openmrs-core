@@ -1,7 +1,7 @@
 #parse($HEADER_TEMPLATE)
 
 <div class="content-container">
-    <form method="post" autocomplete="off" class="setup-form">
+    <form method="post" class="setup-form">
         <input type="hidden" name="page" value="databasesetup.vm" />
         
         <div class="form-container">

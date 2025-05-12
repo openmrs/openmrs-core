@@ -22,7 +22,7 @@
                 <a href="retry" class="button button-primary">$l10n.get("install.error.retry")</a>
             </div>
         #{else}
-            <form method="post" autocomplete="off" class="setup-form">
+            <form method="post" class="setup-form">
                 <input type="hidden" name="page" value="installmethod.vm" />
                 
                 <div class="form-container">
