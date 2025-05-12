@@ -2,7 +2,7 @@
 
 <div class="content-container">
     <div class="form-container">
-        <form method="post" autocomplete="off" class="maintenance-form">
+        <form method="post" class="maintenance-form">
             <h2 class="form-title">$l10n.get("update.maintenance.login").insert($superuserrole)</h2>
 
             <div class="form-field">
