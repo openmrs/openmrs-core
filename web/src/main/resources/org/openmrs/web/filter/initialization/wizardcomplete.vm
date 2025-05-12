@@ -34,10 +34,6 @@
                             <span class="summary-label">$l10n.get("install.complete.db.tables")</span>
                             <span class="summary-value">#if( $createTables == true ) $l10n.get("general.yes") #else $l10n.get("general.no") #end</span>
                         </div>
-                        <div class="summary-item">
-                            <span class="summary-label">$l10n.get("install.complete.db.demo")</span>
-                            <span class="summary-value">#if( $addDemoData == true ) $l10n.get("general.yes") #else $l10n.get("general.no") #end</span>
-                        </div>
                         #end
                     </div>
                 </div>

@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.NoSuchFileException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -28,7 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
@@ -97,8 +97,6 @@ public class InitializationFilter extends StartupFilter {
 	private static final String DATABASE_SQLSERVER = "sqlserver";
 	
 	private static final String DATABASE_H2 = "h2";
-	
-	private static final String LIQUIBASE_DEMO_DATA = "liquibase-demo-data.xml";
 	
 	/**
 	 * The very first page of wizard, that asks user for select his preferred language
@@ -345,11 +343,6 @@ public class InitializationFilter extends StartupFilter {
 			wizardModel.createUserUsername = script.getProperty("create_user_username", wizardModel.createUserUsername);
 			wizardModel.createUserPassword = script.getProperty("create_user_password", wizardModel.createUserPassword);
 			
-			String addDemoData = script.getProperty("add_demo_data");
-			if (addDemoData != null) {
-				wizardModel.addDemoData = Boolean.valueOf(addDemoData);
-			}
-			
 			String moduleWebAdmin = script.getProperty("module_web_admin");
 			if (moduleWebAdmin != null) {
 				wizardModel.moduleWebAdmin = Boolean.valueOf(moduleWebAdmin);
@@ -484,8 +477,6 @@ public class InitializationFilter extends StartupFilter {
 			// default wizardModel.databaseName is openmrs
 			// default wizardModel.createDatabaseUsername is root
 			wizardModel.createDatabasePassword = wizardModel.databaseRootPassword;
-			wizardModel.addDemoData = "yes".equals(httpRequest.getParameter("add_demo_data"));
-			
 			wizardModel.hasCurrentDatabaseUser = false;
 			wizardModel.createDatabaseUser = true;
 			// default wizardModel.createUserUsername is root
@@ -496,7 +487,7 @@ public class InitializationFilter extends StartupFilter {
 			
 			wizardModel.adminUserPassword = InitializationWizardModel.ADMIN_DEFAULT_PASSWORD;
 			
-			createSimpleSetup(httpRequest.getParameter("database_root_password"), httpRequest.getParameter("add_demo_data"));
+			createSimpleSetup(httpRequest.getParameter("database_root_password"));
 			
 			try {
 				loadedDriverString = DatabaseUtil.loadDatabaseDriver(wizardModel.databaseConnection,
@@ -587,8 +578,6 @@ public class InitializationFilter extends StartupFilter {
 			if (wizardModel.hasCurrentOpenmrsDatabase) {
 				wizardModel.createTables = "yes".equals(httpRequest.getParameter("create_tables"));
 			}
-			
-			wizardModel.addDemoData = "yes".equals(httpRequest.getParameter("add_demo_data"));
 			
 			if ("yes".equals(httpRequest.getParameter("current_database_user"))) {
 				wizardModel.currentDatabaseUsername = httpRequest.getParameter("current_database_username");
@@ -727,7 +716,6 @@ public class InitializationFilter extends StartupFilter {
 			if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
 				wizardModel.importTestData = true;
 				wizardModel.createTables = false;
-				wizardModel.addDemoData = false;
 				//if we have a runtime properties file
 				if (skipDatabaseSetupPage()) {
 					wizardModel.hasCurrentOpenmrsDatabase = false;
@@ -744,7 +732,6 @@ public class InitializationFilter extends StartupFilter {
 				wizardModel.tasksToExecute.add(WizardTask.ADD_MODULES);
 			} else {
 				createTablesTask();
-				createDemoDataTask();
 			}
 			wizardModel.tasksToExecute.add(WizardTask.UPDATE_TO_LATEST);
 			
@@ -832,12 +819,6 @@ public class InitializationFilter extends StartupFilter {
 		}
 	}
 	
-	private void createDemoDataTask() {
-		if (wizardModel.addDemoData) {
-			wizardModel.tasksToExecute.add(WizardTask.ADD_DEMO_DATA);
-		}
-	}
-	
 	private void createTablesTask() {
 		if (wizardModel.createTables) {
 			wizardModel.tasksToExecute.add(WizardTask.CREATE_TABLES);
@@ -854,7 +835,7 @@ public class InitializationFilter extends StartupFilter {
 		}
 	}
 	
-	private void createSimpleSetup(String databaseRootPassword, String addDemoData) {
+	private void createSimpleSetup(String databaseRootPassword) {
 		setDatabaseNameIfInTestMode();
 		wizardModel.databaseConnection = Context.getRuntimeProperties().getProperty("connection.url",
 			wizardModel.databaseConnection);
@@ -872,8 +853,6 @@ public class InitializationFilter extends StartupFilter {
 		// default wizardModel.databaseName is openmrs
 		// default wizardModel.createDatabaseUsername is root
 		wizardModel.createDatabasePassword = wizardModel.databaseRootPassword;
-		wizardModel.addDemoData = "yes".equals(addDemoData);
-		
 		wizardModel.hasCurrentDatabaseUser = false;
 		wizardModel.createDatabaseUser = true;
 		// default wizardModel.createUserUsername is root
@@ -900,7 +879,7 @@ public class InitializationFilter extends StartupFilter {
 				wizardModel.createDatabaseUsername = httpRequest.getParameter("database_user_name");
 			}
 			
-			createSimpleSetup(httpRequest.getParameter("database_root_password"), "yes");
+			createSimpleSetup(httpRequest.getParameter("database_root_password"));
 		}
 		
 		checkLocaleAttributes(httpRequest);
@@ -914,7 +893,6 @@ public class InitializationFilter extends StartupFilter {
 		wizardModel.tasksToExecute = new ArrayList<>();
 		createDatabaseTask();
 		createTablesTask();
-		createDemoDataTask();
 		wizardModel.tasksToExecute.add(WizardTask.UPDATE_TO_LATEST);
 		startInstallation();
 	}
@@ -1657,28 +1635,6 @@ public class InitializationFilter extends StartupFilter {
 								reportError(ErrorMessageConstants.ERROR_DB_IMPORT_TEST_DATA, DEFAULT_PAGE, e.getMessage());
 								log.warn("Error while trying to import test data", e);
 								return;
-							}
-						}
-						
-						// add demo data only if creating tables fresh and user selected the option add demo data
-						if (wizardModel.createTables && wizardModel.addDemoData) {
-							try {
-								setMessage("Adding demo data");
-								setCompletedPercentage(0);
-								setExecutingTask(WizardTask.ADD_DEMO_DATA);
-								
-								log.debug("executing Liquibase file '{}' ", LIQUIBASE_DEMO_DATA);
-								
-								DatabaseUpdater.executeChangelog(LIQUIBASE_DEMO_DATA,
-									new PrintingChangeSetExecutorCallback("OpenMRS demo patients, users, and forms"));
-								wizardModel.workLog.add("Added demo data");
-								
-								addExecutedTask(WizardTask.ADD_DEMO_DATA);
-							}
-							catch (Exception e) {
-								reportError(ErrorMessageConstants.ERROR_DB_CREATE_TABLES_OR_ADD_DEMO_DATA, DEFAULT_PAGE,
-									e.getMessage());
-								log.warn("Error while trying to add demo data", e);
 							}
 						}
 						
