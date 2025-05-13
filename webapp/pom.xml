@@ -72,11 +72,6 @@
                   <goals>
                      <goal>run</goal>
                   </goals>
-                  <configuration>
-                     <target>
-                        <unzip src="src/main/resources/liquibase-demo-data.zip" dest="${project.build.outputDirectory}" />
-                     </target>
-                  </configuration>
                </execution>
             </executions>
          </plugin>
