@@ -161,11 +161,6 @@ public class InitializationWizardModel {
 	public Boolean importTestData = Boolean.FALSE;
 	
 	/**
-	 * Does the user want to add the demo data to the database?
-	 */
-	public Boolean addDemoData = Boolean.FALSE;
-	
-	/**
 	 * Asked for on the otherproperties.vm page to know if the allow_web_admin runtime property is
 	 * true/false
 	 */

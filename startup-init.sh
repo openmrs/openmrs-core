@@ -9,7 +9,6 @@
 
 # ----------------------------------
 # Configurable environment variables
-OMRS_ADD_DEMO_DATA=${OMRS_ADD_DEMO_DATA:-false}
 OMRS_ADMIN_USER_PASSWORD=${OMRS_ADMIN_USER_PASSWORD:-Admin123}
 OMRS_ADMIN_PASSWORD_LOCKED=${OMRS_ADMIN_PASSWORD_LOCKED:-false}
 # When set to 'true' all DB updates are applied automatically upon startup
@@ -50,7 +49,6 @@ OMRS_SEARCH_ES_URIS=${OMRS_SEARCH_ES_URIS:-'http://es:9200'}
 # -----------------------------------------
 
 # Support deprecated environment names
-[ -n "${OMRS_CONFIG_ADD_DEMO_DATA:-}" ] && OMRS_ADD_DEMO_DATA=${OMRS_CONFIG_ADD_DEMO_DATA}
 [ -n "${OMRS_CONFIG_ADMIN_USER_PASSWORD:-}" ] && OMRS_ADMIN_USER_PASSWORD=${OMRS_CONFIG_ADMIN_USER_PASSWORD}
 [ -n "${OMRS_CONFIG_AUTO_UPDATE_DATABASE:-}" ] && OMRS_AUTO_UPDATE_DATABASE=${OMRS_CONFIG_AUTO_UPDATE_DATABASE}
 [ -n "${OMRS_CONFIG_CREATE_DATABASE_USER:-}" ] && OMRS_CREATE_DATABASE_USER=${OMRS_CONFIG_CREATE_DATABASE_USER}
@@ -130,7 +128,6 @@ OMRS_DB_URL="${OMRS_DB_URL:-jdbc:${OMRS_DB_JDBC_PROTOCOL}://${OMRS_DB_HOSTNAME}:
 echo "Writing out $OMRS_SERVER_PROPERTIES_FILE"
 
 cat > $OMRS_SERVER_PROPERTIES_FILE << EOF
-add_demo_data=${OMRS_ADD_DEMO_DATA}
 admin_user_password=${OMRS_ADMIN_USER_PASSWORD}
 admin_password_locked=${OMRS_ADMIN_PASSWORD_LOCKED}
 auto_update_database=${OMRS_AUTO_UPDATE_DATABASE}
