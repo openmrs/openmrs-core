@@ -161,7 +161,7 @@ public class FilterUtil {
 		}
 		return systemDefaultLocale;
 	}
-
+	
 	/**
 	 * Stores selected by user locale into DB as admin's user property and as system default locale
 	 *
@@ -170,11 +170,11 @@ public class FilterUtil {
 	 */
 	public static boolean storeLocale(String locale) {
 		if (StringUtils.isNotBlank(locale)) {
-
+			
 			Connection connection = null;
 			Integer userId = null;
 			PreparedStatement statement = null;
-
+			
 			try {
 				connection = DatabaseUpdater.getConnection();
 				
@@ -190,7 +190,7 @@ public class FilterUtil {
 					statement.setInt(2, userId);
 					int rows = statement.executeUpdate();
 					statement.close();
-
+					
 					// If no row was updated, try to insert
 					if (rows == 0) {
 						String insertUserProperty = "INSERT INTO user_property (user_id, property, property_value) VALUES (?, 'defaultLocale', ?)";

@@ -14,7 +14,7 @@
         <input type="password" id="password" name="password" class="input-field" autocomplete="new-password" />
       </div>
       <button type="submit" class="btn-login">
-        <span>Login</span>
+         <span>$l10n.get("general.continue")</span>
       </button>
       <input type="hidden" name="page" value="maintenance.vm" />
     </form>

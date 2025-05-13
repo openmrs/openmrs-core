@@ -287,7 +287,9 @@
                 $l10n.get("update.warn.alert")
             </div>
             <div>
-                <input type="button" value="Continue" class="button" onclick="javascript:window.location='index.htm'" />
+                <button class="button" onclick="javascript:window.location='index.htm'">
+                  <span class="button-text">$l10n.get('general.continue')</span>
+                </button>
             </div>
         </div>
 
