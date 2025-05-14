@@ -1,100 +1,90 @@
 #parse($HEADER_TEMPLATE)
 
-<div class="content-container">
-    <div class="form-container">
-        <form method="post" autocomplete="off" class="maintenance-form">
-            <h2 class="form-title">$l10n.get("update.maintenance.login").insert($superuserrole)</h2>
-
-            <div class="form-field">
-                <label for="username">$l10n.get("update.maintenance.username")</label>
-                <input type="text" id="username" name="username" class="input-field"/>
-            </div>
-
-            <div class="form-field">
-                <label for="password">$l10n.get("install.simple.passwd")</label>
-                <input
-                    type="password"
-                    id="password"
-                    name="password"
-                    class="input-field"
-                    autocomplete="new-password"/>
-            </div>
-
-            <div class="form-actions">
-                <button type="submit" class="button button-primary">
-                    <img src="images/forward_button.png" alt="Continue" class="button-icon"/>
-                </button>
-            </div>
-
-            <input type="hidden" name="page" value="maintenance.vm"/>
-        </form>
-    </div>
+<div class="page-container">
+  <div class="login-box">
+    <h2 class="login-title">System Developer Login</h2>
+    <p class="login-subtext">$l10n.get("update.maintenance.login").insert($superuserrole)</p>
+    <form method="post" autocomplete="off" class="login-form">
+      <div class="form-group">
+        <label for="username">$l10n.get("update.maintenance.username")</label>
+        <input type="text" id="username" name="username" class="input-field" />
+      </div>
+      <div class="form-group">
+        <label for="password">$l10n.get("update.maintenance.password")</label>
+        <input type="password" id="password" name="password" class="input-field" autocomplete="new-password" />
+      </div>
+      <button type="submit" class="btn-login">
+         <span>$l10n.get("general.continue")</span>
+      </button>
+      <input type="hidden" name="page" value="maintenance.vm" />
+    </form>
+  </div>
 </div>
 
-<script>
-    document
-        .getElementById('username')
-        .focus();
-</script>
 <style>
-    .content-container {
-        max-width: 600px;
-        margin: 2rem auto;
-        padding: 2rem;
-        background: #ffffff;
-        border-radius: 12px;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-    }
+  body {
+    margin: 0;
+    font-family: "Roboto", sans-serif;
+    background-color: #f2f7fb;
+  }
 
-    .form-container {
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-    }
+  .page-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
 
-    .form-title {
-        font-size: 1.5rem;
-        font-weight: bold;
-        text-align: center;
-        margin-bottom: 1rem;
-    }
+  .login-box {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    width: 100%;
+    max-width: 400px;
+  }
 
-    .form-field {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-    }
+  .login-title {
+    font-size: 1.6rem;
+    text-align: center;
+    margin-bottom: 0.5rem;
+  }
 
-    .input-field {
-        padding: 0.5rem;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-        font-size: 1rem;
-    }
+  .login-subtext {
+    text-align: center;
+    color: #ff0000;
+    margin-bottom: 1.5rem;
+  }
 
-    .form-actions {
-        display: flex;
-        justify-content: center;
-        margin-top: 1.5rem;
-    }
+  .form-group {
+    margin-bottom: 1.2rem;
+  }
 
-    .button-primary {
-        background-color: var(--openmrs-logo-color);
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 10px;
-        font-size: 1rem;
-        cursor: pointer;
-    }
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
 
-    .button-primary:hover {
-        filter: brightness(90%);
-    }
+  .input-field {
+    width: 100%;
+    padding: 0.7rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+  }
 
-    .button-icon {
-        width: 24px;
-        height: 24px;
-    }
+  .btn-login {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: var(--openmrs-logo-color);
+    color: white;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
 </style>
+
 #parse($FOOTER_TEMPLATE)

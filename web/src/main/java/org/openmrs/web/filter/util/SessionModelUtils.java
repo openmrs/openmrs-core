@@ -43,7 +43,8 @@ public class SessionModelUtils {
 			field.setAccessible(true);
 			String fieldName = field.getName().toLowerCase();
 			// NOTE: Passwords should not be stored in session as this poses a risk of unintended exposure.
-			if (fieldName.contains("password")) {
+			// Also exclude localeToSave as it's a temporary value that shouldn't be persisted
+			if (fieldName.contains("password") || fieldName.equals("localetosave")) {
 				continue;
 			}
 			try {
@@ -74,7 +75,8 @@ public class SessionModelUtils {
 			field.setAccessible(true);
 			String fieldName = field.getName().toLowerCase();
 			// NOTE: Passwords should not be restored from session to avoid persisting sensitive credentials in memory.
-			if (fieldName.contains("password")) {
+			// Also exclude localeToSave as it's a temporary value that shouldn't be persisted
+			if (fieldName.contains("password") || fieldName.equals("localetosave")) {
 				continue;
 			}
 			try {
