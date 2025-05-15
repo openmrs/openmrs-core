@@ -814,32 +814,31 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Override
 	public Concept mapConceptProposalToConcept(ConceptProposal cp, Concept mappedConcept, Locale locale) throws APIException {
-		
 		if (cp.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_REJECT)) {
-			cp.rejectConceptProposal();
+			cp.setState(OpenmrsConstants.CONCEPT_PROPOSAL_REJECT);
+			cp.setFinalText("");
 			Context.getConceptService().saveConceptProposal(cp);
 			return null;
 		}
-		
+
 		if (mappedConcept == null) {
 			throw new APIException("Concept.mapped.illegal", (Object[]) null);
 		}
-		
+
 		ConceptName conceptName = null;
 		if (cp.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_CONCEPT) || StringUtils.isBlank(cp.getFinalText())) {
 			cp.setState(OpenmrsConstants.CONCEPT_PROPOSAL_CONCEPT);
 			cp.setFinalText("");
 		} else if (cp.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_SYNONYM)) {
-			
 			checkIfLocked();
-			
+
 			String finalText = cp.getFinalText();
 			conceptName = new ConceptName(finalText, null);
 			conceptName.setConcept(mappedConcept);
 			conceptName.setLocale(locale == null ? Context.getLocale() : locale);
 			conceptName.setDateCreated(new Date());
 			conceptName.setCreator(Context.getAuthenticatedUser());
-			//If this is pre 1.9
+			// If this is pre 1.9
 			if (conceptName.getUuid() == null) {
 				conceptName.setUuid(UUID.randomUUID().toString());
 			}
@@ -847,11 +846,11 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			mappedConcept.setChangedBy(Context.getAuthenticatedUser());
 			mappedConcept.setDateChanged(new Date());
 			ValidateUtil.validate(mappedConcept);
-            Context.getConceptService().saveConcept(mappedConcept);
+			Context.getConceptService().saveConcept(mappedConcept);
 		}
-		
+
 		cp.setMappedConcept(mappedConcept);
-		
+
 		if (cp.getObsConcept() != null) {
 			Obs ob = new Obs();
 			ob.setEncounter(cp.getEncounter());
@@ -868,10 +867,10 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			if (ob.getUuid() == null) {
 				ob.setUuid(UUID.randomUUID().toString());
 			}
-            Context.getObsService().saveObs(ob, null);
+			Context.getObsService().saveObs(ob, null);
 			cp.setObs(ob);
 		}
-		
+
 		return mappedConcept;
 	}
 	

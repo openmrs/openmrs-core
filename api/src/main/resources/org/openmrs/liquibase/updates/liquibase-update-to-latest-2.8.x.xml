@@ -23,5 +23,23 @@
 		<comment>Empty change set for integration tests.</comment>
 
 	</changeSet>
-	
+
+	<!-- Add mapped_concept_id column and foreign key to concept_proposal -->
+	<changeSet id="add-mapped-concept-id-to-concept-proposal" author="snowvirus">
+		<addColumn tableName="concept_proposal">
+			<column name="mapped_concept_id" type="int"/>
+		</addColumn>
+
+		<addForeignKeyConstraint
+			baseTableName="concept_proposal"
+			baseColumnNames="mapped_concept_id"
+			constraintName="concept_proposal_mapped_concept_fk"
+			referencedTableName="concept"
+			referencedColumnNames="concept_id"
+			deferrable="false"
+			initiallyDeferred="false"
+			onDelete="SET NULL"/>
+	</changeSet>
+
+
 </databaseChangeLog>
