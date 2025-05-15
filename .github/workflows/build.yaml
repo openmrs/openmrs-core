@@ -31,7 +31,8 @@ jobs:
           - 11
           - 17
           - 21
-          - 24
+          # Infinispan 13.x is not compatible with Java 24. It can only be upgraded with Hibernate 6.x
+          #- 24
         exclude:
           - platform: windows-latest
             java-version: 11
@@ -39,8 +40,8 @@ jobs:
             java-version: 17
           - platform: windows-latest
             java-version: 21
-          - platform: windows-latest
-            java-version: 24
+          #- platform: windows-latest
+          #  java-version: 24
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4

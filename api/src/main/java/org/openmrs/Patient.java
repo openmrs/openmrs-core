@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import javax.persistence.Cacheable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -25,6 +26,7 @@ import org.hibernate.envers.Audited;
  * @version 2.0
  */
 @Audited
+@Cacheable
 public class Patient extends Person {
 	
 	public static final long serialVersionUID = 93123L;
