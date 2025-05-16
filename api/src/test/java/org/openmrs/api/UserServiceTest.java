@@ -9,6 +9,9 @@
  */
 package org.openmrs.api;
 
+import static org.mockito.Mockito.*;
+import org.mockito.Mockito;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
@@ -1564,15 +1567,16 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertThat(exception.getMessage(), is(messages.getMessage("error.usernameOrEmail.notNullOrBlank")));
 	}
 	
-	
 	@Test
 	public void setUserActivationKey_shouldCreateUserActivationKey() throws Exception {
-		User createdUser = createTestUser();
-		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_PASSWORD_RESET_URL,
-		    "http://localhost:8080/openmrs/admin/users/changePassword.form/{activationKey}");
-		assertNull(dao.getLoginCredential(createdUser).getActivationKey());
-		assertThrows(MessageException.class, () -> userService.setUserActivationKey(createdUser));
-		assertNotNull(dao.getLoginCredential(createdUser).getActivationKey());
+	    User createdUser = createTestUser();
+	    Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_PASSWORD_RESET_URL,
+	        "http://localhost:8080/openmrs/admin/users/changePassword.form/{activationKey}");
+	    assertNull(dao.getLoginCredential(createdUser).getActivationKey());
+	    userService.setUserActivationKey(createdUser);
+	    LoginCredential credentials = dao.getLoginCredential(createdUser);
+	    assertNotNull(credentials.getActivationKey());
+	    assertTrue(credentials.getActivationKey().matches("^[a-f0-9]+:\\d+$")); // Verify format
 	}
 	
 	@Test 
