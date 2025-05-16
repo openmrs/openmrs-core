@@ -14,6 +14,17 @@ import java.util.Comparator;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.envers.Audited;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 /**
  * The FormField object relates/orders the <code>fields</code> on a <code>form</code> A form can
@@ -23,33 +34,55 @@ import org.hibernate.envers.Audited;
  * @see org.openmrs.Form
  * @see org.openmrs.Field
  */
+@Entity
+@Table(name = "form_field")
 @Audited
 public class FormField extends BaseChangeableOpenmrsMetadata implements java.io.Serializable, Comparable<FormField> {
 	
 	public static final long serialVersionUID = 3456L;
 	
 	// Fields
-	
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "form_field_id_seq")
+	@GenericGenerator(
+			name = "form_field_id_seq",
+			strategy = "native",
+			parameters = @Parameter(name = "sequence", value = "form_field_form_field_id_seq")
+		)
+	@Column(name = "form_field_id")
 	protected Integer formFieldId;
 	
+	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+	@JoinColumn(name = "parent_form_field")
 	protected FormField parent;
 	
+	@ManyToOne
+	@JoinColumn(name = "form_id", nullable = false)
 	protected Form form;
 	
+	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+	@JoinColumn(name = "field_id", nullable = false)
 	protected Field field;
 	
+	@Column(name = "field_number", length = 11)
 	protected Integer fieldNumber;
 	
+	@Column(name = "field_part", length = 5)
 	protected String fieldPart;
 	
+	@Column(name = "page_number", length = 11)
 	protected Integer pageNumber;
 	
+	@Column(name = "min_occurs", length = 11)
 	protected Integer minOccurs;
 	
+	@Column(name = "max_occurs", length = 11)
 	protected Integer maxOccurs;
 	
+	@Column(name = "required", nullable = false, length = 1)
 	protected Boolean required = false;
 	
+	@Column(name = "sort_weight", length = 5, nullable = true)
 	protected Float sortWeight;
 	
 	// Constructors
