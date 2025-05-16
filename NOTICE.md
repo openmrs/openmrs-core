@@ -321,18 +321,6 @@
 <td>war</td>
 <td><a class="externalLink" href="http://openmrs.org/license">Mozilla Public License 2.0 with Healthcare Disclaimer</a></td></tr>
 <tr class="a">
-<td>org.powermock</td>
-<td><a class="externalLink" href="http://www.powermock.org/powermock-api/powermock-api-mockito">powermock-api-mockito</a></td>
-<td>1.6.6</td>
-<td>jar</td>
-<td><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></td></tr>
-<tr class="b">
-<td>org.powermock</td>
-<td><a class="externalLink" href="http://www.powermock.org">powermock-module-junit4</a></td>
-<td>1.6.6</td>
-<td>jar</td>
-<td><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></td></tr>
-<tr class="a">
 <td>org.slf4j</td>
 <td><a class="externalLink" href="http://www.slf4j.org">jcl-over-slf4j</a></td>
 <td>1.6.0</td>
