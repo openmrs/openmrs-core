@@ -28,31 +28,15 @@
                         <span class="info-text">admin/${ADMIN_DEFAULT_PASSWORD}</span>
                     </div>
                 </div>
-
-                <div class="form-group">
-                    <label class="form-label">$l10n.get("install.simple.addDemoData") - ${databaseName}?</label>
-                    <div class="radio-group">
-                        <label class="radio-container">
-                            <input type="radio" name="add_demo_data" value="yes" 
-                                #if( $addDemoData == true )checked="checked"#end/>
-                            <span class="radio-label">$l10n.get("general.yes")</span>
-                        </label>
-                        <label class="radio-container">
-                            <input type="radio" name="add_demo_data" value="no" 
-                                #if( $addDemoData == false )checked="checked"#end/>
-                            <span class="radio-label">$l10n.get("general.no")</span>
-                        </label>
-                    </div>
-                </div>
             </div>
 
             <div class="button-group">
                 <button type="submit" name="back" value="Back" class="button button-secondary">
                     <span class="button-icon">←</span>
-                    <span class="button-text">Back</span>
+                    <span class="button-text">$l10n.get("general.navigateBack")</span>
                 </button>
                 <button type="submit" name="continue" class="button button-primary">
-                    <span class="button-text">Continue</span>
+                    <span class="button-text">$l10n.get("general.continue")</span>
                     <span class="button-icon">→</span>
                 </button>
             </div>
