@@ -260,10 +260,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			orderType = getOrderTypeByConcept(order.getConcept());
 		}
 		if (orderType == null && order instanceof DrugOrder) {
-			orderType = Context.getOrderService().getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID);
+			orderType = Context.getOrderService().getOrderTypeByName(OpenmrsConstants.DRUG_ORDER_TYPE_NAME);
 		}
 		if (orderType == null && order instanceof TestOrder) {
-			orderType = Context.getOrderService().getOrderTypeByUuid(OrderType.TEST_ORDER_TYPE_UUID);
+			orderType = Context.getOrderService().getOrderTypeByName(OpenmrsConstants.TEST_ORDER_TYPE_NAME);
 		}
 		if (orderType == null && order instanceof ReferralOrder) {
 			orderType = Context.getOrderService().getOrderTypeByUuid(OrderType.REFERRAL_ORDER_TYPE_UUID);
@@ -305,7 +305,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		        && !OpenmrsUtil.nullSafeEquals(firstOrder.getPreviousOrder(), secondOrder)
 		        && OrderUtil.checkScheduleOverlap(firstOrder, secondOrder)
 		        && firstOrder.getOrderType().equals(
-		            Context.getOrderService().getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID));
+		            Context.getOrderService().getOrderTypeByName(OpenmrsConstants.DRUG_ORDER_TYPE_NAME));
 	}
 
 	private boolean isDrugOrder(Order order) {
@@ -1046,6 +1046,15 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Transactional(readOnly = true)
 	public OrderType getOrderTypeByConcept(Concept concept) {
 		return Context.getOrderService().getOrderTypeByConceptClass(concept.getConceptClass());
+	}
+
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderTypesByClassName(String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<OrderType> getOrderTypesByClassName(String javaClassName) throws APIException {
+		return dao.getOrderTypesByClassName(javaClassName);
 	}
 	
 	/**
