@@ -136,6 +136,11 @@
     }
 
     async function handleCompleteSubmit(event) {
+        const submitter = event.submitter;
+        if (submitter && submitter.name === 'back') {
+            return true;
+        }
+
         event.preventDefault();
         
         try {
