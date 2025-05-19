@@ -32,6 +32,7 @@ import static org.openmrs.test.OpenmrsMatchers.hasConcept;
 import static org.openmrs.test.OpenmrsMatchers.hasId;
 import static org.openmrs.test.TestUtil.containsId;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -47,10 +48,20 @@ import java.util.stream.Collectors;
 import net.sf.ehcache.Ehcache;
 import org.apache.commons.collections.CollectionUtils;
 import org.dbunit.dataset.IDataSet;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.boot.Metadata;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.openmrs.Allergy;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptAttributeType;
@@ -70,18 +81,43 @@ import org.openmrs.ConceptSearchResult;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSource;
 import org.openmrs.ConceptStopWord;
+import org.openmrs.ConceptTest;
+import org.openmrs.Condition;
+import org.openmrs.Diagnosis;
 import org.openmrs.Drug;
 import org.openmrs.DrugIngredient;
+import org.openmrs.DrugReferenceMap;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
+import org.openmrs.LocationAttributeType;
+import org.openmrs.MedicationDispense;
 import org.openmrs.Obs;
+import org.openmrs.Order;
+import org.openmrs.OrderType;
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifierType;
+import org.openmrs.PatientProgram;
+import org.openmrs.PatientState;
 import org.openmrs.Person;
+import org.openmrs.PersonAddress;
+import org.openmrs.PersonAttributeType;
+import org.openmrs.ProgramAttributeType;
+import org.openmrs.ProviderAttributeType;
+import org.openmrs.Relationship;
 import org.openmrs.User;
+import org.openmrs.Visit;
+import org.openmrs.VisitAttributeType;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
+import org.openmrs.api.db.SerializedObject;
+import org.openmrs.api.db.hibernate.HibernateAdministrationDAO;
+import org.openmrs.api.db.hibernate.HibernateSessionFactoryBean;
 import org.openmrs.customdatatype.datatype.FreeTextDatatype;
+import org.openmrs.hl7.HL7InError;
+import org.openmrs.messagesource.MessageSourceService;
+import org.openmrs.notification.AlertRecipient;
+import org.openmrs.order.OrderUtilTest;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.ConceptMapTypeComparator;
 import org.openmrs.util.DateUtil;
@@ -116,6 +152,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 
 	@Autowired
 	CacheManager cacheManager;
+
+	@Autowired
+	private MessageSourceService messageSourceService;
 
 	// For testing concept lookups by static constant
 	private static final String TEST_CONCEPT_CONSTANT_ID = "3";
@@ -2869,7 +2908,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		assertNull(concept.getDateChanged());
 		assertNull(concept.getChangedBy());
 		conceptService.saveConcept(concept);
-		
+
 		assertNull(concept.getDateChanged());
 		assertNull(concept.getChangedBy());
 	}
@@ -4028,5 +4067,68 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 
 		conceptReferenceRange = conceptService.getConceptReferenceRangeByUuid(CONCEPT_REFERENCE_RANGE_UUID);
 		assertNull(conceptReferenceRange);
+	}
+
+	/**
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+	 */
+	@Test
+	public void saveConcept_shouldFailIfTheConceptClassDoesNotExist() throws Exception {
+
+	HibernateSessionFactoryBean sessionFactoryBean = (HibernateSessionFactoryBean) applicationContext
+			.getBean("&sessionFactory");
+		Configuration configuration = sessionFactoryBean.getConfiguration();
+		HibernateAdministrationDAO adminDAO = (HibernateAdministrationDAO) applicationContext.getBean("adminDAO");
+		StandardServiceRegistry standardRegistry = new StandardServiceRegistryBuilder()
+			.configure().applySettings(configuration.getProperties()).build();
+
+ 	Metadata metaData = new MetadataSources(standardRegistry).addAnnotatedClass(ConceptClass.class)
+		.addAnnotatedClass(Encounter.class).addAnnotatedClass(OrderServiceTest.SomeTestOrder.class)
+		.addAnnotatedClass(Diagnosis.class).addAnnotatedClass(Condition.class)
+		.addAnnotatedClass(Visit.class).addAnnotatedClass(VisitAttributeType.class)
+		.addAnnotatedClass(MedicationDispense.class)
+		.addAnnotatedClass(ProviderAttributeType.class)
+		.addAnnotatedClass(ConceptMapType.class)
+		.addAnnotatedClass(Relationship.class)
+		.addAnnotatedClass(Location.class)
+		.addAnnotatedClass(PersonAddress.class)
+		.addAnnotatedClass(PersonAttributeType.class)
+		.addAnnotatedClass(User.class)
+		.addAnnotatedClass(LocationAttributeType.class)
+		.addAnnotatedClass(SerializedObject.class)
+		.addAnnotatedClass(PatientState.class)
+		.addAnnotatedClass(DrugIngredient.class)
+		.addAnnotatedClass(DrugReferenceMap.class)
+		.addAnnotatedClass(AlertRecipient.class)
+		.addAnnotatedClass(PatientIdentifierType.class)
+		.addAnnotatedClass(ProgramAttributeType.class)
+		.addAnnotatedClass(HL7InError.class)
+		.addAnnotatedClass(OrderType.class)
+		.addAnnotatedClass(Allergy.class)
+		.getMetadataBuilder().build();
+
+		Field field = adminDAO.getClass().getDeclaredField("metadata");
+		field.setAccessible(true);
+		field.set(adminDAO, metaData);
+
+		ConceptClass conceptClass = new ConceptClass();
+		conceptClass.setName("Test ConceptClass Mapping With Annotations");
+		conceptClass.setDescription("Test ConceptClass Mapping With Annotations Details");
+		conceptService.saveConceptClass(conceptClass);
+		ConceptClass testConceptClassMappingWithAnnotations = conceptService.getConceptClassByName("Test ConceptClass Mapping With Annotations");
+		assertThat("Retrieved ConceptClass should not be null.", testConceptClassMappingWithAnnotations, is(not(nullValue())));
+
+		Concept concept = new Concept();
+		ConceptName conceptName = new ConceptName("Monkey Pox", Locale.US);
+		concept.addName(conceptName);
+		concept.addDescription(new ConceptDescription("some description about Monkey Pox",null));
+		ConceptDatatype conceptDatatype = new ConceptDatatype(3);
+		conceptDatatype.setCreator(new User(1));
+		concept.setDatatype(conceptDatatype);
+		concept.setConceptClass(conceptClass);
+		conceptService.saveConcept(concept);
+		Concept conceptByName = conceptService.getConceptByName("Monkey Pox");
+		assertThat("Retrieved Concept should have the Test ConceptClass Mapping With Annotations ConceptClass", 
+			conceptByName.getConceptClass(), is(conceptClass));
 	}
 }

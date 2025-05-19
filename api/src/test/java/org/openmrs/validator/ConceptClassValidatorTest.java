@@ -9,20 +9,32 @@
  */
 package org.openmrs.validator;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openmrs.ConceptClass;
+import org.openmrs.OrderType;
+import org.openmrs.api.ConceptService;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Tests methods on the {@link ConceptClassValidator} class.
  */
 public class ConceptClassValidatorTest extends BaseContextSensitiveTest {
-	
+
+	private ConceptClassValidator validator;
+	private ConceptService mockConceptService;
 	/**
 	 * @see ConceptClassValidator#validate(Object,Errors)
 	 */
@@ -135,4 +147,36 @@ public class ConceptClassValidatorTest extends BaseContextSensitiveTest {
 		assertTrue(errors.hasFieldErrors("description"));
 		assertTrue(errors.hasFieldErrors("retireReason"));
 	}
+
+	/**
+	 * @see ConceptClassValidator#validate(Object, Errors)
+	 */
+	@Test
+	public void validate_shouldPassValidationIfIdIsNullForNewConceptClass() {
+		ConceptClass conceptClass = new ConceptClass();
+		conceptClass.setName("unique name");
+		conceptClass.setDescription("Testing for unique name");
+
+		Errors errors = new BindException(conceptClass, "conceptClass");
+		new ConceptClassValidator().validate(conceptClass, errors); 
+
+		assertFalse(errors.hasErrors());
+	}
+
+	/**
+	 * @see ConceptClassValidator#validate(Object, Errors)
+	 */
+	@Test
+	public void validate_shouldFailValidationIfIdIsNotNullForNewConceptClass() {
+		ConceptClass conceptClass = new ConceptClass();
+		conceptClass.setName("validation-name");
+		conceptClass.setDescription("description for validation.");
+		conceptClass.setId(2005);
+		
+		Errors errors = new BindException(conceptClass, "conceptClass");
+		new ConceptClassValidator().validate(conceptClass, errors);
+
+		assertTrue(errors.hasFieldErrors("conceptClassId"), "Validation should fail if ID is not null for a new ConceptClass.");
+	}
 }
+

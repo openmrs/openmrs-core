@@ -2664,7 +2664,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext) 
 	 */
 	@Test
 	public void saveOrder_shouldFailIfTheExistingDrugOrderMatchesTheConceptAndNotDrugOfTheRevisedOrder() {
@@ -2742,6 +2742,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.addAnnotatedClass(ProgramAttributeType.class)
 			.addAnnotatedClass(HL7InError.class)
 			.addAnnotatedClass(OrderType.class)
+			.addAnnotatedClass(ConceptClass.class)
 			.getMetadataBuilder().build();
 
 

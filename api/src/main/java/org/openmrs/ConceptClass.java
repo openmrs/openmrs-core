@@ -9,11 +9,21 @@
  */
 package org.openmrs;
 
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * ConceptClass
  */
+@Entity
+@Table(name = "concept_class")
 @Audited
 public class ConceptClass extends BaseChangeableOpenmrsMetadata {
 	
@@ -56,6 +66,15 @@ public class ConceptClass extends BaseChangeableOpenmrsMetadata {
 	public static final String FREQUENCY_UUID = "8e071bfe-520c-44c0-a89b-538e9129b42a";
 	
 	// Fields
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "concept_class_id_seq")
+	@GenericGenerator(
+		name = "concept_class_id_seq",
+		strategy = "native",
+		parameters = @org.hibernate.annotations.Parameter(name = "sequence", value = "concept_class_concept_class_id_seq")
+	)
+	@Column(name = "concept_class_id", nullable = false)
 	private Integer conceptClassId;
 	
 	// Constructors
@@ -95,7 +114,5 @@ public class ConceptClass extends BaseChangeableOpenmrsMetadata {
 	@Override
 	public void setId(Integer id) {
 		setConceptClassId(id);
-		
 	}
-	
 }

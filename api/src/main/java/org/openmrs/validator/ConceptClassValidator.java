@@ -10,6 +10,7 @@
 package org.openmrs.validator;
 
 import org.openmrs.ConceptClass;
+import org.openmrs.Drug;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
@@ -27,19 +28,19 @@ public class ConceptClassValidator implements Validator {
 
 	/**
 	 * Determines if the command object being submitted is a valid type
-	 * 
+	 *
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@Override
 	public boolean supports(Class<?> c) {
 		return c.equals(ConceptClass.class);
 	}
-	
+
 	/**
 	 * Checks the form object for any inconsistencies/errors
-	 * 
+	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
-	 *      org.springframework.validation.Errors)
+	 * org.springframework.validation.Errors)
 	 * <strong>Should</strong> fail validation if user is null or empty or whitespace
 	 * <strong>Should</strong> fail validation if name is already exist in non retired concept class
 	 * <strong>Should</strong> pass validation if description is null or empty or whitespace
@@ -47,7 +48,7 @@ public class ConceptClassValidator implements Validator {
 	 * <strong>Should</strong> pass validation if field lengths are correct
 	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
-	
+
 	@Override
 	public void validate(Object obj, Errors errors) {
 		ConceptClass cc = (ConceptClass) obj;
@@ -62,7 +63,11 @@ public class ConceptClassValidator implements Validator {
 				}
 			}
 			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "description", "retireReason");
+
+			// Adding the new field validation for conceptClassId
+			if (cc.getConceptClassId() == null) {
+				errors.rejectValue("conceptClassId", "error.invalid", "ID should be null for a new ConceptClass.");
+			}
 		}
 	}
-	
 }

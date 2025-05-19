@@ -29,7 +29,6 @@
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptDescription.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptName.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptNameTag.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/ConceptClass.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptDatatype.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptProposal.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptStateConversion.hbm.xml" />
@@ -83,7 +82,7 @@
 		<mapping resource="org/openmrs/api/db/hibernate/Cohort.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/CohortMembership.hbm.xml"/>
 		<mapping resource="org/openmrs/api/db/hibernate/OrderFrequency.hbm.xml" />
-
+		
 		<!-- HL7 -->
 		<mapping resource="org/openmrs/hl7/db/hibernate/HL7Source.hbm.xml" />
 		<mapping resource="org/openmrs/hl7/db/hibernate/HL7InQueue.hbm.xml" />
