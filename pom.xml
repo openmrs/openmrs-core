@@ -1250,7 +1250,7 @@
 		<hibernateSearchVersion>6.2.4.Final</hibernateSearchVersion>
 		<luceneVersion>8.11.2</luceneVersion>
 		<!-- ininispanVersion needs to be adjusted if hibernateVersion changes -->
-		<infinispanVersion>13.0.22.Final</infinispanVersion>
+		<infinispanVersion>14.0.0.Dev02</infinispanVersion>
 		<aspectjVersion>1.9.24</aspectjVersion>
 		<jacksonVersion>2.19.0</jacksonVersion>
 		<junitVersion>5.11.4</junitVersion>
