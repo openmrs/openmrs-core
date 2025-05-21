@@ -486,6 +486,25 @@ class StorageServiceTest extends BaseContextSensitiveTest {
 		boolean exists = localStorageService.exists(newKeySuffix());
 		assertThat(exists, is(false));
 	}
+
+	@Test
+	void saveDataShouldHandleWindowsPathSeparatorInKey() throws IOException {
+		saveTestData("test_module", "test_key/test", (key) -> {
+			assertThat(key, is("test_module/test_key/test"));
+			assertThat(localStorageService.exists(key), is(true));
+		});
+
+		saveTestData("test_module", "test_key\\test", (key) -> {
+			assertThat(key, is("test_module/test_key\\test"));
+			assertThat(localStorageService.exists(key), is(true));
+		});
+
+		saveTestData(null, null, (key) -> {
+			assertThat(key, not(containsString("\\")));
+			assertThat(localStorageService.exists(key), is(true));
+		});
+			
+	}
 	
 	@Test
 	void saveDataShouldNotFailIfModuleIdOrGroupContainsAllowedCharacters() throws IOException {
