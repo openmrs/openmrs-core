@@ -59,7 +59,7 @@ public class LocalStorageService extends BaseStorageService implements StorageSe
 	
 	private final MimetypesFileTypeMap mimetypes = new MimetypesFileTypeMap();
 	
-	public LocalStorageService(@Value("${storage_dir:}") String storageDir, @Autowired StreamDataService streamService) {
+	public LocalStorageService(@Value("${storage.dir:}") String storageDir, @Autowired StreamDataService streamService) {
 		super(streamService);
 		this.storageDir = StringUtils.isBlank(storageDir) ? Paths.get(OpenmrsUtil.getApplicationDataDirectory(), 
 			"storage").toAbsolutePath() : Paths.get(storageDir).toAbsolutePath();
