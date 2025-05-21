@@ -64,6 +64,17 @@
 
 	<bean class="org.openmrs.api.impl.GlobalLocaleList" id="globalLocaleList"/>
 
+	<bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:hibernate.default.properties</value>
+				<value>file:${OPENMRS_APPLICATION_DATA_DIRECTORY}/openmrs-runtime.properties</value>
+			</list>
+		</property>
+		<property name="ignoreResourceNotFound" value="true" />
+		<property name="localOverride" value="true" />
+	</bean>
+
 	<!--  **************************  EVENT LISTENERS ***************************** -->
 
 	<!--  Clear out the global property listeners list first -->

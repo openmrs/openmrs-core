@@ -107,6 +107,10 @@
 			<artifactId>spring-context-support</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.infinispan</groupId>
+			<artifactId>infinispan-spring5-embedded</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>ca.uhn.hapi</groupId>
 			<artifactId>hapi-base</artifactId>
 			<exclusions>
@@ -145,8 +149,8 @@
 			<artifactId>hibernate-c3p0</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-ehcache</artifactId>
+			<groupId>org.infinispan</groupId>
+			<artifactId>infinispan-hibernate-cache-v53</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate.search</groupId>
@@ -246,10 +250,6 @@
 			<artifactId>groovy-all</artifactId>
 			<version>2.4.21</version>
 			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.ehcache</groupId>
-			<artifactId>ehcache</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.aspectj</groupId>

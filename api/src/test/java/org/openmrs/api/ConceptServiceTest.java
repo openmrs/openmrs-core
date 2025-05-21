@@ -12,11 +12,13 @@ package org.openmrs.api;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -44,7 +46,6 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import net.sf.ehcache.Ehcache;
 import org.apache.commons.collections.CollectionUtils;
 import org.dbunit.dataset.IDataSet;
 import org.junit.jupiter.api.AfterEach;
@@ -90,7 +91,6 @@ import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.ehcache.EhCacheCache;
 import org.springframework.cache.interceptor.SimpleKey;
 import org.springframework.validation.Errors;
 
@@ -992,16 +992,11 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getConceptIdsByMapping_shouldPopulateCache() {
 		Cache cache = cacheManager.getCache("conceptIdsByMapping");
-		Ehcache ehcache = ((EhCacheCache) cache).getNativeCache();
 		cache.clear();
-		assertThat(ehcache.getSize(), is(0));
-		conceptService.getConceptIdsByMapping("wgt234", "sstrm", true);
-		assertThat(ehcache.getSize(), is(1));
-		List<SimpleKey> keys = ehcache.getKeys();
-		assertThat(keys.size(), is(1));
-		SimpleKey foundKey = keys.get(0);
-		SimpleKey expectedKey = new SimpleKey("wgt234", "sstrm", true);
-		assertThat(foundKey.toString(), equalTo(expectedKey.toString()));;
+		SimpleKey key = new SimpleKey("wgt234", "sstrm", true);
+		assertThat(cache.get(key), is(nullValue()));
+		List<Integer> conceptIdsByMapping = conceptService.getConceptIdsByMapping("wgt234", "sstrm", true);
+		assertThat(cache.get(key).get(), is(conceptIdsByMapping));
 	}
 
 	/**
@@ -1010,32 +1005,31 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void shouldEvictConceptIdsIfSourceOrTermsAreUpdated() {
 		Cache cache = cacheManager.getCache("conceptIdsByMapping");
-		Ehcache ehcache = ((EhCacheCache) cache).getNativeCache();
 		ConceptSource cs = conceptService.getConceptSourceByHL7Code("SSTRM");
 		ConceptReferenceTerm crt = conceptService.getConceptReferenceTermByCode("WGT234", cs);
 		ConceptReferenceTerm dummyTerm = new ConceptReferenceTerm(cs, "DUMMY", "DummyTerm");
 		conceptService.saveConceptReferenceTerm(dummyTerm);
-		assertThat(ehcache.getSize(), is(0));
 
 		// Update Concept Source
-		conceptService.getConceptIdsByMapping(crt.getCode(), cs.getHl7Code(), true);
-		assertThat(ehcache.getSize(), is(1));
+		SimpleKey cacheKey = new SimpleKey(crt.getCode(), cs.getHl7Code(), true);
+		List<Integer> conceptIdsByMapping = conceptService.getConceptIdsByMapping(crt.getCode(), cs.getHl7Code(), true);
+		assertThat(cache.get(cacheKey).get(), is(conceptIdsByMapping));
 		cs.setDateChanged(new Date());
 		conceptService.saveConceptSource(cs);
-		assertThat(ehcache.getSize(), is(0));
+		assertThat(cache.get(cacheKey), is(nullValue()));
 
 		// Save Concept Reference Term
-		conceptService.getConceptIdsByMapping(crt.getCode(), cs.getHl7Code(), true);
-		assertThat(ehcache.getSize(), is(1));
+		conceptIdsByMapping = conceptService.getConceptIdsByMapping(crt.getCode(), cs.getHl7Code(), true);
+		assertThat(cache.get(cacheKey).get(), is(conceptIdsByMapping));
 		crt.setDateChanged(new Date());
 		conceptService.saveConceptReferenceTerm(crt);
-		assertThat(ehcache.getSize(), is(0));
+		assertThat(cache.get(cacheKey), is(nullValue()));
 
 		// purgeConceptReferenceTerm
-		conceptService.getConceptIdsByMapping(crt.getCode(), cs.getHl7Code(), true);
-		assertThat(ehcache.getSize(), is(1));
+		conceptIdsByMapping = conceptService.getConceptIdsByMapping(crt.getCode(), cs.getHl7Code(), true);
+		assertThat(cache.get(cacheKey).get(), is(conceptIdsByMapping));
 		conceptService.purgeConceptReferenceTerm(dummyTerm);
-		assertThat(ehcache.getSize(), is(0));
+		assertThat(cache.get(cacheKey), is(nullValue()));
 	}
 	
 	/**
