@@ -26,7 +26,7 @@ public class InitializationWizardModel {
 	public static final String HEADER_TEMPLATE = "org/openmrs/web/filter/initialization/header.vm";
 	
 	// automatically given to the .vm files and used there
-	public static final String FOOTER_TEMPLATE = "org/openmrs/web/filter/initialization/footer.vm";
+	public static final String FOOTER_TEMPLATE = "org/openmrs/web/filter/footer.vm";
 	
 	// Values for installMethod field.
 	public static final String INSTALL_METHOD_SIMPLE = "simple";
@@ -159,11 +159,6 @@ public class InitializationWizardModel {
 	 * Enables importing test data from the remote server
 	 */
 	public Boolean importTestData = Boolean.FALSE;
-	
-	/**
-	 * Does the user want to add the demo data to the database?
-	 */
-	public Boolean addDemoData = Boolean.FALSE;
 	
 	/**
 	 * Asked for on the otherproperties.vm page to know if the allow_web_admin runtime property is

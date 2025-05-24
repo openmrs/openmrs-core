@@ -1,32 +1,90 @@
 #parse($HEADER_TEMPLATE)
 
-<form method="post" autocomplete="off">
-			
-	<div class="content">
-		<table align="center" cellspacing="5" cellpadding="9">
-			<tr>
-				<td colspan="2" class="question">$l10n.get("update.maintenance.login").insert($superuserrole)</td>
-			</tr>
-            <tr>
-                <td>$l10n.get("update.maintenance.username")</td>
-                <td><input type="text" name="username"/></td>
-            </tr>
-            <tr>
-                <td>$l10n.get("install.simple.passwd")</td>
-                <td><input type="password" name="password"/></td>
-            </tr>
-            <tr>
-                <td colspan="2" align="center"><input type="image" src="images/forward_button.png" name="continue"/></td>
-            </tr>
-		</table>
-	</div>
-	
-	<input type="hidden" name="page" value="maintenance.vm" /> 
-	
-</form>
+<div class="page-container">
+  <div class="login-box">
+    <h2 class="login-title">System Developer Login</h2>
+    <p class="login-subtext">$l10n.get("update.maintenance.login").insert($superuserrole)</p>
+    <form method="post" autocomplete="off" class="login-form">
+      <div class="form-group">
+        <label for="username">$l10n.get("update.maintenance.username")</label>
+        <input type="text" id="username" name="username" class="input-field" />
+      </div>
+      <div class="form-group">
+        <label for="password">$l10n.get("update.maintenance.password")</label>
+        <input type="password" id="password" name="password" class="input-field" autocomplete="new-password" />
+      </div>
+      <button type="submit" class="btn-login">
+         <span>$l10n.get("general.continue")</span>
+      </button>
+      <input type="hidden" name="page" value="maintenance.vm" />
+    </form>
+  </div>
+</div>
 
-<script type="text/javascript">
-	document.forms[0].elements[0].focus();
-</script>
+<style>
+  body {
+    margin: 0;
+    font-family: "Roboto", sans-serif;
+    background-color: #f2f7fb;
+  }
+
+  .page-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .login-box {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .login-title {
+    font-size: 1.6rem;
+    text-align: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .login-subtext {
+    text-align: center;
+    color: #ff0000;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.2rem;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+
+  .input-field {
+    width: 100%;
+    padding: 0.7rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+  }
+
+  .btn-login {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: var(--openmrs-logo-color);
+    color: white;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+</style>
 
 #parse($FOOTER_TEMPLATE)

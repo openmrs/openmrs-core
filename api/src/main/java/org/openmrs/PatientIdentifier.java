@@ -16,15 +16,19 @@ import java.util.Comparator;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.envers.Audited;
-import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.Boost;
-import org.hibernate.search.annotations.DocumentId;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Fields;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.IndexedEmbedded;
-import org.hibernate.search.annotations.SortableField;
-import org.openmrs.api.db.hibernate.search.LuceneAnalyzers;
+import org.hibernate.search.engine.backend.types.Sortable;
+import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.AssociationInverseSide;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.ObjectPath;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.PropertyValue;
+import org.openmrs.api.db.hibernate.search.SearchAnalysis;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,26 +58,27 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	private Integer patientIdentifierId;
 
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
+	@AssociationInverseSide(inversePath = @ObjectPath({
+		@PropertyValue(propertyName = "identifiers")
+	}))
 	private Patient patient;
-
-	@Fields({
-			@Field(name = "identifierPhrase", analyzer = @Analyzer(definition = LuceneAnalyzers.PHRASE_ANALYZER), boost = @Boost(8f)),
-			@Field(name = "identifierExact", analyzer = @Analyzer(definition = LuceneAnalyzers.EXACT_ANALYZER), boost = @Boost(4f)),
-			@Field(name = "identifierStart", analyzer = @Analyzer(definition = LuceneAnalyzers.START_ANALYZER), boost = @Boost(2f)),
-			@Field(name = "identifierAnywhere", analyzer = @Analyzer(definition = LuceneAnalyzers.ANYWHERE_ANALYZER))
-	})
-	@SortableField(forField = "identifierExact")
+	
+	@FullTextField(name = "identifierPhrase", analyzer = SearchAnalysis.PHRASE_ANALYZER)
+	@FullTextField(name = "identifierExact", analyzer = SearchAnalysis.EXACT_ANALYZER)
+	@FullTextField(name = "identifierStart", analyzer = SearchAnalysis.START_ANALYZER, searchAnalyzer = SearchAnalysis.EXACT_ANALYZER)
+	@FullTextField(name = "identifierAnywhere", analyzer = SearchAnalysis.ANYWHERE_ANALYZER, searchAnalyzer = SearchAnalysis.EXACT_ANALYZER)
+	@KeywordField(name = "identifierExact_sort", sortable = Sortable.YES)
 	private String identifier;
 
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	private PatientIdentifierType identifierType;
 	
 	private Location location;
 
 	private PatientProgram patientProgram;
-	
 
-	@Field
+	@GenericField
 	private Boolean preferred = false;
 	
 	/** default constructor */

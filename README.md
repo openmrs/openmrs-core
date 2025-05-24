@@ -103,35 +103,35 @@ The only prerequisite needed is Docker.
 
 In order to build a development version run:
 ```bash 
-docker-compose build
+docker compose build
 ```
 It calls `mvn install` by default. If you would like to customize mvn build arguments you can do so by running:
 ```bash
-docker-compose build --build-arg MVN_ARGS='install -DskipTests'
+docker compose build --build-arg MVN_ARGS='install -DskipTests'
 ```
 It is also possible to use the built dev image to run jetty:
 ```bash
-docker-compose up
+docker compose up
 ```
 
 In order to build a production version run:
 ```bash
-docker-compose -f docker-compose.yml build
+docker compose -f docker-compose.yml build
 ```
 It first builds the dev image and then an image with Tomcat and openmrs.war. 
 It has no dev dependencies.
 
 The production version can be run with:
 ```bash
-docker-compose -f docker-compose.yml up
+docker compose -f docker-compose.yml up
 ```
 If you want to debug, you need to run a development version and connect your debugger to port 8000, which is exposed by default.
 
 Unfortunately, at this point any code changes require full restart and rebuild of the docker container. To speed up the process,
 please use:
 ```bash
-docker-compose build --build-arg MVN_ARGS='install -DskipTests'
-docker-compose up
+docker compose build --build-arg MVN_ARGS='install -DskipTests'
+docker compose up
 ```
 We are working towards providing support for Spring Boot auto-reload feature, which will be documented here once ready.
 
@@ -140,13 +140,21 @@ https://hub.docker.com/r/openmrs/openmrs-core
 
 You can run any tag available with:
 ```bash
-TAG=nightly docker-compose -f docker-compose.yml up
+TAG=nightly docker compose -f docker-compose.yml up
 ```
 It is also possible to run a development version of an image with:
 ```bash
-TAG=dev docker-compose up
+TAG=dev docker compose up
 ```
 All development versions contain dev suffix. The cache suffix is for use by our CI.
+
+### Running with ElasticSearch
+
+OpenMRS can run with ElasticSearch backend instead of the in-built Lucene index. You can run it with:
+```bash
+docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.es.yml up
+```
+If you change backend, you need to rebuild the search index by going to Legacy UI -> Administration -> Search Index. Alternatively, you can rebuild the search index using the `searchindexupdate` REST endpoint.
 
 ## Navigating the repository
 
