@@ -14,6 +14,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
+import javax.validation.constraints.Size;
+
 import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -40,6 +42,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	@FullTextField(analyzer = SearchAnalysis.NAME_ANALYZER)
 	private String name;
 	
+	@Size(max = 255)
 	@Column(name = "description", length = 255)
 	@Lob
 	private String description;
@@ -69,6 +72,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	@JoinColumn(name = "retired_by")
 	private User retiredBy;
 	
+	@Size(max = 255)
 	@Column(name = "retire_reason", length = 255)
 	private String retireReason;
 	
