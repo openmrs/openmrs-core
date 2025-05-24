@@ -9,6 +9,15 @@
  */
 package org.openmrs;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.envers.Audited;
 
@@ -33,21 +42,38 @@ import org.hibernate.envers.Audited;
  * In English, we run into a tricky RelationshipType with aunts and uncles. We have chosen to define
  * them as aunt/uncle-niece/nephew.
  */
+@Entity
+@Table(name = "relationship_type")
+@AttributeOverrides({
+    /* RelationshipType never actually uses the 'name' & 'description' columns.
+       They must exist for JPA inheritance, but must NOT be constrained “NOT NULL”. */
+    @AttributeOverride(name = "name", column = @Column(name = "name", nullable = true, length = 255)),
+	@AttributeOverride(name = "description", column = @Column(name = "description", nullable = true, length = 255)),
+    @AttributeOverride(name = "retireReason", column = @Column(name = "retire_reason", length = 255))
+})
+
 @Audited
-public class RelationshipType extends BaseChangeableOpenmrsMetadata{
+public class RelationshipType extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 4223L;
 	
 	// Fields
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "relationship_type_id")
 	private Integer relationshipTypeId;
 	
+	@Column(name = "a_is_to_b", nullable = false, length = 50)
 	private String aIsToB;
-	
+
+	@Column(name = "b_is_to_a", nullable = false, length = 50)
 	private String bIsToA;
 	
+	@Column(name = "weight")
 	private Integer weight = 0;
 	
+	@Column(name = "preferred")
 	private Boolean preferred = false;
 	
 	// Constructors
@@ -175,7 +201,5 @@ public class RelationshipType extends BaseChangeableOpenmrsMetadata{
 	@Override
 	public void setId(Integer id) {
 		setRelationshipTypeId(id);
-		
 	}
-	
 }
