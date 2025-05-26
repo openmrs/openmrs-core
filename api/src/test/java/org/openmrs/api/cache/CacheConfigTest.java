@@ -10,27 +10,36 @@
 package org.openmrs.api.cache;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 
+import java.net.URL;
 import java.util.Collection;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 
-public class OpenmrsCacheManagerFactoryBeanTest extends BaseContextSensitiveTest{
-    
-    @Autowired
-    CacheManager cacheManager;
-    
+public class CacheConfigTest extends BaseContextSensitiveTest {
+
+	@Autowired
+	CacheManager cacheManager;
+	
+	@Autowired
+	CacheConfig cacheConfig;
+
+	@Test
+	public void shouldContainSpecificCacheConfigurations(){
+		String[] expectedCaches = {"conceptDatatype", "subscription", "userSearchLocales", "conceptIdsByMapping"};
+		Collection<String> actualCaches = cacheManager.getCacheNames();
+		assertThat(actualCaches, containsInAnyOrder(expectedCaches));
+	}
+	
     @Test
-    public void shouldContainSpecificCacheConfigurations(){
-        String[] expectedCaches = {"conceptDatatype", "subscription", "userSearchLocales", "conceptIdsByMapping"};
-        Collection<String> actualCaches = cacheManager.getCacheNames();
-        assertThat(actualCaches.size(), is(expectedCaches.length));
-        assertThat(actualCaches, containsInAnyOrder(expectedCaches));
+    public void shouldReturnCacheConfigurations(){
+        List<URL> cacheConfigurations = cacheConfig.getCacheConfigurations();
+        assertThat(cacheConfigurations.size(), is(2));
     }
 }

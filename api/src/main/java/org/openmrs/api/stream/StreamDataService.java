@@ -38,7 +38,7 @@ import org.springframework.util.unit.DataSize;
  * It's providing the {@link java.io.PipedInputStream}/{@link java.io.PipedOutputStream} mechanism in a thread safe way 
  * with the use of {@link BlockingQueue}.
  * 
- * @since 2.8.0, 2.7.4, 2.6.16, 2.5.15
+ * @since 2.8.0, 2.7.5, 2.6.16, 2.5.15
  */
 @Service
 public class StreamDataService {
@@ -106,7 +106,6 @@ public class StreamDataService {
 		 */
 		public void propagateStreamException(IOException streamException) {
 			this.streamException = streamException;
-			throw new UncheckedIOException(this.streamException);
 		}
 	}
 	
@@ -187,6 +186,7 @@ public class StreamDataService {
 				try (QueueOutputStream out = in.newQueueOutputStream()) {
 					writer.write(out);
 				} catch (Exception e) {
+					log.error("Failed to write data in parallel", e);
 					in.propagateStreamException(new IOException("Failed to write data in parallel", e));
 				}
 			});

@@ -9,12 +9,18 @@
  */
 package org.openmrs;
 
+import javax.persistence.Cacheable;
+
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 /**
  * ConceptDatatype
  */
 @Audited
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class ConceptDatatype extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 473L;

@@ -11,6 +11,7 @@ package org.openmrs;
 
 import static org.apache.commons.lang3.StringUtils.defaultString;
 
+import javax.persistence.Cacheable;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -19,6 +20,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.AssociationInverseSide;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
@@ -42,6 +45,8 @@ import org.springframework.util.StringUtils;
  */
 @Indexed
 @Audited
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class PersonName extends BaseChangeableOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PersonName> {
 	
 	public static final long serialVersionUID = 4353L;

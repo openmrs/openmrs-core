@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Transient;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -24,6 +25,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
@@ -45,6 +48,8 @@ import org.springframework.util.StringUtils;
  * @see org.openmrs.Patient
  */
 @Audited
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Person extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 2L;
