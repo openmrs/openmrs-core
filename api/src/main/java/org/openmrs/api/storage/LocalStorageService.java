@@ -44,7 +44,7 @@ import org.springframework.stereotype.Service;
  * <p>
  * It is the default implementation of StorageService.
  * 
- * @since 2.8.0, 2.7.4, 2.6.16, 2.5.15
+ * @since 2.8.0, 2.7.5, 2.6.16, 2.5.15
  */
 @Service
 @Conditional(StorageServiceCondition.class)
