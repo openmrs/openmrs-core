@@ -39,7 +39,6 @@ import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -229,7 +228,7 @@ class StorageServiceTest extends BaseContextSensitiveTest {
 		});
 	}
 	
-	private static @NotNull String newKeySuffix() {
+	private static String newKeySuffix() {
 		return UUID.randomUUID().toString().substring(0, 8);
 	}
 	
