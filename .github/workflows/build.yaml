@@ -9,12 +9,14 @@ on:
       - 2.4.x
       - 2.5.x
       - 2.6.x
+      - 2.7.x
   pull_request:
     branches:
       - master
       - 2.4.x
       - 2.5.x
       - 2.6.x
+      - 2.7.x
   workflow_dispatch:
 
 permissions: read-all
