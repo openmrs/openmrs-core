@@ -13,11 +13,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 import org.openmrs.module.ModuleException;
+import org.slf4j.LoggerFactory;
 
 public class WebDaemonTest {
 	
 	@Test
 	public void startOpenmrs_shouldThrowExceptionGivenNull() {
+		LoggerFactory.getLogger(WebDaemonTest.class); //see TRUNK-6307
 		assertThrows(ModuleException.class, () -> WebDaemon.startOpenmrs(null));
 	}
 

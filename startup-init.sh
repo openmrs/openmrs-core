@@ -9,7 +9,6 @@
 
 # ----------------------------------
 # Configurable environment variables
-OMRS_ADD_DEMO_DATA=${OMRS_ADD_DEMO_DATA:-false}
 OMRS_ADMIN_USER_PASSWORD=${OMRS_ADMIN_USER_PASSWORD:-Admin123}
 OMRS_ADMIN_PASSWORD_LOCKED=${OMRS_ADMIN_PASSWORD_LOCKED:-false}
 # When set to 'true' all DB updates are applied automatically upon startup
@@ -42,11 +41,14 @@ OMRS_JAVA_MEMORY_OPTS=${OMRS_JAVA_MEMORY_OPTS:-'-XX:NewSize=128m'}
 OMRS_MODULE_WEB_ADMIN=${OMRS_MODULE_WEB_ADMIN:-true}
 # This should match the name of the distribution supplied OpenMRS war file
 OMRS_WEBAPP_NAME=${OMRS_WEBAPP_NAME:-'openmrs'}
+# Can be set to lucene or elasticsearch
+OMRS_SEARCH=${OMRS_SEARCH:-'lucene'}
+OMRS_SEARCH_CONFIG=${OMRS_SEARCH_CONFIG:-"${OMRS_SEARCH}Config"}
+OMRS_SEARCH_ES_URIS=${OMRS_SEARCH_ES_URIS:-'http://es:9200'}
 # End of configurable environment variables
 # -----------------------------------------
 
 # Support deprecated environment names
-[ -n "${OMRS_CONFIG_ADD_DEMO_DATA:-}" ] && OMRS_ADD_DEMO_DATA=${OMRS_CONFIG_ADD_DEMO_DATA}
 [ -n "${OMRS_CONFIG_ADMIN_USER_PASSWORD:-}" ] && OMRS_ADMIN_USER_PASSWORD=${OMRS_CONFIG_ADMIN_USER_PASSWORD}
 [ -n "${OMRS_CONFIG_AUTO_UPDATE_DATABASE:-}" ] && OMRS_AUTO_UPDATE_DATABASE=${OMRS_CONFIG_AUTO_UPDATE_DATABASE}
 [ -n "${OMRS_CONFIG_CREATE_DATABASE_USER:-}" ] && OMRS_CREATE_DATABASE_USER=${OMRS_CONFIG_CREATE_DATABASE_USER}
@@ -126,7 +128,6 @@ OMRS_DB_URL="${OMRS_DB_URL:-jdbc:${OMRS_DB_JDBC_PROTOCOL}://${OMRS_DB_HOSTNAME}:
 echo "Writing out $OMRS_SERVER_PROPERTIES_FILE"
 
 cat > $OMRS_SERVER_PROPERTIES_FILE << EOF
-add_demo_data=${OMRS_ADD_DEMO_DATA}
 admin_user_password=${OMRS_ADMIN_USER_PASSWORD}
 admin_password_locked=${OMRS_ADMIN_PASSWORD_LOCKED}
 auto_update_database=${OMRS_AUTO_UPDATE_DATABASE}
@@ -140,6 +141,11 @@ has_current_openmrs_database=${OMRS_HAS_CURRENT_OPENMRS_DATABASE}
 install_method=${OMRS_INSTALL_METHOD}
 module_web_admin=${OMRS_MODULE_WEB_ADMIN}
 module.allow_web_admin=${OMRS_MODULE_WEB_ADMIN}
+
+hibernate.search.backend.type=${OMRS_SEARCH}
+hibernate.search.backend.analysis.configurer=${OMRS_SEARCH_CONFIG}
+
+hibernate.search.backend.uris=${OMRS_SEARCH_ES_URIS}
 
 EOF
 

@@ -33,6 +33,7 @@ import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.Condition;
 import org.openmrs.Diagnosis;
 import org.openmrs.Drug;
+import org.openmrs.DrugReferenceMap;
 import org.openmrs.DrugIngredient;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
@@ -2736,12 +2737,14 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.addAnnotatedClass(SerializedObject.class)
 			.addAnnotatedClass(PatientState.class)
 			.addAnnotatedClass(DrugIngredient.class)
+			.addAnnotatedClass(DrugReferenceMap.class)
 			.addAnnotatedClass(AlertRecipient.class)
 			.addAnnotatedClass(PatientIdentifierType.class)
 			.addAnnotatedClass(ProgramAttributeType.class)
 			.addAnnotatedClass(HL7InError.class)
 			.addAnnotatedClass(OrderType.class)
 			.addAnnotatedClass(Cohort.class)
+			.addAnnotatedClass(ConceptClass.class)
 			.getMetadataBuilder().build();
 
 

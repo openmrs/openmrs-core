@@ -72,11 +72,6 @@
                   <goals>
                      <goal>run</goal>
                   </goals>
-                  <configuration>
-                     <target>
-                        <unzip src="src/main/resources/liquibase-demo-data.zip" dest="${project.build.outputDirectory}" />
-                     </target>
-                  </configuration>
                </execution>
             </executions>
          </plugin>
@@ -237,7 +232,7 @@
 		  <plugin>
               <groupId>org.codehaus.cargo</groupId>
               <artifactId>cargo-maven3-plugin</artifactId>
-              <version>1.10.16</version>
+              <version>1.10.19</version>
               <configuration>
                   <container>
                       <containerId>tomcat9x</containerId>

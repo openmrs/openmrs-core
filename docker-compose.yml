@@ -10,8 +10,8 @@ version: "3.7"
 
 services:
     db:
-        image: mariadb:10.3
-        command: "mysqld --character-set-server=utf8 --collation-server=utf8_general_ci"
+        image: mariadb:10.11.7
+        command: "mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci"
         environment:
             MYSQL_DATABASE: ${OMRS_DB_NAME:-openmrs}
             MYSQL_USER: ${OMRS_DB_USER:-openmrs}
