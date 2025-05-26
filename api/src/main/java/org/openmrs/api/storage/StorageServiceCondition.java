@@ -23,7 +23,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * <p>
  * It enables "local" storage by default.
  * 
- * @since 2.8.0, 2.7.4, 2.6.16, 2.5.15
+ * @since 2.8.0, 2.7.5, 2.6.16, 2.5.15
  */
 public class StorageServiceCondition implements Condition {
 	private static final Logger log = LoggerFactory.getLogger(StorageServiceCondition.class);

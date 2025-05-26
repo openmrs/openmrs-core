@@ -16,7 +16,7 @@ import java.util.Map;
 /**
  * Used to store and retrieve metadata.
  * 
- * @since 2.8.0, 2.7.4, 2.6.16, 2.5.15
+ * @since 2.8.0, 2.7.5, 2.6.16, 2.5.15
  */
 public class ObjectMetadata {
 	private Map<String, String> customMetadata = new HashMap<>();
