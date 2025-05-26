@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.openmrs.Allergy;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
+import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptDescription;
@@ -2743,6 +2744,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.addAnnotatedClass(HL7InError.class)
 			.addAnnotatedClass(OrderType.class)
 			.addAnnotatedClass(Provider.class)
+			.addAnnotatedClass(ConceptAnswer.class)
+			.addAnnotatedClass(ConceptClass.class)
 			.getMetadataBuilder().build();
 
 

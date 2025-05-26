@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import javax.persistence.Cacheable;
+import javax.persistence.Transient;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -22,17 +24,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.persistence.Transient;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
-import org.hibernate.search.annotations.Analyze;
-import org.hibernate.search.annotations.ContainedIn;
-import org.hibernate.search.annotations.DateBridge;
-import org.hibernate.search.annotations.DocumentId;
-import org.hibernate.search.annotations.EncodingType;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Resolution;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.ObjectPath;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.PropertyValue;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +48,8 @@ import org.springframework.util.StringUtils;
  * @see org.openmrs.Patient
  */
 @Audited
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Person extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 2L;
@@ -58,18 +61,14 @@ public class Person extends BaseChangeableOpenmrsData {
 	
 	private Set<PersonAddress> addresses = null;
 	
-	@ContainedIn
 	private Set<PersonName> names = null;
 	
-	@ContainedIn
 	private Set<PersonAttribute> attributes = null;
 	
-	@Field
+	@GenericField
 	private String gender;
 	
-
-	@Field(analyze = Analyze.YES)
-	@DateBridge(encoding = EncodingType.STRING, resolution = Resolution.DAY)
+	@GenericField
 	private Date birthdate;
 	
 	private Date birthtime;
@@ -78,7 +77,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	
 	private Boolean deathdateEstimated = false;
 	
-	@Field
+	@GenericField
 	private Boolean dead = false;
 	
 	private Date deathDate;
@@ -103,8 +102,9 @@ public class Person extends BaseChangeableOpenmrsData {
 	
 	private String personVoidReason;
 	
-	@Field
+	@GenericField
 	@NotAudited
+	@IndexingDependency(derivedFrom = @ObjectPath(@PropertyValue(propertyName = "patient")))
 	private boolean isPatient;
 	
 	/**
@@ -194,7 +194,13 @@ public class Person extends BaseChangeableOpenmrsData {
 	public void setPersonId(Integer personId) {
 		this.personId = personId;
 	}
-	
+
+	@IndexingDependency(derivedFrom = @ObjectPath(@PropertyValue(propertyName = "personVoided")))
+	@Override
+	public Boolean getVoided() {
+		return super.getVoided();
+	}
+
 	/**
 	 * @return person's gender
 	 */
