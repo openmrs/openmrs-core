@@ -24,6 +24,8 @@ public class ObjectMetadata {
 	private String mimeType;
 	private String filename;
 	private Instant creationTime;
+    private String contentType;
+    private long size;
 	
 	public ObjectMetadata() {}
 
@@ -132,4 +134,20 @@ public class ObjectMetadata {
 			return new ObjectMetadata(length, mimeType, filename, creationTime, customMetadata);
 		}
 	}
+
+    public String getContentType() {
+        return contentType;
+}
+
+    public long getSize() {
+        return size;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    public void setSize(long contentLength) {
+        this.size = contentLength;
+    }
 }
