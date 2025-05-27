@@ -134,6 +134,7 @@ import java.util.concurrent.Future;
  * @see org.openmrs.api.context.UserContext
  * @see org.openmrs.api.context.ServiceContext
  */
+@Component 
 public class Context {
 
 	private static final Logger log = LoggerFactory.getLogger(Context.class);
@@ -559,30 +560,42 @@ public class Context {
 	public static ProgramWorkflowService getProgramWorkflowService() {
 		return getServiceContext().getProgramWorkflowService();
 	}
+//	/**
+//	/**
+//	 * Get the message service.
+//	 *
+//	 * @return message service
+//	 */
+//	public static MessageService getMessageService() {
+//		MessageService ms = getServiceContext().getMessageService();
+//		try {
+//			// Message service dependencies
+//			if (ms.getMessagePreparator() == null) {
+//				ms.setMessagePreparator(getMessagePreparator());
+//			}
+//
+//			if (ms.getMessageSender() == null) {
+//				ms.setMessageSender(getMessageSender());
+//			}
+//
+//		}
+//		catch (Exception e) {
+//			log.error("Unable to create message service due", e);
+//		}
+//		return ms;
+//	}
 	
-	/**
-	 * Get the message service.
-	 *
-	 * @return message service
-	 */
-	public static MessageService getMessageService() {
-		MessageService ms = getServiceContext().getMessageService();
-		try {
-			// Message service dependencies
-			if (ms.getMessagePreparator() == null) {
-				ms.setMessagePreparator(getMessagePreparator());
-			}
+private static MessageService messageService;
 
-			if (ms.getMessageSender() == null) {
-				ms.setMessageSender(getMessageSender());
-			}
-
-		}
-		catch (Exception e) {
-			log.error("Unable to create message service due", e);
-		}
-		return ms;
+	@Autowired
+	public void setMessageService(MessageService messageService) {
+		Context.messageService = messageService;
 	}
+
+	public static MessageService getMessageService() {
+		return messageService;
+	}
+
 
 	/**
 	 * @return all of the configured properties that are used to configure the Mail Session in the Message Service
