@@ -67,6 +67,18 @@
 				<artifactId>openmrs-tools</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			   <dependency>
+        <groupId>io.findify</groupId>
+        <artifactId>s3mock_2.13</artifactId>
+        <version>0.2.6</version>
+        <scope>test</scope>
+    </dependency>
+	     <dependency>
+    <groupId>com.amazonaws</groupId>
+    <artifactId>aws-java-sdk-s3</artifactId>
+    <version>1.12.640</version> <!-- or latest compatible version -->
+  </dependency>
+
 			<dependency>
 				<groupId>org.openmrs.test</groupId>
 				<artifactId>openmrs-test</artifactId>
@@ -178,7 +190,13 @@
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>
 				<version>3.17.0</version>
-			</dependency>
+			</dependency><dependency>
+               <groupId>org.reflections</groupId>
+               <artifactId>reflections</artifactId>
+               <version>0.10.2</version>
+            </dependency>
+
+
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-core</artifactId>
@@ -457,16 +475,19 @@
 				<version>${junitVersion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.mockito</groupId>
-				<artifactId>mockito-junit-jupiter</artifactId>
-				<version>${mockitoVersion}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.mockito</groupId>
-				<artifactId>mockito-core</artifactId>
-				<version>${mockitoVersion}</version>
-			</dependency>
-			<dependency>
+    <groupId>org.mockito</groupId>
+    <artifactId>mockito-core</artifactId>
+    <version>3.4.0</version>
+    <scope>test</scope>
+</dependency>
+
+<dependency>
+    <groupId>org.mockito</groupId>
+    <artifactId>mockito-junit-jupiter</artifactId>
+    <version>3.4.0</version>
+    <scope>test</scope>
+</dependency>
+<dependency>
 				<groupId>org.powermock</groupId>
 				<artifactId>powermock-module-junit4</artifactId>
 				<version>2.0.9</version>
