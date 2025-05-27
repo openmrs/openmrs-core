@@ -10,7 +10,7 @@
 package org.openmrs;
 
 import org.hibernate.envers.Audited;
-import org.hibernate.search.annotations.DocumentId;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,6 +18,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -41,6 +42,7 @@ public class ObsReferenceRange extends BaseReferenceRange {
 	private Integer obsReferenceRangeId;
 	
 	@OneToOne
+	@MapsId
 	@JoinColumn(name = "obs_id", referencedColumnName = "obs_id", unique = true)
 	private Obs obs;
 
