@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -42,7 +43,7 @@ public class CoreDataTunerTest {
 	        .get("org", "openmrs", "liquibase", "snapshots", "core-data", "liquibase-core-data-UPDATED-SNAPSHOT.xml")
 	        .toString();
 	
-	private static String PATH_TO_TEST_RESOURCES = Paths.get("src", "test", "resources").toString() + "/";
+	private static String PATH_TO_TEST_RESOURCES = Paths.get("src", "test", "resources").toString();
 	
 	public static final int TWENTY_FIVE = 25;
 	
@@ -66,7 +67,7 @@ public class CoreDataTunerTest {
 	@Test
 	public void shouldCreateUpdatedChangeLogFile(@TempDir Path tempDir) throws DocumentException, IOException {
 		// given
-		String sourcePath = PATH_TO_TEST_RESOURCES + LIQUIBASE_CORE_DATA_SNAPSHOT_XML;
+		String sourcePath = PATH_TO_TEST_RESOURCES + File.separator + LIQUIBASE_CORE_DATA_SNAPSHOT_XML;
 		String targetPath = tempDir.resolve("liquibase-core-data-UPDATED-SNAPSHOT.xml").toString();
 		
 		// when

@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -42,7 +43,7 @@ public class SchemaOnlyTunerTest {
 	        .get("org", "openmrs", "liquibase", "snapshots", "schema-only", "liquibase-schema-only-UPDATED-SNAPSHOT.xml")
 	        .toString();
 	
-	private static String PATH_TO_TEST_RESOURCES = Paths.get("src", "test", "resources").toString() + "/";
+	private static String PATH_TO_TEST_RESOURCES = Paths.get("src", "test", "resources").toString();
 	
 	private Document document;
 	
@@ -60,7 +61,7 @@ public class SchemaOnlyTunerTest {
 	@Test
 	public void shouldCreateUpdatedChangeLogFile(@TempDir Path tempDir) throws DocumentException, IOException {
 		// given
-		String sourcePath = PATH_TO_TEST_RESOURCES + LIQUIBASE_SCHEMA_ONLY_SNAPSHOT_XML;
+		String sourcePath = PATH_TO_TEST_RESOURCES + File.separator + LIQUIBASE_SCHEMA_ONLY_SNAPSHOT_XML;
 		String targetPath = tempDir.resolve("liquibase-schema-only-UPDATED-SNAPSHOT.xml").toString();
 		
 		// when
