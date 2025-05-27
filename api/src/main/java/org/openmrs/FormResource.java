@@ -82,11 +82,11 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	@Column(name = "datatype_config", length = 65535)
 	private String datatypeConfig;
 
-	@Column(name = "preferred_handler")
+	@Column(name = "preferred_handler", length = 255)
 	private String preferredHandlerClassname;
 
 	@Lob
-	@Column(name = "handler_config")
+	@Column(name = "handler_config", length = 65535)
 	private String handlerConfig;
 	
 	private transient boolean dirty = false;
