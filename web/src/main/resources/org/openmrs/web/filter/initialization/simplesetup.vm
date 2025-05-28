@@ -54,7 +54,7 @@
                         <label class="form-label">PostgreSQL Superuser Name</label>
                         <input type="text" 
                                name="postgres_superuser" 
-                               value="${postgresSuperuser}" 
+                               value="${createDatabaseUsername}" 
                                class="form-input"
                                placeholder="Enter your PostgreSQL superuser name"
                                onKeyPress="return submitenter(this,event);" />

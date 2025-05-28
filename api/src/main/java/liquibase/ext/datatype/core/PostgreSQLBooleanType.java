@@ -46,3 +46,4 @@ public class PostgreSQLBooleanType extends BooleanType {
         return super.getPriority() + 2;
     }
 } 
+ 
