@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
  * PostgreSQL uses BOOLEAN type for boolean values, while MySQL uses BIT(1).
  * This class ensures proper type conversion for PostgreSQL.
  * 
- * @since 2.4
  */
 public class PostgreSQLBooleanType extends BooleanType {
     
@@ -44,6 +43,6 @@ public class PostgreSQLBooleanType extends BooleanType {
     
     @Override
     public int getPriority() {
-        return super.getPriority() + 1;
+        return super.getPriority() + 2;
     }
 } 

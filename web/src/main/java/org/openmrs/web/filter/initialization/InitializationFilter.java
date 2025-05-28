@@ -1492,7 +1492,6 @@ public class InitializationFilter extends StartupFilter {
 							if (isCurrentDatabase(DATABASE_MYSQL)) {
 								sql = "drop user '?'@" + host;
 							} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
-								// Check if user exists before attempting to drop
 								try {
 									String postgresConnection = wizardModel.databaseConnection.replace("@DBNAME@", "postgres");
 									Connection conn = DriverManager.getConnection(postgresConnection, wizardModel.createUserUsername, wizardModel.createUserPassword);
@@ -1504,7 +1503,6 @@ public class InitializationFilter extends StartupFilter {
 									conn.close();
 									
 									if (userExists) {
-										// User exists, skip drop
 										sql = null;
 									} else {
 										sql = "drop user `?`";
@@ -1524,59 +1522,69 @@ public class InitializationFilter extends StartupFilter {
 							if (isCurrentDatabase(DATABASE_MYSQL)) {
 								sql = "create user '?'@" + host + " identified by '?'";
 							} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
-								// Check if user exists before attempting to create
 								try {
 									String postgresConnection = wizardModel.databaseConnection.replace("@DBNAME@", "postgres");
 									Connection conn = DriverManager.getConnection(postgresConnection, wizardModel.createUserUsername, wizardModel.createUserPassword);
 									Statement stmt = conn.createStatement();
+									
 									ResultSet rs = stmt.executeQuery("SELECT 1 FROM pg_roles WHERE rolname = '" + connectionUsername + "'");
 									boolean userExists = rs.next();
 									rs.close();
-									stmt.close();
-									conn.close();
 									
 									if (userExists) {
-										// User exists, skip creation
-										wizardModel.workLog.add("User " + connectionUsername + " already exists, skipping creation");
-										return;
+										sql = "ALTER USER \"" + connectionUsername + "\" WITH PASSWORD '" + connectionPassword + "'";
+										wizardModel.workLog.add("User " + connectionUsername + " already exists, updating password");
 									} else {
 										sql = "CREATE USER \"" + connectionUsername + "\" WITH PASSWORD '" + connectionPassword + "'";
+										wizardModel.workLog.add("Creating new user " + connectionUsername);
 									}
+									
+									stmt.close();
+									conn.close();
 								} catch (SQLException e) {
-									log.warn("Error checking if user exists", e);
-									errors.put("PostgreSQL Error: Unable to check if user exists. Please ensure PostgreSQL is running and you have sufficient privileges.", null);
+									log.warn("Error managing PostgreSQL user", e);
+									errors.put("PostgreSQL Error: Unable to manage user. Please ensure:\n" +
+										"1. PostgreSQL is running\n" +
+										"2. You can connect to the 'postgres' database with your superuser\n" +
+										"3. Your superuser has sufficient privileges to create/manage users", null);
 									return;
 								}
 							}
 							
 							if (-1 != executeStatement(false, wizardModel.createUserUsername, wizardModel.createUserPassword,
 								sql, connectionUsername, connectionPassword.toString())) {
-								wizardModel.workLog.add("Created user " + connectionUsername);
+								wizardModel.workLog.add("Successfully managed user " + connectionUsername);
 							} else {
-								// if error occurs stop
 								reportError(ErrorMessageConstants.ERROR_DB_CREATE_DB_USER, DEFAULT_PAGE);
 								return;
 							}
 							
-							// grant the roles
 							int result = 1;
 							if (isCurrentDatabase(DATABASE_MYSQL)) {
 								sql = "GRANT ALL ON `?`.* TO '?'@" + host;
 								result = executeStatement(false, wizardModel.createUserUsername,
 									wizardModel.createUserPassword, sql, wizardModel.databaseName, connectionUsername);
 							} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
-								sql = "ALTER USER `?` WITH SUPERUSER";
-								result = executeStatement(false, wizardModel.createUserUsername,
-									wizardModel.createUserPassword, sql, connectionUsername);
-							}
-							
-							// throw the user back to the main screen if this error occurs
-							if (result < 0) {
-								reportError(ErrorMessageConstants.ERROR_DB_GRANT_PRIV, DEFAULT_PAGE);
-								return;
-							} else {
-								wizardModel.workLog.add("Granted user " + connectionUsername + " all privileges to database "
-									+ wizardModel.databaseName);
+								try {
+									String postgresConnection = wizardModel.databaseConnection.replace("@DBNAME@", "postgres");
+									Connection conn = DriverManager.getConnection(postgresConnection, wizardModel.createUserUsername, wizardModel.createUserPassword);
+									Statement stmt = conn.createStatement();
+									
+									stmt.execute("GRANT ALL PRIVILEGES ON DATABASE \"" + wizardModel.databaseName + "\" TO \"" + connectionUsername + "\"");
+									stmt.execute("GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO \"" + connectionUsername + "\"");
+									stmt.execute("GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO \"" + connectionUsername + "\"");
+									
+									stmt.close();
+									conn.close();
+									result = 1;
+								} catch (SQLException e) {
+									log.warn("Error granting PostgreSQL privileges", e);
+									errors.put("PostgreSQL Error: Unable to grant privileges. Please ensure:\n" +
+										"1. PostgreSQL is running\n" +
+										"2. You can connect to the 'postgres' database with your superuser\n" +
+										"3. Your superuser has sufficient privileges to grant privileges", null);
+									result = -1;
+								}
 							}
 							
 							addExecutedTask(WizardTask.CREATE_DB_USER);
@@ -1601,7 +1609,6 @@ public class InitializationFilter extends StartupFilter {
 							return;
 						}
 						
-						// For PostgreSQL, we need to connect to 'postgres' database first
 						if (finalDatabaseConnectionString.contains(DATABASE_POSTGRESQL)) {
 							String postgresConnectionString = finalDatabaseConnectionString.replace(wizardModel.databaseName, "postgres");
 							if (!verifyConnection(connectionUsername, connectionPassword.toString(), postgresConnectionString)) {
