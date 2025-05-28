@@ -10,9 +10,63 @@
 
             <div class="form-section">
                 <div class="form-group">
-                    <label class="form-label">$l10n.get("install.simple.passwdinfo")</label>
-                    <p class="form-hint">$l10n.get("install.simple.empty")</p>
-                    <div class="password-input-container">
+                    <label class="form-label">$l10n.get("install.simple.databaseType")</label>
+                    <div class="radio-group">
+                        <label class="radio-container">
+                            <input type="radio" name="database_type" value="mysql" #if($!databaseType == "mysql")checked#end onchange="updatePasswordField('mysql')" />
+                            <span class="radio-label">MySQL</span>
+                        </label>
+                        <label class="radio-container">
+                            <input type="radio" name="database_type" value="postgresql" #if($!databaseType == "postgresql")checked#end onchange="updatePasswordField('postgresql')" />
+                            <span class="radio-label">PostgreSQL</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group" id="passwordGroup">
+                    <label class="form-label" id="passwordLabel">
+                        #if($!databaseType == "postgresql")
+                            PostgreSQL Authentication Information
+                        #else
+                            $l10n.get("install.simple.passwdinfo")
+                        #end
+                    </label>
+                    <div class="info-box postgres-info" id="postgresInfo" style="display: none;">
+                        <div class="info-icon">ℹ️</div>
+                        <div class="info-content">
+                            <p class="info-title">PostgreSQL Authentication</p>
+                            <p class="info-text">The PostgreSQL superuser can be configured to use different authentication methods:</p>
+                            <ul class="info-list">
+                                <li><strong>Peer Authentication:</strong> No password required when connecting locally</li>
+                                <li><strong>Trust Authentication:</strong> No password required for local connections</li>
+                                <li><strong>Password Authentication:</strong> Requires a password</li>
+                            </ul>
+                            <p class="info-text">To find your PostgreSQL superuser name:</p>
+                            <ul class="info-list">
+                                <li><strong>macOS (Homebrew):</strong> Your system username (e.g., 'mac')</li>
+                                <li><strong>Linux:</strong> Usually 'postgres'</li>
+                                <li><strong>Windows:</strong> Usually 'postgres' or your Windows username</li>
+                            </ul>
+                            <p class="info-text">If you're using password authentication, enter the superuser password below.</p>
+                        </div>
+                    </div>
+                    <div class="postgres-username-container" id="postgresUsernameContainer" style="display: none;">
+                        <label class="form-label">PostgreSQL Superuser Name</label>
+                        <input type="text" 
+                               name="postgres_superuser" 
+                               value="${postgresSuperuser}" 
+                               class="form-input"
+                               placeholder="Enter your PostgreSQL superuser name"
+                               onKeyPress="return submitenter(this,event);" />
+                    </div>
+                    <p class="form-hint" id="passwordHint">
+                        #if($!databaseType == "postgresql")
+                            Leave empty if using peer or trust authentication
+                        #else
+                            $l10n.get("install.simple.empty")
+                        #end
+                    </p>
+                    <div class="password-input-container" id="passwordInputContainer">
                         <input type="password" 
                                name="database_root_password" 
                                value="${databaseRootPassword}" 
@@ -43,6 +97,35 @@
         </div>
     </form>
 </div>
+
+<script>
+function updatePasswordField(dbType) {
+    var passwordLabel = document.getElementById('passwordLabel');
+    var passwordHint = document.getElementById('passwordHint');
+    var passwordInputContainer = document.getElementById('passwordInputContainer');
+    var postgresInfo = document.getElementById('postgresInfo');
+    var postgresUsernameContainer = document.getElementById('postgresUsernameContainer');
+    
+    if (dbType === 'postgresql') {
+        passwordLabel.textContent = 'PostgreSQL Authentication Information';
+        passwordHint.textContent = 'Leave empty if using peer or trust authentication';
+        passwordInputContainer.style.display = 'block';
+        postgresInfo.style.display = 'flex';
+        postgresUsernameContainer.style.display = 'block';
+    } else {
+        passwordLabel.textContent = '$l10n.get("install.simple.passwdinfo")';
+        passwordHint.textContent = '$l10n.get("install.simple.empty")';
+        passwordInputContainer.style.display = 'block';
+        postgresInfo.style.display = 'none';
+        postgresUsernameContainer.style.display = 'none';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var selectedDbType = document.querySelector('input[name="database_type"]:checked').value;
+    updatePasswordField(selectedDbType);
+});
+</script>
 
 <style>
     body {
@@ -221,6 +304,74 @@
             width: 100%;
             justify-content: center;
         }
+    }
+
+    .password-input-container {
+        transition: all 0.3s ease;
+    }
+
+    .postgres-info {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+        display: flex;
+        gap: 1rem;
+    }
+
+    .info-icon {
+        font-size: 1.5rem;
+        color: #0d6efd;
+    }
+
+    .info-content {
+        flex: 1;
+    }
+
+    .info-title {
+        font-weight: 600;
+        color: #212529;
+        margin: 0 0 0.5rem 0;
+    }
+
+    .info-text {
+        color: #495057;
+        margin: 0.5rem 0;
+        line-height: 1.5;
+    }
+
+    .info-list {
+        margin: 0.5rem 0;
+        padding-left: 1.5rem;
+        color: #495057;
+    }
+
+    .info-list li {
+        margin: 0.25rem 0;
+    }
+
+    .info-list strong {
+        color: #212529;
+    }
+
+    .postgres-username-container {
+        margin-bottom: 1rem;
+    }
+
+    .postgres-username-container .form-input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .postgres-username-container .form-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(242, 101, 34, 0.1);
     }
 </style>
 #parse($FOOTER_TEMPLATE)
