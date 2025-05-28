@@ -10,43 +10,6 @@
 
             <div class="form-section">
                 <div class="form-group">
-                    <label class="form-label">$l10n.get("install.advanced.dbsetup.type")</label>
-                    <div class="radio-cards">
-                        <div class="radio-card">
-                            <label class="radio-card-container">
-                                <input type="radio" 
-                                       name="database_type" 
-                                       value="mysql" 
-                                       #if( $databaseType == "mysql" || $databaseType == "" )checked="checked"#end
-                                       onchange="updateConnectionString('mysql')"/>
-                                <div class="radio-card-content">
-                                    <div class="radio-card-header">MySQL</div>
-                                    <div class="radio-card-body">
-                                        <p>$l10n.get("install.advanced.dbsetup.type.mysql")</p>
-                                    </div>
-                                </div>
-                            </label>
-                        </div>
-
-                        <div class="radio-card">
-                            <label class="radio-card-container">
-                                <input type="radio" 
-                                       name="database_type" 
-                                       value="postgresql" 
-                                       #if( $databaseType == "postgresql" )checked="checked"#end
-                                       onchange="updateConnectionString('postgresql')"/>
-                                <div class="radio-card-content">
-                                    <div class="radio-card-header">PostgreSQL</div>
-                                    <div class="radio-card-body">
-                                        <p>$l10n.get("install.advanced.dbsetup.type.postgresql")</p>
-                                    </div>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
                     <label class="form-label">$l10n.get("install.advanced.dbsetup.conn")</label>
                     <div class="input-container">
                         <input type="text" 
@@ -376,30 +339,4 @@
         }
     }
 </style>
-
-<script type="text/javascript">
-    function updateConnectionString(dbType) {
-        var connectionInput = document.querySelector('input[name="database_connection"]');
-        var usernameInput = document.querySelector('input[name="create_database_username"]');
-        
-        if (dbType === 'postgresql') {
-            connectionInput.value = 'jdbc:postgresql://localhost:5432/@DBNAME@';
-            if (usernameInput) {
-                usernameInput.value = 'postgres';
-            }
-        } else {
-            connectionInput.value = 'jdbc:mysql://localhost:3306/@DBNAME@?autoReconnect=true&sessionVariables=default_storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8';
-            if (usernameInput) {
-                usernameInput.value = 'root';
-            }
-        }
-    }
-
-    // Initialize connection string based on current database type
-    document.addEventListener('DOMContentLoaded', function() {
-        var selectedDbType = document.querySelector('input[name="database_type"]:checked').value;
-        updateConnectionString(selectedDbType);
-    });
-</script>
-
 #parse($FOOTER_TEMPLATE)

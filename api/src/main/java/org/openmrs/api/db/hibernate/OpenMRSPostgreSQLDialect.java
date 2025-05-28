@@ -9,7 +9,7 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import org.hibernate.dialect.PostgreSQL9Dialect;
+import org.hibernate.dialect.PostgreSQL10Dialect;
 import org.hibernate.type.descriptor.sql.LongVarcharTypeDescriptor;
 import org.hibernate.type.descriptor.sql.SqlTypeDescriptor;
 import org.slf4j.Logger;
@@ -20,7 +20,7 @@ import java.sql.Types;
 /**
  * Custom PostgreSQL dialect that handles CLOB to TEXT mapping
  */
-public class OpenMRSPostgreSQLDialect extends PostgreSQL9Dialect {
+public class OpenMRSPostgreSQLDialect extends PostgreSQL10Dialect {
     
     private static final Logger log = LoggerFactory.getLogger(OpenMRSPostgreSQLDialect.class);
     

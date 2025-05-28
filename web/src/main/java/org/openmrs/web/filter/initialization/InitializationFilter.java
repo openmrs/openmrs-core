@@ -465,11 +465,16 @@ public class InitializationFilter extends StartupFilter {
 				return;
 			}
 
+			wizardModel.createDatabaseUsername = Context.getRuntimeProperties().getProperty("connection.username",
+				wizardModel.createDatabaseUsername);
+
+			wizardModel.createUserUsername = wizardModel.createDatabaseUsername;
+
 			String databaseType = httpRequest.getParameter("database_type");
-			wizardModel.databaseRootPassword = httpRequest.getParameter("database_root_password");
 			if (databaseType != null) {
 				wizardModel.databaseType = databaseType;
 				if (DATABASE_MYSQL.equals(databaseType)) {
+					wizardModel.databaseRootPassword = httpRequest.getParameter("database_root_password");
 					wizardModel.databaseConnection = DEFAULT_MYSQL_CONNECTION;
 					checkForEmptyValue(wizardModel.databaseRootPassword, errors, ErrorMessageConstants.ERROR_DB_PSDW_REQ);
 				} else if (DATABASE_POSTGRESQL.equals(databaseType)) {
