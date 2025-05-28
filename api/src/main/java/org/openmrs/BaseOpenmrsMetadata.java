@@ -14,7 +14,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
-import javax.validation.constraints.Size;
 
 import java.util.Date;
 
@@ -38,11 +37,10 @@ import org.openmrs.api.db.hibernate.search.SearchAnalysis;
 public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements OpenmrsMetadata {
 	
 	//***** Properties *****
-	@Column(name = "name", nullable = false, length = 255)
+	@Column(name = "name", nullable = true, length = 255)
 	@FullTextField(analyzer = SearchAnalysis.NAME_ANALYZER)
 	private String name;
 	
-	@Size(max = 255)
 	@Column(name = "description", length = 255)
 	@Lob
 	private String description;
@@ -72,7 +70,6 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	@JoinColumn(name = "retired_by")
 	private User retiredBy;
 	
-	@Size(max = 255)
 	@Column(name = "retire_reason", length = 255)
 	private String retireReason;
 	

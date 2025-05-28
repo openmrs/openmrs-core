@@ -9,8 +9,6 @@
  */
 package org.openmrs;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -44,16 +42,8 @@ import org.hibernate.envers.Audited;
  */
 @Entity
 @Table(name = "relationship_type")
-@AttributeOverrides({
-    /* RelationshipType never actually uses the 'name' & 'description' columns.
-       They must exist for JPA inheritance, but must NOT be constrained “NOT NULL”. */
-    @AttributeOverride(name = "name", column = @Column(name = "name", nullable = true, length = 255)),
-	@AttributeOverride(name = "description", column = @Column(name = "description", nullable = true, length = 255)),
-    @AttributeOverride(name = "retireReason", column = @Column(name = "retire_reason", length = 255))
-})
-
 @Audited
-public class RelationshipType extends BaseChangeableOpenmrsMetadata {
+public class RelationshipType extends BaseChangeableOpenmrsMetadata{
 	
 	public static final long serialVersionUID = 4223L;
 	
@@ -70,10 +60,10 @@ public class RelationshipType extends BaseChangeableOpenmrsMetadata {
 	@Column(name = "b_is_to_a", nullable = false, length = 50)
 	private String bIsToA;
 	
-	@Column(name = "weight")
+	@Column
 	private Integer weight = 0;
 	
-	@Column(name = "preferred")
+	@Column
 	private Boolean preferred = false;
 	
 	// Constructors

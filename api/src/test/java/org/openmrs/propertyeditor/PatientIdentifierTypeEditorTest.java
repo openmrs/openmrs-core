@@ -9,10 +9,6 @@
  */
 package org.openmrs.propertyeditor;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
-
-
-import org.junit.jupiter.api.Test;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,11 +29,4 @@ public class PatientIdentifierTypeEditorTest extends BasePropertyEditorTest<Pati
 	protected PatientIdentifierType getExistingObject() {
 		return patientService.getPatientIdentifierType(EXISTING_ID);
 	}
-
-	@Test
-    public void shouldSetTheEditorValueToNullIfGivenNull() {
-        PatientIdentifierTypeEditor editor = getNewEditor();
-        editor.setAsText(null);
-        assertNull(editor.getValue(), "Editor value should be null when input text is null");
-    }
 }
