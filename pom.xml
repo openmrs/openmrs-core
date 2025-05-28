@@ -370,7 +370,7 @@
 			<dependency>
 				<groupId>commons-beanutils</groupId>
 				<artifactId>commons-beanutils</artifactId>
-				<version>1.10.1</version>
+				<version>1.11.0</version>
 				<exclusions>
 					<exclusion>
 						<groupId>commons-logging</groupId>
@@ -397,7 +397,7 @@
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>42.7.5</version>
+				<version>42.7.6</version>
 				<scope>runtime</scope>
 			</dependency>
 			<dependency>

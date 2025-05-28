@@ -23,7 +23,6 @@
 
 		<mapping resource="org/openmrs/api/db/hibernate/AllergyReaction.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Concept.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/ConceptAnswer.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptAttribute.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptAttributeType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptDescription.hbm.xml" />
@@ -45,7 +44,6 @@
 		<mapping resource="org/openmrs/api/db/hibernate/FieldType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Form.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/FormField.hbm.xml" />
-        <mapping resource="org/openmrs/api/db/hibernate/FormResource.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/GlobalProperty.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Obs.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Person.hbm.xml" />
