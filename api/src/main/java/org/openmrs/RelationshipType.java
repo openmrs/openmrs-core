@@ -56,7 +56,6 @@ public class RelationshipType extends BaseChangeableOpenmrsMetadata{
 	
 	@Column(name = "a_is_to_b", nullable = false, length = 50)
 	private String aIsToB;
-
 	@Column(name = "b_is_to_a", nullable = false, length = 50)
 	private String bIsToA;
 	
@@ -190,6 +189,4 @@ public class RelationshipType extends BaseChangeableOpenmrsMetadata{
 	 */
 	@Override
 	public void setId(Integer id) {
-		setRelationshipTypeId(id);
-	}
-}
+		setRelationshipTypeId(id);}}
