@@ -189,4 +189,6 @@ public class RelationshipType extends BaseChangeableOpenmrsMetadata{
 	 */
 	@Override
 	public void setId(Integer id) {
-		setRelationshipTypeId(id);}}
+		setRelationshipTypeId(id);
+	}
+}
