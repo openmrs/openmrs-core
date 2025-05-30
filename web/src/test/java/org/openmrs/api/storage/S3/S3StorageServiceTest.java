@@ -45,6 +45,7 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 
+
 public class S3StorageServiceTest {
 	 private AmazonS3 mockS3Client;
     private StreamDataService mockStreamDataService;
