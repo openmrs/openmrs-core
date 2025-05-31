@@ -16,6 +16,25 @@ import org.openmrs.order.OrderUtil;
 import org.openmrs.util.OpenmrsUtil;
 
 import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 /**
  * Encapsulates information about the clinical action of a provider requesting something for a
@@ -32,6 +51,9 @@ import java.util.Date;
  * @version 1.0
  */
 @Audited
+@Entity
+@Table(name = "orders")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Order extends BaseCustomizableData<OrderAttribute> implements FormRecordable {
 
 	public static final long serialVersionUID = 4334343L;
@@ -69,42 +91,73 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 		COMPLETED
 	}
 	
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "orders_order_id")
+    @SequenceGenerator(name = "orders_order_id", sequenceName = "orders_order_id_seq", allocationSize = 1)
+    @Column(name = "order_id")
 	private Integer orderId;
 	
+	@ManyToOne
+    @JoinColumn(name = "patient_id", nullable = false)
 	private Patient patient;
 	
+    @ManyToOne
+    @JoinColumn(name = "order_type_id", nullable = false)
 	private OrderType orderType;
 	
+	
+    @ManyToOne
+    @JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
 	
+	@Column(name = "instructions", length = 65535)
 	private String instructions;
-	
+
+	@Column(name = "date_activated", nullable = false)
 	private Date dateActivated;
-	
+
+	@Column(name = "auto_expire_date")
 	private Date autoExpireDate;
 	
+	@ManyToOne
+    @JoinColumn(name = "encounter_id", nullable = false)
 	private Encounter encounter;
 	
+	@ManyToOne
+    @JoinColumn(name = "orderer", nullable = false)
 	private Provider orderer;
 	
+	@Column(name = "date_stopped")
 	private Date dateStopped;
 	
+    @ManyToOne
+    @JoinColumn(name = "order_reason")
 	private Concept orderReason;
 	
+	@Column(name = "accession_number", length = 255)
 	private String accessionNumber;
 	
+    @Column(name = "order_reason_non_coded", length = 255)
 	private String orderReasonNonCoded;
 	
+	@Enumerated(EnumType.STRING)
+	@Column(name = "urgency", nullable = false)
 	private Urgency urgency = Urgency.ROUTINE;
 	
+	@Column(name = "order_number", nullable = false, length = 50)
 	private String orderNumber;
 	
+	@Column(name = "comment_to_fulfiller", length = 1024)
 	private String commentToFulfiller;
 	
+    @ManyToOne
+    @JoinColumn(name = "care_setting", nullable = false)
 	private CareSetting careSetting;
 	
+	@Column(name = "scheduled_date")
 	private Date scheduledDate;
 	
+	@Column(name = "form_namespace_and_path", length = 255)
 	private String formNamespaceAndPath;
 	
 	/**
@@ -112,12 +165,15 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	 * added in the group ex - for two orders of isoniazid and ampicillin, the sequence of 1 and 2
 	 * needed to be maintained
 	 */
+	@Column(name = "sort_weight")
 	private Double sortWeight;
 	
 	/**
 	 * Allows orders to be linked to a previous order - e.g., an order discontinue ampicillin linked
 	 * to the original ampicillin order (the D/C gets its own order number)
 	 */
+	@ManyToOne
+    @JoinColumn(name = "previous_order_id")
 	private Order previousOrder;
 	
 	/**
@@ -125,23 +181,35 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	 * 
 	 * @see org.openmrs.Order.Action
 	 */
+	@Enumerated(EnumType.STRING)
+	@Column(name = "order_action", nullable = false)
 	private Action action = Action.NEW;
 	
 	/**
 	 * {@link org.openmrs.OrderGroup}
 	 */
+	@ManyToOne
+    @JoinColumn(name = "order_group_id")
 	private OrderGroup orderGroup;
 	
 	/**
 	 * Represents the status of an order received from a fulfiller 
 	 * @see FulfillerStatus
 	 */
+	@Enumerated(EnumType.STRING)
+	@Column(name = "fulfiller_status")
 	private FulfillerStatus fulfillerStatus;
 	
 	/**
 	 * Represents the comment that goes along with with fulfiller status
 	 */	
+	@Column(name = "fulfiller_comment", length = 1024)
 	private String fulfillerComment;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("voided asc")
+    private Set<OrderAttribute> attributes = new LinkedHashSet<>();
+
 
 	// Constructors
 	

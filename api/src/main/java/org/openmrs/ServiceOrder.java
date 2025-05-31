@@ -9,12 +9,20 @@
  */
 package org.openmrs;
 
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
+
 /**
  * Provides properties for several order types like TestOrder , ReferralOrder
  * and others depending on the openmrs implementation use case as need arises
  * 
  * @since 2.5.0
  */
+@MappedSuperclass
 public abstract class ServiceOrder extends Order {
 
 	public enum Laterality {
@@ -25,16 +33,26 @@ public abstract class ServiceOrder extends Order {
 
 	public static final long serialVersionUID = 1L;
 
+    @ManyToOne
+    @JoinColumn(name = "specimen_source")
 	public Concept specimenSource;
 
+	@Enumerated(EnumType.STRING)
+    @Column(name = "laterality", length = 20)
 	private Laterality laterality;
 
+	@Column(name = "clinical_history", length = 65535)
 	private String clinicalHistory;
 
+	@ManyToOne
+    @JoinColumn(name = "frequency")
 	private OrderFrequency frequency;
 
+	@Column(name = "number_of_repeats")
 	private Integer numberOfRepeats;
 	
+	@ManyToOne
+    @JoinColumn(name = "location")
 	private Concept location;
 
 	/**
