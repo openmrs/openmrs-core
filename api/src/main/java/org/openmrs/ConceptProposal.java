@@ -9,8 +9,15 @@
  */
 package org.openmrs;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.util.Date;
-
 import org.hibernate.envers.Audited;
 import org.openmrs.util.OpenmrsConstants;
 
@@ -19,8 +26,10 @@ import org.openmrs.util.OpenmrsConstants;
  * an observation, a user can "propose" a new concept if one isn't found already. The proposal is a
  * simple text entry that will be reviewed later. When a proposal is (edited and) accepted, the
  * encounter that prompted this proposal is updated with a new observation pointing at the new (or
- * edited) concept.
  */
+
+@Entity
+@Table(name = "concept_proposal")
 @Audited
 public class ConceptProposal extends BaseOpenmrsObject {
 	
@@ -28,30 +37,59 @@ public class ConceptProposal extends BaseOpenmrsObject {
 	
 	// Fields
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "concept_proposal_id")
 	private Integer conceptProposalId;
 	
+	@ManyToOne
+	@JoinColumn(name = "encounter_id")
 	private Encounter encounter;
 	
+	@ManyToOne
+	@JoinColumn(name = "obs_concept_id")
 	private Concept obsConcept;
 	
+	@ManyToOne
+	@JoinColumn(name = "obs_id")
 	private Obs obs;
 	
+	@ManyToOne
+	@JoinColumn(name = "mapped_concept_id")
 	private Concept mappedConcept;
-	
+
+	/**
+	 * @deprecated Only kept for legacy dataset and Hibernate mapping compatibility. Avoid using this field directly.
+	 */
+	@Deprecated
+	@ManyToOne
+	@JoinColumn(name = "concept_id")
+	private Concept concept;
+
+	@Column(name = "original_text")
 	private String originalText;
 	
+	@Column(name = "final_text")
 	private String finalText;
 	
+	@Column(name = "state")
 	private String state;
 	
+	@Column(name = "comments")
 	private String comments;
 	
+	@ManyToOne
+	@JoinColumn(name = "creator")
 	private User creator;
 	
+	@Column(name = "date_created")
 	private Date dateCreated;
 	
+	@ManyToOne
+	@JoinColumn(name = "changed_by")
 	private User changedBy;
 	
+	@Column(name = "date_changed")
 	private Date dateChanged;
 	
 	// Constructors
