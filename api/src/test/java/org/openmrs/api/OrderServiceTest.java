@@ -2745,6 +2745,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.addAnnotatedClass(ProgramAttributeType.class)
 			.addAnnotatedClass(HL7InError.class)
 			.addAnnotatedClass(OrderType.class)
+			.addAnnotatedClass(Provider.class)
 			.addAnnotatedClass(ConceptAnswer.class)
 			.addAnnotatedClass(ConceptClass.class)
 			.addAnnotatedClass(FormResource.class)
