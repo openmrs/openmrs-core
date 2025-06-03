@@ -169,5 +169,27 @@
 			referencedTableName="obs"
 			referencedColumnNames="obs_id"/>
 	</changeSet>
-	
+	<changeSet id="AddSupportsVisitsToLocation" author="Deborah Nakamatte">
+		<addColumn tableName="location">
+			<column name="supports_visits" type="BOOLEAN" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+		</addColumn>
+		<rollback>
+			<dropColumn tableName="location" columnName="supports_visits"/>
+		</rollback>
+	</changeSet>
+
+	<changeSet id="PopulateSupportsVisitsFromLocationTag" author="Deborah Nakamatte">
+		<comment>Populating new supports_visits column based on 'Visit Location' tag.</comment>
+		<sql>
+			UPDATE location l
+			JOIN location_tag_map ltm ON l.location_id = ltm.location_id
+			JOIN location_tag lt ON ltm.location_tag_id = lt.location_tag_id
+			SET l.supports_visits = TRUE
+			WHERE lt.name = 'Visit Location';
+		</sql>
+		<rollback>
+		</rollback>
+	</changeSet>
 </databaseChangeLog>

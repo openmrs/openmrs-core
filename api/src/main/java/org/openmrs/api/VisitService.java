@@ -393,4 +393,41 @@ public interface VisitService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.EDIT_VISITS)
 	public void stopVisits(Date maximumStartDate);
+
+	/**
+	 * @param visit
+	 * @param location
+	 * @param when
+	 * @return whether the given visit is suitable to store a patient interaction at the given location and date
+	 */
+	@Authorized({ PrivilegeConstants.GET_VISITS }) // Add this authorization if not already present
+	boolean isSuitableVisit(Visit visit, Location location, Date when);
+
+	/**
+	 * Like #getActiveVisit, but if the patient has no active visit, one is created (and persisted).
+	 * (This has the same side-effects as #getActiveVisit.)
+	 * The visit's location will be a valid visit location per our business logic, looking upwards
+	 * in the location hierarchy for the closest parent location that supports visits.
+	 *
+	 * @param patient The patient for whom to ensure an active visit.
+	 * @param department The location at which the patient activity is occurring.
+	 * @return An active {@link Visit} for the patient at a suitable location.
+	 */
+	@Authorized({ PrivilegeConstants.ADD_VISITS, PrivilegeConstants.EDIT_VISITS, PrivilegeConstants.GET_VISITS })
+	Visit ensureActiveVisit(Patient patient, Location department);
+
+	/**
+	 * Ensures that a visit exists for the given patient at the specified location and time.
+	 * If an existing suitable visit is found, it is returned. Otherwise, a new visit is created.
+	 * The visit's location will be a valid visit location per our business logic, looking upwards
+	 * in the location hierarchy for the closest parent location that supports visits.
+	 *
+	 * @param patient The patient for whom to ensure a visit.
+	 * @param location The location at which the patient activity is occurring.
+	 * @param visitType The type of visit to create if a new visit is needed. Can be null.
+	 * @param startDatetime The start date and time of the visit.
+	 * @return An active {@link Visit} for the patient at a suitable location.
+	 */
+	@Authorized({ PrivilegeConstants.ADD_VISITS, PrivilegeConstants.EDIT_VISITS, PrivilegeConstants.GET_VISITS })
+	Visit ensureVisit(Patient patient, Location location, VisitType visitType, Date startDatetime);
 }

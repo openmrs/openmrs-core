@@ -201,4 +201,14 @@ public interface LocationDAO {
 	 * <strong>Should</strong> ignore null values in location tag list
 	 */
 	List<Location> getLocationsHavingAllTags(List<LocationTag> locationTagIdList);
+
+	/**
+	 * Returns a list of {@link Location} objects based on whether they support visits.
+	 *
+	 * @param supportsVisits If true, return locations that support visits; if false, return those that don't.
+	 * @param includeRetired If true, include retired locations in the result.
+	 * @return A list of matching locations.
+	 */
+	List<Location> getLocationsBySupportsVisits(boolean supportsVisits, boolean includeRetired);
+
 }

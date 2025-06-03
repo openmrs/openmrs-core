@@ -10,9 +10,11 @@
 package org.openmrs.api.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.openmrs.Address;
@@ -508,4 +510,22 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	public LocationAttributeType getLocationAttributeTypeByName(String name) {
 		return dao.getLocationAttributeTypeByName(name);
 	}
+
+	/**
+	 * @see org.openmrs.api.LocationService#getAllLocationsThatSupportVisits()
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<Location> getAllLocationsThatSupportVisits() throws APIException {
+		// IMPORTANT: The ideal implementation for performance is to push this filtering
+		// down to the DAO layer. This is a simplified in-memory filter.
+		// You should add a method like 'dao.getLocationsBySupportsVisits(true, false)'
+		// to your LocationDAO and its implementation.
+
+		List<Location> allNonRetiredLocations = dao.getAllLocations(false); // Get all non-retired locations
+		return allNonRetiredLocations.stream()
+				.filter(location -> Boolean.TRUE.equals(location.getSupportsVisits()))
+				.collect(Collectors.toList());
+	}
+
 }

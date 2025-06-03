@@ -32,6 +32,7 @@ import org.openmrs.api.db.VisitDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.parameter.VisitSearchCriteria;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.ValidateUtil;
 import org.springframework.transaction.annotation.Transactional;
@@ -417,4 +418,165 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		return result;
 	}
 
+	/**
+	 * @param visit
+	 * @param location
+	 * @param when
+	 * @return true if when falls in the visits timespan AND location is within visit.location
+	 */
+	@Override
+	public boolean isSuitableVisit(Visit visit, Location location, Date when) {
+		if (OpenmrsUtil.compare(when, visit.getStartDatetime()) < 0) {
+			return false;
+		}
+		// Null stopDatetime means visit is still open
+		if (OpenmrsUtil.compareWithNullAsLatest(when, visit.getStopDatetime()) > 0) {
+			return false;
+		}
+		// Ensure the given location is the same as the visit's location or a child of it
+		return isSameOrAncestor(visit.getLocation(), location);
+	}
+
+	/**
+	 * @see org.openmrs.api.VisitService#ensureActiveVisit(Patient, Location)
+	 */
+	@Override
+	@Transactional
+	public Visit ensureActiveVisit(Patient patient, Location department) {
+		if (patient == null) {
+			throw new APIException("Patient cannot be null when ensuring an active visit.");
+		}
+		if (department == null) {
+			throw new APIException("Department cannot be null when ensuring an active visit.");
+		}
+
+		// Find an existing active visit for the patient at a suitable location
+		Visit activeVisit = getActiveVisitHelper(patient, department);
+
+		if (activeVisit == null) {
+			Date now = new Date();
+
+			Location visitLocation = null;
+			Location current = department;
+			while (current != null) {
+				if (Boolean.TRUE.equals(current.getSupportsVisits())) {
+					visitLocation = current;
+					break;
+				}
+				current = current.getParentLocation();
+			}
+
+			if (visitLocation == null) {
+				throw new APIException("No location found in the hierarchy of " + department.getName() + " that supports visits.");
+			}
+
+			Visit newVisit = new Visit();
+			newVisit.setPatient(patient);
+			newVisit.setLocation(visitLocation);
+			newVisit.setStartDatetime(now);
+
+			activeVisit = saveVisit(newVisit);
+		}
+		return activeVisit;
+	}
+
+	/**
+	 * @see org.openmrs.api.VisitService#ensureVisit(Patient, Location, VisitType, Date)
+	 */
+	@Override
+	@Transactional
+	public Visit ensureVisit(Patient patient, Location location, VisitType visitType, Date startDatetime) {
+		if (patient == null) {
+			throw new APIException("Patient cannot be null when ensuring a visit.");
+		}
+		if (location == null) {
+			throw new APIException("Location cannot be null when ensuring a visit.");
+		}
+		if (startDatetime == null) {
+			startDatetime = new Date();
+		}
+
+		List<Visit> possibleVisits = getVisits(
+				visitType != null ? Collections.singleton(visitType) : null,
+				Collections.singleton(patient),
+				null,
+				null, null, null, null, null, null,
+				true,
+				false
+		);
+
+		for (Visit visit : possibleVisits) {
+			if (isSuitableVisit(visit, location, startDatetime)) {
+				return visit;
+			}
+		}
+
+		Location visitLocation = null;
+		Location current = location;
+		while (current != null) {
+			if (Boolean.TRUE.equals(current.getSupportsVisits())) {
+				visitLocation = current;
+				break;
+			}
+			current = current.getParentLocation();
+		}
+
+		if (visitLocation == null) {
+			throw new APIException("No location found in the hierarchy of " + location.getName() + " that supports visits.");
+		}
+
+		Visit newVisit = new Visit();
+		newVisit.setPatient(patient);
+		newVisit.setLocation(visitLocation);
+		newVisit.setStartDatetime(startDatetime);
+		if (visitType != null) {
+			newVisit.setVisitType(visitType);
+		}
+
+		return saveVisit(newVisit);
+	}
+
+	/**
+	 * Helper method to find an active visit for the patient at a suitable location.
+	 * This method needs to handle traversing the location hierarchy.
+	 */
+	protected Visit getActiveVisitHelper(Patient patient, Location activityLocation) {
+		List<Visit> activeVisits = getActiveVisitsByPatient(patient);
+		for (Visit visit : activeVisits) {
+			// Check if the visit's location is the same as or an ancestor of the activity location
+			// AND if the visit location itself supports visits.
+			// *** FIX: Call the local private isSameOrAncestor method directly ***
+			if (isSameOrAncestor(visit.getLocation(), activityLocation)) {
+				if (Boolean.TRUE.equals(visit.getLocation().getSupportsVisits())) {
+					return visit;
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Checks if a given location is the same as, or an ancestor of, another given location.
+	 * This method is implemented here because it was not found in OpenmrsUtil in this version.
+	 *
+	 * @param ancestor   The potential ancestor location.
+	 * @param descendant The potential descendant location.
+	 * @return true if ancestor is the same as descendant, or if ancestor is a parent (or grandparent, etc.) of descendant.
+	 */
+	private boolean isSameOrAncestor(Location ancestor, Location descendant) {
+		if (ancestor == null) {
+			return false;
+		}
+		if (ancestor.equals(descendant)) {
+			return true;
+		}
+		Location current = descendant;
+		while (current != null) {
+			if (ancestor.equals(current)) {
+				return true;
+			}
+			current = current.getParentLocation();
+		}
+		return false;
+	}
 }

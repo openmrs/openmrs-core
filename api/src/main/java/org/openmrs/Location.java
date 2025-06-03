@@ -149,6 +149,9 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 		inverseJoinColumns = @JoinColumn(name = "location_tag_id"))
 	@Independent
 	private Set<LocationTag> tags;
+
+	@Column(name = "supports_visits")
+	private Boolean supportsVisits = false;
 	
 	// Constructors
 	
@@ -854,4 +857,13 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	public void setAddress15(String address15) {
 		this.address15 = address15;
 	}
+
+	public Boolean getSupportsVisits() {
+		return supportsVisits;
+	}
+
+	public void setSupportsVisits(Boolean supportsVisits) {
+		this.supportsVisits = supportsVisits;
+	}
+
 }

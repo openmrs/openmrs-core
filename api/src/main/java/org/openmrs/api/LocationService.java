@@ -499,4 +499,16 @@ public interface LocationService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_LOCATION_ATTRIBUTE_TYPES)
 	LocationAttributeType getLocationAttributeTypeByName(String locationAttributeTypeName);
+
+	/**
+	 * Retrieves all non-retired {@link Location} objects where {@link Location#getSupportsVisits()} is true.
+	 * This method is functionally equivalent to the previous behavior of checking for a "Visit Location" tag
+	 * in the EMR API module, but now uses the dedicated `supportsVisits` field in core.
+	 *
+	 * @return a {@link List} of locations that support visits.
+	 * @throws APIException if there is an issue retrieving locations.
+	 * @since 2.x // Adjust based on actual OpenMRS core version
+	 */
+	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	List<Location> getAllLocationsThatSupportVisits() throws APIException;
 }

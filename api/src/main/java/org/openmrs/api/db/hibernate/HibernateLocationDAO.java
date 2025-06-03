@@ -23,8 +23,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.openmrs.Location;
 import org.openmrs.LocationAttribute;
 import org.openmrs.LocationAttributeType;
@@ -436,4 +438,17 @@ public class HibernateLocationDAO implements LocationDAO {
 		}
 		return locationTagIds;
 	}
-}
+
+	/**
+	 * @see org.openmrs.api.db.LocationDAO#getLocationsBySupportsVisits(boolean, boolean)
+	 */
+	@Override
+	public List<Location> getLocationsBySupportsVisits(boolean supportsVisits, boolean includeRetired) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Location.class);
+		criteria.add(Restrictions.eq("supportsVisits", supportsVisits));
+		if (!includeRetired) {
+			criteria.add(Restrictions.eq("retired", false));
+		}
+		return criteria.list();
+	   }
+	}
