@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+
+<Configuration xmlns="http://logging.apache.org/log4j/2.0/config">
+	<Properties>
+		<!-- The default pattern is stored as a property so that it's only defined once.
+		     It's also quite challenging to escape using Log4j2's variable substitution. -->
+		<Property name="defaultPattern">%p - %C{1}.%M(%L) |%d{ISO8601}| %m%n</Property>
+	</Properties>
+	<Appenders>
+		<!-- the console appender is not required but usually a good idea -->
+		<Console name="CONSOLE" target="SYSTEM_OUT">
+			<PatternLayout pattern="${openmrs:logLayout:-${defaultPattern}}" />
+		</Console>
+		<!-- OpenMRS should have an appender called "OPENMRS FILE APPENDER" that appends to a file -->
+		<RollingFile name="OPENMRS FILE APPENDER"
+					 fileName="${openmrs:logLocation:-${openmrs:applicationDirectory}}/openmrs.log"
+					 filePattern="${openmrs:logLocation:-${openmrs:applicationDirectory}}/openmrs.%i.log">
+			<PatternLayout pattern="${openmrs:logLayout:-${defaultPattern}}" />
+			<Policies>
+				<OnStartupTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="10 MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="1" />
+		</RollingFile>
+		<!-- The MEMORY_APPENDER is used to keep a subset of logging messages in memory to be displayed to the user.
+		 	 If one is not configured here, it will be created automatically. -->
+		<Memory name="MEMORY_APPENDER"
+				bufferSize="200"> <!-- bufferSize is how many messages are kept in memory -->
+			<PatternLayout pattern="${openmrs:logLayout:-${defaultPattern}}" />
+		</Memory>
+	</Appenders>
+	<Loggers>
+		<Logger name="org.apache" level="WARN" />
+		<Logger name="org.hibernate" level="ERROR" />
+		<Logger name="net.sf.ehcache" level="ERROR" />
+		<Logger name="org.springframework" level="WARN" />
+		<Logger name="org.openmrs" level="WARN" />
+		<Logger name="liquibase" level="INFO" />
+		<!-- 
+			This controls the LoggingAdvice class that wraps around the OpenMRS services 
+			WARN == don't log anything special for the services
+			INFO == log all setters
+			DEBUG == log all setters & log all getters & log execution time
+		-->
+		<Logger name="org.openmrs.api" level="INFO" />
+		<Logger name="org.apache.fop" level="ERROR" />
+		<!-- Hide the useless MissingResourceException -->
+		<Logger name="org.springframework.context.support.ResourceBundleMessageSource" level="ERROR" />
+		<Logger name="org.springframework.beans.factory.support.DefaultListableBeanFactory" level="ERROR" />
+		<Root level="WARN">
+			<AppenderRef ref="CONSOLE" />
+			<AppenderRef ref="MEMORY_APPENDER" />
+			<AppenderRef ref="OPENMRS FILE APPENDER" />
+		</Root>
+	</Loggers>
+</Configuration>

@@ -57,6 +57,7 @@
 		<module>web</module>
 		<module>webapp</module>
 		<module>liquibase</module>
+		<module>test-module</module>
 	</modules>
 
 	<dependencyManagement>
