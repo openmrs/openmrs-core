@@ -485,6 +485,9 @@
 			<column name="maximum_daily_dose" type="double precision"/>
 			<column name="minimum_daily_dose" type="double precision"/>
 			<column name="route" type="int"/>
+			<column name="description" type="text">
+			<constraints nullable="false"/>
+			</column>
 			<column name="units" type="varchar(50)"/>
 			<column defaultValueNumeric="0" name="creator" type="int">
 				<constraints nullable="false"/>
