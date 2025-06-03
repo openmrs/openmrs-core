@@ -49,7 +49,6 @@
 		<mapping resource="org/openmrs/api/db/hibernate/Person.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PersonAttribute.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PersonMergeLog.hbm.xml" />		
-		<mapping resource="org/openmrs/api/db/hibernate/PersonName.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/LoginCredential.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Privilege.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Role.hbm.xml" />
