@@ -9,6 +9,13 @@
  */
 package org.openmrs.test;
 
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.UIManager;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
@@ -34,14 +41,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-import javax.swing.UIManager;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -111,7 +110,7 @@ import org.xml.sax.InputSource;
  * To migrate your tests follow <a href="https://wiki.openmrs.org/display/docs/How+to+migrate+to+JUnit+5">How to migrate to JUnit 5</a>.
  * The JUnit 5 version of the class is {@link org.openmrs.test.jupiter.BaseContextSensitiveTest}.<p>
  */
-@ContextConfiguration(locations = { "classpath:applicationContext-service.xml", "classpath*:openmrs-servlet.xml",
+@ContextConfiguration(locations = { "classpath:applicationContext-service.xml",
         "classpath*:moduleApplicationContext.xml", "classpath*:TestingApplicationContext.xml" })
 @TestExecutionListeners( { TransactionalTestExecutionListener.class, SkipBaseSetupAnnotationExecutionListener.class,
         StartModuleExecutionListener.class })
@@ -161,7 +160,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	/**
 	 * Allows to determine if the DB is initialized with standard data
 	 */
-	private static boolean isBaseSetup;
+	private static volatile boolean isBaseSetup;
 	
 	/**
 	 * Stores a user authenticated for running tests which allows to discover a situation when some
@@ -176,8 +175,6 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 */
 	@InjectMocks
 	protected ContextMockHelper contextMockHelper;
-	
-	private static volatile BaseContextSensitiveTest instance;
 	
 	/**
 	 * Basic constructor for the super class to all openmrs api unit tests. This constructor sets up
@@ -199,10 +196,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		Context.setRuntimeProperties(props);
 		
 		loadCount++;
-		
-		instance = this;
 	}
-	
+
 	/**
 	 * Initializes fields annotated with {@link Mock}.
 	 * 
@@ -874,11 +869,11 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			connection.commit();
 			
 			updateSearchIndex();
-			
-			isBaseSetup = false;
 		}
 		catch (SQLException | DatabaseUnitException e) {
 			throw new DatabaseUnitRuntimeException(e);
+		} finally {
+			isBaseSetup = false;
 		}
 	}
 	
@@ -985,18 +980,6 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 */
 	@AfterClass
 	public static void closeSessionAfterEachClass() throws Exception {
-		//Some tests add data via executeDataset()
-		//We need to delete it in order not to interfere with others
-		if (instance != null) {
-			try {
-				instance.deleteAllData();
-			}
-			catch (Exception ex) {
-				//No need to worry about this
-			}
-			instance = null;
-		}
-		
 		// clean up the session so we don't leak memory
 		if (Context.isSessionOpen()) {
 			Context.closeSession();
