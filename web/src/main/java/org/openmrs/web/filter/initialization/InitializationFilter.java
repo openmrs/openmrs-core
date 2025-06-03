@@ -1497,7 +1497,7 @@ public class InitializationFilter extends StartupFilter {
 							runtimeProperties.put("connection.driver_class", wizardModel.databaseDriver);
 						}
 						if (finalDatabaseConnectionString.contains(DATABASE_POSTGRESQL)) {
-							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQL82Dialect");
+							runtimeProperties.put("hibernate.dialect", "org.openmrs.api.db.hibernate.OpenMRSPostgreSQLDialect");
 						}
 						if (finalDatabaseConnectionString.contains(DATABASE_SQLSERVER)) {
 							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.SQLServerDialect");
@@ -1661,7 +1661,7 @@ public class InitializationFilter extends StartupFilter {
 							
 							for (String changelog : changelogs) {
 								log.debug("applying Liquibase changelog '{}'", changelog);
-								
+																			
 								DatabaseUpdater.executeChangelog(changelog,
 									new PrintingChangeSetExecutorCallback("executing Liquibase changelog " + changelog));
 							}
