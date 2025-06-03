@@ -60,8 +60,8 @@ public class OpenmrsConfigurationFactory extends ConfigurationFactory {
 			return null;
 		}
 		
-		// try to load the configuration from the application directory
 		if (configLocation == null) {
+			// Try to load the configuration from the application directory
 			for (File applicationDirectory : new File[] {
 				OpenmrsUtil.getDirectoryInApplicationDataDirectory("configuration"),
 				OpenmrsUtil.getApplicationDataDirectoryAsFile()
@@ -78,24 +78,27 @@ public class OpenmrsConfigurationFactory extends ConfigurationFactory {
 				}
 			}
 		}
-		
-		return super.getConfiguration(loggerContext, name, configLocation);		
+
+		return super.getConfiguration(loggerContext, name, configLocation);
 	}
-	
+
 	@Override
 	public Configuration getConfiguration(LoggerContext loggerContext, ConfigurationSource source) {
-		switch (FilenameUtils.getExtension(source.getFile().getName()).toLowerCase(Locale.ROOT)) {
-			case "xml":
-				return new OpenmrsXmlConfiguration(loggerContext, source);
-			case "yaml":
-			case "yml":
-				return new OpenmrsYamlConfiguration(loggerContext, source);
-			case "json":
-				return new OpenmrsJsonConfiguration(loggerContext, source);
-			default:
-				throw new IllegalArgumentException(
-					OpenmrsConfigurationFactory.class.getName() + " does not know how to handle source " + source.getFile());
+		if (source != null && source.getFile() != null) {
+			switch (FilenameUtils.getExtension(source.getFile().getName()).toLowerCase(Locale.ROOT)) {
+				case "xml":
+					return new OpenmrsXmlConfiguration(loggerContext, source);
+				case "yaml":
+				case "yml":
+					return new OpenmrsYamlConfiguration(loggerContext, source);
+				case "json":
+					return new OpenmrsJsonConfiguration(loggerContext, source);
+				default:
+					throw new IllegalArgumentException(
+						OpenmrsConfigurationFactory.class.getName() + " does not know how to handle source " + source.getFile());
+			}
 		}
+		return null;
 	}
 	
 	@Override
