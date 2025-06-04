@@ -169,7 +169,12 @@
 			referencedTableName="obs"
 			referencedColumnNames="obs_id"/>
 	</changeSet>
-	<changeSet id="AddSupportsVisitsToLocation" author="Deborah Nakamatte">
+	<changeSet id="add-supports-visits-to-location-2025-06-04-07:52" author="Deborah Nakamatte">
+		<preConditions onError="HALT" onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="location"/>
+			</not>
+		</preConditions>
 		<addColumn tableName="location">
 			<column name="supports_visits" type="BOOLEAN" defaultValueBoolean="false">
 				<constraints nullable="false"/>
@@ -180,7 +185,7 @@
 		</rollback>
 	</changeSet>
 
-	<changeSet id="PopulateSupportsVisitsFromLocationTag" author="Deborah Nakamatte">
+	<changeSet id="populate-supports-visits-from-location-tag-2025-06-04-07:52" author="Deborah Nakamatte">
 		<comment>Populating new supports_visits column based on 'Visit Location' tag.</comment>
 		<sql>
 			UPDATE location l

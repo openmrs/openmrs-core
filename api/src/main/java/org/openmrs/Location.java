@@ -150,7 +150,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	@Independent
 	private Set<LocationTag> tags;
 
-	@Column(name = "supports_visits")
+	@Column(name = "supports_visits", nullable = false, columnDefinition = "boolean default false")
 	private Boolean supportsVisits = false;
 	
 	// Constructors
