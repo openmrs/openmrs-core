@@ -46,7 +46,6 @@
 		<mapping resource="org/openmrs/api/db/hibernate/FormField.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/GlobalProperty.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Obs.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/Person.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PersonAttribute.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PersonMergeLog.hbm.xml" />		
 		<mapping resource="org/openmrs/api/db/hibernate/PersonName.hbm.xml" />
