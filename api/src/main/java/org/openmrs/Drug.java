@@ -14,8 +14,22 @@ import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Set;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.AssociationInverseSide;
@@ -32,36 +46,51 @@ import org.openmrs.api.context.Context;
  */
 @Indexed
 @Audited
+@Entity
+@Table(name = "drug")
+@AttributeOverride( name = "description", column = @Column( insertable = false, updatable = false))
+@AttributeOverride( name = "name", column = @Column( name= "name" , length = 255))
 public class Drug extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 285L;
 	
 	// Fields
 	@DocumentId
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "drug_drug_id_seq")
+	@GenericGenerator( name = "drug_drug_id_seq", strategy = "native",
+	parameters = @Parameter(name = "sequence" , value = "drug_drug_id_seq")
+	 )
+	@Column(name = "drug_id")
 	private Integer drugId;
-	
+	@Column(name = "combination", nullable = false, length = 1)
 	private Boolean combination = false;
-	
+	@ManyToOne
+	@JoinColumn(name = "dosage_form")
 	private Concept dosageForm;
-	
+	@Column(name = "maximum_daily_dose", length = 22 )
 	private Double maximumDailyDose;
-	
+	@Column( name = "minimum_daily_dose", length = 22)
 	private Double minimumDailyDose;
-	
+	@Column(name = "strength", length = 255)
 	private String strength;
-	
+	@ManyToOne
+	@JoinColumn( name = "dose_limit_units")
 	private Concept doseLimitUnits;
 	
 	@IndexedEmbedded(includePaths = "conceptId", includeEmbeddedObjectId = true)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToOne
+	@JoinColumn( name = "concept_id", nullable = false)
 	private Concept concept;
 	
 	@IndexedEmbedded
 	@AssociationInverseSide(inversePath = @ObjectPath({
 		@PropertyValue(propertyName = "drug")
 	}))
+	@OneToMany(mappedBy = "drug", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<DrugReferenceMap> drugReferenceMaps;
-	
+	@OneToMany(mappedBy="drug", cascade=CascadeType.ALL, orphanRemoval = true)
 	private Collection<DrugIngredient> ingredients;
 	
 	// Constructors

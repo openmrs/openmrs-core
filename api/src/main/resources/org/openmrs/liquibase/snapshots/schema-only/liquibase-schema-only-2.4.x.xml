@@ -775,6 +775,9 @@
             <column defaultValueComputed="NULL" name="maximum_daily_dose" type="DOUBLE"/>
             <column defaultValueComputed="NULL" name="minimum_daily_dose" type="DOUBLE"/>
             <column defaultValueComputed="NULL" name="route" type="INT"/>
+            <column name="description" type="text">
+            				<constraints nullable="false"/>
+			</column>
             <column defaultValueNumeric="0" name="creator" type="INT">
                 <constraints nullable="false"/>
             </column>
