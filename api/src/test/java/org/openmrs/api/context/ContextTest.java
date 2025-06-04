@@ -9,16 +9,21 @@
  */
 package org.openmrs.api.context;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterAll;
@@ -306,9 +311,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 		// Assert that the entity name has been removed from cache
 		long hitCount = sf.getStatistics().getSecondLevelCacheHitCount();
 		Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
-		long newHitCount = sf.getStatistics().getSecondLevelCacheHitCount();
-		assertTrue(newHitCount == hitCount || newHitCount == hitCount + 1,
-		    "Cache hit count should not increase by more than 1 after eviction");
+		assertThat(sf.getStatistics().getSecondLevelCacheHitCount(), is(hitCount));
 	}
 
 	/**
@@ -328,9 +331,13 @@ public class ContextTest extends BaseContextSensitiveTest {
 		
 		// evictAllEntities
 		Context.evictAllEntities(PERSON_NAME_CLASS);
-		// After eviction, just ensure entities can be loaded (do not assert on cache hit count)
+
+		// Assert that the class entities have been removed from cache
+		long hitCount = sf.getStatistics().getSecondLevelCacheHitCount();
 		Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
+		assertThat(sf.getStatistics().getSecondLevelCacheHitCount(), is(hitCount));
 		Context.getPersonService().getPersonName(PERSON_NAME_ID_8);
+		assertThat(sf.getStatistics().getSecondLevelCacheHitCount(), is(hitCount));
 	}
 
 	/**
@@ -351,9 +358,14 @@ public class ContextTest extends BaseContextSensitiveTest {
 
 		// clearEntireCache
 		Context.clearEntireCache();
-		// After eviction, just ensure entities can be loaded (do not assert on cache hit count)
+
+		// Assert that all entities have been removed from cache
+		long hitCount = sf.getStatistics().getSecondLevelCacheHitCount();
 		Context.getPersonService().getPersonName(PERSON_NAME_ID_2);
+		assertThat(sf.getStatistics().getSecondLevelCacheHitCount(), is(hitCount));
 		Context.getPersonService().getPersonName(PERSON_NAME_ID_8);
+		assertThat(sf.getStatistics().getSecondLevelCacheHitCount(), is(hitCount));
 		Context.getPatientService().getPatient(PERSON_NAME_ID_2);
+		assertThat(sf.getStatistics().getSecondLevelCacheHitCount(), is(hitCount));
 	}
 }
