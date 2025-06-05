@@ -98,10 +98,25 @@ public class InitializationWizardModel {
 	public String databaseName = DEFAULT_DATABASE_NAME;
 	
 	/**
-	 * Filled out by user on the databasesetup.vm page Looks like:
+	 * The type of database being used (mysql or postgresql)
 	 */
-	public String databaseConnection = "jdbc:mysql://localhost:3306/@DBNAME@?autoReconnect=true&sessionVariables=default_storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8";
+	public String databaseType = "mysql";
 	
+	/**
+	 * Default MySQL connection string
+	 */
+	protected static final String DEFAULT_MYSQL_CONNECTION = "jdbc:mysql://localhost:3306/@DBNAME@?autoReconnect=true&sessionVariables=default_storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8";
+	
+	/**
+	 * Default PostgreSQL connection string
+	 */
+	protected static final String DEFAULT_POSTGRESQL_CONNECTION = "jdbc:postgresql://localhost:5432/@DBNAME@?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8";
+	
+	/**
+	 * Filled out by user on the databasesetup.vm page
+	 */
+	public String databaseConnection = DEFAULT_MYSQL_CONNECTION;
+
 	/**
 	 * Optional Database Driver string filled in on databasesetup.vm
 	 */

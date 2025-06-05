@@ -19,6 +19,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -79,6 +80,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
 
 import static org.openmrs.util.PrivilegeConstants.GET_GLOBAL_PROPERTIES;
+import static org.openmrs.web.filter.initialization.InitializationWizardModel.DEFAULT_MYSQL_CONNECTION;
+import static org.openmrs.web.filter.initialization.InitializationWizardModel.DEFAULT_POSTGRESQL_CONNECTION;
 
 /**
  * This is the first filter that is processed. It is only active when starting OpenMRS for the very
@@ -461,24 +464,30 @@ public class InitializationFilter extends StartupFilter {
 				renderTemplate(INSTALL_METHOD, referenceMap, httpResponse);
 				return;
 			}
-			wizardModel.databaseConnection = httpRequest.getParameter("database_connection");
 
-			wizardModel.createDatabaseUsername = Context.getRuntimeProperties().getProperty("connection.username",
-				wizardModel.createDatabaseUsername);
-			
+			String databaseType = httpRequest.getParameter("database_type");
+			if (databaseType != null) {
+				wizardModel.databaseType = databaseType;
+				if (DATABASE_MYSQL.equals(databaseType)) {
+					wizardModel.databaseConnection = DEFAULT_MYSQL_CONNECTION;
+					wizardModel.createDatabaseUsername = Context.getRuntimeProperties().getProperty("connection.username", wizardModel.createDatabaseUsername);
+					wizardModel.databaseRootPassword = httpRequest.getParameter("database_root_password");
+					checkForEmptyValue(wizardModel.databaseRootPassword, errors, ErrorMessageConstants.ERROR_DB_PSDW_REQ);
+				} else if (DATABASE_POSTGRESQL.equals(databaseType)) {
+					wizardModel.databaseConnection = DEFAULT_POSTGRESQL_CONNECTION;
+					wizardModel.databaseRootPassword = httpRequest.getParameter("database_root_password");
+					wizardModel.createDatabaseUsername = httpRequest.getParameter("postgres_superuser");
+				}
+			}
+
 			wizardModel.createUserUsername = wizardModel.createDatabaseUsername;
-			
-			wizardModel.databaseRootPassword = httpRequest.getParameter("database_root_password");
-			checkForEmptyValue(wizardModel.databaseRootPassword, errors, ErrorMessageConstants.ERROR_DB_PSDW_REQ);
 			
 			wizardModel.hasCurrentOpenmrsDatabase = false;
 			wizardModel.createTables = true;
 			// default wizardModel.databaseName is openmrs
-			// default wizardModel.createDatabaseUsername is root
 			wizardModel.createDatabasePassword = wizardModel.databaseRootPassword;
 			wizardModel.hasCurrentDatabaseUser = false;
 			wizardModel.createDatabaseUser = true;
-			// default wizardModel.createUserUsername is root
 			wizardModel.createUserPassword = wizardModel.databaseRootPassword;
 			
 			wizardModel.moduleWebAdmin = true;
@@ -833,7 +842,7 @@ public class InitializationFilter extends StartupFilter {
 			wizardModel.tasksToExecute.add(WizardTask.CREATE_DB_USER);
 		}
 	}
-	
+
 	private void createSimpleSetup(String databaseRootPassword) {
 		setDatabaseNameIfInTestMode();
 		wizardModel.databaseConnection = Context.getRuntimeProperties().getProperty("connection.url",
@@ -843,10 +852,13 @@ public class InitializationFilter extends StartupFilter {
 			wizardModel.createDatabaseUsername);
 		
 		wizardModel.createUserUsername = wizardModel.createDatabaseUsername;
-		
+
 		wizardModel.databaseRootPassword = databaseRootPassword;
-		checkForEmptyValue(wizardModel.databaseRootPassword, errors, ErrorMessageConstants.ERROR_DB_PSDW_REQ);
 		
+		if (!DATABASE_POSTGRESQL.equals(wizardModel.databaseType)) {
+			checkForEmptyValue(wizardModel.databaseRootPassword, errors, ErrorMessageConstants.ERROR_DB_PSDW_REQ);
+		}
+
 		wizardModel.hasCurrentOpenmrsDatabase = false;
 		wizardModel.createTables = true;
 		// default wizardModel.databaseName is openmrs
@@ -1144,8 +1156,34 @@ public class InitializationFilter extends StartupFilter {
 			
 			String tempDatabaseConnection;
 			if (sql.contains("create database")) {
-				tempDatabaseConnection = wizardModel.databaseConnection.replace("@DBNAME@",
-					""); // make this dbname agnostic so we can create the db
+				if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
+					// This is necessary because you cannot connect to a database that hasn't been created yet
+					tempDatabaseConnection = wizardModel.databaseConnection.replace("@DBNAME@", "postgres");
+					
+					try {
+						Connection conn = DriverManager.getConnection(tempDatabaseConnection, user, pw);
+						Statement stmt = conn.createStatement();
+						ResultSet rs = stmt.executeQuery("SELECT 1 FROM pg_database WHERE datname = '" + wizardModel.databaseName + "'");
+						boolean dbExists = rs.next();
+						rs.close();
+						stmt.close();
+						conn.close();
+						
+						if (!dbExists) {
+							replacedSql = "CREATE DATABASE " + wizardModel.databaseName + " WITH ENCODING 'UTF8'";
+						} else {
+							return 0;
+						}
+					} catch (SQLException e) {
+						if (!silent) {
+							log.warn("Error checking if database exists", e);
+							errors.put("PostgreSQL Error: Unable to check if database exists. Please ensure PostgreSQL is running and you have sufficient privileges.", null);
+						}
+						return -1;
+					}
+				} else {
+					tempDatabaseConnection = wizardModel.databaseConnection.replace("@DBNAME@", "");
+				}
 			} else {
 				tempDatabaseConnection = wizardModel.databaseConnection.replace("@DBNAME@", wizardModel.databaseName);
 			}
@@ -1381,6 +1419,7 @@ public class InitializationFilter extends StartupFilter {
 							} else {
 								result = 1;
 							}
+							
 							// throw the user back to the main screen if this error occurs
 							if (result < 0) {
 								reportError(ErrorMessageConstants.ERROR_DB_CREATE_NEW, DEFAULT_PAGE);
@@ -1423,16 +1462,60 @@ public class InitializationFilter extends StartupFilter {
 							if (isCurrentDatabase(DATABASE_MYSQL)) {
 								sql = "drop user '?'@" + host;
 							} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
-								sql = "drop user `?`";
+								try {
+									String postgresConnection = wizardModel.databaseConnection.replace("@DBNAME@", "postgres");
+									Connection conn = DriverManager.getConnection(postgresConnection, wizardModel.createUserUsername, wizardModel.createUserPassword);
+									Statement stmt = conn.createStatement();
+									ResultSet rs = stmt.executeQuery("SELECT 1 FROM pg_roles WHERE rolname = '" + connectionUsername + "'");
+									boolean userExists = rs.next();
+									rs.close();
+									stmt.close();
+									conn.close();
+									
+									if (userExists) {
+										sql = null;
+									} else {
+										sql = "drop user `?`";
+									}
+								} catch (SQLException e) {
+									log.warn("Error checking if user exists", e);
+									errors.put("PostgreSQL Error: Unable to check if user exists. Please ensure PostgreSQL is running and you have sufficient privileges.", null);
+									return;
+								}
 							}
 							
-							executeStatement(true, wizardModel.createUserUsername, wizardModel.createUserPassword, sql,
-								connectionUsername);
+							if (sql != null) {
+								executeStatement(true, wizardModel.createUserUsername, wizardModel.createUserPassword, sql,
+									connectionUsername);
+							}
 							
 							if (isCurrentDatabase(DATABASE_MYSQL)) {
 								sql = "create user '?'@" + host + " identified by '?'";
 							} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
-								sql = "create user `?` with password '?'";
+								try {
+									String postgresConnection = wizardModel.databaseConnection.replace("@DBNAME@", "postgres");
+									Connection conn = DriverManager.getConnection(postgresConnection, wizardModel.createUserUsername, wizardModel.createUserPassword);
+									Statement stmt = conn.createStatement();
+									
+									ResultSet rs = stmt.executeQuery("SELECT 1 FROM pg_roles WHERE rolname = '" + connectionUsername + "'");
+									boolean userExists = rs.next();
+									rs.close();
+									
+									if (userExists) {
+										sql = "ALTER ROLE \"" + connectionUsername + "\" WITH PASSWORD '" + connectionPassword + "' CREATEROLE CREATEDB";
+										wizardModel.workLog.add("User " + connectionUsername + " already exists, updating password and privileges");
+									} else {
+										sql = "CREATE ROLE \"" + connectionUsername + "\" WITH LOGIN PASSWORD '" + connectionPassword + "' CREATEROLE CREATEDB";
+										wizardModel.workLog.add("Creating new user " + connectionUsername + " with CREATEROLE and CREATEDB privileges");
+									}
+									
+									stmt.close();
+									conn.close();
+								} catch (SQLException e) {
+									log.warn("Error managing PostgreSQL user", e);
+									errors.put("PostgreSQL Error: Confirm that PostgreSQL is running and your credentials have permission to create or modify users.", null);
+									return;
+								}
 							}
 							
 							if (-1 != executeStatement(false, wizardModel.createUserUsername, wizardModel.createUserPassword,
@@ -1444,25 +1527,30 @@ public class InitializationFilter extends StartupFilter {
 								return;
 							}
 							
-							// grant the roles
+							// grant the role
 							int result = 1;
 							if (isCurrentDatabase(DATABASE_MYSQL)) {
 								sql = "GRANT ALL ON `?`.* TO '?'@" + host;
 								result = executeStatement(false, wizardModel.createUserUsername,
 									wizardModel.createUserPassword, sql, wizardModel.databaseName, connectionUsername);
 							} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
-								sql = "ALTER USER `?` WITH SUPERUSER";
-								result = executeStatement(false, wizardModel.createUserUsername,
-									wizardModel.createUserPassword, sql, connectionUsername);
-							}
-							
-							// throw the user back to the main screen if this error occurs
-							if (result < 0) {
-								reportError(ErrorMessageConstants.ERROR_DB_GRANT_PRIV, DEFAULT_PAGE);
-								return;
-							} else {
-								wizardModel.workLog.add("Granted user " + connectionUsername + " all privileges to database "
-									+ wizardModel.databaseName);
+								try {
+									String postgresConnection = wizardModel.databaseConnection.replace("@DBNAME@", "postgres");
+									Connection conn = DriverManager.getConnection(postgresConnection, wizardModel.createUserUsername, wizardModel.createUserPassword);
+									Statement stmt = conn.createStatement();
+									
+									stmt.execute("GRANT ALL PRIVILEGES ON DATABASE \"" + wizardModel.databaseName + "\" TO \"" + connectionUsername + "\"");
+									stmt.execute("GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO \"" + connectionUsername + "\"");
+									stmt.execute("GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO \"" + connectionUsername + "\"");
+									
+									stmt.close();
+									conn.close();
+									result = 1;
+								} catch (SQLException e) {
+									log.warn("Error granting PostgreSQL privileges", e);
+									errors.put("Could not grant privileges. Check connection and superuser rights.", null);
+									result = -1;
+								}
 							}
 							
 							addExecutedTask(WizardTask.CREATE_DB_USER);
@@ -1487,6 +1575,31 @@ public class InitializationFilter extends StartupFilter {
 							return;
 						}
 						
+						if (finalDatabaseConnectionString.contains(DATABASE_POSTGRESQL)) {
+							String postgresConnectionString = finalDatabaseConnectionString.replace(wizardModel.databaseName, "postgres");
+							if (!verifyConnection(connectionUsername, connectionPassword.toString(), postgresConnectionString)) {
+								setMessage("Verify that you can connect to the 'postgres' database");
+								reportError("Unable to connect to the 'postgres' database. Make sure PostgreSQL is running and your user has privileges.", DEFAULT_PAGE);
+								return;
+							}
+							
+							// Try to create the database if it doesn't exist
+							try {
+								Connection conn = DriverManager.getConnection(postgresConnectionString, connectionUsername, connectionPassword.toString());
+								Statement stmt = conn.createStatement();
+								stmt.execute("CREATE DATABASE " + wizardModel.databaseName + " WITH ENCODING 'UTF8'");
+								stmt.close();
+								conn.close();
+							} catch (SQLException e) {
+								// If database already exists, that's fine
+								if (!e.getMessage().contains("already exists")) {
+									setMessage("Error creating database");
+									reportError("Error creating database: " + e.getMessage(), DEFAULT_PAGE);
+									return;
+								}
+							}
+						}
+						
 						// save the properties for startup purposes
 						Properties runtimeProperties = new Properties();
 						
@@ -1497,7 +1610,7 @@ public class InitializationFilter extends StartupFilter {
 							runtimeProperties.put("connection.driver_class", wizardModel.databaseDriver);
 						}
 						if (finalDatabaseConnectionString.contains(DATABASE_POSTGRESQL)) {
-							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQL82Dialect");
+							runtimeProperties.put("hibernate.dialect", "org.openmrs.api.db.hibernate.OpenMRSPostgreSQLDialect");
 						}
 						if (finalDatabaseConnectionString.contains(DATABASE_SQLSERVER)) {
 							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.SQLServerDialect");
