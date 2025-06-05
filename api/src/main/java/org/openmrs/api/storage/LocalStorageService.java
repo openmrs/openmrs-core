@@ -25,7 +25,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.openmrs.api.StorageService;
@@ -38,6 +37,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Service;
+
 
 /**
  * Used to persist data in a local file system or volumes.
@@ -81,19 +81,21 @@ public class LocalStorageService extends BaseStorageService implements StorageSe
 		return Paths.get(OpenmrsUtil.getApplicationDataDirectory());
 	}
 
-	@Override
-	public ObjectMetadata getMetadata(final String key) throws IOException {
-		Path path = getPath(key);
+	  @Override
+public org.openmrs.api.storage.ObjectMetadata getMetadata(final String key) throws IOException {
+    Path path = getPath(key);
+    BasicFileAttributes attributes = Files.readAttributes(path, BasicFileAttributes.class);
+    String filename = decodeKey(path.getFileName().toString());
 
-		BasicFileAttributes attributes = Files.readAttributes(path, BasicFileAttributes.class);
-		String filename = decodeKey(path.getFileName().toString());
-		
-		return ObjectMetadata.builder()
-				.setLength(attributes.size())
-				.setMimeType(mimetypes.getContentType(filename))
-				.setFilename(filename)
-				.setCreationTime(attributes.creationTime().toInstant()).build();
-	}
+     ObjectMetadata metadata = new ObjectMetadata();
+metadata.setLength(attributes.size());
+metadata.setMimeType(mimetypes.getContentType(filename));
+metadata.setFilename(filename);
+metadata.setCreationTime(attributes.creationTime().toInstant());
+return metadata;
+
+}
+
 
 	Path getPath(String key) {
 		Path legacyStorageDir = getLegacyStorageDir();

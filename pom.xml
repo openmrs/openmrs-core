@@ -67,13 +67,8 @@
 				<artifactId>openmrs-tools</artifactId>
 				<version>${project.version}</version>
 			</dependency>
-			   <dependency>
-        <groupId>io.findify</groupId>
-        <artifactId>s3mock_2.13</artifactId>
-        <version>0.2.6</version>
-        <scope>test</scope>
-    </dependency>
-	     <dependency>
+			  
+          <dependency>
     <groupId>com.amazonaws</groupId>
     <artifactId>aws-java-sdk-s3</artifactId>
     <version>1.12.640</version> <!-- or latest compatible version -->
@@ -190,13 +185,8 @@
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>
 				<version>3.17.0</version>
-			</dependency><dependency>
-               <groupId>org.reflections</groupId>
-               <artifactId>reflections</artifactId>
-               <version>0.10.2</version>
-            </dependency>
-
-
+			</dependency>
+               
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-core</artifactId>
@@ -303,6 +293,19 @@
 				<version>0.10.2</version>
 				<scope>test</scope>
 			</dependency>
+			 <dependency>
+  <groupId>com.adobe.testing</groupId>
+  <artifactId>s3mock-junit5</artifactId>
+  <version>2.13.0</version> 
+  <scope>test</scope>
+  <exclusions>
+    <exclusion>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-to-slf4j</artifactId>
+    </exclusion>
+  </exclusions>
+</dependency>
+
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
 				<artifactId>log4j-core</artifactId>

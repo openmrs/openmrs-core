@@ -21,6 +21,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.StorageService;
 import org.openmrs.api.storage.ObjectMetadata;
+import org.openmrs.api.stream.StreamDataWriter;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.util.OpenmrsConstants;
 import org.slf4j.Logger;
@@ -86,10 +87,16 @@ public class AbstractHandler {
 	public Obs saveObs(Obs obs) throws APIException {
 		try {
 			byte[] data = (byte[]) obs.getComplexData().getData();
-			
-			String key = storageService.saveData(outputStream -> {
-				IOUtils.write( data, outputStream);
-			}, ObjectMetadata.builder().setLength((long) data.length).build(), getObsDir());
+			 
+        // Create metadata object
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setLength((long) data.length);
+
+        // Define the StreamDataWriter lambda
+        StreamDataWriter writer = outputStream -> IOUtils.write(data, outputStream);
+
+        // Save data using the storageService
+        String key = storageService.saveData(writer, metadata, getObsDir());
 			// Store the filename in the Obs
 			obs.setValueComplex(StringUtils.defaultIfBlank(obs.getComplexData().getTitle(), key) + "|" + key);
 			obs.setComplexData(null);

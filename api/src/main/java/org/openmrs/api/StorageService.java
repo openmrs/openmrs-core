@@ -13,9 +13,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
-
-import org.openmrs.api.storage.ObjectMetadata;
 import org.openmrs.api.stream.StreamDataWriter;
+import org.openmrs.api.storage.ObjectMetadata;
 
 /**
  * Storage service to persist data that does not fit well in DB.

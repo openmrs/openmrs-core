@@ -23,6 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.openmrs.api.stream.StreamDataWriter;
+
 
 /**
  * Handler for storing generic binary data for complex obs to the file system.
@@ -105,11 +107,20 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 	@Override
 	public Obs saveObs(Obs obs) throws APIException {
 		try {
-			String key = storageService.saveData(outputStream -> {
-				InputStream in = (InputStream) obs.getComplexData().getData();
-				IOUtils.copy(in, outputStream);
-				outputStream.flush();
-			}, ObjectMetadata.builder().setFilename(obs.getComplexData().getTitle()).build(), getObsDir());
+			   // Set metadata
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setFilename(obs.getComplexData().getTitle());
+
+        // Define writer lambda explicitly
+        StreamDataWriter writer = outputStream -> {
+            InputStream in = (InputStream) obs.getComplexData().getData();
+            IOUtils.copy(in, outputStream);
+            outputStream.flush();
+        };
+
+        // Save data
+        String key = storageService.saveData(writer, metadata, getObsDir());
+
 			// Store the filename in the Obs
 			obs.setValueComplex(StringUtils.defaultIfBlank(obs.getComplexData().getTitle(), key) + "|" + key);
 			obs.setComplexData(null);
