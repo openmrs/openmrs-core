@@ -9,6 +9,9 @@
  */
 package org.openmrs;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
 import org.hibernate.envers.Audited;
 
 /**
@@ -17,6 +20,8 @@ import org.hibernate.envers.Audited;
  * @since 2.5.0
  */
 @Audited
+@Entity
+@Table(name = "referral_order")
 public class ReferralOrder extends ServiceOrder {
 
 	private static final long serialVersionUID = 1L;
