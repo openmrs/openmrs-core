@@ -31,8 +31,6 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.openmrs.api.stream.StreamDataService;
 import org.openmrs.api.stream.StreamDataWriter;
 import org.openmrs.api.storage.ObjectMetadata;
@@ -51,17 +49,7 @@ public class S3StorageServiceTest {
     private StreamDataService mockStreamDataService;
     private S3StorageService s3Service;
 
-	 @Mock
-    StreamDataService streamDataService;
-
-    @Mock
-    AmazonS3 s3Client;
-
-    @InjectMocks
-    S3StorageService s3StorageService;
-
-
-    private final String bucketName = "PLACEHOLDER_BUCKET_NAME";
+	private final String bucketName = "PLACEHOLDER_BUCKET_NAME";
     private final String moduleId = "testModule";
     private final String key = "my/key";
     private final byte[] dummyData = "Hello".getBytes();
@@ -73,12 +61,9 @@ public class S3StorageServiceTest {
         mockStreamDataService = mock(StreamDataService.class);
         mockS3Client = mock(AmazonS3.class);
 
-        s3Service = new S3StorageService(mockStreamDataService) {
-            {
-                this.s3Client = mockS3Client;
-            }
-        };
-	}
+        s3Service = new S3StorageService(mockStreamDataService, mockS3Client, bucketName); 
+            
+        }
 		
     @Test
     public void testGetData() throws Exception {
@@ -101,16 +86,17 @@ public class S3StorageServiceTest {
     }
 
     @Test
-    public void testGetMetadata() throws Exception {
-        com.amazonaws.services.s3.model.ObjectMetadata awsMeta = new com.amazonaws.services.s3.model.ObjectMetadata();
-        awsMeta.setContentType("text/plain");
-        awsMeta.setContentLength(5L);
-        when(mockS3Client.getObjectMetadata(bucketName, key)).thenReturn(awsMeta);
+public void testGetMetadata() throws Exception {
+    com.amazonaws.services.s3.model.ObjectMetadata awsMeta = new com.amazonaws.services.s3.model.ObjectMetadata();
+    awsMeta.setContentType("text/plain");
+    awsMeta.setContentLength(5L);
+    when(mockS3Client.getObjectMetadata(bucketName, key)).thenReturn(awsMeta);
 
-        ObjectMetadata metadata = s3Service.getMetadata(key);
-        assertEquals("text/plain", metadata.getContentType());
-        assertEquals(5L, metadata.getSize());
-    }
+    org.openmrs.api.storage.ObjectMetadata metadata = s3Service.getMetadata(key);
+    assertEquals("text/plain", metadata.getMimeType());
+    assertEquals(5L, metadata.getLength());
+}
+
 
     @Test
     public void testGetKeys() throws Exception {
@@ -136,66 +122,72 @@ public class S3StorageServiceTest {
     public void testSaveData_InputStream() throws Exception {
         InputStream inputStream = new ByteArrayInputStream(dummyData);
         ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentType("text/plain");
-        metadata.setSize(dummyData.length);
+        metadata.setMimeType("text/plain");
+       metadata.setLength((long) dummyData.length);
 
         String result = s3Service.saveData(inputStream, metadata, moduleId);
         assertTrue(result.startsWith(moduleId + "/"));
     }
 
-    @Test
-    public void testSaveData_InputStream_WithSuffix() throws Exception {
-        InputStream inputStream = new ByteArrayInputStream(dummyData);
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentType("text/plain");
-        metadata.setSize(dummyData.length);
+     @Test
+public void testSaveData_InputStream_WithSuffix() throws Exception {
+    InputStream inputStream = new ByteArrayInputStream(dummyData);
+    ObjectMetadata metadata = new ObjectMetadata();
+    metadata.setMimeType("text/plain");
+    metadata.setLength((long) dummyData.length);
 
-        String result = s3Service.saveData(inputStream, metadata, moduleId, key);
-        verify(mockS3Client).putObject(eq(bucketName), eq(key), any(InputStream.class), any());
-        assertEquals(key, result);
-    }
+    String result = s3Service.saveData(inputStream, metadata, moduleId, key);
 
-    @Test
-    public void testSaveData_Writer_WithSuffix() throws Exception {
-        StreamDataWriter writer = outputStream -> outputStream.write(dummyData);
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentType("text/plain");
-        metadata.setSize(dummyData.length);
+    verify(mockS3Client).putObject(eq(bucketName), eq(moduleId + "/" + key), any(InputStream.class), any());
+    assertEquals(moduleId + "/" + key, result);
+}
 
-        String result = s3Service.saveData(writer, metadata, moduleId, key);
-        verify(mockS3Client).putObject(eq(bucketName), eq(key), any(InputStream.class), any());
-        assertEquals(key, result);
-    }
+
+
+      @Test
+public void testSaveData_Writer_WithSuffix() throws Exception {
+    byte[] dummyData = "Hello, world".getBytes(); // ensure not null
+    StreamDataWriter writer = outputStream -> outputStream.write(dummyData);
+
+    ObjectMetadata metadata = new ObjectMetadata();
+    metadata.setMimeType("text/plain");
+    metadata.setLength((long) dummyData.length); 
+
+    String result = s3Service.saveData(writer, metadata, moduleId, key);
+    verify(mockS3Client).putObject(eq(bucketName), eq(key), any(InputStream.class), any());
+    assertEquals(key, result);
+}
+
 
     @Test
     public void testSaveData_Writer_WithAutoKey() throws Exception {
         StreamDataWriter writer = outputStream -> outputStream.write(dummyData);
         ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentType("text/plain");
-        metadata.setSize(dummyData.length);
+        metadata.setMimeType("text/plain");
+       metadata.setLength((long) dummyData.length);
 
         String result = s3Service.saveData(writer, metadata, moduleId);
         assertTrue(result.startsWith(moduleId + "/"));
     }
 
-    @Test
+        @Test
     public void testSaveTempData_InputStream() throws Exception {
         InputStream inputStream = new ByteArrayInputStream(dummyData);
         ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentType("text/plain");
-        metadata.setSize(dummyData.length);
+        metadata.setMimeType("text/plain");
+       metadata.setLength((long) dummyData.length);
 
         String result = s3Service.saveTempData(inputStream, metadata);
         assertTrue(result.startsWith("temp/"));
     }
 
+
     @Test
     public void testSaveTempData_Writer() throws Exception {
         StreamDataWriter writer = outputStream -> outputStream.write(dummyData);
         ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentType("text/plain");
-        metadata.setSize(dummyData.length);
-
+        metadata.setMimeType("text/plain");
+       metadata.setLength((long) dummyData.length);
         String result = s3Service.saveTempData(writer, metadata);
         assertTrue(result.startsWith("temp/"));
     }

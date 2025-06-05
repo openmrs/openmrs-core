@@ -304,6 +304,13 @@
     <version>3.4.0</version>
     <scope>test</scope>
 </dependency>
+<dependency>
+  <groupId>com.adobe.testing</groupId>
+  <artifactId>s3mock-junit5</artifactId>
+  <version>2.13.0</version> 
+  <scope>test</scope>
+</dependency>
+
 
 <dependency>
     <groupId>org.mockito</groupId>
