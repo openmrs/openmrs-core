@@ -24,6 +24,7 @@ import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -65,8 +66,8 @@ public class Form extends BaseChangeableOpenmrsMetadata {
 	@ManyToOne
 	@JoinColumn(name = "encounter_type")
 	private EncounterType encounterType;
-	
-	@OneToMany(mappedBy = "form", cascade = CascadeType.ALL, orphanRemoval = true)
+
+	@OneToMany(mappedBy = "form", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private Set<FormField> formFields;
 	
 	// Constructors
