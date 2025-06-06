@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 @Audited
 @AttributeOverride(name = "name", column = @Column(name = "name"))
 @AssociationOverride(name="attributes",
-	joinColumns=@JoinColumn(name="provider_id",insertable = false,updatable = false))
+	joinColumns=@JoinColumn(name="provider_id", insertable = false, updatable = false))
 public class Provider extends BaseCustomizableMetadata<ProviderAttribute>{
 	
 	private static final Logger log = LoggerFactory.getLogger(Provider.class);
@@ -49,7 +49,7 @@ public class Provider extends BaseCustomizableMetadata<ProviderAttribute>{
 		strategy = "native",
 		parameters = @Parameter(name = "sequence", value = "provider_provider_id_seq")
 	)
-	@Column(name = "provider_id", nullable = false,insertable = false)
+	@Column(name = "provider_id", nullable = false, insertable = false)
 	private Integer providerId;
 	
 	@ManyToOne
