@@ -99,7 +99,7 @@ public class SchemaOnlyTunerTest {
 	@Test
 	public void shouldReplaceBitTypeWithBooleanType() {
 		// given
-		XPath xpath = DocumentHelper.createXPath("//dbchangelog:column[@type=\"BIT(1)\"]/attribute::type");
+		XPath xpath = DocumentHelper.createXPath("//dbchangelog:column[@type=\"BIT\"]/attribute::type");
 		xpath.setNamespaceURIs(namespaceUris);
 		
 		List<Node> nodes = xpath.selectNodes(document);
@@ -167,7 +167,7 @@ public class SchemaOnlyTunerTest {
 	public void shouldDetectWrongGrandParentNodeOfLongtextNode() {
 		assertThrows(AssertionError.class, () -> {
 			// given
-			XPath xPath = DocumentHelper.createXPath("//dbchangelog:column[@type=\"BIT(1)\"]/attribute::type");
+			XPath xPath = DocumentHelper.createXPath("//dbchangelog:column[@type=\"BIT\"]/attribute::type");
 			xPath.setNamespaceURIs(namespaceUris);
 			
 			Node node = xPath.selectSingleNode(document);
