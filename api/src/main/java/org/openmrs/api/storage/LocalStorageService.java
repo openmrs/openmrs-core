@@ -9,7 +9,7 @@
  */
 package org.openmrs.api.storage;
 
-import javax.activation.MimetypesFileTypeMap;
+import jakarta.activation.MimetypesFileTypeMap;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;

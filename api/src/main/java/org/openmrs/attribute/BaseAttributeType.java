@@ -9,9 +9,9 @@
  */
 package org.openmrs.attribute;
 
-import javax.persistence.Column;
-import javax.persistence.Lob;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.Column;
+import jakarta.persistence.Lob;
+import jakarta.persistence.MappedSuperclass;
 
 import org.hibernate.envers.Audited;
 import org.openmrs.BaseChangeableOpenmrsMetadata;

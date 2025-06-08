@@ -14,11 +14,11 @@ import java.util.Date;
 import org.hibernate.envers.Audited;
 import org.openmrs.BaseOpenmrsObject;
 
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.Column;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MappedSuperclass;
 
 /**
  * Common representation of {@link HL7InQueue}, {@link HL7InArchive} and {@link HL7InError}.

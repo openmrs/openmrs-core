@@ -14,13 +14,13 @@ import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.openmrs.api.APIException;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.Table;
 
 /**
  * Represents an error in processing an hl7 message.
@@ -48,7 +48,7 @@ public class HL7InError extends HL7QueueItem {
 	@Column(name = "error", nullable = false)
 	private String error;
 	
-	@Column(name = "error_details", columnDefinition = "mediumtext")
+	@Column(name = "error_details", columnDefinition = "mediumtext", length = MAX_ERROR_DETAILS_LENGTH)
 	@Lob
 	private String errorDetails;
 	

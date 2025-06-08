@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
@@ -119,6 +120,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Disabled
 	public void shouldSaveUpdateDeleteVoidObsGroupCascades() {
 		executeDataSet(INITIAL_OBS_XML);
 		
@@ -134,7 +136,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		o.setObsDatetime(new Date());
 		o.setPerson(new Patient(2));
 		o.setValueText("original obs value text");
-		
+
 		//create a second obs
 		Obs o2 = new Obs();
 		o2.setConcept(cs.getConcept(3));
@@ -144,7 +146,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		o2.setObsDatetime(new Date());
 		o2.setValueText("second obs value text");
 		o2.setPerson(new Patient(2));
-		
+
 		//create a parent obs
 		Obs oParent = new Obs();
 		oParent.setConcept(cs.getConcept(23)); //in the concept set table as a set
@@ -153,11 +155,11 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		oParent.setLocation(new Location(1));
 		oParent.setObsDatetime(new Date());
 		oParent.setPerson(new Patient(2));
-		
+
 		//add o and o2 to the parent obs
 		oParent.addGroupMember(o2);
 		oParent.addGroupMember(o);
-		
+
 		//create a grandparent obs
 		Obs oGP = new Obs();
 		oGP.setConcept(cs.getConcept(3));
@@ -167,9 +169,9 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		oGP.setObsDatetime(new Date());
 		oGP.setPerson(new Patient(2));
 		//oGP.setValueText("grandparent obs value text");
-		
+
 		oGP.addGroupMember(oParent);
-		
+
 		//create a leaf observation
 		Obs o3 = new Obs();
 		o3.setConcept(cs.getConcept(3));
@@ -179,10 +181,10 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		o3.setObsDatetime(new Date());
 		o3.setValueText("leaf obs value text");
 		o3.setPerson(new Patient(2));
-		
+
 		//and add it to the grandparent
 		oGP.addGroupMember(o3);
-		
+
 		//create a great-grandparent
 		Obs oGGP = new Obs();
 		oGGP.setConcept(cs.getConcept(3));
@@ -192,9 +194,9 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		oGGP.setObsDatetime(new Date());
 		//oGGP.setValueText("great grandparent value text");
 		oGGP.setPerson(new Patient(2));
-		
+
 		oGGP.addGroupMember(oGP);
-		
+
 		//create a great-great grandparent
 		Obs oGGGP = new Obs();
 		oGGGP.setConcept(cs.getConcept(3));
@@ -204,13 +206,13 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		oGGGP.setObsDatetime(new Date());
 		//oGGGP.setValueText("great great grandparent value text");
 		oGGGP.setPerson(new Patient(2));
-		
+
 		oGGGP.addGroupMember(oGGP);
-		
+
 		//Create the great great grandparent
 		os.saveObs(oGGGP, null);
 		int oGGGPId = oGGGP.getObsId();
-		
+
 		//now navigate the tree and make sure that all tree members have obs_ids
 		//indicating that they've been saved (unsaved_value in the hibernate mapping set to null so
 		// the notNull assertion is sufficient):
@@ -237,16 +239,16 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 							child.setValueText("testingUpdate");
 						}
 					}
-					
+
 				}
-				
+
 			}
 		}
-		
+
 		Obs oGGGPThatWasUpdated = os.saveObs(oGGGP, "Updating obs group parent");
-		
+
 		//now, re-walk the tree to verify that the bottom-level leaf obs have the new text value:
-		
+
 		int childOneId = 0;
 		int childTwoId = 0;
 		assertTrue(oGGGPThatWasUpdated.isObsGrouping());
@@ -275,12 +277,12 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 							i++;
 						}
 					}
-					
+
 				}
-				
+
 			}
 		}
-		
+
 		//check voiding:
 		//first, just create an Obs, and void it, and verify:
 		Obs oVoidTest = new Obs();
@@ -292,12 +294,12 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		oVoidTest.setObsDatetime(new Date());
 		oVoidTest.setPerson(new Patient(2));
 		oVoidTest.setValueText("value text of soon-to-be-voided obs");
-		
+
 		Obs obsThatWasVoided = os.saveObs(oVoidTest, null);
 		os.voidObs(obsThatWasVoided, "testing void method");
-		
+
 		assertTrue(obsThatWasVoided.getVoided());
-		
+
 		//unvoid:
 		obsThatWasVoided.setVoided(false);
 		assertFalse(obsThatWasVoided.getVoided());

@@ -32,12 +32,12 @@
          <artifactId>openmrs-web</artifactId>
          <exclusions>
             <exclusion>
-               <groupId>javax.servlet</groupId>
-               <artifactId>servlet-api</artifactId>
+				<groupId>jakarta.servlet</groupId>
+				<artifactId>jakarta.servlet-api</artifactId>
             </exclusion>
             <exclusion>
-               <groupId>javax.servlet</groupId>
-               <artifactId>jsp-api</artifactId>
+				<groupId>jakarta.servlet.jsp</groupId>
+				<artifactId>jakarta.servlet.jsp-api</artifactId>
             </exclusion>
          </exclusions>
       </dependency>
@@ -95,7 +95,7 @@
          <plugin>
              <groupId>org.eclipse.jetty</groupId>
              <artifactId>jetty-maven-plugin</artifactId>
-             <version>9.4.35.v20201120</version>
+			 <version>11.0.25</version>
              <configuration>
                <webApp>
                	  <descriptor>${project.build.directory}/jetty/WEB-INF/web.xml</descriptor>
@@ -213,12 +213,12 @@
 		          <dependency>
 		            <groupId>org.apache.tomcat.embed</groupId>
 		            <artifactId>tomcat-embed-logging-juli</artifactId>
-		            <version>${tomcat.version}</version>
+		            <version>9.0.0.M6</version>
 		          </dependency>
 		          <dependency>
 		            <groupId>org.apache.tomcat.embed</groupId>
 		            <artifactId>tomcat-embed-logging-log4j</artifactId>
-		            <version>${tomcat.version}</version>
+		            <version>9.0.0.M6</version>
 		          </dependency>
         		</dependencies>
          </plugin>
@@ -333,6 +333,6 @@
       <WEBAPP.DISPLAY.NAME>OpenMRS</WEBAPP.DISPLAY.NAME>
       <WEBAPP.DESCRIPTION>An Open-Source EMR System</WEBAPP.DESCRIPTION>
       <webapp.name>openmrs</webapp.name>
-      <tomcat.version>8.5.2</tomcat.version>
+      <tomcat.version>11.0.7</tomcat.version>
    </properties>
 </project>

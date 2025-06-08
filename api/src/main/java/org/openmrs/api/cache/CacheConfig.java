@@ -22,6 +22,8 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.text.CaseUtils;
+import org.infinispan.commons.configuration.io.ConfigurationResourceResolver;
+import org.infinispan.commons.configuration.io.URLConfigurationResourceResolver;
 import org.infinispan.commons.dataconversion.MediaType;
 import org.infinispan.configuration.parsing.ConfigurationBuilderHolder;
 import org.infinispan.configuration.parsing.ParserRegistry;
@@ -88,10 +90,10 @@ public class CacheConfig {
 			// Skip already defined caches.
 			InputStream fullConfig = buildFullConfig(yaml, configFile,
 				baseConfigBuilder.getNamedConfigurationBuilders().keySet(), cacheType);
-			parser.parse(fullConfig, baseConfigBuilder, null,
+			parser.parse(fullConfig, baseConfigBuilder, ConfigurationResourceResolver.DEFAULT,
 				MediaType.APPLICATION_YAML);
 		}
-		
+
 		DefaultCacheManager cacheManager = new DefaultCacheManager(baseConfigBuilder, true);
 		return new SpringEmbeddedCacheManager(cacheManager);
 	}
