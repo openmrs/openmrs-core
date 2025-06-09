@@ -32,6 +32,8 @@ public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 	private Concept role;
 	
 	private Concept speciality;
+
+	private ProviderRole providerRole;
 	
 	public Provider() {
 	}
@@ -136,6 +138,14 @@ public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 	 */
 	public Concept getSpeciality() {
 		return speciality;
+	}
+
+	public ProviderRole getProviderRole() {
+		return providerRole;
+	}
+
+	public void setProviderRole(ProviderRole providerRole) {
+		this.providerRole = providerRole;
 	}
 	
 	@Override
