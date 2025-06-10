@@ -11,6 +11,7 @@ package org.openmrs;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.Type;
 import org.hibernate.envers.Audited;
 import org.openmrs.attribute.Attribute;
 import org.openmrs.attribute.BaseAttribute;
@@ -20,6 +21,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -42,6 +45,18 @@ public class ProviderAttribute extends BaseAttribute<ProviderAttributeType, Prov
 	)
 	@Column(name = "provider_attribute_id", nullable = false)
 	private Integer providerAttributeId;
+
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "provider_id", nullable = false)
+	private Provider provider;
+
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "attribute_type_id", nullable = false)
+	private ProviderAttributeType attributeType;
+
+	@Column(name = "value_reference", nullable = false, columnDefinition = "TEXT")
+	@Type(type = "text")
+	private String valueReference;
 	
 	public Integer getProviderAttributeId() {
 		return providerAttributeId;
@@ -68,5 +83,24 @@ public class ProviderAttribute extends BaseAttribute<ProviderAttributeType, Prov
 	public void setId(Integer id) {
 		setProviderAttributeId(id);
 	}
-	
+
+	@Override
+	public String getValueReference() {
+		return valueReference;
+	}
+
+	public void setValueReference(String valueReference) {
+		this.valueReference = valueReference;
+	}
+
+	 /*
+	 * @param valueReference the string representation of the attribute's value
+	 */
+	public void setValueReferenceInternal(String valueReference) {
+		// This line directly assigns the value to the 'valueReference' field.
+		// If your public setValueReference() method has additional validation or logic
+		// that *must* run when setting the value, you might consider calling it here instead:
+		// this.setValueReference(valueReference);
+		this.valueReference = valueReference;
+	}
 }
