@@ -50,7 +50,7 @@ public class Provider extends BaseCustomizableMetadata<ProviderAttribute>{
 		parameters = @Parameter(name = "sequence", value = "provider_provider_id_seq")
 	)
 	@Column(name = "provider_id", nullable = false, insertable = false)
-	private Integer providerId;
+	private Integer providerId = 0;
 	
 	@ManyToOne
 	@JoinColumn(name="person_id")
