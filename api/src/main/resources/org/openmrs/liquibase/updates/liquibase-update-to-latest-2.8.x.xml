@@ -16,16 +16,16 @@
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
-	<changeSet id="providermanagement-1" author="bgeVam">
+	<changeSet id="TRUNK-6354-2025-06-09-1" author="bgeVam">
 		<preConditions onFail="MARK_RAN" onError="WARN">
 			<not>
-				<tableExists tableName="providermanagement_provider_role" />
+				<tableExists tableName="provider_role" />
 			</not>
 		</preConditions>
 		<comment>
 			create table provider role
 		</comment>
-		<createTable tableName="providermanagement_provider_role">
+		<createTable tableName="provider_role">
 			<column name="provider_role_id" autoIncrement="true" type="int">
 				<constraints nullable="false" primaryKey="true" />
 			</column>
@@ -53,7 +53,7 @@
 		</createTable>
 	</changeSet>
 
-	<changeSet id="providermanagement-2a" author="pgutkowski">
+	<changeSet id="TRUNK-6354-2025-06-09-2a" author="pgutkowski">
 		<preConditions onFail="MARK_RAN" onError="WARN">
 			<not>
 				<columnExists tableName="provider" columnName="provider_role_id" />
@@ -67,7 +67,7 @@
 		</addColumn>
 	</changeSet>
 
-	<changeSet id="providermanagement-2b" author="pgutkowski">
+	<changeSet id="TRUNK-6354-2025-06-09-2b" author="pgutkowski">
 		<preConditions onFail="MARK_RAN" onError="WARN">
 			<not>
 				<foreignKeyConstraintExists foreignKeyTableName="provider"
@@ -81,8 +81,7 @@
 			baseTableName="provider"
 			baseColumnNames="provider_role_id"
 			constraintName="provider_ibfk_1"
-			referencedTableName="providermanagement_provider_role"
+			referencedTableName="provider_role"
 			referencedColumnNames="provider_role_id" />
 	</changeSet>
-	
 </databaseChangeLog>

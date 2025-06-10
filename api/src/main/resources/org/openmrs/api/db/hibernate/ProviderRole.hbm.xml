@@ -15,13 +15,11 @@
 	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
 
 <hibernate-mapping package="org.openmrs">
-
-
-	<class name="ProviderRole" table="providermanagement_provider_role">
+	<class name="ProviderRole" table="provider_role">
 
 		<id name="providerRoleId" type="int" column="provider_role_id" unsaved-value="0">
 			<generator class="native">
-				<param name="sequence">providermanagement_provider_role_provider_role_id_seq</param>
+				<param name="sequence">provider_role_provider_role_id_seq</param>
 			</generator>
 		</id>
 		<discriminator column="provider_role_id" insert="false" />
@@ -29,7 +27,7 @@
 
 		<!--  standard OpenmrsMetaData -->
 		<property name="name" type="java.lang.String" column="name" not-null="true" length="255" />
-		<property name="description" type="java.lang.String"  length="255" />
+		<property name="description" type="java.lang.String"  length="1000" />
 		<many-to-one name="creator" class="org.openmrs.User" not-null="true" />
 		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" />
 		<many-to-one name="changedBy" class="org.openmrs.User" column="changed_by" />
