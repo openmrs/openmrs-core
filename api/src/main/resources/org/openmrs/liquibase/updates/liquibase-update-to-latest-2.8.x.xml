@@ -26,25 +26,25 @@
 			create table provider role
 		</comment>
 		<createTable tableName="providermanagement_provider_role">
-			<column name="provider_role_id" autoIncrement="true" type="int(11)">
+			<column name="provider_role_id" autoIncrement="true" type="int">
 				<constraints nullable="false" primaryKey="true" />
 			</column>
 			<column name="name" type="varchar(255)">
 				<constraints nullable="false" />
 			</column>
 			<column name="description" type="varchar(1000)" />
-			<column name="creator" defaultValueNumeric="0" type="int(11)">
+			<column name="creator" defaultValueNumeric="0" type="int">
 				<constraints nullable="false" />
 			</column>
 			<column name="date_created" type="datetime">
 				<constraints nullable="false" />
 			</column>
-			<column name="changed_by" type="int(11)" />
+			<column name="changed_by" type="int" />
 			<column name="date_changed" type="datetime" />
 			<column name="retired" defaultValueBoolean="false" type="boolean">
 				<constraints nullable="false" />
 			</column>
-			<column name="retired_by" type="int(11)" />
+			<column name="retired_by" type="int" />
 			<column name="date_retired" type="datetime" />
 			<column name="retire_reason" type="varchar(255)" />
 			<column name="uuid" type="char(38)">
@@ -63,7 +63,7 @@
 			add provider role id to table provider
 		</comment>
 		<addColumn tableName="provider">
-			<column name="provider_role_id" type="int(11)" />
+			<column name="provider_role_id" type="int" />
 		</addColumn>
 	</changeSet>
 
