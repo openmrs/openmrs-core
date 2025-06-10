@@ -71,7 +71,7 @@
 		<preConditions onFail="MARK_RAN" onError="WARN">
 			<not>
 				<foreignKeyConstraintExists foreignKeyTableName="provider"
-											foreignKeyName="provider_ibfk_1" />
+											foreignKeyName="fk_provider_provider_role_id" />
 			</not>
 		</preConditions>
 		<comment>
@@ -80,7 +80,7 @@
 		<addForeignKeyConstraint
 			baseTableName="provider"
 			baseColumnNames="provider_role_id"
-			constraintName="provider_ibfk_1"
+			constraintName="fk_provider_provider_role_id"
 			referencedTableName="provider_role"
 			referencedColumnNames="provider_role_id" />
 	</changeSet>
