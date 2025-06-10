@@ -140,10 +140,22 @@ public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 		return speciality;
 	}
 
+	/**
+	 * Gets the provider role
+	 * 
+	 * @since 2.8.0
+	 * @return the provider role
+	 */
 	public ProviderRole getProviderRole() {
 		return providerRole;
 	}
 
+	/**
+	 * Sets the provider role
+	 * 
+	 * @since 2.8.0
+	 * @param providerRole the provider role to set
+	 */
 	public void setProviderRole(ProviderRole providerRole) {
 		this.providerRole = providerRole;
 	}
