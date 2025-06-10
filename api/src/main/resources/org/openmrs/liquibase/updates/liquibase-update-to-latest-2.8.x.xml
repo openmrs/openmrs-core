@@ -16,12 +16,73 @@
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
-	<!--
-	The empty change set is needed for integration tests. It can be removed if this file contains other change sets.
--->
-	<changeSet id="42ddb873-f064-4418-a6c0-6c09426c4832" author="wschlegel">
-		<comment>Empty change set for integration tests.</comment>
+	<changeSet id="providermanagement-1" author="bgeVam">
+		<preConditions onFail="MARK_RAN" onError="WARN">
+			<not>
+				<tableExists tableName="providermanagement_provider_role" />
+			</not>
+		</preConditions>
+		<comment>
+			create table provider role
+		</comment>
+		<createTable tableName="providermanagement_provider_role">
+			<column name="provider_role_id" autoIncrement="true" type="int(11)">
+				<constraints nullable="false" primaryKey="true" />
+			</column>
+			<column name="name" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="description" type="varchar(1000)" />
+			<column name="creator" defaultValueNumeric="0" type="int(11)">
+				<constraints nullable="false" />
+			</column>
+			<column name="date_created" type="datetime">
+				<constraints nullable="false" />
+			</column>
+			<column name="changed_by" type="int(11)" />
+			<column name="date_changed" type="datetime" />
+			<column name="retired" defaultValueBoolean="false" type="boolean">
+				<constraints nullable="false" />
+			</column>
+			<column name="retired_by" type="int(11)" />
+			<column name="date_retired" type="datetime" />
+			<column name="retire_reason" type="varchar(255)" />
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false" unique="true" />
+			</column>
+		</createTable>
+	</changeSet>
 
+	<changeSet id="providermanagement-2a" author="pgutkowski">
+		<preConditions onFail="MARK_RAN" onError="WARN">
+			<not>
+				<columnExists tableName="provider" columnName="provider_role_id" />
+			</not>
+		</preConditions>
+		<comment>
+			add provider role id to table provider
+		</comment>
+		<addColumn tableName="provider">
+			<column name="provider_role_id" type="int(11)" />
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="providermanagement-2b" author="pgutkowski">
+		<preConditions onFail="MARK_RAN" onError="WARN">
+			<not>
+				<foreignKeyConstraintExists foreignKeyTableName="provider"
+											foreignKeyName="provider_ibfk_1" />
+			</not>
+		</preConditions>
+		<comment>
+			use provider role id from table provider as foreign key
+		</comment>
+		<addForeignKeyConstraint
+			baseTableName="provider"
+			baseColumnNames="provider_role_id"
+			constraintName="provider_ibfk_1"
+			referencedTableName="providermanagement_provider_role"
+			referencedColumnNames="provider_role_id" />
 	</changeSet>
 	
 </databaseChangeLog>
