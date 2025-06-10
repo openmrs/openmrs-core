@@ -33,7 +33,7 @@
 				<constraints nullable="false" />
 			</column>
 			<column name="description" type="varchar(1000)" />
-			<column name="creator" defaultValueNumeric="0" type="int">
+			<column name="creator" type="int">
 				<constraints nullable="false" />
 			</column>
 			<column name="date_created" type="datetime">
