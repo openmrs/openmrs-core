@@ -239,6 +239,21 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see ProviderService#purgeProvider(Provider)
+	 */
+	@Test
+	public void purgeProvider_shouldDeleteProviderWithAProviderRole() {
+		Provider provider = service.getProvider(9);
+		assertNotNull(provider);
+		assertNotNull(provider.getProviderRole());
+		assertEquals("Community Health Worker", provider.getProviderRole().getName());
+
+		service.purgeProvider(provider);
+
+		assertNull(service.getProvider(provider.getId()));
+	}
+	
+	/**
 	 * @see ProviderService#purgeProviderAttributeType(ProviderAttributeType)
 	 */
 	@Test
@@ -307,9 +322,11 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		
 		ProviderRole providerRole = new ProviderRole();
 		providerRole.setName("Community Health Worker");
+		providerRole.setDescription("Test Description");
 		provider.setProviderRole(providerRole);
 		
 		service.saveProvider(provider);
+		
 		assertNotNull(provider.getId());
 		assertNotNull(provider.getUuid());
 		assertNotNull(provider.getCreator());
