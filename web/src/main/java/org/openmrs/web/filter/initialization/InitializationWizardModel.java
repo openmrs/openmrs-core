@@ -85,6 +85,16 @@ public class InitializationWizardModel {
 	 * The type of database being used (mysql or postgresql)
 	 */
 	public String databaseType = "mysql";
+
+	/**
+	 * Default MySQL connection string
+	 */
+	protected static final String DEFAULT_MYSQL_CONNECTION = "jdbc:mysql://localhost:3306/@DBNAME@?autoReconnect=true&sessionVariables=default_storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8";
+
+	/**
+	 * Default PostgreSQL connection string
+	 */
+	protected static final String DEFAULT_POSTGRESQL_CONNECTION = "jdbc:postgresql://localhost:5432/postgres";
 	
 	/**
 	 * True/false marker for the question "Do you currently have an OpenMRS database installed"
@@ -105,12 +115,12 @@ public class InitializationWizardModel {
 	/**
 	 * Filled out by user on the databasesetup.vm page Looks like:
 	 */
-	public String databaseConnection = "jdbc:mysql://localhost:3306/@DBNAME@?autoReconnect=true&sessionVariables=default_storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8";
+	public String databaseConnection = DEFAULT_MYSQL_CONNECTION;
 	
 	/**
 	 * Optional Database Driver string filled in on databasesetup.vm
 	 */
-	public String databaseDriver = "com.mysql.cj.jdbc.Driver";
+	public String databaseDriver = "";
 	
 	/**
 	 * MySQL root account password used for simple installation. Filled in simplesetup.vm.
