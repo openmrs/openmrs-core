@@ -11,7 +11,6 @@ package org.openmrs.api.context;
 
 import org.aopalliance.aop.Advice;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.SessionFactory;
 import org.openmrs.Allergen;
 import org.openmrs.GlobalProperty;
 import org.openmrs.OpenmrsObject;
@@ -270,7 +269,7 @@ public class Context {
 	 *
 	 * @return the current ServiceContext
 	 */
-	static ServiceContext getServiceContext() {
+	public static ServiceContext getServiceContext() {
 		if (serviceContext == null) {
 			synchronized (Context.class) {
 				if (serviceContext == null) {

@@ -24,9 +24,11 @@ import org.openmrs.notification.MessagePreparator;
 import org.openmrs.notification.MessageSender;
 import org.openmrs.notification.MessageService;
 import org.openmrs.notification.Template;
+import org.openmrs.notification.mail.MailMessageSender;
 import org.openmrs.util.OpenmrsConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -39,6 +41,9 @@ public class MessageServiceImpl implements MessageService {
 	private MessageSender messageSender; // Delivers message 
 	
 	private MessagePreparator messagePreparator; // Prepares message for delivery 
+
+	private MailMessageSender mailMessageSender;
+	 
 	
 	public void setTemplateDAO(TemplateDAO dao) {
 		this.templateDAO = dao;
@@ -49,7 +54,14 @@ public class MessageServiceImpl implements MessageService {
 	 * class requires a DAO Context in order to work properly. Please set the DAO context
 	 */
 	public MessageServiceImpl() {
+
 	}
+
+	@Autowired
+    public MessageServiceImpl(MailMessageSender mailMessageSender) {
+        this.mailMessageSender = mailMessageSender;
+    }
+
 	
 	/**
 	 * Set the message preparator.
@@ -65,6 +77,7 @@ public class MessageServiceImpl implements MessageService {
 	public MessagePreparator getMessagePreparator() {
 		return this.messagePreparator;
 	}
+	
 	
 	/**
 	 * Set the message sender.
@@ -89,6 +102,7 @@ public class MessageServiceImpl implements MessageService {
 	 */
 	@Override
 	public void sendMessage(Message message) throws MessageException {
+		mailMessageSender.send(message);
 		try {
 			messageSender.send(message);
 		}
@@ -260,7 +274,7 @@ public class MessageServiceImpl implements MessageService {
 		try {
 			Template template = (Template) getTemplatesByName(templateName).get(0);
 			template.setData(data);
-			return Context.getMessageService().prepareMessage(template);
+			 return this.prepareMessage(template);
 		}
 		catch (Exception e) {
 			throw new MessageException("Could not prepare message with template " + templateName, e);
@@ -272,12 +286,11 @@ public class MessageServiceImpl implements MessageService {
 	 *
 	 * @return list of Templates
 	 */
-	@Override
+	   @Override
 	@Transactional(readOnly = true)
 	public List getAllTemplates() throws MessageException {
 		return templateDAO.getTemplates();
 	}
-	
 	/**
 	 * Get template by identifier.
 	 *
@@ -300,5 +313,9 @@ public class MessageServiceImpl implements MessageService {
 	@Transactional(readOnly = true)
 	public List getTemplatesByName(String name) throws MessageException {
 		return templateDAO.getTemplatesByName(name);
-	}	
+	}
+
+    public void setMailMessageSender(MailMessageSender mailMessageSender) {
+          this.mailMessageSender = mailMessageSender;
+    }	
 }
