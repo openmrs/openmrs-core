@@ -57,6 +57,7 @@
 		<module>web</module>
 		<module>webapp</module>
 		<module>liquibase</module>
+		<module>test-module</module>
 	</modules>
 
 	<dependencyManagement>
@@ -266,7 +267,7 @@
 			<dependency>
 				<groupId>org.liquibase</groupId>
 				<artifactId>liquibase-core</artifactId>
-				<version>4.31.1</version>
+				<version>4.32.0</version>
 				<exclusions>
 					<exclusion>
 						<groupId>ch.qos.logback</groupId>
@@ -370,7 +371,7 @@
 			<dependency>
 				<groupId>commons-beanutils</groupId>
 				<artifactId>commons-beanutils</artifactId>
-				<version>1.10.1</version>
+				<version>1.11.0</version>
 				<exclusions>
 					<exclusion>
 						<groupId>commons-logging</groupId>
@@ -381,7 +382,7 @@
 			<dependency>
 				<groupId>commons-fileupload</groupId>
 				<artifactId>commons-fileupload</artifactId>
-				<version>1.5</version>
+				<version>1.6.0</version>
 			</dependency>
 			<dependency>
 				<groupId>mysql</groupId>
@@ -397,7 +398,7 @@
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>42.7.5</version>
+				<version>42.7.6</version>
 				<scope>runtime</scope>
 			</dependency>
 			<dependency>
@@ -566,13 +567,13 @@
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>mysql</artifactId>
-				<version>1.21.0</version>
+				<version>1.21.1</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>1.21.0</version>
+				<version>1.21.1</version>
 				<scope>test</scope>
 			</dependency>
 		</dependencies>
@@ -646,7 +647,7 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>build-helper-maven-plugin</artifactId>
-					<version>3.6.0</version>
+					<version>3.6.1</version>
 				</plugin>
 				<plugin>
 					<groupId>com.googlecode.maven-java-formatter-plugin</groupId>

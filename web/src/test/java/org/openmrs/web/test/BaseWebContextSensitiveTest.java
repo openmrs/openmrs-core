@@ -9,24 +9,27 @@
  */
 package org.openmrs.web.test;
 
-import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 /**
- * Web tests for controllers, etc should use this class instead of the general
- * {@link BaseWebContextSensitiveTest} one. The {@link ContextConfiguration} annotation adds in the
- * openmrs-servlet.xml context file to the config locations so that controller tests can pick up the
+ * Web tests for controllers, etc. should use this class instead of the general
+ * {@link org.openmrs.test.BaseContextSensitiveTest} one. 
+ * <p>
+ * The {@link ContextConfiguration} annotation adds the
+ * openmrs-servlet.xml context file so that controller tests can pick up the
  * right type of controller, etc.
- */
-// put reference to openmrs-servlet in the parent class to make this class really do nothing
-//@ContextConfiguration(locations = { "classpath:openmrs-servlet.xml" }, inheritLocations = true)
-
-/*
- * TODO Enable @ContextConfiguration on subclasses of BaseContextSensitiveTest
+ *
  * 
- * @see https://issues.openmrs.org/browse/TRUNK-381?focusedCommentId=254292&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-254292
+ * @deprecated as of 2.4
+ *   <p>openmrs-core migrated its tests from JUnit 4 to JUnit 5.
+ *   JUnit 4 helpers are still supported so module developers can gradually migrate tests from JUnit 4 to JUnit 5. 
+ *   To migrate your tests follow <a href="https://wiki.openmrs.org/display/docs/How+to+migrate+to+JUnit+5">How to migrate to JUnit 5</a>.
+ *   The JUnit 5 version of the class is {@link org.openmrs.web.test.jupiter.BaseWebContextSensitiveTest}.<p>
  */
-@ContextConfiguration(locations = { "classpath*:AltAuthSchemeTestingApplicationContext.xml" })
+@WebAppConfiguration	
+@ContextConfiguration(locations = { "classpath*:openmrs-servlet.xml", "classpath*:AltAuthSchemeTestingApplicationContext.xml" })
+@Deprecated
 public abstract class BaseWebContextSensitiveTest extends BaseContextSensitiveTest {
-
 }

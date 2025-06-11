@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.openmrs.Allergy;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
+import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptDescription;
@@ -66,7 +67,9 @@ import org.openmrs.SimpleDosingInstructions;
 import org.openmrs.TestOrder;
 import org.openmrs.User;
 import org.openmrs.Visit;
+import org.openmrs.VisitType;
 import org.openmrs.VisitAttributeType;
+import org.openmrs.FormResource;
 import org.openmrs.api.builder.DrugOrderBuilder;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
@@ -2744,7 +2747,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.addAnnotatedClass(HL7InError.class)
 			.addAnnotatedClass(ProgramWorkflow.class)
 			.addAnnotatedClass(OrderType.class)
-				.addAnnotatedClass(ConceptClass.class)
+			.addAnnotatedClass(ConceptAnswer.class)
+			.addAnnotatedClass(ConceptClass.class)
+			.addAnnotatedClass(FormResource.class)
+			.addAnnotatedClass(VisitType.class)
 			.getMetadataBuilder().build();
 
 
