@@ -41,7 +41,7 @@
             </column>
             <column name="changed_by" type="INT"/>
             <column name="date_changed" type="datetime"/>
-            <column defaultValueBoolean="true" name="voided" type="BIT(1)">
+            <column defaultValueBoolean="true" name="voided" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="voided_by" type="INT"/>
@@ -83,7 +83,7 @@
             <column name="date_created" type="datetime">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="retired_by" type="INT"/>
@@ -124,7 +124,7 @@
             <column name="date_created" type="datetime">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="voided" type="BIT(1)">
+            <column defaultValueBoolean="false" name="voided" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="voided_by" type="INT"/>
@@ -158,7 +158,7 @@
             <column name="date_created" type="datetime">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="voided" type="BIT(1)">
+            <column defaultValueBoolean="false" name="voided" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="voided_by" type="INT"/>
@@ -174,7 +174,7 @@
             <column autoIncrement="true" name="concept_id" type="INT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="short_name" type="VARCHAR(255)"/>
@@ -186,7 +186,7 @@
             <column defaultValueNumeric="0" name="class_id" type="INT">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="is_set" type="BIT(1)">
+            <column defaultValueBoolean="false" name="is_set" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueNumeric="0" name="creator" type="INT">
@@ -253,7 +253,7 @@
             </column>
             <column name="changed_by" type="INT"/>
             <column name="date_changed" type="datetime"/>
-            <column defaultValueBoolean="false" name="voided" type="BIT(1)">
+            <column defaultValueBoolean="false" name="voided" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="voided_by" type="INT"/>
@@ -286,7 +286,7 @@
             </column>
             <column name="changed_by" type="INT"/>
             <column name="date_changed" type="datetime"/>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="retired_by" type="INT"/>
@@ -312,7 +312,7 @@
             <column name="date_created" type="datetime">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="retired_by" type="INT"/>
@@ -349,7 +349,7 @@
             <column name="date_created" type="datetime">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="retired_by" type="INT"/>
@@ -404,10 +404,10 @@
             </column>
             <column name="changed_by" type="INT"/>
             <column name="date_changed" type="datetime"/>
-            <column defaultValueBoolean="false" name="is_hidden" type="BIT(1)">
+            <column defaultValueBoolean="false" name="is_hidden" type="BIT">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="retired_by" type="INT"/>
@@ -430,7 +430,7 @@
             <column defaultValue="" name="locale" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="locale_preferred" type="BIT(1)"/>
+            <column defaultValueBoolean="false" name="locale_preferred" type="BIT"/>
             <column defaultValueNumeric="0" name="creator" type="INT">
                 <constraints nullable="false"/>
             </column>
@@ -438,7 +438,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="concept_name_type" type="VARCHAR(50)"/>
-            <column defaultValueBoolean="false" name="voided" type="BIT(1)">
+            <column defaultValueBoolean="false" name="voided" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="voided_by" type="INT"/>
@@ -466,7 +466,7 @@
             <column name="date_created" type="datetime">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="voided" type="BIT(1)">
+            <column defaultValueBoolean="false" name="voided" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="voided_by" type="INT"/>
@@ -501,7 +501,7 @@
             <column name="low_critical" type="DOUBLE"/>
             <column name="low_normal" type="DOUBLE"/>
             <column name="units" type="VARCHAR(50)"/>
-            <column name="allow_decimal" type="BIT(1)"/>
+            <column name="allow_decimal" type="BIT"/>
             <column name="display_precision" type="INT"/>
         </createTable>
     </changeSet>
@@ -595,7 +595,7 @@
             <column name="date_created" type="datetime">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="retired_by" type="INT"/>
@@ -633,7 +633,7 @@
             </column>
             <column name="date_changed" type="datetime"/>
             <column name="changed_by" type="INT"/>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="retired_by" type="INT"/>
@@ -739,7 +739,7 @@
             <column name="date_created" type="datetime">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="voided" type="BIT(1)">
+            <column defaultValueBoolean="false" name="voided" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="date_voided" type="datetime"/>
@@ -770,7 +770,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="name" type="VARCHAR(255)"/>
-            <column defaultValueBoolean="false" name="combination" type="BIT(1)">
+            <column defaultValueBoolean="false" name="combination" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="dosage_form" type="INT"/>
@@ -783,7 +783,7 @@
             <column name="date_created" type="datetime">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="changed_by" type="INT"/>
@@ -820,7 +820,7 @@
             </column>
             <column name="drug_inventory_id" type="INT"/>
             <column name="dose" type="DOUBLE"/>
-            <column name="as_needed" type="BIT(1)"/>
+            <column name="as_needed" type="BIT"/>
             <column name="dosing_type" type="VARCHAR(255)"/>
             <column name="quantity" type="DOUBLE"/>
             <column name="as_needed_condition" type="VARCHAR(255)"/>
@@ -833,7 +833,7 @@
             <column name="dose_units" type="INT"/>
             <column name="frequency" type="INT"/>
             <column name="brand_name" type="VARCHAR(255)"/>
-            <column defaultValueBoolean="false" name="dispense_as_written" type="BIT(1)">
+            <column defaultValueBoolean="false" name="dispense_as_written" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="drug_non_coded" type="VARCHAR(255)"/>
@@ -859,7 +859,7 @@
             <column name="date_created" type="datetime">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="retired_by" type="INT"/>
@@ -894,7 +894,7 @@
             <column name="date_created" type="datetime">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="voided" type="BIT(1)">
+            <column defaultValueBoolean="false" name="voided" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="voided_by" type="INT"/>
@@ -940,7 +940,7 @@
             </column>
             <column name="changed_by" type="INT"/>
             <column name="date_changed" type="datetime"/>
-            <column defaultValueBoolean="false" name="voided" type="BIT(1)">
+            <column defaultValueBoolean="false" name="voided" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="voided_by" type="INT"/>
@@ -970,7 +970,7 @@
             </column>
             <column name="changed_by" type="INT"/>
             <column name="date_changed" type="datetime"/>
-            <column defaultValueBoolean="false" name="voided" type="BIT(1)">
+            <column defaultValueBoolean="false" name="voided" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="date_voided" type="datetime"/>
@@ -998,7 +998,7 @@
             </column>
             <column name="changed_by" type="INT"/>
             <column name="date_changed" type="datetime"/>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="retired_by" type="INT"/>
@@ -1024,7 +1024,7 @@
             <column name="date_created" type="datetime">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="retired_by" type="INT"/>
@@ -1053,7 +1053,7 @@
             <column name="table_name" type="VARCHAR(50)"/>
             <column name="attribute_name" type="VARCHAR(50)"/>
             <column name="default_value" type="TEXT"/>
-            <column defaultValueBoolean="false" name="select_multiple" type="BIT(1)">
+            <column defaultValueBoolean="false" name="select_multiple" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueNumeric="0" name="creator" type="INT">
@@ -1064,7 +1064,7 @@
             </column>
             <column name="changed_by" type="INT"/>
             <column name="date_changed" type="datetime"/>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="retired_by" type="INT"/>
@@ -1101,7 +1101,7 @@
             </column>
             <column name="name" type="VARCHAR(50)"/>
             <column name="description" type="TEXT"/>
-            <column defaultValueBoolean="false" name="is_set" type="BIT(1)">
+            <column defaultValueBoolean="false" name="is_set" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueNumeric="0" name="creator" type="INT">
@@ -1127,7 +1127,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="build" type="INT"/>
-            <column defaultValueBoolean="false" name="published" type="BIT(1)">
+            <column defaultValueBoolean="false" name="published" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="xslt" type="TEXT"/>
@@ -1142,7 +1142,7 @@
             </column>
             <column name="changed_by" type="INT"/>
             <column name="date_changed" type="datetime"/>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="retired_by" type="INT"/>
@@ -1170,7 +1170,7 @@
             <column name="parent_form_field" type="INT"/>
             <column name="min_occurs" type="INT"/>
             <column name="max_occurs" type="INT"/>
-            <column defaultValueBoolean="false" name="required" type="BIT(1)">
+            <column defaultValueBoolean="false" name="required" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="changed_by" type="INT"/>
@@ -1353,7 +1353,7 @@
             <column name="ID" type="INT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="LOCKED" type="BIT(1)">
+            <column name="LOCKED" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="LOCKGRANTED" type="datetime"/>
@@ -1388,7 +1388,7 @@
             <column name="address4" type="VARCHAR(255)"/>
             <column name="address5" type="VARCHAR(255)"/>
             <column name="address6" type="VARCHAR(255)"/>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="retired_by" type="INT"/>
@@ -1436,7 +1436,7 @@
             </column>
             <column name="changed_by" type="INT"/>
             <column name="date_changed" type="datetime"/>
-            <column defaultValueBoolean="false" name="voided" type="BIT(1)">
+            <column defaultValueBoolean="false" name="voided" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="voided_by" type="INT"/>
@@ -1469,7 +1469,7 @@
             </column>
             <column name="changed_by" type="INT"/>
             <column name="date_changed" type="datetime"/>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="retired_by" type="INT"/>
@@ -1495,7 +1495,7 @@
             <column name="date_created" type="datetime">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="retired_by" type="INT"/>
@@ -1553,10 +1553,10 @@
             <column name="text" type="VARCHAR(512)">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="satisfied_by_any" type="BIT(1)">
+            <column defaultValueBoolean="false" name="satisfied_by_any" type="BIT">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="alert_read" type="BIT(1)">
+            <column defaultValueBoolean="false" name="alert_read" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="date_to_expire" type="datetime"/>
@@ -1581,7 +1581,7 @@
             <column name="user_id" type="INT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column defaultValueBoolean="false" name="alert_read" type="BIT(1)">
+            <column defaultValueBoolean="false" name="alert_read" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueComputed="CURRENT_TIMESTAMP" name="date_changed" type="timestamp">
@@ -1643,7 +1643,7 @@
             <column name="date_created" type="datetime">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="voided" type="BIT(1)">
+            <column defaultValueBoolean="false" name="voided" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="voided_by" type="INT"/>
@@ -1675,7 +1675,7 @@
             <column name="date_created" type="datetime">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="retired_by" type="INT"/>
@@ -1706,7 +1706,7 @@
             <column name="date_created" type="datetime">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="voided" type="BIT(1)">
+            <column defaultValueBoolean="false" name="voided" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="voided_by" type="INT"/>
@@ -1740,7 +1740,7 @@
             <column name="date_created" type="datetime">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="retired_by" type="INT"/>
@@ -1779,7 +1779,7 @@
             </column>
             <column name="changed_by" type="INT"/>
             <column name="date_changed" type="datetime"/>
-            <column defaultValueBoolean="false" name="voided" type="BIT(1)">
+            <column defaultValueBoolean="false" name="voided" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="voided_by" type="INT"/>
@@ -1812,7 +1812,7 @@
             </column>
             <column name="changed_by" type="INT"/>
             <column name="date_changed" type="datetime"/>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="retired_by" type="INT"/>
@@ -1848,7 +1848,7 @@
             <column name="date_created" type="datetime">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="retired_by" type="INT"/>
@@ -1876,7 +1876,7 @@
             <column name="date_created" type="datetime">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="retired_by" type="INT"/>
@@ -1932,7 +1932,7 @@
             <column name="date_created" type="datetime">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="voided" type="BIT(1)">
+            <column defaultValueBoolean="false" name="voided" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="voided_by" type="INT"/>
@@ -1979,7 +1979,7 @@
             </column>
             <column name="changed_by" type="INT"/>
             <column name="date_changed" type="datetime"/>
-            <column defaultValueBoolean="false" name="voided" type="BIT(1)">
+            <column defaultValueBoolean="false" name="voided" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="voided_by" type="INT"/>
@@ -2004,7 +2004,7 @@
             <column defaultValueNumeric="0" name="identifier_type" type="INT">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="preferred" type="BIT(1)">
+            <column defaultValueBoolean="false" name="preferred" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueNumeric="0" name="location_id" type="INT"/>
@@ -2016,7 +2016,7 @@
             </column>
             <column name="date_changed" type="datetime"/>
             <column name="changed_by" type="INT"/>
-            <column defaultValueBoolean="false" name="voided" type="BIT(1)">
+            <column defaultValueBoolean="false" name="voided" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="voided_by" type="INT"/>
@@ -2037,7 +2037,7 @@
             </column>
             <column name="description" type="TEXT"/>
             <column name="format" type="VARCHAR(255)"/>
-            <column defaultValueBoolean="false" name="check_digit" type="BIT(1)">
+            <column defaultValueBoolean="false" name="check_digit" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueNumeric="0" name="creator" type="INT">
@@ -2046,13 +2046,13 @@
             <column name="date_created" type="datetime">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="required" type="BIT(1)">
+            <column defaultValueBoolean="false" name="required" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="format_description" type="VARCHAR(255)"/>
             <column name="validator" type="VARCHAR(200)"/>
             <column name="location_behavior" type="VARCHAR(50)"/>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="retired_by" type="INT"/>
@@ -2089,7 +2089,7 @@
             </column>
             <column name="changed_by" type="INT"/>
             <column name="date_changed" type="datetime"/>
-            <column defaultValueBoolean="false" name="voided" type="BIT(1)">
+            <column defaultValueBoolean="false" name="voided" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="voided_by" type="INT"/>
@@ -2125,7 +2125,7 @@
             </column>
             <column name="changed_by" type="INT"/>
             <column name="date_changed" type="datetime"/>
-            <column defaultValueBoolean="false" name="voided" type="BIT(1)">
+            <column defaultValueBoolean="false" name="voided" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="voided_by" type="INT"/>
@@ -2154,7 +2154,7 @@
             </column>
             <column name="changed_by" type="INT"/>
             <column name="date_changed" type="datetime"/>
-            <column defaultValueBoolean="false" name="voided" type="BIT(1)">
+            <column defaultValueBoolean="false" name="voided" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="voided_by" type="INT"/>
@@ -2172,10 +2172,10 @@
             </column>
             <column defaultValue="" name="gender" type="VARCHAR(50)"/>
             <column name="birthdate" type="date"/>
-            <column defaultValueBoolean="false" name="birthdate_estimated" type="BIT(1)">
+            <column defaultValueBoolean="false" name="birthdate_estimated" type="BIT">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="dead" type="BIT(1)">
+            <column defaultValueBoolean="false" name="dead" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="death_date" type="datetime"/>
@@ -2186,7 +2186,7 @@
             </column>
             <column name="changed_by" type="INT"/>
             <column name="date_changed" type="datetime"/>
-            <column defaultValueBoolean="false" name="voided" type="BIT(1)">
+            <column defaultValueBoolean="false" name="voided" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="voided_by" type="INT"/>
@@ -2195,7 +2195,7 @@
             <column name="uuid" type="CHAR(38)">
                 <constraints nullable="false" unique="true"/>
             </column>
-            <column defaultValueBoolean="false" name="deathdate_estimated" type="BIT(1)">
+            <column defaultValueBoolean="false" name="deathdate_estimated" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="birthtime" type="time"/>
@@ -2208,7 +2208,7 @@
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <column name="person_id" type="INT"/>
-            <column defaultValueBoolean="false" name="preferred" type="BIT(1)">
+            <column defaultValueBoolean="false" name="preferred" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="address1" type="VARCHAR(255)"/>
@@ -2227,7 +2227,7 @@
             <column name="date_created" type="datetime">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="voided" type="BIT(1)">
+            <column defaultValueBoolean="false" name="voided" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="voided_by" type="INT"/>
@@ -2276,7 +2276,7 @@
             </column>
             <column name="changed_by" type="INT"/>
             <column name="date_changed" type="datetime"/>
-            <column defaultValueBoolean="false" name="voided" type="BIT(1)">
+            <column defaultValueBoolean="false" name="voided" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="voided_by" type="INT"/>
@@ -2298,7 +2298,7 @@
             <column name="description" type="TEXT"/>
             <column name="format" type="VARCHAR(50)"/>
             <column name="foreign_key" type="INT"/>
-            <column defaultValueBoolean="false" name="searchable" type="BIT(1)">
+            <column defaultValueBoolean="false" name="searchable" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueNumeric="0" name="creator" type="INT">
@@ -2309,7 +2309,7 @@
             </column>
             <column name="changed_by" type="INT"/>
             <column name="date_changed" type="datetime"/>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="retired_by" type="INT"/>
@@ -2347,7 +2347,7 @@
             </column>
             <column name="changed_by" type="INT"/>
             <column name="date_changed" type="datetime"/>
-            <column defaultValueBoolean="false" name="voided" type="BIT(1)">
+            <column defaultValueBoolean="false" name="voided" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="voided_by" type="INT"/>
@@ -2360,7 +2360,7 @@
             <column autoIncrement="true" name="person_name_id" type="INT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column defaultValueBoolean="false" name="preferred" type="BIT(1)">
+            <column defaultValueBoolean="false" name="preferred" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="person_id" type="INT">
@@ -2380,7 +2380,7 @@
             <column name="date_created" type="datetime">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="voided" type="BIT(1)">
+            <column defaultValueBoolean="false" name="voided" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="voided_by" type="INT"/>
@@ -2421,7 +2421,7 @@
             </column>
             <column name="changed_by" type="INT"/>
             <column name="date_changed" type="datetime"/>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="name" type="VARCHAR(50)">
@@ -2458,7 +2458,7 @@
             </column>
             <column name="changed_by" type="INT"/>
             <column name="date_changed" type="datetime"/>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="retired_by" type="INT"/>
@@ -2486,7 +2486,7 @@
             <column name="date_created" type="datetime">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="changed_by" type="INT"/>
@@ -2507,10 +2507,10 @@
             <column defaultValueNumeric="0" name="concept_id" type="INT">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="initial" type="BIT(1)">
+            <column defaultValueBoolean="false" name="initial" type="BIT">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="terminal" type="BIT(1)">
+            <column defaultValueBoolean="false" name="terminal" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueNumeric="0" name="creator" type="INT">
@@ -2519,7 +2519,7 @@
             <column name="date_created" type="datetime">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="changed_by" type="INT"/>
@@ -2545,7 +2545,7 @@
             </column>
             <column name="changed_by" type="INT"/>
             <column name="date_changed" type="datetime"/>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="retired_by" type="INT"/>
@@ -2583,7 +2583,7 @@
             </column>
             <column name="changed_by" type="INT"/>
             <column name="date_changed" type="datetime"/>
-            <column defaultValueBoolean="false" name="voided" type="BIT(1)">
+            <column defaultValueBoolean="false" name="voided" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="voided_by" type="INT"/>
@@ -2616,7 +2616,7 @@
             </column>
             <column name="changed_by" type="INT"/>
             <column name="date_changed" type="datetime"/>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="retired_by" type="INT"/>
@@ -2651,7 +2651,7 @@
             </column>
             <column name="date_changed" type="datetime"/>
             <column name="changed_by" type="INT"/>
-            <column defaultValueBoolean="false" name="voided" type="BIT(1)">
+            <column defaultValueBoolean="false" name="voided" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="voided_by" type="INT"/>
@@ -2673,7 +2673,7 @@
             <column name="b_is_to_a" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="preferred" type="BIT(1)">
+            <column defaultValueBoolean="false" name="preferred" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueNumeric="0" name="weight" type="INT">
@@ -2686,7 +2686,7 @@
             <column name="date_created" type="datetime">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="retired_by" type="INT"/>
@@ -2723,7 +2723,7 @@
             </column>
             <column name="changed_by" type="INT"/>
             <column name="date_changed" type="datetime"/>
-            <column defaultValueBoolean="false" name="voided" type="BIT(1)">
+            <column defaultValueBoolean="false" name="voided" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="voided_by" type="INT"/>
@@ -2799,10 +2799,10 @@
             <column defaultValueNumeric="0" name="repeat_interval" type="INT">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="start_on_startup" type="BIT(1)">
+            <column defaultValueBoolean="false" name="start_on_startup" type="BIT">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="started" type="BIT(1)">
+            <column defaultValueBoolean="false" name="started" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueNumeric="0" name="created_by" type="INT"/>
@@ -2856,7 +2856,7 @@
             </column>
             <column name="date_changed" type="datetime"/>
             <column name="changed_by" type="INT"/>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="date_retired" type="datetime"/>
@@ -2926,7 +2926,7 @@
             <column name="person_id" type="INT">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="retired_by" type="INT"/>
@@ -2966,7 +2966,7 @@
             </column>
             <column name="changed_by" type="INT"/>
             <column name="date_changed" type="datetime"/>
-            <column defaultValueBoolean="false" name="voided" type="BIT(1)">
+            <column defaultValueBoolean="false" name="voided" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="voided_by" type="INT"/>
@@ -3002,7 +3002,7 @@
             </column>
             <column name="changed_by" type="INT"/>
             <column name="date_changed" type="datetime"/>
-            <column defaultValueBoolean="false" name="voided" type="BIT(1)">
+            <column defaultValueBoolean="false" name="voided" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="voided_by" type="INT"/>
@@ -3035,7 +3035,7 @@
             </column>
             <column name="changed_by" type="INT"/>
             <column name="date_changed" type="datetime"/>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="retired_by" type="INT"/>
@@ -3063,7 +3063,7 @@
             </column>
             <column name="changed_by" type="INT"/>
             <column name="date_changed" type="datetime"/>
-            <column defaultValueBoolean="false" name="retired" type="BIT(1)">
+            <column defaultValueBoolean="false" name="retired" type="BIT">
                 <constraints nullable="false"/>
             </column>
             <column name="retired_by" type="INT"/>

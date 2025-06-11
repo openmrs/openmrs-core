@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import org.junit.jupiter.api.Test;
 import org.openmrs.web.filter.util.FilterUtil;
-import org.openmrs.web.test.BaseWebContextSensitiveTest;
+import org.openmrs.web.test.jupiter.BaseWebContextSensitiveTest;
 
 /**
  * Tests some of the methods on the {@link FilterUtil}
