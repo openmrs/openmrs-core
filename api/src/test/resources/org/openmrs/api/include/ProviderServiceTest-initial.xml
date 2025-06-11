@@ -11,19 +11,26 @@
 
 -->
 <dataset>
-  <provider provider_id="1" 	name="RobertClive" identifier="8A760" creator="1"  date_created="2005-01-01 00:00:00.0" retired="0" uuid="a2c3868a-6b90-11e0-93c3-18a905e044dc" />
-  <provider provider_id="2" 	name="Roger" person_id="2" identifier="8A761" creator="1"  date_created="2005-01-01 00:00:00.0" retired="0" uuid="a3a5913e-6b94-11e0-93c3-18a905e044dc" />
-  <provider provider_id="3" 	name="Ronald" person_id="6" identifier="8A762" creator="1"  date_created="2005-01-01 00:00:00.0" retired="0" uuid="ae401f88-6b94-11e0-93c3-18a905e044dc" />
-  <provider provider_id="4" 	name="Rona" person_id="7" identifier="8B761" creator="1" 	date_created="2005-01-01 00:00:00.0" retired="0" uuid="ba4781f4-6b94-11e0-93c3-18a905e044dc" />
-  <provider provider_id="5" 	name="John" person_id="8" identifier="8B762" creator="1" 	date_created="2005-01-01 00:00:00.0" retired="0" uuid="c7e19142-6b94-11e0-93c3-18a905e044dc" />
-  <provider provider_id="6" 	name="provider6" person_id="9" identifier="8B763" creator="1" 	date_created="2005-01-01 00:00:00.0" retired="1" uuid="0b2056be-6b95-11e0-93c3-18a905e044dc" />
-  <provider provider_id="7" 	name="provider7" person_id="501" identifier="8C761" creator="1" 	date_created="2005-01-01 00:00:00.0" retired="0" uuid="161b3002-6b95-11e0-93c3-18a905e044dc" />
-  <provider provider_id="8" 	name="provider8" person_id="502" identifier="8C762" creator="1" 	date_created="2005-01-01 00:00:00.0" retired="0" uuid="1f9e8336-6b95-11e0-93c3-18a905e044dc" />
-  <provider provider_id="9" 	name="provider8" person_id="2" identifier="8C763" creator="1" 	date_created="2005-01-01 00:00:00.0" retired="1" uuid="1f9e8336-6b95-11e0-93c3-18a905e044dn" />
-  <person_name person_name_id="9352" preferred="true" person_id="2" prefix="Mr." given_name="william" middle_name="" family_name="williamson" family_name_suffix="Esq." creator="1" date_created="2005-09-22 00:00:00.0" voided="true" void_reason="changed" uuid="399e3a7b-6482-487d-94ce-c07bb3ca3ccw"/>
-  <person_name person_name_id="9353" preferred="false" person_id="7" given_name="Collet" middle_name="james" family_name="Hussey" family_name2="Ricky" creator="1" date_created="2006-01-18 00:00:00.0" voided="true" void_reason="Changed" uuid="a65c347e-1384-493a-a55b-d325924acd9w"/>
+	<provider_role provider_role_id="1001" name="Binome" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f523f-27ce-4bb2-86d6-6d1d05312bd5"/>
+	<provider_role provider_role_id="1002" name="Binome supervisor" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="ea7f523f-27ce-4bb2-86d6-6d1d05312bd5"/>
+	<provider_role provider_role_id="1003" name="Cell supervisor" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="db7f523f-27ce-4bb2-86d6-6d1d05312bd5"/>
 
-  <provider_attribute_type provider_attribute_type_id="1" name="place" datatype="org.openmrs.customdatatype.datatype.FreeTextDatatype" uuid="058d4dcf-7bb0-41f4-93b6-d49580ed9ea6" creator="1" date_created="2005-01-01 00:00:00.0" min_occurs="0" retired="false"/>
-  <provider_attribute provider_attribute_id="321" provider_id="2" attribute_type_id="1" value_reference="2011-04-25" uuid="823382cd-5faa-4b57-8b34-fed33b9c8c65" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" />
+	<provider provider_id="1" name="RobertClive" identifier="8A760" creator="1" date_created="2005-01-01 00:00:00.0" retired="0" uuid="a2c3868a-6b90-11e0-93c3-18a905e044dc"/>
+	<provider provider_id="2" name="Roger" person_id="2" identifier="8A761" creator="1" date_created="2005-01-01 00:00:00.0" retired="0" uuid="a3a5913e-6b94-11e0-93c3-18a905e044dc"/>
+	<provider provider_id="3" name="Ronald" person_id="6" identifier="8A762" creator="1" date_created="2005-01-01 00:00:00.0" retired="0" uuid="ae401f88-6b94-11e0-93c3-18a905e044dc"/>
+	<provider provider_id="4" name="Rona" person_id="7" identifier="8B761" creator="1" date_created="2005-01-01 00:00:00.0" retired="0" uuid="ba4781f4-6b94-11e0-93c3-18a905e044dc"/>
+	<provider provider_id="5" name="John" person_id="8" identifier="8B762" creator="1" date_created="2005-01-01 00:00:00.0" retired="0" uuid="c7e19142-6b94-11e0-93c3-18a905e044dc"/>
+	<provider provider_id="6" name="provider6" person_id="9" identifier="8B763" creator="1" date_created="2005-01-01 00:00:00.0" retired="1" uuid="0b2056be-6b95-11e0-93c3-18a905e044dc"/>
+	<provider provider_id="7" name="provider7" person_id="501" identifier="8C761" creator="1" date_created="2005-01-01 00:00:00.0" retired="0" uuid="161b3002-6b95-11e0-93c3-18a905e044dc"/>
+	<provider provider_id="8" name="provider8" person_id="502" identifier="8C762" creator="1" date_created="2005-01-01 00:00:00.0" retired="0" uuid="1f9e8336-6b95-11e0-93c3-18a905e044dc"/>
+	<provider provider_id="9" name="provider8" person_id="2" identifier="8C763" creator="1" date_created="2005-01-01 00:00:00.0" retired="1" uuid="1f9e8336-6b95-11e0-93c3-18a905e044dn"/>
+	<provider provider_id="10" provider_role_id="1001" person_id="2" identifier="2a5" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7f533f-cca9-11e0-9572-0800200c9a66"/>
+	<provider provider_id="11" provider_role_id="1001" person_id="6" identifier="2a6" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7f573f-cca9-11e0-9572-0800200c9a66"/>
+	<provider provider_id="12" provider_role_id="1001" person_id="7" identifier="2a7" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7f513f-cca9-11e0-9572-0800200c9a66"/>
 
+	<person_name person_name_id="9352" preferred="true" person_id="2" prefix="Mr." given_name="william" middle_name="" family_name="williamson" family_name_suffix="Esq." creator="1" date_created="2005-09-22 00:00:00.0" voided="true" void_reason="changed" uuid="399e3a7b-6482-487d-94ce-c07bb3ca3ccw"/>
+	<person_name person_name_id="9353" preferred="false" person_id="7" given_name="Collet" middle_name="james" family_name="Hussey" family_name2="Ricky" creator="1" date_created="2006-01-18 00:00:00.0" voided="true" void_reason="Changed" uuid="a65c347e-1384-493a-a55b-d325924acd9w"/>
+
+	<provider_attribute_type provider_attribute_type_id="1" name="place" datatype="org.openmrs.customdatatype.datatype.FreeTextDatatype" uuid="058d4dcf-7bb0-41f4-93b6-d49580ed9ea6" creator="1" date_created="2005-01-01 00:00:00.0" min_occurs="0" retired="false"/>
+	<provider_attribute provider_attribute_id="321" provider_id="2" attribute_type_id="1" value_reference="2011-04-25" uuid="823382cd-5faa-4b57-8b34-fed33b9c8c65" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
 </dataset>

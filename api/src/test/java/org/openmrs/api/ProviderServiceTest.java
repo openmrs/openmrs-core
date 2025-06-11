@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,6 +33,7 @@ import org.openmrs.PersonName;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
+import org.openmrs.ProviderRole;
 import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.datatype.FreeTextDatatype;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
@@ -94,7 +94,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAllProviders_shouldGetAllProviders() {
 		List<Provider> providers = service.getAllProviders();
-		assertEquals(9, providers.size());
+		assertEquals(12, providers.size());
 	}
 	
 	/**
@@ -103,7 +103,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAllProviders_shouldGetAllProvidersThatAreUnretired() {
 		List<Provider> providers = service.getAllProviders(false);
-		assertEquals(7, providers.size());
+		assertEquals(10, providers.size());
 	}
 	
 	/**
@@ -113,6 +113,18 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	public void getProvider_shouldGetProviderGivenID() {
 		Provider provider = service.getProvider(2);
 		assertEquals("Mr. Horatio Test Hornblower", provider.getName());
+	}
+
+	/**
+	 * @see ProviderService#getProvider(Integer)
+	 */
+	@Test
+	public void getProvider_shouldGetProviderRoleGivenProviderId() {
+		Provider provider = service.getProvider(10);
+		assertNotNull(provider);
+		assertEquals(1001, provider.getProviderRole().getProviderRoleId());
+		assertEquals("Binome", provider.getProviderRole().getName());
+		assertEquals("da7f523f-27ce-4bb2-86d6-6d1d05312bd5", provider.getProviderRole().getUuid());
 	}
 	
 	/**
@@ -180,7 +192,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getProviders_shouldFetchProviderWithGivenNameWithCaseInSensitive() {
 		List<Provider> providers = service.getProviders("colle", 0, null, null);
-		assertEquals(1, providers.size());
+		assertEquals(2, providers.size());
 	}
 	
 	/**
@@ -188,7 +200,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getProviders_shouldFetchProviderByMatchingQueryStringWithAnyUnVoidedPersonNamesGivenName() {
-		assertEquals(1, service.getProviders("COL", 0, null, null).size());
+		assertEquals(2, service.getProviders("COL", 0, null, null).size());
 	}
 	
 	/**
@@ -196,7 +208,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getProviders_shouldFetchProviderByMatchingQueryStringWithAnyUnVoidedPersonNamesMiddleName() {
-		assertEquals(6, service.getProviders("Tes", 0, null, null).size());
+		assertEquals(9, service.getProviders("Tes", 0, null, null).size());
 	}
 	
 	/**
@@ -204,7 +216,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getProviders_shouldFetchProviderByMatchingQueryStringWithAnyUnVoidedPersonsFamilyName() {
-		assertEquals(2, service.getProviders("Che", 0, null, null, true).size());
+		assertEquals(3, service.getProviders("Che", 0, null, null, true).size());
 	}
 	
 	/**
@@ -213,7 +225,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getProviders_shouldNotFetchProviderIfTheQueryStringMatchesWithAnyVoidedPersonNameForThat() {
 		assertEquals(0, service.getProviders("Hit", 0, null, null).size());
-		assertEquals(1, service.getProviders("coll", 0, null, null).size());
+		assertEquals(2, service.getProviders("coll", 0, null, null).size());
 	}
 	
 	/**
@@ -223,7 +235,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	public void purgeProvider_shouldDeleteAProvider() {
 		Provider provider = service.getProvider(2);
 		service.purgeProvider(provider);
-		assertEquals(8, Context.getProviderService().getAllProviders().size());
+		assertEquals(11, Context.getProviderService().getAllProviders().size());
 	}
 	
 	/**
@@ -248,7 +260,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		service.retireProvider(provider, "retire reason");
 		assertTrue(provider.getRetired());
 		assertEquals("retire reason", provider.getRetireReason());
-		assertEquals(6, service.getAllProviders(false).size());
+		assertEquals(9, service.getAllProviders(false).size());
 	}
 	
 	/**
@@ -282,6 +294,29 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(provider.getDateCreated());
 		assertEquals(999, provider.getPerson().getId().intValue());
 		
+	}
+
+	/**
+	 * @see ProviderService#saveProvider(Provider)
+	 */
+	@Test
+	public void saveProvider_shouldSaveAProviderWithProviderRole() {
+		Provider provider = new Provider();
+		provider.setIdentifier("prov");
+		provider.setPerson(Context.getPersonService().getPerson(2));
+		
+		ProviderRole providerRole = new ProviderRole();
+		providerRole.setProviderRoleId(1001);
+		providerRole.setName("Binome");
+		provider.setProviderRole(providerRole);
+		
+		service.saveProvider(provider);
+		assertNotNull(provider.getId());
+		assertNotNull(provider.getUuid());
+		assertNotNull(provider.getCreator());
+		assertNotNull(provider.getDateCreated());
+		assertEquals(2, provider.getPerson().getId().intValue());
+		assertEquals("Binome", provider.getProviderRole().getName());
 	}
 	
 	/**
@@ -378,7 +413,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getProviders_shouldReturnRetiredProvidersByDefault() {
 		List<Provider> providers = service.getProviders(null, null, null, null);
-		assertEquals(9, providers.size());
+		assertEquals(12, providers.size());
 	}
 	
 	/**
@@ -387,7 +422,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getProviders_shouldNotReturnRetiredProvidersIfIncludeRetiredIsFalse() {
 		List<Provider> providers = service.getProviders(null, null, null, null, false);
-		assertEquals(7, providers.size());
+		assertEquals(10, providers.size());
 	}
 	
 	/**
