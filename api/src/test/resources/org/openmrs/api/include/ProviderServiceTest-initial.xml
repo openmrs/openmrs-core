@@ -11,7 +11,7 @@
 
 -->
 <dataset>
-	<provider_role provider_role_id="1001" name="Binome" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f523f-27ce-4bb2-86d6-6d1d05312bd5"/>
+	<provider_role provider_role_id="1001" name="Community Health Worker" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f523f-27ce-4bb2-86d6-6d1d05312bd5"/>
   <provider provider_id="1" 	name="RobertClive" identifier="8A760" creator="1"  date_created="2005-01-01 00:00:00.0" retired="0" uuid="a2c3868a-6b90-11e0-93c3-18a905e044dc" />
   <provider provider_id="2" 	name="Roger" person_id="2" identifier="8A761" creator="1"  date_created="2005-01-01 00:00:00.0" retired="0" uuid="a3a5913e-6b94-11e0-93c3-18a905e044dc" />
   <provider provider_id="3" 	name="Ronald" person_id="6" identifier="8A762" creator="1"  date_created="2005-01-01 00:00:00.0" retired="0" uuid="ae401f88-6b94-11e0-93c3-18a905e044dc" />

@@ -123,7 +123,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		Provider provider = service.getProvider(9);
 		assertNotNull(provider);
 		assertEquals(1001, provider.getProviderRole().getProviderRoleId());
-		assertEquals("Binome", provider.getProviderRole().getName());
+		assertEquals("Community Health Worker", provider.getProviderRole().getName());
 		assertEquals("da7f523f-27ce-4bb2-86d6-6d1d05312bd5", provider.getProviderRole().getUuid());
 	}
 	
@@ -306,8 +306,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		provider.setPerson(Context.getPersonService().getPerson(2));
 		
 		ProviderRole providerRole = new ProviderRole();
-		providerRole.setProviderRoleId(1001);
-		providerRole.setName("Binome");
+		providerRole.setName("Community Health Worker");
 		provider.setProviderRole(providerRole);
 		
 		service.saveProvider(provider);
@@ -316,7 +315,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(provider.getCreator());
 		assertNotNull(provider.getDateCreated());
 		assertEquals(2, provider.getPerson().getId().intValue());
-		assertEquals("Binome", provider.getProviderRole().getName());
+		assertEquals("Community Health Worker", provider.getProviderRole().getName());
 	}
 	
 	/**
