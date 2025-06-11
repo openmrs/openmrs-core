@@ -82,6 +82,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
 
 import static org.openmrs.util.PrivilegeConstants.GET_GLOBAL_PROPERTIES;
+import static org.openmrs.web.filter.initialization.InitializationWizardModel.DEFAULT_MYSQL_CONNECTION;
+import static org.openmrs.web.filter.initialization.InitializationWizardModel.DEFAULT_POSTGRESQL_CONNECTION;
 
 /**
  * This is the first filter that is processed. It is only active when starting OpenMRS for the very
@@ -484,21 +486,22 @@ public class InitializationFilter extends StartupFilter {
 			}
 			
 			String databaseType = httpRequest.getParameter("database_type");
-			wizardModel.databaseType = databaseType;
-			
-			if ("postgresql".equals(databaseType)) {
-				wizardModel.databaseConnection = "jdbc:postgresql://localhost:5432/postgres";
-				wizardModel.databaseDriver = "org.postgresql.Driver";
+			if (databaseType != null) {
+				wizardModel.databaseType = databaseType;
+				if (DATABASE_MYSQL.equals(databaseType)) {
+					wizardModel.databaseConnection = DEFAULT_MYSQL_CONNECTION;
+					wizardModel.createDatabaseUsername = Context.getRuntimeProperties().getProperty("connection.username", wizardModel.createDatabaseUsername);
+					wizardModel.databaseRootPassword = httpRequest.getParameter("database_root_password");
+					checkForEmptyValue(wizardModel.databaseRootPassword, errors, ErrorMessageConstants.ERROR_DB_PSDW_REQ);
+				} else if (DATABASE_POSTGRESQL.equals(databaseType)) {
+					wizardModel.databaseConnection = DEFAULT_POSTGRESQL_CONNECTION;
+					wizardModel.databaseRootPassword = httpRequest.getParameter("database_root_password");
+					wizardModel.createDatabaseUsername = httpRequest.getParameter("create_database_username");
+				}
 			}
 
-			wizardModel.createDatabaseUsername = Context.getRuntimeProperties().getProperty("connection.username",
-				wizardModel.createDatabaseUsername);
-			
 			wizardModel.createUserUsername = wizardModel.createDatabaseUsername;
-			
-			wizardModel.databaseRootPassword = httpRequest.getParameter("database_root_password");
-			checkForEmptyValue(wizardModel.databaseRootPassword, errors, ErrorMessageConstants.ERROR_DB_PSDW_REQ);
-			
+
 			wizardModel.hasCurrentOpenmrsDatabase = false;
 			wizardModel.createTables = true;
 			// default wizardModel.databaseName is openmrs
