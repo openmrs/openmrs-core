@@ -50,7 +50,7 @@ public class SchemaOnlyTuner extends AbstractSnapshotTuner {
 	}
 	
 	Document replaceBitWithBoolean(Document document) {
-		XPath xPath = DocumentHelper.createXPath("//dbchangelog:column[@type=\"BIT(1)\"]/attribute::type");
+		XPath xPath = DocumentHelper.createXPath("//dbchangelog:column[@type=\"BIT\"]/attribute::type");		
 		xPath.setNamespaceURIs(getNamespaceUris());
 		
 		List<Node> nodes = xPath.selectNodes(document);
