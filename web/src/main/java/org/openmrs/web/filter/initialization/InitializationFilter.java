@@ -482,7 +482,14 @@ public class InitializationFilter extends StartupFilter {
 				renderTemplate(INSTALL_METHOD, referenceMap, httpResponse);
 				return;
 			}
-			wizardModel.databaseConnection = httpRequest.getParameter("database_connection");
+			
+			String databaseType = httpRequest.getParameter("database_type");
+			wizardModel.databaseType = databaseType;
+			
+			if ("postgresql".equals(databaseType)) {
+				wizardModel.databaseConnection = "jdbc:postgresql://localhost:5432/postgres";
+				wizardModel.databaseDriver = "org.postgresql.Driver";
+			}
 
 			wizardModel.createDatabaseUsername = Context.getRuntimeProperties().getProperty("connection.username",
 				wizardModel.createDatabaseUsername);

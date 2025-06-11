@@ -82,6 +82,11 @@ public class InitializationWizardModel {
 	public String installMethod = INSTALL_METHOD_SIMPLE;
 	
 	/**
+	 * The type of database being used (mysql or postgresql)
+	 */
+	public String databaseType = "mysql";
+	
+	/**
 	 * True/false marker for the question "Do you currently have an OpenMRS database installed"
 	 */
 	public Boolean hasCurrentOpenmrsDatabase = true;
@@ -105,7 +110,7 @@ public class InitializationWizardModel {
 	/**
 	 * Optional Database Driver string filled in on databasesetup.vm
 	 */
-	public String databaseDriver = "";
+	public String databaseDriver = "com.mysql.cj.jdbc.Driver";
 	
 	/**
 	 * MySQL root account password used for simple installation. Filled in simplesetup.vm.
