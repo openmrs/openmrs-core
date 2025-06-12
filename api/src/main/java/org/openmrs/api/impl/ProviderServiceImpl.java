@@ -17,7 +17,9 @@ import org.openmrs.Person;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
+import org.openmrs.ProviderRole;
 import org.openmrs.api.APIException;
+import org.openmrs.api.ProviderRoleInUseException;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ProviderDAO;
@@ -25,6 +27,8 @@ import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.PersistenceException;
 
 /**
  * Default implementation of the {@link ProviderService}. This class should not be used on its own.
@@ -301,5 +305,55 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	public Provider getUnknownProvider() {
 		return getProviderByUuid(Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GP_UNKNOWN_PROVIDER_UUID));
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<ProviderRole> getAllProviderRoles(boolean includeRetired) {
+		return dao.getAllProviderRoles(includeRetired);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public ProviderRole getProviderRole(Integer id) {
+		return dao.getProviderRole(id);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public ProviderRole getProviderRoleByUuid(String uuid) {
+		return dao.getProviderRoleByUuid(uuid);
+	}
+
+	@Override
+	@Transactional
+	public ProviderRole saveProviderRole(ProviderRole role) {
+		return dao.saveProviderRole(role);
+	}
+
+	@Override
+	@Transactional
+	public void retireProviderRole(ProviderRole role, String reason) {
+		// BaseRetireHandler handles retiring the object
+		dao.saveProviderRole(role);
+	}
+
+	@Override
+	@Transactional
+	public void unretireProviderRole(ProviderRole role) {
+		// BaseUnretireHandler handles unretiring the object
+		dao.saveProviderRole(role);
+	}
+
+	@Override
+	@Transactional
+	public void purgeProviderRole(ProviderRole role) throws ProviderRoleInUseException {
+		try {
+			dao.deleteProviderRole(role);
+			Context.flushSession();  // shouldn't really have to do this, but we do to force a commit so that the exception will be thrown if necessary
+		}
+		catch (PersistenceException e) {
+			throw new ProviderRoleInUseException("Cannot purge provider role. Most likely it is currently linked to an existing provider ", e);
+		}
 	}
 }

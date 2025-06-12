@@ -25,13 +25,16 @@ import javax.persistence.criteria.Root;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
+import org.openmrs.ProviderRole;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ProviderDAO;
 import org.openmrs.util.OpenmrsConstants;
@@ -392,5 +395,37 @@ public class HibernateProviderDAO implements ProviderDAO {
 		cq.where(cb.equal(cb.lower(root.get("identifier")), MatchMode.EXACT.toLowerCasePattern(identifier)));
 
 		return session.createQuery(cq).uniqueResult();
+	}
+
+	@Override
+	public List<ProviderRole> getAllProviderRoles(boolean includeRetired) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ProviderRole.class);
+		if (!includeRetired) {
+			criteria.add(Restrictions.eq("retired", false));
+		}
+		return (List<ProviderRole>) criteria.list();
+	}
+
+	@Override
+	public ProviderRole getProviderRole(Integer id) {
+		return sessionFactory.getCurrentSession().get(ProviderRole.class, id);
+	}
+
+	@Override
+	public ProviderRole getProviderRoleByUuid(String uuid) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ProviderRole.class);
+		criteria.add(Restrictions.eq("uuid", uuid));
+		return (ProviderRole) criteria.uniqueResult();
+	}
+
+	@Override
+	public ProviderRole  saveProviderRole(ProviderRole role) {
+		sessionFactory.getCurrentSession().saveOrUpdate(role);
+		return role;
+	}
+
+	@Override
+	public void deleteProviderRole(ProviderRole role) {
+		sessionFactory.getCurrentSession().delete(role);
 	}
 }
