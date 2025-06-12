@@ -10,8 +10,18 @@
 package org.openmrs;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -22,17 +32,30 @@ import java.util.stream.Collectors;
 /**
  * This class represents a list of patientIds.
  */
+@Entity
+@Table(name = "cohort")
 @Audited
 public class Cohort extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 0L;
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "cohort_id_seq")
+	@GenericGenerator(
+		name = "cohort_id_seq",
+		strategy = "native",
+		parameters = @Parameter(name = "sequence", value = "cohort_cohort_id_seq")
+	)
+	@Column(name = "cohort_id", nullable = false)
 	private Integer cohortId;
 	
+	@Column(name = "name", nullable = false)
 	private String name;
 	
+	@Column(name = "description", nullable = false)
 	private String description;
 	
+	@OneToMany(mappedBy = "cohort", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Collection<CohortMembership> memberships;
 	
 	public Cohort() {
@@ -349,7 +372,7 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	}
 	
 	public void setMemberships(Collection<CohortMembership> members) {
-		this.memberships = members;
+		this.memberships = members; 
 	}
 	
 	/**
