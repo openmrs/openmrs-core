@@ -12,7 +12,7 @@ package org.openmrs.web.filter.initialization;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.web.test.jupiter.BaseWebContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.io.File;
@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 
-public class InitializationFilterTest extends BaseContextSensitiveTest {
+public class InitializationFilterTest extends BaseWebContextSensitiveTest {
 	
 	private InitializationFilter filter;
 
