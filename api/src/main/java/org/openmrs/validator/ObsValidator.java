@@ -307,14 +307,14 @@ public class ObsValidator implements Validator {
 				validRanges.add(referenceRange);
 			}
 		}
-		
-		ConceptReferenceRange defaultReferenceRange = getDefaultReferenceRange(conceptNumeric);
-		if (defaultReferenceRange != null) {
-			validRanges.add(defaultReferenceRange);
-		}
 
 		if (validRanges.isEmpty()) {
-			return null;
+			ConceptReferenceRange defaultReferenceRange = getDefaultReferenceRange(conceptNumeric);
+			if (defaultReferenceRange != null) {
+				validRanges.add(defaultReferenceRange);
+			} else {
+				return null;
+			}
 		}
 		
 		return findStrictestReferenceRange(validRanges);
