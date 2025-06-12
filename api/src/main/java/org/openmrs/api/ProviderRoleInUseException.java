@@ -13,17 +13,17 @@ package org.openmrs.api;
  * Thrown when user attempts to delete a provider role that is currently linked to a provider
  */
 public class ProviderRoleInUseException extends Exception {
-
+	
 	private static final long serialVersionUID = 1L;
-
+	
 	public ProviderRoleInUseException() {
 		super();
 	}
-
+	
 	public ProviderRoleInUseException(String message) {
 		super(message);
 	}
-
+	
 	public ProviderRoleInUseException(String message, Exception e) {
 		super(message, e);
 	}

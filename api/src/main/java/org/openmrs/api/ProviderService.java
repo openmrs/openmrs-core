@@ -17,9 +17,13 @@ import org.openmrs.Person;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
+import org.openmrs.ProviderRole;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Handler;
 import org.openmrs.util.PrivilegeConstants;
+
+import static org.openmrs.util.PrivilegeConstants.PROVIDER_ROLE_API_PRIVILEGE;
+import static org.openmrs.util.PrivilegeConstants.PROVIDER_ROLE_API_READ_ONLY_PRIVILEGE;
 
 /**
  * This service contains methods relating to providers.
@@ -331,4 +335,63 @@ public interface ProviderService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.GET_PROVIDERS })
 	public Provider getUnknownProvider();
+
+	/**
+	 * Gets all Provider Roles in the database
+	 *
+	 * @param includeRetired whether to include retired provider roles or not
+	 * @return list of all provider roles in the system
+	 */
+	@Authorized(value = {PROVIDER_ROLE_API_PRIVILEGE, PROVIDER_ROLE_API_READ_ONLY_PRIVILEGE}, requireAll = false)
+	public List<ProviderRole> getAllProviderRoles(boolean includeRetired);
+
+	/**
+	 * Gets the provider role referenced by the specified id
+	 *
+	 * @param id
+	 * @return providerRole
+	 */
+	@Authorized(value = {PROVIDER_ROLE_API_PRIVILEGE, PROVIDER_ROLE_API_READ_ONLY_PRIVILEGE}, requireAll = false)
+	public ProviderRole getProviderRole(Integer id);
+
+	/**
+	 * Gets the provider role referenced by the specified uui
+	 *
+	 * @param uuid
+	 * @return providerRole
+	 */
+	@Authorized(value = {PROVIDER_ROLE_API_PRIVILEGE, PROVIDER_ROLE_API_READ_ONLY_PRIVILEGE}, requireAll = false)
+	public ProviderRole getProviderRoleByUuid(String uuid);
+
+	/**
+	 * Saves/updates a provider role
+	 *
+	 * @param role the provider role to save
+	 * @return the saved provider role
+	 */
+	@Authorized(PROVIDER_ROLE_API_PRIVILEGE)
+	public ProviderRole saveProviderRole(ProviderRole role);
+
+	/**
+	 * Retires a provider role
+	 * @param role the role to retire
+	 * @param reason the reason the role is being retired
+	 */
+	@Authorized(PROVIDER_ROLE_API_PRIVILEGE)
+	public void retireProviderRole(ProviderRole role, String reason);
+
+	/**
+	 * Unretires a provider role
+	 * @param role the role to unretire
+	 */
+	@Authorized(PROVIDER_ROLE_API_PRIVILEGE)
+	public void unretireProviderRole(ProviderRole role);
+
+	/**
+	 * Deletes a provider role
+	 *
+	 * @param role the provider role to delete
+	 */
+	@Authorized(PROVIDER_ROLE_API_PRIVILEGE)
+	public void purgeProviderRole(ProviderRole role) throws ProviderRoleInUseException;
 }
