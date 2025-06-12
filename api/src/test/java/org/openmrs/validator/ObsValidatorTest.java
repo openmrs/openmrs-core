@@ -94,7 +94,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfParentObshasValues() {
+	public void validate_shouldFailIfParentObsHasValues() {
 		
 		Obs obs = new Obs();
 		obs.setPerson(Context.getPersonService().getPerson(2));
