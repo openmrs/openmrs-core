@@ -20,15 +20,8 @@ import org.hibernate.envers.Audited;
 import java.io.Serializable;
 
 /**
- * Used to store the possible provider roles.  A Provide can only have a single role (though a single person
+ * Used to store the possible provider roles.  A Provider can only have a single role (though a single person
  * could be associated with more than one Provider object).
- * <p>
- * A provider role specifies what Provider/Patient relationships a provider with that role can support,
- * as well as the provider roles that another provider role can provider oversight for.
- * <p>
- * For example, a "Community Health Worker" role might support an "Accompagnateur" relationship,
- * and "Head Surgeon" role might be able to oversee a person with Provider Role of "Surgeon".
- * 
  * @since 2.8.0
  */
 @Entity

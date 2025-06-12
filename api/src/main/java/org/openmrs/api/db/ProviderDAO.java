@@ -151,4 +151,14 @@ public interface ProviderDAO {
 	 * @see ProviderService#getAllProviderRoles(boolean)
 	 */
 	List<ProviderRole> getAllProviderRoles(boolean includeRetired);
+
+	/**
+	 * @see ProviderService#saveProviderRole(ProviderRole) 
+	 */
+	public ProviderRole saveProviderRole(ProviderRole role);
+
+	/**
+	 * @see ProviderService#purgeProviderRole(ProviderRole) 
+	 */
+	public void deleteProviderRole(ProviderRole role);
 }
