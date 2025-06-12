@@ -158,6 +158,10 @@ public class PrivilegeConstants {
 	
 	@AddOnStartup(description = "Able to get Provider")
 	public static final String GET_PROVIDERS = "Get Providers";
+
+	public static final String PROVIDER_ROLE_API_PRIVILEGE = "Provider Role API";
+
+	public static final String PROVIDER_ROLE_API_READ_ONLY_PRIVILEGE = "Provider Role API - Read-only";
 	
 	@AddOnStartup(description = "Able to get encounter roles")
 	public static final String GET_ENCOUNTER_ROLES = "Get Encounter Roles";
