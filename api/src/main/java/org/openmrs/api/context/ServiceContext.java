@@ -37,7 +37,6 @@ import org.openmrs.api.OrderSetService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
-import org.openmrs.api.ProviderRoleService;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.SerializationService;
 import org.openmrs.api.ServiceNotFoundException;
@@ -1029,14 +1028,6 @@ public class ServiceContext implements ApplicationContextAware {
 	 **/
 	public void setProviderService(ProviderService providerService) {
 		setService(ProviderService.class, providerService);
-	}
-	
-	public ProviderRoleService getProviderRoleService() {
-		return getService(ProviderRoleService.class);
-	}
-
-	public void setProviderRoleService(ProviderRoleService providerRoleService) {
-		setService(ProviderRoleService.class, providerRoleService);
 	}
 	
 	/**
