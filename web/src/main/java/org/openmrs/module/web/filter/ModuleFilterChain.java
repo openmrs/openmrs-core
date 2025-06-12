@@ -13,11 +13,11 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 
 /**
  * This class is an implementation of FilterChain for use in using Filters defined within Modules.
@@ -61,8 +61,8 @@ public class ModuleFilterChain implements FilterChain {
 	 * This Iterates across all of the Filters defined by modules before handing control back over
 	 * to the initial filter chain to continue on.
 	 * 
-	 * @see javax.servlet.FilterChain#doFilter(javax.servlet.ServletRequest,
-	 *      javax.servlet.ServletResponse)
+	 * @see jakarta.servlet.FilterChain#doFilter(jakarta.servlet.ServletRequest,
+	 *      jakarta.servlet.ServletResponse)
 	 */
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response) throws ServletException, IOException {
