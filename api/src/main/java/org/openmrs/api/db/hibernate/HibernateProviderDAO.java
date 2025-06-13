@@ -416,14 +416,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 
 	@Override
 	public ProviderRole getProviderRoleByUuid(String uuid) {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaBuilder cb = session.getCriteriaBuilder();
-		CriteriaQuery<ProviderRole> cq = cb.createQuery(ProviderRole.class);
-		Root<ProviderRole> root = cq.from(ProviderRole.class);
-		
-		cq.where(cb.equal(root.get("uuid"), uuid));
-
-		return session.createQuery(cq).uniqueResult();
+		return getByUuid(uuid, ProviderRole.class);
 	}
 	
 	@Override
