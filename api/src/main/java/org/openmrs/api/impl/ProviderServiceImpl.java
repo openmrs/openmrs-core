@@ -331,14 +331,12 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	@Override
 	@Transactional
 	public void retireProviderRole(ProviderRole role, String reason) {
-		// BaseRetireHandler handles retiring the object
 		dao.saveProviderRole(role);
 	}
 
 	@Override
 	@Transactional
 	public void unretireProviderRole(ProviderRole role) {
-		// BaseUnretireHandler handles unretiring the object
 		dao.saveProviderRole(role);
 	}
 
