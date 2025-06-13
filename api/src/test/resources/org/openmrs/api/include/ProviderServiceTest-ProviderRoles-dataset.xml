@@ -11,8 +11,8 @@
 
 -->
 <dataset>
-	<provider_role provider_role_id="1001" name="Binome" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f523f-27ce-4bb2-86d6-6d1d05312bd5"/>
-	<provider_role provider_role_id="1002" name="Binome supervisor" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="ea7f523f-27ce-4bb2-86d6-6d1d05312bd5"/>
+	<provider_role provider_role_id="1001" name="Physician Assistant" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f523f-27ce-4bb2-86d6-6d1d05312bd5"/>
+	<provider_role provider_role_id="1002" name="Community Health Worker" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="ea7f523f-27ce-4bb2-86d6-6d1d05312bd5"/>
 	<provider_role provider_role_id="1003" name="Cell supervisor" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="db7f523f-27ce-4bb2-86d6-6d1d05312bd5"/>
 	<provider_role provider_role_id="1004" name="Health center supervisor" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da8f523f-27ce-4bb2-86d6-6d1e05312bd5"/>
 	<provider_role provider_role_id="1005" name="Community health nurse" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f623f-37ce-4bb2-86d6-6d1d05312bd5"/>

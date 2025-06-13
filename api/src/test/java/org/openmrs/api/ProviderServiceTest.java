@@ -230,6 +230,21 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see ProviderService#purgeProvider(Provider)
+	 */
+	@Test
+	public void purgeProvider_shouldDeleteProviderWithAProviderRole() {
+		Provider provider = service.getProvider(1009);
+		assertNotNull(provider);
+		assertNotNull(provider.getProviderRole());
+		assertEquals("Community health nurse", provider.getProviderRole().getName());
+
+		service.purgeProvider(provider);
+
+		assertNull(service.getProvider(provider.getId()));
+	}
+	
+	/**
 	 * @see ProviderService#purgeProviderAttributeType(ProviderAttributeType)
 	 */
 	@Test
@@ -285,6 +300,30 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(provider.getDateCreated());
 		assertEquals(999, provider.getPerson().getId().intValue());
 		
+	}
+
+	/**
+	 * @see ProviderService#saveProvider(Provider)
+	 */
+	@Test
+	public void saveProvider_shouldSaveAProviderWithProviderRole() {
+		Provider provider = new Provider();
+		provider.setIdentifier("prov");
+		provider.setPerson(Context.getPersonService().getPerson(2));
+		
+		ProviderRole providerRole = new ProviderRole();
+		providerRole.setName("Community Health Worker");
+		providerRole.setDescription("Test Description");
+		provider.setProviderRole(providerRole);
+		
+		service.saveProvider(provider);
+		
+		assertNotNull(provider.getId());
+		assertNotNull(provider.getUuid());
+		assertNotNull(provider.getCreator());
+		assertNotNull(provider.getDateCreated());
+		assertEquals(2, provider.getPerson().getId().intValue());
+		assertEquals("Community Health Worker", provider.getProviderRole().getName());
 	}
 	
 	/**
@@ -549,6 +588,18 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		assertEquals(provider, service.getUnknownProvider());
 	}
 
+	/**
+	 * @see ProviderService#getProvider(Integer)
+	 */
+	@Test
+	public void getProvider_shouldGetProviderRoleGivenProviderId() {
+		Provider provider = service.getProvider(1009);
+		assertNotNull(provider);
+		assertEquals(1005, provider.getProviderRole().getProviderRoleId());
+		assertEquals("Community health nurse", provider.getProviderRole().getName());
+		assertEquals("da7f623f-37ce-4bb2-86d6-6d1d05312bd5", provider.getProviderRole().getUuid());
+	}
+
 	@Test
 	public void getAllProviderRoles_shouldGetAllProviderRoles() {
 		List<ProviderRole> roles = service.getAllProviderRoles(true);
@@ -571,7 +622,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	public void getProviderRole_shouldGetProviderRole() {
 		ProviderRole role = service.getProviderRole(1002);
 		assertEquals(new Integer(1002), role.getId());
-		assertEquals("Binome supervisor", role.getName());
+		assertEquals("Community Health Worker", role.getName());
 	}
 
 	@Test
