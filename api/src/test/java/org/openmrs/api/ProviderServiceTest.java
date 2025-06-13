@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,6 +33,7 @@ import org.openmrs.PersonName;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
+import org.openmrs.ProviderRole;
 import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.datatype.FreeTextDatatype;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
@@ -51,6 +51,8 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	private static final String PROVIDER_ATTRIBUTE_TYPES_XML = "org/openmrs/api/include/ProviderServiceTest-providerAttributes.xml";
 	
 	private static final String OTHERS_PROVIDERS_XML = "org/openmrs/api/include/ProviderServiceTest-otherProviders.xml";
+
+	protected static final String PROVIDER_ROLES_XML_DATASET = "org/openmrs/api/include/ProviderServiceTest-ProviderRoles-dataset.xml";
 	
 	private ProviderService service;
 	
@@ -59,6 +61,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		service = Context.getProviderService();
 		executeDataSet(PROVIDERS_INITIAL_XML);
 		executeDataSet(PROVIDER_ATTRIBUTE_TYPES_XML);
+		executeDataSet(PROVIDER_ROLES_XML_DATASET);
 	}
 	
 	/**
@@ -94,7 +97,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAllProviders_shouldGetAllProviders() {
 		List<Provider> providers = service.getAllProviders();
-		assertEquals(9, providers.size());
+		assertEquals(17, providers.size());
 	}
 	
 	/**
@@ -103,7 +106,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAllProviders_shouldGetAllProvidersThatAreUnretired() {
 		List<Provider> providers = service.getAllProviders(false);
-		assertEquals(7, providers.size());
+		assertEquals(15, providers.size());
 	}
 	
 	/**
@@ -180,7 +183,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getProviders_shouldFetchProviderWithGivenNameWithCaseInSensitive() {
 		List<Provider> providers = service.getProviders("colle", 0, null, null);
-		assertEquals(1, providers.size());
+		assertEquals(2, providers.size());
 	}
 	
 	/**
@@ -188,7 +191,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getProviders_shouldFetchProviderByMatchingQueryStringWithAnyUnVoidedPersonNamesGivenName() {
-		assertEquals(1, service.getProviders("COL", 0, null, null).size());
+		assertEquals(2, service.getProviders("COL", 0, null, null).size());
 	}
 	
 	/**
@@ -196,7 +199,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getProviders_shouldFetchProviderByMatchingQueryStringWithAnyUnVoidedPersonNamesMiddleName() {
-		assertEquals(6, service.getProviders("Tes", 0, null, null).size());
+		assertEquals(11, service.getProviders("Tes", 0, null, null).size());
 	}
 	
 	/**
@@ -204,7 +207,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getProviders_shouldFetchProviderByMatchingQueryStringWithAnyUnVoidedPersonsFamilyName() {
-		assertEquals(2, service.getProviders("Che", 0, null, null, true).size());
+		assertEquals(4, service.getProviders("Che", 0, null, null, true).size());
 	}
 	
 	/**
@@ -213,7 +216,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getProviders_shouldNotFetchProviderIfTheQueryStringMatchesWithAnyVoidedPersonNameForThat() {
 		assertEquals(0, service.getProviders("Hit", 0, null, null).size());
-		assertEquals(1, service.getProviders("coll", 0, null, null).size());
+		assertEquals(2, service.getProviders("coll", 0, null, null).size());
 	}
 	
 	/**
@@ -223,7 +226,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	public void purgeProvider_shouldDeleteAProvider() {
 		Provider provider = service.getProvider(2);
 		service.purgeProvider(provider);
-		assertEquals(8, Context.getProviderService().getAllProviders().size());
+		assertEquals(16, Context.getProviderService().getAllProviders().size());
 	}
 	
 	/**
@@ -248,7 +251,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		service.retireProvider(provider, "retire reason");
 		assertTrue(provider.getRetired());
 		assertEquals("retire reason", provider.getRetireReason());
-		assertEquals(6, service.getAllProviders(false).size());
+		assertEquals(14, service.getAllProviders(false).size());
 	}
 	
 	/**
@@ -282,6 +285,33 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(provider.getDateCreated());
 		assertEquals(999, provider.getPerson().getId().intValue());
 		
+	}
+
+	/**
+	 * @see ProviderService#saveProvider(Provider)
+	 */
+	@Test
+	public void saveProvider_shouldSaveAProviderWithProviderRole() {
+		Provider provider = new Provider();
+		provider.setIdentifier("prov");
+		provider.setPerson(Context.getPersonService().getPerson(2));
+		
+		ProviderRole providerRole = new ProviderRole();
+		providerRole.setName("Community Health Worker");
+		providerRole.setDescription("Test Description");
+		provider.setProviderRole(providerRole);
+
+		Provider savedProvider = service.saveProvider(provider);
+		assertNotNull(savedProvider.getId());
+		assertNotNull(savedProvider.getUuid());
+		assertNotNull(savedProvider.getCreator());
+		assertNotNull(savedProvider.getDateCreated());
+		
+		Provider fetchedProvider = service.getProvider(savedProvider.getProviderId());
+
+		assertNotNull(fetchedProvider);
+		assertEquals(2, fetchedProvider.getPerson().getId().intValue());
+		assertEquals("Community Health Worker", fetchedProvider.getProviderRole().getName());
 	}
 	
 	/**
@@ -378,7 +408,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getProviders_shouldReturnRetiredProvidersByDefault() {
 		List<Provider> providers = service.getProviders(null, null, null, null);
-		assertEquals(9, providers.size());
+		assertEquals(17, providers.size());
 	}
 	
 	/**
@@ -387,7 +417,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getProviders_shouldNotReturnRetiredProvidersIfIncludeRetiredIsFalse() {
 		List<Provider> providers = service.getProviders(null, null, null, null, false);
-		assertEquals(7, providers.size());
+		assertEquals(15, providers.size());
 	}
 	
 	/**
@@ -544,6 +574,108 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GP_UNKNOWN_PROVIDER_UUID, provider.getUuid(), null);
 		Context.getAdministrationService().saveGlobalProperty(gp);
 		assertEquals(provider, service.getUnknownProvider());
+	}
+
+	/**
+	 * @see ProviderService#getProvider(Integer)
+	 */
+	@Test
+	public void getProvider_shouldReturnProviderWithAssociatedProviderRole() {
+		Provider provider = service.getProvider(1009);
+		assertNotNull(provider);
+		assertEquals(1005, provider.getProviderRole().getProviderRoleId());
+		assertEquals("Community health nurse", provider.getProviderRole().getName());
+		assertEquals("da7f623f-37ce-4bb2-86d6-6d1d05312bd5", provider.getProviderRole().getUuid());
+	}
+
+	@Test
+	public void getAllProviderRoles_shouldGetAllProviderRoles() {
+		List<ProviderRole> roles = service.getAllProviderRoles(true);
+		assertEquals(12, roles.size());
+	}
+
+	@Test
+	public void getAllProviderRoles_shouldGetAllProviderRolesExcludingRetired() {
+		List<ProviderRole> roles = service.getAllProviderRoles(false);
+		assertEquals(11, roles.size());
+	}
+
+	@Test
+	public void getProviderRole_shouldGetProviderRole() {
+		ProviderRole role = service.getProviderRole(1002);
+		assertEquals(1002, role.getId());
+		assertEquals("Community Health Worker", role.getName());
+	}
+
+	@Test
+	public void getProviderRole_shouldReturnNullIfNoProviderForId() {
+		assertNull(service.getProviderRole(200));
+	}
+
+	@Test
+	public void getProviderRoleByUuid_shouldGetProviderRoleByUuid() {
+		ProviderRole role = service.getProviderRoleByUuid("db7f523f-27ce-4bb2-86d6-6d1d05312bd5");
+		assertEquals(1003, role.getId());
+		assertEquals("Cell supervisor", role.getName());
+	}
+
+	@Test
+	public void getProviderRoleByUuid_shouldReturnNullIfNoProviderRoleForUuid() {
+		ProviderRole role = service.getProviderRoleByUuid("zzz");
+		assertNull(role);
+	}
+
+	@Test
+	public void saveProviderRole_shouldSaveProviderRole() {
+		ProviderRole role = new ProviderRole();
+		role.setName("Some provider role");
+
+		ProviderRole saved = Context.getService(ProviderService.class).saveProviderRole(role);
+
+		assertNotNull(saved.getProviderRoleId());
+		assertEquals("Some provider role", saved.getName());
+
+		ProviderRole fetched = service.getProviderRoleByUuid(saved.getUuid());
+		assertNotNull(fetched);
+		assertEquals("Some provider role", fetched.getName());
+
+		//confirm increment of provider roles
+		List<ProviderRole> roles = service.getAllProviderRoles(true);
+		assertEquals(13, roles.size());
+	}
+
+	@Test
+	public void deleteProviderRole_shouldDeleteProviderRole() throws Exception {
+		ProviderRole role = service.getProviderRole(1012);
+		assertNotNull(role);
+
+		service.purgeProviderRole(role);
+
+		ProviderRole deleted = service.getProviderRole(1012);
+		assertNull(deleted);
+	}
+
+	@Test
+	public void retireProviderRole_shouldRetireProviderRole() {
+		ProviderRole role = service.getProviderRole(1002);
+		assertFalse(role.getRetired());
+
+		service.retireProviderRole(role, "test reason");
+
+		ProviderRole retiredRole = service.getProviderRole(1002);
+		assertTrue(retiredRole.getRetired());
+		assertEquals("test reason", retiredRole.getRetireReason());
+	}
+
+	@Test
+	public void unretireProviderRole_shouldUnretireProviderRole() {
+		ProviderRole role = service.getProviderRole(1010);
+		assertTrue(role.getRetired());
+
+		service.unretireProviderRole(role);
+
+		role = service.getProviderRole(1010);
+		assertFalse(role.getRetired());
 	}
 	
 }
