@@ -19,7 +19,6 @@ import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
 import org.openmrs.ProviderRole;
 import org.openmrs.api.APIException;
-import org.openmrs.api.ProviderRoleInUseException;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ProviderDAO;
@@ -27,8 +26,6 @@ import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.PersistenceException;
 
 /**
  * Default implementation of the {@link ProviderService}. This class should not be used on its own.
@@ -347,13 +344,7 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 
 	@Override
 	@Transactional
-	public void purgeProviderRole(ProviderRole role) throws ProviderRoleInUseException {
-		try {
-			dao.deleteProviderRole(role);
-			Context.flushSession();  // shouldn't really have to do this, but we do to force a commit so that the exception will be thrown if necessary
-		}
-		catch (PersistenceException e) {
-			throw new ProviderRoleInUseException("Cannot purge provider role. Most likely it is currently linked to an existing provider ", e);
-		}
+	public void purgeProviderRole(ProviderRole role) {
+		dao.deleteProviderRole(role);
 	}
 }

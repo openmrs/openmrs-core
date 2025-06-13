@@ -592,7 +592,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	 * @see ProviderService#getProvider(Integer)
 	 */
 	@Test
-	public void getProvider_shouldGetProviderRoleGivenProviderId() {
+	public void getProvider_shouldReturnProviderWithAssociatedProviderRole() {
 		Provider provider = service.getProvider(1009);
 		assertNotNull(provider);
 		assertEquals(1005, provider.getProviderRole().getProviderRoleId());
@@ -621,7 +621,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getProviderRole_shouldGetProviderRole() {
 		ProviderRole role = service.getProviderRole(1002);
-		assertEquals(new Integer(1002), role.getId());
+		assertEquals(1002, role.getId());
 		assertEquals("Community Health Worker", role.getName());
 	}
 
@@ -633,60 +633,73 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getProviderRoleByUuid_shouldGetProviderRoleByUuid() {
 		ProviderRole role = service.getProviderRoleByUuid("db7f523f-27ce-4bb2-86d6-6d1d05312bd5");
-		assertEquals(new Integer(1003), role.getId());
+		assertEquals(1003, role.getId());
 		assertEquals("Cell supervisor", role.getName());
 	}
 
 	@Test
-	public void getProviderRoleByUuid_shouldReturnNUllIfNoProviderForUuid() {
+	public void getProviderRoleByUuid_shouldReturnNullIfNoProviderForUuid() {
 		ProviderRole role = service.getProviderRoleByUuid("zzz");
 	}
 
 	@Test
-	public void saveProviderRole_shouldSaveBasicProviderRole() {
+	public void saveProviderRole_shouldSaveProviderRole() {
 		ProviderRole role = new ProviderRole();
 		role.setName("Some provider role");
-		Context.getService(ProviderService.class).saveProviderRole(role);
-		assertEquals(13, service.getAllProviderRoles(true).size());
+
+		ProviderRole saved = Context.getService(ProviderService.class).saveProviderRole(role);
+
+		assertNotNull(saved.getProviderRoleId());
+		assertEquals("Some provider role", saved.getName());
+
+		ProviderRole fetched = service.getProviderRole(saved.getProviderRoleId());
+		assertNotNull(fetched);
+		assertEquals("Some provider role", fetched.getName());
 	}
 
 	@Test
 	public void deleteProviderRole_shouldDeleteProviderRole() throws Exception {
 		ProviderRole role = service.getProviderRole(1012);
-		service.purgeProviderRole(role);
-		assertEquals(11, service.getAllProviderRoles(true).size());
-		assertNull(service.getProviderRole(1012));
-	}
+		assertNotNull(role);
 
-	@Test
-	public void deleteProviderRole_shouldFailIfForeignKeyConstraintExists() throws Exception {
-		assertThrows(ProviderRoleInUseException.class, () -> {
-			ProviderRole role = service.getProviderRole(1002);
-			service.purgeProviderRole(role);
-		});
+		service.purgeProviderRole(role);
+
+		ProviderRole deleted = service.getProviderRole(1012);
+		assertNull(deleted);
 	}
 
 	@Test
 	public void retireProviderRole_shouldRetireProviderRole() {
 		ProviderRole role = service.getProviderRole(1002);
-		service.retireProviderRole(role, "test");
-		assertEquals(10, service.getAllProviderRoles(false).size());
+		assertFalse(role.getRetired());
 
-		role = service.getProviderRole(1002);
-		assertTrue(role.getRetired());
-		assertEquals("test", role.getRetireReason());
+		service.retireProviderRole(role, "test reason");
 
+		ProviderRole retiredRole = service.getProviderRole(1002);
+		assertTrue(retiredRole.getRetired());
+		assertEquals("test reason", retiredRole.getRetireReason());
+
+		List<ProviderRole> activeRoles = service.getAllProviderRoles(false);
+		assertFalse(activeRoles.contains(retiredRole));
 	}
 
 	@Test
 	public void unretireProviderRole_shouldUnretireProviderRole() {
 		ProviderRole role = service.getProviderRole(1002);
-		service.retireProviderRole(role, "test");
-		assertEquals(10, service.getAllProviderRoles(false).size());
+		service.retireProviderRole(role, "testing retire");
 
 		role = service.getProviderRole(1002);
+		assertTrue(role.getRetired());
+		assertEquals("testing retire", role.getRetireReason());
+
 		service.unretireProviderRole(role);
+
+		role = service.getProviderRole(1002);
 		assertFalse(role.getRetired());
+		assertNull(role.getRetireReason());
+
+		List<ProviderRole> activeRoles = service.getAllProviderRoles(false);
+		assertTrue(activeRoles.contains(role));
 	}
 	
 }

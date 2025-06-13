@@ -22,8 +22,6 @@ import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Handler;
 import org.openmrs.util.PrivilegeConstants;
 
-import static org.openmrs.util.PrivilegeConstants.PROVIDER_ROLE_API_PRIVILEGE;
-import static org.openmrs.util.PrivilegeConstants.PROVIDER_ROLE_API_READ_ONLY_PRIVILEGE;
 
 /**
  * This service contains methods relating to providers.
@@ -344,7 +342,7 @@ public interface ProviderService extends OpenmrsService {
 	 * 
 	 * @since 2.8.0
 	 */
-	@Authorized(value = {PROVIDER_ROLE_API_PRIVILEGE, PROVIDER_ROLE_API_READ_ONLY_PRIVILEGE}, requireAll = false)
+	@Authorized({PrivilegeConstants.GET_PROVIDER_ROLES})
 	public List<ProviderRole> getAllProviderRoles(boolean includeRetired);
 
 	/**
@@ -355,7 +353,7 @@ public interface ProviderService extends OpenmrsService {
 	 * 
 	 * @since 2.8.0
 	 */
-	@Authorized(value = {PROVIDER_ROLE_API_PRIVILEGE, PROVIDER_ROLE_API_READ_ONLY_PRIVILEGE}, requireAll = false)
+	@Authorized({PrivilegeConstants.GET_PROVIDER_ROLES})
 	public ProviderRole getProviderRole(Integer id);
 
 	/**
@@ -366,7 +364,7 @@ public interface ProviderService extends OpenmrsService {
 	 * 
 	 * @since 2.8.0
 	 */
-	@Authorized(value = {PROVIDER_ROLE_API_PRIVILEGE, PROVIDER_ROLE_API_READ_ONLY_PRIVILEGE}, requireAll = false)
+	@Authorized({PrivilegeConstants.GET_PROVIDER_ROLES})
 	public ProviderRole getProviderRoleByUuid(String uuid);
 
 	/**
@@ -377,7 +375,7 @@ public interface ProviderService extends OpenmrsService {
 	 * 
 	 * @since 2.8.0
 	 */
-	@Authorized(PROVIDER_ROLE_API_PRIVILEGE)
+	@Authorized(PrivilegeConstants.GET_PROVIDER_ROLES)
 	public ProviderRole saveProviderRole(ProviderRole role);
 
 	/**
@@ -387,7 +385,7 @@ public interface ProviderService extends OpenmrsService {
 	 *               
 	 *  @since 2.8.0
 	 */
-	@Authorized(PROVIDER_ROLE_API_PRIVILEGE)
+	@Authorized(PrivilegeConstants.GET_PROVIDER_ROLES)
 	public void retireProviderRole(ProviderRole role, String reason);
 
 	/**
@@ -396,7 +394,7 @@ public interface ProviderService extends OpenmrsService {
 	 *             
 	 *  @since 2.8.0
 	 */
-	@Authorized(PROVIDER_ROLE_API_PRIVILEGE)
+	@Authorized(PrivilegeConstants.GET_PROVIDER_ROLES)
 	public void unretireProviderRole(ProviderRole role);
 
 	/**
@@ -406,6 +404,6 @@ public interface ProviderService extends OpenmrsService {
 	 * 
 	 *  @since 2.8.0   
 	 */
-	@Authorized(PROVIDER_ROLE_API_PRIVILEGE)
-	public void purgeProviderRole(ProviderRole role) throws ProviderRoleInUseException;
+	@Authorized(PrivilegeConstants.GET_PROVIDER_ROLES)
+	public void purgeProviderRole(ProviderRole role);
 }

@@ -133,49 +133,27 @@ public interface ProviderDAO {
 	public Provider getProviderByIdentifier(String identifier);
 
 	/**
-	 * Gets all Provider Roles in the database
-	 *
-	 * @param includeRetired whether or not to include retired providers
-	 * @return list of al provider roles in the system
-	 * 
-	 * @since 2.8.0
+	 * @see ProviderService#getAllProviderRoles(boolean) 
 	 */
 	public List<ProviderRole> getAllProviderRoles(boolean includeRetired);
 
 	/**
-	 * Gets the provider role referenced by the specified id
-	 *
-	 * @param id
-	 * @return providerRole
-	 * 
-	 * @since 2.8.0
+	 * @see ProviderService#getProviderRole(Integer) 
 	 */
 	public ProviderRole getProviderRole(Integer id);
 
 	/**
-	 * Gets the provider role referenced by the specified uui
-	 *
-	 * @param uuid
-	 * @return providerRole
-	 * 
-	 * @since 2.8.0
+	 * @see ProviderService#getProviderRoleByUuid(String) 
 	 */
 	public ProviderRole getProviderRoleByUuid(String uuid);
 
 	/**
-	 * Saves/updates a provider role
-	 *
-	 * @param role the provider role to save
-	 * @return provider role
+	 * @see ProviderService#saveProviderRole(ProviderRole) 
 	 */
 	public ProviderRole saveProviderRole(ProviderRole role);
 
 	/**
-	 * Deletes a provider role
-	 *
-	 * @param role the provider role to delete
-	 *             
-	 *  @since 2.8.0
+	 * @see ProviderService#purgeProviderRole(ProviderRole) 
 	 */
 	public void deleteProviderRole(ProviderRole role);
 }
