@@ -515,6 +515,11 @@ public class PrivilegeConstants {
 	
 	@AddOnStartup(description = "Able to edit Provider")
 	public static final String MANAGE_PROVIDERS = "Manage Providers";
+
+	@AddOnStartup(description = "Able to edit Provider Role")
+	public static final String MANAGE_PROVIDER_ROLES = "Manage Provider Roles";
+	
+	public static final String PURGE_PROVIDER_ROLES = "Purge Provider Roles";
 	
 	public static final String PURGE_PROVIDERS = "Purge Providers";
 	
