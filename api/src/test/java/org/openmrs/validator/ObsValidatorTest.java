@@ -645,6 +645,59 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
+	public void shouldSetObsReferenceRangeValuesToNarrowestMatchingValues() {
+		// we assume there are two rules that will match a person of this age
+		Person person = new Person(1);
+		calendar.add(Calendar.YEAR, -6);
+		person.setBirthdate(calendar.getTime());
+
+		Obs obs = new Obs();
+		obs.setPerson(person);
+		obs.setConcept(Context.getConceptService().getConcept(4090));
+		obs.setValueNumeric(88.0);
+		obs.setObsDatetime(new Date());
+
+		Errors errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+
+		assertFalse(errors.hasErrors());
+		assertNotNull(obs.getReferenceRange());
+		assertEquals(140.0, obs.getReferenceRange().getHiAbsolute());
+		assertEquals(130.0 , obs.getReferenceRange().getHiCritical());
+		assertEquals(118.0, obs.getReferenceRange().getHiNormal());
+		assertEquals(80.0, obs.getReferenceRange().getLowNormal());
+		assertEquals(75.0, obs.getReferenceRange().getLowCritical());
+		assertEquals(70.0, obs.getReferenceRange().getLowAbsolute());
+	}
+
+	/**
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void shouldSetObsReferenceRangeValuesToConceptReferenceRangeValuesIfNoRuleBasedRangesArePresent() {
+		Person person = new Person(1);
+		calendar.add(Calendar.YEAR, -600);
+		person.setBirthdate(calendar.getTime());
+
+		Obs obs = new Obs();
+		obs.setPerson(person);
+		obs.setConcept(Context.getConceptService().getConcept(5089));
+		obs.setValueNumeric(88.0);
+		obs.setObsDatetime(new Date());
+
+		Errors errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+
+		assertFalse(errors.hasErrors());
+		assertNotNull(obs.getReferenceRange());
+		assertEquals(250.0, obs.getReferenceRange().getHiNormal());
+		assertEquals(0.0, obs.getReferenceRange().getLowCritical());
+	}
+
+	/**
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@Test
 	public void shouldNotSetObsReferenceRangeValueIfConceptIsNotFound() {
 		Person person = new Person(1);
 		calendar.add(Calendar.YEAR, -6);
