@@ -513,7 +513,7 @@ public class PrivilegeConstants {
 	
 	public static final String PURGE_LOCATION_ATTRIBUTE_TYPES = "Purge Location Attribute Types";
 	
-	@AddOnStartup(description = "Able to edit Provider")
+	@AddOnStartup(description = "Able to add/edit Provider")
 	public static final String MANAGE_PROVIDERS = "Manage Providers";
 
 	@AddOnStartup(description = "Able to edit Provider Role")
