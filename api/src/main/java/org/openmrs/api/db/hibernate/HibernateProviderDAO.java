@@ -25,10 +25,8 @@ import javax.persistence.criteria.Root;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.Provider;
@@ -399,33 +397,43 @@ public class HibernateProviderDAO implements ProviderDAO {
 
 	@Override
 	public List<ProviderRole> getAllProviderRoles(boolean includeRetired) {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ProviderRole.class);
-		if (!includeRetired) {
-			criteria.add(Restrictions.eq("retired", false));
-		}
-		return (List<ProviderRole>) criteria.list();
-	}
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<ProviderRole> cq = cb.createQuery(ProviderRole.class);
+		Root<ProviderRole> root = cq.from(ProviderRole.class);
 
+		if (!includeRetired) {
+			cq.where(cb.equal(root.get("retired"), false));
+		}
+
+		return session.createQuery(cq).getResultList();
+	}
+	
 	@Override
 	public ProviderRole getProviderRole(Integer id) {
-		return sessionFactory.getCurrentSession().get(ProviderRole.class, id);
+		return getSession().get(ProviderRole.class, id);
 	}
 
 	@Override
 	public ProviderRole getProviderRoleByUuid(String uuid) {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ProviderRole.class);
-		criteria.add(Restrictions.eq("uuid", uuid));
-		return (ProviderRole) criteria.uniqueResult();
-	}
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<ProviderRole> cq = cb.createQuery(ProviderRole.class);
+		Root<ProviderRole> root = cq.from(ProviderRole.class);
+		
+		cq.where(cb.equal(root.get("uuid"), uuid));
 
+		return session.createQuery(cq).uniqueResult();
+	}
+	
 	@Override
 	public ProviderRole  saveProviderRole(ProviderRole role) {
-		sessionFactory.getCurrentSession().saveOrUpdate(role);
+		getSession().saveOrUpdate(role);
 		return role;
 	}
 
 	@Override
 	public void deleteProviderRole(ProviderRole role) {
-		sessionFactory.getCurrentSession().delete(role);
+		getSession().delete(role);
 	}
 }

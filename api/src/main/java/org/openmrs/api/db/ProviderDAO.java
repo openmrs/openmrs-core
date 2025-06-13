@@ -137,6 +137,8 @@ public interface ProviderDAO {
 	 *
 	 * @param includeRetired whether or not to include retired providers
 	 * @return list of al provider roles in the system
+	 * 
+	 * @since 2.8.0
 	 */
 	public List<ProviderRole> getAllProviderRoles(boolean includeRetired);
 
@@ -145,6 +147,8 @@ public interface ProviderDAO {
 	 *
 	 * @param id
 	 * @return providerRole
+	 * 
+	 * @since 2.8.0
 	 */
 	public ProviderRole getProviderRole(Integer id);
 
@@ -153,6 +157,8 @@ public interface ProviderDAO {
 	 *
 	 * @param uuid
 	 * @return providerRole
+	 * 
+	 * @since 2.8.0
 	 */
 	public ProviderRole getProviderRoleByUuid(String uuid);
 
@@ -168,6 +174,8 @@ public interface ProviderDAO {
 	 * Deletes a provider role
 	 *
 	 * @param role the provider role to delete
+	 *             
+	 *  @since 2.8.0
 	 */
 	public void deleteProviderRole(ProviderRole role);
 }
