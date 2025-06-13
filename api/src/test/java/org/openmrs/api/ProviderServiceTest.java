@@ -21,7 +21,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,7 +52,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	private static final String OTHERS_PROVIDERS_XML = "org/openmrs/api/include/ProviderServiceTest-otherProviders.xml";
 
-	protected static final String PROVIDER_ROLES_XML_DATASET = "org/openmrs/api/include/ProviderRoleServiceTest-dataset.xml";
+	protected static final String PROVIDER_ROLES_XML_DATASET = "org/openmrs/api/include/ProviderServiceTest-ProviderRoles-dataset.xml";
 	
 	private ProviderService service;
 	
@@ -596,19 +595,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	public void saveProviderRole_shouldSaveBasicProviderRole() {
 		ProviderRole role = new ProviderRole();
 		role.setName("Some provider role");
-		Context.getService(ProviderService.class).saveProviderRole(role);
-		assertEquals(13, service.getAllProviderRoles(true).size());
-	}
-
-	@Test
-	public void saveProviderRole_shouldSaveProviderRoleWithProviderAttributeTypes() {
-		ProviderRole role = new ProviderRole();
-		role.setName("Some provider role");
-
-		Set<ProviderAttributeType> attributeTypes = new HashSet<ProviderAttributeType>();
-		attributeTypes.add(Context.getProviderService().getProviderAttributeType(1001));
-		attributeTypes.add(Context.getProviderService().getProviderAttributeType(1002));
-
 		Context.getService(ProviderService.class).saveProviderRole(role);
 		assertEquals(13, service.getAllProviderRoles(true).size());
 	}
