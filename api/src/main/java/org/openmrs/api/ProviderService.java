@@ -341,6 +341,8 @@ public interface ProviderService extends OpenmrsService {
 	 *
 	 * @param includeRetired whether to include retired provider roles or not
 	 * @return list of all provider roles in the system
+	 * 
+	 * @since 2.8.0
 	 */
 	@Authorized(value = {PROVIDER_ROLE_API_PRIVILEGE, PROVIDER_ROLE_API_READ_ONLY_PRIVILEGE}, requireAll = false)
 	public List<ProviderRole> getAllProviderRoles(boolean includeRetired);
@@ -350,6 +352,8 @@ public interface ProviderService extends OpenmrsService {
 	 *
 	 * @param id
 	 * @return providerRole
+	 * 
+	 * @since 2.8.0
 	 */
 	@Authorized(value = {PROVIDER_ROLE_API_PRIVILEGE, PROVIDER_ROLE_API_READ_ONLY_PRIVILEGE}, requireAll = false)
 	public ProviderRole getProviderRole(Integer id);
@@ -359,6 +363,8 @@ public interface ProviderService extends OpenmrsService {
 	 *
 	 * @param uuid
 	 * @return providerRole
+	 * 
+	 * @since 2.8.0
 	 */
 	@Authorized(value = {PROVIDER_ROLE_API_PRIVILEGE, PROVIDER_ROLE_API_READ_ONLY_PRIVILEGE}, requireAll = false)
 	public ProviderRole getProviderRoleByUuid(String uuid);
@@ -368,6 +374,8 @@ public interface ProviderService extends OpenmrsService {
 	 *
 	 * @param role the provider role to save
 	 * @return the saved provider role
+	 * 
+	 * @since 2.8.0
 	 */
 	@Authorized(PROVIDER_ROLE_API_PRIVILEGE)
 	public ProviderRole saveProviderRole(ProviderRole role);
@@ -376,6 +384,8 @@ public interface ProviderService extends OpenmrsService {
 	 * Retires a provider role
 	 * @param role the role to retire
 	 * @param reason the reason the role is being retired
+	 *               
+	 *  @since 2.8.0
 	 */
 	@Authorized(PROVIDER_ROLE_API_PRIVILEGE)
 	public void retireProviderRole(ProviderRole role, String reason);
@@ -383,6 +393,8 @@ public interface ProviderService extends OpenmrsService {
 	/**
 	 * Unretires a provider role
 	 * @param role the role to unretire
+	 *             
+	 *  @since 2.8.0
 	 */
 	@Authorized(PROVIDER_ROLE_API_PRIVILEGE)
 	public void unretireProviderRole(ProviderRole role);
@@ -391,6 +403,8 @@ public interface ProviderService extends OpenmrsService {
 	 * Deletes a provider role
 	 *
 	 * @param role the provider role to delete
+	 * 
+	 *  @since 2.8.0   
 	 */
 	@Authorized(PROVIDER_ROLE_API_PRIVILEGE)
 	public void purgeProviderRole(ProviderRole role) throws ProviderRoleInUseException;
