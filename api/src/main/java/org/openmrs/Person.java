@@ -24,9 +24,27 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Formula;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.SortNatural;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
@@ -48,63 +66,109 @@ import org.springframework.util.StringUtils;
  * @see org.openmrs.Patient
  */
 @Audited
+ @Entity
+@Table(name = "person")
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Person extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 2L;
 	
 	private static final Logger log = LoggerFactory.getLogger(Person.class);
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "person_id")
 	@DocumentId
 	protected Integer personId;
 	
+	@OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OrderBy("voided ASC, preferred DESC, dateCreated DESC")
+	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+	@BatchSize(size = 1000)
+	@SortNatural
+	@LazyCollection(LazyCollectionOption.FALSE)
 	private Set<PersonAddress> addresses = null;
 	
+	@OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OrderBy("voided ASC, preferred DESC, dateCreated DESC")
+	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+	@LazyCollection(LazyCollectionOption.FALSE)
+	@SortNatural
+	@BatchSize(size = 1000)
 	private Set<PersonName> names = null;
 	
+	@OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OrderBy("attributeType")
+	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+	@LazyCollection(LazyCollectionOption.FALSE)
+	@SortNatural
+	@BatchSize(size = 1000)
 	private Set<PersonAttribute> attributes = null;
 	
+	@Column(name = "gender", length = 50)
 	@GenericField
 	private String gender;
 	
+	@Column(name = "birthdate", length = 10)
 	@GenericField
 	private Date birthdate;
 	
+	@Column(name = "birthtime")
 	private Date birthtime;
 	
+	@Column(name = "birthdate_estimated")
 	private Boolean birthdateEstimated = false;
 	
+	@Column(name = "deathdate_estimated")
 	private Boolean deathdateEstimated = false;
 	
+	@Column(name = "dead", nullable = false, length = 1)
 	@GenericField
 	private Boolean dead = false;
 	
+	@Column(name = "death_date", length = 19)
 	private Date deathDate;
 	
+	@ManyToOne
+	@JoinColumn(name = "cause_of_death")
 	private Concept causeOfDeath;
 	
+	@Column(name = "cause_of_death_non_coded", length = 255)
 	private String causeOfDeathNonCoded;
 
+	@ManyToOne
+	@JoinColumn(name = "creator", updatable = false, insertable = false)
 	private User personCreator;
 	
+	@Column(name = "date_created", nullable = false, length = 19, insertable = false, updatable = false)
 	private Date personDateCreated;
 
+	@ManyToOne
+	@JoinColumn(name = "changed_by", nullable = false, updatable = false)
 	private User personChangedBy;
 	
+	@Column(name = "date_changed", length = 19, updatable = false, insertable = false)
 	private Date personDateChanged;
 	
+	@Column(name = "voided", nullable = false, insertable = false, updatable = false)
 	private Boolean personVoided = false;
 
+	@ManyToOne
+	@JoinColumn(name = "voided_by", updatable = false, insertable = false)
 	private User personVoidedBy;
 	
+	@Column(name = "date_voided", length = 19, updatable = false, insertable = false)
 	private Date personDateVoided;
 	
+	@Column(name = "void_reason", length = 255, updatable = false, insertable = false)
 	private String personVoidReason;
 	
 	@GenericField
 	@NotAudited
 	@IndexingDependency(derivedFrom = @ObjectPath(@PropertyValue(propertyName = "patient")))
+	@Formula("case when exists (select * from patient p where p.patient_id = person_id) then 1 else 0 end")
 	private boolean isPatient;
 	
 	/**
