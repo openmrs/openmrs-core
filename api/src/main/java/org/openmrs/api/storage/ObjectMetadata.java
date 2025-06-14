@@ -131,7 +131,7 @@ public class ObjectMetadata {
 		}
 
 		  public ObjectMetadata build() {
-        return new ObjectMetadata(length, mimeType, filename, creationTime, customMetadata);
+             return new ObjectMetadata(length, mimeType, filename, creationTime, customMetadata);
       }
 	}
 
