@@ -48,7 +48,7 @@ public class HL7InError extends HL7QueueItem {
 	@Column(name = "error", nullable = false)
 	private String error;
 	
-	@Column(name = "error_details", columnDefinition = "mediumtext", length = MAX_ERROR_DETAILS_LENGTH)
+	@Column(name = "error_details", length = MAX_ERROR_DETAILS_LENGTH)
 	@Lob
 	private String errorDetails;
 	
