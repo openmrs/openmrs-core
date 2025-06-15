@@ -9,8 +9,8 @@
  */
 package org.openmrs;
 
-import javax.persistence.Cacheable;
-import javax.persistence.Transient;
+import jakarta.persistence.Cacheable;
+import jakarta.persistence.Transient;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;

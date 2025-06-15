@@ -117,13 +117,13 @@
 <td>jar</td>
 <td><a class="externalLink" href="https://glassfish.dev.java.net/public/CDDLv1.0.html">Common Development and Distribution License (CDDL) v1.0</a></td></tr>
 <tr class="a">
-<td>javax.servlet</td>
+<td>jakarta.servlet</td>
 <td>jsp-api</td>
 <td>2.0</td>
 <td>jar</td>
 <td>-</td></tr>
 <tr class="b">
-<td>javax.validation</td>
+<td>jakarta.validation</td>
 <td>validation-api</td>
 <td>1.0.0.GA</td>
 <td>jar</td>
@@ -485,8 +485,8 @@
 <th>Type</th>
 <th>License</th></tr>
 <tr class="b">
-<td>javax.servlet</td>
-<td><a class="externalLink" href="http://servlet-spec.java.net">javax.servlet-api</a></td>
+<td>jakarta.servlet</td>
+<td><a class="externalLink" href="http://servlet-spec.java.net">jakarta.servlet-api</a></td>
 <td>3.0.1</td>
 <td>jar</td>
 <td><a class="externalLink" href="https://glassfish.dev.java.net/nonav/public/CDDL+GPL.html">CDDL + GPLv2 with classpath exception</a></td></tr></table></div></div>

@@ -33,6 +33,7 @@ import org.hibernate.search.mapper.orm.work.SearchIndexingPlan;
 import org.hibernate.stat.QueryStatistics;
 import org.hibernate.stat.Statistics;
 import org.hibernate.type.StandardBasicTypes;
+import org.openmrs.ConceptName;
 import org.openmrs.GlobalProperty;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.User;
@@ -380,7 +381,7 @@ public class HibernateContextDAO implements ContextDAO {
 	 */
 	@Override
 	public void evictEntity(OpenmrsObject obj) {
-		sessionFactory.getCache().evictEntity(obj.getClass(), obj.getId());
+		sessionFactory.getCache().evictEntityData(obj.getClass(), obj.getId());
 	}
 
 	/**
@@ -388,8 +389,8 @@ public class HibernateContextDAO implements ContextDAO {
 	 */
 	@Override
 	public void evictAllEntities(Class<?> entityClass) {
-		sessionFactory.getCache().evictEntityRegion(entityClass);
-		sessionFactory.getCache().evictCollectionRegions();
+		sessionFactory.getCache().evictEntityData(entityClass);
+		sessionFactory.getCache().evictCollectionData();
 		sessionFactory.getCache().evictQueryRegions();
 	}
 
@@ -518,7 +519,7 @@ public class HibernateContextDAO implements ContextDAO {
 		Session session = sessionFactory.getCurrentSession();
 		SearchSession searchSession = searchSessionFactory.getSearchSession();
 		SearchIndexingPlan indexingPlan = searchSession.indexingPlan();
-		
+
 		//Prepare session for batch work
 		session.flush();
 		indexingPlan.execute();
@@ -526,7 +527,7 @@ public class HibernateContextDAO implements ContextDAO {
 
 		//Purge all search indexes of the given type
 		Search.mapping(sessionFactory).scope(type).workspace().purge();
-		
+
 		FlushMode flushMode = session.getHibernateFlushMode();
 		CacheMode cacheMode = session.getCacheMode();
 		try {
@@ -539,7 +540,7 @@ public class HibernateContextDAO implements ContextDAO {
 				while (results.next()) {
 					index++;
 					//index each element
-					indexingPlan.addOrUpdate(results.get(0));
+					indexingPlan.addOrUpdate(results.get());
 					if (index % 1000 == 0) {
 						//apply changes to search indexes
 						indexingPlan.execute();
