@@ -12,6 +12,7 @@ package org.openmrs.liquibase;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalToCompressingWhiteSpace;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -103,7 +105,7 @@ public class SchemaOnlyTunerTest {
 		xpath.setNamespaceURIs(namespaceUris);
 		
 		List<Node> nodes = xpath.selectNodes(document);
-		assertEquals(94, nodes.size());
+		assertEquals(104, nodes.size());
 		
 		// when
 		Document actual = schemaOnlyTuner.replaceBitWithBoolean(document);
@@ -111,6 +113,12 @@ public class SchemaOnlyTunerTest {
 		// then
 		for (Node node : nodes) {
 			assertEquals("BOOLEAN", node.getParent().attributeValue("type"));
+			Attribute booleanAttr = node.getParent().attribute("defaultValueBoolean");
+			if (booleanAttr != null) {
+				String value = booleanAttr.getValue();
+				assertTrue(value.equals("true") || value.equals("false"));
+				assertNull(node.getParent().attribute("defaultValueNumeric"));
+			}
 		}
 	}
 	
@@ -121,7 +129,7 @@ public class SchemaOnlyTunerTest {
 		xPath.setNamespaceURIs(namespaceUris);
 		
 		List<Node> nodes = xPath.selectNodes(document);
-		assertEquals(1, nodes.size());
+		assertEquals(2, nodes.size());
 		
 		// when
 		SchemaOnlyTuner schemaOnlyTunerSpy = Mockito.spy(schemaOnlyTuner);
@@ -142,7 +150,7 @@ public class SchemaOnlyTunerTest {
 		xPath.setNamespaceURIs(namespaceUris);
 		
 		List<Node> nodes = xPath.selectNodes(document);
-		assertEquals(1, nodes.size());
+		assertEquals(2, nodes.size());
 		
 		// when and then
 		assertTrue(schemaOnlyTuner.assertLongtextNodes(nodes));
