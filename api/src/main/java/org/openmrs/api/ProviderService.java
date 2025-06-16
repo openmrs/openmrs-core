@@ -21,6 +21,7 @@ import org.openmrs.ProviderRole;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Handler;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -366,6 +367,54 @@ public interface ProviderService extends OpenmrsService {
 	 */
 	@Authorized({PrivilegeConstants.GET_PROVIDER_ROLES})
 	public ProviderRole getProviderRoleByUuid(String uuid);
+
+	/**
+	 * Assigns a provider role to a person
+	 *
+	 * @param provider the provider whose role we wish to set
+	 * @param role the role to set
+	 * @param identifier the identifier to associate with this provider/role combination (mandatory)
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_PROVIDER_ROLES)
+	public void assignProviderRoleToPerson(Person provider, ProviderRole role, String identifier);
+
+	/**
+	 * Unassigns a provider role from a person by retiring the provider associated with that role
+	 *
+	 * @param provider
+	 * @param role
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_PROVIDER_ROLES)
+	void unassignProviderRoleFromPerson(Person provider, ProviderRole role);
+
+	/**
+	 * Returns whether or not the passed person has one or more associated providers (unretired or retired)
+	 * (So note that a person that only is associated with retired Provider objects is still consider a "provider")
+	 *
+	 * @param person
+	 * @return whether or not the passed person has one or more associated providers
+	 */
+	@Authorized(PrivilegeConstants.GET_PROVIDER_ROLES)
+	public boolean isProvider(Person person);
+
+	/**
+	 * Returns whether or not the passed provider has the specified provider role
+	 *
+	 * @param provider
+	 * @param role
+	 * @return whether or not the passed provider has the specified provider role
+	 */
+	@Authorized(PrivilegeConstants.GET_PROVIDER_ROLES)
+	public boolean hasRole(Person provider, ProviderRole role);
+
+	/**
+	 * Returns the provider roles associated with the specified provider
+	 *
+	 * @param provider
+	 * @return the provider role associated with the specified provider
+	 */
+	@Authorized(PrivilegeConstants.GET_PROVIDER_ROLES)
+	List<ProviderRole> getProviderRoles(Person provider);
 
 	/**
 	 * Saves/updates a provider role
