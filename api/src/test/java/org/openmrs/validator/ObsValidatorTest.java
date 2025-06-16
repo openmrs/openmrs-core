@@ -571,6 +571,24 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		assertNull(referenceRange.getLowAbsolute());
 		assertNotNull(referenceRange.getConceptNumeric());
 	}
+
+	/**
+	 * @see ObsValidator#getReferenceRange(Obs)
+	 */
+	@Test
+	public void getReferenceRange_shouldConceptReferenceRangeWhenNoReferenceRangeDefined() {
+		Obs obs = getObs(1, 5497, 0.0);
+		
+		ConceptReferenceRange referenceRange = obsValidator.getReferenceRange(obs);
+
+		assertNotNull(referenceRange);
+		assertEquals(2500.0, referenceRange.getHiAbsolute());
+		assertEquals(1800.0, referenceRange.getHiCritical());
+		assertEquals(1497.0, referenceRange.getHiNormal());
+		assertEquals(445.0, referenceRange.getLowNormal());
+		assertEquals(99.0, referenceRange.getLowCritical());
+		assertEquals(0.0, referenceRange.getLowAbsolute());
+	}
 	
 	/**
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
@@ -681,7 +699,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 
 		Obs obs = new Obs();
 		obs.setPerson(person);
-		obs.setConcept(Context.getConceptService().getConcept(5089));
+		obs.setConcept(Context.getConceptService().getConcept(5497));
 		obs.setValueNumeric(88.0);
 		obs.setObsDatetime(new Date());
 
@@ -690,8 +708,12 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 
 		assertFalse(errors.hasErrors());
 		assertNotNull(obs.getReferenceRange());
-		assertEquals(250.0, obs.getReferenceRange().getHiNormal());
-		assertEquals(0.0, obs.getReferenceRange().getLowCritical());
+		assertEquals(2500.0, obs.getReferenceRange().getHiAbsolute());
+		assertEquals(1800.0, obs.getReferenceRange().getHiCritical());
+		assertEquals(1497.0, obs.getReferenceRange().getHiNormal());
+		assertEquals(445.0, obs.getReferenceRange().getLowNormal());
+		assertEquals(99.0, obs.getReferenceRange().getLowCritical());
+		assertEquals(0.0, obs.getReferenceRange().getLowAbsolute());
 	}
 
 	/**
