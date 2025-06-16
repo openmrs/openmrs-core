@@ -9,6 +9,14 @@
  */
 package org.openmrs;
 
+import org.openmrs.annotation.OpenmrsProfile;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.io.Serializable;
 
 /**
@@ -23,10 +31,15 @@ import java.io.Serializable;
  * 
  * @since 2.8.0
  */
+@Entity
+@Table(name = "provider_role")
 public class ProviderRole extends BaseOpenmrsMetadata implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "provider_role_id")
 	private Integer providerRoleId;
 
 	@Override
