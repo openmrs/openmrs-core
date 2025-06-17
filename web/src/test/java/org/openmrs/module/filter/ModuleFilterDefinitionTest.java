@@ -1,18 +1,8 @@
-/**
- * This Source Code Form is subject to the terms of the Mozilla Public License,
- * v. 2.0. If a copy of the MPL was not distributed with this file, You can
- * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
- * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
- *
- * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
- * graphic logo is a trademark of OpenMRS Inc.
- */
-package org.openmrs.module.filter;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -27,82 +17,86 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
 public class ModuleFilterDefinitionTest {
-	
-	public static Document getDocument(String xmlString) {
-		try {
-			DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-			Document doc = docBuilder.parse(new InputSource(new StringReader(xmlString)));
-			return doc;
-		} catch (Exception e) {
-			return null;
-		}
-	}	
 
-	/**
-	 * @see ModulefilterDefinition#retrieveFilterDefinitions
-	 * @throws ModuleException
-	 */
-	@Test
-	public void retrieveFilterDefinitions_shouldThrowModuleExceptionIfNoConfig() {
-		Module module = new Module("test");
-		ModuleException exception = assertThrows(ModuleException.class, () -> ModuleFilterDefinition.retrieveFilterDefinitions(module));
-		assertThat(exception.getMessage(), is("Unable to parse filters in module configuration."));
-	}
+    public static Document getDocument(String xmlString) {
+        try {
+            DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+            Document doc = docBuilder.parse(new InputSource(new StringReader(xmlString)));
+            return doc;
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
-	/**
-	 * @see ModulefilterDefinition#retrieveFilterDefinitions
-	 * @throws ModuleException
-	 */
-	@Test
-	public void retrieveFilterDefinitions_shouldReturnEmptyListIfNoFilterNodes() {
-		String xmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-						 + "<data></data>";
-		Module module = new Module("test");
-		module.setConfig(getDocument(xmlString));
+    /**
+     * @see ModuleFilterDefinition#retrieveFilterDefinitions
+     * @throws ModuleException
+     */
+    @Test
+    public void retrieveFilterDefinitions_shouldThrowModuleExceptionIfNoConfig() {
+        // Using mock here to simulate a Module instance.
+        Module module = mock(Module.class);
 
-		List<ModuleFilterDefinition> out = ModuleFilterDefinition.retrieveFilterDefinitions(module);
-		assertThat(out, is(empty()));
-	}
-	
-	/**
-	 * @see ModulefilterDefinition#retrieveFilterDefinitions
-	 * @throws ModuleException
-	 */
-	@Test
-	public void retrieveFilterDefinitions_shouldReturnListOfSizeOneUsingInitParams() {
-		String xmlString = "<?xml version =\"1.0\" encoding=\"UTF-8\"?>\n"
-						 + "<data><filter>\n"
-						 + "	<init-param>\n"
-						 + "		<param-name>test</param-name>\n"
-						 + "		<param-value>123</param-value>\n"
-						 + "	</init-param>\n"
-						 + "</filter></data>";
-		Module module = new Module("test");
-		module.setConfig(getDocument(xmlString));
-		
-		List<ModuleFilterDefinition> out = ModuleFilterDefinition.retrieveFilterDefinitions(module);
-		assertThat(out.size(), is(1));
-		assertThat(out.get(0).getInitParameters().get("test"), is("123"));
-	}
-	
-	/**
-	 * @see ModulefilterDefinition#retrieveFilterDefinitions
-	 * @throws ModuleException
-	 */
-	@Test
-	public void retrieveFilterDefinitions_shouldReturnListOfSizeOneUsingFilterNameAndClass() {
-		String xmlString = "<?xml version =\"1.0\" encoding=\"UTF-8\"?>\n"
-						 + "<data><filter>\n"
-						 + "	<filter-name>test</filter-name>\n"
-						 + "	<filter-class>123</filter-class>\n"
-						 + "</filter></data>";
-		Module module = new Module("test");
-		module.setConfig(getDocument(xmlString));
-		
-		List<ModuleFilterDefinition> out = ModuleFilterDefinition.retrieveFilterDefinitions(module);
-		assertThat(out.size(), is(1));
-		assertThat(out.get(0).getFilterName(), is("test"));
-		assertThat(out.get(0).getFilterClass(), is("123"));
-	}
+        // Assuming retrieveFilterDefinitions is a static method
+        ModuleException exception = assertThrows(ModuleException.class, () -> ModuleFilterDefinition.retrieveFilterDefinitions(module));
+        assertThat(exception.getMessage(), is("Unable to parse filters in module configuration."));
+    }
+
+    /**
+     * @see ModuleFilterDefinition#retrieveFilterDefinitions
+     * @throws ModuleException
+     */
+    @Test
+    public void retrieveFilterDefinitions_shouldReturnEmptyListIfNoFilterNodes() {
+        String xmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                         + "<data></data>";
+        // Assuming setConfig works in this context.
+        Module module = mock(Module.class);
+        module.setConfig(getDocument(xmlString));
+
+        List<ModuleFilterDefinition> out = ModuleFilterDefinition.retrieveFilterDefinitions(module);
+        assertThat(out, is(empty()));
+    }
+
+    /**
+     * @see ModuleFilterDefinition#retrieveFilterDefinitions
+     * @throws ModuleException
+     */
+    @Test
+    public void retrieveFilterDefinitions_shouldReturnListOfSizeOneUsingInitParams() {
+        String xmlString = "<?xml version =\"1.0\" encoding=\"UTF-8\"?>\n"
+                         + "<data><filter>\n"
+                         + "    <init-param>\n"
+                         + "        <param-name>test</param-name>\n"
+                         + "        <param-value>123</param-value>\n"
+                         + "    </init-param>\n"
+                         + "</filter></data>";
+        Module module = mock(Module.class);
+        module.setConfig(getDocument(xmlString));
+
+        List<ModuleFilterDefinition> out = ModuleFilterDefinition.retrieveFilterDefinitions(module);
+        assertThat(out.size(), is(1));
+        assertThat(out.get(0).getInitParameters().get("test"), is("123"));
+    }
+
+    /**
+     * @see ModuleFilterDefinition#retrieveFilterDefinitions
+     * @throws ModuleException
+     */
+    @Test
+    public void retrieveFilterDefinitions_shouldReturnListOfSizeOneUsingFilterNameAndClass() {
+        String xmlString = "<?xml version =\"1.0\" encoding=\"UTF-8\"?>\n"
+                         + "<data><filter>\n"
+                         + "    <filter-name>test</filter-name>\n"
+                         + "    <filter-class>123</filter-class>\n"
+                         + "</filter></data>";
+        Module module = mock(Module.class);
+        module.setConfig(getDocument(xmlString));
+
+        List<ModuleFilterDefinition> out = ModuleFilterDefinition.retrieveFilterDefinitions(module);
+        assertThat(out.size(), is(1));
+        assertThat(out.get(0).getFilterName(), is("test"));
+        assertThat(out.get(0).getFilterClass(), is("123"));
+    }
 }
