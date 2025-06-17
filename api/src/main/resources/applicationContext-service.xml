@@ -678,6 +678,17 @@
 		<property name="queueCapacity" value="1000" />
 	</bean>
 
+	<bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:hibernate.default.properties</value>
+				<value>file:${OPENMRS_APPLICATION_DATA_DIRECTORY}/openmrs-runtime.properties</value>
+			</list>
+		</property>
+		<property name="ignoreResourceNotFound" value="true"/>
+		<property name="localOverride" value="true"/>
+	</bean>
+
 	<!--  ************************ END VALIDATOR CONFIGURATION  ************************  -->
 
 	<context:component-scan base-package="org.openmrs">
