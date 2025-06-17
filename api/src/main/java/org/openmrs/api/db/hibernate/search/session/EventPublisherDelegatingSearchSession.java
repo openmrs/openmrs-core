@@ -9,7 +9,7 @@
  */
 package org.openmrs.api.db.hibernate.search.session;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import java.util.Collection;
 import java.util.stream.Collectors;
 

@@ -133,7 +133,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 	
 	@BeforeEach
 	public void before() throws IOException, SQLException {
-		upgradeTestUtil = new DatabaseUpgradeTestUtil(DATABASE_PATH);
+		upgradeTestUtil = new DatabaseUpgradeTestUtil(DATABASE_PATH, getSchemaPattern());
 	}
 	
 	@AfterEach
@@ -384,7 +384,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		upgradeTestUtil.executeDataset("UpgradeTest-otherOrderTypes.xml");
 		upgradeTestUtil.getConnection().createStatement()
 		        .executeUpdate("alter table `order_type` add java_class_name varchar(255) default 'org.openmrs.Order'");
-		upgradeTestUtil.getConnection().createStatement().executeUpdate("alter table `order_type` add parent int(11)");
+		upgradeTestUtil.getConnection().createStatement().executeUpdate("alter table `order_type` add parent int");
 		createOrderEntryUpgradeFileWithTestData(
 		    "mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
