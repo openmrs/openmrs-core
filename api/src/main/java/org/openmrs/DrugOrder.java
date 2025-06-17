@@ -13,6 +13,8 @@ import static org.openmrs.Order.Action.DISCONTINUE;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.Audited;
+import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -547,6 +549,13 @@ public class DrugOrder extends Order {
 	 */
 	public void setDrugNonCoded(String drugNonCoded) {
 		this.drugNonCoded = StringUtils.isNotBlank(drugNonCoded) ? drugNonCoded.trim() : drugNonCoded;
+		if (StringUtils.isNotBlank(drugNonCoded) && getConcept() == null) {
+			String conceptUuid = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_DRUG_ORDER_DRUG_OTHER);
+			if (StringUtils.isNotBlank(conceptUuid)) {
+				Concept nonCodedDrugConcept = Context.getConceptService().getConceptByUuid(conceptUuid);
+				setConcept(nonCodedDrugConcept);
+			}
+		}
 	}
 
 	/**
