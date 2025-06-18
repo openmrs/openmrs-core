@@ -496,7 +496,7 @@ public class InitializationFilter extends StartupFilter {
 				} else if (DATABASE_POSTGRESQL.equals(databaseType)) {
 					wizardModel.databaseConnection = DEFAULT_POSTGRESQL_CONNECTION;
 					wizardModel.databaseRootPassword = httpRequest.getParameter("database_root_password");
-					wizardModel.createDatabaseUsername = httpRequest.getParameter("postgres_superuser");
+					wizardModel.createDatabaseUsername = httpRequest.getParameter("create_database_username");
 				}
 			}
 
