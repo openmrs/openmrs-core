@@ -131,6 +131,11 @@ public class InitializationWizardModel {
 	 * Filled in on databasesetup.vm
 	 */
 	public String createDatabaseUsername = "root";
+
+	/**
+	 * Default postgres super user
+	 */
+	public String postgresUsername = "postgres";
 	
 	/**
 	 * Filled in on databasesetup.vm
