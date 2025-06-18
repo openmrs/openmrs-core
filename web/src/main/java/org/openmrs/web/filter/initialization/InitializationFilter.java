@@ -503,7 +503,6 @@ public class InitializationFilter extends StartupFilter {
 			}
 
 			wizardModel.createUserUsername = wizardModel.createDatabaseUsername;
-
 			wizardModel.hasCurrentOpenmrsDatabase = false;
 			wizardModel.createTables = true;
 			// default wizardModel.databaseName is openmrs
