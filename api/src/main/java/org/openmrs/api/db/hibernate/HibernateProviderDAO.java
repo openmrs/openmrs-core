@@ -32,6 +32,7 @@ import org.openmrs.PersonName;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
+import org.openmrs.ProviderRole;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ProviderDAO;
 import org.openmrs.util.OpenmrsConstants;
@@ -392,5 +393,40 @@ public class HibernateProviderDAO implements ProviderDAO {
 		cq.where(cb.equal(cb.lower(root.get("identifier")), MatchMode.EXACT.toLowerCasePattern(identifier)));
 
 		return session.createQuery(cq).uniqueResult();
+	}
+
+	@Override
+	public List<ProviderRole> getAllProviderRoles(boolean includeRetired) {
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<ProviderRole> cq = cb.createQuery(ProviderRole.class);
+		Root<ProviderRole> root = cq.from(ProviderRole.class);
+
+		if (!includeRetired) {
+			cq.where(cb.equal(root.get("retired"), false));
+		}
+
+		return session.createQuery(cq).getResultList();
+	}
+	
+	@Override
+	public ProviderRole getProviderRole(Integer id) {
+		return getSession().get(ProviderRole.class, id);
+	}
+
+	@Override
+	public ProviderRole getProviderRoleByUuid(String uuid) {
+		return getByUuid(uuid, ProviderRole.class);
+	}
+	
+	@Override
+	public ProviderRole  saveProviderRole(ProviderRole role) {
+		getSession().saveOrUpdate(role);
+		return role;
+	}
+
+	@Override
+	public void deleteProviderRole(ProviderRole role) {
+		getSession().delete(role);
 	}
 }
