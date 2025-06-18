@@ -34,7 +34,7 @@
                     <div class="postgres-username-container" id="postgresUsernameContainer" style="display: none;">
                         <label class="form-label">$l10n.get("install.simple.postgresql.superuser")</label>
                         <input type="text" 
-                               name="postgres_superuser" 
+                               name="create_database_username" 
                                value="${createDatabaseUsername}" 
                                class="form-input"
                                placeholder="$l10n.get("install.simple.postgresql.superuser.placeholder")"
