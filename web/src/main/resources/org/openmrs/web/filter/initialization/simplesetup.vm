@@ -10,9 +10,44 @@
 
             <div class="form-section">
                 <div class="form-group">
-                    <label class="form-label">$l10n.get("install.simple.passwdinfo")</label>
-                    <p class="form-hint">$l10n.get("install.simple.empty")</p>
-                    <div class="password-input-container">
+                    <label class="form-label">$l10n.get("install.simple.databaseType")</label>
+                    <div class="radio-group">
+                        <label class="radio-container">
+                            <input type="radio" name="database_type" value="mysql" #if($!databaseType == "mysql")checked#end onchange="updatePasswordField('mysql')" />
+                            <span class="radio-label">MySQL</span>
+                        </label>
+                        <label class="radio-container">
+                            <input type="radio" name="database_type" value="postgresql" #if($!databaseType == "postgresql")checked#end onchange="updatePasswordField('postgresql')" />
+                            <span class="radio-label">PostgreSQL</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group" id="passwordGroup">
+                    <label class="form-label" id="passwordLabel">
+                        #if($!databaseType == "postgresql")
+                            $l10n.get("install.simple.postgresql.auth.info")
+                        #else
+                            $l10n.get("install.simple.passwdinfo")
+                        #end
+                    </label>
+                    <div class="postgres-username-container" id="postgresUsernameContainer" style="display: none;">
+                        <label class="form-label">$l10n.get("install.simple.postgresql.superuser")</label>
+                        <input type="text" 
+                               name="create_database_username" 
+                               value="${postgresUsername}" 
+                               class="form-input"
+                               placeholder="$l10n.get("install.simple.postgresql.superuser.placeholder")"
+                               onKeyPress="return submitenter(this,event);" />
+                    </div>
+                    <p class="form-hint" id="passwordHint">
+                        #if($!databaseType == "postgresql")
+                            $l10n.get("install.simple.postgresql.auth.hint")
+                        #else
+                            $l10n.get("install.simple.empty")
+                        #end
+                    </p>
+                    <div class="password-input-container" id="passwordInputContainer">
                         <input type="password" 
                                name="database_root_password" 
                                value="${databaseRootPassword}" 
@@ -43,6 +78,32 @@
         </div>
     </form>
 </div>
+
+<script>
+function updatePasswordField(dbType) {
+    var passwordLabel = document.getElementById('passwordLabel');
+    var passwordHint = document.getElementById('passwordHint');
+    var passwordInputContainer = document.getElementById('passwordInputContainer');
+    var postgresUsernameContainer = document.getElementById('postgresUsernameContainer');
+    
+    if (dbType === 'postgresql') {
+        passwordLabel.textContent = '$l10n.get("install.simple.postgresql.auth.info")';
+        passwordHint.textContent = '$l10n.get("install.simple.postgresql.auth.hint")';
+        passwordInputContainer.style.display = 'block';
+        postgresUsernameContainer.style.display = 'block';
+    } else {
+        passwordLabel.textContent = '$l10n.get("install.simple.passwdinfo")';
+        passwordHint.textContent = '$l10n.get("install.simple.empty")';
+        passwordInputContainer.style.display = 'block';
+        postgresUsernameContainer.style.display = 'none';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var selectedDbType = document.querySelector('input[name="database_type"]:checked').value;
+    updatePasswordField(selectedDbType);
+});
+</script>
 
 <style>
     body {
@@ -221,6 +282,37 @@
             width: 100%;
             justify-content: center;
         }
+    }
+
+    .password-input-container {
+        transition: all 0.3s ease;
+    }
+
+    .postgres-info,
+    .info-icon,
+    .info-content,
+    .info-title,
+    .info-list {
+        display: none;
+    }
+
+    .postgres-username-container {
+        margin-bottom: 1rem;
+    }
+
+    .postgres-username-container .form-input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .postgres-username-container .form-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(242, 101, 34, 0.1);
     }
 </style>
 #parse($FOOTER_TEMPLATE)
