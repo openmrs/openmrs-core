@@ -60,6 +60,7 @@ import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.ProgramAttributeType;
 import org.openmrs.Provider;
+import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
 import org.openmrs.ProviderRole;
 import org.openmrs.Relationship;
@@ -2751,6 +2752,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.addAnnotatedClass(FormResource.class)
 			.addAnnotatedClass(VisitType.class)
 			.addAnnotatedClass(ProviderRole.class)
+				.addAnnotatedClass(ProviderAttribute.class)
 			.getMetadataBuilder().build();
 
 
