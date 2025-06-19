@@ -19,7 +19,6 @@ import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Logging;
 import org.openmrs.api.*;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.context.Daemon;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.UserDAO;
@@ -36,7 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -63,6 +61,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 	
 	protected UserDAO dao;
+
+	
 	
 	private static final int MAX_VALID_TIME = 12 * 60 * 60 * 1000; //Period of 12 hours
 	
@@ -597,14 +597,16 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 			return dao.getUsers(name, new ArrayList<>(), includeRetired, start, length);
 		}
 		
-		// add the requested roles and all child roles for consideration
-		Set<Role> allRoles = new HashSet<>();
-		for (Role r : roles) {
-			allRoles.add(r);
-			allRoles.addAll(r.getAllChildRoles());
-		}
-		
-		return dao.getUsers(name, new ArrayList<>(allRoles), includeRetired, start, length);
+		 // add the requested roles and all child roles for consideration
+Set<Role> allRoles = new HashSet<>();
+for (Role r : roles) {
+    allRoles.add(r);
+    Collection<Role> childRoles = r.getAllChildRoles();
+    if (childRoles != null) {
+        allRoles.addAll(childRoles);
+    }
+}
+    return dao.getUsers(name, new ArrayList<>(allRoles), includeRetired, start, length);
 	}
 	
 	@Override
@@ -814,5 +816,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	public String getLastLoginTime(User user) {
 		return dao.getLastLoginTime(user);
-	}
+    }
+
+	
+
 }

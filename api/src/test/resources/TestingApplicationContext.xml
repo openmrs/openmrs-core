@@ -56,4 +56,9 @@
 			</list>
 		</property>
 	</bean>
+	<!--  Mock MailMessageSender to fix test error -->
+	<bean id="mailMessageSender" class="org.mockito.Mockito" factory-method="mock">
+		<constructor-arg value="org.openmrs.notification.mail.MailMessageSender" />
+	</bean>
 </beans>
+
