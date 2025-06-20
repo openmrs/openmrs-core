@@ -24,6 +24,8 @@ public class ObjectMetadata {
 	private String mimeType;
 	private String filename;
 	private Instant creationTime;
+    
+   
 	
 	public ObjectMetadata() {}
 
@@ -128,8 +130,9 @@ public class ObjectMetadata {
 			return this;
 		}
 
-		public ObjectMetadata build() {
-			return new ObjectMetadata(length, mimeType, filename, creationTime, customMetadata);
-		}
+		  public ObjectMetadata build() {
+             return new ObjectMetadata(length, mimeType, filename, creationTime, customMetadata);
+      }
 	}
-}
+
+  }

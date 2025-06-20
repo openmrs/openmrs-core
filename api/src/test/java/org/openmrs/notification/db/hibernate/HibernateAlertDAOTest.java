@@ -29,7 +29,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * This class tests the hibernate alert data access. TODO Consider changing this and all subsequent
  * tests to use dbunit
+ * 
+ *  NOTE: These tests currently use dataset XML. dbunit could be considered in future refactors.
  */
+
 public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 
 	private static final String DATA_XML = "org/openmrs/api/db/hibernate/include/HibernateAlertDAOTestDataSet.xml";
