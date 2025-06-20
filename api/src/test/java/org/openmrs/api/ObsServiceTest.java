@@ -120,7 +120,6 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
-	@Disabled
 	public void shouldSaveUpdateDeleteVoidObsGroupCascades() {
 		executeDataSet(INITIAL_OBS_XML);
 		
