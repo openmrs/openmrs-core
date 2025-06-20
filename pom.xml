@@ -1111,12 +1111,12 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.17.5</version>
+						<version>1.17.6</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.17.5</version>
+						<version>1.17.6</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
@@ -1137,12 +1137,12 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.17.5</version>
+						<version>1.17.6</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.17.5</version>
+						<version>1.17.6</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
@@ -1163,12 +1163,12 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.17.5</version>
+						<version>1.17.6</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.17.5</version>
+						<version>1.17.6</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
@@ -1253,7 +1253,7 @@
 		<!-- ininispanVersion needs to be adjusted if hibernateVersion changes -->
 		<infinispanVersion>13.0.22.Final</infinispanVersion>
 		<aspectjVersion>1.9.24</aspectjVersion>
-		<jacksonVersion>2.19.0</jacksonVersion>
+		<jacksonVersion>2.19.1</jacksonVersion>
 		<junitVersion>5.11.4</junitVersion>
 		<mockitoVersion>3.12.4</mockitoVersion>
 		<hamcrestVersion>3.0</hamcrestVersion>
