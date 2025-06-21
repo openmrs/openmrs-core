@@ -253,7 +253,7 @@ and get started with re-:eyes: pull requests!
 
 We use
 
-https://www.transifex.com/openmrs/OpenMRS/
+https://explore.transifex.com/openmrs/OpenMRS/
 
 to manage our translations.
 
