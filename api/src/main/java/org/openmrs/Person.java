@@ -9,8 +9,7 @@
  */
 package org.openmrs;
 
-import javax.persistence.Cacheable;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -27,6 +26,7 @@ import java.util.TreeSet;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
@@ -50,6 +50,8 @@ import org.springframework.util.StringUtils;
 @Audited
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@Entity
+@Table(name = "person")
 public class Person extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 2L;
@@ -57,6 +59,14 @@ public class Person extends BaseChangeableOpenmrsData {
 	private static final Logger log = LoggerFactory.getLogger(Person.class);
 	
 	@DocumentId
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "person_id_seq_gen")
+	@GenericGenerator(
+			name = "person_id_seq_gen",
+			strategy = "sequence",
+			parameters = @org.hibernate.annotations.Parameter(name = "sequence", value = "person_person_id_seq")
+	)
+	@Column(name = "person_id")
 	protected Integer personId;
 	
 	private Set<PersonAddress> addresses = null;
@@ -66,40 +76,63 @@ public class Person extends BaseChangeableOpenmrsData {
 	private Set<PersonAttribute> attributes = null;
 	
 	@GenericField
+	@Column(name = "gender", nullable = true, length = 50)
 	private String gender;
 	
 	@GenericField
+	@Column(name = "birthdate", length = 10)
 	private Date birthdate;
-	
+
+	@Column(name = "birthtime")
 	private Date birthtime;
-	
+
+	@Column(name = "birthdate_estimated")
 	private Boolean birthdateEstimated = false;
-	
+
+	@Column(name = "deathdate_estimated")
 	private Boolean deathdateEstimated = false;
 	
 	@GenericField
+	@Column(name = "dead", nullable = false, length = 1)
 	private Boolean dead = false;
-	
+
+	@Column(name = "death_date", length = 19)
 	private Date deathDate;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "concept_id", nullable = true)
 	private Concept causeOfDeath;
-	
+
+	@Column(name = "cause_of_death_non_coded")
 	private String causeOfDeathNonCoded;
 
+	@ManyToOne
+	@JoinColumn(name = "user_id")
 	private User personCreator;
-	
+
+	@Column(name = "date_created", nullable = false, length = 19)
 	private Date personDateCreated;
 
+	@Column(name = "changed_by")
+	@ManyToOne
+	@JoinColumn(name = "user_id")
 	private User personChangedBy;
-	
+
+	@Column(name = "date_changed", length = 19)
 	private Date personDateChanged;
-	
+
+	@Column(name = "voided", nullable = false, length = 1)
 	private Boolean personVoided = false;
 
+	@Column(name = "voided_by")
+	@ManyToOne
+	@JoinColumn(name = "user_id")
 	private User personVoidedBy;
-	
+
+	@Column(name = "date_voided", length = 19)
 	private Date personDateVoided;
-	
+
+	@Column(name = "void_reason")
 	private String personVoidReason;
 	
 	@GenericField

@@ -9,13 +9,8 @@
  */
 package org.openmrs;
 
-import javax.persistence.Cacheable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import javax.persistence.*;
+import java.util.*;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -30,15 +25,45 @@ import org.hibernate.envers.Audited;
 @Audited
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@Entity
+@Table(name = "patient")
 public class Patient extends Person {
 	
 	public static final long serialVersionUID = 93123L;
-	
+
+	@Column(name = "patient_id", nullable = false, insertable = false, updatable = false)
 	private Integer patientId;
-	
+
+	@Column(name = "allergy_status", nullable = true, length = 50)
 	private String allergyStatus = Allergies.UNKNOWN;
 	
 	private Set<PatientIdentifier> identifiers;
+
+	@ManyToOne
+	@JoinColumn(name = "user_id")
+	private User creator;
+
+	@Column(name = "date_created", nullable = false, length = 19)
+	private Date dateCreated;
+
+	@ManyToOne
+	@JoinColumn(name = "user_id")
+	@Column(name = "changed_by")
+	private User changedBy;
+
+	@Column(nullable = false)
+	private Boolean voided;
+
+	@ManyToOne
+	@JoinColumn(name = "user_id")
+	@Column(name = "voided_by")
+	private User voidedBy;
+
+	@Column(name = "date_voided", length = 19)
+	private Date dateVoided;
+
+	@Column(name = "void_reason")
+	private String voidReason;
 
 	
 	// Constructors
