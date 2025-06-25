@@ -29,8 +29,8 @@ import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.spring.embedded.provider.SpringEmbeddedCacheManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
@@ -63,7 +63,7 @@ public class CacheConfig {
 	private String cacheConfig;
 
 	@Bean(name = "apiCacheManager")
-	public SpringEmbeddedCacheManager apiCacheManager() throws IOException {
+	public CacheManager apiCacheManager() throws IOException {
 		if (StringUtils.isBlank(cacheConfig)) {
 			String local = "local".equalsIgnoreCase(cacheType.trim()) ? "-local" : "";
 			cacheConfig = "infinispan-api" + local + ".xml";
