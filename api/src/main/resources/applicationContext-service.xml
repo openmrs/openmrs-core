@@ -699,5 +699,9 @@
 								expression="org.openmrs.util.TestTypeFilter"/>
 		<context:exclude-filter type="custom" expression="org.openmrs.annotation.OpenmrsProfileExcludeFilter"/>
 	</context:component-scan>
+	
+	<cache:annotation-driven cache-manager="apiCacheManager"/>
+	
+	<tx:annotation-driven />
 
 </beans>

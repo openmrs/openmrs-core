@@ -29,10 +29,17 @@ public class CacheConfigTest extends BaseContextSensitiveTest {
 	
 	@Autowired
 	CacheConfig cacheConfig;
+	
+	@Autowired
+	NonServiceTestBean nonServiceTestBean;
+	
+	@Autowired
+	ServiceTestBean serviceTestBean;
 
 	@Test
 	public void shouldContainSpecificCacheConfigurations(){
-		String[] expectedCaches = {"conceptDatatype", "subscription", "userSearchLocales", "conceptIdsByMapping"};
+		String[] expectedCaches = {"conceptDatatype", "subscription", "userSearchLocales", "conceptIdsByMapping", 
+			"testCache"};
 		Collection<String> actualCaches = cacheManager.getCacheNames();
 		assertThat(actualCaches, containsInAnyOrder(expectedCaches));
 	}
@@ -42,4 +49,16 @@ public class CacheConfigTest extends BaseContextSensitiveTest {
         List<URL> cacheConfigurations = cacheConfig.getCacheConfigurations();
         assertThat(cacheConfigurations.size(), is(2));
     }
+	
+	@Test
+	public void shouldCacheNonServiceMethods() {
+		String cachedValue = nonServiceTestBean.getCachedUUID();
+		assertThat(nonServiceTestBean.getCachedUUID(), is(cachedValue));
+	}
+
+	@Test
+	public void shouldCacheServiceMethods() {
+		String cachedValue = serviceTestBean.getCachedUUID();
+		assertThat(serviceTestBean.getCachedUUID(), is(cachedValue));
+	}
 }
