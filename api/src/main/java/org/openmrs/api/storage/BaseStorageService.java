@@ -28,7 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 2.8.0, 2.7.5, 2.6.16, 2.5.15
  */
 public abstract class BaseStorageService extends BaseOpenmrsService implements StorageService {
-	private final StreamDataService streamService;
+	protected final StreamDataService streamService;
 	
 	private final Path tempDir = Paths.get(System.getProperty("java.io.tmpdir"));
 	
