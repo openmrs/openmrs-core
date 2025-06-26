@@ -56,4 +56,13 @@
 			</list>
 		</property>
 	</bean>
+
+	<bean id="serviceTestBeanImpl" class="org.openmrs.api.cache.ServiceTestBeanImpl" />
+	
+	<bean id="serviceTestBean" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="target" ref="serviceTestBeanImpl"/>
+		<property name="preInterceptors" ref="serviceInterceptors"/>
+		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
+	</bean>
 </beans>
