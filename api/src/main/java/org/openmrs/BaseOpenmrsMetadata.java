@@ -14,6 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
+
 import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -36,7 +37,7 @@ import org.openmrs.api.db.hibernate.search.SearchAnalysis;
 public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements OpenmrsMetadata {
 	
 	//***** Properties *****
-	@Column(name = "name", nullable = false, length = 255)
+	@Column(name = "name", nullable = true, length = 255)
 	@FullTextField(analyzer = SearchAnalysis.NAME_ANALYZER)
 	private String name;
 	
