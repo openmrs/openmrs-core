@@ -17,6 +17,7 @@ import javax.persistence.MappedSuperclass;
 import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.annotations.Type;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
@@ -40,8 +41,9 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	@FullTextField(analyzer = SearchAnalysis.NAME_ANALYZER)
 	private String name;
 	
-	@Column(name = "description", length = 255)
 	@Lob
+	@Type(type = "large_text")
+	@Column(name = "description", length = 255)
 	private String description;
 	
 	@ManyToOne(optional = false)
