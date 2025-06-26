@@ -32,8 +32,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericFie
 @Table(name = "patient_identifier_type")
 @Audited
 @AttributeOverrides({
-	@AttributeOverride(name = "name", column = @Column(name = "name", nullable = false, length = 50)),
-	@AttributeOverride(name = "description", column = @Column(name = "description", length = 65535, columnDefinition = "text"))
+	@AttributeOverride(name = "name", column = @Column(name = "name", nullable = false, length = 50))
 })
 public class PatientIdentifierType extends BaseChangeableOpenmrsMetadata {
 	
