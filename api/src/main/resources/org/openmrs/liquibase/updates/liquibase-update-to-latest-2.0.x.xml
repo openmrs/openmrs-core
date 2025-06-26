@@ -8874,7 +8874,7 @@
 				<sqlCheck expectedResult="0">
 					select count(*) from active_list al 
 					inner join active_list_allergy ala on al.active_list_id=ala.active_list_id
-					where voided = 0 and active_list_type_id = (select active_list_type_id 
+					where voided = false and active_list_type_id = (select active_list_type_id 
 					from active_list_type where name = 'Allergy')
 				</sqlCheck>
 			</not>

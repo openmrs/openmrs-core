@@ -9,7 +9,7 @@
  */
 package org.openmrs;
 
-import javax.persistence.Cacheable;
+import jakarta.persistence.Cacheable;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;

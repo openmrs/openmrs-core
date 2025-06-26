@@ -16,8 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.hibernate.CallbackException;
-import org.hibernate.EmptyInterceptor;
-import org.hibernate.collection.internal.PersistentSet;
+import org.hibernate.Interceptor;
+import org.hibernate.collection.spi.PersistentSet;
 import org.hibernate.type.Type;
 import org.openmrs.Auditable;
 import org.openmrs.OpenmrsObject;
@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * @since 1.9
  */
 
-public class AuditableInterceptor extends EmptyInterceptor {
+public class AuditableInterceptor implements Interceptor {
 	
 	private static final Logger log = LoggerFactory.getLogger(AuditableInterceptor.class);
 	
