@@ -19,6 +19,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.io.Serializable;
+import javax.persistence.EmbeddedId;
+
+
+
+
 
 /**
  * DrugIngredient
@@ -31,15 +36,17 @@ public class DrugIngredient extends BaseOpenmrsObject implements Serializable, O
 	public static final long serialVersionUID = 94023L;
 	
 	// Fields
-	@ManyToOne
-	@JoinColumn(name = "drug_id", updatable = false, insertable = false)
-	@Id
-	private Drug drug;
+	@SuppressWarnings("PMD.UnusedPrivateField")
+	@EmbeddedId
+    private DrugIngredientId id;
 
-	@ManyToOne
-	@JoinColumn(name = "ingredient_id", updatable = false, insertable = false)
-	@Id
-	private Concept ingredient;
+    @ManyToOne
+    @JoinColumn(name = "drug_id", insertable = false, updatable = false)
+    private Drug drug;
+
+    @ManyToOne
+    @JoinColumn(name = "ingredient_id", insertable = false, updatable = false)
+    private Concept ingredient;
 
 	@Column(name = "strength")
 	private Double strength;
@@ -51,6 +58,7 @@ public class DrugIngredient extends BaseOpenmrsObject implements Serializable, O
 	// Constructors
 	
 	/** default constructor */
+	@SuppressWarnings("PMD.UnnecessaryConstructor")
 	public DrugIngredient() {
 	}
 	
