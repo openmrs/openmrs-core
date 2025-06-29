@@ -40,6 +40,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "form")
 @AttributeOverride(name = "retireReason", column = @Column(name = "retired_reason", length = 255))
+@AttributeOverride(name="description", column = @Column(name = "description", length = 1024))
 public class Form extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 845634L;
