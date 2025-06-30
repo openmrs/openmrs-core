@@ -1405,7 +1405,7 @@ public class InitializationFilter extends StartupFilter {
 									wizardModel.createDatabasePassword)) {
 									sql = null;
 								} else {
-									sql = "create database if not exists ? default character set utf8";
+									sql = "create database `?` encoding 'utf8'";
 								}
 							} else if (isCurrentDatabase(DATABASE_H2)) {
 								sql = null;
