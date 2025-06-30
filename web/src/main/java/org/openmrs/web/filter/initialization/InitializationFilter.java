@@ -1403,10 +1403,10 @@ public class InitializationFilter extends StartupFilter {
 							} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
 								if (databaseExistsInPostgres(wizardModel.databaseName, wizardModel.createDatabaseUsername, 
 									wizardModel.createDatabasePassword)) {
-									sql = null;
-								} else {
-									sql = "create database `?` encoding 'utf8'";
+									reportError("Error: Database " + wizardModel.databaseName + " already exists!", DEFAULT_PAGE);
+									return;
 								}
+								sql = "create database `?` encoding 'utf8'";
 							} else if (isCurrentDatabase(DATABASE_H2)) {
 								sql = null;
 							} else {
@@ -1462,7 +1462,7 @@ public class InitializationFilter extends StartupFilter {
 							if (isCurrentDatabase(DATABASE_MYSQL)) {
 								sql = "drop user '?'@" + host;
 							} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
-								sql = "drop user `?`";
+								sql = null;
 							}
 							
 							executeStatement(true, wizardModel.createUserUsername, wizardModel.createUserPassword, sql,
@@ -1473,10 +1473,10 @@ public class InitializationFilter extends StartupFilter {
 							} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
 								if (userExistsInPostgres(connectionUsername, wizardModel.createDatabaseUsername, 
 									wizardModel.createDatabasePassword)) {
-									sql = "ALTER USER `?` WITH PASSWORD '?'";
-								} else {
-									sql = "create user `?` with password '?'";
+									reportError("Error: Database user " + connectionUsername + " already exists!", DEFAULT_PAGE);
+									return;
 								}
+								sql = "create user `?` with password '?'";
 							}
 							
 							if (-1 != executeStatement(false, wizardModel.createUserUsername, wizardModel.createUserPassword,
