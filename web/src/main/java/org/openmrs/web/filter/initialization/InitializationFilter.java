@@ -19,6 +19,8 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -488,15 +490,16 @@ public class InitializationFilter extends StartupFilter {
 			String databaseType = httpRequest.getParameter("database_type");
 			if (databaseType != null) {
 				wizardModel.databaseType = databaseType;
-				if (DATABASE_MYSQL.equals(databaseType)) {
-					wizardModel.databaseConnection = DEFAULT_MYSQL_CONNECTION;
-					wizardModel.createDatabaseUsername = Context.getRuntimeProperties().getProperty("connection.username", wizardModel.createDatabaseUsername);
-					checkForEmptyValue(wizardModel.databaseRootPassword, errors, ErrorMessageConstants.ERROR_DB_PSDW_REQ);
-				} else if (DATABASE_POSTGRESQL.equals(databaseType)) {
+				if (DATABASE_POSTGRESQL.equals(databaseType)) {
 					wizardModel.databaseConnection = DEFAULT_POSTGRESQL_CONNECTION;
 					String postgresUsername = httpRequest.getParameter("create_database_username");
 					wizardModel.createDatabaseUsername = StringUtils.hasText(postgresUsername) ? 
-						postgresUsername : Context.getRuntimeProperties().getProperty("connection.username", wizardModel.postgresUsername);
+						postgresUsername : Context.getRuntimeProperties().getProperty("connection.username", "postgres");
+				} else {
+					wizardModel.databaseConnection = DEFAULT_MYSQL_CONNECTION;
+					wizardModel.createDatabaseUsername = Context.getRuntimeProperties().getProperty("connection.username", 
+						wizardModel.createDatabaseUsername);
+					checkForEmptyValue(wizardModel.databaseRootPassword, errors, ErrorMessageConstants.ERROR_DB_PSDW_REQ);
 				}
 			}
 
@@ -1398,7 +1401,12 @@ public class InitializationFilter extends StartupFilter {
 							if (isCurrentDatabase(DATABASE_MYSQL)) {
 								sql = "create database if not exists `?` default character set utf8";
 							} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
-								sql = "create database `?` encoding 'utf8'";
+								if (databaseExistsInPostgres(wizardModel.databaseName, wizardModel.createDatabaseUsername, 
+									wizardModel.createDatabasePassword)) {
+									sql = null;
+								} else {
+									sql = "create database if not exists ? default character set utf8";
+								}
 							} else if (isCurrentDatabase(DATABASE_H2)) {
 								sql = null;
 							} else {
@@ -1463,7 +1471,12 @@ public class InitializationFilter extends StartupFilter {
 							if (isCurrentDatabase(DATABASE_MYSQL)) {
 								sql = "create user '?'@" + host + " identified by '?'";
 							} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
-								sql = "create user `?` with password '?'";
+								if (userExistsInPostgres(connectionUsername, wizardModel.createDatabaseUsername, 
+									wizardModel.createDatabasePassword)) {
+									sql = "ALTER USER `?` WITH PASSWORD '?'";
+								} else {
+									sql = "create user `?` with password '?'";
+								}
 							}
 							
 							if (-1 != executeStatement(false, wizardModel.createUserUsername, wizardModel.createUserPassword,
@@ -2017,4 +2030,33 @@ public class InitializationFilter extends StartupFilter {
 		}
 		return prop;
 	}
+
+	private boolean databaseExistsInPostgres(String dbName, String user, String password) {
+		String query = "SELECT 1 FROM pg_database WHERE datname = ?";
+		try (Connection conn = DriverManager.getConnection(DEFAULT_POSTGRESQL_CONNECTION, user, password);
+			 PreparedStatement stmt = conn.prepareStatement(query)) {
+			stmt.setString(1, dbName);
+			try (ResultSet rs = stmt.executeQuery()) {
+				return rs.next();
+			}
+		} catch (SQLException e) {
+			log.warn("Failed to check if PostgreSQL DB exists: {}", dbName, e);
+			return false;
+		}
+	}
+
+	private boolean userExistsInPostgres(String usernameToCheck, String adminUser, String adminPassword) {
+		String query = "SELECT 1 FROM pg_roles WHERE rolname = ?";
+		try (Connection conn = DriverManager.getConnection(DEFAULT_POSTGRESQL_CONNECTION, adminUser, adminPassword);
+			 PreparedStatement stmt = conn.prepareStatement(query)) {
+			stmt.setString(1, usernameToCheck);
+			try (ResultSet rs = stmt.executeQuery()) {
+				return rs.next();
+			}
+		} catch (SQLException e) {
+			log.warn("Failed to check if PostgreSQL user exists: {}", usernameToCheck, e);
+			return false;
+		}
+	}
+
 }
