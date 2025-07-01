@@ -19,8 +19,6 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -1401,12 +1399,6 @@ public class InitializationFilter extends StartupFilter {
 							if (isCurrentDatabase(DATABASE_MYSQL)) {
 								sql = "create database if not exists `?` default character set utf8";
 							} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
-								if (databaseExistsInPostgres(wizardModel.databaseName, wizardModel.createDatabaseUsername, 
-									wizardModel.createDatabasePassword)) {
-									reportError(String.format("Database '%s' already exists. Choose a different name or drop the existing database.",
-											wizardModel.databaseName), DEFAULT_PAGE);
-									return;
-								}
 								sql = "create database `?` encoding 'utf8'";
 							} else if (isCurrentDatabase(DATABASE_H2)) {
 								sql = null;
@@ -1472,11 +1464,6 @@ public class InitializationFilter extends StartupFilter {
 							if (isCurrentDatabase(DATABASE_MYSQL)) {
 								sql = "create user '?'@" + host + " identified by '?'";
 							} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
-								if (userExistsInPostgres(connectionUsername, wizardModel.createDatabaseUsername, 
-									wizardModel.createDatabasePassword)) {
-									reportError(String.format("A database user named '%s' already exists.", connectionUsername), DEFAULT_PAGE);
-									return;
-								}
 								sql = "create user `?` with password '?'";
 							}
 							
@@ -2030,34 +2017,6 @@ public class InitializationFilter extends StartupFilter {
 			}
 		}
 		return prop;
-	}
-
-	private boolean databaseExistsInPostgres(String dbName, String user, String password) {
-		String query = "SELECT 1 FROM pg_database WHERE datname = ?";
-		try (Connection conn = DriverManager.getConnection(DEFAULT_POSTGRESQL_CONNECTION, user, password);
-			 PreparedStatement stmt = conn.prepareStatement(query)) {
-			stmt.setString(1, dbName);
-			try (ResultSet rs = stmt.executeQuery()) {
-				return rs.next();
-			}
-		} catch (SQLException e) {
-			log.warn("Failed to check if PostgreSQL DB exists: {}", dbName, e);
-			return false;
-		}
-	}
-
-	private boolean userExistsInPostgres(String usernameToCheck, String adminUser, String adminPassword) {
-		String query = "SELECT 1 FROM pg_roles WHERE rolname = ?";
-		try (Connection conn = DriverManager.getConnection(DEFAULT_POSTGRESQL_CONNECTION, adminUser, adminPassword);
-			 PreparedStatement stmt = conn.prepareStatement(query)) {
-			stmt.setString(1, usernameToCheck);
-			try (ResultSet rs = stmt.executeQuery()) {
-				return rs.next();
-			}
-		} catch (SQLException e) {
-			log.warn("Failed to check if PostgreSQL user exists: {}", usernameToCheck, e);
-			return false;
-		}
 	}
 
 }
