@@ -143,17 +143,42 @@ public class JacksonSerializer implements OpenmrsSerializer {
 
 	/**
 	 * Matches a class name against a whitelist pattern.
-	 *
-	 * @param pattern   the whitelist pattern (supports '*' and '.*' wildcards)
-	 * @param className the name of the class to check
-	 * @return true if the class matches the pattern, false otherwise
-	 */
+	 * 
+	 *<p>
+	* Supported pattern types:
+	* <ul>
+	*   <li><b>Exact or wildcard match</b>: Supports {@code *} (single segment) and {@code **} (multi-segment) wildcards.</li>
+	*   <li><b>Inheritance match</b>: Use {@code hierarchyOf:fully.qualified.BaseClass} to match subclasses or implementations.</li>
+	* </ul>
+	*
+	* @param pattern    the matching pattern (wildcard or hierarchy-based)
+	* @param className  the fully qualified name of the class to check
+	* @return {@code true} if the class matches the pattern; {@code false} otherwise or if class resolution fails
+	*
+	* @example
+	* <pre>
+	* matchPattern("org.openmrs.*", "org.openmrs.Patient") → true
+	* matchPattern("hierarchyOf:org.openmrs.OpenmrsObject", "org.openmrs.Patient") → true
+	* </pre>
+	*/
 	private boolean matchPattern(String pattern, String className) {
-		// Convert dot-style wildcard pattern to regex
-		String regex = pattern
-			.replace(".", "\\.")
-			.replace("**", ".+")
-			.replace("*", "[^.]+");
-		return className.matches(regex);
+		try {
+			if (pattern.startsWith("hierarchyOf:")) {
+				String baseClassName = pattern.substring("hierarchyOf:".length());
+				Class<?> baseClass = Class.forName(baseClassName);
+				Class<?> actualClass = Class.forName(className);
+				return baseClass.isAssignableFrom(actualClass);
+			} else {
+				// Convert dot-style wildcard pattern to regex
+				String regex = pattern
+					.replace(".", "\\.")
+					.replace("**", ".+")
+					.replace("*", "[^.]+");
+				return className.matches(regex);
+			}
+		} catch (ClassNotFoundException e) {
+			// Fails safely
+			return false;
+		}
 	}
 }
