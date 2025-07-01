@@ -94,7 +94,7 @@ public class UpdateFilter extends StartupFilter {
 	 * Used on all pages after the first to make sure the user isn't trying to cheat and do some url
 	 * magic to hack in.
 	 */
-	private boolean authenticatedSuccessfully = false;
+	private volatile boolean authenticatedSuccessfully = false;
 	
 	private UpdateFilterCompletion updateJob;
 	
@@ -109,8 +109,6 @@ public class UpdateFilter extends StartupFilter {
 	 * this lock by other threads. This var should only be accessed through the synchronized method.
 	 */
 	private static Boolean lockReleased = false;
-	
-	private static final String AUTHENTICATED_KEY = "updateFilter.authenticated";
 	
 	/**
 	 * Called by {@link #doFilter(ServletRequest, ServletResponse, FilterChain)} on GET requests
@@ -144,12 +142,6 @@ public class UpdateFilter extends StartupFilter {
 		final String updJobStatus = "updateJobStarted";
 		String page = httpRequest.getParameter("page");
 		Map<String, Object> referenceMap = new HashMap<>();
-		
-		Boolean sessionAuth = (Boolean) httpRequest.getSession().getAttribute(AUTHENTICATED_KEY);
-		if (sessionAuth != null) {
-			authenticatedSuccessfully = sessionAuth;
-		}
-		
 		if (httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE) != null) {
 			referenceMap.put(FilterUtil.LOCALE_ATTRIBUTE,
 			    httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
@@ -166,7 +158,6 @@ public class UpdateFilter extends StartupFilter {
 				log.debug("Authentication successful.  Redirecting to 'reviewupdates' page.");
 				// set a variable so we know that the user started here
 				authenticatedSuccessfully = true;
-				httpRequest.getSession().setAttribute(AUTHENTICATED_KEY, true);
 				
 				//Set variable to tell us whether updates are already in progress
 				referenceMap.put("isDatabaseUpdateInProgress", isDatabaseUpdateInProgress);
@@ -252,16 +243,6 @@ public class UpdateFilter extends StartupFilter {
 			httpResponse.setContentType("text/json");
 			httpResponse.setHeader("Cache-Control", "no-cache");
 			Map<String, Object> result = new HashMap<>();
-			
-			if (isDatabaseUpdateInProgress) {
-				// If updates are in progress, maintain the authenticated state
-				authenticatedSuccessfully = true;
-			} else if (!updatesRequired()) {
-				// If updates are complete, clear the authentication session attribute
-				httpRequest.getSession().removeAttribute(AUTHENTICATED_KEY);
-				authenticatedSuccessfully = false;
-			}
-			
 			if (updateJob != null) {
 				result.put("hasErrors", updateJob.hasErrors());
 				if (updateJob.hasErrors()) {
@@ -799,7 +780,6 @@ public class UpdateFilter extends StartupFilter {
 					finally {
 						if (!hasErrors()) {
 							setUpdatesRequired(false);
-							authenticatedSuccessfully = false;
 						}
 						//reset to let other user's make requests after updates are run
 						isDatabaseUpdateInProgress = false;
