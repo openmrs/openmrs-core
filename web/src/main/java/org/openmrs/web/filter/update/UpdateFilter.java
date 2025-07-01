@@ -94,7 +94,7 @@ public class UpdateFilter extends StartupFilter {
 	 * Used on all pages after the first to make sure the user isn't trying to cheat and do some url
 	 * magic to hack in.
 	 */
-	private boolean authenticatedSuccessfully = false;
+	private volatile boolean authenticatedSuccessfully = false;
 	
 	private UpdateFilterCompletion updateJob;
 	
