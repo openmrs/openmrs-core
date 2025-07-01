@@ -46,7 +46,7 @@ public class JacksonSerializerTest extends BaseContextSensitiveTest {
     public void setup() {
         adminService.saveGlobalProperty(
             new GlobalProperty("jackson.serializer.whitelist.types",
-                "org.openmrs.serialization.Foo, org.openmrs.Encounter"));
+                "org.openmrs.serialization.Foo"));
     }
 
     @Test
