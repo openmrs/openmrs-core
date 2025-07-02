@@ -12,6 +12,7 @@ package org.openmrs.serialization;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.openmrs.OpenmrsObject;
 
@@ -26,6 +27,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.deser.BeanDeserializerBuilder;
 import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;
 import com.fasterxml.jackson.databind.deser.SettableBeanProperty;
+import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
@@ -129,6 +131,13 @@ public class UuidReferenceModule extends SimpleModule {
                     }
                 }
                 return builder;
+            }
+            @Override
+            public List<BeanPropertyDefinition> updateProperties(DeserializationConfig config, 
+                    BeanDescription beanDesc, List<BeanPropertyDefinition> propDefs) {
+                return propDefs.stream()
+                    .filter(def -> def.hasField())
+                    .collect(Collectors.toList());
             }
         });
     }
