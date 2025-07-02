@@ -62,9 +62,9 @@ public class JacksonSerializer implements OpenmrsSerializer {
 		objectMapper.registerModule(new UuidReferenceModule(domainService));
 		objectMapper.registerModule(new Hibernate5Module());
 		objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"));
-		objectMapper.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
-		objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-		objectMapper.setVisibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.ANY);
+		objectMapper.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.PUBLIC_ONLY);
+		objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.NONE);
+		objectMapper.setVisibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.PUBLIC_ONLY);
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	}
 
@@ -103,7 +103,7 @@ public class JacksonSerializer implements OpenmrsSerializer {
 		try {
 			return getObjectMapper().writeValueAsString(o);
 		} catch (JsonProcessingException e) {
-			throw new RuntimeException("Unable to deserialize class: " + className, e);
+			throw new RuntimeException("Unable to serialize class: " + className, e);
 		}
 	}
 	
