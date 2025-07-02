@@ -64,7 +64,7 @@ public class DatabaseUpgradeTestUtil {
 	
 	private final String connectionUrl;
 	
-	public DatabaseUpgradeTestUtil(String initialDatabasePath) throws IOException, SQLException {
+	public DatabaseUpgradeTestUtil(String initialDatabasePath, String schema) throws IOException, SQLException {
 		InputStream databaseInputStream = getClass().getResourceAsStream(initialDatabasePath);
 		
 		tempDir = File.createTempFile("openmrs-tests-temp-", "");
@@ -72,7 +72,7 @@ public class DatabaseUpgradeTestUtil {
 		tempDir.mkdir();
 		tempDir.deleteOnExit();
 		
-		tempDBFile = new File(tempDir, "openmrs.h2.db");
+		tempDBFile = new File(tempDir, "openmrs.mv.db");
 		tempDBFile.delete();
 		try {
 			tempDBFile.createNewFile();
@@ -104,7 +104,7 @@ public class DatabaseUpgradeTestUtil {
 		
 		String databaseUrl = tempDir.getAbsolutePath().replace("\\", "/") + "/openmrs";
 		
-		connectionUrl = "jdbc:h2:" + databaseUrl + ";AUTO_RECONNECT=TRUE;DB_CLOSE_DELAY=-1";
+		connectionUrl = "jdbc:h2:" + databaseUrl + ";AUTO_RECONNECT=TRUE;DB_CLOSE_DELAY=-1;MODE=LEGACY;NON_KEYWORDS=VALUE";
 		
 		connection = DriverManager.getConnection(connectionUrl, "sa", "sa");
 		connection.setAutoCommit(true);
@@ -123,7 +123,7 @@ public class DatabaseUpgradeTestUtil {
 		}
 		
 		try {
-			dbUnitConnection = new DatabaseConnection(connection);
+			dbUnitConnection = new DatabaseConnection(connection, schema);
 			dbUnitConnection.getConfig().setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new H2DataTypeFactory());
 		}
 		catch (DatabaseUnitException e) {

@@ -55,7 +55,7 @@ public class ProgramValidatorChangeSet implements CustomTaskChange {
 		StringBuilder query = new StringBuilder();
 		query.append(" select 	s.concept_id, min(n.name) as name ");
 		query.append(" from 	program_workflow_state s, concept_name n ");
-		query.append(" where 	s.concept_id = n.concept_id and initial = '1' and terminal = '1' ");
+		query.append(" where 	s.concept_id = n.concept_id and initial = true and terminal = true ");
 		query.append(" group by s.concept_id ");
 		List<List<Object>> results = DatabaseUtil.executeSQL(conn, query.toString(), true);
 		if (results.isEmpty()) {
