@@ -11,6 +11,8 @@ package org.openmrs.test;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.sql.Connection;
 import java.text.ParseException;
 import java.util.Collection;
