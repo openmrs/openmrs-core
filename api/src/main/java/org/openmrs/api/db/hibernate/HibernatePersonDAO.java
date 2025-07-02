@@ -34,8 +34,8 @@ import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PersonDAO;
-import org.openmrs.api.db.hibernate.search.LuceneQuery;
-import org.openmrs.collection.ListPart;
+import org.openmrs.api.db.hibernate.search.SearchQueryUnique;
+import org.openmrs.api.db.hibernate.search.session.SearchSessionFactory;
 import org.openmrs.person.PersonMergeLog;
 import org.openmrs.util.OpenmrsConstants;
 import org.slf4j.Logger;
@@ -63,6 +63,8 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	private SessionFactory sessionFactory;
 	
+	private SearchSessionFactory searchSessionFactory;
+	
 	/**
 	 * Set session factory
 	 * 
@@ -71,7 +73,11 @@ public class HibernatePersonDAO implements PersonDAO {
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-	
+
+	public void setSearchSessionFactory(SearchSessionFactory searchSessionFactory) {
+		this.searchSessionFactory = searchSessionFactory;
+	}
+
 	/**
 	 * This method executes a Lucene search on persons based on the soundex filter with one search name given
 	 * 
@@ -82,16 +88,14 @@ public class HibernatePersonDAO implements PersonDAO {
 	 * @return the set of Persons that match the search criteria 
 	 */
 	private Set<Person> executeSoundexOnePersonNameQuery(String name, Integer birthyear, boolean includeVoided , String gender) {
-		PersonLuceneQuery personLuceneQuery = new PersonLuceneQuery(sessionFactory);
-		String query = LuceneQuery.escapeQuery(name);
-		int maxResults = HibernatePersonDAO.getMaximumSearchResults();
-		LinkedHashSet<Person> people = new LinkedHashSet<>();
+		PersonQuery personQuery = new PersonQuery();
+
+		List<Person> results = SearchQueryUnique.search(searchSessionFactory, SearchQueryUnique.newQuery(PersonName.class,
+				f -> personQuery.getSoundexPersonNameQuery(f, name, birthyear, includeVoided,
+					gender), "person.personId", PersonName::getPerson), null,
+			HibernatePersonDAO.getMaximumSearchResults());
 		
-		LuceneQuery<PersonName> luceneQuery = personLuceneQuery.getSoundexPersonNameQuery(query, birthyear, false, gender);
-		ListPart<Object[]> names = luceneQuery.listPartProjection(0, maxResults, "person.personId");
-		names.getList().forEach(x -> people.add(getPerson((Integer) x[0])));
-		
-		return people;
+		return new LinkedHashSet<>(results);
 	}
 	
 	
@@ -106,16 +110,16 @@ public class HibernatePersonDAO implements PersonDAO {
 	 * @param gender of the person to search for 
 	 * @return the set of Persons that match the search criteria 
 	 */
-	private Set<Person> executeSoundexThreePersonNamesQuery(String name1, String name2, String name3, Integer birthyear, boolean includeVoided , String gender) {
-		PersonLuceneQuery personLuceneQuery = new PersonLuceneQuery(sessionFactory);
-		int maxResults = HibernatePersonDAO.getMaximumSearchResults();
-		LinkedHashSet<Person> people = new LinkedHashSet<>();
+	private Set<Person> executeSoundexThreePersonNamesQuery(String name1, String name2, String name3, Integer birthyear, 
+															boolean includeVoided , String gender) {
+		PersonQuery personQuery = new PersonQuery();
+
+		List<Person> results = SearchQueryUnique.search(searchSessionFactory, SearchQueryUnique.newQuery(PersonName.class,
+				f -> personQuery.getSoundexPersonNameSearchOnThreeNames(f, name1, name2, name3,
+					birthyear, includeVoided, gender), "person.personId",  PersonName::getPerson),
+			null, HibernatePersonDAO.getMaximumSearchResults());
 		
-		LuceneQuery<PersonName> luceneQuery = personLuceneQuery.getSoundexPersonNameSearchOnThreeNames(name1, name2, name3, birthyear, false, gender);;
-		ListPart<Object[]> names = luceneQuery.listPartProjection(0, maxResults, "person.personId");
-		names.getList().forEach(x -> people.add(getPerson((Integer) x[0])));
-		
-		return people;
+		return new LinkedHashSet<>(results);
 	}
 	
 	/**
@@ -128,16 +132,16 @@ public class HibernatePersonDAO implements PersonDAO {
 	 * @param gender of the person to search for 
 	 * @return the set of Persons that match the search criteria
 	 */
-	private Set<Person> executeSoundexTwoPersonNamesQuery(String searchName1, String searchName2, Integer birthyear, boolean includeVoided , String gender) {
-		PersonLuceneQuery personLuceneQuery = new PersonLuceneQuery(sessionFactory);
-		int maxResults = HibernatePersonDAO.getMaximumSearchResults();
-		LinkedHashSet<Person> people = new LinkedHashSet<>();
+	private Set<Person> executeSoundexTwoPersonNamesQuery(String searchName1, String searchName2, Integer birthyear, 
+														  boolean includeVoided , String gender) {
+		PersonQuery personQuery = new PersonQuery();
+
+		List<Person> results = SearchQueryUnique.search(searchSessionFactory, SearchQueryUnique.newQuery(PersonName.class,
+				f -> personQuery.getSoundexPersonNameSearchOnTwoNames(f, searchName1, searchName2,
+					birthyear, includeVoided, gender), "person.personId", PersonName::getPerson), null,
+			HibernatePersonDAO.getMaximumSearchResults());
 		
-		LuceneQuery<PersonName> luceneQuery = personLuceneQuery.getSoundexPersonNameSearchOnTwoNames(searchName1, searchName2, birthyear, false, gender);;
-		ListPart<Object[]> names = luceneQuery.listPartProjection(0, maxResults, "person.personId");
-		names.getList().forEach(x -> people.add(getPerson((Integer) x[0])));
-		
-		return people;
+		return new LinkedHashSet<>(results);
 	}
 	
 	/**
@@ -149,16 +153,16 @@ public class HibernatePersonDAO implements PersonDAO {
 	 * @param gender of the person to search for 
 	 * @return the set of Persons that match the search criteria
 	 */
-	private Set<Person> executeSoundexNPersonNamesQuery(String[] searchNames, Integer birthyear, boolean includeVoided , String gender) {
-		PersonLuceneQuery personLuceneQuery = new PersonLuceneQuery(sessionFactory);
-		int maxResults = HibernatePersonDAO.getMaximumSearchResults();
-		LinkedHashSet<Person> people = new LinkedHashSet<>();
+	private Set<Person> executeSoundexNPersonNamesQuery(String[] searchNames, Integer birthyear, boolean includeVoided, 
+														String gender) {
+		PersonQuery personQuery = new PersonQuery();
+
+		List<Person> results = SearchQueryUnique.search(searchSessionFactory, SearchQueryUnique.newQuery(PersonName.class,
+				f -> personQuery.getSoundexPersonNameSearchOnNNames(f, searchNames, birthyear,
+					includeVoided, gender), "person.personId",  PersonName::getPerson), null, 
+			HibernatePersonDAO.getMaximumSearchResults());
 		
-		LuceneQuery<PersonName> luceneQuery = personLuceneQuery.getSoundexPersonNameSearchOnNNames(searchNames, birthyear, includeVoided, gender);
-		ListPart<Object[]> names = luceneQuery.listPartProjection(0, maxResults, "person.personId");
-		names.getList().forEach(x -> people.add(getPerson((Integer) x[0])));
-		
-		return people;
+		return new LinkedHashSet<>(results);
 		
 	}
 	
@@ -260,24 +264,14 @@ public class HibernatePersonDAO implements PersonDAO {
 			return session.createQuery(cq).setMaxResults(maxResults).getResultList();
 		}
 
-		String query = LuceneQuery.escapeQuery(searchString);
+		PersonQuery personQuery = new PersonQuery();
 
-		PersonLuceneQuery personLuceneQuery = new PersonLuceneQuery(sessionFactory);
-
-		LuceneQuery<PersonName> nameQuery = personLuceneQuery.getPersonNameQueryWithOrParser(query, includeVoided);
-		if (dead != null) {
-			nameQuery.include("person.dead", dead);
-		}
-		List<Person> people = new ArrayList<>();
-
-		ListPart<Object[]> names = nameQuery.listPartProjection(0, maxResults, "person.personId");
-		names.getList().forEach(name -> people.add(getPerson((Integer) name[0])));
-
-		LuceneQuery<PersonAttribute> attributeQuery = personLuceneQuery.getPersonAttributeQueryWithOrParser(query, includeVoided, nameQuery);
-		ListPart<Object[]> attributes = attributeQuery.listPartProjection(0, maxResults, "person.personId");
-		attributes.getList().forEach(attribute -> people.add(getPerson((Integer) attribute[0])));
-
-		return people;
+		return SearchQueryUnique.search(searchSessionFactory, SearchQueryUnique.newQuery(PersonName.class,
+				f -> personQuery.getPersonNameQueryWithOrParser(f, searchString, includeVoided, dead),
+				"person.personId", PersonName::getPerson).join(SearchQueryUnique.newQuery(PersonAttribute.class,
+				f -> personQuery.getPersonAttributeQueryWithOrParser(f, searchString, includeVoided), 
+				"person.personId", PersonAttribute::getPerson)), null,
+			HibernatePersonDAO.getMaximumSearchResults());
 	}
 	
 	@Override

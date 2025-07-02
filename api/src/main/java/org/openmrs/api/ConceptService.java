@@ -38,6 +38,7 @@ import org.openmrs.ConceptSource;
 import org.openmrs.ConceptStopWord;
 import org.openmrs.Drug;
 import org.openmrs.DrugIngredient;
+import org.openmrs.Person;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.util.PrivilegeConstants;
@@ -2026,4 +2027,25 @@ public interface ConceptService extends OpenmrsService {
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	ConceptReferenceRange getConceptReferenceRangeByUuid(String uuid);
 	
+	/**
+	 * Get the appropriate concept reference range for a concept and person
+	 * 
+	 * @param person The person
+	 * @param concept The concept
+	 * @return the matching ConceptReferenceRange object
+	 * 
+	 * @since 2.7.0
+	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	ConceptReferenceRange getConceptReferenceRange(Person person, Concept concept);
+	
+	/**
+	 * Completely purge a <code>ConceptReferenceRange</code> from the database.
+	 * 
+	 * @param conceptReferenceRange The <code>ConceptReferenceRange</code> to remove from the system
+	 * 
+	 * @since 2.7.0
+	 */
+	@Authorized(PrivilegeConstants.PURGE_CONCEPTS)
+	void purgeConceptReferenceRange(ConceptReferenceRange conceptReferenceRange);
 }

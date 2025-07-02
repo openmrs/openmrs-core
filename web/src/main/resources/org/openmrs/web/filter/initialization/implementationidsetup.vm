@@ -1,41 +1,232 @@
 #parse($HEADER_TEMPLATE)
-	<form method="post" autocomplete="off">
-		<input type="hidden" name="page" value="implementationidsetup.vm" />
-		<div class="content">
-			<table cellpadding="9" align="center" cellspacing="5">
-		  		<tr>
-					<td colspan="3"><strong>$l10n.get("install.advanced.implid")</strong></td>
-				</tr>
-				<tr>
-					<td colspan="3" class="question">$l10n.get("install.advanced.implid.skip")</td>
-				</tr>
-				<tr>
-					<td>$l10n.get("install.complete.impl.name")</td>
-					<td><input type="text" name="implementation_name" value="${implementationIdName}" onKeyPress="return submitenter(this,event);" /></td>
-					<td>$l10n.get("install.advanced.implid.name")</td>
-				</tr>
-				<tr>
-					<td>$l10n.get("install.complete.impl.id")</td>
-					<td><input type="text" name="implementation_id" size="8" maxlength="20" value="${implementationId}" onKeyPress="return submitenter(this,event);" /></td>
-					<td>$l10n.get("install.advanced.implid.id")</td>
-				</tr>
-				<tr>
-					<td>$l10n.get("install.complete.impl.pass")</td>
-					<td><input type="text" name="pass_phrase" value="${implementationIdPassPhrase}" onKeyPress="return submitenter(this,event);" /></td>
-					<td>$l10n.get("install.advanced.implid.passphrase")</td>
-				</tr>
-				<tr>
-					<td>$l10n.get("install.complete.impl.desc")</td>
-					<td><textarea cols="43" rows="3" name="description">${implementationIdDescription}</textarea></td>
-					<td>$l10n.get("install.advanced.implid.desc")</td>
-				</tr>
-				<tr>
-					<td colspan="2" align="center">
-						<input type="image" src="images/back_button.png" value="Back" name="back" style="margin-right: 20px"/>
-						<input type="image" src="images/forward_button.png" name="continue" style="margin-left: 20px"/>
-					</td>
-				</tr>
-		</table>
-		</div>
-	</form>
+
+<div class="content-container">
+    <form method="post" autocomplete="off" class="setup-form">
+        <input type="hidden" name="page" value="implementationidsetup.vm" />
+        
+        <div class="form-container">
+            <h2 class="form-title">$l10n.get("install.advanced.implid")</h2>
+            <p class="form-description">$l10n.get("install.advanced.implid.skip")</p>
+
+            <div class="form-section">
+                <div class="form-group">
+                    <label class="form-label">$l10n.get("install.complete.impl.name")</label>
+                    <div class="input-container">
+                        <input type="text" 
+                               name="implementation_name" 
+                               class="form-input" 
+                               value="${implementationIdName}" 
+                               onKeyPress="return submitenter(this,event);" />
+                        <span class="input-hint">$l10n.get("install.advanced.implid.name")</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">$l10n.get("install.complete.impl.id")</label>
+                    <div class="input-container">
+                        <input type="text" 
+                               name="implementation_id" 
+                               class="form-input" 
+                               size="8" 
+                               maxlength="20" 
+                               value="${implementationId}" 
+                               onKeyPress="return submitenter(this,event);" />
+                        <span class="input-hint">$l10n.get("install.advanced.implid.id")</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">$l10n.get("install.complete.impl.pass")</label>
+                    <div class="input-container">
+                        <input type="text" 
+                               name="pass_phrase" 
+                               class="form-input" 
+                               value="${implementationIdPassPhrase}" 
+                               onKeyPress="return submitenter(this,event);" />
+                        <span class="input-hint">$l10n.get("install.advanced.implid.passphrase")</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">$l10n.get("install.complete.impl.desc")</label>
+                    <div class="input-container">
+                        <textarea name="description" 
+                                  class="form-textarea" 
+                                  rows="3">${implementationIdDescription}</textarea>
+                        <span class="input-hint">$l10n.get("install.advanced.implid.desc")</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" name="back" value="Back" class="button button-secondary">
+                    <span class="button-icon">←</span>
+                    <span class="button-text">$l10n.get("general.navigateBack")</span>
+                </button>
+                <button type="submit" name="continue" class="button button-primary">
+                    <span class="button-text">$l10n.get("general.continue")</span>
+                    <span class="button-icon">→</span>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<style>
+    .content-container {
+        flex: 1;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 1.5rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+        overflow-y: auto;
+        max-height: calc(100vh - 180px);
+        position: relative;
+    }
+
+    .form-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .form-title {
+        font-size: 1.3rem;
+        font-weight: 500;
+        color: var(--text-color);
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+
+    .form-description {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-section {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .form-label {
+        font-size: 1rem;
+        font-weight: 500;
+        color: var(--text-color);
+    }
+
+    .input-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+
+    .form-textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+        resize: vertical;
+        min-height: 80px;
+    }
+
+    .form-input:focus, .form-textarea:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(242, 101, 34, 0.1);
+    }
+
+    .input-hint {
+        font-size: 0.85rem;
+        font-style: italic;
+    }
+
+    .button-group {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 1rem;
+        position: sticky;
+        bottom: 0;
+        background: white;
+        padding: 1rem 0;
+        border-top: 1px solid #eee;
+    }
+
+    .button {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 500;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .button-primary {
+        background: linear-gradient(to right, var(--openmrs-logo-color), var(--openmrs-logo-color));
+        color: white;
+    }
+
+    .button-secondary {
+        background: #f5f5f5;
+        color: var(--text-color);
+    }
+
+    .button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .button-icon {
+        font-size: 1.2rem;
+    }
+
+    @media (max-width: 768px) {
+        .content-container {
+            margin: 1rem;
+            padding: 1.5rem;
+            max-height: calc(100vh - 200px);
+        }
+
+        .button-group {
+            flex-direction: column;
+        }
+
+        .button {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+<script type="text/javascript">
+    document.forms[0].elements[0].focus();
+</script>
+
 #parse($FOOTER_TEMPLATE)

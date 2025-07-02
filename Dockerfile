@@ -35,6 +35,9 @@ COPY liquibase/pom.xml liquibase/
 COPY api/pom.xml api/
 COPY web/pom.xml web/
 COPY webapp/pom.xml webapp/
+COPY test-module/pom.xml test-module/
+COPY test-module/api/pom.xml test-module/api/
+COPY test-module/omod/pom.xml test-module/omod/
 
 # Install dependencies
 RUN mvn $MVN_SETTINGS -B dependency:go-offline -P !default-tools.jar,!mac-tools.jar

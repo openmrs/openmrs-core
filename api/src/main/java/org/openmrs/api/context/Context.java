@@ -1414,14 +1414,28 @@ public class Context {
 	}
 
 	/**
+	 * It should be used <b>IN TESTS ONLY</b>. See {@link #updateSearchIndex(Class[])} for normal use.
+	 * <p>
 	 * Updates the search index for objects of the given type.
 	 *
 	 * @see #updateSearchIndex()
+	 * @see #updateSearchIndex(Class[]) 
 	 * @param type
 	 * @since 1.11
 	 */
 	public static void updateSearchIndexForType(Class<?> type) {
 		getContextDAO().updateSearchIndexForType(type);
+	}
+
+	/**
+	 * Updates the search index for objects of the given types using mass indexer.
+	 * 
+	 * @see #updateSearchIndex() 
+	 * @param types
+	 * @since 2.8.0
+	 */
+	public static void updateSearchIndex(Class<?>... types) {
+		getContextDAO().updateSearchIndex(types);
 	}
 
 	/**

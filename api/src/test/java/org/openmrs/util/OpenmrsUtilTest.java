@@ -1033,11 +1033,10 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		
 		Obs obs = new Obs();
 		obs.setPerson(person);
+		obs.setConcept(Context.getConceptService().getConcept(4090));
 		
 		String result = OpenmrsUtil.isValidNumericValue(
-			5.0f,
-			Context.getConceptService().getConcept(4090),
-			obs
+			5.0f, obs
 		);
 
 		assertEquals("Expected value between 70.0 and 140.0", result);
@@ -1052,11 +1051,10 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 
 		Obs obs = new Obs();
 		obs.setPerson(person);
+		obs.setConcept(Context.getConceptService().getConcept(4090));
 		
 		String result = OpenmrsUtil.isValidNumericValue(
-			155.0f,
-			Context.getConceptService().getConcept(4090),
-			obs
+			155.0f, obs
 		);
 		
 		assertEquals("Expected value between 70.0 and 140.0", result);
@@ -1073,9 +1071,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		obs.setPerson(person);
 
 		String result = OpenmrsUtil.isValidNumericValue(
-			120.0f,
-			new Concept(),
-			obs
+			120.0f, obs
 		);
 
 		assertEquals("", result);

@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.exception.ParseErrorException;
+import org.apache.velocity.runtime.log.Log4JLogChute;
 import org.joda.time.LocalTime;
 import org.openmrs.Concept;
 import org.openmrs.Obs;
@@ -20,6 +21,7 @@ import org.openmrs.Person;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 
+import java.util.Properties;
 import java.io.StringWriter;
 import java.util.Collections;
 import java.util.List;
@@ -63,6 +65,16 @@ public class ConceptReferenceRangeUtility {
 		velocityContext.put("patient", obs.getPerson());
 		
 		VelocityEngine velocityEngine = new VelocityEngine();
+		try {
+			Properties props = new Properties();
+			props.put("runtime.log.logsystem.class", Log4JLogChute.class.getName());
+			props.put("runtime.log.logsystem.log4j.category", "velocity");
+			props.put("runtime.log.logsystem.log4j.logger", "velocity");
+			velocityEngine.init(props);
+		}
+		catch (Exception e) {
+			throw new APIException("Failed to create the velocity engine: " + e.getMessage(), e);
+		}
 		
 		StringWriter writer = new StringWriter();
 		String wrappedCriteria = "#set( $criteria = " + criteria + " )$criteria";

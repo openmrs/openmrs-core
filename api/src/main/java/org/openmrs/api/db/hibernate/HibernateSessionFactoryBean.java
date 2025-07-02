@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 
 public class HibernateSessionFactoryBean extends LocalSessionFactoryBean implements Integrator {
@@ -56,6 +57,9 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 	// This will be sorted on keys before being used
 	@Autowired(required = false)
 	public Map<String, Interceptor> interceptors = new HashMap<>();
+
+	@Value("${cache.type:local}")
+	private String cacheType;
 	
 	private Metadata metadata;
 	
@@ -147,6 +151,11 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 			OpenmrsUtil.loadProperties(props, propertyStream);
 			propertyStream.close();
 			
+			// Load infinispan config based on selected cache type
+			String local = "local".equalsIgnoreCase(cacheType.trim()) ? "-local" : "";
+			props.put("hibernate.cache.infinispan.cfg", 
+				"org/infinispan/hibernate/cache/commons/builder/infinispan-configs" + local + ".xml");
+			
 			// Only load in the default properties if they don't exist
 			for (Entry<Object, Object> prop : props.entrySet()) {
 				if (!config.containsKey(prop.getKey())) {
@@ -195,13 +204,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 	 */
 	@Override
 	public void destroy() throws HibernateException {
-		try {
-			super.destroy();
-		}
-		catch (IllegalStateException e) {
-			// ignore errors sometimes thrown by the CacheManager trying to shut down twice
-			// see net.sf.ehcache.CacheManager#removeShutdownHook()
-		}
+		super.destroy();
 	}
 
 	@Override

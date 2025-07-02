@@ -10,34 +10,54 @@
 package org.openmrs.web.filter.update.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openmrs.web.filter.util.FilterUtil;
-import org.openmrs.web.test.BaseWebContextSensitiveTest;
+import org.openmrs.web.test.jupiter.BaseWebContextSensitiveTest;
 
 /**
  * Tests some of the methods on the {@link FilterUtil}
  */
 public class FilterUtilTest extends BaseWebContextSensitiveTest {
+
+	private static final String INITIAL_LOCALE = "it";
+	
+	private static final String UPDATED_LOCALE = "fr";
 	
 	/**
-	 * @see FilterUtil#storeLocale(String))
+	 * @see FilterUtil#storeLocale(String)
 	 */
 	@Test
-	@Disabled
 	public void storeLocale_shouldStoreLocale() {
-		FilterUtil.storeLocale("it");
+		FilterUtil.storeLocale(INITIAL_LOCALE);
 	}
 	
 	/**
-	 * @see {@link FilterUtil#restoreLocale(String))
+	 * @see FilterUtil#restoreLocale(String)
 	 */
 	@Test
-	@Disabled
 	public void storeLocale_shouldRestoreLocale() {
-		FilterUtil.storeLocale("it");
-		assertEquals("it", FilterUtil.restoreLocale(FilterUtil.ADMIN_USERNAME));
+		FilterUtil.storeLocale(INITIAL_LOCALE);
+		assertEquals(INITIAL_LOCALE, FilterUtil.restoreLocale(FilterUtil.ADMIN_USERNAME));
 	}
-	
+
+	@Test
+	public void storeLocale_shouldNotChangeStoredValueWhenStoringSameLocale() {
+		FilterUtil.storeLocale(INITIAL_LOCALE);
+		assertEquals(INITIAL_LOCALE, FilterUtil.restoreLocale(FilterUtil.ADMIN_USERNAME));
+
+		FilterUtil.storeLocale(INITIAL_LOCALE);
+		assertEquals(INITIAL_LOCALE, FilterUtil.restoreLocale(FilterUtil.ADMIN_USERNAME));
+	}
+
+	@Test
+	public void storeLocale_shouldNotUpdateStoredValueWhenStoringDifferentLocale() {
+		FilterUtil.storeLocale(INITIAL_LOCALE);
+		assertEquals(INITIAL_LOCALE, FilterUtil.restoreLocale(FilterUtil.ADMIN_USERNAME));
+
+		FilterUtil.storeLocale(UPDATED_LOCALE);
+		assertNotEquals(UPDATED_LOCALE, FilterUtil.restoreLocale(FilterUtil.ADMIN_USERNAME));
+	}
+
 }

@@ -28,6 +28,7 @@ import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptReferenceRange;
 import org.openmrs.Drug;
 import org.openmrs.Obs;
 import org.openmrs.Person;
@@ -93,7 +94,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfParentObshasValues() {
+	public void validate_shouldFailIfParentObsHasValues() {
 		
 		Obs obs = new Obs();
 		obs.setPerson(Context.getPersonService().getPerson(2));
@@ -556,6 +557,39 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		assertTrue(errors.hasFieldErrors("valueNumeric"));
 	}
 	
+	@Test
+	public void getReferenceRange_shouldReturnCorrectRangeWhenHiAbsoluteAndLowAbsoluteAreNull() {
+		Obs obs = getObs(10, 4091, 50.0);
+
+		ConceptReferenceRange referenceRange = obsValidator.getReferenceRange(obs);
+		
+		assertNotNull(referenceRange.getHiCritical());
+		assertNotNull(referenceRange.getHiNormal());
+		assertNotNull(referenceRange.getLowCritical());
+		assertNotNull(referenceRange.getLowNormal());
+		assertNull(referenceRange.getHiAbsolute());
+		assertNull(referenceRange.getLowAbsolute());
+		assertNotNull(referenceRange.getConceptNumeric());
+	}
+
+	/**
+	 * @see ObsValidator#getReferenceRange(Obs)
+	 */
+	@Test
+	public void getReferenceRange_shouldConceptReferenceRangeWhenNoReferenceRangeDefined() {
+		Obs obs = getObs(1, 5497, 0.0);
+		
+		ConceptReferenceRange referenceRange = obsValidator.getReferenceRange(obs);
+
+		assertNotNull(referenceRange);
+		assertEquals(2500.0, referenceRange.getHiAbsolute());
+		assertEquals(1800.0, referenceRange.getHiCritical());
+		assertEquals(1497.0, referenceRange.getHiNormal());
+		assertEquals(445.0, referenceRange.getLowNormal());
+		assertEquals(99.0, referenceRange.getLowCritical());
+		assertEquals(0.0, referenceRange.getLowAbsolute());
+	}
+	
 	/**
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
@@ -623,6 +657,63 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		assertNotNull(obs.getReferenceRange());
 		assertEquals(145.0, obs.getReferenceRange().getHiAbsolute());
 		assertEquals(70.0, obs.getReferenceRange().getLowAbsolute());
+	}
+
+	/**
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void shouldSetObsReferenceRangeValuesToNarrowestMatchingValues() {
+		// we assume there are two rules that will match a person of this age
+		Person person = new Person(1);
+		calendar.add(Calendar.YEAR, -6);
+		person.setBirthdate(calendar.getTime());
+
+		Obs obs = new Obs();
+		obs.setPerson(person);
+		obs.setConcept(Context.getConceptService().getConcept(4090));
+		obs.setValueNumeric(88.0);
+		obs.setObsDatetime(new Date());
+
+		Errors errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+
+		assertFalse(errors.hasErrors());
+		assertNotNull(obs.getReferenceRange());
+		assertEquals(140.0, obs.getReferenceRange().getHiAbsolute());
+		assertEquals(130.0 , obs.getReferenceRange().getHiCritical());
+		assertEquals(118.0, obs.getReferenceRange().getHiNormal());
+		assertEquals(80.0, obs.getReferenceRange().getLowNormal());
+		assertEquals(75.0, obs.getReferenceRange().getLowCritical());
+		assertEquals(70.0, obs.getReferenceRange().getLowAbsolute());
+	}
+
+	/**
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void shouldSetObsReferenceRangeValuesToConceptReferenceRangeValuesIfNoRuleBasedRangesArePresent() {
+		Person person = new Person(1);
+		calendar.add(Calendar.YEAR, -600);
+		person.setBirthdate(calendar.getTime());
+
+		Obs obs = new Obs();
+		obs.setPerson(person);
+		obs.setConcept(Context.getConceptService().getConcept(5497));
+		obs.setValueNumeric(88.0);
+		obs.setObsDatetime(new Date());
+
+		Errors errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+
+		assertFalse(errors.hasErrors());
+		assertNotNull(obs.getReferenceRange());
+		assertEquals(2500.0, obs.getReferenceRange().getHiAbsolute());
+		assertEquals(1800.0, obs.getReferenceRange().getHiCritical());
+		assertEquals(1497.0, obs.getReferenceRange().getHiNormal());
+		assertEquals(445.0, obs.getReferenceRange().getLowNormal());
+		assertEquals(99.0, obs.getReferenceRange().getLowCritical());
+		assertEquals(0.0, obs.getReferenceRange().getLowAbsolute());
 	}
 
 	/**

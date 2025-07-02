@@ -43,7 +43,7 @@
 	<Loggers>
 		<Logger name="org.apache" level="WARN" />
 		<Logger name="org.hibernate" level="ERROR" />
-		<Logger name="net.sf.ehcache" level="ERROR" />
+		<Logger name="org.infinispan" level="ERROR" />
 		<Logger name="org.springframework" level="WARN" />
 		<Logger name="org.openmrs" level="WARN" />
 		<Logger name="liquibase" level="INFO" />

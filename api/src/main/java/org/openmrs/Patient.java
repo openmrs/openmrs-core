@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import javax.persistence.Cacheable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -16,8 +17,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
-import org.hibernate.search.annotations.ContainedIn;
 
 /**
  * Defines a Patient in the system. A patient is simply an extension of a person and all that that
@@ -26,6 +28,8 @@ import org.hibernate.search.annotations.ContainedIn;
  * @version 2.0
  */
 @Audited
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Patient extends Person {
 	
 	public static final long serialVersionUID = 93123L;
@@ -34,7 +38,6 @@ public class Patient extends Person {
 	
 	private String allergyStatus = Allergies.UNKNOWN;
 	
-	@ContainedIn
 	private Set<PatientIdentifier> identifiers;
 
 	

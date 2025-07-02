@@ -357,6 +357,16 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 		String requiredVersion = "1.4.0 - 1.4.10";
 		assertTrue(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredVersion));
 	}
+
+	/**
+	 * @see ModuleUtil#matchRequiredVersions(String,String)
+	 */
+	@Test
+	public void matchRequiredVersions_shouldMatchWhenVersionHasQualifierAndIsOnLowerBoundary() {
+		String openmrsVersion = "1.4.0-SNAPSHOT";
+		String requiredVersion = "1.4.0 - 1.4.10";
+		assertTrue(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredVersion));
+	}
 	
 	/**
 	 * @see ModuleUtil#matchRequiredVersions(String,String)
@@ -501,14 +511,57 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	 * @see org.openmrs.module.ModuleUtil#compareVersion(String,String)
 	 */
 	@Test
-	public void compareVersion_shouldTreatSNAPSHOTAsEarliestVersion() {
-		String olderVersion = "1.8.3";
+	public void compareVersion_shouldCorrectlyCompareOlderSNAPSHOTAndNewerSNAPSHOTVersion() {
+		String olderVersion = "1.8.3-SNAPSHOT";
 		String newerVersion = "1.8.4-SNAPSHOT";
 		assertTrue(ModuleUtil.compareVersion(newerVersion, olderVersion) > 0);
-		//should still return the correct value if the arguments are switched
 		assertTrue(ModuleUtil.compareVersion(olderVersion, newerVersion) < 0);
 	}
 	
+	/**
+	 * @see org.openmrs.module.ModuleUtil#compareVersion(String,String)
+	 */
+	@Test
+	public void compareVersion_shouldCorrectlyCompareOlderPlainAndNewerSNAPSHOTVersion() {
+		String olderVersion = "1.8.3";
+		String newerVersion = "1.8.4-SNAPSHOT";
+		assertTrue(ModuleUtil.compareVersion(newerVersion, olderVersion) > 0);
+		assertTrue(ModuleUtil.compareVersion(olderVersion, newerVersion) < 0);
+	}
+	
+	/**
+	 * @see org.openmrs.module.ModuleUtil#compareVersion(String,String)
+	 */
+	@Test
+	public void compareVersion_shouldCorrectlyCompareNewerPlainAndOlderSNAPSHOTVersion() {
+		String olderVersion = "1.8.3-SNAPSHOT";
+		String newerVersion = "1.8.4";
+		assertTrue(ModuleUtil.compareVersion(newerVersion, olderVersion) > 0);
+		assertTrue(ModuleUtil.compareVersion(olderVersion, newerVersion) < 0);
+	}
+	
+	/**
+	 * @see org.openmrs.module.ModuleUtil#compareVersion(String,String)
+	 */
+	@Test
+	public void compareVersion_shouldCorrectlyCompareSamePlainAndSNAPSHOTVersions() {
+		String olderVersion = "1.8.4-SNAPSHOT";
+		String newerVersion = "1.8.4";
+		assertTrue(ModuleUtil.compareVersion(newerVersion, olderVersion) > 0);
+		assertTrue(ModuleUtil.compareVersion(olderVersion, newerVersion) < 0);
+	}
+	
+	/**
+	 * @see org.openmrs.module.ModuleUtil#compareVersion(String,String)
+	 */
+	@Test
+	public void compareVersion_shouldCorrectlyCompareSamePlainAndRandomQualifierVersions() {
+		String olderVersion = "1.8.4-RandomQualifier";
+		String newerVersion = "1.8.4";
+		assertTrue(ModuleUtil.compareVersion(newerVersion, olderVersion) > 0);
+		assertTrue(ModuleUtil.compareVersion(olderVersion, newerVersion) < 0);
+	}
+
 	/**
 	 * @see org.openmrs.module.ModuleUtil#checkRequiredVersion(String, String)
 	 */

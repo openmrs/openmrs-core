@@ -14,15 +14,12 @@
 	This file is provided to be backward compatible with build processes that continue to use 
 	api/src/main/resources/liquibase-schema-only.xml to initialise the OpenMRS database.
 -->
-<databaseChangeLog 
+<databaseChangeLog
 	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
-	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext 
-	    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
-		http://www.liquibase.org/xml/ns/dbchangelog 
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
-	<include file="org/openmrs/liquibase/updates/liquibase-update-to-latest-2.7.x.xml"/>
+	<include file="org/openmrs/liquibase/updates/liquibase-update-to-latest-2.8.x.xml"/>
 
 </databaseChangeLog>

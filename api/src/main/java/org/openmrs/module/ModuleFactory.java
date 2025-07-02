@@ -285,18 +285,16 @@ public class ModuleFactory {
 		
 		AdministrationService adminService = Context.getAdministrationService();
 		
-		for (Module mod : getLoadedModulesCoreFirst()) {
+		for (Module mod : getLoadedModules()) {
 			
 			String key = mod.getModuleId() + ".started";
 			String startedProp = adminService.getGlobalProperty(key, null);
 			String mandatoryProp = adminService.getGlobalProperty(mod.getModuleId() + ".mandatory", null);
 			
-			boolean isCoreToOpenmrs = mod.isCore() && !ModuleUtil.ignoreCoreModules();
-			
 			// if a 'moduleid.started' property doesn't exist, start the module anyway
 			// as this is probably the first time they are loading it
 			if (startedProp == null || "true".equals(startedProp) || "true".equalsIgnoreCase(mandatoryProp)
-				|| mod.isMandatory() || isCoreToOpenmrs) {
+				|| mod.isMandatory()) {
 				modules.add(mod);
 			}
 		}
@@ -388,25 +386,7 @@ public class ModuleFactory {
 			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);
 		}
 	}
-	
-	/**
-	 * Returns all modules found/loaded into the system (started and not started), with the core modules
-	 * at the start of that list
-	 *
-	 * @return <code>List&lt;Module&gt;</code> of the modules loaded into the system, with the core
-	 *         modules first.
-	 */
-	public static List<Module> getLoadedModulesCoreFirst() {
-		List<Module> list = new ArrayList<>(getLoadedModules());
-		final Collection<String> coreModuleIds = ModuleConstants.CORE_MODULES.keySet();
-		list.sort((left, right) -> {
-			Integer leftVal = coreModuleIds.contains(left.getModuleId()) ? 0 : 1;
-			Integer rightVal = coreModuleIds.contains(right.getModuleId()) ? 0 : 1;
-			return leftVal.compareTo(rightVal);
-		});
-		return list;
-	}
-	
+
 	/**
 	 * Convenience method to return a List of Strings containing a description of which modules the
 	 * passed module requires but which are not started. The returned description of each module is the
@@ -1060,11 +1040,7 @@ public class ModuleFactory {
 			if (!isFailedStartup && mod.isMandatory()) {
 				throw new MandatoryModuleException(moduleId);
 			}
-			
-			if (!isFailedStartup && ModuleConstants.CORE_MODULES.containsKey(moduleId)) {
-				throw new OpenmrsCoreModuleException(moduleId);
-			}
-			
+
 			String modulePackage = mod.getPackageName();
 			
 			// stop all dependent modules

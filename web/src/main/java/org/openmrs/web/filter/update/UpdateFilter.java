@@ -94,7 +94,7 @@ public class UpdateFilter extends StartupFilter {
 	 * Used on all pages after the first to make sure the user isn't trying to cheat and do some url
 	 * magic to hack in.
 	 */
-	private boolean authenticatedSuccessfully = false;
+	private volatile boolean authenticatedSuccessfully = false;
 	
 	private UpdateFilterCompletion updateJob;
 	
@@ -134,9 +134,6 @@ public class UpdateFilter extends StartupFilter {
 	
 	/**
 	 * Called by {@link #doFilter(ServletRequest, ServletResponse, FilterChain)} on POST requests
-	 *
-	 * @see org.openmrs.web.filter.StartupFilter#doPost(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
 	protected synchronized void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse)

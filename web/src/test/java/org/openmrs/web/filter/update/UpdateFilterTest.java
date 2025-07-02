@@ -18,7 +18,7 @@ import java.sql.SQLException;
 
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Context;
-import org.openmrs.web.test.BaseWebContextSensitiveTest;
+import org.openmrs.web.test.jupiter.BaseWebContextSensitiveTest;
 
 /**
  * Tests some of the methods on the {@link UpdateFilter}

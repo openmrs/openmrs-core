@@ -24,11 +24,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.jar.JarEntry;
@@ -138,9 +136,6 @@ public class ModuleUtil {
 				log.debug("Found and loaded {} module(s)", modules.size());
 			}
 		}
-		
-		// make sure all openmrs required moduls are loaded and started
-		checkOpenmrsCoreModulesStarted();
 		
 		// make sure all mandatory modules are loaded and started
 		checkMandatoryModulesStarted();
@@ -322,9 +317,9 @@ public class ModuleUtil {
 						upperBound = upperBound.replaceAll("\\*", Integer.toString(Integer.MAX_VALUE));
 					}
 					
-					int lowerReturn = compareVersion(version, lowerBound);
+					int lowerReturn = compareVersionIgnoringQualifier(version, lowerBound);
 					
-					int upperReturn = compareVersion(version, upperBound);
+					int upperReturn = compareVersionIgnoringQualifier(version, upperBound);
 					
 					if (lowerReturn < 0 || upperReturn > 0) {
 						log.debug("Version " + version + " is not between " + lowerBound + " and " + upperBound);
@@ -332,7 +327,7 @@ public class ModuleUtil {
 						return true;
 					}
 				} else {
-					if (compareVersion(version, range) < 0) {
+					if (compareVersionIgnoringQualifier(version, range) < 0) {
 						log.debug("Version " + version + " is below " + range);
 					} else {
 						return true;
@@ -392,65 +387,87 @@ public class ModuleUtil {
 	}
 	
 	/**
-	 * Compares <code>version</code> to <code>value</code> version and value are strings like
-	 * 1.9.2.0 Returns <code>0</code> if either <code>version</code> or <code>value</code> is null.
+	 * Compare two version strings.
 	 *
-	 * @param version String like 1.9.2.0
-	 * @param value String like 1.9.2.0
-	 * @return the value <code>0</code> if <code>version</code> is equal to the argument
-	 *         <code>value</code>; a value less than <code>0</code> if <code>version</code> is
-	 *         numerically less than the argument <code>value</code>; and a value greater than
-	 *         <code>0</code> if <code>version</code> is numerically greater than the argument
-	 *         <code>value</code>
-	 * <strong>Should</strong> correctly comparing two version numbers
-	 * <strong>Should</strong> treat SNAPSHOT as earliest version
+	 * @param versionA String like 1.9.2.0, may include a qualifier like "-SNAPSHOT", may be null
+	 * @param versionB String like 1.9.2.0, may include a qualifier like "-SNAPSHOT", may be null
+	 * @return the value <code>0</code> if versions are equal; a value less than <code>0</code> if first version is
+	 * 		   before the second one; a value greater than <code>0</code> if first version is after the second one.
+	 * 		   If version numbers are equal and only one of them has a qualifier, the version without the qualifier is
+	 * 		   considered greater.
 	 */
-	public static int compareVersion(String version, String value) {
+	public static int compareVersion(String versionA, String versionB) {
+		return compareVersion(versionA, versionB, false);
+	}
+
+	/**
+	 * Compare two version strings. Any version qualifiers are ignored in the comparison.
+	 *
+	 * @param versionA String like 1.9.2.0, may include a qualifier like "-SNAPSHOT", may be null
+	 * @param versionB String like 1.9.2.0, may include a qualifier like "-SNAPSHOT", may be null
+	 * @return the value <code>0</code> if versions are equal; a value less than <code>0</code> if first version is
+	 * 		   before the second one; a value greater than <code>0</code> if first version is after the second one.
+	 */
+	public static int compareVersionIgnoringQualifier(String versionA, String versionB) {
+		return compareVersion(versionA, versionB, true);
+	}
+
+	private static int compareVersion(String versionA, String versionB, boolean ignoreQualifier) {
 		try {
-			if (version == null || value == null) {
+			if (versionA == null || versionB == null) {
 				return 0;
 			}
-			
-			List<String> versions = new ArrayList<>();
-			List<String> values = new ArrayList<>();
-			String separator = "-";
-			
+
+			List<String> versionANumbers = new ArrayList<>();
+			List<String> versionBNumbers = new ArrayList<>();
+			String qualifierSeparator = "-";
+
 			// strip off any qualifier e.g. "-SNAPSHOT"
-			int qualifierIndex = version.indexOf(separator);
-			if (qualifierIndex != -1) {
-				version = version.substring(0, qualifierIndex);
+			int qualifierIndexA = versionA.indexOf(qualifierSeparator);
+			if (qualifierIndexA != -1) {
+				versionA = versionA.substring(0, qualifierIndexA);
 			}
-			
-			qualifierIndex = value.indexOf(separator);
-			if (qualifierIndex != -1) {
-				value = value.substring(0, qualifierIndex);
+
+			// strip off any qualifier e.g. "-SNAPSHOT"
+			int qualifierIndexB = versionB.indexOf(qualifierSeparator);
+			if (qualifierIndexB != -1) {
+				versionB = versionB.substring(0, qualifierIndexB);
 			}
-			
-			Collections.addAll(versions, version.split("\\."));
-			Collections.addAll(values, value.split("\\."));
-			
+
+			Collections.addAll(versionANumbers, versionA.split("\\."));
+			Collections.addAll(versionBNumbers, versionB.split("\\."));
+
 			// match the sizes of the lists
-			while (versions.size() < values.size()) {
-				versions.add("0");
+			while (versionANumbers.size() < versionBNumbers.size()) {
+				versionANumbers.add("0");
 			}
-			while (values.size() < versions.size()) {
-				values.add("0");
+			while (versionBNumbers.size() < versionANumbers.size()) {
+				versionBNumbers.add("0");
 			}
-			
-			for (int x = 0; x < versions.size(); x++) {
-				String verNum = versions.get(x).trim();
-				String valNum = values.get(x).trim();
-				Long ver = NumberUtils.toLong(verNum, 0);
-				Long val = NumberUtils.toLong(valNum, 0);
-				
-				int ret = ver.compareTo(val);
+
+			for (int x = 0; x < versionANumbers.size(); x++) {
+				String verAPartString = versionANumbers.get(x).trim();
+				String verBPartString = versionBNumbers.get(x).trim();
+				Long verAPart = NumberUtils.toLong(verAPartString, 0);
+				Long verBPart = NumberUtils.toLong(verBPartString, 0);
+
+				int ret = verAPart.compareTo(verBPart);
 				if (ret != 0) {
 					return ret;
 				}
 			}
+			
+			// At this point the version numbers are equal.
+			if (!ignoreQualifier) {
+				if (qualifierIndexA >= 0 && qualifierIndexB < 0) {
+					return -1;
+				} else if (qualifierIndexA < 0 && qualifierIndexB >= 0) {
+					return 1;
+				}
+			}
 		}
 		catch (NumberFormatException e) {
-			log.error("Error while converting a version/value to an integer: " + version + "/" + value, e);
+			log.error("Error while converting a version/value to an integer: " + versionA + "/" + versionB, e);
 		}
 		
 		// default return value if an error occurs or elements are equal
@@ -934,57 +951,6 @@ public class ModuleUtil {
 		if (!mandatoryModuleIds.isEmpty()) {
 			throw new MandatoryModuleException(mandatoryModuleIds);
 		}
-	}
-	
-	/**
-	 * Looks at the list of modules in {@link ModuleConstants#CORE_MODULES} to make sure that all
-	 * modules that are core to OpenMRS are started and have at least a minimum version that OpenMRS
-	 * needs.
-	 *
-	 * @throws ModuleException if a module that is core to OpenMRS is not started
-	 * <strong>Should</strong> throw ModuleException if a core module is not started
-	 */
-	protected static void checkOpenmrsCoreModulesStarted() throws OpenmrsCoreModuleException {
-		
-		// if there is a property telling us to ignore required modules, drop out early
-		if (ignoreCoreModules()) {
-			return;
-		}
-		
-		// make a copy of the constant so we can modify the list
-		Map<String, String> coreModules = new HashMap<>(ModuleConstants.CORE_MODULES);
-		
-		Collection<Module> startedModules = ModuleFactory.getStartedModulesMap().values();
-		
-		// loop through the current modules and test them
-		for (Module mod : startedModules) {
-			String moduleId = mod.getModuleId();
-			if (coreModules.containsKey(moduleId)) {
-				String coreReqVersion = coreModules.get(moduleId);
-				if (compareVersion(mod.getVersion(), coreReqVersion) >= 0) {
-					coreModules.remove(moduleId);
-				} else {
-					log.debug("Module: " + moduleId + " is a core module and is started, but its version: "
-					        + mod.getVersion() + " is not within the required version: " + coreReqVersion);
-				}
-			}
-		}
-		
-		// any module ids left in the list are not started
-		if (coreModules.size() > 0) {
-			throw new OpenmrsCoreModuleException(coreModules);
-		}
-	}
-	
-	/**
-	 * Uses the runtime properties to determine if the core modules should be enforced or not.
-	 *
-	 * @return true if the core modules list can be ignored.
-	 */
-	public static boolean ignoreCoreModules() {
-		String ignoreCoreModules = Context.getRuntimeProperties().getProperty(ModuleConstants.IGNORE_CORE_MODULES_PROPERTY,
-		    "false");
-		return Boolean.parseBoolean(ignoreCoreModules);
 	}
 	
 	/**

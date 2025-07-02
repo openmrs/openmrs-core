@@ -56,11 +56,6 @@
         <param-name>springJspExpressionSupport</param-name>
         <param-value>false</param-value>
     </context-param>
-
-	<listener>
-		<listener-class>net.sf.ehcache.constructs.web.ShutdownListener</listener-class>
-		<!-- Should go before Listener so that during webapp shutdown it comes after hibernate shutdown last -->
-	</listener>
 	
 	<listener>
 		<listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>

@@ -9,37 +9,6 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.CacheMode;
-import org.hibernate.FlushMode;
-import org.hibernate.HibernateException;
-import org.hibernate.ScrollableResults;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.search.FullTextSession;
-import org.hibernate.stat.QueryStatistics;
-import org.hibernate.stat.Statistics;
-import org.hibernate.type.StandardBasicTypes;
-import org.openmrs.GlobalProperty;
-import org.openmrs.OpenmrsObject;
-import org.openmrs.User;
-import org.openmrs.api.context.Context;
-import org.openmrs.api.context.ContextAuthenticationException;
-import org.openmrs.api.context.Daemon;
-import org.openmrs.api.db.ContextDAO;
-import org.openmrs.api.db.FullTextSessionFactory;
-import org.openmrs.api.db.UserDAO;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
-import org.openmrs.util.Security;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate5.SessionFactoryUtils;
-import org.springframework.orm.hibernate5.SessionHolder;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
-
 import java.io.File;
 import java.net.URL;
 import java.sql.Connection;
@@ -50,6 +19,39 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.CacheMode;
+import org.hibernate.FlushMode;
+import org.hibernate.HibernateException;
+import org.hibernate.ScrollableResults;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.search.mapper.orm.Search;
+import org.hibernate.search.mapper.orm.session.SearchSession;
+import org.hibernate.search.mapper.orm.work.SearchIndexingPlan;
+import org.hibernate.stat.QueryStatistics;
+import org.hibernate.stat.Statistics;
+import org.hibernate.type.StandardBasicTypes;
+import org.openmrs.GlobalProperty;
+import org.openmrs.OpenmrsObject;
+import org.openmrs.User;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ContextAuthenticationException;
+import org.openmrs.api.context.Daemon;
+import org.openmrs.api.db.ContextDAO;
+import org.openmrs.api.db.UserDAO;
+import org.openmrs.api.db.hibernate.search.session.SearchSessionFactory;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.Security;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.hibernate5.SessionFactoryUtils;
+import org.springframework.orm.hibernate5.SessionHolder;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
  * Hibernate specific implementation of the {@link ContextDAO}. These methods should not be used
@@ -70,7 +72,7 @@ public class HibernateContextDAO implements ContextDAO {
 	private SessionFactory sessionFactory;
 	
 	@Autowired
-	private FullTextSessionFactory fullTextSessionFactory;
+	private SearchSessionFactory searchSessionFactory;
 	
 	private UserDAO userDao;
 	
@@ -513,30 +515,34 @@ public class HibernateContextDAO implements ContextDAO {
 	@Override
 	@Transactional
 	public void updateSearchIndexForType(Class<?> type) {
-		//From http://docs.jboss.org/hibernate/search/3.3/reference/en-US/html/manual-index-changes.html#search-batchindex-flushtoindexes
-		FullTextSession session = fullTextSessionFactory.getFullTextSession();
-		session.purgeAll(type);
+		Session session = sessionFactory.getCurrentSession();
+		SearchSession searchSession = searchSessionFactory.getSearchSession();
+		SearchIndexingPlan indexingPlan = searchSession.indexingPlan();
 		
 		//Prepare session for batch work
 		session.flush();
+		indexingPlan.execute();
 		session.clear();
+
+		//Purge all search indexes of the given type
+		Search.mapping(sessionFactory).scope(type).workspace().purge();
 		
 		FlushMode flushMode = session.getHibernateFlushMode();
 		CacheMode cacheMode = session.getCacheMode();
 		try {
 			session.setHibernateFlushMode(FlushMode.MANUAL);
 			session.setCacheMode(CacheMode.IGNORE);
-			
+
 			//Scrollable results will avoid loading too many objects in memory
 			try (ScrollableResults results = HibernateUtil.getScrollableResult(sessionFactory, type, 1000)) {
 				int index = 0;
 				while (results.next()) {
 					index++;
 					//index each element
-					session.index(results.get(0));
+					indexingPlan.addOrUpdate(results.get(0));
 					if (index % 1000 == 0) {
-						//apply changes to indexes
-						session.flushToIndexes();
+						//apply changes to search indexes
+						indexingPlan.execute();
 						//free memory since the queue is processed
 						session.clear();
 						// reset index to avoid overflows
@@ -544,7 +550,7 @@ public class HibernateContextDAO implements ContextDAO {
 					}
 				}
 			} finally {
-				session.flushToIndexes();
+				indexingPlan.execute();
 				session.clear();
 			}
 		}
@@ -553,16 +559,26 @@ public class HibernateContextDAO implements ContextDAO {
 			session.setCacheMode(cacheMode);
 		}
 	}
-	
+
+	@Override
+	@Transactional
+	public void updateSearchIndex(Class<?>... types) {
+		try {
+			searchSessionFactory.getSearchSession().massIndexer(types).startAndWait();
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	/**
 	 * @see org.openmrs.api.db.ContextDAO#updateSearchIndexForObject(java.lang.Object)
 	 */
 	@Override
 	@Transactional
 	public void updateSearchIndexForObject(Object object) {
-		FullTextSession session = fullTextSessionFactory.getFullTextSession();
-		session.index(object);
-		session.flushToIndexes();
+		SearchIndexingPlan indexingPlan = searchSessionFactory.getSearchSession().indexingPlan();
+		indexingPlan.addOrUpdate(object);
+		indexingPlan.execute();
 	}
 	
 	/**
@@ -584,7 +600,7 @@ public class HibernateContextDAO implements ContextDAO {
 	public void updateSearchIndex() {
 		try {
 			log.info("Updating the search index... It may take a few minutes.");
-			fullTextSessionFactory.getFullTextSession().createIndexer().startAndWait();
+			searchSessionFactory.getSearchSession().massIndexer().startAndWait();
 			GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(
 			    OpenmrsConstants.GP_SEARCH_INDEX_VERSION);
 			if (gp == null) {
@@ -606,7 +622,7 @@ public class HibernateContextDAO implements ContextDAO {
 	public Future<?> updateSearchIndexAsync() {
 		try {
 			log.info("Started asynchronously updating the search index...");
-			return fullTextSessionFactory.getFullTextSession().createIndexer().start();
+			return searchSessionFactory.getSearchSession().massIndexer().start().toCompletableFuture();
 		}
 		catch (Exception e) {
 			throw new RuntimeException("Failed to start asynchronous search index update", e);
