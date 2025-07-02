@@ -407,7 +407,6 @@ public class HibernateContextDAO implements ContextDAO {
 	 */
 	@Override
 	public void refreshEntity(Object obj) {
-		sessionFactory.getCurrentSession().flush();
 		sessionFactory.getCurrentSession().refresh(obj);
 	}
 

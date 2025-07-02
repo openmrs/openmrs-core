@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import jakarta.persistence.Query;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -432,9 +433,12 @@ public class HibernateFormDAO implements FormDAO {
 		Root<Form> root = cq.from(Form.class);
 		List<Predicate> predicates = getFormCriteria(cb, cq, root, partialName, published, encounterTypes, retired, containingAnyFormField,
 			containingAllFormFields, fields);
-		cq.where(predicates.toArray(new Predicate[]{}));
+		cq.where(predicates.toArray(new Predicate[]{})).distinct(false);
 
-		return sessionFactory.getCurrentSession().createQuery(cq).getResultList();
+		return sessionFactory.getCurrentSession()
+			.createQuery(cq)
+			.getResultStream()
+			.collect(Collectors.toList());
 	}
 	
 	/**
