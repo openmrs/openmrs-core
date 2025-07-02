@@ -61,6 +61,7 @@ import org.openmrs.PersonAttributeType;
 import org.openmrs.ProgramAttributeType;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttributeType;
+import org.openmrs.ProviderRole;
 import org.openmrs.Relationship;
 import org.openmrs.SimpleDosingInstructions;
 import org.openmrs.TestOrder;
@@ -2749,6 +2750,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.addAnnotatedClass(ConceptClass.class)
 			.addAnnotatedClass(FormResource.class)
 			.addAnnotatedClass(VisitType.class)
+			.addAnnotatedClass(ProviderRole.class)
 			.getMetadataBuilder().build();
 
 
@@ -3452,6 +3454,34 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		DrugOrder saveOrder = (DrugOrder) orderService.saveOrder(order, null);
 		assertTrue(saveOrder.getAsNeeded());
 		assertNotNull(orderService.getOrder(saveOrder.getOrderId()));
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#saveOrder(Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldSetNonCodedDrugOrderConcept() {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-nonCodedDrugs.xml");
+
+		DrugOrder drugOrder = new DrugOrder();
+		drugOrder.setDateActivated(new Date());
+		drugOrder.setDrugNonCoded("non coded paracetamol");
+		drugOrder.setOrderType(orderService.getOrderTypeByName("Drug order"));
+		drugOrder.setEncounter(encounterService.getEncounter(3));
+		drugOrder.setPatient(patientService.getPatient(7));
+		drugOrder.setCareSetting(orderService.getCareSetting(1));
+		drugOrder.setOrderer(providerService.getProvider(1));
+		drugOrder.setDoseUnits(conceptService.getConcept(50));
+		drugOrder.setQuantityUnits(conceptService.getConcept(51));
+		drugOrder.setFrequency(orderService.getOrderFrequency(3));
+		drugOrder.setRoute(conceptService.getConcept(22));
+		drugOrder.setDosingType(SimpleDosingInstructions.class);
+		drugOrder.setNumRefills(10);
+		drugOrder.setDose(300.0);
+		drugOrder.setQuantity(20.0);
+
+		orderService.saveOrder(drugOrder, null);
+		assertNotNull(drugOrder.getConcept());
 	}
 
 	@Test

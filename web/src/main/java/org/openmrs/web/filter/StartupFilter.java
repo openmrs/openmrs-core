@@ -112,6 +112,9 @@ public abstract class StartupFilter implements Filter {
 	        throws IOException, ServletException {
 		if (((HttpServletRequest)request).getServletPath().equals("/health/started")) {
 			((HttpServletResponse) response).setStatus(Listener.isOpenmrsStarted() ? HttpServletResponse.SC_OK : HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+		}else if(((HttpServletRequest)request).getServletPath().equals("/health/alive")){
+			boolean isOpenmrsLive = Listener.isSetupNeeded() || Listener.isOpenmrsStarted() || InitializationFilter.isInstallationStarted();  
+			((HttpServletResponse) response).setStatus( isOpenmrsLive? HttpServletResponse.SC_OK : HttpServletResponse.SC_SERVICE_UNAVAILABLE);
 		}
 		else if (skipFilter((HttpServletRequest) request)) {
 			chain.doFilter(request, response);

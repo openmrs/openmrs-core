@@ -434,10 +434,16 @@ public abstract class BaseContextSensitiveTest {
 			// ask the user for creds if no junit username/pass defined
 			// in the runtime properties or if that username/pass failed already
 			if (junitusername == null || junitpassword == null || attempts > 0) {
-				credentials = askForUsernameAndPassword(message);
-				// credentials are null if the user clicked "cancel" in popup
-				if (credentials == null)
-					return;
+				// Check if we're in headless mode
+				if (Boolean.getBoolean("java.awt.headless")) {
+					// In headless mode, use default credentials
+					credentials = new String[] { "admin", "test" };
+				} else {
+					credentials = askForUsernameAndPassword(message);
+					// credentials are null if the user clicked "cancel" in popup
+					if (credentials == null)
+						return;
+				}
 			} else
 				credentials = new String[] { junitusername, junitpassword };
 			
