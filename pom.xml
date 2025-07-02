@@ -1106,7 +1106,7 @@
 					<dependency>
 						<groupId>org.mockito</groupId>
 						<artifactId>mockito-core</artifactId>
-						<version>5.6.0</version>
+						<version>3.12.4</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
@@ -1132,7 +1132,7 @@
 					<dependency>
 						<groupId>org.mockito</groupId>
 						<artifactId>mockito-core</artifactId>
-						<version>5.6.0</version>
+						<version>3.12.4</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
@@ -1158,7 +1158,7 @@
 					<dependency>
 						<groupId>org.mockito</groupId>
 						<artifactId>mockito-core</artifactId>
-						<version>5.6.0</version>
+						<version>3.12.4</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
@@ -1196,6 +1196,7 @@
 			</plugin>
 		</plugins>
 	</reporting>
+
 
 	<repositories>
 		<repository>
