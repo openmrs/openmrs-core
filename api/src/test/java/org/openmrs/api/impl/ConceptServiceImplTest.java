@@ -20,7 +20,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -44,6 +47,7 @@ import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSource;
 import org.openmrs.Drug;
 import org.openmrs.DrugReferenceMap;
+import org.openmrs.Person;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
@@ -974,6 +978,44 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		List<ConceptReferenceRange> savedConceptReferenceRange = conceptService.getConceptReferenceRangesByConceptId(conceptNumeric.getId());
 		assertEquals(1, savedConceptReferenceRange.size());
 		assertEquals(conceptReferenceRange.getHiAbsolute(), savedConceptReferenceRange.get(0).getHiAbsolute());
+	}
+
+	/**
+	 * @see ConceptServiceImpl#getConceptReferenceRange(Person, Concept) 
+	 */
+	@Test
+	public void getConceptReferenceRange_shouldReturnMatchingConceptReferenceRange() {
+		Person person = new Person();
+		person.setBirthdate(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).minusYears(6).toInstant()));
+		Concept concept = conceptService.getConcept(4090);
+		
+		ConceptReferenceRange conceptReferenceRange = conceptService.getConceptReferenceRange(person, concept);
+
+		assertEquals(140.0, conceptReferenceRange.getHiAbsolute());
+		assertEquals(130.0 , conceptReferenceRange.getHiCritical());
+		assertEquals(118.0, conceptReferenceRange.getHiNormal());
+		assertEquals(80.0, conceptReferenceRange.getLowNormal());
+		assertEquals(75.0, conceptReferenceRange.getLowCritical());
+		assertEquals(70.0, conceptReferenceRange.getLowAbsolute());
+	}
+
+	/**
+	 * @see ConceptServiceImpl#getConceptReferenceRange(Person, Concept)
+	 */
+	@Test
+	public void getConceptReferenceRange_shouldReturnReferenceRangeFromConceptIfConceptReferenceRangeNotFound() {
+		Person person = new Person();
+		person.setBirthdate(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).minusYears(6).toInstant()));
+		Concept concept = conceptService.getConcept(5497);
+
+		ConceptReferenceRange conceptReferenceRange = conceptService.getConceptReferenceRange(person, concept);
+
+		assertEquals(2500.0, conceptReferenceRange.getHiAbsolute());
+		assertEquals(1800.0, conceptReferenceRange.getHiCritical());
+		assertEquals(1497.0, conceptReferenceRange.getHiNormal());
+		assertEquals(445.0, conceptReferenceRange.getLowNormal());
+		assertEquals(99.0, conceptReferenceRange.getLowCritical());
+		assertEquals(0.0, conceptReferenceRange.getLowAbsolute());
 	}
 	
 	private ConceptNumeric createConceptNumeric() {

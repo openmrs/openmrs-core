@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * Implements temporary storage.
  * 
- * @since 2.8.0, 2.7.4, 2.6.16, 2.5.15
+ * @since 2.8.0, 2.7.5, 2.6.16, 2.5.15
  */
 public abstract class BaseStorageService extends BaseOpenmrsService implements StorageService {
 	private final StreamDataService streamService;

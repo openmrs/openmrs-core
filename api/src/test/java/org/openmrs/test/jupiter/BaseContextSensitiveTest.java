@@ -12,8 +12,19 @@ package org.openmrs.test.jupiter;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.springframework.test.context.TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.UIManager;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.Window;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -105,7 +116,7 @@ import org.xml.sax.InputSource;
  * 
  * @since 2.4.0
  */
-@ContextConfiguration(locations = { "classpath:applicationContext-service.xml", "classpath*:openmrs-servlet.xml",
+@ContextConfiguration(locations = { "classpath:applicationContext-service.xml",
         "classpath*:moduleApplicationContext.xml", "classpath*:TestingApplicationContext.xml" })
 @TestExecutionListeners(
 	listeners = { SkipBaseSetupAnnotationExecutionListener.class,
@@ -159,7 +170,7 @@ public abstract class BaseContextSensitiveTest {
 	/**
 	 * Allows to determine if the DB is initialized with standard data
 	 */
-	private static boolean isBaseSetup;
+	private static volatile boolean isBaseSetup;
 	
 	/**
 	 * Stores a user authenticated for running tests which allows to discover a situation when some
@@ -176,8 +187,6 @@ public abstract class BaseContextSensitiveTest {
 	 */
 	@InjectMocks
 	protected ContextMockHelper contextMockHelper;
-	
-	private static volatile BaseContextSensitiveTest instance;
 	
 	/**
 	 * Basic constructor for the super class to all openmrs api unit tests. This constructor sets up
@@ -197,13 +206,12 @@ public abstract class BaseContextSensitiveTest {
 		
 		Properties props = getRuntimeProperties();
 		
-		log.debug("props: {}", props);
+		if (log.isDebugEnabled())
+			log.debug("props: {}", props);
 		
 		Context.setRuntimeProperties(props);
 		
 		loadCount++;
-		
-		instance = this;
 	}
 	
 	/**
@@ -426,10 +434,16 @@ public abstract class BaseContextSensitiveTest {
 			// ask the user for creds if no junit username/pass defined
 			// in the runtime properties or if that username/pass failed already
 			if (junitusername == null || junitpassword == null || attempts > 0) {
-				credentials = askForUsernameAndPassword(message);
-				// credentials are null if the user clicked "cancel" in popup
-				if (credentials == null)
-					return;
+				// Check if we're in headless mode
+				if (Boolean.getBoolean("java.awt.headless")) {
+					// In headless mode, use default credentials
+					credentials = new String[] { "admin", "test" };
+				} else {
+					credentials = askForUsernameAndPassword(message);
+					// credentials are null if the user clicked "cancel" in popup
+					if (credentials == null)
+						return;
+				}
 			} else
 				credentials = new String[] { junitusername, junitpassword };
 			
@@ -886,11 +900,11 @@ public abstract class BaseContextSensitiveTest {
 			connection.commit();
 			
 			updateSearchIndex();
-			
-			isBaseSetup = false;
 		}
 		catch (SQLException | DatabaseUnitException e) {
 			throw new DatabaseUnitRuntimeException(e);
+		} finally {
+			isBaseSetup = false;
 		}
 	}
 	
@@ -1006,18 +1020,6 @@ public abstract class BaseContextSensitiveTest {
 	 */
 	@AfterAll
 	public static synchronized void closeSessionAfterEachClass() throws Exception {
-		//Some tests add data via executeDataset()
-		//We need to delete it in order not to interfere with others
-		if (instance != null) {
-			try {
-				instance.deleteAllData();
-			}
-			catch (Exception ex) {
-				//No need to worry about this
-			}
-			instance = null;
-		}
-		
 		// clean up the session so we don't leak memory
 		if (Context.isSessionOpen()) {
 			Context.closeSession();

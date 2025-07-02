@@ -32,7 +32,7 @@ public class DatabaseUpdaterDatabaseIT extends DatabaseIT {
 	 * This constant needs to be updated when adding new Liquibase update files to openmrs-core.
 	 */
 	
-	private static final int CHANGE_SET_COUNT_FOR_GREATER_THAN_2_1_X = 900;
+	private static final int CHANGE_SET_COUNT_FOR_GREATER_THAN_2_1_X = 902;
 
 	private static final int CHANGE_SET_COUNT_FOR_2_1_X = 870;
 

@@ -484,6 +484,28 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		
 		assertFalse(errors.hasFieldErrors());
 	}
+
+	/**
+	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldPassIfConceptIsNullAndDrugNonCodedIsSet() {
+		DrugOrder order = new DrugOrder();
+		order.setPatient(Context.getPatientService().getPatient(7));
+		order.setCareSetting(Context.getOrderService().getCareSetting(2));
+		order.setEncounter(Context.getEncounterService().getEncounter(3));
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		order.setDrugNonCoded("non coded paracetamol");
+		order.setConcept(null);
+		FreeTextDosingInstructions di = new FreeTextDosingInstructions();
+		di.setInstructions("testing");
+		di.setDosingInstructions(order);
+
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+
+		assertFalse(errors.hasFieldErrors());
+	}
 	
 	/**
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)

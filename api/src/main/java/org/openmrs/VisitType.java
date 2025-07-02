@@ -9,6 +9,13 @@
  */
 package org.openmrs;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 import org.hibernate.envers.Audited;
 
 /**
@@ -17,11 +24,16 @@ import org.hibernate.envers.Audited;
  * 
  * @since 1.9
  */
+@Entity
+@Table(name = "visit_type")
 @Audited
-public class VisitType extends BaseChangeableOpenmrsMetadata{
+public class VisitType extends BaseChangeableOpenmrsMetadata {
 	
 	private static final long serialVersionUID = 1L;
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "visit_type_id")
 	private Integer visitTypeId;
 	
 	/** default constructor */

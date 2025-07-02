@@ -20,7 +20,7 @@ import java.io.OutputStream;
  * Please take extra care and avoid modifying references used in the write operation as they are accessed by 
  * different threads.
  * 
- * @since 2.8.0, 2.7.4, 2.6.16, 2.5.15
+ * @since 2.8.0, 2.7.5, 2.6.16, 2.5.15
  */
 @FunctionalInterface
 public interface StreamDataWriter {

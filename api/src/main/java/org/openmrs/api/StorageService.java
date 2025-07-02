@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
  * {@link ObjectMetadata} can be passed in save methods. It is implementation dependent on how the metadata is 
  * used or persisted.
  * 
- * @since 2.8.0, 2.7.4, 2.6.16, 2.5.15
+ * @since 2.8.0, 2.7.5, 2.6.16, 2.5.15
  */
 public interface StorageService extends OpenmrsService {
 
