@@ -14,10 +14,24 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openmrs.GlobalProperty;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class CustomDatatypeUtilTest extends BaseContextSensitiveTest {
+
+	@Autowired
+	private AdministrationService adminService;
+
+	@BeforeEach
+	public void setup() {
+	    adminService.saveGlobalProperty(
+	        new GlobalProperty("jackson.serializer.whitelist.types",
+	            "java.util.**"));
+	}
 	
 	/**
 	 * @see CustomDatatypeUtil#deserializeSimpleConfiguration(String)
