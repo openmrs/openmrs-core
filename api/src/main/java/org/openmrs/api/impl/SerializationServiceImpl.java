@@ -18,9 +18,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.openmrs.api.APIException;
 import org.openmrs.api.SerializationService;
 import org.openmrs.api.context.Context;
+import org.openmrs.serialization.JacksonSerializer;
 import org.openmrs.serialization.OpenmrsSerializer;
 import org.openmrs.serialization.SerializationException;
-import org.openmrs.serialization.SimpleXStreamSerializer;
 import org.openmrs.util.OpenmrsConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,12 +67,12 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 				}
 			}
 			catch (Exception e) {
-				log.info("Cannot create an instance of " + prop + " - using builtin SimpleXStreamSerializer.");
+				log.info("Cannot create an instance of " + prop + " - using builtin JacksonSerializer.");
 			}
 		} else {
-			log.info("No default serializer specified - using builtin SimpleXStreamSerializer.");
+			log.info("No default serializer specified - using builtin JacksonSerializer.");
 		}
-		return serializerMap.get(SimpleXStreamSerializer.class);
+		return serializerMap.get(JacksonSerializer.class);
 	}
 	
 	/**
