@@ -286,7 +286,7 @@
 	<bean id="serializationServiceTarget" class="org.openmrs.api.impl.SerializationServiceImpl">
 		<property name="serializers">
 			<list>
-				<ref bean="simpleXStreamSerializer" />
+				<ref bean="jacksonSerializer" />
 			</list>
 		</property>
 	</bean>
