@@ -11,13 +11,10 @@ package org.openmrs.api;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.format.DateTimeFormatter;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
-
-import org.openmrs.api.storage.ObjectMetadata;
 import org.openmrs.api.stream.StreamDataWriter;
-import org.springframework.stereotype.Service;
+import org.openmrs.api.storage.ObjectMetadata;
 
 /**
  * Storage service to persist data that does not fit well in DB.

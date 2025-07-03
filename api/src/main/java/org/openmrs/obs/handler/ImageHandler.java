@@ -23,10 +23,13 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.openmrs.api.stream.StreamDataWriter;
+import org.openmrs.api.storage.ObjectMetadata;
+
+
 import org.apache.commons.io.FilenameUtils;
 import org.openmrs.Obs;
 import org.openmrs.api.APIException;
-import org.openmrs.api.storage.ObjectMetadata;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
 import org.slf4j.Logger;
@@ -125,48 +128,54 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 	 * @see org.openmrs.obs.ComplexObsHandler#saveObs(org.openmrs.Obs)
 	 */
 	@Override
-	public Obs saveObs(Obs obs) throws APIException {
-		try {
-			String[] splitTitle = obs.getComplexData().getTitle().split("\\|");
-			String filename = splitTitle[0];
-			if (splitTitle.length > 1) {
-				filename = splitTitle[1];
+public Obs saveObs(Obs obs) throws APIException {
+	try {
+		String[] splitTitle = obs.getComplexData().getTitle().split("\\|");
+		String filename = splitTitle.length > 1 ? splitTitle[1] : splitTitle[0];
+		String extension = FilenameUtils.getExtension(filename);
+
+		// Build metadata
+		ObjectMetadata metadata = ObjectMetadata.builder()
+			.setFilename(filename)
+			.setMimeType("image/" + extension.toLowerCase()) // optional but recommended
+			.build();
+
+		// Build writer
+		StreamDataWriter writer = out -> {
+			Object data = obs.getComplexData().getData();
+
+			InputStream in = null;
+			if (data instanceof byte[]) {
+				in = new ByteArrayInputStream((byte[]) data);
+			} else if (data instanceof InputStream) {
+				in = (InputStream) data;
 			}
-			String extension = FilenameUtils.getExtension(filename);
-			String assignedKey = storageService.saveData((out) -> {
-				Object data = obs.getComplexData().getData();
-				
-				InputStream in = null;
-				if (data instanceof byte[]) {
-					in = new ByteArrayInputStream((byte[]) data);
-				} else if (data instanceof InputStream) {
-					in = (InputStream) data;
-				}
-				
-				BufferedImage img = null;
-				if (in != null) {
-					img = ImageIO.read(in);
-				} else if (data instanceof BufferedImage) {
-					img = (BufferedImage) data;
-				}
-				
-				if (img == null) {
-					throw new APIException("Obs.error.cannot.save.complex", new Object[] { obs.getObsId() });
-				}
-				ImageIO.write(img, extension, out);
-				out.flush();
-			}, ObjectMetadata.builder().setFilename(filename).build(), getObsDir());
 
-			// Set the Title and URI for the valueComplex
-			obs.setValueComplex(extension + " image |" + assignedKey);
+			BufferedImage img = null;
+			if (in != null) {
+				img = ImageIO.read(in);
+			} else if (data instanceof BufferedImage) {
+				img = (BufferedImage) data;
+			}
 
-			// Remove the ComlexData from the Obs
-			obs.setComplexData(null);
-		} catch (IOException e) {
-			throw new UncheckedIOException(e);
-		}
-		
-		return obs;
+			if (img == null) {
+				throw new APIException("Obs.error.cannot.save.complex", new Object[] { obs.getObsId() });
+			}
+			ImageIO.write(img, extension, out);
+			out.flush();
+		};
+
+		String assignedKey = storageService.saveData(writer, metadata, getObsDir());
+
+		// Store valueComplex as "png image | assignedKey"
+		obs.setValueComplex(extension + " image |" + assignedKey);
+		obs.setComplexData(null);
+
+	} catch (IOException e) {
+		throw new UncheckedIOException(e);
 	}
-	
+
+	return obs;
+}
+
 }
