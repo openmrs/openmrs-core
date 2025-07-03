@@ -383,7 +383,7 @@ public interface LocationService extends OpenmrsService {
 	public List<String> getPossibleAddressValues(Address incomplete, String fieldName) throws APIException;
 	
 	/**
-	 * Returns the xml of default address template.
+	 * Returns the of default address template string.
 	 * 
 	 * @return a string value of the default address template. If the GP is empty, the default
 	 *         template is returned
@@ -397,14 +397,14 @@ public interface LocationService extends OpenmrsService {
 	/**
 	 * Saved default address template to global properties
 	 * 
-	 * @param xml is a string to be saved as address template
+	 * @param template is a string to be saved as address template
 	 * <strong>Should</strong> throw APIException if the string is empty
 	 * <strong>Should</strong> update default address template successfully
 	 * <strong>Should</strong> create default address template successfully
 	 * @since 1.9
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_ADDRESS_TEMPLATES })
-	public void saveAddressTemplate(String xml) throws APIException;
+	public void saveAddressTemplate(String template) throws APIException;
 	
 	/**
 	 * @return all {@link LocationAttributeType}s

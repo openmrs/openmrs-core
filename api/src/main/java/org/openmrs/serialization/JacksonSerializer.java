@@ -83,7 +83,7 @@ public class JacksonSerializer implements OpenmrsSerializer {
 	 *
 	 * @return the underlying ObjectMapper
 	 */
-	public ObjectMapper getObjectMapper() {
+	protected ObjectMapper getObjectMapper() {
 		return objectMapper;
 	}
 	

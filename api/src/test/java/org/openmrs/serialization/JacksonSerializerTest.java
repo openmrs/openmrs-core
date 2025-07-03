@@ -56,10 +56,10 @@ public class JacksonSerializerTest extends BaseContextSensitiveTest {
     public void serialize_shouldSerializeNonOpenmrsObject() {
         // setup
         Foo foo = new Foo("test", 1);
-        List < String > list = new ArrayList < > ();
+        List <String> list = new ArrayList <> ();
         list.add("foo");
         list.add("bar");
-        Map < Integer, String > map = new HashMap < > ();
+        Map <Integer, String> map = new HashMap <> ();
         map.put(1, "foo");
         map.put(2, "fooBar");
         map.put(3, "bar");
@@ -87,12 +87,12 @@ public class JacksonSerializerTest extends BaseContextSensitiveTest {
         assertTrue(foo.getAttributeString().equals("Testing"));
         assertEquals(4, foo.getAttributeInt());
 
-        List < String > newList = foo.getAttributeList();
+        List <String> newList = foo.getAttributeList();
         assertThat(newList, hasSize(2));
         assertTrue(newList.get(0).equals("fooBar"));
         assertTrue(newList.get(1).equals("bar"));
 
-        Map < Integer, String > newMap = foo.getAttributeMap();
+        Map <Integer, String> newMap = foo.getAttributeMap();
         assertEquals(3, newMap.size());
         assertTrue(newMap.get(10).equals("foo"));
         assertTrue(newMap.get(20).equals("fooBar"));

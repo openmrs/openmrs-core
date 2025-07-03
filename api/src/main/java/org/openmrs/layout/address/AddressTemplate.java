@@ -21,6 +21,10 @@ public class AddressTemplate extends LayoutTemplate implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
+	public AddressTemplate() {
+		super();
+	}
+
 	public AddressTemplate(String string) {
 		super(string);
 	}
