@@ -15,13 +15,7 @@
 	xsi:schemaLocation="urn:infinispan:config:13.0 https://infinispan.org/schemas/infinispan-config-13.0.xsd"
 	xmlns="urn:infinispan:config:13.0">
 
-	<jgroups>
-		<stack-file name="api-jgroups" path="${hibernate.cache.infinispan.jgroups_cfg:default-configs/default-jgroups-tcp.xml}"/>
-	</jgroups>
-	
 	<cache-container>
-		<transport stack="api-jgroups" cluster="infinispan-api-cluster"/>
-		
 		<!-- Default configuration is appropriate for entity/collection caching. -->
 		<invalidation-cache-configuration name="entity" remote-timeout="20000" statistics="false" statistics-available="false">
 			<encoding media-type="application/x-java-object"/>
