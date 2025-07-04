@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
@@ -70,6 +71,9 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	@JoinColumn(name = "order_set_id")
 	private OrderSet orderSet;
 	
+	@OneToMany(mappedBy = "parentOrderGroup", cascade = { CascadeType.REMOVE }
+	
+	)
 	@ManyToOne
 	@JoinColumn(name = "parent_order_group")
 	private OrderGroup parentOrderGroup;
@@ -82,8 +86,9 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	@JoinColumn(name = "previous_order_group")
 	private OrderGroup previousOrderGroup;
 	
-	@OneToMany(mappedBy = "parentOrderGroup", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "parentOrderGroup", cascade = { CascadeType.REMOVE })
 	@OrderBy("orderGroupId")
+	@BatchSize(size = 25)
 	private Set<OrderGroup> nestedOrderGroups;
 
 	/**
