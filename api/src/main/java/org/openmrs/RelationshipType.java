@@ -9,6 +9,13 @@
  */
 package org.openmrs;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.envers.Audited;
 
@@ -33,6 +40,8 @@ import org.hibernate.envers.Audited;
  * In English, we run into a tricky RelationshipType with aunts and uncles. We have chosen to define
  * them as aunt/uncle-niece/nephew.
  */
+@Entity
+@Table(name = "relationship_type")
 @Audited
 public class RelationshipType extends BaseChangeableOpenmrsMetadata{
 	
@@ -40,14 +49,20 @@ public class RelationshipType extends BaseChangeableOpenmrsMetadata{
 	
 	// Fields
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "relationship_type_id")
 	private Integer relationshipTypeId;
 	
+	@Column(name = "a_is_to_b", nullable = false, length = 50)
 	private String aIsToB;
-	
+	@Column(name = "b_is_to_a", nullable = false, length = 50)
 	private String bIsToA;
 	
+	@Column
 	private Integer weight = 0;
 	
+	@Column
 	private Boolean preferred = false;
 	
 	// Constructors
@@ -175,7 +190,5 @@ public class RelationshipType extends BaseChangeableOpenmrsMetadata{
 	@Override
 	public void setId(Integer id) {
 		setRelationshipTypeId(id);
-		
 	}
-	
 }
