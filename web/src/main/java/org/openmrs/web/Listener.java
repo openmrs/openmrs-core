@@ -250,6 +250,32 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
 				
 				WebDaemon.startOpenmrs(event.getServletContext());
+
+                // ✅ Print the access URL
+				final String contextPath = servletContext.getContextPath();
+
+				String portTmp = System.getProperty("jetty.port");
+				if (portTmp == null || portTmp.isEmpty()) {
+					portTmp = System.getProperty("server.port");
+				}
+				if (portTmp == null || portTmp.isEmpty()) {
+					portTmp = "8080"; // fallback
+				}
+				final String port = portTmp;
+				
+				final String host = "http://localhost";
+				
+				new Thread(() -> {
+					try {
+						Thread.sleep(3000); // Let Jetty finish logging
+						System.out.println("✅ Server running at: " + host + ":" + port + contextPath);
+					} catch (InterruptedException e) {
+						Thread.currentThread().interrupt();
+					}
+				}).start();
+				
+		
+
 			} else {
 				setupNeeded = true;
 			}
