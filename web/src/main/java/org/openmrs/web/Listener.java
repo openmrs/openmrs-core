@@ -198,21 +198,21 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
 		log.debug("Starting the OpenMRS webapp");
-		
+	
 		try {
 			// validate the current JVM version
 			OpenmrsUtil.validateJavaVersion();
-			
+	
 			ServletContext servletContext = event.getServletContext();
-			
-			// pulled from web.xml.
+	
+			// pulled from web.xml
 			loadConstants(servletContext);
-			
+	
 			// erase things in the dwr file
 			clearDWRFile(servletContext);
-			
+	
 			setApplicationDataDirectory(servletContext);
-			
+	
 			// Try to get the runtime properties
 			Properties props = getRuntimeProperties();
 			if (props != null) {
@@ -221,25 +221,26 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				// set props to the context so that they can be
 				// used during sessionFactory creation
 				Context.setRuntimeProperties(props);
-				
-				String appDataRuntimeProperty = props
-						.getProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, null);
+	
+				String appDataRuntimeProperty = props.getProperty(
+					OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, null
+				);
 				if (StringUtils.hasLength(appDataRuntimeProperty)) {
 					OpenmrsUtil.setApplicationDataDirectory(null);
 				}
 				log.warn("Using runtime properties file: {}",
-						 OpenmrsUtil.getRuntimePropertiesFilePathName(WebConstants.WEBAPP_NAME));
+					OpenmrsUtil.getRuntimePropertiesFilePathName(WebConstants.WEBAPP_NAME));
 			}
 	
 			loadCsrfGuardProperties(servletContext);
-			
+	
 			Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
-			
+	
 			if (!setupNeeded()) {
 				// must be done after the runtime properties are
 				// found but before the database update is done
 				copyCustomizationIntoWebapp(servletContext, props);
-				
+	
 				/**
 				 * This logic is from ContextLoader.initWebApplicationContext. Copied here instead
 				 * of calling that so that the context is not cached and hence not garbage collected
@@ -247,25 +248,29 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				XmlWebApplicationContext context = (XmlWebApplicationContext) createWebApplicationContext(servletContext);
 				configureAndRefreshWebApplicationContext(context, servletContext);
 				servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
-				
+	
 				WebDaemon.startOpenmrs(event.getServletContext());
 	
-				// new addition: detect port (works with mvn jetty:run or -Djetty.http.port=9999)
+				// new addition: detect port (works with jetty and cargo)
 				final String contextPath = servletContext.getContextPath();
-				int port = 8080; // default
-				
+				int port = 8080; // default fallback
+	
 				try {
-					String jettyPort = System.getProperty("jetty.http.port");
-					if (jettyPort != null && !jettyPort.isEmpty()) {
-						port = Integer.parseInt(jettyPort);
+					String[] portProps = { "jetty.http.port", "cargo.servlet.port" };
+					for (String key : portProps) {
+						String val = System.getProperty(key);
+						if (val != null && !val.isEmpty()) {
+							port = Integer.parseInt(val);
+							break;
+						}
 					}
 				} catch (NumberFormatException e) {
-					log.warn("Could not parse jetty.http.port system property. Defaulting to 8080.");
+					log.warn("Could not parse system property for port. Falling back to 8080.", e);
 				}
-				
+	
 				final int finalPort = port;
 				final String host = "http://localhost";
-				
+	
 				new Thread(() -> {
 					try {
 						Thread.sleep(3000);
@@ -276,17 +281,17 @@ public final class Listener extends ContextLoader implements ServletContextListe
 						Thread.currentThread().interrupt();
 					}
 				}).start();
-				
+	
 			} else {
 				setupNeeded = true;
 			}
-			
-		}
-		catch (Exception e) {
+	
+		} catch (Exception e) {
 			setErrorAtStartup(e);
 			log.error(MarkerFactory.getMarker("FATAL"), "Failed to obtain JDBC connection", e);
 		}
 	}
+	
 	
 
 	private void loadCsrfGuardProperties(ServletContext servletContext) throws IOException {
