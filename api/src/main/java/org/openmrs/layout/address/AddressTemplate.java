@@ -14,6 +14,8 @@ import java.io.Serializable;
 import org.openmrs.layout.LayoutSupport;
 import org.openmrs.layout.LayoutTemplate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * @since 1.12
  */
@@ -21,6 +23,10 @@ public class AddressTemplate extends LayoutTemplate implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
+	public AddressTemplate() {
+		super();
+	}
+
 	public AddressTemplate(String string) {
 		super(string);
 	}
@@ -35,6 +41,7 @@ public class AddressTemplate extends LayoutTemplate implements Serializable {
 		return "IS_NOT_ADDR_TOKEN";
 	}
 	
+	@JsonIgnore
 	@Override
 	public LayoutSupport<?> getLayoutSupportInstance() {
 		return AddressSupport.getInstance();
