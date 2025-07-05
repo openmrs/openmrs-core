@@ -205,7 +205,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	
 			ServletContext servletContext = event.getServletContext();
 	
-			// pulled from web.xml
+			// pulled from web.xml.
 			loadConstants(servletContext);
 	
 			// erase things in the dwr file
@@ -213,6 +213,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	
 			setApplicationDataDirectory(servletContext);
 	
+			
 			// Try to get the runtime properties
 			Properties props = getRuntimeProperties();
 			if (props != null) {
@@ -222,21 +223,20 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				// used during sessionFactory creation
 				Context.setRuntimeProperties(props);
 	
-				String appDataRuntimeProperty = props.getProperty(
-					OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, null
-				);
+				String appDataRuntimeProperty = props
+						.getProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, null);
 				if (StringUtils.hasLength(appDataRuntimeProperty)) {
 					OpenmrsUtil.setApplicationDataDirectory(null);
 				}
 				log.warn("Using runtime properties file: {}",
-					OpenmrsUtil.getRuntimePropertiesFilePathName(WebConstants.WEBAPP_NAME));
+								 OpenmrsUtil.getRuntimePropertiesFilePathName(WebConstants.WEBAPP_NAME));
 			}
 	
 			loadCsrfGuardProperties(servletContext);
 	
 			Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 	
-			if (!setupNeeded()) {
+			if (!setupNeeded) {
 				// must be done after the runtime properties are
 				// found but before the database update is done
 				copyCustomizationIntoWebapp(servletContext, props);
@@ -250,50 +250,33 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
 	
 				WebDaemon.startOpenmrs(event.getServletContext());
-	
-				// new addition: detect port (works with jetty and cargo)
-				final String contextPath = servletContext.getContextPath();
-				int port = 8080; // default fallback
-	
-				try {
-					String[] portProps = { "jetty.http.port", "cargo.servlet.port" };
-					for (String key : portProps) {
-						String val = System.getProperty(key);
-						if (val != null && !val.isEmpty()) {
-							port = Integer.parseInt(val);
-							break;
-						}
-					}
-				} catch (NumberFormatException e) {
-					log.warn("Could not parse system property for port. Falling back to 8080.", e);
-				}
-	
-				final int finalPort = port;
-				final String host = "http://localhost";
-	
 				new Thread(() -> {
 					try {
 						Thread.sleep(3000);
-						String url = String.format("%s:%d%s", host, finalPort, contextPath);
-						// NOTE: log.info may be ignored depending on config, so using log.warn for visibility
-						log.warn("✅ OpenMRS is running at: {}", url);
+						String[] portProps = { "jetty.http.port", "cargo.servlet.port" };
+						for (String key : portProps) {
+							String val = System.getProperty(key);
+							if (val != null && !val.isEmpty()) {
+								log.warn("✅ OpenMRS is running at: {}:{}{}", "http://localhost", val, servletContext.getContextPath());
+								return;
+							}
+						}
+						log.warn("✅ OpenMRS is running at: {}{}", "http://localhost:8080", servletContext.getContextPath());
 					} catch (InterruptedException e) {
 						Thread.currentThread().interrupt();
 					}
 				}).start();
-	
 			} else {
 				setupNeeded = true;
 			}
-	
-		} catch (Exception e) {
+
+		} 
+		catch (Exception e) {
 			setErrorAtStartup(e);
 			log.error(MarkerFactory.getMarker("FATAL"), "Failed to obtain JDBC connection", e);
 		}
 	}
 	
-	
-
 	private void loadCsrfGuardProperties(ServletContext servletContext) throws IOException {
 		File csrfGuardFile = new File(OpenmrsUtil.getApplicationDataDirectory(), "csrfguard.properties");
 		Properties csrfGuardProperties = new Properties();
