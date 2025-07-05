@@ -18,6 +18,8 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.ListObjectsV2Request;
 import com.amazonaws.services.s3.model.ListObjectsV2Result;
+import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 
 import org.openmrs.api.StorageService;
 import org.openmrs.api.storage.BaseStorageService;
@@ -28,7 +30,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -134,5 +140,21 @@ public class S3StorageService extends BaseStorageService implements StorageServi
         String fullKey = moduleIdOrGroup + "/" + keySuffix;
         s3Client.putObject(bucketName, fullKey, inputStream, awsMetadata);
         return fullKey;
+    }
+
+    public void store(String key, ByteArrayInputStream byteArrayInputStream, int length) {
+         ObjectMetadata metadata = new ObjectMetadata();
+    metadata.setContentLength(length);
+   s3Client.putObject(bucketName, key, byteArrayInputStream, metadata);
+
+    }
+
+    public List<String> listFiles() {
+       List<String> keys = new ArrayList<>();
+    ObjectListing listing = s3Client.listObjects(bucketName);
+    for (S3ObjectSummary summary : listing.getObjectSummaries()) {
+        keys.add(summary.getKey());
+    }
+    return keys;
     }
 }

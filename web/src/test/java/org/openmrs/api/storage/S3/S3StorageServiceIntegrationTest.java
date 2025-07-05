@@ -24,20 +24,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.MockitoAnnotations;
 import org.openmrs.api.stream.StreamDataService;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.ByteArrayInputStream;
 import java.util.List;
-
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 
-
-
-
-
+// NOTE: All tests in this class currently fail due to SSLHandshakeException:
+// PKIX path building failed: unable to find valid certification path to requested target.
+// This is likely caused by missing or untrusted CA certificates when connecting to the mock S3 endpoint.
+// The test was added for review and further debugging as requested.
 
 @ExtendWith(S3MockExtension.class)
 public class S3StorageServiceIntegrationTest {
@@ -68,12 +65,10 @@ public class S3StorageServiceIntegrationTest {
                 .withPathStyleAccessEnabled(true) // important for local mock
                 .build();
 
-	  
-      
-	  @SuppressWarnings("unused")
-	  S3StorageService storageService = new S3StorageService(streamDataService, s3Client, "test-bucket");
-      
-    }
+	  this.storageService = new S3StorageService(streamDataService, s3Client, BUCKET_NAME);
+	 
+
+	}
 
 @Test
 public void testPutAndListObjects() {

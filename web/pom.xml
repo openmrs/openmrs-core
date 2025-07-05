@@ -81,17 +81,25 @@
     <version>${mockitoVersion}</version>
 </dependency>
       <dependency>
-         <groupId>javax.servlet</groupId>
-         <artifactId>javax.servlet-api</artifactId>
-      </dependency>
+    <groupId>javax.servlet</groupId>
+    <artifactId>javax.servlet-api</artifactId>
+    <version>4.0.1</version>
+    <scope>provided</scope>
+</dependency>
+
+     
       <dependency>
-         <groupId>javax.servlet</groupId>
-         <artifactId>jsp-api</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>javax.servlet.jsp.jstl</groupId>
-         <artifactId>javax.servlet.jsp.jstl-api</artifactId>
-      </dependency>
+    <groupId>javax.servlet.jsp.jstl</groupId>
+    <artifactId>javax.servlet.jsp.jstl-api</artifactId>
+    <version>1.2.2</version>
+</dependency>
+<dependency>
+    <groupId>org.glassfish.web</groupId>
+    <artifactId>jstl-impl</artifactId>
+    <version>1.2</version>
+</dependency>
+
+
       <dependency>
          <groupId>commons-io</groupId>
          <artifactId>commons-io</artifactId>
