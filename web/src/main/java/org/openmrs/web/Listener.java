@@ -198,21 +198,21 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
 		log.debug("Starting the OpenMRS webapp");
-		
+	
 		try {
 			// validate the current JVM version
 			OpenmrsUtil.validateJavaVersion();
-			
+	
 			ServletContext servletContext = event.getServletContext();
-			
+	
 			// pulled from web.xml.
 			loadConstants(servletContext);
-			
+	
 			// erase things in the dwr file
 			clearDWRFile(servletContext);
-			
+	
 			setApplicationDataDirectory(servletContext);
-			
+	
 			
 			// Try to get the runtime properties
 			Properties props = getRuntimeProperties();
@@ -222,25 +222,25 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				// set props to the context so that they can be
 				// used during sessionFactory creation
 				Context.setRuntimeProperties(props);
-				
+	
 				String appDataRuntimeProperty = props
-				        .getProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, null);
+						.getProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, null);
 				if (StringUtils.hasLength(appDataRuntimeProperty)) {
 					OpenmrsUtil.setApplicationDataDirectory(null);
 				}
 				log.warn("Using runtime properties file: {}",
-				         OpenmrsUtil.getRuntimePropertiesFilePathName(WebConstants.WEBAPP_NAME));
+								 OpenmrsUtil.getRuntimePropertiesFilePathName(WebConstants.WEBAPP_NAME));
 			}
-
+	
 			loadCsrfGuardProperties(servletContext);
-			
+	
 			Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
-			
-			if (!setupNeeded()) {
+	
+			if (!setupNeeded) {
 				// must be done after the runtime properties are
 				// found but before the database update is done
 				copyCustomizationIntoWebapp(servletContext, props);
-				
+	
 				/**
 				 * This logic is from ContextLoader.initWebApplicationContext. Copied here instead
 				 * of calling that so that the context is not cached and hence not garbage collected
@@ -248,19 +248,35 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				XmlWebApplicationContext context = (XmlWebApplicationContext) createWebApplicationContext(servletContext);
 				configureAndRefreshWebApplicationContext(context, servletContext);
 				servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
-				
+	
 				WebDaemon.startOpenmrs(event.getServletContext());
+				new Thread(() -> {
+					try {
+						Thread.sleep(3000);
+						String[] portProps = { "jetty.http.port", "cargo.servlet.port" };
+						for (String key : portProps) {
+							String val = System.getProperty(key);
+							if (val != null && !val.isEmpty()) {
+								log.warn("✅ OpenMRS is running at: {}:{}{}", "http://localhost", val, servletContext.getContextPath());
+								return;
+							}
+						}
+						log.warn("✅ OpenMRS is running at: {}{}", "http://localhost:8080", servletContext.getContextPath());
+					} catch (InterruptedException e) {
+						Thread.currentThread().interrupt();
+					}
+				}).start();
 			} else {
 				setupNeeded = true;
 			}
-			
-		}
+
+		} 
 		catch (Exception e) {
 			setErrorAtStartup(e);
 			log.error(MarkerFactory.getMarker("FATAL"), "Failed to obtain JDBC connection", e);
 		}
 	}
-
+	
 	private void loadCsrfGuardProperties(ServletContext servletContext) throws IOException {
 		File csrfGuardFile = new File(OpenmrsUtil.getApplicationDataDirectory(), "csrfguard.properties");
 		Properties csrfGuardProperties = new Properties();
