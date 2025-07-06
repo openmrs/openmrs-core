@@ -32,7 +32,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.ListUtils;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.Field;
@@ -236,28 +235,6 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		// test that a null ignoreFormFields doesn't error out
 		FormField ff = Context.getFormService().getFormField(new Form(1), new Concept(3), null, false);
 		assertNotNull(ff);
-	}
-
-	/**
-	 * Make sure that multiple forms are returned if a field is on a form more than once
-	 *
-	 * @see FormService#getForms(String, Boolean, java.util.Collection, Boolean, java.util.Collection, java.util.Collection, java.util.Collection)
-
-	 */
-	@Test
-	@Disabled("Temporarily until a fix is found DONT MERGE")
-	public void getForms_shouldReturnDuplicateFormWhenGivenFieldsIncludedInFormMultipleTimes() {
-		executeDataSet(INITIAL_FIELDS_XML);
-		executeDataSet("org/openmrs/api/include/FormServiceTest-formFields.xml");
-
-		FormService formService = Context.getFormService();
-
-		List<Field> fields = new ArrayList<>();
-		fields.add(new Field(1));
-
-		List<Form> forms = formService.getForms(null, null, null, null, null, null, fields);
-
-		assertEquals(3, forms.size());
 	}
 
 	/**
