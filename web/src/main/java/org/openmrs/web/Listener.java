@@ -250,6 +250,22 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
 				
 				WebDaemon.startOpenmrs(event.getServletContext());
+				new Thread(() -> {
+					try {
+						Thread.sleep(3000);
+						String[] portProps = { "jetty.http.port", "cargo.servlet.port" };
+						for (String key : portProps) {
+							String val = System.getProperty(key);
+							if (val != null && !val.isEmpty()) {
+								log.warn("✅ OpenMRS is running at: {}:{}{}", "http://localhost", val, servletContext.getContextPath());
+								return;
+							}
+						}
+						log.warn("✅ OpenMRS is running at: {}{}", "http://localhost:8080", servletContext.getContextPath());
+					} catch (InterruptedException e) {
+						Thread.currentThread().interrupt();
+					}
+				}).start();
 			} else {
 				setupNeeded = true;
 			}
