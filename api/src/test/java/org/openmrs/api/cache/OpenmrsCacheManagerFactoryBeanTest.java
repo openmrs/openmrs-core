@@ -10,7 +10,6 @@
 package org.openmrs.api.cache;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 
@@ -21,16 +20,37 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 
-public class OpenmrsCacheManagerFactoryBeanTest extends BaseContextSensitiveTest{
-    
-    @Autowired
-    CacheManager cacheManager;
-    
-    @Test
-    public void shouldContainSpecificCacheConfigurations(){
-        String[] expectedCaches = {"conceptDatatype", "subscription", "userSearchLocales", "conceptIdsByMapping"};
-        Collection<String> actualCaches = cacheManager.getCacheNames();
-        assertThat(actualCaches.size(), is(expectedCaches.length));
-        assertThat(actualCaches, containsInAnyOrder(expectedCaches));
-    }
+public class OpenmrsCacheManagerFactoryBeanTest extends BaseContextSensitiveTest {
+
+	@Autowired
+	CacheManager cacheManager;
+
+	@Autowired
+	CacheConfig cacheConfig;
+
+	@Autowired
+	NonServiceTestBean nonServiceTestBean;
+
+	@Autowired
+	ServiceTestBean serviceTestBean;
+
+	@Test
+	public void shouldContainSpecificCacheConfigurations(){
+		String[] expectedCaches = {"conceptDatatype", "subscription", "userSearchLocales", "conceptIdsByMapping",
+			"testCache"};
+		Collection<String> actualCaches = cacheManager.getCacheNames();
+		assertThat(actualCaches, containsInAnyOrder(expectedCaches));
+	}
+
+	@Test
+	public void shouldCacheNonServiceMethods() {
+		String cachedValue = nonServiceTestBean.getCachedUUID();
+		assertThat(nonServiceTestBean.getCachedUUID(), is(cachedValue));
+	}
+
+	@Test
+	public void shouldCacheServiceMethods() {
+		String cachedValue = serviceTestBean.getCachedUUID();
+		assertThat(serviceTestBean.getCachedUUID(), is(cachedValue));
+	}
 }
