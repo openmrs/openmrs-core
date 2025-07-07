@@ -5,3 +5,5 @@ caches:
             maxCount: 1000
     conceptDatatype:
         configuration: "entity"
+    testCache:
+        configuration: "entity"
