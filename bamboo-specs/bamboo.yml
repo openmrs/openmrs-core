@@ -2,9 +2,9 @@
 version: 2
 plan:
     project-key: TRUNK
-    key: MASTER
-    name: OpenMRS Core Master
-    description: OpenMRS Core Master
+    key: OC28
+    name: OpenMRS Core 2.8.x
+    description: OpenMRS Core 2.8.x
 stages:
     - Build:
           manual: false
@@ -500,7 +500,7 @@ variables:
     maven.release.version: 2.8.0
     build.release.type: release
 repositories:
-    - openmrs-core:
+    - openmrs-core-2.8.x:
           scope: global
     - Release scripts:
           scope: global
@@ -508,7 +508,7 @@ triggers:
     - polling:
           period: '180'
           repositories:
-              - openmrs-core
+              - openmrs-core-2.8.x
 branches:
     create: manually
     delete: never
