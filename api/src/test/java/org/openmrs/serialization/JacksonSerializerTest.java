@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.type.OrderedMapType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Encounter;
@@ -130,7 +131,7 @@ public class JacksonSerializerTest extends BaseContextSensitiveTest {
     }
 
     @Test
-    public void deserialize_shouldAllowIfClassMatchesExactWhitelistEntry() throws Exception {
+    public void deserialize_shouldSucceedIfClassMatchesExactWhitelistEntry() throws Exception {
         // setup
         adminService.saveGlobalProperty(
             new GlobalProperty("jackson.serializer.whitelist.types",
@@ -142,7 +143,7 @@ public class JacksonSerializerTest extends BaseContextSensitiveTest {
     }
 
     @Test
-    public void deserialize_shouldAllowIfClassMatchesWildcardPackagePattern() throws Exception {
+    public void deserialize_shouldSucceedIfClassMatchesWildcardPackagePattern() throws Exception {
         // setup
         adminService.saveGlobalProperty(
             new GlobalProperty("jackson.serializer.whitelist.types",
@@ -154,7 +155,7 @@ public class JacksonSerializerTest extends BaseContextSensitiveTest {
     }
 
     @Test
-    public void deserialize_shouldAllowIfClassMatchesMultiPackagesWildcardPattern() throws Exception {
+    public void deserialize_shouldSucceedIfClassMatchesMultiPackagesWildcardPattern() throws Exception {
         // setup
         adminService.saveGlobalProperty(
             new GlobalProperty("jackson.serializer.whitelist.types",
@@ -176,4 +177,25 @@ public class JacksonSerializerTest extends BaseContextSensitiveTest {
         // verify
         assertThrows(SecurityException.class, () -> serializer.deserialize(deserializedFoo, Foo.class));
     }
+
+    @Test
+	public void deserialize_shouldDeserializeWhitelistedHierarchies() throws SerializationException {
+		// setup
+        adminService.saveGlobalProperty(
+            new GlobalProperty("jackson.serializer.whitelist.types",
+                "hierarchyOf:org.hibernate.type.MapType"));
+		String orderedMapType = serializer.serialize(new OrderedMapTypeWithNoArg("role", "ref"));
+
+		// verify
+		assertDoesNotThrow(() -> serializer.deserialize(orderedMapType, OrderedMapTypeWithNoArg.class));
+	}
+
+    public static class OrderedMapTypeWithNoArg extends OrderedMapType {
+		public OrderedMapTypeWithNoArg() {
+			super(null, null);
+		}
+        public OrderedMapTypeWithNoArg(String arg1, String arg2) {
+			super(arg1, arg2);
+		}
+	}
 }
