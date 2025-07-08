@@ -367,6 +367,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 		}
 	}
 
+
 	/**
 	 * Gets patient program associated to the identifier in context
 	 * @since 2.6.0
