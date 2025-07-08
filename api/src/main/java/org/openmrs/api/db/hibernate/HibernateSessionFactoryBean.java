@@ -28,6 +28,7 @@ import org.hibernate.boot.Metadata;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.integrator.spi.Integrator;
 import org.hibernate.service.spi.SessionFactoryServiceRegistry;
+import org.openmrs.api.cache.CacheConfig;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
@@ -61,7 +62,13 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 	@Value("${cache.type:local}")
 	private String cacheType;
 	
+	@Value(("${cache.stack:}"))
+	private String cacheStack;
+	
 	private Metadata metadata;
+	
+	@Autowired
+	private CacheConfig cacheConfig;
 	
 	/**
 	 * Collect the mapping resources for future use because the mappingResources object is defined
@@ -150,6 +157,9 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 			
 			OpenmrsUtil.loadProperties(props, propertyStream);
 			propertyStream.close();
+			
+			String jChannelConfig=cacheConfig.getJChannelConfig(cacheStack);
+			props.put("hibernate.cache.infinispan.jgroups_cfg",jChannelConfig);
 			
 			// Load infinispan config based on selected cache type
 			String local = "local".equalsIgnoreCase(cacheType.trim()) ? "-local" : "";
