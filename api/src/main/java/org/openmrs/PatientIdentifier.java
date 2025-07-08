@@ -354,7 +354,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 				if (retValue == 0) {
 					retValue = OpenmrsUtil.compareWithNullAsGreatest(pi1.getIdentifier(), pi2.getIdentifier());
 				}
-
+				
 				// if we've gotten this far, just check all identifier values.  If they are
 				// equal, leave the objects at 0.  If not, arbitrarily pick retValue=1
 				// and return that (they are not equal).
