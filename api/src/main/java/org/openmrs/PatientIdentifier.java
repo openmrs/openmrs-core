@@ -49,7 +49,7 @@ import javax.persistence.Table;
  * are anything from medical record numbers, to social security numbers, to driver's licenses. The
  * type of identifier is defined by the PatientIdentifierType. A PatientIdentifier also contains a
  * Location.
- *
+ * 
  * @see org.openmrs.PatientIdentifierType
  */
 @Entity
@@ -72,7 +72,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	@Column(name = "patient_identifier_id")
 	@DocumentId
 	private Integer patientIdentifierId;
-
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "patient_id")
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
@@ -113,7 +113,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	
 	/**
 	 * Convenience constructor for creating a basic identifier
-	 *
+	 * 
 	 * @param identifier String identifier
 	 * @param type PatientIdentifierType
 	 * @param location Location of the identifier
@@ -129,7 +129,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	 * {@link #equals(Object)} in that this method compares the inner fields of each identifier for
 	 * equality. Note: Null/empty fields on <code>otherIdentifier</code> /will not/ cause a false
 	 * value to be returned
-	 *
+	 * 
 	 * @param otherIdentifier PatientiIdentifier with which to compare
 	 * @return boolean true/false whether or not they are the same names
 	 */
