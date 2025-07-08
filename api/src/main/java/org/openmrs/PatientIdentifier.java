@@ -245,7 +245,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	
 	/**
 	 * @return the preferred status
-	 *
+	 * 
 	 * @deprecated as of 2.0, use {@link #getPreferred()}
 	 */
 	@Deprecated
@@ -366,7 +366,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 			return retValue;
 		}
 	}
-	
+
 	/**
 	 * Gets patient program associated to the identifier in context
 	 * @since 2.6.0
