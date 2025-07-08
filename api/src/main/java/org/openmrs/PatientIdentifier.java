@@ -300,7 +300,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	public void setPatientIdentifierId(Integer patientIdentifierId) {
 		this.patientIdentifierId = patientIdentifierId;
 	}
-	
+
 	/**
 	 * bitwise copy of the PatientIdentifier object. NOTICE: THIS WILL NOT COPY THE PATIENT OBJECT. The
 	 * PatientIdentifier.patient object in this object AND the cloned object will point at the same
@@ -324,7 +324,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	 @since 1.12
 	 **/
 	public static class DefaultComparator implements Comparator<PatientIdentifier>, Serializable {
-		
+	
 		private static final long serialVersionUID = 1L;
 		
 		@Override
@@ -349,7 +349,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 				}
 				if (retValue == 0) {
 					retValue = OpenmrsUtil.compareWithNullAsGreatest(pi1.getIdentifierType().getPatientIdentifierTypeId(),
-					pi2.getIdentifierType().getPatientIdentifierTypeId());
+					    pi2.getIdentifierType().getPatientIdentifierTypeId());
 				}
 				if (retValue == 0) {
 					retValue = OpenmrsUtil.compareWithNullAsGreatest(pi1.getIdentifier(), pi2.getIdentifier());
