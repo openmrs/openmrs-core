@@ -102,7 +102,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "patient_program_id")
 	private PatientProgram patientProgram;
-	
+
 	@Column(name = "preferred", nullable = false)
 	@GenericField
 	private Boolean preferred = false;
@@ -160,7 +160,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 			catch (IllegalAccessException | InvocationTargetException e) {
 				log.error("Error while comparing identifiers", e);
 			}
-			
+
 		}
 		
 		return returnValue;
@@ -209,7 +209,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	public void setLocation(Location location) {
 		this.location = location;
 	}
-		
+	
 	/**
 	 * @return Returns the patient.
 	 */
