@@ -88,7 +88,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	@FullTextField(name = "identifierAnywhere", analyzer = SearchAnalysis.ANYWHERE_ANALYZER, searchAnalyzer = SearchAnalysis.EXACT_ANALYZER)
 	@KeywordField(name = "identifierExact_sort", sortable = Sortable.YES)
 	private String identifier;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "identifier_type")
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
@@ -98,7 +98,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "location_id")
 	private Location location;
-	
+
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "patient_program_id")
 	private PatientProgram patientProgram;
@@ -366,6 +366,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 			return retValue;
 		}
 	}
+	
 	/**
 	 * Gets patient program associated to the identifier in context
 	 * @since 2.6.0
