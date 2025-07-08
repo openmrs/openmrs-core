@@ -9,12 +9,23 @@
  */
 package org.openmrs;
 
-import javax.persistence.*;
-import java.util.*;
-
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
+
+import javax.persistence.Cacheable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Defines a Patient in the system. A patient is simply an extension of a person and all that that
@@ -47,16 +58,14 @@ public class Patient extends Person {
 	private Date dateCreated;
 
 	@ManyToOne
-	@JoinColumn(name = "user_id")
-	@Column(name = "changed_by")
+	@JoinColumn(name = "changed_by")
 	private User changedBy;
 
 	@Column(nullable = false)
 	private Boolean voided;
 
 	@ManyToOne
-	@JoinColumn(name = "user_id")
-	@Column(name = "voided_by")
+	@JoinColumn(name = "voided_by")
 	private User voidedBy;
 
 	@Column(name = "date_voided", length = 19)
