@@ -383,7 +383,7 @@ public interface LocationService extends OpenmrsService {
 	public List<String> getPossibleAddressValues(Address incomplete, String fieldName) throws APIException;
 	
 	/**
-	 * Returns the of default address template string.
+	 * Returns the default address template string.
 	 * 
 	 * @return a string value of the default address template. If the GP is empty, the default
 	 *         template is returned
