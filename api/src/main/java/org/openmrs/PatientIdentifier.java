@@ -324,7 +324,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	 @since 1.12
 	 **/
 	public static class DefaultComparator implements Comparator<PatientIdentifier>, Serializable {
-	
+
 		private static final long serialVersionUID = 1L;
 		
 		@Override
@@ -366,7 +366,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 			return retValue;
 		}
 	}
-
+	
 	/**
 	 * Gets patient program associated to the identifier in context
 	 * @since 2.6.0
