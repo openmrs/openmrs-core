@@ -113,7 +113,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	
 	/**
 	 * Convenience constructor for creating a basic identifier
-	 * 
+	 *
 	 * @param identifier String identifier
 	 * @param type PatientIdentifierType
 	 * @param location Location of the identifier
@@ -129,7 +129,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	 * {@link #equals(Object)} in that this method compares the inner fields of each identifier for
 	 * equality. Note: Null/empty fields on <code>otherIdentifier</code> /will not/ cause a false
 	 * value to be returned
-	 * 
+	 *
 	 * @param otherIdentifier PatientiIdentifier with which to compare
 	 * @return boolean true/false whether or not they are the same names
 	 */
@@ -349,7 +349,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 				}
 				if (retValue == 0) {
 					retValue = OpenmrsUtil.compareWithNullAsGreatest(pi1.getIdentifierType().getPatientIdentifierTypeId(),
-						pi2.getIdentifierType().getPatientIdentifierTypeId());
+					pi2.getIdentifierType().getPatientIdentifierTypeId());
 				}
 				if (retValue == 0) {
 					retValue = OpenmrsUtil.compareWithNullAsGreatest(pi1.getIdentifier(), pi2.getIdentifier());
@@ -366,7 +366,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 			return retValue;
 		}
 	}
-	
+
 	/**
 	 * Gets patient program associated to the identifier in context
 	 * @since 2.6.0
