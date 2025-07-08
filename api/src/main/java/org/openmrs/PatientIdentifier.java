@@ -49,7 +49,7 @@ import javax.persistence.Table;
  * are anything from medical record numbers, to social security numbers, to driver's licenses. The
  * type of identifier is defined by the PatientIdentifierType. A PatientIdentifier also contains a
  * Location.
- * 
+ *
  * @see org.openmrs.PatientIdentifierType
  */
 @Entity
@@ -72,7 +72,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	@Column(name = "patient_identifier_id")
 	@DocumentId
 	private Integer patientIdentifierId;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "patient_id")
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
