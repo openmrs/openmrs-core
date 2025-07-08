@@ -349,7 +349,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 				}
 				if (retValue == 0) {
 					retValue = OpenmrsUtil.compareWithNullAsGreatest(pi1.getIdentifierType().getPatientIdentifierTypeId(),
-						pi2.getIdentifierType().getPatientIdentifierTypeId());
+					pi2.getIdentifierType().getPatientIdentifierTypeId());
 				}
 				if (retValue == 0) {
 					retValue = OpenmrsUtil.compareWithNullAsGreatest(pi1.getIdentifier(), pi2.getIdentifier());
