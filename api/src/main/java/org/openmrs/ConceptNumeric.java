@@ -17,12 +17,19 @@ import java.util.TreeSet;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.envers.Audited;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
 /**
  * The ConceptNumeric extends upon the Concept object by adding some number range values
  * 
  * @see Concept
  */
 @Audited
+@Entity
+@Table(name = "concept_numeric")
 public class ConceptNumeric extends Concept {
 	
 	public static final long serialVersionUID = 47323L;
@@ -45,6 +52,7 @@ public class ConceptNumeric extends Concept {
 	
 	private Boolean allowDecimal = false;
 	
+	@OneToMany(mappedBy = "conceptNumeric", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<ConceptReferenceRange> referenceRanges;
 	
 	/**
