@@ -238,8 +238,11 @@ public class DaemonTest extends BaseContextSensitiveTest {
 			Thread another = Daemon.runInNewDaemonThread(() -> {
 				this.wasRun = true;
 			});
-			
-			another.join();
+
+			// Wait for at least 10s to execute
+			another.join(10000);
+			// Assert it completed
+			assertThat(another.getState(), is(Thread.State.TERMINATED));
 		}
 	}
 
