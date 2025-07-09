@@ -64,6 +64,8 @@
 
 	<bean class="org.openmrs.api.impl.GlobalLocaleList" id="globalLocaleList"/>
 
+	<bean class="org.openmrs.config.OpenmrsServiceConfig" id="serviceConfig"/>
+
 	<!--  **************************  EVENT LISTENERS ***************************** -->
 
 	<!--  Clear out the global property listeners list first -->
@@ -136,11 +138,6 @@
 	<bean id="contextDAO" class="org.openmrs.api.db.hibernate.HibernateContextDAO">
 		<property name="sessionFactory" ref="sessionFactory"/>
 		<property name="userDAO" ref="userDAO"/>
-	</bean>
-
-	<bean id="patientDAO" class="org.openmrs.api.db.hibernate.HibernatePatientDAO">
-		<property name="sessionFactory" ref="sessionFactory"/>
-		<property name="searchSessionFactory" ref="searchSessionFactory"/>
 	</bean>
 	<bean id="personDAO" class="org.openmrs.api.db.hibernate.HibernatePersonDAO">
 		<property name="sessionFactory" ref="sessionFactory"/>
@@ -223,19 +220,6 @@
 		Note that we have circular dependency between service and context object.
 		There's nothing we could do about this.  
 	-->
-	<bean id="patientServiceTarget" class="org.openmrs.api.impl.PatientServiceImpl">
-		<property name="patientDAO" ref="patientDAO"/>
-		<property name="identifierValidators">
-			<map>
-				<entry key="org.openmrs.patient.impl.LuhnIdentifierValidator">
-					<bean class="org.openmrs.patient.impl.LuhnIdentifierValidator"/>
-				</entry>
-				<entry key="org.openmrs.patient.impl.VerhoeffIdentifierValidator">
-					<bean class="org.openmrs.patient.impl.VerhoeffIdentifierValidator"/>
-				</entry>
-			</map>
-		</property>
-	</bean>
 	<bean id="personServiceTarget" class="org.openmrs.api.impl.PersonServiceImpl">
 		<property name="personDAO" ref="personDAO"/>
 	</bean>
@@ -364,13 +348,6 @@
 		<property name="useCodeAsDefaultMessage" value="true"/>
 		<property name="cacheSeconds" value="5"/>
 		<property name="defaultEncoding" value="UTF-8"/>
-	</bean>
-
-	<bean id="patientService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="target" ref="patientServiceTarget"/>
-		<property name="preInterceptors" ref="serviceInterceptors"/>
-		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
 	</bean>
 	<bean id="personService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager" ref="transactionManager"/>
