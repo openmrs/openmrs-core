@@ -12,21 +12,14 @@ package org.openmrs.notification;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import java.util.ArrayList;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-
-
+import java.util.ArrayList;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.TemplateDAO;
 import org.openmrs.api.UserService;
-
-
 import org.openmrs.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,12 +33,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.openmrs.notification.impl.MessageServiceImpl;
 import org.openmrs.notification.mail.MailMessageSender;
-
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.lenient;
+import static org.junit.Assert.assertNotNull;
+
 // Mockito static imports
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -60,7 +53,8 @@ import static org.mockito.Mockito.times;
     "classpath:applicationContext-service.xml",
     "classpath*:openmrs-servlet.xml",
     "classpath*:moduleApplicationContext.xml",
-    "classpath*:TestingApplicationContext.xml"
+    "classpath*:TestingApplicationContext.xml",
+	"classpath:/applicationContext-test.xml"
 })
 public class MessageServiceTest extends BaseContextSensitiveTest {
 
