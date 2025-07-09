@@ -7,11 +7,14 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.serialization;
+package org.openmrs.api.impl;
 
+import org.openmrs.api.DomainService;
 import org.openmrs.api.OpenmrsService;
+import org.openmrs.serialization.UuidReferenceModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -22,8 +25,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * {@code DomainService} is a central utility that provides runtime lookup of 
- * {@link org.openmrs.OpenmrsObject} instances using their UUIDs.
+ * {@code DomainServiceImpl}, an implementaion of {@code DomainService}, is a central utility that 
+ * provides runtime lookup of {@link org.openmrs.OpenmrsObject} instances using their UUIDs.
  * <p>
  * It dynamically inspects all registered {@link OpenmrsService} beans to identify
  * public methods of the form {@code getXByUuid(String uuid)}, and maps their
@@ -33,23 +36,28 @@ import java.util.Set;
  * This is particularly useful for deserialization scenarios where a UUID string
  * needs to be resolved into a fully initialized domain object (e.g., during JSON parsing).
  *
+ * @see DomainService
  * @see UuidReferenceModule
  */
-@Component("domainService")
-public class DomainService {
+@Transactional
+@Component("domainServiceTarget")
+public class DomainServiceImpl extends BaseOpenmrsService implements DomainService {
 
     private final Map<Class<?>, DomainFetcher> domainFetchers = new HashMap<>();
 
     /**
-     * Constructs the {@code DomainService} and scans the provided OpenMRS services
+     * Constructs the {@code DomainService} and scans the dynamically provided OpenMRS services
      * for eligible {@code getXByUuid(String)} methods to populate the internal lookup.
      *
      * @param services the list of all available {@code OpenmrsService} implementations
      */
     @Autowired
-    public DomainService(List<OpenmrsService> services) {
+    public DomainServiceImpl(List<OpenmrsService> services) {
         if (services != null) {
             for (OpenmrsService service : services) {
+                if (this.getClass().isAssignableFrom(service.getClass())) {
+                    continue;
+                }
                 for (Method method : service.getClass().getMethods()) {
                     if (method.getName().startsWith("get") &&
                         method.getName().endsWith("ByUuid") &&
@@ -76,6 +84,7 @@ public class DomainService {
      * @throws RuntimeException if no fetcher exists for the given type
      * @throws ClassCastException if the fetched object is not of the expected type
      */
+    @Transactional(readOnly = true)
     public <T> T fetchByUuid(Class<T> type, String uuid) {
         Object result = null;
 
