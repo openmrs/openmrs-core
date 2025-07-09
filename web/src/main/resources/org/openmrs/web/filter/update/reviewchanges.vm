@@ -1,245 +1,255 @@
 #parse($HEADER_TEMPLATE)
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
 <script>
-	var lastIndex = 0;
-	var numberUnsuccessfulJQueryAttempts = 0;
-	var isDisplayingWarnings = false;
+    const notyf = new Notyf({
+        duration: 5000,
+        ripple: true,
+        position: { x: 'right', y: 'top' },
+        types: [
+            {
+                type: 'success',
+                background: '#246b63',
+                icon: {
+                    className: 'fas fa-check',
+                    tagName: 'i',
+                    text: ''
+                }
+            },
+            {
+                type: 'error',
+                background: '#d32f2f',
+                icon: {
+                    className: 'fas fa-times',
+                    tagName: 'i',
+                    text: ''
+                }
+            },
+            {
+                type: 'warning',
+                background: '#f9a825',
+                icon: {
+                    className: 'fas fa-exclamation-triangle',
+                    tagName: 'i',
+                    text: ''
+                }
+            }
+        ]
+    });
 
-	function showProgress() {
-		// schedule the next update check first so we're sure it happens (in case an error occurs)
-		// only check the server again if the last post was successful
-		// (assumes checking the server takes less than 1 second)
-		if (numberUnsuccessfulJQueryAttempts < 5) {
-			setTimeout("showProgress()", 1000);
-			numberUnsuccessfulJQueryAttempts += 1; // this is to be reset in the jquery.post success func callback
-		} else {
-			window.location = "index.htm";
-		}
+    var lastIndex = 0;
+    var numberUnsuccessfulJQueryAttempts = 0;
+    var isDisplayingWarnings = false;
+    var hasShownSuccessToast = false;
 
-		jQuery.post("${setupPageUrl}", { page: "updateProgress.vm.ajaxRequest" }, function (data) {
-			numberUnsuccessfulJQueryAttempts = 0;
+    // schedule the next update check first so we're sure it happens (in case an error occurs)
+    // only check the server again if the last post was successful
+    // (assumes checking the server takes less than 1 second)
+    function showProgress() {
+        if (numberUnsuccessfulJQueryAttempts < 5) {
+            setTimeout("showProgress()", 1000);
+            numberUnsuccessfulJQueryAttempts += 1; // this is to be reset in the jquery.post success func callback
+        } else {
+            notyf.error("Too many failed attempts. Redirecting...");
+            setTimeout(() => window.location = "index.htm", 3000);
+            return;
+        }
 
-			// jQuery("#log").html(jQuery("#log").html() + " in post method.");
+        jQuery.post("${setupPageUrl}", { page: "updateProgress.vm.ajaxRequest" }, function (data) {
+            numberUnsuccessfulJQueryAttempts = 0;
+
+            // jQuery("#log").html(jQuery("#log").html() + " in post method.");
 
 			/*If we have any warnings from the database update, show them*/
-			if (data != null && data.hasWarnings) {
-				jQuery("#hiddenInputs").show();
-				jQuery("#warnings").html(data.updateWarnings);
-				jQuery("#updateWarnings").show();
-				jQuery("#warningsAlert").show();
-				jQuery("#updateLogFile").html(data.updateLogFile);
-				isDisplayingWarnings = true;
-			}
+            if (data && data.hasWarnings) {
+                jQuery("#warningPane").show();
+                jQuery("#warnings").html(data.updateWarnings);
+                jQuery("#updateLogFile").html(data.updateLogFile);
+                if (!isDisplayingWarnings) {
+                    notyf.warning("Warnings detected during update.");
+                    isDisplayingWarnings = true;
+                }
+            }
 
-			if (data == null || !data.updatesRequired) {
-				if (isDisplayingWarnings == true) {
-					// jQuery("#log").html(jQuery("#log").html() + " not redirecting now");
-					return;
-				}
+            if (data == null || !data.updatesRequired) {
+                if (!isDisplayingWarnings && !hasShownSuccessToast) {
+                    notyf.success("Database update completed successfully!");
+                    jQuery("#successPane").show();
+                    hasShownSuccessToast = true;
+                }
+                return;
+            }
 
-				// jQuery("#log").html(jQuery("#log").html() + " redirecting now");
-				window.location = "index.htm";
-				return;
-			}
+            if (data.hasErrors) {
+                notyf.error("An error occurred. Reloading...");
+                window.location = "${setupPageUrl}";
+                return;
+            }
 
-			if (data.hasErrors) {
-				window.location = "${setupPageUrl}";
-				return;
-			}
+            jQuery("#lastActionMessage").html(data.message);
 
-			jQuery("#lastActionMessage").html(data.message);
+            for (var x = lastIndex; x < data.changesetIds.length; x++) {
+                let id = data.changesetIds[x];
+                jQuery("#" + id + "loading").hide();
+                jQuery("#" + id + "checkmark").show();
+            }
 
-			/* put checkmarks next to all executed changesets except the last one (the last one is currently executing) */
-			for (var x = lastIndex; x < data.changesetIds.length; x++) {
-				var changesetId = data.changesetIds[x];
-				jQuery("#" + changesetId + "loading").hide();
-				jQuery("#" + changesetId + "checkmark").show();
-			}
+            lastIndex = data.changesetIds.length - 1;
+            jQuery("#" + data.executingChangesetId + "checkmark").hide();
+            jQuery("#" + data.executingChangesetId + "loading").show();
 
-			/* save the last point in the list for next time */
-			lastIndex = data.changesetIds.length - 1;
+            jQuery("#logLinesDiv").show();
+            let log = "";
+            for (let i = 0; i < data.logLines.length; i++) {
+                log += data.logLines[i] + "<br/>";
+            }
+            jQuery("#logLines").html(log);
+        }, "json");
+    }
 
-			/* show the loading image next to the last changeset because that one is currently executing */
-			jQuery("#" + data.executingChangesetId + "checkmark").hide();
-			jQuery("#" + data.executingChangesetId + "loading").show();
-
-			jQuery("#logLinesDiv").show();
-			var logLines = "";
-			for (var i = 0; i < data.logLines.length; i++) {
-				logLines += data.logLines[i] + "<br />";
-			}
-			jQuery("#logLines").html(logLines);
-
-		}, "json");
-	}
-
-	#if($updateJobStarted == true)
-	jQuery(function () { showProgress(); });
-	#end
+    #if($updateJobStarted == true)
+    jQuery(function () { showProgress(); });
+    #end
 </script>
 <style>
-    .update-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 20px;
+    body {
+        background-color: #f4f8fb;
         font-family: "Roboto", sans-serif;
     }
 
-    .status-message {
-        background-color: #f0f0f0;
-        color:rgb(14, 13, 13);
-        padding: 15px;
-        border-radius: 5px;
+    .container {
+        max-width: 720px;
+        margin: 40px auto;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+    }
+
+    .step-header {
+        font-size: 20px;
+        font-weight: bold;
         margin-bottom: 20px;
         text-align: center;
     }
 
-    .updates-table {
+    .notification {
+        padding: 15px 20px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+    }
+    
+    .notification.success {
+        background-color: #e6f4ea;
+        color: #2e7d32;
+        border: 1px solid #81c784;
+    }
+
+    .notification.warning {
+        background-color: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeeba;
+    }
+
+    .update-table {
         width: 100%;
-        max-width: 600px;
+        table-layout: fixed;
         border-collapse: collapse;
         margin-bottom: 20px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        border-radius: 5px;
-        overflow: hidden;
     }
 
-    .updates-table th, .updates-table td {
-        padding: 12px 15px;
-        text-align: left;
+    .update-table th,
+    .update-table td {
+        padding: 12px;
         border-bottom: 1px solid #ddd;
+        text-align: left;
+        vertical-align: top;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        white-space: normal;
     }
 
-    .updates-table th {
-        background-color: #f5f5f5;
-        font-weight: bold;
-        color:rgb(14, 13, 13);
+    .update-table th:nth-child(1),
+    .update-table td:nth-child(1) {
+        width: 5%;
     }
 
-    .updates-table tr:nth-child(even) {
-        background-color: #f9f9f9;
+    .update-table th:nth-child(2),
+    .update-table td:nth-child(2) {
+        width: 40%;
     }
 
-    .updates-table tr:last-child td {
-        border-bottom: none;
+    .update-table th:nth-child(3),
+    .update-table td:nth-child(3) {
+        width: 40%;
+    }
+
+    .update-table th:nth-child(4),
+    .update-table td:nth-child(4) {
+        width: 15%;
     }
 
     .status-icon {
-        width: 20px;
-        height: 20px;
+        width: 18px;
+        height: 18px;
         vertical-align: middle;
-        margin-right: 5px;
     }
 
-    .continue-button-container {
-        text-align: center;
+    .log-area {
+        background-color: #f6f8fa;
+        border-radius: 6px;
+        padding: 15px;
+        font-size: 14px;
+        color: #333;
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        white-space: pre-wrap;
         margin-bottom: 20px;
     }
 
-    .continue-button {
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 16px;
-    }
-
-    .continue-button:hover {
-        background-color: var(--openmrs-logo-color);
-    }
-
-    #updateWarnings {
-        background-color: #ffe0b2;
-        color:rgb(121, 85, 72);
-        padding: 15px;
-        border-radius: 5px;
-        margin-bottom: 20px;
-        border: 1px solid #ffc107;
-    }
-
-    #updateWarnings b {
-        font-weight: bold;
-    }
-
-    #updateLogFile {
-        padding-left: 15px;
-        margin-top: 10px;
-        font-size: 0.9em;
-        color:rgb(14, 13, 13);
-    }
-
-    #warningsAlert {
-        background-color: #ffdddd;
-        color: #d32f2f;
-        border: 1px solid #f44336;
-        padding: 10px;
-        border-radius: 5px;
-        text-align: center;
-        margin-bottom: 15px;
-    }
-
-    #hiddenInputs {
+    .button-group {
         text-align: center;
     }
 
-    #hiddenInputs .button {
-        background-color: #28a745;
+    .button {
+        background-color: #2e7d32;
         color: white;
         border: none;
-        padding: 10px 20px;
-        border-radius: 5px;
+        padding: 10px 25px;
+        border-radius: 4px;
+        font-size: 15px;
         cursor: pointer;
-        font-size: 16px;
     }
 
-    #hiddenInputs .button:hover {
-        background-color: #1e7e34;
+    .text-center {
+        text-align: center;
     }
 
-    #logLinesDiv {
-        background-color: #e9ecef;
-        padding: 15px;
-        border-radius: 5px;
-        margin-top: 20px;
-        font-size: 0.9em;
-        color: rgb(14, 13, 13);
-        overflow: auto;
-        max-height: 250px;
-        width: 100%;
-        max-width: 600px;
-        box-sizing: border-box;
-    }
-
-    #logLinesDiv b {
-        font-weight: bold;
-        display: block;
-        margin-bottom: 5px;
-    }
-
-    #logLines {
-        white-space: pre-wrap; /* Preserve line breaks */
+    .last-message {
+        font-style: italic;
+        color: #666;
+        margin-top: 15px;
     }
 </style>
-
 <form method="post" autocomplete="off">
     <input type="hidden" name="page" value="reviewchanges.vm" />
-
-    <div class="update-container">
-        <div class="status-message">
-            #if($isDatabaseUpdateInProgress)
-                $l10n.get("update.warn.anotherUser")
-            #else
-                #if ($updateJobStarted != true)
-                    $l10n.get("update.warn.updatesRequired")
-                #else
-                    $l10n.get("update.warn.updatesExecuted")
-                #end
-            #end
+    <div class="container">
+        <div class="step-header">
+            #if($isDatabaseUpdateInProgress) $l10n.get("update.warn.anotherUser") #else #if ($updateJobStarted != true) $l10n.get("update.warn.updatesRequired") #else $l10n.get("update.warn.updatesExecuted") #end #end
         </div>
-
-        <table class="updates-table">
+        <div id="warningPane" class="notification warning" style="display: none;">
+            <strong>$l10n.get("update.warn")</strong><br />
+            $l10n.get("update.warn.saved")<br />
+            <div id="updateLogFile"></div>
+            <div id="warnings"></div>
+        </div>
+        <div id="successPane" class="notification success" style="display: none;">
+            Database update completed successfully! You may now continue.
+        </div>
+        <table class="update-table">
             <thead>
                 <tr>
                     <th></th>
@@ -252,8 +262,8 @@
                 #foreach ($change in $changes)
                 <tr>
                     <td>
-                        <img id="${change.id}checkmark" src="images/checkmark.png" class="status-icon" style="display:none;" alt="Completed" />
-                        <img id="${change.id}loading" src="images/loading.gif" class="status-icon" style="display:none;" alt="Loading" />
+                        <img id="${change.id}checkmark" src="images/checkmark.png" class="status-icon" style="display: none;" alt="Done" />
+                        <img id="${change.id}loading" src="images/loading.gif" class="status-icon" style="display: none;" alt="Running" />
                     </td>
                     <td>${change.comments}</td>
                     <td>${change.description}</td>
@@ -262,41 +272,22 @@
                 #end
             </tbody>
         </table>
-
-        <div id="logLinesDiv" style="display: none;">
-            <b>$l10n.get("install.progress.server.log")</b>
+        <div id="logLinesDiv" class="log-area" style="display: none;">
+            <strong>$l10n.get("install.progress.server.log")</strong><br />
             <div id="logLines"></div>
         </div>
-
+        <div id="lastActionMessage" class="text-center last-message"></div>
         #if ($updateJobStarted != true && $isDatabaseUpdateInProgress != true)
-        <div class="continue-button-container">
-            <input type="image" src="images/forward_button.png" name="continue" class="continue-button" alt="Continue" />
+        <div class="button-group">
+            <input type="image" src="images/forward_button.png" name="continue" class="button" alt="Continue" />
+        </div>
+        #else
+        <div class="button-group" style="margin-top: 20px;">
+            <button class="button" type="button" onclick="window.location='index.htm'">
+                $l10n.get("general.continue")
+            </button>
         </div>
         #end
-
-        <div id="updateWarnings" style="display: none;">
-            <b>$l10n.get("update.warn")</b>
-            <br />
-            <b>$l10n.get("update.warn.saved")</b>
-            <div id="updateLogFile"></div>
-            <div id="warnings"></div>
-        </div>
-
-        <div id="hiddenInputs" style="display: none;">
-            <div id="warningsAlert" style="display: none;">
-                $l10n.get("update.warn.alert")
-            </div>
-            <div>
-                <button class="button" onclick="javascript:window.location='index.htm'">
-                  <span class="button-text">$l10n.get('general.continue')</span>
-                </button>
-            </div>
-        </div>
-
-        <div id="lastActionMessage" style="margin-top: 15px; text-align: center; font-style: italic;"></div>
-
     </div>
 </form>
-
-<!-- div id="log">Used for debugging</div -->
 #parse($FOOTER_TEMPLATE)
