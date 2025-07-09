@@ -29,6 +29,7 @@
                         <span class="radio-text">$l10n.get("general.yes")</span>
                     </label>
                     <p class="option-description">$l10n.get("install.advanced.dbtables.user.login")</p>
+
                     <div class="form-group">
                         <label class="form-label">$l10n.get("install.advanced.dbsetup.instDb.userName")</label>
                         <input type="text" 
@@ -38,6 +39,7 @@
                                onfocus="clickRadio('current_database_user', 'yes')" 
                                onKeyPress="return submitenter(this,event);" />
                     </div>
+
                     <div class="form-group">
                         <label class="form-label">$l10n.get("install.simple.passwd")</label>
                         <input type="password" 
@@ -55,6 +57,7 @@
                         <input type="radio" name="current_database_user" value="no" #if( $hasCurrentDatabaseUser == false )checked="checked"#end/>
                         <span class="radio-text">$l10n.get("general.no")</span>
                     </label>
+
                     <p class="option-description">$l10n.get("install.advanced.dbtables.user.create")</p>
                     <div class="form-group">
                         <label class="form-label">$l10n.get("install.advanced.dbsetup.instDb.userName")</label>
@@ -98,6 +101,7 @@
         height: 100vh;
         overflow: hidden;
     }
+    
     .content-container {
         max-width: 800px;
         margin: 0 auto;
@@ -109,11 +113,13 @@
         overflow-y: auto;
         position: relative;
     }
+
     .form-container {
         display: flex;
         flex-direction: column;
         gap: 1.5rem;
     }
+
     .form-title {
         font-size: 1.3rem;
         font-weight: 500;
@@ -121,11 +127,13 @@
         margin-bottom: 0.5rem;
         text-align: center;
     }
+
     .form-subtitle {
         text-align: center;
         margin: 0 0 1.5rem;
         font-size: 0.95rem;
     }
+
     .form-section {
         display: flex;
         flex-direction: column;
@@ -134,18 +142,21 @@
         background: #f8f9fa;
         border-radius: 8px;
     }
+
     .section-title {
         font-size: 1.1rem;
         font-weight: 500;
         color: var(--text-color);
         margin-bottom: 1rem;
     }
+
     .radio-group {
         display: flex;
         justify-content: center;
         gap: 2rem;
         margin: 1rem 0;
     }
+
     .radio-option {
         display: flex;
         flex-direction: column;
@@ -155,30 +166,36 @@
         border-radius: 8px;
         border: 1px solid #e0e0e0;
     }
+
     .radio-label {
         display: flex;
         align-items: center;
         gap: 0.5rem;
         cursor: pointer;
     }
+
     .radio-text {
         font-weight: 500;
         color: var(--text-color);
     }
+
     .option-description {
         font-size: 0.9rem;
         margin: 0.5rem 0;
     }
+
     .form-group {
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
     }
+    
     .form-label {
         font-size: 1rem;
         font-weight: 500;
         color: var(--text-color);
     }
+
     .form-input {
         width: 100%;
         padding: 0.75rem;
@@ -188,11 +205,13 @@
         transition: all 0.3s ease;
         box-sizing: border-box;
     }
+
     .form-input:focus {
         outline: none;
         border-color: var(--primary-color);
         box-shadow: 0 0 0 2px rgba(242, 101, 34, 0.1);
     }
+
     .button-group {
         display: flex;
         justify-content: center;
@@ -204,6 +223,7 @@
         padding: 1rem 0;
         border-top: 1px solid #eee;
     }
+
     .button {
         display: flex;
         align-items: center;
@@ -220,26 +240,32 @@
         background: linear-gradient(to right, var(--openmrs-logo-color), var(--openmrs-logo-color));
         color: white;
     }
+
     .button-secondary {
         background: #f5f5f5;
         color: var(--text-color);
     }
+
     .button:hover {
         transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
+
     .button-icon {
         font-size: 1.2rem;
     }
+
     @media (max-width: 768px) {
         .content-container {
             margin: 1rem;
             padding: 1.5rem;
         }
+
         .radio-group {
             flex-direction: column;
             gap: 1rem;
         }
+
         .button-group {
             flex-direction: column;
         }
