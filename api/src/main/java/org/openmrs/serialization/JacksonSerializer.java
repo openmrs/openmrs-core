@@ -171,8 +171,9 @@ public class JacksonSerializer implements OpenmrsSerializer {
 				// Convert dot-style wildcard pattern to regex
 				String regex = pattern
 					.replace(".", "\\.")
-					.replace("**", ".+")
-					.replace("*", "[^.]+");
+					.replace("**", "__DOUBLE_STAR__")   // Temporary marker to prevent polution below
+					.replace("*", "[^.]*")              // Replace single *
+					.replace("__DOUBLE_STAR__", ".*");  // Restore correct **
 				return className.matches(regex);
 			}
 		} catch (ClassNotFoundException e) {
