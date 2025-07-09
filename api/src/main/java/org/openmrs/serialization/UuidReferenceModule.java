@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.openmrs.OpenmrsObject;
+import org.openmrs.api.DomainService;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
