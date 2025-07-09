@@ -167,6 +167,30 @@ public class JacksonSerializerTest extends BaseContextSensitiveTest {
     }
 
     @Test
+    public void deserialize_shouldSucceedIfClassMatchesMultipleMultiPackagesWildcardPattern() throws Exception {
+        // setup
+        adminService.saveGlobalProperty(
+            new GlobalProperty("jackson.serializer.whitelist.types",
+                "org.**.serialization.*"));
+        String deserializedFoo = "{\"attributeString\":\"deep\",\"attributeInt\":999,\"attributeList\":null,\"attributeMap\":null}";
+
+        // verify
+        assertDoesNotThrow(() -> serializer.deserialize(deserializedFoo, Foo.class));
+    }
+
+    @Test
+    public void deserialize_shouldThrowIfClassDoesNotMatcheMultipleMultiPackagesWildcardPattern() throws Exception {
+        // setup
+        adminService.saveGlobalProperty(
+            new GlobalProperty("jackson.serializer.whitelist.types",
+                "org.**.serialize.*"));
+        String deserializedFoo = "{\"attributeString\":\"deep\",\"attributeInt\":999,\"attributeList\":null,\"attributeMap\":null}";
+
+        // verify
+        assertThrows(SecurityException.class, () -> serializer.deserialize(deserializedFoo, Foo.class));
+    }
+
+    @Test
     public void deserialize_shouldThrowSecurityExceptionIfClassNotWhitelisted() throws Exception {
         // setup
         adminService.saveGlobalProperty(
