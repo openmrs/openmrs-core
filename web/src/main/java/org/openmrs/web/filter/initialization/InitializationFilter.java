@@ -19,6 +19,8 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -1435,11 +1437,24 @@ public class InitializationFilter extends StartupFilter {
 							setMessage("Create database");
 							setExecutingTask(WizardTask.CREATE_SCHEMA);
 							// connect via jdbc and create a database
-							String sql;
+							String sql = "";
 							if (isCurrentDatabase(DATABASE_MYSQL)) {
 								sql = "create database if not exists `?` default character set utf8";
 							} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
-								sql = "create database `?` encoding 'utf8'";
+								if (!databaseExistsInPostgres(wizardModel.databaseName, wizardModel.createDatabaseUsername, wizardModel.createDatabasePassword)) {
+									sql = "create database `?` encoding 'utf8'";
+									int result = executeStatement(false, wizardModel.createDatabaseUsername,
+										wizardModel.createDatabasePassword, sql, wizardModel.databaseName);
+									if (result < 0) {
+										reportError(ErrorMessageConstants.ERROR_DB_CREATE_NEW, DEFAULT_PAGE);
+										return;
+									} else {
+										wizardModel.workLog.add("Created database " + wizardModel.databaseName);
+										log.warn("Created database {}", wizardModel.databaseName);
+									}
+								} else {
+									log.warn("Database {} already exists, skipping creation.", wizardModel.databaseName);
+								}
 							} else if (isCurrentDatabase(DATABASE_H2)) {
 								sql = null;
 							} else {
@@ -2024,6 +2039,20 @@ public class InitializationFilter extends StartupFilter {
 			}
 		}
 		return prop;
+	}
+
+	private boolean databaseExistsInPostgres(String dbName, String user, String password) {
+		String query = "SELECT datname FROM pg_database WHERE datname = ?";
+		try (Connection conn = DriverManager.getConnection(DEFAULT_POSTGRESQL_CONNECTION, user, password);
+			 PreparedStatement stmt = conn.prepareStatement(query)) {
+			stmt.setString(1, dbName);
+			try (ResultSet rs = stmt.executeQuery()) {
+				return rs.next();
+			}
+		} catch (SQLException e) {
+			log.warn("Failed to check if PostgreSQL DB exists: {}", dbName, e);
+			return false;
+		}
 	}
 
 }
