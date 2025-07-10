@@ -17,12 +17,15 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
@@ -238,8 +241,10 @@ public class DaemonTest extends BaseContextSensitiveTest {
 			Thread another = Daemon.runInNewDaemonThread(() -> {
 				this.wasRun = true;
 			});
-			
-			another.join();
+
+			// another.join(10000); doesn't actually work as runInNewDaemonThread doesn't use the Thread object rather it
+			// only executes the run method. The only way to determine it completed is to wait for wasRun to return true.
+			await().atMost(10, TimeUnit.SECONDS).untilTrue(new AtomicBoolean(wasRun));
 		}
 	}
 
