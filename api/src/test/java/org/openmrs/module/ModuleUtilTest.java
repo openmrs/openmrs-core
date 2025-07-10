@@ -25,6 +25,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
@@ -42,7 +44,6 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
-import org.powermock.reflect.Whitebox;
 
 /**
  * Tests methods on the {@link org.openmrs.module.ModuleUtil} class
@@ -120,7 +121,7 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	        throws Exception {
 
 		final String currentVersion = "1.9.8";
-		Whitebox.setInternalState(OpenmrsConstants.class, "OPENMRS_VERSION_SHORT", currentVersion);
+		setFinalStaticField(OpenmrsConstants.class, "OPENMRS_VERSION_SHORT", currentVersion);
 		assertTrue(ModuleUtil.isOpenmrsVersionInVersions( currentVersion, "1.10.*"));
 	}
 
@@ -131,7 +132,7 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	public void isOpenmrsVersionInVersions_shouldReturnFalseIfCurrentOpenmrsVersionDoesNotMatchAnyElementInVersions()
 	        throws Exception {
 
-		Whitebox.setInternalState(OpenmrsConstants.class, "OPENMRS_VERSION_SHORT", "1.9.8");
+		setFinalStaticField(OpenmrsConstants.class, "OPENMRS_VERSION_SHORT", "1.9.8");
 		assertFalse(ModuleUtil.isOpenmrsVersionInVersions("1.11.*", "2.1.0"));
 	}
 
@@ -866,5 +867,18 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 			destinationFolder.mkdirs();
 		}
 		return destinationFolder;
+	}
+
+	private static void setFinalStaticField(Class<?> clazz, String fieldName, Object value) throws Exception {
+		Class<?> unsafeClass = Class.forName("sun.misc.Unsafe");
+		Field unsafeField = unsafeClass.getDeclaredField("theUnsafe");
+		unsafeField.setAccessible(true);
+		Object unsafe = unsafeField.get(null);
+
+		Field field = clazz.getDeclaredField(fieldName);
+		field.setAccessible(true);
+
+		unsafeClass.getMethod("putObjectVolatile", Object.class, long.class, Object.class)
+			.invoke(unsafe, clazz, unsafeClass.getMethod("staticFieldOffset", Field.class).invoke(unsafe, field), value);
 	}
 }
