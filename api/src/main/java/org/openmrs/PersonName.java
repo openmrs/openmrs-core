@@ -11,7 +11,7 @@ package org.openmrs;
 
 import static org.apache.commons.lang3.StringUtils.defaultString;
 
-import javax.persistence.Cacheable;
+import jakarta.persistence.Cacheable;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;

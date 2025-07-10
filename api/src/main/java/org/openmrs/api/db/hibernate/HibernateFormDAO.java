@@ -14,14 +14,15 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
+import jakarta.persistence.Query;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
@@ -432,9 +433,12 @@ public class HibernateFormDAO implements FormDAO {
 		Root<Form> root = cq.from(Form.class);
 		List<Predicate> predicates = getFormCriteria(cb, cq, root, partialName, published, encounterTypes, retired, containingAnyFormField,
 			containingAllFormFields, fields);
-		cq.where(predicates.toArray(new Predicate[]{}));
+		cq.where(predicates.toArray(new Predicate[]{})).distinct(false);
 
-		return sessionFactory.getCurrentSession().createQuery(cq).getResultList();
+		return sessionFactory.getCurrentSession()
+			.createQuery(cq)
+			.getResultStream()
+			.collect(Collectors.toList());
 	}
 	
 	/**

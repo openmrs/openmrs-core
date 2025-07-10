@@ -203,6 +203,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		}
 
 		if(refreshNeeded) {
+			Context.flushSession();
 			Context.refreshEntity(obs);
 		}
 		return obs;

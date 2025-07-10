@@ -11,10 +11,10 @@ package org.openmrs;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.Column;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MappedSuperclass;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.envers.Audited;
