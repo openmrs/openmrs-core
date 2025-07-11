@@ -180,6 +180,7 @@
 				<artifactId>commons-lang3</artifactId>
 				<version>3.18.0</version>
 			</dependency>
+               
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-core</artifactId>
@@ -438,6 +439,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter</artifactId>
+				<version>${junitVersion}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.junit.jupiter</groupId>
 				<artifactId>junit-jupiter-api</artifactId>
 				<version>${junitVersion}</version>
 			</dependency>
@@ -450,7 +456,6 @@
 				<groupId>org.junit.jupiter</groupId>
 				<artifactId>junit-jupiter-params</artifactId>
 				<version>${junitVersion}</version>
-				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.junit.vintage</groupId>
@@ -458,14 +463,14 @@
 				<version>${junitVersion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.mockito</groupId>
-				<artifactId>mockito-junit-jupiter</artifactId>
-				<version>${mockitoVersion}</version>
+			    <groupId>org.mockito</groupId>
+			    <artifactId>mockito-core</artifactId>
+			    <version>${mockitoVersion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.mockito</groupId>
-				<artifactId>mockito-core</artifactId>
-				<version>${mockitoVersion}</version>
+			    <groupId>org.mockito</groupId>
+			    <artifactId>mockito-junit-jupiter</artifactId>
+			    <version>${mockitoVersion}</version> 
 			</dependency>
 			<dependency>
 				<groupId>org.powermock</groupId>
@@ -566,15 +571,33 @@
 			</dependency>
 			<dependency>
 				<groupId>org.testcontainers</groupId>
+				<artifactId>testcontainers</artifactId>
+				<version>1.21.3</version>
+			</dependency>
+			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>junit-jupiter</artifactId>
+				<version>1.21.3</version>
+			</dependency>
+			<dependency>
+				<groupId>org.testcontainers</groupId>
 				<artifactId>mysql</artifactId>
 				<version>1.21.3</version>
-				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>postgresql</artifactId>
 				<version>1.21.3</version>
-				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>software.amazon.awssdk</groupId>
+				<artifactId>s3</artifactId>
+				<version>2.31.50</version>
+			</dependency>
+			<dependency>
+				<groupId>com.adobe.testing</groupId>
+				<artifactId>s3mock-testcontainers</artifactId>
+				<version>2.17.0</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
