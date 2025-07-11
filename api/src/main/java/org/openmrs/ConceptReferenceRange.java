@@ -49,7 +49,7 @@ public class ConceptReferenceRange extends BaseReferenceRange implements Openmrs
 	@Column(name = "criteria")
 	private String criteria;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne (fetch = FetchType.LAZY)
 	@JoinColumn(name = "concept_id", nullable = false)
 	private ConceptNumeric conceptNumeric;
 	
