@@ -92,6 +92,16 @@ mvn jetty:run
 
 If all goes well (check the console output) you can access the OpenMRS application at `localhost:8080/openmrs`.
 
+You can also specify a different port for jetty to run on:
+```bash
+mvn -Djetty.http.port=xxxx jetty:run
+```
+
+Alternatively, you can use cargo to run the application:
+```bash
+mvn -Dcargo.servlet.port=xxxx cargo:run
+```
+
 Refer to [Getting Started as a Developer - Maven](https://wiki.openmrs.org/display/docs/Maven) for some more information
 on useful Maven commands and build options.
 
