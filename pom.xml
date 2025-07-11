@@ -1189,6 +1189,48 @@
 					<footer>&lt;a href="https://www.openmrs.org" target=_top&gt;${project.name}&lt;/a&gt;</footer>
 				</configuration>
 			</plugin>
+
+			<plugin>
+    <groupId>com.mycila</groupId>
+    <artifactId>license-maven-plugin</artifactId>
+    <version>3.0</version>
+    <configuration>
+        <excludes>
+            <exclude>**/node_modules/**</exclude>
+            <exclude>**/changed-files.txt</exclude>
+            <exclude>**/pmd-bin-5.5.4/**</exclude>
+        </excludes>
+    </configuration>
+</plugin>
+<plugin>
+    <groupId>com.mycila</groupId>
+    <artifactId>license-maven-plugin</artifactId>
+    <version>3.0</version>
+    <configuration>
+        <excludes>
+            <exclude>node_modules/**</exclude>
+        </excludes>
+    </configuration>
+</plugin>
+
+  <plugins>
+    <plugin>
+      <groupId>com.mycila</groupId>
+      <artifactId>license-maven-plugin</artifactId>
+      <version>3.0</version>
+      <configuration>
+        <excludes>
+          <exclude>node_modules/**</exclude>
+          <exclude>pmd-bin-5.5.4/**</exclude>
+          <exclude>changed-files.txt</exclude>
+        </excludes>
+      </configuration>
+    </plugin>
+  </plugins>
+
+
+
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jxr-plugin</artifactId>
