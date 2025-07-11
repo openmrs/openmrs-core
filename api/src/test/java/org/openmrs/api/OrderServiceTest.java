@@ -41,6 +41,7 @@ import org.openmrs.FreeTextDosingInstructions;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.LocationAttributeType;
+import org.openmrs.api.db.LoginCredential;
 import org.openmrs.MedicationDispense;
 import org.openmrs.Obs;
 import org.openmrs.Order;
@@ -2733,6 +2734,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.addAnnotatedClass(ConceptMapType.class)
 			.addAnnotatedClass(Relationship.class)
 			.addAnnotatedClass(Location.class)
+			.addAnnotatedClass(LoginCredential.class)
 			.addAnnotatedClass(PersonAddress.class)
 			.addAnnotatedClass(PersonAttributeType.class)
 			.addAnnotatedClass(User.class)
