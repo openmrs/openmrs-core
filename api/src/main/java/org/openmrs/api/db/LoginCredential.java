@@ -37,18 +37,18 @@ import org.openmrs.util.Security;
 @Entity
 @Table(name = "users")
 public class LoginCredential extends BaseOpenmrsObject implements OpenmrsObject {
-		
+	
 	@Id
 	@Column(name = "user_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer userId;
-		
+	
 	@Column(name = "password")
 	private String hashedPassword;
-		
+	
 	@Column(name = "salt")
 	private String salt;
-		
+	
 	@Column(name = "secret_question")
 	private String secretQuestion;
 	
@@ -65,7 +65,7 @@ public class LoginCredential extends BaseOpenmrsObject implements OpenmrsObject 
 	
 	@Column(name = "activation_key")
 	private String activationKey;
-		
+	
 	public LoginCredential() {
 	}
 	
