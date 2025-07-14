@@ -495,8 +495,8 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	 * @see org.openmrs.api.LocationService#saveAddressTemplate(String)
 	 */
 	@Override
-	public void saveAddressTemplate(String template) throws APIException {
-		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE, template);
+	public void saveAddressTemplate(String xml) throws APIException {
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE, xml);
 		
 	}
 	

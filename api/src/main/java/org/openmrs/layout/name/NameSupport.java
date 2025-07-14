@@ -59,9 +59,9 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 		}
 		Context.getAdministrationService().addGlobalPropertyListener(singleton);
 		// Get configured name template to override the existing one if any
-		String layoutTemplate = Context.getAdministrationService().getGlobalProperty(
+		String layoutTemplateXml = Context.getAdministrationService().getGlobalProperty(
 			OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_TEMPLATE);
-		NameTemplate nameTemplate = deserializeTemplate(layoutTemplate);
+		NameTemplate nameTemplate = deserializeXmlTemplate(layoutTemplateXml);
 		
 		if (nameTemplate != null) {
 			updateLayoutTemplates(nameTemplate);
@@ -87,13 +87,13 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 	/**
 	 * @return Returns the defaultLayoutFormat
 	 */
-	private NameTemplate deserializeTemplate(String template) {
+	private NameTemplate deserializeXmlTemplate(String xml) {
 		NameTemplate nameTemplate = null;
-		if (StringUtils.isBlank(template)) {
+		if (StringUtils.isBlank(xml)) {
 			return null;
 		}
 		try {
-			nameTemplate = Context.getSerializationService().getDefaultSerializer().deserialize(StringEscapeUtils.unescapeXml(template),
+			nameTemplate = Context.getSerializationService().getDefaultSerializer().deserialize(StringEscapeUtils.unescapeXml(xml),
 				NameTemplate.class);
 		} catch (Exception e) {
 			log.error("Error in deserializing provided name template", e);
@@ -123,7 +123,7 @@ public class NameSupport extends LayoutSupport<NameTemplate> implements GlobalPr
 	 */
 	@Override
 	public void globalPropertyChanged(GlobalProperty newValue) {
-		NameTemplate nameTemplate = deserializeTemplate(newValue.getPropertyValue());
+		NameTemplate nameTemplate = deserializeXmlTemplate(newValue.getPropertyValue());
 		if (nameTemplate != null) {
 			updateLayoutTemplates(nameTemplate);
 		}	

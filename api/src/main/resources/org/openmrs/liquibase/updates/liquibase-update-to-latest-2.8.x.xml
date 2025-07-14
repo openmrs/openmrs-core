@@ -97,7 +97,7 @@
 			CREATE FUNCTION UUID() RETURNS UUID LANGUAGE SQL AS $$ SELECT uuid_generate_v1() $$;
 		</sql>
 	</changeSet>
-	
+<<<<
 	<changeSet author="nathan" id="TRUNK-6351-1751556966243909">
 		<preConditions onFail="MARK_RAN" onFailMessage="Cannot update layout.address.format because the property does not exist.">
 			<sqlCheck expectedResult="1">
