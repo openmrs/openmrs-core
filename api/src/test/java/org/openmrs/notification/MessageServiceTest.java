@@ -67,7 +67,12 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 
 	private Object mockMailSender;
 
-        @BeforeEach
+    /**
+     * Initializes mocks and test data before each test method is run.
+     * It sets up the message service with mock dependencies and configures the
+     * test user context and template DAO.
+     */
+@BeforeEach
 public void runBeforeEachTest() {
     MockitoAnnotations.openMocks(this);
     mockSender = mock(MessageSender.class);
@@ -108,6 +113,11 @@ try {
     executeDataSet("org/openmrs/notification/include/MessageServiceTest-initial.xml");
 }
 
+    /**
+     * Verifies that a message is correctly created with all its fields populated.
+     *
+     * @throws MessageException if message creation fails
+     */
 	@Test
 	public void createMessage_shouldCreateMessageWithAllFields() throws MessageException {
 		// Arrange
@@ -134,6 +144,11 @@ try {
 		assertEquals(attachmentFileName, message.getAttachmentFileName());
 	}
 
+    /**
+     * Tests that the message sender successfully sends a basic message.
+     *
+     * @throws Exception if sending fails
+     */
     @Test
     public void sendMessage_shouldSendMessageSuccessfully() throws Exception {
         // Arrange
@@ -150,6 +165,11 @@ try {
         verify(mockSender, times(1)).send(message);
     }
 
+    /**
+     * Tests sending a message to a user and verifies that the mock sender is invoked.
+     *
+     * @throws Exception if sending fails
+     */
 	@Test
     public void sendMessage_shouldSendMessageToUser() throws Exception {
        // Arrange
@@ -166,7 +186,11 @@ try {
     verify(mockSender, times(1)).send(message);
 }
 
-
+ /**
+     * Ensures that the message service can prepare a message from a given template.
+     *
+     * @throws Exception if preparation fails
+     */
 @Test
 public void prepareMessage_shouldPrepareMessageFromTemplate() throws Exception {
     Template template = new Template();
@@ -188,7 +212,12 @@ public void prepareMessage_shouldPrepareMessageFromTemplate() throws Exception {
     assertEquals("user@example.com", message.getRecipients());
 }
 
-
+   /**
+     * Verifies that template variables are substituted correctly when preparing a message
+     * with dynamic data.
+     *
+     * @throws MessageException if message preparation fails
+     */
 @Test
 public void prepareMessageWithData_shouldPrepareMessageWithVariableSubstitution() throws MessageException {
     // Arrange
@@ -223,6 +252,11 @@ public void prepareMessageWithData_shouldPrepareMessageWithVariableSubstitution(
     assertEquals("Hello, John", message.getContent());
 }
 
+     /**
+     * Tests that the message service correctly retrieves a template by its ID.
+     *
+     * @throws MessageException if retrieval fails
+     */
 	 @Test
 public void getTemplate_shouldReturnTemplateById() throws MessageException {
     // Arrange
@@ -241,6 +275,11 @@ public void getTemplate_shouldReturnTemplateById() throws MessageException {
     assertEquals(templateId, template.getId());
 }
 
+     /**
+     * Ensures that templates can be retrieved by name using the message service.
+     *
+     * @throws MessageException if retrieval fails
+     */
 	@Test
 public void getTemplatesByName_shouldReturnTemplatesByName() throws MessageException {
     // Arrange
