@@ -1,12 +1,17 @@
 #parse($HEADER_TEMPLATE)
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css" />
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css"/>
 <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
 <script>
     const notyf = new Notyf({
         duration: 5000,
         ripple: true,
-        position: { x: 'right', y: 'top' },
+        position: {
+            x: 'right',
+            y: 'top'
+        },
         types: [
             {
                 type: 'success',
@@ -16,8 +21,7 @@
                     tagName: 'i',
                     text: ''
                 }
-            },
-            {
+            }, {
                 type: 'error',
                 background: '#d32f2f',
                 icon: {
@@ -25,8 +29,7 @@
                     tagName: 'i',
                     text: ''
                 }
-            },
-            {
+            }, {
                 type: 'warning',
                 background: '#f9a825',
                 icon: {
@@ -43,9 +46,9 @@
     var isDisplayingWarnings = false;
     var hasShownSuccessToast = false;
 
-    // schedule the next update check first so we're sure it happens (in case an error occurs)
-    // only check the server again if the last post was successful
-    // (assumes checking the server takes less than 1 second)
+    // schedule the next update check first so we're sure it happens (in case an error occurs) only
+    // check the server again if the last post was successful (assumes checking the server takes less
+    // than 1 second)
     function showProgress() {
         if (numberUnsuccessfulJQueryAttempts < 5) {
             setTimeout("showProgress()", 1000);
@@ -56,12 +59,14 @@
             return;
         }
 
-        jQuery.post("${setupPageUrl}", { page: "updateProgress.vm.ajaxRequest" }, function (data) {
+        jQuery.post("${setupPageUrl}", {
+            page: "updateProgress.vm.ajaxRequest"
+        }, function (data) {
             numberUnsuccessfulJQueryAttempts = 0;
 
             // jQuery("#log").html(jQuery("#log").html() + " in post method.");
 
-			/*If we have any warnings from the database update, show them*/
+            /*If we have any warnings from the database update, show them*/
             if (data && data.hasWarnings) {
                 jQuery("#warningPane").show();
                 jQuery("#warnings").html(data.updateWarnings);
@@ -109,7 +114,9 @@
     }
 
     #if($updateJobStarted == true)
-    jQuery(function () { showProgress(); });
+    jQuery(function () {
+        showProgress();
+    });
     #end
 </script>
 <style>
@@ -139,7 +146,7 @@
         border-radius: 6px;
         margin-bottom: 20px;
     }
-    
+
     .notification.success {
         background-color: #e6f4ea;
         color: #2e7d32;
@@ -159,8 +166,8 @@
         margin-bottom: 20px;
     }
 
-    .update-table th,
-    .update-table td {
+    .update-table td,
+    .update-table th {
         padding: 12px;
         border-bottom: 1px solid #ddd;
         text-align: left;
@@ -171,23 +178,23 @@
         white-space: normal;
     }
 
-    .update-table th:nth-child(1),
-    .update-table td:nth-child(1) {
+    .update-table td:nth-child(1),
+    .update-table th:nth-child(1) {
         width: 5%;
     }
 
-    .update-table th:nth-child(2),
-    .update-table td:nth-child(2) {
+    .update-table td:nth-child(2),
+    .update-table th:nth-child(2) {
         width: 40%;
     }
 
-    .update-table th:nth-child(3),
-    .update-table td:nth-child(3) {
+    .update-table td:nth-child(3),
+    .update-table th:nth-child(3) {
         width: 40%;
     }
 
-    .update-table th:nth-child(4),
-    .update-table td:nth-child(4) {
+    .update-table td:nth-child(4),
+    .update-table th:nth-child(4) {
         width: 15%;
     }
 
@@ -202,7 +209,6 @@
         border-radius: 6px;
         padding: 15px;
         font-size: 14px;
-        color: #333;
         max-height: 200px;
         overflow-y: auto;
         border: 1px solid #ccc;
@@ -215,7 +221,7 @@
     }
 
     .button {
-        background-color: #2e7d32;
+        background-color: #246B63;
         color: white;
         border: none;
         padding: 10px 25px;
@@ -230,64 +236,82 @@
 
     .last-message {
         font-style: italic;
-        color: #666;
         margin-top: 15px;
     }
 </style>
 <form method="post" autocomplete="off">
-    <input type="hidden" name="page" value="reviewchanges.vm" />
+    <input type="hidden" name="page" value="reviewchanges.vm"/>
     <div class="container">
         <div class="step-header">
-            #if($isDatabaseUpdateInProgress) $l10n.get("update.warn.anotherUser") #else #if ($updateJobStarted != true) $l10n.get("update.warn.updatesRequired") #else $l10n.get("update.warn.updatesExecuted") #end #end
+            #if($isDatabaseUpdateInProgress) $l10n.get("update.warn.anotherUser") #else #if ($updateJobStarted
+            != true) $l10n.get("update.warn.updatesRequired") #else $l10n.get("update.warn.updatesExecuted")
+            #end #end
+            </div>
+            <div id="warningPane" class="notification warning" style="display: none;">
+                <strong>$l10n.get("update.warn")</strong><br/>
+                $l10n.get("update.warn.saved")<br/>
+                <div id="updateLogFile"></div>
+                <div id="warnings"></div>
+            </div>
+            <div id="successPane" class="notification success" style="display: none;">
+                Database update completed successfully! You may now continue.
+            </div>
+            <table class="update-table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>$l10n.get("update.review.desc")</th>
+                        <th>$l10n.get("update.review.act")</th>
+                        <th>$l10n.get("update.review.auth")</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    #foreach ($change in $changes)
+                        <tr>
+                            <td>
+                                <img
+                                    id="${change.id}checkmark"
+                                    src="images/checkmark.png"
+                                    class="status-icon"
+                                    style="display: none;"
+                                    alt="Done"/>
+                                <img
+                                    id="${change.id}loading"
+                                    src="images/loading.gif"
+                                    class="status-icon"
+                                    style="display: none;"
+                                    alt="Running"/>
+                            </td>
+                            <td>${change.comments}</td>
+                            <td>${change.description}</td>
+                            <td>${change.author}</td>
+                        </tr>
+                    #end
+                </tbody>
+            </table>
+            <div id="logLinesDiv" class="log-area" style="display: none;">
+                <strong>$l10n.get("install.progress.server.log")</strong><br/>
+                <div id="logLines"></div>
+            </div>
+            <div id="lastActionMessage" class="text-center last-message"></div>
+            #if ($updateJobStarted != true && $isDatabaseUpdateInProgress != true)
+                <div class="button-group">
+                    <button id="continue" name="continue" class="button" type="submit">$l10n.get("general.continue")
+                    </button>
+                </div>
+            #else
+                <div class="button-group" style="margin-top: 20px;">
+                    <button
+                        id="continueButton"
+                        class="button"
+                        type="button"
+                        onclick="window.location='index.htm'"
+                    >
+                        $l10n.get("general.continue")
+                    </button>
+                </div>
+            #end
         </div>
-        <div id="warningPane" class="notification warning" style="display: none;">
-            <strong>$l10n.get("update.warn")</strong><br />
-            $l10n.get("update.warn.saved")<br />
-            <div id="updateLogFile"></div>
-            <div id="warnings"></div>
-        </div>
-        <div id="successPane" class="notification success" style="display: none;">
-            Database update completed successfully! You may now continue.
-        </div>
-        <table class="update-table">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>$l10n.get("update.review.desc")</th>
-                    <th>$l10n.get("update.review.act")</th>
-                    <th>$l10n.get("update.review.auth")</th>
-                </tr>
-            </thead>
-            <tbody>
-                #foreach ($change in $changes)
-                <tr>
-                    <td>
-                        <img id="${change.id}checkmark" src="images/checkmark.png" class="status-icon" style="display: none;" alt="Done" />
-                        <img id="${change.id}loading" src="images/loading.gif" class="status-icon" style="display: none;" alt="Running" />
-                    </td>
-                    <td>${change.comments}</td>
-                    <td>${change.description}</td>
-                    <td>${change.author}</td>
-                </tr>
-                #end
-            </tbody>
-        </table>
-        <div id="logLinesDiv" class="log-area" style="display: none;">
-            <strong>$l10n.get("install.progress.server.log")</strong><br />
-            <div id="logLines"></div>
-        </div>
-        <div id="lastActionMessage" class="text-center last-message"></div>
-        #if ($updateJobStarted != true && $isDatabaseUpdateInProgress != true)
-        <div class="button-group">
-            <input type="image" src="images/forward_button.png" name="continue" class="button" alt="Continue" />
-        </div>
-        #else
-        <div class="button-group" style="margin-top: 20px;">
-            <button class="button" type="button" onclick="window.location='index.htm'">
-                $l10n.get("general.continue")
-            </button>
-        </div>
-        #end
-    </div>
-</form>
-#parse($FOOTER_TEMPLATE)
+    </form>
+    #parse($FOOTER_TEMPLATE)
+    
