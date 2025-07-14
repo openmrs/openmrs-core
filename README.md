@@ -97,7 +97,12 @@ You can also specify a different port for jetty to run on:
 mvn -Djetty.http.port=xxxx jetty:run
 ```
 
-Alternatively, you can use cargo to run the application:
+Alternatively, you can use Cargo to run the application on the default port:
+```bash
+mvn cargo:run
+```
+
+You can also specify a different port for Cargo to run on:
 ```bash
 mvn -Dcargo.servlet.port=xxxx cargo:run
 ```
