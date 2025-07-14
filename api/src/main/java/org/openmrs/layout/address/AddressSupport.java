@@ -55,9 +55,9 @@ public class AddressSupport extends LayoutSupport<AddressTemplate> implements Gl
 		if (!initialized) {
 			Context.getAdministrationService().addGlobalPropertyListener(singleton);
 			
-			String layoutTemplate = Context.getAdministrationService().getGlobalProperty(
+			String layoutTemplateXml = Context.getAdministrationService().getGlobalProperty(
 			    OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE);
-			setAddressTemplate(layoutTemplate);
+			setAddressTemplate(StringEscapeUtils.unescapeXml(layoutTemplateXml));
 			
 			List<String> specialTokens = new ArrayList<>();
 			specialTokens.add("address1");
@@ -105,9 +105,9 @@ public class AddressSupport extends LayoutSupport<AddressTemplate> implements Gl
 	public List<AddressTemplate> getAddressTemplate() {
 		if (layoutTemplates == null) {
 			try {
-				String addressTemplate = Context.getAdministrationService().getGlobalProperty(
+				String xml = Context.getAdministrationService().getGlobalProperty(
 				    OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE);
-				setAddressTemplate(StringEscapeUtils.unescapeXml(addressTemplate));
+				setAddressTemplate(xml);
 			}
 			catch (Exception ex) {
 				//The old AddressTemplate prevails
@@ -136,16 +136,16 @@ public class AddressSupport extends LayoutSupport<AddressTemplate> implements Gl
 			setAddressTemplate(newValue.getPropertyValue());
 		}
 		catch (Exception ex) {
-			log.error("Error in new global property value", ex);
+			log.error("Error in new xml global property value", ex);
 			setAddressTemplate(new ArrayList<>());
 		}
 	}
 	
-	private void setAddressTemplate(String template) {
+	private void setAddressTemplate(String xml) {
 		AddressTemplate addressTemplate;
 		try {
 			
-			addressTemplate = Context.getSerializationService().getDefaultSerializer().deserialize(StringEscapeUtils.unescapeXml(template),
+			addressTemplate = Context.getSerializationService().getDefaultSerializer().deserialize(StringEscapeUtils.unescapeXml(xml),
 			    AddressTemplate.class);
 		}
 		catch (SerializationException e) {
