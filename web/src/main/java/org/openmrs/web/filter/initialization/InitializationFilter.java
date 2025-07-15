@@ -82,6 +82,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
 
 import static org.openmrs.util.PrivilegeConstants.GET_GLOBAL_PROPERTIES;
+import static org.openmrs.web.filter.initialization.InitializationWizardModel.DEFAULT_MYSQL_CONNECTION;
+import static org.openmrs.web.filter.initialization.InitializationWizardModel.DEFAULT_POSTGRESQL_CONNECTION;
 
 /**
  * This is the first filter that is processed. It is only active when starting OpenMRS for the very
@@ -482,16 +484,25 @@ public class InitializationFilter extends StartupFilter {
 				renderTemplate(INSTALL_METHOD, referenceMap, httpResponse);
 				return;
 			}
-			wizardModel.databaseConnection = httpRequest.getParameter("database_connection");
+			
+			String databaseType = httpRequest.getParameter("database_type");
+			if (databaseType != null) {
+				wizardModel.databaseType = databaseType;
+				if (DATABASE_POSTGRESQL.equals(databaseType)) {
+					wizardModel.databaseConnection = DEFAULT_POSTGRESQL_CONNECTION;
+					String postgresUsername = httpRequest.getParameter("create_database_username");
+					wizardModel.createDatabaseUsername = StringUtils.hasText(postgresUsername) ? 
+						postgresUsername : Context.getRuntimeProperties().getProperty("connection.username", "postgres");
+				} else {
+					wizardModel.databaseConnection = DEFAULT_MYSQL_CONNECTION;
+					wizardModel.createDatabaseUsername = Context.getRuntimeProperties().getProperty("connection.username", 
+						wizardModel.createDatabaseUsername);
+				}
+			}
 
-			wizardModel.createDatabaseUsername = Context.getRuntimeProperties().getProperty("connection.username",
-				wizardModel.createDatabaseUsername);
-			
-			wizardModel.createUserUsername = wizardModel.createDatabaseUsername;
-			
 			wizardModel.databaseRootPassword = httpRequest.getParameter("database_root_password");
 			checkForEmptyValue(wizardModel.databaseRootPassword, errors, ErrorMessageConstants.ERROR_DB_PSDW_REQ);
-			
+			wizardModel.createUserUsername = wizardModel.createDatabaseUsername;
 			wizardModel.hasCurrentOpenmrsDatabase = false;
 			wizardModel.createTables = true;
 			// default wizardModel.databaseName is openmrs
@@ -2007,4 +2018,5 @@ public class InitializationFilter extends StartupFilter {
 		}
 		return prop;
 	}
+
 }

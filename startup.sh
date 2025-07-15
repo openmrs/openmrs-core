@@ -13,6 +13,12 @@ echo "Waiting for database to initialize..."
 
 /openmrs/wait-for-it.sh -t 3600 -h "${OMRS_DB_HOSTNAME}" -p "${OMRS_DB_PORT}"
 
+if [ "${OMRS_SEARCH}" = "elasticsearch" ]; then
+  echo "Waiting for elastic search to initialize..."
+  ELASTIC_SEARCH_HOST_PORT=(${OMRS_SEARCH_ES_URIS//// })
+  /openmrs/wait-for-it.sh -t 3600 "${ELASTIC_SEARCH_HOST_PORT[1]}" 
+fi
+
 TOMCAT_DIR="/usr/local/tomcat"
 TOMCAT_WEBAPPS_DIR="$TOMCAT_DIR/webapps"
 TOMCAT_WORK_DIR="$TOMCAT_DIR/work"
