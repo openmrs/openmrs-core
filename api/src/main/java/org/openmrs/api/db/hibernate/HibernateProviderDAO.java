@@ -32,6 +32,7 @@ import org.openmrs.PersonName;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
+import org.openmrs.ProviderRole;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ProviderDAO;
 import org.openmrs.util.OpenmrsConstants;
@@ -393,4 +394,14 @@ public class HibernateProviderDAO implements ProviderDAO {
 
 		return session.createQuery(cq).uniqueResult();
 	}
+
+	/**
+	 * @see org.openmrs.api.db.ProviderDAO#getProviderRole(Integer) 
+	 */
+	@Override
+	public ProviderRole getProviderRole(Integer providerRoleId) {
+		return sessionFactory.getCurrentSession().get(ProviderRole.class, providerRoleId);
+	}
+	
+	
 }
