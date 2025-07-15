@@ -29,6 +29,7 @@ import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.Condition;
 import org.openmrs.Diagnosis;
@@ -2753,6 +2754,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.addAnnotatedClass(VisitType.class)
 			.addAnnotatedClass(ProviderRole.class)
 			.addAnnotatedClass(Concept.class)
+			.addAnnotatedClass(ConceptNumeric.class)
 			.getMetadataBuilder().build();
 
 
