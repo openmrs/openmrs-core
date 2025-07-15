@@ -46,13 +46,20 @@
     var isDisplayingWarnings = false;
     var hasShownSuccessToast = false;
 
-    // schedule the next update check first so we're sure it happens (in case an error occurs) only
-    // check the server again if the last post was successful (assumes checking the server takes less
-    // than 1 second)
+    function enableContinueButton() {
+        const btn = document.getElementById("continueButton");
+        if (btn) btn.disabled = false;
+    }
+
+    function disableContinueButton() {
+        const btn = document.getElementById("continueButton");
+        if (btn) btn.disabled = true;
+    }
+
     function showProgress() {
         if (numberUnsuccessfulJQueryAttempts < 5) {
-            setTimeout("showProgress()", 1000);
-            numberUnsuccessfulJQueryAttempts += 1; // this is to be reset in the jquery.post success func callback
+            setTimeout(showProgress, 1000);
+            numberUnsuccessfulJQueryAttempts += 1;
         } else {
             notyf.error("Too many failed attempts. Redirecting...");
             setTimeout(() => window.location = "index.htm", 3000);
@@ -64,9 +71,6 @@
         }, function (data) {
             numberUnsuccessfulJQueryAttempts = 0;
 
-            // jQuery("#log").html(jQuery("#log").html() + " in post method.");
-
-            /*If we have any warnings from the database update, show them*/
             if (data && data.hasWarnings) {
                 jQuery("#warningPane").show();
                 jQuery("#warnings").html(data.updateWarnings);
@@ -82,6 +86,7 @@
                     notyf.success("Database update completed successfully!");
                     jQuery("#successPane").show();
                     hasShownSuccessToast = true;
+                    enableContinueButton();
                 }
                 return;
             }
@@ -115,6 +120,7 @@
 
     #if($updateJobStarted == true)
     jQuery(function () {
+        disableContinueButton();
         showProgress();
     });
     #end
@@ -230,6 +236,12 @@
         cursor: pointer;
     }
 
+    .button:disabled {
+        background-color: rgb(204, 204, 204) !important;
+        color: rgb(136, 136, 136) !important;
+        cursor: not-allowed !important;
+    }
+
     .text-center {
         text-align: center;
     }
@@ -294,24 +306,17 @@
                 <div id="logLines"></div>
             </div>
             <div id="lastActionMessage" class="text-center last-message"></div>
-            #if ($updateJobStarted != true && $isDatabaseUpdateInProgress != true)
-                <div class="button-group">
-                    <button id="continue" name="continue" class="button" type="submit">$l10n.get("general.continue")
-                    </button>
-                </div>
-            #else
-                <div class="button-group" style="margin-top: 20px;">
-                    <button
-                        id="continueButton"
-                        class="button"
-                        type="button"
-                        onclick="window.location='index.htm'"
-                    >
-                        $l10n.get("general.continue")
-                    </button>
-                </div>
-            #end
+            <div class="button-group" style="margin-top: 20px;">
+                <button
+                id="continueButton"
+                class="button"
+                type="#if($updateJobStarted || $isDatabaseUpdateInProgress)button#else submit#end"
+                #if($updateJobStarted || $isDatabaseUpdateInProgress)disabled="disabled"#end
+                #if($updateJobStarted || $isDatabaseUpdateInProgress)onclick="window.location='index.htm'"#else name="continue"#end
+                >
+                    $l10n.get("general.continue")
+                </button>
+            </div>
         </div>
     </form>
     #parse($FOOTER_TEMPLATE)
-    
