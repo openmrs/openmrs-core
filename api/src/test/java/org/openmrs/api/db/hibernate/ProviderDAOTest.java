@@ -11,6 +11,8 @@ package org.openmrs.api.db.hibernate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
@@ -70,5 +72,22 @@ public class ProviderDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void getProvidersByPerson_shouldReturnAllProvidersIfIncludeRetiredTrue() {
 		assertEquals(2, providerDao.getProvidersByPerson(personDao.getPerson(2), true).size());
+	}
+
+
+	/**
+	 * @see ProviderDAO#getProviderRole(Integer)
+	 */
+	@Test
+	public void getProviderRole_shouldReturnTheProviderRoleIfExists() {
+		assertNotNull(providerDao.getProviderRole(1003));
+	}
+
+	/**
+	 * @see ProviderDAO#getProviderRole(Integer)
+	 */
+	@Test
+	public void getProviderRole_shouldReturnNullIfNotExists() {
+		assertNull(providerDao.getProviderRole(200));
 	}
 }
