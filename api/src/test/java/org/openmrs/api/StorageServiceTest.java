@@ -45,6 +45,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.openmrs.api.storage.LocalStorageService;
 import org.openmrs.api.stream.StreamDataService;
+import org.openmrs.api.stream.StreamDataWriter;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -588,16 +589,17 @@ class StorageServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	void saveDataShouldNotCreateFileIfErrorOccursWhenCopyingData() {
-		assertThrows(IOException.class, () -> {
-			localStorageService.saveData((out) -> {
-				out.write(1);
-				throw new IOException("Failure during writing");
-				}, null, null,
-				"test");
-		});
+	void saveDataShouldNotCreateFileIfErrorOccursWhenCopyingData() throws IOException {
+		StreamDataWriter writer = (OutputStream outputStream) -> {
+			outputStream.write(1);
+			outputStream.flush();
+			throw new IOException("Failure during writing");
+		};
 
-		assertThat(localStorageService.exists("test"), is(false));
+		InputStream inputStream = streamService.streamData(writer, null);
+		assertThrows(IOException.class, () -> {
+			localStorageService.saveData(inputStream, null, null, "test");
+		});
 	}
 
 	@Test
