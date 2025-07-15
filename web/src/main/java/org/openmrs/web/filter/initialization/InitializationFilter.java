@@ -497,11 +497,11 @@ public class InitializationFilter extends StartupFilter {
 					wizardModel.databaseConnection = DEFAULT_MYSQL_CONNECTION;
 					wizardModel.createDatabaseUsername = Context.getRuntimeProperties().getProperty("connection.username", 
 						wizardModel.createDatabaseUsername);
-					checkForEmptyValue(wizardModel.databaseRootPassword, errors, ErrorMessageConstants.ERROR_DB_PSDW_REQ);
 				}
 			}
 
 			wizardModel.databaseRootPassword = httpRequest.getParameter("database_root_password");
+			checkForEmptyValue(wizardModel.databaseRootPassword, errors, ErrorMessageConstants.ERROR_DB_PSDW_REQ);
 			wizardModel.createUserUsername = wizardModel.createDatabaseUsername;
 			wizardModel.hasCurrentOpenmrsDatabase = false;
 			wizardModel.createTables = true;

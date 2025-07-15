@@ -17,6 +17,7 @@ import org.openmrs.Person;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
+import org.openmrs.ProviderRole;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Handler;
 import org.openmrs.util.PrivilegeConstants;
@@ -331,4 +332,13 @@ public interface ProviderService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.GET_PROVIDERS })
 	public Provider getUnknownProvider();
+
+	/**
+	 * Get a {@link ProviderRole} by its ID
+	 * @param providerRoleId
+	 * @return {@link ProviderRole}
+	 * @since 2.8.0
+	 */
+	@Authorized( { PrivilegeConstants.GET_PROVIDERS })
+	ProviderRole getProviderRole(Integer providerRoleId);
 }
