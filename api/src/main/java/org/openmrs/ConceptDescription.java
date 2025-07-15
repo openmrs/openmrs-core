@@ -11,6 +11,8 @@ package org.openmrs;
 
 import org.hibernate.envers.Audited;
 
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import java.util.Date;
 import java.util.Locale;
 
@@ -25,6 +27,8 @@ public class ConceptDescription extends BaseOpenmrsObject implements Auditable, 
 	// Fields
 	private Integer conceptDescriptionId;
 	
+	@ManyToOne(optional = false) 
+	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
 	
 	private String description;

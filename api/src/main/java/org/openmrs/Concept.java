@@ -170,8 +170,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	
 	@AllowDirectAccess
 	@AssociationInverseSide(inversePath = @ObjectPath({@PropertyValue(propertyName = "concept")}))
-	@OneToMany
-	@JoinColumn(name = "concept_id")
+	@OneToMany(mappedBy = "concept", cascade = CascadeType.ALL, orphanRemoval = true)
+	@BatchSize(size = 25)
 	private Collection<ConceptName> names;
 	
 	@AllowDirectAccess

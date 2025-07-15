@@ -18,6 +18,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -35,21 +36,28 @@ public class ConceptNumeric extends Concept {
 	public static final long serialVersionUID = 47323L;
 	
 	// Fields
-	
+	@Column(name = "HI_ABSOLUTE")
 	private Double hiAbsolute;
 	
+	@Column(name = "HI_CRITICAL")
 	private Double hiCritical;
 	
+	@Column(name = "HI_NORMAL")
 	private Double hiNormal;
 	
+	@Column(name = "LOW_ABSOLUTE")
 	private Double lowAbsolute;
 	
+	@Column(name = "LOW_CRITICAL")
 	private Double lowCritical;
 	
+	@Column(name = "LOW_NORMAL")
 	private Double lowNormal;
 	
+	@Column(name = "UNITS")
 	private String units;
 	
+	@Column(name = "ALLOW_DECIMAL")
 	private Boolean allowDecimal = false;
 	
 	@OneToMany(mappedBy = "conceptNumeric", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -59,6 +67,7 @@ public class ConceptNumeric extends Concept {
 	 * displayPrecision, represents the number of significant digits
 	 * to be used for display of a numeric value
 	 */
+	@Column(name = "DISPLAY_PRECISION")
 	private Integer displayPrecision;
 	
 	// Constructors
