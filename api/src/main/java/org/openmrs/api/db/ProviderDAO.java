@@ -17,6 +17,7 @@ import org.openmrs.Person;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
+import org.openmrs.ProviderRole;
 import org.openmrs.api.ProviderService;
 
 /**
@@ -130,4 +131,15 @@ public interface ProviderDAO {
 	 * @see ProviderService#getProviderByIdentifier(String)
 	 */
 	public Provider getProviderByIdentifier(String identifier);
+
+	/**
+	 * @see ProviderService#getProviderRole(Integer) 
+	 */
+	ProviderRole getProviderRole(Integer providerRoleId);
+
+	/**
+	 * @see ProviderService#getProviderRoleByUuid(String) 
+	 */	
+	ProviderRole getProviderRoleByUuid(String uuid);
+	
 }
