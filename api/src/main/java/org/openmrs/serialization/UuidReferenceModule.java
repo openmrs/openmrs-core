@@ -12,6 +12,7 @@ package org.openmrs.serialization;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.openmrs.OpenmrsObject;
@@ -83,6 +84,19 @@ public class UuidReferenceModule extends SimpleModule {
                     BeanDescription beanDesc,
                     List<BeanPropertyWriter> beanProperties) {
 
+                Map<String, BeanPropertyDefinition> propertyDefMap = beanDesc.findProperties().stream().collect(Collectors.toMap(BeanPropertyDefinition::getName, def -> def));
+                Iterator<BeanPropertyWriter> propIt = beanProperties.iterator();
+
+                while (propIt.hasNext()) {
+                    BeanPropertyWriter writer = propIt.next();
+                    BeanPropertyDefinition def = propertyDefMap.get(writer.getName());
+
+                    if (def == null || !def.hasField()) {
+                        // Exclude from serialization if there's no backing field
+                        propIt.remove();
+                        continue;
+                    }
+                }
                 for (int i = 0; i < beanProperties.size(); i++) {
                     BeanPropertyWriter original = beanProperties.get(i);
 
