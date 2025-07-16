@@ -312,4 +312,14 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	public ProviderRole getProviderRole(Integer providerRoleId) {
 		return dao.getProviderRole(providerRoleId);
 	}
+
+	/**
+	 * @see ProviderService#getProviderRoleByUuid(String)  
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public ProviderRole getProviderRoleByUuid(String uuid) {
+		return dao.getProviderRoleByUuid(uuid);
+	}
+	
 }
