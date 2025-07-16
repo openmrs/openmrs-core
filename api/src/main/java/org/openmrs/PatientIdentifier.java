@@ -43,6 +43,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 /**
  * A <code>Patient</code> can have zero to n identifying PatientIdentifier(s). PatientIdentifiers
@@ -68,8 +70,15 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	 * @since 1.5
 	 */
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "patient_identifier_id")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "patient_identifier_id_seq_generator")
+	@GenericGenerator(
+		name = "patient_identifier_id_seq_generator",
+		strategy = "native",
+		parameters = {
+			@Parameter(name = "sequence", value = "patient_identifier_patient_identifier_id_seq")
+		}
+	)
+	@Column(name = "patient_identifier_id", unique = true, nullable = false)
 	@DocumentId
 	private Integer patientIdentifierId;
 
