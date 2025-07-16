@@ -341,4 +341,14 @@ public interface ProviderService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.GET_PROVIDERS })
 	ProviderRole getProviderRole(Integer providerRoleId);
+
+	/**
+	 * Get a {@link ProviderRole} by its UUID
+	 * @param uuid The ProviderRole UUID
+	 * @return {@link ProviderRole}
+	 * @since 2.8.0
+	 */
+	@Authorized( { PrivilegeConstants.GET_PROVIDERS })
+	ProviderRole getProviderRoleByUuid(String uuid);
+	
 }
