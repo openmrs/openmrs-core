@@ -402,6 +402,13 @@ public class HibernateProviderDAO implements ProviderDAO {
 	public ProviderRole getProviderRole(Integer providerRoleId) {
 		return sessionFactory.getCurrentSession().get(ProviderRole.class, providerRoleId);
 	}
-	
-	
+
+	/**
+	 * @see org.openmrs.api.db.ProviderDAO#getProviderRoleByUuid(String)
+	 */
+	@Override
+	public ProviderRole getProviderRoleByUuid(String uuid) {
+		return getByUuid(uuid, ProviderRole.class);
+	}
+
 }

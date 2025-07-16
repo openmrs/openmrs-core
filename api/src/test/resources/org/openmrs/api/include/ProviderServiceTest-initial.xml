@@ -27,6 +27,7 @@
   <provider_attribute provider_attribute_id="321" provider_id="2" attribute_type_id="1" value_reference="2011-04-25" uuid="823382cd-5faa-4b57-8b34-fed33b9c8c65" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" />
 	
 	<provider_role provider_role_id="1003" name="Cell supervisor" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="db7f523f-27ce-4bb2-86d6-6d1d05312bd5"/>
+	<provider_role provider_role_id="1002" name="Binome supervisor" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="ea7f523f-27ce-4bb2-86d6-6d1d05312bd5"/>
 
 
 </dataset>
