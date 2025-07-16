@@ -90,4 +90,18 @@ public class ProviderDAOTest extends BaseContextSensitiveTest {
 	public void getProviderRole_shouldReturnNullIfNotExists() {
 		assertNull(providerDao.getProviderRole(200));
 	}
+
+	/**
+	 * @see ProviderDAO#getProviderRoleByUuid(String) 
+	 */
+	@Test
+	public void getProviderRoleByUuid_shouldReturnTheProviderRoleIfExists() {
+		assertNotNull(providerDao.getProviderRoleByUuid("db7f523f-27ce-4bb2-86d6-6d1d05312bd5"));
+	}
+	
+	@Test
+	public void getProviderRoleByUuid_shouldReturnNullIfNotExists() {
+		assertNull(providerDao.getProviderRoleByUuid("wrong-uuid"));
+	}
+	
 }
