@@ -90,6 +90,24 @@ cd openmrs-core/webapp
 mvn jetty:run
 ```
 
+To run Jetty on a custom port, use the `jetty.http.port` property:
+
+```bash
+mvn -Djetty.http.port=8081 jetty:run
+```
+
+To run on Cargo, use the `cargo:run` command:
+
+```bash
+mvn cargo:run
+```
+
+To run Cargo on a custom port, use the `cargo.servlet.port` property:
+
+```bash
+mvn -Dcargo.servlet.port=8081 cargo:run
+```
+
 If all goes well (check the console output) you can access the OpenMRS application at `localhost:8080/openmrs`.
 
 Refer to [Getting Started as a Developer - Maven](https://wiki.openmrs.org/display/docs/Maven) for some more information
