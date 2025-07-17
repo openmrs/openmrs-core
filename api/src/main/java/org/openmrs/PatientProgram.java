@@ -23,8 +23,6 @@ import javax.persistence.Column;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.JoinColumn;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.FetchType;
 import javax.persistence.CascadeType;
 
@@ -71,11 +69,9 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	private Location location;
 	
 	@Column(name = "date_enrolled")
-	@Temporal(TemporalType.TIMESTAMP)
 	private Date dateEnrolled;
 	
 	@Column(name = "date_completed")
-	@Temporal(TemporalType.TIMESTAMP)
 	private Date dateCompleted;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
