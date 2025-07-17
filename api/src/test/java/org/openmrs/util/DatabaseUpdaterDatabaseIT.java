@@ -14,7 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.liquibase.ChangeLogDetective;
 import org.openmrs.liquibase.ChangeLogVersionFinder;
-import org.powermock.reflect.Whitebox;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -48,9 +48,9 @@ public class DatabaseUpdaterDatabaseIT extends DatabaseIT {
 	
 	@Test
 	public void should() throws Exception {
-		
-		Whitebox.setInternalState(ChangeLogDetective.getInstance(), "initialSnapshotVersion", (Object)null);
-		Whitebox.setInternalState(ChangeLogDetective.getInstance(), "unrunLiquibaseUpdates", (Object)null);
+
+		ReflectionTestUtils.setField(ChangeLogDetective.getInstance(), "initialSnapshotVersion", (Object)null);
+		ReflectionTestUtils.setField(ChangeLogDetective.getInstance(), "unrunLiquibaseUpdates", (Object)null);
 		
 		ChangeLogVersionFinder changeLogVersionFinder = new ChangeLogVersionFinder();
 		Map<String, List<String>> snapshotCombinations = changeLogVersionFinder.getSnapshotCombinations();
