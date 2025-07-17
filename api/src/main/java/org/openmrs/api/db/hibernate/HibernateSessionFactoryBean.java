@@ -121,9 +121,6 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 	public void afterPropertiesSet() throws IOException {
 		log.debug("Configuring hibernate sessionFactory properties");
 		Properties config = getHibernateProperties();
-		packagesToScan.add("org.openmrs");
-		packagesToScan.addAll(getModulePackagesWithMappedClasses());
-		setPackagesToScan(packagesToScan.toArray(new String[0]));
 		
 		Properties moduleProperties = Context.getConfigProperties();
 		
