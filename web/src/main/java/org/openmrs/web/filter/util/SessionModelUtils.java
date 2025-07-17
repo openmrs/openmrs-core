@@ -13,7 +13,7 @@ import org.openmrs.web.filter.initialization.InitializationWizardModel;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 import java.lang.reflect.Field;
 import java.util.Enumeration;
 

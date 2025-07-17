@@ -333,7 +333,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @param fieldName name of the field to get the length for
 	 * @return the max field length of a property
 	 */
-	public int getMaximumPropertyLength(Class<? extends OpenmrsObject> aClass, String fieldName);
+	public long getMaximumPropertyLength(Class<? extends OpenmrsObject> aClass, String fieldName);
 	
 	/**
 	 * Performs validation in the manual flush mode to prevent any premature flushes.

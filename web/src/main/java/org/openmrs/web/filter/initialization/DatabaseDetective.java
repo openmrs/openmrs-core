@@ -54,9 +54,12 @@ public class DatabaseDetective {
 			
 			while (tbls.next()) {
 				String tableName = tbls.getString("TABLE_NAME");
-				//if any table exist besides "liquibasechangelog" or "liquibasechangeloglock", return false
-				if (!("liquibasechangelog".equals(tableName.toLowerCase()))
-				        && !("liquibasechangeloglock".equals(tableName.toLowerCase()))) {
+				String tableSchema = tbls.getString("TABLE_SCHEM");
+				String schema = tableSchema != null ? tableSchema.toLowerCase() : "";
+				
+				//if any public table exist besides "liquibasechangelog" or "liquibasechangeloglock", return false
+				if ((schema.isEmpty() || "public".equals(schema)) && !("liquibasechangelog".equalsIgnoreCase(tableName))
+				        && !("liquibasechangeloglock".equalsIgnoreCase(tableName))) {
 					return false;
 				}
 			}

@@ -11,10 +11,10 @@ package org.openmrs.web.filter;
 
 import java.io.IOException;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -39,8 +39,8 @@ public class GZIPFilter extends OncePerRequestFilter {
 	private String cachedGZipCompressedRequestForPathAccepted = null;
 	
 	/**
-	 * @see org.springframework.web.filter.OncePerRequestFilter#doFilterInternal(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse, javax.servlet.FilterChain)
+	 * @see org.springframework.web.filter.OncePerRequestFilter#doFilterInternal(jakarta.servlet.http.HttpServletRequest,
+	 *      jakarta.servlet.http.HttpServletResponse, jakarta.servlet.FilterChain)
 	 */
 	@Override
 	public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)

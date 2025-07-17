@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.Properties;
 
 import org.hibernate.dialect.MySQLDialect;
-import org.hibernate.dialect.PostgreSQL82Dialect;
+import org.hibernate.dialect.PostgreSQLDialect;
 import org.openmrs.api.context.Context;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -96,7 +96,7 @@ public class Containers {
     		System.setProperty("databaseUsername", USERNAME);
     		System.setProperty("databasePassword", PASSWORD);
     		System.setProperty("databaseDriver", postgres.getDriverClassName());
-    		System.setProperty("databaseDialect", PostgreSQL82Dialect.class.getName());
+    		System.setProperty("databaseDialect", PostgreSQLDialect.class.getName());
 			
     		createSchema();
         }

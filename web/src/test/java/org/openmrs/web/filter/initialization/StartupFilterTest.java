@@ -11,7 +11,7 @@ package org.openmrs.web.filter.initialization;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 import java.io.IOException;
 
 import org.junit.jupiter.api.BeforeEach;
