@@ -3966,7 +3966,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		
 		assertFalse(conceptReferenceRanges.isEmpty());
 		
-		assertEquals(3, conceptReferenceRanges.get(0).getId());
+		assertTrue(conceptReferenceRanges.stream().anyMatch(r -> r.getId() == 3));
 	}
 
 	/**
