@@ -46,11 +46,15 @@
 		   <groupId>org.junit.vintage</groupId>
 		   <artifactId>junit-vintage-engine</artifactId>
 	   </dependency>
-      <dependency>
+	   <dependency>
+		   <groupId>org.junit.jupiter</groupId>
+		   <artifactId>junit-jupiter-params</artifactId>
+	   </dependency>
+	   <dependency>
          <groupId>org.dbunit</groupId>
          <artifactId>dbunit</artifactId>
-      </dependency>
-		<dependency>	
+	   </dependency>
+	   <dependency>	
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
 		</dependency>
@@ -58,6 +62,10 @@
 		   <groupId>org.mockito</groupId>
 		   <artifactId>mockito-junit-jupiter</artifactId>
 	   </dependency>
+	   <dependency>
+		   <groupId>org.powermock</groupId>
+		   <artifactId>powermock-reflect</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.powermock</groupId>
 			<artifactId>powermock-module-junit4</artifactId>
@@ -78,6 +86,22 @@
 	   <dependency>
 		   <groupId>org.hamcrest</groupId>
 		   <artifactId>hamcrest</artifactId>
+	   </dependency>
+	   <dependency>
+		   <groupId>org.testcontainers</groupId>
+		   <artifactId>testcontainers</artifactId>
+	   </dependency>
+	   <dependency>
+		   <groupId>org.testcontainers</groupId>
+		   <artifactId>postgresql</artifactId>
+	   </dependency>
+	   <dependency>
+		   <groupId>org.testcontainers</groupId>
+		   <artifactId>mysql</artifactId>
+	   </dependency>
+	   <dependency>
+		   <groupId>org.testcontainers</groupId>
+		   <artifactId>junit-jupiter</artifactId>   
 	   </dependency>
    </dependencies>
 	
