@@ -1054,7 +1054,7 @@ public class ServiceContext implements ApplicationContextAware {
 	/**
 	 * Clears entire API cache.
 	 * 
-	 * @since 2.8.0, 2.7.5, 2.6.17, 2.5.15, 2.4.6
+	 * @since 2.8.0
 	 */
 	public void clearEntireApiCache() {
 		CacheManager apiCacheManager = getRegisteredComponent("apiCacheManager", CacheManager.class);
