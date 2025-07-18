@@ -122,106 +122,6 @@
                </systemProperties>
             </configuration>
          </plugin>
-         <plugin>
-		        <groupId>org.apache.tomcat.maven</groupId>
-		        <artifactId>tomcat7-maven-plugin</artifactId>
-		        <version>2.2</version>
-		        <configuration>
-		          <path>/${project.build.finalName}</path>
-		        </configuration>
-		        <dependencies>
-		          <dependency>
-		            <groupId>org.apache.tomcat.embed</groupId>
-		            <artifactId>tomcat-embed-core</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat</groupId>
-		            <artifactId>tomcat-util</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat</groupId>
-		            <artifactId>tomcat-coyote</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat</groupId>
-		            <artifactId>tomcat-api</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat</groupId>
-		            <artifactId>tomcat-jdbc</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat</groupId>
-		            <artifactId>tomcat-dbcp</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat</groupId>
-		            <artifactId>tomcat-servlet-api</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat</groupId>
-		            <artifactId>tomcat-jsp-api</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat</groupId>
-		            <artifactId>tomcat-jasper</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat</groupId>
-		            <artifactId>tomcat-jasper-el</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat</groupId>
-		            <artifactId>tomcat-el-api</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat</groupId>
-		            <artifactId>tomcat-catalina</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat</groupId>
-		            <artifactId>tomcat-tribes</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat</groupId>
-		            <artifactId>tomcat-catalina-ha</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat</groupId>
-		            <artifactId>tomcat-annotations-api</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat</groupId>
-		            <artifactId>tomcat-juli</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat.embed</groupId>
-		            <artifactId>tomcat-embed-logging-juli</artifactId>
-		            <version>9.0.0.M6</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat.embed</groupId>
-		            <artifactId>tomcat-embed-logging-log4j</artifactId>
-		            <version>9.0.0.M6</version>
-		          </dependency>
-        		</dependencies>
-         </plugin>
 		  <plugin>
 			  <groupId>com.mycila</groupId>
 			  <artifactId>license-maven-plugin</artifactId>
@@ -235,7 +135,7 @@
               <version>1.10.20</version>
               <configuration>
                   <container>
-                      <containerId>tomcat9x</containerId>
+                      <containerId>tomcat11x</containerId>
                       <type>embedded</type>
                   </container>
                   <deployables>
@@ -252,10 +152,10 @@
       </plugins>
       <extensions>
             <!-- Prevents this error, with JDK 11 and above: -->
-            <!-- NoSuchMethodError: 'java.lang.String javax.annotation.Resource.lookup()' -->
+            <!-- NoSuchMethodError: 'java.lang.String z.annotation.Resource.lookup()' -->
             <extension>
-                <groupId>javax.annotation</groupId>
-                <artifactId>javax.annotation-api</artifactId>
+                <groupId>jakarta.annotation</groupId>
+                <artifactId>jakarta.annotation-api</artifactId>
             </extension>
       </extensions>
    </build>
