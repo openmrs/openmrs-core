@@ -19,6 +19,8 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.ConditionService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConditionDAO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -29,9 +31,11 @@ import java.util.List;
  *
  * @since 2.2
  */
+@Service("conditionService")
 @Transactional
 public class ConditionServiceImpl extends BaseOpenmrsService implements ConditionService {
 
+	@Autowired
 	private ConditionDAO conditionDAO;
 
 	public void setConditionDAO(ConditionDAO conditionDAO) {

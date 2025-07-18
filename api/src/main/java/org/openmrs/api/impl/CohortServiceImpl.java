@@ -27,16 +27,20 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  * API functions related to Cohorts
  */
+@Service("cohortService")
 @Transactional
 public class CohortServiceImpl extends BaseOpenmrsService implements CohortService {
 	
 	private static final Logger log = LoggerFactory.getLogger(CohortServiceImpl.class);
 	
+	@Autowired
 	private CohortDAO dao;
 	
 	/**

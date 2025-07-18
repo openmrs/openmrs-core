@@ -44,6 +44,8 @@ import org.openmrs.obs.SerializableComplexObsHandler;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.validator.FormValidator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindException;
 
@@ -56,9 +58,11 @@ import org.springframework.validation.BindException;
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.FormService
  */
+@Service("formService")
 @Transactional
 public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	
+	@Autowired
 	private FormDAO dao;
 	
 	private final FormValidator formValidator;

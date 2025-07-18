@@ -72,8 +72,10 @@ import org.openmrs.validator.ObsValidator;
 import org.openmrs.validator.ValidateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -81,11 +83,13 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * @see org.openmrs.api.ConceptService to access these methods
  */
+@Service("conceptService")
 @Transactional
 public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptService {
 	
 	private static final Logger log = LoggerFactory.getLogger(ConceptServiceImpl.class);
 	
+	@Autowired
 	private ConceptDAO dao;
 	
 	private static Concept trueConcept;

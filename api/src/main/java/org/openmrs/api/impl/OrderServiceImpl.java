@@ -55,6 +55,8 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -80,6 +82,7 @@ import static org.openmrs.Order.Action.REVISE;
  * 
  * @see org.openmrs.api.OrderService
  */
+@Service("orderService")
 @Transactional
 public class OrderServiceImpl extends BaseOpenmrsService implements OrderService, OrderNumberGenerator, GlobalPropertyListener {
 	
@@ -87,6 +90,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	
 	private static final String ORDER_NUMBER_PREFIX = "ORD-";
 	
+	@Autowired
 	protected OrderDAO dao;
 	
 	private static OrderNumberGenerator orderNumberGenerator = null;
