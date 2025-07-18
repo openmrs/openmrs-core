@@ -180,6 +180,7 @@
 				<artifactId>commons-lang3</artifactId>
 				<version>3.18.0</version>
 			</dependency>
+               
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-core</artifactId>
@@ -235,9 +236,9 @@
 				<version>${infinispanVersion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.hibernate</groupId>
+				<groupId>org.hibernate.validator</groupId>
 				<artifactId>hibernate-validator</artifactId>
-				<version>6.1.2.Final</version>
+				<version>6.2.0.Final</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate.search</groupId>
@@ -285,6 +286,31 @@
 				<artifactId>reflections</artifactId>
 				<version>0.10.2</version>
 				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.groovy</groupId>
+				<artifactId>groovy-all</artifactId>
+				<version>2.4.21</version>
+			</dependency>
+			<dependency>
+				<groupId>org.owasp.encoder</groupId>
+				<artifactId>encoder</artifactId>
+				<version>1.3.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.owasp</groupId>
+				<artifactId>csrfguard</artifactId>
+				<version>${owaspCsrfGuardVersion}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.owasp</groupId>
+				<artifactId>csrfguard-extension-session</artifactId>
+				<version>${owaspCsrfGuardVersion}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.tomcat</groupId>
+				<artifactId>tomcat-jasper</artifactId>
+				<version>8.5.71</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
@@ -388,18 +414,11 @@
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
 				<version>8.0.30</version>
-				<scope>runtime</scope>
-			</dependency>
-			<dependency>
-				<groupId>com.mysql</groupId>
-				<artifactId>mysql-connector-mxj</artifactId>
-				<version>5.0.11</version>
 			</dependency>
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
 				<version>42.7.7</version>
-				<scope>runtime</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.jackson</groupId>
@@ -438,6 +457,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter</artifactId>
+				<version>${junitVersion}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.junit.jupiter</groupId>
 				<artifactId>junit-jupiter-api</artifactId>
 				<version>${junitVersion}</version>
 			</dependency>
@@ -450,7 +474,6 @@
 				<groupId>org.junit.jupiter</groupId>
 				<artifactId>junit-jupiter-params</artifactId>
 				<version>${junitVersion}</version>
-				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.junit.vintage</groupId>
@@ -458,24 +481,14 @@
 				<version>${junitVersion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.mockito</groupId>
-				<artifactId>mockito-junit-jupiter</artifactId>
-				<version>${mockitoVersion}</version>
+			    <groupId>org.mockito</groupId>
+			    <artifactId>mockito-core</artifactId>
+			    <version>${mockitoVersion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.mockito</groupId>
-				<artifactId>mockito-core</artifactId>
-				<version>${mockitoVersion}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.powermock</groupId>
-				<artifactId>powermock-module-junit4</artifactId>
-				<version>2.0.9</version>
-			</dependency>
-			<dependency>
-				<groupId>org.powermock</groupId>
-				<artifactId>powermock-api-mockito2</artifactId>
-				<version>2.0.9</version>
+			    <groupId>org.mockito</groupId>
+			    <artifactId>mockito-junit-jupiter</artifactId>
+			    <version>${mockitoVersion}</version> 
 			</dependency>
 			<!--hamcrest-core is needed to update JUnit 4 transitive dependency on hamcrest-core as explained in
 			 http://hamcrest.org/JavaHamcrest/distributables#upgrading-from-hamcrest-1x and
@@ -566,15 +579,33 @@
 			</dependency>
 			<dependency>
 				<groupId>org.testcontainers</groupId>
+				<artifactId>testcontainers</artifactId>
+				<version>1.21.3</version>
+			</dependency>
+			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>junit-jupiter</artifactId>
+				<version>1.21.3</version>
+			</dependency>
+			<dependency>
+				<groupId>org.testcontainers</groupId>
 				<artifactId>mysql</artifactId>
 				<version>1.21.3</version>
-				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>postgresql</artifactId>
 				<version>1.21.3</version>
-				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>software.amazon.awssdk</groupId>
+				<artifactId>s3</artifactId>
+				<version>2.31.50</version>
+			</dependency>
+			<dependency>
+				<groupId>com.adobe.testing</groupId>
+				<artifactId>s3mock-testcontainers</artifactId>
+				<version>2.17.0</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
