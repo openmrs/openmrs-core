@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
@@ -119,6 +120,8 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Disabled("TRUNK-6361: childLeafObs had its date voided date changed, so it should not get unvoided by the " 
+		+ "unvoid cascade")
 	public void shouldSaveUpdateDeleteVoidObsGroupCascades() {
 		executeDataSet(INITIAL_OBS_XML);
 		

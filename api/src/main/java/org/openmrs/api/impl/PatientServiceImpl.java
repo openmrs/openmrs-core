@@ -72,6 +72,9 @@ import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.PatientIdentifierValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -83,17 +86,24 @@ import org.springframework.transaction.annotation.Transactional;
  * @see org.openmrs.api.PatientService
  * @see org.openmrs.api.PersonService
  */
+@Service("patientService")
 @Transactional
 public class PatientServiceImpl extends BaseOpenmrsService implements PatientService {
 	
 	private static final Logger log = LoggerFactory.getLogger(PatientServiceImpl.class);
 	
+	@Autowired
 	private PatientDAO dao;
 	
 	/**
 	 * PatientIdentifierValidators registered through spring's applicationContext-service.xml
 	 */
 	private static Map<Class<? extends IdentifierValidator>, IdentifierValidator> identifierValidators = null;
+
+	@Autowired
+	public void setIdentifierValidatorMap(@Qualifier("identifierValidators") Map<Class<? extends IdentifierValidator>, IdentifierValidator> validators) {
+		identifierValidators = validators;
+	}
 	
 	/**
 	 * @see org.openmrs.api.PatientService#setPatientDAO(org.openmrs.api.db.PatientDAO)

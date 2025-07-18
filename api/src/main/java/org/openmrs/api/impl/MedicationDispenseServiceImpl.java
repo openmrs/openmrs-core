@@ -17,6 +17,8 @@ import org.openmrs.api.MedicationDispenseService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.MedicationDispenseDAO;
 import org.openmrs.parameter.MedicationDispenseCriteria;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
@@ -27,9 +29,11 @@ import java.util.List;
  * It defines the API for interacting with MedicationDispense objects.
  * @since 2.6.0
  */
+@Service("medicationDispenseService")
 @Transactional
 public class MedicationDispenseServiceImpl extends BaseOpenmrsService implements MedicationDispenseService {
 
+	@Autowired
 	private MedicationDispenseDAO medicationDispenseDAO;
 
 	public void setMedicationDispenseDAO(MedicationDispenseDAO conditionDAO) {

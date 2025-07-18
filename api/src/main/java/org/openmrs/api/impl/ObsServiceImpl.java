@@ -37,6 +37,9 @@ import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -44,19 +47,26 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * @see org.openmrs.api.ObsService
  */
+@Service("obsService")
 @Transactional
 public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	
 	/**
 	 * The data access object for the obs service
 	 */
+	@Autowired
 	protected ObsDAO dao;
 	
 	/**
 	 * Report handlers that have been registered. This is filled via {@link #setHandlers(Map)} and
 	 * spring's applicationContext-service.xml object
 	 */
-	private static Map<String, ComplexObsHandler> handlers = null;
+	private static Map<String, ComplexObsHandler> handlers;
+
+	@Autowired
+	public void setHandlerMap(@Qualifier("handlers") Map<String, ComplexObsHandler> handlerMap) {
+		handlers = handlerMap;
+	}
 	
 	/**
 	 * Default empty constructor for this obs service

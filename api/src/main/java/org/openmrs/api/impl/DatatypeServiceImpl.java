@@ -25,12 +25,15 @@ import org.openmrs.api.db.DatatypeDAO;
 import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.CustomDatatypeException;
 import org.openmrs.customdatatype.CustomDatatypeHandler;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Standard implementation of {@link DatatypeService}
  * @since 1.9
  */
+@Service("datatypeService")
 @Transactional
 public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeService {
 	
@@ -40,6 +43,7 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 	
 	private transient Map<Class<? extends CustomDatatype>, Class<? extends CustomDatatypeHandler>> prioritizedHandlerClasses;
 	
+	@Autowired
 	private DatatypeDAO dao;
 	
 	/**
