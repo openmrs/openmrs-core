@@ -21,6 +21,8 @@ import org.openmrs.api.DiagnosisService;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DiagnosisDAO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
@@ -28,9 +30,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 
+@Service("diagnosisService")
 @Transactional
 public class DiagnosisServiceImpl extends BaseOpenmrsService implements DiagnosisService {
 	
+	@Autowired
 	private DiagnosisDAO diagnosisDAO;
 
 	/**
