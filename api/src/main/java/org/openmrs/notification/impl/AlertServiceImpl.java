@@ -26,6 +26,8 @@ import org.openmrs.notification.db.AlertDAO;
 import org.openmrs.util.RoleConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -33,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @see org.openmrs.notification.AlertService
  */
+@Service("alertService")
 @Transactional
 public class AlertServiceImpl extends BaseOpenmrsService implements Serializable, AlertService {
 	
@@ -40,6 +43,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	
 	private static final Logger log = LoggerFactory.getLogger(AlertServiceImpl.class);
 	
+	@Autowired
 	private AlertDAO dao;
 	
 	/**
