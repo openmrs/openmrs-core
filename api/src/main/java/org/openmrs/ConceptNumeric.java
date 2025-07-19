@@ -17,40 +17,57 @@ import java.util.TreeSet;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.envers.Audited;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
 /**
  * The ConceptNumeric extends upon the Concept object by adding some number range values
  * 
  * @see Concept
  */
 @Audited
+@Entity
+@Table(name = "concept_numeric")
 public class ConceptNumeric extends Concept {
 	
 	public static final long serialVersionUID = 47323L;
 	
 	// Fields
-	
+	@Column(name = "hi_absolute", precision = 22)
 	private Double hiAbsolute;
-	
+
+	@Column(name = "hi_critical", precision = 22)
 	private Double hiCritical;
-	
+
+	@Column(name = "hi_normal", precision = 22)
 	private Double hiNormal;
-	
+
+	@Column(name = "low_absolute", precision = 22)
 	private Double lowAbsolute;
-	
+
+	@Column(name = "low_critical", precision = 22)
 	private Double lowCritical;
-	
+
+	@Column(name = "low_normal", precision = 22)
 	private Double lowNormal;
-	
+
+	@Column(name = "units", length = 50)
 	private String units;
-	
+
+	@Column(name = "allow_decimal", nullable = false)
 	private Boolean allowDecimal = false;
 	
+	@OneToMany(mappedBy = "conceptNumeric", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<ConceptReferenceRange> referenceRanges;
 	
 	/**
 	 * displayPrecision, represents the number of significant digits
 	 * to be used for display of a numeric value
 	 */
+	@Column(name = "display_precision", nullable = true)
 	private Integer displayPrecision;
 	
 	// Constructors
