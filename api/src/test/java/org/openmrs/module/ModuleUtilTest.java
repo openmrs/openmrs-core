@@ -41,8 +41,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
-import org.openmrs.util.OpenmrsConstants;
-import org.powermock.reflect.Whitebox;
 
 /**
  * Tests methods on the {@link org.openmrs.module.ModuleUtil} class
@@ -113,26 +111,19 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	/**
 	 * @throws SecurityException
 	 * @throws NoSuchFieldException
-	 * @see ModuleUtil#isOpenmrsVersionInVersions(String[])
+	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
-	public void isOpenmrsVersionInVersions_shouldReturnTrueIfCurrentOpenmrsVersionMatchesOneElementInVersions()
-	        throws Exception {
-
-		final String currentVersion = "1.9.8";
-		Whitebox.setInternalState(OpenmrsConstants.class, "OPENMRS_VERSION_SHORT", currentVersion);
-		assertTrue(ModuleUtil.isOpenmrsVersionInVersions( currentVersion, "1.10.*"));
+	public void isOpenmrsVersionInVersions_shouldReturnTrueIfCurrentOpenmrsVersionMatchesOneElementInVersions() {
+		assertTrue(ModuleUtil.isVersionInVersions("1.11.2", "1.10.*", "1.11.*"));
 	}
 
 	/**
 	 * @see ModuleUtil#isOpenmrsVersionInVersions(String[])
 	 */
 	@Test
-	public void isOpenmrsVersionInVersions_shouldReturnFalseIfCurrentOpenmrsVersionDoesNotMatchAnyElementInVersions()
-	        throws Exception {
-
-		Whitebox.setInternalState(OpenmrsConstants.class, "OPENMRS_VERSION_SHORT", "1.9.8");
-		assertFalse(ModuleUtil.isOpenmrsVersionInVersions("1.11.*", "2.1.0"));
+	public void isOpenmrsVersionInVersions_shouldReturnFalseIfCurrentOpenmrsVersionDoesNotMatchAnyElementInVersions() {
+		assertFalse(ModuleUtil.isVersionInVersions("1.9.8", "1.11.*", "2.1.0"));
 	}
 
 	/**

@@ -22,6 +22,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,40 +63,49 @@ public class StreamDataService {
 		}
 
 		public QueueOutputStream newQueueOutputStream() {
-			return new QueueOutputStream(blockingQueue, timeoutNanos);
+			return new QueueOutputStream(this);
 		}
 
 		@Override
 		public int read() throws IOException {
 			try {
-				if (streamException != null) {
-					// Rethrow exception if writer failed.
-					throw streamException;
-				}
+				checkStreamException();
 				
+				int result;
 				Integer peek = this.blockingQueue.peek();
 				if (Integer.valueOf(-1).equals(peek)) {
-					return -1;
+					result = -1;
+				} else {
+					Integer value = this.blockingQueue.poll(this.timeoutNanos, TimeUnit.NANOSECONDS);
+					if (value == null) {
+						// Timeout
+						result = -1;
+					} else if (value == -1) {
+						// End of stream. Put the end of stream back in the queue for consistency.
+						this.blockingQueue.clear();
+						if (!this.blockingQueue.offer(-1, timeoutNanos, TimeUnit.NANOSECONDS)) {
+							throw new IOException("Failed to write to full queue");
+						}
+						result = -1;
+					} else {
+						result = 255 & value;
+					}
 				}
 
-				Integer value = this.blockingQueue.poll(this.timeoutNanos, TimeUnit.NANOSECONDS);
-				if (value == null) {
-					// Timeout
-					return -1;
-				} else if (value == -1) {
-					// End of stream. Put the end of stream back in the queue for consistency.
-					this.blockingQueue.clear();
-					if (!this.blockingQueue.offer(-1, timeoutNanos, TimeUnit.NANOSECONDS)) {
-						throw new IOException("Failed to write to full queue");
-					}
-					return -1;
-				} else {
-					return 255 & value;
-				}
+				checkStreamException();
+				return result;
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
-				throw new IllegalStateException(e);
+				InterruptedIOException interruptedIoException = new InterruptedIOException();
+				interruptedIoException.initCause(e);
+				throw interruptedIoException;
 			}
+		}
+
+		@Override
+		public void close() throws IOException {
+			checkStreamException();
+			super.close();
 		}
 
 		/**
@@ -107,15 +117,19 @@ public class StreamDataService {
 		public void propagateStreamException(IOException streamException) {
 			this.streamException = streamException;
 		}
+		
+		public void checkStreamException() throws IOException {
+			if (streamException != null) {
+				throw streamException;
+			}
+		}
 	}
 	
 	private static class QueueOutputStream extends OutputStream {
-		private final BlockingQueue<Integer> blockingQueue;
-		private final long timeoutNanos;
+		private final QueueInputStream queueInputStream;
 		
-		public QueueOutputStream(BlockingQueue<Integer> blockingQueue, long timeoutNanos) {
-			this.blockingQueue = Objects.requireNonNull(blockingQueue, "blockingQueue");
-			this.timeoutNanos = timeoutNanos;
+		public QueueOutputStream(QueueInputStream queueInputStream) {
+			this.queueInputStream = queueInputStream;
 		}
 
 		/**
@@ -125,8 +139,11 @@ public class StreamDataService {
 		@Override
 		public void write(int b) throws IOException {
 			try {
-				if (!this.blockingQueue.offer(255 & b, timeoutNanos, TimeUnit.NANOSECONDS)) {
-					throw new IOException("Failed to write to full queue");
+				queueInputStream.checkStreamException();
+				
+				if (!queueInputStream.blockingQueue.offer(255 & b, queueInputStream.timeoutNanos, TimeUnit.NANOSECONDS)) {
+					IOException streamException = new IOException("Failed to write to full queue");
+					queueInputStream.propagateStreamException(streamException);
 				}
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
@@ -145,9 +162,12 @@ public class StreamDataService {
 		@Override
 		public void close() throws IOException {
 			try {
+				queueInputStream.checkStreamException();
+				
 				// Indicate the end of stream
-				if (!this.blockingQueue.offer(-1, timeoutNanos, TimeUnit.NANOSECONDS)) {
-					throw new IOException("Failed to write to full queue");
+				if (!this.queueInputStream.blockingQueue.offer(-1, queueInputStream.timeoutNanos, TimeUnit.NANOSECONDS)) {
+					IOException streamException = new IOException("Failed to write to full queue");
+					queueInputStream.propagateStreamException(streamException);
 				}
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
@@ -183,11 +203,15 @@ public class StreamDataService {
 			QueueInputStream in = new QueueInputStream();
 
 			taskExecutor.execute(() -> {
-				try (QueueOutputStream out = in.newQueueOutputStream()) {
+				QueueOutputStream out = in.newQueueOutputStream();
+				try {
 					writer.write(out);
 				} catch (Exception e) {
 					log.error("Failed to write data in parallel", e);
 					in.propagateStreamException(new IOException("Failed to write data in parallel", e));
+				} finally {
+					// Closing quietly as any exceptions in QueueOutputStream.close() are propagated
+					IOUtils.closeQuietly(out);
 				}
 			});
 
