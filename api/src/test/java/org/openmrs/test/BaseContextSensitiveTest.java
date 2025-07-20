@@ -873,6 +873,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	public synchronized void deleteAllData() {
 		try {
 			Context.clearSession();
+			Context.clearEntireCache();
 			
 			Connection connection = getConnection();
 			
@@ -905,9 +906,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	}
 	
 	/**
-	 * Method to clear the hibernate cache
+	 * Method to clear the hibernate cache only.
 	 */
-	@Before
 	public void clearHibernateCache() {
 		SessionFactory sf = (SessionFactory) applicationContext.getBean("sessionFactory");
 		sf.getCache().evictCollectionData();
@@ -991,6 +991,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	public void clearSessionAfterEachTest() {
 		// clear the session to make sure nothing is cached, etc
 		Context.clearSession();
+		Context.clearEntireCache();
 		
 		// needed because the authenticatedUser is the only object that sticks
 		// around after tests and the clearSession call

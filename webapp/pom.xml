@@ -13,7 +13,7 @@
    <parent>
       <groupId>org.openmrs</groupId>
       <artifactId>openmrs</artifactId>
-      <version>2.8.0-SNAPSHOT</version>
+      <version>3.0.0-SNAPSHOT</version>
    </parent>
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.openmrs.web</groupId>
@@ -160,34 +160,6 @@
       </extensions>
    </build>
    <profiles>
-      <profile>
-            <id>integration-test</id>
-             <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>mysql</groupId>
-                    <artifactId>mysql-connector-java</artifactId>
-                    <scope>runtime</scope>
-                </dependency>
-
-                <dependency>
-                    <groupId>com.mysql</groupId>
-                    <artifactId>mysql-connector-mxj</artifactId>
-                    <version>5.0.11</version>
-                    <scope>compile</scope>
-                </dependency>
-
-                <dependency>
-                    <groupId>com.mysql</groupId>
-                    <artifactId>mysql-connector-mxj-dbfiles</artifactId>
-                    <version>5.0.11</version>
-                    <scope>compile</scope>
-                </dependency>
-            </dependencies>
-        </profile>
-        
 		<profile>
 			<id>release</id>
 			<!-- Create sources and javadocs jar -->
