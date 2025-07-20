@@ -21,7 +21,7 @@
 		
 		<!-- API -->
 
-		<mapping resource="org/openmrs/api/db/hibernate/AllergyReaction.hbm.xml" />
+		
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptAttribute.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptAttributeType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptDescription.hbm.xml" />

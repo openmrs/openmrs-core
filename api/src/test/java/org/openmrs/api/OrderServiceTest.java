@@ -20,16 +20,19 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.openmrs.Allergy;
+import org.openmrs.AllergyReaction;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
+import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
+import org.openmrs.ConceptReferenceRange;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.Condition;
 import org.openmrs.Diagnosis;
@@ -2755,6 +2758,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.addAnnotatedClass(ProviderRole.class)
 			.addAnnotatedClass(Concept.class)
 			.addAnnotatedClass(ConceptNumeric.class)
+			.addAnnotatedClass(ConceptComplex.class)
+			.addAnnotatedClass(ConceptReferenceRange.class)
+			.addAnnotatedClass(AllergyReaction.class)
 			.getMetadataBuilder().build();
 
 
