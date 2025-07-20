@@ -18,6 +18,7 @@ import org.hibernate.type.descriptor.sql.SqlTypeDescriptor;
 import org.hibernate.type.descriptor.sql.VarcharTypeDescriptor;
 
 /**
+ * Maps a String annotated with @Lob to CLOB in MySQL and TEXT in PostgreSQL
  * @since 2.8.0
  */
 public class ClobOrTextType extends AbstractSingleColumnStandardBasicType<String> {

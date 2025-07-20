@@ -17,6 +17,8 @@ import org.hibernate.service.ServiceRegistry;
 import org.hibernate.type.BasicType;
 
 /**
+ * Registers the custom `large_text` type globally with the name `large_text`, 
+ * allowing it to be used in entity classes.
  * @since 2.8.0
  */
 public class ClobOrTextTypeContributor implements TypeContributor {
