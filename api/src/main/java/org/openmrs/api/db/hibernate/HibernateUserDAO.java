@@ -9,12 +9,12 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.Query;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -106,9 +106,9 @@ public class HibernateUserDAO implements UserDAO {
 	@SuppressWarnings("unchecked")
 	public User getUserByUsername(String username) {
 		Query query = sessionFactory.getCurrentSession().createQuery(
-		    "from User u where u.retired = '0' and (u.username = ?0 or u.systemId = ?1)");
-		query.setParameter(0, username);
+			"from User u where u.retired = false and (u.username = ?1 or u.systemId = ?2)");
 		query.setParameter(1, username);
+		query.setParameter(2, username);
 		List<User> users = query.getResultList();
 		
 		if (users == null || users.isEmpty()) {
@@ -651,9 +651,17 @@ public class HibernateUserDAO implements UserDAO {
 					String key = "name" + ++counter;
 					String value = n + "%";
 					namesMap.put(key, value);
-					criteria.add("(user.username like :" + key + " or user.systemId like :" + key
-					        + " or name.givenName like :" + key + " or name.middleName like :" + key
-					        + " or name.familyName like :" + key + " or name.familyName2 like :" + key + ")");
+					criteria.add(
+						"("
+							+ "user.username    like :" + key + " ESCAPE '\\' "
+							+ "or user.systemId     like :" + key + " ESCAPE '\\' "
+							+ "or name.givenName    like :" + key + " ESCAPE '\\' "
+							+ "or name.middleName   like :" + key + " ESCAPE '\\' "
+							+ "or name.familyName   like :" + key + " ESCAPE '\\' "
+							+ "or name.familyName2  like :" + key + " ESCAPE '\\'"
+							+ ")"
+					);
+
 				}
 			}
 		}

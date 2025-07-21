@@ -17,9 +17,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.hibernate.CallbackException;
-import org.hibernate.EntityMode;
 import org.hibernate.Interceptor;
 import org.hibernate.Transaction;
+import org.hibernate.metamodel.spi.EntityRepresentationStrategy;
+import org.hibernate.resource.jdbc.spi.StatementInspector;
 import org.hibernate.type.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,6 +67,8 @@ public class ChainingInterceptor implements Interceptor {
 			i.onDelete(entity, id, state, propertyNames, types);
 		}
 	}
+	
+	
 	
 	@Override
 	public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState,
@@ -141,9 +144,9 @@ public class ChainingInterceptor implements Interceptor {
 	
 	// returns the first non-null response from all interceptors
 	@Override
-	public Object instantiate(String entityName, EntityMode entityMode, Serializable id) {
+	public Object instantiate(String entityName, EntityRepresentationStrategy entityRepresentationStrategy, Object id) {
 		for (Interceptor i : interceptors) {
-			Object o = i.instantiate(entityName, entityMode, id);
+			Object o = i.instantiate(entityName, entityRepresentationStrategy, id);
 			if (o != null) {
 				return o;
 			}
@@ -230,16 +233,6 @@ public class ChainingInterceptor implements Interceptor {
 		}
 	}
 	
-	// passes the sql returned from each previous onPrepareStatement onto the next
-	@Override
-	public String onPrepareStatement(String sql) {
-		for (Interceptor i : interceptors) {
-			sql = i.onPrepareStatement(sql);
-		}
-		
-		return sql;
-	}
-	
 	@Override
 	public void onCollectionRemove(Object collection, Serializable key) throws CallbackException {
 		for (Interceptor i : interceptors) {
@@ -260,5 +253,4 @@ public class ChainingInterceptor implements Interceptor {
 			i.onCollectionUpdate(collection, key);
 		}
 	}
-	
 }

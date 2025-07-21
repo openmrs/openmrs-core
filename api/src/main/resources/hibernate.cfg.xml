@@ -16,8 +16,8 @@
 
 <hibernate-configuration>
 	<session-factory>
-        <property name="javax.persistence.validation.mode">none</property>
-		<property name="javax.persistence.sharedCache.mode">ENABLE_SELECTIVE</property>
+        <property name="jakarta.persistence.validation.mode">none</property>
+		<property name="jakarta.persistence.sharedCache.mode">ENABLE_SELECTIVE</property>
 		
 		<!-- API -->
 
