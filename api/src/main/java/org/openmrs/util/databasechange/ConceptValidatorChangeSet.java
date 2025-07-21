@@ -440,7 +440,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 		
 		try {
 			stmt = connection.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT concept_id FROM concept WHERE retired = '0'");
+			ResultSet rs = stmt.executeQuery("SELECT concept_id FROM concept WHERE retired = false");
 			
 			while (rs.next()) {
 				if (conceptIds == null) {
@@ -480,11 +480,11 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 		int duplicates = getInt(connection,
 		    "SELECT count(*) FROM concept_name cn, concept c WHERE cn.concept_id = c.concept_id  AND (cn.concept_name_type = '"
 		            + ConceptNameType.FULLY_SPECIFIED
-		            + "' OR cn.locale_preferred = '1') AND cn.voided = '0' AND cn.name = '"
+		            + "' OR cn.locale_preferred = true) AND cn.voided = false AND cn.name = '"
 		            + HibernateUtil.escapeSqlWildcards(conceptName.getName(), connection.getUnderlyingConnection())
 		            + "' AND cn.locale = '"
 		            + HibernateUtil.escapeSqlWildcards(conceptName.getLocale().toString(), connection
-		                    .getUnderlyingConnection()) + "' AND c.retired = '0' AND c.concept_id != " + conceptId);
+		                    .getUnderlyingConnection()) + "' AND c.retired = false AND c.concept_id != " + conceptId);
 		
 		return duplicates == 0;
 	}
@@ -579,7 +579,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 		
 		try {
 			pStmt = connection
-			        .prepareStatement("SELECT concept_name_id, name, concept_name_type, locale, locale_preferred FROM concept_name WHERE voided = '0' AND concept_id = ?");
+			        .prepareStatement("SELECT concept_name_id, name, concept_name_type, locale, locale_preferred FROM concept_name WHERE voided = false AND concept_id = ?");
 			pStmt.setInt(1, conceptId);
 			ResultSet rs = pStmt.executeQuery();
 			

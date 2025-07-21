@@ -17,7 +17,7 @@ import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.dialect.MySQLDialect;
-import org.hibernate.dialect.PostgreSQL82Dialect;
+import org.hibernate.dialect.PostgreSQLDialect;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.slf4j.Logger;
@@ -86,7 +86,7 @@ public class DbUtil {
 		System.setProperty("databaseUsername", username);
 		System.setProperty("databasePassword", password);
 		System.setProperty("databaseDriver", isMySql ? "com.mysql.cj.jdbc.Driver" : "org.postgresql.Driver");
-		System.setProperty("databaseDialect", isMySql ? MySQLDialect.class.getName() : PostgreSQL82Dialect.class.getName());
+		System.setProperty("databaseDialect", isMySql ? MySQLDialect.class.getName() : PostgreSQLDialect.class.getName());
 		
 		String sql = String.format(
 		    isMySql ? "create database if not exists %s default character set utf8 collate utf8_general_ci"

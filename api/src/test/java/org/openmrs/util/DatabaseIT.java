@@ -35,7 +35,7 @@ public class DatabaseIT implements LiquibaseProvider {
 	
 	private static final Logger log = LoggerFactory.getLogger(DatabaseIT.class);
 
-	public static String CONNECTION_URL = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1";
+	public static String CONNECTION_URL = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MODE=LEGACY;NON_KEYWORDS=VALUE";
 	
 	private static final String CONTEXT = "some context";
 	
