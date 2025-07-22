@@ -1290,7 +1290,7 @@
 		<hibernateVersion>6.4.10.Final</hibernateVersion>
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
 		<hibernateSearchVersion>7.1.2.Final</hibernateSearchVersion>
-		<luceneVersion>9.0.0</luceneVersion>
+		<luceneVersion>10.2.2</luceneVersion>
 		<!-- ininispanVersion needs to be adjusted if hibernateVersion changes -->
 		<infinispanVersion>15.2.2.Final</infinispanVersion>
 		<aspectjVersion>1.9.24</aspectjVersion>
