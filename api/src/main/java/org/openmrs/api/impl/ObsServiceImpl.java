@@ -61,12 +61,9 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * Report handlers that have been registered. This is filled via {@link #setHandlers(Map)} and
 	 * spring's applicationContext-service.xml object
 	 */
-	private static Map<String, ComplexObsHandler> handlers;
-
 	@Autowired
-	public void setHandlerMap(@Qualifier("handlers") Map<String, ComplexObsHandler> handlerMap) {
-		handlers = handlerMap;
-	}
+	@Qualifier("handlers")
+	private Map<String, ComplexObsHandler> handlers;
 	
 	/**
 	 * Default empty constructor for this obs service
@@ -613,21 +610,12 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	@Override
 	public void setHandlers(Map<String, ComplexObsHandler> newHandlers) throws APIException {
 		if (newHandlers == null) {
-			ObsServiceImpl.setStaticHandlers(null);
+			this.handlers = null;
 			return;
 		}
 		for (Map.Entry<String, ComplexObsHandler> entry : newHandlers.entrySet()) {
 			registerHandler(entry.getKey(), entry.getValue());
 		}
-	}
-	
-	/**
-	 * Sets handlers using static method
-	 *
-	 * @param currentHandlers
-	 */
-	private static void setStaticHandlers(Map<String, ComplexObsHandler> currentHandlers) {
-		ObsServiceImpl.handlers = currentHandlers;
 	}
 	
 	/**

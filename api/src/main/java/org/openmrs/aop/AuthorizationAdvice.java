@@ -22,11 +22,13 @@ import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.MethodBeforeAdvice;
+import org.springframework.stereotype.Component;
 
 /**
  * This class provides the authorization AOP advice performed before every service layer method
  * call.
  */
+@Component("authorizationAdvice")
 public class AuthorizationAdvice implements MethodBeforeAdvice {
 	
 	/**

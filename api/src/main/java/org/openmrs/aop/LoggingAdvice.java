@@ -22,12 +22,14 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * This class provides the log4j aop around advice for our service layer. This advice is placed on
  * all services and daos via the spring application context. See
  * /metadata/api/spring/applicationContext.xml
  */
+@Component("loggingAdvice")
 public class LoggingAdvice implements MethodInterceptor {
 	
 	/**

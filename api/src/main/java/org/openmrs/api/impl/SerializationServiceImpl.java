@@ -40,7 +40,7 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 	private static final Logger log = LoggerFactory.getLogger(SerializationServiceImpl.class);
 	
 	//***** Properties (set by spring)
-	private static Map<Class<? extends OpenmrsSerializer>, OpenmrsSerializer> serializerMap;
+	private Map<Class<? extends OpenmrsSerializer>, OpenmrsSerializer> serializerMap;
 
 	@Autowired
 	public void initializeSerializerMap(@Qualifier("serializerList") List<? extends OpenmrsSerializer> serializerList) {
@@ -142,17 +142,13 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 		return new ArrayList<>(serializerMap.values());
 	}
 	
-	public static void setSerializerMap(Map<Class<? extends OpenmrsSerializer>, OpenmrsSerializer> serializerMap) {
-		SerializationServiceImpl.serializerMap = serializerMap;
-	}
-	
 	/**
 	 * @param serializers the serializers to set
 	 * <strong>Should</strong> not reset serializers list when called multiple times
 	 */
 	public void setSerializers(List<? extends OpenmrsSerializer> serializers) {
 		if (serializers == null || serializerMap == null) {
-			setSerializerMap(new LinkedHashMap<>());
+			this.serializerMap = new LinkedHashMap<>();
 		}
 		if (serializers != null) {
 			for (OpenmrsSerializer s : serializers) {

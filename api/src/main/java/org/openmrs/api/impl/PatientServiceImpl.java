@@ -98,12 +98,9 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	/**
 	 * PatientIdentifierValidators registered through spring's applicationContext-service.xml
 	 */
-	private static Map<Class<? extends IdentifierValidator>, IdentifierValidator> identifierValidators = null;
-
 	@Autowired
-	public void setIdentifierValidatorMap(@Qualifier("identifierValidators") Map<Class<? extends IdentifierValidator>, IdentifierValidator> validators) {
-		identifierValidators = validators;
-	}
+	@Qualifier("identifierValidators")
+	private Map<Class<? extends IdentifierValidator>, IdentifierValidator> identifierValidators;
 	
 	/**
 	 * @see org.openmrs.api.PatientService#setPatientDAO(org.openmrs.api.db.PatientDAO)
@@ -1286,22 +1283,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 */
 	public void setIdentifierValidators(Map<Class<? extends IdentifierValidator>, IdentifierValidator> identifierValidators) {
 		if (identifierValidators == null) {
-			PatientServiceImpl.setStaticIdentifierValidators(null);
+			this.identifierValidators = null;
 			return;
 		}
 		for (Map.Entry<Class<? extends IdentifierValidator>, IdentifierValidator> entry : identifierValidators.entrySet()) {
 			getIdentifierValidators().put(entry.getKey(), entry.getValue());
 		}
-	}
-	
-	/**
-	 * Sets identifierValidators using static method
-	 *
-	 * @param currentIdentifierValidators
-	 */
-	private static void setStaticIdentifierValidators(
-	        Map<Class<? extends IdentifierValidator>, IdentifierValidator> currentIdentifierValidators) {
-		PatientServiceImpl.identifierValidators = currentIdentifierValidators;
 	}
 	
 	/**

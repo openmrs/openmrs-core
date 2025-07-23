@@ -280,64 +280,14 @@
 			<bean class="org.openmrs.hl7.handler.ADTA28Handler"/>
 		</entry>
 	</util:map>
-
-	<!--  **************************  SERVICE INTERCEPTORS  *************************  -->
-	<!-- AOP before advice that authorizes users according to annotations -->
-	<bean id="authorizationInterceptor" class="org.openmrs.aop.AuthorizationAdvice"/>
-	
-	<bean id="authorizationAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
-		<property name="pointcut">
-			<bean class="org.springframework.aop.aspectj.AspectJExpressionPointcut">
-				<property name="expression" value="this(org.openmrs.api.OpenmrsService)" />
-			</bean>
-		</property>
-		<property name="advice" ref="authorizationInterceptor" />
-	</bean>
-	
-	<!-- AOP "around" advisor that prints logging messages for service methods -->
-	<bean id="loggingInterceptor" class="org.openmrs.aop.LoggingAdvice"/>
-
-	<bean id="loggingAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
-		<property name="pointcut">
-			<bean class="org.springframework.aop.aspectj.AspectJExpressionPointcut">
-				<property name="expression" value="this(org.openmrs.api.OpenmrsService)" />
-			</bean>
-		</property>
-		<property name="advice" ref="loggingInterceptor" />
-	</bean>
-	<!-- AOP before advice that calls the SetRequiredDataHandler methods -->
-	<bean id="requiredDataInterceptor" class="org.openmrs.aop.RequiredDataAdvice"/>
-
-	<bean id="requiredDataAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
-		<property name="pointcut">
-			<bean class="org.springframework.aop.aspectj.AspectJExpressionPointcut">
-				<property name="expression" value="this(org.openmrs.api.OpenmrsService)" />
-			</bean>
-		</property>
-		<property name="advice" ref="requiredDataInterceptor" />
-	</bean>
-	<!-- AOP cache interceptor -->
-	<bean id="cacheInterceptor" class="org.springframework.cache.interceptor.CacheInterceptor">
-		<property name="cacheManager" ref="apiCacheManager"/>
-		<property name="cacheOperationSources" ref="annotationCacheOperationSource"/>
-	</bean>
-
-	<bean id="cacheAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
-		<property name="pointcut">
-			<bean class="org.springframework.aop.aspectj.AspectJExpressionPointcut">
-				<property name="expression" value="this(org.openmrs.api.OpenmrsService)" />
-			</bean>
-		</property>
-		<property name="advice" ref="cacheInterceptor" />
-	</bean>
 	
 	<!-- finds all cache-related annotations to create available cache operations for CacheInterceptor -->
 	<bean id="annotationCacheOperationSource" class="org.springframework.cache.annotation.AnnotationCacheOperationSource"/>
 
 	<util:list id="serviceInterceptors">
-		<ref bean="authorizationInterceptor"/>
-		<ref bean="requiredDataInterceptor"/>
-		<ref bean="loggingInterceptor"/>
+		<ref bean="authorizationAdvice"/>
+		<ref bean="requiredDataAdvice"/>
+		<ref bean="loggingAdvice"/>
 		<ref bean="cacheInterceptor"/>
 	</util:list>
 
@@ -477,7 +427,6 @@
 	
 	<cache:annotation-driven cache-manager="apiCacheManager"/>
 	
-	<tx:annotation-driven transaction-manager="transactionManager"/>
-	<aop:aspectj-autoproxy />
+	<tx:annotation-driven />
 
 </beans>
