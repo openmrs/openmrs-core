@@ -1,0 +1,58 @@
+version: "3.8"
+
+#    This Source Code Form is subject to the terms of the Mozilla Public License,
+#    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+#    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+#    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+#    
+#    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+#    graphic logo is a trademark of OpenMRS Inc.
+
+services:
+    es:
+        image: elasticsearch:8.17.2
+        deploy:
+            resources:
+                limits:
+                    memory: 2g
+        environment:
+            - discovery.type=single-node
+            - bootstrap.memory_lock=true
+            - xpack.security.enabled=false
+            - xpack.security.enrollment.enabled=false
+        ulimits:
+            memlock:
+                soft: -1
+                hard: -1
+        ports:
+            - "9200:9200"
+        volumes:
+            - es-data:/usr/share/elasticsearch/data
+        restart: "always"
+        command: >
+            /bin/sh -c "./bin/elasticsearch-plugin list | grep -q analysis-phonetic 
+            || ./bin/elasticsearch-plugin install analysis-phonetic; 
+            /usr/local/bin/docker-entrypoint.sh"
+        healthcheck:
+            test:
+              [
+                  "CMD-SHELL",
+                  "curl -s http://localhost:9200 | grep -q 'missing authentication credentials'",
+              ]
+            interval: 10s
+            timeout: 10s
+            retries: 120
+            
+    api:
+        environment:
+            OMRS_DEV_DEBUG_PORT: ${OMRS_DEV_DEBUG_PORT:-8000}
+            OMRS_CREATE_TABLES: ${OMRS_CREATE_TABLES:-true}
+            OMRS_SEARCH: ${OMRS_SEARCH:-lucene}
+
+            OMRS_BUILD: ${OMRS_BUILD:-true}
+            OMRS_BUILD_GOALS: ${OMRS_BUILD_GOALS:-}
+            OMRS_BUILD_ARGS: ${OMRS_BUILD_ARGS:-}
+
+volumes:
+    es-data:
+

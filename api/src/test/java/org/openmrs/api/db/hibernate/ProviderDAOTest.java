@@ -11,6 +11,8 @@ package org.openmrs.api.db.hibernate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
@@ -71,4 +73,35 @@ public class ProviderDAOTest extends BaseContextSensitiveTest {
 	public void getProvidersByPerson_shouldReturnAllProvidersIfIncludeRetiredTrue() {
 		assertEquals(2, providerDao.getProvidersByPerson(personDao.getPerson(2), true).size());
 	}
+
+
+	/**
+	 * @see ProviderDAO#getProviderRole(Integer)
+	 */
+	@Test
+	public void getProviderRole_shouldReturnTheProviderRoleIfExists() {
+		assertNotNull(providerDao.getProviderRole(1003));
+	}
+
+	/**
+	 * @see ProviderDAO#getProviderRole(Integer)
+	 */
+	@Test
+	public void getProviderRole_shouldReturnNullIfNotExists() {
+		assertNull(providerDao.getProviderRole(200));
+	}
+
+	/**
+	 * @see ProviderDAO#getProviderRoleByUuid(String) 
+	 */
+	@Test
+	public void getProviderRoleByUuid_shouldReturnTheProviderRoleIfExists() {
+		assertNotNull(providerDao.getProviderRoleByUuid("db7f523f-27ce-4bb2-86d6-6d1d05312bd5"));
+	}
+	
+	@Test
+	public void getProviderRoleByUuid_shouldReturnNullIfNotExists() {
+		assertNull(providerDao.getProviderRoleByUuid("wrong-uuid"));
+	}
+	
 }

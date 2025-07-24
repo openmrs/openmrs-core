@@ -12,13 +12,13 @@ package org.openmrs.web.filter.update;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Context;
-import org.openmrs.web.test.BaseWebContextSensitiveTest;
+import org.openmrs.web.test.jupiter.BaseWebContextSensitiveTest;
 
 /**
  * Tests some of the methods on the {@link UpdateFilter}

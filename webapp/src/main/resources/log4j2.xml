@@ -43,11 +43,10 @@
 	<Loggers>
 		<Logger name="org.apache" level="WARN" />
 		<Logger name="org.hibernate" level="ERROR" />
-		<Logger name="net.sf.ehcache" level="ERROR" />
+		<Logger name="org.infinispan" level="ERROR" />
 		<Logger name="org.springframework" level="WARN" />
 		<Logger name="org.openmrs" level="WARN" />
 		<Logger name="liquibase" level="INFO" />
-		<Logger name="liquibase.resource.CompositeResourceAccessor" level="ERROR" additivity="false"/>
 		<!-- 
 			This controls the LoggingAdvice class that wraps around the OpenMRS services 
 			WARN == don't log anything special for the services

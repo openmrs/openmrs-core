@@ -12,11 +12,26 @@ package org.openmrs;
 import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.NotYetPersistedException;
 import org.openmrs.customdatatype.SingleCustomValue;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 
 /**
  * A FormResource is meant as a way for modules to add arbitrary information to
@@ -30,33 +45,59 @@ import org.openmrs.customdatatype.SingleCustomValue;
  *
  * @since 1.9
  */
+@Entity
+@Table(name = "form_resource")
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@AttributeOverride(name = "uuid", column = @Column(name = "uuid", unique = true, nullable = false, length = 38))
 @Audited
 public class FormResource extends BaseOpenmrsObject implements CustomValueDescriptor, SingleCustomValue<FormResource> {
 
 	private static final long serialVersionUID = 1L;
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "form_resource_form_resource_id_seq")
+	@GenericGenerator(
+		name = "form_resource_form_resource_id_seq",
+		strategy = "native",
+		parameters = @Parameter(name = "sequence", value = "form_resource_form_resource_id_seq")
+	)
+	@Column(name = "form_resource_id")
 	private Integer formResourceId;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "form_id", nullable = false)
 	private Form form;
-	
+
+	@Column(name = "name", length = 255, nullable = true)
 	private String name;
-	
+
+	@Lob
+	@Column(name = "value_reference", length = 65535, nullable = true)
 	private String valueReference;
-	
+
+	@Column(name = "datatype", length = 255)
 	private String datatypeClassname;
-	
+
+	@Lob
+	@Column(name = "datatype_config", length = 65535)
 	private String datatypeConfig;
-	
+
+	@Column(name = "preferred_handler", length = 255)
 	private String preferredHandlerClassname;
-	
+
+	@Lob
+	@Column(name = "handler_config", length = 65535)
 	private String handlerConfig;
 	
 	private transient boolean dirty = false;
 	
 	private transient Object typedValue;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "changed_by")
 	private User changedBy;
 	
+	@Column(name = "date_changed", length = 19)
 	private Date dateChanged;
 	
 	public FormResource() {

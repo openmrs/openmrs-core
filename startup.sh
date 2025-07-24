@@ -13,6 +13,34 @@ echo "Waiting for database to initialize..."
 
 /openmrs/wait-for-it.sh -t 3600 -h "${OMRS_DB_HOSTNAME}" -p "${OMRS_DB_PORT}"
 
+wait_for_es()
+{
+	IFS=',' read -a es_uris <<< "${OMRS_SEARCH_ES_URIS}"
+    
+    EXIT_STATUS=1  
+    while [ $EXIT_STATUS -ne 0 ]
+    do
+		for es_uri in "${es_uris[@]}"; do
+			echo "Waiting for elastic search ${es_uri} to initialize..."
+			ELASTIC_SEARCH_HOST_PORT=(${es_uri//// })
+			/openmrs/wait-for-it.sh -t 120 "${ELASTIC_SEARCH_HOST_PORT[1]}" 
+			EXIT_STATUS=$?
+			if [ $EXIT_STATUS -eq 0 ]; then
+            	break 
+            fi
+            
+		done
+    done
+    
+    return EXIT_STATUS
+}
+
+if [ "${OMRS_SEARCH}" = "elasticsearch" ]; then
+	set +e
+	wait_for_es
+	set -e
+fi
+
 TOMCAT_DIR="/usr/local/tomcat"
 TOMCAT_WEBAPPS_DIR="$TOMCAT_DIR/webapps"
 TOMCAT_WORK_DIR="$TOMCAT_DIR/work"
@@ -36,7 +64,14 @@ CATALINA_OPTS="${OMRS_JAVA_MEMORY_OPTS} -DOPENMRS_INSTALLATION_SCRIPT=${OMRS_SER
 
 if [ -n "${OMRS_DEV_DEBUG_PORT-}" ]; then
   echo "Enabling debugging on port ${OMRS_DEV_DEBUG_PORT}"
-  CATALINA_OPTS="$CATALINA_OPTS -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=${OMRS_DEV_DEBUG_PORT}"
+  
+  JAVA_VERSION=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '/.*/ {print $1}')
+  
+  if [[ "$JAVA_VERSION" -gt "8" ]]; then
+  	CATALINA_OPTS="$CATALINA_OPTS -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:${OMRS_DEV_DEBUG_PORT}"
+  else
+  	CATALINA_OPTS="$CATALINA_OPTS -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=${OMRS_DEV_DEBUG_PORT}"
+  fi
 fi
 
 cat > $TOMCAT_SETENV_FILE << EOF

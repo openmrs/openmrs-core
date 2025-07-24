@@ -12,8 +12,19 @@ package org.openmrs.test.jupiter;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.springframework.test.context.TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.UIManager;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.Window;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -74,7 +85,6 @@ import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.ContextMockHelper;
 import org.openmrs.api.context.Credentials;
 import org.openmrs.api.context.UsernamePasswordCredentials;
-import org.openmrs.module.ModuleConstants;
 import org.openmrs.test.Containers;
 import org.openmrs.test.OpenmrsMetadataHandler;
 import org.openmrs.test.SkipBaseSetup;
@@ -106,7 +116,7 @@ import org.xml.sax.InputSource;
  * 
  * @since 2.4.0
  */
-@ContextConfiguration(locations = { "classpath:applicationContext-service.xml", "classpath*:openmrs-servlet.xml",
+@ContextConfiguration(locations = { "classpath:applicationContext-service.xml",
         "classpath*:moduleApplicationContext.xml", "classpath*:TestingApplicationContext.xml" })
 @TestExecutionListeners(
 	listeners = { SkipBaseSetupAnnotationExecutionListener.class,
@@ -160,7 +170,7 @@ public abstract class BaseContextSensitiveTest {
 	/**
 	 * Allows to determine if the DB is initialized with standard data
 	 */
-	private static boolean isBaseSetup;
+	private static volatile boolean isBaseSetup;
 	
 	/**
 	 * Stores a user authenticated for running tests which allows to discover a situation when some
@@ -177,8 +187,6 @@ public abstract class BaseContextSensitiveTest {
 	 */
 	@InjectMocks
 	protected ContextMockHelper contextMockHelper;
-	
-	private static volatile BaseContextSensitiveTest instance;
 	
 	/**
 	 * Basic constructor for the super class to all openmrs api unit tests. This constructor sets up
@@ -198,13 +206,12 @@ public abstract class BaseContextSensitiveTest {
 		
 		Properties props = getRuntimeProperties();
 		
-		log.debug("props: {}", props);
+		if (log.isDebugEnabled())
+			log.debug("props: {}", props);
 		
 		Context.setRuntimeProperties(props);
 		
 		loadCount++;
-		
-		instance = this;
 	}
 	
 	/**
@@ -310,7 +317,7 @@ public abstract class BaseContextSensitiveTest {
 		// properties
 		if (useInMemoryDatabase()) {
 			runtimeProperties.setProperty(Environment.DIALECT, H2Dialect.class.getName());
-			String url = "jdbc:h2:mem:openmrs;DB_CLOSE_DELAY=30;LOCK_TIMEOUT=10000;IGNORECASE=TRUE";
+			String url = "jdbc:h2:mem:openmrs;DB_CLOSE_DELAY=-1;LOCK_TIMEOUT=10000;MODE=LEGACY;NON_KEYWORDS=VALUE;IGNORECASE=TRUE";
 			runtimeProperties.setProperty(Environment.URL, url);
 			runtimeProperties.setProperty(Environment.DRIVER, "org.h2.Driver");
 			runtimeProperties.setProperty(Environment.USER, "sa");
@@ -346,9 +353,6 @@ public abstract class BaseContextSensitiveTest {
 			//after that, just update, if there are any changes. This is for performance reasons.
 			runtimeProperties.setProperty(Environment.HBM2DDL_AUTO, "update");
 		}
-		
-		// we don't want to try to load core modules in tests
-		runtimeProperties.setProperty(ModuleConstants.IGNORE_CORE_MODULES_PROPERTY, "true");
 		
 		try {
 			File tempappdir = File.createTempFile("appdir-for-unit-tests-", "");
@@ -430,10 +434,16 @@ public abstract class BaseContextSensitiveTest {
 			// ask the user for creds if no junit username/pass defined
 			// in the runtime properties or if that username/pass failed already
 			if (junitusername == null || junitpassword == null || attempts > 0) {
-				credentials = askForUsernameAndPassword(message);
-				// credentials are null if the user clicked "cancel" in popup
-				if (credentials == null)
-					return;
+				// Check if we're in headless mode
+				if (Boolean.getBoolean("java.awt.headless")) {
+					// In headless mode, use default credentials
+					credentials = new String[] { "admin", "test" };
+				} else {
+					credentials = askForUsernameAndPassword(message);
+					// credentials are null if the user clicked "cancel" in popup
+					if (credentials == null)
+						return;
+				}
 			} else
 				credentials = new String[] { junitusername, junitpassword };
 			
@@ -841,7 +851,7 @@ public abstract class BaseContextSensitiveTest {
 	}
 	
 	protected IDatabaseConnection setupDatabaseConnection(Connection connection) throws DatabaseUnitException {
-		IDatabaseConnection dbUnitConn = new DatabaseConnection(connection);
+		IDatabaseConnection dbUnitConn = new DatabaseConnection(connection, getSchemaPattern());
 		DatabaseConfig config = dbUnitConn.getConfig();
 		
 		if (useInMemoryDatabase()) {
@@ -865,6 +875,7 @@ public abstract class BaseContextSensitiveTest {
 	public synchronized void deleteAllData() {
 		try {
 			Context.clearSession();
+			Context.clearEntireCache();
 			
 			Connection connection = getConnection();
 			
@@ -890,15 +901,15 @@ public abstract class BaseContextSensitiveTest {
 			connection.commit();
 			
 			updateSearchIndex();
-			
-			isBaseSetup = false;
 		}
 		catch (SQLException | DatabaseUnitException e) {
 			throw new DatabaseUnitRuntimeException(e);
+		} finally {
+			isBaseSetup = false;
 		}
 	}
 	
-	private String getSchemaPattern() {
+	protected String getSchemaPattern() {
 		if (useInMemoryDatabase()) {
 			return "PUBLIC";
 		}
@@ -908,13 +919,12 @@ public abstract class BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Method to clear the hibernate cache
+	 * Method to clear the hibernate cache only
 	 */
-	@BeforeEach
 	public void clearHibernateCache() {
 		SessionFactory sf = (SessionFactory) applicationContext.getBean("sessionFactory");
-		sf.getCache().evictCollectionRegions();
-		sf.getCache().evictEntityRegions();
+		sf.getCache().evictCollectionData();
+		sf.getCache().evictEntityData();
 	}
 	
 	/**
@@ -980,13 +990,13 @@ public abstract class BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * It needs to be call if you want to do a concept search after you modify a concept in a test.
+	 * It needs to be called if you want to do a concept search after you modify a concept in a test.
 	 * It is because index is automatically updated only after transaction is committed, which
 	 * happens only at the end of a test in our transactional tests.
 	 */
 	public void updateSearchIndex() {
-		for (Class<?> indexType : getIndexedTypes()) {
-			Context.updateSearchIndexForType(indexType);
+		for (Class<?> type: getIndexedTypes()) {
+			Context.updateSearchIndexForType(type);
 		}
 	}
 	
@@ -994,6 +1004,7 @@ public abstract class BaseContextSensitiveTest {
 	public void clearSessionAfterEachTest() {
 		// clear the session to make sure nothing is cached, etc
 		Context.clearSession();
+		Context.clearEntireCache();
 		
 		// needed because the authenticatedUser is the only object that sticks
 		// around after tests and the clearSession call
@@ -1010,18 +1021,6 @@ public abstract class BaseContextSensitiveTest {
 	 */
 	@AfterAll
 	public static synchronized void closeSessionAfterEachClass() throws Exception {
-		//Some tests add data via executeDataset()
-		//We need to delete it in order not to interfere with others
-		if (instance != null) {
-			try {
-				instance.deleteAllData();
-			}
-			catch (Exception ex) {
-				//No need to worry about this
-			}
-			instance = null;
-		}
-		
 		// clean up the session so we don't leak memory
 		if (Context.isSessionOpen()) {
 			Context.closeSession();

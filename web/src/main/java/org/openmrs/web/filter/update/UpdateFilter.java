@@ -35,15 +35,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.ContextLoader;
 
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -94,7 +94,7 @@ public class UpdateFilter extends StartupFilter {
 	 * Used on all pages after the first to make sure the user isn't trying to cheat and do some url
 	 * magic to hack in.
 	 */
-	private boolean authenticatedSuccessfully = false;
+	private volatile boolean authenticatedSuccessfully = false;
 	
 	private UpdateFilterCompletion updateJob;
 	
@@ -134,9 +134,6 @@ public class UpdateFilter extends StartupFilter {
 	
 	/**
 	 * Called by {@link #doFilter(ServletRequest, ServletResponse, FilterChain)} on POST requests
-	 *
-	 * @see org.openmrs.web.filter.StartupFilter#doPost(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
 	protected synchronized void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
@@ -323,7 +320,7 @@ public class UpdateFilter extends StartupFilter {
 		try {
 			connection = DatabaseUpdater.getConnection();
 			
-			String select = "select user_id, password, salt from users where (username = ? or system_id = ?) and retired = '0'";
+			String select = "select user_id, password, salt from users where (username = ? or system_id = ?) and retired = false";
 			PreparedStatement statement = null;
 			try {
 				statement = connection.prepareStatement(select);
@@ -374,7 +371,7 @@ public class UpdateFilter extends StartupFilter {
 			// we may not have upgraded User to have retired instead of voided yet, so if the query above fails, we try
 			// again the old way
 			if (connection != null) {
-				String select = "select user_id, password, salt from users where (username = ? or system_id = ?) and voided = '0'";
+				String select = "select user_id, password, salt from users where (username = ? or system_id = ?) and voided = false";
 				PreparedStatement statement = null;
 				try {
 					statement = connection.prepareStatement(select);
@@ -486,7 +483,7 @@ public class UpdateFilter extends StartupFilter {
 	}
 	
 	/**
-	 * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
+	 * @see jakarta.servlet.Filter#init(jakarta.servlet.FilterConfig)
 	 */
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
@@ -709,7 +706,7 @@ public class UpdateFilter extends StartupFilter {
 						try {
 							setMessage("Updating the database to the latest version");
 							
-							ChangeLogDetective changeLogDetective = new ChangeLogDetective();
+							ChangeLogDetective changeLogDetective = ChangeLogDetective.getInstance();
 							ChangeLogVersionFinder changeLogVersionFinder = new ChangeLogVersionFinder();
 							
 							List<String> changelogs = new ArrayList<>();

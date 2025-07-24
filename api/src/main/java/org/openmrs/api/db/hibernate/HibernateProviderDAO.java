@@ -14,14 +14,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,6 +32,7 @@ import org.openmrs.PersonName;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
+import org.openmrs.ProviderRole;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ProviderDAO;
 import org.openmrs.util.OpenmrsConstants;
@@ -393,4 +394,21 @@ public class HibernateProviderDAO implements ProviderDAO {
 
 		return session.createQuery(cq).uniqueResult();
 	}
+
+	/**
+	 * @see org.openmrs.api.db.ProviderDAO#getProviderRole(Integer) 
+	 */
+	@Override
+	public ProviderRole getProviderRole(Integer providerRoleId) {
+		return sessionFactory.getCurrentSession().get(ProviderRole.class, providerRoleId);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ProviderDAO#getProviderRoleByUuid(String)
+	 */
+	@Override
+	public ProviderRole getProviderRoleByUuid(String uuid) {
+		return getByUuid(uuid, ProviderRole.class);
+	}
+
 }

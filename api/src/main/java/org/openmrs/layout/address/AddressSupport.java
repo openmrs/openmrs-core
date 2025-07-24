@@ -145,7 +145,7 @@ public class AddressSupport extends LayoutSupport<AddressTemplate> implements Gl
 		AddressTemplate addressTemplate;
 		try {
 			
-			addressTemplate = Context.getSerializationService().getDefaultSerializer().deserialize(xml,
+			addressTemplate = Context.getSerializationService().getDefaultSerializer().deserialize(StringEscapeUtils.unescapeXml(xml),
 			    AddressTemplate.class);
 		}
 		catch (SerializationException e) {

@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.openmrs.Allergy;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
+import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptDescription;
@@ -33,6 +34,7 @@ import org.openmrs.ConceptStopWord;
 import org.openmrs.Condition;
 import org.openmrs.Diagnosis;
 import org.openmrs.Drug;
+import org.openmrs.DrugReferenceMap;
 import org.openmrs.DrugIngredient;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
@@ -60,12 +62,15 @@ import org.openmrs.PersonAttributeType;
 import org.openmrs.ProgramAttributeType;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttributeType;
+import org.openmrs.ProviderRole;
 import org.openmrs.Relationship;
 import org.openmrs.SimpleDosingInstructions;
 import org.openmrs.TestOrder;
 import org.openmrs.User;
 import org.openmrs.Visit;
+import org.openmrs.VisitType;
 import org.openmrs.VisitAttributeType;
+import org.openmrs.FormResource;
 import org.openmrs.api.builder.DrugOrderBuilder;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
@@ -95,6 +100,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -256,7 +262,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		throws InterruptedException {
 
 		int N = 50;
-		final Set<String> uniqueOrderNumbers = new HashSet<>(50);
+		final Set<String> uniqueOrderNumbers = Collections.synchronizedSet(new HashSet<String>(50));
 		List<Thread> threads = new ArrayList<>();
 		for (int i = 0; i < N; i++) {
 			threads.add(new Thread(() -> {
@@ -2736,12 +2742,18 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.addAnnotatedClass(SerializedObject.class)
 			.addAnnotatedClass(PatientState.class)
 			.addAnnotatedClass(DrugIngredient.class)
+			.addAnnotatedClass(DrugReferenceMap.class)
 			.addAnnotatedClass(AlertRecipient.class)
 			.addAnnotatedClass(PatientIdentifierType.class)
 			.addAnnotatedClass(ConceptStopWord.class)
 			.addAnnotatedClass(ProgramAttributeType.class)
 			.addAnnotatedClass(HL7InError.class)
 			.addAnnotatedClass(OrderType.class)
+			.addAnnotatedClass(ConceptAnswer.class)
+			.addAnnotatedClass(ConceptClass.class)
+			.addAnnotatedClass(FormResource.class)
+			.addAnnotatedClass(VisitType.class)
+			.addAnnotatedClass(ProviderRole.class)
 			.getMetadataBuilder().build();
 
 
@@ -3445,6 +3457,34 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		DrugOrder saveOrder = (DrugOrder) orderService.saveOrder(order, null);
 		assertTrue(saveOrder.getAsNeeded());
 		assertNotNull(orderService.getOrder(saveOrder.getOrderId()));
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#saveOrder(Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldSetNonCodedDrugOrderConcept() {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-nonCodedDrugs.xml");
+
+		DrugOrder drugOrder = new DrugOrder();
+		drugOrder.setDateActivated(new Date());
+		drugOrder.setDrugNonCoded("non coded paracetamol");
+		drugOrder.setOrderType(orderService.getOrderTypeByName("Drug order"));
+		drugOrder.setEncounter(encounterService.getEncounter(3));
+		drugOrder.setPatient(patientService.getPatient(7));
+		drugOrder.setCareSetting(orderService.getCareSetting(1));
+		drugOrder.setOrderer(providerService.getProvider(1));
+		drugOrder.setDoseUnits(conceptService.getConcept(50));
+		drugOrder.setQuantityUnits(conceptService.getConcept(51));
+		drugOrder.setFrequency(orderService.getOrderFrequency(3));
+		drugOrder.setRoute(conceptService.getConcept(22));
+		drugOrder.setDosingType(SimpleDosingInstructions.class);
+		drugOrder.setNumRefills(10);
+		drugOrder.setDose(300.0);
+		drugOrder.setQuantity(20.0);
+
+		orderService.saveOrder(drugOrder, null);
+		assertNotNull(drugOrder.getConcept());
 	}
 
 	@Test

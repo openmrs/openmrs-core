@@ -10,10 +10,12 @@
 package org.openmrs.validator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptNumeric;
@@ -23,7 +25,9 @@ import org.openmrs.ObsReferenceRange;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.util.ConceptReferenceRangeUtility;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -83,7 +87,6 @@ public class ObsValidator implements Validator {
 			return;
 		}
 		List<Obs> ancestors = new ArrayList<>();
-		validateConceptReferenceRange(obs, errors);
 		validateHelper(obs, errors, ancestors, true);
 		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "accessionNumber", "valueModifier", "valueComplex",
 		    "comment", "voidReason");
@@ -194,22 +197,8 @@ public class ObsValidator implements Validator {
 							errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
 						}
 					}
-					// If the number is higher than the absolute range, raise an error 
-					if (cn.getHiAbsolute() != null && cn.getHiAbsolute() < obs.getValueNumeric()) {
-						if (atRootNode) {
-							errors.rejectValue("valueNumeric", "error.outOfRange.high");
-						} else {
-							errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
-						}
-					}
-					// If the number is lower than the absolute range, raise an error as well 
-					if (cn.getLowAbsolute() != null && cn.getLowAbsolute() > obs.getValueNumeric()) {
-						if (atRootNode) {
-							errors.rejectValue("valueNumeric", "error.outOfRange.low");
-						} else {
-							errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
-						}
-					}
+					
+					validateConceptReferenceRange(obs, errors, atRootNode);
 				} else if (dt.isText() && obs.getValueText() == null) {
 					if (atRootNode) {
 						errors.rejectValue("valueText", "error.null");
@@ -270,11 +259,11 @@ public class ObsValidator implements Validator {
 	 * @param obs Observation to validate
 	 * @param errors Errors to record validation issues
 	 */
-	private void validateConceptReferenceRange(Obs obs, Errors errors) {
-		ConceptReferenceRange conceptReferenceRange = getReferenceRange(obs.getConcept(), obs);
+	private void validateConceptReferenceRange(Obs obs, Errors errors, boolean atRootNode) {
+		ConceptReferenceRange conceptReferenceRange = getReferenceRange(obs);
 
 		if (conceptReferenceRange != null) {
-			validateAbsoluteRanges(obs, conceptReferenceRange, errors);
+			validateAbsoluteRanges(obs, conceptReferenceRange, errors, atRootNode);
 			
 			if (obs.getId() == null) {
 				setObsReferenceRange(obs, conceptReferenceRange);
@@ -286,45 +275,86 @@ public class ObsValidator implements Validator {
 	}
 
 	/**
-	 * Evaluates the criteria and return the most strict {@link ConceptReferenceRange} for a given concept.
+	 * Evaluates the criteria and return the most strict {@link ConceptReferenceRange} for a given concept
+	 * and patient contained in an observation.
 	 * It considers all valid ranges that match the criteria for the person.
 	 *
-	 * @param concept The concept to evaluate
-	 * @param obs containing The patient for whom the range is being evaluated
+	 * @param obs containing The concept and patient for whom the range is being evaluated
 	 * @return The strictest {@link ConceptReferenceRange}, or null if no valid range is found
 	 * 
 	 * @since 2.7.0
 	 */
-	public ConceptReferenceRange getReferenceRange(Concept concept, Obs obs) {
+	public ConceptReferenceRange getReferenceRange(Obs obs) {
+		Concept concept = HibernateUtil.getRealObjectFromProxy(obs.getConcept());
 		if (concept == null || concept.getDatatype() == null || !concept.getDatatype().isNumeric()) {
 			return null;
 		}
+		
+		ConceptNumeric conceptNumeric = (ConceptNumeric) concept;
 
 		List<ConceptReferenceRange> referenceRanges = Context.getConceptService()
 			.getConceptReferenceRangesByConceptId(concept.getConceptId());
 
 		if (referenceRanges.isEmpty()) {
-			return null;
+			return getDefaultReferenceRange(conceptNumeric);
 		}
 
 		ConceptReferenceRangeUtility referenceRangeUtility = new ConceptReferenceRangeUtility();
 		List<ConceptReferenceRange> validRanges = new ArrayList<>();
 
 		for (ConceptReferenceRange referenceRange : referenceRanges) {
-			if (referenceRangeUtility.evaluateCriteria(referenceRange.getCriteria(), obs)) {
+			if (referenceRangeUtility.evaluateCriteria(StringEscapeUtils.unescapeHtml4(referenceRange.getCriteria()), obs)) {
 				validRanges.add(referenceRange);
 			}
 		}
 
 		if (validRanges.isEmpty()) {
-			return null;
+			ConceptReferenceRange defaultReferenceRange = getDefaultReferenceRange(conceptNumeric);
+			if (defaultReferenceRange != null) {
+				validRanges.add(defaultReferenceRange);
+			} else {
+				return null;
+			}
 		}
+		
 		return findStrictestReferenceRange(validRanges);
 	}
-	
+
+	/**
+	 * Loads the reference range from the ConceptNumeric if no reference ranges are associated with
+	 * this concept and person.
+	 * 
+	 * @param conceptNumeric A {@link ConceptNumeric} to extract the default values from
+	 * @return a {@link ConceptReferenceRange} containing the reference range from the concept
+	 */
+	private static ConceptReferenceRange getDefaultReferenceRange(ConceptNumeric conceptNumeric) {
+		if (conceptNumeric == null || (
+			conceptNumeric.getHiAbsolute() == null &&
+			conceptNumeric.getHiCritical() == null &&
+			conceptNumeric.getHiNormal() == null &&
+			conceptNumeric.getLowAbsolute() == null &&
+			conceptNumeric.getLowCritical() == null &&
+			conceptNumeric.getLowNormal() == null
+		)) {
+			return null;
+		}
+		
+		ConceptReferenceRange defaultReferenceRange = new ConceptReferenceRange();
+		defaultReferenceRange.setConceptNumeric(conceptNumeric);
+		defaultReferenceRange.setHiAbsolute(conceptNumeric.getHiAbsolute());
+		defaultReferenceRange.setHiCritical(conceptNumeric.getHiCritical());
+		defaultReferenceRange.setHiNormal(conceptNumeric.getHiNormal());
+		defaultReferenceRange.setLowAbsolute(conceptNumeric.getLowAbsolute());
+		defaultReferenceRange.setLowCritical(conceptNumeric.getLowCritical());
+		defaultReferenceRange.setLowNormal(conceptNumeric.getLowNormal());
+		return defaultReferenceRange;
+	}
+
 	/**
 	 * Finds the strictest {@link ConceptReferenceRange} from a list of valid ranges.
-	 * The strictest range is determined by having the highest lower bound and the lowest upper bound.
+	 * The strictest range is determined separately for each value, e.g., the lowAbsolute will
+	 * be the highest lowAbsolute of any matching range, the lowCritical value will be the
+	 * highest lowCritical value of any matching range.
 	 * e.g.
 	 * If ConceptReferenceRange-1 has a range of 80-150.
 	 * and ConceptReferenceRange-2 has a range of 60-140,
@@ -334,30 +364,45 @@ public class ObsValidator implements Validator {
 	 * @return The strictest {@link ConceptReferenceRange} constructed from the strictest bounds
 	 */
 	private ConceptReferenceRange findStrictestReferenceRange(List<ConceptReferenceRange> conceptReferenceRanges) {
-		ConceptReferenceRange strictestLowRange = conceptReferenceRanges.stream()
-			.filter(range -> range.getLowAbsolute() != null)
-			.max(Comparator.comparing(ConceptReferenceRange::getLowAbsolute))
-			.orElse(null);
-
-		ConceptReferenceRange strictestHiRange = conceptReferenceRanges.stream()
-			.filter(range -> range.getHiAbsolute() != null)
-			.min(Comparator.comparing(ConceptReferenceRange::getHiAbsolute))
-			.orElse(null);
+		if (conceptReferenceRanges.size() == 1) {
+			return conceptReferenceRanges.get(0);
+		}
 
 		ConceptReferenceRange strictestRange = new ConceptReferenceRange();
+		strictestRange.setConceptNumeric(conceptReferenceRanges.get(0).getConceptNumeric());
 
-		if (strictestLowRange != null) {
-			strictestRange.setLowAbsolute(strictestLowRange.getLowAbsolute());
-			strictestRange.setLowNormal(strictestLowRange.getLowNormal());
-			strictestRange.setLowCritical(strictestLowRange.getLowCritical());
+		for (ConceptReferenceRange conceptReferenceRange : conceptReferenceRanges) {
+			if (conceptReferenceRange.getLowAbsolute() != null && 
+					(strictestRange.getLowAbsolute() == null || strictestRange.getLowAbsolute() < conceptReferenceRange.getLowAbsolute())) {
+				strictestRange.setLowAbsolute(conceptReferenceRange.getLowAbsolute());
+			}
+			
+			if (conceptReferenceRange.getLowCritical() != null && 
+					(strictestRange.getLowCritical() == null || strictestRange.getLowCritical() < conceptReferenceRange.getLowCritical())) {
+				strictestRange.setLowCritical(conceptReferenceRange.getLowCritical());
+			}
+			
+			if (conceptReferenceRange.getLowNormal() != null &&
+					(strictestRange.getLowNormal() == null || strictestRange.getLowNormal() < conceptReferenceRange.getLowNormal())) {
+				strictestRange.setLowNormal(conceptReferenceRange.getLowNormal());
+			}
+			
+			if (conceptReferenceRange.getHiNormal() != null &&
+					(strictestRange.getHiNormal() == null || strictestRange.getHiNormal() > conceptReferenceRange.getHiNormal())) {
+				strictestRange.setHiNormal(conceptReferenceRange.getHiNormal());
+			}
+			
+			if (conceptReferenceRange.getHiCritical() != null &&
+					(strictestRange.getHiCritical() == null || strictestRange.getHiCritical() > conceptReferenceRange.getHiCritical())) {
+				strictestRange.setHiCritical(conceptReferenceRange.getHiCritical());
+			}
+			
+			if (conceptReferenceRange.getHiAbsolute() != null &&
+					(strictestRange.getHiAbsolute() == null || strictestRange.getHiAbsolute() > conceptReferenceRange.getHiAbsolute())) {
+				strictestRange.setHiAbsolute(conceptReferenceRange.getHiAbsolute());
+			}
 		}
-
-		if (strictestHiRange != null) {
-			strictestRange.setHiAbsolute(strictestHiRange.getHiAbsolute());
-			strictestRange.setHiNormal(strictestHiRange.getHiNormal());
-			strictestRange.setHiCritical(strictestHiRange.getHiCritical());
-		}
-
+		
 		return strictestRange;
 	}
 
@@ -368,22 +413,41 @@ public class ObsValidator implements Validator {
 	 * @param conceptReferenceRange ConceptReferenceRange containing the range values
 	 * @param errors Errors to record validation issues
 	 */
-	private void validateAbsoluteRanges(Obs obs, ConceptReferenceRange conceptReferenceRange, Errors errors) {
+	private void validateAbsoluteRanges(Obs obs, ConceptReferenceRange conceptReferenceRange, Errors errors, boolean atRootNode) {
 		if (conceptReferenceRange.getHiAbsolute() != null && conceptReferenceRange.getHiAbsolute() < obs.getValueNumeric()) {
-			errors.rejectValue(
-				"valueNumeric", 
-				"error.value.outOfRange.high", 
-				new Object[] { conceptReferenceRange.getLowAbsolute() },
-				null
-			);
+			if (atRootNode) {
+				errors.rejectValue(
+					"valueNumeric",
+					"error.value.outOfRange.high",
+					new Object[] { conceptReferenceRange.getHiAbsolute() },
+					null
+				);
+			} else {
+				errors.rejectValue(
+					"groupMember",
+					"Obs.error.inGroupMember",
+					new Object[] {},
+					null
+				);
+			}
 		}
+		
 		if (conceptReferenceRange.getLowAbsolute() != null && conceptReferenceRange.getLowAbsolute() > obs.getValueNumeric()) {
-			errors.rejectValue(
-				"valueNumeric", 
-				"error.value.outOfRange.low", 
-				new Object[] { conceptReferenceRange.getLowAbsolute() },
-				null
-			);
+			if (atRootNode) {
+				errors.rejectValue(
+					"valueNumeric",
+					"error.value.outOfRange.low",
+					new Object[] { conceptReferenceRange.getLowAbsolute() },
+					null
+				);
+			} else {
+				errors.rejectValue(
+					"groupMember",
+					"Obs.error.inGroupMember",
+					new Object[] { },
+					null
+				);
+			}
 		}
 	}
 

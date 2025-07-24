@@ -10,10 +10,10 @@
     graphic logo is a trademark of OpenMRS Inc.
 
 -->
-<web-app xmlns="http://java.sun.com/xml/ns/javaee"
-		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-Instance"
-		 xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-		 version="3.0">
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+		 version="6.0">
 	
 	<display-name>@WEBAPP.DISPLAY.NAME@</display-name>
 	<description>@WEBAPP.DESCRIPTION@</description> 
@@ -56,11 +56,6 @@
         <param-name>springJspExpressionSupport</param-name>
         <param-value>false</param-value>
     </context-param>
-
-	<listener>
-		<listener-class>net.sf.ehcache.constructs.web.ShutdownListener</listener-class>
-		<!-- Should go before Listener so that during webapp shutdown it comes after hibernate shutdown last -->
-	</listener>
 	
 	<listener>
 		<listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
@@ -268,6 +263,10 @@
 
 	        </param-value>
 	    </init-param>
+		<multipart-config>
+			<max-file-size>75000000</max-file-size>
+			<max-request-size>75000000</max-request-size>
+		</multipart-config>
 		<!-- Don't use "load-on-startup" in case initial setup wizard is needed -->
 	</servlet>
 

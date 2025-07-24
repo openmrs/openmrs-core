@@ -9,21 +9,21 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
-import org.hibernate.search.annotations.DocumentId;
-import org.hibernate.search.annotations.Field;
-
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 
 /**
  * PatientIdentifierType
@@ -32,7 +32,8 @@ import javax.persistence.Table;
 @Table(name = "patient_identifier_type")
 @Audited
 @AttributeOverrides({
-	@AttributeOverride(name = "name", column = @Column(name = "name", nullable = false, length = 50))
+	@AttributeOverride(name = "name", column = @Column(name = "name", nullable = false, length = 50)),
+	@AttributeOverride(name = "description", column = @Column(name = "description", length = 65535))
 })
 public class PatientIdentifierType extends BaseChangeableOpenmrsMetadata {
 	
@@ -86,7 +87,7 @@ public class PatientIdentifierType extends BaseChangeableOpenmrsMetadata {
 	@Column(name = "format")
 	private String format;
 
-	@Field
+	@GenericField
 	@Column(name = "required", nullable = false)
 	private Boolean required = Boolean.FALSE;
 

@@ -9,13 +9,18 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.Cacheable;
+
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
-import org.hibernate.search.annotations.DocumentId;
 
 /**
  * ConceptDatatype
  */
 @Audited
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class ConceptDatatype extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 473L;
@@ -65,7 +70,6 @@ public class ConceptDatatype extends BaseChangeableOpenmrsMetadata {
 	public static final String COMPLEX_UUID = "8d4a6242-c2cc-11de-8d13-0010c6dffd0f";
 	
 	// Fields
-	@DocumentId
 	private Integer conceptDatatypeId;
 	
 	private String hl7Abbreviation;

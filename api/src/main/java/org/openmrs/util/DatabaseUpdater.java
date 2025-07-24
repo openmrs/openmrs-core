@@ -35,14 +35,12 @@ import liquibase.lockservice.LockServiceFactory;
 import liquibase.resource.CompositeResourceAccessor;
 import liquibase.resource.FileSystemResourceAccessor;
 import liquibase.resource.ResourceAccessor;
-import liquibase.ui.LoggerUIService;
 import org.apache.commons.io.IOUtils;
 import org.openmrs.api.context.Context;
 import org.openmrs.liquibase.ChangeLogDetective;
 import org.openmrs.liquibase.ChangeLogVersionFinder;
 import org.openmrs.liquibase.ChangeSetExecutorCallback;
 import org.openmrs.liquibase.LiquibaseProvider;
-import org.openmrs.liquibase.LiquibaseScopeHandling;
 import org.openmrs.liquibase.OpenmrsClassLoaderResourceAccessor;
 import org.openmrs.module.ModuleClassLoader;
 import org.slf4j.Logger;
@@ -52,7 +50,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -71,7 +68,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.logging.Level;
 
 /**
  * This class uses Liquibase to update the database. <br>
@@ -101,7 +97,7 @@ public class DatabaseUpdater {
 	private static LiquibaseProvider liquibaseProvider;
 	
 	static {
-		changeLogDetective = new ChangeLogDetective();
+		changeLogDetective = ChangeLogDetective.getInstance();
 		changeLogVersionFinder = new ChangeLogVersionFinder();
 	}
 	
@@ -219,11 +215,9 @@ public class DatabaseUpdater {
 		log.debug("Setting up liquibase object to run changelog: {}", changeLogFile);
 		Liquibase liquibase = getLiquibase(changeLogFile, cl);
 
-		String scopeId = LiquibaseScopeHandling.enterLiquibaseUILoggingService();
 		int numChangeSetsToRun = new StatusCommandStep()
 			.listUnrunChangeSets(contexts,
 				new LabelExpression(), liquibase.getDatabaseChangeLog(), liquibase.getDatabase()).size();
-		LiquibaseScopeHandling.exitLiquibaseScope(scopeId);
 
 		Database database = null;
 		LockService lockHandler = null;
@@ -233,19 +227,32 @@ public class DatabaseUpdater {
 			lockHandler = LockServiceFactory.getInstance().getLockService(database);
 			lockHandler.waitForLock();
 			
-			DatabaseChangeLog changeLog = liquibase.getDatabaseChangeLog();
-			changeLog.setChangeLogParameters(liquibase.getChangeLogParameters());
-			changeLog.validate(database);
-			
-			ChangeLogIterator logIterator = new ChangeLogIterator(changeLog, new ShouldRunChangeSetFilter(database),
-			        new ContextChangeSetFilter(contexts), new DbmsChangeSetFilter(database));
-			
-			// ensure that the change log history service is initialised
-			//
-			Scope.getCurrentScope().getSingleton(ChangeLogHistoryServiceFactory.class).getChangeLogService(database).init();
-			
-			logIterator.run(new OpenmrsUpdateVisitor(database, callback, numChangeSetsToRun),
-			    new RuntimeEnvironment(database, contexts, new LabelExpression()));
+			Map<String, Object> scopeValues = new HashMap<>();
+			scopeValues.put(Scope.Attr.resourceAccessor.name(), getCompositeResourceAccessor(null));
+			String scopeId = null;
+			try {
+				scopeId = Scope.enter(scopeValues);
+				DatabaseChangeLog changeLog = liquibase.getDatabaseChangeLog();
+				changeLog.setChangeLogParameters(liquibase.getChangeLogParameters());
+				changeLog.validate(database);
+
+				ChangeLogIterator logIterator = new ChangeLogIterator(changeLog, new ShouldRunChangeSetFilter(database),
+					new ContextChangeSetFilter(contexts), new DbmsChangeSetFilter(database));
+
+				// ensure that the change log history service is initialised
+				Scope.getCurrentScope().getSingleton(ChangeLogHistoryServiceFactory.class).getChangeLogService(database).init();
+
+				logIterator.run(new OpenmrsUpdateVisitor(database, callback, numChangeSetsToRun),
+					new RuntimeEnvironment(database, contexts, new LabelExpression()));
+			}
+			finally {
+				try {
+					Scope.exit(scopeId);
+				}
+				catch (Exception e) {
+					log.warn("An error occurred trying to exit the liquibase scope", e);
+				}
+			}
 		}
 		finally {
 			try {
@@ -620,7 +627,6 @@ public class DatabaseUpdater {
 		Liquibase liquibase = null;
 		try {
 			for (String filename : changeLogFileNames) {
-				String scopeId = LiquibaseScopeHandling.enterLiquibaseUILoggingService();
 				liquibase = getLiquibase(filename);
 				List<ChangeSet> changeSets = liquibase.getDatabaseChangeLog().getChangeSets();
 				
@@ -628,7 +634,6 @@ public class DatabaseUpdater {
 					OpenMRSChangeSet openMRSChangeSet = new OpenMRSChangeSet(changeSet, liquibase.getDatabase());
 					result.add(openMRSChangeSet);
 				}
-				LiquibaseScopeHandling.exitLiquibaseScope(scopeId);
 				liquibase.close();
 			}
 		}
@@ -691,7 +696,6 @@ public class DatabaseUpdater {
 			
 			List<OpenMRSChangeSet> results = new ArrayList<>();
 			
-			String scopeId = LiquibaseScopeHandling.enterLiquibaseUILoggingService();
 			for (String changelogFile : changeLogFilenames) {
 				Liquibase liquibase = getLiquibase(changelogFile, null);
 				database = liquibase.getDatabase();
@@ -706,7 +710,6 @@ public class DatabaseUpdater {
 				}
 			}
 			
-			LiquibaseScopeHandling.exitLiquibaseScope(scopeId);
 			return results;
 			
 		}
@@ -793,9 +796,7 @@ public class DatabaseUpdater {
 	}
 	
 	/**
-	 * This method releases the liquibase db lock after a crashed database update. First, it checks
-	 * whether "liquibasechangeloglock" table exists in db. If so, it will check whether the database is
-	 * locked. If that is also true, this means that last attempted db update crashed.<br>
+	 * This method releases the liquibase db lock, and is intended to be usd after a crashed database update.
 	 * <br>
 	 * This should only be called if the user is sure that no one else is currently running database
 	 * updates. This method should be used if there was a db crash while updates were being written and
@@ -805,12 +806,11 @@ public class DatabaseUpdater {
 	 */
 	public static synchronized void releaseDatabaseLock() throws LockException {
 		Database database = null;
-		
 		try {
 			Liquibase liquibase = getLiquibase(null, null);
 			database = liquibase.getDatabase();
 			LockService lockService = LockServiceFactory.getInstance().getLockService(database);
-			if (lockService.hasChangeLogLock() && isLocked()) {
+			if (isLocked()) {
 				lockService.forceReleaseLock();
 			}
 		}

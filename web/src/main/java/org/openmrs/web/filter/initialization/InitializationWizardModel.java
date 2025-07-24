@@ -26,7 +26,7 @@ public class InitializationWizardModel {
 	public static final String HEADER_TEMPLATE = "org/openmrs/web/filter/initialization/header.vm";
 	
 	// automatically given to the .vm files and used there
-	public static final String FOOTER_TEMPLATE = "org/openmrs/web/filter/initialization/footer.vm";
+	public static final String FOOTER_TEMPLATE = "org/openmrs/web/filter/footer.vm";
 	
 	// Values for installMethod field.
 	public static final String INSTALL_METHOD_SIMPLE = "simple";
@@ -82,6 +82,21 @@ public class InitializationWizardModel {
 	public String installMethod = INSTALL_METHOD_SIMPLE;
 	
 	/**
+	 * The type of database being used (mysql or postgresql)
+	 */
+	public String databaseType = "mysql";
+
+	/**
+	 * Default MySQL connection string
+	 */
+	protected static final String DEFAULT_MYSQL_CONNECTION = "jdbc:mysql://localhost:3306/@DBNAME@?autoReconnect=true&sessionVariables=default_storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8";
+
+	/**
+	 * Default PostgreSQL connection string
+	 */
+	protected static final String DEFAULT_POSTGRESQL_CONNECTION = "jdbc:postgresql://localhost:5432/postgres";
+	
+	/**
 	 * True/false marker for the question "Do you currently have an OpenMRS database installed"
 	 */
 	public Boolean hasCurrentOpenmrsDatabase = true;
@@ -100,7 +115,7 @@ public class InitializationWizardModel {
 	/**
 	 * Filled out by user on the databasesetup.vm page Looks like:
 	 */
-	public String databaseConnection = "jdbc:mysql://localhost:3306/@DBNAME@?autoReconnect=true&sessionVariables=default_storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8";
+	public String databaseConnection = DEFAULT_MYSQL_CONNECTION;
 	
 	/**
 	 * Optional Database Driver string filled in on databasesetup.vm
@@ -116,6 +131,11 @@ public class InitializationWizardModel {
 	 * Filled in on databasesetup.vm
 	 */
 	public String createDatabaseUsername = "root";
+
+	/**
+	 * Default postgres super user
+	 */
+	public String postgresUsername = "postgres";
 	
 	/**
 	 * Filled in on databasesetup.vm
@@ -159,11 +179,6 @@ public class InitializationWizardModel {
 	 * Enables importing test data from the remote server
 	 */
 	public Boolean importTestData = Boolean.FALSE;
-	
-	/**
-	 * Does the user want to add the demo data to the database?
-	 */
-	public Boolean addDemoData = Boolean.FALSE;
 	
 	/**
 	 * Asked for on the otherproperties.vm page to know if the allow_web_admin runtime property is

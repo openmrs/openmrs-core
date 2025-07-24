@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -544,6 +543,22 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GP_UNKNOWN_PROVIDER_UUID, provider.getUuid(), null);
 		Context.getAdministrationService().saveGlobalProperty(gp);
 		assertEquals(provider, service.getUnknownProvider());
+	}
+
+	/**
+	 * @see ProviderService#getProviderRole(Integer) 
+	 */
+	@Test
+	public void getProviderRole_shouldReturnTheProviderRoleIfExists() {
+		assertNotNull(service.getProviderRole(1003));
+	}
+
+	/**
+	 * @see ProviderService#getProviderRole(Integer)
+	 */
+	@Test
+	public void getProviderRole_shouldReturnNullIfNotExists() {
+		assertNull(service.getProviderRole(200));
 	}
 	
 }

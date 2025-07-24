@@ -59,7 +59,7 @@ import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 
-import javax.activation.MimetypesFileTypeMap;
+import jakarta.activation.MimetypesFileTypeMap;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -2156,14 +2156,13 @@ public class OpenmrsUtil {
 	 * given the concept. It checks if a given value is within the valid reference range.
 	 *
 	 * @param value The value to check
-	 * @param concept The concept associated with the value
 	 * @param obs The observation to be verified
 	 * @return Error message containing expected range if there was a range mismatch, else returns empty string.
 	 * 
 	 * @since 2.7.0
 	 */
-	public static String isValidNumericValue(Float value, Concept concept, Obs obs) {
-		ConceptReferenceRange conceptReferenceRange = new ObsValidator().getReferenceRange(concept, obs);
+	public static String isValidNumericValue(Float value, Obs obs) {
+		ConceptReferenceRange conceptReferenceRange = Context.getConceptService().getConceptReferenceRange(obs.getPerson(), obs.getConcept());
 		if (conceptReferenceRange == null) {
 			return "";
 		}
