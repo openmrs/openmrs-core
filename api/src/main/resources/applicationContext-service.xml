@@ -14,54 +14,21 @@
 <!-- Application context definition for OpenMRS business services. -->
 <beans xmlns="http://www.springframework.org/schema/beans"
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xmlns:p="http://www.springframework.org/schema/p"
 	   xmlns:context="http://www.springframework.org/schema/context"
 	   xmlns:cache="http://www.springframework.org/schema/cache"
-	   xmlns:jee="http://www.springframework.org/schema/jee"
 	   xmlns:tx="http://www.springframework.org/schema/tx"
-	   xmlns:aop="http://www.springframework.org/schema/aop"
 	   xmlns:util="http://www.springframework.org/schema/util"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans
        		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 			http://www.springframework.org/schema/context
 			http://www.springframework.org/schema/context/spring-context-3.0.xsd
-			http://www.springframework.org/schema/jee
-			http://www.springframework.org/schema/jee/spring-jee-3.0.xsd
 			http://www.springframework.org/schema/tx
 			http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
-			http://www.springframework.org/schema/aop
-           	http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
             http://www.springframework.org/schema/util
             http://www.springframework.org/schema/util/spring-util-3.0.xsd
 			http://www.springframework.org/schema/cache
 			http://www.springframework.org/schema/cache/spring-cache.xsd">
-	<!--  **************************  Transactional Intercepter  *************************  -->
-	<!--  	
-		Looks for advisors (TransactionAttributeSourceAdvisor) in the context, and automatically 
-		creates proxy objects which are the transactional wrappers.  This object looks at every 
-		class defined below to see whether it contains the Transactional annotation attribute. 
-		NOTE:  I believe this needs to be defined at the top of the file (or before all Transactional
-		components) because it needs to do processing on objects after they are initialized. 
-	-->
-	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
-	<!-- 
-		AOP advisor: Contains TransactionAttributeSource which tells Spring what to do (advice) 
-		and when to do it (pointcut).  Pointcuts, in our case, are defined by the use of the 
-		Transactional annotation attribute.
-	-->
-	<bean class="org.springframework.transaction.interceptor.TransactionAttributeSourceAdvisor">
-		<property name="transactionInterceptor" ref="transactionInterceptor"/>
-	</bean>
-	<!-- 
-		AOP transaction advice: Intercepts method call and wraps it with a transaction.  The 
-		transactionAttributeSource is what reads/remembers all Transactional attributes of a given 
-		method or class (which is done during initialization)
-	-->
-	<bean id="transactionInterceptor" class="org.springframework.transaction.interceptor.TransactionInterceptor">
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
-	</bean>
-
+	
 	<bean class="org.openmrs.api.impl.GlobalLocaleList" id="globalLocaleList"/>
 
 	<!--  **************************  EVENT LISTENERS ***************************** -->
@@ -325,7 +292,7 @@
 	</bean>
 	<!-- /SerializationService setup -->
 
-	<bean id="hL7ServiceTarget" class="org.openmrs.hl7.impl.HL7ServiceImpl" factory-method="getInstance">
+	<bean id="hL7ServiceTarget" class="org.openmrs.hl7.impl.HL7ServiceImpl">
 		<property name="HL7DAO" ref="hL7DAO"/>
 		<property name="parser">
 			<bean class="ca.uhn.hl7v2.parser.GenericParser"/>
@@ -491,9 +458,7 @@
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="target" ref="serializationServiceTarget"/>
 		<property name="preInterceptors" ref="serviceInterceptors"/>
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-		</property>
+		<property name="transactionAttributeSource" ref="transactionAttributeSource" />
 	</bean>
 	<bean id="hL7Service" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager" ref="transactionManager"/>
@@ -520,7 +485,6 @@
 		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
 	</bean>
 
-
 	<!--  **************************  SERVICE INTERCEPTORS  *************************  -->
 	<!-- AOP before advice that authorizes users according to annotations -->
 	<bean id="authorizationInterceptor" class="org.openmrs.aop.AuthorizationAdvice"/>
@@ -528,23 +492,15 @@
 	<bean id="loggingInterceptor" class="org.openmrs.aop.LoggingAdvice"/>
 	<!-- AOP before advice that calls the SetRequiredDataHandler methods -->
 	<bean id="requiredDataInterceptor" class="org.openmrs.aop.RequiredDataAdvice"/>
-	<!-- AOP cache interceptor -->
-	<bean id="cacheInterceptor" class="org.springframework.cache.interceptor.CacheInterceptor">
-		<property name="cacheManager" ref="apiCacheManager"/>
-		<property name="cacheOperationSources" ref="annotationCacheOperationSource"/>
-	</bean>
-
-	<!-- finds all cache-related annotations to create available cache operations for CacheInterceptor -->
-	<bean id="annotationCacheOperationSource" class="org.springframework.cache.annotation.AnnotationCacheOperationSource"/>
 
 	<util:list id="serviceInterceptors">
 		<ref bean="authorizationInterceptor"/>
 		<ref bean="requiredDataInterceptor"/>
 		<ref bean="loggingInterceptor"/>
-		<ref bean="cacheInterceptor"/>
+		<!-- Caching handled by cache:annotation-driven -->
+		<!-- Transactions handled by tx:annotation-driven -->
 	</util:list>
-
-
+	
 	<!--  **************************  SESSION FACTORY  *************************  -->
 
 	<util:list id="moduleTestingMappingJarLocations">
@@ -576,7 +532,8 @@
 				<value>org.openmrs</value>
 			</list>
 		</property>
-		<!--  default properties must be set in the hibernate.default.properties -->
+		<property name="cacheConfig" ref="cacheConfig" />
+		<!-- default properties must be set in the hibernate.default.properties -->
 	</bean>
 
 	<bean id="dbSessionFactory" class="org.openmrs.api.db.hibernate.DbSessionFactory">
@@ -677,9 +634,9 @@
 								expression="org.openmrs.util.TestTypeFilter"/>
 		<context:exclude-filter type="custom" expression="org.openmrs.annotation.OpenmrsProfileExcludeFilter"/>
 	</context:component-scan>
-	
-	<cache:annotation-driven cache-manager="apiCacheManager"/>
-	
-	<tx:annotation-driven />
+
+	<cache:annotation-driven cache-manager="apiCacheManager" proxy-target-class="true"/>
+
+	<tx:annotation-driven proxy-target-class="true" />
 
 </beans>
