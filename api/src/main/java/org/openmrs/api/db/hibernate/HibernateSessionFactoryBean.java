@@ -67,9 +67,12 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 	
 	private Metadata metadata;
 	
-	@Autowired
 	private CacheConfig cacheConfig;
-	
+
+	public void setCacheConfig(CacheConfig cacheConfig) {
+		this.cacheConfig = cacheConfig;
+	}
+
 	/**
 	 * Collect the mapping resources for future use because the mappingResources object is defined
 	 * as 'private' instead of 'protected'
