@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +34,7 @@ import org.openmrs.PersonName;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
+import org.openmrs.ProviderRole;
 import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.datatype.FreeTextDatatype;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
@@ -560,5 +562,18 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	public void getProviderRole_shouldReturnNullIfNotExists() {
 		assertNull(service.getProviderRole(200));
 	}
-	
+
+	/**
+	 * @see ProviderService#getProvidersByRoles(List) 
+	 */
+	@Test
+	public void getProvidersByRoles_shouldGetProvidersByRoles() {
+		List<ProviderRole> roles = new ArrayList<>();
+		roles.add(service.getProviderRole(1001));
+		roles.add(service.getProviderRole(1002));
+
+		List<Provider> providers = service.getProvidersByRoles(roles);
+		assertEquals(5, providers.size());
+	}
+
 }
