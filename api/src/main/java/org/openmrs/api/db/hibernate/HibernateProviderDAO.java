@@ -411,4 +411,23 @@ public class HibernateProviderDAO implements ProviderDAO {
 		return getByUuid(uuid, ProviderRole.class);
 	}
 
+	@Override
+	public List<Provider> getProvidersByRoles(List<ProviderRole> roles, boolean includeRetired) {
+		CriteriaBuilder cb = sessionFactory.getCurrentSession().getCriteriaBuilder();
+		CriteriaQuery<Provider> cq = cb.createQuery(Provider.class);
+		Root<Provider> root = cq.from(Provider.class);
+		
+		List<Predicate> predicates = new ArrayList<>();
+		predicates.add(root.get("providerRole").in(roles));
+		if (!includeRetired) {
+			predicates.add(cb.isFalse(root.get("retired")));
+		}
+
+		cq.select(root)
+			.where(predicates.toArray(new Predicate[0]))
+			.orderBy(cb.asc(root.get("providerId")));
+
+		return sessionFactory.getCurrentSession().createQuery(cq).getResultList();
+	}
+
 }
