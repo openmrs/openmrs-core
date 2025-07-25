@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,8 +20,6 @@ import jakarta.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
-import org.openmrs.api.db.hibernate.search.SearchAnalysis;
 
 import java.util.Date;
 
@@ -29,6 +29,10 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "concept_reference_source")
+@AttributeOverrides({
+	@AttributeOverride(name = "name", column = @Column(name = "name", nullable = false, length = 50)),
+	@AttributeOverride(name = "description", column = @Column(name= "description", nullable = false, length = 1024))
+})
 @Audited
 public class ConceptSource extends BaseChangeableOpenmrsMetadata {
 	

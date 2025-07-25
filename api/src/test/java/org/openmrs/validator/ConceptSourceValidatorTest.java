@@ -119,8 +119,8 @@ public class ConceptSourceValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		ConceptSource conceptSource = new ConceptSource();
-		conceptSource.setName(StringUtils.repeat("a", 256));
-		conceptSource.setDescription(StringUtils.repeat("a", 256));
+		conceptSource.setName(StringUtils.repeat("a", 51));
+		conceptSource.setDescription(StringUtils.repeat("a", 1025));
 		conceptSource.setHl7Code(StringUtils.repeat("a", 51));
 		conceptSource.setUniqueId(StringUtils.repeat("a", 251));
 		conceptSource.setRetireReason(StringUtils.repeat("a", 256));
