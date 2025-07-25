@@ -111,8 +111,14 @@ import org.xml.sax.InputSource;
  */
 @ContextConfiguration(locations = { "classpath:applicationContext-service.xml",
         "classpath*:moduleApplicationContext.xml", "classpath*:TestingApplicationContext.xml" })
-@TestExecutionListeners( { TransactionalTestExecutionListener.class, SkipBaseSetupAnnotationExecutionListener.class,
-        StartModuleExecutionListener.class })
+@TestExecutionListeners(
+	listeners = {
+		TransactionalTestExecutionListener.class,
+		SkipBaseSetupAnnotationExecutionListener.class,
+		StartModuleExecutionListener.class
+	},
+	mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS
+)
 @Transactional
 @Rollback
 @Deprecated
@@ -315,7 +321,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		// properties
 		if (useInMemoryDatabase()) {
 			runtimeProperties.setProperty(Environment.DIALECT, H2Dialect.class.getName());
-			String url = "jdbc:h2:mem:openmrs;DB_CLOSE_DELAY=30;LOCK_TIMEOUT=10000";
+			String url = "jdbc:h2:mem:openmrs;DB_CLOSE_DELAY=30;LOCK_TIMEOUT=10000;MODE=LEGACY;NON_KEYWORDS=VALUE";
 			runtimeProperties.setProperty(Environment.URL, url);
 			runtimeProperties.setProperty(Environment.DRIVER, "org.h2.Driver");
 			runtimeProperties.setProperty(Environment.USER, "sa");
@@ -834,7 +840,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	}
 	
 	protected IDatabaseConnection setupDatabaseConnection(Connection connection) throws DatabaseUnitException {
-		IDatabaseConnection dbUnitConn = new DatabaseConnection(connection);
+		IDatabaseConnection dbUnitConn = new DatabaseConnection(connection, getSchemaPattern());
 		DatabaseConfig config = dbUnitConn.getConfig();
 		
 		if (useInMemoryDatabase()) {
@@ -846,6 +852,15 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		}
 		
 		return dbUnitConn;
+	}
+
+	protected String getSchemaPattern() {
+		if (useInMemoryDatabase()) {
+			return "PUBLIC";
+		}
+		else {
+			return "public";
+		}
 	}
 	
 	/**
@@ -895,8 +910,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 */
 	public void clearHibernateCache() {
 		SessionFactory sf = (SessionFactory) applicationContext.getBean("sessionFactory");
-		sf.getCache().evictCollectionRegions();
-		sf.getCache().evictEntityRegions();
+		sf.getCache().evictCollectionData();
+		sf.getCache().evictEntityData();
 	}
 	
 	/**

@@ -12,12 +12,12 @@ package org.openmrs.web.filter.startuperror;
 import java.io.IOException;
 import java.util.HashMap;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.openmrs.web.Listener;
 import org.openmrs.web.filter.StartupFilter;
 
@@ -49,8 +49,8 @@ public class StartupErrorFilter extends StartupFilter {
 	}
 	
 	/**
-	 * @see org.openmrs.web.filter.StartupFilter#doPost(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse)
+	 * @see org.openmrs.web.filter.StartupFilter#doPost(jakarta.servlet.http.HttpServletRequest,
+	 *      jakarta.servlet.http.HttpServletResponse)
 	 */
 	@Override
 	protected void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
