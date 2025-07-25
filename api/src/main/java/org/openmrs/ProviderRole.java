@@ -9,14 +9,14 @@
  */
 package org.openmrs;
 
-import org.openmrs.annotation.OpenmrsProfile;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.hibernate.envers.Audited;
+
 import java.io.Serializable;
 
 /**
@@ -33,6 +33,7 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name = "provider_role")
+@Audited
 public class ProviderRole extends BaseOpenmrsMetadata implements Serializable {
 
 	private static final long serialVersionUID = 1L;
