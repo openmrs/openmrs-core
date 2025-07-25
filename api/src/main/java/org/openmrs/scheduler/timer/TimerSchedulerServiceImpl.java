@@ -35,12 +35,15 @@ import org.openmrs.scheduler.db.SchedulerDAO;
 import org.openmrs.util.OpenmrsMemento;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.ObjectRetrievalFailureException;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Simple scheduler service that uses JDK timer to trigger and execute scheduled tasks.
  */
+@Service("schedulerService")
 @Transactional
 public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements SchedulerService {
 	
@@ -72,6 +75,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	/**
 	 * Global data access object context
 	 */
+	@Autowired
 	private SchedulerDAO schedulerDAO;
 	
 	/**

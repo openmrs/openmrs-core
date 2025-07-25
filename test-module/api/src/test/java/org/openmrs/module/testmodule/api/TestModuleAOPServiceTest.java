@@ -1,4 +1,4 @@
-package org.openmrs.module.testmodule.api; /**
+/**
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
@@ -7,8 +7,8 @@ package org.openmrs.module.testmodule.api; /**
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+package org.openmrs.module.testmodule.api;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -20,28 +20,34 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.openmrs.test.jupiter.BaseModuleContextSensitiveTest;
 import org.springframework.aop.framework.Advised;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+
 /**
- * Testing with JUnit 5
+ * Tests {@link org.openmrs.module.testmodule.api.TestModuleAOPService}.
  */
-public class TestModuleServiceTest extends BaseModuleContextSensitiveTest {
+public class TestModuleAOPServiceTest extends BaseModuleContextSensitiveTest {
 	
 	@Autowired
-	@Qualifier("testModuleService")
-	private TestModuleService testModuleService;
-	
+	@Qualifier("testModuleAOPService")
+	private TestModuleAOPService aopService;
+
+
+	/**
+	 * @see org.openmrs.module.testmodule.api.TestModuleAOPService#aopHello()
+	 */
 	@Test
-	public void testHello() {
-		assertThat(testModuleService.hello(), is("hello"));
+	public void testAopHello() {
+		assertEquals("AOP Hello", aopService.aopHello());
 	}
 
 	@Test
-	public void annotatedService_shouldHaveInterceptorsApplied() {
-		assertNotNull(testModuleService);
-
-		Advised advised = (Advised) testModuleService;
+	public void xmlServiceDefined_shouldHaveInterceptorsApplied() {
+		assertNotNull(aopService);
+		
+		Advised advised = (Advised) aopService;
 		List<String> expectedAdvices = Arrays.asList(
 			"AuthorizationAdvice", "LoggingAdvice", "RequiredDataAdvice", "CacheInterceptor");
 
@@ -51,14 +57,14 @@ public class TestModuleServiceTest extends BaseModuleContextSensitiveTest {
 	}
 
 	@Test
-	public void annotatedService_shouldNotHaveDuplicateAdvices() {
-		assertNotNull(testModuleService);
+	public void xmlServiceDefined_shouldNotHaveDuplicateAdvices() {
+		assertNotNull(aopService);
 
 		List<String> expectedAdvices = Arrays.asList(
 			"AuthorizationAdvice", "LoggingAdvice", "RequiredDataAdvice", "CacheInterceptor");
 
 		// Collect all advice class simple names applied to the proxy
-		Advised advised = (Advised) testModuleService;
+		Advised advised = (Advised) aopService;
 		List<String> appliedAdviceNames = Arrays.stream(advised.getAdvisors())
 			.map(advisor -> advisor.getAdvice().getClass().getSimpleName())
 			.collect(Collectors.toList());
@@ -72,7 +78,7 @@ public class TestModuleServiceTest extends BaseModuleContextSensitiveTest {
 			assertEquals(1, count);
 		}
 	}
-
+	
 	private boolean hasAdvice(Advised advised, String adviceName) {
 		return Arrays.stream(advised.getAdvisors())
 			.anyMatch(advisor -> advisor.getAdvice().getClass().getSimpleName().contains(adviceName));

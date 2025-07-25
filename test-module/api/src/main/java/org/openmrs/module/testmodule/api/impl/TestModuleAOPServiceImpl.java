@@ -10,19 +10,16 @@
 package org.openmrs.module.testmodule.api.impl;
 
 import org.openmrs.api.impl.BaseOpenmrsService;
-import org.openmrs.module.testmodule.api.TestModuleService;
-import org.springframework.stereotype.Service;
+import org.openmrs.module.testmodule.api.TestModuleAOPService;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Defines the services provided by the Test module
+ * Defines the AOP services provided by the Test module
  */
-@Service("testModuleService")
-public class TestModuleServiceImpl extends BaseOpenmrsService implements TestModuleService {
+@Transactional
+public class TestModuleAOPServiceImpl  extends BaseOpenmrsService implements TestModuleAOPService {
 	
-	@Transactional(readOnly = true)
-	public String hello() {
-		return "hello";
+	public String aopHello() {
+		return "AOP Hello";
 	}
-	
 }
