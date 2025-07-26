@@ -158,7 +158,7 @@ Deploy to docker:
                       docker buildx build --pull --push --platform ${bamboo.docker.image.platforms} \
                           --cache-to=type=registry,mode=max,ref=${IMAGE_NIGHTLY}-cache \
                           --cache-from=${IMAGE},${IMAGE_DEV}-cache,${IMAGE_NIGHTLY}-cache \
-                          --build-arg MVN_ARGS="clean install -DskipTests" 
+                          --build-arg MVN_ARGS="clean install -DskipTests" \
                           -t ${IMAGE_NIGHTLY} -t ${IMAGE_NIGHTLY}-${JDK_IMAGE}  .
               description: Deploy to docker
     artifact-subscriptions: []
