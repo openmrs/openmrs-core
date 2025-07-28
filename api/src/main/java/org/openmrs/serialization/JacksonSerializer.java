@@ -10,11 +10,16 @@
 package org.openmrs.serialization;
 
 import java.text.SimpleDateFormat;
+
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.DomainService;
+import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -23,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
+import com.fasterxml.jackson.datatype.hibernate6.Hibernate6Module;
 
 /**
  * {@code JacksonSerializer} is a JSON serialization implementation for OpenMRS
@@ -56,10 +61,10 @@ public class JacksonSerializer implements OpenmrsSerializer {
 	 * @throws SerializationException if initialization fails
 	 */
 	@Autowired
-	public JacksonSerializer(DomainService domainService) throws SerializationException {
+	public JacksonSerializer(@Qualifier(value = "domainService") DomainService domainService) throws SerializationException {
 		objectMapper = new ObjectMapper();
 		objectMapper.registerModule(new UuidReferenceModule(domainService));
-		objectMapper.registerModule(new Hibernate5Module());
+		objectMapper.registerModule(new Hibernate6Module());
 		objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"));
 		objectMapper.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.PUBLIC_ONLY);
 		objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
@@ -93,17 +98,17 @@ public class JacksonSerializer implements OpenmrsSerializer {
 	 *
 	 * @param o the object to serialize
 	 * @return the serialized JSON string
-	 * @throws SecurityException if the class of the object is not whitelisted
-	 *  @throws RuntimeException if serialization fails
+	 * @throws RuntimeException if serialization fails or object is null
 	 */
 	@Override
 	public String serialize(Object o) {
-		String className = o.getClass().getName();
-
+		if (o == null) {
+			throw new RuntimeException("Cannot serialize null object");
+		}
 		try {
 			return getObjectMapper().writeValueAsString(o);
 		} catch (JsonProcessingException e) {
-			throw new RuntimeException("Unable to serialize class: " + className, e);
+			throw new RuntimeException("Unable to serialize class: " + o.getClass().getName(), e);
 		}
 	}
 	
@@ -114,10 +119,19 @@ public class JacksonSerializer implements OpenmrsSerializer {
 	 * @param clazz            the target class to deserialize to
 	 * @param <T>              the type parameter
 	 * @return the deserialized Java object
-	 * @throws SerializationException if deserialization fails
+	 * @throws SerializationException if deserialization fails or provided clazz is null
+	 * @throws SecurityException if the class of the object is not whitelisted
 	 */
 	@Override
 	public <T> T deserialize(String serializedObject, Class<? extends T> clazz) throws SerializationException {
+
+		if (StringUtils.isBlank(serializedObject)) {
+			return null;
+		}
+
+		if (clazz == null) {
+			throw new SerializationException("Cannot deserialize to null class type!");
+		}
 
 		if (!isWhitelisted(clazz.getName())) {
 			throw new SecurityException("Deserialization denied: " + clazz.getName());
@@ -138,48 +152,6 @@ public class JacksonSerializer implements OpenmrsSerializer {
 	 * @return true if whitelisted or if whitelist is empty, false otherwise
 	 */
 	private boolean isWhitelisted(String className) {
-		return adminService.getSerializerWhitelistTypes().isEmpty() ? true : adminService.getSerializerWhitelistTypes().stream().anyMatch(pattern -> matchPattern(pattern, className));
-	}
-
-	/**
-	 * Matches a class name against a whitelist pattern.
-	 * 
-	 *<p>
-	* Supported pattern types:
-	* <ul>
-	*   <li><b>Exact or wildcard match</b>: Supports {@code *} (single segment) and {@code **} (multi-segment) wildcards.</li>
-	*   <li><b>Inheritance match</b>: Use {@code hierarchyOf:fully.qualified.BaseClass} to match subclasses or implementations.</li>
-	* </ul>
-	*
-	* @param pattern    the matching pattern (wildcard or hierarchy-based)
-	* @param className  the fully qualified name of the class to check
-	* @return {@code true} if the class matches the pattern; {@code false} otherwise or if class resolution fails
-	*
-	* @example
-	* <pre>
-	* matchPattern("org.openmrs.*", "org.openmrs.Patient") → true
-	* matchPattern("hierarchyOf:org.openmrs.OpenmrsObject", "org.openmrs.Patient") → true
-	* </pre>
-	*/
-	private boolean matchPattern(String pattern, String className) {
-		try {
-			if (pattern.startsWith("hierarchyOf:")) {
-				String baseClassName = pattern.substring("hierarchyOf:".length());
-				Class<?> baseClass = Class.forName(baseClassName);
-				Class<?> actualClass = Class.forName(className);
-				return baseClass.isAssignableFrom(actualClass);
-			} else {
-				// Convert dot-style wildcard pattern to regex
-				String regex = pattern
-					.replace(".", "\\.")
-					.replace("**", "__DOUBLE_STAR__")   // Temporary marker to prevent polution below
-					.replace("*", "[^.]*")              // Replace single *
-					.replace("__DOUBLE_STAR__", ".*");  // Restore correct **
-				return className.matches(regex);
-			}
-		} catch (ClassNotFoundException e) {
-			// Fails safely
-			return false;
-		}
+		return adminService.getSerializerWhitelistTypes().isEmpty() ? true : adminService.getSerializerWhitelistTypes().stream().anyMatch(pattern -> OpenmrsUtil.matchPattern(pattern, className));
 	}
 }
