@@ -61,9 +61,10 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	@ManyToOne
 	@JoinColumn(name = "encounter_id", nullable = false)
 	private Encounter encounter;
-	
-	@OneToMany
+
+	@OneToMany(mappedBy = "orderGroup")
 	@OrderBy("sort_weight")
+	@LazyCollection(LazyCollectionOption.TRUE)
 	private List<Order> orders;
 	
 	@ManyToOne
