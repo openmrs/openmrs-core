@@ -11,6 +11,7 @@ package org.openmrs.api.impl;
 
 import org.openmrs.api.DomainService;
 import org.openmrs.api.OpenmrsService;
+import org.openmrs.api.context.ServiceContext;
 import org.openmrs.serialization.UuidReferenceModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -40,7 +41,6 @@ import java.util.Set;
  * @see UuidReferenceModule
  */
 @Transactional
-@Component("domainServiceTarget")
 public class DomainServiceImpl extends BaseOpenmrsService implements DomainService {
 
     private final Map<Class<?>, DomainFetcher> domainFetchers = new HashMap<>();
@@ -49,29 +49,28 @@ public class DomainServiceImpl extends BaseOpenmrsService implements DomainServi
      * Constructs the {@code DomainService} and scans the dynamically provided OpenMRS services
      * for eligible {@code getXByUuid(String)} methods to populate the internal lookup.
      *
-     * @param services the list of all available {@code OpenmrsService} implementations
+     * @param serviceContext application context providing available {@code OpenmrsService} implementations
      */
-    @Autowired
-    public DomainServiceImpl(List<OpenmrsService> services) {
-        if (services != null) {
-            for (OpenmrsService service : services) {
-                if (this.getClass().isAssignableFrom(service.getClass())) {
-                    continue;
-                }
-                for (Method method : service.getClass().getMethods()) {
-                    if (method.getName().startsWith("get") &&
-                        method.getName().endsWith("ByUuid") &&
-                        method.getParameterCount() == 1 &&
-                        method.getParameterTypes()[0].equals(String.class)) {
+    public DomainServiceImpl(ServiceContext serviceContext) {
+        List<OpenmrsService> services = serviceContext.getRegisteredComponents(OpenmrsService.class);
+        for (OpenmrsService service : services) {
+            if (this.getClass().isAssignableFrom(service.getClass())) {
+                continue;
+            }
+            for (Method method : service.getClass().getMethods()) {
+                if (method.getName().startsWith("get") &&
+                    method.getName().endsWith("ByUuid") &&
+                    method.getParameterCount() == 1 &&
+                    method.getParameterTypes()[0].equals(String.class)) {
 
-                        Class<?> domainKey = method.getReturnType();
-                        if (!domainFetchers.containsKey(domainKey)) {
-                            domainFetchers.put(domainKey, new DomainFetcher(method.getReturnType(), service, method));
-                        }
+                    Class<?> domainKey = method.getReturnType();
+                    if (!domainFetchers.containsKey(domainKey)) {
+                        domainFetchers.put(domainKey, new DomainFetcher(method.getReturnType(), service, method));
                     }
                 }
             }
         }
+        System.out.println("aaaaaa.      :     " + domainFetchers);
     }
 
     /**
