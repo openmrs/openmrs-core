@@ -83,6 +83,8 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	protected AdministrationDAO dao;
 	
 	private EventListeners eventListeners;
+
+	private static final String SERIALISER_WHITE_LIST_TYPES = "serializerWhiteListTypes";
 	
 	/**
 	 * An always up-to-date collection of the allowed locales.
@@ -955,6 +957,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	}
 
 	@Override
+	@Cacheable(value = SERIALISER_WHITE_LIST_TYPES)
 	public List<String> getSerializerWhitelistTypes() {
 		List<String> whitelistTypes = new ArrayList<>();
 		List<Class<?>> hierarchyTypes = getSerializerDefaultWhitelistHierarchyTypes();

@@ -317,6 +317,10 @@
 		<property name="activeMessageSource" ref="mutableResourceBundleMessageSource"/>
 	</bean>
 
+	<bean id="domainServiceTarget" class="org.openmrs.api.impl.DomainServiceImpl">
+		<constructor-arg name="serviceContext" ref="serviceContext"/>
+	</bean>
+
 	<bean id="transactionAttributeSource"
 		  class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
 
