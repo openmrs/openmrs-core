@@ -532,7 +532,6 @@
 				<value>org.openmrs</value>
 			</list>
 		</property>
-		<property name="cacheConfig" ref="cacheConfig" />
 		<!-- default properties must be set in the hibernate.default.properties -->
 	</bean>
 
