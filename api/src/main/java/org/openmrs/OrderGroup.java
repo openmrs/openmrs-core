@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import jakarta.persistence.Access;
+import jakarta.persistence.AccessType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -62,6 +64,7 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	@JoinColumn(name = "encounter_id", nullable = false)
 	private Encounter encounter;
 
+	@Access(AccessType.PROPERTY)
 	@OneToMany(mappedBy = "orderGroup")
 	@OrderBy("sort_weight")
 	@LazyCollection(LazyCollectionOption.TRUE)
