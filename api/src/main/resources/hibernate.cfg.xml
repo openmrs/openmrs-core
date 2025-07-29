@@ -82,8 +82,7 @@
 		<!-- HL7 -->
 		<mapping resource="org/openmrs/hl7/db/hibernate/HL7Source.hbm.xml" />
 		<mapping resource="org/openmrs/hl7/db/hibernate/HL7InQueue.hbm.xml" />
-		<mapping resource="org/openmrs/hl7/db/hibernate/HL7InArchive.hbm.xml" />
-		
+
 		<!-- Notification -->
 		<mapping resource="org/openmrs/notification/db/hibernate/Template.hbm.xml" />
 		<mapping resource="org/openmrs/notification/db/hibernate/Alert.hbm.xml" />
