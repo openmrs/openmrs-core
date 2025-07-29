@@ -12,8 +12,9 @@ package org.openmrs.customdatatype;
 import org.openmrs.api.APIException;
 
 /**
- * Indicates that you tried to access the valueReference of a {@link SingleCustomValue} that has not yet been persisted
+ * Indicates that you tried to access the valueReference of a {@link SingleCustomValue} that has not
+ * yet been persisted
  */
 public class NotYetPersistedException extends APIException {
-
+	
 }

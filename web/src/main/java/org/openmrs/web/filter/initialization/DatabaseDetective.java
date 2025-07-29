@@ -28,7 +28,7 @@ public class DatabaseDetective {
 	/**
 	 * Check whether openmrs database is empty. Having just one non-liquibase table in the given
 	 * database qualifies this as a non-empty database.
-	 *
+	 * 
 	 * @param props the runtime properties
 	 * @return true if the openmrs database is empty or does not exist yet
 	 */
@@ -42,8 +42,8 @@ public class DatabaseDetective {
 		try {
 			DatabaseUtil.loadDatabaseDriver(props.getProperty(CONNECTION_URL), null);
 			
-			connection = DriverManager.getConnection(props.getProperty(CONNECTION_URL), props
-			        .getProperty(CONNECTION_USERNAME), props.getProperty(CONNECTION_PASSWORD));
+			connection = DriverManager.getConnection(props.getProperty(CONNECTION_URL),
+			    props.getProperty(CONNECTION_USERNAME), props.getProperty(CONNECTION_PASSWORD));
 			
 			DatabaseMetaData dbMetaData = connection.getMetaData();
 			
