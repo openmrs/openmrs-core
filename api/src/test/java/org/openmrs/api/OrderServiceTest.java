@@ -2760,6 +2760,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(PatientProgram.class)
 				.addAnnotatedClass(HL7InArchive.class)
 				.addAnnotatedClass(PersonMergeLog.class)
+				.addAnnotatedClass(OrderGroup.class)
 				.getMetadataBuilder().build();
 
 
