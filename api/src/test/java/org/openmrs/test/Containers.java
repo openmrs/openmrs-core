@@ -48,8 +48,6 @@ public class Containers {
         if (mysql == null) {
         	
         	mysql = new MySQLContainer<>("mysql:5.7.39")
-                .withUsername(USERNAME)
-                .withPassword(PASSWORD)
                 .withDatabaseName(DATABASE)
                 .withUrlParam("autoReconnect", "true")
                 .withUrlParam("sessionVariables", "default_storage_engine=InnoDB")
@@ -64,10 +62,11 @@ public class Containers {
         	
         	mysql.start();
         	
+        	// Use the root user for MySQL tests to avoid permission issues
         	System.setProperty("databaseUrl", mysql.getJdbcUrl());
     		System.setProperty("databaseName", DATABASE);
-    		System.setProperty("databaseUsername", USERNAME);
-    		System.setProperty("databasePassword", PASSWORD);
+    		System.setProperty("databaseUsername", "root");
+    		System.setProperty("databasePassword", mysql.getPassword());
     		System.setProperty("databaseDriver", mysql.getDriverClassName());
     		System.setProperty("databaseDialect", MySQLDialect.class.getName());
 			System.setProperty("database", "mysql");
@@ -106,8 +105,8 @@ public class Containers {
     	
     	//needed for running liquibase changesets
 		Properties runtimeProperties = TestUtil.getRuntimeProperties("openmrs");
-		runtimeProperties.setProperty("connection.username", USERNAME);
-		runtimeProperties.setProperty("connection.password", PASSWORD);
+		runtimeProperties.setProperty("connection.username", "root");
+		runtimeProperties.setProperty("connection.password", mysql.getPassword());
 		runtimeProperties.setProperty("connection.url", System.getProperty("databaseUrl"));
 		Context.setRuntimeProperties(runtimeProperties);
     			
