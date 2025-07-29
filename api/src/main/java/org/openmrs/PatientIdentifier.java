@@ -33,6 +33,19 @@ import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
+
 /**
  * A <code>Patient</code> can have zero to n identifying PatientIdentifier(s). PatientIdentifiers
  * are anything from medical record numbers, to social security numbers, to driver's licenses. The
@@ -41,6 +54,8 @@ import org.slf4j.LoggerFactory;
  *
  * @see org.openmrs.PatientIdentifierType
  */
+@Entity
+@Table(name = "patient_identifier")
 @Indexed
 @Audited
 public class PatientIdentifier extends BaseChangeableOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PatientIdentifier> {
@@ -54,15 +69,28 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	/**
 	 * @since 1.5
 	 */
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "patient_identifier_id_seq_generator")
+	@GenericGenerator(
+		name = "patient_identifier_id_seq_generator",
+		strategy = "native",
+		parameters = {
+			@Parameter(name = "sequence", value = "patient_identifier_patient_identifier_id_seq")
+		}
+	)
+	@Column(name = "patient_identifier_id", unique = true, nullable = false)
 	@DocumentId
 	private Integer patientIdentifierId;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "patient_id")
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	@AssociationInverseSide(inversePath = @ObjectPath({
 		@PropertyValue(propertyName = "identifiers")
 	}))
 	private Patient patient;
 	
+	@Column(name = "identifier", nullable = false, length = 50)
 	@FullTextField(name = "identifierPhrase", analyzer = SearchAnalysis.PHRASE_ANALYZER)
 	@FullTextField(name = "identifierExact", analyzer = SearchAnalysis.EXACT_ANALYZER)
 	@FullTextField(name = "identifierStart", analyzer = SearchAnalysis.START_ANALYZER, searchAnalyzer = SearchAnalysis.EXACT_ANALYZER)
@@ -70,14 +98,21 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	@KeywordField(name = "identifierExact_sort", sortable = Sortable.YES)
 	private String identifier;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "identifier_type")
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	private PatientIdentifierType identifierType;
 	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "location_id")
 	private Location location;
 
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "patient_program_id")
 	private PatientProgram patientProgram;
 
+	@Column(name = "preferred", nullable = false)
 	@GenericField
 	private Boolean preferred = false;
 	
