@@ -75,6 +75,7 @@ import org.openmrs.FormResource;
 import org.openmrs.api.builder.DrugOrderBuilder;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.ClobDatatypeStorage;
 import org.openmrs.api.db.SerializedObject;
 import org.openmrs.api.db.hibernate.HibernateAdministrationDAO;
 import org.openmrs.api.db.hibernate.HibernateSessionFactoryBean;
@@ -2760,6 +2761,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(PatientProgram.class)
 				.addAnnotatedClass(HL7InArchive.class)
 				.addAnnotatedClass(PersonMergeLog.class)
+				.addAnnotatedClass(ClobDatatypeStorage.class)
 				.getMetadataBuilder().build();
 
 
