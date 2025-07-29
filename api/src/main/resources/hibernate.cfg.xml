@@ -30,7 +30,6 @@
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptNameTag.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptDatatype.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptProposal.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/ConceptStateConversion.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptSet.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptMap.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptStopWord.hbm.xml" />

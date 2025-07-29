@@ -31,6 +31,7 @@ import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptSource;
+import org.openmrs.ConceptStateConversion;
 import org.openmrs.Condition;
 import org.openmrs.Diagnosis;
 import org.openmrs.Drug;
@@ -2732,39 +2733,40 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.configure().applySettings(configuration.getProperties()).build();
 
 		Metadata metaData = new MetadataSources(standardRegistry).addAnnotatedClass(Allergy.class)
-				.addAnnotatedClass(Encounter.class).addAnnotatedClass(SomeTestOrder.class)
-				.addAnnotatedClass(Diagnosis.class).addAnnotatedClass(Condition.class)
-				.addAnnotatedClass(Visit.class).addAnnotatedClass(VisitAttributeType.class)
-				.addAnnotatedClass(MedicationDispense.class)
-				.addAnnotatedClass(ProviderAttributeType.class)
-				.addAnnotatedClass(ConceptMapType.class)
-				.addAnnotatedClass(Relationship.class)
-				.addAnnotatedClass(Location.class)
-				.addAnnotatedClass(PersonAddress.class)
-				.addAnnotatedClass(PersonAttributeType.class)
-				.addAnnotatedClass(User.class)
-				.addAnnotatedClass(LocationAttributeType.class)
-				.addAnnotatedClass(SerializedObject.class)
-				.addAnnotatedClass(PatientState.class)
-				.addAnnotatedClass(DrugIngredient.class)
-				.addAnnotatedClass(DrugReferenceMap.class)
-				.addAnnotatedClass(AlertRecipient.class)
-				.addAnnotatedClass(PatientIdentifierType.class)
-				.addAnnotatedClass(ProgramAttributeType.class)
-				.addAnnotatedClass(HL7InError.class)
-				.addAnnotatedClass(OrderType.class)
-				.addAnnotatedClass(ConceptAnswer.class)
-				.addAnnotatedClass(ConceptClass.class)
-				.addAnnotatedClass(FormResource.class)
-				.addAnnotatedClass(VisitType.class)
-				.addAnnotatedClass(ProviderRole.class)
-				.addAnnotatedClass(EncounterRole.class)
-				.addAnnotatedClass(PatientProgram.class)
-				.addAnnotatedClass(HL7InArchive.class)
-				.addAnnotatedClass(PersonMergeLog.class)
-				.addAnnotatedClass(ClobDatatypeStorage.class)
-        .addAnnotatedClass(ConceptSource.class)
-				.getMetadataBuilder().build();
+			.addAnnotatedClass(Encounter.class).addAnnotatedClass(SomeTestOrder.class)
+			.addAnnotatedClass(Diagnosis.class).addAnnotatedClass(Condition.class)
+			.addAnnotatedClass(Visit.class).addAnnotatedClass(VisitAttributeType.class)
+			.addAnnotatedClass(MedicationDispense.class)
+			.addAnnotatedClass(ProviderAttributeType.class)
+			.addAnnotatedClass(ConceptMapType.class)
+			.addAnnotatedClass(Relationship.class)
+			.addAnnotatedClass(Location.class)
+			.addAnnotatedClass(PersonAddress.class)
+			.addAnnotatedClass(PersonAttributeType.class)
+			.addAnnotatedClass(User.class)
+			.addAnnotatedClass(LocationAttributeType.class)
+			.addAnnotatedClass(SerializedObject.class)
+			.addAnnotatedClass(PatientState.class)
+			.addAnnotatedClass(DrugIngredient.class)
+			.addAnnotatedClass(DrugReferenceMap.class)
+			.addAnnotatedClass(AlertRecipient.class)
+			.addAnnotatedClass(PatientIdentifierType.class)
+			.addAnnotatedClass(ProgramAttributeType.class)
+			.addAnnotatedClass(HL7InError.class)
+			.addAnnotatedClass(OrderType.class)
+			.addAnnotatedClass(ConceptAnswer.class)
+			.addAnnotatedClass(ConceptClass.class)
+			.addAnnotatedClass(FormResource.class)
+			.addAnnotatedClass(VisitType.class)
+			.addAnnotatedClass(ProviderRole.class)
+			.addAnnotatedClass(EncounterRole.class)
+			.addAnnotatedClass(PatientProgram.class)
+			.addAnnotatedClass(HL7InArchive.class)
+			.addAnnotatedClass(PersonMergeLog.class)
+			.addAnnotatedClass(ClobDatatypeStorage.class)
+			.addAnnotatedClass(ConceptSource.class)
+			.addAnnotatedClass(ConceptStateConversion.class)
+			.getMetadataBuilder().build();
 
 
 		Field field = adminDAO.getClass().getDeclaredField("metadata");
