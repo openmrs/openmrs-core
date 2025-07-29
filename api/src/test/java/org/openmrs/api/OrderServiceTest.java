@@ -89,6 +89,7 @@ import org.openmrs.order.OrderUtilTest;
 import org.openmrs.orders.TimestampOrderNumberGenerator;
 import org.openmrs.parameter.OrderSearchCriteria;
 import org.openmrs.parameter.OrderSearchCriteriaBuilder;
+import org.openmrs.person.PersonMergeLog;
 import org.openmrs.test.TestUtil;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.DateUtil;
@@ -2758,6 +2759,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(EncounterRole.class)
 				.addAnnotatedClass(PatientProgram.class)
 				.addAnnotatedClass(HL7InArchive.class)
+				.addAnnotatedClass(PersonMergeLog.class)
 				.getMetadataBuilder().build();
 
 
