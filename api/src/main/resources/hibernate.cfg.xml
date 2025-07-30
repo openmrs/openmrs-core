@@ -96,8 +96,6 @@
 		<mapping resource="org/openmrs/api/db/hibernate/Provider.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ProviderAttribute.hbm.xml" />
 		
-		<mapping resource="org/openmrs/api/db/hibernate/ClobDatatypeStorage.hbm.xml" />
-
 		<!-- These mappings are required because of references in Obs & Concept -->
 		<mapping class="org.openmrs.ObsReferenceRange"/>
 		<mapping class="org.openmrs.ConceptReferenceRange"/>
