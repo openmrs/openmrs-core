@@ -30,6 +30,7 @@ import org.openmrs.ConceptMap;
 import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptReferenceTerm;
+import org.openmrs.ConceptSource;
 import org.openmrs.Condition;
 import org.openmrs.Diagnosis;
 import org.openmrs.Drug;
@@ -75,6 +76,7 @@ import org.openmrs.FormResource;
 import org.openmrs.api.builder.DrugOrderBuilder;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.ClobDatatypeStorage;
 import org.openmrs.api.db.SerializedObject;
 import org.openmrs.api.db.hibernate.HibernateAdministrationDAO;
 import org.openmrs.api.db.hibernate.HibernateSessionFactoryBean;
@@ -2760,6 +2762,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(PatientProgram.class)
 				.addAnnotatedClass(HL7InArchive.class)
 				.addAnnotatedClass(PersonMergeLog.class)
+				.addAnnotatedClass(ClobDatatypeStorage.class)
+        .addAnnotatedClass(ConceptSource.class)
 				.getMetadataBuilder().build();
 
 
