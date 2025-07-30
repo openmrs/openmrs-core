@@ -69,7 +69,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 	
 	@Autowired
 	private CacheConfig cacheConfig;
-	
+
 	/**
 	 * Collect the mapping resources for future use because the mappingResources object is defined
 	 * as 'private' instead of 'protected'

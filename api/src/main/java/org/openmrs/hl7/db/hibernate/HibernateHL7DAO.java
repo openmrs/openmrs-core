@@ -305,7 +305,7 @@ public class HibernateHL7DAO implements HL7DAO {
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<HL7InArchive> getAllHL7InArchives(Integer maxResults) {
-		Query q = sessionFactory.getCurrentSession().createQuery("from HL7InArchive order by HL7InArchiveId");
+		Query q = sessionFactory.getCurrentSession().createQuery("from HL7InArchive order by hl7InArchiveId");
 		if (maxResults != null) {
 			q.setMaxResults(maxResults);
 		}

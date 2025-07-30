@@ -9,6 +9,12 @@
  */
 package org.openmrs.api.db;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import org.hibernate.envers.Audited;
 import org.openmrs.BaseOpenmrsObject;
 
@@ -17,13 +23,18 @@ import org.openmrs.BaseOpenmrsObject;
  * 
  * @since 1.9
  */
+@Entity
+@Table(name = "clob_datatype_storage")
 @Audited
 public class ClobDatatypeStorage extends BaseOpenmrsObject {
-	
+
+	@Id
+	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
 	// inherits uuid from BaseOpenmrsObject
-	
+	@Column(name = "value", nullable = false, columnDefinition = "LONGTEXT")
 	String value;
 	
 	/**
