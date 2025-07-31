@@ -1441,6 +1441,7 @@ public class InitializationFilter extends StartupFilter {
 							if (isCurrentDatabase(DATABASE_MYSQL)) {
 								sql = "create database if not exists `?` default character set utf8";
 							} else if (isCurrentDatabase(DATABASE_POSTGRESQL)) {
+								checkForEmptyValue(wizardModel.databaseName, errors, ErrorMessageConstants.ERROR_DB_CURR_NAME_REQ);
 								if (!databaseExistsInPostgres(wizardModel.databaseName, wizardModel.createDatabaseUsername, wizardModel.createDatabasePassword)) {
 									sql = "create database `?` encoding 'utf8'";
 									int result = executeStatement(false, wizardModel.createDatabaseUsername,
