@@ -25,11 +25,13 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
+import java.util.Set;
 import java.util.zip.ZipInputStream;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -48,7 +50,6 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.UsernamePasswordCredentials;
-import org.openmrs.api.impl.UserServiceImpl;
 import org.openmrs.liquibase.ChangeLogDetective;
 import org.openmrs.liquibase.ChangeLogVersionFinder;
 import org.openmrs.module.MandatoryModuleException;
@@ -164,6 +165,28 @@ public class InitializationFilter extends StartupFilter {
 	private static final String PROGRESS_VM_AJAXREQUEST = "progress.vm.ajaxRequest";
 	
 	public static final String RELEASE_TESTING_MODULE_PATH = "/module/releasetestinghelper/";
+
+	/**
+	 * This tracks the properties that we use in the installation wizard. Properties not defined here will be copied
+	 * to the runtime properties, allowing us to pre-define certain runtime settings.
+	 */
+	private static final Set<String> INSTALLATION_WIZARD_PROPERTIES;
+	static {
+		INSTALLATION_WIZARD_PROPERTIES = new HashSet<>();
+		INSTALLATION_WIZARD_PROPERTIES.add("install_method");
+		INSTALLATION_WIZARD_PROPERTIES.add("connection.url");
+		INSTALLATION_WIZARD_PROPERTIES.add("connection.driver_class");
+		INSTALLATION_WIZARD_PROPERTIES.add("connection.username");
+		INSTALLATION_WIZARD_PROPERTIES.add("connection.password");
+		INSTALLATION_WIZARD_PROPERTIES.add("has_current_openmrs_database");
+		INSTALLATION_WIZARD_PROPERTIES.add("create_database_username");
+		INSTALLATION_WIZARD_PROPERTIES.add("create_database_password");
+		INSTALLATION_WIZARD_PROPERTIES.add("create_tables");
+		INSTALLATION_WIZARD_PROPERTIES.add("add_demo_data");
+		INSTALLATION_WIZARD_PROPERTIES.add("module_web_admin");
+		INSTALLATION_WIZARD_PROPERTIES.add("auto_update_database");
+		INSTALLATION_WIZARD_PROPERTIES.add("admin_user_password");
+	}
 	
 	/**
 	 * The model object that holds all the properties that the rendered templates use. All attributes on
@@ -319,7 +342,7 @@ public class InitializationFilter extends StartupFilter {
 			
 			String hasCurrentOpenmrsDatabase = script.getProperty("has_current_openmrs_database");
 			if (hasCurrentOpenmrsDatabase != null) {
-				wizardModel.hasCurrentOpenmrsDatabase = Boolean.valueOf(hasCurrentOpenmrsDatabase);
+				wizardModel.hasCurrentOpenmrsDatabase = Boolean.parseBoolean(hasCurrentOpenmrsDatabase);
 			}
 			wizardModel.createDatabaseUsername = script.getProperty("create_database_username",
 				wizardModel.createDatabaseUsername);
@@ -328,32 +351,38 @@ public class InitializationFilter extends StartupFilter {
 			
 			String createTables = script.getProperty("create_tables");
 			if (createTables != null) {
-				wizardModel.createTables = Boolean.valueOf(createTables);
+				wizardModel.createTables = Boolean.parseBoolean(createTables);
 			}
 			
 			String createDatabaseUser = script.getProperty("create_database_user");
 			if (createDatabaseUser != null) {
-				wizardModel.createDatabaseUser = Boolean.valueOf(createDatabaseUser);
+				wizardModel.createDatabaseUser = Boolean.parseBoolean(createDatabaseUser);
 			}
 			wizardModel.createUserUsername = script.getProperty("create_user_username", wizardModel.createUserUsername);
 			wizardModel.createUserPassword = script.getProperty("create_user_password", wizardModel.createUserPassword);
 			
 			String addDemoData = script.getProperty("add_demo_data");
 			if (addDemoData != null) {
-				wizardModel.addDemoData = Boolean.valueOf(addDemoData);
+				wizardModel.addDemoData = Boolean.parseBoolean(addDemoData);
 			}
 			
 			String moduleWebAdmin = script.getProperty("module_web_admin");
 			if (moduleWebAdmin != null) {
-				wizardModel.moduleWebAdmin = Boolean.valueOf(moduleWebAdmin);
+				wizardModel.moduleWebAdmin = Boolean.parseBoolean(moduleWebAdmin);
 			}
 			
 			String autoUpdateDatabase = script.getProperty("auto_update_database");
 			if (autoUpdateDatabase != null) {
-				wizardModel.autoUpdateDatabase = Boolean.valueOf(autoUpdateDatabase);
+				wizardModel.autoUpdateDatabase = Boolean.parseBoolean(autoUpdateDatabase);
 			}
 			
 			wizardModel.adminUserPassword = script.getProperty("admin_user_password", wizardModel.adminUserPassword);
+			
+			for (Map.Entry<Object, Object> entry : script.entrySet()) {
+				if (!INSTALLATION_WIZARD_PROPERTIES.contains(entry.getKey())) {
+					wizardModel.additionalPropertiesFromInstallationScript.put(entry.getKey(), entry.getValue());
+				}
+			}
 		}
 	}
 	
@@ -979,11 +1008,9 @@ public class InitializationFilter extends StartupFilter {
 			// verify connection
 			//Set Database Driver using driver String
 			Class.forName(loadedDriverString).newInstance();
-			Connection tempConnection = DriverManager.getConnection(databaseConnectionFinalUrl, connectionUsername,
-				connectionPassword);
-			tempConnection.close();
-			return true;
-			
+			try (Connection ignored = DriverManager.getConnection(databaseConnectionFinalUrl, connectionUsername, connectionPassword)) {
+				return true;
+			}
 		}
 		catch (Exception e) {
 			errors.put("User account " + connectionUsername + " does not work. " + e.getMessage()
@@ -1525,13 +1552,15 @@ public class InitializationFilter extends StartupFilter {
 						if (finalDatabaseConnectionString.contains(DATABASE_H2)) {
 							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
 						}
-						runtimeProperties.put("module.allow_web_admin", wizardModel.moduleWebAdmin.toString());
-						runtimeProperties.put("auto_update_database", wizardModel.autoUpdateDatabase.toString());
+						runtimeProperties.put("module.allow_web_admin", "" + wizardModel.moduleWebAdmin);
+						runtimeProperties.put("auto_update_database", "" + wizardModel.autoUpdateDatabase);
 						final Encoder base64 = Base64.getEncoder();
 						runtimeProperties.put(OpenmrsConstants.ENCRYPTION_VECTOR_RUNTIME_PROPERTY,
 							new String(base64.encode(Security.generateNewInitVector()), StandardCharsets.UTF_8));
 						runtimeProperties.put(OpenmrsConstants.ENCRYPTION_KEY_RUNTIME_PROPERTY,
 							new String(base64.encode(Security.generateNewSecretKey()), StandardCharsets.UTF_8));
+						
+						runtimeProperties.putAll(wizardModel.additionalPropertiesFromInstallationScript);
 						
 						Properties properties = Context.getRuntimeProperties();
 						properties.putAll(runtimeProperties);
