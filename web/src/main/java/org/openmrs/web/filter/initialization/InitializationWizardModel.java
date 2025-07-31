@@ -11,6 +11,7 @@ package org.openmrs.web.filter.initialization;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
@@ -31,16 +32,12 @@ public class InitializationWizardModel {
 	// Values for installMethod field.
 	public static final String INSTALL_METHOD_SIMPLE = "simple";
 	
-	public static final String INSTALL_METHOD_ADVANCED = "advanced";
-	
 	public static final String INSTALL_METHOD_TESTING = "testing";
 	
 	public static final String INSTALL_METHOD_AUTO = "auto";
 	
 	// Default OpenMRS admin password set by the simple installation.
 	public static final String ADMIN_DEFAULT_PASSWORD = "Admin123";
-	
-	public static final String OPENMRS_VERSION = OpenmrsConstants.OPENMRS_VERSION_SHORT;
 	
 	/**
 	 * Default database name to use unless user specifies another in the wizard or they are creating
@@ -168,29 +165,29 @@ public class InitializationWizardModel {
 	 * Asked for on the databasetablesanduser.vm page to know if their existing database has the
 	 * tables or not
 	 */
-	public Boolean createTables = Boolean.FALSE;
+	public boolean createTables = false;
 	
 	/**
 	 * if the user asked us to create the user for openmrs
 	 */
-	public Boolean createDatabaseUser = Boolean.FALSE;
+	public boolean createDatabaseUser = false;
 	
 	/**
 	 * Enables importing test data from the remote server
 	 */
-	public Boolean importTestData = Boolean.FALSE;
+	public boolean importTestData = false;
 	
 	/**
 	 * Asked for on the otherproperties.vm page to know if the allow_web_admin runtime property is
 	 * true/false
 	 */
-	public Boolean moduleWebAdmin = Boolean.TRUE;
+	public boolean moduleWebAdmin = true;
 	
 	/**
 	 * Asked for on otherproperties.vm page to know if the runtime property for auto updating their
 	 * db is true/false
 	 */
-	public Boolean autoUpdateDatabase = Boolean.FALSE;
+	public boolean autoUpdateDatabase = Boolean.FALSE;
 	
 	/**
 	 * Password for the admin user if the database was created now
@@ -244,10 +241,12 @@ public class InitializationWizardModel {
 	/**
 	 * The current step. e.g Step 1 of ...
 	 */
-	public Integer currentStepNumber = 1;
+	public int currentStepNumber = 1;
 	
 	/**
 	 * The total number of steps. e.g Step ... of 5
 	 */
-	public Integer numberOfSteps = 1;
+	public int numberOfSteps = 1;
+	
+	public Properties additionalPropertiesFromInstallationScript = new Properties();
 }
