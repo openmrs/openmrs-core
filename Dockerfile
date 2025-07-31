@@ -131,6 +131,7 @@ RUN mkdir -p /openmrs/data/modules \
     && mkdir -p /openmrs/data/configuration \
     && mkdir -p /openmrs/data/configuration_checksums \
     && mkdir -p /openmrs/data/complex_obs \
+    && mkdir -p /openmrs/data/activemq-data \
     && chmod -R g+rw /openmrs
     
 # Copy in the start-up scripts
