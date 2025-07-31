@@ -882,7 +882,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			IDatabaseConnection dbUnitConn = setupDatabaseConnection(connection);
 			
 			// find all the tables for this connection
-			ResultSet resultSet = connection.getMetaData().getTables(System.getProperty("databaseName"), "PUBLIC", "%", null);
+			String[] types = { "TABLE" };
+			ResultSet resultSet = connection.getMetaData().getTables(System.getProperty("databaseName"), "PUBLIC", "%", types);
 			DefaultDataSet dataset = new DefaultDataSet();
 			while (resultSet.next()) {
 				String tableName = resultSet.getString(3);
