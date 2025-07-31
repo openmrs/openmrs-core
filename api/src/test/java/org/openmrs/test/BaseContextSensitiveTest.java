@@ -854,12 +854,20 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		return dbUnitConn;
 	}
 
+	protected boolean isPostgreSQL() {
+		return "postgresql".equals(System.getProperty("database"));
+	}
+	
 	protected String getSchemaPattern() {
 		if (useInMemoryDatabase()) {
 			return "PUBLIC";
 		}
-		else {
+		else if (isPostgreSQL()) {
 			return "public";
+		}
+		else {
+			// For MySQL, return null to use the default schema
+			return null;
 		}
 	}
 	
@@ -881,8 +889,10 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			
 			IDatabaseConnection dbUnitConn = setupDatabaseConnection(connection);
 			
+			String databaseName = System.getProperty("databaseName");
+			
 			// find all the tables for this connection
-			ResultSet resultSet = connection.getMetaData().getTables(System.getProperty("databaseName"), "PUBLIC", "%", null);
+			ResultSet resultSet = connection.getMetaData().getTables(databaseName, getSchemaPattern(), "%", new String[] {"TABLE"});
 			DefaultDataSet dataset = new DefaultDataSet();
 			while (resultSet.next()) {
 				String tableName = resultSet.getString(3);
