@@ -12,7 +12,7 @@ ARG DEV_JDK=amazoncorretto-8
 ARG RUNTIME_JDK=jdk8-corretto
 
 ### Compile Stage (platform-agnostic)
-FROM --platform=$BUILDPLATFORM maven:3.8-$DEV_JDK as compile
+FROM --platform=$BUILDPLATFORM maven:3.9-$DEV_JDK AS compile
 
 RUN yum -y update && yum -y install git && yum clean all
 
@@ -52,7 +52,7 @@ ARG MVN_ARGS='clean install -DskipTests'
 RUN mvn $MVN_SETTINGS $MVN_ARGS
 
 ### Development Stage
-FROM maven:3.8-$DEV_JDK as dev
+FROM maven:3.9-$DEV_JDK AS dev
 
 RUN yum -y update && yum -y install tar gzip git && yum clean all
 
