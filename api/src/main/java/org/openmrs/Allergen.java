@@ -17,6 +17,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /**
  * Represent allergen
@@ -25,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 public class Allergen {
 	
 	@Enumerated(EnumType.STRING)
+	@JdbcTypeCode(SqlTypes.VARCHAR)
 	@Column(name = "allergen_type")
 	private AllergenType allergenType;
 	
