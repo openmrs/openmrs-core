@@ -91,7 +91,7 @@ public class CacheConfig {
 			jChannelConfig = getJChannelConfig(cacheStack);
 			JChannel jchannel = new JChannel(jChannelConfig);
 			Class<? extends TP> protocolClass = TCP.class;
-			if(cacheStack.trim().isBlank() || cacheStack.trim().equals("udp")){
+			if(cacheStack.trim().isEmpty() || cacheStack.trim().equals("udp")){
 				protocolClass = UDP.class;
 			}else if(cacheStack.trim().equals("tunnel")){
 				protocolClass = TUNNEL.class;
