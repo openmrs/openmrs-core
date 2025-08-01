@@ -10,6 +10,7 @@
 package org.openmrs;
 
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.envers.Audited;
 
 import jakarta.persistence.Access;
@@ -32,6 +33,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
+import org.hibernate.type.SqlTypes;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -70,6 +72,7 @@ public class Diagnosis extends BaseCustomizableData<DiagnosisAttribute> implemen
 	private Condition condition;
 	
 	@Enumerated(EnumType.STRING)
+	@JdbcTypeCode(SqlTypes.VARCHAR)
 	@Column(length = 50)
 	private ConditionVerificationStatus certainty;
 	
