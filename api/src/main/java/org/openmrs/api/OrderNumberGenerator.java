@@ -19,8 +19,8 @@ public interface OrderNumberGenerator {
 	 * Generates a new order number. Note that this method is invoked in a non thread-safe way,
 	 * therefore implementations need to be thread safe.
 	 * 
-	 * @return the new order number
-	 * <strong>Should</strong> always return unique orderNumbers when called multiple times without saving orders
+	 * @return the new order number <strong>Should</strong> always return unique orderNumbers when
+	 *         called multiple times without saving orders
 	 * @param orderContext
 	 */
 	public String getNewOrderNumber(OrderContext orderContext);

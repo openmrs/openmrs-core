@@ -18,8 +18,8 @@ import java.lang.reflect.Field;
 import java.util.Enumeration;
 
 /**
- * Utility class for saving and loading the state of an {@link InitializationWizardModel}
- * to and from an {@link HttpSession}.
+ * Utility class for saving and loading the state of an {@link InitializationWizardModel} to and
+ * from an {@link HttpSession}.
  */
 public class SessionModelUtils {
 	
@@ -28,9 +28,9 @@ public class SessionModelUtils {
 	private static final String PREFIX = "setup.";
 	
 	/**
-	 * Saves all non-null fields of the {@link InitializationWizardModel} to the HTTP session.
-	 * The field name is used as the session key, prefixed with "setup.".
-	 *
+	 * Saves all non-null fields of the {@link InitializationWizardModel} to the HTTP session. The
+	 * field name is used as the session key, prefixed with "setup.".
+	 * 
 	 * @param session the current {@link HttpSession}, must not be null
 	 * @param model the {@link InitializationWizardModel} to save
 	 */
@@ -60,9 +60,9 @@ public class SessionModelUtils {
 	}
 	
 	/**
-	 * Loads all existing session attributes (with "setup." prefix) into the corresponding fields
-	 * of the given {@link InitializationWizardModel}, if present.
-	 *
+	 * Loads all existing session attributes (with "setup." prefix) into the corresponding fields of
+	 * the given {@link InitializationWizardModel}, if present.
+	 * 
 	 * @param session the current {@link HttpSession}, must not be null
 	 * @param model the {@link InitializationWizardModel} to populate with values
 	 */
@@ -92,9 +92,9 @@ public class SessionModelUtils {
 	}
 	
 	/**
-	 * Clears all session attributes previously saved by the wizard,
-	 * i.e., those with the "setup." prefix.
-	 *
+	 * Clears all session attributes previously saved by the wizard, i.e., those with the "setup."
+	 * prefix.
+	 * 
 	 * @param session the current {@link HttpSession}, must not be null
 	 */
 	public static void clearWizardSessionAttributes(HttpSession session) {

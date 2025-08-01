@@ -12,11 +12,10 @@ package org.openmrs.api;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
- * This exception is thrown when a encounter types are locked and the user tries to edit an encounter type
- * type, this is done by a global property being true/false.
+ * This exception is thrown when a encounter types are locked and the user tries to edit an
+ * encounter type type, this is done by a global property being true/false.
  * 
  * @since 1.10 added to 1.8.5 and 1.9.4
- * 
  * @see OpenmrsConstants#GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED
  * @see EncounterService#checkIfEncounterTypesAreLocked()
  */
