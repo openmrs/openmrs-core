@@ -110,6 +110,11 @@ if [[ -z $OMRS_DB || "$OMRS_DB" == "mysql" ]]; then
   OMRS_DB_DRIVER_CLASS=${OMRS_DB_DRIVER_CLASS:-com.mysql.jdbc.Driver}
   OMRS_DB_PORT=${OMRS_DB_PORT:-3306}
   OMRS_DB_ARGS="${OMRS_DB_ARGS:-?autoReconnect=true&sessionVariables=default_storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8}"
+elif [[ "$OMRS_DB" == "mariadb" ]]; then
+  OMRS_DB_JDBC_PROTOCOL=${OMRS_DB_JDBC_PROTOCOL:-mariadb}
+  OMRS_DB_DRIVER_CLASS=${OMRS_DB_DRIVER_CLASS:-org.mariadb.jdbc.Driver}
+  OMRS_DB_PORT=${OMRS_DB_PORT:-3306}
+  OMRS_DB_ARGS="${OMRS_DB_ARGS:-?autoReconnect=true&sessionVariables=default_storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8}"	
 elif [[ "$OMRS_DB" == "postgresql" ]]; then
   OMRS_DB_JDBC_PROTOCOL=${OMRS_DB_JDBC_PROTOCOL:-postgresql}
   OMRS_DB_DRIVER_CLASS=${OMRS_DB_DRIVER_CLASS:-org.postgresql.Driver}

@@ -101,6 +101,8 @@ public class InitializationFilter extends StartupFilter {
 	private static final String DATABASE_SQLSERVER = "sqlserver";
 	
 	private static final String DATABASE_H2 = "h2";
+
+	private static final String DATABASE_MARIADB = "mariadb";
 	
 	/**
 	 * The very first page of wizard, that asks user for select his preferred language
@@ -1561,6 +1563,9 @@ public class InitializationFilter extends StartupFilter {
 						}
 						if (finalDatabaseConnectionString.contains(DATABASE_H2)) {
 							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
+						}
+						if (finalDatabaseConnectionString.contains(DATABASE_MARIADB)) {
+							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.MariaDBDialect");
 						}
 						runtimeProperties.put("module.allow_web_admin", "" + wizardModel.moduleWebAdmin);
 						runtimeProperties.put("auto_update_database", "" + wizardModel.autoUpdateDatabase);
