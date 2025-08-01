@@ -1562,6 +1562,8 @@ public class InitializationFilter extends StartupFilter {
 							new String(base64.encode(Security.generateNewInitVector()), StandardCharsets.UTF_8));
 						runtimeProperties.put(OpenmrsConstants.ENCRYPTION_KEY_RUNTIME_PROPERTY,
 							new String(base64.encode(Security.generateNewSecretKey()), StandardCharsets.UTF_8));
+						runtimeProperties.put(OpenmrsConstants.DEVELOPMENT_MODE_RUNTIME_PROPERTY,
+							OpenmrsConstants.DEVELOPMENT_MODE_DEFAULT);
 						
 						runtimeProperties.putAll(wizardModel.additionalPropertiesFromInstallationScript);
 						
