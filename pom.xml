@@ -418,9 +418,9 @@
 				<version>8.0.30</version>
 			</dependency>
 			<dependency>
-				<groupId>com.mysql</groupId>
-				<artifactId>mysql-connector-mxj</artifactId>
-				<version>5.0.11</version>
+				<groupId>org.mariadb.jdbc</groupId>
+				<artifactId>mariadb-java-client</artifactId>
+				<version>3.5.4</version>
 			</dependency>
 			<dependency>
 				<groupId>org.postgresql</groupId>
@@ -1157,7 +1157,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jxr-plugin</artifactId>
-				<version>3.3.0</version>
+				<version>3.6.0</version>
 			</plugin>
 		</plugins>
 	</reporting>
