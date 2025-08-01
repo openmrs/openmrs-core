@@ -70,12 +70,12 @@ public class APIException extends RuntimeException {
 	}
 	
 	/**
-	 * Constructor to give the end user a helpful message and to also propagate the parent
-	 * error exception message..
-	 *
+	 * Constructor to give the end user a helpful message and to also propagate the parent error
+	 * exception message..
+	 * 
 	 * @param messageKey message code to retrieve
 	 * @param parameters message parameters
-	 * @param cause the parent exception cause that this APIException is wrapping around   
+	 * @param cause the parent exception cause that this APIException is wrapping around
 	 */
 	public APIException(String messageKey, Object[] parameters, Throwable cause) {
 		super(Context.getMessageSourceService().getMessage(messageKey, parameters, Context.getLocale()), cause);

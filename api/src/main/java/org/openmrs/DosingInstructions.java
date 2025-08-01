@@ -62,8 +62,8 @@ public interface DosingInstructions {
 	
 	/**
 	 * Implementations of this interface may be able to infer the auto-expiration date from other
-	 * fields on the DrugOrder.  If the expiration date cannot be determined, then this method
-	 * may return null (i.e., null means duration of order is unknown).
+	 * fields on the DrugOrder. If the expiration date cannot be determined, then this method may
+	 * return null (i.e., null means duration of order is unknown).
 	 */
 	public Date getAutoExpireDate(DrugOrder order);
 }
