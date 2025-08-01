@@ -77,7 +77,6 @@
 		<mapping resource="org/openmrs/api/db/hibernate/OrderFrequency.hbm.xml" />
 
 		<!-- HL7 -->
-		<mapping resource="org/openmrs/hl7/db/hibernate/HL7Source.hbm.xml" />
 		<mapping resource="org/openmrs/hl7/db/hibernate/HL7InQueue.hbm.xml" />
 
 		<!-- Notification -->
