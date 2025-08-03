@@ -2768,6 +2768,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(ConceptSource.class)
         .addAnnotatedClass(TaskDefinition.class)
 				.addAnnotatedClass(ConceptStateConversion.class)
+				.addAnnotatedClass(OrderGroup.class)
 				.getMetadataBuilder().build();
 
 
