@@ -30,8 +30,12 @@ import org.openmrs.ConceptMap;
 import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptReferenceTerm;
+<<<<<<< HEAD
 import org.openmrs.ConceptSource;
 import org.openmrs.ConceptStateConversion;
+=======
+import org.openmrs.ConceptReferenceTermMap;
+>>>>>>> 19102b2d4 (TRUNK-5907: Migrate `ConceptReferenceTermMap` from Hibernate XML Mapping to JPA annotations)
 import org.openmrs.Condition;
 import org.openmrs.Diagnosis;
 import org.openmrs.Drug;
@@ -2755,6 +2759,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(ProgramAttributeType.class)
 				.addAnnotatedClass(HL7InError.class)
 				.addAnnotatedClass(OrderType.class)
+			    .addAnnotatedClass(ConceptReferenceTermMap.class)
 				.addAnnotatedClass(ConceptAnswer.class)
 				.addAnnotatedClass(ConceptClass.class)
 				.addAnnotatedClass(FormResource.class)
