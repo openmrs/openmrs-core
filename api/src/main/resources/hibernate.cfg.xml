@@ -61,7 +61,6 @@
 		<mapping resource="org/openmrs/api/db/hibernate/OrderSetMember.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/OrderSetAttributeType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/OrderSetAttribute.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/OrderGroup.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/OrderGroupAttribute.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/OrderGroupAttributeType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/CareSetting.hbm.xml" />
