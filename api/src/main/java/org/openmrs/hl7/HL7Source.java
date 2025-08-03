@@ -9,17 +9,39 @@
  */
 package org.openmrs.hl7;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.openmrs.BaseChangeableOpenmrsMetadata;
 
 /**
  * Names a unique location that hl7 messages could be coming from.
  */
+@Entity
+@Table(name = "hl7_source")
 @Audited
+@AttributeOverrides({
+		@AttributeOverride(name = "retired", column = @Column(name = "retired"))
+})
 public class HL7Source extends BaseChangeableOpenmrsMetadata {
 	                                  
 	private static final long serialVersionUID = 3062136520728193223L;
-	
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "hl7_source_gen")
+	@GenericGenerator(
+			name = "hl7_source_gen",
+			parameters = @Parameter(name = "sequence", value = "hl7_source_hl7_source_id_seq")
+	)
+	@Column(name = "hl7_source_id")
 	private Integer hl7SourceId;
 	
 	/**

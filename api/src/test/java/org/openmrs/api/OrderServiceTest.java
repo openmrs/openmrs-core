@@ -85,6 +85,7 @@ import org.openmrs.api.impl.OrderServiceImpl;
 import org.openmrs.customdatatype.datatype.FreeTextDatatype;
 import org.openmrs.hl7.HL7InArchive;
 import org.openmrs.hl7.HL7InError;
+import org.openmrs.hl7.HL7Source;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.notification.AlertRecipient;
 import org.openmrs.order.OrderUtil;
@@ -2764,11 +2765,12 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(PatientProgram.class)
 				.addAnnotatedClass(HL7InArchive.class)
 				.addAnnotatedClass(PersonMergeLog.class)
-				.addAnnotatedClass(ClobDatatypeStorage.class)
-				.addAnnotatedClass(ConceptSource.class)
-        .addAnnotatedClass(TaskDefinition.class)
-				.addAnnotatedClass(ConceptStateConversion.class)
-				.getMetadataBuilder().build();
+                .addAnnotatedClass(ClobDatatypeStorage.class)
+                .addAnnotatedClass(ConceptSource.class)
+                .addAnnotatedClass(TaskDefinition.class)
+                .addAnnotatedClass(ConceptStateConversion.class)
+                .addAnnotatedClass(HL7Source.class)
+                .getMetadataBuilder().build();
 
 
 		Field field = adminDAO.getClass().getDeclaredField("metadata");

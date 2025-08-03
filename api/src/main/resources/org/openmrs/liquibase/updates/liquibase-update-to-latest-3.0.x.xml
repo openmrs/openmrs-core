@@ -40,4 +40,15 @@
 		</addColumn>
 	</changeSet>
 
+	<changeSet id="TRUNK-6396-2025-08-01" author="Wikum Weerakutti">
+		<addColumn tableName="hl7_source">
+			<column name="date_retired" type="DATETIME" />
+			<column name="retire_reason" type="VARCHAR(255)" />
+			<column name="retired" type="BOOLEAN" defaultValue="false"/>
+			<column name="retired_by" type="INT" />
+			<column name="date_changed" type="DATETIME" />
+			<column name="changed_by" type="INT"/>
+		</addColumn>
+	</changeSet>
+
 </databaseChangeLog>
