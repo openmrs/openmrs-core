@@ -10,7 +10,6 @@
 package org.openmrs.web.test;
 
 import org.openmrs.test.BaseModuleContextSensitiveTest;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 /**
@@ -28,7 +27,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
  * The JUnit 5 version of the class is {@link org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest}.<p>
  */
 @WebAppConfiguration
-@ContextConfiguration(locations = { "classpath*:openmrs-servlet.xml", "classpath*:webModuleApplicationContext.xml" }, inheritLocations = true)
 @Deprecated
 public abstract class BaseModuleWebContextSensitiveTest extends BaseModuleContextSensitiveTest {
 }

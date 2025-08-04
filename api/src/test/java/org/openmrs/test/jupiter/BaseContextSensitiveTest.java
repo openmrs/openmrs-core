@@ -85,6 +85,8 @@ import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.ContextMockHelper;
 import org.openmrs.api.context.Credentials;
 import org.openmrs.api.context.UsernamePasswordCredentials;
+import org.openmrs.config.OpenmrsAppConfig;
+import org.openmrs.config.OpenmrsTestConfig;
 import org.openmrs.test.Containers;
 import org.openmrs.test.OpenmrsMetadataHandler;
 import org.openmrs.test.SkipBaseSetup;
@@ -116,8 +118,7 @@ import org.xml.sax.InputSource;
  * 
  * @since 2.4.0
  */
-@ContextConfiguration(locations = { "classpath:applicationContext-service.xml",
-        "classpath*:moduleApplicationContext.xml", "classpath*:TestingApplicationContext.xml" })
+@ContextConfiguration(classes = { OpenmrsAppConfig.class, OpenmrsTestConfig.class })
 @TestExecutionListeners(
 	listeners = { SkipBaseSetupAnnotationExecutionListener.class,
 		StartModuleExecutionListener.class },

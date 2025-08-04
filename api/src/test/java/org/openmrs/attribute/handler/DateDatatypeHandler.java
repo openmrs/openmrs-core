@@ -11,11 +11,13 @@ package org.openmrs.attribute.handler;
 
 import java.util.Date;
 
+import org.openmrs.annotation.Handler;
 import org.openmrs.customdatatype.CustomDatatypeHandler;
 import org.openmrs.customdatatype.datatype.DateDatatype;
 import org.springframework.stereotype.Component;
 
 @Component
+@Handler(supports = DateDatatype.class)
 public class DateDatatypeHandler implements CustomDatatypeHandler<DateDatatype, Date> {
 	
 	@Override

@@ -30,7 +30,7 @@ import org.springframework.util.Assert;
  * @see OpenmrsConstants#GLOBAL_PROPERTY_COMPLEX_OBS_DIR
  * @since 1.8
  */
-@Component
+@Component("binaryStreamHandler")
 public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHandler {
 	
 	/** Views supported by this handler */
