@@ -12,7 +12,7 @@ ARG DEV_JDK=amazoncorretto-8
 ARG RUNTIME_JDK=jdk8-corretto
 
 ### Compile Stage (platform-agnostic)
-FROM --platform=$BUILDPLATFORM maven:3.8-$DEV_JDK AS compile
+FROM --platform=$BUILDPLATFORM maven:3.9-$DEV_JDK AS compile
 
 RUN yum -y update && yum -y install git && yum clean all
 
@@ -23,7 +23,8 @@ ENV OMRS_SDK_PLUGIN_VERSION="5.11.0"
 
 COPY docker-pom.xml .
 
-ARG MVN_SETTINGS="-s /usr/share/maven/ref/settings-docker.xml"
+# aether.dependencyCollector.impl=bf downloads poms in parallel in addition to jars, dependency download speed up by ~60%
+ARG MVN_SETTINGS="-s /usr/share/maven/ref/settings-docker.xml -Daether.dependencyCollector.impl=bf"
 
 # Setup and cache SDK
 RUN mvn $MVN_SETTINGS -f docker-pom.xml $OMRS_SDK_PLUGIN:$OMRS_SDK_PLUGIN_VERSION:setup-sdk -N -DbatchAnswers=n
@@ -40,7 +41,13 @@ COPY test-module/api/pom.xml test-module/api/
 COPY test-module/omod/pom.xml test-module/omod/
 
 # Install dependencies
-RUN mvn $MVN_SETTINGS -B dependency:go-offline -P !default-tools.jar,!mac-tools.jar
+# Commenting out as it fails with:
+# `The following artifacts could not be resolved: org.openjfx:javafx-base:jar:linux-aarch64:17.0.14`
+# The version is not LTS thus linux-aarch64 is not available. 
+# I wasn't able to force a newer version with dependencyManagement for unknown reason.
+# Neither dependency:tree nor dependency:resolve-plugins lists this dependency. The excludeArtifactIds=javafx-base param
+# does not work due to https://github.com/apache/maven-dependency-plugin/pull/417 (not yet released)
+#RUN mvn $MVN_SETTINGS -B dependency:go-offline -P !default-tools.jar,!mac-tools.jar -DexcludeArtifactIds=javafx-base
 
 # Copy remaining files
 COPY . .
@@ -52,7 +59,7 @@ ARG MVN_ARGS='clean install -DskipTests'
 RUN mvn $MVN_SETTINGS $MVN_ARGS
 
 ### Development Stage
-FROM maven:3.8-$DEV_JDK AS dev
+FROM maven:3.9-$DEV_JDK AS dev
 
 RUN yum -y update && yum -y install tar gzip git && yum clean all
 
@@ -68,9 +75,9 @@ RUN if [ "$TARGETARCH" = "arm64" ] ; then TINI_URL="${TINI_URL}-arm64" TINI_SHA=
     && chmod +x /usr/bin/tini 
 
 # Setup Tomcat for development
-ARG TOMCAT_VERSION=8.5.83
-ARG TOMCAT_SHA="57cbe9608a9c4e88135e5f5480812e8d57690d5f3f6c43a7c05fe647bddb7c3b684bf0fc0efebad399d05e80c6d20c43d5ecdf38ec58f123e6653e443f9054e3"
-ARG TOMCAT_URL="https://www.apache.org/dyn/closer.cgi?action=download&filename=tomcat/tomcat-8/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz"
+ARG TOMCAT_VERSION=9.0.107
+ARG TOMCAT_SHA="1815837fa10083258b653dab1f3947fadbad377fa66546fa74aecea1439c6fed2ef4e40c86fa55e176d8c5739ad448196a7415ddfca6ff8d17c6fe8cdba0fefb"
+ARG TOMCAT_URL="https://www.apache.org/dyn/closer.cgi?action=download&filename=tomcat/tomcat-9/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz"
 RUN curl -fL -o /tmp/apache-tomcat.tar.gz "$TOMCAT_URL" \
     && echo "${TOMCAT_SHA}  /tmp/apache-tomcat.tar.gz" | sha512sum -c \
     && mkdir -p /usr/local/tomcat && gzip -d /tmp/apache-tomcat.tar.gz  \
@@ -123,6 +130,8 @@ RUN mkdir -p /openmrs/data/modules \
     && mkdir -p /openmrs/data/owa  \
     && mkdir -p /openmrs/data/configuration \
     && mkdir -p /openmrs/data/configuration_checksums \
+    && mkdir -p /openmrs/data/complex_obs \
+    && mkdir -p /openmrs/data/activemq-data \
     && chmod -R g+rw /openmrs
     
 # Copy in the start-up scripts
@@ -145,4 +154,3 @@ ENTRYPOINT ["/usr/bin/tini", "--"]
 
 # See startup-init.sh for all configurable environment variables
 CMD ["/openmrs/startup.sh"]
-
