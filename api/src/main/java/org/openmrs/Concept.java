@@ -53,6 +53,10 @@ import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ObjectUtils;
+import org.openmrs.Concept;
+import org.openmrs.Drug;
+import org.openmrs.ConceptAnswer;
+import java.util.Comparator;
 
 /**
  * A Concept object can represent either a question or an answer to a data point. That data point is
@@ -221,21 +225,26 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	public void addAnswer(ConceptAnswer conceptAnswer) {
 		if (conceptAnswer != null) {
+			if (conceptAnswer.getAnswerDrug() != null) {
+				throw new IllegalArgumentException("Adding Drug as answer is not allowed here.");
+			}
+
 			if (!getAnswers().contains(conceptAnswer)) {
 				conceptAnswer.setConcept(this);
 				getAnswers().add(conceptAnswer);
 			}
-			
-			if ((conceptAnswer.getSortWeight() == null) || (conceptAnswer.getSortWeight() <= 0)) {
-				//find largest sort weight
-				ConceptAnswer a = Collections.max(answers);
-				//a.sortWeight can be NULL
-				Double sortWeight = (a == null) ? 1d : ((a.getSortWeight() == null) ? 1d : a.getSortWeight() + 1d);
+			if (conceptAnswer.getSortWeight() == null || conceptAnswer.getSortWeight() <= 0) {
+				ConceptAnswer max = getAnswers().stream()
+					.filter(ans -> ans != null && ans.getSortWeight() != null)
+					.max(Comparator.comparing(ConceptAnswer::getSortWeight))
+					.orElse(null);
+				Double sortWeight = (max == null) ? 1d : max.getSortWeight() + 1d;
 				conceptAnswer.setSortWeight(sortWeight);
 			}
 		}
 	}
-	
+
+
 	/**
 	 * Remove the given answer from the list of answers for this Concept
 	 * 
