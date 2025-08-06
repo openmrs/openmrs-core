@@ -24,15 +24,17 @@ import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
+import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptReferenceTerm;
+import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.ConceptSource;
 import org.openmrs.ConceptStateConversion;
-import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.Condition;
 import org.openmrs.Diagnosis;
 import org.openmrs.Drug;
@@ -2757,7 +2759,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(ProgramAttributeType.class)
 				.addAnnotatedClass(HL7InError.class)
 				.addAnnotatedClass(OrderType.class)
-			    .addAnnotatedClass(ConceptReferenceTermMap.class)
+				.addAnnotatedClass(ConceptReferenceTermMap.class)
 				.addAnnotatedClass(ConceptAnswer.class)
 				.addAnnotatedClass(ConceptClass.class)
 				.addAnnotatedClass(FormResource.class)
@@ -2770,9 +2772,12 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(ClobDatatypeStorage.class)
 				.addAnnotatedClass(ConceptSource.class)
         		.addAnnotatedClass(TaskDefinition.class)
-				.addAnnotatedClass(ConceptStateConversion.class)
 				.addAnnotatedClass(OrderGroup.class)
 				.addAnnotatedClass(Template.class)
+				.addAnnotatedClass(ConceptStateConversion.class)
+				.addAnnotatedClass(Concept.class)
+				.addAnnotatedClass(ConceptNumeric.class)
+				.addAnnotatedClass(ConceptComplex.class)
 				.getMetadataBuilder().build();
 
 

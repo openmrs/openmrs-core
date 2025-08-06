@@ -14,6 +14,13 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.Table;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.envers.Audited;
 
@@ -23,28 +30,38 @@ import org.hibernate.envers.Audited;
  * @see Concept
  */
 @Audited
+@Entity
+@Table(name = "concept_numeric")
 public class ConceptNumeric extends Concept {
 	
 	public static final long serialVersionUID = 47323L;
 	
 	// Fields
-	
+	@Column(name = "hi_absolute", length = 22)
 	private Double hiAbsolute;
 	
+	@Column(name = "hi_critical", length = 22)
 	private Double hiCritical;
 	
+	@Column(name = "hi_normal", length = 22)
 	private Double hiNormal;
 	
+	@Column(name = "low_absolute", length = 22)
 	private Double lowAbsolute;
 	
+	@Column(name = "low_critical", length = 22)
 	private Double lowCritical;
 	
+	@Column(name = "low_normal", length = 22)
 	private Double lowNormal;
 	
+	@Column(name = "units", length = 22)
 	private String units;
-	
+
+	@Column(name = "allow_decimal", nullable = false)
 	private Boolean allowDecimal = false;
-	
+	@OneToMany(mappedBy = "concept", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@OrderBy("conceptReferenceRangeId ASC")
 	private Set<ConceptReferenceRange> referenceRanges;
 	
 	/**
