@@ -29,8 +29,9 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 
 /**
- * A concept reference term is typically name for a concept by which it is referred in another institution like ICD9, ICD10,
- * SNOMED that keeps a concept dictionary or any other OpenMRS implementation
+ * A concept reference term is typically name for a concept by which it is referred in another
+ * institution like ICD9, ICD10, SNOMED that keeps a concept dictionary or any other OpenMRS
+ * implementation
  *
  * @since 1.9
  */
@@ -82,8 +83,8 @@ public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 	 * Convenience constructor with the required fields filled in
 	 *
 	 * @param source the ConceptSource belongs in
-	 * @param code   the code within that concept
-	 * @param name   the user readable name of this term
+	 * @param code the code within that concept
+	 * @param name the user readable name of this term
 	 * @since 1.9.2, 1.10.0
 	 */
 	public ConceptReferenceTerm(ConceptSource source, String code, String name) {
@@ -182,17 +183,18 @@ public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 	}
 	
 	/**
-	 * Add the given {@link ConceptReferenceTermMap} object to this concept reference term's list of concept reference term
-	 * maps. If there is already a corresponding ConceptReferenceTermMap object for this concept reference term already, this
-	 * one will not be added.
+	 * Add the given {@link ConceptReferenceTermMap} object to this concept reference term's list of
+	 * concept reference term maps. If there is already a corresponding ConceptReferenceTermMap
+	 * object for this concept reference term already, this one will not be added.
 	 *
-	 * @param conceptReferenceTermMap <strong>Should</strong> not add a map where termB is itself
-	 *                                <strong>Should</strong> set termA as the term to which a mapping is being added
-	 *                                <strong>Should</strong> not add duplicate concept reference term maps
+	 * @param conceptReferenceTermMap
+	 * <strong>Should</strong> not add a map where termB is itself
+	 * <strong>Should</strong> set termA as the term to which a mapping is being added
+	 * <strong>Should</strong> not add duplicate concept reference term maps
 	 */
 	public void addConceptReferenceTermMap(ConceptReferenceTermMap conceptReferenceTermMap) {
 		if (conceptReferenceTermMap != null && conceptReferenceTermMap.getTermB() != null
-			&& !this.equals(conceptReferenceTermMap.getTermB())) {
+		        && !this.equals(conceptReferenceTermMap.getTermB())) {
 			//can't map a term to itself
 			conceptReferenceTermMap.setTermA(this);
 			if (conceptReferenceTermMaps == null) {
