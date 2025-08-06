@@ -32,6 +32,7 @@ import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptReferenceTerm;
+import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.ConceptSource;
 import org.openmrs.ConceptStateConversion;
 import org.openmrs.Condition;
@@ -2757,6 +2758,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(ProgramAttributeType.class)
 				.addAnnotatedClass(HL7InError.class)
 				.addAnnotatedClass(OrderType.class)
+				.addAnnotatedClass(ConceptReferenceTermMap.class)
 				.addAnnotatedClass(ConceptAnswer.class)
 				.addAnnotatedClass(ConceptClass.class)
 			    .addAnnotatedClass(ConceptMap.class)
@@ -2770,6 +2772,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(ClobDatatypeStorage.class)
 				.addAnnotatedClass(ConceptSource.class)
         		.addAnnotatedClass(TaskDefinition.class)
+				.addAnnotatedClass(OrderGroup.class)
 				.addAnnotatedClass(ConceptStateConversion.class)
 				.addAnnotatedClass(Concept.class)
 				.addAnnotatedClass(ConceptNumeric.class)
