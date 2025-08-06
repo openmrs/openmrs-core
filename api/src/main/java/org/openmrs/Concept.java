@@ -228,17 +228,16 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			if (conceptAnswer.getAnswerDrug() != null) {
 				throw new IllegalArgumentException("Adding Drug as answer is not allowed here.");
 			}
-
 			if (!getAnswers().contains(conceptAnswer)) {
 				conceptAnswer.setConcept(this);
 				getAnswers().add(conceptAnswer);
 			}
-			if (conceptAnswer.getSortWeight() == null || conceptAnswer.getSortWeight() <= 0) {
-				ConceptAnswer max = getAnswers().stream()
-					.filter(ans -> ans != null && ans.getSortWeight() != null)
-					.max(Comparator.comparing(ConceptAnswer::getSortWeight))
-					.orElse(null);
-				Double sortWeight = (max == null) ? 1d : max.getSortWeight() + 1d;
+
+			if ((conceptAnswer.getSortWeight() == null) || (conceptAnswer.getSortWeight() <= 0)) {
+				//find largest sort weight
+				ConceptAnswer a = Collections.max(answers);
+				//a.sortWeight can be NULL
+				Double sortWeight = (a == null) ? 1d : ((a.getSortWeight() == null) ? 1d : a.getSortWeight() + 1d);
 				conceptAnswer.setSortWeight(sortWeight);
 			}
 		}
