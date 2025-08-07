@@ -9,15 +9,15 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import javax.persistence.CacheRetrieveMode;
-import javax.persistence.CacheStoreMode;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.CacheRetrieveMode;
+import jakarta.persistence.CacheStoreMode;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -28,9 +28,9 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.FlushMode;
-import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.NativeQuery;
 import org.openmrs.Cohort;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterProvider;
@@ -267,10 +267,11 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		FlushMode flushMode = session.getHibernateFlushMode();
 		session.setHibernateFlushMode(FlushMode.MANUAL);
 		try {
-			SQLQuery sql = session
-			        .createSQLQuery("select encounter_datetime from encounter where encounter_id = :encounterId");
-			sql.setInteger("encounterId", encounter.getEncounterId());
-			return (Date) sql.uniqueResult();
+			NativeQuery<Date> sql = session
+				.createNativeQuery(
+					"select encounter_datetime from encounter where encounter_id = :encounterId", Date.class);
+			sql.setParameter("encounterId", encounter.getEncounterId());
+			return sql.uniqueResult();
 		}
 		finally {
 			session.setHibernateFlushMode(flushMode);
@@ -334,9 +335,10 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		FlushMode flushMode = session.getHibernateFlushMode();
 		session.setHibernateFlushMode(FlushMode.MANUAL);
 		try {
-			SQLQuery sql = session.createSQLQuery("select location_id from encounter where encounter_id = :encounterId");
-			sql.setInteger("encounterId", encounter.getEncounterId());
-			return Context.getLocationService().getLocation((Integer) sql.uniqueResult());
+			NativeQuery<Integer> sql = session.createNativeQuery("select location_id from encounter where encounter_id = :encounterId",
+				Integer.class);
+			sql.setParameter("encounterId", encounter.getEncounterId());
+			return Context.getLocationService().getLocation(sql.uniqueResult());
 		}
 		finally {
 			session.setHibernateFlushMode(flushMode);
@@ -362,8 +364,8 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		);
 
 		TypedQuery<Encounter> query = session.createQuery(cq);
-		query.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-		query.setHint("javax.persistence.cache.storeMode", CacheStoreMode.BYPASS);
+		query.setHint("jakarta.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
+		query.setHint("jakarta.persistence.cache.storeMode", CacheStoreMode.BYPASS);
 
 		Map<Integer, List<Encounter>> encountersBypatient = new HashMap<>();
 		List<Encounter> allEncounters = query.getResultList();
@@ -637,11 +639,13 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		// Query for Encounters
 		CriteriaQuery<Encounter> encounterQuery = cb.createQuery(Encounter.class);
 		Root<Encounter> encounterRoot = encounterQuery.from(Encounter.class);
+		Join<Encounter, Visit> visitJoin = encounterRoot.join("visit", JoinType.LEFT);
+
 		encounterQuery.where(createEncountersByPatientPredicates(cb, encounterRoot, patient, includeVoided, query)
 			.toArray(new Predicate[]{}));
 		encounterQuery.orderBy(
-			cb.desc(encounterRoot.get("visit").get("startDatetime")),
-			cb.desc(encounterRoot.get("visit").get("visitId")),
+			cb.desc(visitJoin.get("startDatetime")),
+			cb.desc(visitJoin.get("visitId")),
 			cb.desc(encounterRoot.get("encounterDatetime")),
 			cb.desc(encounterRoot.get("encounterId")));
 

@@ -97,4 +97,5 @@
 			CREATE FUNCTION UUID() RETURNS UUID LANGUAGE SQL AS $$ SELECT uuid_generate_v1() $$;
 		</sql>
 	</changeSet>
+
 </databaseChangeLog>

@@ -12,12 +12,12 @@
 -->
 <infinispan
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="urn:infinispan:config:13.0 https://infinispan.org/schemas/infinispan-config-13.0.xsd"
-	xmlns="urn:infinispan:config:13.0">
+	xsi:schemaLocation="urn:infinispan:config:15.2 https://infinispan.org/schemas/infinispan-config-15.2.xsd"
+	xmlns="urn:infinispan:config:15.2">
 
 	<cache-container>
 		<!-- Default configuration is appropriate for entity/collection caching. -->
-		<invalidation-cache-configuration name="entity" remote-timeout="20000" statistics="false" statistics-available="false">
+		<invalidation-cache-configuration name="entity" remote-timeout="20000" statistics="false">
 			<encoding media-type="application/x-java-object"/>
 			<locking concurrency-level="1000" acquire-timeout="15000"/>
 			<transaction mode="NONE" />

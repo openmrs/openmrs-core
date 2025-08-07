@@ -11,10 +11,10 @@ package org.openmrs.api.db.hibernate;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Root;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;

@@ -9,25 +9,19 @@
  */
 package org.openmrs.api.storage;
 
-import javax.activation.MimetypesFileTypeMap;
+import jakarta.activation.MimetypesFileTypeMap;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
-
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.openmrs.api.StorageService;
 import org.openmrs.api.stream.StreamDataService;
 import org.openmrs.util.OpenmrsUtil;
@@ -38,6 +32,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Service;
+
 
 /**
  * Used to persist data in a local file system or volumes.
@@ -55,11 +50,9 @@ public class LocalStorageService extends BaseStorageService implements StorageSe
 	
 	private final Path storageDir;
 	
-	private final DateTimeFormatter keyDateTimeFormat = DateTimeFormatter.ofPattern("yyyy/MM-dd/yyyy-MM-dd-HH-mm-ss-SSS-");
-	
 	private final MimetypesFileTypeMap mimetypes = new MimetypesFileTypeMap();
 	
-	public LocalStorageService(@Value("${storage.dir:}") String storageDir, @Autowired StreamDataService streamService) {
+	public LocalStorageService(@Value("${storage.local.dir:}") String storageDir, @Autowired StreamDataService streamService) {
 		super(streamService);
 		this.storageDir = StringUtils.isBlank(storageDir) ? Paths.get(OpenmrsUtil.getApplicationDataDirectory(), 
 			"storage").toAbsolutePath() : Paths.get(storageDir).toAbsolutePath();
@@ -112,61 +105,32 @@ public class LocalStorageService extends BaseStorageService implements StorageSe
 	
 	@Override
 	public Stream<String> getKeys(final String moduleIdOrGroup, final String keyPrefix) throws IOException {
-		List<String> dirs = new ArrayList<>();
-		final Path storagePath;
-		if (moduleIdOrGroup != null) {
-			dirs.add(moduleIdOrGroup);
-			storagePath = storageDir.resolve(moduleIdOrGroup);
-		} else {
-			storagePath = storageDir;
+		String key = encodeKey(newKey(moduleIdOrGroup, keyPrefix, null));
+
+		int lastDirIndex = key.lastIndexOf("/");
+		String lastDir = "";
+		if (lastDirIndex != -1) {
+			lastDir = key.substring(0, lastDirIndex + 1);
+		}
+
+		Path searchDir = storageDir.resolve(lastDir);
+
+		if (!searchDir.toFile().isDirectory()) {
+			return Stream.empty();
 		}
 		
-		String encodedPrefix = encodeKey(keyPrefix);
-		encodedPrefix = encodedPrefix.replace('/', File.separatorChar);
-		
-		Path pathPrefix = Paths.get(encodedPrefix);
-		final Path parent;
-		final String filename;
-		if (encodedPrefix.endsWith(File.separator) && Files.isDirectory(storagePath.resolve(pathPrefix))) {
-			parent = pathPrefix;
-			filename = "";
-		} else {
-			parent = pathPrefix.getParent();
-			filename = pathPrefix.getFileName().toString();
-		}
-		
-		if (parent != null) {
-			dirs.add(parent.toString());
-		}
 		@SuppressWarnings("resource")
-		Stream<Path> stream = Files.list(Paths.get(storageDir.toString(), dirs.toArray(new String[0])));
+		Stream<Path> stream = Files.list(searchDir);
 		// Filter out files that start with dot (hidden files)
 		return stream.filter(
-		    path -> path.getFileName().toString().startsWith(filename) && !path.getFileName().toString().startsWith("."))
+		    path -> !path.getFileName().toString().startsWith("."))
 		        .map(path -> {
-					String key = storagePath.relativize(path).toString();
-					key = decodeKey(key);
-					key += (Files.isDirectory(path)) ? File.separator : "";
-					key = key.replace(File.separatorChar, '/'); //MS Windows support
-					return key;
-				});
-	}
-
-	static String decodeKey(String key) {
-		try {
-			return URLDecoder.decode(key, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	static String encodeKey(String key) {
-		try {
-			return URLEncoder.encode(key, "UTF-8").replace(".", "%2E")
-				.replace("*", "%2A").replace("%2F", "/");
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
+					String foundKey = storageDir.relativize(path).toString();
+					foundKey = decodeKey(foundKey);
+					foundKey += (Files.isDirectory(path)) ? File.separator : "";
+					foundKey = foundKey.replace(File.separatorChar, '/'); //MS Windows support
+					return foundKey;
+				}).filter(foundKey -> foundKey.startsWith(key));
 	}
 
 	Path newPath(String key) throws IOException {
@@ -185,25 +149,7 @@ public class LocalStorageService extends BaseStorageService implements StorageSe
 			throw new IllegalArgumentException("Key must not point outside storage dir. Wrong key: " + key);
 		}
 	}
-	
-	String newKey(String moduleIdOrGroup, String keySuffix, String filename) {
-		if (keySuffix == null) {
-			keySuffix = LocalDateTime.now().format(keyDateTimeFormat) + RandomStringUtils.insecure().nextAlphanumeric(8);
-		}
-		if (filename != null) {
-			keySuffix += '-' + filename.replace(File.separator, "");
-		}
-		
-		if (moduleIdOrGroup == null) {
-			return keySuffix;
-		} else {
-			if (!moduleIdOrGroupPattern.matcher(moduleIdOrGroup).matches()) {
-				throw new IllegalArgumentException("moduleIdOrGroup '" + moduleIdOrGroup + "' does not match [\\w-./]+");
-			}
-			return moduleIdOrGroup + '/' + keySuffix;
-		}
-	}
-	
+
 	@Override
 	public String saveData(InputStream inputStream, ObjectMetadata metadata, String moduleIdOrGroup, String keySuffix) throws IOException {
 		String key = newKey(moduleIdOrGroup, keySuffix, metadata != null ? metadata.getFilename() : null);

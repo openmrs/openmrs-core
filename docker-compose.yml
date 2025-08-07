@@ -11,14 +11,14 @@ version: "3.7"
 services:
     db:
         image: mariadb:10.11.7
-        command: "mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci"
+        command: "mariadbd --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci"
         environment:
-            MYSQL_DATABASE: ${OMRS_DB_NAME:-openmrs}
-            MYSQL_USER: ${OMRS_DB_USER:-openmrs}
-            MYSQL_PASSWORD: ${OMRS_DB_PASSWORD:-openmrs}
-            MYSQL_ROOT_PASSWORD: ${OMRS_DB_ROOT_PASSWORD:-openmrs}
+            MARIADB_DATABASE: ${OMRS_DB_NAME:-openmrs}
+            MARIADB_USER: ${OMRS_DB_USER:-openmrs}
+            MARIADB_PASSWORD: ${OMRS_DB_PASSWORD:-openmrs}
+            MARIADB_ROOT_PASSWORD: ${OMRS_DB_ROOT_PASSWORD:-openmrs}
         healthcheck:
-            test: "mysql --user=${OMRS_DB_USER:-openmrs} --password=${OMRS_DB_PASSWORD:-openmrs} --execute \"SHOW DATABASES;\""
+            test: "mariadb --user=${OMRS_DB_USER:-openmrs} --password=${OMRS_DB_PASSWORD:-openmrs} --execute \"SHOW DATABASES;\""
             interval: 3s
             timeout: 5s
             retries: 3
@@ -35,6 +35,7 @@ services:
         ports:
             - "8080:8080"
         environment:
+            OMRS_DB: ${OMRS_DB:-mariadb}
             OMRS_DB_HOSTNAME: ${OMRS_DB_HOSTNAME:-db}
             OMRS_DB_NAME: ${OMRS_DB_NAME:-openmrs}
             OMRS_DB_USERNAME: ${OMRS_DB_USERNAME:-openmrs}

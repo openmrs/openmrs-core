@@ -11,21 +11,35 @@ package org.openmrs;
 
 import java.util.Date;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MappedSuperclass;
+
 /**
  * Superclass for {@link ConceptMap}s and {@link ConceptReferenceTermMap}s
  * 
  * @since 1.9
  */
+@MappedSuperclass
 public abstract class BaseConceptMap extends BaseOpenmrsObject implements Auditable {
 	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "a_is_to_b_id", nullable = false)
 	private ConceptMapType conceptMapType;
 	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
 	
+	@ManyToOne
+	@JoinColumn(name = "changed_by")
 	private User changedBy;
 	
+	@Column(name = "date_created", nullable = false)
 	private Date dateCreated;
 	
+	@Column(name = "date_changed")
 	private Date dateChanged;
 	
 	/**

@@ -9,7 +9,7 @@
  */
 package org.openmrs;
 
-import javax.persistence.Cacheable;
+import jakarta.persistence.Cacheable;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

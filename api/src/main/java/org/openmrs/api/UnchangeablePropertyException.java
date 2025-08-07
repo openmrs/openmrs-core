@@ -12,7 +12,7 @@ package org.openmrs.api;
 /**
  * An instance of this exception is thrown if an attempt is made to update an unchangeable property
  * on an object
- *
+ * 
  * @since 2.1
  */
 public class UnchangeablePropertyException extends APIException {
