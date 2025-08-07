@@ -12,6 +12,8 @@ package org.openmrs.util;
 import org.openmrs.annotation.Handler;
 import org.openmrs.annotation.OpenmrsProfileExcludeFilter;
 import org.openmrs.annotation.OpenmrsProfileIncludeFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -46,6 +48,8 @@ import org.springframework.core.type.filter.AnnotationTypeFilter;
  * @since 3.0.0
  */
 public class OpenmrsBeanRegistrar implements BeanDefinitionRegistryPostProcessor {
+
+	private static final Logger log = LoggerFactory.getLogger(OpenmrsBeanRegistrar.class);
 
 	@Override
 	public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
