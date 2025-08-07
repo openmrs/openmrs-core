@@ -9,13 +9,24 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import org.hibernate.envers.Audited;
 import org.openmrs.attribute.AttributeType;
 import org.openmrs.attribute.BaseAttributeType;
 
+@Entity
+@Table(name = "concept_attribute_type")
 @Audited
 public class ConceptAttributeType extends BaseAttributeType<Concept> implements AttributeType<Concept> {
-	
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "concept_attribute_type_id")
 	private Integer conceptAttributeTypeId;
 	
 	public Integer getConceptAttributeTypeId() {
