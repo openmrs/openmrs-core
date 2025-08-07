@@ -9,6 +9,19 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.Customizable;
@@ -50,7 +63,7 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	// ******************
 	// Properties
 	// ******************
-	
+  
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "patient_program_id")
@@ -82,6 +95,7 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	private Set<PatientState> states = new HashSet<>();
          
 	@OneToMany(mappedBy = "patientProgram", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+
 	private Set<PatientProgramAttribute> attributes = new LinkedHashSet<>();
 	
 	// ******************

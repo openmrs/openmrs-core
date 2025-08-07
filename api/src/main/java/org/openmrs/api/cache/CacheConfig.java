@@ -22,6 +22,8 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.text.CaseUtils;
+import org.infinispan.commons.configuration.io.ConfigurationResourceResolver;
+import org.infinispan.commons.configuration.io.URLConfigurationResourceResolver;
 import org.infinispan.commons.dataconversion.MediaType;
 import org.infinispan.configuration.parsing.ConfigurationBuilderHolder;
 import org.infinispan.configuration.parsing.ParserRegistry;
@@ -30,6 +32,9 @@ import org.infinispan.remoting.transport.jgroups.JGroupsTransport;
 import org.infinispan.spring.embedded.provider.SpringEmbeddedCacheManager;
 import org.jgroups.JChannel;
 import org.jgroups.protocols.TCP;
+import org.jgroups.protocols.TP;
+import org.jgroups.protocols.TUNNEL;
+import org.jgroups.protocols.UDP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -85,13 +90,21 @@ public class CacheConfig {
 		if(cacheType.trim().equals("cluster")) {
 			jChannelConfig = getJChannelConfig(cacheStack);
 			JChannel jchannel = new JChannel(jChannelConfig);
-			TCP tcp = jchannel.getProtocolStack().findProtocol(TCP.class);
+			Class<? extends TP> protocolClass = TCP.class;
+			if (cacheStack.trim().isEmpty() || cacheStack.trim().equals("udp")) {
+				protocolClass = UDP.class;
+			} else if(cacheStack.trim().equals("tunnel")) {
+				protocolClass = TUNNEL.class;
+			}
+			TP protocol = jchannel.getProtocolStack().findProtocol(protocolClass);
 			if (StringUtils.isBlank(apiCacheBindPort)) {
 				String hibernateCacheBindPort = System.getProperty("jgroups.bind.port");
-				if(hibernateCacheBindPort == null) hibernateCacheBindPort = "7800";
-				apiCacheBindPort=String.valueOf(Integer.parseInt(hibernateCacheBindPort) + 1);
+				if (hibernateCacheBindPort == null) {
+					hibernateCacheBindPort = "7800";
+				}
+				apiCacheBindPort = String.valueOf(Integer.parseInt(hibernateCacheBindPort) + 1);
 			}
-			tcp.setBindPort(Integer.parseInt(apiCacheBindPort));
+			protocol.setBindPort(Integer.parseInt(apiCacheBindPort));
 			JGroupsTransport transport = new JGroupsTransport(jchannel);
 			baseConfigBuilder.getGlobalConfigurationBuilder().transport().clusterName("infinispan-api-cluster").transport(transport);
 		}
@@ -111,10 +124,10 @@ public class CacheConfig {
 			// Skip already defined caches.
 			InputStream fullConfig = buildFullConfig(yaml, configFile,
 				baseConfigBuilder.getNamedConfigurationBuilders().keySet(), cacheType);
-			parser.parse(fullConfig, baseConfigBuilder, null,
+			parser.parse(fullConfig, baseConfigBuilder, ConfigurationResourceResolver.DEFAULT,
 				MediaType.APPLICATION_YAML);
 		}
-		
+
 		DefaultCacheManager cacheManager = new DefaultCacheManager(baseConfigBuilder, true);
 		return new SpringEmbeddedCacheManager(cacheManager);
 	}

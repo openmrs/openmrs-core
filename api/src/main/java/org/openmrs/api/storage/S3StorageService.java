@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.io.UncheckedIOException;
+import java.net.URI;
 import java.nio.file.FileAlreadyExistsException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -88,13 +89,16 @@ public class S3StorageService extends BaseStorageService implements StorageServi
         @Value("${storage.s3.accessKeyId:}") String accessKeyId,
         @Value("${storage.s3.secretAccessKey:}") String secretAccessKey,
         @Value("${storage.s3.region:}") String region,
+	 	@Value("${storage.s3.endpoint:}") String endpoint,
 	 	@Value("${storage.s3.bucketName:openmrs}") String bucketName,
+	 	@Value("${storage.s3.forcePathStyle:false}") boolean forcePathStyle,
 	    @Value("${storage.s3.multipartEnabled:true}") boolean multipartEnabled
     ) {
         super(streamDataService);
 		this.bucketName = bucketName;
 
-		S3AsyncClientBuilder s3AsyncClientBuilder = S3AsyncClient.builder().multipartEnabled(multipartEnabled);
+		S3AsyncClientBuilder s3AsyncClientBuilder = S3AsyncClient.builder().multipartEnabled(multipartEnabled)
+			.forcePathStyle(forcePathStyle);
 
 		if (StringUtils.isNotBlank(accessKeyId) || StringUtils.isNotBlank(secretAccessKey)) {
 			log.info("Using storage.s3.accessKeyId and storage.s3.secretAccessKey for S3 client");
@@ -106,6 +110,10 @@ public class S3StorageService extends BaseStorageService implements StorageServi
 				AwsBasicCredentials.create(accessKeyId, secretAccessKey));
 			s3AsyncClientBuilder = s3AsyncClientBuilder.credentialsProvider(awsCredentials);
         }
+		
+		if (StringUtils.isNotBlank(endpoint)) {
+			s3AsyncClientBuilder = s3AsyncClientBuilder.endpointOverride(URI.create(endpoint));
+		}
 
 		if (StringUtils.isNotBlank(region)) {
 			log.info("Using storage.s3.region '{}' for S3 client", region);

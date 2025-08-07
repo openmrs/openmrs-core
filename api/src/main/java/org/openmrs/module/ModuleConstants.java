@@ -63,8 +63,9 @@ public class ModuleConstants {
 	public static final String REPOSITORY_FOLDER_RUNTIME_PROPERTY = "module.repository_folder";
 	
 	/**
-	 * A module message.properties file containing this key mapped to "true" will be allowed to define messages outside of the module's namespace.
-	 *
+	 * A module message.properties file containing this key mapped to "true" will be allowed to
+	 * define messages outside of the module's namespace.
+	 * 
 	 * @since 1.9.3
 	 */
 	public static final String MESSAGE_PROPERTY_ALLOW_KEYS_OUTSIDE_OF_MODULE_NAMESPACE = "openmrs.property.MESSAGE_PROPERTY_ALLOW_KEYS_OUTSIDE_OF_MODULE_NAMESPACE";

@@ -92,7 +92,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.infinispan</groupId>
-			<artifactId>infinispan-spring5-embedded</artifactId>
+			<artifactId>infinispan-spring6-embedded</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>ca.uhn.hapi</groupId>
@@ -125,16 +125,16 @@
 			<artifactId>javassist</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate</groupId>
+			<groupId>org.hibernate.orm</groupId>
 			<artifactId>hibernate-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate</groupId>
+			<groupId>org.hibernate.orm</groupId>
 			<artifactId>hibernate-c3p0</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.infinispan</groupId>
-			<artifactId>infinispan-hibernate-cache-v53</artifactId>
+			<artifactId>infinispan-hibernate-cache-v62</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate.search</groupId>
@@ -150,10 +150,10 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-analyzers-phonetic</artifactId>
+			<artifactId>lucene-analysis-phonetic</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate</groupId>
+			<groupId>org.hibernate.orm</groupId>
 			<artifactId>hibernate-envers</artifactId>
 		</dependency>
 		<dependency>
@@ -193,8 +193,8 @@
 			<artifactId>xercesImpl</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>javax.validation</groupId>
-			<artifactId>validation-api</artifactId>
+			<groupId>jakarta.validation</groupId>
+			<artifactId>jakarta.validation-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate.validator</groupId>
@@ -203,6 +203,11 @@
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mariadb.jdbc</groupId>
+			<artifactId>mariadb-java-client</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -239,6 +244,14 @@
 			<artifactId>groovy-all</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>jakarta.xml.bind</groupId>
+			<artifactId>jakarta.xml.bind-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jaxb</groupId>
+			<artifactId>jaxb-runtime</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjrt</artifactId>
 		</dependency>
@@ -251,12 +264,12 @@
 			<artifactId>joda-time</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>javax.annotation</groupId>
-			<artifactId>javax.annotation-api</artifactId>
+			<groupId>jakarta.annotation</groupId>
+			<artifactId>jakarta.annotation-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.activation</groupId>
-			<artifactId>javax.activation</artifactId>
+			<artifactId>jakarta.activation</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>jakarta.xml.bind</groupId>

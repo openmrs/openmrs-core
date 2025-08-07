@@ -14,14 +14,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -409,6 +409,25 @@ public class HibernateProviderDAO implements ProviderDAO {
 	@Override
 	public ProviderRole getProviderRoleByUuid(String uuid) {
 		return getByUuid(uuid, ProviderRole.class);
+	}
+
+	@Override
+	public List<Provider> getProvidersByRoles(List<ProviderRole> roles, boolean includeRetired) {
+		CriteriaBuilder cb = sessionFactory.getCurrentSession().getCriteriaBuilder();
+		CriteriaQuery<Provider> cq = cb.createQuery(Provider.class);
+		Root<Provider> root = cq.from(Provider.class);
+		
+		List<Predicate> predicates = new ArrayList<>();
+		predicates.add(root.get("providerRole").in(roles));
+		if (!includeRetired) {
+			predicates.add(cb.isFalse(root.get("retired")));
+		}
+
+		cq.select(root)
+			.where(predicates.toArray(new Predicate[0]))
+			.orderBy(cb.asc(root.get("providerId")));
+
+		return sessionFactory.getCurrentSession().createQuery(cq).getResultList();
 	}
 
 }

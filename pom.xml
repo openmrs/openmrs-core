@@ -97,20 +97,20 @@
 				<type>war</type>
 			</dependency>
 			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>javax.servlet-api</artifactId>
-				<version>4.0.1</version>
+				<groupId>jakarta.servlet</groupId>
+				<artifactId>jakarta.servlet-api</artifactId>
+				<version>6.1.0</version>
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>jsp-api</artifactId>
-				<version>2.0</version>
+				<groupId>jakarta.servlet.jsp</groupId>
+				<artifactId>jakarta.servlet.jsp-api</artifactId>
+				<version>4.0.0</version>
 			</dependency>
 			<dependency>
-				<groupId>javax.servlet.jsp.jstl</groupId>
-				<artifactId>javax.servlet.jsp.jstl-api</artifactId>
-				<version>1.2.2</version>
+				<groupId>jakarta.servlet.jsp.jstl</groupId>
+				<artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+				<version>3.0.2</version>
 			</dependency>
 			<dependency>
 				<groupId>taglibs</groupId>
@@ -173,7 +173,7 @@
 			<dependency>
 				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>
-				<version>2.19.0</version>
+				<version>2.20.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
@@ -212,7 +212,7 @@
 			</dependency>
 			<dependency>
 				<groupId>org.infinispan</groupId>
-				<artifactId>infinispan-spring5-embedded</artifactId>
+				<artifactId>infinispan-spring6-embedded</artifactId>
 				<version>${infinispanVersion}</version>
 			</dependency>
 			<dependency>
@@ -221,24 +221,24 @@
 				<version>3.30.2-GA</version>
 			</dependency>
 			<dependency>
-				<groupId>org.hibernate</groupId>
+				<groupId>org.hibernate.orm</groupId>
 				<artifactId>hibernate-core</artifactId>
 				<version>${hibernateVersion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.hibernate</groupId>
+				<groupId>org.hibernate.orm</groupId>
 				<artifactId>hibernate-c3p0</artifactId>
 				<version>${hibernateVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.infinispan</groupId>
-				<artifactId>infinispan-hibernate-cache-v53</artifactId>
+				<artifactId>infinispan-hibernate-cache-v62</artifactId>
 				<version>${infinispanVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate.validator</groupId>
 				<artifactId>hibernate-validator</artifactId>
-				<version>6.2.0.Final</version>
+				<version>9.0.1.Final</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate.search</groupId>
@@ -257,11 +257,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.apache.lucene</groupId>
-				<artifactId>lucene-analyzers-phonetic</artifactId>
+				<artifactId>lucene-analysis-phonetic</artifactId>
 				<version>${luceneVersion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.hibernate</groupId>
+				<groupId>org.hibernate.orm</groupId>
 				<artifactId>hibernate-envers</artifactId>
 				<version>${hibernateVersion}</version>
 			</dependency>
@@ -310,7 +310,7 @@
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-jasper</artifactId>
-				<version>8.5.71</version>
+				<version>11.0.10</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
@@ -389,8 +389,8 @@
 				<scope>provided</scope>
 				<exclusions>
 					<exclusion>  <!-- declare the exclusion here -->
-						<groupId>javax.activation</groupId>
-						<artifactId>activation</artifactId>
+						<groupId>com.sun.activation</groupId>
+						<artifactId>jakarta.activation</artifactId>
 					</exclusion>
 				</exclusions>
 			</dependency>
@@ -414,6 +414,11 @@
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
 				<version>8.0.30</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mariadb.jdbc</groupId>
+				<artifactId>mariadb-java-client</artifactId>
+				<version>3.5.4</version>
 			</dependency>
 			<dependency>
 				<groupId>org.postgresql</groupId>
@@ -508,7 +513,7 @@
 			<dependency>
 				<groupId>com.h2database</groupId>
 				<artifactId>h2</artifactId>
-				<version>1.4.200</version>
+				<version>2.3.232</version>
 			</dependency>
 			<dependency>
 				<groupId>org.dbunit</groupId>
@@ -516,14 +521,24 @@
 				<version>3.0.0</version>
 			</dependency>
 			<dependency>
-				<groupId>javax.validation</groupId>
-				<artifactId>validation-api</artifactId>
-				<version>2.0.1.Final</version>
+				<groupId>jakarta.validation</groupId>
+				<artifactId>jakarta.validation-api</artifactId>
+				<version>3.1.1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.sonar-plugins.java</groupId>
 				<artifactId>sonar-jacoco-listeners</artifactId>
 				<version>3.2</version>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.xml.bind</groupId>
+				<artifactId>jakarta.xml.bind-api</artifactId>
+				<version>4.0.2</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jaxb</groupId>
+				<artifactId>jaxb-runtime</artifactId>
+				<version>4.0.5</version>
 			</dependency>
 			<dependency>
 			    <groupId>commons-validator</groupId>
@@ -546,14 +561,14 @@
 			  <version>2.14.0</version>
 			</dependency>
 			<dependency>
-			    <groupId>javax.annotation</groupId>
-			    <artifactId>javax.annotation-api</artifactId>
-			    <version>1.3.2</version>
+				<groupId>jakarta.annotation</groupId>
+				<artifactId>jakarta.annotation-api</artifactId>
+				<version>3.0.0</version>
 			</dependency>
 			<dependency>
-			    <groupId>com.sun.activation</groupId>
-			    <artifactId>javax.activation</artifactId>
-			    <version>1.2.0</version>
+				<groupId>com.sun.activation</groupId>
+				<artifactId>jakarta.activation</artifactId>
+				<version>2.0.1</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.guava</groupId>
@@ -572,8 +587,8 @@
 				<scope>runtime</scope>
 				<exclusions>
 					<exclusion>
-						<groupId>javax.activation</groupId>
-						<artifactId>activation</artifactId>
+						<groupId>com.sun.activation</groupId>
+						<artifactId>jakarta.activation</artifactId>
 					</exclusion>
 				</exclusions>
 			</dependency>
@@ -600,12 +615,12 @@
 			<dependency>
 				<groupId>software.amazon.awssdk</groupId>
 				<artifactId>s3</artifactId>
-				<version>2.31.50</version>
+				<version>2.32.13</version>
 			</dependency>
 			<dependency>
 				<groupId>com.adobe.testing</groupId>
 				<artifactId>s3mock-testcontainers</artifactId>
-				<version>2.17.0</version>
+				<version>4.7.0</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -660,6 +675,11 @@
 					<version>3.4.0</version>
 				</plugin>
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>3.8.1</version>
+				</plugin>
+				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>buildnumber-maven-plugin</artifactId>
 					<version>3.2.1</version>
@@ -683,7 +703,7 @@
 				<plugin>
 					<groupId>com.googlecode.maven-java-formatter-plugin</groupId>
 					<artifactId>maven-java-formatter-plugin</artifactId>
-					<version>0.3</version>
+					<version>0.4</version>
 					<configuration>
 						<compilerSource>${javaCompilerVersion}</compilerSource>
 						<compilerCompliance>${javaCompilerVersion}</compilerCompliance>
@@ -907,6 +927,28 @@
 						</execution>
 					</executions>
 				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-enforcer-plugin</artifactId>
+					<version>3.6.1</version>
+					<configuration>
+						<rules>
+							<requireMavenVersion>
+								<version>3.8.0</version>
+							</requireMavenVersion>
+						</rules>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>3.7.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.liquibase</groupId>
+					<artifactId>liquibase-maven-plugin</artifactId>
+					<version>4.33.0</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 
@@ -938,7 +980,6 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.7.1</version>
 				<configuration>
 					<descriptorRefs>
 						<descriptorRef>project</descriptorRef>
@@ -948,7 +989,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.5.3</version>
 				<configuration>
 					<failIfNoTests>false</failIfNoTests>
 					<useSystemClassLoader>false</useSystemClassLoader>
@@ -960,7 +1000,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<version>3.8.1</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -972,6 +1011,18 @@
 				<configuration>
 					<header>${project.basedir}/license-header.txt</header>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>enforce</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
@@ -1262,7 +1313,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<javaCompilerVersion>1.8</javaCompilerVersion>
+		<javaCompilerVersion>21</javaCompilerVersion>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
 		<TIMESTAMP>${maven.build.timestamp}</TIMESTAMP>
 
@@ -1276,22 +1327,22 @@
 			 For instance, our version of Lucene is tied to the version of Hibernate Search. Similarly, our
 			 version of Hibernate Search must be compatible with the version of Hibernate and Hibernate must
 			 be compatible with our version of Spring. -->
-		<springVersion>5.3.30</springVersion>
-		<hibernateVersion>5.6.15.Final</hibernateVersion>
+		<springVersion>6.2.9</springVersion>
+		<hibernateVersion>6.6.23.Final</hibernateVersion>
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
-		<hibernateSearchVersion>6.2.4.Final</hibernateSearchVersion>
-		<luceneVersion>8.11.2</luceneVersion>
+		<hibernateSearchVersion>7.1.2.Final</hibernateSearchVersion>
+		<luceneVersion>9.0.0</luceneVersion>
 		<!-- ininispanVersion needs to be adjusted if hibernateVersion changes -->
-		<infinispanVersion>13.0.22.Final</infinispanVersion>
+		<infinispanVersion>15.2.2.Final</infinispanVersion>
 		<aspectjVersion>1.9.24</aspectjVersion>
-		<jacksonVersion>2.19.1</jacksonVersion>
+		<jacksonVersion>2.19.2</jacksonVersion>
 		<junitVersion>5.11.4</junitVersion>
 		<mockitoVersion>3.12.4</mockitoVersion>
 		<hamcrestVersion>3.0</hamcrestVersion>
 
 		<slf4jVersion>1.7.36</slf4jVersion>
 		<log4jVersion>2.22.1</log4jVersion>
-		<owaspCsrfGuardVersion>4.2.1</owaspCsrfGuardVersion>
+		<owaspCsrfGuardVersion>4.5.0-jakarta</owaspCsrfGuardVersion>
 
 		<customArgLineForTesting />
 

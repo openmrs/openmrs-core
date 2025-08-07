@@ -20,6 +20,6 @@
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
-	<include file="org/openmrs/liquibase/updates/liquibase-update-to-latest-2.8.x.xml"/>
+	<include file="org/openmrs/liquibase/updates/liquibase-update-to-latest-3.0.x.xml"/>
 
 </databaseChangeLog>

@@ -16,8 +16,8 @@
 
 <hibernate-configuration>
 	<session-factory>
-        <property name="javax.persistence.validation.mode">none</property>
-		<property name="javax.persistence.sharedCache.mode">ENABLE_SELECTIVE</property>
+        <property name="jakarta.persistence.validation.mode">none</property>
+		<property name="jakarta.persistence.sharedCache.mode">ENABLE_SELECTIVE</property>
 		
 		<!-- API -->
 
@@ -30,13 +30,10 @@
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptNameTag.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptDatatype.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptProposal.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/ConceptStateConversion.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptSet.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptMap.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptStopWord.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/ConceptSource.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptReferenceTerm.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/ConceptReferenceTermMap.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/DiagnosisAttribute.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/DiagnosisAttributeType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Drug.hbm.xml" />
@@ -48,14 +45,15 @@
 		<mapping resource="org/openmrs/api/db/hibernate/Obs.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Person.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PersonAttribute.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/PersonMergeLog.hbm.xml" />		
 		<mapping resource="org/openmrs/api/db/hibernate/PersonName.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/LoginCredential.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Privilege.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Role.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Patient.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PatientIdentifier.hbm.xml" />
-                <mapping resource="org/openmrs/api/db/hibernate/PatientProgramAttribute.hbm.xml" />
+  
+		<mapping resource="org/openmrs/api/db/hibernate/PatientProgramAttribute.hbm.xml" />
+  
 		<mapping resource="org/openmrs/api/db/hibernate/RelationshipType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Order.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/OrderAttribute.hbm.xml" />
@@ -64,7 +62,6 @@
 		<mapping resource="org/openmrs/api/db/hibernate/OrderSetMember.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/OrderSetAttributeType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/OrderSetAttribute.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/OrderGroup.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/OrderGroupAttribute.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/OrderGroupAttributeType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/CareSetting.hbm.xml" />
@@ -72,7 +69,6 @@
 		<mapping resource="org/openmrs/api/db/hibernate/LocationAttribute.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/EncounterType.hbm.xml" />
         <mapping resource="org/openmrs/api/db/hibernate/EncounterProvider.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/EncounterRole.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Program.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ProgramWorkflow.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ProgramWorkflowState.hbm.xml" />
@@ -83,15 +79,11 @@
 		<!-- HL7 -->
 		<mapping resource="org/openmrs/hl7/db/hibernate/HL7Source.hbm.xml" />
 		<mapping resource="org/openmrs/hl7/db/hibernate/HL7InQueue.hbm.xml" />
-		<mapping resource="org/openmrs/hl7/db/hibernate/HL7InArchive.hbm.xml" />
-		
+
 		<!-- Notification -->
-		<mapping resource="org/openmrs/notification/db/hibernate/Template.hbm.xml" />
 		<mapping resource="org/openmrs/notification/db/hibernate/Alert.hbm.xml" />
 		
-		<!-- Scheduler -->
-		<mapping resource="org/openmrs/scheduler/db/hibernate/TaskDefinition.hbm.xml" />
-		
+
 		<!-- Visit -->
 		<mapping resource="org/openmrs/api/db/hibernate/VisitAttribute.hbm.xml" />
 		
@@ -99,8 +91,6 @@
 		<mapping resource="org/openmrs/api/db/hibernate/Provider.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ProviderAttribute.hbm.xml" />
 		
-		<mapping resource="org/openmrs/api/db/hibernate/ClobDatatypeStorage.hbm.xml" />
-
 		<!-- These mappings are required because of references in Obs & Concept -->
 		<mapping class="org.openmrs.ObsReferenceRange"/>
 		<mapping class="org.openmrs.ConceptReferenceRange"/>

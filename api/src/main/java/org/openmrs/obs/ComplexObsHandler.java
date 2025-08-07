@@ -79,7 +79,7 @@ public interface ComplexObsHandler {
 	
 	/**
 	 * Supported views getter
-	 *
+	 * 
 	 * @return all views supported by this handler
 	 * @since 1.12
 	 */
@@ -87,7 +87,7 @@ public interface ComplexObsHandler {
 	
 	/**
 	 * View support check
-	 *
+	 * 
 	 * @param view view type defined by UI and view/handler
 	 * @return true if given view is supported by this handler
 	 * @since 1.12

@@ -110,6 +110,11 @@ if [[ -z $OMRS_DB || "$OMRS_DB" == "mysql" ]]; then
   OMRS_DB_DRIVER_CLASS=${OMRS_DB_DRIVER_CLASS:-com.mysql.jdbc.Driver}
   OMRS_DB_PORT=${OMRS_DB_PORT:-3306}
   OMRS_DB_ARGS="${OMRS_DB_ARGS:-?autoReconnect=true&sessionVariables=default_storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8}"
+elif [[ "$OMRS_DB" == "mariadb" ]]; then
+  OMRS_DB_JDBC_PROTOCOL=${OMRS_DB_JDBC_PROTOCOL:-mariadb}
+  OMRS_DB_DRIVER_CLASS=${OMRS_DB_DRIVER_CLASS:-org.mariadb.jdbc.Driver}
+  OMRS_DB_PORT=${OMRS_DB_PORT:-3306}
+  OMRS_DB_ARGS="${OMRS_DB_ARGS:-?autoReconnect=true&sessionVariables=default_storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8}"	
 elif [[ "$OMRS_DB" == "postgresql" ]]; then
   OMRS_DB_JDBC_PROTOCOL=${OMRS_DB_JDBC_PROTOCOL:-postgresql}
   OMRS_DB_DRIVER_CLASS=${OMRS_DB_DRIVER_CLASS:-org.postgresql.Driver}
@@ -149,7 +154,6 @@ hibernate.search.backend.uris=${OMRS_SEARCH_ES_URIS}
 
 EOF
 
-
 # Supports any custom env variable with the OMRS_EXTRA_ prefix, which translates to a property without the 
 # OMRS_EXTRA_ prefix. The '_' is replaced with '.' and '__' with '_'.
 EXTRA_VARS=(${!OMRS_EXTRA_@})
@@ -164,15 +168,24 @@ if [[ -n "${EXTRA_VARS+x}" ]]; then
 	  EXTRA_PROPERTIES+="${var}=${!i}\n"
 	done
 	
-	echo -e "$EXTRA_PROPERTIES" >> "$OMRS_SERVER_PROPERTIES_FILE"
+	echo -e "$EXTRA_PROPERTIES" >> "openmrs-extra.properties"
 fi
 
-cat "$OMRS_SERVER_PROPERTIES_FILE"
-
 if [ -f "$OMRS_RUNTIME_PROPERTIES_FILE" ]; then
-  echo "Found existing runtime properties file at $OMRS_RUNTIME_PROPERTIES_FILE. Merging with $OMRS_SERVER_PROPERTIES_FILE"
-  awk -F= '!a[$1]++' "$OMRS_SERVER_PROPERTIES_FILE" "$OMRS_RUNTIME_PROPERTIES_FILE" > openmrs-merged.properties
-  cp openmrs-merged.properties "$OMRS_RUNTIME_PROPERTIES_FILE"
-  cat "$OMRS_RUNTIME_PROPERTIES_FILE"
+  if [ -f "openmrs-extra.properties" ]; then
+    echo "Found existing runtime properties file at $OMRS_RUNTIME_PROPERTIES_FILE. Merging with extra properties."
+    awk -F= '!a[$1]++' "openmrs-extra.properties" "$OMRS_RUNTIME_PROPERTIES_FILE" > openmrs-merged.properties
+    mv openmrs-merged.properties "$OMRS_RUNTIME_PROPERTIES_FILE"
+    cat "$OMRS_RUNTIME_PROPERTIES_FILE"
+  fi
+else
+  if [ -f "openmrs-extra.properties" ]; then
+  	cat "openmrs-extra.properties" >> "$OMRS_SERVER_PROPERTIES_FILE"
+  fi
+  cat "$OMRS_SERVER_PROPERTIES_FILE"
+fi
+
+if [ -f "openmrs-extra.properites" ]; then
+  rm "openmrs-extra.properties";
 fi
 
