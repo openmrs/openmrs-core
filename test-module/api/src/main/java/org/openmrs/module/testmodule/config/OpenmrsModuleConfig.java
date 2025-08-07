@@ -7,15 +7,15 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.attribute.handler;
+package org.openmrs.module.testmodule.config;
 
-import org.openmrs.Location;
-import org.openmrs.annotation.Handler;
-import org.openmrs.customdatatype.datatype.LocationDatatype;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
-@Component
-@Handler(supports = LocationDatatype.class)
-public class LocationDatatypeHandler extends BaseDatatypeHandler<LocationDatatype, Location> {
-	
+@Configuration
+@Import({
+	org.openmrs.module.testmodule.api.impl.TestModuleServiceImpl.class,
+	org.openmrs.module.testmodule.api.TestModuleServiceNoInterface.class
+})
+public class OpenmrsModuleConfig {
 }

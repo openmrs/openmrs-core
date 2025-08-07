@@ -36,7 +36,7 @@ import org.springframework.util.Assert;
  * The in coming data are either char[] or java.io.Reader
  *
  */
-@Component
+@Component("textHandler")
 public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 	
 	/** Views supported by this handler */

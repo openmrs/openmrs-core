@@ -14,7 +14,7 @@ import java.util.UUID;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
-@Component
+@Component("nonServiceTestBean")
 public class NonServiceTestBeanImpl implements NonServiceTestBean {
 	
 	@Cacheable("testCache")

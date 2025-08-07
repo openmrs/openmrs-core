@@ -31,7 +31,7 @@ import org.springframework.util.Assert;
  * 
  * @since 1.5
  */
-@Component
+@Component("binaryDataHandler")
 public class BinaryDataHandler extends AbstractHandler implements ComplexObsHandler {
 	
 	/** Views supported by this handler */
