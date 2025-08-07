@@ -15,7 +15,7 @@
 	<parent>
 		<groupId>org.openmrs.module</groupId>
 		<artifactId>openmrs-test-module</artifactId>
-		<version>2.7.5</version>
+		<version>2.7.6-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>openmrs-test-module-api</artifactId>
