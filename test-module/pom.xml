@@ -41,7 +41,6 @@
 	</modules>
 	
 	<properties>
-		<openmrsPlatformVersion>${project.version}</openmrsPlatformVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javaCompilerVersion>1.8</javaCompilerVersion>
 	</properties>
@@ -54,7 +53,7 @@
 			<dependency>
 				<groupId>org.openmrs.api</groupId>
 				<artifactId>openmrs-api</artifactId>
-				<version>${openmrsPlatformVersion}</version>
+				<version>${project.version}</version>
 				<type>jar</type>
 				<scope>provided</scope>
 			</dependency>
@@ -62,7 +61,7 @@
 			<dependency>
 				<groupId>org.openmrs.web</groupId>
 				<artifactId>openmrs-web</artifactId>
-				<version>${openmrsPlatformVersion}</version>
+				<version>${project.version}</version>
 				<type>jar</type>
 				<scope>provided</scope>
 				<exclusions>
@@ -76,7 +75,7 @@
 			<dependency>
 				<groupId>org.openmrs.api</groupId>
 				<artifactId>openmrs-api</artifactId>
-				<version>${openmrsPlatformVersion}</version>
+				<version>${project.version}</version>
 				<type>test-jar</type>
 				<scope>test</scope>
 			</dependency>
@@ -84,7 +83,7 @@
 			<dependency>
 				<groupId>org.openmrs.web</groupId>
 				<artifactId>openmrs-web</artifactId>
-				<version>${openmrsPlatformVersion}</version>
+				<version>${project.version}</version>
 				<type>test-jar</type>
 				<scope>test</scope>
 				<exclusions>
@@ -98,7 +97,7 @@
 			<dependency>
 				<groupId>org.openmrs.test</groupId>
 				<artifactId>openmrs-test</artifactId>
-				<version>${openmrsPlatformVersion}</version>
+				<version>${project.version}</version>
 				<type>pom</type>
 				<scope>test</scope>
 			</dependency>
