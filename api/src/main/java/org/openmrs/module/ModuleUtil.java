@@ -216,13 +216,24 @@ public class ModuleUtil {
 	 * <strong>Should</strong> return false if current openmrs version does not match any element in versions
 	 */
 	public static boolean isOpenmrsVersionInVersions(String ...versions) {
+		return isVersionInVersions(OpenmrsConstants.OPENMRS_VERSION_SHORT, versions);
+	}
+
+	/**
+	 * For testing of {@link #isOpenmrsVersionInVersions(String...)} only.
+	 * 
+	 * @param version the version
+	 * @param versions versions to match
+	 * @return true if version matches any value from versions
+	 */
+	static boolean isVersionInVersions(String version, String ...versions) {
 		if (versions == null || versions.length == 0) {
 			return false;
 		}
 
 		boolean result = false;
-		for (String version : versions) {
-			if (matchRequiredVersions(OpenmrsConstants.OPENMRS_VERSION_SHORT, version)) {
+		for (String candidateVersion : versions) {
+			if (matchRequiredVersions(version, candidateVersion)) {
 				result = true;
 				break;
 			}
