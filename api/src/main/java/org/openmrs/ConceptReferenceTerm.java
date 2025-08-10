@@ -64,7 +64,7 @@ public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 	
 	//The unique code used to identify the reference term in it's reference terminology
 	@GenericField
-	@Column(name = "code", nullable = false)
+	@Column(name = "code", nullable = false, length = 255)
 	private String code;
 	
 	@Column(name = "version", length = 50)
