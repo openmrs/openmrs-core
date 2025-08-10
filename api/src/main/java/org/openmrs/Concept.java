@@ -225,6 +225,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			if (conceptAnswer.getAnswerDrug() != null) {
 				throw new IllegalArgumentException("Adding Drug as answer is not allowed here.");
 			}
+			
 			if (!getAnswers().contains(conceptAnswer)) {
 				conceptAnswer.setConcept(this);
 				getAnswers().add(conceptAnswer);
