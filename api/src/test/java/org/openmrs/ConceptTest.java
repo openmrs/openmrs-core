@@ -1268,7 +1268,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	void shouldNotAllowDrugAsAnswer() {
+	void addAnswer_shouldNotAllowDrugAsAnswer() {
 		Concept concept = new Concept();
 		Drug drug = new Drug();
 
