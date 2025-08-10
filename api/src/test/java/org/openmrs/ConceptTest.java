@@ -1272,7 +1272,6 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Concept concept = new Concept();
 		Drug drug = new Drug();
 
-		// Wrap drug in ConceptAnswer
 		ConceptAnswer ca = new ConceptAnswer(null, drug);
 
 		assertThrows(IllegalArgumentException.class, () -> concept.addAnswer(ca));
