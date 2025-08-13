@@ -31,6 +31,8 @@ import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.timer.TimerSchedulerTask;
 import org.openmrs.util.OpenmrsSecurityManager;
 import org.openmrs.util.OpenmrsThreadPoolHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.AbstractRefreshableApplicationContext;
 
 /**
@@ -38,6 +40,8 @@ import org.springframework.context.support.AbstractRefreshableApplicationContext
  * module startup when there is no user to authenticate as.
  */
 public final class Daemon {
+
+	private static final Logger log = LoggerFactory.getLogger(Daemon.class);
 	
 	/**
 	 * The uuid defined for the daemon user object
@@ -177,6 +181,40 @@ public final class Daemon {
 		catch (InterruptedException e) {
 			// ignore
 		} catch (ExecutionException e) {
+			if (e.getCause() instanceof Exception) {
+				throw (Exception) e.getCause();
+			} else {
+				throw new RuntimeException(e.getCause());
+			}
+		}
+	}
+
+	/**
+	 * Authenticates a daemon user with privileges so the task can call service layers <br>
+	 * <br>
+	 * This can only be called from {@link TimerSchedulerTask} during actual task execution
+	 *
+	 * <strong>Should</strong> not be called from other methods other than TimerSchedulerTask
+	 * <strong>Should</strong> not throw error if called from a TimerSchedulerTask class
+	 */
+	public static void authenticateTask() throws Exception {
+		// quick check to make sure we're only being called by ourselves
+		Class<?> callerClass = new OpenmrsSecurityManager().getCallerClass(0);
+		if (!TimerSchedulerTask.class.isAssignableFrom(callerClass)) {
+			throw new APIException("Scheduler.timer.task.only", new Object[] { callerClass.getName() });
+		}
+		
+		// create a new thread and execute that task in it
+		Future<?> taskFuture = runInDaemonThreadInternal(() -> log.info("daemon authenticating task..."));
+		
+		// wait for the "authenticate" thread to finish
+		try {
+			taskFuture.get();
+		} 
+		catch (InterruptedException e) {
+			// ignore
+		} 
+		catch (ExecutionException e) {
 			if (e.getCause() instanceof Exception) {
 				throw (Exception) e.getCause();
 			} else {
