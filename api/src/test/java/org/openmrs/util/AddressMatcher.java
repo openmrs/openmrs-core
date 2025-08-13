@@ -12,33 +12,35 @@ package org.openmrs.util;
 import java.util.Set;
 
 import org.hamcrest.Description;
-import org.junit.internal.matchers.TypeSafeMatcher;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.openmrs.PersonAddress;
 
-public class AddressMatcher extends TypeSafeMatcher<Set<PersonAddress>> {
-	
-	private String address;
-	
-	public AddressMatcher(String address) {
-		this.address = address;
+public class AddressMatcher extends TypeSafeDiagnosingMatcher<Set<PersonAddress>> {
+
+	private final String expectedAddress;
+
+	public AddressMatcher(String expectedAddress) {
+		this.expectedAddress = expectedAddress;
 	}
-	
+
 	@Override
-	public boolean matchesSafely(Set<PersonAddress> personAddresses) {
+	protected boolean matchesSafely(Set<PersonAddress> personAddresses, Description mismatchDescription) {
 		for (PersonAddress personAddress : personAddresses) {
-			if (personAddress.toString().equals(address)) {
+			if (personAddress != null && personAddress.toString().equals(expectedAddress)) {
 				return true;
 			}
 		}
+
+		mismatchDescription.appendText("no address matched ").appendValue(expectedAddress);
 		return false;
 	}
-	
+
 	@Override
 	public void describeTo(Description description) {
-		description.appendText(address);
+		description.appendValue(expectedAddress);
 	}
-	
-	public static AddressMatcher containsAddress(String address) {
-		return new AddressMatcher(address);
+
+	public static AddressMatcher containsAddress(String expectedAddress) {
+		return new AddressMatcher(expectedAddress);
 	}
 }

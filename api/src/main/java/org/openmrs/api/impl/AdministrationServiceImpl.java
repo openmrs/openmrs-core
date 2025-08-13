@@ -333,7 +333,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		
 		// add all of the new properties
 		for (GlobalProperty prop : props) {
-			if (prop.getProperty() != null && prop.getProperty().length() > 0) {
+			if (prop.getProperty() != null && !prop.getProperty().isEmpty()) {
 				Context.getAdministrationService().saveGlobalProperty(prop);
 			}
 		}
@@ -354,7 +354,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		}
 		
 		// only try to save it if the global property has a key
-		if (gp.getProperty() != null && gp.getProperty().length() > 0) {
+		if (gp.getProperty() != null && !gp.getProperty().isEmpty()) {
 			if (gp.getProperty().equals(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST)) {
 				if (gp.getPropertyValue() != null) {
 					List<Locale> localeList = new ArrayList<>();
@@ -976,10 +976,9 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		return whitelistTypes;
 	}
 	public static List<Class<?>> getSerializerDefaultWhitelistHierarchyTypes() {
-		List<Class<?>> types = Arrays.asList(OpenmrsObject.class, OpenmrsMetadata.class, OpenmrsData.class, 
+		return Arrays.asList(OpenmrsObject.class, OpenmrsMetadata.class, OpenmrsData.class, 
 			CustomDatatype.class, SingleCustomValue.class, CustomValueDescriptor.class, Customizable.class,
 			LayoutTemplate.class, LayoutSupport.class, ComplexData.class, PresentationMessage.class,
 			PersonMergeLogData.class);
-		return types;
 	}
 }
