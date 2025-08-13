@@ -42,7 +42,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericFie
 @Entity
 @Table(name = "concept_reference_term")
 @AttributeOverrides({
-	@AttributeOverride(name = "name", column = @Column(name = "name"))
+	@AttributeOverride(name = "name", column = @Column(name = "name", nullable = true))
 })
 public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 	
