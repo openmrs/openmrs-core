@@ -913,8 +913,12 @@ public abstract class BaseContextSensitiveTest {
 		if (useInMemoryDatabase()) {
 			return "PUBLIC";
 		}
-		else {
+		else if (isPostgreSQL()) {
 			return "public";
+		}
+		else {
+			// For MySQL, return null to use the default schema
+			return null;
 		}
 	}
 	
