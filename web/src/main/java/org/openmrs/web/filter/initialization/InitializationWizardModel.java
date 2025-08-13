@@ -217,6 +217,11 @@ public class InitializationWizardModel {
 	public String setupPageUrl = WebConstants.SETUP_PAGE_URL;
 	
 	/**
+	 * OpenMRS version for display in templates
+	 */
+	public String OPENMRS_VERSION = OpenmrsConstants.OPENMRS_VERSION_SHORT;
+	
+	/**
 	 * The tasks to be executed that the user selected from the wizard's prompts
 	 */
 	public List<WizardTask> tasksToExecute;
