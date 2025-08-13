@@ -105,7 +105,7 @@ public class ConceptMap extends BaseConceptMap {
 	public void setConcept(Concept concept) {
 		this.concept = concept;
 	}
-	
+
 	/**
 	 * @return Returns the conceptMapId.
 	 */
