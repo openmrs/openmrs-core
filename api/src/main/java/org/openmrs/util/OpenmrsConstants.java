@@ -998,7 +998,7 @@ public final class OpenmrsConstants {
 		                "An integer which, if specified, would determine the maximum number of encounters to display on the encounter tab of the patient dashboard."));
 		
 		props.add(new GlobalProperty(GP_ENCOUNTER_EDITABLE_DURATION, "",
-		        "The length of time in minutes after encounter creation during which the encounter is allowed to be edited. By default, there is no limit."));
+		        "The length of time in minutes after encounter creation during which the encounter is allowed to be edited. By default, there is no limit. Examples: '1440' for 24 hours, '43200' for 30 days."));
 		
 		props.add(new GlobalProperty(GP_ENCOUNTER_EDITABLE_DURATION_OVERRIDE_PRIVILEGES, "",
 		        "A comma-separated list of privileges that allow users to edit encounters regardless of the editable duration."));
