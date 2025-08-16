@@ -14,6 +14,19 @@ import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Set;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.envers.Audited;
@@ -32,36 +45,54 @@ import org.openmrs.api.context.Context;
  */
 @Indexed
 @Audited
+@Entity
+@Table(name = "drug")
+@AttributeOverrides({ @AttributeOverride(name = "name", column = @Column(name = "name", length = 255, nullable = true)) })
 public class Drug extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 285L;
 	
 	// Fields
 	@DocumentId
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "drug_id")
 	private Integer drugId;
 	
+	@Column(name = "combination", nullable = false)
 	private Boolean combination = false;
 	
+	@ManyToOne
+	@JoinColumn(name = "dosage_form")
 	private Concept dosageForm;
 	
+	@Column(name = "maximum_daily_dose", length = 22)
 	private Double maximumDailyDose;
 	
+	@Column(name = "minimum_daily_dose", length = 22)
 	private Double minimumDailyDose;
 	
+	@Column(name = "strength", length = 255)
 	private String strength;
 	
+	@ManyToOne
+	@JoinColumn(name = "dose_limit_units")
 	private Concept doseLimitUnits;
 	
 	@IndexedEmbedded(includePaths = "conceptId", includeEmbeddedObjectId = true)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
 	
 	@IndexedEmbedded
 	@AssociationInverseSide(inversePath = @ObjectPath({
 		@PropertyValue(propertyName = "drug")
 	}))
+	@OneToMany(mappedBy = "drug", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<DrugReferenceMap> drugReferenceMaps;
 	
+	@OneToMany(mappedBy = "drug", fetch = FetchType.LAZY)
 	private Collection<DrugIngredient> ingredients;
 	
 	// Constructors
@@ -98,7 +129,7 @@ public class Drug extends BaseChangeableOpenmrsMetadata {
 	
 	/**
 	 * Gets the entries concept drug name in the form of CONCEPTNAME (Drug: DRUGNAME)
-	 * 
+	 *
 	 * @param locale
 	 * @return full drug name (with concept name appended)
 	 */
@@ -114,7 +145,7 @@ public class Drug extends BaseChangeableOpenmrsMetadata {
 	 * Gets whether or not this is a combination drug
 	 *
 	 * @return Boolean
-	 * 
+	 *
 	 * @deprecated as of 2.0, use {@link #getCombination()}
 	 */
 	@Deprecated
@@ -293,7 +324,7 @@ public class Drug extends BaseChangeableOpenmrsMetadata {
 	/**
 	 * Gets the doseLimitUnits which represents the units of the existing maximumDailyDose and
 	 * minimumDailyDose
-	 * 
+	 *
 	 * @return the doseLimitUnits.
 	 * @since 2.3.0
 	 */
@@ -304,7 +335,7 @@ public class Drug extends BaseChangeableOpenmrsMetadata {
 	/**
 	 * Sets the doseLimitUnits which represents the units of the existing maximumDailyDose and
 	 * minimumDailyDose
-	 * 
+	 *
 	 * @param doseLimitUnits The doseLimitUnits to set.
 	 * @since 2.3.0
 	 */
