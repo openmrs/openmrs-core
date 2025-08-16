@@ -2761,6 +2761,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			    .addAnnotatedClass(ConceptReferenceTerm.class)
 				.addAnnotatedClass(ConceptAnswer.class)
 				.addAnnotatedClass(ConceptClass.class)
+			    .addAnnotatedClass(ConceptMap.class)
 				.addAnnotatedClass(FormResource.class)
 				.addAnnotatedClass(VisitType.class)
 				.addAnnotatedClass(ProviderRole.class)
