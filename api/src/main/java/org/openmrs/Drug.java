@@ -129,7 +129,7 @@ public class Drug extends BaseChangeableOpenmrsMetadata {
 	
 	/**
 	 * Gets the entries concept drug name in the form of CONCEPTNAME (Drug: DRUGNAME)
-	 *
+	 * 
 	 * @param locale
 	 * @return full drug name (with concept name appended)
 	 */
@@ -145,7 +145,7 @@ public class Drug extends BaseChangeableOpenmrsMetadata {
 	 * Gets whether or not this is a combination drug
 	 *
 	 * @return Boolean
-	 *
+	 * 
 	 * @deprecated as of 2.0, use {@link #getCombination()}
 	 */
 	@Deprecated
@@ -335,7 +335,7 @@ public class Drug extends BaseChangeableOpenmrsMetadata {
 	/**
 	 * Sets the doseLimitUnits which represents the units of the existing maximumDailyDose and
 	 * minimumDailyDose
-	 *
+	 * 
 	 * @param doseLimitUnits The doseLimitUnits to set.
 	 * @since 2.3.0
 	 */
