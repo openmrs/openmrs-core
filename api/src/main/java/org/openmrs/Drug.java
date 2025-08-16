@@ -324,7 +324,7 @@ public class Drug extends BaseChangeableOpenmrsMetadata {
 	/**
 	 * Gets the doseLimitUnits which represents the units of the existing maximumDailyDose and
 	 * minimumDailyDose
-	 *
+	 * 
 	 * @return the doseLimitUnits.
 	 * @since 2.3.0
 	 */
