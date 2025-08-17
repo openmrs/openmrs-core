@@ -68,6 +68,7 @@ public class ConceptNumeric extends Concept {
 	 * displayPrecision, represents the number of significant digits
 	 * to be used for display of a numeric value
 	 */
+	@Column(name = "display_precision", nullable = true)
 	private Integer displayPrecision;
 	
 	// Constructors
