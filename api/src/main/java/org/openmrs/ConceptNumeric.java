@@ -17,7 +17,6 @@ import java.util.TreeSet;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
@@ -55,12 +54,13 @@ public class ConceptNumeric extends Concept {
 	@Column(name = "low_normal", length = 22)
 	private Double lowNormal;
 	
-	@Column(name = "units", length = 22)
+	@Column(name = "units", length = 50)
 	private String units;
 
-	@Column(name = "allow_decimal", nullable = false)
+	@Column(name = "allow_decimal", nullable = false, length = 1)
 	private Boolean allowDecimal = false;
-	@OneToMany(mappedBy = "concept", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+
+	@OneToMany(mappedBy = "conceptNumeric", cascade = CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("conceptReferenceRangeId ASC")
 	private Set<ConceptReferenceRange> referenceRanges;
 	
