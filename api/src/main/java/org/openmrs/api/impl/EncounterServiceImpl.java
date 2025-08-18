@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.impl;
 
+
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -40,6 +42,7 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.EncounterTypeLockedException;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
+import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.EncounterDAO;
 import org.openmrs.api.handler.EncounterVisitHandler;
@@ -62,7 +65,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @see org.openmrs.api.EncounterService
  */
 @Transactional
-public class EncounterServiceImpl extends BaseOpenmrsService implements EncounterService {
+public class EncounterServiceImpl extends BaseOpenmrsService implements EncounterService, RefByUuid {
 	
 	private EncounterDAO dao;
 	
@@ -1000,4 +1003,25 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		
 		return saveEncounter(encounterCopy);
 	}
+	
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getRefByUuid(Class<T> type, String uuid) {
+        if (EncounterRole.class.equals(type)) {
+            return (T) getEncounterRoleByUuid(uuid);
+        }
+        if (Encounter.class.equals(type)) {
+            return (T) getEncounterByUuid(uuid);
+        }
+        if (EncounterType.class.equals(type)) {
+            return (T) getEncounterTypeByUuid(uuid);
+        }
+        return null;
+    }
+
+    @Override
+    public List<?> getRefTypes() {
+        return Arrays.asList(EncounterRole.class, Encounter.class, EncounterType.class);
+    }
+
 }

@@ -9,11 +9,14 @@
  */
 package org.openmrs.api.impl;
 
+
+import java.util.Arrays;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.MedicationDispense;
 import org.openmrs.api.APIException;
 import org.openmrs.api.MedicationDispenseService;
+import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.MedicationDispenseDAO;
 import org.openmrs.parameter.MedicationDispenseCriteria;
@@ -28,7 +31,7 @@ import java.util.List;
  * @since 2.6.0
  */
 @Transactional
-public class MedicationDispenseServiceImpl extends BaseOpenmrsService implements MedicationDispenseService {
+public class MedicationDispenseServiceImpl extends BaseOpenmrsService implements MedicationDispenseService, RefByUuid {
 
 	private MedicationDispenseDAO medicationDispenseDAO;
 
@@ -83,4 +86,19 @@ public class MedicationDispenseServiceImpl extends BaseOpenmrsService implements
 	public void purgeMedicationDispense(MedicationDispense medicationDispense) throws APIException {
 		medicationDispenseDAO.deleteMedicationDispense(medicationDispense);
 	}
+	
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getRefByUuid(Class<T> type, String uuid) {
+        if (MedicationDispense.class.equals(type)) {
+            return (T) getMedicationDispenseByUuid(uuid);
+        }
+        return null;
+    }
+
+    @Override
+    public List<?> getRefTypes() {
+        return Arrays.asList(MedicationDispense.class);
+    }
+
 }

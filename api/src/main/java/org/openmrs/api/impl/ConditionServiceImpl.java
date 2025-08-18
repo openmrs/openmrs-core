@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.impl;
 
+
+import java.util.Arrays;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Condition;
@@ -17,6 +19,7 @@ import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConditionService;
+import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConditionDAO;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +33,7 @@ import java.util.List;
  * @since 2.2
  */
 @Transactional
-public class ConditionServiceImpl extends BaseOpenmrsService implements ConditionService {
+public class ConditionServiceImpl extends BaseOpenmrsService implements ConditionService, RefByUuid {
 
 	private ConditionDAO conditionDAO;
 
@@ -179,4 +182,19 @@ public class ConditionServiceImpl extends BaseOpenmrsService implements Conditio
 	public void purgeCondition(Condition condition) {
 		conditionDAO.deleteCondition(condition);
 	}
+	
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getRefByUuid(Class<T> type, String uuid) {
+        if (Condition.class.equals(type)) {
+            return (T) getConditionByUuid(uuid);
+        }
+        return null;
+    }
+
+    @Override
+    public List<?> getRefTypes() {
+        return Arrays.asList(Condition.class);
+    }
+
 }

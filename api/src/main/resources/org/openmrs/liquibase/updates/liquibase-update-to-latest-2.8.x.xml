@@ -97,45 +97,5 @@
 			CREATE FUNCTION UUID() RETURNS UUID LANGUAGE SQL AS $$ SELECT uuid_generate_v1() $$;
 		</sql>
 	</changeSet>
-<<<<
-	<changeSet author="nathan" id="TRUNK-6351-1751556966243909">
-		<preConditions onFail="MARK_RAN" onFailMessage="Cannot update layout.address.format because the property does not exist.">
-			<sqlCheck expectedResult="1">
-				SELECT COUNT(*) FROM global_property WHERE property = 'layout.address.format'
-			</sqlCheck>
-		</preConditions>
-		<comment>Update layout.address.format global property to JSON format</comment>
-        <update tableName="global_property">
-            <column name="property_value">
-                <![CDATA[
-                {
-                    "nameMappings": {
-                    "postalCode": "Location.postalCode",
-                    "address2": "Location.address2",
-                    "address1": "Location.address1",
-                    "country": "Location.country",
-                    "stateProvince": "Location.stateProvince",
-                    "cityVillage": "Location.cityVillage"
-                    },
-                    "sizeMappings": {
-                    "postalCode": "10",
-                    "address2": "40",
-                    "address1": "40",
-                    "country": "10",
-                    "stateProvince": "10",
-                    "cityVillage": "10"
-                    },
-                    "lineByLineFormat": [
-                    "address1",
-                    "address2",
-                    "cityVillage stateProvince country postalCode"
-                    ],
-                    "requiredElements": []
-                }
-                ]]>
-            </column> 
-            <column name="description" value="JSON description of address formats"/>
-            <where>property = 'layout.address.format'</where>
-        </update>
-    </changeSet>
+
 </databaseChangeLog>

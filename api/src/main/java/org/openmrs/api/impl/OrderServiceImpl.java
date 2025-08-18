@@ -45,6 +45,7 @@ import org.openmrs.api.OrderContext;
 import org.openmrs.api.OrderEntryException;
 import org.openmrs.api.OrderNumberGenerator;
 import org.openmrs.api.OrderService;
+import org.openmrs.api.RefByUuid;
 import org.openmrs.api.UnchangeableObjectException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderDAO;
@@ -81,7 +82,7 @@ import static org.openmrs.Order.Action.REVISE;
  * @see org.openmrs.api.OrderService
  */
 @Transactional
-public class OrderServiceImpl extends BaseOpenmrsService implements OrderService, OrderNumberGenerator, GlobalPropertyListener {
+public class OrderServiceImpl extends BaseOpenmrsService implements OrderService, OrderNumberGenerator, GlobalPropertyListener, RefByUuid {
 	
 	private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
 	
@@ -1287,4 +1288,43 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	public OrderAttribute getOrderAttributeByUuid(String uuid)throws APIException {
 		return dao.getOrderAttributeByUuid(uuid);
 	}
+	
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getRefByUuid(Class<T> type, String uuid) {
+        if (OrderType.class.equals(type)) {
+            return (T) getOrderTypeByUuid(uuid);
+        }
+        if (CareSetting.class.equals(type)) {
+            return (T) getCareSettingByUuid(uuid);
+        }
+        if (OrderGroup.class.equals(type)) {
+            return (T) getOrderGroupByUuid(uuid);
+        }
+        if (OrderFrequency.class.equals(type)) {
+            return (T) getOrderFrequencyByUuid(uuid);
+        }
+        if (OrderAttributeType.class.equals(type)) {
+            return (T) getOrderAttributeTypeByUuid(uuid);
+        }
+        if (OrderAttribute.class.equals(type)) {
+            return (T) getOrderAttributeByUuid(uuid);
+        }
+        if (Order.class.equals(type)) {
+            return (T) getOrderByUuid(uuid);
+        }
+        if (OrderGroupAttribute.class.equals(type)) {
+            return (T) getOrderGroupAttributeByUuid(uuid);
+        }
+        if (OrderGroupAttributeType.class.equals(type)) {
+            return (T) getOrderGroupAttributeTypeByUuid(uuid);
+        }
+        return null;
+    }
+
+    @Override
+    public List<?> getRefTypes() {
+        return Arrays.asList(OrderType.class, CareSetting.class, OrderGroup.class, OrderFrequency.class, OrderAttributeType.class, OrderAttribute.class, Order.class, OrderGroupAttribute.class, OrderGroupAttributeType.class);
+    }
+
 }

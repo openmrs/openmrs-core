@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.impl;
 
+
+import java.util.Arrays;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -62,6 +64,7 @@ import org.openmrs.api.ConceptNameInUseException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.ConceptStopWordException;
 import org.openmrs.api.ConceptsLockedException;
+import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.api.db.DAOException;
@@ -82,7 +85,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @see org.openmrs.api.ConceptService to access these methods
  */
 @Transactional
-public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptService {
+public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptService, RefByUuid {
 	
 	private static final Logger log = LoggerFactory.getLogger(ConceptServiceImpl.class);
 	
@@ -2152,4 +2155,70 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		checkIfLocked();
 		dao.purgeConceptReferenceRange(conceptReferenceRange);
 	}
+	
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getRefByUuid(Class<T> type, String uuid) {
+        if (ConceptSource.class.equals(type)) {
+            return (T) getConceptSourceByUuid(uuid);
+        }
+        if (ConceptAttributeType.class.equals(type)) {
+            return (T) getConceptAttributeTypeByUuid(uuid);
+        }
+        if (DrugIngredient.class.equals(type)) {
+            return (T) getDrugIngredientByUuid(uuid);
+        }
+        if (ConceptSet.class.equals(type)) {
+            return (T) getConceptSetByUuid(uuid);
+        }
+        if (ConceptAttribute.class.equals(type)) {
+            return (T) getConceptAttributeByUuid(uuid);
+        }
+        if (ConceptName.class.equals(type)) {
+            return (T) getConceptNameByUuid(uuid);
+        }
+        if (ConceptDatatype.class.equals(type)) {
+            return (T) getConceptDatatypeByUuid(uuid);
+        }
+        if (ConceptMapType.class.equals(type)) {
+            return (T) getConceptMapTypeByUuid(uuid);
+        }
+        if (ConceptNumeric.class.equals(type)) {
+            return (T) getConceptNumericByUuid(uuid);
+        }
+        if (ConceptProposal.class.equals(type)) {
+            return (T) getConceptProposalByUuid(uuid);
+        }
+        if (Drug.class.equals(type)) {
+            return (T) getDrugByUuid(uuid);
+        }
+        if (ConceptDescription.class.equals(type)) {
+            return (T) getConceptDescriptionByUuid(uuid);
+        }
+        if (ConceptNameTag.class.equals(type)) {
+            return (T) getConceptNameTagByUuid(uuid);
+        }
+        if (ConceptClass.class.equals(type)) {
+            return (T) getConceptClassByUuid(uuid);
+        }
+        if (ConceptAnswer.class.equals(type)) {
+            return (T) getConceptAnswerByUuid(uuid);
+        }
+        if (ConceptReferenceTerm.class.equals(type)) {
+            return (T) getConceptReferenceTermByUuid(uuid);
+        }
+        if (ConceptReferenceRange.class.equals(type)) {
+            return (T) getConceptReferenceRangeByUuid(uuid);
+        }
+        if (Concept.class.equals(type)) {
+            return (T) getConceptByUuid(uuid);
+        }
+        return null;
+    }
+
+    @Override
+    public List<?> getRefTypes() {
+        return Arrays.asList(ConceptSource.class, ConceptAttributeType.class, DrugIngredient.class, ConceptSet.class, ConceptAttribute.class, ConceptName.class, ConceptDatatype.class, ConceptMapType.class, ConceptNumeric.class, ConceptProposal.class, Drug.class, ConceptDescription.class, ConceptNameTag.class, ConceptClass.class, ConceptAnswer.class, ConceptReferenceTerm.class, ConceptReferenceRange.class, Concept.class);
+    }
+
 }

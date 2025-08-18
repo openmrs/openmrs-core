@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.impl;
 
+
+import java.util.Arrays;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Person;
@@ -22,6 +24,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PersonAttributeTypeLockedException;
 import org.openmrs.api.PersonService;
+import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.PersonDAO;
 import org.openmrs.person.PersonMergeLog;
@@ -53,7 +56,7 @@ import java.util.Set;
  * @see org.openmrs.api.context.Context
  */
 @Transactional
-public class PersonServiceImpl extends BaseOpenmrsService implements PersonService {
+public class PersonServiceImpl extends BaseOpenmrsService implements PersonService, RefByUuid {
 	
 	private static final Logger log = LoggerFactory.getLogger(PersonServiceImpl.class);
 	
@@ -998,4 +1001,37 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 			throw new PersonAttributeTypeLockedException();
 		}
 	}
+	
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getRefByUuid(Class<T> type, String uuid) {
+        if (Person.class.equals(type)) {
+            return (T) getPersonByUuid(uuid);
+        }
+        if (PersonName.class.equals(type)) {
+            return (T) getPersonNameByUuid(uuid);
+        }
+        if (PersonAttribute.class.equals(type)) {
+            return (T) getPersonAttributeByUuid(uuid);
+        }
+        if (Relationship.class.equals(type)) {
+            return (T) getRelationshipByUuid(uuid);
+        }
+        if (PersonAttributeType.class.equals(type)) {
+            return (T) getPersonAttributeTypeByUuid(uuid);
+        }
+        if (RelationshipType.class.equals(type)) {
+            return (T) getRelationshipTypeByUuid(uuid);
+        }
+        if (PersonAddress.class.equals(type)) {
+            return (T) getPersonAddressByUuid(uuid);
+        }
+        return null;
+    }
+
+    @Override
+    public List<?> getRefTypes() {
+        return Arrays.asList(Person.class, PersonName.class, PersonAttribute.class, Relationship.class, PersonAttributeType.class, RelationshipType.class, PersonAddress.class);
+    }
+
 }
