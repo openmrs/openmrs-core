@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.impl;
 
+
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,6 +24,7 @@ import org.openmrs.LocationAttributeType;
 import org.openmrs.LocationTag;
 import org.openmrs.api.APIException;
 import org.openmrs.api.LocationService;
+import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.LocationDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
@@ -41,7 +44,7 @@ import org.springframework.util.StringUtils;
  * @see org.openmrs.Location
  */
 @Transactional
-public class LocationServiceImpl extends BaseOpenmrsService implements LocationService {
+public class LocationServiceImpl extends BaseOpenmrsService implements LocationService, RefByUuid {
 	
 	private LocationDAO dao;
 	
@@ -508,4 +511,28 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	public LocationAttributeType getLocationAttributeTypeByName(String name) {
 		return dao.getLocationAttributeTypeByName(name);
 	}
+	
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getRefByUuid(Class<T> type, String uuid) {
+        if (LocationAttributeType.class.equals(type)) {
+            return (T) getLocationAttributeTypeByUuid(uuid);
+        }
+        if (LocationTag.class.equals(type)) {
+            return (T) getLocationTagByUuid(uuid);
+        }
+        if (LocationAttribute.class.equals(type)) {
+            return (T) getLocationAttributeByUuid(uuid);
+        }
+        if (Location.class.equals(type)) {
+            return (T) getLocationByUuid(uuid);
+        }
+        return null;
+    }
+
+    @Override
+    public List<?> getRefTypes() {
+        return Arrays.asList(LocationAttributeType.class, LocationTag.class, LocationAttribute.class, Location.class);
+    }
+
 }

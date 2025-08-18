@@ -11,8 +11,10 @@ package org.openmrs.api.impl;
 
 import org.openmrs.api.DomainService;
 import org.openmrs.api.OpenmrsService;
+import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.ServiceContext;
 import org.openmrs.serialization.UuidReferenceModule;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Method;
@@ -155,15 +157,23 @@ public class DomainServiceImpl extends BaseOpenmrsService implements DomainServi
         }
 
         /**
-         * Invokes the underlying method to fetch the object.
+         * Fetches a domain object by its UUID.
          *
-         * @param uuid the UUID of the object
-         * @return the resolved object
+         * <p>If the service implements {@link RefByUuid}, delegates to 
+         * {@link RefByUuid#getRefByUuid(Class, String)}; otherwise, invokes the 
+         * underlying method reflectively.</p>
+         *
+         * @param uuid the UUID of the object to fetch
+         * @return the resolved object, or {@code null} if not found
          * @throws RuntimeException if the invocation fails
          */
         public Object fetch(String uuid) {
             try {
-                return method.invoke(service, uuid);
+                if (RefByUuid.class.isAssignableFrom(getService().getClass())) {
+                    return ((RefByUuid) getService()).getRefByUuid(getReturnType(), uuid);
+                } else {
+                    return getMethod().invoke(service, uuid);
+                }
             } catch (Exception e) {
                 throw new RuntimeException("Failed to fetch " + returnType.getSimpleName() + " by UUID", e);
             }
@@ -171,9 +181,10 @@ public class DomainServiceImpl extends BaseOpenmrsService implements DomainServi
 
         @Override
         public String toString() {
+
             return "DomainFetcher{" +
                     "returnType=" + (returnType != null ? returnType.getSimpleName() : "null") +
-                    ", service=" + (service != null ? service.getClass().getSimpleName() : "null") +
+                    ", service=" + (service != null ? AopUtils.getTargetClass(service).getSimpleName() : "null") +
                     ", method=" + (method != null ? method.getName() : "null") +
                     '}';
         }

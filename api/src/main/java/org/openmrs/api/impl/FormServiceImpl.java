@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.impl;
 
+
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -35,6 +37,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.FormService;
 import org.openmrs.api.FormsLockedException;
 import org.openmrs.api.InvalidFileTypeException;
+import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.FormDAO;
 import org.openmrs.api.handler.SaveHandler;
@@ -57,7 +60,7 @@ import org.springframework.validation.BindException;
  * @see org.openmrs.api.FormService
  */
 @Transactional
-public class FormServiceImpl extends BaseOpenmrsService implements FormService {
+public class FormServiceImpl extends BaseOpenmrsService implements FormService, RefByUuid {
 	
 	private FormDAO dao;
 	
@@ -792,4 +795,33 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 		}
 	}
 	
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getRefByUuid(Class<T> type, String uuid) {
+        if (Field.class.equals(type)) {
+            return (T) getFieldByUuid(uuid);
+        }
+        if (FieldAnswer.class.equals(type)) {
+            return (T) getFieldAnswerByUuid(uuid);
+        }
+        if (Form.class.equals(type)) {
+            return (T) getFormByUuid(uuid);
+        }
+        if (FormField.class.equals(type)) {
+            return (T) getFormFieldByUuid(uuid);
+        }
+        if (FormResource.class.equals(type)) {
+            return (T) getFormResourceByUuid(uuid);
+        }
+        if (FieldType.class.equals(type)) {
+            return (T) getFieldTypeByUuid(uuid);
+        }
+        return null;
+    }
+
+    @Override
+    public List<?> getRefTypes() {
+        return Arrays.asList(Field.class, FieldAnswer.class, Form.class, FormField.class, FormResource.class, FieldType.class);
+    }
+
 }

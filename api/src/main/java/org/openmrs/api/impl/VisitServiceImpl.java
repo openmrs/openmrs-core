@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.impl;
 
+
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,6 +28,7 @@ import org.openmrs.VisitAttribute;
 import org.openmrs.VisitAttributeType;
 import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
+import org.openmrs.api.RefByUuid;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.VisitDAO;
@@ -43,7 +46,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @since 1.9
  */
 @Transactional
-public class VisitServiceImpl extends BaseOpenmrsService implements VisitService {
+public class VisitServiceImpl extends BaseOpenmrsService implements VisitService, RefByUuid {
 	
 	private VisitDAO dao;
 	
@@ -416,5 +419,28 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		}
 		return result;
 	}
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getRefByUuid(Class<T> type, String uuid) {
+        if (Visit.class.equals(type)) {
+            return (T) getVisitByUuid(uuid);
+        }
+        if (VisitType.class.equals(type)) {
+            return (T) getVisitTypeByUuid(uuid);
+        }
+        if (VisitAttribute.class.equals(type)) {
+            return (T) getVisitAttributeByUuid(uuid);
+        }
+        if (VisitAttributeType.class.equals(type)) {
+            return (T) getVisitAttributeTypeByUuid(uuid);
+        }
+        return null;
+    }
+
+    @Override
+    public List<?> getRefTypes() {
+        return Arrays.asList(Visit.class, VisitType.class, VisitAttribute.class, VisitAttributeType.class);
+    }
 
 }
