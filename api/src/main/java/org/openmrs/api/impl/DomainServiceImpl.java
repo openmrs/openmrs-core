@@ -13,8 +13,6 @@ import org.openmrs.api.DomainService;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.api.context.ServiceContext;
 import org.openmrs.serialization.UuidReferenceModule;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Method;
@@ -70,7 +68,6 @@ public class DomainServiceImpl extends BaseOpenmrsService implements DomainServi
                 }
             }
         }
-        System.out.println("aaaaaa.      :     " + domainFetchers);
     }
 
     /**
