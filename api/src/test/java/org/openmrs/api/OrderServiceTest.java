@@ -23,6 +23,7 @@ import org.openmrs.Allergy;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
+import org.openmrs.ConceptAttributeType;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptDescription;
@@ -2775,6 +2776,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(ConceptStateConversion.class)
 				.addAnnotatedClass(OrderGroup.class)
 				.addAnnotatedClass(Template.class)
+				.addAnnotatedClass(ConceptAttributeType.class)
 				.getMetadataBuilder().build();
 
 
