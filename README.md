@@ -253,7 +253,7 @@ Read the following sections to find out where you could help.
 
 Check out our [contributing guidelines](CONTRIBUTING.md), read through the [Developer guides](#developer-guides).
 
-After you've read up :eyeglasses: [grab an introductory issue](https://wiki.openmrs.org/display/docs/Contribute+as+a+Developer#ContributeasaDeveloper-Workonanissue) that is `Ready For Work`.
+After you've read up :eyeglasses: [grab an introductory issue](https://openmrs.atlassian.net/wiki/x/a8GEAQ) that is `Ready For Work`.
 
 ### Code Reviews
 
@@ -263,7 +263,7 @@ appreciated!
 
 Read
 
-https://wiki.openmrs.org/display/docs/Code+Review
+https://openmrs.atlassian.net/wiki/x/-r_EAQ
 
 and get started with re-:eyes: pull requests!
 
@@ -271,7 +271,7 @@ and get started with re-:eyes: pull requests!
 
 We use
 
-https://www.transifex.com/openmrs/OpenMRS/
+https://explore.transifex.com/openmrs/OpenMRS/
 
 to manage our translations.
 
@@ -286,7 +286,7 @@ the `messages_es.properties` file.
 
 If you would like to know how to help with translations see
 
-http://openmrs.org/join-the-community/translate/
+https://openmrs.org/get-involved/translate-openmrs/
 
 ## Issues
 
