@@ -21,7 +21,12 @@
 				   retired="false" uuid="db7f523f-27ce-4bb2-86d6-6d1d05312bd5"/>
 	<provider_role provider_role_id="1004" name="Health center supervisor" creator="1"
 				   date_created="2005-09-22 00:00:00.0" retired="false" uuid="da8f523f-27ce-4bb2-86d6-6d1e05312bd5"/>
-
+	<provider_role provider_role_id="1009" name="Palliative care worker" creator="1" date_created="2005-09-22 00:00:00.0" 
+				   retired="true" uuid="da7f523f-27ce-5bb2-86d6-6d1d05312bd5"/>
+	<provider_role provider_role_id="1010" name="Retired accompagnateur type" creator="1" date_created="2005-09-22 00:00:00.0" 
+				   retired="true" uuid="da7f623f-27ce-5bb2-86d6-6d1d05312bd5"/>
+	<provider_role provider_role_id="1011" name="Accompagnateur" creator="1" date_created="2005-09-22 00:00:00.0" 
+				   retired="true" uuid="da7f623f-37ce-5bb2-86d6-6d1d05312bd5"/>
 
 	<provider provider_id="1" provider_role_id="1001" name="RobertClive" identifier="8A760" creator="1" date_created="2005-01-01 00:00:00.0"
 			  retired="0" uuid="a2c3868a-6b90-11e0-93c3-18a905e044dc"/>
