@@ -330,5 +330,11 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	public List<Provider> getProvidersByRoles(List<ProviderRole> roles) {
 		return dao.getProvidersByRoles(roles, false);
 	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<ProviderRole> getAllProviderRoles(boolean includeRetired) {
+		return dao.getAllProviderRoles(includeRetired);
+	}
 	
 }
