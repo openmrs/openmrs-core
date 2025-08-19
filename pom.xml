@@ -1193,7 +1193,7 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.17.6</version>
+						<version>1.17.7</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
@@ -1219,7 +1219,7 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.17.6</version>
+						<version>1.17.7</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
@@ -1245,7 +1245,7 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.17.6</version>
+						<version>1.17.7</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
