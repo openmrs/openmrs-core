@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
 import org.openmrs.api.OrderServiceTest;
 import org.openmrs.api.db.hibernate.envers.OpenmrsRevisionEntity;
 import org.openmrs.liquibase.ChangeLogVersionFinder;
-import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.util.DatabaseIT;
 import org.openmrs.util.OpenmrsClassScanner;
 import org.slf4j.Logger;
@@ -85,20 +84,13 @@ public class ValidateHibernateMappingsDatabaseIT extends DatabaseIT {
 		Set<Class<?>> entityClasses = OpenmrsClassScanner.getInstance().getClassesWithAnnotation(Entity.class);
 		entityClasses.remove(OrderServiceTest.SomeTestOrder.class);
 		entityClasses.remove(OpenmrsRevisionEntity.class);
-
-		// This test fails for some JPA-mapped entities because the Liquibase schema doesn’t include a few inherited columns
-		// (like 'date_retired' in 'scheduler_task_config'). For now, we’re just skipping those entities here so the rest
-		// of the mappings can still be validated. We’ll fix this properly once the changelogs are updated.
-		entityClasses.remove(TaskDefinition.class);
-
 		for (Class<?> clazz : entityClasses) {
 			configuration.addAnnotatedClass(clazz);
 		}
-
 		configuration.setProperty(Environment.DIALECT, System.getProperty("databaseDialect"));
-		configuration.setProperty(Environment.JAKARTA_JDBC_URL, CONNECTION_URL);
-		configuration.setProperty(Environment.JAKARTA_JDBC_USER, USER_NAME);
-		configuration.setProperty(Environment.JAKARTA_JDBC_PASSWORD, PASSWORD);
+		configuration.setProperty(Environment.URL, CONNECTION_URL);
+		configuration.setProperty(Environment.USER, USER_NAME);
+		configuration.setProperty(Environment.PASS, PASSWORD);
 		configuration.setProperty(Environment.USE_SECOND_LEVEL_CACHE, "false");
 		configuration.setProperty(Environment.USE_QUERY_CACHE, "false");
 		configuration.setProperty("hibernate.integration.envers.enabled", "false");
