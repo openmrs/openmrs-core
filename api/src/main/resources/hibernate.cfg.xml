@@ -23,7 +23,6 @@
 		
 		<mapping resource="org/openmrs/api/db/hibernate/Concept.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptAttribute.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/ConceptAttributeType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptDescription.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptName.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptNameTag.hbm.xml" />
