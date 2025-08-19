@@ -640,16 +640,6 @@ public final class OpenmrsConstants {
 	 * Global property that stores the number of days for users to be deactivated.
 	 */
 	public static final String GP_NUMBER_OF_DAYS_TO_AUTO_RETIRE_USERS = "users.numberOfDaysToRetire";
-
-	/**
-	 * Sets the length of time after encounter creation during which the encounter is allowed to be edited.
-	 */
-	public static final String GP_ENCOUNTER_EDITABLE_DURATION = "encounter.editableDuration";
-
-	/**
-	 * Allow users with certain privileges to edit encounters regardless of the editable duration.
-	 */
-	public static final String GP_ENCOUNTER_EDITABLE_DURATION_OVERRIDE_PRIVILEGES = "encounter.editableDurationOverridePrivileges";
 	
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
@@ -997,12 +987,6 @@ public final class OpenmrsConstants {
 		                "3",
 		                "An integer which, if specified, would determine the maximum number of encounters to display on the encounter tab of the patient dashboard."));
 		
-		props.add(new GlobalProperty(GP_ENCOUNTER_EDITABLE_DURATION, "",
-		        "The length of time in minutes after encounter creation during which the encounter is allowed to be edited. By default, there is no limit. Examples: '1440' for 24 hours, '43200' for 30 days."));
-		
-		props.add(new GlobalProperty(GP_ENCOUNTER_EDITABLE_DURATION_OVERRIDE_PRIVILEGES, "",
-		        "A comma-separated list of privileges that allow users to edit encounters regardless of the editable duration."));
-
 		props.add(new GlobalProperty(GP_VISIT_TYPES_TO_AUTO_CLOSE, "",
 		        "comma-separated list of the visit type(s) to automatically close"));
 		
