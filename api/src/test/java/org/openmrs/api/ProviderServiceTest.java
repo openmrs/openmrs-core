@@ -576,4 +576,16 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		assertEquals(5, providers.size());
 	}
 
+	@Test
+	public void getAllProviderRoles_shouldGetAllProviderRoles() {
+		List<ProviderRole> roles = service.getAllProviderRoles(true);
+		assertEquals(7, roles.size());
+	}
+
+	@Test
+	public void getAllProviderRoles_shouldGetAllProviderRolesExcludingRetired() {
+		List<ProviderRole> roles = service.getAllProviderRoles(false);
+		assertEquals(4, roles.size());
+	}
+
 }
