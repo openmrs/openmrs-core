@@ -16,16 +16,6 @@
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
-	<!--
-  	This empty change set is required for integration tests.
- 	Currently, the other two change sets in this file are specific to PostgreSQL.
-  	Without this, tests like ChangeLogDetectiveDatabaseIT#shouldGetUnrunLiquibaseUpdateFileNames will fail.
-  	This can be removed once additional dbms independent change sets are added to this file.
-	-->
-
-	<changeSet id="42ddb873-f064-4418-a6c0-6c09426c4832" author="wschlegel">
-		<comment>Empty change set for integration tests.</comment>
-	</changeSet>
 
 	<changeSet id="20200604-soundex_extension" author="aman" dbms="postgresql">
 		<comment> Soundex extension for PostgreSQL</comment>
@@ -40,5 +30,14 @@
 		</sql>
 	</changeSet>
 
+	<changeSet id="TRUNK-6391-2025-07-29" author="Wikum Weerakutti">
+		<addColumn tableName="scheduler_task_config">
+			<column name="date_retired" type="DATETIME" />
+			<column name="retire_reason" type="VARCHAR(255)" />
+			<column name="retired" type="BOOLEAN" defaultValue="false"/>
+			<column name="creator" type="INT"/>
+			<column name="retired_by" type="INT" />
+		</addColumn>
+	</changeSet>
 
 </databaseChangeLog>
