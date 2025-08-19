@@ -432,16 +432,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 
 	@Override
 	public List<ProviderRole> getAllProviderRoles(boolean includeRetired) {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaBuilder cb = session.getCriteriaBuilder();
-		CriteriaQuery<ProviderRole> cq = cb.createQuery(ProviderRole.class);
-		Root<ProviderRole> root = cq.from(ProviderRole.class);
-
-		if (!includeRetired) {
-			cq.where(cb.equal(root.get("retired"), false));
-		}
-
-		return session.createQuery(cq).getResultList();
+		return getAll(includeRetired, ProviderRole.class);
 	}
 
 }
