@@ -1198,7 +1198,7 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.17.6</version>
+						<version>1.17.7</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
@@ -1224,7 +1224,7 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.17.6</version>
+						<version>1.17.7</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
@@ -1250,7 +1250,7 @@
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.17.6</version>
+						<version>1.17.7</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
