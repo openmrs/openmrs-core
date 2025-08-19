@@ -78,8 +78,8 @@ public class CacheConfig {
 	
 	private String jChannelConfig;
 
-	@Bean(name = "apiCacheManager")
-	public CacheManager apiCacheManager() throws Exception {
+	@Bean(name = "apiCacheManager", destroyMethod = "stop")
+	public SpringEmbeddedCacheManager apiCacheManager() throws Exception {
 		if (StringUtils.isBlank(cacheConfig)) {
 			String local = "local".equalsIgnoreCase(cacheType.trim()) ? "-local" : "";
 			cacheConfig = "infinispan-api" + local + ".xml";
