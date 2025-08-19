@@ -430,4 +430,9 @@ public class HibernateProviderDAO implements ProviderDAO {
 		return sessionFactory.getCurrentSession().createQuery(cq).getResultList();
 	}
 
+	@Override
+	public List<ProviderRole> getAllProviderRoles(boolean includeRetired) {
+		return getAll(includeRetired, ProviderRole.class);
+	}
+
 }

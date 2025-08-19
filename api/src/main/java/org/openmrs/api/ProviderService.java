@@ -343,6 +343,17 @@ public interface ProviderService extends OpenmrsService {
 	ProviderRole getProviderRole(Integer providerRoleId);
 
 	/**
+	 * Gets all Provider Roles in the database
+	 *
+	 * @param includeRetired whether to include retired provider roles or not
+	 * @return list of all provider roles in the system
+	 *
+	 * @since 3.0.0
+	 */
+	@Authorized({PrivilegeConstants.GET_PROVIDERS})
+	public List<ProviderRole> getAllProviderRoles(boolean includeRetired);
+
+	/**
 	 * Get a {@link ProviderRole} by its UUID
 	 * @param uuid The ProviderRole UUID
 	 * @return {@link ProviderRole}
