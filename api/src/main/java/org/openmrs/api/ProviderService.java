@@ -348,7 +348,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @param includeRetired whether to include retired provider roles or not
 	 * @return list of all provider roles in the system
 	 *
-	 * @since 3.0.0
+	 * @since 2.8.1
 	 */
 	@Authorized({PrivilegeConstants.GET_PROVIDERS})
 	public List<ProviderRole> getAllProviderRoles(boolean includeRetired);
