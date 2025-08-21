@@ -40,7 +40,6 @@
 		</addColumn>
 	</changeSet>
 	
-	<!-- Temporary fix: added column to bypass Hibernate validation for inherited fields. Not functionally required — should be replaced with a proper solution. -->
 	<changeSet id="TRUNK-5749-2025-08-20" author="Jai Vora">
 		<addColumn tableName="drug">
 			<column name="description" type="TEXT" />
