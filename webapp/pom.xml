@@ -95,7 +95,7 @@
          <plugin>
              <groupId>org.eclipse.jetty</groupId>
              <artifactId>jetty-maven-plugin</artifactId>
-			 <version>11.0.25</version>
+			 <version>11.0.26</version>
              <configuration>
                <webApp>
                	  <descriptor>${project.build.directory}/jetty/WEB-INF/web.xml</descriptor>
@@ -132,7 +132,7 @@
 		  <plugin>
               <groupId>org.codehaus.cargo</groupId>
               <artifactId>cargo-maven3-plugin</artifactId>
-              <version>1.10.20</version>
+              <version>1.10.21</version>
               <configuration>
                   <container>
                       <containerId>tomcat11x</containerId>

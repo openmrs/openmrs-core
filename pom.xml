@@ -763,7 +763,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>3.11.2</version>
+					<version>3.11.3</version>
 					<configuration>
 						<!-- For some reason some packages from org.springframework are being
 						included and causing errors. -->
@@ -1188,17 +1188,17 @@
 					<dependency>
 						<groupId>org.mockito</groupId>
 						<artifactId>mockito-core</artifactId>
-						<version>5.6.0</version>
+						<version>5.19.0</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.17.6</version>
+						<version>1.17.7</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.17.6</version>
+						<version>1.17.7</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
@@ -1214,17 +1214,17 @@
 					<dependency>
 						<groupId>org.mockito</groupId>
 						<artifactId>mockito-core</artifactId>
-						<version>5.6.0</version>
+						<version>5.19.0</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.17.6</version>
+						<version>1.17.7</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.17.6</version>
+						<version>1.17.7</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
@@ -1240,17 +1240,17 @@
 					<dependency>
 						<groupId>org.mockito</groupId>
 						<artifactId>mockito-core</artifactId>
-						<version>5.6.0</version>
+						<version>5.19.0</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy</artifactId>
-						<version>1.17.6</version>
+						<version>1.17.7</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
 						<artifactId>byte-buddy-agent</artifactId>
-						<version>1.17.6</version>
+						<version>1.17.7</version>
 					</dependency>
 				</dependencies>
 			</dependencyManagement>
@@ -1263,7 +1263,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.11.2</version>
+				<version>3.11.3</version>
 				<configuration>
 					<docfilessubdirs>true</docfilessubdirs>
 					<bottom>&lt;em&gt;&lt;small&gt; Generated ${TIMESTAMP} NOTE - these libraries are in active development and subject to change&lt;/small&gt;&lt;/em&gt;</bottom>
@@ -1327,7 +1327,7 @@
 			 For instance, our version of Lucene is tied to the version of Hibernate Search. Similarly, our
 			 version of Hibernate Search must be compatible with the version of Hibernate and Hibernate must
 			 be compatible with our version of Spring. -->
-		<springVersion>6.2.9</springVersion>
+		<springVersion>6.2.10</springVersion>
 		<hibernateVersion>6.6.23.Final</hibernateVersion>
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
 		<hibernateSearchVersion>7.1.2.Final</hibernateSearchVersion>
@@ -1337,7 +1337,7 @@
 		<aspectjVersion>1.9.24</aspectjVersion>
 		<jacksonVersion>2.19.2</jacksonVersion>
 		<junitVersion>5.11.4</junitVersion>
-		<mockitoVersion>3.12.4</mockitoVersion>
+		<mockitoVersion>5.19.0</mockitoVersion>
 		<hamcrestVersion>3.0</hamcrestVersion>
 
 		<slf4jVersion>1.7.36</slf4jVersion>
