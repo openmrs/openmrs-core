@@ -12,7 +12,7 @@ ARG DEV_JDK=amazoncorretto-21
 ARG RUNTIME_JDK=jdk21-corretto
 
 ### Compile Stage (platform-agnostic)
-FROM --platform=$BUILDPLATFORM maven:3.9-$DEV_JDK as compile
+FROM --platform=$BUILDPLATFORM maven:3.9-$DEV_JDK AS compile
 
 RUN yum -y update && yum -y install git && yum clean all
 
@@ -59,7 +59,7 @@ ARG MVN_ARGS='clean install -DskipTests'
 RUN mvn $MVN_SETTINGS $MVN_ARGS
 
 ### Development Stage
-FROM maven:3.9-$DEV_JDK as dev
+FROM maven:3.9-$DEV_JDK AS dev
 
 RUN yum -y update && yum -y install tar gzip git && yum clean all
 
@@ -131,6 +131,7 @@ RUN mkdir -p /openmrs/data/modules \
     && mkdir -p /openmrs/data/configuration \
     && mkdir -p /openmrs/data/configuration_checksums \
     && mkdir -p /openmrs/data/complex_obs \
+    && mkdir -p /openmrs/data/activemq-data \
     && chmod -R g+rw /openmrs
     
 # Copy in the start-up scripts

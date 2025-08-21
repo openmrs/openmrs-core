@@ -23,7 +23,7 @@ wait_for_es()
 		for es_uri in "${es_uris[@]}"; do
 			echo "Waiting for elastic search ${es_uri} to initialize..."
 			ELASTIC_SEARCH_HOST_PORT=(${es_uri//// })
-			/openmrs/wait-for-it.sh -t 120 "${ELASTIC_SEARCH_HOST_PORT[1]}" 
+			/openmrs/wait-for-it.sh -t 15 "${ELASTIC_SEARCH_HOST_PORT[1]}" 
 			EXIT_STATUS=$?
 			if [ $EXIT_STATUS -eq 0 ]; then
             	break 
@@ -32,7 +32,7 @@ wait_for_es()
 		done
     done
     
-    return EXIT_STATUS
+    return 0
 }
 
 if [ "${OMRS_SEARCH}" = "elasticsearch" ]; then

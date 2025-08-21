@@ -103,7 +103,7 @@ public class ComplexData implements java.io.Serializable {
 	
 	/**
 	 * Set the data length
-	 *
+	 * 
 	 * @param length
 	 * @since 1.12
 	 */
@@ -113,7 +113,7 @@ public class ComplexData implements java.io.Serializable {
 	
 	/**
 	 * Get the data length
-	 *
+	 * 
 	 * @return data length
 	 * @since 1.12
 	 */

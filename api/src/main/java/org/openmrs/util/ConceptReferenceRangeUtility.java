@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * A utility class that evaluates the concept ranges 
+ * A utility class that evaluates the concept ranges
  * 
  * @since 2.7.0
  */
@@ -39,10 +39,10 @@ public class ConceptReferenceRangeUtility {
 	
 	/**
 	 * This method evaluates the given criteria against the provided {@link Obs}.
-	 *
+	 * 
 	 * @param criteria the criteria string to evaluate e.g. "$patient.getAge() > 1"
-	 * @param obs The observation (Obs) object containing the values to be used in the criteria evaluation.
-	 *                  
+	 * @param obs The observation (Obs) object containing the values to be used in the criteria
+	 *            evaluation.
 	 * @return true if the criteria evaluates to true, false otherwise
 	 */
 	public boolean evaluateCriteria(String criteria, Obs obs) {
@@ -93,11 +93,10 @@ public class ConceptReferenceRangeUtility {
 	
 	/**
 	 * Gets the latest Obs by concept.
-	 *
-	 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName 
-	 *                   e.g "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434"
+	 * 
+	 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName e.g
+	 *            "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434"
 	 * @param person person to get obs for
-	 *                   
 	 * @return Obs latest Obs
 	 */
 	public Obs getLatestObs(String conceptRef, Person person) {
@@ -127,7 +126,7 @@ public class ConceptReferenceRangeUtility {
 	
 	/**
 	 * Gets the time of the day in hours.
-	 *
+	 * 
 	 * @return the hour of the day in 24hr format (e.g. 14 to mean 2pm)
 	 */
 	public int getCurrentHour() {
@@ -135,12 +134,14 @@ public class ConceptReferenceRangeUtility {
 	}
 	
 	/**
-	 * Retrieves the most relevant Obs for the given current Obs and conceptRef. If the current Obs contains a valid value 
-	 * (coded, numeric, date, text e.t.c) and the concept in Obs is the same as the supplied concept,
-	 * the method returns the current Obs. Otherwise, it fetches the latest Obs for the supplied concept and patient.
-	 *
+	 * Retrieves the most relevant Obs for the given current Obs and conceptRef. If the current Obs
+	 * contains a valid value (coded, numeric, date, text e.t.c) and the concept in Obs is the same
+	 * as the supplied concept, the method returns the current Obs. Otherwise, it fetches the latest
+	 * Obs for the supplied concept and patient.
+	 * 
 	 * @param currentObs the current Obs being evaluated
-	 * @return the most relevant Obs based on the current Obs, or the latest Obs if the current one has no valid value
+	 * @return the most relevant Obs based on the current Obs, or the latest Obs if the current one
+	 *         has no valid value
 	 */
 	public Obs getCurrentObs(String conceptRef, Obs currentObs) {
 		Concept concept = Context.getConceptService().getConceptByReference(conceptRef);

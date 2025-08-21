@@ -19,5 +19,5 @@ package org.openmrs;
  * @since 1.5
  */
 public interface Auditable extends Creatable, Changeable {
-
+	
 }

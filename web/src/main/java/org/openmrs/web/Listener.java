@@ -361,8 +361,13 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			SchedulerUtil.startup(getRuntimeProperties());
 		}
 		catch (Exception t) {
-			Context.shutdown();
-			WebModuleUtil.shutdownModules(servletContext);
+			try {
+				Context.shutdown();
+				WebModuleUtil.shutdownModules(servletContext);
+			}
+			catch (Throwable tw) {
+				//ignore shutdown error
+			}
 			throw new ServletException(t);
 		}
 		finally {
