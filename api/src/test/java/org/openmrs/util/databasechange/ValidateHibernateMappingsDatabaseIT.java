@@ -96,8 +96,6 @@ public class ValidateHibernateMappingsDatabaseIT extends DatabaseIT {
 		configuration.setProperty("hibernate.integration.envers.enabled", "false");
 		configuration.setProperty("hibernate.search.backend.type", "lucene");
 		configuration.setProperty("hibernate.search.backend.analysis.configurer", "class:org.openmrs.api.db.hibernate.search.lucene.LuceneConfig");
-		// Temporary workaround: inherited fields missing corresponding database columns
-		configuration.setProperty("hibernate.hbm2ddl.schema_filter_provider", "org.openmrs.util.databasechange.schemafilter.ExcludedTablesSchemaFilterProvider");
 		// Validate HBMs against the actual schema
 		configuration.setProperty(Environment.HBM2DDL_AUTO, "validate");
 		
