@@ -39,5 +39,11 @@
 			<column name="retired_by" type="INT" />
 		</addColumn>
 	</changeSet>
+	
+	<changeSet id="TRUNK-5749-2025-08-20" author="Jai Vora">
+		<addColumn tableName="drug">
+			<column name="description" type="TEXT" />
+		</addColumn>
+	</changeSet>
 
 </databaseChangeLog>
