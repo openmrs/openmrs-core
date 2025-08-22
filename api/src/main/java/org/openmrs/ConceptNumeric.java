@@ -63,10 +63,7 @@ public class ConceptNumeric extends Concept {
 	private Boolean allowDecimal = false;
 
 	@OneToMany(
-		mappedBy = "concept",
-		cascade = CascadeType.ALL,
-		orphanRemoval = true
-	)
+		mappedBy = "concept", cascade = CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("conceptReferenceRangeId ASC")
 	private Set<ConceptReferenceRange> referenceRanges;
 	

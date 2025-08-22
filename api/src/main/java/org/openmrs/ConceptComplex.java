@@ -14,7 +14,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import org.hibernate.annotations.Proxy;
 import org.hibernate.envers.Audited;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.openmrs.obs.ComplexObsHandler;
 
 /**

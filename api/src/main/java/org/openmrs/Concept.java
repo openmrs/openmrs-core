@@ -39,6 +39,7 @@ import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.BatchSize;
@@ -202,11 +203,12 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * A cache of locales to names which have compatible locales. Built on-the-fly by
 	 * getCompatibleNames().
 	 */
+	@Transient
 	private Map<Locale, List<ConceptName>> compatibleCache;
+	
 	@OneToMany(mappedBy = "concept", cascade = CascadeType.ALL, orphanRemoval = true)
 	@BatchSize(size = 100)
 	@OrderBy("voided ASC")
-	
 	private Set<ConceptAttribute> attributes = new LinkedHashSet<>();
 
 	/** default constructor */
