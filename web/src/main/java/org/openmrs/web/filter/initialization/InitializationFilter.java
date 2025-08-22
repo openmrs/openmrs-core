@@ -165,28 +165,6 @@ public class InitializationFilter extends StartupFilter {
 	private static final String PROGRESS_VM_AJAXREQUEST = "progress.vm.ajaxRequest";
 	
 	public static final String RELEASE_TESTING_MODULE_PATH = "/module/releasetestinghelper/";
-
-	/**
-	 * This tracks the properties that we use in the installation wizard. Properties not defined here will be copied
-	 * to the runtime properties, allowing us to pre-define certain runtime settings.
-	 */
-	private static final Set<String> INSTALLATION_WIZARD_PROPERTIES;
-	static {
-		INSTALLATION_WIZARD_PROPERTIES = new HashSet<>();
-		INSTALLATION_WIZARD_PROPERTIES.add("install_method");
-		INSTALLATION_WIZARD_PROPERTIES.add("connection.url");
-		INSTALLATION_WIZARD_PROPERTIES.add("connection.driver_class");
-		INSTALLATION_WIZARD_PROPERTIES.add("connection.username");
-		INSTALLATION_WIZARD_PROPERTIES.add("connection.password");
-		INSTALLATION_WIZARD_PROPERTIES.add("has_current_openmrs_database");
-		INSTALLATION_WIZARD_PROPERTIES.add("create_database_username");
-		INSTALLATION_WIZARD_PROPERTIES.add("create_database_password");
-		INSTALLATION_WIZARD_PROPERTIES.add("create_tables");
-		INSTALLATION_WIZARD_PROPERTIES.add("add_demo_data");
-		INSTALLATION_WIZARD_PROPERTIES.add("module_web_admin");
-		INSTALLATION_WIZARD_PROPERTIES.add("auto_update_database");
-		INSTALLATION_WIZARD_PROPERTIES.add("admin_user_password");
-	}
 	
 	/**
 	 * The model object that holds all the properties that the rendered templates use. All attributes on
@@ -379,8 +357,8 @@ public class InitializationFilter extends StartupFilter {
 			wizardModel.adminUserPassword = script.getProperty("admin_user_password", wizardModel.adminUserPassword);
 			
 			for (Map.Entry<Object, Object> entry : script.entrySet()) {
-				if (!INSTALLATION_WIZARD_PROPERTIES.contains(entry.getKey())) {
-					wizardModel.additionalPropertiesFromInstallationScript.put(entry.getKey(), entry.getValue());
+				if (entry.getKey() instanceof String && ((String) entry.getKey()).startsWith("property.")) {
+					wizardModel.additionalPropertiesFromInstallationScript.put(((String) entry.getKey()).substring(9), entry.getValue());
 				}
 			}
 		}
