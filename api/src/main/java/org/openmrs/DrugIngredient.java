@@ -44,7 +44,7 @@ public class DrugIngredient extends BaseOpenmrsObject implements Serializable, O
 	@Column(name = "strength")
 	private Double strength;
 	
-	@JoinColumn(name = "units", insertable = false, updatable = false)
+	@JoinColumn(name = "units")
 	@ManyToOne
 	private Concept units;
 	
