@@ -854,12 +854,20 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		return dbUnitConn;
 	}
 
+	protected boolean isPostgreSQL() {
+		return "postgresql".equals(System.getProperty("database"));
+	}
+	
 	protected String getSchemaPattern() {
 		if (useInMemoryDatabase()) {
 			return "PUBLIC";
 		}
-		else {
+		else if (isPostgreSQL()) {
 			return "public";
+		}
+		else {
+			// For MySQL, return null to use the default schema
+			return null;
 		}
 	}
 	
