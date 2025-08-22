@@ -9,8 +9,6 @@
  */
 package org.openmrs.test.jupiter;
 
-import org.springframework.test.context.ContextConfiguration;
-
 /**
  * Modules using the unit test framework should use this class instead of the general
  * {@link org.openmrs.test.jupiter.BaseContextSensitiveTest} one. Developers just need to make sure their modules are on the
@@ -23,8 +21,6 @@ import org.springframework.test.context.ContextConfiguration;
  * 
  * @since 2.4.0
  */
-@ContextConfiguration(locations = { "classpath:applicationContext-service.xml", "classpath*:TestingApplicationContext.xml",
-        "classpath*:moduleApplicationContext.xml" }, inheritLocations = false)
 public abstract class BaseModuleContextSensitiveTest extends BaseContextSensitiveTest {
 
 }
