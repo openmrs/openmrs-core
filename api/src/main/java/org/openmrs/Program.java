@@ -13,12 +13,27 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.openmrs.annotation.AllowDirectAccess;
 
 /**
  * Program
  */
+@Entity
+@Table(name = "program")
 @Audited
 public class Program extends BaseChangeableOpenmrsMetadata {
 	
@@ -27,18 +42,27 @@ public class Program extends BaseChangeableOpenmrsMetadata {
 	// ******************
 	// Properties
 	// ******************
-	
+	@Id
+	@GeneratedValue(generator = "native")
+	@GenericGenerator(name = "native", strategy = "native", parameters = @Parameter(name = "sequence", value = "program_program_id_seq"))
+	@Column(name = "program_id")
 	private Integer programId;
 	
+	@ManyToOne
+	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
 	
 	/**
 	 * Represents the possible outcomes for this program. The concept should have answers or a
 	 * memberSet.
 	 */
+	@ManyToOne
+	@JoinColumn(name = "outcomes_concept_id")
 	private Concept outcomesConcept;
 	
 	@AllowDirectAccess
+	@OneToMany(mappedBy = "program", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	@OrderBy("dateCreated asc")
 	private Set<ProgramWorkflow> allWorkflows = new HashSet<>();
 	
 	// ******************
