@@ -4023,4 +4023,41 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		conceptReferenceRange = conceptService.getConceptReferenceRangeByUuid(CONCEPT_REFERENCE_RANGE_UUID);
 		assertNull(conceptReferenceRange);
 	}
+	
+	@Test
+	public void saveDrug_shouldSaveDrugIngredients() {
+		// First save a new drug with an ingredient
+		Concept coughSyrup = conceptService.getConcept(3);
+		Concept mg = conceptService.getConcept(50);
+		Drug drug = new Drug();
+		drug.setName("My drug");
+		drug.setConcept(coughSyrup);
+		drug.setStrength("500mg");
+		DrugIngredient ingredient = new DrugIngredient();
+		ingredient.setDrug(drug);
+		ingredient.setIngredient(coughSyrup);
+		ingredient.setStrength(500.0);
+		ingredient.setUnits(mg);
+		drug.getIngredients().add(ingredient);
+		conceptService.saveDrug(drug);
+		String drugUuid = drug.getUuid();
+		
+		// Clear this out of the hibernate session to ensure we don't get a cached value
+		Context.flushSession();
+		Context.clearSession();
+		
+		// Test that both the drug and it's ingredients were saved as expected
+		drug = conceptService.getDrugByUuid(drugUuid);
+		assertNotNull(drug);
+		assertThat(drug.getName(), equalTo("My drug"));
+		assertEquals(1, drug.getIngredients().size());
+		ingredient = drug.getIngredients().iterator().next();
+		assertThat(ingredient.getDrug(), equalTo(drug));
+		assertThat(ingredient.getIngredient(), notNullValue());
+		assertThat(ingredient.getIngredient(), equalTo(coughSyrup));
+		assertThat(ingredient.getStrength(), notNullValue());
+		assertThat(ingredient.getStrength(), equalTo(500.0));
+		assertThat(ingredient.getUnits(), notNullValue());
+		assertThat(ingredient.getUnits(), equalTo(mg));
+	}
 }
