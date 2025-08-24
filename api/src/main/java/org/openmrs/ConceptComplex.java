@@ -9,8 +9,11 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.Proxy;
 import org.hibernate.envers.Audited;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.openmrs.obs.ComplexObsHandler;
 
 /**
@@ -19,10 +22,14 @@ import org.openmrs.obs.ComplexObsHandler;
  * @since 1.5
  */
 @Audited
+@Entity
+@Table(name = "concept_complex")
+@Proxy(lazy = false)
 public class ConceptComplex extends Concept {
 	
 	public static final long serialVersionUID = 473231233L;
 	
+	@Column(name = "handler", length = 255)
 	private String handler;
 	
 	/**

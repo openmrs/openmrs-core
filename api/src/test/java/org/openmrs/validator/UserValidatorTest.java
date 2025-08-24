@@ -10,6 +10,7 @@
 package org.openmrs.validator;
 
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
@@ -20,6 +21,8 @@ import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
