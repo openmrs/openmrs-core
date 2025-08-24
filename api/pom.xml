@@ -131,6 +131,7 @@
 		<dependency>
 			<groupId>org.hibernate.orm</groupId>
 			<artifactId>hibernate-c3p0</artifactId>
+			  <version>${hibernateVersion}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.infinispan</groupId>
