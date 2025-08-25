@@ -9,6 +9,14 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.Audited;
 import org.openmrs.util.OpenmrsUtil;
@@ -17,17 +25,27 @@ import org.openmrs.util.OpenmrsUtil;
  * Represent allergy reactions
  */
 @Audited
+@Entity
+@Table(name = "allergy_reaction")
+
 public class AllergyReaction extends BaseOpenmrsObject implements java.io.Serializable{
 	
 	public static final long serialVersionUID = 1;
-
-
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "allergy_reaction_id")
 	private Integer allergyReactionId;
 	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "allergy_id", nullable = false)
 	private Allergy allergy;
 	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "reaction_concept_id", nullable = false)
 	private Concept reaction;
 	
+	@Column(name = "reaction_non_coded")
 	private String reactionNonCoded;
 	
 	/**
