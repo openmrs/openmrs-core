@@ -1323,7 +1323,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
     }
 
     @Override
-    public List<?> getRefTypes() {
+    public List<Class<?>> getRefTypes() {
         return Arrays.asList(OrderType.class, CareSetting.class, OrderGroup.class, OrderFrequency.class, OrderAttributeType.class, OrderAttribute.class, Order.class, OrderGroupAttribute.class, OrderGroupAttributeType.class);
     }
 

@@ -359,7 +359,7 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
     }
 
     @Override
-    public List<?> getRefTypes() {
+    public List<Class<?>> getRefTypes() {
         return Arrays.asList(ProviderAttributeType.class, ProviderRole.class, Provider.class, ProviderAttribute.class);
     }
 

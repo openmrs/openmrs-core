@@ -97,7 +97,7 @@ public class MedicationDispenseServiceImpl extends BaseOpenmrsService implements
     }
 
     @Override
-    public List<?> getRefTypes() {
+    public List<Class<?>> getRefTypes() {
         return Arrays.asList(MedicationDispense.class);
     }
 

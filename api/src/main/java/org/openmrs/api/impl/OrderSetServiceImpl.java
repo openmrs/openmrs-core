@@ -234,7 +234,7 @@ public class OrderSetServiceImpl extends BaseOpenmrsService implements OrderSetS
     }
 
     @Override
-    public List<?> getRefTypes() {
+    public List<Class<?>> getRefTypes() {
         return Arrays.asList(OrderSetMember.class, OrderSetAttribute.class, OrderSetAttributeType.class, OrderSet.class);
     }
 

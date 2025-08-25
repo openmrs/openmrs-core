@@ -820,7 +820,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService, 
     }
 
     @Override
-    public List<?> getRefTypes() {
+    public List<Class<?>> getRefTypes() {
         return Arrays.asList(Field.class, FieldAnswer.class, Form.class, FormField.class, FormResource.class, FieldType.class);
     }
 

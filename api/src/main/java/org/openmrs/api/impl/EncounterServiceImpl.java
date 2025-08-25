@@ -1020,7 +1020,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
     }
 
     @Override
-    public List<?> getRefTypes() {
+    public List<Class<?>> getRefTypes() {
         return Arrays.asList(EncounterRole.class, Encounter.class, EncounterType.class);
     }
 

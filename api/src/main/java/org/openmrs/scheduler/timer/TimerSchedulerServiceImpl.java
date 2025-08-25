@@ -562,7 +562,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
     }
 
     @Override
-    public List<?> getRefTypes() {
+    public List<Class<?>> getRefTypes() {
         return Arrays.asList(TaskDefinition.class);
     }
 

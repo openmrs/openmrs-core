@@ -2217,7 +2217,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
     }
 
     @Override
-    public List<?> getRefTypes() {
+    public List<Class<?>> getRefTypes() {
         return Arrays.asList(ConceptSource.class, ConceptAttributeType.class, DrugIngredient.class, ConceptSet.class, ConceptAttribute.class, ConceptName.class, ConceptDatatype.class, ConceptMapType.class, ConceptNumeric.class, ConceptProposal.class, Drug.class, ConceptDescription.class, ConceptNameTag.class, ConceptClass.class, ConceptAnswer.class, ConceptReferenceTerm.class, ConceptReferenceRange.class, Concept.class);
     }
 

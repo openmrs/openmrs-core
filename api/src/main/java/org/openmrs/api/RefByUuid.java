@@ -49,5 +49,5 @@ public interface RefByUuid {
      *
      * @return a list of {@link Class} objects representing supported domain types
      */
-    List<?> getRefTypes();
+    List<Class<?>> getRefTypes();
 }

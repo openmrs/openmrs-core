@@ -296,7 +296,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
     }
 
     @Override
-    public List<?> getRefTypes() {
+    public List<Class<?>> getRefTypes() {
         return Arrays.asList(CohortMembership.class, Cohort.class);
     }
 

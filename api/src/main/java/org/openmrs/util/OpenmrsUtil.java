@@ -2174,46 +2174,4 @@ public class OpenmrsUtil {
 			return "";
 		}
 	}
-	
-	/**
-	 * Matches a class name against a pattern.
-	 * 
-	 *<p>
-	* Supported pattern types:
-	* <ul>
-	*   <li><b>Exact or wildcard match</b>: Supports {@code *} (single segment) and {@code **} (multi-segment) wildcards.</li>
-	*   <li><b>Inheritance match</b>: Use {@code hierarchyOf:fully.qualified.BaseClass} to match subclasses or implementations.</li>
-	* </ul>
-	*
-	* @param pattern    the matching pattern (wildcard or hierarchy-based)
-	* @param className  the fully qualified name of the class to check
-	* @return {@code true} if the class matches the pattern; {@code false} otherwise or if class resolution fails
-	*
-	* @example
-	* <pre>
-	* matchPattern("org.openmrs.*", "org.openmrs.Patient") → true
-	* matchPattern("hierarchyOf:org.openmrs.OpenmrsObject", "org.openmrs.Patient") → true
-	* </pre>
-	*/
-	public static boolean matchPattern(String pattern, String className) {
-		try {
-			if (pattern.startsWith("hierarchyOf:")) {
-				String baseClassName = pattern.substring("hierarchyOf:".length());
-				Class<?> baseClass = Context.loadClass(baseClassName);
-				Class<?> actualClass = Context.loadClass(className);
-				return baseClass.isAssignableFrom(actualClass);
-			} else {
-				// Convert dot-style wildcard pattern to regex
-				String regex = pattern
-					.replace(".", "\\.")
-					.replace("**", "__DOUBLE_STAR__")   // Temporary marker to prevent polution below
-					.replace("*", "[^.]*")              // Replace single *
-					.replace("__DOUBLE_STAR__", ".*");  // Restore correct **
-				return className.matches(regex);
-			}
-		} catch (ClassNotFoundException e) {
-			// Fails safely
-			return false;
-		}
-	}
 }

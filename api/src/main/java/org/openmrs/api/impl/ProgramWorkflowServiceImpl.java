@@ -670,7 +670,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
     }
 
     @Override
-    public List<?> getRefTypes() {
+    public List<Class<?>> getRefTypes() {
         return Arrays.asList(ProgramAttributeType.class, ProgramWorkflow.class, PatientProgram.class, Program.class, PatientState.class, ProgramWorkflowState.class, PatientProgramAttribute.class, ConceptStateConversion.class);
     }
 

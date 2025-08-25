@@ -246,7 +246,7 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
     }
 
     @Override
-    public List<?> getRefTypes() {
+    public List<Class<?>> getRefTypes() {
         return Arrays.asList(ClobDatatypeStorage.class);
     }
 

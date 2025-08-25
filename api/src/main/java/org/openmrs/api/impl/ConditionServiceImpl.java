@@ -193,7 +193,7 @@ public class ConditionServiceImpl extends BaseOpenmrsService implements Conditio
     }
 
     @Override
-    public List<?> getRefTypes() {
+    public List<Class<?>> getRefTypes() {
         return Arrays.asList(Condition.class);
     }
 

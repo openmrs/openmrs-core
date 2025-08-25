@@ -11,9 +11,7 @@ package org.openmrs.serialization;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.SimpleDateFormat;
@@ -24,10 +22,8 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.type.OrderedMapType;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Encounter;
-import org.openmrs.GlobalProperty;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
@@ -45,13 +41,6 @@ public class JacksonSerializerTest extends BaseContextSensitiveTest {
     @Autowired
     @Qualifier("jacksonSerializer")
     private JacksonSerializer serializer;
-
-    @BeforeEach
-    public void setup() {
-        adminService.saveGlobalProperty(
-            new GlobalProperty("jackson.serializer.whitelist.types",
-                "org.openmrs.serialization.Foo"));
-    }
 
     @Test
     public void serialize_shouldSerializeNonOpenmrsObject() {
@@ -130,89 +119,6 @@ public class JacksonSerializerTest extends BaseContextSensitiveTest {
         assertEquals(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse("2008-08-18T14:09:05"), deserializedEnc.getDateCreated());
     }
 
-    @Test
-    public void deserialize_shouldSucceedIfClassMatchesExactWhitelistEntry() throws Exception {
-        // setup
-        adminService.saveGlobalProperty(
-            new GlobalProperty("jackson.serializer.whitelist.types",
-                "org.openmrs.serialization.Foo"));
-        String deserializedFoo = "{\"attributeString\":\"exact\",\"attributeInt\":200,\"attributeList\":null,\"attributeMap\":null}";
-
-        // verify
-        assertDoesNotThrow(() -> serializer.deserialize(deserializedFoo, Foo.class));
-    }
-
-    @Test
-    public void deserialize_shouldSucceedIfClassMatchesWildcardPackagePattern() throws Exception {
-        // setup
-        adminService.saveGlobalProperty(
-            new GlobalProperty("jackson.serializer.whitelist.types",
-                "org.openmrs.serialization.*"));
-        String deserializedFoo = "{\"attributeString\":\"wild\",\"attributeInt\":123,\"attributeList\":null,\"attributeMap\":null}";
-
-        // verify
-        assertDoesNotThrow(() -> serializer.deserialize(deserializedFoo, Foo.class));
-    }
-
-    @Test
-    public void deserialize_shouldSucceedIfClassMatchesMultiPackagesWildcardPattern() throws Exception {
-        // setup
-        adminService.saveGlobalProperty(
-            new GlobalProperty("jackson.serializer.whitelist.types",
-                "org.openmrs.**"));
-        String deserializedFoo = "{\"attributeString\":\"deep\",\"attributeInt\":999,\"attributeList\":null,\"attributeMap\":null}";
-
-        // verify
-        assertDoesNotThrow(() -> serializer.deserialize(deserializedFoo, Foo.class));
-    }
-
-    @Test
-    public void deserialize_shouldSucceedIfClassMatchesMultipleMultiPackagesWildcardPattern() throws Exception {
-        // setup
-        adminService.saveGlobalProperty(
-            new GlobalProperty("jackson.serializer.whitelist.types",
-                "org.**.serialization.*"));
-        String deserializedFoo = "{\"attributeString\":\"deep\",\"attributeInt\":999,\"attributeList\":null,\"attributeMap\":null}";
-
-        // verify
-        assertDoesNotThrow(() -> serializer.deserialize(deserializedFoo, Foo.class));
-    }
-
-    @Test
-    public void deserialize_shouldThrowIfClassDoesNotMatcheMultipleMultiPackagesWildcardPattern() throws Exception {
-        // setup
-        adminService.saveGlobalProperty(
-            new GlobalProperty("jackson.serializer.whitelist.types",
-                "org.**.serialize.*"));
-        String deserializedFoo = "{\"attributeString\":\"deep\",\"attributeInt\":999,\"attributeList\":null,\"attributeMap\":null}";
-
-        // verify
-        assertThrows(SecurityException.class, () -> serializer.deserialize(deserializedFoo, Foo.class));
-    }
-
-    @Test
-    public void deserialize_shouldThrowSecurityExceptionIfClassNotWhitelisted() throws Exception {
-        // setup
-        adminService.saveGlobalProperty(
-            new GlobalProperty("jackson.serializer.whitelist.types",
-                "org.openmrs.model.*"));
-        String deserializedFoo = "{\"attributeString\":\"bad\",\"attributeInt\":404,\"attributeList\":null,\"attributeMap\":null}";
-
-        // verify
-        assertThrows(SecurityException.class, () -> serializer.deserialize(deserializedFoo, Foo.class));
-    }
-
-    @Test
-	public void deserialize_shouldDeserializeWhitelistedHierarchies() throws SerializationException {
-		// setup
-        adminService.saveGlobalProperty(
-            new GlobalProperty("jackson.serializer.whitelist.types",
-                "hierarchyOf:org.hibernate.type.MapType"));
-		String orderedMapType = serializer.serialize(new OrderedMapTypeWithNoArg("role", "ref"));
-
-		// verify
-		assertDoesNotThrow(() -> serializer.deserialize(orderedMapType, OrderedMapTypeWithNoArg.class));
-	}
 
     public static class OrderedMapTypeWithNoArg extends OrderedMapType {
 		public OrderedMapTypeWithNoArg() {

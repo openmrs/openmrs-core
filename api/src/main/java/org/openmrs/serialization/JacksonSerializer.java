@@ -14,8 +14,6 @@ import java.text.SimpleDateFormat;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.DomainService;
-import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +33,7 @@ import com.fasterxml.jackson.datatype.hibernate6.Hibernate6Module;
  * that uses the Jackson library to convert Java objects to JSON and vice versa.
  * <p>
  * It supports UUID-based references for {@code OpenmrsObject}s using
- * {@link UuidReferenceModule}, handles Hibernate proxies via {@link Hibernate5Module},
- * and enforces a configurable whitelist of allowed types during serialization.
+ * {@link UuidReferenceModule} and handles Hibernate proxies via {@link Hibernate5Module},
  * </p>
  *
  * @see UuidReferenceModule
@@ -133,25 +130,11 @@ public class JacksonSerializer implements OpenmrsSerializer {
 			throw new SerializationException("Cannot deserialize to null class type!");
 		}
 
-		if (!isWhitelisted(clazz.getName())) {
-			throw new SecurityException("Deserialization denied: " + clazz.getName());
-		}
-
 		try {
 			return (T) getObjectMapper().readValue(serializedObject, clazz);
 		}
 		catch (Exception e) {
 			throw new SerializationException("Unable to deserialize class: " + clazz.getName(), e);
 		}
-	}
-
-	/**
-	 * Checks if a class is allowed for serialization based on the configured whitelist.
-	 *
-	 * @param className the fully qualified name of the class
-	 * @return true if whitelisted or if whitelist is empty, false otherwise
-	 */
-	private boolean isWhitelisted(String className) {
-		return adminService.getSerializerWhitelistTypes().isEmpty() ? true : adminService.getSerializerWhitelistTypes().stream().anyMatch(pattern -> OpenmrsUtil.matchPattern(pattern, className));
 	}
 }

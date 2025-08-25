@@ -531,7 +531,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
     }
 
     @Override
-    public List<?> getRefTypes() {
+    public List<Class<?>> getRefTypes() {
         return Arrays.asList(LocationAttributeType.class, LocationTag.class, LocationAttribute.class, Location.class);
     }
 

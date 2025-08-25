@@ -838,7 +838,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
     }
 
     @Override
-    public List<?> getRefTypes() {
+    public List<Class<?>> getRefTypes() {
         return Arrays.asList(Role.class, Privilege.class, User.class);
     }
 

@@ -439,7 +439,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
     }
 
     @Override
-    public List<?> getRefTypes() {
+    public List<Class<?>> getRefTypes() {
         return Arrays.asList(Visit.class, VisitType.class, VisitAttribute.class, VisitAttributeType.class);
     }
 

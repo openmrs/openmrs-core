@@ -1030,7 +1030,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
     }
 
     @Override
-    public List<?> getRefTypes() {
+    public List<Class<?>> getRefTypes() {
         return Arrays.asList(Person.class, PersonName.class, PersonAttribute.class, Relationship.class, PersonAttributeType.class, RelationshipType.class, PersonAddress.class);
     }
 
