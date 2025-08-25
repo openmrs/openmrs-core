@@ -1205,7 +1205,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service, Re
     }
 
     @Override
-    public List<?> getRefTypes() {
+    public List<Class<?>> getRefTypes() {
         return Arrays.asList(HL7InError.class, HL7InQueue.class, HL7InArchive.class, HL7QueueItem.class);
     }
 

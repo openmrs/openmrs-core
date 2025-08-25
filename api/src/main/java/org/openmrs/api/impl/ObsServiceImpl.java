@@ -687,7 +687,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
     }
 
     @Override
-    public List<?> getRefTypes() {
+    public List<Class<?>> getRefTypes() {
         return Arrays.asList(Obs.class);
     }
 

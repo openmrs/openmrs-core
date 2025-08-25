@@ -997,7 +997,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
     }
 
     @Override
-    public List<?> getRefTypes() {
+    public List<Class<?>> getRefTypes() {
         return Arrays.asList(GlobalProperty.class);
     }
 

@@ -276,7 +276,7 @@ public class DiagnosisServiceImpl extends BaseOpenmrsService implements Diagnosi
     }
 
     @Override
-    public List<?> getRefTypes() {
+    public List<Class<?>> getRefTypes() {
         return Arrays.asList(DiagnosisAttributeType.class, Diagnosis.class, DiagnosisAttribute.class);
     }
 

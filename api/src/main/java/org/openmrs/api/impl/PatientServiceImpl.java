@@ -1659,7 +1659,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
     }
 
     @Override
-    public List<?> getRefTypes() {
+    public List<Class<?>> getRefTypes() {
         return Arrays.asList(PatientIdentifier.class, PatientIdentifierType.class, Patient.class, Allergy.class);
     }
 
