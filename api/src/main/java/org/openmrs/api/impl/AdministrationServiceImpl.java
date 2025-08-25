@@ -43,6 +43,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.EventListeners;
 import org.openmrs.api.GlobalPropertyListener;
+import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.customdatatype.CustomDatatype;
@@ -76,13 +77,15 @@ import org.springframework.validation.Errors;
  * @see org.openmrs.api.context.Context
  */
 @Transactional
-public class AdministrationServiceImpl extends BaseOpenmrsService implements AdministrationService, GlobalPropertyListener {
+public class AdministrationServiceImpl extends BaseOpenmrsService implements AdministrationService, GlobalPropertyListener, RefByUuid {
 	
 	private static final Logger log = LoggerFactory.getLogger(AdministrationServiceImpl.class);
 
 	protected AdministrationDAO dao;
 	
 	private EventListeners eventListeners;
+
+	private static final String SERIALISER_WHITE_LIST_TYPES = "serializerWhiteListTypes";
 	
 	/**
 	 * An always up-to-date collection of the allowed locales.
@@ -955,6 +958,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	}
 
 	@Override
+	@Cacheable(value = SERIALISER_WHITE_LIST_TYPES)
 	public List<String> getSerializerWhitelistTypes() {
 		List<String> whitelistTypes = new ArrayList<>();
 		List<Class<?>> hierarchyTypes = getSerializerDefaultWhitelistHierarchyTypes();
@@ -982,4 +986,19 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			PersonMergeLogData.class);
 		return types;
 	}
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getRefByUuid(Class<T> type, String uuid) {
+        if (GlobalProperty.class.equals(type)) {
+            return (T) getGlobalPropertyByUuid(uuid);
+        }
+        return null;
+    }
+
+    @Override
+    public List<Class<?>> getRefTypes() {
+        return Arrays.asList(GlobalProperty.class);
+    }
+
 }
