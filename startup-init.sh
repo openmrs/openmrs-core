@@ -150,6 +150,7 @@ module.allow_web_admin=${OMRS_MODULE_WEB_ADMIN}
 property.hibernate.search.backend.type=${OMRS_SEARCH}
 property.hibernate.search.backend.analysis.configurer=${OMRS_SEARCH_CONFIG}
 property.hibernate.search.backend.uris=${OMRS_SEARCH_ES_URIS}
+property.hibernate.search.backend.discovery.enabled=true
 
 EOF
 
