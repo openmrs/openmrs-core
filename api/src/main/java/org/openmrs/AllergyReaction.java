@@ -27,7 +27,6 @@ import org.openmrs.util.OpenmrsUtil;
 @Audited
 @Entity
 @Table(name = "allergy_reaction")
-
 public class AllergyReaction extends BaseOpenmrsObject implements java.io.Serializable{
 	
 	public static final long serialVersionUID = 1;
