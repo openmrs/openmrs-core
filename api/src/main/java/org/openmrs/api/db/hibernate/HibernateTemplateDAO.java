@@ -57,7 +57,7 @@ public class HibernateTemplateDAO implements TemplateDAO {
 	public List<Template> getTemplatesByName(String name) {
 		log.info("Get template " + name);
 		return sessionFactory.getCurrentSession().createQuery("from Template as template where template.name = ?")
-		        .setString(0, name).list();
+		        .setParameter(0, name).list();
 	}
 	
 	@Override

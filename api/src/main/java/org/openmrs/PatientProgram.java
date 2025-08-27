@@ -9,6 +9,19 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.Customizable;
@@ -28,6 +41,8 @@ import java.util.Set;
 /**
  * PatientProgram
  */
+@Entity
+@Table(name = "patient_program")
 @Audited
 public class PatientProgram extends BaseChangeableOpenmrsData implements Customizable<PatientProgramAttribute>{
 	
@@ -36,23 +51,39 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	// ******************
 	// Properties
 	// ******************
-	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "patient_program_id")
 	private Integer patientProgramId;
 	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "patient_id")
 	private Patient patient;
-	
+
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "program_id")
 	private Program program;
 	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "location_id")
 	private Location location;
-	
+
+	@Column(name = "date_enrolled")
 	private Date dateEnrolled;
-	
+
+	@Column(name = "date_completed")
 	private Date dateCompleted;
 	
+	@ManyToOne
+	@JoinColumn(name = "outcome_concept_id")
 	private Concept outcome;
-	
+
+	@OneToMany(mappedBy = "patientProgram", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
 	private Set<PatientState> states = new HashSet<>();
-         
+	
+	@OneToMany(mappedBy = "patientProgram", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OrderBy("voided ASC")
+	@BatchSize(size = 100)
 	private Set<PatientProgramAttribute> attributes = new LinkedHashSet<>();
 	
 	// ******************

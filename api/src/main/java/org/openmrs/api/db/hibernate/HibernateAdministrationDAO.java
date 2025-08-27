@@ -9,10 +9,10 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import java.sql.Statement;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -25,16 +25,20 @@ import org.hibernate.MappingException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.Metadata;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.jdbc.Work;
 import org.hibernate.mapping.Column;
 import org.hibernate.mapping.PersistentClass;
 import org.hibernate.metadata.ClassMetadata;
-import org.hibernate.type.StringType;
-import org.hibernate.type.TextType;
+import org.hibernate.persister.entity.AbstractEntityPersister;
+import org.hibernate.persister.entity.EntityPersister;
+import org.hibernate.type.BasicType;
 import org.hibernate.type.Type;
+import org.hibernate.type.internal.NamedBasicTypeImpl;
 import org.openmrs.GlobalProperty;
 import org.openmrs.OpenmrsObject;
+import org.openmrs.Patient;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.api.db.DAOException;
@@ -220,14 +224,24 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	}
 	
 	@Override
-	public int getMaximumPropertyLength(Class<? extends OpenmrsObject> aClass, String fieldName) {
+	public long getMaximumPropertyLength(Class<? extends OpenmrsObject> aClass, String fieldName) {
 		PersistentClass persistentClass = metadata.getEntityBinding(aClass.getName().split("_")[0]);
 		if (persistentClass == null) {
 			throw new APIException("Couldn't find a class in the hibernate configuration named: " + aClass.getName());
 		} else {
-			int fieldLength;
+			long fieldLength;
 			try {
-				fieldLength = ((Column) persistentClass.getProperty(fieldName).getColumnIterator().next()).getLength();
+				List<Column> columns = persistentClass.getProperty(fieldName).getColumns();
+				if (columns.isEmpty()) {
+					throw new Exception(String.format("No columns found for fieldName %s to determine maximum length", fieldName));
+				}
+				Column column = columns.get(0);
+				String columnDefinition = column.getSqlType();
+				if (columnDefinition != null && columnDefinition.equalsIgnoreCase("LONGTEXT")) {
+					fieldLength = Integer.MAX_VALUE;
+				} else {
+					fieldLength = column.getLength();
+				}
 			}
 			catch (Exception e) {
 				log.debug("Could not determine maximum length", e);
@@ -256,25 +270,32 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	@Override
 	public void validate(Object object, Errors errors) throws DAOException {
 		Class entityClass = object.getClass();
-		ClassMetadata metadata = null;
+		EntityPersister metadata = null;
 		try {
-			metadata = sessionFactory.getClassMetadata(entityClass);
+			SessionFactoryImplementor sfi =
+				sessionFactory.unwrap(SessionFactoryImplementor.class);
+			
+			metadata =
+					sfi.getRuntimeMetamodels()
+						.getMappingMetamodel()
+						.getEntityDescriptor(entityClass);
+			
 		}
 		catch (MappingException ex) {
 			log.debug(entityClass + " is not a hibernate mapped entity", ex);
 		}
 		if (metadata != null) {
 			String[] propNames = metadata.getPropertyNames();
-			Object identifierType = metadata.getIdentifierType();
+			Type identifierType = metadata.getIdentifierType();
 			String identifierName = metadata.getIdentifierPropertyName();
-			if (identifierType instanceof StringType || identifierType instanceof TextType) {
-				int maxLength = getMaximumPropertyLength(entityClass, identifierName);
+			
+			if (identifierType instanceof BasicType<?> && String.class.equals(((BasicType<?>) identifierType).getJavaTypeDescriptor().getJavaType())) {
+				long maxLength = getMaximumPropertyLength(entityClass, identifierName);
 				String identifierValue = (String) metadata.getIdentifier(object,
 				    (SessionImplementor) sessionFactory.getCurrentSession());
 				if (identifierValue != null) {
 					int identifierLength = identifierValue.length();
-					if (identifierLength > maxLength) {
-						
+					if (maxLength >= 0 && identifierLength > maxLength) {
 						errors.rejectValue(identifierName, "error.exceededMaxLengthOfField", new Object[] { maxLength },
 						    null);
 					}
@@ -282,12 +303,12 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 			}
 			for (String propName : propNames) {
 				Type propType = metadata.getPropertyType(propName);
-				if (propType instanceof StringType || propType instanceof TextType) {
+				if (propType instanceof BasicType<?> && String.class.equals(((BasicType<?>) propType).getJavaTypeDescriptor().getJavaType())) {
 					String propertyValue = (String) metadata.getPropertyValue(object, propName);
 					if (propertyValue != null) {
-						int maxLength = getMaximumPropertyLength(entityClass, propName);
+						long maxLength = getMaximumPropertyLength(entityClass, propName);
 						int propertyValueLength = propertyValue.length();
-						if (propertyValueLength > maxLength) {
+						if (maxLength >= 0 && propertyValueLength > maxLength) {
 							errors.rejectValue(propName, "error.exceededMaxLengthOfField", new Object[] { maxLength },
 									null);
 						}
@@ -332,7 +353,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	
 	@Override
 	public boolean isDatabaseStringComparisonCaseSensitive() {
-		GlobalProperty gp = (GlobalProperty) sessionFactory.getCurrentSession().get(GlobalProperty.class,
+		GlobalProperty gp = sessionFactory.getCurrentSession().get(GlobalProperty.class,
 		    OpenmrsConstants.GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON);
 		if (gp != null) {
 			return Boolean.valueOf(gp.getPropertyValue());

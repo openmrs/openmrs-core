@@ -32,12 +32,12 @@
          <artifactId>openmrs-web</artifactId>
          <exclusions>
             <exclusion>
-               <groupId>javax.servlet</groupId>
-               <artifactId>servlet-api</artifactId>
+				<groupId>jakarta.servlet</groupId>
+				<artifactId>jakarta.servlet-api</artifactId>
             </exclusion>
             <exclusion>
-               <groupId>javax.servlet</groupId>
-               <artifactId>jsp-api</artifactId>
+				<groupId>jakarta.servlet.jsp</groupId>
+				<artifactId>jakarta.servlet.jsp-api</artifactId>
             </exclusion>
          </exclusions>
       </dependency>
@@ -95,7 +95,7 @@
          <plugin>
              <groupId>org.eclipse.jetty</groupId>
              <artifactId>jetty-maven-plugin</artifactId>
-             <version>9.4.35.v20201120</version>
+			 <version>11.0.26</version>
              <configuration>
                <webApp>
                	  <descriptor>${project.build.directory}/jetty/WEB-INF/web.xml</descriptor>
@@ -122,106 +122,6 @@
                </systemProperties>
             </configuration>
          </plugin>
-         <plugin>
-		        <groupId>org.apache.tomcat.maven</groupId>
-		        <artifactId>tomcat7-maven-plugin</artifactId>
-		        <version>2.2</version>
-		        <configuration>
-		          <path>/${project.build.finalName}</path>
-		        </configuration>
-		        <dependencies>
-		          <dependency>
-		            <groupId>org.apache.tomcat.embed</groupId>
-		            <artifactId>tomcat-embed-core</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat</groupId>
-		            <artifactId>tomcat-util</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat</groupId>
-		            <artifactId>tomcat-coyote</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat</groupId>
-		            <artifactId>tomcat-api</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat</groupId>
-		            <artifactId>tomcat-jdbc</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat</groupId>
-		            <artifactId>tomcat-dbcp</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat</groupId>
-		            <artifactId>tomcat-servlet-api</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat</groupId>
-		            <artifactId>tomcat-jsp-api</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat</groupId>
-		            <artifactId>tomcat-jasper</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat</groupId>
-		            <artifactId>tomcat-jasper-el</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat</groupId>
-		            <artifactId>tomcat-el-api</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat</groupId>
-		            <artifactId>tomcat-catalina</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat</groupId>
-		            <artifactId>tomcat-tribes</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat</groupId>
-		            <artifactId>tomcat-catalina-ha</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat</groupId>
-		            <artifactId>tomcat-annotations-api</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat</groupId>
-		            <artifactId>tomcat-juli</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat.embed</groupId>
-		            <artifactId>tomcat-embed-logging-juli</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-		          <dependency>
-		            <groupId>org.apache.tomcat.embed</groupId>
-		            <artifactId>tomcat-embed-logging-log4j</artifactId>
-		            <version>${tomcat.version}</version>
-		          </dependency>
-        		</dependencies>
-         </plugin>
 		  <plugin>
 			  <groupId>com.mycila</groupId>
 			  <artifactId>license-maven-plugin</artifactId>
@@ -232,10 +132,10 @@
 		  <plugin>
               <groupId>org.codehaus.cargo</groupId>
               <artifactId>cargo-maven3-plugin</artifactId>
-              <version>1.10.20</version>
+              <version>1.10.21</version>
               <configuration>
                   <container>
-                      <containerId>tomcat9x</containerId>
+                      <containerId>tomcat11x</containerId>
                       <type>embedded</type>
                   </container>
                   <deployables>
@@ -252,42 +152,14 @@
       </plugins>
       <extensions>
             <!-- Prevents this error, with JDK 11 and above: -->
-            <!-- NoSuchMethodError: 'java.lang.String javax.annotation.Resource.lookup()' -->
+            <!-- NoSuchMethodError: 'java.lang.String z.annotation.Resource.lookup()' -->
             <extension>
-                <groupId>javax.annotation</groupId>
-                <artifactId>javax.annotation-api</artifactId>
+                <groupId>jakarta.annotation</groupId>
+                <artifactId>jakarta.annotation-api</artifactId>
             </extension>
       </extensions>
    </build>
    <profiles>
-      <profile>
-            <id>integration-test</id>
-             <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>mysql</groupId>
-                    <artifactId>mysql-connector-java</artifactId>
-                    <scope>runtime</scope>
-                </dependency>
-
-                <dependency>
-                    <groupId>com.mysql</groupId>
-                    <artifactId>mysql-connector-mxj</artifactId>
-                    <version>5.0.11</version>
-                    <scope>compile</scope>
-                </dependency>
-
-                <dependency>
-                    <groupId>com.mysql</groupId>
-                    <artifactId>mysql-connector-mxj-dbfiles</artifactId>
-                    <version>5.0.11</version>
-                    <scope>compile</scope>
-                </dependency>
-            </dependencies>
-        </profile>
-        
 		<profile>
 			<id>release</id>
 			<!-- Create sources and javadocs jar -->
@@ -333,6 +205,6 @@
       <WEBAPP.DISPLAY.NAME>OpenMRS</WEBAPP.DISPLAY.NAME>
       <WEBAPP.DESCRIPTION>An Open-Source EMR System</WEBAPP.DESCRIPTION>
       <webapp.name>openmrs</webapp.name>
-      <tomcat.version>8.5.2</tomcat.version>
+      <tomcat.version>11.0.7</tomcat.version>
    </properties>
 </project>

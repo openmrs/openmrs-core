@@ -45,7 +45,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
@@ -1602,7 +1601,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#voidPatient(Patient,String)
 	 */
 	@Test
-	@Disabled
 	// TODO fix: NullPointerException in RequiredDataAdvice
 	public void voidPatient_shouldReturnNullWhenPatientIsNull() throws Exception {
 		PatientService patientService = Context.getPatientService();

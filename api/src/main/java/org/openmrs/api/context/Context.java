@@ -912,11 +912,13 @@ public class Context {
 	}
 
 	/**
-	 * Evicts data from all cache regions.
+	 * Evicts data from both DB and API cache.
 	 */
 	public static void clearEntireCache() {
-		log.debug("Clearing DB cache from all regions");
+		log.debug("Clearing DB cache");
 		getContextDAO().clearEntireCache();
+		log.debug("Clearing API cache");
+		getServiceContext().clearEntireApiCache();
 	}
 
 	/**
