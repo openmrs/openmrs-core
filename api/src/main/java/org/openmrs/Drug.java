@@ -92,7 +92,7 @@ public class Drug extends BaseChangeableOpenmrsMetadata {
 	@OneToMany(mappedBy = "drug", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<DrugReferenceMap> drugReferenceMaps;
 	
-	@OneToMany(mappedBy = "drug", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "drug", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private Collection<DrugIngredient> ingredients;
 	
 	// Constructors

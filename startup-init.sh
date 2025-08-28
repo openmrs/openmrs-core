@@ -147,10 +147,10 @@ install_method=${OMRS_INSTALL_METHOD}
 module_web_admin=${OMRS_MODULE_WEB_ADMIN}
 module.allow_web_admin=${OMRS_MODULE_WEB_ADMIN}
 
-hibernate.search.backend.type=${OMRS_SEARCH}
-hibernate.search.backend.analysis.configurer=${OMRS_SEARCH_CONFIG}
-
-hibernate.search.backend.uris=${OMRS_SEARCH_ES_URIS}
+property.hibernate.search.backend.type=${OMRS_SEARCH}
+property.hibernate.search.backend.analysis.configurer=${OMRS_SEARCH_CONFIG}
+property.hibernate.search.backend.uris=${OMRS_SEARCH_ES_URIS}
+property.hibernate.search.backend.discovery.enabled=true
 
 EOF
 
@@ -179,13 +179,28 @@ if [ -f "$OMRS_RUNTIME_PROPERTIES_FILE" ]; then
     cat "$OMRS_RUNTIME_PROPERTIES_FILE"
   fi
 else
-  if [ -f "openmrs-extra.properties" ]; then
-  	cat "openmrs-extra.properties" >> "$OMRS_SERVER_PROPERTIES_FILE"
+  # on installation, we place the extra properties in the server properties, prefixed with `property` so that they
+  # are correctly pulled out by the InitializationFilter. This leverages a system originally used by the SDK.
+  if [ -f openmrs-extra.properties ]; then
+  	if [ -f openmrs-extra.properties.tmp ]; then
+  	  : > openmrs-extra.properties.tmp
+  	fi
+  	
+  	while IFS="" read -r line; do
+  	  [[ -n "$line" ]] && echo -e "property.$line" >> openmrs-extra.properties.tmp
+	done < openmrs-extra.properties
+	
+	echo >> openmrs-exta.properties.tmp
+	
+	if [ -f openmrs-extra.properties.tmp ]; then
+	  mv openmrs-extra.properties.tmp openmrs-extra.properties
+	  cat "openmrs-extra.properties" >> "$OMRS_SERVER_PROPERTIES_FILE"
+	fi
   fi
   cat "$OMRS_SERVER_PROPERTIES_FILE"
 fi
 
-if [ -f "openmrs-extra.properites" ]; then
-  rm "openmrs-extra.properties";
+if [ -f openmrs-extra.properties ]; then
+  rm openmrs-extra.properties;
 fi
 
