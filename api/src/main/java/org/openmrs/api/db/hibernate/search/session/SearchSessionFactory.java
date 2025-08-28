@@ -17,14 +17,14 @@ import org.hibernate.search.mapper.orm.session.SearchSession;
  * factory has to be registered as a spring, it is highly recommended to use a factory to create
  * instances of the {@link SearchSession} rather than directly calling
  * {@link org.hibernate.search.mapper.orm.Search#session(Session)} for proper functionality.
- *
+ * 
  * @since 2.8.0
  */
 public interface SearchSessionFactory {
 	
 	/**
 	 * Obtains a {@link SearchSession} instance.
-	 *
+	 * 
 	 * @return {@link SearchSession} object
 	 */
 	SearchSession getSearchSession();

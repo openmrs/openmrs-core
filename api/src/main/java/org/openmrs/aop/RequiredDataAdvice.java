@@ -39,6 +39,7 @@ import org.openmrs.util.HandlerUtil;
 import org.openmrs.util.Reflect;
 import org.openmrs.validator.ValidateUtil;
 import org.springframework.aop.MethodBeforeAdvice;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 /**

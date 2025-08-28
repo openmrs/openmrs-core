@@ -9,7 +9,7 @@
  */
 package org.openmrs;
 
-import javax.persistence.Cacheable;
+import jakarta.persistence.Cacheable;
 import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonIgnore;

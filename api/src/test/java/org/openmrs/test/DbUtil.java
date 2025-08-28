@@ -17,25 +17,24 @@ import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.dialect.MySQLDialect;
-import org.hibernate.dialect.PostgreSQL82Dialect;
+import org.hibernate.dialect.PostgreSQLDialect;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * I did not want to throw away this utility which i used while working on TRUNK-6028
- * for my local database instances, before switching to the ones running in a docker container.
- * To use this utility, in org.openmrs.test.jupiter.BaseContextSensitiveTest 
- * and org.openmrs.test.BaseContextSensitiveTest, replace Containers.ensureDatabaseRunning()
- * with DbUtil.ensureDatabaseCreated() and then run: mvn test -DuseInMemoryDatabase=false
- * If you do not want to use the defaults, you can use the optional command line options below:
- * -DdatabaseName -DdatabaseUsername -DdatabasePassword -DdatabaseUrl
- * The default values are: database username=root, database password=test, 
- * database name=openmrs_test, database host=localhost and database port=3306
- * If you want to override the default database connection url, you would need to use
- * %s for the database name. To use PostgreSQL, you would need -Ddatabase=postgres
- * and then the default database port would change to 5432
+ * I did not want to throw away this utility which i used while working on TRUNK-6028 for my local
+ * database instances, before switching to the ones running in a docker container. To use this
+ * utility, in org.openmrs.test.jupiter.BaseContextSensitiveTest and
+ * org.openmrs.test.BaseContextSensitiveTest, replace Containers.ensureDatabaseRunning() with
+ * DbUtil.ensureDatabaseCreated() and then run: mvn test -DuseInMemoryDatabase=false If you do not
+ * want to use the defaults, you can use the optional command line options below: -DdatabaseName
+ * -DdatabaseUsername -DdatabasePassword -DdatabaseUrl The default values are: database
+ * username=root, database password=test, database name=openmrs_test, database host=localhost and
+ * database port=3306 If you want to override the default database connection url, you would need to
+ * use %s for the database name. To use PostgreSQL, you would need -Ddatabase=postgres and then the
+ * default database port would change to 5432
  */
 public class DbUtil {
 	
@@ -86,7 +85,7 @@ public class DbUtil {
 		System.setProperty("databaseUsername", username);
 		System.setProperty("databasePassword", password);
 		System.setProperty("databaseDriver", isMySql ? "com.mysql.cj.jdbc.Driver" : "org.postgresql.Driver");
-		System.setProperty("databaseDialect", isMySql ? MySQLDialect.class.getName() : PostgreSQL82Dialect.class.getName());
+		System.setProperty("databaseDialect", isMySql ? MySQLDialect.class.getName() : PostgreSQLDialect.class.getName());
 		
 		String sql = String.format(
 		    isMySql ? "create database if not exists %s default character set utf8 collate utf8_general_ci"

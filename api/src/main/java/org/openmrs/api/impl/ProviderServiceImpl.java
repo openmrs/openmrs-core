@@ -17,6 +17,7 @@ import org.openmrs.Person;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
+import org.openmrs.ProviderRole;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
@@ -302,4 +303,38 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 		return getProviderByUuid(Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GP_UNKNOWN_PROVIDER_UUID));
 	}
+
+	/**
+	 * @see ProviderService#getProviderRole(Integer) 
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public ProviderRole getProviderRole(Integer providerRoleId) {
+		return dao.getProviderRole(providerRoleId);
+	}
+
+	/**
+	 * @see ProviderService#getProviderRoleByUuid(String)  
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public ProviderRole getProviderRoleByUuid(String uuid) {
+		return dao.getProviderRoleByUuid(uuid);
+	}
+
+	/**
+	 * @see ProviderService#getProvidersByRoles(List) 
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<Provider> getProvidersByRoles(List<ProviderRole> roles) {
+		return dao.getProvidersByRoles(roles, false);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<ProviderRole> getAllProviderRoles(boolean includeRetired) {
+		return dao.getAllProviderRoles(includeRetired);
+	}
+	
 }

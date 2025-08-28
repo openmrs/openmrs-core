@@ -41,12 +41,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpSessionEvent;
-import javax.servlet.http.HttpSessionListener;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpSessionEvent;
+import jakarta.servlet.http.HttpSessionListener;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
@@ -361,8 +361,13 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			SchedulerUtil.startup(getRuntimeProperties());
 		}
 		catch (Exception t) {
-			Context.shutdown();
-			WebModuleUtil.shutdownModules(servletContext);
+			try {
+				Context.shutdown();
+				WebModuleUtil.shutdownModules(servletContext);
+			}
+			catch (Throwable tw) {
+				//ignore shutdown error
+			}
 			throw new ServletException(t);
 		}
 		finally {
@@ -606,7 +611,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 * Called when the webapp is shut down properly Must call Context.shutdown() and then shutdown
 	 * all the web layers of the modules
 	 *
-	 * @see org.springframework.web.context.ContextLoaderListener#contextDestroyed(javax.servlet.ServletContextEvent)
+	 * @see org.springframework.web.context.ContextLoaderListener#contextDestroyed(jakarta.servlet.ServletContextEvent)
 	 */
 	@SuppressWarnings("squid:S1215")
 	@Override

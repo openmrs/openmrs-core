@@ -5,11 +5,11 @@
         <input type="hidden" name="page" value="databasetablesanduser.vm" />
         
         <div class="form-container">
-            #if($installMethod != $INSTALL_METHOD_TESTING)
+            <h2 class="form-title">$l10n.get("install.advanced.dbtables").insert(${currentStepNumber}).insert(${numberOfSteps})</h2>
+            
             <div class="form-section">
-                <h2 class="form-title">$l10n.get("install.advanced.dbtables")</h2>
-                <p class="form-description">$l10n.get("install.advanced.dbtables.quest").insert(${databaseName})</p>
-
+                <h3 class="section-title">$l10n.get("install.advanced.dbtables.quest").insert(${databaseName})</h3>
+                #if($installMethod != $INSTALL_METHOD_TESTING)
                 <div class="radio-group">
                     <label class="radio-label">
                         <input type="radio" name="create_tables" value="yes" #if( $createTables == true )checked="checked"#end />
@@ -20,9 +20,8 @@
                         <span class="radio-text">$l10n.get("general.no")</span>
                     </label>
                 </div>
-            #else
-                <h2 class="form-title">$l10n.get("install.step").insert(${currentStepNumber}).insert(${numberOfSteps})</h2>
-            #end
+                #end
+            </div>
 
             <div class="form-section">
                 <h3 class="section-title">$l10n.get("install.advanced.dbtables.user").insert(${databaseName})</h3>
@@ -33,7 +32,6 @@
                         <span class="radio-text">$l10n.get("general.yes")</span>
                     </label>
                     <p class="option-description">$l10n.get("install.advanced.dbtables.user.login")</p>
-                    
                     <div class="form-group">
                         <label class="form-label">$l10n.get("install.advanced.dbsetup.instDb.userName")</label>
                         <input type="text" 
@@ -43,7 +41,6 @@
                                onfocus="clickRadio('current_database_user', 'yes')" 
                                onKeyPress="return submitenter(this,event);" />
                     </div>
-
                     <div class="form-group">
                         <label class="form-label">$l10n.get("install.simple.passwd")</label>
                         <input type="password" 
@@ -62,7 +59,6 @@
                         <span class="radio-text">$l10n.get("general.no")</span>
                     </label>
                     <p class="option-description">$l10n.get("install.advanced.dbtables.user.create")</p>
-                    
                     <div class="form-group">
                         <label class="form-label">$l10n.get("install.advanced.dbsetup.instDb.userName")</label>
                         <input type="text" 
@@ -72,7 +68,6 @@
                                onfocus="clickRadio('current_database_user', 'no')" 
                                onKeyPress="return submitenter(this,event);" />
                     </div>
-
                     <div class="form-group">
                         <label class="form-label">$l10n.get("install.simple.passwd")</label>
                         <input type="password" 
@@ -85,7 +80,7 @@
                     </div>
                 </div>
             </div>
-
+            
             <div class="button-group">
                 <button type="submit" name="back" value="Back" class="button button-secondary">
                     <span class="button-icon">←</span>
@@ -101,24 +96,29 @@
 </div>
 
 <style>
+    body {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        overflow: hidden;
+    }
+
     .content-container {
-        flex: 1;
-        max-width: 600px;
+        max-width: 800px;
         margin: 0 auto;
         padding: 1.5rem;
         background: white;
         border-radius: 12px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        margin-bottom: 20px;
+        height: calc(100vh - 180px);
         overflow-y: auto;
-        max-height: calc(100vh - 180px);
         position: relative;
     }
 
     .form-container {
         display: flex;
         flex-direction: column;
-        gap: 1.5rem;
+        gap: 1rem;
     }
 
     .form-title {
@@ -129,15 +129,16 @@
         text-align: center;
     }
 
-    .form-description {
+    .form-subtitle {
         text-align: center;
-        margin-bottom: 1.5rem;
+        margin: 0 0 1.5rem;
+        font-size: 0.95rem;
     }
 
     .form-section {
         display: flex;
         flex-direction: column;
-        gap: 1.5rem;
+        gap: 0.5rem;
         padding: 1.5rem;
         background: #f8f9fa;
         border-radius: 8px;
@@ -189,7 +190,7 @@
         flex-direction: column;
         gap: 0.5rem;
     }
-
+    
     .form-label {
         font-size: 1rem;
         font-weight: 500;
@@ -236,7 +237,6 @@
         cursor: pointer;
         transition: all 0.2s ease;
     }
-
     .button-primary {
         background: linear-gradient(to right, var(--openmrs-logo-color), var(--openmrs-logo-color));
         color: white;
@@ -260,7 +260,6 @@
         .content-container {
             margin: 1rem;
             padding: 1.5rem;
-            max-height: calc(100vh - 200px);
         }
 
         .radio-group {
@@ -271,7 +270,6 @@
         .button-group {
             flex-direction: column;
         }
-
         .button {
             width: 100%;
             justify-content: center;

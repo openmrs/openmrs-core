@@ -31,16 +31,6 @@
          <artifactId>openmrs-test</artifactId>
          <type>pom</type>
          <scope>test</scope>
-		  <exclusions>
-			  <exclusion>
-				  <groupId>org.powermock</groupId>
-				  <artifactId>powermock-module-junit4</artifactId>
-			  </exclusion>
-			  <exclusion>
-				  <groupId>org.powermock</groupId>
-				  <artifactId>powermock-api-mockito2</artifactId>
-			  </exclusion>
-		  </exclusions>
       </dependency>
       <!-- Test-jar for sharing api test resources in web tests -->
       <dependency>
@@ -49,17 +39,21 @@
          <type>test-jar</type>
          <scope>test</scope>
       </dependency>
+	   <dependency>
+		   <groupId>com.fasterxml.jackson.core</groupId>
+		   <artifactId>jackson-core</artifactId>
+	   </dependency>
+	   <dependency>
+		   <groupId>jakarta.servlet.jsp</groupId>
+		   <artifactId>jakarta.servlet.jsp-api</artifactId>
+	   </dependency>
       <dependency>
-         <groupId>javax.servlet</groupId>
-         <artifactId>javax.servlet-api</artifactId>
+		  <groupId>jakarta.servlet</groupId>
+		  <artifactId>jakarta.servlet-api</artifactId>
       </dependency>
       <dependency>
-         <groupId>javax.servlet</groupId>
-         <artifactId>jsp-api</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>javax.servlet.jsp.jstl</groupId>
-         <artifactId>javax.servlet.jsp.jstl-api</artifactId>
+		  <groupId>jakarta.servlet.jsp.jstl</groupId>
+		  <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
       </dependency>
       <dependency>
          <groupId>commons-io</groupId>
@@ -81,14 +75,6 @@
          <groupId>org.springframework</groupId>
          <artifactId>spring-oxm</artifactId>
        </dependency>
-      <dependency>
-         <groupId>mysql</groupId>
-         <artifactId>mysql-connector-java</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>org.postgresql</groupId>
-         <artifactId>postgresql</artifactId>
-      </dependency>
        <dependency>
            <groupId>taglibs</groupId>
            <artifactId>request</artifactId>
@@ -126,31 +112,20 @@
       <dependency>
          <groupId>org.owasp.encoder</groupId>
          <artifactId>encoder</artifactId>
-         <version>1.3.1</version>
       </dependency>
+	   
 	   <dependency>
 		   <groupId>org.apache.tomcat</groupId>
 		   <artifactId>tomcat-jasper</artifactId>
-		   <version>8.5.71</version>
 		   <scope>provided</scope>
 	   </dependency>
 	   <dependency>
 			<groupId>org.owasp</groupId>
 			<artifactId>csrfguard</artifactId>
-			<version>${owaspCsrfGuardVersion}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.owasp</groupId>
 			<artifactId>csrfguard-extension-session</artifactId>
-			<version>${owaspCsrfGuardVersion}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.testcontainers</groupId>
-			<artifactId>postgresql</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.testcontainers</groupId>
-			<artifactId>mysql</artifactId>
 		</dependency>
    </dependencies>
 

@@ -9,6 +9,15 @@
  */
 package org.openmrs.person;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import org.hibernate.envers.Audited;
 import org.openmrs.BaseChangeableOpenmrsData;
 import org.openmrs.Person;
@@ -26,6 +35,8 @@ import org.openmrs.api.PersonService;
  * @see PersonService#savePersonMergeLog(PersonMergeLog)
  * @since 1.9
  */
+@Entity
+@Table(name = "person_merge_log")
 @Audited
 public class PersonMergeLog extends BaseChangeableOpenmrsData {
 	
@@ -34,21 +45,29 @@ public class PersonMergeLog extends BaseChangeableOpenmrsData {
 	/**
 	 * The unique identifier of the person merge log entity
 	 */
+	@Id
+	@Column(name = "person_merge_log_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer personMergeLogId;
 	
 	/**
 	 * The object representing the preferred person of the merge
 	 */
+	@ManyToOne
+	@JoinColumn(name = "winner_person_id", nullable = false)
 	private Person winner;
 	
 	/**
 	 * The object representing the non-preferred person of the merge
 	 */
+	@ManyToOne
+	@JoinColumn(name = "loser_person_id", nullable = false)
 	private Person loser;
 	
 	/**
 	 * serialized data representing the details of the merge
 	 */
+	@Column(name = "merged_data", nullable = false, columnDefinition = "LONGTEXT")
 	private String serializedMergedData;
 	
 	/**

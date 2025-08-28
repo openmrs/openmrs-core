@@ -268,6 +268,7 @@ public class CustomDatatypeUtil {
 			return true;
 		}
 		catch (Exception ex) {
+			log.error("Exception caught while trying to validate the value {} for descriptor {}", value.getValue(), value.getDescriptor(), ex);
 			return false;
 		}
 	}

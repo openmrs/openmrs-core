@@ -54,7 +54,7 @@
 		<many-to-one name="doseLimitUnits" class="org.openmrs.Concept"
 		    not-null="false" column="dose_limit_units" />
 
-		<set name="ingredients" lazy="true" inverse="true">
+		<set name="ingredients" lazy="true" inverse="true" cascade="all-delete-orphan">
 			<key column="drug_id" />	
 			<one-to-many class="org.openmrs.DrugIngredient" />
 		</set>

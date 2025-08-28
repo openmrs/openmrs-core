@@ -9,6 +9,16 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 
 /**
@@ -18,15 +28,28 @@ import org.hibernate.envers.Audited;
  *
  * @since 1.9
  */
+@Entity
+@Table(name = "concept_reference_term_map")
 @Audited
 public class ConceptReferenceTermMap extends BaseConceptMap {
 	
 	private static final long serialVersionUID = 1L;
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "concept_reference_term_map_id_seq")
+	@GenericGenerator(
+		name = "concept_reference_term_map_id_seq", 
+		parameters = @Parameter(name = "sequence", value = "concept_reference_term_map_concept_reference_term_map_id_seq")
+	)
+	@Column(name = "concept_reference_term_map_id", nullable = false)
 	private Integer conceptReferenceTermMapId;
 	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "term_a_id", nullable = false)
 	private ConceptReferenceTerm termA;
 	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "term_b_id", nullable = false)
 	private ConceptReferenceTerm termB;
 	
 	// Constructors

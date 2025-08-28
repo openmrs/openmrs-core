@@ -20,9 +20,11 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.openmrs.Allergy;
+import org.openmrs.AllergyReaction;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
+import org.openmrs.ConceptAttributeType;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptDescription;
@@ -30,6 +32,9 @@ import org.openmrs.ConceptMap;
 import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptReferenceTerm;
+import org.openmrs.ConceptSource;
+import org.openmrs.ConceptStateConversion;
+import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.Condition;
 import org.openmrs.Diagnosis;
 import org.openmrs.Drug;
@@ -37,7 +42,7 @@ import org.openmrs.DrugReferenceMap;
 import org.openmrs.DrugIngredient;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
-import org.openmrs.Form;
+import org.openmrs.EncounterRole;
 import org.openmrs.FreeTextDosingInstructions;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
@@ -56,6 +61,7 @@ import org.openmrs.OrderSet;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttributeType;
@@ -74,19 +80,24 @@ import org.openmrs.FormResource;
 import org.openmrs.api.builder.DrugOrderBuilder;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.ClobDatatypeStorage;
 import org.openmrs.api.db.SerializedObject;
 import org.openmrs.api.db.hibernate.HibernateAdministrationDAO;
 import org.openmrs.api.db.hibernate.HibernateSessionFactoryBean;
 import org.openmrs.api.impl.OrderServiceImpl;
 import org.openmrs.customdatatype.datatype.FreeTextDatatype;
+import org.openmrs.hl7.HL7InArchive;
 import org.openmrs.hl7.HL7InError;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.notification.AlertRecipient;
+import org.openmrs.notification.Template;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.order.OrderUtilTest;
 import org.openmrs.orders.TimestampOrderNumberGenerator;
 import org.openmrs.parameter.OrderSearchCriteria;
 import org.openmrs.parameter.OrderSearchCriteriaBuilder;
+import org.openmrs.person.PersonMergeLog;
+import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.test.TestUtil;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.DateUtil;
@@ -100,6 +111,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -261,7 +273,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		throws InterruptedException {
 
 		int N = 50;
-		final Set<String> uniqueOrderNumbers = new HashSet<>(50);
+		final Set<String> uniqueOrderNumbers = Collections.synchronizedSet(new HashSet<String>(50));
 		List<Thread> threads = new ArrayList<>();
 		for (int i = 0; i < N; i++) {
 			threads.add(new Thread(() -> {
@@ -2726,34 +2738,48 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.configure().applySettings(configuration.getProperties()).build();
 
 		Metadata metaData = new MetadataSources(standardRegistry).addAnnotatedClass(Allergy.class)
-			.addAnnotatedClass(Encounter.class).addAnnotatedClass(SomeTestOrder.class)
-			.addAnnotatedClass(Diagnosis.class).addAnnotatedClass(Condition.class)
-			.addAnnotatedClass(Visit.class).addAnnotatedClass(VisitAttributeType.class)
-			.addAnnotatedClass(MedicationDispense.class)
-			.addAnnotatedClass(ProviderAttributeType.class)
-			.addAnnotatedClass(ConceptMapType.class)
-			.addAnnotatedClass(Relationship.class)
-			.addAnnotatedClass(Location.class)
-			.addAnnotatedClass(PersonAddress.class)
-			.addAnnotatedClass(PersonAttributeType.class)
-			.addAnnotatedClass(User.class)
-			.addAnnotatedClass(LocationAttributeType.class)
-			.addAnnotatedClass(SerializedObject.class)
-			.addAnnotatedClass(PatientState.class)
-			.addAnnotatedClass(DrugIngredient.class)
-			.addAnnotatedClass(DrugReferenceMap.class)
-			.addAnnotatedClass(AlertRecipient.class)
-			.addAnnotatedClass(PatientIdentifierType.class)
-			.addAnnotatedClass(ProgramAttributeType.class)
-			.addAnnotatedClass(HL7InError.class)
-			.addAnnotatedClass(OrderType.class)
-			.addAnnotatedClass(ConceptAnswer.class)
-			.addAnnotatedClass(ConceptClass.class)
-			.addAnnotatedClass(FormResource.class)
-			.addAnnotatedClass(VisitType.class)
-			.addAnnotatedClass(ProviderRole.class)
-			.addAnnotatedClass(Form.class)
-			.getMetadataBuilder().build();
+				.addAnnotatedClass(Encounter.class).addAnnotatedClass(SomeTestOrder.class)
+				.addAnnotatedClass(Diagnosis.class).addAnnotatedClass(Condition.class)
+				.addAnnotatedClass(Visit.class).addAnnotatedClass(VisitAttributeType.class)
+				.addAnnotatedClass(MedicationDispense.class)
+				.addAnnotatedClass(ProviderAttributeType.class)
+				.addAnnotatedClass(ConceptMapType.class)
+				.addAnnotatedClass(Relationship.class)
+				.addAnnotatedClass(Location.class)
+				.addAnnotatedClass(PersonAddress.class)
+				.addAnnotatedClass(PersonAttributeType.class)
+				.addAnnotatedClass(User.class)
+				.addAnnotatedClass(LocationAttributeType.class)
+				.addAnnotatedClass(SerializedObject.class)
+				.addAnnotatedClass(PatientState.class)
+				.addAnnotatedClass(DrugIngredient.class)
+				.addAnnotatedClass(DrugReferenceMap.class)
+				.addAnnotatedClass(AlertRecipient.class)
+				.addAnnotatedClass(PatientIdentifierType.class)
+				.addAnnotatedClass(ProgramAttributeType.class)
+				.addAnnotatedClass(HL7InError.class)
+				.addAnnotatedClass(OrderType.class)
+			    .addAnnotatedClass(ConceptReferenceTermMap.class)
+			    .addAnnotatedClass(ConceptReferenceTerm.class)
+				.addAnnotatedClass(ConceptAnswer.class)
+				.addAnnotatedClass(ConceptClass.class)
+			    .addAnnotatedClass(ConceptMap.class)
+				.addAnnotatedClass(FormResource.class)
+				.addAnnotatedClass(VisitType.class)
+				.addAnnotatedClass(ProviderRole.class)
+				.addAnnotatedClass(EncounterRole.class)
+				.addAnnotatedClass(PatientProgram.class)
+				.addAnnotatedClass(HL7InArchive.class)
+				.addAnnotatedClass(PersonMergeLog.class)
+				.addAnnotatedClass(ClobDatatypeStorage.class)
+				.addAnnotatedClass(ConceptSource.class)
+        		.addAnnotatedClass(TaskDefinition.class)
+				.addAnnotatedClass(ConceptStateConversion.class)
+				.addAnnotatedClass(OrderGroup.class)
+				.addAnnotatedClass(Template.class)
+			    .addAnnotatedClass(AllergyReaction.class)
+				.addAnnotatedClass(ConceptAttributeType.class)
+				.getMetadataBuilder().build();
 
 
 		Field field = adminDAO.getClass().getDeclaredField("metadata");
