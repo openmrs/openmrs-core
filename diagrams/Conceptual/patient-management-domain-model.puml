@@ -1,0 +1,337 @@
+@startuml Patient Management System - Domain Model
+!theme cerulean-outline
+title Patient Management System with Condition Management - Domain Model\n(OpenMRS Core - Base Domain Entities)
+
+' This model contains the foundational domain entities that are shared across
+' multiple OpenMRS domain models including Clinical Data Management.
+' Entities defined here: Patient, Visit, Encounter, Observation, Provider, Location, Program entities
+' Added: Condition Management entities for comprehensive condition and diagnosis tracking
+
+' Define entity colors and styles - STANDARDIZED ACROSS ALL DOMAIN MODELS
+' Color Legend:
+' - LightBlue (Person): Person demographic entities
+' - LightGreen (Patient): Patient-specific entities  
+' - LightYellow (Clinical): Clinical care episode entities (Visit, Encounter, Observation)
+' - LightCyan (Concept): Clinical vocabulary and concept entities (includes Condition/Diagnosis)
+' - LightSalmon (Program): Program and workflow entities
+' - LightGray (Location): Location and facility entities
+' - Orange (Provider): Healthcare provider entities
+
+skinparam class {
+    BackgroundColor<<Person>> LightBlue
+    BackgroundColor<<Patient>> LightGreen
+    BackgroundColor<<Clinical>> LightYellow
+    BackgroundColor<<Concept>> LightCyan
+    BackgroundColor<<Program>> LightSalmon
+    BackgroundColor<<Location>> LightGray
+    BackgroundColor<<Provider>> Orange
+    BorderColor<<Person>> DarkBlue
+    BorderColor<<Patient>> DarkGreen
+    BorderColor<<Clinical>> DarkOrange
+    BorderColor<<Concept>> DarkCyan
+    BorderColor<<Program>> DarkRed
+    BorderColor<<Location>> DarkGray
+    BorderColor<<Provider>> DarkOrange
+}
+
+' Core Person and Patient Entities
+entity Person <<Person>> {
+    birthdate
+    birthdateEstimated
+    gender
+    dead
+    deathDate
+    causeOfDeath
+}
+
+entity PersonName <<Person>> {
+    preferred
+    prefix
+    givenName
+    middleName
+    familyNamePrefix
+    familyName
+    familyName2
+    familyNameSuffix
+    degree
+}
+
+entity PersonAddress <<Person>> {
+    preferred
+    address1
+    address2
+    cityVillage
+    stateProvince
+    country
+    postalCode
+    countyDistrict
+    address3
+    latitude
+    longitude
+    startDate
+    endDate
+}
+
+entity CauseOfDeath <<Clinical>> {
+    name
+    description
+    category
+}
+
+entity Patient <<Patient>> {
+    patientIdentifiers
+}
+
+entity PatientIdentifier <<Patient>> {
+    identifier
+    identifierType
+    identifierFormat
+    preferred
+    required
+    checkDigit
+}
+
+' Condition Management Entities
+entity Condition <<Concept>> {
+    conditionId
+    clinicalStatus
+    verificationStatus
+    onsetDate
+    endDate
+    endReason
+    additionalDetail
+}
+
+entity Diagnosis <<Concept>> {
+    diagnosisId
+    certainty
+    rank
+    formNamespaceAndPath
+}
+
+entity DiagnosisAttribute <<Concept>> {
+    diagnosisAttributeId
+    value
+}
+
+entity DiagnosisAttributeType <<Concept>> {
+    diagnosisAttributeTypeId
+    name
+    description
+    datatypeClassname
+    required
+    minOccurs
+    maxOccurs
+}
+
+entity CodedOrFreeText <<Concept>> {
+    nonCoded
+}
+
+entity ConditionClinicalStatus <<Concept>> {
+    "ACTIVE"
+    "INACTIVE" 
+    "RECURRENCE"
+    "RELAPSE"
+    "REMISSION"
+    "RESOLVED"
+    "HISTORY_OF"
+}
+
+entity ConditionVerificationStatus <<Concept>> {
+    "PROVISIONAL"
+    "CONFIRMED"
+}
+
+entity Concept <<Concept>> {
+    conceptId
+    datatype
+    conceptClass
+    name
+    description
+}
+
+entity ConceptName <<Concept>> {
+    conceptNameId
+    name
+    locale
+    conceptNameType
+}
+
+' Location Entity
+entity Location <<Location>> {
+    name
+    description
+}
+
+' Clinical Care Entities
+entity Visit <<Clinical>> {
+    startDatetime
+    stopDatetime
+    visitType
+}
+
+entity VisitIndication <<Clinical>> {
+    name
+    description
+    category
+}
+
+entity Encounter <<Clinical>> {
+    encounterDatetime
+    encounterType
+}
+
+entity Observation <<Clinical>> {
+    observationDatetime
+    value
+}
+
+' Provider Entities
+entity Provider <<Provider>> {
+    identifier
+    name
+}
+
+entity ProviderRole <<Provider>> {
+    name
+    description
+    permissions
+}
+
+' Program Management Entities
+entity Program <<Program>> {
+    name
+    description
+    conceptName
+    outcomesConceptName
+}
+
+entity ProgramWorkflow <<Program>> {
+    name
+    conceptName
+}
+
+entity ProgramWorkflowState <<Program>> {
+    name
+    conceptName
+    initial
+    terminal
+}
+
+entity PatientProgram <<Program>> {
+    dateEnrolled
+    dateCompleted
+}
+
+entity ProgramOutcome <<Program>> {
+    name
+    description
+    category
+}
+
+entity PatientState <<Program>> {
+    startDate
+    endDate
+}
+
+' Core Relationships - Person and Patient
+Person ||--o{ PersonName : "has names"
+Person ||--o{ PersonAddress : "has addresses"
+Person }o--o| CauseOfDeath : "cause of death"
+Patient ||--|| Person : "extends"
+Patient ||--o{ PatientIdentifier : "has identifiers"
+PatientIdentifier }o--|| Location : "issued at"
+
+' Clinical Care Relationships
+Patient ||--o{ Visit : "has visits"
+Visit }o--|| Location : "occurs at"
+Visit }o--o| VisitIndication : "has indication"
+Visit ||--o{ Encounter : "contains encounters"
+Encounter }o--|| Patient : "for patient"
+Encounter }o--|| Location : "occurs at"
+Encounter ||--o{ Observation : "contains observations"
+Encounter }o--o{ Provider : "provided by"
+Observation }o--|| Person : "about person"
+Observation }o--|| Location : "recorded at"
+Observation }o--|| Encounter : "recorded in"
+Provider }o--|| ProviderRole : "has role"
+
+' Condition Management Relationships
+Patient ||--o{ Condition : "has conditions"
+Condition }o--|| Patient : "belongs to"
+Condition }o--o| Encounter : "documented in"
+Condition ||--|| CodedOrFreeText : "described by"
+Condition }o--|| ConditionClinicalStatus : "has clinical status"
+Condition }o--|| ConditionVerificationStatus : "has verification status"
+Condition }o--o| Condition : "previous version"
+Encounter ||--o{ Diagnosis : "contains diagnoses"
+Diagnosis }o--|| Patient : "for patient"
+Diagnosis }o--|| Encounter : "documented in"
+Diagnosis }o--o| Condition : "related to"
+Diagnosis ||--|| CodedOrFreeText : "described by"
+Diagnosis }o--|| ConditionVerificationStatus : "has certainty"
+Diagnosis ||--o{ DiagnosisAttribute : "has attributes"
+DiagnosisAttribute }o--|| DiagnosisAttributeType : "of type"
+DiagnosisAttribute }o--|| Diagnosis : "belongs to"
+CodedOrFreeText }o--o| Concept : "coded concept"
+CodedOrFreeText }o--o| ConceptName : "specific name"
+Concept ||--o{ ConceptName : "has names"
+
+' Program Management Relationships
+Program ||--o{ ProgramWorkflow : "has workflows"
+Program ||--o{ PatientProgram : "enrolls patients"
+ProgramWorkflow ||--o{ ProgramWorkflowState : "has states"
+ProgramWorkflow }o--|| Program : "belongs to"
+ProgramWorkflowState }o--|| ProgramWorkflow : "part of"
+PatientProgram }o--|| Patient : "enrolls"
+PatientProgram }o--|| Program : "in program"
+PatientProgram }o--|| Location : "at location"
+PatientProgram }o--o| ProgramOutcome : "has outcome"
+PatientProgram ||--o{ PatientState : "has states"
+PatientState }o--|| PatientProgram : "belongs to"
+PatientState }o--|| ProgramWorkflowState : "current state"
+PatientState }o--|| Encounter : "triggered by"
+PatientIdentifier }o--|| PatientProgram : "associated with"
+
+' Additional domain relationships
+Provider }o--|| Person : "is a person"
+
+' Notes and constraints
+note right of Patient : A Patient is a Person\nwho receives medical care\n[SHARED ENTITY]
+note right of PatientProgram : Tracks patient enrollment\nin care programs\n[SHARED ENTITY]
+note right of PatientState : Represents patient's state\nin a workflow over time
+note bottom of Encounter : Core unit of clinical\ninteraction between\npatient and provider\n[SHARED ENTITY]
+note bottom of Visit : Groups related encounters\nduring a care episode\n[SHARED ENTITY]
+note bottom of Observation : Clinical measurements\nand findings with values\n[SHARED ENTITY]
+note left of VisitIndication : Clinical reasoning for\nthe visit or encounter
+note bottom of CauseOfDeath : Standardized cause\nof death classification
+note left of ProviderRole : Professional roles and\nresponsibilities in care\n[SHARED ENTITY]
+note left of Provider : Healthcare professionals\nproviding clinical care\n[SHARED ENTITY]
+note left of Location : Physical locations where\ncare is provided\n[SHARED ENTITY]
+note top of Condition : Records detailed information\nabout patient conditions,\nproblems, or diagnoses\n[SHARED ENTITY]
+note bottom of Diagnosis : Identification of illness\nor problem during an\nencounter\n[SHARED ENTITY]
+note right of ConditionClinicalStatus : Clinical status of condition\n(Active, Inactive, Recurrence,\nRelapse, Remission, Resolved)\n[SHARED ENTITY]
+note left of ConditionVerificationStatus : Verification status\n(Provisional, Confirmed)\n[SHARED ENTITY]
+note right of CodedOrFreeText : Represents coded concepts\nor free text entries\n[SHARED ENTITY]
+note bottom of DiagnosisAttribute : Extensible attributes\nfor diagnosis entities\n[SHARED ENTITY]
+note bottom of DiagnosisAttributeType : Defines types of\ndiagnosis attributes\n[SHARED ENTITY]
+note left of Concept : Standard medical concepts\nfor coded representations\n[SHARED ENTITY]
+note right of ConceptName : Localized names for\nmedical concepts\n[SHARED ENTITY]
+
+' Model Information
+note top : This is the foundational Patient Management Domain Model with Condition Management.\nEntities marked as [SHARED ENTITY] are referenced by other domain models\nsuch as Clinical Data Management.\nFocuses on core conceptual entities - implementation details like\nflexible attribute mechanisms are excluded for conceptual clarity.\n\nCondition Management includes:\n- Condition tracking with clinical and verification status\n- Diagnosis documentation during encounters\n- Extensible diagnosis attributes\n- Coded and free-text concept representation
+
+' Color Legend Table
+legend right
+|= Color |= Description |= Domain |
+|<back:LightBlue>   </back>| Person demographics | Shared |
+|<back:LightGreen>   </back>| Patient entities | Shared |
+|<back:LightYellow>   </back>| Clinical episodes | Shared |
+|<back:LightCyan>   </back>| Concepts & vocabulary | Shared |
+|<back:LightSalmon>   </back>| Programs & workflows | Shared |
+|<back:LightGray>   </back>| Locations | Shared |
+|<back:Orange>   </back>| Healthcare providers | Shared |
+endlegend
+
+@enduml

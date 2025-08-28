@@ -1,0 +1,515 @@
+@startuml Medication Dispensing System - Domain Model
+!theme cerulean-outline
+title Medication Dispensing System - Domain Model\n(OpenMRS Core - Medication Dispensing Domain)
+
+' This model defines the conceptual domain entities for Medication Dispensing
+' References shared entities from: patient-management-domain-model.puml, clinical-data-management-domain-model.puml, order-management-domain-model.puml, location-facility-management-domain-model.puml
+' Focuses on conceptual entities following domain modeling best practices
+' Based on FMC modeling methodology: https://www.fmc-modeling.org/category/projects/apache/amp/Apache_Modeling_Project.html
+
+' Define entity colors and styles - STANDARDIZED ACROSS ALL DOMAIN MODELS
+' Color Legend:
+' - LightBlue (Person): Person demographic entities
+' - LightGreen (Patient): Patient-specific entities
+' - LightYellow (Clinical): Clinical care episode entities
+' - LightCyan (Concept): Clinical vocabulary and concept entities
+' - Orange (Provider): Healthcare provider entities
+' - LightGray (Location): Location and facility entities
+' - LightPink (Order): Clinical order and request entities
+' - LightSalmon (Pharmaceutical): Pharmaceutical product entities
+' - LightSteelBlue (Dispensing): Medication dispensing workflow entities
+' - Lavender (Dosing): Dosing and administration entities
+' - MistyRose (Substitution): Medication substitution entities
+' - LemonChiffon (Supply): Supply chain and inventory entities
+' - LightCoral (Quality): Quality assurance and safety entities
+
+skinparam class {
+    ' Shared entities from other domain models
+    BackgroundColor<<Person>> LightBlue
+    BackgroundColor<<Patient>> LightGreen
+    BackgroundColor<<Clinical>> LightYellow
+    BackgroundColor<<Concept>> LightCyan
+    BackgroundColor<<Provider>> Orange
+    BackgroundColor<<Location>> LightGray
+    BackgroundColor<<Order>> LightPink
+    
+    ' Medication Dispensing specific entities
+    BackgroundColor<<Pharmaceutical>> LightSalmon
+    BackgroundColor<<Dispensing>> LightSteelBlue
+    BackgroundColor<<Dosing>> Lavender
+    BackgroundColor<<Substitution>> MistyRose
+    BackgroundColor<<Supply>> LemonChiffon
+    BackgroundColor<<Quality>> LightCoral
+    
+    ' Border colors for better distinction
+    BorderColor<<Person>> DarkBlue
+    BorderColor<<Patient>> DarkGreen
+    BorderColor<<Clinical>> DarkOrange
+    BorderColor<<Concept>> DarkCyan
+    BorderColor<<Provider>> DarkOrange
+    BorderColor<<Location>> DarkGray
+    BorderColor<<Order>> DeepPink
+    BorderColor<<Pharmaceutical>> DarkRed
+    BorderColor<<Dispensing>> DarkSlateBlue
+    BorderColor<<Dosing>> DarkMagenta
+    BorderColor<<Substitution>> DeepPink
+    BorderColor<<Supply>> DarkGoldenRod
+    BorderColor<<Quality>> DarkRed
+}
+
+' === SHARED ENTITIES (referenced from other domain models) ===
+entity Patient <<Patient>> {
+    patientIdentifiers
+    (from Patient Management)
+}
+
+entity Provider <<Provider>> {
+    identifier
+    name
+    (from Provider & User Management)
+}
+
+entity HealthcareFacility <<Location>> {
+    name
+    description
+    facilityCode
+    (from Location & Facility Management)
+}
+
+entity PharmacyLocation <<Location>> {
+    pharmacyType
+    licensure
+    operatingHours
+    (from Location & Facility Management)
+}
+
+entity Encounter <<Clinical>> {
+    encounterDatetime
+    encounterType
+    (from Patient Management)
+}
+
+entity Concept <<Concept>> {
+    name
+    description
+    conceptClass
+    datatype
+    (from Patient Management)
+}
+
+entity PrescriptionOrder <<Order>> {
+    orderNumber
+    dateActivated
+    autoExpireDate
+    urgency
+    instructions
+    (from Order Management)
+}
+
+' === MEDICATION DISPENSING CORE ENTITIES ===
+
+' Core Dispensing Event Entity
+entity MedicationDispense <<Dispensing>> {
+    dispensingDate
+    dispensingStatus
+    datePrepared
+    dateHandedOver
+    quantityDispensed
+    instructions
+    notes
+}
+
+entity DispenseStatus <<Dispensing>> {
+    statusName
+    description
+    workflowStage
+}
+
+entity DispenseType <<Dispensing>> {
+    typeName
+    description
+    supplyCategory
+}
+
+entity DispenseReason <<Dispensing>> {
+    reasonCode
+    reasonDescription
+    justification
+}
+
+' Pharmaceutical Product Entities
+entity PharmaceuticalProduct <<Pharmaceutical>> {
+    productName
+    brandName
+    genericName
+    strength
+    dosageForm
+    manufacturer
+    marketingAuthorization
+    productClassification
+    combination
+    activeIngredients
+}
+
+entity MedicationIngredient <<Pharmaceutical>> {
+    ingredientName
+    ingredientStrength
+    ingredientRole
+    concentrationUnits
+}
+
+entity DosageForm <<Pharmaceutical>> {
+    formName
+    formDescription
+    administrationRoute
+    physicalCharacteristics
+}
+
+entity MedicationStrength <<Pharmaceutical>> {
+    strengthValue
+    strengthUnits
+    concentrationType
+    referenceStandard
+}
+
+' Dosing and Administration Entities
+entity DosingInstructions <<Dosing>> {
+    dosingRegimen
+    administrationTiming
+    patientInstructions
+    specialInstructions
+    duration
+}
+
+entity AdministrationFrequency <<Dosing>> {
+    frequencyDescription
+    timesPerDay
+    intervalHours
+    schedulingPattern
+}
+
+entity AdministrationRoute <<Dosing>> {
+    routeName
+    routeDescription
+    administrationMethod
+    bodySystem
+}
+
+entity DoseQuantity <<Dosing>> {
+    doseAmount
+    doseUnits
+    calculationMethod
+    variabilityRange
+}
+
+entity AdministrationTiming <<Dosing>> {
+    timingPattern
+    frequencyPerPeriod
+    periodUnit
+    specificTimes
+    asNeededCondition
+}
+
+' Medication Substitution Entities
+entity MedicationSubstitution <<Substitution>> {
+    substitutionMade
+    substitutionType
+    substitutionReason
+    substitutionAuthorization
+}
+
+entity SubstitutionType <<Substitution>> {
+    typeName
+    typeDescription
+    regulatoryBasis
+    clinicalJustification
+}
+
+entity SubstitutionReason <<Substitution>> {
+    reasonCode
+    reasonDescription
+    urgencyLevel
+    documentationRequired
+}
+
+entity TherapeuticEquivalence <<Substitution>> {
+    equivalenceClass
+    bioequivalence
+    therapeuticCategory
+    regulatoryStatus
+}
+
+' Dispensing Workflow and Management
+entity DispensingWorkflow <<Dispensing>> {
+    workflowStage
+    stageDescription
+    requiredActions
+    stakeholderRoles
+}
+
+entity DispensingAuthorization <<Dispensing>> {
+    authorizationType
+    authorizingProvider
+    authorizationDate
+    validityPeriod
+    restrictions
+}
+
+entity DispensingVerification <<Dispensing>> {
+    verificationLevel
+    verifyingProvider
+    verificationDate
+    verificationCriteria
+    qualityChecks
+}
+
+entity DispensingDocumentation <<Dispensing>> {
+    documentationType
+    documentContent
+    recordingProvider
+    documentDate
+    legalRequirements
+}
+
+' Supply Chain and Inventory Entities
+entity MedicationSupply <<Supply>> {
+    supplySource
+    supplyQuantity
+    supplyDate
+    lotNumber
+    expirationDate
+    costInformation
+    insuranceCoverage
+}
+
+entity MedicationLot <<Supply>> {
+    lotNumber
+    batchNumber
+    manufacturingDate
+    expirationDate
+    manufacturer
+    qualitySpecifications
+}
+
+entity MedicationInventory <<Supply>> {
+    currentStock
+    minimumStock
+    maximumStock
+    reorderPoint
+    stockLocation
+}
+
+entity SupplyChainSource <<Supply>> {
+    sourceName
+    sourceType
+    supplierInformation
+    contractDetails
+    qualityAssurance
+}
+
+' Patient Counseling and Education
+entity PatientCounseling <<Dispensing>> {
+    counselingTopics
+    counselingProvider
+    counselingDate
+    patientUnderstanding
+    followUpRequired
+}
+
+entity MedicationEducation <<Dispensing>> {
+    educationMaterials
+    educationMethod
+    educationLanguage
+    patientQuestions
+    comprehensionLevel
+}
+
+entity CounselingTopic <<Dispensing>> {
+    topicName
+    topicDescription
+    requiredByRegulation
+    targetAudience
+}
+
+' Dispensing Quality and Safety
+entity DispensingError <<Quality>> {
+    errorType
+    errorDescription
+    errorSeverity
+    rootCause
+    preventionMeasures
+    reportingRequired
+}
+
+entity QualityAssurance <<Quality>> {
+    qualityChecks
+    qualityStandards
+    complianceLevel
+    auditResults
+    improvementActions
+}
+
+entity SafetyAlert <<Quality>> {
+    alertType
+    alertDescription
+    severity
+    affectedMedications
+    recommendedActions
+}
+
+entity AdverseEvent <<Quality>> {
+    eventType
+    eventDescription
+    severity
+    outcome
+    reportingStatus
+}
+
+' Dispensing Performance and Analytics
+entity DispensingMetrics <<Quality>> {
+    metricType
+    metricValue
+    measurementPeriod
+    benchmarkComparison
+    performanceIndicators
+}
+
+entity PharmacyPerformance <<Quality>> {
+    dispensingAccuracy
+    turnaroundTime
+    patientSatisfaction
+    errorRates
+    complianceScores
+}
+
+' === RELATIONSHIPS ===
+
+' Core Dispensing Relationships
+Patient ||--o{ MedicationDispense : "receives dispensed medications"
+Provider }o--|| MedicationDispense : "dispenses medication"
+PrescriptionOrder ||--o{ MedicationDispense : "fulfilled by dispensing"
+Encounter }o--o| MedicationDispense : "occurs during encounter"
+HealthcareFacility }o--|| MedicationDispense : "dispensed at facility"
+PharmacyLocation }o--|| MedicationDispense : "dispensed from pharmacy"
+
+' Pharmaceutical Product Relationships
+MedicationDispense }o--|| PharmaceuticalProduct : "dispenses pharmaceutical product"
+PharmaceuticalProduct ||--o{ MedicationIngredient : "contains ingredients"
+PharmaceuticalProduct }o--|| DosageForm : "has dosage form"
+PharmaceuticalProduct ||--o{ MedicationStrength : "has strength specifications"
+MedicationIngredient }o--|| ClinicalConcept : "ingredient concept"
+
+' Dosing and Administration Relationships
+MedicationDispense ||--|| DosingInstructions : "includes dosing instructions"
+DosingInstructions }o--|| AdministrationFrequency : "specifies frequency"
+DosingInstructions }o--|| AdministrationRoute : "specifies route"
+DosingInstructions }o--|| DoseQuantity : "specifies dose amount"
+DosingInstructions }o--|| AdministrationTiming : "specifies timing"
+AdministrationTiming }o--o| ClinicalConcept : "as needed condition"
+
+' Dispensing Status and Type Relationships
+MedicationDispense }o--|| DispenseStatus : "has current status"
+MedicationDispense }o--|| DispenseType : "categorized by type"
+MedicationDispense }o--o| DispenseReason : "justified by reason"
+
+' Substitution Relationships
+MedicationDispense ||--o| MedicationSubstitution : "may involve substitution"
+MedicationSubstitution }o--|| SubstitutionType : "categorized by type"
+MedicationSubstitution }o--|| SubstitutionReason : "justified by reason"
+MedicationSubstitution }o--|| Provider : "authorized by provider"
+PharmaceuticalProduct ||--o{ TherapeuticEquivalence : "has therapeutic equivalents"
+MedicationSubstitution }o--|| TherapeuticEquivalence : "based on equivalence"
+
+' Workflow and Authorization Relationships
+MedicationDispense ||--o{ DispensingWorkflow : "follows workflow stages"
+MedicationDispense ||--|| DispensingAuthorization : "requires authorization"
+MedicationDispense ||--|| DispensingVerification : "undergoes verification"
+MedicationDispense ||--|| DispensingDocumentation : "generates documentation"
+DispensingAuthorization }o--|| Provider : "authorized by provider"
+DispensingVerification }o--|| Provider : "verified by provider"
+
+' Supply Chain and Inventory Relationships
+MedicationDispense ||--|| MedicationSupply : "draws from supply"
+MedicationSupply }o--|| MedicationLot : "from specific lot"
+MedicationSupply }o--|| SupplyChainSource : "sourced from supplier"
+MedicationInventory }o--|| PharmacyLocation : "managed at pharmacy"
+MedicationInventory }o--|| PharmaceuticalProduct : "tracks product stock"
+MedicationLot }o--|| PharmaceuticalProduct : "batch of product"
+SupplyChainSource }o--|| HealthcareFacility : "supplies to facility"
+
+' Patient Counseling and Education Relationships
+MedicationDispense ||--o| PatientCounseling : "includes patient counseling"
+MedicationDispense ||--o| MedicationEducation : "provides medication education"
+PatientCounseling }o--|| Provider : "provided by healthcare professional"
+PatientCounseling ||--o{ CounselingTopic : "covers specific topics"
+MedicationEducation }o--|| Provider : "delivered by healthcare professional"
+PatientCounseling }o--|| Patient : "received by patient"
+MedicationEducation }o--|| Patient : "received by patient"
+
+' Quality and Safety Relationships
+MedicationDispense ||--o{ DispensingError : "may have dispensing errors"
+MedicationDispense ||--|| QualityAssurance : "subject to quality assurance"
+DispensingError }o--|| Provider : "identified by provider"
+QualityAssurance }o--|| Provider : "managed by provider"
+PharmaceuticalProduct ||--o{ SafetyAlert : "may have safety alerts"
+MedicationDispense ||--o{ AdverseEvent : "may result in adverse events"
+AdverseEvent }o--|| Patient : "experienced by patient"
+SafetyAlert }o--|| HealthcareFacility : "distributed to facilities"
+
+' Performance and Analytics Relationships
+PharmacyLocation ||--|| PharmacyPerformance : "measured by performance metrics"
+MedicationDispense ||--o{ DispensingMetrics : "generates performance metrics"
+DispensingMetrics }o--|| PharmacyLocation : "measured at pharmacy"
+PharmacyPerformance }o--|| QualityAssurance : "influenced by quality measures"
+
+' Concept Relationships (mapping to clinical vocabulary)
+DispenseStatus }o--|| ClinicalConcept : "status concept"
+DispenseType }o--|| ClinicalConcept : "type concept"
+DispenseReason }o--|| ClinicalConcept : "reason concept"
+DosageForm }o--|| ClinicalConcept : "form concept"
+AdministrationRoute }o--|| ClinicalConcept : "route concept"
+SubstitutionType }o--|| ClinicalConcept : "substitution type concept"
+SubstitutionReason }o--|| ClinicalConcept : "substitution reason concept"
+DoseQuantity }o--|| ClinicalConcept : "dose units concept"
+MedicationStrength }o--|| ClinicalConcept : "strength units concept"
+AdministrationFrequency }o--|| ClinicalConcept : "frequency concept"
+
+' === DOMAIN NOTES ===
+note right of MedicationDispense : Central entity recording the provision\nof medication supply to patients\nwith complete dispensing details
+note right of PharmaceuticalProduct : Commercial pharmaceutical products\nwith detailed composition,\nstrength, and regulatory information
+note right of DosingInstructions : Complete dosing regimen including\ntiming, route, dose amounts,\nand patient-specific instructions
+note right of MedicationSubstitution : Therapeutic substitutions made\nduring dispensing with proper\nauthorization and documentation
+note right of DispensingWorkflow : Standardized workflow stages\nfor safe and accurate\nmedication dispensing
+note right of PatientCounseling : Patient education and counseling\nprovided during medication\ndispensing for safe use
+note right of MedicationSupply : Supply chain context with\nlot tracking, expiration dates\nand cost considerations
+note right of QualityAssurance : Quality and safety measures\nto ensure accurate dispensing\nand prevent medication errors
+note bottom of MedicationLot : Batch tracking for pharmaceutical\nproducts with manufacturing\nand expiration information
+note bottom of AdministrationFrequency : Standardized frequency patterns\nfor medication administration\nbased on therapeutic needs
+note bottom of TherapeuticEquivalence : Clinically equivalent medications\nsuitable for therapeutic\nsubstitution when appropriate
+note bottom of SafetyAlert : Medication safety alerts and\nwarnings distributed to\nhealthcare professionals
+note left of DispensingVerification : Multi-level verification process\nto ensure dispensing accuracy\nand patient safety
+note left of MedicationEducation : Comprehensive patient education\nabout medication use, effects,\nand adherence requirements
+note left of PharmacyPerformance : Key performance indicators\nfor pharmacy operations\nand quality measurement
+note left of CounselingTopic : Standardized counseling topics\nfor patient education\nand regulatory compliance
+
+' Reference note
+note top : This model defines the Medication Dispensing domain entities.\nShared entities (Patient, Provider, HealthcareFacility, Encounter, ClinicalConcept, PrescriptionOrder)\nare referenced from other domain models.\nFocuses on core conceptual entities for medication dispensing workflow,\nfollowing FMC domain modeling methodology and removing database-specific implementations.
+
+' Color Legend Table
+legend right
+|= Color |= Description |= Domain |
+|<back:LightGreen>   </back>| Patient entities | Shared |
+|<back:Orange>   </back>| Healthcare providers | Shared |
+|<back:LightGray>   </back>| Locations & facilities | Shared |
+|<back:LightYellow>   </back>| Clinical episodes | Shared |
+|<back:LightCyan>   </back>| Clinical concepts | Shared |
+|<back:LightPink>   </back>| Clinical orders | Shared |
+|<back:LightSalmon>   </back>| Pharmaceutical products | Medication Dispensing |
+|<back:LightSteelBlue>   </back>| Dispensing workflow | Medication Dispensing |
+|<back:Lavender>   </back>| Dosing & administration | Medication Dispensing |
+|<back:MistyRose>   </back>| Medication substitution | Medication Dispensing |
+|<back:LemonChiffon>   </back>| Supply chain & inventory | Medication Dispensing |
+|<back:LightCoral>   </back>| Quality assurance & safety | Medication Dispensing |
+endlegend
+
+@enduml

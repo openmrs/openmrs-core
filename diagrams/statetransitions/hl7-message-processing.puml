@@ -1,0 +1,36 @@
+@startuml HL7 Message Processing State Machine
+!theme plain
+skinparam backgroundColor white
+skinparam state {
+  BackgroundColor lightblue
+  BorderColor navy
+  ArrowColor navy
+}
+
+title OpenMRS HL7 Message Processing State Machine
+
+state "HL7 Message Processing State Machine" as HL7 {
+  state PENDING : HL7_STATUS_PENDING (0)\nAwaiting processing
+  state PROCESSING : HL7_STATUS_PROCESSING (1)\nCurrently being processed
+  state PROCESSED : HL7_STATUS_PROCESSED (2)\nSuccessfully processed
+  state ERROR : HL7_STATUS_ERROR (3)\nProcessing failed
+  state DELETED : HL7_STATUS_DELETED (4)\nMarked for deletion
+  state MIGRATED : HL7_STATUS_MIGRATED (5)\nArchived to filesystem
+  
+  [*] --> PENDING : HL7 message received
+  PENDING --> PROCESSING : Begin processing
+  PROCESSING --> PROCESSED : Processing successful
+  PROCESSING --> ERROR : Processing failed
+  ERROR --> PENDING : Retry processing
+  ERROR --> DELETED : Abandon message
+  PROCESSED --> MIGRATED : Archive to filesystem
+  PROCESSED --> DELETED : Manual deletion
+  MIGRATED --> [*] : Archived successfully
+  DELETED --> [*] : Message removed
+}
+
+note top of HL7 : HL7InQueue.messageState tracks\nlifecycle of incoming HL7 messages\nthrough processing and archival
+
+note bottom : **Key Classes:**\n- HL7InQueue: Represents incoming HL7 messages\n- HL7Constants: Defines status constants\n- Hl7InArchivesMigrateThread: Handles archival process\n\n**Status Values:**\n- 0: PENDING - Message waiting for processing\n- 1: PROCESSING - Currently being processed\n- 2: PROCESSED - Successfully completed\n- 3: ERROR - Processing failed\n- 4: DELETED - Marked for deletion\n- 5: MIGRATED - Archived to filesystem
+
+@enduml

@@ -1,0 +1,438 @@
+@startuml Visit Management System - Domain Model
+!theme cerulean-outline
+title Visit Management System - Domain Model\n(OpenMRS Core - Visit Management Domain)
+
+' This model defines the conceptual domain entities for Visit Management
+' References shared entities from: patient-management-domain-model.puml
+' Focuses on conceptual entities without database-specific implementation details
+' Follows FMC domain modeling principles - conceptual entities not technical implementations
+
+' Define entity colors and styles - consistent with other domain models
+' Color Legend - aligned with DOMAIN_COLOR_STANDARDS.md:
+' - LightGreen (Patient): Patient-specific entities (from Patient Management)
+' - Orange (Provider): Healthcare provider entities (from Patient Management)
+' - LightYellow (Clinical): Clinical care episode entities (from Patient Management)
+' - LightCyan (Concept): Clinical vocabulary and concept entities (from Patient Management)
+' - LightGray (Location): Location and facility entities (from Patient Management)
+' - LightSalmon (Program): Program and workflow entities (from Patient Management)
+' - LightPink (Order): Clinical orders and requests (from Order Management)
+' - Wheat (Visit): Visit Management specific entities (Visit Management Domain)
+
+skinparam class {
+    ' Shared entities from other domain models
+    BackgroundColor<<Patient>> LightGreen
+    BackgroundColor<<Provider>> Orange
+    BackgroundColor<<Clinical>> LightYellow
+    BackgroundColor<<Concept>> LightCyan
+    BackgroundColor<<Location>> LightGray
+    BackgroundColor<<Program>> LightSalmon
+    BackgroundColor<<Order>> LightPink
+    
+    ' Visit Management specific entities
+    BackgroundColor<<Visit>> Wheat
+    
+    ' Border colors for better distinction
+    BorderColor<<Patient>> DarkGreen
+    BorderColor<<Provider>> DarkOrange
+    BorderColor<<Clinical>> DarkOrange
+    BorderColor<<Concept>> DarkCyan
+    BorderColor<<Location>> DarkGray
+    BorderColor<<Program>> DarkRed
+    BorderColor<<Order>> DeepPink
+    BorderColor<<Visit>> DarkOrange
+}
+
+' === SHARED ENTITIES (referenced from patient-management-domain-model.puml) ===
+
+entity Patient <<Patient>> {
+    patientIdentifiers
+    (from Patient Management)
+}
+
+entity Provider <<Provider>> {
+    identifier
+    name
+    (from Patient Management)
+}
+
+entity Location <<Location>> {
+    name
+    description
+    (from Patient Management)
+}
+
+entity Encounter <<Clinical>> {
+    encounterDatetime
+    encounterType
+    (from Patient Management)
+}
+
+entity Observation <<Clinical>> {
+    observationDatetime
+    value
+    (from Patient Management)
+}
+
+entity ClinicalOrder <<Order>> {
+    orderNumber
+    dateActivated
+    urgency
+    instructions
+    (from Order Management)
+}
+
+entity Concept <<Concept>> {
+    name
+    description
+    conceptClass
+    datatype
+    (from Patient Management)
+}
+
+entity PatientProgram <<Program>> {
+    dateEnrolled
+    dateCompleted
+    (from Patient Management)
+}
+
+entity Visit <<Clinical>> {
+    startDatetime
+    stopDatetime
+    visitType
+    indication
+    (from Patient Management)
+}
+
+' === VISIT MANAGEMENT CORE ENTITIES ===
+
+' Core Visit Entity (extends base Visit from Patient Management)
+entity VisitEpisode <<Visit>> {
+    visitPurpose
+    visitPriority
+    visitUrgency
+    plannedDuration
+    actualDuration
+    visitStatus
+    visitOutcome
+}
+
+entity VisitClassification <<Visit>> {
+    classificationName
+    classificationDescription
+    careLevel
+    visitComplexity
+    resourceRequirements
+}
+
+entity VisitIndication <<Visit>> {
+    indicationName
+    indicationDescription
+    indicationCategory
+    clinicalReason
+    administrativeReason
+}
+
+' Visit Scheduling and Planning
+entity VisitAppointment <<Visit>> {
+    appointmentDatetime
+    scheduledDuration
+    appointmentStatus
+    appointmentPriority
+    cancellationReason
+    rescheduleReason
+}
+
+entity AppointmentSlot <<Visit>> {
+    slotDatetime
+    slotDuration
+    slotCapacity
+    slotAvailability
+    slotRestrictions
+}
+
+entity VisitSchedulingRule <<Visit>> {
+    ruleName
+    ruleDescription
+    schedulingCriteria
+    resourceAllocation
+    conflictResolution
+}
+
+entity VisitReservation <<Visit>> {
+    reservationDatetime
+    reservationDuration
+    reservationStatus
+    reservationPriority
+    holdDuration
+}
+
+' Visit Workflow and State Management
+entity VisitWorkflowState <<Visit>> {
+    stateName
+    stateDescription
+    stateCategory
+    entryConditions
+    exitConditions
+    allowedTransitions
+}
+
+entity VisitWorkflowTransition <<Visit>> {
+    transitionName
+    fromState
+    toState
+    transitionConditions
+    requiredActions
+    transitionReason
+}
+
+entity VisitQueue <<Visit>> {
+    queueName
+    queueDescription
+    queuePriority
+    queueCapacity
+    processingOrder
+    waitingTime
+}
+
+entity QueueEntry <<Visit>> {
+    entryDatetime
+    queuePosition
+    priorityLevel
+    estimatedWaitTime
+    processingStatus
+}
+
+entity VisitAdmission <<Visit>> {
+    admissionDatetime
+    admissionType
+    admissionSource
+    admissionDiagnosis
+    bedAssignment
+    admissionStatus
+}
+
+entity VisitDischarge <<Visit>> {
+    dischargeDatetime
+    dischargeType
+    dischargeDestination
+    dischargeSummary
+    dischargeInstructions
+    followupPlan
+}
+
+entity VisitTransfer <<Visit>> {
+    transferDatetime
+    transferType
+    transferReason
+    sourceLocation
+    destinationLocation
+    transferStatus
+}
+
+' Visit Documentation and Communication
+entity VisitNote <<Visit>> {
+    noteType
+    noteContent
+    noteDatetime
+    noteCategory
+    confidentialityLevel
+}
+
+entity VisitCommunication <<Visit>> {
+    communicationType
+    communicationContent
+    communicationDatetime
+    communicationChannel
+    recipientType
+    urgencyLevel
+}
+
+entity VisitAlert <<Visit>> {
+    alertType
+    alertDescription
+    alertDatetime
+    alertSeverity
+    alertStatus
+    alertSource
+}
+
+' Visit Resources and Capacity Management
+entity VisitResource <<Visit>> {
+    resourceType
+    resourceName
+    resourceDescription
+    availabilitySchedule
+    utilizationRate
+    maintenanceSchedule
+}
+
+entity ResourceAllocation <<Visit>> {
+    allocationDatetime
+    allocatedDuration
+    allocationPurpose
+    allocationStatus
+    utilizationMetrics
+}
+
+entity VisitCapacity <<Visit>> {
+    capacityType
+    maximumCapacity
+    currentUtilization
+    reservedCapacity
+    availableCapacity
+    capacityPeriod
+}
+
+' Visit Quality and Performance
+entity VisitQualityMetric <<Visit>> {
+    metricName
+    metricDescription
+    metricValue
+    measurementDatetime
+    targetValue
+    performanceIndicator
+}
+
+entity VisitSatisfactionSurvey <<Visit>> {
+    surveyDatetime
+    satisfactionScore
+    feedbackComments
+    improvementSuggestions
+    surveyCategory
+}
+
+entity VisitPerformanceIndicator <<Visit>> {
+    indicatorName
+    indicatorDescription
+    measurementPeriod
+    targetThreshold
+    actualValue
+    performanceStatus
+}
+
+' Visit Configuration and Rules
+entity VisitAttributeDefinition <<Visit>> {
+    attributeName
+    attributeDescription
+    attributeDatatype
+    defaultValue
+    validationRules
+    applicableVisitTypes
+}
+
+entity VisitBusinessRule <<Visit>> {
+    ruleName
+    ruleDescription
+    ruleConditions
+    ruleActions
+    ruleValidityPeriod
+    rulePriority
+}
+
+entity VisitTemplate <<Visit>> {
+    templateName
+    templateDescription
+    templateStructure
+    defaultDuration
+    requiredResources
+    workflowSteps
+}
+
+' === RELATIONSHIPS ===
+
+' Core Visit Relationships
+Patient ||--o{ VisitEpisode : "has visit episodes"
+VisitEpisode }o--|| VisitClassification : "classified as"
+VisitEpisode }o--o| VisitIndication : "has indication"
+VisitEpisode }o--|| Location : "occurs at facility"
+VisitEpisode ||--o{ Encounter : "contains encounters"
+
+' Visit Scheduling and Appointment Relationships
+VisitEpisode }o--o| VisitAppointment : "scheduled via appointment"
+VisitAppointment }o--|| AppointmentSlot : "uses appointment slot"
+VisitAppointment }o--o| VisitReservation : "has reservation"
+AppointmentSlot }o--|| Location : "allocated to area"
+AppointmentSlot }o--|| Provider : "assigned to provider"
+VisitSchedulingRule ||--o{ AppointmentSlot : "governs slot creation"
+VisitReservation }o--|| Patient : "reserved for patient"
+
+' Visit Workflow and State Management Relationships
+VisitEpisode ||--o{ VisitWorkflowState : "progresses through states"
+VisitWorkflowState ||--o{ VisitWorkflowTransition : "allows transitions"
+VisitEpisode ||--o{ QueueEntry : "enters queues"
+QueueEntry }o--|| VisitQueue : "in queue"
+VisitQueue }o--|| Location : "serves area"
+VisitEpisode }o--o| VisitAdmission : "may have admission"
+VisitEpisode }o--o| VisitDischarge : "may have discharge"
+VisitEpisode ||--o{ VisitTransfer : "may have transfers"
+VisitTransfer }o--|| Location : "from area"
+VisitTransfer }o--|| Location : "to area"
+
+' Visit Documentation Relationships
+VisitEpisode ||--o{ VisitNote : "documented by notes"
+VisitEpisode ||--o{ VisitCommunication : "involves communications"
+VisitEpisode ||--o{ VisitAlert : "generates alerts"
+VisitNote }o--|| Provider : "authored by provider"
+VisitCommunication }o--|| Provider : "sent by provider"
+VisitAlert }o--|| Provider : "assigned to provider"
+
+' Visit Resource Management Relationships
+VisitEpisode ||--o{ ResourceAllocation : "allocates resources"
+ResourceAllocation }o--|| VisitResource : "uses resource"
+VisitResource }o--|| Location : "available in area"
+Location ||--|| VisitCapacity : "has capacity"
+ResourceAllocation }o--|| Provider : "managed by provider"
+
+' Visit Quality and Performance Relationships
+VisitEpisode ||--o{ VisitQualityMetric : "measured by metrics"
+VisitEpisode }o--o| VisitSatisfactionSurvey : "evaluated by survey"
+VisitClassification ||--o{ VisitPerformanceIndicator : "tracked by indicators"
+VisitSatisfactionSurvey }o--|| Patient : "completed by patient"
+
+' Visit Configuration Relationships
+VisitEpisode ||--o{ VisitAttributeDefinition : "extended by attributes"
+VisitClassification ||--o{ VisitBusinessRule : "governed by rules"
+VisitAppointment }o--|| VisitTemplate : "based on template"
+VisitTemplate }o--|| VisitClassification : "applies to classification"
+VisitBusinessRule }o--|| Concept : "references concepts"
+
+' Shared Entity Integration Relationships
+VisitEpisode }o--o{ Provider : "involves providers"
+Encounter }o--|| Provider : "provided by"
+ClinicalOrder }o--|| VisitEpisode : "ordered during visit"
+Observation }o--|| VisitEpisode : "recorded during visit"
+VisitIndication }o--|| Concept : "concept-based indication"
+VisitClassification }o--|| Concept : "concept-based classification"
+PatientProgram }o--o{ VisitEpisode : "includes visits"
+
+' === DOMAIN NOTES ===
+note right of VisitEpisode : A contiguous time period where\na patient receives healthcare\nservices at a facility
+note right of VisitClassification : Categorization of visits based on\ncare level, complexity, and\nresource requirements
+note right of VisitAppointment : Scheduled time slots for\npatient visits with specific\nproviders and services
+note right of VisitQueue : Patient waiting and processing\nqueues for efficient workflow\nmanagement
+note right of VisitAdmission : Formal admission process\nfor inpatient or extended\ncare episodes
+note right of VisitDischarge : Planned conclusion of visit\nwith care transitions and\nfollow-up planning
+note bottom of VisitResource : Healthcare resources including\nequipment, rooms, and staff\nrequired for visits
+note bottom of VisitQualityMetric : Measurement of visit quality,\nefficiency, and patient\nsatisfaction indicators
+note bottom of VisitWorkflowState : Defined states in visit\nprocessing workflow from\narrival to departure
+note left of AppointmentSlot : Available time periods for\nscheduling visits with\nspecific capacity constraints
+note left of VisitTemplate : Standardized visit patterns\nwith predefined duration,\nresources, and workflow
+note left of VisitBusinessRule : Configurable rules governing\nvisit scheduling, workflow,\nand resource allocation
+
+' Reference note
+note top : This model defines the Visit Management domain entities.\nShared entities (Patient, Provider, Location, Encounter, etc.)\nare referenced from patient-management-domain-model.puml.\nFocuses on core conceptual entities following FMC principles -\nimplementation details like flexible attribute mechanisms are excluded for conceptual clarity.\nVisit extends the base Visit entity from Patient Management with visit-specific behaviors.
+
+' Color Legend Table
+legend right
+|= Color |= Description |= Domain |
+|<back:LightGreen>   </back>| Patient entities | Patient Management |
+|<back:Orange>   </back>| Healthcare providers | Patient Management |
+|<back:LightYellow>   </back>| Clinical episodes | Patient Management |
+|<back:LightCyan>   </back>| Clinical concepts | Patient Management |
+|<back:LightGray>   </back>| Location & facilities | Patient Management |
+|<back:LightSalmon>   </back>| Programs & workflows | Patient Management |
+|<back:LightPink>   </back>| Clinical orders | Order Management |
+|<back:Wheat>   </back>| Visit Management | Visit Management |
+endlegend
+
+@enduml

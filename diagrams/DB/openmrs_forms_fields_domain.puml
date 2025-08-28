@@ -1,0 +1,43 @@
+@startuml OpenMRS_Forms_and_Fields_Domain
+!theme plain
+skinparam linetype ortho
+skinparam packageStyle rectangle
+title OpenMRS Forms & Fields Domain Model
+
+entity "field" {
+  concept_id : INT <<FK>>
+  description : TEXT
+  table_name : VARCHAR(50)
+  attribute_name : VARCHAR(50)
+  default_value : TEXT
+  field_type : INT
+  changed_by : INT
+}
+
+entity "field_answer" {
+}
+
+entity "field_type" {
+  name : VARCHAR(50)
+  description : TEXT
+}
+
+entity "form" {
+  description : TEXT
+  build : INT
+  xslt : TEXT
+}
+
+entity "form_field" {
+  field_number : INT
+  field_part : VARCHAR(5)
+}
+
+entity "form_resource" {
+  datatype : VARCHAR(255)
+  datatype_config : TEXT
+}
+
+' Relationships
+
+@enduml

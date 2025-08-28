@@ -1,0 +1,110 @@
+@startuml OpenMRS_Orders_and_Medications_Domain
+!theme plain
+skinparam linetype ortho
+skinparam packageStyle rectangle
+title OpenMRS Orders & Medications Domain Model
+
+entity "drug" {
+  name : VARCHAR(255)
+  dosage_form : INT
+  maximum_daily_dose : DOUBLE
+  ... (additional columns)
+}
+
+entity "drug_ingredient" {
+  strength : DOUBLE
+  units : INT
+}
+
+entity "drug_order" {
+  drug_inventory_id : INT <<FK>>
+  brand_name : VARCHAR(255)
+  drug_non_coded : VARCHAR(255)
+  dose : DOUBLE
+  as_needed : BOOLEAN
+  ... (additional columns)
+}
+
+entity "drug_reference_map" {
+  retired_by : INT
+  date_retired : datetime(0)
+}
+
+entity "medication_dispense" {
+  encounter_id : INT <<FK>>
+  drug_id : INT <<FK>>
+  location_id : INT <<FK>>
+  drug_order_id : INT <<FK>>
+  form_namespace_and_path : VARCHAR(255)
+  dispenser : INT
+  status_reason : INT
+  ... (additional columns)
+}
+
+entity "order_attribute" {
+  changed_by : INT
+  date_changed : datetime(0)
+}
+
+entity "order_attribute_type" {
+  description : VARCHAR(1024)
+  datatype : VARCHAR(255)
+  datatype_config : TEXT
+  ... (additional columns)
+}
+
+entity "order_frequency" {
+  frequency_per_day : DOUBLE
+  retired_by : INT
+}
+
+entity "order_group" {
+  order_set_id : INT <<FK>>
+  voided_by : INT
+  date_voided : datetime(0)
+}
+
+entity "order_group_attribute" {
+  changed_by : INT
+  date_changed : datetime(0)
+}
+
+entity "order_group_attribute_type" {
+  description : VARCHAR(1024)
+  datatype : VARCHAR(255)
+  datatype_config : TEXT
+  ... (additional columns)
+}
+
+entity "order_type" {
+  description : TEXT
+  retired_by : INT
+  date_retired : datetime(0)
+}
+
+entity "orders" {
+  previous_order_id : INT <<FK>>
+  order_group_id : INT <<FK>>
+  order_reason_non_coded : VARCHAR(255)
+  form_namespace_and_path : VARCHAR(255)
+  instructions : TEXT
+  date_activated : datetime(0)
+  ... (additional columns)
+}
+
+entity "referral_order" {
+  specimen_source : INT
+  laterality : VARCHAR(20)
+}
+
+entity "test_order" {
+  specimen_source : INT
+  laterality : VARCHAR(20)
+}
+
+' Relationships
+orders }o--|| order_group : order_group_id
+medication_dispense }o--|| drug : drug_id
+medication_dispense }o--|| drug_order : drug_order_id
+
+@enduml

@@ -1,0 +1,381 @@
+@startuml OpenMRS Core Architecture - Component Diagram
+
+!define OPENMRS_COLOR #2E8B57
+!define WEB_COLOR #4169E1
+!define SERVICE_COLOR #FF6347
+!define DATA_COLOR #9932CC
+!define THIRDPARTY_COLOR #808080
+!define SPRING_COLOR #6DB33F
+!define HIBERNATE_COLOR #59666C
+
+' Configure for 16:9 aspect ratio and better readability
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+skinparam defaultFontSize 11
+skinparam defaultFontName "Segoe UI"
+skinparam componentFontSize 10
+skinparam packageFontSize 12
+skinparam noteFontSize 9
+skinparam maxMessageSize 150
+skinparam wrapWidth 300
+skinparam componentBackgroundColor #F8F9FA
+skinparam packageBackgroundColor #E9ECEF
+skinparam noteBackgroundColor #FFF3CD
+skinparam noteBorderColor #FFEAA7
+skinparam arrowColor #6C757D
+skinparam dpi 200
+skinparam minClassWidth 140
+skinparam componentShadowing false
+skinparam packageShadowing false
+skinparam roundcorner 5
+skinparam nodesep 70
+skinparam ranksep 50
+skinparam componentPadding 10
+skinparam packagePadding 15
+skinparam notePadding 5
+
+title **OpenMRS Core Architecture - Layered Detailed Component Diagram**\n<size:11>(Sources: web/, api/, webapp/ modules - Code-based mapping)</size>
+
+' Optimize layout for 16:9 aspect ratio
+!define LAYOUT_AS_SKETCH
+skinparam direction top to bottom direction
+
+package "Presentation Layer" as PresentationLayer {
+    
+    package "Web Framework & Core Servlets" as WebCore {
+        component [Static Content] as StaticContent WEB_COLOR
+        component [DispatcherServlet\n<<OpenMRS Web>>] as DispatcherServlet WEB_COLOR
+        component [StaticDispatcherServlet\n<<OpenMRS Web>>] as StaticDispatcherServlet WEB_COLOR  
+        component [HandlerMapping\n<<Spring MVC>>] as HandlerMapping SPRING_COLOR
+        component [HandlerAdapter\n<<Spring MVC>>] as HandlerAdapter SPRING_COLOR
+        component [PseudoController\n<<OpenMRS Web>>] as PseudoController WEB_COLOR
+        component [ModuleServlet\n<<OpenMRS Modules>>] as ModuleServlet WEB_COLOR
+        component [ModuleResources\n<<OpenMRS Modules>>] as ModuleResourcesServlet WEB_COLOR
+        component [TestController\n<<OpenMRS Modules>>] as TestController WEB_COLOR
+    }
+    
+    package "Web Utilities & Security" as WebUtils {
+        component [WebModuleUtil\n<<OpenMRS Web>>] as WebModuleUtil WEB_COLOR
+        component [WebListener\n<<OpenMRS Web>>] as WebListener WEB_COLOR
+        component [OpenmrsJspServlet\n<<OpenMRS Web>>] as OpenmrsJspServlet WEB_COLOR
+        component [CsrfServlet\n<<OpenMRS Security>>] as CsrfServlet WEB_COLOR
+        component [CSRF Protection\n<<OpenMRS Security>>] as CSRFProtection WEB_COLOR
+        component [OpenmrsClassLoader\n<<OpenMRS Core>>] as OpenmrsClassLoader WEB_COLOR
+    }
+
+    package "Web Filters & Processing Pipeline" as WebFilters {
+        component [StartupFilter\n<<OpenMRS Startup>>] as StartupFilter WEB_COLOR
+        component [InitializationFilter\n<<OpenMRS Startup>>] as InitializationFilter WEB_COLOR
+        component [UpdateFilter\n<<OpenMRS Startup>>] as UpdateFilter WEB_COLOR
+        component [OpenmrsFilter\n<<OpenMRS Web>>] as OpenmrsFilter WEB_COLOR
+        component [JspClassLoaderFilter\n<<OpenMRS Web>>] as JspClassLoaderFilter WEB_COLOR
+        component [ModuleFilter\n<<OpenMRS Modules>>] as ModuleFilter WEB_COLOR
+        component [CharsetFilter\n<<OpenMRS Web>>] as CharsetFilter WEB_COLOR
+        component [HibernateFilter\n<<OpenMRS Data>>] as HibernateFilter WEB_COLOR
+        component [ModuleFilterChain\n<<OpenMRS Modules>>] as ModuleFilterChain WEB_COLOR
+        component [ModuleFilterMapping\n<<OpenMRS Modules>>] as ModuleFilterMapping WEB_COLOR
+        component [ModuleFilterConfig\n<<OpenMRS Modules>>] as ModuleFilterConfig WEB_COLOR
+    }
+}
+
+package "Middleware/Services Layer" as MiddlewareLayer {
+    
+    package "Context & Core Services" as CoreServicesContext {
+        component [Context\n<<OpenMRS API>>] as Context SERVICE_COLOR
+        component [ServiceContext\n<<OpenMRS API>>] as ServiceContext SERVICE_COLOR
+        component [UserContext\n<<OpenMRS API>>] as UserContext SERVICE_COLOR
+        
+        component [PatientService\n<<OpenMRS API>>] as PatientService SERVICE_COLOR
+        component [PersonService\n<<OpenMRS API>>] as PersonService SERVICE_COLOR
+        component [ConceptService\n<<OpenMRS API>>] as ConceptService SERVICE_COLOR
+        component [EncounterService\n<<OpenMRS API>>] as EncounterService SERVICE_COLOR
+        component [ObsService\n<<OpenMRS API>>] as ObsService SERVICE_COLOR
+        component [UserService\n<<OpenMRS API>>] as UserService SERVICE_COLOR
+        component [LocationService\n<<OpenMRS API>>] as LocationService SERVICE_COLOR
+        component [OrderService\n<<OpenMRS API>>] as OrderService SERVICE_COLOR
+        component [AdminService\n<<OpenMRS API>>] as AdminService SERVICE_COLOR
+    }
+    
+    package "Extended & Module Services" as ExtendedServices {
+        component [FormService\n<<OpenMRS API>>] as FormService SERVICE_COLOR
+        component [ProgramWorkflowService\n<<OpenMRS API>>] as ProgramWorkflowService SERVICE_COLOR
+        component [SchedulerService\n<<OpenMRS API>>] as SchedulerService SERVICE_COLOR
+        component [MessageSourceService\n<<OpenMRS API>>] as MessageSourceService SERVICE_COLOR
+        component [HL7Service\n<<OpenMRS API>>] as HL7Service SERVICE_COLOR
+        component [OrderSetService\n<<OpenMRS API>>] as OrderSetService SERVICE_COLOR
+        
+        component [ModuleFactory\n<<OpenMRS Modules>>] as ModuleFactory SERVICE_COLOR
+        component [ModuleUtil\n<<OpenMRS Modules>>] as ModuleUtil SERVICE_COLOR
+        component [TestModuleService\n<<OpenMRS Modules>>] as TestModuleService SERVICE_COLOR
+        
+        component [BaseOpenmrsService\n<<OpenMRS API>>] as BaseOpenmrsService SERVICE_COLOR
+        component [OpenmrsService\n<<OpenMRS API>>] as OpenmrsService SERVICE_COLOR
+    }
+}
+
+package "Database Layer" as DatabaseLayer {
+    
+    package "DAO Interfaces & Hibernate Implementations" as DAOLayer {
+        component [ContextDAO\n<<OpenMRS API>>] as ContextDAO DATA_COLOR
+        component [HibernateContext\n<<OpenMRS Data>>] as HibernateContextDAO DATA_COLOR
+        component [PatientDAO\n<<OpenMRS API>>] as PatientDAO DATA_COLOR
+        component [HibernatePatient\n<<OpenMRS Data>>] as HibernatePatientDAO DATA_COLOR
+        component [PersonDAO\n<<OpenMRS API>>] as PersonDAO DATA_COLOR
+        component [HibernatePerson\n<<OpenMRS Data>>] as HibernatePersonDAO DATA_COLOR
+        component [ConceptDAO\n<<OpenMRS API>>] as ConceptDAO DATA_COLOR
+        component [HibernateConcept\n<<OpenMRS Data>>] as HibernateConceptDAO DATA_COLOR
+        component [EncounterDAO\n<<OpenMRS API>>] as EncounterDAO DATA_COLOR
+        component [HibernateEncounter\n<<OpenMRS Data>>] as HibernateEncounterDAO DATA_COLOR
+        component [ObsDAO\n<<OpenMRS API>>] as ObsDAO DATA_COLOR
+        component [HibernateObs\n<<OpenMRS Data>>] as HibernateObsDAO DATA_COLOR
+        component [UserDAO\n<<OpenMRS API>>] as UserDAO DATA_COLOR
+        component [HibernateUser\n<<OpenMRS Data>>] as HibernateUserDAO DATA_COLOR
+        component [LocationDAO\n<<OpenMRS API>>] as LocationDAO DATA_COLOR
+        component [HibernateLocation\n<<OpenMRS Data>>] as HibernateLocationDAO DATA_COLOR
+        component [OrderDAO\n<<OpenMRS API>>] as OrderDAO DATA_COLOR
+        component [HibernateOrder\n<<OpenMRS Data>>] as HibernateOrderDAO DATA_COLOR
+        component [FormDAO\n<<OpenMRS API>>] as FormDAO DATA_COLOR
+        component [HibernateForm\n<<OpenMRS Data>>] as HibernateFormDAO DATA_COLOR
+        component [AdministrationDAO\n<<OpenMRS API>>] as AdminDAO DATA_COLOR
+        component [HibernateAdministration\n<<OpenMRS Data>>] as HibernateAdminDAO DATA_COLOR
+        component [SchedulerDAO\n<<OpenMRS API>>] as SchedulerDAO DATA_COLOR
+        component [HibernateScheduler\n<<OpenMRS Data>>] as HibernateSchedulerDAO DATA_COLOR
+        component [ProgramWorkflowDAO\n<<OpenMRS API>>] as ProgramWorkflowDAO DATA_COLOR
+        component [HibernateProgramWorkflow\n<<OpenMRS Data>>] as HibernateProgramWorkflowDAO DATA_COLOR
+        component [HL7DAO\n<<OpenMRS API>>] as HL7DAO DATA_COLOR
+        component [HibernateHL7\n<<OpenMRS Data>>] as HibernateHL7DAO DATA_COLOR
+        component [OrderSetDAO\n<<OpenMRS API>>] as OrderSetDAO DATA_COLOR
+        component [HibernateOrderSet\n<<OpenMRS Data>>] as HibernateOrderSetDAO DATA_COLOR
+    }
+    
+    package "DB Infrastructure" as DBInfra {
+        component [SessionFactory\n<<Hibernate ORM>>] as SessionFactory HIBERNATE_COLOR
+        component [SessionFactoryBean\n<<Spring ORM>>] as HibernateSessionFactoryBean SPRING_COLOR
+        component [SearchSessionFactory\n<<Hibernate Search>>] as SearchSessionFactory HIBERNATE_COLOR
+        
+        package "Database Instances" {
+            database "Primary Database" as PrimaryDB DATA_COLOR
+            note right of PrimaryDB : Configurable: MySQL, MariaDB, PostgreSQL, H2\nhibernate.connection.url\nSingle SessionFactory instance\n(hibernate.default.properties, startup-init.sh)
+            
+            package "Search Backends" {
+                database "Lucene Index" as LuceneDB DATA_COLOR
+                database "Elasticsearch" as ElasticsearchDB DATA_COLOR
+                note right of LuceneDB : Local filesystem indexes\nhibernate.search.backend.directory.root\n%APPLICATION_DATA_DIRECTORY%/lucene/indexes\n(hibernate.default.properties)
+                note right of ElasticsearchDB : External search cluster\nhibernate.search.backend.uris=http://es:9200\nhibernate.search.backend.type=elasticsearch\n(docker-compose.es.yml)
+            }
+            
+            package "Connection Management" {
+                component [C3P0Pool\n<<C3P0 Library>>] as C3P0 THIRDPARTY_COLOR
+            }
+            
+            database "Test DB" as TestDB DATA_COLOR  
+            note right of TestDB : H2 in-memory for tests\njdbc:h2:@APPLICATIONDATADIR@/database/openmrs\n(installation.h2.properties, BaseContextSensitiveTest.java)
+        }
+    }
+}
+
+' Key relationships - simplified for readability
+DispatcherServlet --> HandlerMapping
+DispatcherServlet --> HandlerAdapter
+HandlerMapping --> PseudoController
+ModuleServlet --> ModuleResourcesServlet
+WebModuleUtil --> ModuleServlet
+WebListener --> Context
+
+' Web Filter Chain (from web.xml order)
+StartupFilter --> InitializationFilter : "<<filter chain>>\nstartup sequence"
+InitializationFilter --> UpdateFilter : "<<filter chain>>\nweb.xml order"
+UpdateFilter --> OpenmrsFilter : "<<filter chain>>\ncore request processing"
+OpenmrsFilter --> JspClassLoaderFilter : "<<filter chain>>\nJSP support"
+JspClassLoaderFilter --> ModuleFilter : "<<filter chain>>\nmodule filters"
+ModuleFilter --> ModuleFilterChain : "<<runtime>>\nmodule filter processing\n(ModuleFilter.java)"
+
+' Module Filter System
+ModuleFilterChain --> ModuleFilterMapping : "<<runtime>>\nURL/servlet matching\n(WebModuleUtil.java)"
+ModuleFilterChain --> ModuleFilterConfig : "<<runtime>>\nfilter configuration"
+
+' Additional Servlet Relationships
+OpenmrsJspServlet --> OpenmrsClassLoader : "<<runtime>>\nTLD processing\n(OpenmrsJspServlet.java)"
+CsrfServlet --> CSRFProtection : "<<security>>\nJavaScriptServlet"
+
+Context --> ServiceContext
+ServiceContext --> PatientService
+ServiceContext --> ConceptService
+ServiceContext --> UserService
+ServiceContext --> OrderService
+
+' === Runtime Dependencies (Spring Configuration) ===
+' All services are wired as transactionProxyFactoryBean with DAO injection
+
+' AdminService Dependencies
+AdminService -down-> AdminDAO : "<<runtime>>\nsetAdministrationDAO()\n(applicationContext-service.xml)"
+AdminDAO <|-- HibernateAdminDAO : "<<Spring alias>>\nadministrationDAO bean"
+HibernateAdminDAO --> SessionFactory : "<<compile>>\nsessionFactory field\n(HibernateAdministrationDAO.java)"
+
+' SchedulerService Dependencies
+SchedulerService -down-> SchedulerDAO : "<<runtime>>\nsetSchedulerDAO()\n(applicationContext-service.xml)"
+SchedulerDAO <|-- HibernateSchedulerDAO : "<<Spring alias>>\nschedulerDAO bean"
+HibernateSchedulerDAO --> SessionFactory : "<<compile>>\nsessionFactory field"
+
+' LocationService Dependencies  
+LocationService -down-> LocationDAO : "<<runtime>>\nsetLocationDAO()\n(applicationContext-service.xml)"
+LocationDAO <|-- HibernateLocationDAO : "<<Spring alias>>\nlocationDAO bean"
+HibernateLocationDAO --> SessionFactory : "<<compile>>\nsessionFactory field\n(HibernateLocationDAO.java)"
+LocationService --> Context : "<<compile>>\nContext.getAdministrationService()\n(LocationServiceImpl.java)"
+
+' Missing Core Service Dependencies
+PersonService --> PersonDAO : "<<runtime>>\nsetPersonDAO()\n(applicationContext-service.xml)"
+PersonDAO <|-- HibernatePersonDAO : "<<Spring binding>>\npersonDAO bean"
+HibernatePersonDAO --> SessionFactory : "<<compile>>\nsessionFactory field"
+
+ConceptService --> ConceptDAO : "<<runtime>>\nsetConceptDAO()\n(applicationContext-service.xml)"
+ConceptDAO <|-- HibernateConceptDAO : "<<Spring binding>>\nconceptDAO bean"
+HibernateConceptDAO --> SessionFactory : "<<compile>>\nsessionFactory field"
+
+EncounterService --> EncounterDAO : "<<runtime>>\nsetEncounterDAO()\n(applicationContext-service.xml)"
+EncounterDAO <|-- HibernateEncounterDAO : "<<Spring binding>>\nencounterDAO bean"
+HibernateEncounterDAO --> SessionFactory : "<<compile>>\nsessionFactory field"
+
+ObsService --> ObsDAO : "<<runtime>>\nsetObsDAO()\n(applicationContext-service.xml)"
+ObsDAO <|-- HibernateObsDAO : "<<Spring binding>>\nobsDAO bean"
+HibernateObsDAO --> SessionFactory : "<<compile>>\nsessionFactory field"
+
+FormService --> FormDAO : "<<runtime>>\nsetFormDAO()\n(applicationContext-service.xml)"
+FormDAO <|-- HibernateFormDAO : "<<Spring binding>>\nformDAO bean"
+HibernateFormDAO --> SessionFactory : "<<compile>>\nsessionFactory field"
+
+' Extended Service Dependencies
+ProgramWorkflowService --> ProgramWorkflowDAO : "<<runtime>>\nsetProgramWorkflowDAO()\n(applicationContext-service.xml)"
+ProgramWorkflowDAO <|-- HibernateProgramWorkflowDAO : "<<Spring binding>>\nprogramWorkflowDAO bean"
+HibernateProgramWorkflowDAO --> SessionFactory : "<<compile>>\nsessionFactory field"
+
+HL7Service --> HL7DAO : "<<runtime>>\nsetHL7DAO()\n(applicationContext-service.xml)"
+HL7DAO <|-- HibernateHL7DAO : "<<Spring binding>>\nhl7DAO bean"
+HibernateHL7DAO --> SessionFactory : "<<compile>>\nsessionFactory field"
+
+OrderSetService --> OrderSetDAO : "<<runtime>>\nsetOrderSetDAO()\n(applicationContext-service.xml)"
+OrderSetDAO <|-- HibernateOrderSetDAO : "<<Spring binding>>\norderSetDAO bean"
+HibernateOrderSetDAO --> SessionFactory : "<<compile>>\nsessionFactory field"
+
+' Service Inheritance - All services extend BaseOpenmrsService
+PatientService --|> BaseOpenmrsService : "<<extends>>\n(PatientServiceImpl.java)"
+PersonService --|> BaseOpenmrsService : "<<extends>>\n(PersonServiceImpl.java)"
+ConceptService --|> BaseOpenmrsService : "<<extends>>\n(ConceptServiceImpl.java)"
+EncounterService --|> BaseOpenmrsService : "<<extends>>\n(EncounterServiceImpl.java)"
+ObsService --|> BaseOpenmrsService : "<<extends>>\n(ObsServiceImpl.java)"
+LocationService --|> BaseOpenmrsService : "<<extends>>\n(LocationServiceImpl.java)"
+OrderService --|> BaseOpenmrsService : "<<extends>>\n(OrderServiceImpl.java)"
+AdminService --|> BaseOpenmrsService : "<<extends>>\n(AdministrationServiceImpl.java)"
+FormService --|> BaseOpenmrsService : "<<extends>>\n(FormServiceImpl.java)"
+ProgramWorkflowService --|> BaseOpenmrsService : "<<extends>>\n(ProgramWorkflowServiceImpl.java)"
+SchedulerService --|> BaseOpenmrsService : "<<extends>>\n(TimerSchedulerServiceImpl.java)"
+HL7Service --|> BaseOpenmrsService : "<<extends>>\n(HL7ServiceImpl.java)"
+OrderSetService --|> BaseOpenmrsService : "<<extends>>\n(OrderSetServiceImpl.java)"
+
+BaseOpenmrsService ..|> OpenmrsService : "<<implements>>\n(BaseOpenmrsService.java)"
+
+' Module System Dependencies
+ModuleFactory --> ModuleUtil : "<<compile+runtime>>\nStatic utility calls\n(ModuleFactory.java)"
+ModuleFactory --> [ModuleClassLoader] : "<<compile>>\nModule loading"
+component [ModuleClassLoader] as ModuleClassLoader SERVICE_COLOR
+
+' Other Service Dependencies (existing pattern)
+PatientService --> PatientDAO : "<<runtime>>\nsetPatientDAO()"
+ConceptService --> ConceptDAO : "<<runtime>>\nsetConceptDAO()"
+UserService --> UserDAO : "<<runtime>>\nsetUserDAO()"
+OrderService --> OrderDAO : "<<runtime>>\nsetOrderDAO()"
+Context --> ContextDAO : "<<runtime>>\nDAO access"
+
+' DAO Implementation Bindings
+ContextDAO <|-- HibernateContextDAO : "<<Spring binding>>"
+PatientDAO <|-- HibernatePatientDAO : "<<Spring binding>>"
+UserDAO <|-- HibernateUserDAO : "<<Spring binding>>"
+OrderDAO <|-- HibernateOrderDAO : "<<Spring binding>>"
+
+' Hibernate SessionFactory Dependencies
+HibernateContextDAO --> SessionFactory
+HibernatePatientDAO --> SessionFactory
+HibernateAdminDAO --> SessionFactory
+HibernateSchedulerDAO --> SessionFactory
+HibernateLocationDAO --> SessionFactory
+HibernatePersonDAO --> SessionFactory
+HibernateConceptDAO --> SessionFactory
+HibernateEncounterDAO --> SessionFactory
+HibernateObsDAO --> SessionFactory
+HibernateFormDAO --> SessionFactory
+HibernateProgramWorkflowDAO --> SessionFactory
+HibernateHL7DAO --> SessionFactory
+HibernateOrderSetDAO --> SessionFactory
+
+' Cross-layer flow
+DispatcherServlet ..> Context : "service access"
+TestController ..> TestModuleService : "business logic"
+PatientService ..> PatientDAO : "data access"
+
+' Database Infrastructure Dependencies
+SessionFactory --> PrimaryDB : "<<runtime>>\nhibernate.connection.url\n(HibernateSessionFactoryBean.java, DatabaseUpdater.java)"
+SessionFactory --> C3P0 : "<<runtime>>\nConnection pooling\n(hibernate.default.properties)"
+C3P0 --> PrimaryDB : "<<physical>>\nConnection pool"
+
+SearchSessionFactory --> LuceneDB : "<<runtime>>\nlocal backend\nhibernate.search.backend.type=lucene\n(LuceneConfig.java)"
+SearchSessionFactory --> ElasticsearchDB : "<<runtime>>\nremote backend\nhibernate.search.backend.type=elasticsearch\n(ElasticsearchConfig.java)"
+
+HibernatePatientDAO --> SearchSessionFactory : "<<compile>>\nsearchSessionFactory field\n(HibernatePatientDAO.java)"
+HibernatePersonDAO --> SearchSessionFactory : "<<compile>>\nsearchSessionFactory field"
+HibernateConceptDAO --> SearchSessionFactory : "<<compile>>\nsearchSessionFactory field"
+
+' Test Environment Database Configuration
+TestDB .left.> SessionFactory : "<<test runtime>>\nBaseContextSensitiveTest\nH2 in-memory database"
+
+' Hibernate Infrastructure 
+HibernateSessionFactoryBean --> SessionFactory : "<<creates>>\nLocalSessionFactoryBean\n(applicationContext-service.xml)"
+HibernateSessionFactoryBean --> PrimaryDB : "<<configures>>\nDatabase connection setup"
+
+' Transaction Management (all services are proxied)
+component [TransactionManager\n<<Spring AOP>>] as TransactionManager SPRING_COLOR
+TransactionManager --> SessionFactory : "<<runtime>>\nHibernateTransactionManager\n(applicationContext-service.xml)"
+AdminService --> TransactionManager : "<<runtime>>\nAOP proxy\n(applicationContext-service.xml)"
+SchedulerService --> TransactionManager : "<<runtime>>\nAOP proxy"
+LocationService --> TransactionManager : "<<runtime>>\nAOP proxy"
+PersonService --> TransactionManager : "<<runtime>>\nAOP proxy"
+ConceptService --> TransactionManager : "<<runtime>>\nAOP proxy"
+EncounterService --> TransactionManager : "<<runtime>>\nAOP proxy"
+ObsService --> TransactionManager : "<<runtime>>\nAOP proxy"
+FormService --> TransactionManager : "<<runtime>>\nAOP proxy"
+ProgramWorkflowService --> TransactionManager : "<<runtime>>\nAOP proxy"
+HL7Service --> TransactionManager : "<<runtime>>\nAOP proxy"
+OrderSetService --> TransactionManager : "<<runtime>>\nAOP proxy"
+
+legend right
+  <size:11>**Layer & Component Colors**</size>
+  |<back:#4169E1>   </back>| Web/Presentation | Servlets, Filters, Controllers |
+  |<back:#FF6347>   </back>| Service/Business | Context, Services, Modules |
+  |<back:#9932CC>   </back>| Data/Persistence | DAOs, Hibernate, Databases |
+  
+  <size:11>**Component Types (via <<stereotype>>)**</size>
+  |<back:#2E8B57>   </back>| OpenMRS | <<OpenMRS API>>, <<OpenMRS Web>>, <<OpenMRS Data>> |
+  |<back:#6DB33F>   </back>| Spring | <<Spring MVC>>, <<Spring AOP>>, <<Spring ORM>> |
+  |<back:#59666C>   </back>| Hibernate | <<Hibernate ORM>>, <<Hibernate Search>> |
+  |<back:#808080>   </back>| Third-party | <<C3P0 Library>>, etc. |
+  
+  <size:10>**OpenMRS Module Stereotypes:**</size>
+  • <<OpenMRS API>> = Core business services and interfaces
+  • <<OpenMRS Web>> = Web tier components and filters
+  • <<OpenMRS Data>> = Data access layer implementations
+  • <<OpenMRS Modules>> = Module system components
+  • <<OpenMRS Security>> = Security and authentication
+  • <<OpenMRS Startup>> = Application initialization
+  
+  <size:10>**Request Flow:**</size>
+  HTTP → Filters → DispatcherServlet → Controller → Service → DAO → DB
+  
+  <size:10>**Relationship Types:**</size>
+  • <<runtime>> = Spring injection • <<creates>> = Factory pattern
+  • <<configures>> = Configuration • <<physical>> = DB connection
+end legend
+
+note bottom : <size:10>**Key Source Files:**</size>\n• web/src/main/java/org/openmrs/web/DispatcherServlet.java\n• api/src/main/java/org/openmrs/api/context/Context.java\n• api/src/main/java/org/openmrs/api/db/hibernate/ (DAO implementations)\n• api/src/main/resources/applicationContext-service.xml (Service configuration)\n• api/src/main/java/org/openmrs/module/ModuleFactory.java\n• api/src/main/resources/hibernate.default.properties (Database defaults)\n• api/src/main/resources/installation.h2.properties (Test DB config)\n• api/src/main/resources/c3p0-config.xml (Connection pool)\n• startup-init.sh (Runtime database configuration)\n• docker-compose.yml, docker-compose.es.yml (Container databases)\n• All services are Spring transactionProxyFactoryBean with explicit DAO injection
+
+@enduml

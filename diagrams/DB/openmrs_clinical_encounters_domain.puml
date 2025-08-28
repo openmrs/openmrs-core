@@ -1,0 +1,81 @@
+@startuml OpenMRS_Clinical_Encounters_and_Observations_Domain
+!theme plain
+skinparam linetype ortho
+skinparam packageStyle rectangle
+title OpenMRS Clinical Encounters & Observations Domain Model
+
+entity "diagnosis_attribute" {
+  changed_by : INT
+  date_changed : datetime(0)
+}
+
+entity "diagnosis_attribute_type" {
+  description : VARCHAR(1024)
+  datatype : VARCHAR(255)
+  datatype_config : TEXT
+  ... (additional columns)
+}
+
+entity "encounter" {
+  location_id : INT <<FK>>
+  form_id : INT <<FK>>
+  visit_id : INT <<FK>>
+  voided_by : INT
+  date_voided : datetime(0)
+}
+
+entity "encounter_diagnosis" {
+  condition_id : INT <<FK>>
+  diagnosis_coded : INT
+  diagnosis_non_coded : VARCHAR(255)
+  diagnosis_coded_name : INT
+  form_namespace_and_path : VARCHAR(255)
+  changed_by : INT
+  date_changed : datetime(0)
+}
+
+entity "encounter_provider" {
+  changed_by : INT
+  date_changed : datetime(0)
+}
+
+entity "encounter_role" {
+  description : VARCHAR(1024)
+  changed_by : INT
+  date_changed : datetime(0)
+}
+
+entity "encounter_type" {
+  description : TEXT
+  retired_by : INT
+  date_retired : datetime(0)
+}
+
+entity "obs" {
+  encounter_id : INT <<FK>>
+  order_id : INT <<FK>>
+  location_id : INT <<FK>>
+  obs_group_id : INT <<FK>>
+  value_group_id : INT <<FK>>
+  value_coded_name_id : INT <<FK>>
+  value_coded : INT
+  value_drug : INT
+  value_datetime : datetime(0)
+  value_numeric : DOUBLE
+  value_modifier : VARCHAR(2)
+  value_text : TEXT
+  value_complex : VARCHAR(1000)
+  form_namespace_and_path : VARCHAR(255)
+  accession_number : VARCHAR(255)
+  comments : VARCHAR(255)
+  ... (additional columns)
+}
+
+entity "obs_reference_range" {
+  hi_absolute : DOUBLE
+  hi_critical : DOUBLE
+}
+
+obs }o--|| encounter : encounter_id
+
+@enduml

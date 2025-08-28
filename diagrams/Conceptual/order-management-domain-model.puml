@@ -1,0 +1,387 @@
+@startuml Order Management System - Domain Model
+!theme cerulean-outline
+title Order Management System - Domain Model\n(OpenMRS Core - Order Management Domain)
+
+' This model defines the conceptual domain entities for Order Management
+' References shared entities from: patient-management-domain-model.puml and clinical-data-management-domain-model.puml
+' Focuses on conceptual entities without database-specific implementation details
+
+' Define entity colors and styles - consistent with other domain models
+' Color Legend - aligned with DOMAIN_COLOR_STANDARDS.md:
+' - LightGreen (Patient): Patient-specific entities (from Patient Management)
+' - Orange (Provider): Healthcare provider entities (from Patient Management)
+' - LightGray (Location): Location and facility entities (from Patient Management)
+' - LightYellow (Clinical): Clinical care episode entities (from Patient Management)
+' - LightCyan (Concept): Clinical vocabulary and concept entities (from Patient Management)
+' - LightPink (Order): Clinical order and request entities (Order Management Domain)
+' - LightSalmon (Pharmaceutical): Medication and pharmaceutical entities (Order Management Domain)
+' - Wheat (Service): Service and test order entities (Order Management Domain)
+' - Plum (OrderManagement): Order workflow and management entities (Order Management Domain)
+
+skinparam class {
+    ' Shared entities from other domain models
+    BackgroundColor<<Patient>> LightGreen
+    BackgroundColor<<Provider>> Orange
+    BackgroundColor<<Location>> LightGray
+    BackgroundColor<<Clinical>> LightYellow
+    BackgroundColor<<Concept>> LightCyan
+    
+    ' Order Management specific entities - aligned with standards
+    BackgroundColor<<Order>> LightPink
+    BackgroundColor<<Pharmaceutical>> LightSalmon
+    BackgroundColor<<Service>> Wheat
+    BackgroundColor<<OrderManagement>> Plum
+    
+    ' Border colors for better distinction
+    BorderColor<<Patient>> DarkGreen
+    BorderColor<<Provider>> DarkOrange
+    BorderColor<<Location>> DarkGray
+    BorderColor<<Clinical>> DarkOrange
+    BorderColor<<Concept>> DarkCyan
+    BorderColor<<Order>> DeepPink
+    BorderColor<<Pharmaceutical>> DarkRed
+    BorderColor<<Service>> DarkGoldenRod
+    BorderColor<<OrderManagement>> DarkMagenta
+}
+
+' === SHARED ENTITIES (referenced from patient-management-domain-model.puml) ===
+entity Patient <<Patient>> {
+    patientIdentifiers
+    (from Patient Management)
+}
+
+entity Encounter <<Clinical>> {
+    encounterDatetime
+    encounterType
+    (from Patient Management)
+}
+
+entity Provider <<Provider>> {
+    identifier
+    name
+    (from Patient Management)
+}
+
+entity Location <<Location>> {
+    name
+    description
+    (from Patient Management)
+}
+
+entity Concept <<Concept>> {
+    name
+    description
+    conceptClass
+    datatype
+    (from Patient Management)
+}
+
+' === ORDER MANAGEMENT CORE ENTITIES ===
+
+' Core Order Entity
+entity ClinicalOrder <<Order>> {
+    orderNumber
+    dateActivated
+    autoExpireDate
+    dateStopped
+    urgency
+    instructions
+    accessionNumber
+    orderReason
+    commentToFulfiller
+    scheduledDate
+    fulfillerStatus
+}
+
+' Order Action Workflow
+entity OrderAction <<OrderManagement>> {
+    actionType
+    actionDate
+    actionReason
+}
+
+entity OrderUrgency <<OrderManagement>> {
+    urgencyLevel
+    name
+    description
+}
+
+entity FulfillerStatus <<OrderManagement>> {
+    statusCode
+    name
+    description
+}
+
+' Order Classification
+entity OrderType <<OrderManagement>> {
+    name
+    description
+    javaClassName
+}
+
+entity CareSetting <<OrderManagement>> {
+    name
+    description
+    careSettingType
+}
+
+entity CareSettingType <<OrderManagement>> {
+    typeName
+    description
+}
+
+' Order Grouping
+entity OrderGroup <<OrderManagement>> {
+    orderGroupReason
+}
+
+entity OrderSet <<OrderManagement>> {
+    name
+    description
+    indication
+}
+
+' === MEDICATION ORDER ENTITIES ===
+
+' Medication Order
+entity MedicationOrder <<Order>> {
+    dose
+    asNeeded
+    asNeededCondition
+    quantity
+    numRefills
+    duration
+    brandName
+    dispenseAsWritten
+    dosingInstructions
+}
+
+entity DosingInstructions <<Pharmaceutical>> {
+    instructions
+    administrationInstructions
+}
+
+' Order Frequency
+entity OrderFrequency <<Pharmaceutical>> {
+    frequencyPerDay
+    name
+    description
+}
+
+' Medication Entity
+entity Medication <<Pharmaceutical>> {
+    name
+    strength
+    combination
+    maximumDailyDose
+    minimumDailyDose
+}
+
+entity MedicationIngredient <<Pharmaceutical>> {
+    name
+    strength
+}
+
+entity DosageForm <<Pharmaceutical>> {
+    name
+    description
+}
+
+' Medication Dispensing
+entity MedicationDispense <<Order>> {
+    quantityDispensed
+    whenPrepared
+    whenHandedOver
+    status
+    substitutionMade
+    substitutionReason
+}
+
+' === SERVICE ORDER ENTITIES ===
+
+' Test Order
+entity TestOrder <<Service>> {
+    clinicalHistory
+    specimenSource
+    laterality
+    numberOfRepeats
+}
+
+entity Laterality <<Service>> {
+    side
+    description
+}
+
+entity SpecimenSource <<Service>> {
+    name
+    description
+}
+
+' Referral Order
+entity ReferralOrder <<Service>> {
+    referralReason
+    specialtyArea
+    urgencyLevel
+}
+
+entity SpecialtyArea <<Service>> {
+    name
+    description
+}
+
+' Generic Service Order
+entity ServiceOrder <<Service>> {
+    clinicalHistory
+    frequency
+    numberOfRepeats
+    location
+}
+
+' === ORDER MANAGEMENT WORKFLOW ENTITIES ===
+
+' Order Fulfillment
+entity OrderFulfillment <<OrderManagement>> {
+    fulfillmentDate
+    fulfillmentStatus
+    fulfillmentNotes
+}
+
+entity OrderResult <<OrderManagement>> {
+    resultDate
+    resultValue
+    resultStatus
+    resultNotes
+}
+
+' Order Revision and History
+entity OrderRevision <<OrderManagement>> {
+    revisionDate
+    revisionReason
+    revisionType
+}
+
+entity PreviousOrder <<OrderManagement>> {
+    orderReference
+    relationshipType
+}
+
+' === RELATIONSHIPS ===
+
+' Core Order Relationships
+Patient ||--o{ ClinicalOrder : "places orders"
+Encounter ||--o{ ClinicalOrder : "contains orders"
+ClinicalOrder }o--|| Provider : "ordered by"
+ClinicalOrder }o--|| OrderType : "of type"
+ClinicalOrder }o--|| CareSetting : "in care setting"
+ClinicalOrder }o--|| Concept : "orders concept"
+ClinicalOrder }o--o| Concept : "for reason"
+ClinicalOrder }o--o| OrderGroup : "member of group"
+ClinicalOrder }o--|| OrderUrgency : "has urgency"
+ClinicalOrder }o--o| FulfillerStatus : "fulfiller status"
+ClinicalOrder }o--o| Location : "performed at"
+
+' Order Action and Workflow
+ClinicalOrder ||--o{ OrderAction : "has actions"
+OrderAction }o--|| Provider : "performed by"
+
+' Order Type Hierarchy and Care Settings
+OrderType }o--o| OrderType : "parent type"
+CareSetting }o--|| CareSettingType : "of type"
+
+' Order Grouping
+OrderGroup }o--|| Patient : "for patient"
+OrderGroup }o--|| Encounter : "in encounter"
+OrderGroup }o--o| OrderSet : "based on order set"
+OrderGroup }o--o| Concept : "for reason"
+OrderGroup }o--o| OrderGroup : "parent group"
+OrderGroup }o--o| OrderGroup : "previous group"
+
+' Medication Orders (extending ClinicalOrder)
+MedicationOrder ||--|| ClinicalOrder : "extends"
+MedicationOrder }o--|| Medication : "prescribes medication"
+MedicationOrder }o--o| OrderFrequency : "with frequency"
+MedicationOrder }o--o| DosingInstructions : "has dosing"
+MedicationOrder }o--o| Concept : "dose units"
+MedicationOrder }o--o| Concept : "quantity units"
+MedicationOrder }o--o| Concept : "duration units"
+MedicationOrder }o--o| Concept : "route"
+
+' Medication Details
+Medication ||--o{ MedicationIngredient : "contains ingredients"
+Medication }o--|| Concept : "represents concept"
+Medication }o--o| DosageForm : "has dosage form"
+Medication }o--o| Concept : "dose limit units"
+OrderFrequency }o--|| Concept : "frequency concept"
+
+' Medication Dispensing
+MedicationOrder ||--o{ MedicationDispense : "dispensed as"
+MedicationDispense }o--|| Patient : "dispensed to"
+MedicationDispense }o--|| Provider : "dispensed by"
+MedicationDispense }o--|| Location : "dispensed at"
+
+' Service Orders (extending ClinicalOrder)
+ServiceOrder ||--|| ClinicalOrder : "extends"
+ServiceOrder }o--o| OrderFrequency : "with frequency"
+ServiceOrder }o--o| Concept : "service location"
+
+' Test Orders (extending ServiceOrder)
+TestOrder ||--|| ServiceOrder : "extends"
+TestOrder }o--o| Laterality : "has laterality"
+TestOrder }o--o| SpecimenSource : "specimen source"
+
+' Referral Orders (extending ServiceOrder)
+ReferralOrder ||--|| ServiceOrder : "extends"
+ReferralOrder }o--o| SpecialtyArea : "to specialty"
+
+' Order Fulfillment and Results
+ClinicalOrder ||--o{ OrderFulfillment : "fulfilled as"
+OrderFulfillment }o--|| Provider : "fulfilled by"
+OrderFulfillment }o--|| Location : "fulfilled at"
+ClinicalOrder ||--o{ OrderResult : "produces results"
+OrderResult }o--|| Provider : "reported by"
+
+' Order Revision and History
+ClinicalOrder ||--o{ OrderRevision : "has revisions"
+OrderRevision }o--|| Provider : "revised by"
+ClinicalOrder }o--o| PreviousOrder : "revises/discontinues"
+
+' Enhanced Concept Relationships
+DosageForm }o--|| Concept : "represents concept"
+SpecimenSource }o--|| Concept : "represents concept"
+Laterality }o--|| Concept : "represents concept"
+SpecialtyArea }o--|| Concept : "represents concept"
+
+' === DOMAIN NOTES ===
+note right of ClinicalOrder : Core order entity representing\nclinical requests for medications,\ntests, procedures, or services
+note right of MedicationOrder : Prescription orders with detailed\ndosing, frequency, and\nadministration instructions
+note right of TestOrder : Laboratory and diagnostic\ntest orders with specimen\nand clinical context
+note right of ReferralOrder : Referral requests to specialists\nor other care providers
+note right of OrderGroup : Groups related orders that\nare ordered together for\na specific treatment protocol
+note right of OrderFrequency : Standardized frequency patterns\nfor medication administration\nand service delivery
+note right of CareSetting : Scope of care context\n(Inpatient, Outpatient, Emergency)\nfor order management
+note right of DosingInstructions : Complex dosing patterns and\nadministration instructions\nfor medications
+note right of Medication : Pharmaceutical products with\ningredients, strength, and\ndosage form information
+note right of MedicationDispense : Record of medication supply\nprovided to patient following\na prescription order
+note bottom of OrderType : Classification of different\norder types (Drug, Test,\nReferral, etc.)
+note bottom of OrderAction : Workflow actions on orders\n(New, Revise, Discontinue, Renew)
+note bottom of FulfillerStatus : Status of order fulfillment\n(Received, In Progress,\nCompleted, Exception)
+note left of OrderSet : Predefined groups of orders\nfor common treatment protocols\nand clinical guidelines
+
+' Reference note
+note top : This model defines the Order Management domain entities.\nShared entities (Patient, Encounter, Provider, Location, Concept)\nare referenced from patient-management-domain-model.puml
+
+' Color Legend Table
+legend right
+|= Color |= Description |= Domain |
+|<back:LightGreen>   </back>| Patient entities | Patient Management |
+|<back:Orange>   </back>| Healthcare providers | Patient Management |
+|<back:LightGray>   </back>| Locations | Patient Management |
+|<back:LightYellow>   </back>| Clinical episodes | Patient Management |
+|<back:LightCyan>   </back>| Clinical concepts | Patient Management |
+|<back:LightPink>   </back>| Clinical orders | Order Management |
+|<back:LightSalmon>   </back>| Pharmaceutical entities | Order Management |
+|<back:Wheat>   </back>| Service & test orders | Order Management |
+|<back:Plum>   </back>| Order workflow & management | Order Management |
+endlegend
+
+@enduml

@@ -1,0 +1,131 @@
+@startuml OpenMRS State Machines
+!theme plain
+skinparam backgroundColor white
+skinparam state {
+  BackgroundColor lightblue
+  BorderColor navy
+  ArrowColor navy
+}
+
+title OpenMRS Core - State Transition Diagrams for Key Entities
+
+state "Program Workflow State Machine" as PWF {
+  state "Initial State" as PWF_Initial : Any state marked as initial=true
+  state "Intermediate State" as PWF_Intermediate : Regular workflow state
+  state "Terminal State" as PWF_Terminal : Any state marked as terminal=true
+  
+  [*] --> PWF_Initial : Patient enters program
+  PWF_Initial --> PWF_Intermediate : Legal transition\n(via ProgramWorkflow.isLegalTransition())
+  PWF_Intermediate --> PWF_Intermediate : State change\n(same state not allowed)
+  PWF_Intermediate --> PWF_Terminal : Progress to completion
+  PWF_Terminal --> [*] : Program completed\n(PatientProgram.dateCompleted set)
+}
+
+note top of PWF : PatientProgram transitions through\nProgramWorkflowStates based on\nconfigured legal transitions.\nTerminal states complete the program.
+
+' Order Fulfiller Status State Machine  
+state "Order Fulfiller Status State Machine" as OFS {
+  state RECEIVED : Order received by fulfiller
+  state IN_PROGRESS : Order being processed
+  state ON_HOLD : Order temporarily paused
+  state EXCEPTION : Error in processing
+  state DECLINED : Order rejected by fulfiller
+  state COMPLETED : Order successfully fulfilled
+  
+  [*] --> RECEIVED : Order submitted to fulfiller
+  RECEIVED --> IN_PROGRESS : Begin processing
+  RECEIVED --> DECLINED : Reject order
+  IN_PROGRESS --> ON_HOLD : Pause processing
+  IN_PROGRESS --> EXCEPTION : Error encountered
+  IN_PROGRESS --> COMPLETED : Processing successful
+  ON_HOLD --> IN_PROGRESS : Resume processing
+  ON_HOLD --> DECLINED : Cancel while on hold
+  EXCEPTION --> IN_PROGRESS : Retry after error
+  EXCEPTION --> DECLINED : Cannot fulfill
+  COMPLETED --> [*] : Order fulfilled
+  DECLINED --> [*] : Order cancelled
+}
+
+note top of OFS : Order.FulfillerStatus tracks\norder processing by external\nfulfillment systems (labs, pharmacy, etc.)
+
+' HL7 Message Processing State Machine
+state "HL7 Message Processing State Machine" as HL7 {
+  state PENDING : HL7_STATUS_PENDING (0)\nAwaiting processing
+  state PROCESSING : HL7_STATUS_PROCESSING (1)\nCurrently being processed
+  state PROCESSED : HL7_STATUS_PROCESSED (2)\nSuccessfully processed
+  state ERROR : HL7_STATUS_ERROR (3)\nProcessing failed
+  state DELETED : HL7_STATUS_DELETED (4)\nMarked for deletion
+  state MIGRATED : HL7_STATUS_MIGRATED (5)\nArchived to filesystem
+  
+  [*] --> PENDING : HL7 message received
+  PENDING --> PROCESSING : Begin processing
+  PROCESSING --> PROCESSED : Processing successful
+  PROCESSING --> ERROR : Processing failed
+  ERROR --> PENDING : Retry processing
+  ERROR --> DELETED : Abandon message
+  PROCESSED --> MIGRATED : Archive to filesystem
+  PROCESSED --> DELETED : Manual deletion
+  MIGRATED --> [*] : Archived successfully
+  DELETED --> [*] : Message removed
+}
+
+note top of HL7 : HL7InQueue.messageState tracks\nlifecycle of incoming HL7 messages\nthrough processing and archival
+
+' Condition Clinical Status State Machine
+state "Condition Clinical Status State Machine" as CCS {
+  state ACTIVE : Patient experiencing symptoms\nor evidence present
+  state INACTIVE : No current symptoms\nor evidence
+  state RECURRENCE : Re-occurrence of\npreviously resolved condition
+  state RELAPSE : Return after period\nof improvement/remission
+  state REMISSION : No symptoms but\nrisk of return exists
+  state RESOLVED : No symptoms and\nnegligible risk of return
+  
+  [*] --> ACTIVE : Condition diagnosed
+  ACTIVE --> INACTIVE : Symptoms resolve
+  ACTIVE --> REMISSION : Temporary improvement
+  ACTIVE --> RESOLVED : Complete resolution
+  INACTIVE --> ACTIVE : Symptoms return
+  INACTIVE --> RECURRENCE : Condition recurs
+  INACTIVE --> RESOLVED : Confirmed resolution
+  REMISSION --> ACTIVE : Symptoms return
+  REMISSION --> RELAPSE : Condition worsens
+  REMISSION --> RESOLVED : Complete recovery
+  RECURRENCE --> ACTIVE : Active symptoms
+  RECURRENCE --> REMISSION : Improving again
+  RELAPSE --> ACTIVE : Active symptoms
+  RELAPSE --> REMISSION : Stabilizing
+  RESOLVED --> RECURRENCE : Unexpected return
+}
+
+note top of CCS : ConditionClinicalStatus tracks\nthe clinical progression of\npatient conditions over time
+
+' Condition Verification Status State Machine
+state "Condition Verification Status State Machine" as CVS {
+  state PROVISIONAL : Tentative diagnosis\nunder consideration
+  state CONFIRMED : Sufficient evidence\nfor confirmed condition
+  
+  [*] --> PROVISIONAL : Initial diagnosis
+  PROVISIONAL --> CONFIRMED : Evidence supports diagnosis
+  PROVISIONAL --> [*] : Diagnosis ruled out
+  CONFIRMED --> [*] : Condition resolved/ended
+}
+
+note top of CVS : ConditionVerificationStatus tracks\ndiagnostic certainty from\nprovisional to confirmed
+
+' Patient State Workflow Integration
+state "Patient State Integration" as PSI {
+  state "New Patient State" as NewPS : PatientState created
+  state "Active State" as ActivePS : Current state in workflow
+  state "Ended State" as EndedPS : State ended (endDate set)
+  
+  [*] --> NewPS : PatientProgram.transitionToState()
+  NewPS --> ActivePS : startDate set
+  ActivePS --> EndedPS : Transition to new state\n(endDate set on previous)
+  EndedPS --> [*] : State history preserved
+}
+
+note top of PSI : PatientState instances track\nhistory of patient progression\nthrough ProgramWorkflowStates
+
+note bottom : These state machines represent the core workflow and status tracking\nentities in OpenMRS, managing patient care processes, order fulfillment,\nmessage processing, and clinical condition lifecycles.
+
+@enduml

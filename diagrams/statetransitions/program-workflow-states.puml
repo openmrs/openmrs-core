@@ -1,0 +1,28 @@
+@startuml Program Workflow State Machine
+!theme plain
+skinparam backgroundColor white
+skinparam state {
+  BackgroundColor lightblue
+  BorderColor navy
+  ArrowColor navy
+}
+
+title OpenMRS Program Workflow State Machine
+
+state "Program Workflow State Machine" as PWF {
+  state "Initial State" as PWF_Initial : Any state marked as initial=true
+  state "Intermediate State" as PWF_Intermediate : Regular workflow state
+  state "Terminal State" as PWF_Terminal : Any state marked as terminal=true
+  
+  [*] --> PWF_Initial : Patient enters program
+  PWF_Initial --> PWF_Intermediate : Legal transition\n(via ProgramWorkflow.isLegalTransition())
+  PWF_Intermediate --> PWF_Intermediate : State change\n(same state not allowed)
+  PWF_Intermediate --> PWF_Terminal : Progress to completion
+  PWF_Terminal --> [*] : Program completed\n(PatientProgram.dateCompleted set)
+}
+
+note top of PWF : PatientProgram transitions through\nProgramWorkflowStates based on\nconfigured legal transitions.\nTerminal states complete the program.
+
+note bottom : **Key Classes:**\n- ProgramWorkflow: Defines available states and transition rules\n- ProgramWorkflowState: Individual states with initial/terminal flags\n- PatientProgram: Patient enrollment in a program\n- PatientState: Historical record of state transitions\n\n**Transition Logic:**\n- isLegalTransition() validates state changes\n- Same state transitions are blocked\n- Terminal states automatically complete programs
+
+@enduml

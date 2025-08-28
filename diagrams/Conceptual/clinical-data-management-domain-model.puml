@@ -1,0 +1,507 @@
+@startuml Clinical Data Management System - Domain Model
+!theme cerulean-outline
+title Clinical Data Management System - Domain Model\n(OpenMRS Core - extends Patient Management)
+
+' This model extends the Patient Management Domain Model
+' Shared entities are referenced from: patient-management-domain-model.puml
+' - Patient, Visit, Encounter, Observation
+' - Provider, ProviderRole, Location
+' - Program, ProgramWorkflow, PatientProgram, ProgramOutcome, PatientState
+' Order entities are referenced from: order-management-domain-model.puml
+' - ClinicalOrder, MedicationOrder, TestOrder, OrderType, CareSetting
+
+' Define entity colors and styles - STANDARDIZED ACROSS ALL DOMAIN MODELS
+' Color Legend:
+' - LightBlue (Person): Person demographic entities
+' - LightGreen (Patient): Patient-specific entities
+' - LightYellow (Clinical): Clinical care episode entities
+' - LightCyan (Concept): Clinical vocabulary and concept entities
+' - LightSalmon (Program): Program and workflow entities
+' - LightGray (Location): Location and facility entities
+' - Orange (Provider): Healthcare provider entities
+' - LightPink (Order): Clinical order and request entities
+' - LightSkyBlue (Form): Clinical form and documentation entities
+' - Plum (Allergy): Allergy and adverse reaction entities
+
+skinparam class {
+    ' Shared entities from patient-management-domain-model.puml
+    BackgroundColor<<Person>> LightBlue
+    BackgroundColor<<Patient>> LightGreen
+    BackgroundColor<<Clinical>> LightYellow
+    BackgroundColor<<Concept>> LightCyan
+    BackgroundColor<<Program>> LightSalmon
+    BackgroundColor<<Location>> LightGray
+    BackgroundColor<<Provider>> Orange
+    
+    ' Clinical Data Management specific entities
+    BackgroundColor<<Order>> LightPink
+    BackgroundColor<<Form>> LightSkyBlue
+    BackgroundColor<<Allergy>> Plum
+    
+    ' Border colors for better distinction
+    BorderColor<<Person>> DarkBlue
+    BorderColor<<Patient>> DarkGreen
+    BorderColor<<Clinical>> DarkOrange
+    BorderColor<<Concept>> DarkCyan
+    BorderColor<<Program>> DarkRed
+    BorderColor<<Location>> DarkGray
+    BorderColor<<Provider>> DarkOrange
+    BorderColor<<Order>> DeepPink
+    BorderColor<<Form>> DeepSkyBlue
+    BorderColor<<Allergy>> DarkMagenta
+}
+
+' === SHARED ENTITIES (defined in patient-management-domain-model.puml) ===
+entity Patient <<Patient>> {
+    patientIdentifiers
+    (from Patient Management)
+}
+
+entity Visit <<Clinical>> {
+    startDatetime
+    stopDatetime
+    visitType
+    (from Patient Management)
+}
+
+entity Encounter <<Clinical>> {
+    encounterDatetime
+    encounterType
+    (from Patient Management)
+}
+
+entity Observation <<Clinical>> {
+    observationDatetime
+    value
+    (from Patient Management)
+}
+
+entity Provider <<Provider>> {
+    identifier
+    name
+    (from Patient Management)
+}
+
+entity ProviderRole <<Provider>> {
+    name
+    description
+    permissions
+    (from Patient Management)
+}
+
+entity Location <<Location>> {
+    name
+    description
+    (from Patient Management)
+}
+
+entity Program <<Program>> {
+    name
+    description
+    conceptName
+    outcomesConceptName
+    (from Patient Management)
+}
+
+entity ProgramWorkflow <<Program>> {
+    name
+    conceptName
+    (from Patient Management)
+}
+
+entity ProgramWorkflowState <<Program>> {
+    name
+    conceptName
+    initial
+    terminal
+    (from Patient Management)
+}
+
+entity PatientProgram <<Program>> {
+    dateEnrolled
+    dateCompleted
+    (from Patient Management)
+}
+
+entity ProgramOutcome <<Program>> {
+    name
+    description
+    category
+    (from Patient Management)
+}
+
+entity PatientState <<Program>> {
+    startDate
+    endDate
+    (from Patient Management)
+}
+
+entity Condition <<Concept>> {
+    onsetDate
+    endDate
+    clinicalStatus
+    verificationStatus
+    additionalDetail
+    (from Patient Management)
+}
+
+entity Diagnosis <<Concept>> {
+    rank
+    certainty
+    formNamespaceAndPath
+    (from Patient Management)
+}
+
+entity ConditionClinicalStatus <<Concept>> {
+    "ACTIVE"
+    "INACTIVE"
+    "RECURRENCE"
+    "RELAPSE"
+    "REMISSION"
+    "RESOLVED"
+    "HISTORY_OF"
+    (from Patient Management)
+}
+
+entity ConditionVerificationStatus <<Concept>> {
+    "PROVISIONAL"
+    "CONFIRMED"
+    (from Patient Management)
+}
+
+entity Concept <<Concept>> {
+    name
+    description
+    conceptClass
+    datatype
+    version
+    isSet
+    (from Patient Management)
+}
+
+entity ConceptName <<Concept>> {
+    name
+    locale
+    conceptNameType
+    (from Patient Management)
+}
+
+entity CodedOrFreeText <<Concept>> {
+    nonCoded
+    (from Patient Management)
+}
+
+' === CLINICAL DATA MANAGEMENT SPECIFIC ENTITIES ===
+
+' Additional Encounter and Visit Types (extending base entities)
+entity EncounterType <<Clinical>> {
+    name
+    description
+}
+
+' Enhanced Clinical Observations (extending base Observation)
+entity ObservationGroup <<Clinical>> {
+    groupingConcept
+}
+
+entity ReferenceRange <<Clinical>> {
+    hiNormal
+    lowNormal
+    hiCritical
+    lowCritical
+    hiAbsolute
+    lowAbsolute
+}
+
+' Clinical Orders (referenced from order-management-domain-model.puml)
+entity ClinicalOrder <<Order>> {
+    orderNumber
+    dateActivated
+    autoExpireDate
+    urgency
+    instructions
+    (from Order Management)
+}
+
+entity MedicationOrder <<Order>> {
+    dose
+    asNeeded
+    quantity
+    numRefills
+    (from Order Management)
+}
+
+entity TestOrder <<Order>> {
+    clinicalHistory
+    specimenSource
+    laterality
+    (from Order Management)
+}
+
+entity OrderType <<Order>> {
+    name
+    description
+    javaClassName
+    (from Order Management)
+}
+
+entity CareSetting <<Order>> {
+    name
+    description
+    careSettingType
+    (from Order Management)
+}
+
+' Allergies and Adverse Reactions
+entity Allergy <<Allergy>> {
+    allergen
+    allergyType
+    severity
+    reactions
+}
+
+entity AllergenType <<Allergy>> {
+    name
+    description
+}
+
+entity AllergySeverity <<Allergy>> {
+    name
+    description
+}
+
+entity AllergyReaction <<Allergy>> {
+    reactionType
+    manifestation
+}
+
+' Clinical Concepts and Vocabulary Extensions
+entity ConceptClass <<Concept>> {
+    name
+    description
+}
+
+entity ConceptDatatype <<Concept>> {
+    name
+    description
+}
+
+entity ConceptAnswer <<Concept>> {
+    sortWeight
+}
+
+entity ConceptSet <<Concept>> {
+    sortWeight
+}
+
+entity ConceptMap <<Concept>> {
+    mapType
+    conceptReferenceTerm
+}
+
+entity ConceptReferenceTerm <<Concept>> {
+    code
+    description
+    source
+}
+
+entity ConceptMapType <<Concept>> {
+    name
+    description
+    isHidden
+}
+
+' Enhanced Provider Entities (extending base Provider)
+entity EncounterProvider <<Provider>> {
+    encounterRole
+}
+
+entity EncounterRole <<Provider>> {
+    name
+    description
+}
+
+' Clinical Forms and Documentation
+entity ClinicalForm <<Form>> {
+    name
+    version
+    description
+    published
+}
+
+entity FormField <<Form>> {
+    fieldNumber
+    fieldPart
+    pageNumber
+    minOccurs
+    maxOccurs
+    required
+    sortWeight
+}
+
+entity Field <<Form>> {
+    name
+    description
+    fieldType
+    concept
+    tableName
+    attributeName
+    defaultValue
+    selectMultiple
+}
+
+entity FieldType <<Form>> {
+    name
+    description
+    isSet
+}
+
+entity FieldAnswer <<Form>> {
+    value
+    sortWeight
+}
+
+' Enhanced Location Entity (extending base Location)
+entity LocationTag <<Location>> {
+    name
+    description
+}
+
+' === RELATIONSHIPS ===
+
+' Core relationships (from Patient Management Domain Model)
+Patient ||--o{ Visit : "has visits"
+Visit }o--|| Location : "occurs at"
+Visit ||--o{ Encounter : "contains encounters"
+Encounter }o--|| Patient : "for patient"
+Encounter }o--|| Location : "occurs at"
+Encounter ||--o{ Observation : "contains observations"
+Encounter }o--o{ Provider : "provided by"
+Observation }o--|| Location : "recorded at"
+Observation }o--|| Encounter : "recorded in"
+Provider }o--|| ProviderRole : "has role"
+Program ||--o{ ProgramWorkflow : "has workflows"
+Program ||--o{ PatientProgram : "enrolls patients"
+ProgramWorkflow ||--o{ ProgramWorkflowState : "has states"
+PatientProgram }o--|| Patient : "enrolls"
+PatientProgram }o--|| Program : "in program"
+PatientProgram }o--|| Location : "at location"
+PatientProgram }o--o| ProgramOutcome : "has outcome"
+PatientProgram ||--o{ PatientState : "has states"
+PatientState }o--|| ProgramWorkflowState : "current state"
+PatientState }o--|| Encounter : "triggered by"
+
+' Extended relationships for Clinical Data Management
+
+Visit }o--o| Concept : "has indication"
+Encounter }o--|| EncounterType : "of type"
+Encounter }o--o| ClinicalForm : "uses form"
+
+' Clinical Observations (extending base Observation relationships)
+Observation }o--|| Concept : "measures concept"
+Observation }o--o| ObservationGroup : "member of group"
+Observation }o--o| ReferenceRange : "has reference range"
+ObservationGroup }o--|| Concept : "groups by concept"
+
+' Conditions and Diagnoses (using shared entities from Patient Management)
+Encounter ||--o{ Condition : "documents conditions"
+Encounter ||--o{ Diagnosis : "establishes diagnoses"
+Condition }o--|| Patient : "affects patient"
+Condition }o--|| Concept : "represents condition"
+Condition }o--|| ConditionClinicalStatus : "has clinical status"
+Condition }o--|| ConditionVerificationStatus : "has verification status"
+Diagnosis }o--|| Patient : "for patient"
+Diagnosis }o--|| Concept : "diagnoses condition"
+Diagnosis }o--o| Condition : "relates to condition"
+
+' Clinical Orders (extending base relationships)
+Encounter ||--o{ ClinicalOrder : "places orders"
+ClinicalOrder }o--|| Patient : "for patient"
+ClinicalOrder }o--|| OrderType : "of type"
+ClinicalOrder }o--|| Provider : "ordered by"
+ClinicalOrder }o--|| CareSetting : "in care setting"
+ClinicalOrder }o--|| Concept : "orders concept"
+ClinicalOrder }o--o| Concept : "for reason"
+
+' Medication Orders (extending ClinicalOrder relationships)
+MedicationOrder ||--|| ClinicalOrder : "extends"
+MedicationOrder }o--o| Concept : "dose units"
+MedicationOrder }o--o| Concept : "quantity units"
+MedicationOrder }o--o| Concept : "route"
+
+' Test Orders (extending ClinicalOrder relationships)
+TestOrder ||--|| ClinicalOrder : "extends"
+TestOrder }o--o| Concept : "specimen source"
+TestOrder }o--o| Location : "performed at"
+
+' Allergies
+Encounter ||--o{ Allergy : "documents allergies"
+Allergy }o--|| Patient : "affects patient"
+Allergy }o--|| Concept : "allergen"
+Allergy }o--|| AllergenType : "allergen type"
+Allergy }o--|| AllergySeverity : "severity"
+Allergy ||--o{ AllergyReaction : "causes reactions"
+
+' Clinical Concepts and Vocabulary
+Concept }o--|| ConceptClass : "belongs to class"
+Concept }o--|| ConceptDatatype : "has datatype"
+Concept ||--o{ ConceptAnswer : "has answers"
+Concept ||--o{ ConceptSet : "contains concepts"
+Concept ||--o{ ConceptMap : "maps to external"
+ConceptAnswer }o--|| Concept : "answer concept"
+ConceptSet }o--|| Concept : "set member"
+ConceptMap }o--|| ConceptMapType : "map type"
+ConceptMap }o--|| ConceptReferenceTerm : "maps to term"
+
+' Enhanced Provider Relationships (extending base Provider relationships)
+Encounter ||--o{ EncounterProvider : "involves providers"
+EncounterProvider }o--|| Provider : "provider"
+EncounterProvider }o--|| EncounterRole : "in role"
+
+' Forms and Documentation
+ClinicalForm }o--|| EncounterType : "for encounter type"
+ClinicalForm ||--o{ FormField : "contains fields"
+FormField }o--|| Field : "field definition"
+FormField }o--o| ClinicalForm : "parent form"
+Field }o--|| FieldType : "of type"
+Field }o--o| Concept : "references concept"
+Field ||--o{ FieldAnswer : "has answers"
+
+' Enhanced Program Management (extending base Program relationships)
+Program }o--|| Concept : "represents concept"
+ProgramWorkflow }o--|| Concept : "workflow concept"
+ProgramWorkflowState }o--|| Concept : "state concept"
+
+' Enhanced Location Management (extending base Location)
+Location ||--o{ LocationTag : "has tags"
+
+' Notes and constraints - Clinical Data Management specific
+note right of EncounterType : Specific types of clinical\nencounters for data collection
+note right of ObservationGroup : Groups related observations\nfor complex measurements
+note right of ReferenceRange : Normal and critical ranges\nfor laboratory values
+note right of ClinicalOrder : Clinical requests for medications,\ntests, procedures, or services\n(detailed in order-management-domain-model.puml)
+note right of Allergy : Documented allergic reactions\nand sensitivities
+note right of ClinicalForm : Structured data collection\nfor clinical documentation
+note bottom of MedicationOrder : Prescription orders with\ndosing and administration details\n(detailed in order-management-domain-model.puml)
+note bottom of TestOrder : Laboratory and diagnostic\ntest orders with specifications\n(detailed in order-management-domain-model.puml)
+note left of EncounterProvider : Healthcare professionals\ninvolved in specific encounters
+note left of LocationTag : Classification and grouping\nof clinical locations
+
+' Reference note
+note top : This model extends the Patient Management Domain Model.\nShared entities (Patient, Visit, Encounter, Observation, Provider, Location, Program,\nCondition, Diagnosis, Concept, etc.) are defined in patient-management-domain-model.puml\nOrder entities are detailed in order-management-domain-model.puml
+
+' Color Legend Table
+legend right
+|= Color |= Description |= Domain |
+|<back:LightGreen>   </back>| Patient entities | Shared |
+|<back:LightYellow>   </back>| Clinical episodes | Shared |
+|<back:LightCyan>   </back>| Concepts & vocabulary | Shared |
+|<back:LightSalmon>   </back>| Programs & workflows | Shared |
+|<back:LightGray>   </back>| Locations | Shared |
+|<back:Orange>   </back>| Healthcare providers | Shared |
+|<back:LightPink>   </back>| Clinical orders | Clinical Data |
+|<back:LightSkyBlue>   </back>| Clinical forms & documentation | Clinical Data |
+|<back:Plum>   </back>| Allergies & adverse reactions | Clinical Data |
+endlegend
+
+@enduml

@@ -1,0 +1,38 @@
+@startuml Order Fulfiller Status State Machine
+!theme plain
+skinparam backgroundColor white
+skinparam state {
+  BackgroundColor lightblue
+  BorderColor navy
+  ArrowColor navy
+}
+
+title OpenMRS Order Fulfiller Status State Machine
+
+state "Order Fulfiller Status State Machine" as OFS {
+  state RECEIVED : Order received by fulfiller
+  state IN_PROGRESS : Order being processed
+  state ON_HOLD : Order temporarily paused
+  state EXCEPTION : Error in processing
+  state DECLINED : Order rejected by fulfiller
+  state COMPLETED : Order successfully fulfilled
+  
+  [*] --> RECEIVED : Order submitted to fulfiller
+  RECEIVED --> IN_PROGRESS : Begin processing
+  RECEIVED --> DECLINED : Reject order
+  IN_PROGRESS --> ON_HOLD : Pause processing
+  IN_PROGRESS --> EXCEPTION : Error encountered
+  IN_PROGRESS --> COMPLETED : Processing successful
+  ON_HOLD --> IN_PROGRESS : Resume processing
+  ON_HOLD --> DECLINED : Cancel while on hold
+  EXCEPTION --> IN_PROGRESS : Retry after error
+  EXCEPTION --> DECLINED : Cannot fulfill
+  COMPLETED --> [*] : Order fulfilled
+  DECLINED --> [*] : Order cancelled
+}
+
+note top of OFS : Order.FulfillerStatus tracks\norder processing by external\nfulfillment systems (labs, pharmacy, etc.)
+
+note bottom : **Key Enum Values:**\n- RECEIVED: Initial state when order reaches fulfiller\n- IN_PROGRESS: Active processing by fulfillment system\n- ON_HOLD: Temporary pause in processing\n- EXCEPTION: Error condition requiring attention\n- DECLINED: Order rejected by fulfiller\n- COMPLETED: Order successfully fulfilled\n\n**Usage:** Updated via OrderService.updateOrderFulfillerStatus()
+
+@enduml

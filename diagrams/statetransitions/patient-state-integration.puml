@@ -1,0 +1,27 @@
+@startuml Patient State Integration
+!theme plain
+skinparam backgroundColor white
+skinparam state {
+  BackgroundColor lightblue
+  BorderColor navy
+  ArrowColor navy
+}
+
+title OpenMRS Patient State Integration
+
+state "Patient State Integration" as PSI {
+  state "New Patient State" as NewPS : PatientState created
+  state "Active State" as ActivePS : Current state in workflow
+  state "Ended State" as EndedPS : State ended (endDate set)
+  
+  [*] --> NewPS : PatientProgram.transitionToState()
+  NewPS --> ActivePS : startDate set
+  ActivePS --> EndedPS : Transition to new state\n(endDate set on previous)
+  EndedPS --> [*] : State history preserved
+}
+
+note top of PSI : PatientState instances track\nhistory of patient progression\nthrough ProgramWorkflowStates
+
+note bottom : **Key Classes:**\n- PatientState: Individual state transition record\n- PatientProgram: Patient enrollment in program\n- ProgramWorkflowState: The actual state definition\n\n**State Management:**\n- Each PatientState has startDate and optional endDate\n- endDate is set when transitioning to new state\n- Multiple workflows can have concurrent active states\n- Complete audit trail of patient progression\n\n**Integration Points:**\n- Forms: PatientState can reference encounter/form\n- Observations: Can trigger automatic state transitions\n- Workflows: Each workflow maintains separate state history
+
+@enduml
