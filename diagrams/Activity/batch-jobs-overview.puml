@@ -1,0 +1,87 @@
+@startuml batch-jobs-overview
+!theme plain
+scale 1.2
+skinparam dpi 300
+skinparam minClassWidth 100
+skinparam packageStyle rectangle
+skinparam component {
+  FontSize 12
+  FontName Arial
+}
+skinparam note {
+  FontSize 10
+  FontName Arial
+}
+
+title OpenMRS Batch Jobs Overview
+
+!define TASK_COLOR #lightblue
+!define THREAD_COLOR #lightgreen
+!define MAIN_COLOR #lightyellow
+
+package "Main Method Batch Jobs" #lightyellow {
+  [Liquibase Main] as LiqMain
+  note bottom of LiqMain : **Main Entry Point**\nProcesses Liquibase snapshots\n• Core Data Tuner\n• Schema Only Tuner
+}
+
+package "Scheduled Tasks" #lightblue {
+  [ProcessHL7InQueueTask] as HL7Task
+  [AutoCloseVisitsTask] as VisitsTask  
+  [AutoRetireUsersTask] as UsersTask
+  
+  HL7Task -[hidden]down-> VisitsTask
+  VisitsTask -[hidden]down-> UsersTask
+  
+  [AlertReminderTask] as AlertTask
+  [CheckInternetConnectivityTask] as ConnectTask
+  [SendEmailTask] as EmailTask
+  
+  AlertTask -[hidden]down-> ConnectTask
+  ConnectTask -[hidden]down-> EmailTask
+  
+  UsersTask -[hidden]right-> AlertTask
+}
+
+package "Background Threads" #lightgreen {
+  [Hl7InArchivesMigrateThread] as MigrateThread
+  note bottom of MigrateThread : **Data Migration**\nMigrates HL7 archives\n• From database to filesystem\n• Configurable retention period
+}
+
+' Layout relationships after all components are defined
+LiqMain -[hidden]right-> HL7Task
+HL7Task -[hidden]right-> MigrateThread
+
+' Component descriptions positioned for 16:9 layout
+note top of HL7Task : **HL7 Message Processing**\nProcesses HL7 messages from queue\n• Transforms HL7 messages\n• Moves to archive/error tables
+
+note left of VisitsTask : **Visit Management**\nAuto-closes active visits\n• Based on visit types config\n• Uses current date as stop time
+
+note left of UsersTask : **User Management**\nRetires inactive users\n• Based on inactivity threshold\n• Excludes super users
+
+note right of AlertTask : **Notification System**\nSends email reminders\n• For unread alerts\n• To alert recipients
+
+note right of ConnectTask : **System Monitoring**\nChecks internet connectivity\n• Tests connection to Google\n• Alerts System Developers on failure
+
+note right of EmailTask : **Email Service**\nSample email task implementation\n• Logs execution\n• Placeholder for email sending
+
+' Execution context notes
+note top of LiqMain
+  Executed manually or via build process
+  Entry point: org.openmrs.liquibase.Main.main()
+end note
+
+note bottom of HL7Task
+  Scheduled task for HL7 processing
+  Inherits from AbstractTask
+end note
+
+note top of MigrateThread
+  Long-running background process
+  Extends Thread, manages its own lifecycle
+end note
+
+' Relationships
+LiqMain ..> HL7Task : Different execution contexts
+HL7Task ..> MigrateThread : Both work with HL7 data
+
+@enduml

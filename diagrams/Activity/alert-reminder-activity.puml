@@ -1,0 +1,37 @@
+@startuml alert-reminder-task
+title OpenMRS Alert Reminder Batch Job Activity Diagram
+
+start
+
+:AlertReminderTask.execute();
+note right: /scheduler/tasks/AlertReminderTask.java, line 35
+
+:Collection<Alert> alerts = Context.getAlertService().getAllAlerts(false);
+note right: Get all unread alerts\n(AlertReminderTask.java, line 39)\nTODO: Change to getAllAlerts(Boolean includeRead, Boolean includeExpired)
+
+:sendAlertNotifications(alerts);
+note right: Send notifications for alerts\n(AlertReminderTask.java, line 42)
+
+stop
+
+floating note right
+  Exception handling: If any error occurs during execution,
+  log.error("Failed to send alert notifications", e)
+  (AlertReminderTask.java, lines 45-47)
+  
+  sendAlertNotifications() method:
+  1. Create message with subject "Alert Reminder" and text "You have unread alerts."
+  2. Get recipients using getRecipients(alerts) method
+  3. Send message to all recipients at once
+  4. Handle MessageException by logging "Failed to send message"
+  (AlertReminderTask.java, lines 56-67)
+  
+  getRecipients() method:
+  1. Create HashSet for unique users
+  2. For each alert: if not read and has recipients
+  3. For each recipient: if recipient hasn't read alert and recipient exists
+  4. Add recipient.getRecipient() to user collection
+  5. Return unique user collection
+  (AlertReminderTask.java, lines 75-86)
+end note
+@enduml
