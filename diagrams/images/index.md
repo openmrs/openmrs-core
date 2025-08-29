@@ -7,6 +7,30 @@ This directory contains automatically generated images from PlantUML source file
 ### APIResources/OpenMRS API Resource Model
 ![OpenMRS API Resource Model](./APIResources/OpenMRS API Resource Model.png)
 
+### Activity/alert-reminder-task
+![alert-reminder-task](./Activity/alert-reminder-task.png)
+
+### Activity/auto-close-visits-task
+![auto-close-visits-task](./Activity/auto-close-visits-task.png)
+
+### Activity/auto-retire-users-task
+![auto-retire-users-task](./Activity/auto-retire-users-task.png)
+
+### Activity/batch-jobs-activity
+![batch-jobs-activity](./Activity/batch-jobs-activity.png)
+
+### Activity/batch-jobs-overview
+![batch-jobs-overview](./Activity/batch-jobs-overview.png)
+
+### Activity/hl7-archives-migrate-thread
+![hl7-archives-migrate-thread](./Activity/hl7-archives-migrate-thread.png)
+
+### Activity/hl7-queue-processor-task
+![hl7-queue-processor-task](./Activity/hl7-queue-processor-task.png)
+
+### Activity/internet-connectivity-task
+![internet-connectivity-task](./Activity/internet-connectivity-task.png)
+
 ### Conceptual/Clinical Data Management System - Domain Model
 ![Clinical Data Management System - Domain Model](./Conceptual/Clinical Data Management System - Domain Model.png)
 
