@@ -31,7 +31,6 @@
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptStopWord.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/DiagnosisAttribute.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/DiagnosisAttributeType.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/Drug.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Field.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/FieldType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Form.hbm.xml" />
