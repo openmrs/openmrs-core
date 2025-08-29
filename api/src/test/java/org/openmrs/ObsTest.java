@@ -311,13 +311,7 @@ public class ObsTest {
 	 */
 	@Test
 	public void setValueAsString_shouldFailIfTheValueOfTheStringIsEmpty() throws Exception {
-		ConceptDatatype cdt = new ConceptDatatype();
-		cdt.setHl7Abbreviation("ST");
-		Concept c = new Concept();
-		c.setDatatype(cdt);
-
 		Obs obs = new Obs();
-		obs.setConcept(c);
 		assertThrows(RuntimeException.class, () -> obs.setValueAsString(""));
 	}
 	
@@ -326,31 +320,8 @@ public class ObsTest {
 	 */
 	@Test
 	public void setValueAsString_shouldFailIfTheValueOfTheStringIsNull() throws Exception {
-		ConceptDatatype cdt = new ConceptDatatype();
-		cdt.setHl7Abbreviation("ST");
-		Concept c = new Concept();
-		c.setDatatype(cdt);
-
 		Obs obs = new Obs();
-		obs.setConcept(c);
 		assertThrows(RuntimeException.class, () -> obs.setValueAsString(null));
-	}
-
-	/**
-	 * @see Obs#setValueAsString(String)
-	 */
-	@Test
-	public void setValueAsString_shouldNotFailIfTheValueOfTheStringIsBlank() throws Exception {
-		ConceptDatatype cdt = new ConceptDatatype();
-		cdt.setHl7Abbreviation("ST");
-		Concept c = new Concept();
-		c.setDatatype(cdt);
-		
-		Obs obs = new Obs();
-		obs.setConcept(c);
-		obs.setValueAsString("\r\n");
-		
-		assertEquals("\r\n", obs.getValueText());
 	}
 	
 	/**

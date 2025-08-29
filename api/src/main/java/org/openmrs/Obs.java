@@ -1072,11 +1072,7 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	public void setValueAsString(String s) throws ParseException {
 		log.debug("getConcept() == {}", getConcept());
 		
-		if (StringUtils.isEmpty(s)) {
-			throw new RuntimeException("Value cannot be null or empty");
-		}
-		
-		if (getConcept() != null) {
+		if (getConcept() != null && !StringUtils.isBlank(s)) {
 			String abbrev = getConcept().getDatatype().getHl7Abbreviation();
 			if ("BIT".equals(abbrev)) {
 				setValueBoolean(Boolean.valueOf(s));
