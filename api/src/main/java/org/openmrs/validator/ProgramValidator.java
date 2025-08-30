@@ -56,10 +56,6 @@ public class ProgramValidator implements Validator {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "concept", "error.concept");
 			
-			if (p.getName() != null && p.getName().length() > 100) {
-				errors.rejectValue("name", "error.name.tooLong");
-			}
-			
 			Program existingProgram = Context.getProgramWorkflowService().getProgramByName(p.getName());
 			if (existingProgram != null && !existingProgram.getUuid().equals(p.getUuid())) {
 				errors.rejectValue("name", "general.error.nameAlreadyInUse");

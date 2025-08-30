@@ -13,6 +13,8 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -35,6 +37,7 @@ import org.openmrs.annotation.AllowDirectAccess;
 @Entity
 @Table(name = "program")
 @Audited
+@AttributeOverrides({ @AttributeOverride(name = "name", column = @Column(name = "name", length = 100, nullable = true)) })
 public class Program extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 3214567L;
@@ -123,12 +126,11 @@ public class Program extends BaseChangeableOpenmrsMetadata {
 	}
 	
 	/**
-	 * Returns a {@link ProgramWorkflow} whose {@link Concept} has any {@link ConceptName} that
-	 * matches the given <code>name</code>
+	 * Returns a {@link ProgramWorkflow} whose {@link Concept} has any {@link ConceptName} that matches
+	 * the given <code>name</code>
 	 *
 	 * @param name the {@link ProgramWorkflow} name, in any {@link Locale}
-	 * @return a {@link ProgramWorkflow} which has the passed <code>name</code> in any
-	 *         {@link Locale}
+	 * @return a {@link ProgramWorkflow} which has the passed <code>name</code> in any {@link Locale}
 	 */
 	public ProgramWorkflow getWorkflowByName(String name) {
 		for (ProgramWorkflow pw : getAllWorkflows()) {
