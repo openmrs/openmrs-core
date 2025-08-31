@@ -20,6 +20,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 
 /**
@@ -28,6 +29,7 @@ import org.hibernate.envers.Audited;
 @Entity
 @Table(name = "concept_name_tag")
 @Audited
+@BatchSize(size = 25)
 public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Voidable, java.io.Serializable {
 	
 	public static final long serialVersionUID = 33226787L;
@@ -51,7 +53,7 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	@Column(name = "date_created", nullable = false)
 	private Date dateCreated;
 	
-	@Column(name = "voided", length = 1, nullable = false)
+	@Column(name = "voided", nullable = false)
 	private Boolean voided = false;
 	
 	@ManyToOne
