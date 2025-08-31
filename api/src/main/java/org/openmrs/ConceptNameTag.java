@@ -11,39 +11,68 @@ package org.openmrs;
 
 import java.util.Date;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.envers.Audited;
 
 /**
  * ConceptNameTag is a textual tag which can be applied to a ConceptName.
  */
+@Entity
+@Table(name = "concept_name_tag")
 @Audited
 public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Voidable, java.io.Serializable {
 	
 	public static final long serialVersionUID = 33226787L;
 	
 	// Fields
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "concept_name_tag_id")
 	private Integer conceptNameTagId;
 	
+	@Column(name = "tag", length = 50, nullable = false)
 	private String tag;
 	
+	@Column(name = "description", columnDefinition = "TEXT", length = 65535)
 	private String description;
 	
+	@ManyToOne
+	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
 	
+	@Column(name = "date_created", nullable = false)
 	private Date dateCreated;
 	
+	@Column(name = "voided", length = 1, nullable = false)
 	private Boolean voided = false;
 	
+	@ManyToOne
+	@JoinColumn(name = "voided_by")
 	private User voidedBy;
 	
+	@Column(name = "date_voided")
 	private Date dateVoided;
 	
+	@Column(name = "void_reason", length = 255)
 	private String voidReason;
 	
+	@ManyToOne
+	@JoinColumn(name = "changed_by")
 	private User changedBy;
 	
+	@Column(name = "date_changed")
 	private Date dateChanged;
+
+	@Column(name = "uuid", length = 38, unique = true)
+	private String uuid;
 	
 	// Constructors
 	
@@ -138,7 +167,6 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	 * Returns whether the ConceptName has been voided.
 	 * 
 	 * @return true if the ConceptName has been voided, false otherwise.
-	 * 
 	 * @deprecated as of 2.0, use {@link #getVoided()}
 	 */
 	@Override
