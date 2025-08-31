@@ -43,7 +43,6 @@ import org.openmrs.DrugIngredient;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterRole;
-import org.openmrs.Form;
 import org.openmrs.FreeTextDosingInstructions;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
@@ -66,6 +65,7 @@ import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttributeType;
+import org.openmrs.Program;
 import org.openmrs.ProgramAttributeType;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttributeType;
@@ -2778,9 +2778,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(ConceptStateConversion.class)
 				.addAnnotatedClass(OrderGroup.class)
 				.addAnnotatedClass(Template.class)
+		    	.addAnnotatedClass(Drug.class)
 			    .addAnnotatedClass(AllergyReaction.class)
 				.addAnnotatedClass(ConceptAttributeType.class)
-				.addAnnotatedClass(Form.class)
+				.addAnnotatedClass(Program.class)
 				.getMetadataBuilder().build();
 
 
