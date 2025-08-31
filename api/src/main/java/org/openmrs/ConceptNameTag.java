@@ -70,9 +70,6 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	
 	@Column(name = "date_changed")
 	private Date dateChanged;
-
-	@Column(name = "uuid", length = 38, unique = true)
-	private String uuid;
 	
 	// Constructors
 	
