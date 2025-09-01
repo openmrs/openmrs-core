@@ -88,3 +88,11 @@ nb-configuration.xml
 ### Liquibase snapshot files ###
 liquibase/snapshots/*.xml
 #############
+
+### Documentation files ###
+CLINICIAN_WORKFLOW.md
+OPENMRS_ARCHITECTURE.txt
+OPENMRS_CODEBASE_DIAGRAM.md
+OPENMRS_DATABASE_SCHEMA.md
+OUTPATIENT_CLINIC_FILES.md
+#############
