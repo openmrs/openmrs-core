@@ -32,7 +32,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "location_tag")
 @AttributeOverrides({
-	@AttributeOverride( name = "name", column = @Column(name = "name", nullable = false, length = 55)),
+	@AttributeOverride( name = "name", column = @Column(name = "name", nullable = false, length = 50)),
 	@AttributeOverride( name = "dateCreated", column = @Column(name = "date_created", nullable = false, length = 19)),
 	@AttributeOverride( name = "dateRetired", column = @Column( name = "date_retired", length = 19))
 })
