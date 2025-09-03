@@ -13,6 +13,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,6 +31,11 @@ import jakarta.persistence.Table;
 @Audited
 @Entity
 @Table(name = "location_tag")
+@AttributeOverrides({
+	@AttributeOverride( name = "name", column = @Column(name = "name", nullable = false, length = 55)),
+	@AttributeOverride( name = "dateCreated", column = @Column(name = "date_created", nullable = false, length = 19)),
+	@AttributeOverride( name = "dateRetired", column = @Column( name = "date_retired", length = 19))
+})
 public class LocationTag extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 7654L;
