@@ -33,7 +33,7 @@ import org.hibernate.type.SqlTypes;
  * type of setting (INPATIENT, OUTPATIENT, EMERGENCY) they use. If an implementation provides care
  * in two separate hospitals that function independently, then they would use two separate care
  * settings like "Hospital A" and "Hospital B".
- *
+ * 
  * @since 1.10
  */
 @Audited
