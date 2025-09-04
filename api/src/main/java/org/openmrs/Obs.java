@@ -1079,9 +1079,10 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 					setValueText(s);
 				}
 				else {
-					throw new RuntimeException("Cannot set value to a empty string for concept: " + getConcept().getName().getName());
+					throw new RuntimeException("Cannot set value to a empty string for concept: " + getConcept().getDisplayString());
 				}
 			} else if (!StringUtils.isBlank(s)) {
+				s = s.trim();
 				if ("BIT".equals(abbrev)) {
 					setValueBoolean(Boolean.valueOf(s));
 				} else if ("CWE".equals(abbrev)) {
@@ -1098,10 +1099,10 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 					DateFormat datetimeFormat = new SimpleDateFormat(DATE_TIME_PATTERN);
 					setValueDatetime(datetimeFormat.parse(s));
 				}  else {
-					throw new RuntimeException("Don't know how to handle " + abbrev + " for concept: " + getConcept().getName().getName());
+					throw new RuntimeException("Don't know how to handle " + abbrev + " for concept: " + getConcept().getDisplayString());
 				}
 			} else {
-				throw new RuntimeException("Cannot set value to a blank string for concept: " + getConcept().getName().getName());
+				throw new RuntimeException("Cannot set value to a blank string for concept: " + getConcept().getDisplayString());
 			}
 		} else {
 			if (s == null) {
