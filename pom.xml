@@ -180,7 +180,7 @@
 				<artifactId>commons-lang3</artifactId>
 				<version>3.18.0</version>
 			</dependency>
-               
+
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-core</artifactId>
@@ -493,7 +493,7 @@
 			<dependency>
 			    <groupId>org.mockito</groupId>
 			    <artifactId>mockito-junit-jupiter</artifactId>
-			    <version>${mockitoVersion}</version> 
+			    <version>${mockitoVersion}</version>
 			</dependency>
 			<!--hamcrest-core is needed to update JUnit 4 transitive dependency on hamcrest-core as explained in
 			 http://hamcrest.org/JavaHamcrest/distributables#upgrading-from-hamcrest-1x and
@@ -1097,11 +1097,11 @@
 								</configuration>
 							</execution>
 							<execution>
-								<!-- 
+								<!--
 									Runs database integration tests that do not require the Spring context. The tests
-									are identified by the naming convention '*DatabaseIT.java'. They are run separately 
-									from integration tests that are based on BaseContextSensitiveTest as the 'IT2' tests 
-									drop the database at the end of each test which breaks BaseContextSensitiveTest. 
+									are identified by the naming convention '*DatabaseIT.java'. They are run separately
+									from integration tests that are based on BaseContextSensitiveTest as the 'IT2' tests
+									drop the database at the end of each test which breaks BaseContextSensitiveTest.
 								 -->
 								<id>integration-test-2</id>
 								<phase>test</phase>
@@ -1172,7 +1172,7 @@
 				<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 			</properties>
 		</profile>
-		
+
 		<!-- When using mockito-core:3.12.4 with Java 17, we get the following error.
 		 java.lang.NullPointerException: Cannot read the array length because "this.buf" is null
 		 mockito-core:5.6.0 does not support Java 8.
@@ -1229,7 +1229,7 @@
 				</dependencies>
 			</dependencyManagement>
 		</profile>
-		
+
 		<profile>
 			<id>java24</id>
 			<activation>
@@ -1278,6 +1278,7 @@
 			</plugin>
 		</plugins>
 	</reporting>
+
 
 	<repositories>
 		<repository>
@@ -1346,7 +1347,7 @@
 
 		<customArgLineForTesting />
 
-		<sonar.host.url>https://sonar.openmrs.org</sonar.host.url>		
+		<sonar.host.url>https://sonar.openmrs.org</sonar.host.url>
 		<sonar.issuesReport.html.enable>true</sonar.issuesReport.html.enable>
 		<sonar.issuesReport.lightModeOnly>true</sonar.issuesReport.lightModeOnly>
 		<sonar.issuesReport.console.enable>true</sonar.issuesReport.console.enable>
