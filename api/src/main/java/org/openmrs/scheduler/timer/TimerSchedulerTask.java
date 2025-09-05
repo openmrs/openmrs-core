@@ -99,4 +99,24 @@ public class TimerSchedulerTask extends TimerTask {
 		} 
 		saveLastExecutionTime(task);
 	}
+
+	/**
+	 * Authenticate so that the task can call service layer.
+	 */
+	protected void authenticate() {
+
+		if (Daemon.isDaemonThread()) {
+			log.error("Authentication attempted while operating on a daemon thread," 
+				+ " authenticating is not necessary or allowed");
+			return;
+		}
+
+		try {
+			Daemon.authenticateTask();
+		} 
+		catch (Exception e) {
+			log.error("FATAL ERROR: [{}], Task authentication failed due to exception [{}]", e.getClass().getName(), e);
+			SchedulerUtil.sendSchedulerError(e);
+		}
+	}
 }

@@ -75,6 +75,35 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		assertThat(new PrivateSchedulerTask(task).runTheTest(), is(true));
 	}
 	
+	/**
+	 * @see Daemon#authenticateTask()
+	 */
+	@Test
+	public void authenticateTask_shouldNotBeCalledFromOtherMethodsOtherThanTimerSchedulerTask() throws Throwable {
+		try {
+			Daemon.authenticateTask();
+			fail("Should not be here, an exception should have been thrown in the line above");
+		} 
+		catch (APIException e) {
+			assertThat(e.getMessage(), startsWith(
+				Context.getMessageSourceService().getMessage("Scheduler.timer.task.only", 
+					new Object[]{this.getClass().getName()}, Locale.ENGLISH)));
+		}
+	}
+
+	/**
+	 * This uses a task that just marks itself as run when its "execute" method is called. This
+	 * verifies that the Daemon class is getting past the class check and on to the task running
+	 * step
+	 *
+	 * @see Daemon#authenticateTask() 
+	 */
+	@Test
+	public void authenticateTask_shouldNotThrowErrorIfCalledFromATimerSchedulerTaskClass() throws Throwable {
+		Task task = new PrivateTask();
+		assertThat(new PrivateSchedulerTask(task).authenticateTask(), is(true));
+	}
+	
 	@Test 
 	public void createUser_shouldThrowWhenCalledOutsideContextDAO() throws Throwable {
 		// setup
@@ -213,6 +242,12 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		
 		public void runTask() throws Throwable {
 			Daemon.executeScheduledTask(this.task);
+		}
+		
+		public boolean authenticateTask() throws Throwable {
+			Daemon.authenticateTask();
+			Daemon.executeScheduledTask(this.task);
+			return ((PrivateTask) task).wasRun;
 		}
 	}
 	
