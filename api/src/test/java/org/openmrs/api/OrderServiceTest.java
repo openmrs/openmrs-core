@@ -2784,7 +2784,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(ConceptAttributeType.class)
 				.addAnnotatedClass(Program.class)
 				.addAnnotatedClass(ConceptNameTag.class)
-			    .addAnnotatedClass(CareSetting.class)
+			    .addAnnotatedClass(CareSetting.class) 
 				.getMetadataBuilder().build();
 
 
