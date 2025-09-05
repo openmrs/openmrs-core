@@ -15,7 +15,7 @@ import java.util.Map;
 
 import org.openmrs.Role;
 import org.openmrs.User;
-
+@Service
 public interface MessageService {
 	
 	// Set dependencies for message services
