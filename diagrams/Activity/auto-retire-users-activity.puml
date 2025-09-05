@@ -1,0 +1,51 @@
+@startuml auto-retire-users-task
+title OpenMRS Auto Retire Users Batch Job Activity Diagram
+
+start
+
+:AutoRetireUsersTask.execute();
+note right: /scheduler/tasks/AutoRetireUsersTask.java, line 45
+
+if (isExecuting == false?) then (yes)
+  :log.debug("Auto-retiring users task Started");
+  note right: Log task start\n(AutoRetireUsersTask.java, line 47)
+  
+  :startExecuting();
+  note right: Set execution flag\n(AutoRetireUsersTask.java, line 49)
+  
+  :UserService userService = Context.getUserService();
+  note right: Get user service\n(AutoRetireUsersTask.java, line 52)
+  
+  :Set<User> usersToRetire = getUsersToRetire(userService);
+  note right: Find users to retire using private method\n(AutoRetireUsersTask.java, line 53)
+  
+  :usersToRetire.forEach(user -> userService.retireUser(user, AUTO_RETIRE_REASON));
+  note right: Retire each user with reason "User retired due to inactivity"\n(AutoRetireUsersTask.java, line 55)
+  
+  :log.debug("Auto-retiring users task ended");
+  note right: Log completion (in finally block)\n(AutoRetireUsersTask.java, line 58)
+  
+  :stopExecuting();
+  note right: Clear execution flag (in finally block)\n(AutoRetireUsersTask.java, line 59)
+else (no)
+  :Skip execution (already running);
+  note right: Prevent concurrent execution
+endif
+
+stop
+
+floating note right
+  Exception handling: If error occurs during execution,
+  log.error("Error occurred while auto-retiring users: ", e)
+  (AutoRetireUsersTask.java, lines 56-57)
+  
+  getUsersToRetire() method details:
+  1. Get all users from userService.getAllUsers()
+  2. Get GP_NUMBER_OF_DAYS_TO_AUTO_RETIRE_USERS global property
+  3. Return empty set if property is blank
+  4. Convert days to milliseconds for threshold
+  5. Filter users: not super user, not retired, inactivity exceeds threshold
+  6. Use userInactivityExceedsDaysToRetire() to check each user
+  (AutoRetireUsersTask.java, lines 60-75)
+end note
+@enduml

@@ -1,0 +1,26 @@
+@startuml Condition Verification Status State Machine
+!theme plain
+skinparam backgroundColor white
+skinparam state {
+  BackgroundColor lightblue
+  BorderColor navy
+  ArrowColor navy
+}
+
+title OpenMRS Condition Verification Status State Machine
+
+state "Condition Verification Status State Machine" as CVS {
+  state PROVISIONAL : Tentative diagnosis\nunder consideration
+  state CONFIRMED : Sufficient evidence\nfor confirmed condition
+  
+  [*] --> PROVISIONAL : Initial diagnosis
+  PROVISIONAL --> CONFIRMED : Evidence supports diagnosis
+  PROVISIONAL --> [*] : Diagnosis ruled out
+  CONFIRMED --> [*] : Condition resolved/ended
+}
+
+note top of CVS : ConditionVerificationStatus tracks\ndiagnostic certainty from\nprovisional to confirmed
+
+note bottom : **Enum Values (ConditionVerificationStatus):**\n- PROVISIONAL: Tentative diagnosis under consideration\n  (historically called "Presumed")\n- CONFIRMED: Sufficient diagnostic/clinical evidence\n  to treat as confirmed condition\n\n**Purpose:** Verification status to support or decline\nthe clinical status of conditions or diagnoses\n\n**FHIR Alignment:** Subset of FHIR ConditionVerificationStatus\n**Historical Note:** Previously called "diagnosis certainty"
+
+@enduml
