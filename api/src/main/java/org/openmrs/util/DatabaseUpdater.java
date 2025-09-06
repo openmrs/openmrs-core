@@ -68,6 +68,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.GlobalProperty;
+
 
 /**
  * This class uses Liquibase to update the database. <br>
@@ -153,7 +156,26 @@ public class DatabaseUpdater {
 			executeChangelog(changeLog, (ChangeSetExecutorCallback) null);
 		}
 	}
-	
+
+
+	static boolean isCoreChanged() {
+		AdministrationService adminService = Context.getAdministrationService();
+		String dbVersion = adminService.getGlobalProperty("core.version.lastApplied", null);
+		return dbVersion == null || !dbVersion.equals(OpenmrsConstants.OPENMRS_VERSION);
+	}
+
+	static void markVersionAs() {
+		AdministrationService adminService = Context.getAdministrationService();
+		GlobalProperty gp = adminService.getGlobalPropertyObject("core.version.lastApplied");
+		if (gp == null) {
+			gp = new GlobalProperty("core.version.lastApplied", OpenmrsConstants.OPENMRS_VERSION);
+		} else {
+			gp.setPropertyValue(OpenmrsConstants.OPENMRS_VERSION);
+		}
+		adminService.saveGlobalProperty(gp);
+	}
+
+
 	/**
 	 * Run changesets on database using Liquibase to get the database up to the most recent version
 	 *
