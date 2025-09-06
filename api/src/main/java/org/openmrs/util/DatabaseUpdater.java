@@ -34,6 +34,8 @@ import liquibase.resource.CompositeResourceAccessor;
 import liquibase.resource.FileSystemResourceAccessor;
 import liquibase.resource.ResourceAccessor;
 import org.apache.commons.io.IOUtils;
+import org.openmrs.GlobalProperty;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.liquibase.ChangeLogDetective;
 import org.openmrs.liquibase.ChangeLogVersionFinder;
@@ -152,7 +154,33 @@ public class DatabaseUpdater {
 			executeChangelog(changeLog, (ChangeSetExecutorCallback) null);
 		}
 	}
-	
+	/**
+	 * Checks if the core database version differs from the current code version,
+	 * or if no version has been recorded yet.
+	 *
+	 * @return true if the database version is not recorded or different
+	 */
+	static boolean isCoreChanged() {
+		AdministrationService adminService = Context.getAdministrationService();
+		String dbVersion = adminService.getGlobalProperty("core.version.lastApplied", null);
+		return dbVersion == null || !dbVersion.equals(OpenmrsConstants.OPENMRS_VERSION);
+	}
+
+	/**
+	 * Marks the current core version as applied in the database by updating
+	 * the global property `core.version.lastApplied`.
+	 */
+	static void markVersionAs() {
+		AdministrationService adminService = Context.getAdministrationService();
+		GlobalProperty gp = adminService.getGlobalPropertyObject("core.version.lastApplied");
+		if (gp == null) {
+			gp = new GlobalProperty("core.version.lastApplied", OpenmrsConstants.OPENMRS_VERSION);
+		} else {
+			gp.setPropertyValue(OpenmrsConstants.OPENMRS_VERSION);
+		}
+		adminService.saveGlobalProperty(gp);
+	}
+
 	/**
 	 * Run changesets on database using Liquibase to get the database up to the most recent version
 	 *
