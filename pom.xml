@@ -310,7 +310,7 @@
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-jasper</artifactId>
-				<version>11.0.10</version>
+				<version>11.0.11</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
