@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
@@ -27,6 +28,7 @@ import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
+import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ObsDAO;
@@ -309,7 +311,17 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		}
 		
 		if (cascade) {
-			throw new APIException("Obs.error.cascading.purge.not.implemented", (Object[]) null);
+			OrderService orderService = Context.getOrderService();
+			if (obs.getOrder() != null) {
+				orderService.purgeOrder(obs.getOrder(), false);
+			}
+			
+			Set<Obs> obsGroup = obs.getGroupMembers();
+			if (obsGroup != null) {
+				for (Obs o : obsGroup) {					
+					purgeObs(o, o.getObsGroup().hasGroupMembers());
+				}
+			}
 			// TODO delete any related objects here before deleting the obs
 			// obsGroups objects?
 			// orders?
