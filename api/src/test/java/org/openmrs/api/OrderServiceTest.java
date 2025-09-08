@@ -48,7 +48,6 @@ import org.openmrs.FreeTextDosingInstructions;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.LocationAttributeType;
-import org.openmrs.LocationTag;
 import org.openmrs.MedicationDispense;
 import org.openmrs.Obs;
 import org.openmrs.Order;
@@ -2785,7 +2784,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(ConceptAttributeType.class)
 				.addAnnotatedClass(Program.class)
 				.addAnnotatedClass(ConceptNameTag.class)
-				.addAnnotatedClass(LocationTag.class)
+			    .addAnnotatedClass(CareSetting.class) 
 				.getMetadataBuilder().build();
 
 
