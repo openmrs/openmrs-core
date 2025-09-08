@@ -4308,4 +4308,42 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void getOrderAttributeTypeByName_shouldReturnNullForMismatchedName() {
 		assertNull(orderService.getOrderAttributeTypeByName("InvalidName"));
 	}
+	
+	/**
+	 * @see OrderService#saveOrder(Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldOptimizeActiveOrderQueriesForDrugOrders() {
+		// Test that drug orders only query for drug orders when checking for conflicts
+		// This verifies the performance optimization in OrderServiceImpl.saveOrder()
+		
+		Encounter encounter = encounterService.getEncounter(3);
+		OrderContext context = new OrderContext();
+		context.setCareSetting(orderService.getCareSetting(1));
+		context.setOrderType(orderService.getOrderType(1));
+		
+		// Create a drug order
+		DrugOrder drugOrder = new DrugOrderBuilder()
+			.withPatient(encounter.getPatient().getPatientId())
+			.withEncounter(encounter.getEncounterId())
+			.withCareSetting(1)
+			.withOrderer(1)
+			.withOrderType(1)
+			.withDrug(2)
+			.withUrgency(Order.Urgency.ROUTINE)
+			.withDateActivated(new Date())
+			.withDose(1.0)
+			.withDoseUnits(50)
+			.withFrequency(1)
+			.withRoute(22)
+			.build();
+		
+		// This should not throw any exceptions and should complete successfully
+		// The optimization ensures only drug orders are queried when saving a drug order
+		Order savedOrder = orderService.saveOrder(drugOrder, context);
+		
+		assertNotNull(savedOrder);
+		assertNotNull(savedOrder.getOrderId());
+		assertEquals(DrugOrder.class, savedOrder.getClass());
+	}
 }

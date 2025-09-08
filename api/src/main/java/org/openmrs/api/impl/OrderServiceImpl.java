@@ -200,7 +200,16 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			if (isRetrospective) {
 				asOfDate = order.getDateActivated();
 			}
-			List<Order> activeOrders = getActiveOrders(order.getPatient(), null, order.getCareSetting(), asOfDate);
+			
+			// Optimize: Only get drug orders if this is a drug order to avoid unnecessary queries
+			List<Order> activeOrders;
+			if (isDrugOrder(order)) {
+				OrderType drugOrderType = Context.getOrderService().getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID);
+				activeOrders = getActiveOrders(order.getPatient(), null, drugOrderType, order.getCareSetting(), asOfDate);
+			} else {
+				activeOrders = getActiveOrders(order.getPatient(), null, order.getCareSetting(), asOfDate);
+			}
+			
 			List<String> parallelOrders = Collections.emptyList();
 			if (orderContext != null && orderContext.getAttribute(PARALLEL_ORDERS) != null) {
 				parallelOrders = Arrays.asList((String[]) orderContext.getAttribute(PARALLEL_ORDERS));
@@ -299,7 +308,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 
 	private void failOnOrderTypeMismatch(Order order) {
-		if (!order.getOrderType().getJavaClass().isAssignableFrom(order.getClass())) {
+		if (order.getOrderType() != null && !order.getOrderType().getJavaClass().isAssignableFrom(order.getClass())) {
 			throw new OrderEntryException("Order.type.class.does.not.match", new Object[] {
 					order.getOrderType().getJavaClass(), order.getClass().getName() });
 		}
@@ -309,6 +318,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		return firstOrder.hasSameOrderableAs(secondOrder)
 		        && !OpenmrsUtil.nullSafeEquals(firstOrder.getPreviousOrder(), secondOrder)
 		        && OrderUtil.checkScheduleOverlap(firstOrder, secondOrder)
+		        && firstOrder.getOrderType() != null
 		        && firstOrder.getOrderType().equals(
 		            Context.getOrderService().getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID));
 	}
