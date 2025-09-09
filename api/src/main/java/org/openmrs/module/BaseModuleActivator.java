@@ -13,45 +13,47 @@ package org.openmrs.module;
  * Must be extended by modules and referenced by the Module-Activator property in the module
  * manifest, contains methods that let modules get notifications as the application is executing to
  * allow modules to react in custom ways.
- *
+ * 
  * @since 1.7
  */
 public abstract class BaseModuleActivator implements ModuleActivator {
+	
 	/**
 	 * @see org.openmrs.module.ModuleActivator#contextRefreshed()
 	 */
 	@Override
 	public void contextRefreshed() {
 	}
-
+	
 	/**
 	 * @see org.openmrs.module.ModuleActivator#started()
 	 */
 	@Override
 	public void started() {
 	}
-
+	
 	/**
 	 * @see org.openmrs.module.ModuleActivator#stopped()
 	 */
 	@Override
 	public void stopped() {
+		
 	}
-
+	
 	/**
 	 * @see org.openmrs.module.ModuleActivator#willRefreshContext()
 	 */
 	@Override
 	public void willRefreshContext() {
 	}
-
+	
 	/**
 	 * @see org.openmrs.module.ModuleActivator#willStart()
 	 */
 	@Override
 	public void willStart() {
 	}
-
+	
 	/**
 	 * @see org.openmrs.module.ModuleActivator#willStop()
 	 */
@@ -80,6 +82,7 @@ public abstract class BaseModuleActivator implements ModuleActivator {
 	 */
 	@Override
 	public void setupOnVersionChange(String previousCoreVersion, String previousModuleVersion) {
-		
+
 	}
+	
 }
