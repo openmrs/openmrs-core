@@ -157,9 +157,6 @@ public class DatabaseUpdater {
 			executeChangelog(changeLog, (ChangeSetExecutorCallback) null);
 		}
 	}
-
-
-
 	static boolean isAnyModuleChanged() {
 		AdministrationService adminService = Context.getAdministrationService();
 		for (Module module : ModuleFactory.getLoadedModules()) {
@@ -211,14 +208,27 @@ public class DatabaseUpdater {
 		adminService.saveGlobalProperty(gp);
 	}
 
-	
-	public static void performDatabaseUpdateIfNeeded() throws DatabaseUpdateException {
-		if (isCoreChanged() || isAnyModuleChanged()) {
+	private static void runModuleSetupHooks(String previousCoreVersion, boolean beforeSchema) {
+		// Currently no-op due to missing methods in ModuleActivator interface.
+	}
+
+	public static void performDatabaseUpdateIfNeeded() throws Exception {
+		AdministrationService adminService = Context.getAdministrationService();
+		String previousCoreVersion = adminService.getGlobalProperty("core.version.lastApplied", null);
+		boolean coreChanged = isCoreChanged();
+		boolean moduleChanged = isAnyModuleChanged();
+		boolean forceSetup = "true".equalsIgnoreCase(Context.getRuntimeProperties().getProperty("FORCE_SETUP", "false"));
+
+		if (coreChanged || moduleChanged || forceSetup) {
+			runModuleSetupHooks(previousCoreVersion, true);
 			executeChangelog();
+			runModuleSetupHooks(previousCoreVersion, false);
 			markVersionAs();
 			updateModulesVersionAfterChangelog();
 		}
 	}
+
+
 
 	/**
 	 * Run changesets on database using Liquibase to get the database up to the most recent version
