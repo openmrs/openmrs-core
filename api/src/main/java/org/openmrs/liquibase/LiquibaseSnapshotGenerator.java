@@ -31,7 +31,6 @@ import liquibase.structure.core.Schema;
 import liquibase.structure.core.Table;
 import liquibase.structure.core.UniqueConstraint;
 import liquibase.structure.core.View;
-import org.openmrs.api.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +46,6 @@ import java.sql.DriverManager;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
-import java.util.Properties;
 
 /**
  * Utility class for generating Liquibase snapshots from an OpenMRS database.
@@ -78,11 +76,10 @@ public class LiquibaseSnapshotGenerator {
 	private static final String DATA_SNAPSHOT_FILE = "liquibase-core-data-SNAPSHOT.xml";
 	
 	public static void main(String[] args) throws Exception {
-		Properties properties = Context.getRuntimeProperties();
 		
-		String url = properties.getProperty("connection.url", "jdbc:mysql://localhost:3306/openmrs?autoReconnect=true");
-		String username = properties.getProperty("connection.username", "root");
-		String password = properties.getProperty("connection.password", "");
+		String url = "jdbc:mysql://127.0.0.1:3306/openmrs";
+		String username = "test";
+		String password = "test";
 		
 		execute(url, username, password);
 	}

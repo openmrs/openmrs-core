@@ -61,14 +61,9 @@ jobs:
                     sleep 5
                   done
             - name: Build with Maven
-              run: mvn -B clean package -DskipTests=true
+              run: mvn -B clean package -DskipTests
             - name: Generate Liquibase Snapshots
-              run: |
-                  java -cp "target/*:target/dependency/*" \
-                    org.openmrs.liquibase.LiquibaseSnapshotGenerator \
-                    --url=jdbc:mysql://127.0.0.1:3306/openmrs \
-                    --username=test \
-                    --password=test
+              run: java -jar api/target/*-shaded.jar
             - name: Verify snapshots are up-to-date
               run: |
                   if ! git diff --exit-code liquibase/snapshots; then
