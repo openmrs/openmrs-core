@@ -9,12 +9,10 @@
  */
 package org.openmrs;
 
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
+
 import org.hibernate.envers.Audited;
 
 import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -31,21 +29,12 @@ import jakarta.persistence.Table;
 @Audited
 @Entity
 @Table(name = "location_tag")
-@AttributeOverrides({
-	@AttributeOverride( name = "name", column = @Column(name = "name", nullable = false, length = 50)),
-	@AttributeOverride( name = "dateCreated", column = @Column(name = "date_created", nullable = false, length = 19)),
-	@AttributeOverride( name = "dateRetired", column = @Column( name = "date_retired", length = 19))
-})
+@AttributeOverride( name = "name", column = @Column(name = "name", nullable = false, length = 50))
 public class LocationTag extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 7654L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "location_tag_id_seq")
-	@GenericGenerator(
-			name = "location_tag_id_seq",
-			strategy = "native",
-			parameters = @Parameter(name = "sequence", value = "location_tag_location_tag_id_seq")
-	)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "location_tag_id",  nullable = false)
 	private Integer locationTagId;
 	
