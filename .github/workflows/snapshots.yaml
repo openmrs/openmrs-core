@@ -1,0 +1,78 @@
+# liquibase snapshot generation check workflow
+name: Liquibase Snapshots
+
+# runs on pushes and PRs to master branch
+on:
+    push:
+        branches:
+            - master
+    pull_request:
+        branches:
+            - master
+    workflow_dispatch:
+
+permissions: read-all
+
+jobs:
+    snapshots:
+        strategy:
+            matrix:
+                platform:
+                    - ubuntu-latest
+                    - windows-latest
+                java-version:
+                    - 21
+#                    - 24
+                exclude:
+                    - platform: windows-latest
+                      java-version: 21
+        runs-on: ${{ matrix.platform }}
+        services:
+            mysql:
+                image: mysql:8
+                env:
+                    MYSQL_DATABASE: openmrs
+                    MYSQL_USER: test
+                    MYSQL_PASSWORD: test
+                    MYSQL_ROOT_PASSWORD: root
+                ports:
+                    - 3306:3306
+                options: >-
+                    --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
+                    --health-interval=10s
+                    --health-timeout=5s
+                    --health-retries=5
+        steps:
+            - uses: actions/checkout@v4
+            - name: Setup JDK
+              uses: actions/setup-java@v4
+              with:
+                  distribution: 'temurin'
+                  java-version: ${{ matrix.java-version }}
+                  cache: 'maven'
+            - name: Wait for MySQL to be ready
+              run: |
+                  for i in {1..30}; do
+                    if mysqladmin ping -h127.0.0.1 -uroot -proot --silent; then
+                      echo "MySQL is up!"
+                      break
+                    fi
+                    echo "Waiting for MySQL..."
+                    sleep 5
+                  done
+            - name: Build with Maven
+              run: mvn -B clean package -DskipTests=true
+            - name: Generate Liquibase Snapshots
+              run: |
+                  java -cp "target/*:target/dependency/*" \
+                    org.openmrs.liquibase.LiquibaseSnapshotGenerator \
+                    --url=jdbc:mysql://127.0.0.1:3306/openmrs \
+                    --username=test \
+                    --password=test
+            - name: Verify snapshots are up-to-date
+              run: |
+                  if ! git diff --exit-code liquibase/snapshots; then
+                    echo "Liquibase snapshots are out of date."
+                    echo "Please regenerate snapshots locally and commit them."
+                    exit 1
+                  fi
