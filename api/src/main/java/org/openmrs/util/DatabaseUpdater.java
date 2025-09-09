@@ -157,17 +157,15 @@ public class DatabaseUpdater {
 			executeChangelog(changeLog, (ChangeSetExecutorCallback) null);
 		}
 	}
-	
+
+
+
 	static boolean isAnyModuleChanged() {
 		AdministrationService adminService = Context.getAdministrationService();
-
 		for (Module module : ModuleFactory.getLoadedModules()) {
 			String moduleId = module.getModuleId();
-
-
 			String lastAppliedVersion = adminService.getGlobalProperty(moduleId + ".database_version", null);
 			String currentVersion = module.getVersion();
-
 			if (lastAppliedVersion == null || !lastAppliedVersion.equals(currentVersion)) {
 				return true;
 			}
@@ -178,10 +176,8 @@ public class DatabaseUpdater {
 	static void markModuleVersionAs(Module module) {
 		AdministrationService adminService = Context.getAdministrationService();
 		String moduleId = module.getModuleId();
-
 		String key = moduleId + ".database_version";
 		String currentVersion = module.getVersion();
-
 		GlobalProperty gp = adminService.getGlobalPropertyObject(key);
 		if (gp == null) {
 			gp = new GlobalProperty(key, currentVersion,
@@ -215,6 +211,14 @@ public class DatabaseUpdater {
 		adminService.saveGlobalProperty(gp);
 	}
 
+	
+	public static void performDatabaseUpdateIfNeeded() throws DatabaseUpdateException {
+		if (isCoreChanged() || isAnyModuleChanged()) {
+			executeChangelog();
+			markVersionAs();
+			updateModulesVersionAfterChangelog();
+		}
+	}
 
 	/**
 	 * Run changesets on database using Liquibase to get the database up to the most recent version
