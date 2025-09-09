@@ -322,9 +322,6 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 					purgeObs(o, o.getObsGroup().hasGroupMembers());
 				}
 			}
-			// TODO delete any related objects here before deleting the obs
-			// obsGroups objects?
-			// orders?
 		}
 		
 		dao.deleteObs(obs);
