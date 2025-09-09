@@ -321,7 +321,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	@Transactional(readOnly = true)
 	public List<Encounter> getEncountersByPatient(Patient patient) throws APIException {
 		if (patient == null) {
-			throw new IllegalArgumentException("The 'patient' parameter is requred and cannot be null");
+			throw new IllegalArgumentException("The 'patient' parameter is required and cannot be null");
 		}
 		
 		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setPatient(patient)
@@ -347,7 +347,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	@Transactional(readOnly = true)
 	public List<Encounter> getEncountersByPatientId(Integer patientId) throws APIException {
 		if (patientId == null) {
-			throw new IllegalArgumentException("The 'patientId' parameter is requred and cannot be null");
+			throw new IllegalArgumentException("The 'patientId' parameter is required and cannot be null");
 		}
 		return Context.getEncounterService()
 		        .filterEncountersByViewPermissions(dao.getEncountersByPatientId(patientId), null);
@@ -363,11 +363,24 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			throw new IllegalArgumentException("The 'identifier' parameter is required and cannot be null");
 		}
 		
-		List<Encounter> encs = new ArrayList<>();
-		for (Patient p : Context.getPatientService().getPatients(identifier, null, null, false)) {
-			encs.addAll(Context.getEncounterService().getEncountersByPatientId(p.getPatientId()));
+		// Get all patients with this identifier
+		List<Patient> patients = Context.getPatientService().getPatients(identifier, null, null, false);
+		
+		// If no patients found, return empty list
+		if (patients.isEmpty()) {
+			return new ArrayList<>();
 		}
-		return Context.getEncounterService().filterEncountersByViewPermissions(encs, null);
+		
+		// Collect all patient IDs
+		List<Integer> patientIds = new ArrayList<>();
+		for (Patient p : patients) {
+			patientIds.add(p.getPatientId());
+		}
+		
+		// Get encounters for all patients in a single query if possible
+		List<Encounter> allEncounters = dao.getEncountersByPatientIds(patientIds);
+		
+		return Context.getEncounterService().filterEncountersByViewPermissions(allEncounters, null);
 	}
 	
 	/**
