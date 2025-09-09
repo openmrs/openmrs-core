@@ -4308,4 +4308,4 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void getOrderAttributeTypeByName_shouldReturnNullForMismatchedName() {
 		assertNull(orderService.getOrderAttributeTypeByName("InvalidName"));
 	}
-}
+ }
