@@ -1266,4 +1266,14 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		assertThat(concept.getSetMembers(), hasItem(setMember3));
 		assertThat(concept.getSetMembers().size(), is(3));
 	}
+
+	@Test
+	void addAnswer_shouldNotAllowDrugAsAnswer() {
+		Concept concept = new Concept();
+		Drug drug = new Drug();
+
+		ConceptAnswer ca = new ConceptAnswer(null, drug);
+
+		assertThrows(IllegalArgumentException.class, () -> concept.addAnswer(ca));
+	}
 }
