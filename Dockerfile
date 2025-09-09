@@ -8,13 +8,13 @@
 #	Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS 
 #	graphic logo is a trademark of OpenMRS Inc.
 
-ARG DEV_JDK=amazoncorretto-21
-ARG RUNTIME_JDK=jdk21-corretto
+ARG DEV_JDK=eclipse-temurin-21
+ARG RUNTIME_JDK=jdk21-temurin
 
 ### Compile Stage (platform-agnostic)
 FROM --platform=$BUILDPLATFORM maven:3.9-$DEV_JDK AS compile
 
-RUN yum -y update && yum -y install git && yum clean all
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /openmrs_core
 
@@ -61,7 +61,7 @@ RUN mvn $MVN_SETTINGS $MVN_ARGS
 ### Development Stage
 FROM maven:3.9-$DEV_JDK AS dev
 
-RUN yum -y update && yum -y install tar gzip git && yum clean all
+RUN apt-get update && apt-get install -y tar gzip git && rm -rf /var/lib/apt/lists/*
 
 # Setup Tini
 ARG TARGETARCH
@@ -107,7 +107,7 @@ CMD ["/openmrs/startup-dev.sh"]
 ### Production Stage
 FROM tomcat:11-$RUNTIME_JDK
 
-RUN yum -y update && yum clean all && rm -rf /usr/local/tomcat/webapps/*
+RUN apt-get update && rm -rf /var/lib/apt/lists/* && rm -rf /usr/local/tomcat/webapps/*
 
 # Setup Tini
 ARG TARGETARCH
