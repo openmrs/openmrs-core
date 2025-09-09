@@ -157,13 +157,14 @@ public class DatabaseUpdater {
 			executeChangelog(changeLog, (ChangeSetExecutorCallback) null);
 		}
 	}
+
 	static boolean isAnyModuleChanged() {
 		AdministrationService adminService = Context.getAdministrationService();
 
 		for (Module module : ModuleFactory.getLoadedModules()) {
 			String moduleId = module.getModuleId();
 
-			
+
 			String lastAppliedVersion = adminService.getGlobalProperty(moduleId + ".database_version", null);
 			String currentVersion = module.getVersion();
 
