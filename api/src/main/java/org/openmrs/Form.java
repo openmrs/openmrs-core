@@ -9,8 +9,6 @@
  */
 package org.openmrs;
 
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 
 import java.util.ArrayList;
@@ -29,7 +27,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 /**
@@ -48,8 +45,7 @@ public class Form extends BaseChangeableOpenmrsMetadata {
 	
 	// Fields
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "form_seq")
-	@SequenceGenerator(name = "form_seq", sequenceName = "form_form_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "form_id")
 	private Integer formId;
 
