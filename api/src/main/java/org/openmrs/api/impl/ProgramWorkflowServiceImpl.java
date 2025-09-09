@@ -666,7 +666,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
         if (ConceptStateConversion.class.equals(type)) {
             return (T) getConceptStateConversionByUuid(uuid);
         }
-        return null;
+        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
     }
 
     @Override

@@ -272,7 +272,7 @@ public class DiagnosisServiceImpl extends BaseOpenmrsService implements Diagnosi
         if (DiagnosisAttribute.class.equals(type)) {
             return (T) getDiagnosisAttributeByUuid(uuid);
         }
-        return null;
+        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
     }
 
     @Override

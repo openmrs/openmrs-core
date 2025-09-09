@@ -189,7 +189,7 @@ public class ConditionServiceImpl extends BaseOpenmrsService implements Conditio
         if (Condition.class.equals(type)) {
             return (T) getConditionByUuid(uuid);
         }
-        return null;
+        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
     }
 
     @Override

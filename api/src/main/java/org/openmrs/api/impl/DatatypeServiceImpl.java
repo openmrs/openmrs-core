@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.openmrs.api.APIException;
 import org.openmrs.api.DatatypeService;
 import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
@@ -242,7 +243,7 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
         if (ClobDatatypeStorage.class.equals(type)) {
             return (T) getClobDatatypeStorageByUuid(uuid);
         }
-        return null;
+        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
     }
 
     @Override

@@ -558,7 +558,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
         if (TaskDefinition.class.equals(type)) {
             return (T) getTaskByUuid(uuid);
         }
-        return null;
+        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
     }
 
     @Override

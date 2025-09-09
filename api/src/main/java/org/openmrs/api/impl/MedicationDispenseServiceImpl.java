@@ -93,7 +93,7 @@ public class MedicationDispenseServiceImpl extends BaseOpenmrsService implements
         if (MedicationDispense.class.equals(type)) {
             return (T) getMedicationDispenseByUuid(uuid);
         }
-        return null;
+        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
     }
 
     @Override

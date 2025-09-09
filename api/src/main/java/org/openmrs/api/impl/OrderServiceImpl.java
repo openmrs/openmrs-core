@@ -1319,7 +1319,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
         if (OrderGroupAttributeType.class.equals(type)) {
             return (T) getOrderGroupAttributeTypeByUuid(uuid);
         }
-        return null;
+        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
     }
 
     @Override

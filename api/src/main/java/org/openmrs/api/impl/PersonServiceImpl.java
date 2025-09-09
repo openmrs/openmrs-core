@@ -1026,7 +1026,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
         if (PersonAddress.class.equals(type)) {
             return (T) getPersonAddressByUuid(uuid);
         }
-        return null;
+        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
     }
 
     @Override

@@ -1016,7 +1016,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
         if (EncounterType.class.equals(type)) {
             return (T) getEncounterTypeByUuid(uuid);
         }
-        return null;
+        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
     }
 
     @Override

@@ -41,8 +41,9 @@ public interface RefByUuid {
      * @param uuid the UUID of the object to fetch
      * @param <T>  the domain object type
      * @return the resolved domain object instance, or {@code null} if no matching object is found
+     * @throws APIException if the type is not supported
      */
-    <T> T getRefByUuid(Class<T> type, String uuid);
+    <T> T getRefByUuid(Class<T> type, String uuid) throws APIException;
 
     /**
      * Get the list of domain types that this service can resolve.

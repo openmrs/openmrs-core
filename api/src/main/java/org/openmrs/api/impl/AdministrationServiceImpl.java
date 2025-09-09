@@ -993,7 +993,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
         if (GlobalProperty.class.equals(type)) {
             return (T) getGlobalPropertyByUuid(uuid);
         }
-        return null;
+        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
     }
 
     @Override

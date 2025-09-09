@@ -816,7 +816,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService, 
         if (FieldType.class.equals(type)) {
             return (T) getFieldTypeByUuid(uuid);
         }
-        return null;
+        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
     }
 
     @Override

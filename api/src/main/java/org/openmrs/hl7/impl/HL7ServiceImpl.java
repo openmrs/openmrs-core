@@ -1201,7 +1201,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service, Re
         if (HL7QueueItem.class.equals(type)) {
             return (T) getHl7QueueItemByUuid(uuid);
         }
-        return null;
+        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
     }
 
     @Override

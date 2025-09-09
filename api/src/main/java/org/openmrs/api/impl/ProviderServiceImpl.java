@@ -355,7 +355,7 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
         if (ProviderAttribute.class.equals(type)) {
             return (T) getProviderAttributeByUuid(uuid);
         }
-        return null;
+        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
     }
 
     @Override
