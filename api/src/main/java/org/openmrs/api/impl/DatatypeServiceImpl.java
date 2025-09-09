@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.impl;
 
+
+import java.util.Arrays;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -18,7 +20,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.openmrs.api.APIException;
 import org.openmrs.api.DatatypeService;
+import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ClobDatatypeStorage;
 import org.openmrs.api.db.DatatypeDAO;
@@ -32,7 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @since 1.9
  */
 @Transactional
-public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeService {
+public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeService, RefByUuid {
 	
 	private List<Class<? extends CustomDatatype>> datatypeClasses;
 	
@@ -233,4 +237,18 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 		dao.deleteClobDatatypeStorage(storage);
 	}
 	
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getRefByUuid(Class<T> type, String uuid) {
+        if (ClobDatatypeStorage.class.equals(type)) {
+            return (T) getClobDatatypeStorageByUuid(uuid);
+        }
+        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
+    }
+
+    @Override
+    public List<Class<?>> getRefTypes() {
+        return Arrays.asList(ClobDatatypeStorage.class);
+    }
+
 }
