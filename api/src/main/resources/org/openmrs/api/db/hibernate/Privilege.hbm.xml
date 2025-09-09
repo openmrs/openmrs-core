@@ -11,23 +11,23 @@
 
 -->
 <!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+		"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+		"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="org.openmrs">
 
 	<class name="Privilege" table="privilege">
 
 		<cache usage="read-write"/>
 		<id name="privilege" type="java.lang.String"
-			column="privilege" length="250">
-			<generator class="assigned" />
+		    column="privilege" length="250">
+			<generator class="assigned"/>
 		</id>
 
 		<property name="uuid" type="java.lang.String"
-			column="uuid" length="38" unique="true" />
+		          column="uuid" length="38" unique="true"/>
 
 		<property name="description" type="java.lang.String"
-			column="description" length="250" />
+		          column="description" length="250"/>
 
 	</class>
 </hibernate-mapping>
