@@ -9,7 +9,16 @@
  */
 package org.openmrs;
 
+
 import org.hibernate.envers.Audited;
+
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 /**
  * An LocationTag allows categorization of {@link Location}s
@@ -18,10 +27,15 @@ import org.hibernate.envers.Audited;
  * @since 1.5
  */
 @Audited
+@Entity
+@Table(name = "location_tag")
+@AttributeOverride( name = "name", column = @Column(name = "name", nullable = false, length = 50))
 public class LocationTag extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 7654L;
-	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "location_tag_id",  nullable = false)
 	private Integer locationTagId;
 	
 	// Constructors
