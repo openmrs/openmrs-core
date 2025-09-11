@@ -15,19 +15,13 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xmlns:context="http://www.springframework.org/schema/context"
-	   xmlns:cache="http://www.springframework.org/schema/cache"
-	   xmlns:tx="http://www.springframework.org/schema/tx"
 	   xmlns:util="http://www.springframework.org/schema/util"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans
        		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 			http://www.springframework.org/schema/context
 			http://www.springframework.org/schema/context/spring-context-3.0.xsd
-			http://www.springframework.org/schema/tx
-			http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
             http://www.springframework.org/schema/util
-            http://www.springframework.org/schema/util/spring-util-3.0.xsd
-			http://www.springframework.org/schema/cache
-			http://www.springframework.org/schema/cache/spring-cache.xsd">
+            http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 	
 	<bean class="org.openmrs.api.impl.GlobalLocaleList" id="globalLocaleList"/>
 
@@ -54,8 +48,8 @@
 				<ref bean="personNameGlobalPropertyListener"/>
 				<ref bean="loggingConfigurationGlobalPropertyListener"/>
 				<ref bean="globalLocaleList"/>
-				<ref bean="adminServiceTarget"/>
-				<ref bean="orderServiceTarget"/>
+				<ref bean="adminService"/>
+				<ref bean="orderService"/>
 			</list>
 		</property>
 	</bean>
@@ -185,322 +179,6 @@
 		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
 
-	<!--  **************************  SCHEDULER SERVICE  *************************  -->
-	<!-- 
-		Note that we have circular dependency between service and context object.
-		There's nothing we could do about this.  
-	-->
-	<bean id="patientServiceTarget" class="org.openmrs.api.impl.PatientServiceImpl">
-		<property name="patientDAO" ref="patientDAO"/>
-		<property name="identifierValidators">
-			<map>
-				<entry key="org.openmrs.patient.impl.LuhnIdentifierValidator">
-					<bean class="org.openmrs.patient.impl.LuhnIdentifierValidator"/>
-				</entry>
-				<entry key="org.openmrs.patient.impl.VerhoeffIdentifierValidator">
-					<bean class="org.openmrs.patient.impl.VerhoeffIdentifierValidator"/>
-				</entry>
-			</map>
-		</property>
-	</bean>
-	<bean id="personServiceTarget" class="org.openmrs.api.impl.PersonServiceImpl">
-		<property name="personDAO" ref="personDAO"/>
-	</bean>
-	<bean id="conceptServiceTarget" class="org.openmrs.api.impl.ConceptServiceImpl">
-		<property name="conceptDAO" ref="conceptDAO"/>
-	</bean>
-	<bean id="userServiceTarget" class="org.openmrs.api.impl.UserServiceImpl">
-		<property name="userDAO" ref="userDAO"/>
-	</bean>
-	<bean id="obsServiceTarget" class="org.openmrs.api.impl.ObsServiceImpl">
-		<property name="obsDAO" ref="obsDAO"/>
-		<property name="handlers">
-			<map>
-				<entry key="ImageHandler" value-ref="imageHandler"/>
-				<entry key="TextHandler" value-ref="textHandler"/>
-				<entry key="BinaryDataHandler" value-ref="binaryDataHandler"/>
-				<entry key="BinaryStreamHandler" value-ref="binaryStreamHandler"/>
-			</map>
-		</property>
-	</bean>
-	<bean id="encounterServiceTarget" class="org.openmrs.api.impl.EncounterServiceImpl">
-		<property name="encounterDAO" ref="encounterDAO"/>
-	</bean>
-	<bean id="locationServiceTarget" class="org.openmrs.api.impl.LocationServiceImpl">
-		<property name="locationDAO" ref="locationDAO"/>
-	</bean>
-	<bean id="orderServiceTarget" class="org.openmrs.api.impl.OrderServiceImpl">
-		<property name="orderDAO" ref="orderDAO"/>
-	</bean>
-	<bean id="conditionServiceTarget" class="org.openmrs.api.impl.ConditionServiceImpl">
-		<property name="conditionDAO" ref="conditionDAO"/>
-	</bean>
-	<bean id="diagnosisServiceTarget" class="org.openmrs.api.impl.DiagnosisServiceImpl">
-		<property name="diagnosisDAO" ref="diagnosisDAO"/>
-	</bean>
-	<bean id="medicationDispenseServiceTarget" class="org.openmrs.api.impl.MedicationDispenseServiceImpl">
-		<property name="medicationDispenseDAO" ref="medicationDispenseDAO"/>
-	</bean>
-	<bean id="orderSetServiceTarget" class="org.openmrs.api.impl.OrderSetServiceImpl">
-		<property name="orderSetDAO" ref="orderSetDAO"/>
-	</bean>
-	<bean id="formServiceTarget" class="org.openmrs.api.impl.FormServiceImpl">
-		<property name="formDAO" ref="formDAO"/>
-	</bean>
-	<bean id="adminServiceTarget" class="org.openmrs.api.impl.AdministrationServiceImpl">
-		<property name="administrationDAO" ref="adminDAO"/>
-		<property name="eventListeners" ref="openmrsEventListeners"/>
-		<property name="globalLocaleList" ref="globalLocaleList"/>
-		<property name="implementationIdHttpClient" ref="implementationIdHttpClient"/>
-	</bean>
-	<bean id="datatypeServiceTarget" class="org.openmrs.api.impl.DatatypeServiceImpl">
-		<property name="dao" ref="datatypeDAO"/>
-	</bean>
-	<bean id="programWorkflowServiceTarget" class="org.openmrs.api.impl.ProgramWorkflowServiceImpl">
-		<property name="programWorkflowDAO" ref="programWorkflowDAO"/>
-	</bean>
-	<bean id="visitServiceTarget" class="org.openmrs.api.impl.VisitServiceImpl">
-		<property name="visitDAO" ref="visitDAO"/>
-	</bean>
-	<bean id="providerServiceTarget" class="org.openmrs.api.impl.ProviderServiceImpl">
-		<property name="providerDAO" ref="providerDAO"/>
-	</bean>
-
-	<!-- Cohort Service setup -->
-	<bean id="cohortServiceTarget" class="org.openmrs.api.impl.CohortServiceImpl">
-		<property name="cohortDAO" ref="cohortDAO"/>
-	</bean>
-	<!-- /Cohort Service setup -->
-
-	<bean id="schedulerServiceTarget" class="org.openmrs.scheduler.timer.TimerSchedulerServiceImpl">
-		<property name="schedulerDAO" ref="schedulerDAO"/>
-	</bean>
-	<bean id="alertServiceTarget" class="org.openmrs.notification.impl.AlertServiceImpl">
-		<property name="alertDAO" ref="alertDAO"/>
-	</bean>
-	<bean id="messageServiceTarget" class="org.openmrs.notification.impl.MessageServiceImpl">
-		<property name="templateDAO" ref="templateDAO"/>
-	</bean>
-
-	<!-- SerializationService setup -->
-	<bean id="serializationServiceTarget" class="org.openmrs.api.impl.SerializationServiceImpl">
-		<property name="serializers">
-			<list>
-				<ref bean="simpleXStreamSerializer" />
-			</list>
-		</property>
-	</bean>
-	<!-- /SerializationService setup -->
-
-	<bean id="hL7ServiceTarget" class="org.openmrs.hl7.impl.HL7ServiceImpl">
-		<property name="HL7DAO" ref="hL7DAO"/>
-		<property name="parser">
-			<bean class="ca.uhn.hl7v2.parser.GenericParser"/>
-		</property>
-		<property name="router">
-			<bean class="ca.uhn.hl7v2.app.MessageTypeRouter"/>
-		</property>
-		<property name="HL7Handlers">
-			<map>
-				<entry key="ORU_R01">
-					<bean class="org.openmrs.hl7.handler.ORUR01Handler"/>
-				</entry>
-				<entry key="ADT_A28">
-					<bean class="org.openmrs.hl7.handler.ADTA28Handler"/>
-				</entry>
-			</map>
-		</property>
-	</bean>
-
-
-	<bean id="messageSourceServiceTarget" class="org.openmrs.messagesource.impl.MessageSourceServiceImpl">
-		<property name="activeMessageSource" ref="mutableResourceBundleMessageSource"/>
-	</bean>
-
-	<bean id="transactionAttributeSource"
-		  class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-
-	<bean id="mutableResourceBundleMessageSource" class="org.openmrs.messagesource.impl.MutableResourceBundleMessageSource">
-		<property name="basenames">
-			<!--  TODO: Ugh. Presumes to be in a web application... -->
-			<list>
-				<value>classpath:custom_messages</value>
-				<value>classpath:messages</value>
-			</list>
-		</property>
-		<property name="useCodeAsDefaultMessage" value="true"/>
-		<property name="cacheSeconds" value="5"/>
-		<property name="defaultEncoding" value="UTF-8"/>
-	</bean>
-
-	<bean id="patientService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="target" ref="patientServiceTarget"/>
-		<property name="preInterceptors" ref="serviceInterceptors"/>
-		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
-	</bean>
-	<bean id="personService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="target" ref="personServiceTarget"/>
-		<property name="preInterceptors" ref="serviceInterceptors"/>
-		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
-	</bean>
-	<bean id="conceptService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="target" ref="conceptServiceTarget"/>
-		<property name="preInterceptors" ref="serviceInterceptors"/>
-		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
-	</bean>
-	<bean id="userService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="target" ref="userServiceTarget"/>
-		<property name="preInterceptors" ref="serviceInterceptors"/>
-		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
-	</bean>
-	<bean id="obsService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="target" ref="obsServiceTarget"/>
-		<property name="preInterceptors" ref="serviceInterceptors"/>
-		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
-	</bean>
-	<bean id="encounterService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="target" ref="encounterServiceTarget"/>
-		<property name="preInterceptors" ref="serviceInterceptors"/>
-		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
-	</bean>
-	<bean id="locationService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="target" ref="locationServiceTarget"/>
-		<property name="preInterceptors" ref="serviceInterceptors"/>
-		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
-	</bean>
-	<bean id="orderService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="target" ref="orderServiceTarget"/>
-		<property name="preInterceptors" ref="serviceInterceptors"/>
-		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
-	</bean>
-	<bean id="conditionService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="target" ref="conditionServiceTarget"/>
-		<property name="preInterceptors" ref="serviceInterceptors"/>
-		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
-	</bean>
-	<bean id="diagnosisService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="target" ref="diagnosisServiceTarget"/>
-		<property name="preInterceptors" ref="serviceInterceptors"/>
-		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
-	</bean>
-	<bean id="medicationDispenseService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="target" ref="medicationDispenseServiceTarget"/>
-		<property name="preInterceptors" ref="serviceInterceptors"/>
-		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
-	</bean>
-	<bean id="orderSetService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="target" ref="orderSetServiceTarget"/>
-		<property name="preInterceptors" ref="serviceInterceptors"/>
-		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
-	</bean>
-	<bean id="formService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="target" ref="formServiceTarget"/>
-		<property name="preInterceptors" ref="serviceInterceptors"/>
-		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
-	</bean>
-	<bean id="adminService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean" primary="true">
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="target" ref="adminServiceTarget"/>
-		<property name="preInterceptors" ref="serviceInterceptors"/>
-		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
-	</bean>
-	<bean id="datatypeService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="target" ref="datatypeServiceTarget"/>
-		<property name="preInterceptors" ref="serviceInterceptors"/>
-		<!-- This service is not transactional, at least not yet, so maybe we can remove this -->
-		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
-	</bean>
-	<bean id="programWorkflowService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="target" ref="programWorkflowServiceTarget"/>
-		<property name="preInterceptors" ref="serviceInterceptors"/>
-		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
-	</bean>
-	<bean id="messageService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="target" ref="messageServiceTarget"/>
-		<property name="preInterceptors" ref="serviceInterceptors"/>
-		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
-	</bean>
-	<bean id="cohortService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="target" ref="cohortServiceTarget"/>
-		<property name="preInterceptors" ref="serviceInterceptors"/>
-		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
-	</bean>
-	<bean id="schedulerService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="target" ref="schedulerServiceTarget"/>
-		<property name="preInterceptors" ref="serviceInterceptors"/>
-		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
-	</bean>
-	<bean id="alertService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="target" ref="alertServiceTarget"/>
-		<property name="preInterceptors" ref="serviceInterceptors"/>
-		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
-	</bean>
-	<bean id="serializationService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="target" ref="serializationServiceTarget"/>
-		<property name="preInterceptors" ref="serviceInterceptors"/>
-		<property name="transactionAttributeSource" ref="transactionAttributeSource" />
-	</bean>
-	<bean id="hL7Service" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="target" ref="hL7ServiceTarget"/>
-		<property name="preInterceptors" ref="serviceInterceptors"/>
-		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
-	</bean>
-	<bean id="messageSourceService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="target" ref="messageSourceServiceTarget"/>
-		<property name="preInterceptors" ref="serviceInterceptors"/>
-		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
-	</bean>
-	<bean id="visitService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="target" ref="visitServiceTarget"/>
-		<property name="preInterceptors" ref="serviceInterceptors"/>
-		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
-	</bean>
-	<bean id="providerService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="target" ref="providerServiceTarget"/>
-		<property name="preInterceptors" ref="serviceInterceptors"/>
-		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
-	</bean>
-
-	<!--  **************************  SERVICE INTERCEPTORS  *************************  -->
-	<!-- AOP before advice that authorizes users according to annotations -->
-	<bean id="authorizationInterceptor" class="org.openmrs.aop.AuthorizationAdvice"/>
-	<!-- AOP "around" advisor that prints logging messages for service methods -->
-	<bean id="loggingInterceptor" class="org.openmrs.aop.LoggingAdvice"/>
-	<!-- AOP before advice that calls the SetRequiredDataHandler methods -->
-	<bean id="requiredDataInterceptor" class="org.openmrs.aop.RequiredDataAdvice"/>
-
-	<util:list id="serviceInterceptors">
-		<ref bean="authorizationInterceptor"/>
-		<ref bean="requiredDataInterceptor"/>
-		<ref bean="loggingInterceptor"/>
-		<!-- Caching handled by cache:annotation-driven -->
-		<!-- Transactions handled by tx:annotation-driven -->
-	</util:list>
-	
 	<!--  **************************  SESSION FACTORY  *************************  -->
 
 	<util:list id="moduleTestingMappingJarLocations">
@@ -538,14 +216,7 @@
 	<bean id="dbSessionFactory" class="org.openmrs.api.db.hibernate.DbSessionFactory">
 		<constructor-arg name="sessionFactory" ref="sessionFactory"/>
 	</bean>
-
-	<!--  **************************  TRANSACTION MANAGER CONFIGURATION  *************************  -->
-
-	<bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
-		<property name="sessionFactory" ref="sessionFactory"/>
-	</bean>
-
-
+	
 	<!--  ******************************  MESSAGE SERVICES  ****************************** -->
 
 	<!-- Messaging Service -->
@@ -617,12 +288,6 @@
 		<constructor-arg name="url" value="https://implementation.openmrs.org"/>
 	</bean>
 
-	<bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor" >
-		<property name="corePoolSize" value="1" />
-		<property name="maxPoolSize" value="20" />
-		<property name="queueCapacity" value="1000" />
-	</bean>
-
 	<!--  ************************ END VALIDATOR CONFIGURATION  ************************  -->
 
 	<context:component-scan base-package="org.openmrs">
@@ -633,9 +298,5 @@
 								expression="org.openmrs.util.TestTypeFilter"/>
 		<context:exclude-filter type="custom" expression="org.openmrs.annotation.OpenmrsProfileExcludeFilter"/>
 	</context:component-scan>
-
-	<cache:annotation-driven cache-manager="apiCacheManager" proxy-target-class="true"/>
-
-	<tx:annotation-driven proxy-target-class="true" />
 
 </beans>
