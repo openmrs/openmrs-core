@@ -10,10 +10,17 @@
 package org.openmrs.module.testmodule.api;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.openmrs.test.jupiter.BaseModuleContextSensitiveTest;
+import org.springframework.aop.framework.Advised;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class TestModuleServiceNoInterfaceTest extends BaseModuleContextSensitiveTest {
@@ -24,5 +31,18 @@ public class TestModuleServiceNoInterfaceTest extends BaseModuleContextSensitive
 	@Test
 	public void testHello() {
 		assertThat(testModuleServiceNoInterface.hello(), is("Hello!"));
+	}
+
+	@Test
+	public void annotatedService_shouldHaveInterceptorsAppliedInTheCorrectOrder() {
+		assertNotNull(testModuleServiceNoInterface);
+
+		Advised advised = (Advised) testModuleServiceNoInterface;
+
+		List<String> actualAdvices = Arrays.stream(advised.getAdvisors()).map(advisor -> advisor.getAdvice().getClass()
+			.getSimpleName()).collect(Collectors.toList());
+
+		assertThat(actualAdvices, contains("AuthorizationAdvice", "LoggingAdvice",
+			"RequiredDataAdvice", "CacheInterceptor", "TransactionInterceptor"));
 	}
 }

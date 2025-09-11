@@ -15,19 +15,13 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xmlns:context="http://www.springframework.org/schema/context"
-	   xmlns:cache="http://www.springframework.org/schema/cache"
-	   xmlns:tx="http://www.springframework.org/schema/tx"
 	   xmlns:util="http://www.springframework.org/schema/util"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans
        		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 			http://www.springframework.org/schema/context
 			http://www.springframework.org/schema/context/spring-context-3.0.xsd
-			http://www.springframework.org/schema/tx
-			http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
             http://www.springframework.org/schema/util
-            http://www.springframework.org/schema/util/spring-util-3.0.xsd
-			http://www.springframework.org/schema/cache
-			http://www.springframework.org/schema/cache/spring-cache.xsd">
+            http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 	
 	<bean class="org.openmrs.api.impl.GlobalLocaleList" id="globalLocaleList"/>
 
@@ -185,85 +179,6 @@
 		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
 
-	<bean id="transactionAttributeSource"
-		  class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-
-	<bean id="mutableResourceBundleMessageSource" class="org.openmrs.messagesource.impl.MutableResourceBundleMessageSource">
-		<property name="basenames">
-			<!--  TODO: Ugh. Presumes to be in a web application... -->
-			<list>
-				<value>classpath:custom_messages</value>
-				<value>classpath:messages</value>
-			</list>
-		</property>
-		<property name="useCodeAsDefaultMessage" value="true"/>
-		<property name="cacheSeconds" value="5"/>
-		<property name="defaultEncoding" value="UTF-8"/>
-	</bean>
-	
-	<util:map id="identifierValidators" key-type="java.lang.Class" value-type="org.openmrs.patient.IdentifierValidator">
-		<entry>
-			<key>
-				<value type="java.lang.Class">org.openmrs.patient.impl.LuhnIdentifierValidator</value>
-			</key>
-			<bean class="org.openmrs.patient.impl.LuhnIdentifierValidator"/>
-		</entry>
-		<entry>
-			<key>
-				<value type="java.lang.Class">org.openmrs.patient.impl.VerhoeffIdentifierValidator</value>
-			</key>
-			<bean class="org.openmrs.patient.impl.VerhoeffIdentifierValidator"/>
-		</entry>
-	</util:map>
-	
-	<util:map id="handlers" key-type="java.lang.String" value-type="org.openmrs.obs.ComplexObsHandler">
-		<entry key="ImageHandler">
-			<ref bean="imageHandler" />
-		</entry>
-		<entry key="TextHandler">
-			<ref bean="textHandler" />
-		</entry>
-		<entry key="BinaryDataHandler">
-			<ref bean="binaryDataHandler" />
-		</entry>
-		<entry key="BinaryStreamHandler">
-			<ref bean="binaryStreamHandler" />
-		</entry>
-	</util:map>
-
-	<util:list id="serializerList" value-type="org.openmrs.serialization.OpenmrsSerializer">
-		<bean class="org.openmrs.serialization.SimpleXStreamSerializer" />
-	</util:list>
-
-	<bean id="hL7Parser" class="ca.uhn.hl7v2.parser.GenericParser"/>
-
-	<bean id="hL7Router" class="ca.uhn.hl7v2.app.MessageTypeRouter"/>
-	
-	<util:map id="hL7Handlers" key-type="java.lang.String" value-type="ca.uhn.hl7v2.app.Application">
-		<entry key="ORU_R01">
-			<bean class="org.openmrs.hl7.handler.ORUR01Handler"/>
-		</entry>
-		<entry key="ADT_A28">
-			<bean class="org.openmrs.hl7.handler.ADTA28Handler"/>
-		</entry>
-	</util:map>
-	
-	<!--  **************************  SERVICE INTERCEPTORS  *************************  -->
-	<!-- AOP before advice that authorizes users according to annotations -->
-	<bean id="authorizationInterceptor" class="org.openmrs.aop.AuthorizationAdvice"/>
-	<!-- AOP "around" advisor that prints logging messages for service methods -->
-	<bean id="loggingInterceptor" class="org.openmrs.aop.LoggingAdvice"/>
-	<!-- AOP before advice that calls the SetRequiredDataHandler methods -->
-	<bean id="requiredDataInterceptor" class="org.openmrs.aop.RequiredDataAdvice"/>
-
-	<util:list id="serviceInterceptors">
-		<ref bean="authorizationInterceptor"/>
-		<ref bean="requiredDataInterceptor"/>
-		<ref bean="loggingInterceptor"/>
-		<!-- Caching handled by cache:annotation-driven -->
-		<!-- Transactions handled by tx:annotation-driven -->
-	</util:list>
-	
 	<!--  **************************  SESSION FACTORY  *************************  -->
 
 	<util:list id="moduleTestingMappingJarLocations">
@@ -301,14 +216,7 @@
 	<bean id="dbSessionFactory" class="org.openmrs.api.db.hibernate.DbSessionFactory">
 		<constructor-arg name="sessionFactory" ref="sessionFactory"/>
 	</bean>
-
-	<!--  **************************  TRANSACTION MANAGER CONFIGURATION  *************************  -->
-
-	<bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
-		<property name="sessionFactory" ref="sessionFactory"/>
-	</bean>
-
-
+	
 	<!--  ******************************  MESSAGE SERVICES  ****************************** -->
 
 	<!-- Messaging Service -->
@@ -380,12 +288,6 @@
 		<constructor-arg name="url" value="https://implementation.openmrs.org"/>
 	</bean>
 
-	<bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor" >
-		<property name="corePoolSize" value="1" />
-		<property name="maxPoolSize" value="20" />
-		<property name="queueCapacity" value="1000" />
-	</bean>
-
 	<!--  ************************ END VALIDATOR CONFIGURATION  ************************  -->
 
 	<context:component-scan base-package="org.openmrs">
@@ -396,9 +298,5 @@
 								expression="org.openmrs.util.TestTypeFilter"/>
 		<context:exclude-filter type="custom" expression="org.openmrs.annotation.OpenmrsProfileExcludeFilter"/>
 	</context:component-scan>
-
-	<cache:annotation-driven cache-manager="apiCacheManager" proxy-target-class="true"/>
-
-	<tx:annotation-driven proxy-target-class="true" />
 
 </beans>

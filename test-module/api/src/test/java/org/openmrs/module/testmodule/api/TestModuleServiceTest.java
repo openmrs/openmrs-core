@@ -8,6 +8,7 @@ package org.openmrs.module.testmodule.api; /**
  * graphic logo is a trademark of OpenMRS Inc.
  */
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.openmrs.test.jupiter.BaseModuleContextSensitiveTest;
+import org.springframework.aop.Advisor;
 import org.springframework.aop.framework.Advised;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -38,43 +40,15 @@ public class TestModuleServiceTest extends BaseModuleContextSensitiveTest {
 	}
 
 	@Test
-	public void annotatedService_shouldHaveInterceptorsApplied() {
+	public void annotatedService_shouldHaveInterceptorsAppliedInTheCorrectOrder() {
 		assertNotNull(testModuleService);
 
 		Advised advised = (Advised) testModuleService;
-		List<String> expectedAdvices = Arrays.asList(
-			"AuthorizationAdvice", "LoggingAdvice", "RequiredDataAdvice", "CacheInterceptor");
 
-		boolean hasAllExpectedAdvice = expectedAdvices.stream()
-			.allMatch(expected -> hasAdvice(advised, expected));
-		assertTrue(hasAllExpectedAdvice);
-	}
+		List<String> actualAdvices = Arrays.stream(advised.getAdvisors()).map(advisor -> advisor.getAdvice().getClass()
+			.getSimpleName()).collect(Collectors.toList());
 
-	@Test
-	public void annotatedService_shouldNotHaveDuplicateAdvices() {
-		assertNotNull(testModuleService);
-
-		List<String> expectedAdvices = Arrays.asList(
-			"AuthorizationAdvice", "LoggingAdvice", "RequiredDataAdvice", "CacheInterceptor");
-
-		// Collect all advice class simple names applied to the proxy
-		Advised advised = (Advised) testModuleService;
-		List<String> appliedAdviceNames = Arrays.stream(advised.getAdvisors())
-			.map(advisor -> advisor.getAdvice().getClass().getSimpleName())
-			.collect(Collectors.toList());
-
-		// Count occurrences of each expected advice
-		for (String expected : expectedAdvices) {
-			long count = appliedAdviceNames.stream()
-				.filter(name -> name.equals(expected))
-				.count();
-
-			assertEquals(1, count);
-		}
-	}
-
-	private boolean hasAdvice(Advised advised, String adviceName) {
-		return Arrays.stream(advised.getAdvisors())
-			.anyMatch(advisor -> advisor.getAdvice().getClass().getSimpleName().contains(adviceName));
+		assertThat(actualAdvices, contains("AuthorizationAdvice", 
+			"LoggingAdvice", "RequiredDataAdvice", "CacheInterceptor", "TransactionInterceptor"));
 	}
 }

@@ -11,6 +11,7 @@ package org.openmrs.module.testmodule.api.impl;
 
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.testmodule.api.TestModuleAOPService;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class TestModuleAOPServiceImpl  extends BaseOpenmrsService implements TestModuleAOPService {
 	
+	@Cacheable("testModuleCache")
 	public String aopHello() {
 		return "AOP Hello";
 	}

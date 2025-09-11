@@ -9,6 +9,8 @@
  */
 package org.openmrs.module.testmodule.api;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -44,43 +46,15 @@ public class TestModuleAOPServiceTest extends BaseModuleContextSensitiveTest {
 	}
 
 	@Test
-	public void xmlServiceDefined_shouldHaveInterceptorsApplied() {
+	public void xmlServiceDefined_shouldHaveInterceptorsAppliedInTheCorrectOrder() {
 		assertNotNull(aopService);
 		
 		Advised advised = (Advised) aopService;
-		List<String> expectedAdvices = Arrays.asList(
-			"AuthorizationAdvice", "LoggingAdvice", "RequiredDataAdvice", "CacheInterceptor");
 
-		boolean hasAllExpectedAdvice = expectedAdvices.stream()
-			.allMatch(expected -> hasAdvice(advised, expected));
-		assertTrue(hasAllExpectedAdvice);
-	}
+		List<String> actualAdvices = Arrays.stream(advised.getAdvisors()).map(advisor -> advisor.getAdvice().getClass()
+			.getSimpleName()).collect(Collectors.toList());
 
-	@Test
-	public void xmlServiceDefined_shouldNotHaveDuplicateAdvices() {
-		assertNotNull(aopService);
-
-		List<String> expectedAdvices = Arrays.asList(
-			"AuthorizationAdvice", "LoggingAdvice", "RequiredDataAdvice", "CacheInterceptor");
-
-		// Collect all advice class simple names applied to the proxy
-		Advised advised = (Advised) aopService;
-		List<String> appliedAdviceNames = Arrays.stream(advised.getAdvisors())
-			.map(advisor -> advisor.getAdvice().getClass().getSimpleName())
-			.collect(Collectors.toList());
-
-		// Count occurrences of each expected advice
-		for (String expected : expectedAdvices) {
-			long count = appliedAdviceNames.stream()
-				.filter(name -> name.equals(expected))
-				.count();
-
-			assertEquals(1, count);
-		}
-	}
-	
-	private boolean hasAdvice(Advised advised, String adviceName) {
-		return Arrays.stream(advised.getAdvisors())
-			.anyMatch(advisor -> advisor.getAdvice().getClass().getSimpleName().contains(adviceName));
+		assertThat(actualAdvices, contains(
+			"AuthorizationAdvice", "LoggingAdvice", "RequiredDataAdvice", "CacheInterceptor", "TransactionInterceptor"));
 	}
 }

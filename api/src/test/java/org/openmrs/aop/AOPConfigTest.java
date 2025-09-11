@@ -31,20 +31,13 @@ import org.springframework.stereotype.Service;
 public class AOPConfigTest extends BaseContextSensitiveTest {
 	
 	@Autowired
-	@Qualifier("loggingAdvice")
 	private LoggingAdvice loggingAdvice;
 	
 	@Autowired
-	@Qualifier("requiredDataAdvice")
 	private RequiredDataAdvice requiredDataAdvice;
 	
 	@Autowired
-	@Qualifier("authorizationAdvice")
 	private AuthorizationAdvice authorizationAdvice;
-	
-	@Autowired
-	@Qualifier("cacheInterceptor")
-	private CacheInterceptor cacheInterceptor;
 	
 	private static Method dummyMethod;
 
@@ -58,7 +51,7 @@ public class AOPConfigTest extends BaseContextSensitiveTest {
 	 * @see org.openmrs.aop.AOPConfig#loggingAdvisor(org.openmrs.aop.LoggingAdvice)
 	 */
 	@Test
-	public void loggingAdvisor_shouldMatchOnlyAnnotatedOpenmrsServiceClasses() {
+	public void loggingAdvisor_shouldMatchOnlyAnnotatedServiceClasses() {
 		assertNotNull(loggingAdvice);
 		
 		StaticMethodMatcherPointcutAdvisor advisor = (StaticMethodMatcherPointcutAdvisor) new AOPConfig().loggingAdvisor(loggingAdvice);
@@ -69,15 +62,15 @@ public class AOPConfigTest extends BaseContextSensitiveTest {
 		// Fails: implements OpenmrsService but not annotated with @Service
 		assertFalse(advisor.matches(dummyMethod, TestClassNotAnnotatedExtends.class));
 		
-		// Fails: annotated with @Service but does not implement OpenmrsService
-		assertFalse(advisor.matches(dummyMethod, TestClassAnnotatedNotExtends.class));
+		// Matches: annotated with @Service but does not implement OpenmrsService
+		assertTrue(advisor.matches(dummyMethod, TestClassAnnotatedNotExtends.class));
 	}
 	
 	/**
 	 * @see org.openmrs.aop.AOPConfig#authorizationAdvisor(org.openmrs.aop.AuthorizationAdvice)
 	 */
 	@Test
-	public void authorizationAdvisor_shouldMatchOnlyAnnotatedOpenmrsServiceClasses() {
+	public void authorizationAdvisor_shouldMatchOnlyAnnotatedServiceClasses() {
 		assertNotNull(authorizationAdvice);
 		
 		StaticMethodMatcherPointcutAdvisor advisor = (StaticMethodMatcherPointcutAdvisor) new AOPConfig().authorizationAdvisor(authorizationAdvice);
@@ -88,8 +81,8 @@ public class AOPConfigTest extends BaseContextSensitiveTest {
 		// Fails: implements OpenmrsService but not annotated with @Service
 		assertFalse(advisor.matches(dummyMethod, TestClassNotAnnotatedExtends.class));
 
-		// Fails: annotated with @Service but does not implement OpenmrsService
-		assertFalse(advisor.matches(dummyMethod, TestClassAnnotatedNotExtends.class));
+		// Matches: annotated with @Service but does not implement OpenmrsService
+		assertTrue(advisor.matches(dummyMethod, TestClassAnnotatedNotExtends.class));
 	}
 	
 	/**
@@ -107,34 +100,15 @@ public class AOPConfigTest extends BaseContextSensitiveTest {
 		// Fails: implements OpenmrsService but not annotated with @Service
 		assertFalse(advisor.matches(dummyMethod, TestClassNotAnnotatedExtends.class));
 
-		// Fails: annotated with @Service but does not implement OpenmrsService
-		assertFalse(advisor.matches(dummyMethod, TestClassAnnotatedNotExtends.class));
-	}
-	
-	/**
-	 * @see org.openmrs.aop.AOPConfig#cacheAdvisor(org.springframework.cache.interceptor.CacheInterceptor)
-	 */
-	@Test
-	public void cacheAdvisor_shouldMatchOnlyAnnotatedOpenmrsServiceClasses() {
-		assertNotNull(cacheInterceptor);
-		
-		StaticMethodMatcherPointcutAdvisor advisor = (StaticMethodMatcherPointcutAdvisor) new AOPConfig().cacheAdvisor(cacheInterceptor);
-
-		// Matches: class implements OpenmrsService AND is annotated with @Service
-		assertTrue(advisor.matches(dummyMethod, TestClassAnnotatedExtends.class));
-
-		// Fails: implements OpenmrsService but not annotated with @Service
-		assertFalse(advisor.matches(dummyMethod, TestClassNotAnnotatedExtends.class));
-
-		// Fails: annotated with @Service but does not implement OpenmrsService
-		assertFalse(advisor.matches(dummyMethod, TestClassAnnotatedNotExtends.class));
+		// Matches: annotated with @Service but does not implement OpenmrsService
+		assertTrue(advisor.matches(dummyMethod, TestClassAnnotatedNotExtends.class));
 	}
 	
 	@Service
-	private static class TestClassAnnotatedExtends  extends BaseOpenmrsService {}
+	public static class TestClassAnnotatedExtends  extends BaseOpenmrsService {}
 	
-	private static class TestClassNotAnnotatedExtends  extends BaseOpenmrsService {}
+	public static class TestClassNotAnnotatedExtends  extends BaseOpenmrsService {}
 	
 	@Service
-	private static class TestClassAnnotatedNotExtends {}
+	public static class TestClassAnnotatedNotExtends {}
 }

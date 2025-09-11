@@ -66,6 +66,7 @@ public class ConceptNumeric extends Concept {
 	 * @param conceptId key for this numeric concept
 	 */
 	public ConceptNumeric(Integer conceptId) {
+		this();
 		setConceptId(conceptId);
 	}
 	

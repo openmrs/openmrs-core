@@ -40,7 +40,6 @@ import org.openmrs.util.Reflect;
 import org.openmrs.validator.ValidateUtil;
 import org.springframework.aop.MethodBeforeAdvice;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 /**
@@ -79,7 +78,7 @@ import org.springframework.util.StringUtils;
  * @see VoidHandler
  * @since 1.5
  */
-@Component("requiredDataAdvice")
+@Component("requiredDataInterceptor")
 public class RequiredDataAdvice implements MethodBeforeAdvice {
 	
 	private static final String UNABLE_GETTER_METHOD = "unable.getter.method";

@@ -9,12 +9,15 @@
  */
 package org.openmrs.module.testmodule.api;
 
+import org.openmrs.api.impl.BaseOpenmrsService;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class TestModuleServiceNoInterface {
+public class TestModuleServiceNoInterface extends BaseOpenmrsService {
 	
+	@Cacheable("testModuleCache")
 	@Transactional
 	public String hello() {
 		return "Hello!";
