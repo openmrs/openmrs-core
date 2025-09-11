@@ -71,6 +71,7 @@ import java.util.Set;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.GlobalProperty;
 import org.openmrs.module.ModuleFactory;
+import org.openmrs.module.ModuleActivator;
 import org.openmrs.module.Module;
 
 /**
@@ -159,9 +160,9 @@ public class DatabaseUpdater {
 	}
 	static boolean isAnyModuleChanged() {
 		AdministrationService adminService = Context.getAdministrationService();
-		for (Module module : ModuleFactory.getLoadedModules()) {
+		for (org.openmrs.module.Module module : ModuleFactory.getLoadedModules()) {
 			String moduleId = module.getModuleId();
-			String lastAppliedVersion = adminService.getGlobalProperty(moduleId + ".database_version", null);
+			String lastAppliedVersion = adminService.getGlobalProperty(moduleId + ".version", null);
 			String currentVersion = module.getVersion();
 			if (lastAppliedVersion == null || !lastAppliedVersion.equals(currentVersion)) {
 				return true;
@@ -170,65 +171,82 @@ public class DatabaseUpdater {
 		return false;
 	}
 
-	static void markModuleVersionAs(Module module) {
+	static void markModuleVersionAs(org.openmrs.module.Module module) {
 		AdministrationService adminService = Context.getAdministrationService();
 		String moduleId = module.getModuleId();
-		String key = moduleId + ".database_version";
+		String key = moduleId + ".version";
 		String currentVersion = module.getVersion();
 		GlobalProperty gp = adminService.getGlobalPropertyObject(key);
-		if (gp == null) {
+		if (gp == null) { 
 			gp = new GlobalProperty(key, currentVersion,
 				"DO NOT MODIFY. Current database version number for the " + moduleId + " module.");
 		} else {
 			gp.setPropertyValue(currentVersion);
-		}
+		}	
 		adminService.saveGlobalProperty(gp);
 	}
 
 	static void updateModulesVersionAfterChangelog() {
-		for (Module module : ModuleFactory.getLoadedModules()) {
+		for (org.openmrs.module.Module module : ModuleFactory.getLoadedModules()) {
 			markModuleVersionAs(module);
 		}
 	}
 
 	static boolean isCoreChanged() {
 		AdministrationService adminService = Context.getAdministrationService();
-		String dbVersion = adminService.getGlobalProperty("core.version.lastApplied", null);
+		String dbVersion = adminService.getGlobalProperty("core.version", null);
 		return dbVersion == null || !dbVersion.equals(OpenmrsConstants.OPENMRS_VERSION);
 	}
 
 	static void markVersionAs() {
 		AdministrationService adminService = Context.getAdministrationService();
-		GlobalProperty gp = adminService.getGlobalPropertyObject("core.version.lastApplied");
+		GlobalProperty gp = adminService.getGlobalPropertyObject("core.version");
 		if (gp == null) {
-			gp = new GlobalProperty("core.version.lastApplied", OpenmrsConstants.OPENMRS_VERSION);
+			gp = new GlobalProperty("core.version", OpenmrsConstants.OPENMRS_VERSION);
 		} else {
 			gp.setPropertyValue(OpenmrsConstants.OPENMRS_VERSION);
 		}
 		adminService.saveGlobalProperty(gp);
 	}
 
-	private static void runModuleSetupHooks(String previousCoreVersion, boolean beforeSchema) {
-		// Currently no-op due to missing methods in ModuleActivator interface.
+	public static void runModuleHooks(String previousCoreVersion, boolean beforeSchema) {
+		AdministrationService adminService = Context.getAdministrationService();
+
+		for (org.openmrs.module.Module module : ModuleFactory.getLoadedModules()) {
+			org.openmrs.module.ModuleActivator activator = module.getModuleActivator();
+
+			if (activator != null) {
+				String moduleId = module.getModuleId();
+				String prevModuleVersion = adminService.getGlobalProperty(moduleId + ".version", null);
+
+				try {
+					if (beforeSchema) {
+						activator.setupOnVersionChangeBeforeSchemaChanges(previousCoreVersion, prevModuleVersion);
+					} else {
+						activator.setupOnVersionChange(previousCoreVersion, prevModuleVersion);
+					}
+				} catch (Exception e) {
+					log.error("Error executing lifecycle hook for module " + moduleId, e);
+				}
+			}
+		}
 	}
 
 	public static void performDatabaseUpdateIfNeeded() throws Exception {
 		AdministrationService adminService = Context.getAdministrationService();
-		String previousCoreVersion = adminService.getGlobalProperty("core.version.lastApplied", null);
+		String previousCoreVersion = adminService.getGlobalProperty("core.version", null);
 		boolean coreChanged = isCoreChanged();
 		boolean moduleChanged = isAnyModuleChanged();
 		boolean forceSetup = "true".equalsIgnoreCase(Context.getRuntimeProperties().getProperty("FORCE_SETUP", "false"));
 
 		if (coreChanged || moduleChanged || forceSetup) {
-			runModuleSetupHooks(previousCoreVersion, true);
+			runModuleHooks(previousCoreVersion, true);
 			executeChangelog();
-			runModuleSetupHooks(previousCoreVersion, false);
+			runModuleHooks(previousCoreVersion, false);
 			markVersionAs();
 			updateModulesVersionAfterChangelog();
 		}
 	}
-
-
 
 	/**
 	 * Run changesets on database using Liquibase to get the database up to the most recent version
