@@ -1330,11 +1330,28 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see ObsService#purgeObs(Obs,boolean)
+	 * @see ObsService#purgeObs(Obs, boolean)
 	 */
 	@Test
-	public void purgeObs_shouldThrowAPIExceptionIfGivenTrueCascade() {
-		assertThrows(APIException.class, () -> Context.getObsService().purgeObs(new Obs(1), true));
+	public void purgeObs_shouldDeleteTheGivenObsAndItsRelatedObjectsFromTheDatabase() {
+		executeDataSet(INITIAL_OBS_XML);
+		ObsService obsService = Context.getObsService();
+		OrderService orderService = Context.getOrderService();
+		
+		// an obs with a child group
+		Obs obs = obsService.getObs(17);
+		
+		Order order = orderService.getOrder(42);
+		//attach order to obs
+		obs.setOrder(order);		
+		
+		obsService.purgeObs(obs, true);
+				
+		assertNull(obsService.getObs(17));
+		//Make sure the order is deleted
+		assertNull(orderService.getOrder(42));
+		//Make sure the child obs is deleted
+		assertNull(obsService.getObs(18));
 	}
 	
 	/**
