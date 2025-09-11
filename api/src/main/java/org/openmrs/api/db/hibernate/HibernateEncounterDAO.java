@@ -119,6 +119,30 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	}
 
 	/**
+	 * @see org.openmrs.api.db.EncounterDAO#getEncountersByPatientIds(java.util.List)
+	 */
+	@Override
+	public List<Encounter> getEncountersByPatientIds(List<Integer> patientIds) throws DAOException {
+		if (patientIds == null || patientIds.isEmpty()) {
+			return new ArrayList<>();
+		}
+		
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Encounter> cq = cb.createQuery(Encounter.class);
+		Root<Encounter> encounterRoot = cq.from(Encounter.class);
+		
+		Join<Encounter, Patient> patientJoin = encounterRoot.join("patient");
+
+		cq.select(encounterRoot).where(
+			patientJoin.get("patientId").in(patientIds), 
+			cb.isFalse(encounterRoot.get("voided"))
+		).orderBy(cb.desc(encounterRoot.get("encounterDatetime")));
+		
+		return session.createQuery(cq).getResultList();
+	}
+
+	/**
 	 * @see org.openmrs.api.db.EncounterDAO#getEncounters(org.openmrs.parameter.EncounterSearchCriteria)
 	 */
 	@Override
