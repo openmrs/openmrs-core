@@ -53,7 +53,7 @@
 			<column name="retired_by" type="INT" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="TRUNK-5804-2025-09-12" author="elijah" dbms="mysql">
+	<changeSet id="TRUNK-5804-2025-09-12" author="elijah">
     <preConditions onFail="MARK_RAN">
         <columnExists tableName="form" columnName="retired_reason"/>
     </preConditions>
