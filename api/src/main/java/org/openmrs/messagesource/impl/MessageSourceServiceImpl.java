@@ -21,9 +21,12 @@ import org.openmrs.messagesource.MutableMessageSource;
 import org.openmrs.messagesource.PresentationMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
+import org.springframework.stereotype.Service;
 
 /**
  * Extensible implementation of the MessageSourceService, which relies on injected implementations
@@ -32,12 +35,15 @@ import org.springframework.context.NoSuchMessageException;
  * ResourceBundleMessageSourceService can be specified in the applicationContext-service.xml file to
  * use the usual .properties files to provide messages.
  */
+@Service("messageSourceService")
 public class MessageSourceServiceImpl implements MessageSourceService {
 	
 	private static final Logger log = LoggerFactory.getLogger(MessageSourceServiceImpl.class);
 	
 	private Set<MutableMessageSource> availableMessageSources = new HashSet<>();
 	
+	@Autowired
+	@Qualifier("mutableResourceBundleMessageSource")
 	private MutableMessageSource activeMessageSource;
 	
 	/**

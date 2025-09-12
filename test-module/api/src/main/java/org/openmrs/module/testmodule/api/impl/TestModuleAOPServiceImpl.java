@@ -7,19 +7,21 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.module.testmodule.api;
+package org.openmrs.module.testmodule.api.impl;
 
 import org.openmrs.api.impl.BaseOpenmrsService;
+import org.openmrs.module.testmodule.api.TestModuleAOPService;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
-public class TestModuleServiceNoInterface extends BaseOpenmrsService {
+/**
+ * Defines the AOP services provided by the Test module
+ */
+@Transactional
+public class TestModuleAOPServiceImpl  extends BaseOpenmrsService implements TestModuleAOPService {
 	
 	@Cacheable("testModuleCache")
-	@Transactional
-	public String hello() {
-		return "Hello!";
+	public String aopHello() {
+		return "AOP Hello";
 	}
 }
