@@ -56,4 +56,26 @@ public interface ModuleActivator {
 	 */
 	public void stopped();
 	
+	/**
+	 * Called before any Liquibase schema changes if the core or module version changed. Previous
+	 * versions may be null if this is the first setup. This method allows a module to run setup
+	 * code only if its version changes. Runs in the same transaction as the schema changes for
+	 * consistent rollback.
+	 * 
+	 * @param previousCoreVersion the previous OpenMRS core version or null if first setup
+	 * @param previousModuleVersion the previous module version or null if first setup
+	 */
+	public void setupOnVersionChangeBeforeSchemaChanges(String previousCoreVersion, String previousModuleVersion);
+	
+	/**
+	 * Called after all Liquibase schema changes if the core or module version changed. Previous
+	 * versions may be null if this is the first setup. This method allows a module to run setup
+	 * code only if its version changes. Runs in the same transaction as the schema changes for
+	 * consistent rollback.
+	 * 
+	 * @param previousCoreVersion the previous OpenMRS core version or null if first setup
+	 * @param previousModuleVersion the previous module version or null if first setup
+	 */
+	public void setupOnVersionChange(String previousCoreVersion, String previousModuleVersion);
+	
 }

@@ -60,5 +60,29 @@ public abstract class BaseModuleActivator implements ModuleActivator {
 	@Override
 	public void willStop() {
 	}
+
+	/**
+	 * Called before any Liquibase schema changes if the core or module version changed.
+	 * Empty default implementation for backward compatibility.
+	 *
+	 * @param previousCoreVersion the previous OpenMRS core version or null if first setup
+	 * @param previousModuleVersion the previous module version or null if first setup
+	 */
+	@Override
+	public void setupOnVersionChangeBeforeSchemaChanges(String previousCoreVersion, String previousModuleVersion) {
+
+	}
+
+	/**
+	 * Called after all Liquibase schema changes if the core or module version changed.
+	 * Empty default implementation for backward compatibility.
+	 *
+	 * @param previousCoreVersion the previous OpenMRS core version or null if first setup
+	 * @param previousModuleVersion the previous module version or null if first setup
+	 */
+	@Override
+	public void setupOnVersionChange(String previousCoreVersion, String previousModuleVersion) {
+
+	}
 	
 }

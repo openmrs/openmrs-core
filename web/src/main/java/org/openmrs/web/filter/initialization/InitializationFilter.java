@@ -81,6 +81,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
 
+import org.openmrs.module.ModuleFactory;
+import org.openmrs.module.Module;
 import static org.openmrs.util.PrivilegeConstants.GET_GLOBAL_PROPERTIES;
 import static org.openmrs.web.filter.initialization.InitializationWizardModel.DEFAULT_MYSQL_CONNECTION;
 import static org.openmrs.web.filter.initialization.InitializationWizardModel.DEFAULT_POSTGRESQL_CONNECTION;
@@ -1403,6 +1405,16 @@ public class InitializationFilter extends StartupFilter {
 				@Override
 				public void run() {
 					try {
+						String previousCoreVersion = Context.getAdministrationService().getGlobalProperty("core.version.lastApplied", null);
+
+						Map<String, String> previousModuleVersions = new HashMap<>();
+						for (Module module :ModuleFactory.getLoadedModules()) { 
+							String moduleId = module.getModuleId();
+							String version = Context.getAdministrationService().getGlobalProperty(moduleId + ".database_version", null);
+							previousModuleVersions.put(moduleId, version);
+						}
+						DatabaseUpdater.runModuleHooks(previousCoreVersion, true);   
+
 						String connectionUsername;
 						StringBuilder connectionPassword = new StringBuilder();
 						ChangeLogDetective changeLogDetective = ChangeLogDetective.getInstance();
@@ -1711,7 +1723,11 @@ public class InitializationFilter extends StartupFilter {
 							log.warn("Error while trying to update to the latest database version", e);
 							return;
 						}
-						
+
+					
+						DatabaseUpdater.runModuleHooks(previousCoreVersion, false); 
+
+
 						setExecutingTask(null);
 						setMessage("Starting OpenMRS");
 						
