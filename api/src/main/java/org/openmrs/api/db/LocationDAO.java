@@ -12,7 +12,6 @@ package org.openmrs.api.db;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.SessionFactory;
 import org.openmrs.Location;
 import org.openmrs.LocationAttribute;
 import org.openmrs.LocationAttributeType;
@@ -24,12 +23,6 @@ import org.openmrs.api.LocationService;
  */
 public interface LocationDAO {
 	
-	/**
-	 * Set the Hibernate SessionFactory to connect to the database.
-	 * 
-	 * @param sessionFactory
-	 */
-	public void setSessionFactory(SessionFactory sessionFactory);
 	
 	/**
 	 * Create or update a location.

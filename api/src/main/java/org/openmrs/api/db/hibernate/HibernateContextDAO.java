@@ -53,6 +53,7 @@ import org.springframework.orm.hibernate5.SessionFactoryUtils;
 import org.springframework.orm.hibernate5.SessionHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.stereotype.Repository;
 
 /**
  * Hibernate specific implementation of the {@link ContextDAO}. These methods should not be used
@@ -61,6 +62,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  * @see ContextDAO
  * @see Context
  */
+@Repository("contextDAO")
 public class HibernateContextDAO implements ContextDAO {
 	
 	private static final Logger log = LoggerFactory.getLogger(HibernateContextDAO.class);
@@ -70,27 +72,19 @@ public class HibernateContextDAO implements ContextDAO {
 	/**
 	 * Hibernate session factory
 	 */
-	private SessionFactory sessionFactory;
+	private final SessionFactory sessionFactory;
+	
+	private final SearchSessionFactory searchSessionFactory;
+	
+	private final UserDAO userDao;
 	
 	@Autowired
-	private SearchSessionFactory searchSessionFactory;
-	
-	private UserDAO userDao;
-	
-	/**
-	 * Session factory to use for this DAO. This is usually injected by spring and its application
-	 * context.
-	 * 
-	 * @param sessionFactory
-	 */
-	public void setSessionFactory(SessionFactory sessionFactory) {
+	public HibernateContextDAO(SessionFactory sessionFactory, SearchSessionFactory searchSessionFactory, UserDAO userDao) {
 		this.sessionFactory = sessionFactory;
-	}
-	
-	public void setUserDAO(UserDAO userDao) {
+		this.searchSessionFactory = searchSessionFactory;
 		this.userDao = userDao;
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.db.ContextDAO#authenticate(java.lang.String, java.lang.String)
 	 */

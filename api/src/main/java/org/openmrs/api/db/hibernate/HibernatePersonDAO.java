@@ -40,6 +40,8 @@ import org.openmrs.person.PersonMergeLog;
 import org.openmrs.util.OpenmrsConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 /**
  * Hibernate specific Person database methods. <br>
@@ -54,6 +56,7 @@ import org.slf4j.LoggerFactory;
  * @see org.openmrs.api.PersonService
  * @see org.openmrs.api.context.Context
  */
+@Repository("personDAO")
 public class HibernatePersonDAO implements PersonDAO {
 	
 	private static final Logger log = LoggerFactory.getLogger(HibernatePersonDAO.class);
@@ -61,23 +64,16 @@ public class HibernatePersonDAO implements PersonDAO {
 	/**
 	 * Hibernate session factory
 	 */
-	private SessionFactory sessionFactory;
+	private final SessionFactory sessionFactory;
 	
-	private SearchSessionFactory searchSessionFactory;
+	private final SearchSessionFactory searchSessionFactory;
 	
-	/**
-	 * Set session factory
-	 * 
-	 * @param sessionFactory
-	 */
-	public void setSessionFactory(SessionFactory sessionFactory) {
+	@Autowired
+	public HibernatePersonDAO(SessionFactory sessionFactory, SearchSessionFactory searchSessionFactory) {
 		this.sessionFactory = sessionFactory;
-	}
-
-	public void setSearchSessionFactory(SearchSessionFactory searchSessionFactory) {
 		this.searchSessionFactory = searchSessionFactory;
 	}
-
+	
 	/**
 	 * This method executes a Lucene search on persons based on the soundex filter with one search name given
 	 * 
