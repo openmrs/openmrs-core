@@ -19,6 +19,7 @@ import org.openmrs.PersonName;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.aop.AOPConfig;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.CohortService;
@@ -1057,6 +1058,7 @@ public class Context {
 	 *
 	 * @param cls
 	 * @param advisor
+	 * @deprecated since 3.0.0 use {@link AOPConfig}
 	 */
 	public static void addAdvisor(Class cls, Advisor advisor) {
 		getServiceContext().addAdvisor(cls, advisor);
@@ -1069,6 +1071,7 @@ public class Context {
 	 *
 	 * @param cls
 	 * @param advice
+	 * @deprecated since 3.0.0 use {@link AOPConfig}
 	 */
 	public static void addAdvice(Class cls, Advice advice) {
 		getServiceContext().addAdvice(cls, advice);
@@ -1079,6 +1082,7 @@ public class Context {
 	 *
 	 * @param cls
 	 * @param advisor
+	 * @deprecated since 3.0.0 use {@link AOPConfig}
 	 */
 	public static void removeAdvisor(Class cls, Advisor advisor) {
 		getServiceContext().removeAdvisor(cls, advisor);
@@ -1089,6 +1093,7 @@ public class Context {
 	 *
 	 * @param cls
 	 * @param advice
+	 * @deprecated since 3.0.0 use {@link AOPConfig}
 	 */
 	public static void removeAdvice(Class cls, Advice advice) {
 		getServiceContext().removeAdvice(cls, advice);
