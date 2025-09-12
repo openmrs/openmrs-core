@@ -1823,7 +1823,7 @@ CREATE TABLE `form` (
   `retired` tinyint(1) NOT NULL DEFAULT 0,
   `retired_by` int(11) DEFAULT NULL,
   `date_retired` datetime DEFAULT NULL,
-  `retired_reason` varchar(255) DEFAULT NULL,
+  `retire_reason` varchar(255) DEFAULT NULL,
   `uuid` char(38) NOT NULL,
   PRIMARY KEY (`form_id`),
   UNIQUE KEY `uuid_form` (`uuid`),

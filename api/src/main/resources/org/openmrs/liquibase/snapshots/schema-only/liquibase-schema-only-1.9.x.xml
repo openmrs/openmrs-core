@@ -721,7 +721,7 @@
 			</column>
 			<column name="retired_by" type="int"/>
 			<column name="date_retired" type="DATETIME"/>
-			<column name="retired_reason" type="varchar(255)"/>
+			<column name="retire_reason" type="varchar(255)"/>
 			<column name="uuid" type="char(38)" />
 		</createTable>
 		<modifySql dbms="mssql">

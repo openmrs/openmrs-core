@@ -305,7 +305,7 @@
 			</column>
 			<column name="retired_by" type="int(11)" />
 			<column name="date_retired" type="datetime" />
-			<column name="retired_reason" type="varchar(255)" defaultValue="null"/>
+			<column name="retire_reason" type="varchar(255)" defaultValue="null"/>
 		</createTable>
 		<addForeignKeyConstraint constraintName="location_tag_creator"
 			baseTableName="location_tag" baseColumnNames="creator"

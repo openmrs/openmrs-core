@@ -53,5 +53,17 @@
 			<column name="retired_by" type="INT" />
 		</addColumn>
 	</changeSet>
+	<changeSet id="TRUNK-5804-2025-09-12" author="elijah" dbms="mysql">
+    <preConditions onFail="MARK_RAN">
+        <columnExists tableName="form" columnName="retired_reason"/>
+    </preConditions>
+    <comment>Rename retired_reason to retire_reason for consistency</comment>
+    <renameColumn 
+        tableName="form"
+        oldColumnName="retired_reason" 
+        newColumnName="retire_reason" 
+        columnDataType="varchar(255)"/>
+</changeSet>
+
 
 </databaseChangeLog>
