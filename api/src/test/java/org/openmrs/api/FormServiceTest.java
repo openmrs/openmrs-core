@@ -642,8 +642,10 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	public void saveFormField_shouldPropagateSaveToTheFieldPropertyOnTheGivenFormField() {
 		// create a new Field
 		Field field = new Field();
+		FormService fs = Context.getFormService();
 		field.setName("This is a new field");
 		field.setDescription("It should be saved along with the formField");
+		field.setFieldType(fs.getAllFieldTypes().getFirst());
 
 		// put that field on a new FormField.
 		FormField formField = new FormField();
@@ -916,6 +918,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		Field field = new Field();
 		field.setName("neighbor");
 		field.setConcept(concept);
+		field.setFieldType(Context.getFormService().getAllFieldTypes().getFirst());
 
 		FormField formField = new FormField();
 		formField.setField(field);
@@ -945,10 +948,15 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		@Override
 		public Set<FormField> getFormFields() {
 			Set<FormField> formFields = new HashSet<>();
+			FieldType fieldType = Context.getFormService().getAllFieldTypes().getFirst();
+			
 			Field firstName = new Field();
 			firstName.setName("firstName");
+			firstName.setFieldType(fieldType);
+			
 			Field lastName = new Field();
 			lastName.setName("lastName");
+			lastName.setFieldType(fieldType);
 
 			FormField firstNameFormField = new FormField();
 			firstNameFormField.setField(firstName);
