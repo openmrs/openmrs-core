@@ -1,0 +1,23 @@
+@startuml internet-connectivity-task
+title OpenMRS Internet Connectivity Check Batch Job Activity Diagram
+
+start
+
+:CheckInternetConnectivityTask.execute();
+note right: /scheduler/tasks/CheckInternetConnectivityTask.java, line 35
+
+:String url = "http://www.google.com:80/index.html";
+note right: Set target URL for connectivity test\n(CheckInternetConnectivityTask.java, line 38)\nTODO: url should be provided as a property to taskconfig
+
+:URLConnection connection = new URL(url).openConnection();
+note right: Create URL connection\n(CheckInternetConnectivityTask.java, line 40)
+
+:connection.connect();
+note right: Attempt to connect to internet\n(CheckInternetConnectivityTask.java, line 41)\nThrows IOException if connection fails
+
+stop
+
+note right: If IOException occurs:\n1. Create error message with timestamp and exception\n2. Get "System Developer" role (TODO: should be configurable)\n3. Get all users with that role\n4. Create and save alert for those users\n5. If alert creation fails, log "Failed to check internet connectivity"\n(CheckInternetConnectivityTask.java, lines 43-53)
+
+stop
+@enduml

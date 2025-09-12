@@ -1,0 +1,34 @@
+@startuml hl7-queue-processor-task
+title OpenMRS HL7 Queue Processor Batch Job Activity Diagram
+
+start
+
+:ProcessHL7InQueueTask.execute();
+note right: /scheduler/tasks/ProcessHL7InQueueTask.java, line 54
+
+:Context.openSession();
+note right: Open database session for processing\n(ProcessHL7InQueueTask.java, line 55)
+
+:log.debug("Processing HL7 queue ...");
+note right: Log processing start\n(ProcessHL7InQueueTask.java, line 57)
+
+:processor.processHL7InQueue();
+note right: Process all HL7 messages in queue using static HL7InQueueProcessor\n(ProcessHL7InQueueTask.java, line 58)\nProcessor instance created in constructor if null
+
+:Context.closeSession();
+note right: Close database session (in finally block)\n(ProcessHL7InQueueTask.java, line 65)\nExecuted even if exception occurs
+
+stop
+
+floating note right
+  Exception handling: If HL7Exception occurs during processing,
+  log.error("Error running hl7 in queue task", e)
+  throw new APIException("Hl7inQueue.error.running", null, e)
+  (ProcessHL7InQueueTask.java, lines 60-62)
+  
+  Note: Uses static HL7InQueueProcessor instance to ensure only one processor runs
+  Processor handles the details of getting messages from queue and processing them
+end note
+
+stop
+@enduml

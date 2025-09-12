@@ -1,0 +1,393 @@
+@startuml Clinical Decision Support System - Domain Model
+!theme cerulean-outline
+title Clinical Decision Support System - Domain Model\n(OpenMRS Core - Clinical Rule Engine and Alert System)
+
+' This model represents the conceptual domain entities for Clinical Decision Support
+' Shared entities are referenced from: patient-management-domain-model.puml
+
+' Define entity colors and styles - consistent with other domain models
+' Color Legend - aligned with DOMAIN_COLOR_STANDARDS.md:
+' - LightGreen (Patient): Patient-specific entities (from Patient Management)
+' - Orange (Provider): Healthcare provider entities (from Patient Management)
+' - LightYellow (Clinical): Clinical care episode entities (from Patient Management)
+' - LightCyan (Concept): Clinical vocabulary and concept entities (from Patient Management)
+' - MistyRose (CDS): All Clinical Decision Support entities (Clinical Decision Support Domain)
+
+skinparam class {
+    ' Shared Domain Entities (from other domain models)
+    BackgroundColor<<Patient>> LightGreen
+    BackgroundColor<<Provider>> Orange
+    BackgroundColor<<Clinical>> LightYellow
+    BackgroundColor<<Concept>> LightCyan
+    
+    ' Clinical Decision Support Specific Entities - All use same color
+    BackgroundColor<<CDS>> MistyRose
+    
+    ' Border colors for better distinction
+    BorderColor<<Patient>> DarkGreen
+    BorderColor<<Provider>> DarkOrange
+    BorderColor<<Clinical>> DarkOrange
+    BorderColor<<Concept>> DarkCyan
+    BorderColor<<CDS>> DeepPink
+}
+
+' === SHARED ENTITIES (referenced from patient-management-domain-model.puml) ===
+entity Patient <<Patient>> {
+    patientIdentifiers
+    (from Patient Management)
+}
+
+entity Provider <<Provider>> {
+    identifier
+    name
+    (from Patient Management)
+}
+
+entity User <<Provider>> {
+    username
+    systemId
+    (from Patient Management)
+}
+
+entity Encounter <<Clinical>> {
+    encounterDatetime
+    encounterType
+    (from Patient Management)
+}
+
+entity Observation <<Clinical>> {
+    observationDatetime
+    value
+    (from Patient Management)
+}
+
+entity Concept <<Concept>> {
+    name
+    description
+    conceptClass
+    datatype
+    (from Patient Management)
+}
+
+entity Condition <<Concept>> {
+    onsetDate
+    endDate
+    clinicalStatus
+    (from Patient Management)
+}
+
+entity Diagnosis <<Concept>> {
+    rank
+    certainty
+    (from Patient Management)
+}
+
+' === CLINICAL DECISION SUPPORT CORE ENTITIES ===
+
+' Decision Rule Engine
+entity ClinicalDecisionRule <<CDS>> {
+    name
+    description
+    priority
+    active
+    version
+    effectiveDate
+    expirationDate
+}
+
+entity RuleEvaluationContext <<CDS>> {
+    indexDate
+    globalParameters
+    evaluationMode
+}
+
+entity RuleLogicCriteria <<CDS>> {
+    rootToken
+    logicParameters
+    criteriaExpression
+}
+
+entity RuleParameterDefinition <<CDS>> {
+    parameterName
+    parameterClass
+    required
+    defaultValue
+}
+
+entity RuleDataSource <<CDS>> {
+    name
+    description
+    sourceType
+    configuration
+}
+
+' Evaluation and Results
+entity DecisionEvaluation <<CDS>> {
+    evaluationDate
+    evaluationMode
+    resultStatus
+    processingTime
+}
+
+entity EvaluationResult <<CDS>> {
+    resultType
+    resultValue
+    confidence
+    evidence
+    resultDate
+}
+
+entity ResultDatatype <<CDS>> {
+    datatypeName
+    description
+}
+
+entity EvaluationCriteria <<CDS>> {
+    criteriaExpression
+    operator
+    operand
+    logicalOperator
+}
+
+' Clinical Recommendations and Actions
+entity ClinicalRecommendation <<CDS>> {
+    recommendationType
+    priority
+    rationale
+    evidenceLevel
+    expirationDate
+    actionRequired
+}
+
+entity RecommendationAction <<CDS>> {
+    actionType
+    description
+    urgency
+    dueDate
+    assignedProvider
+}
+
+entity DecisionSupportAlert <<CDS>> {
+    alertType
+    severity
+    title
+    message
+    triggerCondition
+    expirationDate
+    suppressible
+}
+
+entity AlertRecipient <<CDS>> {
+    recipient
+    alertRead
+    readDate
+    acknowledged
+}
+
+entity AlertDeliveryMethod <<CDS>> {
+    methodType
+    configuration
+    enabled
+}
+
+' Clinical Guidelines and Knowledge
+entity ClinicalGuideline <<CDS>> {
+    guidelineName
+    organization
+    version
+    publicationDate
+    evidenceLevel
+}
+
+entity GuidelineRecommendation <<CDS>> {
+    recommendationText
+    strength
+    evidenceQuality
+    applicabilityConditions
+}
+
+entity DecisionTree <<CDS>> {
+    treeName
+    description
+    rootNode
+    version
+}
+
+entity DecisionNode <<CDS>> {
+    nodeType
+    condition
+    action
+    nextNode
+}
+
+' Clinical Reminder System
+entity ClinicalReminder <<CDS>> {
+    reminderType
+    title
+    description
+    frequency
+    triggerConditions
+    targetPopulation
+}
+
+entity ReminderSchedule <<CDS>> {
+    scheduledDate
+    recurrencePattern
+    lastTriggered
+    nextDue
+}
+
+entity PatientReminder <<CDS>> {
+    reminderStatus
+    dueDate
+    overdue
+    dismissedDate
+    dismissedBy
+}
+
+' Rule Knowledge Base
+entity ClinicalKnowledgeBase <<CDS>> {
+    knowledgeBaseName
+    version
+    lastUpdated
+    maintainer
+}
+
+entity KnowledgeRule <<CDS>> {
+    ruleIdentifier
+    ruleName
+    category
+    complexity
+    dependencies
+}
+
+entity RuleLibrary <<CDS>> {
+    libraryName
+    namespace
+    version
+    description
+}
+
+' Data Integration and Sources
+entity HealthDataSource <<CDS>> {
+    sourceName
+    sourceType
+    dataFormat
+    accessMethod
+    reliability
+}
+
+entity DataMapping <<CDS>> {
+    sourceField
+    targetField
+    transformation
+    validationRule
+}
+
+entity EvaluationCache <<CDS>> {
+    cacheKey
+    cachedResult
+    cacheExpiry
+    hitCount
+}
+
+' === RELATIONSHIPS ===
+
+' Core Patient and Provider Relationships (from base models)
+Patient ||--o{ DecisionEvaluation : "evaluated for"
+Provider ||--o{ DecisionEvaluation : "evaluates rules for"
+Provider ||--o{ ClinicalRecommendation : "provides recommendations"
+Encounter ||--o{ DecisionEvaluation : "triggers evaluation"
+Observation ||--o{ DecisionEvaluation : "provides data for"
+
+' Decision Rule Engine Relationships
+ClinicalDecisionRule ||--o{ RuleParameterDefinition : "has parameters"
+ClinicalDecisionRule ||--o{ RuleLogicCriteria : "defined by criteria"
+ClinicalDecisionRule }o--|| ClinicalGuideline : "implements guideline"
+RuleLogicCriteria ||--o{ EvaluationCriteria : "contains criteria"
+RuleLogicCriteria }o--|| RuleDataSource : "queries data source"
+RuleEvaluationContext ||--o{ DecisionEvaluation : "provides context for"
+
+' Evaluation and Results Relationships
+DecisionEvaluation }o--|| Patient : "evaluates patient"
+DecisionEvaluation }o--|| ClinicalDecisionRule : "executes rule"
+DecisionEvaluation }o--|| RuleEvaluationContext : "uses context"
+DecisionEvaluation ||--o{ EvaluationResult : "produces results"
+EvaluationResult }o--|| ResultDatatype : "has datatype"
+EvaluationResult }o--o| Concept : "references concept"
+
+' Clinical Recommendations and Actions
+DecisionEvaluation ||--o{ ClinicalRecommendation : "generates recommendations"
+ClinicalRecommendation }o--|| GuidelineRecommendation : "based on guideline"
+ClinicalRecommendation ||--o{ RecommendationAction : "suggests actions"
+RecommendationAction }o--o| Provider : "assigned to provider"
+RecommendationAction }o--o| Patient : "for patient"
+
+' Alert and Notification System
+DecisionEvaluation ||--o{ DecisionSupportAlert : "triggers alerts"
+ClinicalRecommendation ||--o{ DecisionSupportAlert : "generates alerts"
+DecisionSupportAlert ||--o{ AlertRecipient : "delivered to recipients"
+AlertRecipient }o--|| User : "receives alert"
+DecisionSupportAlert }o--|| AlertDeliveryMethod : "delivered via method"
+
+' Clinical Reminder System
+ClinicalReminder ||--o{ PatientReminder : "creates patient reminders"
+PatientReminder }o--|| Patient : "reminds patient"
+PatientReminder ||--o{ ReminderSchedule : "has schedule"
+ClinicalReminder ||--o{ DecisionSupportAlert : "triggers alerts"
+PatientReminder }o--o| Provider : "dismissed by provider"
+
+' Guidelines and Decision Trees
+ClinicalGuideline ||--o{ GuidelineRecommendation : "contains recommendations"
+DecisionTree ||--o{ DecisionNode : "contains nodes"
+DecisionNode }o--o| DecisionNode : "connects to next node"
+DecisionTree }o--|| ClinicalDecisionRule : "implements as rule"
+
+' Knowledge Base and Rule Management
+ClinicalKnowledgeBase ||--o{ KnowledgeRule : "contains rules"
+KnowledgeRule ||--|| ClinicalDecisionRule : "implements as"
+RuleLibrary ||--o{ KnowledgeRule : "organizes rules"
+ClinicalDecisionRule }o--|| RuleLibrary : "belongs to library"
+
+' Data Sources and Integration
+RuleDataSource ||--o{ DataMapping : "uses mappings"
+HealthDataSource ||--o{ DataMapping : "provides data via"
+RuleDataSource }o--|| HealthDataSource : "accesses data from"
+DecisionEvaluation ||--o{ EvaluationCache : "uses cache"
+
+' Clinical Concept Integration
+EvaluationCriteria }o--o| Concept : "evaluates concept"
+ClinicalRecommendation }o--o| Concept : "recommends concept"
+ClinicalReminder }o--o| Concept : "monitors concept"
+
+' Condition and Diagnosis Integration
+Condition ||--o{ DecisionEvaluation : "evaluated in context"
+Diagnosis ||--o{ ClinicalRecommendation : "influences recommendation"
+Condition ||--o{ ClinicalReminder : "triggers reminder"
+
+' === NOTES AND CONSTRAINTS ===
+note right of ClinicalDecisionRule : Represents executable clinical\nbusiness rules for patient care\ndecision support
+note right of DecisionEvaluation : Records the execution of rules\nagainst patient data with\nresults and recommendations
+note right of ClinicalRecommendation : Evidence-based suggestions\nfor clinical actions based\non rule evaluation
+note right of DecisionSupportAlert : Automated notifications to\nclinicians based on rule\nevaluation outcomes
+note right of ClinicalReminder : Proactive reminders for\npreventive care, follow-ups\nand care protocols
+note bottom of EvaluationResult : Structured results from rule\nevaluation with data types\nand confidence levels
+note bottom of RuleLogicCriteria : Defines the logical conditions\nand data queries for\nrule evaluation
+note left of ClinicalGuideline : Evidence-based clinical\npractice guidelines that\ninform decision rules
+note left of RuleDataSource : Abstraction layer for accessing\nclinical data sources\nfor rule evaluation
+note left of HealthDataSource : External data sources that\nprovide clinical information\nfor decision support
+
+' Reference note
+note top : This model represents the Clinical Decision Support domain entities.\nShared entities (Patient, Provider, Encounter, Observation, Concept, Condition, Diagnosis)\nare referenced from patient-management-domain-model.puml.\nFocuses on rule-based decision support, alerts, reminders, and clinical recommendations.
+
+' Color Legend Table
+legend right
+|= Color |= Description |= Domain |
+|<back:LightGreen>   </back>| Patient entities | Patient Management |
+|<back:Orange>   </back>| Healthcare providers | Patient Management |
+|<back:LightYellow>   </back>| Clinical episodes | Patient Management |
+|<back:LightCyan>   </back>| Clinical concepts | Patient Management |
+|<back:MistyRose>   </back>| Clinical Decision Support | Clinical Decision Support |
+endlegend
+
+@enduml

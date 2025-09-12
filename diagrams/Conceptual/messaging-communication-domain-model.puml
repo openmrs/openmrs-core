@@ -1,0 +1,483 @@
+@startuml Messaging & Communication System - Domain Model
+!theme cerulean-outline
+title Messaging & Communication System - Domain Model\n(OpenMRS Core - Healthcare Communication and System Integration)
+
+' This model represents the conceptual domain entities for Messaging & Communication
+' Shared entities are referenced from: patient-management-domain-model.puml
+
+' Define entity colors and styles - consistent with other domain models
+' Color Legend - aligned with DOMAIN_COLOR_STANDARDS.md:
+' - LightGreen (Patient): Patient-specific entities (from Patient Management)
+' - Orange (Provider): Healthcare provider entities (from Patient Management)
+' - LightYellow (Clinical): Clinical care episode entities (from Patient Management)
+' - LightCyan (Concept): Clinical vocabulary and concept entities (from Patient Management)
+' - LightPink (Communication): All Messaging & Communication entities (Messaging & Communication Domain)
+
+skinparam class {
+    ' Shared Domain Entities (from other domain models)
+    BackgroundColor<<Patient>> LightGreen
+    BackgroundColor<<Provider>> Orange
+    BackgroundColor<<Clinical>> LightYellow
+    BackgroundColor<<Concept>> LightCyan
+    
+    ' Messaging & Communication Specific Entities - All use same color
+    BackgroundColor<<Communication>> LightPink
+    
+    ' Border colors for better distinction
+    BorderColor<<Patient>> DarkGreen
+    BorderColor<<Provider>> DarkOrange
+    BorderColor<<Clinical>> DarkOrange
+    BorderColor<<Concept>> DarkCyan
+    BorderColor<<Communication>> DeepPink
+}
+
+' === SHARED ENTITIES (referenced from patient-management-domain-model.puml) ===
+entity Patient <<Patient>> {
+    patientIdentifiers
+    (from Patient Management)
+}
+
+entity Provider <<Provider>> {
+    identifier
+    name
+    (from Patient Management)
+}
+
+entity User <<Provider>> {
+    username
+    systemId
+    userProperties
+    (from Patient Management)
+}
+
+entity Role <<Provider>> {
+    role
+    description
+    (from Patient Management)
+}
+
+entity Encounter <<Clinical>> {
+    encounterDatetime
+    encounterType
+    (from Patient Management)
+}
+
+entity Observation <<Clinical>> {
+    observationDatetime
+    value
+    (from Patient Management)
+}
+
+entity Concept <<Concept>> {
+    name
+    description
+    conceptClass
+    datatype
+    (from Clinical Data Management)
+}
+
+' === CORE MESSAGING ENTITIES ===
+
+' Message Communication Core
+entity CommunicationMessage <<Communication>> {
+    subject
+    content
+    contentType
+    sentDate
+    recipients
+    sender
+}
+
+entity MessageAttachment <<Communication>> {
+    attachmentContent
+    contentType
+    fileName
+    fileSize
+}
+
+entity MessageRecipient <<Communication>> {
+    recipientAddress
+    recipientType
+    deliveryStatus
+    readStatus
+    deliveredDate
+    readDate
+}
+
+entity MessageDeliveryChannel <<Communication>> {
+    channelType
+    channelName
+    configuration
+    enabled
+    priority
+}
+
+entity MessageSender <<Communication>> {
+    senderImplementation
+    protocol
+    configuration
+    enabled
+}
+
+entity MessageDeliveryStatus <<Communication>> {
+    status
+    deliveryAttempts
+    lastAttemptDate
+    errorMessage
+    nextRetryDate
+}
+
+' Alert and Notification System
+entity SystemAlert <<Communication>> {
+    text
+    alertType
+    priority
+    dateToExpire
+    satisfiedByAny
+    alertRead
+}
+
+entity AlertRecipient <<Communication>> {
+    recipient
+    alertRead
+    readDate
+    acknowledged
+    acknowledgedDate
+}
+
+entity NotificationRule <<Communication>> {
+    ruleName
+    triggerCondition
+    targetRecipients
+    messageTemplate
+    enabled
+    priority
+}
+
+entity NotificationEvent <<Communication>> {
+    eventType
+    eventSource
+    eventData
+    triggerDate
+    processed
+}
+
+' === MESSAGE TEMPLATE AND CONTENT GENERATION ===
+
+entity MessageTemplate <<Communication>> {
+    templateName
+    templateContent
+    templateEngine
+    subject
+    recipients
+    sender
+    ordinal
+}
+
+entity TemplateVariable <<Communication>> {
+    variableName
+    variableType
+    defaultValue
+    required
+    description
+}
+
+entity ContentEngine <<Communication>> {
+    engineName
+    engineType
+    configuration
+    supportedFeatures
+}
+
+entity TemplateProcessor <<Communication>> {
+    processorName
+    engineType
+    configuration
+    processingRules
+}
+
+entity GeneratedContent <<Communication>> {
+    originalTemplate
+    processedContent
+    generationDate
+    contextData
+    success
+}
+
+' === HEALTHCARE MESSAGE INTEGRATION ===
+
+' Healthcare Message Processing
+entity HealthcareMessage <<Communication>> {
+    messageType
+    version
+    sendingSystem
+    sendingFacility
+    receivingSystem
+    receivingFacility
+    messageControlId
+    processingId
+}
+
+entity MessageSource <<Communication>> {
+    sourceName
+    description
+    sourceType
+    configuration
+}
+
+entity MessageQueue <<Communication>> {
+    queueName
+    queueType
+    priority
+    capacity
+    processingOrder
+}
+
+entity InboundMessageQueue <<Communication>> {
+    sourceKey
+    messageData
+    dateCreated
+    processedDate
+    processingStatus
+}
+
+entity ProcessedMessageArchive <<Communication>> {
+    messageState
+    archiveDate
+    processingResult
+    loaded
+}
+
+entity MessageProcessingError <<Communication>> {
+    errorMessage
+    errorDetails
+    errorCode
+    errorDate
+    resolutionStatus
+}
+
+entity MessageHandler <<Communication>> {
+    handlerName
+    messageType
+    version
+    implementation
+    enabled
+}
+
+entity MessageRouter <<Communication>> {
+    routingRules
+    defaultHandler
+    fallbackBehavior
+    routingTable
+}
+
+entity MessageProcessor <<Communication>> {
+    processorName
+    processingRules
+    parallelProcessing
+    maxConcurrency
+    errorHandling
+}
+
+' Integration and External Systems
+entity ExternalSystem <<Communication>> {
+    systemName
+    systemType
+    endpointUrl
+    authenticationMethod
+    connectionStatus
+}
+
+entity DataExchange <<Communication>> {
+    exchangeName
+    protocol
+    dataFormat
+    mappingRules
+    transformationRules
+}
+
+entity MessageTransformation <<Communication>> {
+    transformationName
+    sourceFormat
+    targetFormat
+    mappingConfiguration
+    validationRules
+}
+
+' === SCHEDULED COMMUNICATION ===
+
+entity CommunicationTask <<Communication>> {
+    taskName
+    taskClass
+    description
+    startTime
+    repeatInterval
+    lastExecutionTime
+}
+
+entity TaskConfiguration <<Communication>> {
+    configurationKey
+    configurationValue
+    valueType
+    required
+    description
+}
+
+entity ScheduledAlert <<Communication>> {
+    alertType
+    schedule
+    targetUsers
+    messageContent
+    active
+}
+
+entity AlertReminder <<Communication>> {
+    reminderType
+    frequency
+    targetUsers
+    conditions
+    lastSent
+}
+
+entity CommunicationSchedule <<Communication>> {
+    scheduleName
+    cronExpression
+    timezone
+    startDate
+    endDate
+    enabled
+}
+
+entity TaskExecution <<Communication>> {
+    executionDate
+    executionStatus
+    duration
+    errorMessage
+    nextExecutionDate
+}
+
+' === AUDIT AND MONITORING ===
+
+entity CommunicationAudit <<Communication>> {
+    auditAction
+    auditDate
+    userAgent
+    sourceAddress
+    messageId
+    success
+}
+
+entity DeliveryMetrics <<Communication>> {
+    metricType
+    metricValue
+    measurementDate
+    timeWindow
+    aggregationType
+}
+
+entity SystemHealthMonitor <<Communication>> {
+    componentName
+    healthStatus
+    lastCheckDate
+    errorCount
+    performanceMetrics
+}
+
+' === RELATIONSHIPS ===
+
+' Core Patient and Provider Relationships (from base models)
+User ||--o{ MessageRecipient : "receives messages"
+User ||--o{ AlertRecipient : "receives alerts"
+User ||--o{ SystemAlert : "creates alerts"
+Role ||--o{ NotificationRule : "targeted by rules"
+Provider ||--o{ CommunicationMessage : "sends messages"
+Patient ||--o{ HealthcareMessage : "subject of healthcare messages"
+
+' Core Messaging Relationships
+CommunicationMessage ||--o{ MessageRecipient : "delivered to recipients"
+CommunicationMessage }o--|| MessageSender : "sent via sender"
+CommunicationMessage ||--o{ MessageAttachment : "includes attachments"
+CommunicationMessage }o--|| MessageDeliveryChannel : "delivered through channel"
+MessageRecipient ||--|| MessageDeliveryStatus : "has delivery status"
+CommunicationMessage ||--|| CommunicationAudit : "audited"
+
+' Alert System Relationships
+SystemAlert ||--o{ AlertRecipient : "delivered to recipients"
+AlertRecipient }o--|| User : "assigned to user"
+NotificationRule ||--o{ NotificationEvent : "triggers events"
+NotificationEvent ||--o{ CommunicationMessage : "generates messages"
+NotificationRule }o--|| MessageTemplate : "uses template"
+
+' Template and Content Generation Relationships
+MessageTemplate ||--o{ TemplateVariable : "contains variables"
+MessageTemplate }o--|| ContentEngine : "processed by engine"
+TemplateProcessor }o--|| ContentEngine : "implements engine"
+MessageTemplate ||--o{ GeneratedContent : "generates content"
+GeneratedContent ||--|| CommunicationMessage : "creates message"
+CommunicationMessage }o--o| MessageTemplate : "based on template"
+
+' HL7 Processing Relationships
+HealthcareMessage }o--|| MessageSource : "received from source"
+InboundMessageQueue }o--|| MessageSource : "queued from source"
+InboundMessageQueue ||--|| HealthcareMessage : "contains message"
+MessageProcessor ||--o{ InboundMessageQueue : "processes queue items"
+InboundMessageQueue ||--|| ProcessedMessageArchive : "archived when processed"
+InboundMessageQueue ||--o| MessageProcessingError : "error if processing fails"
+MessageRouter ||--o{ MessageHandler : "routes to handlers"
+HealthcareMessage }o--|| MessageHandler : "handled by handler"
+
+' Integration and Transformation Relationships
+ExternalSystem ||--o{ DataExchange : "exchanges data"
+DataExchange ||--o{ MessageTransformation : "applies transformations"
+MessageTransformation ||--o{ HealthcareMessage : "transforms messages"
+ExternalSystem ||--o{ MessageSource : "provides message source"
+
+' Scheduled Communication Relationships
+CommunicationTask ||--o{ TaskConfiguration : "has configuration"
+CommunicationTask ||--o{ TaskExecution : "has executions"
+CommunicationSchedule ||--o{ CommunicationTask : "schedules tasks"
+ScheduledAlert }o--|| CommunicationSchedule : "follows schedule"
+AlertReminder }o--|| CommunicationSchedule : "follows schedule"
+CommunicationTask ||--o{ SystemAlert : "may generate alerts"
+AlertReminder ||--o{ CommunicationMessage : "sends reminder messages"
+
+' Monitoring and Metrics Relationships
+CommunicationMessage ||--o{ DeliveryMetrics : "generates metrics"
+MessageDeliveryChannel ||--o{ DeliveryMetrics : "measured by metrics"
+SystemHealthMonitor ||--o{ DeliveryMetrics : "monitors metrics"
+MessageProcessor ||--o{ SystemHealthMonitor : "monitored by health monitor"
+CommunicationTask ||--o{ CommunicationAudit : "execution audited"
+
+' Clinical Integration Relationships
+HealthcareMessage }o--o| Patient : "relates to patient"
+HealthcareMessage }o--o| Encounter : "relates to encounter"
+HealthcareMessage }o--o| Observation : "contains observations"
+NotificationRule }o--o| Concept : "triggered by concepts"
+SystemAlert }o--o| Concept : "related to concepts"
+
+' === NOTES AND CONSTRAINTS ===
+note right of CommunicationMessage : Core messaging entity supporting\nmultiple delivery channels including\nemail, SMS, push notifications
+note right of HealthcareMessage : Standardized healthcare messaging\nfor clinical data exchange\nbetween systems (HL7, FHIR, etc.)
+note right of SystemAlert : Internal system notifications\nfor users and administrators\nwith read/acknowledgment tracking
+note right of MessageTemplate : Reusable message templates\nwith variable substitution\nfor consistent communication
+note right of InboundMessageQueue : Queue for processing incoming\nhealthcare messages with error handling\nand retry mechanisms
+note bottom of MessageProcessor : Handles parallel processing\nof queued messages with\nconfigurable concurrency
+note bottom of NotificationRule : Event-driven notification\nrules that trigger automated\ncommunications
+note left of ExternalSystem : External healthcare systems\nthat exchange clinical data\nvia standard protocols
+note left of CommunicationTask : Scheduled communication tasks\nfor periodic alerts, reminders\nand system notifications
+note left of MessageTransformation : Data transformation rules\nfor converting between different\nmessage formats and standards
+
+' Reference note
+note top : This model represents the Messaging & Communication domain entities.\nShared entities (Patient, Provider, User, Role, Encounter, Observation)\nare referenced from patient-management-domain-model.puml.\nFocuses on healthcare messaging, system integration, notifications, and scheduled communications.
+
+' Color Legend Table
+legend right
+|= Color |= Description |= Domain |
+|<back:LightGreen>   </back>| Patient entities | Patient Management |
+|<back:Orange>   </back>| Healthcare providers | Patient Management |
+|<back:LightYellow>   </back>| Clinical episodes | Patient Management |
+|<back:LightCyan>   </back>| Clinical concepts | Patient Management |
+|<back:LightPink>   </back>| Messaging & Communication | Messaging & Communication |
+endlegend
+
+@enduml
