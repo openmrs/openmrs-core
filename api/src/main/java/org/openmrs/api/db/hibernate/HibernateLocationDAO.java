@@ -31,12 +31,16 @@ import org.openmrs.LocationAttributeType;
 import org.openmrs.LocationTag;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LocationDAO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 /**
  * Hibernate location-related database functions
  */
+@Repository("locationDAO")
 public class HibernateLocationDAO implements LocationDAO {
 	
+	@Autowired
 	private SessionFactory sessionFactory;
 	
 	/**
