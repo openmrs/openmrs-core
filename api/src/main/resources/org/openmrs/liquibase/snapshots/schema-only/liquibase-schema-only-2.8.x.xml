@@ -1235,7 +1235,7 @@
       </column>  
       <column defaultValueComputed="NULL" name="retired_by" type="INT"/>  
       <column defaultValueComputed="NULL" name="date_retired" type="datetime(0)"/>  
-      <column name="retired_reason" type="VARCHAR(255)"/>  
+      <column name="retire_reason" type="VARCHAR(255)"/>  
       <column name="uuid" type="CHAR(38)"> 
         <constraints nullable="false" unique="true"/> 
       </column> 
