@@ -50,7 +50,9 @@ import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -74,11 +76,13 @@ import java.util.stream.Collectors;
  * @see org.openmrs.api.UserService
  * @see org.openmrs.api.context.Context
  */
+@Service("userService")
 @Transactional
 public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 
 	private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
-
+	
+	@Autowired
 	protected UserDAO dao;
 
 
