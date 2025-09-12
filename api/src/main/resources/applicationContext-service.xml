@@ -99,14 +99,6 @@
 		<property name="userDAO" ref="userDAO"/>
 	</bean>
 
-	<bean id="patientDAO" class="org.openmrs.api.db.hibernate.HibernatePatientDAO">
-		<property name="sessionFactory" ref="sessionFactory"/>
-		<property name="searchSessionFactory" ref="searchSessionFactory"/>
-	</bean>
-	<bean id="personDAO" class="org.openmrs.api.db.hibernate.HibernatePersonDAO">
-		<property name="sessionFactory" ref="sessionFactory"/>
-		<property name="searchSessionFactory" ref="searchSessionFactory"/>
-	</bean>
 	<bean id="conceptDAO" class="org.openmrs.api.db.hibernate.HibernateConceptDAO">
 		<property name="sessionFactory" ref="sessionFactory"/>
 		<property name="searchSessionFactory" ref="searchSessionFactory"/>
@@ -114,16 +106,7 @@
 	<bean id="userDAO" class="org.openmrs.api.db.hibernate.HibernateUserDAO">
 		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
-	<bean id="obsDAO" class="org.openmrs.api.db.hibernate.HibernateObsDAO">
-		<property name="sessionFactory" ref="sessionFactory"/>
-	</bean>
-	<bean id="encounterDAO" class="org.openmrs.api.db.hibernate.HibernateEncounterDAO">
-		<property name="sessionFactory" ref="sessionFactory"/>
-	</bean>
 	<bean id="locationDAO" class="org.openmrs.api.db.hibernate.HibernateLocationDAO">
-		<property name="sessionFactory" ref="sessionFactory"/>
-	</bean>
-	<bean id="orderDAO" class="org.openmrs.api.db.hibernate.HibernateOrderDAO">
 		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
 	<bean id="orderSetDAO" class="org.openmrs.api.db.hibernate.HibernateOrderSetDAO">
