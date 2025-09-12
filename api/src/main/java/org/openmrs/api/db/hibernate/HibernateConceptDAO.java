@@ -79,6 +79,8 @@ import org.openmrs.util.ConceptMapTypeComparator;
 import org.openmrs.util.OpenmrsConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -88,32 +90,17 @@ import org.springframework.util.CollectionUtils;
  * 
  * @see ConceptService
  */
+@Repository("conceptDAO")
 public class HibernateConceptDAO implements ConceptDAO {
 	
 	private static final Logger log = LoggerFactory.getLogger(HibernateConceptDAO.class);
 	
+	@Autowired
 	private SessionFactory sessionFactory;
 	
+	@Autowired
 	private SearchSessionFactory searchSessionFactory;
 	
-	/**
-	 * Sets the session factory
-	 * 
-	 * @param sessionFactory
-	 */
-	public void setSessionFactory(SessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
-	}
-
-	/**
-	 * Sets the search session factory
-	 * 
-	 * @param searchSessionFactory
-	 */
-	public void setSearchSessionFactory(SearchSessionFactory searchSessionFactory) {
-		this.searchSessionFactory = searchSessionFactory;
-	}
-
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptComplex(java.lang.Integer)
 	 */

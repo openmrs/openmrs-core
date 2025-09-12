@@ -42,6 +42,8 @@ import org.openmrs.util.Security;
 import org.openmrs.util.UserByNameComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 /**
  * Hibernate specific database methods for the UserService
@@ -50,6 +52,7 @@ import org.slf4j.LoggerFactory;
  * @see org.openmrs.api.db.UserDAO
  * @see org.openmrs.api.UserService
  */
+@Repository("userDAO")
 public class HibernateUserDAO implements UserDAO {
 	
 	private static final Logger log = LoggerFactory.getLogger(HibernateUserDAO.class);
@@ -57,16 +60,8 @@ public class HibernateUserDAO implements UserDAO {
 	/**
 	 * Hibernate session factory
 	 */
+	@Autowired
 	private SessionFactory sessionFactory;
-	
-	/**
-	 * Set session factory
-	 * 
-	 * @param sessionFactory
-	 */
-	public void setSessionFactory(SessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
-	}
 	
 	/**
 	 * @see org.openmrs.api.UserService#saveUser(org.openmrs.User, java.lang.String, java.lang.String)

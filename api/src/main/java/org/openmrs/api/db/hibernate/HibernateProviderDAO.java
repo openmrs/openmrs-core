@@ -36,6 +36,8 @@ import org.openmrs.ProviderRole;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ProviderDAO;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 /**
  * Hibernate specific Provider related functions. This class should not be used directly. All calls
@@ -43,13 +45,11 @@ import org.openmrs.util.OpenmrsConstants;
  *
  * @since 1.9
  */
+@Repository("providerDAO")
 public class HibernateProviderDAO implements ProviderDAO {
 	
+	@Autowired
 	private SessionFactory sessionFactory;
-	
-	public void setSessionFactory(SessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
-	}
 	
 	/**
 	 * @see org.openmrs.api.db.ProviderDAO#getAllProviders(boolean)

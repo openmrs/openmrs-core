@@ -75,6 +75,7 @@ public class HibernateContextDAO implements ContextDAO {
 	@Autowired
 	private SearchSessionFactory searchSessionFactory;
 	
+	@Autowired
 	private UserDAO userDao;
 	
 	/**
@@ -87,10 +88,6 @@ public class HibernateContextDAO implements ContextDAO {
 		this.sessionFactory = sessionFactory;
 	}
 	
-	public void setUserDAO(UserDAO userDao) {
-		this.userDao = userDao;
-	}
-
 	/**
 	 * @see org.openmrs.api.db.ContextDAO#authenticate(java.lang.String, java.lang.String)
 	 */

@@ -41,6 +41,8 @@ import org.openmrs.api.db.FormDAO;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 /**
  * Hibernate-specific Form-related functions. This class should not be used directly. All calls
@@ -49,6 +51,7 @@ import org.slf4j.LoggerFactory;
  * @see org.openmrs.api.db.FormDAO
  * @see org.openmrs.api.FormService
  */
+@Repository("formDAO")
 public class HibernateFormDAO implements FormDAO {
 	
 	private static final Logger log = LoggerFactory.getLogger(HibernateFormDAO.class);
@@ -56,16 +59,8 @@ public class HibernateFormDAO implements FormDAO {
 	/**
 	 * Hibernate session factory
 	 */
+	@Autowired
 	private SessionFactory sessionFactory;
-	
-	/**
-	 * Set session factory
-	 *
-	 * @param sessionFactory
-	 */
-	public void setSessionFactory(SessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
-	}
 	
 	/**
 	 * Returns the form object originally passed in, which will have been persisted.
