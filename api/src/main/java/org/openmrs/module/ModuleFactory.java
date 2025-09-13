@@ -30,8 +30,6 @@ import java.util.SortedMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import org.aopalliance.aop.Advice;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Privilege;
@@ -54,6 +52,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.aop.Advisor;
 import org.springframework.context.support.AbstractRefreshableApplicationContext;
 import org.springframework.util.StringUtils;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 import liquibase.Contexts;
 
@@ -310,43 +311,44 @@ public class ModuleFactory {
 	 */
 	public static List<Module> getModulesInStartupOrder(Collection<Module> modules) throws CycleException {
 		Graph<Module> graph = new Graph<>();
-		
+
 		for (Module mod : modules) {
-			
 			graph.addNode(mod);
-			
-			// Required dependencies
-			for (String key : mod.getRequiredModules()) {
-				Module module = getModuleByPackage(key);
-				Module fromNode = graph.getNode(module);
-				if (fromNode == null) {
-					fromNode = module;
-				}
-				
-				if (fromNode != null) {
-					graph.addEdge(graph.new Edge(
-						fromNode,
-						mod));
-				}
+			// Se llama al nuevo método para ambos tipos de dependencias
+			addModuleDependenciesToGraph(graph, mod, mod.getRequiredModules());
+			addModuleDependenciesToGraph(graph, mod, mod.getAwareOfModules());
+		}
+
+		return graph.topologicalSort();
+	}
+
+
+	/**
+	 * Agrega las dependencias de un módulo a un grafo para el ordenamiento
+	 * topológico.
+	 *
+	 * @param graph              El grafo de dependencias.
+	 * @param dependentModule    El módulo que tiene las dependencias (el nodo
+	 *                           "hacia").
+	 * @param dependencyPackages La lista de paquetes de los módulos de los que
+	 *                           depende.
+	 */
+	private static void addModuleDependenciesToGraph(Graph<Module> graph, Module dependentModule,
+			Collection<String> dependencyPackages) {
+		if (dependencyPackages == null) {
+			return;
+		}
+		for (String dependencyPackage : dependencyPackages) {
+			Module dependencyModule = getModuleByPackage(dependencyPackage);
+			Module fromNode = graph.getNode(dependencyModule);
+			if (fromNode == null) {
+				fromNode = dependencyModule;
 			}
-			
-			// Aware-of dependencies
-			for (String key : mod.getAwareOfModules()) {
-				Module module = getModuleByPackage(key);
-				Module fromNode = graph.getNode(module);
-				if (fromNode == null) {
-					fromNode = module;
-				}
-				
-				if (fromNode != null) {
-					graph.addEdge(graph.new Edge(
-						fromNode,
-						mod));
-				}
+
+			if (fromNode != null) {
+				graph.addEdge(graph.new Edge(fromNode, dependentModule));
 			}
 		}
-		
-		return graph.topologicalSort();
 	}
 	
 	/**

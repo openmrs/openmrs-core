@@ -307,10 +307,8 @@ public class ModuleClassLoader extends URLClassLoader {
 		File tmpModuleDir = getLibCacheFolderForModule(module);
 		try {
 			log.debug("Expanding /lib folder in module");
-
 			ModuleUtil.expandJar(module.getFile(), tmpModuleDir, "lib", true);
 			File libdir = new File(tmpModuleDir, "lib");
-
 			if (libdir != null && libdir.exists()) {
 				Map<String, String> startedRelatedModules = new HashMap<>();
 				for (Module requiredModule : collectRequiredModuleImports(module)) {
@@ -319,7 +317,6 @@ public class ModuleClassLoader extends URLClassLoader {
 				for (Module awareOfModule : collectAwareOfModuleImports(module)) {
 					startedRelatedModules.put(awareOfModule.getModuleId(), awareOfModule.getVersion());
 				}
-
 				Collection<File> files = FileUtils.listFiles(libdir, new String[] { "jar" }, true);
 				for (File file : files) {
 					if (devDir != null) {
@@ -334,12 +331,8 @@ public class ModuleClassLoader extends URLClassLoader {
 							continue;
 						}
 					}
-
 					URL fileUrl = ModuleUtil.file2url(file);
-
-					boolean include = shouldResourceBeIncluded(module, fileUrl, OpenmrsConstants.OPENMRS_VERSION_SHORT,
-							startedRelatedModules);
-
+					boolean include = shouldResourceBeIncluded(module, fileUrl, OpenmrsConstants.OPENMRS_VERSION_SHORT,startedRelatedModules);
 					if (include) {
 						log.debug("Including file in classpath: {}", fileUrl);
 						classPathUrls.add(fileUrl);
