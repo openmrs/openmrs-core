@@ -204,86 +204,113 @@ public class ModuleClassLoader extends URLClassLoader {
 	 */
 	private static List<URL> getUrls(final Module module) {
 		List<URL> result = new LinkedList<>();
-		
-		//if in dev mode, add development folder to the classpath
 		List<String> devFolderNames = new ArrayList<>();
+
 		File devDir = ModuleUtil.getDevelopmentDirectory(module.getModuleId());
+		if (devDir != null) {
+			devFolderNames.addAll(addDevelopmentClasspaths(devDir, result));
+		} else {
+			addModuleJarToClasspath(module, result);
+		}
+		addLibraryJarsToClasspath(module, devDir, devFolderNames, result);
+
+		return result;
+	}
+
+
+	/**
+	 * Agrega los directorios 'target/classes' de los subproyectos de un módulo al
+	 * classpath
+	 * cuando se está ejecutando en modo de desarrollo.
+	 *
+	 * @param devDir        El directorio base de desarrollo del módulo.
+	 * @param classPathUrls La lista de URLs del classpath a la que se agregarán las
+	 *                      nuevas rutas.
+	 * @return Una lista de los nombres de las carpetas de subproyectos encontradas
+	 *         (ej. "api", "omod").
+	 */
+	private static List<String> addDevelopmentClasspaths(File devDir, List<URL> classPathUrls) {
+		List<String> devFolderNames = new ArrayList<>();
 		try {
-			if (devDir != null) {
-				File[] fileList = devDir.listFiles();
-				if (fileList != null) {
-					for (File file : fileList) {
-						if (!file.isDirectory()) {
-							continue;
-						}
-						File dir = Paths.get(devDir.getAbsolutePath(), file.getName(), "target", "classes").toFile();
-						if (dir.exists()) {
-							result.add(dir.toURI().toURL());
-							devFolderNames.add(file.getName());
-						}
+			File[] fileList = devDir.listFiles();
+			if (fileList != null) {
+				for (File file : fileList) {
+					if (!file.isDirectory()) {
+						continue;
+					}
+					File dir = Paths.get(devDir.getAbsolutePath(), file.getName(), "target", "classes").toFile();
+					if (dir.exists()) {
+						classPathUrls.add(dir.toURI().toURL());
+						devFolderNames.add(file.getName());
 					}
 				}
 			}
-		}
-		catch (MalformedURLException ex) {
+		} catch (MalformedURLException ex) {
 			log.error("Failed to add development folder to the classpath", ex);
 		}
-		
+		return devFolderNames;
+	}
+
+
+	/**
+	 * Copia el archivo .omod principal del módulo a un directorio de caché y agrega
+	 * la URL
+	 * de este archivo copiado al classpath. Esto se hace para evitar el bloqueo de
+	 * archivos.
+	 *
+	 * @param module        El módulo cuyo archivo .omod se va a procesar.
+	 * @param classPathUrls La lista de URLs del classpath a la que se agregará la
+	 *                      nueva ruta.
+	 */
+	private static void addModuleJarToClasspath(Module module, List<URL> classPathUrls) {
 		File tmpModuleDir = getLibCacheFolderForModule(module);
-		
-		//add module jar to classpath only if we are not in dev mode
-		if (devDir == null) {
-			File tmpModuleJar = new File(tmpModuleDir, module.getModuleId() + ".jar");
-			
-			if (!tmpModuleJar.exists()) {
-				try {
-					tmpModuleJar.createNewFile();
-				}
-				catch (IOException io) {
-					log.warn("Unable to create tmpModuleFile", io);
-				}
-			}
-			
-			// copy the module jar into that temporary folder
-			FileInputStream in = null;
-			FileOutputStream out = null;
+		File tmpModuleJar = new File(tmpModuleDir, module.getModuleId() + ".jar");
+
+		if (!tmpModuleJar.exists()) {
 			try {
-				in = new FileInputStream(module.getFile());
-				out = new FileOutputStream(tmpModuleJar);
-				OpenmrsUtil.copyFile(in, out);
-			}
-			catch (IOException io) {
-				log.warn("Unable to copy tmpModuleFile", io);
-			}
-			finally {
-				try {
-					in.close();
-				}
-				catch (Exception e) { /* pass */}
-				try {
-					out.close();
-				}
-				catch (Exception e) { /* pass */}
-			}
-			
-			// add the module jar as a url in the classpath of the classloader
-			URL moduleFileURL;
-			try {
-				moduleFileURL = ModuleUtil.file2url(tmpModuleJar);
-				result.add(moduleFileURL);
-			}
-			catch (MalformedURLException e) {
-				log.warn("Unable to add files from module to URL list: " + module.getModuleId(), e);
+				tmpModuleJar.createNewFile();
+			} catch (IOException io) {
+				log.warn("Unable to create tmpModuleFile", io);
 			}
 		}
-		
-		// add each defined jar in the /lib folder, add as a url in the classpath of the classloader
+
+		try (FileInputStream in = new FileInputStream(module.getFile());
+				FileOutputStream out = new FileOutputStream(tmpModuleJar)) {
+			OpenmrsUtil.copyFile(in, out);
+		} catch (IOException io) {
+			log.warn("Unable to copy tmpModuleFile", io);
+		}
+		try {
+			URL moduleFileURL = ModuleUtil.file2url(tmpModuleJar);
+			classPathUrls.add(moduleFileURL);
+		} catch (MalformedURLException e) {
+			log.warn("Unable to add files from module to URL list: " + module.getModuleId(), e);
+		}
+	}
+
+
+	/**
+	 * Expande las librerías del directorio /lib de un módulo, las filtra según las
+	 * condiciones
+	 * definidas en config.xml y las agrega al classpath.
+	 *
+	 * @param module         El módulo que se está cargando.
+	 * @param devDir         El directorio de desarrollo (es nulo si no se está en
+	 *                       modo dev).
+	 * @param devFolderNames Nombres de las carpetas de subproyectos en modo dev,
+	 *                       para excluir JARs de código fuente.
+	 * @param classPathUrls  La lista de URLs del classpath a la que se agregarán
+	 *                       las nuevas librerías.
+	 */
+	private static void addLibraryJarsToClasspath(Module module, File devDir, List<String> devFolderNames,
+			List<URL> classPathUrls) {
+		File tmpModuleDir = getLibCacheFolderForModule(module);
 		try {
 			log.debug("Expanding /lib folder in module");
-			
+
 			ModuleUtil.expandJar(module.getFile(), tmpModuleDir, "lib", true);
 			File libdir = new File(tmpModuleDir, "lib");
-			
+
 			if (libdir != null && libdir.exists()) {
 				Map<String, String> startedRelatedModules = new HashMap<>();
 				for (Module requiredModule : collectRequiredModuleImports(module)) {
@@ -292,52 +319,40 @@ public class ModuleClassLoader extends URLClassLoader {
 				for (Module awareOfModule : collectAwareOfModuleImports(module)) {
 					startedRelatedModules.put(awareOfModule.getModuleId(), awareOfModule.getVersion());
 				}
-				
-				// recursively get files
+
 				Collection<File> files = FileUtils.listFiles(libdir, new String[] { "jar" }, true);
 				for (File file : files) {
-					
-					//if in dev mode, do not put the module source jar files in the class path
 					if (devDir != null) {
 						boolean jarForDevFolder = false;
 						for (String folderName : devFolderNames) {
 							if (file.getName().startsWith(module.getModuleId() + "-" + folderName + "-")) {
-								//e.g uiframework-api-3.3-SNAPSHOT.jar, webservices.rest-omod-common-2.14-SNAPSHOT.jar
-								//webservices.rest-omod-1.11-2.14-SNAPSHOT.jar, webservices.rest-omod-1.10-2.14-SNAPSHOT.jar, etc
 								jarForDevFolder = true;
 								break;
 							}
 						}
-						
 						if (jarForDevFolder) {
 							continue;
 						}
 					}
-					
+
 					URL fileUrl = ModuleUtil.file2url(file);
-					
+
 					boolean include = shouldResourceBeIncluded(module, fileUrl, OpenmrsConstants.OPENMRS_VERSION_SHORT,
-					    startedRelatedModules);
-					
+							startedRelatedModules);
+
 					if (include) {
 						log.debug("Including file in classpath: {}", fileUrl);
-						result.add(fileUrl);
+						classPathUrls.add(fileUrl);
 					} else {
 						log.debug("Excluding file from classpath: {}", fileUrl);
 					}
 				}
 			}
-		}
-		catch (MalformedURLException e) {
+		} catch (MalformedURLException e) {
 			log.warn("Error while adding module 'lib' folder to URL result list");
-		}
-		catch (IOException io) {
+		} catch (IOException io) {
 			log.warn("Error while expanding lib folder", io);
 		}
-		
-		// add each xml document to the url list
-		
-		return result;
 	}
 	
 	/**
