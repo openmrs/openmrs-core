@@ -26,6 +26,8 @@ import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Obs;
+import org.openmrs.PersonAttribute;
+import org.openmrs.notification.Message;
 import org.openmrs.Order;
 import org.openmrs.OrderGroup;
 import org.openmrs.Patient;
@@ -50,6 +52,8 @@ import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -63,6 +67,8 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Transactional
 public class EncounterServiceImpl extends BaseOpenmrsService implements EncounterService {
+	
+	private static final Logger log = LoggerFactory.getLogger(EncounterServiceImpl.class);
 	
 	private EncounterDAO dao;
 	
@@ -210,6 +216,16 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			diagnosis.setEncounter(encounter);
 		});
 		encounter.getDiagnoses().forEach(Context.getDiagnosisService()::save);
+		
+		// Send email notification for new encounters
+		if (isNewEncounter && isAppointmentNotificationEnabled()) {
+			try {
+				sendAppointmentNotification(encounter);
+			} catch (Exception e) {
+				// Log error but don't fail the transaction
+				log.warn("Failed to send appointment notification email", e);
+			}
+		}
 		
 		return encounter;
 	}
@@ -999,5 +1015,191 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		}
 		
 		return saveEncounter(encounterCopy);
+	}
+	
+	/**
+	 * Checks if appointment email notifications are enabled through global properties
+	 * 
+	 * @return true if notifications are enabled, false otherwise
+	 */
+	private boolean isAppointmentNotificationEnabled() {
+		return "true".equals(Context.getAdministrationService()
+			.getGlobalProperty("appointment.notification.enabled", "false"));
+	}
+	
+	/**
+	 * Sends an email notification for a new appointment/encounter
+	 * 
+	 * @param encounter the encounter to send notification for
+	 */
+	private void sendAppointmentNotification(Encounter encounter) {
+		String patientEmail = getPatientEmail(encounter.getPatient());
+		if (StringUtils.isNotBlank(patientEmail)) {
+			try {
+				Message message = createAppointmentMessage(encounter, patientEmail);
+				Context.getMessageService().sendMessage(message);
+			} catch (Exception e) {
+				log.warn("Failed to send appointment notification email to " + patientEmail, e);
+			}
+		}
+	}
+	
+	/**
+	 * Retrieves the email address for a patient from their person attributes
+	 * 
+	 * @param patient the patient to get email for
+	 * @return the patient's email address, or null if not found
+	 */
+	private String getPatientEmail(Patient patient) {
+		// Get the configurable email attribute type name
+		String emailAttributeType = Context.getAdministrationService()
+			.getGlobalProperty("appointment.notification.patient.email.attribute", "Email");
+		
+		for (PersonAttribute attr : patient.getAttributes()) {
+			if (emailAttributeType.equals(attr.getAttributeType().getName())) {
+				return attr.getValue();
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Creates an email message for appointment notification
+	 * 
+	 * @param encounter the encounter to create message for
+	 * @param patientEmail the patient's email address
+	 * @return the prepared message
+	 */
+	private Message createAppointmentMessage(Encounter encounter, String patientEmail) {
+		Message message = new Message();
+		message.addRecipient(patientEmail);
+		message.setSubject(Context.getAdministrationService()
+			.getGlobalProperty("appointment.notification.subject", "🏥 Nueva Cita Médica Programada - OpenMRS"));
+		
+		String content = generateEmailContent(encounter);
+		message.setContent(content);
+		
+		// Set content type to HTML
+		message.setContentType("text/html; charset=UTF-8");
+		
+		return message;
+	}
+	
+	/**
+	 * Generates the email content for appointment notification
+	 * 
+	 * @param encounter the encounter to generate content for
+	 * @return the email content as a string
+	 */
+	private String generateEmailContent(Encounter encounter) {
+		StringBuilder html = new StringBuilder();
+		
+		// HTML Email Template
+		html.append("<!DOCTYPE html>");
+		html.append("<html lang='es'>");
+		html.append("<head>");
+		html.append("<meta charset='UTF-8'>");
+		html.append("<meta name='viewport' content='width=device-width, initial-scale=1.0'>");
+		html.append("<title>Nueva Cita Médica - OpenMRS</title>");
+		html.append("<style>");
+		html.append("body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f4f4f4; }");
+		html.append(".container { max-width: 600px; margin: 20px auto; background: white; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.1); overflow: hidden; }");
+		html.append(".header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }");
+		html.append(".header h1 { margin: 0; font-size: 28px; }");
+		html.append(".header .logo { font-size: 36px; margin-bottom: 10px; }");
+		html.append(".content { padding: 30px; }");
+		html.append(".patient-info { background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; }");
+		html.append(".appointment-details { background: #e3f2fd; padding: 20px; border-left: 4px solid #2196f3; margin: 20px 0; }");
+		html.append(".detail-row { display: flex; justify-content: space-between; margin: 10px 0; }");
+		html.append(".label { font-weight: bold; color: #555; }");
+		html.append(".value { color: #333; }");
+		html.append(".footer { background: #f8f9fa; padding: 20px; text-align: center; color: #666; }");
+		html.append(".btn { display: inline-block; padding: 12px 24px; background: #4CAF50; color: white; text-decoration: none; border-radius: 5px; margin: 10px 0; }");
+		html.append(".warning { background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin: 15px 0; }");
+		html.append("</style>");
+		html.append("</head>");
+		html.append("<body>");
+		
+		// Email Content
+		html.append("<div class='container'>");
+		
+		// Header
+		html.append("<div class='header'>");
+		html.append("<div class='logo'>🏥</div>");
+		html.append("<h1>Nueva Cita Médica</h1>");
+		html.append("<p>Sistema de Gestión OpenMRS</p>");
+		html.append("</div>");
+		
+		// Content
+		html.append("<div class='content'>");
+		html.append("<h2>¡Hola ").append(encounter.getPatient().getPersonName().getGivenName()).append("!</h2>");
+		html.append("<p>Se ha programado una nueva cita médica para usted. A continuación encontrará todos los detalles:</p>");
+		
+		// Patient Info
+		html.append("<div class='patient-info'>");
+		html.append("<h3>👤 Información del Paciente</h3>");
+		html.append("<div class='detail-row'>");
+		html.append("<span class='label'>Nombre Completo:</span>");
+		html.append("<span class='value'>").append(encounter.getPatient().getPersonName().getFullName()).append("</span>");
+		html.append("</div>");
+		html.append("<div class='detail-row'>");
+		html.append("<span class='label'>ID del Paciente:</span>");
+		html.append("<span class='value'>").append(encounter.getPatient().getPatientId()).append("</span>");
+		html.append("</div>");
+		html.append("</div>");
+		
+		// Appointment Details
+		html.append("<div class='appointment-details'>");
+		html.append("<h3>📅 Detalles de la Cita</h3>");
+		html.append("<div class='detail-row'>");
+		html.append("<span class='label'>Fecha y Hora:</span>");
+		html.append("<span class='value'>").append(new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(encounter.getEncounterDatetime())).append("</span>");
+		html.append("</div>");
+		html.append("<div class='detail-row'>");
+		html.append("<span class='label'>Tipo de Consulta:</span>");
+		html.append("<span class='value'>").append(encounter.getEncounterType().getName()).append("</span>");
+		html.append("</div>");
+		
+		if (encounter.getLocation() != null) {
+			html.append("<div class='detail-row'>");
+			html.append("<span class='label'>📍 Ubicación:</span>");
+			html.append("<span class='value'>").append(encounter.getLocation().getName()).append("</span>");
+			html.append("</div>");
+		}
+		
+		if (!encounter.getEncounterProviders().isEmpty()) {
+			html.append("<div class='detail-row'>");
+			html.append("<span class='label'>👨‍⚕️ Médico/Proveedor:</span>");
+			html.append("<span class='value'>").append(encounter.getEncounterProviders().iterator().next().getProvider().getName()).append("</span>");
+			html.append("</div>");
+		}
+		
+		html.append("<div class='detail-row'>");
+		html.append("<span class='label'>🆔 ID de la Cita:</span>");
+		html.append("<span class='value'>#").append(encounter.getEncounterId()).append("</span>");
+		html.append("</div>");
+		html.append("</div>");
+		
+		// Important Notice
+		html.append("<div class='warning'>");
+		html.append("<strong>⚠️ Importante:</strong> Por favor, llegue 15 minutos antes de su cita. ");
+		html.append("Si necesita cancelar o reprogramar, contáctenos con al menos 24 horas de anticipación.");
+		html.append("</div>");
+		
+		html.append("<p style='margin-top: 30px;'>¡Esperamos verle pronto!</p>");
+		html.append("</div>");
+		
+		// Footer
+		html.append("<div class='footer'>");
+		html.append("<p><strong>Sistema OpenMRS</strong><br>");
+		html.append("📧 Notificación automática generada el ").append(new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(new java.util.Date())).append("<br>");
+		html.append("🏥 Universidad de Caldas - Ingeniería de Software 3</p>");
+		html.append("</div>");
+		
+		html.append("</div>");
+		html.append("</body>");
+		html.append("</html>");
+		
+		return html.toString();
 	}
 }

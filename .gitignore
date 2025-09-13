@@ -88,3 +88,17 @@ nb-configuration.xml
 ### Liquibase snapshot files ###
 liquibase/snapshots/*.xml
 #############
+
+### Email Configuration - Sensitive Data ###
+# Environment files with credentials
+.env.local
+.env.production
+.env.development
+.env
+configure-email-temp.sql
+configure-my-gmail.sql
+
+# Backup files with potentially sensitive data
+*.sql.bak
+configure-*-gmail.sql
+#############

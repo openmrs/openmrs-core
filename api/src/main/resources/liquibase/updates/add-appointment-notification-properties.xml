@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="add-appointment-notification-properties" author="implementacionServicioEmail">
+        <insert tableName="global_property">
+            <column name="property" value="appointment.notification.enabled"/>
+            <column name="property_value" value="false"/>
+            <column name="description" value="Enable/disable appointment email notifications"/>
+            <column name="uuid" value="a1b2c3d4-e5f6-7890-abcd-ef1234567890"/>
+        </insert>
+        
+        <insert tableName="global_property">
+            <column name="property" value="appointment.notification.subject"/>
+            <column name="property_value" value="Cita Programada - OpenMRS"/>
+            <column name="description" value="Subject line for appointment notification emails"/>
+            <column name="uuid" value="b2c3d4e5-f6g7-8901-bcde-f23456789012"/>
+        </insert>
+        
+        <insert tableName="global_property">
+            <column name="property" value="appointment.notification.patient.email.attribute"/>
+            <column name="property_value" value="Email"/>
+            <column name="description" value="Patient attribute type name that contains email address"/>
+            <column name="uuid" value="c3d4e5f6-g7h8-9012-cdef-345678901234"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
