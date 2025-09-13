@@ -46,4 +46,12 @@
 		</addColumn>
 	</changeSet>
 
+	<changeSet id="TRUNK-5809-2025-08-30" author="Deborah Nakamatte">
+		<addColumn tableName="program">
+			<column name="date_retired" type="DATETIME" />
+			<column name="retire_reason" type="VARCHAR(255)" />
+			<column name="retired_by" type="INT" />
+		</addColumn>
+	</changeSet>
+
 </databaseChangeLog>
