@@ -64,6 +64,7 @@
 			<column name="creator" type="INT"/>
 			<column name="retired_by" type="INT" />
 			<column name="changed_by" type="INT"/>
+			<column name="name" type="VARCHAR(255)"/>
 		</addColumn>
 	</changeSet>
 
