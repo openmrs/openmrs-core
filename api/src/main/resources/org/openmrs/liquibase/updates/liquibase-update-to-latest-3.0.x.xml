@@ -54,4 +54,10 @@
 		</addColumn>
 	</changeSet>
 
+	<changeSet id="TRUNK-5890-2025-09-14" author="Deborah Nakamatte">
+		<addColumn tableName="privilege">
+			<column name="date_changed" type="DATETIME"/>
+		</addColumn>
+	</changeSet>
+
 </databaseChangeLog>
