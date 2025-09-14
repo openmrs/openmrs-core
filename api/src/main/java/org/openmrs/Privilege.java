@@ -24,11 +24,11 @@ import org.hibernate.envers.Audited;
  * 
  * @version 1.0
  */
-@Entity
-@Table(name = "privilege")
 @Audited
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@Entity
+@Table(name = "privilege")
 public class Privilege extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 312L;
