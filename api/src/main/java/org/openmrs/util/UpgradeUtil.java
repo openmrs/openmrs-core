@@ -74,6 +74,15 @@ public class UpgradeUtil {
 		        + ". Please refer to upgrade instructions for more details. https://wiki.openmrs.org/x/OALpAw");
 	}
 	
+	/**
+	 * 
+	 * Busca en la base de datos el uuid del concepto cuyo concept_id es igual al que se pasa como parametro
+	 * 
+	 * @param connection
+	 * @param conceptId
+	 * @return
+	 * @throws SQLException
+	**/
 	public static String getConceptUuid(Connection connection, int conceptId) throws SQLException {
 
 		try (PreparedStatement select = connection.prepareStatement("select uuid from concept where concept_id = ?")) {
@@ -88,6 +97,15 @@ public class UpgradeUtil {
 		}
 	}
 	
+	/**
+	 * 
+	 * El parametro gp que se ingresa es buscado en la base para saber si existe y si es asi devuelve su valor
+	 * 
+	 * @param connection
+	 * @param gp
+	 * @return
+	 * @throws SQLException
+	**/
 	public static String getGlobalProperty(Connection connection, String gp) throws SQLException {
 
 		try (PreparedStatement select = connection
@@ -103,6 +121,15 @@ public class UpgradeUtil {
 		}
 	}
 	
+	/**
+	 * 
+	 * al ingresar el identificador lo busca en la base de datos y devuelve una lista con los conceptos que pertenecen a ese grupo
+	 * 
+	 * @param connection
+	 * @param conceptUuid
+	 * @return lista de los conceptos que pertenecen al grupo
+	 * @throws SQLException
+	**/
 	public static List<Integer> getMemberSetIds(Connection connection, String conceptUuid) throws SQLException {
 		Integer conceptSetId;
 
@@ -132,6 +159,15 @@ public class UpgradeUtil {
 		return conceptIds;
 	}
 	
+	/**
+	 * 
+	 * al ingresar el concepto se busca en la base de datos si existe ese valor, si es asi devuelve su identificador
+	 * 
+	 * @param connection
+	 * @param conceptIdForFrequency
+	 * @return identificador del concepto
+	 * @throws SQLException
+	**/
 	public static Integer getOrderFrequencyIdForConceptId(Connection connection, Integer conceptIdForFrequency)
 	        throws SQLException {
 		PreparedStatement orderFrequencyIdQuery = connection
