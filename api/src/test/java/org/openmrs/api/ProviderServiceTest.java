@@ -604,13 +604,13 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		roles.add(service.getProviderRole(1002));
 
 		List<Provider> providers = service.getProvidersByRoles(roles);
-		assertEquals(5, providers.size());
+		assertEquals(9, providers.size());
 	}
 
 	@Test
 	public void getAllProviderRoles_shouldGetAllProviderRolesExcludingRetired() {
 		List<ProviderRole> roles = service.getAllProviderRoles(false);
-		assertEquals(4, roles.size());
+		assertEquals(11, roles.size());
 	}
 	
 	/**
@@ -688,8 +688,8 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		Context.getProviderService().retireProvider(Context.getProviderService().getProvider(1003), "test");
 
 		List<ProviderRole> roles = service.getProviderRoles(provider);
-		assertEquals(1, (Integer) roles.size());
-		assertEquals(1005, roles.get(0).getId());
+		assertEquals(2, (Integer) roles.size());
+		assertEquals(1001, roles.get(0).getId());
 	}
 
 	@Test
@@ -826,7 +826,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void hasRole_shouldReturnFalseIfRoleRetired() {
-		ProviderRole role = Context.getService(ProviderService.class).getProviderRole(1001);
+		ProviderRole role = Context.getService(ProviderService.class).getProviderRole(1010);
 		Person provider = Context.getPersonService().getPerson(2);
 
 		Context.getProviderService().retireProvider(Context.getProviderService().getProvider(1003), "test");
