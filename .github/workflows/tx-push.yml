@@ -1,7 +1,7 @@
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [master]
 
 name: "Update Transifex on Push"
 
