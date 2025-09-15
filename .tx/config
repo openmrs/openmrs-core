@@ -1,7 +1,7 @@
 [main]
 host = https://www.transifex.com
 
-[o:openmrs:p:openmrs:r:openmrs-core]
+[o:openmrs:p:OpenMRS:r:openmrs-core]
 file_filter            = api/src/main/resources/messages_<lang>.properties
 source_file            = api/src/main/resources/messages.properties
 source_lang            = en
