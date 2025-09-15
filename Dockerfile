@@ -7,7 +7,7 @@
 #	
 #	Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS 
 #	graphic logo is a trademark of OpenMRS Inc.
-
+ARG BUILDPLATFORM
 ARG DEV_JDK=eclipse-temurin-21
 ARG RUNTIME_JDK=jdk21-temurin
 
