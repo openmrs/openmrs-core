@@ -53,5 +53,14 @@
 			<column name="retired_by" type="INT" />
 		</addColumn>
 	</changeSet>
+	<changeSet id="TRUNK-5842-2025-09-15" author="elai">
+		<addColumn tableName="program_workflow">
+			<column name="name" type="VARCHAR(255)" />
+			<column name="description" type="text" />
+			<column name="date_retired" type="DATETIME" />
+			<column name="retire_reason" type="VARCHAR(255)" />
+			<column name="retired_by" type="INT" />
+		</addColumn>
+	</changeSet>
 
 </databaseChangeLog>
