@@ -1,0 +1,41 @@
+@startuml Condition Clinical Status State Machine
+!theme plain
+skinparam backgroundColor white
+skinparam state {
+  BackgroundColor lightblue
+  BorderColor navy
+  ArrowColor navy
+}
+
+title OpenMRS Condition Clinical Status State Machine
+
+state "Condition Clinical Status State Machine" as CCS {
+  state ACTIVE : Patient experiencing symptoms\nor evidence present
+  state INACTIVE : No current symptoms\nor evidence
+  state RECURRENCE : Re-occurrence of\npreviously resolved condition
+  state RELAPSE : Return after period\nof improvement/remission
+  state REMISSION : No symptoms but\nrisk of return exists
+  state RESOLVED : No symptoms and\nnegligible risk of return
+  
+  [*] --> ACTIVE : Condition diagnosed
+  ACTIVE --> INACTIVE : Symptoms resolve
+  ACTIVE --> REMISSION : Temporary improvement
+  ACTIVE --> RESOLVED : Complete resolution
+  INACTIVE --> ACTIVE : Symptoms return
+  INACTIVE --> RECURRENCE : Condition recurs
+  INACTIVE --> RESOLVED : Confirmed resolution
+  REMISSION --> ACTIVE : Symptoms return
+  REMISSION --> RELAPSE : Condition worsens
+  REMISSION --> RESOLVED : Complete recovery
+  RECURRENCE --> ACTIVE : Active symptoms
+  RECURRENCE --> REMISSION : Improving again
+  RELAPSE --> ACTIVE : Active symptoms
+  RELAPSE --> REMISSION : Stabilizing
+  RESOLVED --> RECURRENCE : Unexpected return
+}
+
+note top of CCS : ConditionClinicalStatus tracks\nthe clinical progression of\npatient conditions over time
+
+note bottom : **Enum Values (ConditionClinicalStatus):**\n- ACTIVE: Patient experiencing symptoms or evidence present\n- INACTIVE: No current symptoms or evidence\n- RECURRENCE: Re-occurrence of previously resolved condition\n- RELAPSE: Return after period of improvement/remission\n- REMISSION: No symptoms but risk of return exists\n- RESOLVED: No symptoms and negligible risk of return\n\n**FHIR Alignment:** Based on FHIR ConditionClinicalStatus\n**Deprecated:** HISTORY_OF (use REMISSION instead)
+
+@enduml
