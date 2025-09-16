@@ -20,10 +20,28 @@ import java.util.TreeSet;
 import org.hibernate.envers.Audited;
 import org.openmrs.util.NaturalStrings;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.Table;
+
 /**
  * ProgramWorkflow
  */
 @Audited
+@Entity
+@Table(name = "program_workflow")
+@AttributeOverrides({ @AttributeOverride(name = "name", column = @Column(name = "name", length = 100, nullable = true)) })
 public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	
 	private static final long serialVersionUID = 1L;
@@ -31,13 +49,23 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	// ******************
 	// Properties
 	// ******************
-	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "program_workflow_id")
 	private Integer programWorkflowId;
-	
+	@ManyToOne
+	@JoinColumn(name = "program_id" ,nullable = false)
 	private Program program;
-	
+	@ManyToOne
+	@JoinColumn(name = "concept_id" ,nullable = false)
 	private Concept concept;
-	
+	@OneToMany(
+		mappedBy = "programWorkflow",
+		fetch = FetchType.EAGER,
+		cascade = CascadeType.ALL,
+		orphanRemoval = true
+	)
+	@OrderBy("date_created asc")
 	private Set<ProgramWorkflowState> states = new HashSet<>();
 	
 	// ******************
