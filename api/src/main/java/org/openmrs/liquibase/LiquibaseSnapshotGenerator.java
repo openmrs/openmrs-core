@@ -63,7 +63,7 @@ import java.util.Objects;
  * </ul>
  * After generation, a Mozilla Public License header is prepended to each file. This class can be
  * run standalone (via {@link #main(String[])}), or programmatically through
- * {@link #execute(String, String, String)} ()}.
+ * {@link #execute(String, String, String)}
  */
 public class LiquibaseSnapshotGenerator {
 	
@@ -75,6 +75,31 @@ public class LiquibaseSnapshotGenerator {
 	
 	private static final String DATA_SNAPSHOT_FILE = "liquibase-core-data-SNAPSHOT.xml";
 	
+	/**
+	 * To run this generator locally, update the database connection details below:
+	 * <ul>
+	 * <li><b>URL</b>: Change {@code 127.0.0.1} to {@code localhost} (Optional), and replace
+	 * {@code openmrs} with your local DB name (Required).</li>
+	 * <li><b>Username</b>: Use your local DB username (e.g. {@code root})</li>
+	 * <li><b>Password</b>: Use your local DB password (e.g. {@code Admin123})</li>
+	 * </ul>
+	 * Example configuration:
+	 * 
+	 * <pre><code>
+	 * String url = "jdbc:mysql://localhost:3306/@DBNAME?autoReconnect=true";
+	 * String username = "root";
+	 * String password = "Admin123";
+	 * </code></pre>
+	 * 
+	 * After updating these values, you can run:
+	 * 
+	 * <pre><code>
+	 *   mvn clean package -DskipTests=true dependency:copy-dependencies
+	 *   java -cp "api/target/classes:api/target/dependency/*" org.openmrs.liquibase.LiquibaseSnapshotGenerator
+	 * </code></pre>
+	 * 
+	 * This will generate the snapshots into the configured output directory.
+	 */
 	public static void main(String[] args) throws Exception {
 		
 		String url = "jdbc:mysql://127.0.0.1:3306/openmrs";
