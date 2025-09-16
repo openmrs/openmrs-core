@@ -309,3 +309,9 @@ Talk to us on [OpenMRS Talk](https://talk.openmrs.org/)
 
 [MPL 2.0 w/ HD](http://openmrs.org/license/) © [OpenMRS Inc.](http://www.openmrs.org/)
 
+### FHIR Quickstart
+
+OpenMRS FHIR support is in the **FHIR2 module**. To use FHIR resources:
+1. Install and run OpenMRS Platform.
+2. Add the `openmrs-module-fhir2` and access endpoints at `/ws/fhir2`.
+Docs: https://github.com/openmrs/openmrs-module-fhir2
