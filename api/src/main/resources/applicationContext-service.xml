@@ -22,75 +22,6 @@
 			http://www.springframework.org/schema/context/spring-context-3.0.xsd
             http://www.springframework.org/schema/util
             http://www.springframework.org/schema/util/spring-util-3.0.xsd">
-	
-	<bean class="org.openmrs.api.impl.GlobalLocaleList" id="globalLocaleList"/>
-
-	<!--  **************************  EVENT LISTENERS ***************************** -->
-
-	<!--  Clear out the global property listeners list first -->
-	<bean id="clearOpenmrsEventListeners" class="org.openmrs.api.EventListeners">
-		<property name="globalPropertyListenersToEmpty" value="false"/>
-	</bean>
-
-	<bean id="localeUtility" class="org.openmrs.util.LocaleUtility"/>
-	<bean id="locationUtility" class="org.openmrs.util.LocationUtility"/>
-	<bean id="configUtilGlobalPropertyListener" class="org.openmrs.util.ConfigUtil"/>
-	<bean id="personNameGlobalPropertyListener" class="org.openmrs.api.impl.PersonNameGlobalPropertyListener"/>
-	<bean id="loggingConfigurationGlobalPropertyListener"
-		  class="org.openmrs.logging.LoggingConfigurationGlobalPropertyListener"/>
-
-	<bean id="openmrsEventListeners" class="org.openmrs.api.EventListeners" depends-on="clearOpenmrsEventListeners">
-		<property name="globalPropertyListeners">
-			<list value-type="org.openmrs.api.GlobalPropertyListener">
-				<ref bean="localeUtility"/>
-				<ref bean="locationUtility"/>
-				<ref bean="configUtilGlobalPropertyListener"/>
-				<ref bean="personNameGlobalPropertyListener"/>
-				<ref bean="loggingConfigurationGlobalPropertyListener"/>
-				<ref bean="globalLocaleList"/>
-				<ref bean="adminService"/>
-				<ref bean="orderService"/>
-			</list>
-		</property>
-	</bean>
-
-
-	<!--  **************************  SERVICE CONTEXT CONFIGURATION  *************************  -->
-
-	<!-- Single application context (our own context, not Spring's ApplicationContext -->
-	<bean id="serviceContext" class="org.openmrs.api.context.ServiceContext" factory-method="getInstance"
-		  destroy-method="destroyInstance">
-		<property name="patientService" ref="patientService"/>
-		<property name="personService" ref="personService"/>
-		<property name="conceptService" ref="conceptService"/>
-		<property name="userService" ref="userService"/>
-		<property name="obsService" ref="obsService"/>
-		<property name="encounterService" ref="encounterService"/>
-		<property name="locationService" ref="locationService"/>
-		<property name="orderService" ref="orderService"/>
-		<property name="conditionService" ref="conditionService"/>
-		<property name="diagnosisService" ref="diagnosisService"/>
-		<property name="medicationDispenseService" ref="medicationDispenseService"/>
-		<property name="orderSetService" ref="orderSetService"/>
-		<property name="formService" ref="formService"/>
-		<property name="administrationService" ref="adminService"/>
-		<property name="datatypeService" ref="datatypeService"/>
-		<property name="programWorkflowService" ref="programWorkflowService"/>
-		<property name="cohortService" ref="cohortService"/>
-		<property name="messageService" ref="messageService"/>
-		<property name="serializationService" ref="serializationService"/>
-		<property name="schedulerService" ref="schedulerService"/>
-		<property name="alertService" ref="alertService"/>
-		<property name="hl7Service" ref="hL7Service"/>
-		<property name="messageSourceService" ref="messageSourceService"/>
-		<property name="visitService" ref="visitService"/>
-		<property name="providerService" ref="providerService"/>
-	</bean>
-
-	<bean id="context" class="org.openmrs.api.context.Context" init-method="setAuthenticationScheme">
-		<property name="serviceContext" ref="serviceContext"/>
-		<property name="contextDAO" ref="contextDAO"/>
-	</bean>
 
 	<!--  **************************  DATA ACCESS OBJECTS  *************************  -->
 
@@ -179,44 +110,6 @@
 		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
 
-	<!--  **************************  SESSION FACTORY  *************************  -->
-
-	<util:list id="moduleTestingMappingJarLocations">
-
-	</util:list>
-
-	<bean id="mappingJarResources" class="org.springframework.beans.factory.config.ListFactoryBean"
-		  parent="moduleTestingMappingJarLocations">
-		<property name="sourceList">
-			<list merge="true">
-
-			</list>
-		</property>
-	</bean>
-
-	<!-- will be autowired to the HibernateSessionFactoryBean by type -->
-	<!-- interceptors are used in order of name, this needs to be one of the first and should be since auditable happens to start with 'a' -->
-	<bean id="auditableInterceptor" class="org.openmrs.api.db.hibernate.AuditableInterceptor"/>
-
-	<bean id="sessionFactory" class="org.openmrs.api.db.hibernate.HibernateSessionFactoryBean">
-		<property name="configLocations">
-			<list>
-				<value>classpath:hibernate.cfg.xml</value>
-			</list>
-		</property>
-		<property name="mappingJarLocations" ref="mappingJarResources"/>
-		<property name="packagesToScan">
-			<list>
-				<value>org.openmrs</value>
-			</list>
-		</property>
-		<!-- default properties must be set in the hibernate.default.properties -->
-	</bean>
-
-	<bean id="dbSessionFactory" class="org.openmrs.api.db.hibernate.DbSessionFactory">
-		<constructor-arg name="sessionFactory" ref="sessionFactory"/>
-	</bean>
-	
 	<!--  ******************************  MESSAGE SERVICES  ****************************** -->
 
 	<!-- Messaging Service -->
@@ -241,52 +134,6 @@
 		</property>
     </bean>   
 	-->
-
-	<!--  **************************  VALIDATOR CONFIGURATION  *************************  -->
-	<!--  Configuration for all openmrs validators                                        -->
-
-	<bean id="allergyValidator" class="org.openmrs.validator.AllergyValidator"/>
-	<bean id="personValidator" class="org.openmrs.validator.PersonValidator"/>
-	<bean id="patientValidator" class="org.openmrs.validator.PatientValidator"/>
-	<bean id="locationValidator" class="org.openmrs.validator.LocationValidator"/>
-	<bean id="personNameValidator" class="org.openmrs.validator.PersonNameValidator"/>
-	<bean id="patientIdentifierValidator" class="org.openmrs.validator.PatientIdentifierValidator"/>
-	<bean id="patientIdentifierTypeValidator" class="org.openmrs.validator.PatientIdentifierTypeValidator"/>
-	<bean id="personAttributeTypeValidator" class="org.openmrs.validator.PersonAttributeTypeValidator"/>
-	<bean id="userValidator" class="org.openmrs.validator.UserValidator"/>
-	<bean id="roleValidator" class="org.openmrs.validator.RoleValidator"/>
-	<bean id="privilegeValidator" class="org.openmrs.validator.PrivilegeValidator"/>
-	<bean id="encounterTypeValidator" class="org.openmrs.validator.EncounterTypeValidator"/>
-	<bean id="conceptClassValidator" class="org.openmrs.validator.ConceptClassValidator"/>
-	<bean id="conceptDatatypeValidator" class="org.openmrs.validator.ConceptDatatypeValidator"/>
-	<bean id="conceptSourceValidator" class="org.openmrs.validator.ConceptSourceValidator"/>
-	<bean id="formEditValidator" class="org.openmrs.validator.FormValidator"/>
-	<bean id="fieldTypeValidator" class="org.openmrs.validator.FieldTypeValidator"/>
-	<bean id="programValidator" class="org.openmrs.validator.ProgramValidator"/>
-	<bean id="stateConversionValidator" class="org.openmrs.validator.StateConversionValidator"/>
-	<bean id="taskValidator" class="org.openmrs.validator.SchedulerFormValidator"/>
-	<bean id="obsValidator" class="org.openmrs.validator.ObsValidator"/>
-	<bean id="orderValidator" class="org.openmrs.validator.OrderValidator"/>
-	<bean id="drugOrderValidator" class="org.openmrs.validator.DrugOrderValidator"/>
-	<bean id="requireNameValidator" class="org.openmrs.validator.RequireNameValidator"/>
-	<bean id="conceptDrugValidator" class="org.openmrs.validator.ConceptDrugValidator"/>
-	<bean id="hl7SourceValidator" class="org.openmrs.validator.HL7SourceValidator"/>
-	<bean id="personAddressValidator" class="org.openmrs.validator.PersonAddressValidator"/>
-	<bean id="visitTypeValidator" class="org.openmrs.validator.VisitTypeValidator"/>
-	<bean id="visitAttributeTypeValidator" class="org.openmrs.validator.VisitAttributeTypeValidator"/>
-	<bean id="providerAttributeTypeValidator" class="org.openmrs.validator.ProviderAttributeTypeValidator"/>
-	<bean id="encounterValidator" class="org.openmrs.validator.EncounterValidator"/>
-	<bean id="locationAttributeTypeValidator" class="org.openmrs.validator.LocationAttributeTypeValidator"/>
-	<bean id="providerValidator" class="org.openmrs.validator.ProviderValidator"/>
-	<bean id="patientProgramValidator" class="org.openmrs.validator.PatientProgramValidator"/>
-	<bean id="conceptValidator" class="org.openmrs.validator.ConceptValidator"/>
-	<bean id="personMergeLogValidator" class="org.openmrs.validator.PersonMergeLogValidator"/>
-	<bean id="conceptReferenceTermValidator" class="org.openmrs.validator.ConceptReferenceTermValidator"/>
-	<bean id="conceptMapTypeValidator" class="org.openmrs.validator.ConceptMapTypeValidator"/>
-	<bean id="conceptAttributeTypeValidator" class="org.openmrs.validator.ConceptAttributeTypeValidator"/>
-	<bean id="implementationIdHttpClient" class="org.openmrs.util.HttpClient">
-		<constructor-arg name="url" value="https://implementation.openmrs.org"/>
-	</bean>
 
 	<!--  ************************ END VALIDATOR CONFIGURATION  ************************  -->
 
