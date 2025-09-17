@@ -47,7 +47,7 @@ services:
         environment:
             OMRS_DEV_DEBUG_PORT: ${OMRS_DEV_DEBUG_PORT:-8000}
             OMRS_CREATE_TABLES: ${OMRS_CREATE_TABLES:-true}
-            OMRS_SEARCH: ${OMRS_SEARCH:-lucene}
+            OMRS_SEARCH: ${OMRS_SEARCH:-elasticsearch}
 
             OMRS_BUILD: ${OMRS_BUILD:-true}
             OMRS_BUILD_GOALS: ${OMRS_BUILD_GOALS:-}
