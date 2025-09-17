@@ -533,7 +533,7 @@
 			<dependency>
 				<groupId>jakarta.xml.bind</groupId>
 				<artifactId>jakarta.xml.bind-api</artifactId>
-				<version>4.0.2</version>
+				<version>4.0.4</version>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.jaxb</groupId>
@@ -578,7 +578,7 @@
 			<dependency>
 			    <groupId>jakarta.xml.bind</groupId>
 			    <artifactId>jakarta.xml.bind-api</artifactId>
-			    <version>4.0.2</version>
+			    <version>4.0.4</version>
 			</dependency>
 			<dependency>
 				<groupId>com.sun.mail</groupId>
@@ -631,7 +631,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>3.5.3</version>
+					<version>3.5.4</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -1331,7 +1331,7 @@
 		<hibernateVersion>6.6.23.Final</hibernateVersion>
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
 		<hibernateSearchVersion>7.1.2.Final</hibernateSearchVersion>
-		<luceneVersion>9.0.0</luceneVersion>
+		<luceneVersion>10.3.0</luceneVersion>
 		<!-- ininispanVersion needs to be adjusted if hibernateVersion changes -->
 		<infinispanVersion>15.2.2.Final</infinispanVersion>
 		<aspectjVersion>1.9.24</aspectjVersion>
