@@ -50,7 +50,7 @@ Build:
                       
                       set +x
                       
-                      export IMAGE_DEV=${bamboo.docker.image.name}:dev
+                      export IMAGE_DEV=${bamboo.docker.image.name}:${bamboo.docker.image.tag}-dev
                       
                       docker login -u ${bamboo.dockerhub.username} -p ${bamboo.dockerhub.password}
                       
@@ -74,25 +74,25 @@ Build:
                   variableScope: RESULT
               description: Store docker image id
     artifact-subscriptions: []
-#Unit Test:
-#    key: UT
-#    tasks:
-#        # Checkout Task for default repository will be added implicitly during Specs import
-#        - script:
-#              interpreter: SHELL
-#              scripts:
-#                  - |-
-#                      #!/bin/bash -eu
-#                      
-#                      set -x
-#                      
-#                      export IMAGE=${bamboo.docker.image.id}
-#                      
-#                      docker pull ${IMAGE}
-#                      
-#                      docker run -v m2-repo:/root/.m2/repository --rm ${IMAGE} mvn test
-#              description: Run unit tests
-#    artifact-subscriptions: []
+Unit Test:
+    key: UT
+    tasks:
+        # Checkout Task for default repository will be added implicitly during Specs import
+        - script:
+              interpreter: SHELL
+              scripts:
+                  - |-
+                      #!/bin/bash -eu
+                      
+                      set -x
+                      
+                      export IMAGE=${bamboo.docker.image.id}
+                      
+                      docker pull ${IMAGE}
+                      
+                      docker run -v m2-repo:/root/.m2/repository --rm ${IMAGE} mvn test
+              description: Run unit tests
+    artifact-subscriptions: []
 Integration Test:
     key: IT
     tasks:
@@ -148,7 +148,7 @@ Deploy to docker:
                       
                       export IMAGE=${bamboo.docker.image.id}
                       export IMAGE_NIGHTLY=${bamboo.docker.image.name}:${bamboo.docker.image.tag}
-                      export IMAGE_DEV=${bamboo.docker.image.name}:dev
+                      export IMAGE_DEV=${bamboo.docker.image.name}:${bamboo.docker.image.tag}-dev
                       
                       docker login -u ${bamboo.dockerhub.username} -p ${bamboo.dockerhub.password}
                       
@@ -178,7 +178,7 @@ Deploy to docker JDK 11:
                       export RUNTIME_JDK="jdk11-corretto"
                       
                       export IMAGE_NIGHTLY=${bamboo.docker.image.name}:${bamboo.docker.image.tag}-${JDK_IMAGE}
-                      export IMAGE_DEV=${bamboo.docker.image.name}:dev-${JDK_IMAGE}
+                      export IMAGE_DEV=${bamboo.docker.image.name}:${bamboo.docker.image.tag}-dev-${JDK_IMAGE}
                       
                       docker login -u ${bamboo.dockerhub.username} -p ${bamboo.dockerhub.password}
                       
@@ -219,7 +219,7 @@ Deploy to docker JDK 17:
                       export RUNTIME_JDK="jdk17-corretto"
                       
                       export IMAGE_NIGHTLY=${bamboo.docker.image.name}:${bamboo.docker.image.tag}-${JDK_IMAGE}
-                      export IMAGE_DEV=${bamboo.docker.image.name}:dev-${JDK_IMAGE}
+                      export IMAGE_DEV=${bamboo.docker.image.name}:${bamboo.docker.image.tag}-dev-${JDK_IMAGE}
                       
                       docker login -u ${bamboo.dockerhub.username} -p ${bamboo.dockerhub.password}
                       
