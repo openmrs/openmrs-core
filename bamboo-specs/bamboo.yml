@@ -496,7 +496,7 @@ Release JDK 21 image:
     artifact-subscriptions: []
 variables:
     docker.image.name: openmrs/openmrs-core
-    docker.image.tag: nightly
+    docker.image.tag: 2.8.x
     maven.release.version: 2.8.0
     build.release.type: release
 repositories:
