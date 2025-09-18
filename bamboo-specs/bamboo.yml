@@ -52,7 +52,7 @@ Build:
                       
                       set +x
                       
-                      export IMAGE_DEV=${bamboo.docker.image.name}:dev
+                      export IMAGE_DEV=${bamboo.docker.image.name}:${bamboo.docker.image.tag}-dev
                       
                       docker login -u ${bamboo.dockerhub.username} -p ${bamboo.dockerhub.password}
                       
@@ -150,7 +150,7 @@ Deploy to docker:
                       
                       export IMAGE=${bamboo.docker.image.id}
                       export IMAGE_NIGHTLY=${bamboo.docker.image.name}:${bamboo.docker.image.tag}
-                      export IMAGE_DEV=${bamboo.docker.image.name}:dev
+                      export IMAGE_DEV=${bamboo.docker.image.name}:${bamboo.docker.image.tag}-dev
                       
                       docker login -u ${bamboo.dockerhub.username} -p ${bamboo.dockerhub.password}
                       
@@ -180,7 +180,7 @@ Deploy to docker JDK 11:
                       export RUNTIME_JDK="jdk11-corretto"
                       
                       export IMAGE_NIGHTLY=${bamboo.docker.image.name}:${bamboo.docker.image.tag}-${JDK_IMAGE}
-                      export IMAGE_DEV=${bamboo.docker.image.name}:dev-${JDK_IMAGE}
+                      export IMAGE_DEV=${bamboo.docker.image.name}:${bamboo.docker.image.tag}-dev-${JDK_IMAGE}
                       
                       docker login -u ${bamboo.dockerhub.username} -p ${bamboo.dockerhub.password}
                       
@@ -221,7 +221,7 @@ Deploy to docker JDK 17:
                       export RUNTIME_JDK="jdk17-corretto"
                       
                       export IMAGE_NIGHTLY=${bamboo.docker.image.name}:${bamboo.docker.image.tag}-${JDK_IMAGE}
-                      export IMAGE_DEV=${bamboo.docker.image.name}:dev-${JDK_IMAGE}
+                      export IMAGE_DEV=${bamboo.docker.image.name}:${bamboo.docker.image.tag}-dev-${JDK_IMAGE}
                       
                       docker login -u ${bamboo.dockerhub.username} -p ${bamboo.dockerhub.password}
                       
@@ -262,7 +262,7 @@ Deploy to docker JDK 21:
                       export RUNTIME_JDK="jdk21-corretto"
                       
                       export IMAGE_NIGHTLY=${bamboo.docker.image.name}:${bamboo.docker.image.tag}-${JDK_IMAGE}
-                      export IMAGE_DEV=${bamboo.docker.image.name}:dev-${JDK_IMAGE}
+                      export IMAGE_DEV=${bamboo.docker.image.name}:${bamboo.docker.image.tag}-dev-${JDK_IMAGE}
                       
                       docker login -u ${bamboo.dockerhub.username} -p ${bamboo.dockerhub.password}
                       
