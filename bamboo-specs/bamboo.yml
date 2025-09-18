@@ -15,7 +15,7 @@ stages:
           manual: false
           final: false
           jobs:
-#              - Unit Test
+              - Unit Test
               - Integration Test
     - Deploy:
           manual: false
