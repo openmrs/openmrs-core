@@ -26,28 +26,21 @@ import org.openmrs.notification.Alert;
 import org.openmrs.notification.db.AlertDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 /**
  * Hibernate specific implementation of the
  */
+@Repository("alertDAO")
 public class HibernateAlertDAO implements AlertDAO {
 	
 	private static final Logger log = LoggerFactory.getLogger(HibernateAlertDAO.class);
 	
-	/**
-	 * Hibernate session factory
-	 */
-	private SessionFactory sessionFactory;
+	private final SessionFactory sessionFactory;
 	
-	public HibernateAlertDAO() {
-	}
-	
-	/**
-	 * Set session factory
-	 *
-	 * @param sessionFactory
-	 */
-	public void setSessionFactory(SessionFactory sessionFactory) {
+	@Autowired
+	public HibernateAlertDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 	
