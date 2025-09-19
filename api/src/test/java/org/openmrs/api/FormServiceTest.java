@@ -918,7 +918,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		Field field = new Field();
 		field.setName("neighbor");
 		field.setConcept(concept);
-		field.setFieldType(Context.getFormService().getAllFieldTypes().getFirst());
+		field.setFieldType(new FieldType(1));
 
 		FormField formField = new FormField();
 		formField.setField(field);
@@ -948,15 +948,14 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		@Override
 		public Set<FormField> getFormFields() {
 			Set<FormField> formFields = new HashSet<>();
-			FieldType fieldType = Context.getFormService().getAllFieldTypes().getFirst();
 			
 			Field firstName = new Field();
 			firstName.setName("firstName");
-			firstName.setFieldType(fieldType);
+			firstName.setFieldType(new FieldType(1));
 			
 			Field lastName = new Field();
 			lastName.setName("lastName");
-			lastName.setFieldType(fieldType);
+			lastName.setFieldType(new FieldType(1));
 
 			FormField firstNameFormField = new FormField();
 			firstNameFormField.setField(firstName);
