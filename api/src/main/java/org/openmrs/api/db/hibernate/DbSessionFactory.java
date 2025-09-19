@@ -10,6 +10,7 @@
 package org.openmrs.api.db.hibernate;
 
 import org.hibernate.SessionFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * It should be used instead of SessionFactory for modules, which need to support OpenMRS 1.12 and
@@ -18,6 +19,7 @@ import org.hibernate.SessionFactory;
  * 
  * @since 1.12, 1.11.3, 1.10.2, 1.9.9
  */
+@Component
 public class DbSessionFactory {
 	
 	private SessionFactory sessionFactory;

@@ -25,6 +25,7 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * This class looks for {@link OpenmrsObject} and {@link Auditable} that are being inserted into the
@@ -38,7 +39,7 @@ import org.slf4j.LoggerFactory;
  *
  * @since 1.9
  */
-
+@Component
 public class AuditableInterceptor implements Interceptor {
 	
 	private static final Logger log = LoggerFactory.getLogger(AuditableInterceptor.class);

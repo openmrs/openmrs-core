@@ -73,6 +73,7 @@ import org.springframework.aop.Advisor;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
+import org.springframework.stereotype.Component;
 
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;
@@ -135,6 +136,7 @@ import java.util.concurrent.Future;
  * @see org.openmrs.api.context.UserContext
  * @see org.openmrs.api.context.ServiceContext
  */
+@Component
 public class Context {
 
 	private static final Logger log = LoggerFactory.getLogger(Context.class);
