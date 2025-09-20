@@ -39,6 +39,8 @@ import org.openmrs.Visit;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.ObsDAO;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 /**
  * Hibernate specific Observation related functions This class should not be used directly. All
@@ -47,16 +49,13 @@ import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
  * @see org.openmrs.api.db.ObsDAO
  * @see org.openmrs.api.ObsService
  */
+@Repository("obsDAO")
 public class HibernateObsDAO implements ObsDAO {
 	
-	protected SessionFactory sessionFactory;
+	protected final SessionFactory sessionFactory;
 	
-	/**
-	 * Set session factory that allows us to connect to the database that Hibernate knows about.
-	 *
-	 * @param sessionFactory
-	 */
-	public void setSessionFactory(SessionFactory sessionFactory) {
+	@Autowired
+	public HibernateObsDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 	

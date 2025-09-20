@@ -47,7 +47,9 @@ import org.openmrs.util.HandlerUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.validation.Errors;
@@ -60,6 +62,7 @@ import org.springframework.validation.Validator;
  * @see org.openmrs.api.db.AdministrationDAO
  * @see org.openmrs.api.AdministrationService
  */
+@Repository("adminDAO")
 public class HibernateAdministrationDAO implements AdministrationDAO, ApplicationContextAware {
 	
 	private static final Logger log = LoggerFactory.getLogger(HibernateAdministrationDAO.class);
@@ -68,19 +71,12 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	/**
 	 * Hibernate session factory
 	 */
-	private SessionFactory sessionFactory;
+	private final SessionFactory sessionFactory;
 
 	private Metadata metadata;
 	
-	public HibernateAdministrationDAO() {
-	}
-	
-	/**
-	 * Set session factory
-	 *
-	 * @param sessionFactory
-	 */
-	public void setSessionFactory(SessionFactory sessionFactory) {
+	@Autowired
+	public HibernateAdministrationDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 	

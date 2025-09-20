@@ -146,7 +146,7 @@ Deploy to docker:
                       
                       docker pull $IMAGE
                       
-                      export JDK_IMAGE="amazoncorretto-21"
+                      export JDK_IMAGE="eclipse-temurin-21"
                       
                       docker buildx build --pull --push --platform ${bamboo.docker.image.platforms} \
                         --target dev \
@@ -180,7 +180,7 @@ Release:
                       export IMAGE=${bamboo.docker.image.name}:${OMRS_VERSION}
                       export DEV_IMAGE=${bamboo.docker.image.name}:${OMRS_VERSION}-dev
                       export BUILD_IMAGE=${bamboo.docker.image.id}
-                      export JDK_IMAGE="amazoncorretto-21"
+                      export JDK_IMAGE="eclipse-temurin-21"
                       
                       # Set to be able to push
                       git remote set-url origin git@github.com:openmrs/openmrs-core.git

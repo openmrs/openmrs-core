@@ -40,6 +40,8 @@ import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.ProgramWorkflowDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 /**
  * Hibernate specific ProgramWorkflow related functions.<br>
@@ -50,19 +52,13 @@ import org.openmrs.customdatatype.CustomDatatypeUtil;
  * @see org.openmrs.api.db.ProgramWorkflowDAO
  * @see org.openmrs.api.ProgramWorkflowService
  */
+@Repository("programWorkflowDAO")
 public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	
-	private SessionFactory sessionFactory;
+	private final SessionFactory sessionFactory;
 	
-	public HibernateProgramWorkflowDAO() {
-	}
-	
-	/**
-	 * Hibernate Session Factory
-	 *
-	 * @param sessionFactory
-	 */
-	public void setSessionFactory(SessionFactory sessionFactory) {
+	@Autowired
+	public HibernateProgramWorkflowDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 	

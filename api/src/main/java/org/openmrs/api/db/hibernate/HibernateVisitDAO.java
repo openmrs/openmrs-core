@@ -32,6 +32,8 @@ import org.openmrs.VisitType;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.VisitDAO;
 import org.openmrs.parameter.VisitSearchCriteria;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -40,11 +42,13 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @since 1.9
  */
+@Repository("visitDAO")
 public class HibernateVisitDAO implements VisitDAO {
 	
-	private SessionFactory sessionFactory;
+	private final SessionFactory sessionFactory;
 	
-	public void setSessionFactory(SessionFactory sessionFactory) {
+	@Autowired
+	public HibernateVisitDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 	
