@@ -9,9 +9,12 @@
  */
 package org.openmrs.api.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.openmrs.Person;
 import org.openmrs.Provider;
@@ -340,5 +343,136 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	public List<ProviderRole> getAllProviderRoles(boolean includeRetired) {
 		return dao.getAllProviderRoles(includeRetired);
 	}
+
+	@Override
+	@Transactional
+	public void assignProviderRoleToPerson(Person provider, ProviderRole role, String identifier) {
+
+		if (provider == null) {
+			throw new APIException("Cannot set provider role: provider is null");
+		}
+
+		if (role == null) {
+			throw new APIException("Cannot set provider role: role is null");
+		}
+
+		if (provider.getVoided()) {
+			throw new APIException("Cannot set provider role: underlying person has been voided");
+		}
+
+		if (hasRole(provider,role)) {
+			return;
+		}
+
+		Provider p = new Provider();
+		p.setPerson(provider);
+		p.setIdentifier(identifier);
+		p.setProviderRole(role);
+		Context.getProviderService().saveProvider(p);
+	}
+
+	@Transactional
+	@Override
+	public void unassignProviderRoleFromPerson(Person provider, ProviderRole role) {
+
+		if (provider == null) {
+			throw new APIException("Cannot set provider role: provider is null");
+		}
+
+		if (role == null) {
+			throw new APIException("Cannot set provider role: role is null");
+		}
+
+		if (!hasRole(provider,role)) {
+			// if the provider doesn't have this role, do nothing
+			return;
+		}
+
+		// note that we don't check to make sure this provider is a person
+
+		// iterate through all the providers and retire any with the specified role
+		for (Provider p : getProvidersByPerson(provider, true)) {
+			if (p.getProviderRole() != null && p.getProviderRole().equals(role)) {
+				Context.getProviderService().retireProvider(p, "removing provider role " + role + " from " + provider);
+			}
+		}
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public boolean isProvider(Person person) {
+
+		if (person == null) {
+			throw new APIException("Person cannot be null");
+		}
+
+		Collection<Provider> providers = getProvidersByPerson(person, true);
+		return providers == null || providers.size() == 0 ? false : true;
+	}
 	
+	@Transactional(readOnly = true)
+	@Override
+	public boolean hasRole(Person provider, ProviderRole role) {
+
+		if (provider == null) {
+			throw new APIException("Provider cannot be null");
+		}
+
+		if (role == null) {
+			throw new APIException("Role cannot be null");
+		}
+
+		return getProviderRoles(provider).contains(role);
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public List<ProviderRole> getProviderRoles(Person provider) {
+		if (provider == null) {
+			throw new APIException("Provider cannot be null");
+		}
+
+		if (!isProvider(provider)) {
+			// return empty list if this person is not a provider
+			return new ArrayList<ProviderRole>();
+		}
+
+		// otherwise, collect all the roles associated with this provider
+		// (we use a set to avoid duplicates at this point)
+		Set<ProviderRole> providerRoles = new HashSet<ProviderRole>();
+
+		Collection<Provider> providers = getProvidersByPerson(provider, false);
+
+		for (Provider p : providers) {
+			if (p.getProviderRole() != null) {
+				providerRoles.add(p.getProviderRole());
+			}
+		}
+
+		return new ArrayList<>(providerRoles);
+	}
+
+	@Override
+	@Transactional
+	public ProviderRole saveProviderRole(ProviderRole role) {
+		return dao.saveProviderRole(role);
+	}
+
+	@Override
+	@Transactional
+	public void retireProviderRole(ProviderRole role, String reason) {
+		dao.saveProviderRole(role);
+	}
+
+	@Override
+	@Transactional
+	public void unretireProviderRole(ProviderRole role) {
+		dao.saveProviderRole(role);
+	}
+
+	@Override
+	@Transactional
+	public void purgeProviderRole(ProviderRole role) {
+		dao.deleteProviderRole(role);
+	}
 }

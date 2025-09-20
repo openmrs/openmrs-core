@@ -438,5 +438,15 @@ public class HibernateProviderDAO implements ProviderDAO {
 	public List<ProviderRole> getAllProviderRoles(boolean includeRetired) {
 		return getAll(includeRetired, ProviderRole.class);
 	}
+	
+	@Override
+	public ProviderRole  saveProviderRole(ProviderRole role) {
+		getSession().saveOrUpdate(role);
+		return role;
+	}
 
+	@Override
+	public void deleteProviderRole(ProviderRole role) {
+		getSession().delete(role);
+	}
 }

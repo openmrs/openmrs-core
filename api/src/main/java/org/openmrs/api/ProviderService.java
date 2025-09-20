@@ -370,5 +370,92 @@ public interface ProviderService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.GET_PROVIDERS })
 	List<Provider> getProvidersByRoles(List<ProviderRole> roles);
-	
+
+	/**
+	 * Assigns a provider role to a person
+	 *
+	 * @param provider the provider whose role we wish to set
+	 * @param role the role to set
+	 * @param identifier the identifier to associate with this provider/role combination (mandatory)
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_PROVIDER_ROLES)
+	public void assignProviderRoleToPerson(Person provider, ProviderRole role, String identifier);
+
+	/**
+	 * Unassigns a provider role from a person by retiring the provider associated with that role
+	 *
+	 * @param provider
+	 * @param role
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_PROVIDER_ROLES)
+	void unassignProviderRoleFromPerson(Person provider, ProviderRole role);
+
+	/**
+	 * Returns whether or not the passed person has one or more associated providers (unretired or retired)
+	 * (So note that a person that only is associated with retired Provider objects is still consider a "provider")
+	 *
+	 * @param person
+	 * @return whether or not the passed person has one or more associated providers
+	 */
+	@Authorized(PrivilegeConstants.GET_PROVIDER_ROLES)
+	public boolean isProvider(Person person);
+
+	/**
+	 * Returns whether or not the passed provider has the specified provider role
+	 *
+	 * @param provider
+	 * @param role
+	 * @return whether or not the passed provider has the specified provider role
+	 */
+	@Authorized(PrivilegeConstants.GET_PROVIDER_ROLES)
+	public boolean hasRole(Person provider, ProviderRole role);
+
+	/**
+	 * Returns the provider roles associated with the specified provider
+	 *
+	 * @param provider
+	 * @return the provider role associated with the specified provider
+	 */
+	@Authorized(PrivilegeConstants.GET_PROVIDER_ROLES)
+	List<ProviderRole> getProviderRoles(Person provider);
+
+	/**
+	 * Saves/updates a provider role
+	 *
+	 * @param role the provider role to save
+	 * @return the saved provider role
+	 * 
+	 * @since 2.8.0
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_PROVIDER_ROLES)
+	public ProviderRole saveProviderRole(ProviderRole role);
+
+	/**
+	 * Retires a provider role
+	 * @param role the role to retire
+	 * @param reason the reason the role is being retired
+	 *               
+	 *  @since 2.8.0
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_PROVIDER_ROLES)
+	public void retireProviderRole(ProviderRole role, String reason);
+
+	/**
+	 * Unretires a provider role
+	 * @param role the role to unretire
+	 *             
+	 *  @since 2.8.0
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_PROVIDER_ROLES)
+	public void unretireProviderRole(ProviderRole role);
+
+	/**
+	 * Deletes a provider role
+	 *
+	 * @param role the provider role to delete
+	 * 
+	 *  @since 2.8.0   
+	 */
+	@Authorized(PrivilegeConstants.PURGE_PROVIDER_ROLES)
+	public void purgeProviderRole(ProviderRole role);
 }
