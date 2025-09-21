@@ -34,8 +34,12 @@ import java.util.HashSet;
 @Transactional
 public class DiagnosisServiceImpl extends BaseOpenmrsService implements DiagnosisService {
 	
+	private final DiagnosisDAO diagnosisDAO;
+	
 	@Autowired
-	private DiagnosisDAO diagnosisDAO;
+	public DiagnosisServiceImpl(DiagnosisDAO diagnosisDAO) {
+		this.diagnosisDAO = diagnosisDAO;
+	}
 
 	/**
 	 * Saves a diagnosis
@@ -58,7 +62,7 @@ public class DiagnosisServiceImpl extends BaseOpenmrsService implements Diagnosi
 	 */
 	@Override
 	public Diagnosis voidDiagnosis(Diagnosis diagnosis, String voidReason) {
-		return Context.getDiagnosisService().save(diagnosis);
+		return save(diagnosis);
 	}
 
 	/**
@@ -156,7 +160,7 @@ public class DiagnosisServiceImpl extends BaseOpenmrsService implements Diagnosi
 	 */
 	@Override
 	public Diagnosis unvoidDiagnosis(Diagnosis diagnosis) {
-		return Context.getDiagnosisService().save(diagnosis);
+		return save(diagnosis);
 	}
 
 	/**
@@ -182,15 +186,6 @@ public class DiagnosisServiceImpl extends BaseOpenmrsService implements Diagnosi
 	 */
 	public DiagnosisDAO getDiagnosisDAO() {
 		return diagnosisDAO;
-	}
-
-	/**
-	 * Sets the diagnosis data access object
-	 * 
-	 * @param diagnosisDAO
-	 */
-	public void setDiagnosisDAO(DiagnosisDAO diagnosisDAO) {
-		this.diagnosisDAO = diagnosisDAO;
 	}
 
 	/**
@@ -233,7 +228,7 @@ public class DiagnosisServiceImpl extends BaseOpenmrsService implements Diagnosi
 	 */
 	@Override
 	public DiagnosisAttributeType retireDiagnosisAttributeType(DiagnosisAttributeType diagnosisAttributeType, String reason) throws APIException {
-		return Context.getDiagnosisService().saveDiagnosisAttributeType(diagnosisAttributeType);
+		return saveDiagnosisAttributeType(diagnosisAttributeType);
 	}
 
 	/**
@@ -241,7 +236,7 @@ public class DiagnosisServiceImpl extends BaseOpenmrsService implements Diagnosi
 	 */
 	@Override
 	public DiagnosisAttributeType unretireDiagnosisAttributeType(DiagnosisAttributeType diagnosisAttributeType) throws APIException {
-		return Context.getDiagnosisService().saveDiagnosisAttributeType(diagnosisAttributeType);
+		return saveDiagnosisAttributeType(diagnosisAttributeType);
 	}
 
 	/**

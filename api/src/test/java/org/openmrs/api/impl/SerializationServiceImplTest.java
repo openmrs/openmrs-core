@@ -10,6 +10,7 @@
 package org.openmrs.api.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
 
 import java.util.Collections;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.serialization.OpenmrsSerializer;
 import org.openmrs.serialization.SerializationException;
 
@@ -35,7 +37,7 @@ public class SerializationServiceImplTest {
 	 */
 	@BeforeAll
 	public static void clearSerializers() {
-		SerializationServiceImpl ssi = new SerializationServiceImpl();
+		SerializationServiceImpl ssi = new SerializationServiceImpl(mock(AdministrationService.class));
 		currentSerializers = ssi.getSerializers();
 		ssi.setSerializers(null); // clear out the current serializers
 	}
@@ -45,7 +47,7 @@ public class SerializationServiceImplTest {
 	 */
 	@Test
 	public void setSerializers_shouldNotResetSerializersListWhenCalledMultipleTimes() {
-		SerializationServiceImpl ssi = new SerializationServiceImpl();
+		SerializationServiceImpl ssi = new SerializationServiceImpl(mock(AdministrationService.class));
 		assertEquals(0, ssi.getSerializers().size());
 		
 		ssi.setSerializers(Collections.singletonList(new MockSerializer1()));
@@ -109,7 +111,7 @@ public class SerializationServiceImplTest {
 	 */
 	@AfterAll
 	public static void restoreSerializers() {
-		SerializationServiceImpl ssi = new SerializationServiceImpl();
+		SerializationServiceImpl ssi = new SerializationServiceImpl(mock(AdministrationService.class));
 		ssi.setSerializers(null); // clear out our serializers
 		ssi.setSerializers(currentSerializers); // reset the serializers that were here before this class
 	}

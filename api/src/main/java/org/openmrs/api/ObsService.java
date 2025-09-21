@@ -46,14 +46,6 @@ import org.openmrs.util.PrivilegeConstants;
 public interface ObsService extends OpenmrsService {
 	
 	/**
-	 * Set the given <code>dao</code> on this obs service. The dao will act as the conduit through
-	 * with all obs calls get to the database
-	 * 
-	 * @param dao specific ObsDAO to use for this service
-	 */
-	public void setObsDAO(ObsDAO dao);
-	
-	/**
 	 * Get an observation
 	 * 
 	 * @param obsId integer obsId of observation desired

@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.api.APIException;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.SerializationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.serialization.OpenmrsSerializer;
@@ -26,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +43,13 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 	
 	//***** Properties (set by spring)
 	private Map<Class<? extends OpenmrsSerializer>, OpenmrsSerializer> serializerMap;
+	
+	private final AdministrationService administrationService;
+	
+	@Autowired
+	public SerializationServiceImpl(@Lazy AdministrationService administrationService) {
+		this.administrationService = administrationService;
+	}
 
 	@Autowired
 	public void initializeSerializerMap(@Qualifier("serializerList") List<? extends OpenmrsSerializer> serializerList) {
@@ -66,7 +75,7 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 	@Override
 	@Transactional(readOnly = true)
 	public OpenmrsSerializer getDefaultSerializer() {
-		String prop = Context.getAdministrationService().getGlobalProperty(
+		String prop = administrationService.getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_SERIALIZER);
 		if (StringUtils.isNotEmpty(prop)) {
 			try {

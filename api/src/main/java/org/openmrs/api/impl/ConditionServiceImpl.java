@@ -35,10 +35,10 @@ import java.util.List;
 @Transactional
 public class ConditionServiceImpl extends BaseOpenmrsService implements ConditionService {
 
+	private final ConditionDAO conditionDAO;
+	
 	@Autowired
-	private ConditionDAO conditionDAO;
-
-	public void setConditionDAO(ConditionDAO conditionDAO) {
+	public ConditionServiceImpl(ConditionDAO conditionDAO) {
 		this.conditionDAO = conditionDAO;
 	}
 

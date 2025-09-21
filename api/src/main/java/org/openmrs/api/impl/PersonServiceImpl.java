@@ -22,7 +22,9 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PersonAttributeTypeLockedException;
 import org.openmrs.api.PersonService;
+import org.openmrs.api.SerializationService;
 import org.openmrs.api.context.Context;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.api.db.PersonDAO;
 import org.openmrs.person.PersonMergeLog;
 import org.openmrs.person.PersonMergeLogData;
@@ -34,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -60,15 +63,20 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	
 	private static final Logger log = LoggerFactory.getLogger(PersonServiceImpl.class);
 	
-	@Autowired
-	private PersonDAO dao;
+	private final PersonDAO dao;
+	private final AdministrationService administrationService;
+	private final MessageSourceService messageSourceService;
+	private final SerializationService serializationService;
 	
-	/**
-	 * @see org.openmrs.api.PersonService#setPersonDAO(org.openmrs.api.db.PersonDAO)
-	 */
-	@Override
-	public void setPersonDAO(PersonDAO dao) {
+	@Autowired
+	public PersonServiceImpl(PersonDAO dao,
+	                        @Lazy AdministrationService administrationService,
+	                        @Lazy MessageSourceService messageSourceService,
+	                        @Lazy SerializationService serializationService) {
 		this.dao = dao;
+		this.administrationService = administrationService;
+		this.messageSourceService = messageSourceService;
+		this.serializationService = serializationService;
 	}
 	
 	/**
@@ -103,7 +111,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	@Override
 	@Transactional(readOnly = true)
 	public List<PersonAttributeType> getAllPersonAttributeTypes() throws APIException {
-		return Context.getPersonService().getAllPersonAttributeTypes(true);
+		return getAllPersonAttributeTypes(true);
 	}
 	
 	/**
@@ -121,7 +129,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	@Override
 	@Transactional(readOnly = true)
 	public PersonAttributeType getPersonAttributeTypeByName(String typeName) throws APIException {
-		List<PersonAttributeType> types = Context.getPersonService().getPersonAttributeTypes(typeName, null, null, null);
+		List<PersonAttributeType> types = getPersonAttributeTypes(typeName, null, null, null);
 		
 		if (types.isEmpty()) {
 			return null;
@@ -147,7 +155,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		checkIfPersonAttributeTypesAreLocked();
 		
 		if (type.getSortWeight() == null) {
-			List<PersonAttributeType> allTypes = Context.getPersonService().getAllPersonAttributeTypes();
+			List<PersonAttributeType> allTypes = getAllPersonAttributeTypes();
 			if (!allTypes.isEmpty()) {
 				type.setSortWeight(allTypes.get(allTypes.size() - 1).getSortWeight() + 1);
 			} else {
@@ -166,10 +174,10 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 			if (!oldTypeName.equals(newTypeName)) {
 				List<GlobalProperty> props = new ArrayList<>();
 				
-				AdministrationService as = Context.getAdministrationService();
+				// Use injected administrationService directly
 				
 				for (String propName : OpenmrsConstants.GLOBAL_PROPERTIES_OF_PERSON_ATTRIBUTES) {
-					props.add(as.getGlobalPropertyObject(propName));
+					props.add(administrationService.getGlobalPropertyObject(propName));
 				}
 				
 				for (GlobalProperty prop : props) {
@@ -177,7 +185,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 						String propVal = prop.getPropertyValue();
 						if (propVal != null && propVal.contains(oldTypeName)) {
 							prop.setPropertyValue(propVal.replaceFirst(oldTypeName, newTypeName));
-							as.saveGlobalProperty(prop);
+							administrationService.saveGlobalProperty(prop);
 						}
 					}
 				}
@@ -234,7 +242,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		type.setDateRetired(null);
 		type.setRetiredBy(null);
 		type.setRetireReason(null);
-		Context.getPersonService().savePersonAttributeType(type);
+		savePersonAttributeType(type);
 
 	}
 	
@@ -369,7 +377,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 			return null;
 		}
 		
-		return Context.getPersonService().savePerson(person);
+		return savePerson(person);
 	}
 	
 	/**
@@ -390,7 +398,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	@Override
 	@Transactional(readOnly = true)
 	public List<Relationship> getAllRelationships() throws APIException {
-		return Context.getPersonService().getAllRelationships(false);
+		return getAllRelationships(false);
 	}
 	
 	/**
@@ -444,8 +452,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		
 		// search both the left side and the right side of the relationship
 		// for this person
-		List<Relationship> rels = Context.getPersonService().getRelationships(p, null, null);
-		rels.addAll(Context.getPersonService().getRelationships(null, p, null));
+		List<Relationship> rels = getRelationships(p, null, null);
+		rels.addAll(getRelationships(null, p, null));
 		
 		return rels;
 	}
@@ -460,8 +468,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		
 		// search both the left side and the right side of the relationship
 		// for this person
-		List<Relationship> rels = Context.getPersonService().getRelationships(p, null, null, effectiveDate);
-		rels.addAll(Context.getPersonService().getRelationships(null, p, null, effectiveDate));
+		List<Relationship> rels = getRelationships(p, null, null, effectiveDate);
+		rels.addAll(getRelationships(null, p, null, effectiveDate));
 		
 		return rels;
 	}
@@ -496,7 +504,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 			return null;
 		}
 		
-		return Context.getPersonService().saveRelationship(relationship);
+		return saveRelationship(relationship);
 	}
 	
 	/**
@@ -509,7 +517,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		relationship.setDateVoided(null);
 		relationship.setVoidReason(null);
 		
-		return Context.getPersonService().saveRelationship(relationship);
+		return saveRelationship(relationship);
 	}
 	
 	/**
@@ -518,7 +526,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	@Override
 	@Transactional(readOnly = true)
 	public List<RelationshipType> getAllRelationshipTypes() throws APIException {
-		return Context.getPersonService().getAllRelationshipTypes(false);
+		return getAllRelationshipTypes(false);
 	}
 	
 	/**
@@ -528,7 +536,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	@Transactional(readOnly = true)
 	public List<RelationshipType> getRelationshipTypes(String searchString) throws APIException {
 		
-		return Context.getPersonService().getRelationshipTypes(searchString, null);
+		return getRelationshipTypes(searchString, null);
 	}
 	
 	/**
@@ -557,7 +565,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	public RelationshipType saveRelationshipType(RelationshipType relationshipType) throws APIException {
 		if (StringUtils.isBlank(relationshipType.getDescription())) {
 			throw new APIException("error.required",
-			        new Object[] { Context.getMessageSourceService().getMessage("general.description") });
+			        new Object[] { messageSourceService.getMessage("general.description") });
 		}
 		
 		return dao.saveRelationshipType(relationshipType);
@@ -573,7 +581,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	        throws APIException {
 		
 		if (viewType == null) {
-			return Context.getPersonService().getAllPersonAttributeTypes();
+			return getAllPersonAttributeTypes();
 		}
 		
 		List<String> attrNames = getAttributeTypesFromGlobalProperties(viewType, personType);
@@ -633,9 +641,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	
 	private List<String> getGlobalProperties(String... properties) {
 		List<String> result = new ArrayList<>();
-		AdministrationService as = Context.getAdministrationService();
 		for (String p : properties) {
-			String id = as.getGlobalProperty(p, "");
+			String id = administrationService.getGlobalProperty(p, "");
 			if (StringUtils.isNotBlank(id)) {
 				result.add(id.trim());
 			}
@@ -712,7 +719,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 */
 	@Override
 	public PersonName voidPersonName(PersonName personName, String voidReason) throws APIException {
-		return Context.getPersonService().savePersonName(personName);
+		return savePersonName(personName);
 	}
 	
 	/**
@@ -720,7 +727,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 */
 	@Override
 	public PersonName unvoidPersonName(PersonName personName) throws APIException {
-		return Context.getPersonService().savePersonName(personName);
+		return savePersonName(personName);
 		
 	}
 	
@@ -741,7 +748,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	public Map<Person, List<Person>> getRelationshipMap(RelationshipType relType) throws APIException {
 		
 		// get all relationships with this type
-		List<Relationship> relationships = Context.getPersonService().getRelationships(null, null, relType);
+		List<Relationship> relationships = getRelationships(null, null, relType);
 		
 		// the map to return
 		Map<Person, List<Person>> ret = new HashMap<>();
@@ -818,13 +825,13 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	@Override
 	public PersonMergeLog savePersonMergeLog(PersonMergeLog personMergeLog) throws SerializationException, APIException {
 		//verify required fields
-		if (Context.getSerializationService().getDefaultSerializer() == null) {
+		if (serializationService.getDefaultSerializer() == null) {
 			throw new APIException("serializer.default.not.found", (Object[]) null);
 		}
 		log.debug("Auditing merging of non-preferred person " + personMergeLog.getLoser().getUuid()
 		        + " with preferred person " + personMergeLog.getWinner().getId());
 		//populate the mergedData XML from the PersonMergeLogData object
-		String serialized = Context.getSerializationService().getDefaultSerializer()
+		String serialized = serializationService.getDefaultSerializer()
 		        .serialize(personMergeLog.getPersonMergeLogData());
 		personMergeLog.setSerializedMergedData(serialized);
 		log.debug(serialized);
@@ -869,7 +876,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @throws SerializationException
 	 */
 	private void deserialize(PersonMergeLog personMergeLog) throws SerializationException {
-		PersonMergeLogData data = Context.getSerializationService().getDefaultSerializer()
+		PersonMergeLogData data = serializationService.getDefaultSerializer()
 		        .deserialize(personMergeLog.getSerializedMergedData(), PersonMergeLogData.class);
 		personMergeLog.setPersonMergeLogData(data);
 	}
@@ -955,7 +962,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		type.setRetiredBy(Context.getAuthenticatedUser());
 		type.setDateRetired(new Date());
 		type.setRetireReason(retiredReason);
-		return Context.getPersonService().saveRelationshipType(type);
+		return saveRelationshipType(type);
 	}
 	
 	/**
@@ -967,7 +974,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		relationshipType.setRetiredBy(null);
 		relationshipType.setDateRetired(null);
 		relationshipType.setRetireReason(null);
-		return Context.getPersonService().saveRelationshipType(relationshipType);
+		return saveRelationshipType(relationshipType);
 	}
 	
 	/**
@@ -975,7 +982,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 */
 	@Override
 	public PersonAddress voidPersonAddress(PersonAddress personAddress, String voidReason) {
-		return Context.getPersonService().savePersonAddress(personAddress);
+		return savePersonAddress(personAddress);
 	}
 	
 	/**
@@ -983,7 +990,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 */
 	@Override
 	public PersonAddress unvoidPersonAddress(PersonAddress personAddress) throws APIException {
-		return Context.getPersonService().savePersonAddress(personAddress);
+		return savePersonAddress(personAddress);
 	}
 	
 	/**
@@ -996,7 +1003,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	
 	@Override
 	public void checkIfPersonAttributeTypesAreLocked() {
-		String locked = Context.getAdministrationService()
+		String locked = administrationService
 		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATRIBUTE_TYPES_LOCKED, "false");
 		if (Boolean.valueOf(locked)) {
 			throw new PersonAttributeTypeLockedException();
