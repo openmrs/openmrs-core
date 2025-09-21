@@ -33,11 +33,11 @@ import java.util.List;
 @Transactional
 public class MedicationDispenseServiceImpl extends BaseOpenmrsService implements MedicationDispenseService {
 
+	private final MedicationDispenseDAO medicationDispenseDAO;
+	
 	@Autowired
-	private MedicationDispenseDAO medicationDispenseDAO;
-
-	public void setMedicationDispenseDAO(MedicationDispenseDAO conditionDAO) {
-		this.medicationDispenseDAO = conditionDAO;
+	public MedicationDispenseServiceImpl(MedicationDispenseDAO medicationDispenseDAO) {
+		this.medicationDispenseDAO = medicationDispenseDAO;
 	}
 
 	public MedicationDispenseDAO getMedicationDispenseDAO() {

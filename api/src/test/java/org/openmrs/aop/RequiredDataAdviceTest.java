@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -46,10 +47,14 @@ import org.openmrs.Location;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Person;
 import org.openmrs.annotation.AllowDirectAccess;
+import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.annotation.DisableHandlers;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
+import org.openmrs.api.ConceptService;
+import org.openmrs.api.ObsService;
 import org.openmrs.api.handler.BaseVoidHandler;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.api.handler.OpenmrsObjectSaveHandler;
 import org.openmrs.api.handler.RequiredDataHandler;
 import org.openmrs.api.handler.RetireHandler;
@@ -482,8 +487,8 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	@Test
 	public void before_shouldNotFailOnUpdateMethodWithNoArguments() throws Throwable {
 		Method method = ConceptServiceImpl.class.getMethod("updateConceptIndexes", (Class[]) null);
-		requiredDataAdvice.before(method, null, new ConceptServiceImpl());
-		requiredDataAdvice.before(method, new Object[] {}, new ConceptServiceImpl());
+		requiredDataAdvice.before(method, null, new ConceptServiceImpl(mock(ConceptDAO.class), mock(MessageSourceService.class), mock(ObsService.class), mock(AdministrationService.class), mock(ConceptService.class)));
+		requiredDataAdvice.before(method, new Object[] {}, new ConceptServiceImpl(mock(ConceptDAO.class), mock(MessageSourceService.class), mock(ObsService.class), mock(AdministrationService.class), mock(ConceptService.class)));
 	}
 	
 	@Test

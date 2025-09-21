@@ -1073,7 +1073,10 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Context.getUserService().saveUser(user);
 
 		//when
-		adminService.getSearchLocales();
+		List<Locale> searchLocales = adminService.getSearchLocales();
+		
+		assertNotNull(searchLocales, "getSearchLocales() should return a non-null list");
+		assertFalse(searchLocales.isEmpty(), "getSearchLocales() should return a non-empty list");
 
 		List<Locale> cachedSearchLocales = getCachedSearchLocalesForCurrentUser();
 
@@ -1111,7 +1114,12 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	}
 
 	private List<Locale> getCachedSearchLocalesForCurrentUser() {
-		return (List<Locale>) getCacheForCurrentUser().get();
+		Cache.ValueWrapper wrapper = getCacheForCurrentUser();
+		if (wrapper == null) {
+			throw new AssertionError("Expected cache entry to exist for current user, but cache was empty. " +
+				"This indicates the cache was not properly populated by getSearchLocales() call.");
+		}
+		return (List<Locale>) wrapper.get();
 	}
 
 	@Test

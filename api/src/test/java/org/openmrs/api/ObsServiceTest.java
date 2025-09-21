@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.mock;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -40,6 +41,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.openmrs.api.db.ObsDAO;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -557,8 +560,15 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	public void getHandlers_shouldNeverReturnNull() {
 		assertNotNull(Context.getObsService().getHandlers());
 		
-		// test our current implementation without it being initialized by spring
-		assertNotNull(new ObsServiceImpl().getHandlers());
+		ObsServiceImpl obsServiceImpl = new ObsServiceImpl(
+			mock(ObsDAO.class),
+			new HashMap<>(),
+			mock(PatientService.class),
+			mock(EncounterService.class), 
+			mock(ConceptService.class),
+			mock(ObsService.class)
+		);
+		assertNotNull(obsServiceImpl.getHandlers());
 	}
 	
 	/**
