@@ -53,6 +53,8 @@ import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -64,9 +66,11 @@ import org.springframework.transaction.annotation.Transactional;
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.EncounterService
  */
+@Service("encounterService")
 @Transactional
 public class EncounterServiceImpl extends BaseOpenmrsService implements EncounterService, RefByUuid {
 	
+	@Autowired
 	private EncounterDAO dao;
 	
 	/**

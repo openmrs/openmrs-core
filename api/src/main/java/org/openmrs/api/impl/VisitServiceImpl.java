@@ -37,6 +37,8 @@ import org.openmrs.parameter.VisitSearchCriteria;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.ValidateUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -45,9 +47,11 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @since 1.9
  */
+@Service("visitService")
 @Transactional
 public class VisitServiceImpl extends BaseOpenmrsService implements VisitService, RefByUuid {
 	
+	@Autowired
 	private VisitDAO dao;
 	
 	/**

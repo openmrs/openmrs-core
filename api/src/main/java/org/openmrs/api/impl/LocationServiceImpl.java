@@ -30,6 +30,8 @@ import org.openmrs.api.db.LocationDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
@@ -43,9 +45,11 @@ import org.springframework.util.StringUtils;
  * @see org.openmrs.api.LocationService
  * @see org.openmrs.Location
  */
+@Service("locationService")
 @Transactional
 public class LocationServiceImpl extends BaseOpenmrsService implements LocationService, RefByUuid {
 	
+	@Autowired
 	private LocationDAO dao;
 	
 	/**

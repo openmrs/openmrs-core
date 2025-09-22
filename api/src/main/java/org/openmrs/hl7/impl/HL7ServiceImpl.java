@@ -76,6 +76,9 @@ import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.PatientIdentifierValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -84,17 +87,30 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @see org.openmrs.hl7.HL7Service
  */
+@Service("hL7Service")
 @Transactional
 public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service, RefByUuid {
 	
 	private static final Logger log = LoggerFactory.getLogger(HL7ServiceImpl.class);
 	
+	@Autowired
 	protected HL7DAO dao;
 	
+	@Autowired
+	@Qualifier("hL7Parser")
 	private GenericParser parser;
 	
+	@Autowired
+	@Qualifier("hL7Router")
 	private MessageTypeRouter router;
 
+	
+
+	@Autowired
+	public void initializeHL7Handlers(@Qualifier("hL7Handlers") Map<String, Application> handlers) {
+		setHL7Handlers(handlers);
+	}
+	
 	/**
 	 * @see org.openmrs.hl7.HL7Service#setHL7DAO(org.openmrs.hl7.db.HL7DAO)
 	 */

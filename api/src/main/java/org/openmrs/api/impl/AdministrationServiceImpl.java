@@ -64,8 +64,11 @@ import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 
@@ -76,13 +79,17 @@ import org.springframework.validation.Errors;
  * @see org.openmrs.api.AdministrationService
  * @see org.openmrs.api.context.Context
  */
+@Service("adminService")
 @Transactional
 public class AdministrationServiceImpl extends BaseOpenmrsService implements AdministrationService, GlobalPropertyListener, RefByUuid {
 	
 	private static final Logger log = LoggerFactory.getLogger(AdministrationServiceImpl.class);
 
+	@Autowired
 	protected AdministrationDAO dao;
 	
+	@Autowired
+	@Qualifier("openmrsEventListeners")
 	private EventListeners eventListeners;
 
 	private static final String SERIALISER_WHITE_LIST_TYPES = "serializerWhiteListTypes";
@@ -90,8 +97,12 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * An always up-to-date collection of the allowed locales.
 	 */
+	@Autowired
+	@Qualifier("globalLocaleList")
 	private GlobalLocaleList globalLocaleList;
 	
+	@Autowired
+	@Qualifier("implementationIdHttpClient")
 	private HttpClient implementationIdHttpClient;
 	
 	/**

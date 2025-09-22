@@ -37,6 +37,8 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ProgramWorkflowDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -47,11 +49,13 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @see org.openmrs.api.ProgramWorkflowService
  */
+@Service("programWorkflowService")
 @Transactional
 public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements ProgramWorkflowService, RefByUuid {
 	
 	private static final Logger log = LoggerFactory.getLogger(ProgramWorkflowServiceImpl.class);
 	
+	@Autowired
 	protected ProgramWorkflowDAO dao;
         
 	public ProgramWorkflowServiceImpl() {

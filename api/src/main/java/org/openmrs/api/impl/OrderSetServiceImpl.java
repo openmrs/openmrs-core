@@ -26,10 +26,14 @@ import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderSetDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Service("orderSetService")
 public class OrderSetServiceImpl extends BaseOpenmrsService implements OrderSetService, RefByUuid {
 	
+	@Autowired
 	protected OrderSetDAO dao;
 	
 	/**

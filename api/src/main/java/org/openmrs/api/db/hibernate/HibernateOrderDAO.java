@@ -56,6 +56,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 /**
  * This class should not be used directly. This is just a common implementation of the OrderDAO that
@@ -68,6 +70,7 @@ import java.util.Set;
  * @see org.openmrs.api.OrderService
  * @see org.openmrs.api.db.OrderDAO
  */
+@Repository("orderDAO")
 public class HibernateOrderDAO implements OrderDAO {
 	
 	private static final Logger log = LoggerFactory.getLogger(HibernateOrderDAO.class);
@@ -75,17 +78,10 @@ public class HibernateOrderDAO implements OrderDAO {
 	/**
 	 * Hibernate session factory
 	 */
-	private SessionFactory sessionFactory;
+	private final SessionFactory sessionFactory;
 	
-	public HibernateOrderDAO() {
-	}
-	
-	/**
-	 * Set session factory
-	 * 
-	 * @param sessionFactory
-	 */
-	public void setSessionFactory(SessionFactory sessionFactory) {
+	@Autowired
+	public HibernateOrderDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 	

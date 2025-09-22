@@ -28,6 +28,8 @@ import org.openmrs.api.db.ProviderDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -36,9 +38,11 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * @since 1.9
  */
+@Service("providerService")
 @Transactional
 public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderService, RefByUuid {
 	
+	@Autowired
 	private ProviderDAO dao;
 	
 	/**

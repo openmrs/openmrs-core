@@ -8,13 +8,13 @@
 #	Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS 
 #	graphic logo is a trademark of OpenMRS Inc.
 
-ARG DEV_JDK=amazoncorretto-21
-ARG RUNTIME_JDK=jdk21-corretto
+ARG DEV_JDK=eclipse-temurin-21
+ARG RUNTIME_JDK=jdk21-temurin
 
 ### Compile Stage (platform-agnostic)
 FROM --platform=$BUILDPLATFORM maven:3.9-$DEV_JDK AS compile
 
-RUN yum -y update && yum -y install git && yum clean all
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /openmrs_core
 
@@ -61,7 +61,7 @@ RUN mvn $MVN_SETTINGS $MVN_ARGS
 ### Development Stage
 FROM maven:3.9-$DEV_JDK AS dev
 
-RUN yum -y update && yum -y install tar gzip git && yum clean all
+RUN apt-get update && apt-get install -y tar gzip git && rm -rf /var/lib/apt/lists/*
 
 # Setup Tini
 ARG TARGETARCH
@@ -75,9 +75,9 @@ RUN if [ "$TARGETARCH" = "arm64" ] ; then TINI_URL="${TINI_URL}-arm64" TINI_SHA=
     && chmod +x /usr/bin/tini 
 
 # Setup Tomcat for development
-ARG TOMCAT_VERSION=9.0.107
-ARG TOMCAT_SHA="1815837fa10083258b653dab1f3947fadbad377fa66546fa74aecea1439c6fed2ef4e40c86fa55e176d8c5739ad448196a7415ddfca6ff8d17c6fe8cdba0fefb"
-ARG TOMCAT_URL="https://www.apache.org/dyn/closer.cgi?action=download&filename=tomcat/tomcat-9/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz"
+ARG TOMCAT_VERSION=11.0.11
+ARG TOMCAT_SHA="a26b2269530fd2fc834e9b1544962f6524cf87925de43b05ad050e66b5eaa76a4ad754a2c5fc4f851baf75a0ea1b0ed8f51082300393a4c35d8c2da0d7c535bd"
+ARG TOMCAT_URL="https://www.apache.org/dyn/closer.cgi?action=download&filename=tomcat/tomcat-11/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz"
 RUN curl -fL -o /tmp/apache-tomcat.tar.gz "$TOMCAT_URL" \
     && echo "${TOMCAT_SHA}  /tmp/apache-tomcat.tar.gz" | sha512sum -c \
     && mkdir -p /usr/local/tomcat && gzip -d /tmp/apache-tomcat.tar.gz  \
@@ -105,9 +105,9 @@ ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/mvn-entrypoint.sh"]
 CMD ["/openmrs/startup-dev.sh"]
 
 ### Production Stage
-FROM tomcat:9-$RUNTIME_JDK
+FROM tomcat:11-$RUNTIME_JDK
 
-RUN yum -y update && yum clean all && rm -rf /usr/local/tomcat/webapps/*
+RUN apt-get update && rm -rf /var/lib/apt/lists/* && rm -rf /usr/local/tomcat/webapps/*
 
 # Setup Tini
 ARG TARGETARCH

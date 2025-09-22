@@ -10,10 +10,12 @@
 package org.openmrs.patient.impl;
 
 import org.openmrs.patient.UnallowedIdentifierException;
+import org.springframework.stereotype.Component;
 
 /**
  * A IdentifierValidator based on the Regenstrief Institute's version of the Luhn Algorithm.
  */
+@Component
 public class LuhnIdentifierValidator extends BaseHyphenatedIdentifierValidator {
 	
 	private static final String ALLOWED_CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_";
