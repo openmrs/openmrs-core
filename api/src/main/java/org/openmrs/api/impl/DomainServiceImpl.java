@@ -15,6 +15,9 @@ import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.ServiceContext;
 import org.openmrs.serialization.UuidReferenceModule;
 import org.springframework.aop.support.AopUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Method;
@@ -40,6 +43,8 @@ import java.util.Set;
  * @see DomainService
  * @see UuidReferenceModule
  */
+
+ @Service("domainService")
 @Transactional
 public class DomainServiceImpl extends BaseOpenmrsService implements DomainService {
 
@@ -51,7 +56,8 @@ public class DomainServiceImpl extends BaseOpenmrsService implements DomainServi
      *
      * @param serviceContext application context providing available {@code OpenmrsService} implementations
      */
-    public DomainServiceImpl(ServiceContext serviceContext) {
+    @Autowired
+    public DomainServiceImpl(@Qualifier ("serviceContext") ServiceContext serviceContext) {
         List<OpenmrsService> services = serviceContext.getRegisteredComponents(OpenmrsService.class);
         for (OpenmrsService service : services) {
             if (this.getClass().isAssignableFrom(service.getClass())) {
