@@ -423,7 +423,7 @@
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>42.7.7</version>
+				<version>42.7.8</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.jackson</groupId>
@@ -573,7 +573,7 @@
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
-				<version>33.4.8-jre</version>
+				<version>33.5.0-jre</version>
 			</dependency>
 			<dependency>
 			    <groupId>jakarta.xml.bind</groupId>
@@ -620,7 +620,7 @@
 			<dependency>
 				<groupId>com.adobe.testing</groupId>
 				<artifactId>s3mock-testcontainers</artifactId>
-				<version>4.8.0</version>
+				<version>4.9.1</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
