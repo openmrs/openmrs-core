@@ -642,7 +642,6 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	public void saveFormField_shouldPropagateSaveToTheFieldPropertyOnTheGivenFormField() {
 		// create a new Field
 		Field field = new Field();
-		FormService fs = Context.getFormService();
 		field.setName("This is a new field");
 		field.setDescription("It should be saved along with the formField");
 		field.setFieldType(new FieldType(1));
