@@ -12,11 +12,9 @@ package org.openmrs.api.impl;
 import org.openmrs.api.DomainService;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.api.RefByUuid;
-import org.openmrs.api.context.ServiceContext;
 import org.openmrs.serialization.UuidReferenceModule;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,7 +42,7 @@ import java.util.Set;
  * @see UuidReferenceModule
  */
 
- @Service("domainService")
+@Service("domainService")
 @Transactional
 public class DomainServiceImpl extends BaseOpenmrsService implements DomainService {
 
@@ -54,11 +52,10 @@ public class DomainServiceImpl extends BaseOpenmrsService implements DomainServi
      * Constructs the {@code DomainService} and scans the dynamically provided OpenMRS services
      * for eligible {@code getXByUuid(String)} methods to populate the internal lookup.
      *
-     * @param serviceContext application context providing available {@code OpenmrsService} implementations
+     * @param services the list of all available {@code OpenmrsService} implementations
      */
     @Autowired
-    public DomainServiceImpl(@Qualifier ("serviceContext") ServiceContext serviceContext) {
-        List<OpenmrsService> services = serviceContext.getRegisteredComponents(OpenmrsService.class);
+    public DomainServiceImpl(List<OpenmrsService> services) {
         for (OpenmrsService service : services) {
             if (this.getClass().isAssignableFrom(service.getClass())) {
                 continue;
