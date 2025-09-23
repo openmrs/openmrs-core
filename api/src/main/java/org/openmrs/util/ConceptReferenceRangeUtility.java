@@ -9,6 +9,16 @@
  */
 package org.openmrs.util;
 
+import java.io.StringWriter;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Properties;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -21,18 +31,14 @@ import org.openmrs.Person;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 
-import java.util.Properties;
-import java.io.StringWriter;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-
 /**
  * A utility class that evaluates the concept ranges
  * 
  * @since 2.7.0
  */
 public class ConceptReferenceRangeUtility {
+	
+	private final long NULL_DATE_RETURN_VALUE = -1;
 	
 	public ConceptReferenceRangeUtility() {
 	}
@@ -151,5 +157,232 @@ public class ConceptReferenceRangeUtility {
 		} else {
 			return getLatestObs(conceptRef, currentObs.getPerson());
 		}
+	}
+	
+	/**
+	 * Gets the person's latest observation date for a given concept
+	 * 
+	 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName 
+	 *                   e.g "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434"
+	 * @param person the person
+	 * 
+	 * @return the observation date
+	 * 
+	 * @since 2.7.8
+	 */
+	public Date getLatestObsDate(String conceptRef, Person person) {
+		Obs obs = getLatestObs(conceptRef, person);
+		if (obs == null) {
+			return null;
+		}
+		
+		Date date = obs.getValueDate();
+		if (date == null) {
+			date = obs.getValueDatetime();
+		}
+		
+		return date;
+	}
+	
+	/**
+	 * Gets the number of days from the person's latest observation date value for a given concept to the current date
+	 * 
+	 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName 
+	 *                   e.g "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434"
+	 * @param person the person
+	 * 
+	 * @return the number of days
+	 * 
+	 * @since 2.7.8
+	 */
+	public long getObsDays(String conceptRef, Person person) {
+		Date date = getLatestObsDate(conceptRef, person);
+		if (date == null) {
+			return NULL_DATE_RETURN_VALUE;
+		}
+		return this.getDays(date);
+	}
+	
+	/**
+	 * Gets the number of weeks from the person's latest observation date value for a given concept to the current date
+	 * 
+	 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName 
+	 *                   e.g "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434"
+	 * @param person the person
+	 * 
+	 * @return the number of weeks
+	 * 
+	 * @since 2.7.8
+	 */
+	public long getObsWeeks(String conceptRef, Person person) {
+		Date date = getLatestObsDate(conceptRef, person);
+		if (date == null) {
+			return NULL_DATE_RETURN_VALUE;
+		}
+		return this.getWeeks(date);
+	}
+	
+	/**
+	 * Gets the number of months from the person's latest observation date value for a given concept to the current date
+	 * 
+	 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName 
+	 *                   e.g "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434"
+	 * @param person the person
+	 * 
+	 * @return the number of months
+	 * 
+	 * @since 2.7.8
+	 */
+	public long getObsMonths(String conceptRef, Person person) {
+		Date date = getLatestObsDate(conceptRef, person);
+		if (date == null) {
+			return NULL_DATE_RETURN_VALUE;
+		}
+		return this.getMonths(date);
+	}
+	
+	/**
+	 * Gets the number of years from the person's latest observation date value for a given concept to the current date
+	 * 
+	 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName 
+	 *                   e.g "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434"
+	 * @param person the person
+	 * 
+	 * @return the number of years
+	 * 
+	 * @since 2.7.8
+	 */
+	public long getObsYears(String conceptRef, Person person) {
+		Date date = getLatestObsDate(conceptRef, person);
+		if (date == null) {
+			return NULL_DATE_RETURN_VALUE;
+		}
+		return this.getYears(date);
+	}
+	
+	/**
+	 * Gets the number of days between two given dates
+	 * 
+	 * @param fromDate the date from which to start counting
+	 * @param dateDate the date up to which to stop counting
+	 * 
+	 * @return the number of days between
+	 * 
+	 * @since 2.7.8
+	 */
+	public long getDaysBetween(Date fromDate, Date toDate) {
+		if (fromDate == null || toDate == null) {
+			return NULL_DATE_RETURN_VALUE;
+		}
+		return ChronoUnit.DAYS.between(toLocalDate(fromDate), toLocalDate(toDate));
+	}
+	
+	/**
+	 * Gets the number of weeks between two given dates
+	 * 
+	 * @param fromDate the date from which to start counting
+	 * @param dateDate the date up to which to stop counting
+	 * 
+	 * @return the number of weeks between
+	 * 
+	 * @since 2.7.8
+	 */
+	public long getWeeksBetween(Date fromDate, Date toDate) {
+		if (fromDate == null || toDate == null) {
+			return NULL_DATE_RETURN_VALUE;
+		}
+		return ChronoUnit.WEEKS.between(toLocalDate(fromDate), toLocalDate(toDate));
+	}
+	
+	/**
+	 * Gets the number of months between two given dates
+	 * 
+	 * @param fromDate the date from which to start counting
+	 * @param dateDate the date up to which to stop counting
+	 * 
+	 * @return the number of months between
+	 * 
+	 * @since 2.7.8
+	 */
+	public long getMonthsBetween(Date fromDate, Date toDate) {
+		if (fromDate == null || toDate == null) {
+			return NULL_DATE_RETURN_VALUE;
+		}
+		return ChronoUnit.MONTHS.between(toLocalDate(fromDate), toLocalDate(toDate));
+	}
+	
+	/**
+	 * Gets the number of years between two given dates
+	 * 
+	 * @param fromDate the date from which to start counting
+	 * @param dateDate the date up to which to stop counting
+	 * 
+	 * @return the number of years between
+	 * 
+	 * @since 2.7.8
+	 */
+	public long getYearsBetween(Date fromDate, Date toDate) {
+		if (fromDate == null || toDate == null) {
+			return NULL_DATE_RETURN_VALUE;
+		}
+		return ChronoUnit.YEARS.between(toLocalDate(fromDate), toLocalDate(toDate));
+	}
+	
+	/**
+	 * Gets the number of days from a given date up to the current date.
+	 * 
+	 * @param fromDate the date from which to start counting
+	 * @return the number of days
+	 * 
+	 * @since 2.7.8
+	 */
+	public long getDays(Date fromDate) {
+		return getDaysBetween(fromDate, new Date());
+	}
+	
+	/**
+	 * Gets the number of weeks from a given date up to the current date.
+	 * 
+	 * @param fromDate the date from which to start counting
+	 * @return the number of weeks
+	 * 
+	 * @since 2.7.8
+	 */
+	public long getWeeks(Date fromDate) {
+		return getWeeksBetween(fromDate, new Date());
+	}
+	
+	/**
+	 * Gets the number of months from a given date up to the current date.
+	 * 
+	 * @param fromDate the date from which to start counting
+	 * @return the number of months
+	 * 
+	 * @since 2.7.8
+	 */
+	public long getMonths(Date fromDate) {
+		return getMonthsBetween(fromDate, new Date());
+	}
+	
+	/**
+	 * Gets the number of years from a given date up to the current date.
+	 * 
+	 * @param fromDate the date from which to start counting
+	 * @return the number of years
+	 * 
+	 * @since 2.7.8
+	 */
+	public long getYears(Date fromDate) {
+		return getYearsBetween(fromDate, new Date());
+	}
+	
+	/**
+	 * Converts a java.util.Date to java.time.LocalDate
+	 * 
+	 * @param date the java.util.Date
+	 * @return the java.time.LocalDate
+	 */
+	private LocalDate toLocalDate(Date date) {
+		return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 	}
 }
