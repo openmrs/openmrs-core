@@ -293,6 +293,38 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
+	public void testObsValueMatch_shouldReturnTrueIfValueCodedMatch() {
+		Obs obs = buildObs();
+		obs.setPerson(person);
+		
+		Concept valueCoded = new Concept(900);
+		obs.setValueCoded(valueCoded);
+		
+		Concept concept = new Concept(4900);
+		
+		Mockito.when(conceptService.getConceptByReference("CIEL:1234")).thenReturn(concept);
+		Mockito.when(conceptService.getConceptByReference("CIEL:1000")).thenReturn(valueCoded);
+
+		Mockito.when(obsService.getObservations(Collections.singletonList(person),
+				null,
+				Collections.singletonList(concept),
+				null,
+				null,
+				null,
+				Collections.singletonList("dateCreated"),
+				1,
+				null,
+				null,
+				null,
+				false))
+			.thenReturn(Collections.singletonList(obs));
+		
+		assertTrue(
+			conceptReferenceRangeUtility.evaluateCriteria("$fn.isObsValueCodedAnswer('CIEL:1234', $patient, 'CIEL:1000')", obs)
+		);
+	}
+	
+	@Test
 	public void testObsValueMatch_shouldReturnTrueIfValueTextMatch() {
 		person.setGender("F");
 		
