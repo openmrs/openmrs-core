@@ -185,6 +185,40 @@ public class ConceptReferenceRangeUtility {
 	}
 	
 	/**
+	 * Checks if an observation's value coded answer is equal to a given concept
+	 * 
+	 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName 
+	 *                   e.g "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434" for the observation's question
+	 *                   
+	 * @param person the person
+	 * 
+	 * @param answerConceptRef can be either concept uuid or conceptMap's code and sourceName 
+	 *                   e.g "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434" for the observation's coded answer
+	 *                   
+	 * @return true if the given concept is equal to the observation's value coded answer
+	 * 
+	 * @since 2.7.8
+	 */
+	public boolean isObsValueCodedAnswer(String conceptRef, Person person, String answerConceptRef) {
+		Obs obs = getLatestObs(conceptRef, person);
+		if (obs == null) {
+			return false;
+		}
+		
+		Concept valudeCoded = obs.getValueCoded();
+		if (valudeCoded == null) {
+			return false;
+		}
+		
+		Concept answerConcept = Context.getConceptService().getConceptByReference(answerConceptRef);
+		if (answerConcept == null) {
+			return false;
+		}
+		
+		return valudeCoded.equals(answerConcept);
+	}
+	
+	/**
 	 * Gets the number of days from the person's latest observation date value for a given concept to the current date
 	 * 
 	 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName 
