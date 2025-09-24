@@ -11,6 +11,7 @@ package org.openmrs;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -51,7 +52,7 @@ public class MedicationDispense extends BaseFormRecordableOpenmrsData {
 	 * FHIR:context
 	 * Encounter when the dispensing event occurred
 	 */
-	@ManyToOne(optional = true)
+	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "encounter_id")
 	private Encounter encounter;
 
@@ -75,7 +76,7 @@ public class MedicationDispense extends BaseFormRecordableOpenmrsData {
 	 * FHIR:location
 	 * Where the dispensed event occurred
 	 */
-	@ManyToOne(optional = true)
+	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "location_id")
 	private Location location;
 
@@ -85,7 +86,7 @@ public class MedicationDispense extends BaseFormRecordableOpenmrsData {
 	 *     	https://www.hl7.org/fhir/medicationdispense-definitions.html#MedicationDispense.performer
 	 *     </a>specification, It should be assumed that the actor is the dispenser of the medication
 	 */
-	@ManyToOne(optional = true)
+	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "dispenser")
 	private Provider dispenser;
 
@@ -94,7 +95,7 @@ public class MedicationDispense extends BaseFormRecordableOpenmrsData {
 	 * The drug order that led to this dispensing event; 
 	 * note that authorizing prescription maps to a "MedicationRequest" FHIR resource
 	 */
-	@ManyToOne(optional = true)
+	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "drug_order_id")
 	private DrugOrder drugOrder;
 
@@ -116,7 +117,7 @@ public class MedicationDispense extends BaseFormRecordableOpenmrsData {
 	 *     	</a>
 	 * i.e "Stock Out"
 	 */
-	@ManyToOne(optional = true)
+	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "status_reason")
 	private Concept statusReason;
 
@@ -127,7 +128,7 @@ public class MedicationDispense extends BaseFormRecordableOpenmrsData {
 	 *     	</a> for potential example concepts
 	 * i.e. "Refill" and "Partial Fill"
 	 */
-	@ManyToOne(optional = true)
+	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "type")
 	private Concept type;
 
@@ -142,7 +143,7 @@ public class MedicationDispense extends BaseFormRecordableOpenmrsData {
 	 * FHIR:quantity.unit and/or quanity.code
 	 * Relates to drugOrder.quantityUnits
 	 */
-	@ManyToOne(optional = true)
+	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "quantity_units")
 	private Concept quantityUnits;
 
@@ -157,7 +158,7 @@ public class MedicationDispense extends BaseFormRecordableOpenmrsData {
 	 * FHIR:dosageInstructions.doseAndRate.dose.quantity.unit and/or code
 	 * Relates to drugOrder.doseUnits
 	 */
-	@ManyToOne(optional = true)
+	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "dose_units")
 	private Concept doseUnits;
 
@@ -165,7 +166,7 @@ public class MedicationDispense extends BaseFormRecordableOpenmrsData {
 	 * FHIR:dosageInstructions.route
 	 * Relates to drugOrder.route
 	 */
-	@ManyToOne(optional = true)
+	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "route")
 	private Concept route;
 
@@ -176,7 +177,7 @@ public class MedicationDispense extends BaseFormRecordableOpenmrsData {
 	 * to make consistent with DrugOrder in OpenMRS
 	 * Relates to drugOrder.frequency
 	 */
-	@ManyToOne(optional = true)
+	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "frequency")
 	private OrderFrequency frequency;
 
@@ -221,7 +222,7 @@ public class MedicationDispense extends BaseFormRecordableOpenmrsData {
 	 *     		https://www.hl7.org/fhir/v3/ActSubstanceAdminSubstitutionCode/vs.html
 	 *      </a>
 	 */
-	@ManyToOne(optional = true)
+	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "substitution_type")
 	private Concept substitutionType;
 
@@ -231,7 +232,7 @@ public class MedicationDispense extends BaseFormRecordableOpenmrsData {
 	 *     		https://www.hl7.org/fhir/v3/SubstanceAdminSubstitutionReason/vs.html
 	 *      </a>
 	 */
-	@ManyToOne(optional = true)
+	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "substitution_reason")
 	private Concept substitutionReason;
 
