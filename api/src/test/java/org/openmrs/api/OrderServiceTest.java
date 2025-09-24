@@ -1,3 +1,4 @@
+
 /**
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -69,7 +70,6 @@ import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.Program;
 import org.openmrs.ProgramAttributeType;
-import org.openmrs.ProgramWorkflow;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttributeType;
 import org.openmrs.ProviderRole;
@@ -2788,7 +2788,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(ConceptNameTag.class)
 			    .addAnnotatedClass(CareSetting.class) 
 				.addAnnotatedClass(LocationTag.class)
-				.addAnnotatedClass(ProgramWorkflow.class)
+			    .addAnnotatedClass(org.openmrs.Field.class)
 				.getMetadataBuilder().build();
 
 

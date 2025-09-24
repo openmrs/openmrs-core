@@ -538,7 +538,7 @@
 			<dependency>
 				<groupId>org.glassfish.jaxb</groupId>
 				<artifactId>jaxb-runtime</artifactId>
-				<version>4.0.5</version>
+				<version>4.0.6</version>
 			</dependency>
 			<dependency>
 			    <groupId>commons-validator</groupId>
@@ -641,7 +641,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.14.0</version>
+					<version>3.14.1</version>
 					<configuration>
 						<target>${javaCompilerVersion}</target>
 						<source>${javaCompilerVersion}</source>
@@ -763,7 +763,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>3.11.3</version>
+					<version>3.12.0</version>
 					<configuration>
 						<!-- For some reason some packages from org.springframework are being
 						included and causing errors. -->
@@ -1188,7 +1188,7 @@
 					<dependency>
 						<groupId>org.mockito</groupId>
 						<artifactId>mockito-core</artifactId>
-						<version>5.19.0</version>
+						<version>5.20.0</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
@@ -1214,7 +1214,7 @@
 					<dependency>
 						<groupId>org.mockito</groupId>
 						<artifactId>mockito-core</artifactId>
-						<version>5.19.0</version>
+						<version>5.20.0</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
@@ -1240,7 +1240,7 @@
 					<dependency>
 						<groupId>org.mockito</groupId>
 						<artifactId>mockito-core</artifactId>
-						<version>5.19.0</version>
+						<version>5.20.0</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
@@ -1263,7 +1263,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.11.3</version>
+				<version>3.12.0</version>
 				<configuration>
 					<docfilessubdirs>true</docfilessubdirs>
 					<bottom>&lt;em&gt;&lt;small&gt; Generated ${TIMESTAMP} NOTE - these libraries are in active development and subject to change&lt;/small&gt;&lt;/em&gt;</bottom>
@@ -1337,11 +1337,11 @@
 		<aspectjVersion>1.9.24</aspectjVersion>
 		<jacksonVersion>2.19.2</jacksonVersion>
 		<junitVersion>5.11.4</junitVersion>
-		<mockitoVersion>5.19.0</mockitoVersion>
+		<mockitoVersion>5.20.0</mockitoVersion>
 		<hamcrestVersion>3.0</hamcrestVersion>
 
 		<slf4jVersion>1.7.36</slf4jVersion>
-		<log4jVersion>2.22.1</log4jVersion>
+		<log4jVersion>2.25.2</log4jVersion>
 		<owaspCsrfGuardVersion>4.5.0-jakarta</owaspCsrfGuardVersion>
 
 		<customArgLineForTesting />
