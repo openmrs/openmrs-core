@@ -2787,6 +2787,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(ConceptNameTag.class)
 			    .addAnnotatedClass(CareSetting.class) 
 				.addAnnotatedClass(LocationTag.class)
+			    .addAnnotatedClass(org.openmrs.Field.class)
 				.getMetadataBuilder().build();
 
 
