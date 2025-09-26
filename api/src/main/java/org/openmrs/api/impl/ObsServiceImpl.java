@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.impl;
 
+
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -28,6 +30,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ObsDAO;
 import org.openmrs.api.handler.SaveHandler;
@@ -49,7 +52,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service("obsService")
 @Transactional
-public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
+public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, RefByUuid {
 	
 	/**
 	 * The data access object for the obs service
@@ -671,4 +674,19 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	public void removeHandler(String key) {
 		handlers.remove(key);
 	}
+	
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getRefByUuid(Class<T> type, String uuid) {
+        if (Obs.class.equals(type)) {
+            return (T) getObsByUuid(uuid);
+        }
+        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
+    }
+
+    @Override
+    public List<Class<?>> getRefTypes() {
+        return Arrays.asList(Obs.class);
+    }
+
 }

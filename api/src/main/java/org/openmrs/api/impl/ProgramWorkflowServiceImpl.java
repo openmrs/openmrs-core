@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.impl;
 
+
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.Collection;
@@ -30,6 +32,7 @@ import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ProgramNameDuplicatedException;
 import org.openmrs.api.ProgramWorkflowService;
+import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ProgramWorkflowDAO;
 import org.slf4j.Logger;
@@ -48,7 +51,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service("programWorkflowService")
 @Transactional
-public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements ProgramWorkflowService {
+public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements ProgramWorkflowService, RefByUuid {
 	
 	private static final Logger log = LoggerFactory.getLogger(ProgramWorkflowServiceImpl.class);
 	
@@ -639,4 +642,40 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
         public List<PatientProgram> getPatientProgramByAttributeNameAndValue(String attributeName, String attributeValue) {
             return dao.getPatientProgramByAttributeNameAndValue(attributeName, attributeValue);
         }	
+    
+	@Override
+    @SuppressWarnings("unchecked")
+    public <T> T getRefByUuid(Class<T> type, String uuid) {
+        if (ProgramAttributeType.class.equals(type)) {
+            return (T) getProgramAttributeTypeByUuid(uuid);
+        }
+        if (ProgramWorkflow.class.equals(type)) {
+            return (T) getWorkflowByUuid(uuid);
+        }
+        if (PatientProgram.class.equals(type)) {
+            return (T) getPatientProgramByUuid(uuid);
+        }
+        if (Program.class.equals(type)) {
+            return (T) getProgramByUuid(uuid);
+        }
+        if (PatientState.class.equals(type)) {
+            return (T) getPatientStateByUuid(uuid);
+        }
+        if (ProgramWorkflowState.class.equals(type)) {
+            return (T) getStateByUuid(uuid);
+        }
+        if (PatientProgramAttribute.class.equals(type)) {
+            return (T) getPatientProgramAttributeByUuid(uuid);
+        }
+        if (ConceptStateConversion.class.equals(type)) {
+            return (T) getConceptStateConversionByUuid(uuid);
+        }
+        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
+    }
+
+    @Override
+    public List<Class<?>> getRefTypes() {
+        return Arrays.asList(ProgramAttributeType.class, ProgramWorkflow.class, PatientProgram.class, Program.class, PatientState.class, ProgramWorkflowState.class, PatientProgramAttribute.class, ConceptStateConversion.class);
+    }
+
 }

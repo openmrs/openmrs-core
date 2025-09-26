@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.impl;
 
+
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +22,7 @@ import org.openmrs.ProviderAttributeType;
 import org.openmrs.ProviderRole;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ProviderService;
+import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ProviderDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
@@ -37,7 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service("providerService")
 @Transactional
-public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderService {
+public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderService, RefByUuid {
 	
 	@Autowired
 	private ProviderDAO dao;
@@ -341,4 +344,27 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 		return dao.getAllProviderRoles(includeRetired);
 	}
 	
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getRefByUuid(Class<T> type, String uuid) {
+        if (ProviderAttributeType.class.equals(type)) {
+            return (T) getProviderAttributeTypeByUuid(uuid);
+        }
+        if (ProviderRole.class.equals(type)) {
+            return (T) getProviderRoleByUuid(uuid);
+        }
+        if (Provider.class.equals(type)) {
+            return (T) getProviderByUuid(uuid);
+        }
+        if (ProviderAttribute.class.equals(type)) {
+            return (T) getProviderAttributeByUuid(uuid);
+        }
+        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
+    }
+
+    @Override
+    public List<Class<?>> getRefTypes() {
+        return Arrays.asList(ProviderAttributeType.class, ProviderRole.class, Provider.class, ProviderAttribute.class);
+    }
+
 }
