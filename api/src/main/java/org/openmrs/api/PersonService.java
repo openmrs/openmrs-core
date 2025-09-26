@@ -65,15 +65,7 @@ public interface PersonService extends OpenmrsService {
 		 * Attributes to be shown in the header
 		 */
 		HEADER,
-		
 	}
-	
-	/**
-	 * Sets the DAO for this service. This is done through spring injection
-	 * 
-	 * @param dao DAO for this service
-	 */
-	public void setPersonDAO(PersonDAO dao);
 	
 	/**
 	 * Find a similar person given the attributes. This does a very loose lookup with the

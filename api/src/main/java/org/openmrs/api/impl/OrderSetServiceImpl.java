@@ -30,14 +30,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("orderSetService")
 public class OrderSetServiceImpl extends BaseOpenmrsService implements OrderSetService {
 	
-	@Autowired
-	protected OrderSetDAO dao;
+	private final OrderSetDAO dao;
 	
-	/**
-	 * @see org.openmrs.api.OrderSetService#setOrderSetDAO(org.openmrs.api.db.OrderSetDAO)
-	 */
-	@Override
-	public void setOrderSetDAO(OrderSetDAO dao) {
+	@Autowired
+	public OrderSetServiceImpl(OrderSetDAO dao) {
 		this.dao = dao;
 	}
 	
@@ -186,7 +182,7 @@ public class OrderSetServiceImpl extends BaseOpenmrsService implements OrderSetS
 	@Override
 	@Transactional(readOnly = false)
 	public OrderSetAttributeType unretireOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType) {
-		return Context.getOrderSetService().saveOrderSetAttributeType(orderSetAttributeType);
+		return saveOrderSetAttributeType(orderSetAttributeType);
 	}
 
 	/**
