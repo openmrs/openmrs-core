@@ -41,6 +41,12 @@ public class HttpClient {
 		this.url = url;
 	}
 	
+	/**
+	 * Realiza una consulta http post a la url que ingresa al constructor y devuelve la respuesta del servidor
+	 * 
+	 * @param parameters parametro de ingreso al constructor
+	 * @return respuesta del servidos
+	 */
 	public String post(Map<String, String> parameters) {
 		OutputStreamWriter wr = null;
 		BufferedReader rd = null;
