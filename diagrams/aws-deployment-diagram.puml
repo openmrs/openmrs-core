@@ -1,0 +1,95 @@
+@startuml OpenMRS Docker Deployment Architecture
+
+' Using standard PlantUML components based on actual codebase artifacts
+!define APP_COLOR #FF9900
+!define DATABASE_COLOR #3F48CC
+!define STORAGE_COLOR #569A31
+!define SEARCH_COLOR #EC7211
+
+' Optimize for 16:9 aspect ratio and presentation
+skinparam backgroundColor #FFFFFF
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+skinparam defaultFontSize 12
+skinparam defaultFontName Arial
+skinparam shadowing false
+skinparam roundCorner 15
+skinparam titleFontSize 18
+skinparam titleFontStyle bold
+
+' External actors based on actual OpenMRS roles (from initial_test_db.sql)
+actor "Anonymous Users\n(Unauthenticated)" as Anonymous #lightgray
+actor "Authenticated Users\n(Basic privileges)" as Authenticated #lightblue  
+actor "Providers\n(Healthcare workers)" as Providers #lightgreen
+actor "System Developers\n(Full system access)" as Developers #orange
+
+' Main horizontal layout - Docker Host Environment
+package "Docker Host Environment" <<frame>> {
+    ' Horizontal layout for 16:9 aspect ratio
+    left to right direction
+    
+    ' Application Layer - Left side
+    package "Application Services" <<cloud>> {
+        component "**OpenMRS API**\n//openmrs/openmrs-core:nightly//" as OpenMRSAPI APP_COLOR {
+            [Tomcat 9] as Tomcat
+            [Amazon Corretto JDK 21] as JDK
+            [Tini Init System] as Tini
+        }
+        
+        component "**Application Cache**\n//Infinispan//" as AppCache APP_COLOR {
+            [Entity Cache] as EntityCache
+            [Collection Cache] as CollectionCache
+        }
+    }
+    
+    ' Data Layer - Center
+    package "Data Services" <<database>> {
+        component "**MariaDB Database**\n//mariadb:10.11.7//" as MariaDBContainer DATABASE_COLOR {
+            [Database Engine] as DBEngine
+            [Character Set: utf8mb4] as CharSet
+        }
+        
+        component "**Search Engine**\n//elasticsearch:8.17.2//" as ElasticsearchContainer SEARCH_COLOR {
+            [Elasticsearch Core] as ESCore
+            [Analysis-phonetic Plugin] as ESPlugin
+        }
+    }
+    
+    ' Storage Layer - Right side
+    package "Persistent Storage" <<folder>> {
+        storage "**DB Data Volume**\n//db-data//" as DBVolume STORAGE_COLOR
+        storage "**App Data Volume**\n//openmrs-data//" as OMRSVolume STORAGE_COLOR  
+        storage "**Search Data Volume**\n//es-data//" as ESVolume STORAGE_COLOR
+    }
+}
+
+' Connection flows based on OpenMRS role privileges (from initial_test_db.sql)
+Anonymous -down-> OpenMRSAPI : **Limited Access**\n//Basic viewing privileges//
+Authenticated -down-> OpenMRSAPI : **Standard Access**\n//Get/View operations//
+Providers -down-> OpenMRSAPI : **Clinical Access**\n//Patient care functions//
+Developers -down-> OpenMRSAPI : **Full System Access**\n//All privileges + admin//
+
+OpenMRSAPI -right-> MariaDBContainer : **DB Connection**\n//OMRS_DB_HOSTNAME=db//
+OpenMRSAPI -right-> ElasticsearchContainer : **Search Queries**\n//OMRS_SEARCH=elasticsearch//
+OpenMRSAPI -down-> AppCache : **L2 Cache**\n//Hibernate//
+
+' Storage connections
+MariaDBContainer -right-> DBVolume : **Persist**\n///var/lib/mysql//
+OpenMRSAPI -down-> OMRSVolume : **App Data**\n///openmrs/data///
+ElasticsearchContainer -right-> ESVolume : **Index Data**
+
+' Configuration notes positioned for wide layout
+note top of OpenMRSAPI : **Container Configuration**\n• Port: 8080\n• User: 1001 (non-root)\n• Health: curl -f http://localhost:8080/openmrs\n• Environment: OMRS_AUTO_UPDATE_DATABASE=true
+
+note top of MariaDBContainer : **Database Configuration**\n• Character Set: utf8mb4\n• Collation: utf8mb4_general_ci\n• Health: mariadb --execute "SHOW DATABASES;"\n• Credentials: openmrs/openmrs
+
+note top of ElasticsearchContainer : **Search Configuration**\n• Memory Limit: 2GB\n• Discovery: single-node\n• Security: disabled (dev)\n• Health: curl -s http://localhost:9200
+
+note right of AppCache : **Cache Types**\n• userSearchLocales\n• conceptIdsByMapping\n• conceptDatatype\n• Max: 10K entries\n• Timeout: 15s
+
+note right of OMRSVolume : **Data Directories**\n• /modules/\n• /owa/\n• /configuration/\n• /complex_obs/\n• /activemq-data/
+
+' Role-based privileges note (from initial_test_db.sql)
+note left of Anonymous : **Role Privileges**\n• Anonymous: Limited viewing\n• Authenticated: Get/View operations\n• Provider: Patient care functions\n• System Developer: Full access\n\n**Super User**: Admin123 (default)
+
+@enduml

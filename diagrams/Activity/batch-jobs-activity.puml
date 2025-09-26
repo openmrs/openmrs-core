@@ -1,0 +1,36 @@
+@startuml
+title OpenMRS Liquibase Batch Job Activity Diagram
+
+start
+
+:Main.main(String[] args);
+note right: /liquibase/src/main/java/org/openmrs/liquibase/Main.java, line 41\nthrows DocumentException, IOException, SAXException
+
+:coreDataTuner.addLicenseHeaderToFileIfNeeded(LIQUIBASE_CORE_DATA_SOURCE_PATH);
+note right: Add license header to core data snapshot if needed\n(Main.java, line 42)\nUses static CoreDataTuner instance
+
+:coreDataTuner.createUpdatedChangeLogFile(LIQUIBASE_CORE_DATA_SOURCE_PATH, LIQUIBASE_CORE_DATA_TARGET_PATH);
+note right: Create updated core data changelog file\n(Main.java, line 43)\nReads source, processes, writes to target path
+
+:schemaOnlyTuner.addLicenseHeaderToFileIfNeeded(LIQUIBASE_SCHEMA_ONLY_SOURCE_PATH);
+note right: Add license header to schema-only snapshot if needed\n(Main.java, line 44)\nUses static SchemaOnlyTuner instance
+
+:schemaOnlyTuner.createUpdatedChangeLogFile(LIQUIBASE_SCHEMA_ONLY_SOURCE_PATH, LIQUIBASE_SCHEMA_ONLY_TARGET_PATH);
+note right: Create updated schema-only changelog file\n(Main.java, line 45)\nReads source, processes, writes to target path
+
+stop
+
+floating note right
+  Static initialization (lines 36-38):
+  - coreDataTuner = new CoreDataTuner()
+  - schemaOnlyTuner = new SchemaOnlyTuner()
+  
+  File paths defined as constants (lines 19-28):
+  - LIQUIBASE_CORE_DATA_SOURCE_PATH: "./snapshots/liquibase-core-data-SNAPSHOT.xml"
+  - LIQUIBASE_CORE_DATA_TARGET_PATH: "./snapshots/liquibase-core-data-UPDATED-SNAPSHOT.xml"
+  - LIQUIBASE_SCHEMA_ONLY_SOURCE_PATH: "./snapshots/liquibase-schema-only-SNAPSHOT.xml"
+  - LIQUIBASE_SCHEMA_ONLY_TARGET_PATH: "./snapshots/liquibase-schema-only-UPDATED-SNAPSHOT.xml"
+end note
+
+stop
+@enduml
