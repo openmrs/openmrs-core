@@ -12,6 +12,7 @@ package org.openmrs.logging;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.stereotype.Component;
 
 /**
  * This is a GlobalPropertyListener that updates logging levels whenever any of the log-related settings supported by core
@@ -23,6 +24,7 @@ import org.openmrs.util.OpenmrsConstants;
  * 
  * @since 2.4
  */
+@Component
 public class LoggingConfigurationGlobalPropertyListener implements GlobalPropertyListener {
 	
 	private volatile String logLayout = null;

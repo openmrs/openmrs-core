@@ -21,11 +21,13 @@ import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 /**
  * A utility class for working with Locales.
  */
+@Component
 public class LocaleUtility implements GlobalPropertyListener {
 	
 	private static final Logger log = LoggerFactory.getLogger(LocaleUtility.class);
