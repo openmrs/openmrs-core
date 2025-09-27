@@ -67,6 +67,7 @@ import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttributeType;
+import org.openmrs.Privilege;
 import org.openmrs.Program;
 import org.openmrs.ProgramAttributeType;
 import org.openmrs.Provider;
@@ -2788,6 +2789,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			    .addAnnotatedClass(CareSetting.class) 
 				.addAnnotatedClass(LocationTag.class)
 			    .addAnnotatedClass(org.openmrs.Field.class)
+				.addAnnotatedClass(Privilege.class)
 				.getMetadataBuilder().build();
 
 

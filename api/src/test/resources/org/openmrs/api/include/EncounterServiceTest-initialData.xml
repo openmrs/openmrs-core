@@ -90,8 +90,8 @@
   <visit visit_id="1" visit_type_id="2" date_started="2001-01-01 00:00:00.0" patient_id="3" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="7fffd6b9-0970-4967-88c7-0b7b50f12ab9"/>
   <global_property property="visits.assignmentHandler" property_value="" description="Set to the name of the class responsible for assigning visits to encounters." uuid="7fffd6b9-0970-4967-88c7-0b7b50f12cc6"/>
   
-  <privilege privilege="Some Privilege For View Encounter Types" description="This is a test privilege for view encounter types" uuid="d979d066-15e6-467c-9d4b-cb575ef12345"/>
-  <privilege privilege="Some Privilege For Edit Encounter Types" description="This is a test privilege for edit encounter types" uuid="d979d066-15e6-467c-9d4b-cb575ef54321"/>
+  <privilege privilege="Some Privilege For View Encounter Types" description="This is a test privilege for view encounter types" uuid="d979d066-15e6-467c-9d4b-cb575ef12345" creator="1" retired="false" date_created="2005-01-01 00:00:00.0"  name="Some Privilege For View Encounter Types" />
+  <privilege privilege="Some Privilege For Edit Encounter Types" description="This is a test privilege for edit encounter types" uuid="d979d066-15e6-467c-9d4b-cb575ef54321" creator="1" retired="false" date_created="2005-01-01 00:00:00.0"  name="Some Privilege For View Encounter Types" />
   <users user_id="5506" person_id="501" system_id="7-5" username="test_user" password="4a1750c8607d0fa237de36c6305715c223415189" salt="c788c6ad82a157b712392ca695dfcf2eed193d7f" secret_question="" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" retired="false" retire_reason="" uuid="06d05314-e132-11de-babe-001e37123456"/>
 
 </dataset>
