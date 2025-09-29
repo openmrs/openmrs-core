@@ -63,4 +63,18 @@
 		</addColumn>
 	</changeSet>
 
+	<changeSet id="TRUNK-5890-2025-09-14" author="Deborah Nakamatte">
+		<addColumn tableName="privilege">
+			<column name="date_changed" type="datetime"/>
+			<column name="date_created" type="datetime"/>
+			<column name="date_retired" type="datetime" />
+			<column name="retire_reason" type="VARCHAR(255)"/>
+			<column name="retired" type="BOOLEAN" defaultValue="false"/>
+			<column name="creator" type="INT"/>
+			<column name="retired_by" type="INT" />
+			<column name="changed_by" type="INT"/>
+			<column name="name" type="VARCHAR(255)"/>
+		</addColumn>
+	</changeSet>
+
 </databaseChangeLog>
