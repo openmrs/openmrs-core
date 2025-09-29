@@ -1,0 +1,32 @@
+on:
+  workflow_dispatch:
+  schedule:
+    # every day at 8 PM UTC
+    - cron: "0 20 * * *"
+
+name: "🔄 Scheduled Transifex Update"
+
+jobs:
+  pull-translations-from-transifex:
+    name: pull-translations-from-transifex
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: 🌐 Push source file using transifex client
+        uses: transifex/cli-action@v2
+        with:
+          token: ${{ secrets.TRANSIFEX_TOKEN }}
+          args: pull --force --all
+      - name: 🔄 Create PR if necessary
+        uses: peter-evans/create-pull-request@v6.0.1
+        with:
+          commit-message: "(chore) Update translations from Transifex"
+          title: "(chore) Update translations from Transifex"
+          body: "Automated updates of translations pulled from Transifex"
+          branch: "chore/update-transifex"
+          author: "OpenMRS Bot <infrastructure@openmrs.org>"
+          token: ${{ secrets.GITHUB_TOKEN }}
