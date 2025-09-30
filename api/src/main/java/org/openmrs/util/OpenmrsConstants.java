@@ -319,7 +319,7 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_MIN_SEARCH_CHARACTERS = "minSearchCharacters";
 	
-	public static final int GLOBAL_PROPERTY_DEFAULT_MIN_SEARCH_CHARACTERS = 2;
+	public static final int GLOBAL_PROPERTY_DEFAULT_MIN_SEARCH_CHARACTERS = 1;
 	
 	public static final String GLOBAL_PROPERTY_DEFAULT_LOCALE = "default_locale";
 	

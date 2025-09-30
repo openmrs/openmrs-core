@@ -2949,7 +2949,7 @@
         </insert>
         <insert tableName="global_property">
             <column name="property" value="minSearchCharacters"/>
-            <column name="property_value" value="2"/>
+            <column name="property_value" value="1"/>
             <column name="description" value="Number of characters user must input before searching is started."/>
             <column name="uuid" value="13b753c2-e0b0-4f63-b118-23796e24748d"/>
             <column name="datatype"/>
