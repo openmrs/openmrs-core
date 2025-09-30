@@ -23,8 +23,7 @@ import org.springframework.test.context.ContextConfiguration;
  * 
  * @since 2.4.0
  */
-@ContextConfiguration(locations = { "classpath:applicationContext-service.xml", "classpath*:TestingApplicationContext.xml",
-        "classpath*:moduleApplicationContext.xml" }, inheritLocations = false)
+@ContextConfiguration(locations = { "classpath*:TestingApplicationContext.xml", "classpath*:moduleApplicationContext.xml" }, inheritLocations = false)
 public abstract class BaseModuleContextSensitiveTest extends BaseContextSensitiveTest {
 
 }
