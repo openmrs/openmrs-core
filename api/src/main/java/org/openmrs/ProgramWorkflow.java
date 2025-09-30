@@ -20,8 +20,6 @@ import java.util.TreeSet;
 import org.hibernate.envers.Audited;
 import org.openmrs.util.NaturalStrings;
 
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,7 +39,6 @@ import jakarta.persistence.Table;
 @Audited
 @Entity
 @Table(name = "program_workflow")
-@AttributeOverrides({ @AttributeOverride(name = "name", column = @Column(name = "name", length = 100, nullable = true)) })
 public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	
 	private static final long serialVersionUID = 1L;

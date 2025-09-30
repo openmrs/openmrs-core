@@ -171,10 +171,12 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		program.setConcept(cs.getConcept(3));
 
 		ProgramWorkflow workflow1 = new ProgramWorkflow();
+		workflow1.setName("WORKFLOW1 NAME");
 		workflow1.setConcept(cs.getConcept(4));
 		program.addWorkflow(workflow1);
 
 		ProgramWorkflow workflow2 = new ProgramWorkflow();
+		workflow2.setName("WORKFLOW2 NAME");
 		workflow2.setConcept(cs.getConcept(4));
 		program.addWorkflow(workflow2);
 
@@ -281,14 +283,17 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		program.setConcept(cs.getConcept(3));
 
 		ProgramWorkflow workflow1 = new ProgramWorkflow();
+		workflow1.setName("WORKFLOW1 NAME");
 		workflow1.setConcept(cs.getConcept(4));
 		program.addWorkflow(workflow1);
 
 		ProgramWorkflow workflow2 = new ProgramWorkflow();
+		workflow2.setName("WORKFLOW2 NAME");
 		workflow2.setConcept(cs.getConcept(4));
 		program.addWorkflow(workflow2);
 
 		ProgramWorkflow workflow3 = new ProgramWorkflow();
+		workflow3.setName("WORKFLOW3 NAME");
 		workflow3.setConcept(cs.getConcept(4));
 		program.addWorkflow(workflow3);
 
@@ -398,6 +403,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		program.setConcept(cs.getConcept(3));
 		
 		ProgramWorkflow workflow = new ProgramWorkflow();
+		workflow.setName("WORKFLOW NAME");
 		workflow.setConcept(cs.getConcept(4));
 		program.addWorkflow(workflow);
 		
