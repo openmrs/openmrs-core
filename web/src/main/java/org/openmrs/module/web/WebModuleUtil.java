@@ -122,7 +122,7 @@ public class WebModuleUtil {
 	 */
 	public static boolean startModule(Module mod, ServletContext servletContext, boolean delayContextRefresh) {
 		
-		log.debug("trying to start module {}", mod);
+		log.debug("Trying to start module {}", mod);
 		
 		// only try and start this module if the api started it without a
 		// problem.
@@ -338,7 +338,9 @@ public class WebModuleUtil {
 					}
 					
 					// try starting the application context again
+					log.debug("Retrying refreshing context for module {}", mod);
 					refreshWAC(servletContext, false, mod);
+					log.debug("Done refreshing WAC");
 					
 					notifySuperUsersAboutModuleFailure(mod);
 				}
