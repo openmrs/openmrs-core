@@ -718,9 +718,9 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		
 		if (someModuleNeedsARefresh) {
 			try {
-				log.debug("Refreshing WebApplicationContext");
+				log.debug("Refreshing WAC as required by some module");
 				WebModuleUtil.refreshWAC(servletContext, true, null);
-				log.debug("Done refreshing WebApplicationContext");
+				log.debug("Done refreshing WAC as required by some module");
 			}
 			catch (ModuleMustStartException | BeanCreationException ex) {
 				// pass this up to the calling method so that openmrs loading stops
