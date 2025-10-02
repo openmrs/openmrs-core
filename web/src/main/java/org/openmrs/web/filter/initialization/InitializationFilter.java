@@ -205,6 +205,7 @@ public class InitializationFilter extends StartupFilter {
 	@Override
 	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
 		throws IOException, ServletException {
+		log.debug("Entered initialization filter");
 		loadInstallationScriptIfPresent();
 		
 		// we need to save current user language in references map since it will be used when template
@@ -1318,6 +1319,7 @@ public class InitializationFilter extends StartupFilter {
 		}
 		
 		public synchronized void setMessage(String message) {
+			log.debug(message);
 			this.message = message;
 			setStepsComplete(getStepsComplete() + 1);
 		}
@@ -1575,6 +1577,7 @@ public class InitializationFilter extends StartupFilter {
 						}
 						
 						if (wizardModel.createTables) {
+							log.debug("Creating tables");
 							// use liquibase to create core data + tables
 							try {
 								String liquibaseSchemaFileName = changeLogVersionFinder.getLatestSchemaSnapshotFilename()
@@ -1725,8 +1728,10 @@ public class InitializationFilter extends StartupFilter {
 						// start spring
 						// after this point, all errors need to also call: contextLoader.closeWebApplicationContext(event.getServletContext())
 						// logic copied from org.springframework.web.context.ContextLoaderListener
+						log.debug("Initializing WAC");
 						ContextLoader contextLoader = new ContextLoader();
 						contextLoader.initWebApplicationContext(filterConfig.getServletContext());
+						log.debug("Done initializing WAC");
 						
 						// output properties to the openmrs runtime properties file so that this wizard is not run again
 						FileOutputStream fos = null;

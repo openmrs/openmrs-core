@@ -247,9 +247,11 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				 * This logic is from ContextLoader.initWebApplicationContext. Copied here instead
 				 * of calling that so that the context is not cached and hence not garbage collected
 				 */
+				log.debug("Refreshing WAC");
 				XmlWebApplicationContext context = (XmlWebApplicationContext) createWebApplicationContext(servletContext);
 				configureAndRefreshWebApplicationContext(context, servletContext);
 				servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
+				log.debug("Done refreshing WAC");
 				
 				WebDaemon.startOpenmrs(event.getServletContext());
 			} else {
@@ -341,6 +343,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		// start openmrs
 		try {
 			// load bundled modules that are packaged into the webapp
+			log.debug("Loading bundled modules");
 			Listener.loadBundledModules(servletContext);
 			
 			Context.startup(getRuntimeProperties());
@@ -360,7 +363,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		// TODO catch openmrs errors here and drop the user back out to the setup screen
 		
 		try {
-			
+			log.debug("Performing start of modules");
 			// web load modules
 			Listener.performWebStartOfModules(servletContext);
 			
@@ -704,6 +707,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		
 		boolean someModuleNeedsARefresh = false;
 		for (Module mod : startedModules) {
+			log.debug("Staring module: {}", mod.getModuleId());
 			try {
 				boolean thisModuleCausesRefresh = WebModuleUtil.startModule(mod, servletContext,
 				    /* delayContextRefresh */true);
@@ -716,7 +720,9 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		
 		if (someModuleNeedsARefresh) {
 			try {
+				log.debug("Refreshing WAC as required by some module");
 				WebModuleUtil.refreshWAC(servletContext, true, null);
+				log.debug("Done refreshing WAC as required by some module");
 			}
 			catch (ModuleMustStartException | BeanCreationException ex) {
 				// pass this up to the calling method so that openmrs loading stops
@@ -746,7 +752,9 @@ public final class Listener extends ContextLoader implements ServletContextListe
 							}
 						}
 					}
+					log.debug("Retrying refreshing WebApplicationContext");
 					WebModuleUtil.refreshWAC(servletContext, true, null);
+					log.debug("Done refreshing WebApplicationContext");
 				}
 				catch (MandatoryModuleException ex) {
 					// pass this up to the calling method so that openmrs loading stops
@@ -765,6 +773,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		// because we delayed the refresh, we need to load+start all servlets and filters now
 		// (this is to protect servlets/filters that depend on their module's spring xml config being available)
 		for (Module mod : ModuleFactory.getStartedModulesInOrder()) {
+			log.debug("Loading servlets and filters for module: {}", mod.getModuleId());
 			WebModuleUtil.loadServlets(mod, servletContext);
 			WebModuleUtil.loadFilters(mod, servletContext);
 		}
