@@ -14,7 +14,14 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.Table;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.annotations.Proxy;
 import org.hibernate.envers.Audited;
 
 /**
@@ -23,34 +30,48 @@ import org.hibernate.envers.Audited;
  * @see Concept
  */
 @Audited
+@Entity
+@Table(name = "concept_numeric")
+@Proxy(lazy = false)
 public class ConceptNumeric extends Concept {
 	
 	public static final long serialVersionUID = 47323L;
 	
 	// Fields
-	
+	@Column(name = "hi_absolute", length = 22)
 	private Double hiAbsolute;
 	
+	@Column(name = "hi_critical", length = 22)
 	private Double hiCritical;
 	
+	@Column(name = "hi_normal", length = 22)
 	private Double hiNormal;
 	
+	@Column(name = "low_absolute", length = 22)
 	private Double lowAbsolute;
 	
+	@Column(name = "low_critical", length = 22)
 	private Double lowCritical;
 	
+	@Column(name = "low_normal", length = 22)
 	private Double lowNormal;
 	
+	@Column(name = "units", length = 50)
 	private String units;
-	
+
+	@Column(name = "allow_decimal", nullable = false)
 	private Boolean allowDecimal = false;
-	
+
+	@OneToMany(
+		mappedBy = "conceptNumeric", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OrderBy("conceptReferenceRangeId ASC")
 	private Set<ConceptReferenceRange> referenceRanges;
 	
 	/**
 	 * displayPrecision, represents the number of significant digits
 	 * to be used for display of a numeric value
 	 */
+	@Column(name = "display_precision", nullable = true)
 	private Integer displayPrecision;
 	
 	// Constructors
