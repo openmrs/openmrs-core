@@ -384,7 +384,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		assertTrue(foundCompletedProposal, "No completed proposals were returned.");
 	}
 
-
+	
 	/**
 	 * @see ConceptService#saveConcept(Concept)
 	 */
@@ -591,12 +591,11 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		concept = Context.getConceptService().saveConcept(concept);
 		assertFalse(concept.getConceptId().equals(5089));
 	}
-
+	
 	/**
 	 * @see ConceptService#saveConcept(Concept)
 	 */
-	
-	/**@Test
+	@Test
 	 public void saveConcept_shouldKeepIdForNewConceptIfOneIsSpecified() {
 	 Integer conceptId = 343434; // a nonexistent concept id;
 	 assertNull(conceptService.getConcept(conceptId)); // sanity check
@@ -611,23 +610,38 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 
 	 concept = Context.getConceptService().saveConcept(concept);
 	 assertEquals(concept.getConceptId(), conceptId);
-	 }*/
+	 }
 
+	/**
+	 * @see ConceptService#getAllConceptClasses(boolean)
+	 */
 	@Test
-	public void saveConcept_shouldSaveWithAutoAssignedId() {
-		Concept concept = new Concept();
-		concept.addName(new ConceptName("Weight", Context.getLocale()));
-		concept.setDatatype(Context.getConceptService().getConceptDatatypeByName("Numeric"));
-		concept.setConceptClass(Context.getConceptService().getConceptClassByName("Finding"));
+	public void getAllConceptClasses_whenIncludeRetiredIsFalse_shouldNotReturnRetiredConceptClasses() {
+		boolean includeRetired = false;
 
-		concept = Context.getConceptService().saveConcept(concept);
-		assertNotNull(concept.getConceptId());
+		List<ConceptClass> conceptClasses = conceptService.getAllConceptClasses(includeRetired);
 
-		concept.addDescription(new ConceptDescription("some description", null));
-		concept = Context.getConceptService().saveConcept(concept);
+		assertNotNull(conceptClasses);
+		assertTrue(conceptClasses.size() > 0);
+		for (ConceptClass conceptClass : conceptClasses) {
+			assertFalse(conceptClass.isRetired());
+		}
+	}
+	
+	/**
+	 * @see ConceptService#getAllConceptDatatypes(boolean)
+	 */
+	@Test
+	public void getAllConceptDatatypes_whenIncludeRetiredIsFalse_shouldNotReturnRetiredConceptDatatypes() {
+		boolean includeRetired = false;
 
-		assertNotNull(concept.getConceptId());
-		assertFalse(concept.getDescriptions().isEmpty());
+		List<ConceptDatatype> conceptDatatypes = conceptService.getAllConceptDatatypes(includeRetired);
+
+		assertNotNull(conceptDatatypes);
+		assertTrue(conceptDatatypes.size() > 0);
+		for (ConceptDatatype conceptDatatype : conceptDatatypes) {
+			assertFalse(conceptDatatype.isRetired());
+		}
 	}
 	
 	/**
