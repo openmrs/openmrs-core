@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+	<provider_role provider_role_id="1001" name="Physician Assistant" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f523f-27ce-4bb2-86d6-6d1d05312bd5"/>
+	<provider_role provider_role_id="1002" name="Community Health Worker" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="ea7f523f-27ce-4bb2-86d6-6d1d05312bd5"/>
+	<provider_role provider_role_id="1003" name="Cell supervisor" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="db7f523f-27ce-4bb2-86d6-6d1d05312bd5"/>
+	<provider_role provider_role_id="1004" name="Health center supervisor" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da8f523f-27ce-4bb2-86d6-6d1e05312bd5"/>
+	<provider_role provider_role_id="1005" name="Community health nurse" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f623f-37ce-4bb2-86d6-6d1d05312bd5"/>
+	<provider_role provider_role_id="1006" name="ASM" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f523f-27ce-4bb2-86d6-7d1d05312bd5"/>
+	<provider_role provider_role_id="1007" name="Accompagnateur leader" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da8f523f-27ce-4bb2-86d6-6d1d05312bd5"/>
+	<provider_role provider_role_id="1008" name="ID Nurse" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f523f-27ce-4bc2-86d6-6d1d05312bd5"/>
+	<provider_role provider_role_id="1009" name="Palliative care worker" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f523f-27ce-5bb2-86d6-6d1d05312bd5"/>
+	<provider_role provider_role_id="1010" name="Retired accompagnateur type" creator="1" date_created="2005-09-22 00:00:00.0" retired="true" uuid="da7f623f-27ce-5bb2-86d6-6d1d05312bd5"/>
+	<provider_role provider_role_id="1011" name="Accompagnateur" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f623f-37ce-5bb2-86d6-6d1d05312bd5"/>
+	<provider_role provider_role_id="1012" name="Some other role" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f623e-37ce-5bb2-86d6-6d1d05312bd5"/>
+
+	<person person_id="2" dead="false" date_created="2012-01-01 00:00:00.0" voided="false"/>
+	<person person_id="202" dead="false" date_created="2012-01-01 00:00:00.0" voided="false"/>
+	<person person_id="203" dead="false" date_created="2012-01-01 00:00:00.0" voided="false"/>
+	<person person_id="5002" dead="false" date_created="2025-01-01 00:00:00.0" voided="false"/>
+
+	<patient patient_id="202" creator="1" date_created="2012-01-01 00:00:00.0" voided="false"/>
+	<patient patient_id="203" creator="1" date_created="2012-02-01 00:00:00.0" voided="false"/>
+
+	<provider provider_id="1002" person_id="1" identifier="2a3" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7f523f-cca9-11e0-9572-0800200c9a66" />
+	<provider provider_id="1003" provider_role_id="1001" person_id="2" identifier="2a5" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7f533f-cca9-11e0-9572-0800200c9a66" />
+	<provider provider_id="1004" provider_role_id="1001" person_id="6" identifier="2a6" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7f573f-cca9-11e0-9572-0800200c9a66" />
+	<provider provider_id="1005" provider_role_id="1001" person_id="7" identifier="2a7" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7f513f-cca9-11e0-9572-0800200c9a66" />
+	<provider provider_id="1006" provider_role_id="1002" person_id="8" identifier="2a8" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7d523f-cca9-11e0-9572-0800200c9a66" />
+	<provider provider_id="1007" provider_role_id="1011" person_id="9" identifier="b7" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7d523e-cca9-11e0-9572-0800200c9a66" />
+	<provider provider_id="1008" provider_role_id="1005" person_id="501" identifier="b9" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7d523e-cca9-12e0-9572-0800200c9a66" />
+	<provider provider_id="1009" provider_role_id="1005" person_id="2" identifier="b8" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7d523f-cda9-12e0-9572-0800200c9a66" />
+</dataset>
