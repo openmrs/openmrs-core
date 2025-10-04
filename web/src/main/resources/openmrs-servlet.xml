@@ -102,7 +102,7 @@
 		<property name="order"><value>98</value></property>
 	</bean>
 
-	<bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
+	<bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter" name="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
 
 	<bean id="openmrsObjectMapperFactoryBean" class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean">
 		<property name="modulesToInstall" value="org.openmrs.util.OpenmrsJacksonLocaleModule" />
