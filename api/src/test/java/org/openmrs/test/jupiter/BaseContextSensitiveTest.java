@@ -116,8 +116,7 @@ import org.xml.sax.InputSource;
  * 
  * @since 2.4.0
  */
-@ContextConfiguration(locations = { "classpath:applicationContext-service.xml",
-        "classpath*:moduleApplicationContext.xml", "classpath*:TestingApplicationContext.xml" })
+@ContextConfiguration(locations = { "classpath*:moduleApplicationContext.xml", "classpath*:TestingApplicationContext.xml" })
 @TestExecutionListeners(
 	listeners = { SkipBaseSetupAnnotationExecutionListener.class,
 		StartModuleExecutionListener.class },

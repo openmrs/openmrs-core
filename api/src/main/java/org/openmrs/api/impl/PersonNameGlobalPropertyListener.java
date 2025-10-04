@@ -13,11 +13,13 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.PersonName;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.stereotype.Component;
 
 /**
  * This is a property Listener class for Person Name
  * This class is responsible for handling Person Name format
  */
+@Component
 public class PersonNameGlobalPropertyListener implements GlobalPropertyListener {
 	
 	@Override

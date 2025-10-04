@@ -17,11 +17,14 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.stereotype.Component;
 
 /**
  * A utility class which caches the current list of allowed locales, rebuilding the list whenever
  * the global properties are updated.
  */
+
+@Component
 public class GlobalLocaleList implements GlobalPropertyListener {
 	
 	private Set<Locale> allowedLocales = null;
