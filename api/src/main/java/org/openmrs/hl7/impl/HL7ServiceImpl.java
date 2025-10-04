@@ -9,6 +9,8 @@
  */
 package org.openmrs.hl7.impl;
 
+
+import java.util.Arrays;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -53,6 +55,7 @@ import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.PatientIdentifierException;
+import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.impl.BaseOpenmrsService;
@@ -86,7 +89,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service("hL7Service")
 @Transactional
-public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
+public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service, RefByUuid {
 	
 	private static final Logger log = LoggerFactory.getLogger(HL7ServiceImpl.class);
 	
@@ -1199,4 +1202,27 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		return null;
 	}
 	
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getRefByUuid(Class<T> type, String uuid) {
+        if (HL7InError.class.equals(type)) {
+            return (T) getHL7InErrorByUuid(uuid);
+        }
+        if (HL7InQueue.class.equals(type)) {
+            return (T) getHL7InQueueByUuid(uuid);
+        }
+        if (HL7InArchive.class.equals(type)) {
+            return (T) getHL7InArchiveByUuid(uuid);
+        }
+        if (HL7QueueItem.class.equals(type)) {
+            return (T) getHl7QueueItemByUuid(uuid);
+        }
+        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
+    }
+
+    @Override
+    public List<Class<?>> getRefTypes() {
+        return Arrays.asList(HL7InError.class, HL7InQueue.class, HL7InArchive.class, HL7QueueItem.class);
+    }
+
 }
