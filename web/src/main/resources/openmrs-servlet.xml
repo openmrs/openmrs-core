@@ -20,51 +20,6 @@
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans
        		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
-            	
-	<!--  **************************  VIEW RESOLVER / CONTROLLERS  *************************  -->
-	
 
-	<bean id="multipartResolver"
-		class="org.springframework.web.multipart.support.StandardServletMultipartResolver">
-	</bean>
-	
-	<bean id="contentNegotiationManager"
-		  class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
-		<property name="defaultContentType" value="application/json" />
-		<property name="favorPathExtension" value="true" />
-
-		<property name="mediaTypes">
-			<map>
-				<entry key="json" value="application/json" />
-				<entry key="xml" value="application/xml" />
-			</map>
-		</property>
-	</bean>
-
-	<!--  Exception handler mappings -->
- 		 
- 	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver"> 
- 		<property name="exceptionMappings"> 
- 			<map>
-				<entry key="java.lang.Exception" value="uncaughtException"/>
- 			</map> 
- 		</property> 
- 		<property name="order" value="100" /> 
- 	</bean>
-
-	<bean id="conversion-service" class="org.springframework.format.support.FormattingConversionServiceFactoryBean" />
-	
-	<bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-		<property name="order"><value>99</value></property>
-	</bean>
-
-	<!-- Use an alias to the messageSourceService (defined in applicationContext-service.xml)
-		to override the application MessageSource, which must be named "messageSource".
-	-->	
 	<alias name="messageSourceServiceTarget" alias="messageSource"/>
-		
-	<!-- Find/replace strings after errant 'contrl-shift-f':
-		>\r\n			<value>(.*)</value>\r\n		</property>
-		><value>$1</value></property>
-	-->
 </beans>

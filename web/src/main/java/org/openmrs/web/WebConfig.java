@@ -11,23 +11,30 @@ package org.openmrs.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openmrs.util.OpenmrsJacksonLocaleModule;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.format.support.FormattingConversionServiceFactoryBean;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.xml.MarshallingHttpMessageConverter;
 import org.springframework.http.converter.xml.SourceHttpMessageConverter;
 import org.springframework.oxm.xstream.XStreamMarshaller;
+import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
+import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
@@ -38,11 +45,17 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 @Configuration
 @EnableWebMvc
 @ComponentScan(basePackages = "org.openmrs.web.controller")
 public class WebConfig implements WebMvcConfigurer {
+
+    @Bean
+    public StandardServletMultipartResolver multipartResolver() {
+        return new StandardServletMultipartResolver();
+    }
 
     @Bean
     public ViewResolver jspViewResolver() {
@@ -102,6 +115,14 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     @Bean
+    public Jackson2ObjectMapperFactoryBean openmrsObjectMapperFactoryBean() {
+        Jackson2ObjectMapperFactoryBean factory = new Jackson2ObjectMapperFactoryBean();
+        factory.setModulesToInstall(OpenmrsJacksonLocaleModule.class);
+        return factory;
+    }
+
+
+    @Bean
     public MappingJackson2HttpMessageConverter jacksonConverter() {
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         converter.setObjectMapper(openmrsObjectMapper());
@@ -128,4 +149,27 @@ public class WebConfig implements WebMvcConfigurer {
         converter.setUnmarshaller(xStreamMarshaller());
         return converter;
     }
+
+    @Bean
+    public SimpleMappingExceptionResolver simpleMappingExceptionResolver() {
+        SimpleMappingExceptionResolver exceptionResolver = new SimpleMappingExceptionResolver();
+        Properties mappings = new Properties();
+        mappings.put("java.lang.Exception", "uncaughtException");
+        exceptionResolver.setExceptionMappings(mappings);
+        exceptionResolver.setOrder(100);
+        return exceptionResolver;
+    }
+
+    @Bean(name = "conversion-service")
+    public FormattingConversionServiceFactoryBean conversionService() {
+        return new FormattingConversionServiceFactoryBean();
+    }
+
+    @Bean
+    public SimpleUrlHandlerMapping urlMapping() {
+        SimpleUrlHandlerMapping handlerMapping = new SimpleUrlHandlerMapping();
+        handlerMapping.setOrder(99);
+        return handlerMapping;
+    }
+
 }
