@@ -76,5 +76,13 @@
 			<column name="name" type="VARCHAR(255)"/>
 		</addColumn>
 	</changeSet>
+	
+	<changeSet id="2025-09-30-TRUNK-6245" author="dkayiwa">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="concept_reference_range" columnName="criteria"></columnExists>
+		</preConditions>
+		<comment>Changing concept_reference_range.criteria from VARCHAR(255) to TEXT</comment>
+		<modifyDataType tableName="concept_reference_range" columnName="criteria" newDataType="TEXT" />
+	</changeSet>
 
 </databaseChangeLog>

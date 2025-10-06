@@ -284,7 +284,7 @@ public class DatabaseUpdater {
 	 * @throws Exception when an exception is raised while processing Liquibase changelog files
 	 */
 	public static boolean updatesRequired() throws Exception {
-		log.debug("checking for updates");
+		log.debug("Checking for updates");
 		List<OpenMRSChangeSet> changesets = getUnrunDatabaseChanges(new DatabaseUpdaterLiquibaseProvider());
 		
 		// if the db is locked, it means there was a crash
