@@ -310,7 +310,7 @@
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-jasper</artifactId>
-				<version>11.0.11</version>
+				<version>11.0.12</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
@@ -682,7 +682,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-dependency-plugin</artifactId>
-					<version>3.8.1</version>
+					<version>3.9.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
@@ -935,7 +935,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-enforcer-plugin</artifactId>
-					<version>3.6.1</version>
+					<version>3.6.2</version>
 					<configuration>
 						<rules>
 							<requireMavenVersion>
@@ -1336,7 +1336,7 @@
 		<hibernateVersion>6.6.23.Final</hibernateVersion>
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
 		<hibernateSearchVersion>7.1.2.Final</hibernateSearchVersion>
-		<luceneVersion>10.3.0</luceneVersion>
+		<luceneVersion>10.3.1</luceneVersion>
 		<!-- ininispanVersion needs to be adjusted if hibernateVersion changes -->
 		<infinispanVersion>15.2.2.Final</infinispanVersion>
 		<aspectjVersion>1.9.24</aspectjVersion>
