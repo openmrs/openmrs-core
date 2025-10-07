@@ -105,7 +105,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		checkPrivileges(user);
 		
 		// if a password wasn't supplied, throw an error
-		if (password == null || password.length() < 1) {
+		if (password == null || password.isEmpty()) {
 			throw new APIException("User.creating.password.required", (Object[]) null);
 		}
 		
@@ -664,22 +664,26 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	}
 	
 	@Override
+	@Logging(ignoredArgumentIndexes = { 1 })
 	public void changePassword(User user, String newPassword) {
-		updatePassword(user, newPassword);
-	}
-	
-	private void updatePassword(User user, String newPassword) {
-		OpenmrsUtil.validatePassword(user.getUsername(), newPassword, user.getSystemId());
-		dao.changePassword(user, newPassword);
+		Context.getUserService().changePassword(user, null, newPassword);
 	}
 	
 	@Override
+	@Logging(ignoredArgumentIndexes = { 1, 2 })
 	public void changePasswordUsingSecretAnswer(String secretAnswer, String pw) throws APIException {
 		User user = Context.getAuthenticatedUser();
+		
 		if (!isSecretAnswer(user, secretAnswer)) {
 			throw new APIException("secret.answer.not.correct", (Object[]) null);
 		}
+		
 		updatePassword(user, pw);
+	}
+
+	private void updatePassword(User user, String newPassword) {
+		OpenmrsUtil.validatePassword(user.getUsername(), newPassword, user.getSystemId());
+		dao.changePassword(user, newPassword);
 	}
 	
 	@Override
