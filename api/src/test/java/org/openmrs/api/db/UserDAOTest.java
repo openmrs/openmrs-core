@@ -9,9 +9,12 @@
  */
 package org.openmrs.api.db;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Date;
@@ -131,6 +134,28 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		lc = dao.getLoginCredential(userJoe);
 		assertEquals(SECRET_QUESTION, lc.getSecretQuestion(), "question should not have changed");
 		assertEquals(hashedSecretAnswer, lc.getSecretAnswer(), "answer should not have changed");
+	}
+
+	private static class DisallowedCaller {
+		
+		private final UserDAO userDao;
+		
+		DisallowedCaller(UserDAO userDao) {
+			this.userDao = userDao;
+		}
+		
+		public void changePassword(User user, String password) {
+			userDao.changePassword(user, password);
+		}
+	}
+	
+	@Test
+	public void changePassword_shouldNotAllowChangingPasswordFromUnknownClass() {
+		DisallowedCaller caller = new DisallowedCaller(dao);
+		
+		Exception caughtException = assertThrows(DAOException.class, () -> caller.changePassword(userJoe, PASSWORD));
+		
+		assertThat(caughtException.getMessage(), is("Illegal attempt to change user password from unknown caller"));
 	}
 	
 	@Test
