@@ -126,7 +126,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	 * 
 	 * @param user authenticated user
 	 * @param method acting method
-	 * @param attrs privilege names that the user must have
+	 * @param attr privilege names that the user must have
 	 */
 	private void throwUnauthorized(User user, Method method, String attr) {
 		log.debug(USER_IS_NOT_AUTHORIZED_TO_ACCESS, user, method.getName());
