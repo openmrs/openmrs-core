@@ -69,6 +69,12 @@ public class UpdateFileParser {
 				inputSource.setSystemId("./");
 				
 				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+				// Harden parser against XXE and DTD attacks
+				dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+				dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+				dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+				dbf.setXIncludeAware(false);
+				dbf.setExpandEntityReferences(false);
 				DocumentBuilder db = dbf.newDocumentBuilder();
 				
 				// Disable resolution of external entities. See TRUNK-3942 
