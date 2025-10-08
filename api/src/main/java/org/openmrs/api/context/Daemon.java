@@ -23,13 +23,13 @@ import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.api.db.ContextDAO;
+import org.openmrs.api.db.hibernate.HibernateContextDAO;
 import org.openmrs.module.DaemonToken;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleException;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.timer.TimerSchedulerTask;
-import org.openmrs.util.OpenmrsSecurityManager;
 import org.openmrs.util.OpenmrsThreadPoolHolder;
 import org.springframework.context.support.AbstractRefreshableApplicationContext;
 
@@ -47,6 +47,8 @@ public final class Daemon {
 	private static final ThreadLocal<Boolean> isDaemonThread = new ThreadLocal<>();
 	
 	private static final ThreadLocal<User> daemonThreadUser = new ThreadLocal<>();
+	
+	private static final StackWalker STACK_WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
 	
 	/**
 	 * private constructor to override the default constructor to prevent it from being instantiated.
@@ -76,9 +78,17 @@ public final class Daemon {
 	 */
 	public static Module startModule(final Module module, final boolean isOpenmrsStartup,
 	        final AbstractRefreshableApplicationContext applicationContext) throws ModuleException {
-		Class<?> callerClass = new OpenmrsSecurityManager().getCallerClass(0);
-		if (callerClass != Daemon.class && callerClass != ModuleFactory.class) {
-			throw new APIException("Module.factory.only", new Object[] { callerClass.getName() });
+		var possibleFrame = STACK_WALKER.walk(s -> 
+			s.skip(1).limit(1).map(StackWalker.StackFrame::getDeclaringClass).findFirst()
+		);
+		
+		if (possibleFrame.isEmpty()) {
+			throw new APIException("Could not determine if module was called from appropriate place");
+		} else {
+			var callerClass = possibleFrame.get();
+			if (!Daemon.class.equals(callerClass) && !ModuleFactory.class.equals(callerClass)) {
+				throw new APIException("Module.factory.only", new Object[] { callerClass.getName() });
+			}
 		}
 		
 		Future<Module> moduleStartFuture = runInDaemonThreadInternal(() -> ModuleFactory.startModuleInternal(module, isOpenmrsStartup, applicationContext));
@@ -115,9 +125,17 @@ public final class Daemon {
 	 */
 	public static User createUser(User user, String password, List<String> roleNames) throws Exception {
 		// quick check to make sure we're only being called by ourselves
-		Class<?> callerClass = new OpenmrsSecurityManager().getCallerClass(0);
-		if (!ContextDAO.class.isAssignableFrom(callerClass)) {
-			throw new APIException("Context.DAO.only", new Object[] { callerClass.getName() });
+		var possibleFrame = STACK_WALKER.walk(s ->
+			s.skip(1).limit(1).map(StackWalker.StackFrame::getDeclaringClass).findFirst()
+		);
+
+		if (possibleFrame.isEmpty()) {
+			throw new APIException("Could not determine where createUser() was called from");
+		} else {
+			var callerClass = possibleFrame.get();
+			if (!HibernateContextDAO.class.equals(callerClass)) {
+				throw new APIException("Context.DAO.only", new Object[] { callerClass.getName() });
+			}
 		}
 
 		// create a new thread and execute that task in it
@@ -163,9 +181,17 @@ public final class Daemon {
 	 */
 	public static void executeScheduledTask(final Task task) throws Exception {
 		// quick check to make sure we're only being called by ourselves
-		Class<?> callerClass = new OpenmrsSecurityManager().getCallerClass(0);
-		if (!TimerSchedulerTask.class.isAssignableFrom(callerClass)) {
-			throw new APIException("Scheduler.timer.task.only", new Object[] { callerClass.getName() });
+		var possibleFrame = STACK_WALKER.walk(s ->
+			s.skip(1).limit(1).map(StackWalker.StackFrame::getDeclaringClass).findFirst()
+		);
+
+		if (possibleFrame.isEmpty()) {
+			throw new APIException("Could not determine where executeScheduledClass() was called from");
+		} else {
+			var callerClass = possibleFrame.get();
+			if (!TimerSchedulerTask.class.isAssignableFrom(callerClass)) {
+				throw new APIException("Scheduler.timer.task.only", new Object[] { callerClass.getName() });
+			}
 		}
 		
 		Future<?> scheduleTaskFuture = runInDaemonThreadInternal(() -> TimerSchedulerTask.execute(task));
@@ -288,8 +314,16 @@ public final class Daemon {
 		Boolean b = isDaemonThread.get();
 		if (b == null || !b) {
 			// Allow functions in Daemon and WebDaemon to be treated as a DaemonThread
-			Class<?> callerClass = new OpenmrsSecurityManager().getCallerClass(1);
-			return callerClass.equals(Daemon.class) || callerClass.getName().equals("org.openmrs.web.WebDaemon");
+			var possibleFrame = STACK_WALKER.walk(s ->
+				s.skip(2).limit(1).map(StackWalker.StackFrame::getDeclaringClass).findFirst()
+			);
+
+			if (possibleFrame.isEmpty()) {
+				throw new APIException("Could not determine where isDaemonThread() was called from");
+			} else {
+				var callerClass = possibleFrame.get();
+				return Daemon.class.equals(callerClass) || "org.openmrs.web.WebDaemon".equals(callerClass.getName());
+			}
 		} else {
 			return true;
 		}
@@ -303,9 +337,17 @@ public final class Daemon {
 	 * @since 1.9
 	 */
 	public static void runStartupForService(final OpenmrsService service) throws ModuleException {
-		Class<?> callerClass = new OpenmrsSecurityManager().getCallerClass(0);
-		if (callerClass != ServiceContext.class) {
-			throw new APIException("Service.context.only", new Object[] { callerClass.getName() });
+		var possibleFrame = STACK_WALKER.walk(s ->
+			s.skip(1).limit(1).map(StackWalker.StackFrame::getDeclaringClass).findFirst()
+		);
+
+		if (possibleFrame.isEmpty()) {
+			throw new APIException("Could not determine where executeScheduledClass() was called from");
+		} else {
+			var callerClass = possibleFrame.get();
+			if (!ServiceContext.class.equals(callerClass)) {
+				throw new APIException("Service.context.only", new Object[] { callerClass.getName() });
+			}
 		}
 		
 		Future<?> future = runInDaemonThreadInternal(service::onStartup);
