@@ -3020,7 +3020,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see ConceptService#getConcepts(String, List<Locale>,null,List<ConceptClass>,List<
-	 *      ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)
+	 * ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)
 	 */
 	@Test
 	public void getConcepts_shouldNotReturnConceptsWithMatchingNamesThatAreVoided() {
@@ -3036,9 +3036,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see ConceptServiceImpl#getConcepts(String phrase, List<Locale> locales, boolean
-	 *      includeRetired,List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
-	 *      List<ConceptDatatype> requireDatatypes,List<ConceptDatatype> excludeDatatypes, Concept
-	 *      answersToConcept, Integer start, Integer size)
+	 * includeRetired,List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
+	 * List<ConceptDatatype> requireDatatypes,List<ConceptDatatype> excludeDatatypes, Concept
+	 * answersToConcept, Integer start, Integer size)
 	 */
 	@Test
 	public void getConcepts_shouldNotFailWithNullClassesAndDatatypes() {
@@ -3049,9 +3049,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see ConceptServiceImpl# getCountOfConcepts(String phrase, List<Locale> locales, boolean
-	 *      includeRetired,List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
-	 *      List<ConceptDatatype> requireDatatypes,List<ConceptDatatype> excludeDatatypes, Concept
-	 *      answersToConcept)
+	 * includeRetired,List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
+	 * List<ConceptDatatype> requireDatatypes,List<ConceptDatatype> excludeDatatypes, Concept
+	 * answersToConcept)
 	 */
 	@Test
 	public void getCountOfConcepts_shouldNotFailWithNullClassesAndDatatypes() {
@@ -3382,7 +3382,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see ConceptService#getDrugsByMapping(String, org.openmrs.ConceptSource,
-	 *      java.util.Collection, boolean)
+	 * java.util.Collection, boolean)
 	 */
 	@Test
 	public void getDrugsByMapping_shouldGetAListOfAllDrugsThatMatchOnAllTheParameterValues() {
@@ -3397,7 +3397,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see ConceptService#getDrugsByMapping(String, org.openmrs.ConceptSource,
-	 *      java.util.Collection, boolean)
+	 * java.util.Collection, boolean)
 	 */
 	@Test
 	public void getDrugsByMapping_shouldExcludeDuplicateMatches() {
@@ -3413,7 +3413,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see ConceptService#getDrugsByMapping(String, org.openmrs.ConceptSource,
-	 *      java.util.Collection, boolean)
+	 * java.util.Collection, boolean)
 	 */
 	@Test
 	public void getDrugsByMapping_shouldReturnRetiredAndNonretiredDrugsIfIncludeRetiredIsSetToTrue() {
@@ -3428,7 +3428,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see ConceptService#getDrugsByMapping(String, org.openmrs.ConceptSource,
-	 *      java.util.Collection, boolean)
+	 * java.util.Collection, boolean)
 	 */
 	@Test
 	public void getDrugsByMapping_shouldReturnEmptyListIfNoMatchesAreFound() {
@@ -3484,7 +3484,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see ConceptService#getDrugsByMapping(String, org.openmrs.ConceptSource,
-	 *      java.util.Collection, boolean)
+	 * java.util.Collection, boolean)
 	 */
 	@Test
 	public void getDrugsByMapping_shouldFailIfNoCodeAndConceptSourceAndWithAnyOfTheseTypesAreProvided() {
@@ -3493,7 +3493,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see ConceptService#getDrugsByMapping(String, org.openmrs.ConceptSource,
-	 *      java.util.Collection, boolean)
+	 * java.util.Collection, boolean)
 	 */
 	@Test
 	public void getDrugsByMapping_shouldFailIfSourceIsNull() {
@@ -3910,7 +3910,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see ConceptService#getConceptByReference(String) tests static constant containing ids and
-	 *      UUIDs
+	 * UUIDs
 	 */
 	@Test
 	public void getConceptByReference_shouldFindAConceptWithStaticConstant() {
