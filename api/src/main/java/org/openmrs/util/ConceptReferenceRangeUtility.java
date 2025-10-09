@@ -162,12 +162,10 @@ public class ConceptReferenceRangeUtility {
 	/**
 	 * Gets the person's latest observation date for a given concept
 	 * 
-	 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName 
-	 *                   e.g "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434"
+	 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName e.g
+	 *            "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434"
 	 * @param person the person
-	 * 
 	 * @return the observation date
-	 * 
 	 * @since 2.7.8
 	 */
 	public Date getLatestObsDate(String conceptRef, Person person) {
@@ -187,16 +185,14 @@ public class ConceptReferenceRangeUtility {
 	/**
 	 * Checks if an observation's value coded answer is equal to a given concept
 	 * 
-	 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName 
-	 *                   e.g "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434" for the observation's question
-	 *                   
+	 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName e.g
+	 *            "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434" for the observation's
+	 *            question
 	 * @param person the person
-	 * 
-	 * @param answerConceptRef can be either concept uuid or conceptMap's code and sourceName 
-	 *                   e.g "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434" for the observation's coded answer
-	 *                   
+	 * @param answerConceptRef can be either concept uuid or conceptMap's code and sourceName e.g
+	 *            "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434" for the observation's coded
+	 *            answer
 	 * @return true if the given concept is equal to the observation's value coded answer
-	 * 
 	 * @since 2.7.8
 	 */
 	public boolean isObsValueCodedAnswer(String conceptRef, Person person, String answerConceptRef) {
@@ -219,14 +215,13 @@ public class ConceptReferenceRangeUtility {
 	}
 	
 	/**
-	 * Gets the number of days from the person's latest observation date value for a given concept to the current date
+	 * Gets the number of days from the person's latest observation date value for a given concept
+	 * to the current date
 	 * 
-	 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName 
-	 *                   e.g "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434"
+	 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName e.g
+	 *            "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434"
 	 * @param person the person
-	 * 
 	 * @return the number of days
-	 * 
 	 * @since 2.7.8
 	 */
 	public long getObsDays(String conceptRef, Person person) {
@@ -238,14 +233,13 @@ public class ConceptReferenceRangeUtility {
 	}
 	
 	/**
-	 * Gets the number of weeks from the person's latest observation date value for a given concept to the current date
+	 * Gets the number of weeks from the person's latest observation date value for a given concept
+	 * to the current date
 	 * 
-	 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName 
-	 *                   e.g "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434"
+	 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName e.g
+	 *            "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434"
 	 * @param person the person
-	 * 
 	 * @return the number of weeks
-	 * 
 	 * @since 2.7.8
 	 */
 	public long getObsWeeks(String conceptRef, Person person) {
@@ -257,14 +251,13 @@ public class ConceptReferenceRangeUtility {
 	}
 	
 	/**
-	 * Gets the number of months from the person's latest observation date value for a given concept to the current date
+	 * Gets the number of months from the person's latest observation date value for a given concept
+	 * to the current date
 	 * 
-	 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName 
-	 *                   e.g "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434"
+	 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName e.g
+	 *            "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434"
 	 * @param person the person
-	 * 
 	 * @return the number of months
-	 * 
 	 * @since 2.7.8
 	 */
 	public long getObsMonths(String conceptRef, Person person) {
@@ -276,14 +269,13 @@ public class ConceptReferenceRangeUtility {
 	}
 	
 	/**
-	 * Gets the number of years from the person's latest observation date value for a given concept to the current date
+	 * Gets the number of years from the person's latest observation date value for a given concept
+	 * to the current date
 	 * 
-	 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName 
-	 *                   e.g "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434"
+	 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName e.g
+	 *            "bac25fd5-c143-4e43-bffe-4eb1e7efb6ce" or "CIEL:1434"
 	 * @param person the person
-	 * 
 	 * @return the number of years
-	 * 
 	 * @since 2.7.8
 	 */
 	public long getObsYears(String conceptRef, Person person) {
@@ -299,9 +291,7 @@ public class ConceptReferenceRangeUtility {
 	 * 
 	 * @param fromDate the date from which to start counting
 	 * @param dateDate the date up to which to stop counting
-	 * 
 	 * @return the number of days between
-	 * 
 	 * @since 2.7.8
 	 */
 	public long getDaysBetween(Date fromDate, Date toDate) {
@@ -316,9 +306,7 @@ public class ConceptReferenceRangeUtility {
 	 * 
 	 * @param fromDate the date from which to start counting
 	 * @param dateDate the date up to which to stop counting
-	 * 
 	 * @return the number of weeks between
-	 * 
 	 * @since 2.7.8
 	 */
 	public long getWeeksBetween(Date fromDate, Date toDate) {
@@ -333,9 +321,7 @@ public class ConceptReferenceRangeUtility {
 	 * 
 	 * @param fromDate the date from which to start counting
 	 * @param dateDate the date up to which to stop counting
-	 * 
 	 * @return the number of months between
-	 * 
 	 * @since 2.7.8
 	 */
 	public long getMonthsBetween(Date fromDate, Date toDate) {
@@ -350,9 +336,7 @@ public class ConceptReferenceRangeUtility {
 	 * 
 	 * @param fromDate the date from which to start counting
 	 * @param dateDate the date up to which to stop counting
-	 * 
 	 * @return the number of years between
-	 * 
 	 * @since 2.7.8
 	 */
 	public long getYearsBetween(Date fromDate, Date toDate) {
@@ -367,7 +351,6 @@ public class ConceptReferenceRangeUtility {
 	 * 
 	 * @param fromDate the date from which to start counting
 	 * @return the number of days
-	 * 
 	 * @since 2.7.8
 	 */
 	public long getDays(Date fromDate) {
@@ -379,7 +362,6 @@ public class ConceptReferenceRangeUtility {
 	 * 
 	 * @param fromDate the date from which to start counting
 	 * @return the number of weeks
-	 * 
 	 * @since 2.7.8
 	 */
 	public long getWeeks(Date fromDate) {
@@ -391,7 +373,6 @@ public class ConceptReferenceRangeUtility {
 	 * 
 	 * @param fromDate the date from which to start counting
 	 * @return the number of months
-	 * 
 	 * @since 2.7.8
 	 */
 	public long getMonths(Date fromDate) {
@@ -403,7 +384,6 @@ public class ConceptReferenceRangeUtility {
 	 * 
 	 * @param fromDate the date from which to start counting
 	 * @return the number of years
-	 * 
 	 * @since 2.7.8
 	 */
 	public long getYears(Date fromDate) {
