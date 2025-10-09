@@ -81,7 +81,11 @@ public class ConceptDatatype extends BaseChangeableOpenmrsMetadata {
 	// Fields
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "concept_datatype_id_seq")
-	@GenericGenerator(name = "concept_datatype_id_seq", strategy = "native", parameters = @Parameter(name = "sequence", value = "concept_datatype_concept_datatype_id_seq"))
+	@GenericGenerator(
+		name = "concept_datatype_id_seq",
+		strategy = "native",
+		parameters = @Parameter(name = "sequence", value = "concept_datatype_concept_datatype_id_seq")
+	)
 	@Column(name = "concept_datatype_id", nullable = false)
 	private Integer conceptDatatypeId;
 	
