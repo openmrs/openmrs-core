@@ -11,6 +11,7 @@ package org.openmrs.api.context;
 
 import org.aopalliance.aop.Advice;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.SessionFactory;
 import org.openmrs.Allergen;
 import org.openmrs.GlobalProperty;
 import org.openmrs.OpenmrsObject;
@@ -270,7 +271,7 @@ public class Context {
 	 *
 	 * @return the current ServiceContext
 	 */
-	 static ServiceContext getServiceContext() {
+	static ServiceContext getServiceContext() {
 		if (serviceContext == null) {
 			synchronized (Context.class) {
 				if (serviceContext == null) {
@@ -289,7 +290,7 @@ public class Context {
 	 *
 	 * @param ctx
 	 */
-	public static void setServiceContext(ServiceContext ctx) {
+	public void setServiceContext(ServiceContext ctx) {
 		setContext(ctx);
 	}
 
@@ -299,10 +300,10 @@ public class Context {
 
 	/**
 	 * OpenMRS provides its default authentication scheme that authenticates via DAO with OpenMRS usernames and passwords.
-	 *
+	 * 
 	 * Any module can provide an authentication scheme override by Spring wiring a custom implementation of {@link AuthenticationScheme}.
 	 * This method would return Core's default authentication scheme unless a Spring override is provided somewhere else.
-	 *
+	 * 
 	 * @return The enforced authentication scheme.
 	 */
 	public static AuthenticationScheme getAuthenticationScheme() {
@@ -311,7 +312,7 @@ public class Context {
 
 	/**
 	 * @deprecated as of 2.3.0, replaced by {@link #authenticate(Credentials)}
-	 *
+	 * 
 	 * Used to authenticate user within the context
 	 *
 	 * @param username user's identifier token for login
@@ -331,7 +332,7 @@ public class Context {
 	/**
 	 * @param credentials
 	 * @throws ContextAuthenticationException
-	 *
+	 * 
 	 * @since 2.3.0
 	 */
 	public static Authenticated authenticate(Credentials credentials) throws ContextAuthenticationException {
@@ -450,7 +451,7 @@ public class Context {
 
 	/**
 	 * @return condition-related services
-	 *
+	 * 
 	 * @since 2.2
 	 */
 	public static ConditionService getConditionService(){
@@ -559,7 +560,7 @@ public class Context {
 	public static ProgramWorkflowService getProgramWorkflowService() {
 		return getServiceContext().getProgramWorkflowService();
 	}
-
+	
 	/**
 	 * Get the message service.
 	 *
@@ -587,7 +588,7 @@ public class Context {
 	/**
 	 * @return all of the configured properties that are used to configure the Mail Session in the Message Service
 	 * These properties are defined as all properties that are prefixed with "mail." and this will return all such
-	 * properties as defined in global properties, runtime properties, and/or system properties, with
+	 * properties as defined in global properties, runtime properties, and/or system properties, with 
 	 * system properties overriding runtime properties overriding global properties.
 	 */
 	public static Properties getMailProperties() {
@@ -901,17 +902,17 @@ public class Context {
 		log.debug("Clearing DB cache for entity: {} with id: {}", object.getClass(), object.getId());
 		getContextDAO().evictEntity(object);
 	}
-
+	
 	/**
 	 * Evicts all entity data of a particular class from the given region.
-	 *
+	 * 
 	 * @param entityClass entity class to evict from the DB cache
 	 */
 	public static void evictAllEntities(Class<?> entityClass) {
 		log.debug("Clearing DB cache for entities of type: {}", entityClass);
 		getContextDAO().evictAllEntities(entityClass);
 	}
-
+	
 	/**
 	 * Evicts data from both DB and API cache.
 	 */
@@ -921,7 +922,7 @@ public class Context {
 		log.debug("Clearing API cache");
 		getServiceContext().clearEntireApiCache();
 	}
-
+	
 	/**
 	 * Starts the OpenMRS System Should be called prior to any kind of activity
 	 *
@@ -1259,7 +1260,7 @@ public class Context {
 	 * @throws DatabaseUpdateException if an error occurred while updating
 	 * @since 1.5
 	 * @deprecated as of 2.4
-	 *
+	 * 
 	 */
 	@Deprecated
 	public static void updateDatabase(Map<String, Object> userInput) throws DatabaseUpdateException {
@@ -1426,7 +1427,7 @@ public class Context {
 	 * Updates the search index for objects of the given type.
 	 *
 	 * @see #updateSearchIndex()
-	 * @see #updateSearchIndex(Class[])
+	 * @see #updateSearchIndex(Class[]) 
 	 * @param type
 	 * @since 1.11
 	 */
@@ -1436,8 +1437,8 @@ public class Context {
 
 	/**
 	 * Updates the search index for objects of the given types using mass indexer.
-	 *
-	 * @see #updateSearchIndex()
+	 * 
+	 * @see #updateSearchIndex() 
 	 * @param types
 	 * @since 2.8.0
 	 */
