@@ -22,11 +22,22 @@ jobs:
           token: ${{ secrets.TRANSIFEX_TOKEN }}
           args: pull --force --all
       - name: 🔄 Create PR if necessary
-        uses: peter-evans/create-pull-request@v6.0.1
+        id: cpr
+        uses: peter-evans/create-pull-request@v7.0.8
         with:
           commit-message: "(chore) Update translations from Transifex"
           title: "(chore) Update translations from Transifex"
           body: "Automated updates of translations pulled from Transifex"
           branch: "chore/update-transifex"
           author: "OpenMRS Bot <infrastructure@openmrs.org>"
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.OMRS_BOT_GH_TOKEN }}
+      - name: ✅ Auto approve PR
+        if: steps.cpr.outputs.pull-request-operation == 'created' || steps.cpr.outputs.pull-request-operation == 'updated'
+        run: gh pr review --approve "${{ steps.cpr.outputs.pull-request-number }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: 🔀 Automerge PR
+        if: steps.cpr.outputs.pull-request-operation == 'created' || steps.cpr.outputs.pull-request-operation == 'updated'
+        run: gh pr merge --auto --squash "${{ steps.cpr.outputs.pull-request-number }}"
+        env:
+          GH_TOKEN: ${{ secrets.OMRS_BOT_GH_TOKEN }}

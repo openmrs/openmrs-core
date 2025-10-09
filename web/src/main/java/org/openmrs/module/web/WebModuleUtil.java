@@ -122,7 +122,7 @@ public class WebModuleUtil {
 	 */
 	public static boolean startModule(Module mod, ServletContext servletContext, boolean delayContextRefresh) {
 		
-		log.debug("trying to start module {}", mod);
+		log.debug("Trying to start module {}", mod);
 		
 		// only try and start this module if the api started it without a
 		// problem.
@@ -312,11 +312,11 @@ public class WebModuleUtil {
 			// refresh the spring web context to get the just-created xml
 			// files into it (if we copied an xml file)
 			if (moduleNeedsContextRefresh && !delayContextRefresh) {
-				log.debug("Refreshing context for module {}", mod);
+				log.debug("Refreshing context for module {}", mod.getModuleId());
 				
 				try {
 					refreshWAC(servletContext, false, mod);
-					log.debug("Done Refreshing WAC");
+					log.debug("Done refreshing context for module {}", mod.getModuleId());
 				}
 				catch (Exception e) {
 					String msg = "Unable to refresh the WebApplicationContext";
@@ -338,7 +338,9 @@ public class WebModuleUtil {
 					}
 					
 					// try starting the application context again
+					log.debug("Refreshing context for module {} (re-trying)", mod.getModuleId());
 					refreshWAC(servletContext, false, mod);
+					log.debug("Done refreshing context for module {} (re-trying)", mod.getModuleId());
 					
 					notifySuperUsersAboutModuleFailure(mod);
 				}
@@ -933,7 +935,7 @@ public class WebModuleUtil {
 	        Module startedModule) {
 		XmlWebApplicationContext wac = (XmlWebApplicationContext) WebApplicationContextUtils
 		        .getWebApplicationContext(servletContext);
-		log.debug("Refreshing web application Context of class: {}", wac.getClass().getName());
+		log.debug("Refreshing Web Application Context of class: {}", wac.getClass().getName());
 		
 		if (dispatcherServlet != null) {
 			dispatcherServlet.stopAndCloseApplicationContext();

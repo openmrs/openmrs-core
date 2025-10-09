@@ -58,6 +58,14 @@
 		<!-- Hide the useless MissingResourceException -->
 		<Logger name="org.springframework.context.support.ResourceBundleMessageSource" level="ERROR" />
 		<Logger name="org.springframework.beans.factory.support.DefaultListableBeanFactory" level="ERROR" />
+		<!-- Startup monitoring
+		<Logger name="org.openmrs.module.ModuleFactory" level="DEBUG" />
+		<Logger name="org.openmrs.module.ModuleUtil" level="DEBUG" />
+		<Logger name="org.openmrs.module.web.WebModuleUtil" level="DEBUG" />
+		<Logger name="org.openmrs.web.Listener" level="DEBUG" />
+		<Logger name="org.openmrs.web.filter.initialization.InitializationFilter" level="DEBUG" />
+		<Logger name="org.openmrs.util.DatabaseUpdater" level="DEBUG" />
+		-->
 		<Root level="WARN">
 			<AppenderRef ref="CONSOLE" />
 			<AppenderRef ref="MEMORY_APPENDER" />

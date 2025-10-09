@@ -627,6 +627,7 @@ public class ModuleFactory {
 				}
 				
 				// fire up the classloader for this module
+				log.debug("Prepare module classloader: {}", module.getModuleId());
 				ModuleClassLoader moduleClassLoader = new ModuleClassLoader(module, ModuleFactory.class.getClassLoader());
 				getModuleClassLoaderMap().put(module, moduleClassLoader);
 				registerProvidedPackages(moduleClassLoader);
@@ -640,6 +641,7 @@ public class ModuleFactory {
 				// a spring context refresh anyway
 				
 				// map extension point to a list of extensions for this module only
+				log.debug("Prepare module extensions: {}", module.getModuleId());
 				Map<String, List<Extension>> moduleExtensionMap = new HashMap<>();
 				for (Extension ext : module.getExtensions()) {
 					
@@ -669,6 +671,7 @@ public class ModuleFactory {
 				// This and the property updates are the only things that can't
 				// be undone at startup, so put these calls after any other
 				// calls that might hinder startup
+				log.debug("Run module sql update script: {}", module.getModuleId());
 				SortedMap<String, String> diffs = SqlDiffFileParser.getSqlDiffs(module);
 				
 				try {
@@ -692,6 +695,7 @@ public class ModuleFactory {
 				}
 				
 				// run module's optional liquibase.xml immediately after sqldiff.xml
+				log.debug("Run module liquibase: {}", module.getModuleId());
 				runLiquibase(module);
 				
 				// effectively mark this module as started successfully
@@ -731,6 +735,7 @@ public class ModuleFactory {
 				
 				// should be near the bottom so the module has all of its stuff
 				// set up for it already.
+				log.debug("Run module willStart: {}", module.getModuleId());
 				try {
 					if (module.getModuleActivator() != null) {
 						// if extends BaseModuleActivator
@@ -773,6 +778,7 @@ public class ModuleFactory {
 		}
 		
 		if (applicationContext != null) {
+			log.debug("Run module refresh application context: {}", module.getModuleId());
 			ModuleUtil.refreshApplicationContext(applicationContext, isOpenmrsStartup, module);
 		}
 		

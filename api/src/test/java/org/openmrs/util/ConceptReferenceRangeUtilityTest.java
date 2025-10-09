@@ -293,6 +293,38 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
+	public void testObsValueMatch_shouldReturnTrueIfValueCodedMatch() {
+		Obs obs = buildObs();
+		obs.setPerson(person);
+		
+		Concept valueCoded = new Concept(900);
+		obs.setValueCoded(valueCoded);
+		
+		Concept concept = new Concept(4900);
+		
+		Mockito.when(conceptService.getConceptByReference("CIEL:1234")).thenReturn(concept);
+		Mockito.when(conceptService.getConceptByReference("CIEL:1000")).thenReturn(valueCoded);
+
+		Mockito.when(obsService.getObservations(Collections.singletonList(person),
+				null,
+				Collections.singletonList(concept),
+				null,
+				null,
+				null,
+				Collections.singletonList("dateCreated"),
+				1,
+				null,
+				null,
+				null,
+				false))
+			.thenReturn(Collections.singletonList(obs));
+		
+		assertTrue(
+			conceptReferenceRangeUtility.evaluateCriteria("$fn.isObsValueCodedAnswer('CIEL:1234', $patient, 'CIEL:1000')", obs)
+		);
+	}
+	
+	@Test
 	public void testObsValueMatch_shouldReturnTrueIfValueTextMatch() {
 		person.setGender("F");
 		
@@ -483,6 +515,173 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 					"($fn.getCurrentObs('c607c80f-1ea9-4da3-bb88-6276ce8868dd', $obs).getValueNumeric() / " +
 					"( ($fn.getCurrentObs('a09ab2c5-878e-4905-b25d-5784167d0216', $obs).getValueNumeric() / 100) * " +
 					"($fn.getCurrentObs('a09ab2c5-878e-4905-b25d-5784167d0216', $obs).getValueNumeric() / 100))) < 25",
+				obs)
+		);
+	}
+	
+	@Test
+	public void getObsDays_shouldReturnNumberOfDaysFromObsDate() {
+		Obs obs = buildObs();
+		obs.setPerson(person);
+		
+		calendar = Calendar.getInstance();
+		calendar.add(Calendar.DAY_OF_YEAR, -90);
+		obs.setValueDate(calendar.getTime());
+
+		Concept concept = new Concept(4900);
+
+		Mockito.when(conceptService.getConceptByReference(Mockito.anyString())).thenReturn(concept);
+
+		Mockito.when(obsService.getObservations(Collections.singletonList(person),
+				null,
+				Collections.singletonList(concept),
+				null,
+				null,
+				null,
+				Collections.singletonList("dateCreated"),
+				1,
+				null,
+				null,
+				null,
+				false))
+			.thenReturn(Collections.singletonList(obs));
+
+		assertTrue(
+			conceptReferenceRangeUtility.evaluateCriteria(
+				"$fn.getObsDays('bac25fd5-c143-4e43-bffe-4eb1e7efb6ce', $patient) == 90",
+				obs)
+		);
+	}
+	
+	@Test
+	public void getObsWeeks_shouldReturnNumberOfWeeksFromObsDate() {
+		Obs obs = buildObs();
+		obs.setPerson(person);
+		
+		calendar = Calendar.getInstance();
+		calendar.add(Calendar.WEEK_OF_YEAR, -32);
+		obs.setValueDate(calendar.getTime());
+
+		Concept concept = new Concept(4900);
+
+		Mockito.when(conceptService.getConceptByReference(Mockito.anyString())).thenReturn(concept);
+
+		Mockito.when(obsService.getObservations(Collections.singletonList(person),
+				null,
+				Collections.singletonList(concept),
+				null,
+				null,
+				null,
+				Collections.singletonList("dateCreated"),
+				1,
+				null,
+				null,
+				null,
+				false))
+			.thenReturn(Collections.singletonList(obs));
+
+		assertTrue(
+			conceptReferenceRangeUtility.evaluateCriteria(
+				"$fn.getObsWeeks('bac25fd5-c143-4e43-bffe-4eb1e7efb6ce', $patient) == 32",
+				obs)
+		);
+	}
+	
+	@Test
+	public void getObsMonths_shouldReturnNumberOfMonthsFromObsDate() {
+		Obs obs = buildObs();
+		obs.setPerson(person);
+		
+		calendar = Calendar.getInstance();
+		calendar.add(Calendar.MONTH, -9);
+		obs.setValueDate(calendar.getTime());
+
+		Concept concept = new Concept(4900);
+
+		Mockito.when(conceptService.getConceptByReference(Mockito.anyString())).thenReturn(concept);
+
+		Mockito.when(obsService.getObservations(Collections.singletonList(person),
+				null,
+				Collections.singletonList(concept),
+				null,
+				null,
+				null,
+				Collections.singletonList("dateCreated"),
+				1,
+				null,
+				null,
+				null,
+				false))
+			.thenReturn(Collections.singletonList(obs));
+
+		assertTrue(
+			conceptReferenceRangeUtility.evaluateCriteria(
+				"$fn.getObsMonths('bac25fd5-c143-4e43-bffe-4eb1e7efb6ce', $patient) == 9",
+				obs)
+		);
+	}
+	
+	@Test
+	public void getObsYears_shouldReturnNumberOfYearsFromObsDate() {
+		Obs obs = buildObs();
+		obs.setPerson(person);
+		
+		calendar = Calendar.getInstance();
+		calendar.add(Calendar.YEAR, -18);
+		obs.setValueDate(calendar.getTime());
+
+		Concept concept = new Concept(4900);
+
+		Mockito.when(conceptService.getConceptByReference(Mockito.anyString())).thenReturn(concept);
+
+		Mockito.when(obsService.getObservations(Collections.singletonList(person),
+				null,
+				Collections.singletonList(concept),
+				null,
+				null,
+				null,
+				Collections.singletonList("dateCreated"),
+				1,
+				null,
+				null,
+				null,
+				false))
+			.thenReturn(Collections.singletonList(obs));
+
+		assertTrue(
+			conceptReferenceRangeUtility.evaluateCriteria(
+				"$fn.getObsYears('bac25fd5-c143-4e43-bffe-4eb1e7efb6ce', $patient) == 18",
+				obs)
+		);
+	}
+	
+	@Test
+	public void getObsWeeks_shouldReturnNegativeOneForNullValueDate() {
+		Obs obs = buildObs();
+		obs.setPerson(person);
+		obs.setValueDate(null);
+
+		Concept concept = new Concept(4900);
+
+		Mockito.when(conceptService.getConceptByReference(Mockito.anyString())).thenReturn(concept);
+
+		Mockito.when(obsService.getObservations(Collections.singletonList(person),
+				null,
+				Collections.singletonList(concept),
+				null,
+				null,
+				null,
+				Collections.singletonList("dateCreated"),
+				1,
+				null,
+				null,
+				null,
+				false))
+			.thenReturn(Collections.singletonList(obs));
+
+		assertTrue(
+			conceptReferenceRangeUtility.evaluateCriteria(
+				"$fn.getObsWeeks('bac25fd5-c143-4e43-bffe-4eb1e7efb6ce', $patient) == -1",
 				obs)
 		);
 	}
