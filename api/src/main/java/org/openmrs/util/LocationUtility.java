@@ -13,12 +13,14 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.context.Context;
+import org.springframework.stereotype.Component;
 
 /**
  * A utility class for working with locations
  *
  * @since 1.9
  */
+@Component
 public class LocationUtility implements GlobalPropertyListener {
 	
 	/**

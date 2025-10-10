@@ -84,24 +84,25 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	
 	private static final Logger log = LoggerFactory.getLogger(AdministrationServiceImpl.class);
 
-	@Autowired
 	protected AdministrationDAO dao;
 	
-	@Autowired
-	@Qualifier("openmrsEventListeners")
 	private EventListeners eventListeners;
 	
 	/**
 	 * An always up-to-date collection of the allowed locales.
 	 */
-	@Autowired
-	@Qualifier("globalLocaleList")
 	private GlobalLocaleList globalLocaleList;
 	
-	@Autowired
-	@Qualifier("implementationIdHttpClient")
 	private HttpClient implementationIdHttpClient;
 	
+	@Autowired
+	public AdministrationServiceImpl(GlobalLocaleList globalLocaleList, @Qualifier("openmrsEventListeners") EventListeners eventListeners, @Qualifier("implementationIdHttpClient") HttpClient implementationIdHttpClient, AdministrationDAO dao) {
+		this.globalLocaleList = globalLocaleList;
+		this.eventListeners = eventListeners;
+		this.implementationIdHttpClient = implementationIdHttpClient;
+		this.dao = dao;
+	}
+
 	/**
 	 * Default empty constructor
 	 */
