@@ -38,6 +38,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.openmrs.util.XmlUtils.createDocumentBuilder;
+
 /**
  * ConfigXmlBuilder is a utility class for tests that need to build a configuration XML file for OpenMRS.
  * It provides a fluent API to add various elements to the configuration file.
@@ -178,8 +180,6 @@ public class ConfigXmlBuilder {
 	
 	private static final String PUBLIC_IDENTIFIER = "-//OpenMRS//DTD OpenMRS Config 1.0//EN";
 	
-	private static final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-	
 	private final String dtdVersion;
 	
 	private Document configXml;
@@ -236,7 +236,7 @@ public class ConfigXmlBuilder {
 	}
 	
 	private void initDocument() throws ParserConfigurationException {
-		DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+		DocumentBuilder documentBuilder = createDocumentBuilder();
 		
 		configXml = documentBuilder.newDocument();
 		documentBuilder.newDocument();
