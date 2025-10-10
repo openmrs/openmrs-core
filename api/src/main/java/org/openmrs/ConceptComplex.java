@@ -3,12 +3,16 @@
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
  * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
- *
+ * <p>
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.Proxy;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.openmrs.obs.ComplexObsHandler;
@@ -19,25 +23,29 @@ import org.openmrs.obs.ComplexObsHandler;
  * @since 1.5
  */
 @Audited
+@Entity
+@Table(name = "concept_complex")
+@Proxy(lazy = false)
 public class ConceptComplex extends Concept {
-	
+
 	public static final long serialVersionUID = 473231233L;
-	
+
+	@Column(name = "handler", length = 255)
 	private String handler;
-	
+
 	/**
 	 * Default Constructor
 	 */
 	public ConceptComplex() {
 	}
-	
+
 	/**
 	 * @param conceptId
 	 */
 	public ConceptComplex(Integer conceptId) {
 		super(conceptId);
 	}
-	
+
 	/**
 	 * Constructor with conceptId and ConceptComplexHandler
 	 *
@@ -48,7 +56,7 @@ public class ConceptComplex extends Concept {
 		super(conceptId);
 		this.handler = handler;
 	}
-	
+
 	/**
 	 * Constructor from Concept.
 	 *
@@ -71,10 +79,10 @@ public class ConceptComplex extends Concept {
 		this.setRetired(c.getRetired());
 		this.setVersion(c.getVersion());
 		this.setUuid(c.getUuid());
-		
+
 		this.handler = "";
 	}
-	
+
 	/**
 	 * Overrides parent method and returns true if this Concept.getDatatype() equals "Complex"..
 	 *
@@ -85,10 +93,17 @@ public class ConceptComplex extends Concept {
 		if (getDatatype() == null || getDatatype().getHl7Abbreviation() == null) {
 			return false;
 		}
-		
+
 		return "ED".equals(getDatatype().getHl7Abbreviation());
 	}
-	
+
+	/**
+	 * @return Returns the key to the ComplexObsHandler associated with this ConceptComplex.
+	 */
+	public String getHandler() {
+		return this.handler;
+	}
+
 	/**
 	 * Set the ConceptComplexHandler. This should be the ComplexObsHandler key
 	 *
@@ -97,12 +112,5 @@ public class ConceptComplex extends Concept {
 	public void setHandler(String handler) {
 		this.handler = handler;
 	}
-	
-	/**
-	 * @return Returns the key to the ComplexObsHandler associated with this ConceptComplex.
-	 */
-	public String getHandler() {
-		return this.handler;
-	}
-	
+
 }
