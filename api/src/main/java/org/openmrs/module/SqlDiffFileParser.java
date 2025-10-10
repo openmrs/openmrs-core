@@ -29,6 +29,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import static org.openmrs.util.XmlUtils.createDocumentBuilder;
+
 /**
  * This class will parse an xml sql diff file
  *
@@ -90,12 +92,7 @@ public class SqlDiffFileParser {
 				// turn the diff stream into an xml document
 				Document diffDoc;
 				try {
-					DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-					DocumentBuilder db = dbf.newDocumentBuilder();
-
-					// When asked to resolve external entities (such as a DTD) we return an InputSource
-					// with no data at the end, causing the parser to ignore the DTD.
-					db.setEntityResolver((publicId, systemId) -> new InputSource(new StringReader("")));
+					DocumentBuilder db = createDocumentBuilder();
 					diffDoc = db.parse(diffStream);
 				}
 				catch (Exception e) {

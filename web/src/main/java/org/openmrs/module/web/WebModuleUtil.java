@@ -76,6 +76,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import static org.openmrs.util.XmlUtils.createDocumentBuilder;
+
 public class WebModuleUtil {
 
 	private WebModuleUtil() {
@@ -757,12 +759,7 @@ public class WebModuleUtil {
 	private static Document getDWRModuleXML(InputStream inputStream, String realPath) {
 		Document dwrmodulexml;
 		try {
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			DocumentBuilder db = dbf.newDocumentBuilder();
-
-			// When asked to resolve external entities (such as a DTD) we return an InputSource
-			// with no data at the end, causing the parser to ignore the DTD.
-			db.setEntityResolver((publicId, systemId) -> new InputSource(new StringReader("")));
+			DocumentBuilder db = createDocumentBuilder();
 			dwrmodulexml = db.parse(inputStream);
 		}
 		catch (Exception e) {
@@ -1025,11 +1022,8 @@ public class WebModuleUtil {
 	}
 	
 	public static void createDwrModulesXml(String realPath) {
-		
 		try {
-			
-			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			DocumentBuilder docBuilder = createDocumentBuilder();
 			
 			// root elements
 			Document doc = docBuilder.newDocument();
@@ -1046,7 +1040,7 @@ public class WebModuleUtil {
 			transformer.transform(source, result);
 			
 		}
-		catch (ParserConfigurationException pce) {
+		catch (APIException pce) {
 			log.error("Failed to parse document", pce);
 		}
 		catch (TransformerException tfe) {
