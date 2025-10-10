@@ -10,12 +10,10 @@
 package org.openmrs.validator;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 
 import org.apache.commons.text.StringEscapeUtils;
+import org.openmrs.BaseReferenceRange;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptNumeric;
@@ -27,7 +25,6 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.util.ConceptReferenceRangeUtility;
-import org.openmrs.util.OpenmrsUtil;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -198,7 +195,7 @@ public class ObsValidator implements Validator {
 						}
 					}
 					
-					validateConceptReferenceRange(obs, errors, atRootNode);
+					validateReferenceRange(obs, errors, atRootNode);
 				} else if (dt.isText() && obs.getValueText() == null) {
 					if (atRootNode) {
 						errors.rejectValue("valueText", "error.null");
@@ -259,18 +256,22 @@ public class ObsValidator implements Validator {
 	 * @param obs Observation to validate
 	 * @param errors Errors to record validation issues
 	 */
-	private void validateConceptReferenceRange(Obs obs, Errors errors, boolean atRootNode) {
-		ConceptReferenceRange conceptReferenceRange = getReferenceRange(obs);
+	private void validateReferenceRange(Obs obs, Errors errors, boolean atRootNode) {
+		BaseReferenceRange referenceRange = obs.getReferenceRange();
+		if (referenceRange == null) {
+			referenceRange = getReferenceRange(obs);
+		}
 
-		if (conceptReferenceRange != null) {
-			validateAbsoluteRanges(obs, conceptReferenceRange, errors, atRootNode);
+		if (referenceRange != null) {
+			validateAbsoluteRanges(obs, referenceRange, errors, atRootNode);
 			
 			if (obs.getId() == null) {
-				setObsReferenceRange(obs, conceptReferenceRange);
+				setObsReferenceRange(obs, referenceRange);
 			}
 		} else if (obs.getId() == null) {
 			setObsReferenceRange(obs);
 		}
+		
 		setObsInterpretation(obs);
 	}
 
@@ -410,16 +411,16 @@ public class ObsValidator implements Validator {
 	 * Validates the high and low absolute values of the Obs.
 	 *
 	 * @param obs Observation to validate
-	 * @param conceptReferenceRange ConceptReferenceRange containing the range values
+	 * @param referenceRange ConceptReferenceRange containing the range values
 	 * @param errors Errors to record validation issues
 	 */
-	private void validateAbsoluteRanges(Obs obs, ConceptReferenceRange conceptReferenceRange, Errors errors, boolean atRootNode) {
-		if (conceptReferenceRange.getHiAbsolute() != null && conceptReferenceRange.getHiAbsolute() < obs.getValueNumeric()) {
+	private void validateAbsoluteRanges(Obs obs, BaseReferenceRange referenceRange, Errors errors, boolean atRootNode) {
+		if (referenceRange.getHiAbsolute() != null && referenceRange.getHiAbsolute() < obs.getValueNumeric()) {
 			if (atRootNode) {
 				errors.rejectValue(
 					"valueNumeric",
 					"error.value.outOfRange.high",
-					new Object[] { conceptReferenceRange.getHiAbsolute() },
+					new Object[] { referenceRange.getHiAbsolute() },
 					null
 				);
 			} else {
@@ -432,12 +433,12 @@ public class ObsValidator implements Validator {
 			}
 		}
 		
-		if (conceptReferenceRange.getLowAbsolute() != null && conceptReferenceRange.getLowAbsolute() > obs.getValueNumeric()) {
+		if (referenceRange.getLowAbsolute() != null && referenceRange.getLowAbsolute() > obs.getValueNumeric()) {
 			if (atRootNode) {
 				errors.rejectValue(
 					"valueNumeric",
 					"error.value.outOfRange.low",
-					new Object[] { conceptReferenceRange.getLowAbsolute() },
+					new Object[] { referenceRange.getLowAbsolute() },
 					null
 				);
 			} else {
@@ -455,20 +456,23 @@ public class ObsValidator implements Validator {
 	 * Builds and sets the ObsReferenceRange for the given Obs.
 	 *
 	 * @param obs Observation to set the reference range
-	 * @param conceptReferenceRange ConceptReferenceRange used to build the ObsReferenceRange
+	 * @param referenceRange ConceptReferenceRange used to build the ObsReferenceRange
 	 */
-	private void setObsReferenceRange(Obs obs, ConceptReferenceRange conceptReferenceRange) {
-		ObsReferenceRange obsRefRange = new ObsReferenceRange();
-
-		obsRefRange.setHiAbsolute(conceptReferenceRange.getHiAbsolute());
-		obsRefRange.setHiCritical(conceptReferenceRange.getHiCritical());
-		obsRefRange.setHiNormal(conceptReferenceRange.getHiNormal());
-		obsRefRange.setLowAbsolute(conceptReferenceRange.getLowAbsolute());
-		obsRefRange.setLowCritical(conceptReferenceRange.getLowCritical());
-		obsRefRange.setLowNormal(conceptReferenceRange.getLowNormal());
-		obsRefRange.setObs(obs);
-
-		obs.setReferenceRange(obsRefRange);
+	private void setObsReferenceRange(Obs obs, BaseReferenceRange referenceRange) {
+		if (referenceRange instanceof ObsReferenceRange) {
+			if (((ObsReferenceRange) referenceRange).getObs() == null) {
+				obs.setReferenceRange((ObsReferenceRange) referenceRange);
+			}
+		} else {
+			ObsReferenceRange obsRefRange = new ObsReferenceRange();
+			obsRefRange.setHiAbsolute(referenceRange.getHiAbsolute());
+			obsRefRange.setHiCritical(referenceRange.getHiCritical());
+			obsRefRange.setHiNormal(referenceRange.getHiNormal());
+			obsRefRange.setLowAbsolute(referenceRange.getLowAbsolute());
+			obsRefRange.setLowCritical(referenceRange.getLowCritical());
+			obsRefRange.setLowNormal(referenceRange.getLowNormal());
+			obs.setReferenceRange(obsRefRange);
+		}
 	}
 
 	/**
@@ -479,24 +483,24 @@ public class ObsValidator implements Validator {
 	private void setObsReferenceRange(Obs obs) {
 		if (obs.getConcept() == null) {
 			return;
+		} else if (obs.getReferenceRange() != null) {
+			return;
 		}
-		
+
 		ConceptNumeric conceptNumeric = Context.getConceptService().getConceptNumeric(obs.getConcept().getId());
 
 		if (conceptNumeric != null) {
 			ObsReferenceRange obsRefRange = new ObsReferenceRange();
-
 			obsRefRange.setHiAbsolute(conceptNumeric.getHiAbsolute());
 			obsRefRange.setHiCritical(conceptNumeric.getHiCritical());
 			obsRefRange.setHiNormal(conceptNumeric.getHiNormal());
 			obsRefRange.setLowAbsolute(conceptNumeric.getLowAbsolute());
 			obsRefRange.setLowCritical(conceptNumeric.getLowCritical());
 			obsRefRange.setLowNormal(conceptNumeric.getLowNormal());
-			obsRefRange.setObs(obs);
-			
 			obs.setReferenceRange(obsRefRange);
 		}
 	}
+	
 
 	/**
 	 * This method sets Obs interpretation based on the current obs' numeric value.
@@ -504,8 +508,12 @@ public class ObsValidator implements Validator {
 	 * @param obs Observation to set the interpretation
 	 */
 	private void setObsInterpretation(Obs obs) {
+		if (obs.getInterpretation() != null || obs.getValueNumeric() == null) {
+			return;
+		}
+		
 		ObsReferenceRange referenceRange = obs.getReferenceRange();
-		if (referenceRange == null || obs.getValueNumeric() == null) {
+		if (referenceRange == null) {
 			return;
 		}
 		
