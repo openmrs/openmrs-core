@@ -63,6 +63,7 @@ import org.openmrs.OrderSet;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
 import org.openmrs.PersonAddress;
@@ -182,10 +183,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 	@Autowired
 	private MessageSourceService messageSourceService;
-	
+
 	@Autowired
 	private VisitService visitService;
-	
+
 	@BeforeEach
 	public void setUp(){
 		executeDataSet(ORDER_ATTRIBUTES);
@@ -193,7 +194,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 
 	public class SomeTestOrder extends TestOrder {}
-	
+
 
 	/**
 	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
@@ -346,7 +347,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertEquals(22, orders.get(2).getOrderId().intValue());
 		assertEquals(2, orders.get(3).getOrderId().intValue());
 	}
-	
+
 	/**
 	 * @see OrderService#getOrderHistoryByConcept(Patient, Concept)
 	 */
@@ -455,7 +456,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertTrue(OrderUtilTest.isActiveOrder(orders.get(3), null));
 		assertTrue(OrderUtilTest.isActiveOrder(orders.get(4), null));
 	}
-	
+
 	/**
 	 * @see OrderService#getActiveOrders(org.openmrs.Patient, org.openmrs.Visit, org.openmrs.OrderType,
 	 * org.openmrs.CareSetting, java.util.Date)
@@ -2080,7 +2081,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		List<Order> inPatientDrugOrders = orderService.getOrders(patient, inPatient, drugOrderType, false);
 		assertEquals(222, inPatientDrugOrders.get(0).getOrderId().intValue());
 	}
-	
+
 	/**
 	 * @see OrderService#getOrders(org.openmrs.Patient, org.openmrs.Visit, org.openmrs.CareSetting,
 	 * org.openmrs.OrderType, boolean)
@@ -2168,7 +2169,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		List<Order> orders = orderService.getOrders(orderSearchCriteria);
 		assertEquals(11, orders.size());
 	}
-	
+
 	/**
 	 * @see OrderService#(OrderSearchCriteria)
 	 */
@@ -2774,6 +2775,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(ProviderRole.class)
 				.addAnnotatedClass(EncounterRole.class)
 				.addAnnotatedClass(PatientProgram.class)
+				.addAnnotatedClass(PatientIdentifier.class)
 				.addAnnotatedClass(HL7InArchive.class)
 				.addAnnotatedClass(PersonMergeLog.class)
 				.addAnnotatedClass(ClobDatatypeStorage.class)
@@ -2787,7 +2789,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				.addAnnotatedClass(ConceptAttributeType.class)
 				.addAnnotatedClass(Program.class)
 				.addAnnotatedClass(ConceptNameTag.class)
-			    .addAnnotatedClass(CareSetting.class) 
+			    .addAnnotatedClass(CareSetting.class)
 				.addAnnotatedClass(LocationTag.class)
 			    .addAnnotatedClass(org.openmrs.Field.class)
 				.addAnnotatedClass(Privilege.class)
@@ -3496,7 +3498,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertTrue(saveOrder.getAsNeeded());
 		assertNotNull(orderService.getOrder(saveOrder.getOrderId()));
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.OrderService#saveOrder(Order, OrderContext)
 	 */
@@ -3972,7 +3974,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		// Re-retrieve this order group, and try to save it
 		Context.flushSession();
 		Context.clearSession();
-		
+
 		orderGroup = Context.getOrderService().getOrderGroup(orderGroupId);
 		Context.getOrderService().saveOrderGroup(orderGroup);
 	}
@@ -4000,7 +4002,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Encounter encounter = Context.getEncounterService().getEncounter(3);
 
 		List<OrderGroup> orderGroups = orderService.getOrderGroupsByEncounter(encounter);
-		
+
 		assertNotNull(orderGroups);
 		assertEquals(2, orderGroups.size());
 
@@ -4018,25 +4020,25 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		List<OrderGroupAttributeType> orderGroupAttributeTypes = orderService.getAllOrderGroupAttributeTypes();
 		assertEquals(4, orderGroupAttributeTypes.size());
 	}
-	
+
 	@Test
 	public void getOrderGroupAttributeType_shouldReturnNullIfNoOrderGroupAttributeTypeHasTheGivenId() {
 		assertNull(orderService.getOrderGroupAttributeType(10));
 	}
-	
+
 	@Test
 	public void getOrderGroupAttributeType_shouldReturnOrderGroupAttributeType() {
 		OrderGroupAttributeType orderGroupAttributeType = orderService.getOrderGroupAttributeType(2);
 		assertThat(orderGroupAttributeType.getId(), is(2));
 	}
-	
+
 	@Test
 	public void getOrderGroupAttributeTypeByUuid_shouldReturnOrderGroupAttributeTypeByUuid() {
 		OrderGroupAttributeType orderGroupAttributeType = orderService
 		        .getOrderGroupAttributeTypeByUuid("9cf1bce0-d18e-11ea-87d0-0242ac130003");
 		assertEquals("Bacteriology", orderGroupAttributeType.getName());
 	}
-	
+
 	@Test
 	public void saveOrderGroupAttributeType_shouldSaveOrderGroupAttributeTypeGivenOrderGroupAttributeType()
 	        throws ParseException {
@@ -4048,7 +4050,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(orderGroupAttributeType.getId());
 		assertEquals(initialGroupOrderAttributeTypeCount + 1, orderService.getAllOrderGroupAttributeTypes().size());
 	}
-	
+
 	@Test
 	public void saveOrderGroupAttributeType_shouldEditAnExistingOrderGroupAttributeType() {
 		//Check for values in the database
@@ -4060,7 +4062,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		//confirm new values are persisted
 		assertEquals("Laparascopy", orderGroupAttributeType.getName());
 	}
-	
+
 	@Test
 	public void retireOrderGroupAttributeType_shouldRetireOrderGroupAttributeType() throws ParseException {
 		OrderGroupAttributeType orderGroupAttributeType = orderService.getOrderGroupAttributeType(2);
@@ -4075,7 +4077,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertEquals("Test Retire", orderGroupAttributeType.getRetireReason());
 		assertNotNull(orderGroupAttributeType.getDateRetired());
 	}
-	
+
 	@Test
 	public void unretireOrderGroupAttributeType_shouldUnretireOrderGroupAttributeType() {
 		OrderGroupAttributeType orderGroupAttributeType = orderService.getOrderGroupAttributeType(4);
@@ -4089,25 +4091,25 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertNull(orderGroupAttributeType.getDateRetired());
 		assertNull(orderGroupAttributeType.getRetireReason());
 	}
-	
+
 	@Test
 	public void getOrderGroupAttributeTypeByName_shouldReturnOrderGroupAttributeTypeUsingName() {
 		OrderGroupAttributeType orderGroupAttributeType = orderService.getOrderGroupAttributeTypeByName("Bacteriology");
 		assertEquals("9cf1bce0-d18e-11ea-87d0-0242ac130003", orderGroupAttributeType.getUuid());
 	}
-	
+
 	@Test
 	public void purgeOrderGroupAttributeType_shouldPurgeOrderGroupAttributeType() {
 		int initialOrderGroupAttributeTypeCount = orderService.getAllOrderGroupAttributeTypes().size();
 		orderService.purgeOrderGroupAttributeType(orderService.getOrderGroupAttributeType(4));
 		assertEquals(initialOrderGroupAttributeTypeCount - 1, orderService.getAllOrderGroupAttributeTypes().size());
 	}
-	
+
 	@Test
 	public void getOrderGroupAttributeByUuid_shouldReturnNullIfNonExistingUuidIsProvided() {
 		assertNull(orderService.getOrderGroupAttributeTypeByUuid("cbf580ee-d7fb-11ea-87d0-0242ac130003"));
 	}
-	
+
 	@Test
 	public void getOrderGroupAttributeByUuid_shouldReturnOrderGroupAttributeGivenUuid() {
 		OrderGroupAttribute orderGroupAttribute = orderService
@@ -4119,18 +4121,18 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void saveOrder_shouldAllowARetrospectiveOrderToCloseAnOrderThatExpiredInThePast() throws Exception {
-		
+
 		// Ensure that duration units are configured correctly to a snomed duration code
 		ConceptReferenceTerm days = new ConceptReferenceTerm();
 		days.setConceptSource(conceptService.getConceptSourceByName("SNOMED CT"));
 		days.setCode("258703001");
 		days.setName("Day(s)");
 		conceptService.saveConceptReferenceTerm(days);
-		
+
 		Concept daysConcept = conceptService.getConcept(28);
 		daysConcept.addConceptMapping(new ConceptMap(days, conceptService.getConceptMapType(2)));
 		conceptService.saveConcept(daysConcept);
-		
+
 		// First create a retrospective Order on 8/1/2008 with a duration of 60 days.
 		// This will set the auto-expire date to 9/29/2008
 
@@ -4200,7 +4202,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertEquals(orderType, result.getOrders().get(0).getOrderType());
 		assertEquals(careSetting, result.getOrders().get(1).getCareSetting());
 	}
-	
+
 	/**
 	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
 	 */
@@ -4214,11 +4216,11 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setOrderType(orderService.getOrderType(2));
 		order.setEncounter(encounterService.getEncounter(3));
 		order.setDateActivated(new Date());
-		
+
 		final String NAMESPACE = "namespace";
 		final String FORMFIELD_PATH = "formFieldPath";
 		order.setFormField(NAMESPACE, FORMFIELD_PATH);
-		
+
 		order = orderService.saveOrder(order, null);
 		assertEquals(NAMESPACE + "^" + FORMFIELD_PATH, order.getFormNamespaceAndPath());
 	}
@@ -4243,7 +4245,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertEquals("Referral", orderService.getOrderAttributeTypeByUuid(
 				"9758d106-79b0-4f45-8d8c-ae8b3f25d72a").getName());
 	}
-	
+
 	@Test
 	public void saveOrderAttributeType_shouldEditTheExistingOrderAttributeType() {
 		OrderAttributeType orderAttributeType = orderService.getOrderAttributeTypeById(4);
@@ -4281,7 +4283,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertNull(orderAttributeType.getDateRetired());
 		assertNull(orderAttributeType.getRetireReason());
 	}
-	
+
 	@Test
 	public void purgeOrderAttributeType_shouldPurgeTheProvidedOrderAttributeType() {
 		final int ORIGINAL_COUNT = orderService.getAllOrderAttributeTypes().size();
