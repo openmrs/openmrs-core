@@ -22,6 +22,7 @@ import org.openmrs.api.OpenmrsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DiagnosisDAO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,8 +35,19 @@ import java.util.HashSet;
 @Transactional
 public class DiagnosisServiceImpl extends BaseOpenmrsService implements DiagnosisService {
 	
+	private final DiagnosisDAO diagnosisDAO;
+	private final DiagnosisService self;
+	
+	public DiagnosisServiceImpl(DiagnosisDAO diagnosisDAO) {
+		this.diagnosisDAO = diagnosisDAO;
+		this.self = this;
+	}
+	
 	@Autowired
-	private DiagnosisDAO diagnosisDAO;
+	public DiagnosisServiceImpl(DiagnosisDAO diagnosisDAO, @Lazy DiagnosisService self) {
+		this.diagnosisDAO = diagnosisDAO;
+		this.self = self;
+	}
 
 	/**
 	 * Saves a diagnosis
@@ -58,7 +70,7 @@ public class DiagnosisServiceImpl extends BaseOpenmrsService implements Diagnosi
 	 */
 	@Override
 	public Diagnosis voidDiagnosis(Diagnosis diagnosis, String voidReason) {
-		return Context.getDiagnosisService().save(diagnosis);
+		return self.save(diagnosis);
 	}
 
 	/**
@@ -156,7 +168,7 @@ public class DiagnosisServiceImpl extends BaseOpenmrsService implements Diagnosi
 	 */
 	@Override
 	public Diagnosis unvoidDiagnosis(Diagnosis diagnosis) {
-		return Context.getDiagnosisService().save(diagnosis);
+		return self.save(diagnosis);
 	}
 
 	/**
@@ -182,15 +194,6 @@ public class DiagnosisServiceImpl extends BaseOpenmrsService implements Diagnosi
 	 */
 	public DiagnosisDAO getDiagnosisDAO() {
 		return diagnosisDAO;
-	}
-
-	/**
-	 * Sets the diagnosis data access object
-	 * 
-	 * @param diagnosisDAO
-	 */
-	public void setDiagnosisDAO(DiagnosisDAO diagnosisDAO) {
-		this.diagnosisDAO = diagnosisDAO;
 	}
 
 	/**
@@ -233,7 +236,7 @@ public class DiagnosisServiceImpl extends BaseOpenmrsService implements Diagnosi
 	 */
 	@Override
 	public DiagnosisAttributeType retireDiagnosisAttributeType(DiagnosisAttributeType diagnosisAttributeType, String reason) throws APIException {
-		return Context.getDiagnosisService().saveDiagnosisAttributeType(diagnosisAttributeType);
+		return self.saveDiagnosisAttributeType(diagnosisAttributeType);
 	}
 
 	/**
@@ -241,7 +244,7 @@ public class DiagnosisServiceImpl extends BaseOpenmrsService implements Diagnosi
 	 */
 	@Override
 	public DiagnosisAttributeType unretireDiagnosisAttributeType(DiagnosisAttributeType diagnosisAttributeType) throws APIException {
-		return Context.getDiagnosisService().saveDiagnosisAttributeType(diagnosisAttributeType);
+		return self.saveDiagnosisAttributeType(diagnosisAttributeType);
 	}
 
 	/**

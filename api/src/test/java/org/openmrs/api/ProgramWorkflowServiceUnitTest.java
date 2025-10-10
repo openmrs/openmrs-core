@@ -13,6 +13,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,13 +44,13 @@ public class ProgramWorkflowServiceUnitTest {
 	
 	@BeforeEach
 	public void setup() {
-		pws = new ProgramWorkflowServiceImpl();
+		pws = new ProgramWorkflowServiceImpl(mock(ProgramWorkflowDAO.class));
 	}
 	
 	@Test
 	public void getProgramByName_shouldCallDaoGetProgramsByName() {
 		ProgramWorkflowDAO mockDao = Mockito.mock(ProgramWorkflowDAO.class);
-		pws.setProgramWorkflowDAO(mockDao);
+		pws = new ProgramWorkflowServiceImpl(mockDao);
 		pws.getProgramByName("A name");
 		Mockito.verify(mockDao).getProgramsByName("A name", false);
 		Mockito.verify(mockDao).getProgramsByName("A name", true);
@@ -61,7 +62,7 @@ public class ProgramWorkflowServiceUnitTest {
 		List<Program> noProgramWithGivenName = new ArrayList<>();
 		Mockito.when(mockDao.getProgramsByName("A name", false)).thenReturn(noProgramWithGivenName);
 		Mockito.when(mockDao.getProgramsByName("A name", true)).thenReturn(noProgramWithGivenName);
-		pws.setProgramWorkflowDAO(mockDao);
+		pws = new ProgramWorkflowServiceImpl(mockDao);
 		assertNull(pws.getProgramByName("A name"));
 	}
 	
@@ -75,7 +76,7 @@ public class ProgramWorkflowServiceUnitTest {
 		programsWithGivenName.add(program2);
 		Mockito.when(mockDao.getProgramsByName("A name", false)).thenReturn(programsWithGivenName);
 		Mockito.when(mockDao.getProgramsByName("A name", true)).thenReturn(programsWithGivenName);
-		pws.setProgramWorkflowDAO(mockDao);
+		pws = new ProgramWorkflowServiceImpl(mockDao);
 		assertThrows(ProgramNameDuplicatedException.class, () -> pws.getProgramByName("A name"));
 	}
 	

@@ -21,6 +21,7 @@ import org.openmrs.LocationAttribute;
 import org.openmrs.LocationAttributeType;
 import org.openmrs.LocationTag;
 import org.openmrs.api.APIException;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.LocationDAO;
@@ -28,6 +29,7 @@ import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -46,15 +48,13 @@ import org.springframework.util.StringUtils;
 @Transactional
 public class LocationServiceImpl extends BaseOpenmrsService implements LocationService {
 	
-	@Autowired
-	private LocationDAO dao;
+	private final LocationDAO dao;
+	private final AdministrationService administrationService;
 	
-	/**
-	 * @see org.openmrs.api.LocationService#setLocationDAO(org.openmrs.api.db.LocationDAO)
-	 */
-	@Override
-	public void setLocationDAO(LocationDAO dao) {
+	@Autowired
+	public LocationServiceImpl(LocationDAO dao, @Lazy AdministrationService administrationService) {
 		this.dao = dao;
+		this.administrationService = administrationService;
 	}
 	
 	/**
@@ -76,7 +76,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 						throw new APIException("Location.tag.name.required", (Object[]) null);
 					}
 					
-					LocationTag existing = Context.getLocationService().getLocationTagByName(tag.getName());
+					LocationTag existing = getLocationTagByName(tag.getName());
 					if (existing != null) {
 						location.removeTag(tag);
 						location.addTag(existing);
@@ -117,11 +117,11 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	@Transactional(readOnly = true)
 	public Location getDefaultLocation() throws APIException {
 		Location location = null;
-		String locationGP = Context.getAdministrationService().getGlobalProperty(
+		String locationGP = administrationService.getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCATION_NAME);
 		
 		if (StringUtils.hasText(locationGP)) {
-			location = Context.getLocationService().getLocation(locationGP);
+			location = getLocation(locationGP);
 		}
 
 		if (location == null) {
@@ -130,7 +130,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 		
 		// If neither exist, get the first available location
 		if (location == null) {
-			location = Context.getLocationService().getLocation(1);
+			location = getLocation(1);
 		}
 		
 		return location;
@@ -151,7 +151,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	private Location getDefaultLocationFromSting(Location location, String locationGP, String defaultLocation) {
 		Location result = null;
 		if (location == null && (!StringUtils.hasText(locationGP) || !defaultLocation.equalsIgnoreCase(locationGP))) {
-			result = Context.getLocationService().getLocation(defaultLocation);
+			result = getLocation(defaultLocation);
 		}
 
 		return result;
@@ -199,7 +199,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	@Override
 	@Transactional(readOnly = true)
 	public List<Location> getLocations(String nameFragment) throws APIException {
-		return Context.getLocationService().getLocations(nameFragment, null, null, false, null, null);
+		return getLocations(nameFragment, null, null, false, null, null);
 	}
 	
 	/**
@@ -254,7 +254,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	public Location retireLocation(Location location, String reason) throws APIException {
 		location.setRetired(true);
 		location.setRetireReason(reason);
-		return Context.getLocationService().saveLocation(location);
+		return saveLocation(location);
 	}
 	
 	/**
@@ -263,7 +263,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	@Override
 	public Location unretireLocation(Location location) throws APIException {
 		location.setRetired(false);
-		return Context.getLocationService().saveLocation(location);
+		return saveLocation(location);
 	}
 	
 	/**
@@ -325,7 +325,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	@Transactional(readOnly = true)
 	public List<LocationTag> getLocationTags(String search) throws APIException {
 		if (StringUtils.isEmpty(search)) {
-			return Context.getLocationService().getAllLocationTags(true);
+			return getAllLocationTags(true);
 		}
 		
 		return dao.getLocationTags(search);
@@ -346,7 +346,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 			tag.setRetireReason(reason);
 			tag.setRetiredBy(Context.getAuthenticatedUser());
 			tag.setDateRetired(new Date());
-			return Context.getLocationService().saveLocationTag(tag);
+			return saveLocationTag(tag);
 		}
 	}
 	
@@ -359,7 +359,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 		tag.setRetireReason(null);
 		tag.setRetiredBy(null);
 		tag.setDateRetired(null);
-		return Context.getLocationService().saveLocationTag(tag);
+		return saveLocationTag(tag);
 	}
 	
 	/**
@@ -460,7 +460,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	 */
 	@Override
 	public LocationAttributeType unretireLocationAttributeType(LocationAttributeType locationAttributeType) {
-		return Context.getLocationService().saveLocationAttributeType(locationAttributeType);
+		return saveLocationAttributeType(locationAttributeType);
 	}
 	
 	/**
@@ -486,7 +486,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	@Override
 	@Transactional(readOnly = true)
 	public String getAddressTemplate() throws APIException {
-		String addressTemplate = Context.getAdministrationService().getGlobalProperty(
+		String addressTemplate = administrationService.getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE);
 		if (!StringUtils.hasLength(addressTemplate)) {
 			addressTemplate = OpenmrsConstants.DEFAULT_ADDRESS_TEMPLATE;
@@ -500,7 +500,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	 */
 	@Override
 	public void saveAddressTemplate(String xml) throws APIException {
-		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE, xml);
+		administrationService.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE, xml);
 		
 	}
 	

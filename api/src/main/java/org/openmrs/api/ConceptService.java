@@ -76,14 +76,6 @@ import org.openmrs.util.PrivilegeConstants;
 public interface ConceptService extends OpenmrsService {
 	
 	/**
-	 * Sets the data access object for Concepts. The dao is used for saving and getting concepts
-	 * to/from the database
-	 * 
-	 * @param dao The data access object to use
-	 */
-	public void setConceptDAO(ConceptDAO dao);
-	
-	/**
 	 * Get Concept by its UUID
 	 * 
 	 * @param uuid
