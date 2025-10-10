@@ -29,6 +29,13 @@
 			CREATE FUNCTION UUID() RETURNS UUID LANGUAGE SQL AS $$ SELECT uuid_generate_v1() $$;
 		</sql>
 	</changeSet>
+	
+	<changeSet id="TRUNK-5836-2025-10-09" author="Nethmi Rodrigo">
+		<addColumn tableName="concept_datatype" >
+			<column name="date_changed" type="DATETIME" />
+			<column name="changed_by" type="INT" />
+		</addColumn>
+	</changeSet>
 
 	<changeSet id="TRUNK-6391-2025-07-29" author="Wikum Weerakutti">
 		<addColumn tableName="scheduler_task_config">
