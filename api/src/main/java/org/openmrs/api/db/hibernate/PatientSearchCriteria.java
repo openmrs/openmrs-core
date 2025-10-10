@@ -529,7 +529,7 @@ public class PatientSearchCriteria {
 		OpenmrsConstants.GLOBAL_PROPERTY_MIN_SEARCH_CHARACTERS,
 		OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_MIN_SEARCH_CHARACTERS);
 
-		if (name != null && name.length() < minChars) {
+		if (name != null && name.length() == minChars) {
 			return Boolean.TRUE;
 
 		} else {
