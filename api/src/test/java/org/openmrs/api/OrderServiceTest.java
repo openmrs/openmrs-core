@@ -2789,6 +2789,57 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			.addAnnotatedClass(ConceptNumeric.class)
 			.addAnnotatedClass(ConceptComplex.class)
 			.getMetadataBuilder().build();
+				.addAnnotatedClass(Encounter.class).addAnnotatedClass(SomeTestOrder.class)
+				.addAnnotatedClass(Diagnosis.class).addAnnotatedClass(Condition.class)
+				.addAnnotatedClass(Visit.class).addAnnotatedClass(VisitAttributeType.class)
+				.addAnnotatedClass(MedicationDispense.class)
+				.addAnnotatedClass(ProviderAttributeType.class)
+				.addAnnotatedClass(ConceptMapType.class)
+				.addAnnotatedClass(Relationship.class)
+				.addAnnotatedClass(Location.class)
+				.addAnnotatedClass(PersonAddress.class)
+				.addAnnotatedClass(PersonAttributeType.class)
+				.addAnnotatedClass(User.class)
+				.addAnnotatedClass(LocationAttributeType.class)
+				.addAnnotatedClass(SerializedObject.class)
+				.addAnnotatedClass(PatientState.class)
+				.addAnnotatedClass(DrugIngredient.class)
+				.addAnnotatedClass(DrugReferenceMap.class)
+				.addAnnotatedClass(AlertRecipient.class)
+				.addAnnotatedClass(PatientIdentifierType.class)
+				.addAnnotatedClass(ProgramAttributeType.class)
+				.addAnnotatedClass(HL7InError.class)
+				.addAnnotatedClass(OrderType.class)
+			    .addAnnotatedClass(ConceptReferenceTermMap.class)
+			    .addAnnotatedClass(ConceptReferenceTerm.class)
+				.addAnnotatedClass(ConceptAnswer.class)
+				.addAnnotatedClass(ConceptClass.class)
+			    .addAnnotatedClass(ConceptMap.class)
+				.addAnnotatedClass(FormResource.class)
+				.addAnnotatedClass(VisitType.class)
+				.addAnnotatedClass(ProviderRole.class)
+				.addAnnotatedClass(EncounterRole.class)
+				.addAnnotatedClass(PatientProgram.class)
+				.addAnnotatedClass(HL7InArchive.class)
+				.addAnnotatedClass(PersonMergeLog.class)
+				.addAnnotatedClass(ClobDatatypeStorage.class)
+				.addAnnotatedClass(ConceptSource.class)
+        		.addAnnotatedClass(TaskDefinition.class)
+				.addAnnotatedClass(ConceptStateConversion.class)
+				.addAnnotatedClass(OrderGroup.class)
+				.addAnnotatedClass(Template.class)
+		    	.addAnnotatedClass(Drug.class)
+			    .addAnnotatedClass(AllergyReaction.class)
+				.addAnnotatedClass(ConceptAttributeType.class)
+				.addAnnotatedClass(Program.class)
+				.addAnnotatedClass(ConceptNameTag.class)
+			    .addAnnotatedClass(CareSetting.class) 
+				.addAnnotatedClass(LocationTag.class)
+			    .addAnnotatedClass(org.openmrs.Field.class)
+				.addAnnotatedClass(Privilege.class)
+				.addAnnotatedClass(LoginCredential.class)
+				.addAnnotatedClass(ConceptDatatype.class)
+				.getMetadataBuilder().build();
 
 
 		Field field = adminDAO.getClass().getDeclaredField("metadata");
@@ -4315,4 +4366,5 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 
 	public class SomeTestOrder extends TestOrder {
 	}
+
 }
