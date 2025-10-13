@@ -51,6 +51,7 @@ import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
  *   <li>Support lazy loading of related entities based on UUIDs</li>
  * </ul>
  *
+ * @since 3.0.0
  */
 public class UuidReferenceModule extends SimpleModule {
 

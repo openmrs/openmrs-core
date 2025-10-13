@@ -37,6 +37,8 @@ import java.util.Set;
  *
  * This is particularly useful for deserialization scenarios where a UUID string
  * needs to be resolved into a fully initialized domain object (e.g., during JSON parsing).
+ * 
+ * @since 3.0.0
  *
  * @see DomainService
  * @see UuidReferenceModule

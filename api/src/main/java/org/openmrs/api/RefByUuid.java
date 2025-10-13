@@ -31,6 +31,8 @@ import java.util.List;
  *     // Get all types this service can resolve
  *     List<?> types = service.getRefTypes();
  * </pre>
+ * 
+ * @since 3.0.0
  */
 public interface RefByUuid {
 

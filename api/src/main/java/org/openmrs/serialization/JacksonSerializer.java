@@ -35,6 +35,8 @@ import com.fasterxml.jackson.datatype.hibernate6.Hibernate6Module;
  * It supports UUID-based references for {@code OpenmrsObject}s using
  * {@link UuidReferenceModule} and handles Hibernate proxies via {@link Hibernate5Module},
  * </p>
+ * 
+ * @since 3.0.0
  *
  * @see UuidReferenceModule
  * @see OpenmrsSerializer

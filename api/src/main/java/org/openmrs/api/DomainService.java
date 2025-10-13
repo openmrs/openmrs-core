@@ -14,6 +14,8 @@ import java.util.List;
 /**
  * Interface for Openmrs services supporting
  * fetching domain objects by UUID.
+ * 
+ * @since 3.0.0
  */
 public interface DomainService extends OpenmrsService {
 
