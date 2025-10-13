@@ -26,12 +26,14 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptAttributeType;
 import org.openmrs.ConceptClass;
+import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
+import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptSource;
 import org.openmrs.ConceptStateConversion;
@@ -2792,6 +2794,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			    .addAnnotatedClass(org.openmrs.Field.class)
 				.addAnnotatedClass(Privilege.class)
 				.addAnnotatedClass(LoginCredential.class)
+				.addAnnotatedClass(Concept.class)
+				.addAnnotatedClass(ConceptNumeric.class)
+				.addAnnotatedClass(ConceptComplex.class)
 				.getMetadataBuilder().build();
 
 
