@@ -31,6 +31,7 @@ import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptReferenceRange;
 import org.openmrs.Drug;
 import org.openmrs.Obs;
+import org.openmrs.ObsReferenceRange;
 import org.openmrs.Person;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -865,6 +866,86 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		assertEquals(Obs.Interpretation.CRITICALLY_LOW, obs.getInterpretation());
 	}
 
+	@Test 
+	public void shouldSetInterpretationToNormalIfObsValueIsAboveLowNormalAndHiNormalIsNull() {
+		Obs obs = createObsWithReferenceRange(60, 97, 4090, 95.0, null, 90.0, null, 0.0, 100.0);
+
+		Errors errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+
+		assertFalse(errors.hasErrors());
+		assertEquals(Obs.Interpretation.NORMAL, obs.getInterpretation());
+	}
+	
+	@Test
+	public void shouldSetInterpretationToNormalIfObsValueIsBelowHiNormalAndLowNormalIsNull() {
+		Obs obs = createObsWithReferenceRange(60, 100, 4090, null, 140.0, null, null, null, null);
+		
+		Errors errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+		
+		assertFalse(errors.hasErrors());
+		assertEquals(Obs.Interpretation.NORMAL, obs.getInterpretation());
+	}
+	
+	@Test
+	public void shouldSetInterpretationToHighIfObsValueIsAboveHiNormalAndHiCriticalIsNull() {
+		Obs obs = createObsWithReferenceRange(60, 150, 4090, null, 140.0, null, null, null, null);
+
+		// Set obs ID to prevent reference range from being overwritten by database values
+		obs.setId(1);
+	
+		
+		Errors errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+		
+		assertFalse(errors.hasErrors());
+		assertEquals(Obs.Interpretation.HIGH, obs.getInterpretation());
+	}
+	
+	@Test
+	public void shouldSetInterpretationToLowIfObsValueIsBelowLowNormalAndLowCriticalIsNull() {
+		Obs obs = createObsWithReferenceRange(60, 90, 4090, 100.0, 140.0, null, 180.0, 0.0, 100.0);
+		
+		// Set obs ID to prevent reference range from being overwritten by database values
+		obs.setId(1);
+		
+		Errors errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+		
+		assertFalse(errors.hasErrors());
+		assertEquals(Obs.Interpretation.LOW, obs.getInterpretation());
+	}
+	
+	/**
+	 * Helper method to create an Obs with specific reference range values
+	 * @param value The numeric value for the observation
+	 * @param conceptId The concept id for the observation
+	 * @param lowNormal Low normal value (can be null)
+	 * @param hiNormal High normal value (can be null)
+	 * @param lowCritical Low critical value (can be null)
+	 * @param hiCritical High critical value (can be null)
+	 * @param lowAbsolute Low absolute value (can be null)
+	 * @param hiAbsolute High absolute value (can be null)
+	 */
+	private static Obs createObsWithReferenceRange(int numberOfYears, double value, int conceptId, Double lowNormal, Double hiNormal,
+		Double lowCritical, Double hiCritical, Double lowAbsolute, Double hiAbsolute) {
+		Obs obs = getObs(numberOfYears, conceptId, value);
+		
+		// Set up the reference range manually with the provided values
+		ObsReferenceRange obsRefRange = new ObsReferenceRange();
+		obsRefRange.setHiAbsolute(hiAbsolute);
+		obsRefRange.setHiCritical(hiCritical);
+		obsRefRange.setHiNormal(hiNormal);
+		obsRefRange.setLowAbsolute(lowAbsolute);
+		obsRefRange.setLowCritical(lowCritical);
+		obsRefRange.setLowNormal(lowNormal);
+		obsRefRange.setObs(obs);
+		obs.setReferenceRange(obsRefRange);
+		
+		return obs;
+	}
+
 	private static Obs getObs(int numberOfYears, int conceptId, double valueNumeric) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.add(Calendar.YEAR, -numberOfYears);
@@ -879,4 +960,5 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setObsDatetime(new Date());
 		return obs;
 	}
+	
 }
