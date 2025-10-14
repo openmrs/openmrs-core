@@ -517,26 +517,15 @@ public class ObsValidator implements Validator {
 		
 		if (hiCritical != null && obsValue >= hiCritical) {
 			obs.setInterpretation(Obs.Interpretation.CRITICALLY_HIGH);
-			return;
-		}
-		
-		if (hiNormal != null && obsValue > hiNormal) {
+		} else if (hiNormal != null && obsValue > hiNormal) {
 			obs.setInterpretation(Obs.Interpretation.HIGH);
-			return;
-		}
-		
-		if (lowCritical != null && obsValue <= lowCritical) {
+		} else if (lowCritical != null && obsValue <= lowCritical) {
 			obs.setInterpretation(Obs.Interpretation.CRITICALLY_LOW);
-			return;
-		}
-		
-		if (lowNormal != null && obsValue < lowNormal) {
+		} else if (lowNormal != null && obsValue < lowNormal) {
 			obs.setInterpretation(Obs.Interpretation.LOW);
-			return;
+		} else {
+			obs.setInterpretation(Obs.Interpretation.NORMAL);
 		}
-		
-		obs.setInterpretation(Obs.Interpretation.NORMAL);
-		
 	}
 	
 }
