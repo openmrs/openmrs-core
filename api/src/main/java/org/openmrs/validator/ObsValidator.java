@@ -509,28 +509,34 @@ public class ObsValidator implements Validator {
 			return;
 		}
 		
-		if (referenceRange.getHiNormal() != null 
-			&& referenceRange.getHiCritical() != null
-			&& obs.getValueNumeric() > referenceRange.getHiNormal()
-			&& obs.getValueNumeric() < referenceRange.getHiCritical()) {
-			obs.setInterpretation(Obs.Interpretation.HIGH);
-		} else if (referenceRange.getHiCritical() != null 
-			&& obs.getValueNumeric() >= referenceRange.getHiCritical()) {
+		Double obsValue = obs.getValueNumeric();
+		Double hiCritical = referenceRange.getHiCritical(); 
+		Double lowCritical = referenceRange.getLowCritical();
+		Double lowNormal = referenceRange.getLowNormal();
+		Double hiNormal = referenceRange.getHiNormal();
+		
+		if (hiCritical != null && obsValue >= hiCritical) {
 			obs.setInterpretation(Obs.Interpretation.CRITICALLY_HIGH);
-		} else if (referenceRange.getLowNormal() != null 
-			&& referenceRange.getLowCritical() != null
-			&& obs.getValueNumeric() < referenceRange.getLowNormal() 
-			&& obs.getValueNumeric() > referenceRange.getLowCritical()) {
-			obs.setInterpretation(Obs.Interpretation.LOW);
-		} else if (referenceRange.getLowNormal() != null 
-			&& referenceRange.getHiNormal() != null
-			&& obs.getValueNumeric() >= referenceRange.getLowNormal() 
-			&& obs.getValueNumeric() <= referenceRange.getHiNormal()) {
-			obs.setInterpretation(Obs.Interpretation.NORMAL);
-		} else if (referenceRange.getLowCritical() != null 
-			&& obs.getValueNumeric() <= referenceRange.getLowCritical()) {
-			obs.setInterpretation(Obs.Interpretation.CRITICALLY_LOW);
+			return;
 		}
+		
+		if (hiNormal != null && obsValue > hiNormal) {
+			obs.setInterpretation(Obs.Interpretation.HIGH);
+			return;
+		}
+		
+		if (lowCritical != null && obsValue <= lowCritical) {
+			obs.setInterpretation(Obs.Interpretation.CRITICALLY_LOW);
+			return;
+		}
+		
+		if (lowNormal != null && obsValue < lowNormal) {
+			obs.setInterpretation(Obs.Interpretation.LOW);
+			return;
+		}
+		
+		obs.setInterpretation(Obs.Interpretation.NORMAL);
+		
 	}
 	
 }
