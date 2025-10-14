@@ -673,6 +673,54 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see OpenmrsUtil#formattedStackTrace(String)
+	 */
+	@Test
+	public void formattedStackTrace_shouldReturnTheErrorAndCauseAfterFormattingIfNotInDevMode() {
+		Properties props = Context.getRuntimeProperties();
+		props.setProperty(OpenmrsConstants.DEVELOPMENT_MODE_RUNTIME_PROPERTY, "false");
+		Context.setRuntimeProperties(props);
+		
+		String test = "ca.uhn.hl7v2.HL7Exception: Error while processing HL7 message: ORU_R01\n"
+			+ "\tat org.openmrs.hl7.impl.HL7ServiceImpl.processHL7Message(HL7ServiceImpl.java:752)\n"
+			+ "Caused by: ca.uhn.hl7v2.app.ApplicationException: ca.uhn.hl7v2.HL7Exception: Could not resolve patient by identifier\n"
+			+ "\tat org.openmrs.hl7.handler.ORUR01Handler.processMessage(ORUR01Handler.java:132)\n"
+			+ "Caused by: ca.uhn.hl7v2.HL7Exception: Could not resolve patient by identifier\n"
+			+ "\tat org.openmrs.hl7.handler.ORUR01Handler.getPatientByIdentifier(ORUR01Handler.java:998)";
+		
+		String expected = "Error (HL7): ca.uhn.hl7v2.HL7Exception: Error while processing HL7 message: ORU_R01\n" 
+			+ "Caused by: ca.uhn.hl7v2.app.ApplicationException: ca.uhn.hl7v2.HL7Exception: Could not resolve patient by identifier";
+		
+		assertEquals(expected, OpenmrsUtil.formattedStackTrace(test), "stack trace was not formatted properly");
+	}
+	
+	/**
+	 * @see OpenmrsUtil#formattedStackTrace(String)
+	 */
+	@Test
+	public void formattedStackTrace_shouldReturnTheUnFormattedStackTraceIfInDevMode() {
+		Properties props = Context.getRuntimeProperties();
+		props.setProperty(OpenmrsConstants.DEVELOPMENT_MODE_RUNTIME_PROPERTY, "true");
+		Context.setRuntimeProperties(props);
+		
+		String test = "ca.uhn.hl7v2.HL7Exception: Error while processing HL7 message: ORU_R01\n"
+			+ "\tat org.openmrs.hl7.impl.HL7ServiceImpl.processHL7Message(HL7ServiceImpl.java:752)\n"
+			+ "Caused by: ca.uhn.hl7v2.app.ApplicationException: ca.uhn.hl7v2.HL7Exception: Could not resolve patient by identifier\n"
+			+ "\tat org.openmrs.hl7.handler.ORUR01Handler.processMessage(ORUR01Handler.java:132)\n"
+			+ "Caused by: ca.uhn.hl7v2.HL7Exception: Could not resolve patient by identifier\n"
+			+ "\tat org.openmrs.hl7.handler.ORUR01Handler.getPatientByIdentifier(ORUR01Handler.java:998)";
+		
+		String expected = "ca.uhn.hl7v2.HL7Exception: Error while processing HL7 message: ORU_R01\n"
+			+ "\tat org.openmrs.hl7.impl.HL7ServiceImpl.processHL7Message(HL7ServiceImpl.java:752)\n"
+			+ "Caused by: ca.uhn.hl7v2.app.ApplicationException: ca.uhn.hl7v2.HL7Exception: Could not resolve patient by identifier\n"
+			+ "\tat org.openmrs.hl7.handler.ORUR01Handler.processMessage(ORUR01Handler.java:132)\n"
+			+ "Caused by: ca.uhn.hl7v2.HL7Exception: Could not resolve patient by identifier\n"
+			+ "\tat org.openmrs.hl7.handler.ORUR01Handler.getPatientByIdentifier(ORUR01Handler.java:998)";
+		
+		assertEquals(expected, OpenmrsUtil.formattedStackTrace(test), "stack trace was not returned properly");
+	}
+	
+	/**
 	 * @see OpenmrsUtil#shortenedStackTrace(String)
 	 */
 	@Test
