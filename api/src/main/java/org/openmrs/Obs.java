@@ -1279,5 +1279,8 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	 */
 	public void setReferenceRange(ObsReferenceRange referenceRange) {
 		this.referenceRange = referenceRange;
+		if (referenceRange != null) {
+			referenceRange.setObs(this);
+		}
 	}
 }
