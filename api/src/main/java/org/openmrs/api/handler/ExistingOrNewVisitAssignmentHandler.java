@@ -112,14 +112,15 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 			
 			VisitService visitService = Context.getVisitService();
 			String targetEncounterTypeId = encounterType.getId().toString();
+			String targetEncounterTypeUuid = encounterType.getUuid();
 			
 			String[] mappings = value.split(",");
 			for (String mapping : mappings) {
 				int index = mapping.indexOf(':');
 				if (index > 0) {
 					String encounterTypeIdOrUuid = mapping.substring(0, index).trim();
-					if (targetEncounterTypeId.equals(encounterTypeIdOrUuid)
-					        || encounterType.getUuid().equals(encounterTypeIdOrUuid)) {
+					if ("default".equals(encounterTypeIdOrUuid) || targetEncounterTypeId.equals(encounterTypeIdOrUuid) 
+						|| targetEncounterTypeUuid.equals(encounterTypeIdOrUuid)) {
 						String visitTypeIdOrUuid = mapping.substring(index + 1).trim();
 						VisitType visitType;
 						if (StringUtils.isNumeric(visitTypeIdOrUuid)) {
