@@ -45,7 +45,7 @@ import com.fasterxml.jackson.datatype.hibernate6.Hibernate6Module;
 @Component("jacksonSerializer")
 public class JacksonSerializer implements OpenmrsSerializer {
 
-	protected static final Logger log = LoggerFactory.getLogger(JacksonSerializer.class);
+	private static final Logger log = LoggerFactory.getLogger(JacksonSerializer.class);
 
 	private ObjectMapper objectMapper =  null;
 
