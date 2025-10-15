@@ -12,6 +12,7 @@ package org.openmrs.serialization;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.SimpleDateFormat;
@@ -43,7 +44,7 @@ public class JacksonSerializerTest extends BaseContextSensitiveTest {
     private JacksonSerializer serializer;
 
     @Test
-    public void serialize_shouldSerializeNonOpenmrsObject() {
+    public void serialize_shouldSerializeNonOpenmrsObject() throws Exception {
         // setup
         Foo foo = new Foo("test", 1);
         List <String> list = new ArrayList <> ();
@@ -66,7 +67,7 @@ public class JacksonSerializerTest extends BaseContextSensitiveTest {
     }
 
     @Test
-    public void deserialize_shouldDeserializeStringToNonOpenmrsObjectClassInstance() throws SerializationException {
+    public void deserialize_shouldDeserializeStringToNonOpenmrsObjectClassInstance() throws Exception {
         // setup
         String serializedFoo = "{\"attributeString\":\"Testing\",\"attributeInt\":4,\"attributeList\":[\"fooBar\",\"bar\"],\"attributeMap\":{\"20\":\"fooBar\",\"10\":\"foo\",\"30\":\"bar\"}}";
 
@@ -91,7 +92,7 @@ public class JacksonSerializerTest extends BaseContextSensitiveTest {
     }
 
     @Test
-    public void serialize_shouldSerializeOpenmrsObject() throws Exception{
+    public void serialize_shouldSerializeOpenmrsObject() throws Exception {
         // setup
         ObjectMapper mapper = new ObjectMapper();
 
@@ -99,24 +100,42 @@ public class JacksonSerializerTest extends BaseContextSensitiveTest {
         String serializedEnc = serializer.serialize(Context.getEncounterService().getEncounter(3));
 
         // verify
-
         JsonNode expectedEnc = mapper.readTree("{\"uuid\":\"6519d653-393b-4118-9c83-a3715b82d4ac\",\"creator\":\"1010d442-e134-11de-babe-001e378eb67e\",\"dateCreated\":\"2008-08-18T14:09:05\",\"voided\":false,\"encounterId\":3,\"encounterDatetime\":\"2008-08-01T00:00:00\",\"patient\":\"5946f880-b197-400b-9caa-a3c661d23041\",\"location\":\"8d6c993e-c2cc-11de-8d13-0010c6dffd0f\",\"form\":\"d9218f76-6c39-45f4-8efa-4c5c6c199f50\",\"encounterType\":\"07000be2-26b6-4cce-8b40-866d8435b613\",\"obs\":[{\"uuid\":\"39fb7f47-e80a-4056-9285-bd798be13c63\",\"creator\":\"1010d442-e134-11de-babe-001e378eb67e\",\"dateCreated\":\"2008-08-18T14:09:35\",\"voided\":false,\"obsId\":7,\"concept\":\"c607c80f-1ea9-4da3-bb88-6276ce8868dd\",\"obsDatetime\":\"2008-07-01T00:00:00\",\"valueNumeric\":50.0,\"person\":\"5946f880-b197-400b-9caa-a3c661d23041\",\"location\":\"8d6c993e-c2cc-11de-8d13-0010c6dffd0f\",\"encounter\":\"6519d653-393b-4118-9c83-a3715b82d4ac\",\"dirty\":false,\"status\":\"FINAL\"},{\"uuid\":\"be48cdcb-6a76-47e3-9f2e-2635032f3a9a\",\"creator\":\"1010d442-e134-11de-babe-001e378eb67e\",\"dateCreated\":\"2008-08-18T14:11:13\",\"voided\":false,\"obsId\":9,\"concept\":\"a09ab2c5-878e-4905-b25d-5784167d0216\",\"obsDatetime\":\"2008-08-01T00:00:00\",\"valueNumeric\":150.0,\"person\":\"5946f880-b197-400b-9caa-a3c661d23041\",\"location\":\"8d6c993e-c2cc-11de-8d13-0010c6dffd0f\",\"encounter\":\"6519d653-393b-4118-9c83-a3715b82d4ac\",\"dirty\":false,\"status\":\"PRELIMINARY\"}],\"visit\":\"a2428fea-6b78-11e0-93c3-18a905e044dc\"}");
-        JsonNode actaulEnc = mapper.readTree(serializedEnc);
+        JsonNode actualEnc = mapper.readTree(serializedEnc);
 
-        assertTrue(expectedEnc.equals(actaulEnc));
+        assertTrue(expectedEnc.equals(actualEnc));
     }
 
     @Test
     public void deserialize_shouldDeserializeJsonStringToOpenmrsObjectClassInstance() throws Exception {
         // setup
-        String serializedenc = "{\"uuid\":\"6519d653-393b-4118-9c83-a3715b82d4ac\",\"creator\":\"1010d442-e134-11de-babe-001e378eb67e\",\"dateCreated\":\"2008-08-18T14:09:05\",\"changedBy\":null,\"dateChanged\":null,\"voided\":false,\"dateVoided\":null,\"voidedBy\":null,\"voidReason\":null,\"encounterId\":3,\"encounterDatetime\":\"2008-08-01T00:00:00\",\"patient\":\"5946f880-b197-400b-9caa-a3c661d23041\",\"location\":\"8d6c993e-c2cc-11de-8d13-0010c6dffd0f\",\"form\":\"d9218f76-6c39-45f4-8efa-4c5c6c199f50\",\"encounterType\":\"07000be2-26b6-4cce-8b40-866d8435b613\",\"orders\":null,\"diagnoses\":null,\"conditions\":[],\"obs\":[{\"uuid\":\"be48cdcb-6a76-47e3-9f2e-2635032f3a9a\",\"creator\":\"1010d442-e134-11de-babe-001e378eb67e\",\"dateCreated\":\"2008-08-18T14:11:13\",\"changedBy\":null,\"dateChanged\":null,\"voided\":false,\"dateVoided\":null,\"voidedBy\":null,\"voidReason\":null,\"formNamespaceAndPath\":null,\"obsId\":9,\"concept\":\"a09ab2c5-878e-4905-b25d-5784167d0216\",\"obsDatetime\":\"2008-08-01T00:00:00\",\"accessionNumber\":null,\"obsGroup\":null,\"groupMembers\":[],\"valueCoded\":null,\"valueCodedName\":null,\"valueDrug\":null,\"valueGroupId\":null,\"valueDatetime\":null,\"valueNumeric\":150.0,\"valueModifier\":null,\"valueText\":null,\"valueComplex\":null,\"comment\":\"\",\"person\":\"5946f880-b197-400b-9caa-a3c661d23041\",\"order\":null,\"location\":\"8d6c993e-c2cc-11de-8d13-0010c6dffd0f\",\"encounter\":\"6519d653-393b-4118-9c83-a3715b82d4ac\",\"previousVersion\":null,\"dirty\":true,\"interpretation\":null,\"status\":\"PRELIMINARY\",\"referenceRange\":null,\"complex\":false,\"obsGrouping\":false},{\"uuid\":\"39fb7f47-e80a-4056-9285-bd798be13c63\",\"creator\":\"1010d442-e134-11de-babe-001e378eb67e\",\"dateCreated\":\"2008-08-18T14:09:35\",\"changedBy\":null,\"dateChanged\":null,\"voided\":false,\"dateVoided\":null,\"voidedBy\":null,\"voidReason\":null,\"formNamespaceAndPath\":null,\"obsId\":7,\"concept\":\"c607c80f-1ea9-4da3-bb88-6276ce8868dd\",\"obsDatetime\":\"2008-07-01T00:00:00\",\"accessionNumber\":null,\"obsGroup\":null,\"groupMembers\":[],\"valueCoded\":null,\"valueCodedName\":null,\"valueDrug\":null,\"valueGroupId\":null,\"valueDatetime\":null,\"valueNumeric\":50.0,\"valueModifier\":null,\"valueText\":null,\"valueComplex\":null,\"comment\":\"\",\"person\":\"5946f880-b197-400b-9caa-a3c661d23041\",\"order\":null,\"location\":\"8d6c993e-c2cc-11de-8d13-0010c6dffd0f\",\"encounter\":\"6519d653-393b-4118-9c83-a3715b82d4ac\",\"previousVersion\":null,\"dirty\":false,\"interpretation\":null,\"status\":\"FINAL\",\"referenceRange\":null,\"complex\":false,\"obsGrouping\":false}],\"visit\":\"a2428fea-6b78-11e0-93c3-18a905e044dc\",\"encounterProviders\":null,\"allergies\":[]}";
+        String serializedEnc = "{\"uuid\":\"6519d653-393b-4118-9c83-a3715b82d4ac\",\"creator\":\"1010d442-e134-11de-babe-001e378eb67e\",\"dateCreated\":\"2008-08-18T14:09:05\",\"changedBy\":null,\"dateChanged\":null,\"voided\":false,\"dateVoided\":null,\"voidedBy\":null,\"voidReason\":null,\"encounterId\":3,\"encounterDatetime\":\"2008-08-01T00:00:00\",\"patient\":\"5946f880-b197-400b-9caa-a3c661d23041\",\"location\":\"8d6c993e-c2cc-11de-8d13-0010c6dffd0f\",\"form\":\"d9218f76-6c39-45f4-8efa-4c5c6c199f50\",\"encounterType\":\"07000be2-26b6-4cce-8b40-866d8435b613\",\"orders\":null,\"diagnoses\":null,\"conditions\":[],\"obs\":[{\"uuid\":\"be48cdcb-6a76-47e3-9f2e-2635032f3a9a\",\"creator\":\"1010d442-e134-11de-babe-001e378eb67e\",\"dateCreated\":\"2008-08-18T14:11:13\",\"changedBy\":null,\"dateChanged\":null,\"voided\":false,\"dateVoided\":null,\"voidedBy\":null,\"voidReason\":null,\"formNamespaceAndPath\":null,\"obsId\":9,\"concept\":\"a09ab2c5-878e-4905-b25d-5784167d0216\",\"obsDatetime\":\"2008-08-01T00:00:00\",\"accessionNumber\":null,\"obsGroup\":null,\"groupMembers\":[],\"valueCoded\":null,\"valueCodedName\":null,\"valueDrug\":null,\"valueGroupId\":null,\"valueDatetime\":null,\"valueNumeric\":150.0,\"valueModifier\":null,\"valueText\":null,\"valueComplex\":null,\"comment\":\"\",\"person\":\"5946f880-b197-400b-9caa-a3c661d23041\",\"order\":null,\"location\":\"8d6c993e-c2cc-11de-8d13-0010c6dffd0f\",\"encounter\":\"6519d653-393b-4118-9c83-a3715b82d4ac\",\"previousVersion\":null,\"dirty\":true,\"interpretation\":null,\"status\":\"PRELIMINARY\",\"referenceRange\":null,\"complex\":false,\"obsGrouping\":false},{\"uuid\":\"39fb7f47-e80a-4056-9285-bd798be13c63\",\"creator\":\"1010d442-e134-11de-babe-001e378eb67e\",\"dateCreated\":\"2008-08-18T14:09:35\",\"changedBy\":null,\"dateChanged\":null,\"voided\":false,\"dateVoided\":null,\"voidedBy\":null,\"voidReason\":null,\"formNamespaceAndPath\":null,\"obsId\":7,\"concept\":\"c607c80f-1ea9-4da3-bb88-6276ce8868dd\",\"obsDatetime\":\"2008-07-01T00:00:00\",\"accessionNumber\":null,\"obsGroup\":null,\"groupMembers\":[],\"valueCoded\":null,\"valueCodedName\":null,\"valueDrug\":null,\"valueGroupId\":null,\"valueDatetime\":null,\"valueNumeric\":50.0,\"valueModifier\":null,\"valueText\":null,\"valueComplex\":null,\"comment\":\"\",\"person\":\"5946f880-b197-400b-9caa-a3c661d23041\",\"order\":null,\"location\":\"8d6c993e-c2cc-11de-8d13-0010c6dffd0f\",\"encounter\":\"6519d653-393b-4118-9c83-a3715b82d4ac\",\"previousVersion\":null,\"dirty\":false,\"interpretation\":null,\"status\":\"FINAL\",\"referenceRange\":null,\"complex\":false,\"obsGrouping\":false}],\"visit\":\"a2428fea-6b78-11e0-93c3-18a905e044dc\",\"encounterProviders\":null,\"allergies\":[]}";
 
         // replay
-        Encounter deserializedEnc = (Encounter) serializer.deserialize(serializedenc, Encounter.class);
+        Encounter deserializedEnc = (Encounter) serializer.deserialize(serializedEnc, Encounter.class);
 
         // verify
         assertTrue("6519d653-393b-4118-9c83-a3715b82d4ac".equals(deserializedEnc.getUuid()));
         assertEquals(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse("2008-08-18T14:09:05"), deserializedEnc.getDateCreated());
+    }
+
+    @Test
+    public void serialize_shouldThrowExceptionOnNullObjectInput() {
+        // verify
+        assertThrows(SerializationException.class, () -> {
+            serializer.serialize(null);
+        });
+    }
+
+    @Test
+    public void deserialize_shouldThrowExceptionOnNullTargetClass() {
+        // setup
+        String validEnc = "{\"uuid\":\"6519d653-393b-4118-9c83-a3715b82d4ac\",\"creator\":\"1010d442-e134-11de-babe-001e378eb67e\",\"dateCreated\":\"2008-08-18T14:09:05\",\"voided\":false,\"encounterId\":3,\"encounterDatetime\":\"2008-08-01T00:00:00\",\"patient\":\"5946f880-b197-400b-9caa-a3c661d23041\",\"location\":\"8d6c993e-c2cc-11de-8d13-0010c6dffd0f\",\"form\":\"d9218f76-6c39-45f4-8efa-4c5c6c199f50\",\"encounterType\":\"07000be2-26b6-4cce-8b40-866d8435b613\",\"obs\":[{\"uuid\":\"39fb7f47-e80a-4056-9285-bd798be13c63\",\"creator\":\"1010d442-e134-11de-babe-001e378eb67e\",\"dateCreated\":\"2008-08-18T14:09:35\",\"voided\":false,\"obsId\":7,\"concept\":\"c607c80f-1ea9-4da3-bb88-6276ce8868dd\",\"obsDatetime\":\"2008-07-01T00:00:00\",\"valueNumeric\":50.0,\"person\":\"5946f880-b197-400b-9caa-a3c661d23041\",\"location\":\"8d6c993e-c2cc-11de-8d13-0010c6dffd0f\",\"encounter\":\"6519d653-393b-4118-9c83-a3715b82d4ac\",\"dirty\":false,\"status\":\"FINAL\"},{\"uuid\":\"be48cdcb-6a76-47e3-9f2e-2635032f3a9a\",\"creator\":\"1010d442-e134-11de-babe-001e378eb67e\",\"dateCreated\":\"2008-08-18T14:11:13\",\"voided\":false,\"obsId\":9,\"concept\":\"a09ab2c5-878e-4905-b25d-5784167d0216\",\"obsDatetime\":\"2008-08-01T00:00:00\",\"valueNumeric\":150.0,\"person\":\"5946f880-b197-400b-9caa-a3c661d23041\",\"location\":\"8d6c993e-c2cc-11de-8d13-0010c6dffd0f\",\"encounter\":\"6519d653-393b-4118-9c83-a3715b82d4ac\",\"dirty\":false,\"status\":\"PRELIMINARY\"}],\"visit\":\"a2428fea-6b78-11e0-93c3-18a905e044dc\"}";
+
+        // verify
+        assertThrows(SerializationException.class, () -> {
+            serializer.deserialize(validEnc, null);
+        });
     }
 
 

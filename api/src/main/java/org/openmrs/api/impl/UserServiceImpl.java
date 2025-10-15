@@ -9,7 +9,6 @@
  */
 package org.openmrs.api.impl;
 
-
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;

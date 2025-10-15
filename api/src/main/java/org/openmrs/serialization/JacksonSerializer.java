@@ -97,17 +97,17 @@ public class JacksonSerializer implements OpenmrsSerializer {
 	 *
 	 * @param o the object to serialize
 	 * @return the serialized JSON string
-	 * @throws RuntimeException if serialization fails or object is null
+	 * @throws SerializationException if serialization fails or object is null
 	 */
 	@Override
-	public String serialize(Object o) {
+	public String serialize(Object o) throws SerializationException {
 		if (o == null) {
-			throw new RuntimeException("Cannot serialize null object");
+			throw new SerializationException("Cannot serialize null object");
 		}
 		try {
 			return getObjectMapper().writeValueAsString(o);
 		} catch (JsonProcessingException e) {
-			throw new RuntimeException("Unable to serialize class: " + o.getClass().getName(), e);
+			throw new SerializationException("Unable to serialize class: " + o.getClass().getName(), e);
 		}
 	}
 	
@@ -119,7 +119,6 @@ public class JacksonSerializer implements OpenmrsSerializer {
 	 * @param <T>              the type parameter
 	 * @return the deserialized Java object
 	 * @throws SerializationException if deserialization fails or provided clazz is null
-	 * @throws SecurityException if the class of the object is not whitelisted
 	 */
 	@Override
 	public <T> T deserialize(String serializedObject, Class<? extends T> clazz) throws SerializationException {
