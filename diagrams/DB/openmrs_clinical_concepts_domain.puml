@@ -1,0 +1,124 @@
+@startuml OpenMRS_Clinical_Concepts_and_Terminology_Domain
+!theme plain
+skinparam linetype ortho
+skinparam packageStyle rectangle
+title OpenMRS Clinical Concepts & Terminology Domain Model
+
+entity "concept" {
+  short_name : VARCHAR(255)
+  description : TEXT
+  form_text : TEXT
+  version : VARCHAR(50)
+}
+
+entity "concept_answer" {
+  answer_concept : INT
+  answer_drug : INT
+}
+
+entity "concept_attribute" {
+  changed_by : INT
+  date_changed : datetime(0)
+}
+
+entity "concept_attribute_type" {
+  description : VARCHAR(1024)
+  datatype : VARCHAR(255)
+  datatype_config : TEXT
+  ... (additional columns)
+}
+
+entity "concept_class" {
+  description : VARCHAR(255)
+  retired_by : INT
+  date_retired : datetime(0)
+}
+
+entity "concept_complex" {
+  handler : VARCHAR(255)
+}
+
+entity "concept_datatype" {
+  description : VARCHAR(255)
+  hl7_abbreviation : VARCHAR(3)
+  retired_by : INT
+}
+
+entity "concept_description" {
+  changed_by : INT
+  date_changed : datetime(0)
+}
+
+entity "concept_map_type" {
+  description : VARCHAR(255)
+  changed_by : INT
+  date_changed : datetime(0)
+}
+
+entity "concept_name" {
+  concept_id : INT <<FK>>
+  concept_name_type : VARCHAR(50)
+  locale_preferred : BOOLEAN
+  voided_by : INT
+}
+
+entity "concept_numeric" {
+  hi_absolute : DOUBLE
+  hi_critical : DOUBLE
+}
+
+entity "concept_proposal" {
+  concept_id : INT <<FK>>
+  encounter_id : INT <<FK>>
+  obs_id : INT <<FK>>
+  obs_concept_id : INT <<FK>>
+  final_text : VARCHAR(255)
+  comments : VARCHAR(255)
+}
+
+entity "concept_reference_map" {
+  changed_by : INT
+  date_changed : datetime(0)
+}
+
+entity "concept_reference_range" {
+  hi_absolute : DOUBLE
+  hi_critical : DOUBLE
+}
+
+entity "concept_reference_source" {
+  retired_by : INT
+  date_retired : datetime(0)
+}
+
+entity "concept_reference_term" {
+  name : VARCHAR(255)
+  description : VARCHAR(255)
+  version : VARCHAR(255)
+  date_changed : datetime(0)
+}
+
+entity "concept_reference_term_map" {
+  changed_by : INT
+  date_changed : datetime(0)
+}
+
+entity "concept_set" {
+  sort_weight : DOUBLE
+}
+
+entity "concept_state_conversion" {
+  concept_id : INT <<FK>>
+  program_workflow_id : INT <<FK>>
+  program_workflow_state_id : INT <<FK>>
+}
+
+entity "concept_stop_word" {
+  locale : VARCHAR(50)
+}
+
+concept_name }o--|| concept : concept_id
+concept_proposal }o--|| concept : concept_id
+concept_state_conversion }o--|| concept : concept_id
+
+@enduml
