@@ -18,7 +18,7 @@
 	<session-factory>
         <property name="jakarta.persistence.validation.mode">none</property>
 		<property name="jakarta.persistence.sharedCache.mode">ENABLE_SELECTIVE</property>
-		
+
 		<!-- API -->
 		<mapping resource="org/openmrs/api/db/hibernate/Concept.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptAttribute.hbm.xml" />
@@ -31,7 +31,7 @@
 		<mapping resource="org/openmrs/api/db/hibernate/DiagnosisAttributeType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/FieldType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Form.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/FormField.hbm.xml" />
+        <mapping resource="org/openmrs/api/db/hibernate/FormResource.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/GlobalProperty.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Obs.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Person.hbm.xml" />
@@ -66,15 +66,15 @@
 
 		<!-- Notification -->
 		<mapping resource="org/openmrs/notification/db/hibernate/Alert.hbm.xml" />
-		
+
 
 		<!-- Visit -->
 		<mapping resource="org/openmrs/api/db/hibernate/VisitAttribute.hbm.xml" />
-		
+
 		<!-- Provider -->
 		<mapping resource="org/openmrs/api/db/hibernate/Provider.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ProviderAttribute.hbm.xml" />
-		
+
 		<!-- These mappings are required because of references in Obs & Concept -->
 		<mapping class="org.openmrs.ObsReferenceRange"/>
 		<mapping class="org.openmrs.ConceptReferenceRange"/>
