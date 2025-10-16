@@ -19,6 +19,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.io.Serializable;
+import jakarta.persistence.EmbeddedId;
+
+
+
+
 
 /**
  * DrugIngredient
@@ -27,33 +32,36 @@ import java.io.Serializable;
 @Table(name = "drug_ingredient")
 @Audited
 public class DrugIngredient extends BaseOpenmrsObject implements Serializable, OpenmrsObject {
-	
-	public static final long serialVersionUID = 94023L;
-	
-	// Fields
-	@ManyToOne
-	@JoinColumn(name = "drug_id", updatable = false, insertable = false)
-	@Id
-	private Drug drug;
 
-	@ManyToOne
-	@JoinColumn(name = "ingredient_id", updatable = false, insertable = false)
-	@Id
-	private Concept ingredient;
+	public static final long serialVersionUID = 94023L;
+
+	// Fields
+	@SuppressWarnings("PMD.UnusedPrivateField")
+	@EmbeddedId
+    private DrugIngredientId id;
+
+    @ManyToOne
+    @JoinColumn(name = "drug_id", insertable = false, updatable = false)
+    private Drug drug;
+
+    @ManyToOne
+    @JoinColumn(name = "ingredient_id", insertable = false, updatable = false)
+    private Concept ingredient;
 
 	@Column(name = "strength")
 	private Double strength;
-	
+
 	@JoinColumn(name = "units")
 	@ManyToOne
 	private Concept units;
-	
+
 	// Constructors
-	
+
 	/** default constructor */
+	@SuppressWarnings("PMD.UnnecessaryConstructor")
 	public DrugIngredient() {
 	}
-	
+
 	// Property accessors
 	/**
 	 * @return the drug
@@ -61,28 +69,28 @@ public class DrugIngredient extends BaseOpenmrsObject implements Serializable, O
 	public Drug getDrug() {
 		return drug;
 	}
-	
+
 	/**
 	 * @param drug the drug to set
 	 */
 	public void setDrug(Drug drug) {
 		this.drug = drug;
 	}
-	
+
 	/**
 	 * @return Returns the ingredient.
 	 */
 	public Concept getIngredient() {
 		return ingredient;
 	}
-	
+
 	/**
 	 * @param ingredient The ingredient to set.
 	 */
 	public void setIngredient(Concept ingredient) {
 		this.ingredient = ingredient;
 	}
-	
+
 	/**
 	 * @return Returns the strength.
 	 * @since 1.11
@@ -90,7 +98,7 @@ public class DrugIngredient extends BaseOpenmrsObject implements Serializable, O
 	public Double getStrength() {
 		return strength;
 	}
-	
+
 	/**
 	 * @param strength The strength to set.
 	 * @since 1.11
@@ -98,7 +106,7 @@ public class DrugIngredient extends BaseOpenmrsObject implements Serializable, O
 	public void setStrength(Double strength) {
 		this.strength = strength;
 	}
-	
+
 	/**
 	 * @return Returns the units.
 	 * @since 1.11
@@ -106,7 +114,7 @@ public class DrugIngredient extends BaseOpenmrsObject implements Serializable, O
 	public Concept getUnits() {
 		return units;
 	}
-	
+
 	/**
 	 * @param units The units to set.
 	 * @since 1.11
@@ -114,7 +122,7 @@ public class DrugIngredient extends BaseOpenmrsObject implements Serializable, O
 	public void setUnits(Concept units) {
 		this.units = units;
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
@@ -123,7 +131,7 @@ public class DrugIngredient extends BaseOpenmrsObject implements Serializable, O
 	public Integer getId() {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
@@ -132,5 +140,5 @@ public class DrugIngredient extends BaseOpenmrsObject implements Serializable, O
 	public void setId(Integer id) {
 		throw new UnsupportedOperationException();
 	}
-	
+
 }
