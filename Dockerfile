@@ -8,8 +8,8 @@
 #	Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS 
 #	graphic logo is a trademark of OpenMRS Inc.
 
-ARG DEV_JDK=amazoncorretto-8
-ARG RUNTIME_JDK=jdk8-corretto
+ARG DEV_JDK=amazoncorretto-17
+ARG RUNTIME_JDK=jdk17-corretto
 
 ### Compile Stage (platform-agnostic)
 FROM --platform=$BUILDPLATFORM maven:3.9-$DEV_JDK AS compile
