@@ -32,9 +32,11 @@ import org.openmrs.FormField;
 import org.openmrs.FormResource;
 import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.api.APIException;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.FormsLockedException;
 import org.openmrs.api.InvalidFileTypeException;
+import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.FormDAO;
 import org.openmrs.api.handler.SaveHandler;
@@ -45,6 +47,7 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.validator.FormValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindException;
@@ -62,25 +65,32 @@ import org.springframework.validation.BindException;
 @Transactional
 public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	
-	@Autowired
-	private FormDAO dao;
-	
+	private final FormDAO dao;
 	private final FormValidator formValidator;
+	private final ObsService obsService;
+	private final AdministrationService administrationService;
+	private final FormService self;
 	
-	/**
-	 * Default empty constructor
-	 */
-	public FormServiceImpl() {
-		formValidator = new FormValidator();
+	public FormServiceImpl(FormDAO dao,
+	                      ObsService obsService,
+	                      AdministrationService administrationService) {
+		this.dao = dao;
+		this.formValidator = new FormValidator();
+		this.obsService = obsService;
+		this.administrationService = administrationService;
+		this.self = this;
 	}
 	
-	/**
-	 * Method used to inject the data access object.
-	 * 
-	 * @param dao
-	 */
-	public void setFormDAO(FormDAO dao) {
+	@Autowired
+	public FormServiceImpl(FormDAO dao,
+	                      ObsService obsService,
+	                      AdministrationService administrationService,
+	                      @Lazy FormService self) {
 		this.dao = dao;
+		this.formValidator = new FormValidator();
+		this.obsService = obsService;
+		this.administrationService = administrationService;
+		this.self = self;
 	}
 	
 	/**
@@ -122,13 +132,13 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 		
 		Context.clearSession();
 		
-		Form originalForm = Context.getFormService().getForm(originalFormId);
+		Form originalForm = getForm(originalFormId);
 		//On upgrading from hibernate 4.3.10.Final to 4.3.11.Final, 
 		//calling getFormResourcesForForm results into a flush which finds the form as dirty,
 		//resulting into the failure of this test
 		//FormServiceTest.duplicateForm_shouldClearChangedDetailsAndUpdateCreationDetails:401 expected null, but was:<admin>
 		//That is why we call getFormResourcesForForm before dao.duplicateForm(form) below.
-		Collection<FormResource> formResources = Context.getFormService().getFormResourcesForForm(originalForm);
+		Collection<FormResource> formResources = getFormResourcesForForm(originalForm);
 		
 		RequiredDataAdvice.recursivelyHandle(SaveHandler.class, form, null);
 		Form newForm = dao.duplicateForm(form);
@@ -146,7 +156,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	public void retireForm(Form form, String reason) throws APIException {
 		form.setRetired(true);
 		form.setRetireReason(reason);
-		Context.getFormService().saveForm(form);
+		self.saveForm(form);
 	}
 	
 	/**
@@ -155,7 +165,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	@Override
 	public void unretireForm(Form form) throws APIException {
 		form.setRetired(false);
-		Context.getFormService().saveForm(form);
+		self.saveForm(form);
 	}
 	
 	/**
@@ -164,7 +174,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<FieldType> getAllFieldTypes() throws APIException {
-		return Context.getFormService().getAllFieldTypes(true);
+		return getAllFieldTypes(true);
 	}
 	
 	/**
@@ -277,7 +287,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<Field> getAllFields() throws APIException {
-		return Context.getFormService().getAllFields(true);
+		return getAllFields(true);
 	}
 	
 	/**
@@ -304,7 +314,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<Form> getAllForms() throws APIException {
-		return Context.getFormService().getAllForms(true);
+		return getAllForms(true);
 	}
 	
 	/**
@@ -372,7 +382,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	@Transactional(readOnly = true)
 	public List<Form> getForms(String fuzzyName, boolean onlyLatestVersion) {
 		// get all forms including unpublished and including retired
-		List<Form> forms = Context.getFormService().getForms(fuzzyName, null, null, null, null, null, null);
+		List<Form> forms = getForms(fuzzyName, null, null, null, null, null, null);
 		
 		Set<String> namesAlreadySeen = new HashSet<>();
 		for (Iterator<Form> i = forms.iterator(); i.hasNext();) {
@@ -432,7 +442,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<Form> getPublishedForms() throws APIException {
-		return Context.getFormService().getForms(null, true, null, false, null, null, null);
+		return getForms(null, true, null, false, null, null, null);
 	}
 	
 	/**
@@ -440,7 +450,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	@Override
 	public void purgeField(Field field) throws APIException {
-		Context.getFormService().purgeField(field, false);
+		purgeField(field, false);
 	}
 	
 	/**
@@ -461,7 +471,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	@Override
 	public void purgeForm(Form form) throws APIException {
 		checkIfFormsAreLocked();
-		Context.getFormService().purgeForm(form, false);
+		purgeForm(form, false);
 	}
 	
 	/**
@@ -474,8 +484,8 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 		}
 		
 		// remove resources
-		for (FormResource resource : Context.getFormService().getFormResourcesForForm(form)) {
-			Context.getFormService().purgeFormResource(resource);
+		for (FormResource resource : getFormResourcesForForm(form)) {
+			purgeFormResource(resource);
 		}
 		
 		dao.deleteForm(form);
@@ -496,7 +506,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	public Field retireField(Field field) throws APIException {
 		if (!field.getRetired()) {
 			field.setRetired(true);
-			return Context.getFormService().saveField(field);
+			return self.saveField(field);
 		} else {
 			return field;
 		}
@@ -561,7 +571,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 		//Include all formfields from all serializable complex obs handlers
 		Concept concept = tmpFormField.getField().getConcept();
 		if (concept != null && concept.isComplex()) {
-			ComplexObsHandler handler = Context.getObsService().getHandler(((ConceptComplex) concept).getHandler());
+			ComplexObsHandler handler = obsService.getHandler(((ConceptComplex) concept).getHandler());
 			if (handler instanceof SerializableComplexObsHandler) {
 				SerializableComplexObsHandler sHandler = (SerializableComplexObsHandler) handler;
 				if (sHandler.getFormFields() != null) {
@@ -586,7 +596,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	public Field unretireField(Field field) throws APIException {
 		if (field.getRetired()) {
 			field.setRetired(false);
-			return Context.getFormService().saveField(field);
+			return self.saveField(field);
 		} else {
 			return field;
 		}
@@ -606,7 +616,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<Field> getFieldsByConcept(Concept concept) throws APIException {
-		return Context.getFormService().getFields(null, null, Collections.singleton(concept), null, null, null, null, null,
+		return getFields(null, null, Collections.singleton(concept), null, null, null, null, null,
 		    null);
 	}
 	
@@ -731,7 +741,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 		}
 		// If a form resource with same name exists, replace it with current value
 		FormResource toPersist = formResource;
-		FormResource original = Context.getFormService().getFormResource(formResource.getForm(), formResource.getName());
+		FormResource original = getFormResource(formResource.getForm(), formResource.getName());
 		if (original != null) {
 			original.setName(formResource.getName());
 			original.setValue(formResource.getValue());
@@ -775,11 +785,10 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @param formResources the form resources from the source form
 	 */
 	private void duplicateFormResources(Form source, Form destination, Collection<FormResource> formResources) {
-		FormService service = Context.getFormService();
 		for (FormResource resource : formResources) {
 			FormResource newResource = new FormResource(resource);
 			newResource.setForm(destination);
-			service.saveFormResource(newResource);
+			self.saveFormResource(newResource);
 		}
 	}
 	
@@ -789,7 +798,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	@Override
 	public void checkIfFormsAreLocked() {
-		String locked = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_FORMS_LOCKED,
+		String locked = administrationService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_FORMS_LOCKED,
 		    "false");
 		if (Boolean.valueOf(locked)) {
 			throw new FormsLockedException();
