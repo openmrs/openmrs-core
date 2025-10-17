@@ -9,6 +9,8 @@
  */
 package org.openmrs.scheduler.timer;
 
+
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -23,6 +25,7 @@ import java.util.TreeMap;
 import java.util.WeakHashMap;
 
 import org.openmrs.api.APIException;
+import org.openmrs.api.RefByUuid;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.scheduler.SchedulerConstants;
 import org.openmrs.scheduler.SchedulerException;
@@ -45,7 +48,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service("schedulerService")
 @Transactional
-public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements SchedulerService {
+public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements SchedulerService, RefByUuid {
 	
 	/**
 	 * Logger
@@ -553,4 +556,18 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 		return getSchedulerDAO().getTaskByUuid(uuid);
 	}
 	
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getRefByUuid(Class<T> type, String uuid) {
+        if (TaskDefinition.class.equals(type)) {
+            return (T) getTaskByUuid(uuid);
+        }
+        throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
+    }
+
+    @Override
+    public List<Class<?>> getRefTypes() {
+        return Arrays.asList(TaskDefinition.class);
+    }
+
 }
