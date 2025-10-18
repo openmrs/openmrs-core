@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.context.Context;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +21,7 @@ import java.util.Map;
 /**
  * A utility class for working with configuration properties
  */
+@Component("configUtilGlobalPropertyListener")
 public class ConfigUtil implements GlobalPropertyListener {
 
 	/**
