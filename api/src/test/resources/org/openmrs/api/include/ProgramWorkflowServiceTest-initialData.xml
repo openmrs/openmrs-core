@@ -21,7 +21,9 @@
 
 	<!-- concept with outcome concept with set of data -->
     <program program_id="4" concept_id="9" outcomes_concept_id="25" creator="1" date_created="2008-08-15 16:07:11.0" changed_by="1" date_changed="2008-08-15 17:04:50.0" retired="false" name="HIV Program" description="hiv program" uuid="5dc2a3b0-863c-4074-8f84-45762c3aa04c"/>
-    
+    <program_workflow program_workflow_id="4" program_id="4" name="Enrollment State" concept_id="25" creator="1" date_created="2008-08-15 16:07:11.0" retired="false" uuid="5dc2a3b0-863c-4074-8f84-45762c3aa04d"/>
+    <program program_id="5" concept_id="9" outcomes_concept_id="99" creator="1" date_created="2008-08-15 16:07:11.0" changed_by="1" date_changed="2008-08-15 17:04:50.0" retired="false" name="HIV Program" description="hiv program" uuid="d7477c21-bfc3-4922-9591-e89d8b9c8efa"/>
+
     <!-- Marital outcome -->
     <concept concept_id="99" retired="false" datatype_id="4" class_id="10" is_set="false" creator="1" date_created="2008-08-18 12:38:58.0" version="" uuid="cf25712e-f193-48d5-a85a-5fd8d0244c71"/>
     <concept_name concept_id="99" name="MARITAL OUTCOME" locale="en" creator="1" date_created="2008-08-18 12:38:58.0" concept_name_id="5151" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="d1093cd6-3c89-45f0-8731-13c551c14b4f"/>
@@ -32,4 +34,8 @@
 
 	<!-- concept with outcome concept of type question -->
     <program program_id="5" concept_id="9" outcomes_concept_id="99" creator="1" date_created="2008-08-15 16:07:11.0" changed_by="1" date_changed="2008-08-15 17:04:50.0" retired="false" name="HIV Program" description="hiv program" uuid="d7477c21-bfc3-4922-9591-e89d8b9c8efa"/>
+    <program_workflow program_workflow_id="5" program_id="5" name="Question Outcome Workflow" concept_id="99" creator="1" date_created="2008-08-15 16:07:11.0" retired="false" uuid="d7477c21-bfc3-4922-9591-e89d8b9c8efb"/>
+    <program_workflow_state program_workflow_state_id="10" name="Initial State" program_workflow_id="4" concept_id="5" initial="true" terminal="false" creator="1" date_created="2008-08-15 17:04:02.0" retired="false" uuid="a0101010-a1a1-4232-8177-c53f483fc5f6"/>
+    <program_workflow_state program_workflow_state_id="11" name="Active State" program_workflow_id="4" concept_id="6" initial="false" terminal="false" creator="1" date_created="2008-08-15 17:04:02.0" retired="false" uuid="b0202020-b2b2-4232-8177-c53f483fc5f6"/>
+    <program_workflow_state program_workflow_state_id="12" name="Completed State" program_workflow_id="4" concept_id="25" initial="false" terminal="true" creator="1" date_created="2008-08-15 17:04:02.0" retired="false" uuid="c0303030-c3c3-4232-8177-c53f483fc5f6"/>
 </dataset>

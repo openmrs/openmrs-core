@@ -180,12 +180,14 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 
 		// workflow1
 		ProgramWorkflowState state1_w1 = new ProgramWorkflowState();
+		state1_w1.setName("W1 State 1");
 		state1_w1.setConcept(cs.getConcept(5));
 		state1_w1.setInitial(true);
 		state1_w1.setTerminal(false);
 		workflow1.addState(state1_w1);
 
 		ProgramWorkflowState state2_w1 = new ProgramWorkflowState();
+		state2_w1.setName("W1 State 2");
 		state2_w1.setConcept(cs.getConcept(6));
 		state2_w1.setInitial(false);
 		state2_w1.setTerminal(true);
@@ -193,12 +195,14 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 
 		// workflow2
 		ProgramWorkflowState state1_w2 = new ProgramWorkflowState();
+		state1_w2.setName("W2 State 1");
 		state1_w2.setConcept(cs.getConcept(5));
 		state1_w2.setInitial(true);
 		state1_w2.setTerminal(false);
 		workflow2.addState(state1_w2);
 
 		ProgramWorkflowState state2_w2 = new ProgramWorkflowState();
+		state2_w2.setName("W2 State 2");
 		state2_w2.setConcept(cs.getConcept(6));
 		state2_w2.setInitial(false);
 		state2_w2.setTerminal(true);
@@ -294,12 +298,14 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 
 		// workflow1
 		ProgramWorkflowState state1_w1 = new ProgramWorkflowState();
+		state1_w1.setName("W1 State 1");
 		state1_w1.setConcept(cs.getConcept(5));
 		state1_w1.setInitial(true);
 		state1_w1.setTerminal(false);
 		workflow1.addState(state1_w1);
 
 		ProgramWorkflowState state2_w1 = new ProgramWorkflowState();
+		state2_w1.setName("W1 State 2");
 		state2_w1.setConcept(cs.getConcept(6));
 		state2_w1.setInitial(false);
 		state2_w1.setTerminal(true);
@@ -307,12 +313,14 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 
 		// workflow2
 		ProgramWorkflowState state1_w2 = new ProgramWorkflowState();
+		state1_w2.setName("W2 State 1");
 		state1_w2.setConcept(cs.getConcept(5));
 		state1_w2.setInitial(true);
 		state1_w2.setTerminal(false);
 		workflow2.addState(state1_w2);
 
 		ProgramWorkflowState state2_w2 = new ProgramWorkflowState();
+		state2_w2.setName("W2 State 2");
 		state2_w2.setConcept(cs.getConcept(6));
 		state2_w2.setInitial(false);
 		state2_w2.setTerminal(true);
@@ -320,12 +328,14 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 
 		//workflow3
 		ProgramWorkflowState state1_w3 = new ProgramWorkflowState();
+		state1_w3.setName("W3 State 1");
 		state1_w3.setConcept(cs.getConcept(5));
 		state1_w3.setInitial(true);
 		state1_w3.setTerminal(false);
 		workflow3.addState(state1_w3);
 
 		ProgramWorkflowState state2_w3 = new ProgramWorkflowState();
+		state2_w3.setName("W3 State 2");
 		state2_w3.setConcept(cs.getConcept(6));
 		state2_w3.setInitial(false);
 		state2_w3.setTerminal(true);
@@ -402,12 +412,14 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		program.addWorkflow(workflow);
 		
 		ProgramWorkflowState state1 = new ProgramWorkflowState();
+		state1.setName("State 1");
 		state1.setConcept(cs.getConcept(5));
 		state1.setInitial(true);
 		state1.setTerminal(false);
 		workflow.addState(state1);
 		
 		ProgramWorkflowState state2 = new ProgramWorkflowState();
+		state2.setName("State 2");
 		state2.setConcept(cs.getConcept(6));
 		state2.setInitial(false);
 		state2.setTerminal(true);

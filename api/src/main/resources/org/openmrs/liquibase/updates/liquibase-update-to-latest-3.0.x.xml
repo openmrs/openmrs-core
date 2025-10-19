@@ -83,4 +83,13 @@
 		<modifyDataType tableName="concept_reference_range" columnName="criteria" newDataType="TEXT" />
 	</changeSet>
 
+	<changeSet id="TRUNK-5891-2025-10-19" author="Deborah Nakamatte">
+		<addColumn tableName="program_workflow_state">
+			<column name="date_retired" type="datetime"/>
+			<column name="retire_reason" type="VARCHAR(255)"/>
+			<column name="retired_by" type="INT"/>
+			<column name="name" type="VARCHAR(255)"/>
+		</addColumn>
+	</changeSet>
+
 </databaseChangeLog>

@@ -9,12 +9,26 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import org.hibernate.envers.Audited;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.openmrs.api.db.hibernate.search.SearchAnalysis;
 
 /**
  * ProgramWorkflowState
  */
+@Entity
+@Table(name = "program_workflow_state")
 @Audited
+@AttributeOverride(name = "id", column = @Column(name = "program_workflow_state_id"))
 public class ProgramWorkflowState extends BaseChangeableOpenmrsMetadata {
 	
 	private static final long serialVersionUID = 1L;
@@ -22,16 +36,28 @@ public class ProgramWorkflowState extends BaseChangeableOpenmrsMetadata {
 	// ******************
 	// Properties
 	// ******************
-	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "program_workflow_state_id")
 	private Integer programWorkflowStateId;
 	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "program_workflow_id", nullable = false)
 	private ProgramWorkflow programWorkflow;
 	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
 	
+	@Column(name = "initial", nullable = false, length = 1)
 	private Boolean initial;
 	
+	@Column(name = "terminal", nullable = false, length = 1)
 	private Boolean terminal;
+
+	@Column(name = "name", nullable = false)
+	@FullTextField(analyzer = SearchAnalysis.NAME_ANALYZER)
+	private String name;
 	
 	// ******************
 	// Constructors
@@ -59,6 +85,10 @@ public class ProgramWorkflowState extends BaseChangeableOpenmrsMetadata {
 	// ******************
 	// Property Access
 	// ******************
+
+	public String getName() {return name;}
+
+	public void setName(String name) {this.name = name;}
 	
 	public Concept getConcept() {
 		return concept;

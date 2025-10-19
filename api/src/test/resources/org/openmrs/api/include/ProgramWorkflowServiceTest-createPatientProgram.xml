@@ -19,4 +19,8 @@
   <person person_id="2" gender="M" birthdate="1980-12-25" birthdate_estimated="false" dead="false" creator="1" date_created="2006-02-15 00:00:00.0" voided="false" uuid="6013a8cd-c6a0-4140-bfac-0af565704420"/>
   <person_name person_name_id="2" preferred="true" person_id="2" given_name="Fred" middle_name="C" family_name="Dobbs" creator="1" date_created="2006-02-15 00:00:00.0" voided="false" uuid="b0a2a59e-48b2-4f9c-ad28-74d53d9cabd2"/>
   <program program_id="1" concept_id="1738" creator="1" date_created="2007-09-20 16:00:32.0" retired="false" name="program name" description="Desc" uuid="eae98b4c-e195-403b-b34a-82d94103b2c0"/>
+  <program_workflow program_workflow_id="1" program_id="1" concept_id="4" name="Main Workflow" creator="1" date_created="2007-09-20 16:00:32.0" retired="false" uuid="84f0effa-dd73-46cb-b931-7cd6be6c5f81"/>
+  <program_workflow_state program_workflow_state_id="1" name="Terminated State" program_workflow_id="1" concept_id="16" initial="false" terminal="true" creator="1" date_created="2008-08-15 17:04:02.0" retired="false" uuid="92584cdc-6a20-4c84-a659-e035e45d36b0"/>
+  <program_workflow_state program_workflow_state_id="2" name="Initial State" program_workflow_id="1" concept_id="17" initial="true" terminal="false" creator="1" date_created="2008-08-15 17:04:02.0" retired="false" uuid="e938129e-248a-482a-acea-f85127251472"/>
+  <program_workflow_state program_workflow_state_id="4" name="Active State" program_workflow_id="1" concept_id="14" initial="false" terminal="false" creator="1" date_created="2008-08-15 17:04:02.0" retired="false" uuid="0d5f1bb4-2edb-4dd1-8d9f-34489bb4d9ea"/>
 </dataset>
