@@ -12,6 +12,7 @@ package org.openmrs;
 import java.util.Date;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
@@ -40,7 +41,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	@Column(name = "date_created", nullable = false, updatable = false)
 	private Date dateCreated;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "changed_by")
 	private User changedBy;
 	
@@ -54,7 +55,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	@Column(name = "date_voided")
 	private Date dateVoided;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "voided_by")
 	private User voidedBy;
 	
